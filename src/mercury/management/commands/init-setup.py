@@ -24,6 +24,7 @@ USER1_LAST_NAME=
 USER1_EMAIL=
 USER1_WHATSAPP=
 USER1_TWILIO=
+USER1_SLACK=
 
 USER2_USERNAME=
 USER2_FIRST_NAME=
@@ -31,22 +32,23 @@ USER2_LAST_NAME=
 USER2_EMAIL=
 USER2_WHATSAPP=
 USER2_TWILIO=
+USER2_SLACK
 
 ; create password at https://myaccount.google.com/apppasswords
 CHANNEL_GMAIL_USER=
 CHANNEL_GMAIL_PASSWORD=
-CHANNEL_GMAIL_SENDER=
+CHANNEL_GMAIL_SENDER=mercury@noreply.org
 
 ; use yowsup-cli to register
 ; see: https://github.com/tgalal/yowsup/wiki/yowsup-cli-2.0#yowsup-cli-registration
 CHANNEL_WHATSAPP_LOGIN=
 CHANNEL_WHATSAPP_PASSWORD=
-WHATSAPP_RECIPIENT=
 
 ; get your token at https://www.twilio.com/console
 CHANNEL_TWILIO_SID=
 CHANNEL_TWILIO_TOKEN=
-CHANNEL_TWILIO_FROM=
+;get twilio number  at https://www.twilio.com/console/phone-numbers/incoming
+CHANNEL_TWILIO_SENDER=
 
 ; get legacy token at https://api.slack.com/custom-integrations/legacy-tokens
 CHANNEL_SLACK_TOKEN=
@@ -122,9 +124,9 @@ class Command(BaseCommand):
                                                   defaults=defs)[0]
 
             def create_channel(handler):
-                prefix = handler.name
-                attrs = {k: v for k, v in env.ENVIRON.items()
-                         if k.startswith(f"CHANNEL_{prefix}")}
+                prefix = "CHANNEL_%s_" % handler.name.upper()
+                attrs = {k.replace(prefix, "").lower(): v for k, v in env.ENVIRON.items()
+                         if k.startswith(prefix)}
 
                 return app.owned_channels.get_or_create(name=handler.name,
                                                         defaults=dict(
@@ -168,19 +170,21 @@ class Command(BaseCommand):
                                                   channel=ch_gmail)
                 users.append(user2)
 
-            for plugin in ['mercury_whatsapp.WhatsApp',
-                           'mercury_slack.Slack',
+            for plugin in ['mercury_slack.Slack',
                            'mercury_twilio.Twilio'
                            ]:
-                h = import_by_name(plugin)
-                ch = create_channel(h)
-                self.stdout.write(f"Create channel {ch}")
-                prefix = ch.name.upper()
-                msg.channels.add(ch)
-                for i, user in enumerate(users, 1):
-                    cfg = {"recipient": env(f'USER{i}_{prefix}')}
-                    s = event.subscriptions.get_or_create(subscriber=user,
-                                                          channel=ch,
-                                                          active=False,
-                                                          config=cfg)[0]
-                self.stdout.write(f"Create subscription {s}")
+                try:
+                    h = import_by_name(plugin)
+                    ch = create_channel(h)
+                    self.stdout.write(f"Create channel {ch}")
+                    prefix = ch.name.upper()
+                    msg.channels.add(ch)
+                    for i, user in enumerate(users, 1):
+                        cfg = {"recipient": env(f'USER{i}_{prefix}')}
+                        s = event.subscriptions.get_or_create(subscriber=user,
+                                                              channel=ch,
+                                                              active=False,
+                                                              config=cfg)[0]
+                    self.stdout.write(f"Create subscription {s}")
+                except ImportError:
+                    pass

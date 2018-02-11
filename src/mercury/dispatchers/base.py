@@ -2,26 +2,26 @@
 import abc
 from logging import INFO
 
-from rest_framework import serializers
-
 from mercury.configurable import ConfigurableMixin
 from mercury.logging import getLogger
 
+from . import serializers
+
 logger = getLogger(__name__)
 
-MEDIUM_EMAIL = 'email'
-MEDIUM_SMS = 'sms'
-MEDIUM_URL = 'url'
-
-MEDIA = [MEDIUM_EMAIL, MEDIUM_SMS, MEDIUM_URL]
-MEDIA_CHOICES = zip(MEDIA, MEDIA)
+# MEDIUM_EMAIL = 'email'
+# MEDIUM_SMS = 'sms'
+# MEDIUM_URL = 'url'
+#
+# MEDIA = [MEDIUM_EMAIL, MEDIUM_SMS, MEDIUM_URL]
+# MEDIA_CHOICES = zip(MEDIA, MEDIA)
 
 
 class MessageType(object):
     pass
 
 
-class SubscriberOptions(serializers.Serializer):
+class SubscriptionOptions(serializers.Serializer):
     pass
 
 
@@ -30,6 +30,10 @@ class DispatcherOptions(serializers.Serializer):
 
 
 class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
+    subscription_class = SubscriptionOptions
+    options_class = SubscriptionOptions
+    message_class = MessageType
+
     __media__ = None
 
     def __init__(self, owner=None):

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from mercury.dispatchers.base import Dispatcher, DispatcherOptions, MessageType
+from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
+                                      SubscriptionOptions, MessageType)
 from mercury.dispatchers.registry import dispatcher_registry
 from mercury.exceptions import PluginSendError, ValidationError
 from mercury.logging import getLogger
+from mercury.dispatchers import serializers
 
 logger = getLogger('mercury.plugins.{{cookiecutter.name}}')
 
@@ -12,7 +14,7 @@ class Message(MessageType):
 
 
 class Options(DispatcherOptions):
-    recipient = serializers.CharField(required=True)
+    pass
 
 
 class RecipientOptions(SubscriptionOptions):
@@ -23,6 +25,7 @@ class RecipientOptions(SubscriptionOptions):
 class {{cookiecutter.classname}}(Dispatcher):
     options_class = Options
     message_class = Message
+    subscription_class = SubscriptionOptions
     __license__ = 'MIT'
     __author__ = 'unknown'
 
