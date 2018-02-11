@@ -1,0 +1,103 @@
+{% extends "admin/change_form.html" %}{% load i18n admin_urls static admin_modify mercury %}
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+        &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+        &rsaquo; <a href="{% url opts|admin_urlname:'change' original.pk %}">{{ original }}</a>
+        &rsaquo; Trigger
+    </div>
+{% endblock %}
+
+{% block content %}
+    <style>
+        button, .right {
+            float: right;
+        }
+
+        pre {
+            padding: 5px;
+            width: 90%;
+            font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, sans-serif;
+            font-size: 15px;
+            color: #e8e8e8;
+            background-color: black;
+        }
+
+        textarea {
+            width: 0;
+            height: 0;
+            position: fixed;
+            left: -9999px;
+            right: 0;
+            z-index: -1000;
+            resize: none;
+            border: 0 transparent;
+
+        }
+    </style>
+    {% if not user_token %}
+        <a href="{% url "admin:mercury_apiauthtoken_add" %}">Create user token</a>
+    {% else %}
+        <textarea id="_hiddenCopyText_"></textarea>
+        <div>
+            <button id="copyCurl">Copy</button>
+            <pre id="curl">
+curl -H "Content-Type: application/json" \
+     -H "Authorization:Token {{ user_token.token }}" \
+     -X POST \
+     -d '{{ arguments|jsonify }}' \
+     {{ api_url }}
+</pre>
+        </div>
+        <div>
+            <button id="copyHttpie">Copy</button>
+            <pre id="httpie">
+http POST {{ api_url }} \
+    Authorization:"Token {{ user_token.token }}" \
+    {{ arguments|httpiefy }}
+</pre>
+        </div>
+        <div class="right">copy multilinetted command <input type="checkbox" id="multiline"></div>
+
+    {% endif %}
+
+
+    <div width="100%">
+        <div>{{ form.arguments.errors }}</div>
+        <form method="post">
+            {% csrf_token %}
+            <div>{{ form.arguments }}</div>
+            <input type="submit" value="Test">
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("copyCurl").addEventListener("click", function () {
+            copyToClipboard(document.getElementById("curl"));
+        });
+        document.getElementById("copyHttpie").addEventListener("click", function () {
+            copyToClipboard(document.getElementById("httpie"));
+        });
+
+        function copyToClipboard(elem) {
+            let targetId = "_hiddenCopyText_";
+            target = document.getElementById(targetId);
+            if (document.getElementById("multiline").checked) {
+                target.textContent = elem.textContent;
+            } else {
+                target.textContent = elem.textContent.replace(/[\n\\]/g, "").replace(/ {2,}/g, " ");
+            }
+            target.focus();
+            target.setSelectionRange(0, target.value.length);
+            let succeed;
+            try {
+                succeed = document.execCommand("copy");
+            } catch (e) {
+                succeed = false;
+            }
+            return succeed;
+        }
+    </script>
+
+{% endblock %}

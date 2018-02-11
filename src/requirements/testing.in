@@ -1,0 +1,12 @@
+django-behave
+django-webtest
+factory-boy
+flake8
+isort
+pdbpp
+pytest
+pytest-echo
+pytest-cov
+pytest-django
+selenium
+tox

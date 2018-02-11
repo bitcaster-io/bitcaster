@@ -1,0 +1,12 @@
+.DS_Store
+.env
+.demo
+.demo-sax
+.yowsup
+*.egg-info
+.coverage
+.pytest_cache
+.idea
+.tox
+/dist
+/~*

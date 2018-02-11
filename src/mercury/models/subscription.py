@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+from django.core.exceptions import ValidationError
+from django.db import models
+
+from jsoneditor.fields.postgres_jsonfield import JSONField
+
+from mercury import logging
+
+from .base import AbstractModel
+from .channel import Channel
+from .event import Event
+from .user import User
+
+logger = logging.getLogger(__name__)
+
+
+class SubscriptionQuerySet(models.QuerySet):
+    def enabled(self):
+        return self.filter(active=True, channel__enabled=True)
+
+    def valid(self):
+        return self.filter(active=True, channel__enabled=True)
+
+
+class Subscription(AbstractModel):
+    """ """
+    subscriber = models.ForeignKey(User, models.CASCADE,
+                                   related_name='subscriptions')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE,
+                              related_name='subscriptions')
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
+    config = JSONField(null=True, blank=True)
+
+    objects = SubscriptionQuerySet.as_manager()
+
+    class Meta:
+        unique_together = ('channel', 'subscriber')
+        get_latest_by = 'id'
+
+    def __str__(self):
+        return "<Subscription {0.subscriber} on {0.event} via {0.channel}>".format(self)
+
+    def clean(self):
+        if not self.channel.messages.filter(event=self.event).exists():
+            raise ValidationError('Channel cannot be used as no messages are configured for it')
+        return super().clean()

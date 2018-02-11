@@ -1,0 +1,31 @@
+admin-extra-urls==1.8.0
+amqp==2.2.2               # via kombu
+asn1crypto==0.24.0        # via cryptography
+billiard==3.5.0.3         # via celery
+celery==4.1.0
+cffi==1.11.4              # via cryptography
+cryptography==2.1.4       # via django-fernet-fields
+django-bitfield==1.9.3
+django-concurrency==1.4
+django-environ==0.4.4
+django-fernet-fields==0.5
+django-jsoneditor==0.0.12
+django-regex==0.2.1
+django-rest-framework-nested==0.0.1
+django-strategy-field==1.1.1
+django-sysinfo==1.3.0
+django-timezone-field==2.0
+django==2.0.2
+djangorestframework==3.7.7
+idna==2.6                 # via cryptography
+kombu==4.1.0              # via celery
+packaging==16.8           # via django-jsoneditor
+psutil==5.4.3             # via django-sysinfo
+psycopg2==2.7.3.2
+pycparser==2.18           # via cffi
+pycrypto==2.6.1
+pyparsing==2.2.0          # via packaging
+pytz==2017.3              # via celery, django, django-sysinfo, django-timezone-field
+raven==6.5.0
+six==1.11.0               # via admin-extra-urls, cryptography, django-bitfield, django-concurrency, django-environ, django-sysinfo, packaging
+vine==1.1.4               # via amqp

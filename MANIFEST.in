@@ -1,0 +1,22 @@
+include README.rst
+include CHANGES
+include MANIFEST.in
+include *.py
+include tox.ini
+
+recursive-include docs *
+recursive-include src/mercury *
+recursive-include src/requirements *.pip
+recursive-include tests *
+
+exclude plugins
+exclude src/requirements/*.in
+exclude .pytest_cache
+exclude .demo
+exclude .demo-sax
+exclude .DS_Store
+
+recursive-exclude plugins *
+recursive-exclude . *.pyc
+recursive-exclude **/__pycache__ *
+recursive-exclude .pytest_cache *
