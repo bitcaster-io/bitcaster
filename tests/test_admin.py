@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import json
 import django.core.mail
+import json
 
 from rest_framework.reverse import reverse
 

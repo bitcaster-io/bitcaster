@@ -5,31 +5,20 @@ from __future__ import absolute_import, unicode_literals
 from rest_framework import exceptions
 from rest_framework.authentication import (BaseAuthentication,
                                            SessionAuthentication,
-                                           get_authorization_header,)
+                                           get_authorization_header, )
 from rest_framework.permissions import BasePermission, IsAuthenticated
 
 from mercury.models import ApiAuthToken, Application, User
 from mercury.utils.language import get_attr
 from django.utils.translation import ugettext as _
 
+
 class SameUser(BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.is_superuser or (request.user == obj)
 
 
-
-# class AppPermission(IsAuthenticated):
-#     def has_permission(self, request, view):
-#         return False
-#
-#     def has_object_permission(self, request, view, obj):
-#         return request.user.is_superuser or (request.user == obj.owner)
-
-
 class IsApplicationRelated(IsAuthenticated):
-    # def __init__(self, attr) -> None:
-    #     super().__init__()
-    #     self.attr = attr
     attr = None
 
     @classmethod

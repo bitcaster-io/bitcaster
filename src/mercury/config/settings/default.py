@@ -1,6 +1,10 @@
+import logging
 import os
 
 import environ
+
+logger = logging.getLogger(__name__)
+
 
 MERCURY_DIR = environ.Path(__file__) - 3  # (mercury/config/settings/base.py - 3 = mercury/)
 PROJECT_DIR = MERCURY_DIR - 2
@@ -19,9 +23,9 @@ env = environ.Env(ENABLE_SENTRY=False)
 env_file = str(PROJECT_DIR.path('.env'))
 if os.path.exists(env_file):
     env.read_env(env_file)
-    print('The .env `%s` file has been loaded. ' % env_file)
+    logger.info('The .env `%s` file has been loaded. ' % env_file)
 else:
-    print('`%s` not found. ' % env_file)
+    logger.info('`%s` not found. ' % env_file)
 
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------

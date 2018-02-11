@@ -1,10 +1,10 @@
 import os
 import socket
 from contextlib import contextmanager
-
-import pytest
 from django.contrib.sessions.backends.base import SessionBase
 from django.http import HttpRequest
+
+import pytest
 
 
 class override_threadlocals(object):

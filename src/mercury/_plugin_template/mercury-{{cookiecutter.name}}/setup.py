@@ -7,6 +7,7 @@ setup(
     version='0.1',
     description='',
     long_description='',
+    install_requires=['mercury',],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_{{cookiecutter.name}}'],

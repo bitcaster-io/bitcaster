@@ -1,13 +1,24 @@
 admin-extra-urls==1.8.0
 amqp==2.2.2
+arrow==0.12.1             # via jinja2-time
 asn1crypto==0.24.0
 attrs==17.4.0
 beautifulsoup4==4.6.0
+behave==1.2.5
 billiard==3.5.0.3
+binaryornot==0.4.4        # via cookiecutter
 celery==4.1.0
+certifi==2018.1.18        # via requests
 cffi==1.11.4
-coverage==4.5
+chardet==3.0.4            # via binaryornot, requests
+check-manifest==0.36      # via devpi-client
+click==6.7                # via cookiecutter, pip-tools
+cookiecutter==1.6.0
+coverage==4.5.1
 cryptography==2.1.4
+devpi-client==4.0.1
+devpi-common==3.2.1       # via devpi-client
+django-behave==0.1.5
 django-bitfield==1.9.3
 django-concurrency==1.4
 django-environ==0.4.4
@@ -15,7 +26,7 @@ django-fernet-fields==0.5
 django-jsoneditor==0.0.12
 django-regex==0.2.1
 django-rest-framework-nested==0.0.1
-django-strategy-field==1.1.1
+django-strategy-field==1.2
 django-sysinfo==1.3.0
 django-timezone-field==2.0
 django-webtest==1.9.2
@@ -24,16 +35,26 @@ djangorestframework==3.7.7
 factory-boy==2.10.0
 faker==0.8.10
 fancycompleter==0.8
+first==2.0.1              # via pip-tools
 flake8==3.5.0
+future==0.16.0            # via cookiecutter
 idna==2.6
-isort==4.3.0
+isort==4.3.3
+jinja2-time==0.2.0        # via cookiecutter
+jinja2==2.10              # via cookiecutter, jinja2-time
 kombu==4.1.0
+markupsafe==1.0           # via jinja2
 mccabe==0.6.1
 packaging==16.8
+parse-type==0.4.2
+parse==1.8.2
 pdbpp==0.9.2
+pip-tools==1.11.0
+pkginfo==1.4.1            # via devpi-client
 pluggy==0.6.0
+poyo==0.4.1               # via cookiecutter
 psutil==5.4.3
-psycopg2==2.7.3.2
+psycopg2==2.7.4
 py==1.5.2
 pycodestyle==2.3.1
 pycparser==2.18
@@ -46,14 +67,19 @@ pytest-django==3.1.2
 pytest-echo==1.5.1
 pytest==3.4.0
 python-dateutil==2.6.1
-pytz==2017.3
+pytz==2018.3
 raven==6.5.0
+redis==2.10.6
+requests==2.18.4          # via cookiecutter, devpi-common
+selenium==3.9.0
 six==1.11.0
 text-unidecode==1.1
 tox==2.9.1
+urllib3==1.22             # via requests
 vine==1.1.4
 virtualenv==15.1.0
 waitress==1.1.0
 webob==1.7.4
 webtest==2.0.29
+whichcraft==0.4.1         # via cookiecutter
 wmctrl==0.3

@@ -1,8 +1,8 @@
 import pytest
 from rest_framework.reverse import reverse
+from tests_utils import client_factory
 
 from mercury.models import Message
-from tests_utils import client_factory
 
 
 @pytest.mark.django_db

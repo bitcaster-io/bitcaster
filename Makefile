@@ -80,8 +80,16 @@ compile-requirements:
 
 sync-requirements:
 	pip-sync src/requirements/develop.pip
+	pip install -e .[dev]
+	pip install -e plugins/mercury-slack
+	pip install -e plugins/mercury-xmpp
+	pip install -e plugins/mercury-twilio
+	pip install -e plugins/mercury-plivo
+	pip install -e plugins/mercury-hangout
+
 
 
 cache-requirements:
-	pip install devpi-builder
-	devpi-builder src/requirements/develop.pip  http://localhost:3141/sax/dev --user sax
+	pip freeze > freeze.txt
+	devpi-builder freeze.txt  http://localhost:3141/sax/dev --user sax
+#	rm freeze.txt
