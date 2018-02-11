@@ -1,0 +1,21 @@
+language: python
+sudo: false
+python:
+  - 3.6
+
+env:
+  - DJANGO=2.0
+
+
+install:
+  - pip install tox codecov
+
+script:
+  - tox -e "d${DJANGO//.}-py${TRAVIS_PYTHON_VERSION//.}" -- py.test tests/ --create-db
+
+before_success:
+  - coverage erase
+
+after_success:
+  - coverage combine
+  - codecov
