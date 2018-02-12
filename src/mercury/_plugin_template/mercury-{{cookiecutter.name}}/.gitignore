@@ -1,0 +1,4 @@
+.pytest_cache
+.env
+mercury_{{cookiecutter.name}}.egg-info
+/~build

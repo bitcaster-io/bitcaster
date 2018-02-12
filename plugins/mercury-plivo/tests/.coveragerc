@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = mercury_hangout
+source = mercury_plivo
 
 omit =
 

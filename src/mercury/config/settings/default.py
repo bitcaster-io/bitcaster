@@ -11,7 +11,8 @@ PROJECT_DIR = MERCURY_DIR - 2
 APPS_DIR = MERCURY_DIR.path('.')
 
 # Load operating system environment variables and then prepare to use them
-env = environ.Env(ENABLE_SENTRY=False)
+env = environ.Env(ENABLE_SENTRY=False,
+                  MERCURY_PLUGINS_AUTOLOAD=True)
 
 # .env file, should load only in development environment
 # READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=False)
@@ -246,6 +247,10 @@ LOGIN_URL = 'account_login'
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = r'^admin/'
+
+
+# MERCURY
+PLUGINS_AUTOLOAD=env.bool('MERCURY_PLUGINS_AUTOLOAD', True)
 
 # Your common stuff: Below this line define 3rd party library settings
 # ------------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 from unittest.mock import Mock
 
 import pytest
-from mercury_hangout import Hangout
+from mercury_plivo import Plivo
 
 
 @pytest.fixture
@@ -21,10 +21,10 @@ def subscription():
 
 
 def test_send(subscription):
-    d = Hangout(channel)
+    d = Plivo(channel)
     assert d.emit(subscription, 'subject', 'message') == 1
 
 
 def test_connection(subscription1):
-    d = Hangout(channel)
+    d = Plivo(channel)
     assert d.test_connection()

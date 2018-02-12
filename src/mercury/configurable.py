@@ -68,3 +68,4 @@ class ConfigurableMixin:
             else:
                 logger.error("Invalid configuration")
                 raise ValidationError(opts.errors)
+        return {}

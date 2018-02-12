@@ -86,6 +86,7 @@ sync-requirements:
 	pip install -e plugins/mercury-twilio
 	pip install -e plugins/mercury-plivo
 	pip install -e plugins/mercury-hangout
+	pip install -e plugins/mercury-skype
 
 
 
