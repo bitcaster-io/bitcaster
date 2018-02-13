@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-# from mercury.middleware import get_anonymous_user
 from rest_framework import exceptions
 from rest_framework.authentication import (BaseAuthentication,
                                            SessionAuthentication,

@@ -1,0 +1,3 @@
+include-recursive mercury_facebook *.py
+include README.rst
+include setup.py

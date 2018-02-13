@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import plivo
-
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions,)
@@ -9,7 +7,7 @@ from mercury.exceptions import PluginSendError, ValidationError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
 
-logger = getLogger('mercury.plugins.plivo')
+logger = getLogger('mercury.plugins.facebook')
 
 
 class Message(MessageType):
@@ -17,9 +15,7 @@ class Message(MessageType):
 
 
 class Options(DispatcherOptions):
-    sid = serializers.CharField(required=True)
-    token = serializers.CharField(required=True)
-    sender = serializers.CharField(required=True)
+    pass
 
 
 class RecipientOptions(SubscriptionOptions):
@@ -27,7 +23,7 @@ class RecipientOptions(SubscriptionOptions):
 
 
 @dispatcher_registry.register
-class Plivo(Dispatcher):
+class Facebook(Dispatcher):
     options_class = Options
     message_class = Message
     subscription_class = RecipientOptions
@@ -36,7 +32,7 @@ class Plivo(Dispatcher):
 
     @classproperty
     def name(cls):
-        return 'Plivo'
+        return 'Facebook'
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
         ser = RecipientOptions(data=subscription.config)
@@ -47,13 +43,7 @@ class Plivo(Dispatcher):
         try:
             recipient = subscription.config['recipient']
             logger.info('Processing {0}'.format(subscription, recipient))
-            client = plivo.RestClient(auth_id=self.config['sid'],
-                                      auth_token=self.config['token'])
-            client.messages.create(
-                src=self.config['source'],
-                dst=recipient,
-                text=message
-            )
+            raise NotImplementedError
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)

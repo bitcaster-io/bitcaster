@@ -163,7 +163,7 @@ class ChannelSerializer(ApplicationNestedMixin, serializers.ModelSerializer):
             handler = self.instance.handler
         if handler:
             config = attrs.get('config', {})
-            valid, errors = handler.validate(config)
+            valid, errors = handler.validate_configuration(config)
             if not valid:
                 raise ValidationError({"config": [errors]})
         return super().validate(attrs)

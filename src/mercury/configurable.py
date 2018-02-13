@@ -2,6 +2,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import empty
 
 from mercury import logging
+from mercury.exceptions import PluginValidationError
 from mercury.utils.language import classproperty
 
 logger = logging.getLogger(__name__)
@@ -42,16 +43,21 @@ class ConfigurableMixin:
         return ret
 
     @classmethod
-    def validate(self, config, raise_exception=False):
+    def validate_configuration(self, config, raise_exception=False):
         if self.options_class:
-            ser = self.options_class(data=config)
-            valid = ser.is_valid(raise_exception)
-            errors = dict(ser.errors)
-            for field_name in config.keys():
-                if field_name not in ser.fields:
-                    valid = False
-                    errors[field_name] = ['Unknown attribute `%s`' % field_name]
-            return (valid, errors)
+            try:
+                ser = self.options_class(data=config)
+                valid = ser.is_valid(raise_exception)
+                errors = dict(ser.errors)
+                for field_name in config.keys():
+                    if field_name not in ser.fields:
+                        valid = False
+                        errors[field_name] = ['Unknown attribute `%s`' % field_name]
+                if not valid and raise_exception:
+                    raise PluginValidationError(errors)
+                return (valid, errors)
+            except ValidationError as e:
+                raise PluginValidationError(e)
         return True, []
 
     @property
@@ -67,5 +73,5 @@ class ConfigurableMixin:
                 return opts.data
             else:
                 logger.error("Invalid configuration")
-                raise ValidationError(opts.errors)
+                raise PluginValidationError(opts.errors)
         return {}

@@ -21,7 +21,7 @@ idna==2.6                 # via cryptography
 kombu==4.1.0              # via celery
 packaging==16.8           # via django-jsoneditor
 psutil==5.4.3             # via django-sysinfo
-psycopg2==2.7.4
+psycopg2-binary==2.7.4
 pycparser==2.18           # via cffi
 pycrypto==2.6.1
 pyparsing==2.2.0          # via packaging

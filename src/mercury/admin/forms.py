@@ -11,6 +11,7 @@ from jsoneditor.forms import JSONEditor
 from rest_framework.exceptions import ValidationError
 
 from mercury import logging
+from mercury.exceptions import PluginValidationError
 from mercury.models import Application, Channel, Event, Subscription
 from mercury.utils import import_by_name
 from mercury.utils.language import flatten
@@ -55,7 +56,7 @@ class ValidateJsonMixin(object):
                 config = handler.defaults()
             else:
                 config = {**handler.defaults(), **config}
-            valid, errors = handler.validate(config, False)
+            valid, errors = handler.validate_configuration(config, False)
             # Ugly but it is the only way
             d = self.data.copy()
             d['config'] = json.dumps(config)
@@ -76,6 +77,7 @@ class DispatcherConfigForm(ValidateJsonMixin, forms.ModelForm):
         exclude = []
         fields = ('name', 'application', 'handler', 'config', 'description',
                   'enabled', 'deprecated')
+
     #
     # def clean(self):
     #     ret = super().clean()

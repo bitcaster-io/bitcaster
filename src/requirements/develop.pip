@@ -33,13 +33,13 @@ django-webtest==1.9.2
 django==2.0.2
 djangorestframework==3.7.7
 factory-boy==2.10.0
-faker==0.8.10
+faker==0.8.11
 fancycompleter==0.8
 first==2.0.1              # via pip-tools
 flake8==3.5.0
 future==0.16.0            # via cookiecutter
 idna==2.6
-isort==4.3.3
+isort==4.3.4
 jinja2-time==0.2.0        # via cookiecutter
 jinja2==2.10              # via cookiecutter, jinja2-time
 kombu==4.1.0
@@ -54,7 +54,7 @@ pkginfo==1.4.1            # via devpi-client
 pluggy==0.6.0
 poyo==0.4.1               # via cookiecutter
 psutil==5.4.3
-psycopg2==2.7.4
+psycopg2-binary==2.7.4
 py==1.5.2
 pycodestyle==2.3.1
 pycparser==2.18

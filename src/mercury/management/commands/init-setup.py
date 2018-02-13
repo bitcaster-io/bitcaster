@@ -9,7 +9,6 @@ from django.core.management.base import BaseCommand
 import environ
 from strategy_field.utils import fqn, import_by_name
 
-from mercury.dispatchers import Gmail
 from mercury.models import Application, Channel, Subscription, User
 
 TEMPLATE = b"""
@@ -32,10 +31,12 @@ USER2_LAST_NAME=
 USER2_EMAIL=
 USER2_WHATSAPP=
 USER2_TWILIO=
-USER2_SLACK
+USER2_SLACK=
+
+# CHANNELS=gmail,twilio,slack,plivio,irc,xmpp,skype,hangout
 
 ; create password at https://myaccount.google.com/apppasswords
-CHANNEL_GMAIL_USER=
+CHANNEL_GMAIL_USERNAME=
 CHANNEL_GMAIL_PASSWORD=
 CHANNEL_GMAIL_SENDER=mercury@noreply.org
 
@@ -52,6 +53,23 @@ CHANNEL_TWILIO_SENDER=
 
 ; get legacy token at https://api.slack.com/custom-integrations/legacy-tokens
 CHANNEL_SLACK_TOKEN=
+
+CHANNEL_PLIVO_SID=
+CHANNEL_PLIVO_TOKEN=
+CHANNEL_PLIVO_SENDER=
+
+CHANNEL_IRC_USERNAME=
+CHANNEL_IRC_PASSWORD=
+CHANNEL_IRC_RECIPIENT=
+
+CHANNEL_XMPP_USERNAME=
+CHANNEL_XMPP_PASSWORD=
+CHANNEL_XMPP_RECIPIENT=
+
+CHANNEL_SKYPE_USERNAME=
+CHANNEL_SKYPE_PASSWORD=
+CHANNEL_SKYPE_RECIPIENT=
+
 """
 
 DEMO_MESSAGE = """Ciao {{recipient.first_name}},
@@ -82,7 +100,6 @@ class Command(BaseCommand):
             cursor = connection.cursor()
             for m in [Application, Subscription, Channel, ModelUser]:
                 cursor.execute("TRUNCATE TABLE {} CASCADE".format(m._meta.db_table))
-                # m.objects.all().delete()
 
         if settings.DEBUG:
             pwd = '123'
@@ -145,18 +162,11 @@ class Command(BaseCommand):
                                                        subject='{{subject}}',
                                                        body=DEMO_MESSAGE)
                                                    )
-
-            ch_gmail = create_channel(Gmail)
-            msg.channels.add(ch_gmail)
-
             users = []
 
             if env('USER1_USERNAME'):
                 user1 = create_user('USER1')
                 user1.tokens.create()
-                event.subscriptions.get_or_create(subscriber=user1,
-                                                  active=False,
-                                                  channel=ch_gmail)
                 users.append(user1)
             else:
                 self.stderr.write('set USER1_USERNAME in your env file')
@@ -165,26 +175,26 @@ class Command(BaseCommand):
             if env('USER2_USERNAME'):
                 user2 = create_user('USER2')
                 user2.tokens.create()
-                event.subscriptions.get_or_create(subscriber=user2,
-                                                  active=False,
-                                                  channel=ch_gmail)
                 users.append(user2)
 
-            for plugin in ['mercury_slack.Slack',
-                           'mercury_twilio.Twilio'
-                           ]:
+            configured_channels = {"{1}".format(*k.split('_'))
+                                   for k, v in env.ENVIRON.items() if k.startswith('CHANNEL_')}
+
+            for name in configured_channels:
                 try:
+                    plugin = "mercury_%s.%s" % (name.lower(), name.title())
                     h = import_by_name(plugin)
                     ch = create_channel(h)
                     self.stdout.write(f"Create channel {ch}")
-                    prefix = ch.name.upper()
                     msg.channels.add(ch)
                     for i, user in enumerate(users, 1):
-                        cfg = {"recipient": env(f'USER{i}_{prefix}')}
-                        s = event.subscriptions.get_or_create(subscriber=user,
+                        recipient = env.str(f'USER{i}_{name}', '')
+                        if recipient:
+                            cfg = {"recipient": recipient}
+                            event.subscriptions.get_or_create(subscriber=user,
                                                               channel=ch,
                                                               active=False,
-                                                              config=cfg)[0]
-                    self.stdout.write(f"Create subscription {s}")
-                except ImportError:
-                    pass
+                                                              config=cfg)
+                            self.stdout.write(f"    User {user} subscribed to {ch}")
+                except Exception as e:
+                    self.stderr.write(f"{name} configured but not found. {e}")

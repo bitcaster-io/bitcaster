@@ -8,12 +8,12 @@ from pathlib import Path
 
 from mercury.exceptions import ValidationError
 
-from mercury_{{cookiecutter.name}} import {{cookiecutter.classname}}
+from mercury_gmail import Gmail
 
 
-env = Env(MERCURY_{{cookiecutter.name|upper}}_USERNAME='',
-          MERCURY_{{cookiecutter.name|upper}}_PASSWORD='',
-          MERCURY_{{cookiecutter.name|upper}}_RECIPIENT='',
+env = Env(MERCURY_GMAIL_USERNAME='',
+          MERCURY_GMAIL_PASSWORD='',
+          MERCURY_GMAIL_RECIPIENT='',
           )
 
 env.read_env(str(Path(__file__).parent / '.env'))
@@ -24,37 +24,37 @@ def subscription():
     application = Mock()
     user = Mock()
     channel = Mock(application=application,
-                   config={'username': env('MERCURY_{{cookiecutter.name|upper}}_USERNAME', str),
-                           'password': env('MERCURY_{{cookiecutter.name|upper}}_PASSWORD', str)
+                   config={'username': env('MERCURY_GMAIL_USERNAME', str),
+                           'password': env('MERCURY_GMAIL_PASSWORD', str)
                            })
     event = Mock(application=application)
 
     return Mock(subscriber=user,
                 event=event,
-                config={'recipient': env('MERCURY_{{cookiecutter.name|upper}}_RECIPIENT', str)},
+                config={'recipient': env('MERCURY_GMAIL_RECIPIENT', str)},
                 channel=channel)
 
 
 def test_validate_subscription(subscription):
-    d = {{cookiecutter.classname}}(subscription.channel)
+    d = Gmail(subscription.channel)
     d.validate_subscription(subscription)
 
 
 def test_validate_subscription_fail(subscription):
 
     subscription.config = {}
-    d = {{cookiecutter.classname}}(subscription.channel)
+    d = Gmail(subscription.channel)
     with pytest.raises(ValidationError):
         d.validate_subscription(subscription)
 
 
 def test_send(subscription):
-    d = {{cookiecutter.classname}}(subscription.channel)
+    d = Gmail(subscription.channel)
     assert d.emit(subscription,
                   'subject',
-                  'Mercury is on {{cookiecutter.classname}}...enjoy') == 1
+                  'Mercury is on Gmail...enjoy') == 1
 
 
 def test_connection(subscription):
-    d = {{cookiecutter.classname}}(subscription.channel)
+    d = Gmail(subscription.channel)
     assert d.test_connection()

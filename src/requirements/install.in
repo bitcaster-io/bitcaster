@@ -1,4 +1,4 @@
-admin-extra-urls
+admin-extra-urls>=1.9
 celery
 django>=2.0
 django-bitfield
@@ -12,7 +12,8 @@ django-sysinfo>=1.3
 django-timezone-field
 djangorestframework
 django-rest-framework-nested
-psycopg2
+oauth2client
+psycopg2-binary
 pycrypto
 raven
 redis

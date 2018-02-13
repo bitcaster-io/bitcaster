@@ -2,11 +2,12 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from mercury.dispatchers import Email
+from mercury.exceptions import PluginValidationError
 from mercury.logging import getLogger
 
-from .base import DispatcherOptions, MessageType
-from .registry import dispatcher_registry
+from mercury.dispatchers.base import DispatcherOptions, MessageType
+from mercury.dispatchers.email import Email
+from mercury.dispatchers.registry import dispatcher_registry
 
 logger = getLogger(__name__)
 
@@ -38,7 +39,7 @@ class Gmail(Email):
                 return data
             else:
                 logger.error("Invalid configuration")
-                raise ValidationError(opts.errors)
+                raise PluginValidationError(opts.errors)
 
     def test_connection(self, raise_exception=False):
         try:

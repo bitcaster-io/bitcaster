@@ -11,6 +11,8 @@ from django.views.decorators.debug import sensitive_post_parameters
 
 from admin_extra_urls.extras import ExtraUrlMixin, action
 from jsoneditor.forms import JSONEditor
+
+from mercury.exceptions import PluginValidationError
 from strategy_field.utils import fqn
 
 from mercury.logging import getLogger
@@ -19,23 +21,24 @@ from mercury.models.message import Message
 from mercury.models.subscription import Subscription
 from mercury.tasks import emit_event
 from mercury.utils.django import (activator_factory,
-                                  deactivator_factory, toggler_factory,)
+                                  deactivator_factory, toggler_factory, )
 
 from .forms import (ApplicationForm, DispatcherConfigForm,
-                    EventForm, MessageForm, SubscriptionForm,)
+                    EventForm, MessageForm, SubscriptionForm, )
 from .inlines import ApiTokenInline, ChannelInline, EventInline, MessageInline
+from .site import site
 
 logger = getLogger(__name__)
 csrf_protect_m = method_decorator(csrf_protect)
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 
 
-@admin.register(User)
+@admin.register(User, site=site)
 class UserAdmin(UserAdmin):
     inlines = [ApiTokenInline]
 
 
-@admin.register(Application)
+@admin.register(Application, site=site)
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ('name', 'timezone', 'owner')
     inlines = [ChannelInline, EventInline]
@@ -43,7 +46,7 @@ class ApplicationAdmin(admin.ModelAdmin):
     form = ApplicationForm
 
 
-@admin.register(ApiAuthToken)
+@admin.register(ApiAuthToken, site=site)
 class ApiTokenAdmin(admin.ModelAdmin):
     list_display = ('application', 'user', 'token', 'expires_at')
 
@@ -68,7 +71,7 @@ class EventTriggerForm(Form):
             raise ValidationError({'arguments': errors})
 
 
-@admin.register(Event)
+@admin.register(Event, site=site)
 class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
     form = EventForm
     list_display = ('name', 'application', 'enabled')
@@ -123,7 +126,7 @@ class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
                 return render(request, 'admin/event_trigger.html', ctx)
 
 
-@admin.register(Message)
+@admin.register(Message, site=site)
 class MessageAdmin(admin.ModelAdmin):
     form = MessageForm
     list_display = ('name', 'event', 'language')
@@ -155,7 +158,7 @@ class MessageAdmin(admin.ModelAdmin):
         return []
 
 
-@admin.register(Subscription)
+@admin.register(Subscription, site=site)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('application',
                     'event', 'subscriber', 'channel', 'active')
@@ -171,15 +174,43 @@ class SubscriptionAdmin(admin.ModelAdmin):
         return obj.event.application
 
 
-@admin.register(Channel)
+@admin.register(Channel, site=site)
 class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
     list_display = ('name', 'application', 'handler_name', 'enabled')
     list_filter = ('application',)
     list_editable = ('enabled',)
     form = DispatcherConfigForm
+
+    change_form_template = None
+
     formfield_overrides = {
         pg.JSONField: {'widget': JSONEditor}
     }
+    actions = ['validate_channel',
+               'activate',
+               deactivator_factory('enabled'),
+               ]
+
+    def activate(self, request, queryset):
+        for channel in queryset.all():
+            try:
+                channel.handler.validate_configuration(channel.config, True)
+                channel.enabled = True
+            except PluginValidationError as e:
+                channel.enabled = False
+                self.message_user(request, f"{channel.name} invalid configuration {e}",
+                                  messages.ERROR)
+            channel.save()
+
+    def validate_channel(self, request, queryset):
+        for channel in queryset.all():
+            try:
+                channel.handler.validate_configuration(channel.config, True)
+            except PluginValidationError as e:
+                channel.enabled = False
+                channel.save()
+                self.message_user(request, f"{channel.name} invalid configuration {e}",
+                                  messages.ERROR)
 
     def get_exclude(self, request, obj=None):
         if not obj:
@@ -193,27 +224,6 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
             self.message_user(request, 'Success')
         except Exception as e:  # pragma: no-cover
             self.message_user(request, str(e), level=messages.ERROR)
-        # channel = self.get_object(request, pk)
-        # opts = channel._meta
-        # ctx = {'opts': opts,
-        #        'app_label': opts.app_label,
-        #        'original': channel,
-        #        'change': True,
-        #        'is_popup': False,
-        #        'save_as': False,
-        #        'has_delete_permission': False,
-        #        'has_add_permission': False,
-        #        'has_change_permission': False}
-        # if request.method == 'GET':
-        #     serializer =  channel.handler.subscription_class()
-        #     ctx['serializer'] = serializer
-        #     return render(request, 'admin/mercury/channel/test.html', ctx)
-        # elif request.method == 'POST':
-        #     serializer = channel.handler.subscription_class(data=request.POST)
-        #     if serializer.is_valid():
-        #         channel.handler.test_message(request.POST['message'], serializer)
-        #     ctx['serializer'] = serializer
-        #     return render(request, 'admin/mercury/channel/test.html', ctx)
 
     def handler_name(self, obj):
         return fqn(obj.handler) if obj.handler else ''

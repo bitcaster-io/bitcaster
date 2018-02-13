@@ -3,7 +3,6 @@ import pkg_resources
 from django.conf import settings
 
 from strategy_field.registry import Registry as Registry
-from strategy_field.utils import fqn
 
 from mercury.exceptions import PluginValidationError
 from mercury.logging import getLogger
@@ -13,7 +12,6 @@ logger = getLogger(__name__)
 dispatcher_registry = Registry('mercury.dispatchers.base.Dispatcher')
 
 if settings.PLUGINS_AUTOLOAD:
-    logger.info('Loading plugins')
     for ep in pkg_resources.iter_entry_points('mercury'):  # pragma: no-cover
         try:
             plugin = ep.load()

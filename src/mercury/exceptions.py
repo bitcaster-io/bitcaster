@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from rest_framework.exceptions import ValidationError as DRFValidationError
-
+from django.core.exceptions import ValidationError
 
 class MercuryError(Exception):
     pass
@@ -10,7 +10,7 @@ class UnableToAcquireLock(MercuryError):
     """Exception raised when a lock cannot be acquired."""
 
 
-class PluginValidationError(MercuryError):
+class PluginValidationError(DRFValidationError, ValidationError):
     pass
 
 

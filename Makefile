@@ -81,12 +81,15 @@ compile-requirements:
 sync-requirements:
 	pip-sync src/requirements/develop.pip
 	pip install -e .[dev]
-	pip install -e plugins/mercury-slack
-	pip install -e plugins/mercury-xmpp
-	pip install -e plugins/mercury-twilio
 	pip install -e plugins/mercury-plivo
-	pip install -e plugins/mercury-hangout
 	pip install -e plugins/mercury-skype
+	pip install -e plugins/mercury-slack
+	pip install -e plugins/mercury-twilio
+
+	pip install -e plugins/~mercury-hangout
+	pip install -e plugins/~mercury-irc
+	pip install -e plugins/~mercury-whatsapp
+	pip install -e plugins/~mercury-xmpp
 
 
 

@@ -42,6 +42,8 @@ It can be Global or Application specific.
         :return:
         """
 
+    def validate_config(self):
+        self.handler.config
     # def validate_subscription(self, user):
     #     """
     #         validate user has required
