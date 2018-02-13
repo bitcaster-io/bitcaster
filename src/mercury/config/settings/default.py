@@ -358,12 +358,10 @@ LOGGING = {
 
 # SENTRY & RAVEN
 if env.bool('ENABLE_SENTRY', False):
-    # FIXME: remove this line (pdb)
-    import pdb; pdb.set_trace()
     import raven
     import os
 
-    LOGGING['handlers']['sentry'] = {'level': 'ERROR',  # To capture more than ERROR, change to WARNING, INFO, etc.
+    LOGGING['handlers']['sentry'] = {'level': 'ERROR',
                                      'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
                                      'tags': {'custom-tag': 'x'},
                                      }
@@ -375,6 +373,6 @@ if env.bool('ENABLE_SENTRY', False):
         # release based on the git info.
         'release': raven.fetch_git_sha(str(PROJECT_DIR)),
     }
-    MIDDLEWARE = (  # We recommend putting this as high in the chain as possible
-                     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-                 ) + tuple(MIDDLEWARE)
+    # We recommend putting this as high in the chain as possible
+    MIDDLEWARE = ('raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
+                  ) + tuple(MIDDLEWARE)

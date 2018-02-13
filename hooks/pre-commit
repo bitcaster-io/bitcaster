@@ -1,0 +1,28 @@
+#!/bin/bash
+red='\033[0;31m'
+NC='\033[0m' # No Color
+
+exec 1>&2
+
+. ${BASH_SOURCE%/*}/checks/lib.bash
+
+HOOK_ERROR=0f
+
+
+for module in $(ls ${HOOKS_CHECK_DIR} ); do
+    if [[ "$module" == _* ]] || [[ $module == 'lib.bash' ]]; then
+        continue
+    fi
+    . ${HOOKS_CHECK_DIR}/$module
+
+    if [ $? -eq 1 ] ; then
+        HOOK_ERROR=1
+    fi
+done
+
+#if [ $HOOK_ERROR -gt 0 ];then
+#    gitflow_error "Commit aborted: Check your code."
+#    exit 1
+#else
+gitflow_success "All checks passed."
+#fi

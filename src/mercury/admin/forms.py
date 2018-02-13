@@ -11,7 +11,6 @@ from jsoneditor.forms import JSONEditor
 from rest_framework.exceptions import ValidationError
 
 from mercury import logging
-from mercury.exceptions import PluginValidationError
 from mercury.models import Application, Channel, Event, Subscription
 from mercury.utils import import_by_name
 from mercury.utils.language import flatten
@@ -71,26 +70,11 @@ class ValidateJsonMixin(object):
 
 
 class DispatcherConfigForm(ValidateJsonMixin, forms.ModelForm):
-    # handler = StrategyFormField(registry=dispatcher_registry)
     class Meta:
         model = Channel
         exclude = []
         fields = ('name', 'application', 'handler', 'config', 'description',
                   'enabled', 'deprecated')
-
-
-    #
-    # def clean(self):
-    #     ret = super().clean()
-    #     enabled = self.cleaned_data['enabled']
-    #     if enabled:
-    #         handler = self.cleaned_data['handler']
-    #         config = self.cleaned_data['config']
-    #         try:
-    #             handler.validate(config, True)
-    #         except Exception as e:
-    #             raise ValidationError(e)
-    #     return ret
 
 
 class SubscriptionForm(forms.ModelForm):

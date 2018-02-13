@@ -8,12 +8,15 @@ DJANGO?='last'
 .mkbuilddir:
 	mkdir -p ${BUILDDIR}
 
-develop:
+develop: .setup-git
 	@pip install -U pip setuptools
-	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
 	@pip install -e .[dev]
 	$(MAKE) .init-db
 
+.setup-git:
+	git config branch.autosetuprebase always
+	chmod +x hooks/*
+	cd .git/hooks && ln -fs ../../hooks/* .
 
 .init-db:
 	# initializing '${DBENGINE}' database 'mercury'

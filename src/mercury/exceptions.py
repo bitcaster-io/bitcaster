@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from rest_framework.exceptions import ValidationError as DRFValidationError
 from django.core.exceptions import ValidationError
+
+from rest_framework.exceptions import ValidationError as DRFValidationError
+
 
 class MercuryError(Exception):
     pass
