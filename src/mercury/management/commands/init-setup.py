@@ -70,6 +70,9 @@ CHANNEL_SKYPE_USERNAME=
 CHANNEL_SKYPE_PASSWORD=
 CHANNEL_SKYPE_RECIPIENT=
 
+CHANNEL_FACEBOOK_KEY=
+CHANNEL_FACEBOOK_PASSWORD=
+
 """
 
 DEMO_MESSAGE = """Ciao {{recipient.first_name}},
@@ -194,7 +197,11 @@ class Command(BaseCommand):
                             event.subscriptions.get_or_create(subscriber=user,
                                                               channel=ch,
                                                               active=False,
-                                                              config=cfg)
+                                                              defaults={
+                                                                  'config': cfg
+                                                              })
                             self.stdout.write(f"    User {user} subscribed to {ch}")
-                except Exception as e:
+                except ImportError as e:
                     self.stderr.write(f"{name} configured but not found. {e}")
+                except Exception as e:
+                    raise

@@ -2,9 +2,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from jsoneditor.fields.postgres_jsonfield import JSONField
-
 from mercury import logging
+from mercury.fields import EncryptedJSONField
 
 from .base import AbstractModel
 from .channel import Channel
@@ -30,7 +29,7 @@ class Subscription(AbstractModel):
                               related_name='subscriptions')
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
-    config = JSONField(null=True, blank=True)
+    config = EncryptedJSONField(null=True, blank=True)
 
     objects = SubscriptionQuerySet.as_manager()
 

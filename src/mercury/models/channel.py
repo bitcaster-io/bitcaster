@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from strategy_field.fields import StrategyField
 
 from mercury import logging
 from mercury.dispatchers import dispatcher_registry
+from mercury.fields import EncryptedJSONField
 from mercury.models import AbstractModel, Application
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ It can be Global or Application specific.
                                     blank=True,
                                     on_delete=models.CASCADE,
                                     related_name='owned_channels')
-    config = JSONField(null=True, blank=True)
+    config = EncryptedJSONField(null=True, blank=True)
     enabled = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
     handler = StrategyField(verbose_name='Dispatcher',

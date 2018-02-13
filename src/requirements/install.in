@@ -12,6 +12,7 @@ django-sysinfo>=1.3
 django-timezone-field
 djangorestframework
 django-rest-framework-nested
+jsonfield
 oauth2client
 psycopg2-binary
 pycrypto
