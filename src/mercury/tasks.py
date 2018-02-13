@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
-
-from django.template import Template, Context
+from django.template import Context, Template
 
 from mercury.celery import app
 from mercury.exceptions import LogicError

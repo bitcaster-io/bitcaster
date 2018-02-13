@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from mercury.exceptions import PluginValidationError
 from mercury.logging import getLogger

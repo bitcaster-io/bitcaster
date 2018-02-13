@@ -32,13 +32,15 @@ class ApplicationOwnedFilter(BaseFilterBackend):
 
 class IsOwnerFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
+        if not request.user.is_authenticated:
+            return queryset.none()
         app = view.get_selected_application()
         if app:
             return queryset.filter(id=app.pk)
-        else:
-            if request.user.is_superuser:
-                return queryset
-            return queryset.filter(Q(owner=request.user) | Q(maintainers=request.user))
+        # else:
+        if request.user.is_superuser:
+            return queryset
+        return queryset.filter(Q(owner=request.user) | Q(maintainers=request.user))
 
 
 class MasterChildFilterBackend(BaseFilterBackend):

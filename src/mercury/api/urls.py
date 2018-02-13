@@ -14,7 +14,12 @@ logger = logging.getLogger(__name__)
 
 app_name = 'api'
 
-router = DefaultRouter()
+
+class R(DefaultRouter):
+    include_format_suffixes = False
+
+
+router = R()
 router.register(r'languages', LanguageViewSet, base_name='language')
 router.register(r'timezones', TimezoneViewSet, base_name='timezone')
 
@@ -41,5 +46,5 @@ urlpatterns = (
     url(r'^', include(app.urls)),
     url(r'^', include(user.urls)),
 )
-
+#
 # urlpatterns = router.urls

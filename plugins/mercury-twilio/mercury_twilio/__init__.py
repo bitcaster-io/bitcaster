@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from .plugin import Twilio
+from .plugin import Twilio  # noqa

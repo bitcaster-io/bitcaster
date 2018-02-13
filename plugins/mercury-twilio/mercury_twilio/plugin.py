@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
 
-from mercury.exceptions import ValidationError
+from mercury.exceptions import PluginValidationError
 
 from mercury.logging import getLogger
-from mercury.dispatchers.base import Dispatcher, DispatcherOptions, MessageType
+from mercury.dispatchers.base import Dispatcher, DispatcherOptions, MessageType, SubscriptionOptions
 from mercury.dispatchers.registry import dispatcher_registry
 from twilio.rest import Client
 
@@ -15,7 +15,11 @@ class Message(MessageType):
     pass
 
 
-class Options(DispatcherOptions):
+class TwilioSubscription(SubscriptionOptions):
+    pass
+
+
+class TwilioOptions(DispatcherOptions):
     sid = serializers.CharField(allow_blank=False, required=True)
     token = serializers.CharField(allow_blank=False, required=True)
     sender = serializers.CharField(allow_blank=False, required=True)
@@ -24,16 +28,19 @@ class Options(DispatcherOptions):
 @dispatcher_registry.register
 class Twilio(Dispatcher):
     name = 'Twilio'
-    options_class = Options
-    message_class = Message
+    subscription_class = TwilioSubscription
+    options_class = TwilioOptions
+    message_class = MessageType
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        pass
+        ser = TwilioSubscription(data=subscription.config)
+        if not ser.is_valid():
+            raise PluginValidationError(ser.errors)
 
     @property
     def client(self):
         return Client(self.config['sid'],
-                        self.config['token'])
+                      self.config['token'])
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         recipient = subscription.config['recipient']

@@ -11,20 +11,19 @@ from django.views.decorators.debug import sensitive_post_parameters
 
 from admin_extra_urls.extras import ExtraUrlMixin, action
 from jsoneditor.forms import JSONEditor
-
-from mercury.exceptions import PluginValidationError
 from strategy_field.utils import fqn
 
+from mercury.exceptions import PluginValidationError
 from mercury.logging import getLogger
 from mercury.models import ApiAuthToken, Application, Channel, Event, User
 from mercury.models.message import Message
 from mercury.models.subscription import Subscription
 from mercury.tasks import emit_event
 from mercury.utils.django import (activator_factory,
-                                  deactivator_factory, toggler_factory, )
+                                  deactivator_factory, toggler_factory,)
 
 from .forms import (ApplicationForm, DispatcherConfigForm,
-                    EventForm, MessageForm, SubscriptionForm, )
+                    EventForm, MessageForm, SubscriptionForm,)
 from .inlines import ApiTokenInline, ChannelInline, EventInline, MessageInline
 from .site import site
 
@@ -166,12 +165,33 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_filter = ('event__application', 'channel', 'active')
     search_fields = ('subscriber__username', 'subscriber__last_name')
     form = SubscriptionForm
-    actions = (toggler_factory('active'),
-               activator_factory('active'),
+    actions = ('activate',
+               'validate_subscription',
                deactivator_factory('active'))
 
     def application(self, obj):
         return obj.event.application
+
+    def activate(self, request, queryset):
+        for subscription in queryset.all():
+            try:
+                subscription.channel.validate_subscription(subscription)
+                subscription.active = True
+            except PluginValidationError as e:
+                subscription.active = False
+                self.message_user(request, f"{subscription}: Invalid configuration {e}",
+                                  messages.ERROR)
+            subscription.save()
+
+    def validate_subscription(self, request, queryset):
+        for subscription in queryset.all():
+            try:
+                subscription.channel.validate_subscription(subscription, True)
+            except PluginValidationError as e:
+                subscription.enabled = False
+                subscription.save()
+                self.message_user(request, f"{subscription.name} invalid configuration {e}",
+                                  messages.ERROR)
 
 
 @admin.register(Channel, site=site)

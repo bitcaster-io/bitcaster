@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from .plugin import Plivo
+from .plugin import Plivo  # noqa

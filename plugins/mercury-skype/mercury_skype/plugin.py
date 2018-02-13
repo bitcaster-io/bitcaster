@@ -2,9 +2,9 @@
 import skpy.main
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                      MessageType, SubscriptionOptions,)
+                                      MessageType, SubscriptionOptions, )
 from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import PluginSendError, ValidationError
+from mercury.exceptions import PluginSendError, PluginValidationError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
 
@@ -15,20 +15,20 @@ class Message(MessageType):
     pass
 
 
-class Options(DispatcherOptions):
+class SkypeOptions(DispatcherOptions):
     username = serializers.CharField()
     password = serializers.CharField()
 
 
-class RecipientOptions(SubscriptionOptions):
+class SkypeSubscription(SubscriptionOptions):
     recipient = serializers.CharField()
 
 
 @dispatcher_registry.register
 class Skype(Dispatcher):
-    options_class = Options
-    message_class = Message
-    subscription_class = RecipientOptions
+    subscription_class = SkypeSubscription
+    options_class = SkypeOptions
+    message_class = MessageType
     __license__ = 'MIT'
     __author__ = 'unknown'
 
@@ -37,9 +37,9 @@ class Skype(Dispatcher):
         return 'Skype'
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = RecipientOptions(data=subscription.config)
+        ser = SkypeSubscription(data=subscription.config)
         if not ser.is_valid():
-            raise ValidationError(ser.errors)
+            raise PluginValidationError(ser.errors)
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:

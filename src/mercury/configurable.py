@@ -57,7 +57,8 @@ class ConfigurableMixin:
                     raise PluginValidationError(errors)
                 return (valid, errors)
             except ValidationError as e:
-                raise PluginValidationError(e)
+                if raise_exception:
+                    raise PluginValidationError(e)
         return True, []
 
     @property

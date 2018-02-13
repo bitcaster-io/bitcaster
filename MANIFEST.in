@@ -3,12 +3,14 @@ include CHANGES
 include MANIFEST.in
 include *.py
 include tox.ini
+include src/mercury/_plugin_template/mercury-{{cookiecutter.name}}/tests/.env
 
 recursive-include docs *
 recursive-include src/mercury *
 recursive-include src/requirements *.pip
 recursive-include tests *
 
+exclude hooks
 exclude plugins
 exclude src/requirements/*.in
 exclude .pytest_cache
@@ -17,6 +19,7 @@ exclude .demo-sax
 exclude .DS_Store
 
 recursive-exclude plugins *
+recursive-exclude hooks *
 recursive-exclude . *.pyc
 recursive-exclude **/__pycache__ *
 recursive-exclude .pytest_cache *

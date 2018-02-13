@@ -4,7 +4,7 @@ from mercury.api.endpoints.base import BaseModelViewSet
 from mercury.api.filters import ApplicationFilterBackend, ApplicationOwnedFilter
 from mercury.api.serializers import MessageSerializer
 from mercury.models.message import Message
-from mercury.permissions import IsOwner
+from mercury.permissions import IsApplicationRelated
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class MessageViewSet(BaseModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
-    permission_classes = [IsOwner, ]
+    permission_classes = [IsApplicationRelated.create('application')]
     filter_backends = [ApplicationOwnedFilter,
                        ApplicationFilterBackend.create('application__pk',
                                                        'event__application')

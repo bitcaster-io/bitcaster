@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-import pytest
 from environ import Env
-from pathlib import Path
-
 from mercury.exceptions import ValidationError
 
 from mercury_{{cookiecutter.name}} import {{cookiecutter.classname}}
-
 
 env = Env(MERCURY_{{cookiecutter.name|upper}}_USERNAME='',
           MERCURY_{{cookiecutter.name|upper}}_PASSWORD='',

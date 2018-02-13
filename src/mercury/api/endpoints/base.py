@@ -42,7 +42,8 @@ class BaseModelViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,
                               BasicAuthentication,
                               CsrfExemptSessionAuthentication)
-    renderer_classes = (JSONRenderer, BrowsableAPIRenderer, AdminRenderer)
+    # renderer_classes = (JSONRenderer, BrowsableAPIRenderer, AdminRenderer)
+    renderer_classes = (JSONRenderer, )
 
     def get_exception_handler(self):
         return handler

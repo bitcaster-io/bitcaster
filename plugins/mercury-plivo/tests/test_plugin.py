@@ -21,10 +21,10 @@ def subscription():
 
 
 def test_send(subscription):
-    d = Plivo(channel)
+    d = Plivo(subscription.channel)
     assert d.emit(subscription, 'subject', 'message') == 1
 
 
 def test_connection(subscription1):
-    d = Plivo(channel)
+    d = Plivo(subscription.channel)
     assert d.test_connection()

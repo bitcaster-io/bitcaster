@@ -43,6 +43,7 @@ def test_applicationownedfilter(rf, application1, event1, event2, admin):
 
 def test_isownerfilter(rf, application1, application2, admin):
     request = rf.get('/')
+    request.user = AnonymousUser()
     f = IsOwnerFilter()
 
     view = Mock(get_selected_application=lambda *a: application1)
@@ -50,7 +51,7 @@ def test_isownerfilter(rf, application1, application2, admin):
     qs = Application.objects.all()
     with override_threadlocals(request=request):
         result = f.filter_queryset(request, qs, view)
-        assert list(result) == [application1]
+        assert list(result) == []
 
     with override_threadlocals(request=request, user=admin):
         result = f.filter_queryset(request, qs, view)

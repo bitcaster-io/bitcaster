@@ -5,6 +5,7 @@ from strategy_field.fields import StrategyField
 
 from mercury import logging
 from mercury.dispatchers import dispatcher_registry
+from mercury.exceptions import PluginValidationError
 from mercury.fields import EncryptedJSONField
 from mercury.models import AbstractModel, Application
 
@@ -35,6 +36,12 @@ It can be Global or Application specific.
     def __str__(self):
         return self.name
 
+    def validate_subscription(self, subscription):
+        try:
+            self.handler.validate_subscription(subscription)
+        except Exception:
+            raise PluginValidationError()
+
     def validate_message(self, message):
         """
 
@@ -44,6 +51,7 @@ It can be Global or Application specific.
 
     def validate_config(self):
         self.handler.config
+
     # def validate_subscription(self, user):
     #     """
     #         validate user has required

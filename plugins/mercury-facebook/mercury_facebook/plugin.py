@@ -3,7 +3,7 @@ from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions, )
 from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import PluginSendError, ValidationError
+from mercury.exceptions import PluginSendError, PluginValidationError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
 
@@ -16,20 +16,20 @@ class Message(MessageType):
     pass
 
 
-class Options(DispatcherOptions):
+class FacebookOptions(DispatcherOptions):
     key = serializers.CharField()
     password = serializers.CharField()
 
 
-class RecipientOptions(SubscriptionOptions):
+class FacebookSubscription(SubscriptionOptions):
     recipient = serializers.CharField()
 
 
 @dispatcher_registry.register
 class Facebook(Dispatcher):
-    options_class = Options
-    message_class = Message
-    subscription_class = RecipientOptions
+    subscription_class = FacebookSubscription
+    options_class = FacebookOptions
+    message_class = MessageType
     __license__ = 'MIT'
     __author__ = 'unknown'
 
@@ -38,9 +38,9 @@ class Facebook(Dispatcher):
         return 'Facebook'
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = RecipientOptions(data=subscription.config)
+        ser = FacebookSubscription(data=subscription.config)
         if not ser.is_valid():
-            raise ValidationError(ser.errors)
+            raise PluginValidationError(ser.errors)
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:
@@ -60,7 +60,7 @@ class Facebook(Dispatcher):
             raise PluginSendError(e)
 
     def test_connection(self, raise_exception=False):
-        client = fbchat.Client(self.config['key'],
-                               self.config['password'])
+        fbchat.Client(self.config['key'],
+                      self.config['password'])
 
         return True

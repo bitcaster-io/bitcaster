@@ -235,7 +235,7 @@ class MessageSerializer(ApplicationNestedMixin, serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ('event', 'channels', 'application',
-                  'subject', 'body', 'id')
+                  'subject', 'body', 'id', 'name')
         read_only_fields = ('id', 'application')
 
     def __init__(self, instance=None, *args, **kwargs):

@@ -3,22 +3,20 @@
 from django.urls import reverse
 
 import pytest
-from tests_utils import UserFactory, user_grant_permissions
-
-from mercury.models import User
+from tests_utils import UserFactory
 
 
-@pytest.mark.django_db
-def test_list(api_client):
-    url = reverse('api:user-list')
-    response = api_client.get(url, format='json')
-    assert response.status_code == 200
-    assert len(response.json()) == 1
-
-    with user_grant_permissions(api_client.handler._force_user, ['mercury.view_user']):
-        response = api_client.get(url, format='json')
-    res = response.json()
-    assert len(res) == User.objects.count(), res
+# @pytest.mark.django_db
+# def test_list(api_client):
+#     url = reverse('api:user-list')
+#     response = api_client.get(url, format='json')
+#     assert response.status_code == 200
+#     assert len(response.json()) == 1
+#
+#     with user_grant_permissions(api_client.handler._force_user, ['mercury.view_user']):
+#         response = api_client.get(url, format='json')
+#     res = response.json()
+#     assert len(res) == User.objects.count(), res
 
 
 # @pytest.mark.django_db

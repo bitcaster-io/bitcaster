@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from .plugin import Facebook
+from .plugin import Facebook  # noqa

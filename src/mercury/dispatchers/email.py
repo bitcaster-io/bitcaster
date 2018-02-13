@@ -8,7 +8,8 @@ from rest_framework.exceptions import ValidationError
 from mercury.logging import getLogger
 from mercury.utils import fqn
 
-from .base import Dispatcher, DispatcherOptions, MessageType, SubscriptionOptions
+from .base import (Dispatcher, DispatcherOptions,
+                   MessageType, SubscriptionOptions,)
 from .registry import dispatcher_registry
 
 logger = getLogger(__name__)
@@ -18,7 +19,7 @@ class EmailMessage(MessageType):
     pass
 
 
-class UserAttributes(SubscriptionOptions):
+class EmailSubscription(SubscriptionOptions):
     email = serializers.EmailField()
 
 
@@ -35,11 +36,12 @@ class EmailOptions(DispatcherOptions):
 @dispatcher_registry.register
 class Email(Dispatcher):
     options_class = EmailOptions
-    subscription_option_class = UserAttributes
+    subscription_class = EmailSubscription
     message_class = EmailMessage
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        pass
+        if not subscription.subscriber.email:
+            raise ValidationError("")
 
     def _get_connection(self):
         config = self.config

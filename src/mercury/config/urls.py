@@ -5,9 +5,9 @@ from django.urls import path
 
 from django_sysinfo.views import admin_sysinfo
 
-from mercury.admin import site
 import mercury.api.urls
 import mercury.views
+from mercury.admin import site
 
 urlpatterns = [url(r'^api/', include(mercury.api.urls), name='api'),
                url('^', site.urls),

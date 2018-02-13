@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 from environ import Env
-from mercury.exceptions import ValidationError
+from mercury.exceptions import PluginValidationError
 
 from mercury_skype import Skype
 
@@ -42,7 +42,7 @@ def test_validate_subscription_fail(subscription):
 
     subscription.config = {}
     d = Skype(subscription.channel)
-    with pytest.raises(ValidationError):
+    with pytest.raises(PluginValidationError):
         d.validate_subscription(subscription)
 
 

@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from .plugin import Gmail
+from .plugin import Gmail  # noqa

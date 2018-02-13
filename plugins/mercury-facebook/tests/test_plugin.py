@@ -2,11 +2,10 @@
 from unittest.mock import Mock
 
 import pytest
-import pytest
 from environ import Env
 from pathlib import Path
 
-from mercury.exceptions import ValidationError
+from mercury.exceptions import PluginValidationError
 
 from mercury_facebook import Facebook
 
@@ -44,7 +43,7 @@ def test_validate_subscription_fail(subscription):
 
     subscription.config = {}
     d = Facebook(subscription.channel)
-    with pytest.raises(ValidationError):
+    with pytest.raises(PluginValidationError):
         d.validate_subscription(subscription)
 
 

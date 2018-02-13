@@ -31,7 +31,7 @@ class DispatcherOptions(serializers.Serializer):
 
 class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     subscription_class = SubscriptionOptions
-    options_class = SubscriptionOptions
+    options_class = DispatcherOptions
     message_class = MessageType
 
     __media__ = None

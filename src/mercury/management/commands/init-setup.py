@@ -24,6 +24,9 @@ USER1_EMAIL=
 USER1_WHATSAPP=
 USER1_TWILIO=
 USER1_SLACK=
+USER1_IRC_RECIPIENT=
+USER1_XMPP_RECIPIENT=
+USER1_SKYPE_RECIPIENT=
 
 USER2_USERNAME=
 USER2_FIRST_NAME=
@@ -60,15 +63,12 @@ CHANNEL_PLIVO_SENDER=
 
 CHANNEL_IRC_USERNAME=
 CHANNEL_IRC_PASSWORD=
-CHANNEL_IRC_RECIPIENT=
 
 CHANNEL_XMPP_USERNAME=
 CHANNEL_XMPP_PASSWORD=
-CHANNEL_XMPP_RECIPIENT=
 
 CHANNEL_SKYPE_USERNAME=
 CHANNEL_SKYPE_PASSWORD=
-CHANNEL_SKYPE_RECIPIENT=
 
 CHANNEL_FACEBOOK_KEY=
 CHANNEL_FACEBOOK_PASSWORD=
@@ -147,11 +147,11 @@ class Command(BaseCommand):
                 prefix = "CHANNEL_%s_" % handler.name.upper()
                 attrs = {k.replace(prefix, "").lower(): v for k, v in env.ENVIRON.items()
                          if k.startswith(prefix)}
-
+                ok, __ = handler.validate_configuration(attrs)
                 return app.owned_channels.get_or_create(name=handler.name,
                                                         defaults=dict(
                                                             handler=fqn(handler),
-                                                            enabled=True,
+                                                            enabled=ok,
                                                             config=attrs))[0]
 
             event, __ = app.events.get_or_create(name='Demo Event',

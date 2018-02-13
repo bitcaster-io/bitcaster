@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-from django.template import Library, Context
+from django.template import Context, Library
 
 register = Library()
 

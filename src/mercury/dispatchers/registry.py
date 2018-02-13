@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import pkg_resources
 from django.conf import settings
 
+import pkg_resources
 from strategy_field.registry import Registry as Registry
 
 from mercury.exceptions import PluginValidationError

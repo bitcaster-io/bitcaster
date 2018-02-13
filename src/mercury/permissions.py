@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from django.utils.translation import ugettext as _
+
 from rest_framework import exceptions
 from rest_framework.authentication import (BaseAuthentication,
                                            SessionAuthentication,
-                                           get_authorization_header, )
+                                           get_authorization_header,)
 from rest_framework.permissions import BasePermission, IsAuthenticated
 
-from mercury.models import ApiAuthToken, Application, User
+from mercury.models import ApiAuthToken, User
 from mercury.utils.language import get_attr
-from django.utils.translation import ugettext as _
 
 
 class SameUser(BasePermission):
@@ -37,15 +38,18 @@ class IsApplicationRelated(IsAuthenticated):
 
 class IsOwnerOrMaintainter(IsAuthenticated):
     def has_permission(self, request, view):
-        if 'application__pk' in view.kwargs:
-            app = Application.objects.get(pk=view.kwargs['application__pk'])
-            return request.user.is_admin(app)
+        #     if 'pk' in view.kwargs:
+        #         try:
+        #             app = Application.objects.get(pk=view.kwargs['pk'])
+        #         except Application.DoesNotExist:
+        #             raise Http404
+        #         return request.user.is_authenticated and request.user.is_admin(app)
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        return (request.user.is_superuser or
-                obj.owner == request.user or
-                obj.maintainers.filter(id=request.user.id).exists())
+        return request.user.is_superuser or request.user.is_admin(obj)
+        # obj.owner == request.user or
+        # obj.maintainers.filter(id=request.user.id).exists())
 
 
 class IsOwner(IsAuthenticated):
@@ -175,10 +179,10 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_credentials(self, request, key):
         try:
-            # TODO(sax) add id/key matching
             token = ApiAuthToken.objects.get(token=key)
             user = token.user
             request.token = token
+            request.user = user
         except (User.DoesNotExist, ApiAuthToken.DoesNotExist):
             raise exceptions.AuthenticationFailed(_('Invalid token.'))
 

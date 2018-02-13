@@ -31,13 +31,19 @@ class ApplicationViewSet(BaseModelViewSet):
     permission_classes = (IsOwnerOrMaintainter,)
     search_fields = ('name',)
     filter_backends = (IsOwnerFilter,)
-
+    # lookup_url_kwarg = 'application__pk'
     # def get_serializer(self, *args, **kwargs):
     #     kwargs['owner'] = self.request.user
     #     return super().get_serializer(*args, **kwargs)
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+    def check_permissions(self, request):
+        super().check_permissions(request)
+
+    def get_object(self):
+        return super().get_object()
 
     # def perform_update(self, serializer):
     #     # serializer.validated_data['owner'] = self.request.user

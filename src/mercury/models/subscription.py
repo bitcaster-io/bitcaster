@@ -38,7 +38,7 @@ class Subscription(AbstractModel):
         get_latest_by = 'id'
 
     def __str__(self):
-        return "<Subscription {0.subscriber} on {0.event} via {0.channel}>".format(self)
+        return "Subscription {0.subscriber} on {0.event} via {0.channel}".format(self)
 
     def clean(self):
         if not self.channel.messages.filter(event=self.event).exists():

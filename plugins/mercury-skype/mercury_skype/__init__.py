@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from .plugin import Skype
+from .plugin import Skype  # noqa
