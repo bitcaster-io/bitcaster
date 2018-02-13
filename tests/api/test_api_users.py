@@ -5,7 +5,6 @@ from django.urls import reverse
 import pytest
 from tests_utils import UserFactory
 
-
 # @pytest.mark.django_db
 # def test_list(api_client):
 #     url = reverse('api:user-list')
