@@ -73,6 +73,11 @@ class Email(Dispatcher):
             logger.exception(e)
             raise
 
+    def test_message(self, subscription, subject, message, *args, **kwargs):
+        # assert subscription.event is None
+        assert subscription.pk is None
+        return self.emit(subscription, subject, message, *args, **kwargs)
+
     def test_connection(self, raise_exception=False):
         try:
             conn = self._get_connection()

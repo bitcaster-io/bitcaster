@@ -5,7 +5,6 @@ import environ
 
 logger = logging.getLogger(__name__)
 
-
 MERCURY_DIR = environ.Path(__file__) - 3  # (mercury/config/settings/base.py - 3 = mercury/)
 PROJECT_DIR = MERCURY_DIR - 2
 APPS_DIR = MERCURY_DIR.path('.')
@@ -248,9 +247,8 @@ LOGIN_URL = 'account_login'
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = r'^admin/'
 
-
 # MERCURY
-PLUGINS_AUTOLOAD=env.bool('MERCURY_PLUGINS_AUTOLOAD', True)
+PLUGINS_AUTOLOAD = env.bool('MERCURY_PLUGINS_AUTOLOAD', True)
 
 # Your common stuff: Below this line define 3rd party library settings
 # ------------------------------------------------------------------------------
@@ -294,10 +292,81 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['sentry'],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s '
+                      '%(process)d %(thread)d %(message)s'
+        },
+        'short': {
+            'format': '%(levelname)s %(name)s '
+            # '%(pathname)s'
+                      ':%(lineno)d '
+                      '%(message)s'
+        },
+    },
+    'handlers': {
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'short'
+        },
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+            'formatter': 'short'
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'raven': {
+            'level': 'ERROR',
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'yowsup': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'mercury.plugins': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'sentry'],
+            'propagate': False,
+        },
+        'mercury': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'sentry'],
+            'propagate': False,
+        },
+    },
+}
+
 # SENTRY & RAVEN
 if env.bool('ENABLE_SENTRY', False):
+    # FIXME: remove this line (pdb)
+    import pdb; pdb.set_trace()
     import raven
     import os
+
+    LOGGING['handlers']['sentry'] = {'level': 'ERROR',  # To capture more than ERROR, change to WARNING, INFO, etc.
+                                     'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+                                     'tags': {'custom-tag': 'x'},
+                                     }
 
     INSTALLED_APPS += ['raven.contrib.django.raven_compat', ]
     RAVEN_CONFIG = {

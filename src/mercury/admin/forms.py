@@ -78,6 +78,7 @@ class DispatcherConfigForm(ValidateJsonMixin, forms.ModelForm):
         fields = ('name', 'application', 'handler', 'config', 'description',
                   'enabled', 'deprecated')
 
+
     #
     # def clean(self):
     #     ret = super().clean()

@@ -225,5 +225,36 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
         except Exception as e:  # pragma: no-cover
             self.message_user(request, str(e), level=messages.ERROR)
 
+    @action()
+    def send_sample_message(self, request, pk):
+        channel = self.get_object(request, pk)
+        opts = channel._meta
+        ctx = {'opts': opts,
+               'app_label': opts.app_label,
+               'original': channel,
+               'change': True,
+               'is_popup': False,
+               'save_as': False,
+               'has_delete_permission': False,
+               'has_add_permission': False,
+               'has_change_permission': False}
+        if request.method == 'GET':
+            serializer = channel.handler.subscription_class()
+            ctx['serializer'] = serializer
+            return render(request, 'admin/mercury/channel/test.html', ctx)
+        elif request.method == 'POST':
+            serializer = channel.handler.subscription_class(data=request.POST)
+            if serializer.is_valid():
+                s = Subscription(subscriber=request.user,
+                                 event=None,
+                                 channel=channel,
+                                 active=True,
+                                 config=serializer.data)
+                channel.handler.test_message(s,
+                                             "",
+                                             request.POST['message'])
+            ctx['serializer'] = serializer
+            return render(request, 'admin/mercury/channel/test.html', ctx)
+
     def handler_name(self, obj):
         return fqn(obj.handler) if obj.handler else ''

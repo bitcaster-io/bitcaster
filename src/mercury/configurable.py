@@ -72,6 +72,6 @@ class ConfigurableMixin:
             if opts.is_valid():
                 return opts.data
             else:
-                logger.error("Invalid configuration")
+                logger.error("Invalid configuration %s " % opts.errors)
                 raise PluginValidationError(opts.errors)
         return {}

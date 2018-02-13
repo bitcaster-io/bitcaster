@@ -14,7 +14,7 @@
 <form action="." method="POST">
     {% csrf_token %}
     <textarea name="message"></textarea>
-    {% render_form serializer %}
+    {% render_form serializer  "_rest_framework/table" %}
     <input type="submit" value="Save">
 </form>
 {% endblock %}

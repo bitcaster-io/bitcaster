@@ -11,7 +11,7 @@ from mercury.exceptions import ValidationError
 from mercury_facebook import Facebook
 
 
-env = Env(MERCURY_FACEBOOK_USERNAME='',
+env = Env(MERCURY_FACEBOOK_KEY='',
           MERCURY_FACEBOOK_PASSWORD='',
           MERCURY_FACEBOOK_RECIPIENT='',
           )
@@ -24,7 +24,7 @@ def subscription():
     application = Mock()
     user = Mock()
     channel = Mock(application=application,
-                   config={'username': env('MERCURY_FACEBOOK_USERNAME', str),
+                   config={'key': env('MERCURY_FACEBOOK_KEY', str),
                            'password': env('MERCURY_FACEBOOK_PASSWORD', str)
                            })
     event = Mock(application=application)
