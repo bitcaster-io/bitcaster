@@ -4,6 +4,7 @@ from django.db import models
 
 from mercury import logging
 from mercury.fields import EncryptedJSONField
+from mercury.utils import generate_subscription_token
 
 from .base import AbstractModel
 from .channel import Channel
@@ -32,6 +33,9 @@ class Subscription(AbstractModel):
     config = EncryptedJSONField(null=True, blank=True)
 
     objects = SubscriptionQuerySet.as_manager()
+    deactivation_token = models.CharField(max_length=100,
+                                          editable=False,
+                                          unique=True)
 
     class Meta:
         unique_together = ('channel', 'subscriber')
@@ -39,6 +43,14 @@ class Subscription(AbstractModel):
 
     def __str__(self):
         return "Subscription {0.subscriber} on {0.event} via {0.channel}".format(self)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.pk:
+            self.update_token()
+        super().save(force_insert, force_update, using, update_fields)
+
+    def update_token(self):
+        self.deactivation_token = generate_subscription_token(self)
 
     def clean(self):
         if not self.channel.messages.filter(event=self.event).exists():

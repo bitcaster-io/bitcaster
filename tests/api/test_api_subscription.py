@@ -70,3 +70,13 @@ def test_subscription_create_invalid(user1, channel2, event2):
     res = client.post(url, {'channel': channel2.pk,
                             'event': event2.pk})
     assert res.status_code == 400, str(res.content)
+
+
+def test_subscription_deactivate(subscription1):
+    url = reverse('api:user-subscription-deactivate', args=[subscription1.subscriber.pk,
+                                                            subscription1.pk])
+    client = client_factory(subscription1.subscriber)
+    res = client.get(url, {'token': subscription1.deactivation_token})
+    assert res.status_code == 200, str(res.content)
+    subscription1.refresh_from_db()
+    assert not subscription1.active

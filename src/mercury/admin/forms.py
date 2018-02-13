@@ -78,6 +78,7 @@ class DispatcherConfigForm(ValidateJsonMixin, forms.ModelForm):
 
 
 class SubscriptionForm(forms.ModelForm):
+
     class Meta:
         model = Subscription
         exclude = []

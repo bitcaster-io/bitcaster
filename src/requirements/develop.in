@@ -1,3 +1,4 @@
 cookiecutter
 devpi-client
 pip-tools
+django-extensions

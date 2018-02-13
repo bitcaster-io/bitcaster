@@ -1,12 +1,12 @@
 import datetime
 from django.db import models
 from django.utils import timezone
-from uuid import uuid4
 
 from mercury.logging import getLogger
 from mercury.models.application import Application
 from mercury.models.base import AbstractModel
 from mercury.models.user import User
+from mercury.utils import generate_token, generate_api_token
 
 logger = getLogger(__name__)
 
@@ -15,10 +15,6 @@ DEFAULT_EXPIRATION = datetime.timedelta(days=30)
 
 def calculate_expiration():
     return timezone.now() + DEFAULT_EXPIRATION
-
-
-def generate_token():
-    return ApiAuthToken.generate_token()
 
 
 class ApiTriggerKey(AbstractModel):
@@ -48,4 +44,4 @@ class ApiAuthToken(AbstractModel):
 
     @classmethod
     def generate_token(cls):
-        return uuid4().hex + uuid4().hex
+        return generate_api_token()

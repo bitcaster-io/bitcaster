@@ -35,3 +35,5 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.MD5PasswordHasher',
 ]
 CELERY_TASK_ALWAYS_EAGER = True
+
+INSTALLED_APPS = INSTALLED_APPS + ['django_extensions']
