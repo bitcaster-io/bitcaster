@@ -9,8 +9,6 @@ setup(
     long_description='',
     install_requires=['mercury',
                       'pyxmpp2',
-                      'pyasn1-modules==0.1.5',
-                      'sleekxmpp==1.3.3'
                       ],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',

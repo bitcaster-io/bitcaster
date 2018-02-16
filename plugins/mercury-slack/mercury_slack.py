@@ -41,9 +41,9 @@ class Slack(Dispatcher):
             raise PluginValidationError(ser.errors)
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection: object, *args, **kwargs) -> int:
+             connection=None, *args, **kwargs) -> int:
         try:
-            self.logger(f"Emitting {subscription}")
+            self.logger.debug(f"Emitting {subscription}")
             recipient = subscription.config['recipient']
             connection = connection or self._get_connection()
 

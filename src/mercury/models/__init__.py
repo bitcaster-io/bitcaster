@@ -1,6 +1,7 @@
 from .application import Application  # noqa
 from .base import AbstractModel  # noqa
 from .channel import Channel  # noqa
+from .counters import Counter, Occurence  # noqa
 from .event import Event  # noqa
 from .message import Message  # noqa
 # from .monitor import Monitor  # noqa

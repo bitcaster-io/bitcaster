@@ -2,12 +2,19 @@
 from django.db import models
 from django.db.models import F
 
-from mercury.models import Event
+# from .channel import Application, Channel
+# from .event import Event
+from strategy_field.utils import fqn
 
 
 class CounterManager(models.Manager):
+    def initialize(self, target):
+        t = "{0}-{1.pk}".format(fqn(target), target)
+        self.get_or_create(target=t)
+
     def increment(self, target):
-        self.filter(target=target).update(total=F('total') + 1)
+        t = "{0}-{1.pk}".format(fqn(target), target)
+        self.filter(target=t).update(total=F('total') + 1)
 
 
 class Counter(models.Model):
@@ -20,10 +27,28 @@ class Counter(models.Model):
 
 
 class Occurence(models.Model):
-    event = models.ForeignKey(Event,
+    timestamp = models.DateTimeField(auto_now_add=True)
+    event = models.ForeignKey('mercury.Event',
                               on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_created=True)
     submissions = models.IntegerField(default=0,
                                       help_text="number of subscriptions")
     successes = models.IntegerField(default=0)
     failures = models.IntegerField(default=0)
+
+
+class LogEntry(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    application = models.ForeignKey('mercury.Application',
+                                    related_name='+',
+                                    on_delete=models.CASCADE)
+    event = models.ForeignKey('mercury.Event',
+                              related_name='+',
+                              on_delete=models.CASCADE)
+    subscription = models.ForeignKey('mercury.Application',
+                                     null=True,
+                                     related_name='+',
+                                     on_delete=models.SET_NULL)
+    channel = models.ForeignKey('mercury.Channel',
+                                null=True,
+                                related_name='+',
+                                on_delete=models.SET_NULL)

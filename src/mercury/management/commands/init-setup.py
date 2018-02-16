@@ -11,7 +11,28 @@ from strategy_field.utils import fqn, import_by_name
 
 from mercury.models import Application, Channel, Subscription, User
 
-TEMPLATE = b"""
+TEMPLATE_ENV = b"""
+ADMIN_EMAIL=
+DEBUG=True
+DATABASE_URL=psql://postgres:@127.0.0.1:5432/mercury
+MERCURY_SECRET_KEY=
+
+EMAIL_HOST=
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+EMAIL_PORT=
+EMAIL_USE_TLS=
+
+CACHE_URL=rediscache://127.0.0.1:6379/1?client_class=django_redis.client.DefaultClient
+CELERY_BROKER_URL=redis://127.0.0.1:6379/0
+
+ENABLE_SENTRY=0
+RAVEN_DSN=
+
+"""
+
+TEMPLATE_DEMO = b"""
 ADMIN_EMAIL=
 DEBUG=True
 DATABASE_URL=psql://postgres:@127.0.0.1:5432/mercury
@@ -120,19 +141,28 @@ class Command(BaseCommand):
                                                     owner=admin,
                                                     )
         admin.tokens.create(application=app)
-
-        if demo:
-            env = environ.Env(ENABLE_SENTRY=False)
-            env_file = str(settings.PROJECT_DIR.path('.demo'))
-            if not os.path.exists(env_file):
-                self.stderr.write(""""{0} has not found.
+        env_file = str(settings.PROJECT_DIR.path('.env'))
+        if not os.path.exists(env_file):
+            self.stderr.write(""""{0} has not found.
  Environment file has not been found and a new empty one has been created.
  Fill it before launch this command again.
 """.format(env_file))
-                with open(env_file, "wb") as f:
-                    f.write(TEMPLATE)
+            with open(env_file, "wb") as f:
+                f.write(TEMPLATE_ENV)
+            sys.exit(1)
+
+        if demo:
+            env = environ.Env(ENABLE_SENTRY=False)
+            env_demo_file = str(settings.PROJECT_DIR.path('.demo'))
+            if not os.path.exists(env_demo_file):
+                self.stderr.write(""""{0} has not found.
+ Environment file has not been found and a new empty one has been created.
+ Fill it before launch this command again.
+""".format(env_demo_file))
+                with open(env_demo_file, "wb") as f:
+                    f.write(TEMPLATE_DEMO)
                 sys.exit(1)
-            env.read_env(env_file)
+            env.read_env(env_demo_file)
 
             def create_user(prefix):
                 uname = env(f'{prefix}_USERNAME')

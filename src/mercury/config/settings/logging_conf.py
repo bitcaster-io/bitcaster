@@ -56,7 +56,7 @@ LOGGING = {
             'propagate': False,
         },
         'mercury.plugins': {
-            'level': 'DEBUG',
+            'level': 'ERROR',
             'handlers': ['console', 'sentry'],
             'propagate': False,
         },

@@ -1,12 +1,14 @@
-admin-extra-urls>=1.9
+admin-extra-urls>=1.8
 celery
 django>=2.0
 django-bitfield
 django-concurrency
 django-constance[database,redis]
+django-countries
 django-environ
 django-fernet-fields
 django-jsoneditor
+django-redis
 django-regex
 django-strategy-field>=1.2
 django-sysinfo>=1.3

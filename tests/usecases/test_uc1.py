@@ -3,8 +3,8 @@ import tempfile
 import webbrowser
 
 import pytest
-from rest_framework.reverse import reverse
 import requests
+from rest_framework.reverse import reverse
 
 #
 # @pytest.fixture(scope="module")

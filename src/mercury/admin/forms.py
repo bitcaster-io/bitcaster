@@ -8,6 +8,7 @@ from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
                                        UsernameField,)
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.forms import Form
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -146,3 +147,23 @@ class SubscriptionForm(forms.ModelForm):
     class Meta:
         model = Subscription
         exclude = []
+
+
+class EventTriggerForm(Form):
+    arguments = JSONField(widget=JSONEditor, required=False)
+
+    def __init__(self, event, *args, **kwargs):
+        self.event = event
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        expected_arguments = self.event.arguments
+        arguments = self.cleaned_data['arguments']
+        errors = []
+        if arguments:
+            for k, v in arguments.items():
+                if k not in expected_arguments.keys():
+                    errors.append('Invalid argument %s' % k)
+
+        if errors:
+            raise ValidationError({'arguments': errors})

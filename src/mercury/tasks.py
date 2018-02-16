@@ -4,7 +4,6 @@ from django.db.models import Count
 from mercury.celery import app
 from mercury.exceptions import LogicError
 from mercury.logging import getLogger
-from mercury.models import Channel
 
 logger = getLogger(__name__)
 
@@ -21,11 +20,13 @@ app.conf.beat_schedule = {
 def trigger_event(event_id, context):
     from mercury.models import Event
     event = Event.objects.get(id=event_id)
-    event.emit(context)
+    emit_event(event, context)
 
 
-@app.task()
 def emit_event(event, context):
+    from mercury.models import Channel
+    from mercury.models.counters import Counter, Occurence
+
     logger.debug("Event [{0.name} {0.enabled}] emit()".format(event))
     total_success = 0
     total_failure = 0
@@ -35,15 +36,23 @@ def emit_event(event, context):
     ids = [channel['channel'] for channel in channels]
     if len(channels) == 0:
         logger.warning(f"No subscriptions/channels found for `{event}`")
+    o = Occurence.objects.create(event=event)
+    Counter.objects.initialize(event)
     for channel in Channel.objects.filter(id__in=ids, enabled=True):
         try:
             logger.debug(f"Processing channel {channel}")
             channel.validate_config()
             success, failure = channel.process_event(event, context)
             total_success += success
+            Counter.objects.increment(event)
         except Exception as e:
             logger.exception(e)
             total_failure += 1
+    o.submissions = total_failure + total_success
+    o.successes = total_success
+    o.failures = total_failure
+    o.save()
+    logger.debug(f"End processing {event}. #{o.submissions} messages sent")
     return total_success, total_failure
 
     # for subscription in event.subscriptions.valid():

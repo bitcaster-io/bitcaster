@@ -10,8 +10,7 @@ DJANGO?='last'
 
 develop: .setup-git
 	@pip install -U pip setuptools
-	@pip install -e .[dev]
-	$(MAKE) .init-db
+	$(MAKE) .init-db sync-requirements
 
 .setup-git:
 	git config branch.autosetuprebase always
@@ -92,11 +91,9 @@ sync-requirements:
 	pip install -e plugins/mercury-slack
 	pip install -e plugins/mercury-twilio
 
-	pip install -e plugins/~mercury-hangout
+	pip install -e plugins/mercury-hangout
+	pip install -e plugins/mercury-xmpp
 	pip install -e plugins/~mercury-irc
-	pip install -e plugins/~mercury-whatsapp
-	pip install -e plugins/~mercury-xmpp
-
 
 
 cache-requirements:

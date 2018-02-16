@@ -114,10 +114,6 @@ class Hangout(Dispatcher):
 
             msg = Message(to_jid=target_jid, body=message, subject=subject, stanza_type='chat')
 
-            def action(client):
-                """Send a mesage `msg` via a client."""
-                client.stream.send(msg)
-
             conn.action = lambda c: c.stream.send(msg)
             conn.run()
             return 1

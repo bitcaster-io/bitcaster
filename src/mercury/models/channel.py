@@ -11,6 +11,7 @@ from mercury.dispatchers import dispatcher_registry
 from mercury.exceptions import PluginValidationError
 from mercury.fields import EncryptedJSONField
 from mercury.models import AbstractModel, Application
+from mercury.models.counters import Counter
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ It can be Global or Application specific.
             body = Template(message.body)
             subject = Template(message.subject)
 
-            logger.debug(f"Processing event {event}")
+            # logger.debug(f"Processing event {event}")
             conn = self.handler._get_connection()
             success, failures = 0, 0
             for subscription in event.subscriptions.valid(channel=self):
@@ -98,8 +99,9 @@ It can be Global or Application specific.
                         'today': datetime.datetime.today()})
                     m = body.render(SecureContext(ctx))
                     s = subject.render(SecureContext(ctx))
-                    ret = self.handler.emit(subscription, s, m, conn)
-                    success += ret
+                    self.handler.emit(subscription, s, m, conn)
+                    Counter.objects.increment(subscription)
+                    success += 1
                 except Exception as e:
                     logger.exception(e)
                     failures += 1

@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'admin_extra_urls',
     'rest_framework',
     'constance',
-    'mptt',
     'django_countries',
 
     # Admin
@@ -61,6 +60,8 @@ INSTALLED_APPS = [
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE = [
+    'mercury.middleware.env.MercuryEnvMiddleware',
+    'mercury.middleware.security.SecurityHeadersMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -69,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mercury.middleware.logger.LoggerMiddleware'
 ]
 AUTH_USER_MODEL = 'mercury.user'
 
@@ -126,7 +128,7 @@ USE_L10N = True
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
 
-# TEMPLATE CONFIGURATION
+# TEMPLATE_DEMO CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#templates
 TEMPLATES = [
@@ -229,6 +231,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CACHES = {
+    'default': env.cache(),
+    # 'locking': env.cache('CACHE_LOCK')
+}
+
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
@@ -299,7 +306,6 @@ CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-
 
 # CONSTANCE
 CONSTANCE_REDIS_CONNECTION = {

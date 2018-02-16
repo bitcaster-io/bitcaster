@@ -7,7 +7,6 @@ from uuid import uuid4
 
 from mercury import logging
 from mercury.models import AbstractModel, Application
-from mercury.tasks import emit_event
 
 logger = logging.getLogger(__name__)
 
@@ -37,5 +36,5 @@ class Event(AbstractModel):
     def get_message(self, channel):
         return self.messages.get(channels=channel)
 
-    def emit(self, context, fail_silently=True):
-        return emit_event.delay(self, context)
+    # def emit(self, context, fail_silently=True):
+    #     return emit_event.delay(self, context)
