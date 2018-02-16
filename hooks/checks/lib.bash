@@ -188,7 +188,7 @@ gitflow_commit_files() {
 		extensions="${extensions}(${extension})|"
 	done
 	regex="\.(${extensions%?})$"
-	echo $(git diff-index --name-only --diff-filter=ACM --cached HEAD -- | grep -E "$regex" | grep -R ".*/migrations/.*" )
+	echo $(git diff-index --name-only --diff-filter=ACM --cached HEAD -- | grep -E "$regex")
 }
 
 #gitflow_count_commit_files() {
