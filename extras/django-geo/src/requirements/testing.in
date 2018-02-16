@@ -1,8 +1,0 @@
-coverage
-django-webtest>=1.9.2
-factory-boy
-pytest-django
-pytest-cache
-pytest-cov
-pytest
-tox
