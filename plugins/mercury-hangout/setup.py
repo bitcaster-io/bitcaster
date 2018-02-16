@@ -3,15 +3,17 @@
 from setuptools import setup
 
 setup(
-    name='mercury-facebook',
+    name='mercury-hangout',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['mercury', 'pyfacebook', 'vcrpy'],
+    install_requires=['mercury',
+                      'vcrpy',
+                      'pyxmpp2'],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
-    py_modules=['mercury_facebook'],
-    entry_points={'mercury': ['facebook = mercury_facebook.plugin:Facebook']},
+    py_modules=['mercury_hangout'],
+    entry_points={'mercury': ['hangout = mercury_hangout.plugin:Hangout']},
     license="MIT License",
     classifiers=[
         'Development Status :: 5 - Production/Stable',

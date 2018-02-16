@@ -1,0 +1,3 @@
+include-recursive mercury_xmpp *.py
+include README.rst
+include setup.py

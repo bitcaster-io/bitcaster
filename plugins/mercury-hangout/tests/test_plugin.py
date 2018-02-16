@@ -8,11 +8,12 @@ import vcr as _vcr
 
 from mercury.exceptions import PluginValidationError
 
-from mercury_facebook import Facebook
+from mercury_hangout import Hangout
 
-env = Env(MERCURY_FACEBOOK_KEY='',
-          MERCURY_FACEBOOK_PASSWORD='',
-          MERCURY_FACEBOOK_RECIPIENT='',
+
+env = Env(MERCURY_HANGOUT_USERNAME='',
+          MERCURY_HANGOUT_PASSWORD='',
+          MERCURY_HANGOUT_RECIPIENT='',
           )
 
 env.read_env(str(Path(__file__).parent / '.env'))
@@ -27,7 +28,7 @@ def before_record_cb(request):
 vcr = _vcr.VCR(
     serializer='yaml',
     cassette_library_dir=str(Path(__file__).parent / 'cassettes'),
-    record_mode='once',
+    record_mode='always',
     match_on=['uri', 'method'],
     # filter_headers=['authorization'],
     # filter_query_parameters=['mail', 'pass'],
@@ -35,46 +36,48 @@ vcr = _vcr.VCR(
     before_record_request=before_record_cb,
     # sensitive HTTP request goes here
 )
-
-
 @pytest.fixture
 def subscription():
     application = Mock()
     user = Mock()
     channel = Mock(application=application,
-                   config={'key': env('MERCURY_FACEBOOK_KEY', str),
-                           'password': env('MERCURY_FACEBOOK_PASSWORD', str),
+                   config={'username': env('MERCURY_HANGOUT_USERNAME', str),
+                           'password': env('MERCURY_HANGOUT_PASSWORD', str)
                            })
     event = Mock(application=application)
 
     return Mock(subscriber=user,
                 event=event,
-                config={'recipient': env('MERCURY_FACEBOOK_RECIPIENT', str)},
+                config={'recipient': env('MERCURY_HANGOUT_RECIPIENT', str)},
                 channel=channel)
 
 
 def test_validate_subscription(subscription):
-    d = Facebook(subscription.channel)
+    d = Hangout(subscription.channel)
     d.validate_subscription(subscription)
 
 
 def test_validate_subscription_fail(subscription):
+
     subscription.config = {}
-    d = Facebook(subscription.channel)
+    d = Hangout(subscription.channel)
     with pytest.raises(PluginValidationError):
         d.validate_subscription(subscription)
 
 
 def test_send(subscription, monkeypatch):
-    # monkeypatch.setattr('mercury_facebook.plugin.Client.login', Mock())
+    monkeypatch.setattr('django.contrib.sites.models.Site', Mock(id=1))
+    # monkeypatch.setattr('raven.contrib.django.client.Site', Mock(id=1))
     with vcr.use_cassette('test_send.yaml'):
-        d = Facebook(subscription.channel)
+
+        d = Hangout(subscription.channel)
         assert d.emit(subscription,
                       'subject',
-                      'Mercury is on Facebook...enjoy') == 1
+                      'Mercury is on Hangout...enjoy') == 1
 
 
-def test_connection(subscription):
-    with vcr.use_cassette('test_connection.yaml'):
-        d = Facebook(subscription.channel)
+def test_connection(subscription, monkeypatch):
+    monkeypatch.setattr('django.contrib.sites.models.Site', Mock(id=1))
+    with vcr.use_cassette('test_send.yaml'):
+        d = Hangout(subscription.channel)
         assert d.test_connection()

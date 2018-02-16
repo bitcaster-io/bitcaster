@@ -23,6 +23,13 @@ class PluginSendError(MercuryError):
 class LogicError(MercuryError):
     pass
 
+
+class InvalidRecipient(MercuryError):
+    pass
+
+
+class RecipientNotFound(InvalidRecipient):
+    pass
 #
 # class ValidationError(DRFValidationError):
 #     pass

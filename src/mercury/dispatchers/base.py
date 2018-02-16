@@ -53,10 +53,11 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def emit(self, subscription: object, subject: str, message: str,
-             connection: object, *args, **kwargs) -> int:
+             connection=None, *args, **kwargs) -> int:
         """
 
         :param subscription: mercury.models.Subscription
+        :param connection: object
         :param subject: message subject
         :param message: message body
         :return:
