@@ -235,6 +235,6 @@ class Command(BaseCommand):
                                                               })
                             self.stdout.write(f"    User {user} subscribed to {ch}")
                 except ImportError as e:
-                    self.stderr.write(f"{name} configured but not found. {e}")
+                    self.stderr.write(f"{name} configuration found, but plugin not found. {e}")
                 except Exception as e:
                     raise

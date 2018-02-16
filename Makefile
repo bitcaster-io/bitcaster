@@ -90,10 +90,11 @@ sync-requirements:
 	pip install -e plugins/mercury-skype
 	pip install -e plugins/mercury-slack
 	pip install -e plugins/mercury-twilio
+	pip install -e plugins/mercury-gmail
+	pip install -e plugins/mercury-facebook
 
 	pip install -e plugins/mercury-hangout
 	pip install -e plugins/mercury-xmpp
-	pip install -e plugins/~mercury-irc
 
 
 cache-requirements:
