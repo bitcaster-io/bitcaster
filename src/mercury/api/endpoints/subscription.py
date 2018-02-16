@@ -27,4 +27,3 @@ class SubscriptionViewSet(BaseModelViewSet):
             return Response(status=200)
         else:
             return Response({"error": "Invalid token"}, status=400)
-

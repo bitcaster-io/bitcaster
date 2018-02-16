@@ -53,7 +53,8 @@ def test_event_delete(event1):
 def test_event_trigger(event1):
     # do not use api_client_factory for test readability
     app = event1.application
-    token = models.ApiAuthToken.objects.get(application=app)
+    # token = models.ApiAuthToken.objects.get(application=app)
+    token = models.ApiTriggerKey.objects.get(application=app)
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION='Token ' + token.token)
     url = reverse('api:application-event-trigger', args=[app.pk, event1.pk])
@@ -78,7 +79,7 @@ def test_event_trigger_check_token(event1, token1):
     app = event1.application
     # do not use api_client_factory for test readability
     client = APIClient()
-    client.credentials(HTTP_AUTHORIZATION='Token ' + token1.token)
+    client.credentials(HTTP_AUTHORIZATION='TriggerToken ' + token1.token)
     url = reverse('api:application-event-trigger', args=[app.pk, event1.pk])
     res = client.get(url, {'message': 'ABC'})
     assert res.status_code == 403, str(res.content)

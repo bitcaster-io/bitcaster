@@ -3,6 +3,8 @@ import os
 
 import environ
 
+from .logging_conf import LOGGING
+
 logger = logging.getLogger(__name__)
 
 MERCURY_DIR = environ.Path(__file__) - 3  # (mercury/config/settings/base.py - 3 = mercury/)
@@ -40,10 +42,15 @@ INSTALLED_APPS = [
 
     # Useful template tags:
     'django.contrib.humanize',
+
+    # Useful libraries and add-ons
     'jsoneditor',
     'django_sysinfo',
     'admin_extra_urls',
     'rest_framework',
+    'constance',
+    'mptt',
+    'django_countries',
 
     # Admin
     'django.contrib.admin',
@@ -60,6 +67,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 AUTH_USER_MODEL = 'mercury.user'
@@ -292,68 +300,29 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'root': {
-        'level': 'WARNING',
-        'handlers': ['sentry'],
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s '
-                      '%(process)d %(thread)d %(message)s'
-        },
-        'short': {
-            'format': '%(levelname)s %(name)s '
-            # '%(pathname)s'
-                      ':%(lineno)d '
-                      '%(message)s'
-        },
-    },
-    'handlers': {
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'logging.NullHandler',
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'short'
-        },
-        'null': {
-            'level': 'DEBUG',
-            'class': 'logging.NullHandler',
-            'formatter': 'short'
-        }
-    },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'ERROR',
-            'handlers': ['console'],
-            'propagate': False,
-        },
-        'raven': {
-            'level': 'ERROR',
-            'handlers': ['null'],
-            'propagate': False,
-        },
-        'yowsup': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
-        },
-        'mercury.plugins': {
-            'level': 'DEBUG',
-            'handlers': ['console', 'sentry'],
-            'propagate': False,
-        },
-        'mercury': {
-            'level': 'DEBUG',
-            'handlers': ['console', 'sentry'],
-            'propagate': False,
-        },
-    },
+
+# CONSTANCE
+CONSTANCE_REDIS_CONNECTION = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 0,
+}
+
+CONSTANCE_ADDITIONAL_FIELDS = {
+    'yes_no_null_select': ['django.forms.fields.ChoiceField', {
+        'widget': 'django.forms.Select',
+        'choices': ((None, "-----"), ("yes", "Yes"), ("no", "No"))
+    }],
+    # 'yes_no_null_select': ['django.forms.fields.ChoiceField', {
+    #     'widget': 'django.forms.Select',
+    #     'choices': ((None, "-----"), ("yes", "Yes"), ("no", "No"))
+    # }],
+}
+
+CONSTANCE_CONFIG = {
+    'HOST_IP_ADDRESS': ('http://api.hostip.info/get_html.php',
+                        'api.hostip.info info',
+                        str),
 }
 
 # SENTRY & RAVEN
@@ -374,5 +343,5 @@ if env.bool('ENABLE_SENTRY', False):
         'release': raven.fetch_git_sha(str(PROJECT_DIR)),
     }
     # We recommend putting this as high in the chain as possible
-    MIDDLEWARE = ('raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-                  ) + tuple(MIDDLEWARE)
+    MIDDLEWARE = ['raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
+                  ] + list(MIDDLEWARE)

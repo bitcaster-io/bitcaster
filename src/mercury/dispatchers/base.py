@@ -1,6 +1,5 @@
 # from rest_framework import serializers
 import abc
-from logging import INFO
 
 from mercury.configurable import ConfigurableMixin
 from mercury.logging import getLogger
@@ -8,6 +7,7 @@ from mercury.logging import getLogger
 from . import serializers
 
 logger = getLogger(__name__)
+
 
 # MEDIUM_EMAIL = 'email'
 # MEDIUM_SMS = 'sms'
@@ -41,7 +41,19 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         self.logger = getLogger('mercury.plugins.%s' % self.name)
 
     @abc.abstractmethod
-    def emit(self, subscription: object, subject: str, message: str, *args, **kwargs) -> None:
+    def _get_connection(self) -> object:
+        """
+
+        :param subscription: mercury.models.Subscription
+        :param subject: message subject
+        :param message: message body
+        :return:
+        """
+        pass  # pragma: no-cover
+
+    @abc.abstractmethod
+    def emit(self, subscription: object, subject: str, message: str,
+             connection: object, *args, **kwargs) -> int:
         """
 
         :param subscription: mercury.models.Subscription
@@ -58,6 +70,6 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def test_connection(self, raise_exception=False):
         pass
-
-    def log(self, message, level=INFO):
-        self.logger.log(level, message)
+    #
+    # def log(self, message, level=INFO):
+    #     self.logger.log(level, message)

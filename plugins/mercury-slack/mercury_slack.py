@@ -31,8 +31,7 @@ class Slack(Dispatcher):
     options_class = SlackOptions
     message_class = MessageType
 
-    @property
-    def client(self):
+    def _get_connection(self):
         from slackclient import SlackClient
         return SlackClient(self.config['token'])
 
@@ -41,18 +40,26 @@ class Slack(Dispatcher):
         if not ser.is_valid():
             raise PluginValidationError(ser.errors)
 
-    def emit(self, subscription, subject, message, *args, **kwargs):
-        recipient = subscription.config['recipient']
+    def emit(self, subscription: object, subject: str, message: str,
+             connection: object, *args, **kwargs) -> int:
+        try:
+            self.logger(f"Emitting {subscription}")
+            recipient = subscription.config['recipient']
+            connection = connection or self._get_connection()
 
-        ret = self.client.api_call(
-            "chat.postMessage",
-            channel=recipient,
-            text=message
-        )
-        if not ret['ok']:
-            raise PluginSendError(f"Error sending to {subscription.subscriber} "
-                                  f"using recipient '{recipient}' "
-                                  f"Error was: {ret['error']} ")
+            ret = connection.api_call(
+                "chat.postMessage",
+                channel=recipient,
+                text=message
+            )
+            if not ret['ok']:
+                raise PluginSendError(f"Error sending to {subscription.subscriber} "
+                                      f"using recipient '{recipient}' "
+                                      f"Error was: {ret['error']} ")
+        except Exception as e:
+            logger.exception(e)
+            raise
+        return 1
 
     def test_connection(self, raise_exception=False):
         if not self.client.rtm_connect:

@@ -2,6 +2,7 @@
 import os
 import sys
 
+
 if __name__ == '__main__':
     # This allows easy placement of apps within the interior
     # mercury directory.
@@ -18,6 +19,8 @@ if __name__ == '__main__':
         # exceptions on Python 2.
         try:
             import django  # noqa
+            from django.conf import settings
+
         except ImportError:
             raise ImportError(
                 "Couldn't import Django. Are you sure it's installed and "
@@ -25,6 +28,4 @@ if __name__ == '__main__':
                 "forget to activate a virtual environment?"
             )
         raise
-
-
     execute_from_command_line(sys.argv)

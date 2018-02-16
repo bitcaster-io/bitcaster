@@ -37,14 +37,15 @@ class Twilio(Dispatcher):
         if not ser.is_valid():
             raise PluginValidationError(ser.errors)
 
-    @property
-    def client(self):
+    def _get_connection(self):
         return Client(self.config['sid'],
                       self.config['token'])
 
-    def emit(self, subscription, subject, message, *args, **kwargs):
+    def emit(self, subscription: object, subject: str, message: str,
+             connection: object, *args, **kwargs) -> None:
         recipient = subscription.config['recipient']
-        self.client.messages.create(
+        connection = connection or self._get_connection()
+        connection.messages.create(
             to=recipient.encode('utf8'),
             from_=self.config['sender'].encode('utf8'),
             body=message.encode('utf8')

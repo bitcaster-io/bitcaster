@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from mercury import logging
-from mercury.models import ApiAuthToken, Channel, Event
+from mercury.models import ApiAuthToken, ApiTriggerKey, Channel, Event
 from mercury.models.message import Message
 from mercury.utils import fqn
 
@@ -10,6 +10,11 @@ logger = logging.getLogger(__name__)
 
 class ApiTokenInline(admin.TabularInline):
     model = ApiAuthToken
+    extra = 0
+
+
+class ApiKeyInline(admin.TabularInline):
+    model = ApiTriggerKey
     extra = 0
 
 

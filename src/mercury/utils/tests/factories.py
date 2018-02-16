@@ -11,7 +11,7 @@ from rest_framework.test import APIClient
 import mercury
 from mercury import models
 from mercury.dispatchers import Email
-from mercury.models.token import generate_token
+from mercury.models.token import generate_api_token
 from mercury.utils import fqn
 
 whitespace = ' \t\n\r\v\f'
@@ -168,17 +168,27 @@ class ApplicationFactory(factory.DjangoModelFactory):
             # Simple build, do nothing.
             return
         ApiTokenFactory(application=self, user=self.owner)
+        ApiTriggerKeyFactory(application=self)
         if extracted:
             # A list of groups were passed in, use them
             for user in extracted:
                 self.maintainers.add(user)
 
 
+class ApiTriggerKeyFactory(factory.DjangoModelFactory):
+    application = factory.SubFactory(ApplicationFactory)
+    user = factory.SubFactory(UserFactory)
+    token = factory.LazyAttribute(lambda s: generate_api_token())
+
+    class Meta:
+        model = models.ApiTriggerKey
+        django_get_or_create = ('token',)
+
+
 class ApiTokenFactory(factory.DjangoModelFactory):
     application = factory.SubFactory(ApplicationFactory)
     user = factory.SubFactory(UserFactory)
-    token = factory.LazyAttribute(lambda s: generate_token())
-    refresh_token = factory.LazyAttribute(lambda s: generate_token())
+    token = factory.LazyAttribute(lambda s: generate_api_token())
 
     class Meta:
         model = models.ApiAuthToken
@@ -199,6 +209,7 @@ class ChannelFactory(factory.DjangoModelFactory):
     def _get_or_create(cls, model_class, *args, **kwargs):
         if 'config' not in kwargs:
             kwargs['config'] = {'server': 'server',
+                                'backend': 'django.core.mail.backends.locmem.EmailBackend',
                                 'port': 9000,
                                 'sender': 'sender@sender.org'}
         channel = super()._get_or_create(model_class, *args, **kwargs)

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+import datetime
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.template import Context, Template
 
 from strategy_field.fields import StrategyField
 
@@ -72,3 +75,78 @@ It can be Global or Application specific.
         self.handler.validate_subscription(subscription)
         return self.handler.emit(subscription, subject,
                                  message, *args, **kwargs)
+
+    def process_event(self, event, context):
+        if not self.enabled:
+            logger.error("Channel {0} disabled".format(self))
+            return 0, 0
+        try:
+            message = self.messages.get(event=event)
+            body = Template(message.body)
+            subject = Template(message.subject)
+
+            logger.debug(f"Processing event {event}")
+            conn = self.handler._get_connection()
+            success, failures = 0, 0
+            for subscription in event.subscriptions.valid(channel=self):
+                logger.debug(f"Processing {subscription}")
+                try:
+                    ctx = dict(context or {})
+                    ctx.update({
+                        'event': event,
+                        'recipient': subscription.subscriber,
+                        'today': datetime.datetime.today()})
+                    m = body.render(SecureContext(ctx))
+                    s = subject.render(SecureContext(ctx))
+                    ret = self.handler.emit(subscription, s, m, conn)
+                    success += ret
+                except Exception as e:
+                    logger.exception(e)
+                    failures += 1
+        except ObjectDoesNotExist as e:
+            logger.error(e)
+            raise ObjectDoesNotExist(f"Unable to find a message for {self}/{event}") from e
+        except Exception as e:
+            logger.exception(e)
+            raise
+
+        return success, failures
+
+
+class Stop:
+    def __repr__(self):
+        return ""
+
+    def __str__(self):
+        return ""
+
+
+class Wrapper:
+    def __init__(self, wrapped):
+        self.__wrapped = wrapped
+
+    def _path(self):
+        pass
+
+    def __getattr__(self, item):
+        if isinstance(self.__wrapped, Stop):
+            return Wrapper('=====')
+
+        if item in ['key', 'token', 'password']:
+            return '******'
+        original = getattr(self.__wrapped, item)
+        if callable(original):
+            return Wrapper(Stop())
+
+        return Wrapper(original)
+
+    def __repr__(self):
+        return repr(self.__wrapped)
+
+    def __str__(self):
+        return str(self.__wrapped)
+
+
+class SecureContext(Context):
+    def __getitem__(self, key):
+        return Wrapper(super().__getitem__(key))

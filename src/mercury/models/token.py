@@ -6,7 +6,7 @@ from mercury.logging import getLogger
 from mercury.models.application import Application
 from mercury.models.base import AbstractModel
 from mercury.models.user import User
-from mercury.utils import generate_token, generate_api_token
+from mercury.utils import generate_api_token
 
 logger = getLogger(__name__)
 
@@ -18,10 +18,14 @@ def calculate_expiration():
 
 
 class ApiTriggerKey(AbstractModel):
-    application = models.ForeignKey(Application, null=True,
+    application = models.ForeignKey(Application,
                                     on_delete=models.CASCADE,
-                                    related_name='keys')
-    key = models.CharField(max_length=64, unique=True, default=generate_token)
+                                    related_name='triggers')
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='triggers')
+    token = models.CharField(max_length=64, unique=True,
+                             default=generate_api_token)
+    active = models.BooleanField(default=True, db_index=True)
 
 
 class ApiAuthToken(AbstractModel):
@@ -34,12 +38,8 @@ class ApiAuthToken(AbstractModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='tokens')
 
-    token = models.CharField(max_length=64, unique=True, default=generate_token)
-    refresh_token = models.CharField(max_length=70, unique=True, null=True,
-                                     default=generate_token)
-    expires_at = models.DateTimeField(null=True,
-                                      default=calculate_expiration)
-
+    token = models.CharField(max_length=64, unique=True,
+                             default=generate_api_token)
     active = models.BooleanField(default=True, db_index=True)
 
     @classmethod

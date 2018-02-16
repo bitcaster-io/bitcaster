@@ -185,7 +185,10 @@ class Command(BaseCommand):
 
             for name in configured_channels:
                 try:
-                    plugin = "mercury_%s.%s" % (name.lower(), name.title())
+                    if name == "EMAIL":
+                        plugin = "mercury.dispatchers.%s.%s" % (name.lower(), name.title())
+                    else:
+                        plugin = "mercury_%s.%s" % (name.lower(), name.title())
                     h = import_by_name(plugin)
                     ch = create_channel(h)
                     self.stdout.write(f"Create channel {ch}")

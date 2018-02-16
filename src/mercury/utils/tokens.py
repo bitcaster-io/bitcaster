@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from uuid import uuid4, UUID, uuid5
-
+from uuid import UUID, uuid4, uuid5
 
 NAMESPACE_API = UUID('b9209163-3a51-4cdc-a534-34422fed7be9')
 NAMESPACE_SUBSCRIPTION = UUID('d617f4ed-bb71-46ea-97ac-c3d2f403f8c5')

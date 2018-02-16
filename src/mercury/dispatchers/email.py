@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 import smtplib
-from django.core.mail import get_connection
+from django.core.mail import get_connection, send_mail
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from mercury.logging import getLogger
 from mercury.utils import fqn
 
 from .base import (Dispatcher, DispatcherOptions,
                    MessageType, SubscriptionOptions,)
 from .registry import dispatcher_registry
 
-logger = getLogger(__name__)
+# logger = getLogger(__name__)
 
 
 class EmailMessage(MessageType):
@@ -30,7 +29,8 @@ class EmailOptions(DispatcherOptions):
     password = serializers.CharField(allow_blank=True, required=False)
     tls = serializers.BooleanField(default=False)
     sender = serializers.EmailField(required=True)
-    timeout = serializers.IntegerField(default=1)
+    timeout = serializers.IntegerField(default=60)
+    backend = serializers.CharField(default='django.core.mail.backends.smtp.EmailBackend')
 
 
 @dispatcher_registry.register
@@ -46,7 +46,7 @@ class Email(Dispatcher):
     def _get_connection(self):
         config = self.config
         return get_connection(
-            # backend='django.core.mail.backends.smtp.EmailBackend',
+            backend=self.config['backend'],
             host=config["server"],
             username=config.get("username", ""),
             password=config.get("password", ""),
@@ -54,26 +54,23 @@ class Email(Dispatcher):
             use_tls=config["tls"],
             fail_silently=False)
 
-    def emit(self, subscription, subject, message, *args, **kwargs):
-        from django.core.mail import send_mail
+    def emit(self, subscription, subject, message, connection=None, *args, **kwargs):
         recipient = subscription.subscriber
         try:
-            conn = self._get_connection()
+            connection = connection or self._get_connection()
             ret = send_mail(subject=subject,
                             message=message,
-                            connection=conn,
+                            connection=connection,
                             from_email=self.config["sender"],
                             recipient_list=[recipient.email])
-            logger.debug("{0} email sent to {1.email}".format(fqn(self), recipient))
+            self.logger.debug("{0} email sent to {1.email}".format(fqn(self), recipient))
             return ret
         except smtplib.SMTPException as e:
             raise ValidationError(str(e)) from e
         except ValidationError as e:
-            logger.exception(e)
-            raise
+            self.logger.exception(e)
         except Exception as e:
-            logger.exception(e)
-            raise
+            self.logger.exception(e)
 
     def test_message(self, subscription, subject, message, *args, **kwargs):
         # assert subscription.event is None
@@ -87,7 +84,7 @@ class Email(Dispatcher):
             conn.close()
             return True
         except Exception as e:
-            logger.exception(e)
+            self.logger.exception(e)
             if raise_exception:
                 raise
             return False

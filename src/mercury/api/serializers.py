@@ -11,7 +11,6 @@ from strategy_field.utils import import_by_name
 
 from mercury import logging
 from mercury.dispatchers import dispatcher_registry
-# from mercury.middleware import get_current_user
 from mercury.models import Application, Channel, Event, User
 from mercury.models.message import Message
 from mercury.models.subscription import Subscription

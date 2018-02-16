@@ -1,11 +1,12 @@
 from django.contrib import admin, messages
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.contrib.postgres import fields as pg
 from django.contrib.postgres.forms import JSONField, ValidationError
 from django.forms import Form
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 
@@ -15,16 +16,20 @@ from strategy_field.utils import fqn
 
 from mercury.exceptions import PluginValidationError
 from mercury.logging import getLogger
-from mercury.models import ApiAuthToken, Application, Channel, Event, User
+from mercury.models import (ApiAuthToken, ApiTriggerKey,
+                            Application, Channel, Event, User,)
 from mercury.models.message import Message
 from mercury.models.subscription import Subscription
 from mercury.tasks import emit_event
 from mercury.utils.django import (activator_factory,
                                   deactivator_factory, toggler_factory,)
+from mercury.utils.wsgi import get_client_ip
 
 from .forms import (ApplicationForm, DispatcherConfigForm,
-                    EventForm, MessageForm, SubscriptionForm,)
-from .inlines import ApiTokenInline, ChannelInline, EventInline, MessageInline
+                    EventForm, MessageForm, SubscriptionForm,
+                    UserChangeForm, UserCreationForm,)
+from .inlines import (ApiKeyInline, ApiTokenInline,
+                      ChannelInline, EventInline, MessageInline,)
 from .site import site
 
 logger = getLogger(__name__)
@@ -33,8 +38,50 @@ sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 
 
 @admin.register(User, site=site)
-class UserAdmin(UserAdmin):
-    inlines = [ApiTokenInline]
+class UserAdmin(_UserAdmin):
+    inlines = [ApiTokenInline, ApiKeyInline, ]
+    # add_form_template = 'admin/auth/user/add_form.html'
+    add_form = UserCreationForm
+    form = UserChangeForm
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff',
+                    'language', 'timezone')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups',)
+    fieldsets = (
+        (None, {'fields': (('username', 'password'),)}),
+        (_('Personal info'), {'fields': (('first_name', 'last_name'),
+                                         ('email', 'language'),
+                                         ('country', 'timezone'))}),
+        # (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+        #                                'groups', 'user_permissions')}),
+        (_('Important dates'), {'fields': (('last_login',
+                                            'last_password_change',
+                                            'date_joined'),)}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username',
+                       ('email', 'language'),
+                       ('country', 'timezone'),
+                       ('password1', 'password2'),),
+        }),
+    )
+
+    def get_changeform_initial_data(self, request):
+        initial = super().get_changeform_initial_data(request)
+        remote_ip = get_client_ip(request)
+        initial['language'] = request.LANGUAGE_CODE
+        if remote_ip:
+            from geolite2 import geolite2
+            reader = geolite2.reader()
+            match = reader.get(remote_ip)
+            if match:
+                # code = match['country']['iso_code'].lower()
+                # c = pycountry.languages.get(alpha_2=code)
+                # initial['language'] = c.alpha_2.lower()
+                initial['country'] = match['country']['iso_code']
+                initial['timezone'] = match['location']['time_zone']
+        return initial
 
 
 @admin.register(Application, site=site)
@@ -46,8 +93,13 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 
 @admin.register(ApiAuthToken, site=site)
-class ApiTokenAdmin(admin.ModelAdmin):
-    list_display = ('application', 'user', 'token', 'expires_at')
+class ApiAuthTokenAdmin(admin.ModelAdmin):
+    list_display = ('application', 'user', 'token', 'active')
+
+
+@admin.register(ApiTriggerKey, site=site)
+class ApiTriggerKeyAdmin(admin.ModelAdmin):
+    list_display = ('application', 'user', 'token', 'active')
 
 
 class EventTriggerForm(Form):
@@ -85,12 +137,15 @@ class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
     def trigger(self, request, id):
         event = self.get_object(request, id)
         opts = event._meta
+        key = request.user.triggers.filter(application=event.application).first()
+        if not key:
+            key = request.user.triggers.create(application=event.application)
         ctx = {'opts': opts,
                'app_label': opts.app_label,
                'original': event,
                # 'media': self.media + form.media,
-               'user_token': request.user.tokens.all().first(),
-               'arguments': event.arguments,
+               'user_token': key,
+               'arguments': event.arguments or {},
                # 'arguments': json.dumps(event.arguments),
                'api_url': request.build_absolute_uri(reverse('api:application-event-trigger',
                                                              args=[event.application.pk, event.pk])),
@@ -104,9 +159,7 @@ class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
         if request.method == 'GET':
             form = EventTriggerForm(event,
                                     initial={'arguments': event.arguments})
-            ctx['form'] = form
-            ctx['media'] = self.media + form.media
-            return render(request, 'admin/event_trigger.html', ctx)
+            # return render(request, 'admin/event_trigger.html', ctx)
         else:
             form = EventTriggerForm(event, request.POST)
             if form.is_valid():
@@ -114,15 +167,18 @@ class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
                     # success, fail = event.emit(form.cleaned_data['arguments'], False)
                     success, fail = emit_event(event, form.cleaned_data['arguments'])
                     self.message_user(request, f"Success:{success} - Failures:{fail}", messages.INFO)
+                    # return render(request, 'admin/event_trigger.html', ctx)
 
                 except Exception as e:
                     logger.exception(e)
                     self.message_user(request, str(e), messages.ERROR)
-                    return render(request, 'admin/event_trigger.html', ctx)
-            else:
-                ctx['form'] = form
-                ctx['media'] = self.media + form.media
-                return render(request, 'admin/event_trigger.html', ctx)
+                # return render(request, 'admin/event_trigger.html', ctx)
+            # else:
+            #     ctx['form'] = form
+            #     ctx['media'] = self.media + form.media
+        ctx['form'] = form
+        ctx['media'] = self.media + form.media
+        return render(request, 'admin/event_trigger.html', ctx)
 
 
 @admin.register(Message, site=site)

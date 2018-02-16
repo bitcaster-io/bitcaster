@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import datetime
-from django.template import Context, Template
+from django.db.models import Count
 
 from mercury.celery import app
 from mercury.exceptions import LogicError
 from mercury.logging import getLogger
+from mercury.models import Channel
 
 logger = getLogger(__name__)
 
@@ -25,40 +25,52 @@ def trigger_event(event_id, context):
 
 
 @app.task()
-def emit_event(self, context):
-    from mercury.models.message import Message
-    logger.debug("Event [{0.name}] emit()".format(self))
-    errored_channels = []
-    success = 0
-    failure = 0
-    if not self.enabled:
+def emit_event(event, context):
+    logger.debug("Event [{0.name} {0.enabled}] emit()".format(event))
+    total_success = 0
+    total_failure = 0
+    if not event.enabled:
         raise LogicError("Cannot emit disabled event")
+    channels = event.subscriptions.valid().values('channel').annotate(dcount=Count('channel'))
+    ids = [channel['channel'] for channel in channels]
+    if len(channels) == 0:
+        logger.warning(f"No subscriptions/channels found for `{event}`")
+    for channel in Channel.objects.filter(id__in=ids, enabled=True):
+        try:
+            logger.debug(f"Processing channel {channel}")
+            channel.validate_config()
+            success, failure = channel.process_event(event, context)
+            total_success += success
+        except Exception as e:
+            logger.exception(e)
+            total_failure += 1
+    return total_success, total_failure
 
-    for subscription in self.subscriptions.valid():
-        if subscription.channel not in errored_channels:
-            try:
-                ctx = dict(context or {})
-                ctx.update({
-                    'recipient': subscription.subscriber,
-                    'today': datetime.datetime.today()})
-                message = self.get_message(subscription.channel)
-                body = Template(message.body).render(Context(ctx))
-                subject = Template(message.subject).render(Context(ctx))
-                subscription.channel.send(subscription,
-                                          subject, body)
-                success += 1
-            except Message.DoesNotExist as e:
-                logger.exception(e)
-                errored_channels.append(subscription.channel)
-                subscription.channel.enabled = False
-                subscription.channel.save()
-                failure += 1
-            except Exception as e:
-                logger.exception(e)
-                failure += 1
-            else:
-                logger.debug(f"Subscription {subscription.pk} emit successful")
-        else:
-            logger.debug("Event [{0.name}] emit skipped because channel misconfiguration".format(self))
-
-    return success, failure
+    # for subscription in event.subscriptions.valid():
+    #     if subscription.channel not in errored_channels:
+    #         try:
+    #             ctx = dict(context or {})
+    #             ctx.update({
+    #                 'recipient': subscription.subscriber,
+    #                 'today': datetime.datetime.today()})
+    #             message = event.get_message(subscription.channel)
+    #             body = Template(message.body).render(Context(ctx))
+    #             subject = Template(message.subject).render(Context(ctx))
+    #             subscription.channel.send(subscription,
+    #                                       subject, body)
+    #             success += 1
+    #         except Message.DoesNotExist as e:
+    #             logger.exception(e)
+    #             errored_channels.append(subscription.channel)
+    #             subscription.channel.enabled = False
+    #             subscription.channel.save()
+    #             failure += 1
+    #         except Exception as e:
+    #             logger.exception(e)
+    #             failure += 1
+    #         else:
+    #             logger.debug(f"Subscription {subscription.pk} emit successful")
+    #     else:
+    #         logger.debug("Event [{0.name}] emit skipped because channel misconfiguration".format(event))
+    #
+    # return success, failure

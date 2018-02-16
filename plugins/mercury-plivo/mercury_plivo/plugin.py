@@ -29,7 +29,7 @@ class PlivoSubscription(SubscriptionOptions):
 @dispatcher_registry.register
 class Plivo(Dispatcher):
     subscription_class = PlivoSubscription
-    options_class = DispatcherOptions
+    options_class = Options
     message_class = MessageType
     __license__ = 'MIT'
     __author__ = 'unknown'
@@ -43,13 +43,18 @@ class Plivo(Dispatcher):
         if not ser.is_valid():
             raise PluginValidationError(ser.errors)
 
-    def emit(self, subscription, subject, message, *args, **kwargs):
+    def _get_connection(self) -> plivo.RestClient:
+        return plivo.RestClient(auth_id=self.config['sid'],
+                                  auth_token=self.config['token'])
+
+    def emit(self, subscription: object, subject: str, message: str,
+             connection: object, *args, **kwargs) -> None:
         try:
             recipient = subscription.config['recipient']
             logger.info('Processing {0}'.format(subscription, recipient))
-            client = plivo.RestClient(auth_id=self.config['sid'],
-                                      auth_token=self.config['token'])
-            client.messages.create(
+            connection = connection or self._get_connection()
+
+            connection.messages.create(
                 src=self.config['source'],
                 dst=recipient,
                 text=message

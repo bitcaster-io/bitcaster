@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 
 
 class SubscriptionQuerySet(models.QuerySet):
-    def enabled(self):
-        return self.filter(active=True, channel__enabled=True)
+    def enabled(self, *args, **kwargs):
+        return self.filter(active=True, channel__enabled=True, *args, **kwargs)
 
-    def valid(self):
-        return self.filter(active=True, channel__enabled=True)
+    def valid(self, *args, **kwargs):
+        return self.filter(active=True, channel__enabled=True, *args, **kwargs)
 
 
 class Subscription(AbstractModel):

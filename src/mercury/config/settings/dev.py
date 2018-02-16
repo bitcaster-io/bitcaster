@@ -6,6 +6,7 @@ Test settings
 
 from .default import *  # noqa
 
+ALLOWED_HOSTS = ['*']
 # DEBUG
 # ------------------------------------------------------------------------------
 # Turn debug off so tests run faster

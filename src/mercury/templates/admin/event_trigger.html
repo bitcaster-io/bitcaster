@@ -37,7 +37,7 @@
         }
     </style>
     {% if not user_token %}
-        <a href="{% url "admin:mercury_apiauthtoken_add" %}">Create user token</a>
+        <a href="{% url "admin:mercury_apitriggerkey_add" %}?user={{ request.user.pk }}&application={{ original.application.pk }}">Create user token</a>
     {% else %}
         <textarea id="_hiddenCopyText_"></textarea>
         <div>

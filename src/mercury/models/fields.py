@@ -8,6 +8,6 @@ class LanguageField(models.CharField):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('max_length', 3)
+        kwargs.setdefault('max_length', 5)
         kwargs.setdefault('choices', settings.LANGUAGES)
         super().__init__(*args, **kwargs)

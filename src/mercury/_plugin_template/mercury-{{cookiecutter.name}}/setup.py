@@ -2,12 +2,18 @@
 
 from setuptools import setup
 
+tests_require = ['vcrpy', ]
+
 setup(
     name='mercury-{{cookiecutter.name}}',
     version='0.1',
     description='',
     long_description='',
     install_requires=['mercury',],
+    tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_{{cookiecutter.name}}'],

@@ -1,0 +1,18 @@
+{% extends "admin/change_form.html" %}{% load geo %}
+{% block content %}
+    {{ block.super }}
+<ul>
+{% if nodes %}
+    {% recursetree nodes %}
+        <li>
+            {{ node.name }}
+            {% if not node.is_leaf_node %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+{% endif %}
+</ul>
+{% endblock content %}

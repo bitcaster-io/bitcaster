@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from rest_framework import serializers
 
 from mercury.exceptions import PluginValidationError
@@ -8,7 +9,7 @@ from mercury.dispatchers.base import DispatcherOptions, MessageType
 from mercury.dispatchers.email import Email
 from mercury.dispatchers.registry import dispatcher_registry
 
-logger = getLogger(__name__)
+# logger = getLogger(__name__)
 
 
 class EmailMessage(MessageType):
@@ -32,12 +33,13 @@ class Gmail(Email):
             opts = self.options_class(data=self.owner.config)
             if opts.is_valid():
                 data = dict(opts.data)
+                data['backend'] = settings.EMAIL_BACKEND
                 data['server'] = 'smtp.gmail.com'
                 data['port'] = 587
                 data['tls'] = True
                 return data
             else:
-                logger.error("Invalid configuration")
+                self.logger.error("Invalid configuration")
                 raise PluginValidationError(opts.errors)
 
     def test_connection(self, raise_exception=False):

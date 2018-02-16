@@ -3,12 +3,12 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from mercury import logging
-from mercury.api.endpoints.application import token_required
 from mercury.api.endpoints.base import BaseModelViewSet
 from mercury.api.filters import ApplicationFilterBackend
 from mercury.api.serializers import EventSerializer
 from mercury.models import Event
-from mercury.permissions import IsApplicationRelated
+from mercury.permissions import (EventTriggerPermission, IsApplicationRelated,
+                                 TriggerTokenAuthentication,)
 from mercury.tasks import trigger_event
 
 logger = logging.getLogger(__name__)
@@ -26,8 +26,9 @@ class EventViewSet(BaseModelViewSet):
         ret.application = self.get_selected_application()
         return ret
 
-    @token_required
-    @detail_route(methods=['get', 'post'])
+    @detail_route(methods=['get', 'post'],
+                  authentication_classes=[TriggerTokenAuthentication],
+                  permission_classes=[EventTriggerPermission])
     def trigger(self, request, application__pk, pk):
         event = self.get_object()
         if not event.enabled:

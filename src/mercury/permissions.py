@@ -9,13 +9,23 @@ from rest_framework.authentication import (BaseAuthentication,
                                            get_authorization_header,)
 from rest_framework.permissions import BasePermission, IsAuthenticated
 
-from mercury.models import ApiAuthToken, User
+from mercury.models import ApiAuthToken, ApiTriggerKey, User
 from mercury.utils.language import get_attr
 
 
 class SameUser(BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.is_superuser or (request.user == obj)
+
+
+class EventTriggerPermission(BasePermission):
+
+    def has_permission(self, request, view):
+        app = view.get_selected_application()
+        return getattr(request, 'token', None) and request.token.application == app
+
+    def has_object_permission(self, request, view, obj):
+        return getattr(request, 'token', None) and request.token.application == obj.application
 
 
 class IsApplicationRelated(IsAuthenticated):
@@ -141,7 +151,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
         return  # To not perform the csrf check previously happening
 
 
-class TokenAuthentication(BaseAuthentication):
+class TokenAuthenticationBase(BaseAuthentication):
     """
     Simple token based authentication.
 
@@ -152,6 +162,7 @@ class TokenAuthentication(BaseAuthentication):
     """
 
     keyword = 'Token'
+    model = None
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
@@ -179,11 +190,11 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_credentials(self, request, key):
         try:
-            token = ApiAuthToken.objects.get(token=key)
+            token = self.model.objects.get(token=key)
             user = token.user
             request.token = token
             request.user = user
-        except (User.DoesNotExist, ApiAuthToken.DoesNotExist):
+        except (User.DoesNotExist, self.model.DoesNotExist):
             raise exceptions.AuthenticationFailed(_('Invalid token.'))
 
         if not user.is_active:
@@ -191,5 +202,28 @@ class TokenAuthentication(BaseAuthentication):
 
         return (user, key)
 
-    # def authenticate_header(self, request):
-    #     return self.keyword
+
+class TokenAuthentication(TokenAuthenticationBase):
+    """
+    Simple token based authentication.
+
+    Clients should authenticate by passing the token key in the "Authorization"
+    HTTP header, prepended with the string "Token ".  For example:
+
+        Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a
+    """
+    keyword = 'Token'
+    model = ApiAuthToken
+
+
+class TriggerTokenAuthentication(TokenAuthenticationBase):
+    """
+    Simple token based authentication.
+
+    Clients should authenticate by passing the token key in the "Authorization"
+    HTTP header, prepended with the string "Token ".  For example:
+
+        Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a
+    """
+    keyword = 'Token'
+    model = ApiTriggerKey

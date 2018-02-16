@@ -78,9 +78,14 @@ def test_event_create(django_app, admin):
 def test_event_trigger(django_app, admin, subscription1, settings):
     settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
     event = subscription1.event
+    assert event.enabled
+    assert subscription1.active
+    assert subscription1.channel.enabled
+    assert subscription1.channel.handler
     url = reverse("admin:mercury_event_trigger", [event.pk])
     res = django_app.get(url, user=admin.username)
-    res = res.form.submit().follow()
+
+    res = res.form.submit()
     assert res.status_code == 200
     assert django.core.mail.outbox
     mail = django.core.mail.outbox[0]

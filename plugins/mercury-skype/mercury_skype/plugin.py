@@ -41,14 +41,24 @@ class Skype(Dispatcher):
         if not ser.is_valid():
             raise PluginValidationError(ser.errors)
 
-    def emit(self, subscription, subject, message, *args, **kwargs):
+    def _get_connection(self) -> skpy.main.Skype:
+        return skpy.main.Skype(self.config['username'], self.config['password'])
+
+    def emit(self, subscription: object, subject: str, message: str,
+             connection: object, *args, **kwargs) -> int:
         try:
             recipient = subscription.config['recipient']
-            logger.info('Processing {0}'.format(subscription, recipient))
-            sk = skpy.main.Skype(self.config['username'], self.config['password'])
-            ch = sk.contacts[recipient].chat  # 1-to-1 conversation
+            self.logger.info('Processing {0}'.format(subscription, recipient))
+            connection = connection or self._get_connection()
+            ch = connection.contacts[recipient].chat  # 1-to-1 conversation
             ch.sendMsg(message)  # plain-text message
-            return True
+            return 1
+        except skpy.core.SkypeApiException as e:
+            logger.error(e)
+            if e.args[1].status_code == 404:
+                subscription.active = False
+                subscription.save()
+            raise PluginSendError(e) from e
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e) from e

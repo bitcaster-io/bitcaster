@@ -6,10 +6,11 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.fields import JSONField
+from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
 
 from mercury import logging
+from mercury.fields import EncryptedJSONField
 from mercury.models.fields import LanguageField
 
 logger = logging.getLogger(__name__)
@@ -69,14 +70,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(
         _('date joined'), default=timezone.now)
 
-    storage = JSONField(
+    storage = EncryptedJSONField(
         _('storage'),
+        blank=True, null=True,
         help_text=_('Where store handler related user data')
 
     )
 
     timezone = TimeZoneField()
     language = LanguageField(default='en')
+    country = CountryField()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']

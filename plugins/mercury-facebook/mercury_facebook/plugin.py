@@ -42,19 +42,23 @@ class Facebook(Dispatcher):
         if not ser.is_valid():
             raise PluginValidationError(ser.errors)
 
-    def emit(self, subscription, subject, message, *args, **kwargs):
+    def _get_connection(self) -> fbchat.Client:
+        return fbchat.Client(self.config['key'].encode('utf8'),
+                               self.config['password'].encode('utf8'),
+                               max_tries=1)
+
+    def emit(self, subscription: object, subject: str, message: str,
+             connection: object, *args, **kwargs) -> int:
         try:
             recipient = subscription.config['recipient']
             logger.info('Processing {0}'.format(subscription, recipient))
-            client = fbchat.Client(self.config['key'].encode('utf8'),
-                                   self.config['password'].encode('utf8'),
-                                   max_tries=1)
+            connection = connection or self._get_connection()
 
-            friends = client.searchForUsers("Giovanni Bronzini")
+            friends = connection.searchForUsers("Giovanni Bronzini")
             friend = friends[0]
             msg = fbchat.Message(text=message.encode('utf8'))
-            client.send(msg, friend.uid)
-            return True
+            connection.send(msg, friend.uid)
+            return 1
         except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e)

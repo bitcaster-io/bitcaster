@@ -2,28 +2,93 @@
 
 import json
 from django import forms
+from django.contrib.auth import password_validation
+from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
+                                       UserCreationForm as _UserCreationForm,
+                                       UsernameField,)
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
-from bitfield.forms import BitFormField
+# from bitfield.forms import BitFormField
 from jsoneditor.forms import JSONEditor
 from rest_framework.exceptions import ValidationError
 
 from mercury import logging
-from mercury.models import Application, Channel, Event, Subscription
+from mercury.models import Application, Channel, Event, Subscription, User
 from mercury.utils import import_by_name
 from mercury.utils.language import flatten
 
 logger = logging.getLogger(__name__)
 
 
+class UserChangeForm(_UserChangeForm):
+    last_password_change = forms.DateTimeField(disabled=True, required=False)
+    date_joined = forms.DateTimeField(disabled=True, required=False)
+    last_login = forms.DateTimeField(disabled=True, required=False)
+
+    class Meta:
+        model = User
+        exclude = ('user_permissions', 'groups')
+        field_classes = {'username': UsernameField}
+
+
+class UserCreationForm(_UserCreationForm):
+    error_messages = {
+        'password_mismatch': _("The two password fields didn't match."),
+    }
+
+    email = forms.EmailField()
+    password1 = forms.CharField(
+        label=_("Password"),
+        required=False,
+        strip=False,
+        widget=forms.PasswordInput,
+        help_text=password_validation.password_validators_help_text_html(),
+    )
+    password2 = forms.CharField(
+        label=_("Password confirmation"),
+        required=False,
+        widget=forms.PasswordInput,
+        strip=False,
+        help_text=_("Enter the same password as before, for verification."),
+    )
+
+    class Meta:
+        model = User
+        fields = ("username", 'email', 'timezone', 'language', 'country')
+        field_classes = {'username': UsernameField}
+
+    def _post_clean(self):
+        super()._post_clean()
+        # Validate the password after self.instance is updated with form data
+        # by super().
+        password = self.cleaned_data.get('password2')
+        if password:
+            try:
+                password_validation.validate_password(password, self.instance)
+            except forms.ValidationError as error:
+                self.add_error('password2', error)
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if self.cleaned_data["password1"]:
+            user.set_password(self.cleaned_data["password1"])
+        else:
+            user.set_unusable_password()
+
+        if commit:
+            user.save()
+        return user
+
+
 class ApplicationForm(forms.ModelForm):
-    flags = BitFormField(initial=0)
+    # flags = BitFormField(initial=0)
 
     class Meta:
         model = Application
-        exclude = []
+        exclude = ['flags']
 
 
 class EventForm(forms.ModelForm):
@@ -78,7 +143,6 @@ class DispatcherConfigForm(ValidateJsonMixin, forms.ModelForm):
 
 
 class SubscriptionForm(forms.ModelForm):
-
     class Meta:
         model = Subscription
         exclude = []
