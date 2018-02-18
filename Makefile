@@ -3,6 +3,7 @@ BUILDDIR='~build'
 PYTHONPATH:=${PWD}/tests/:${PWD}
 DBENGINE?=pg
 DJANGO?='last'
+SUBDIRS := $(wildcard plugins/mercury-*)
 
 
 .mkbuilddir:
@@ -48,6 +49,7 @@ clean:
 fullclean:
 	rm -fr .tox .cache
 	$(MAKE) clean
+	$(MAKE) clean-plugins
 
 
 docs: .mkbuilddir
@@ -86,18 +88,41 @@ compile-requirements:
 sync-requirements:
 	pip-sync src/requirements/develop.pip
 	pip install -e .[dev]
-	pip install -e plugins/mercury-plivo
-	pip install -e plugins/mercury-skype
-	pip install -e plugins/mercury-slack
-	pip install -e plugins/mercury-twilio
-	pip install -e plugins/mercury-gmail
-	pip install -e plugins/mercury-facebook
+	$(MAKE) install-plugins
 
-	pip install -e plugins/mercury-hangout
-	pip install -e plugins/mercury-xmpp
-
+test-all:
+	pytest tests
+	$(MAKE) test-plugins
 
 cache-requirements:
 	pip freeze > freeze.txt
 	devpi-builder freeze.txt  http://localhost:3141/sax/dev --user sax
-#	rm freeze.txt
+
+
+
+test-plugins:
+	@for dir in $(SUBDIRS); do \
+		pytest $$dir/tests; \
+ 	done
+
+clean-plugins:
+	@for dir in $(SUBDIRS); do \
+		pushd $$dir;\
+		make clean; \
+		popd; \
+ 	done
+
+tox-plugins:
+	@for dir in $(SUBDIRS); do \
+		pushd $$dir;\
+		tox; \
+		popd; \
+ 	done
+
+install-plugins:
+	@for dir in $(SUBDIRS); do \
+		pip install -e $$dir; \
+ 	done
+
+
+.PHONY: test-plugins clean-plugins install-plugins

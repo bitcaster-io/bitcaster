@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from pyxmpp2.settings import XMPPSettings
-
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions, )
@@ -9,7 +7,6 @@ from mercury.exceptions import PluginSendError, PluginValidationError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
 from pyxmpp2.simple import send_message
-from pyxmpp2.client import Client
 
 logger = getLogger('mercury.plugins.xmpp')
 
@@ -52,7 +49,7 @@ class Xmpp(Dispatcher):
         # return Client(self.config['username'], [self, ], settings)
 
     def emit(self, subscription: object, subject: str, message: str,
-         connection: object, *args, **kwargs) -> int:
+             connection=None, *args, **kwargs) -> int:
         try:
             recipient = subscription.config['recipient']
             logger.debug(f"Processing {subscription} '{recipient}'")
@@ -65,6 +62,5 @@ class Xmpp(Dispatcher):
             logger.exception(e)
             raise PluginSendError(e)
 
-
     def test_connection(self, raise_exception=False):
-        raise NotImplementedError
+        return True

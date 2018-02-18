@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
 
-from mercury.exceptions import PluginValidationError
+from mercury.exceptions import PluginValidationError, PluginSendError
 
 from mercury.logging import getLogger
 from mercury.dispatchers.base import Dispatcher, DispatcherOptions, MessageType, SubscriptionOptions
@@ -16,7 +16,7 @@ class Message(MessageType):
 
 
 class TwilioSubscription(SubscriptionOptions):
-    pass
+    recipient = serializers.CharField(allow_blank=False, required=True)
 
 
 class TwilioOptions(DispatcherOptions):
@@ -37,19 +37,25 @@ class Twilio(Dispatcher):
         if not ser.is_valid():
             raise PluginValidationError(ser.errors)
 
-    def _get_connection(self):
+    def _get_connection(self) -> Client:
         return Client(self.config['sid'],
                       self.config['token'])
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection: object, *args, **kwargs) -> None:
-        recipient = subscription.config['recipient']
-        connection = connection or self._get_connection()
-        connection.messages.create(
-            to=recipient.encode('utf8'),
-            from_=self.config['sender'].encode('utf8'),
-            body=message.encode('utf8')
-        )
+             connection=None, *args, **kwargs) -> int:
+        try:
+            self.validate_subscription(subscription)
+            recipient = subscription.config['recipient']
+            connection = connection or self._get_connection()
+            connection.messages.create(
+                to=recipient.encode('utf8'),
+                from_=self.config['sender'].encode('utf8'),
+                body=message.encode('utf8')
+            )
+            return 1
+        except Exception as e:  # pragma: no cover
+            raise PluginSendError(e)
 
     def test_connection(self, raise_exception=False):
-        return self.client.api.signing_keys(self.config['sid'])
+        connection = self._get_connection()
+        return connection.api.signing_keys(self.config['sid'])

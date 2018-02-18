@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                      MessageType, SubscriptionOptions,)
+                                      MessageType, SubscriptionOptions, )
 from mercury.dispatchers.registry import dispatcher_registry
 from mercury.exceptions import PluginSendError, PluginValidationError
 from mercury.logging import getLogger
@@ -12,7 +12,7 @@ from pyxmpp2.mainloop.interfaces import QUIT, EventHandler, event_handler
 from pyxmpp2.message import Message
 from pyxmpp2.settings import XMPPSettings
 from pyxmpp2.streamevents import (AuthorizedEvent, ConnectedEvent,
-                                  DisconnectedEvent,)
+                                  DisconnectedEvent, )
 
 logger = getLogger('mercury.plugins.hangout')
 

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import smtplib
 from django.core.mail import get_connection, send_mail
+from django.core.validators import EmailValidator
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from mercury.exceptions import PluginValidationError
 from mercury.utils import fqn
 
 from .base import (Dispatcher, DispatcherOptions,
@@ -40,8 +42,12 @@ class Email(Dispatcher):
     message_class = EmailMessage
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        if not subscription.subscriber.email:
-            raise ValidationError("")
+        validate_email = EmailValidator()
+        try:
+            validate_email(subscription.subscriber.email)
+        except ValidationError:
+            raise PluginValidationError("User {subscription.subscriber} "
+                                        "does not have valid email")
 
     def _get_connection(self):
         config = self.config

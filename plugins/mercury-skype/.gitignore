@@ -1,3 +1,4 @@
 .pytest_cache
 .env
 mercury_skype.egg-info
+tests/cassettes/*

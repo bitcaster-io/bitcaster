@@ -4,7 +4,7 @@ from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions, )
 from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import PluginSendError, PluginValidationError
+from mercury.exceptions import PluginSendError, PluginValidationError, RecipientNotFound
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
 
@@ -45,7 +45,7 @@ class Skype(Dispatcher):
         return skpy.main.Skype(self.config['username'], self.config['password'])
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection: object, *args, **kwargs) -> int:
+             connection=None, *args, **kwargs) -> int:
         try:
             recipient = subscription.config['recipient']
             self.logger.info('Processing {0}'.format(subscription, recipient))
@@ -54,12 +54,13 @@ class Skype(Dispatcher):
             ch.sendMsg(message)  # plain-text message
             return 1
         except skpy.core.SkypeApiException as e:
-            logger.error(e)
             if e.args[1].status_code == 404:
                 subscription.active = False
                 subscription.save()
+                raise RecipientNotFound(e) from e
+            logger.error(e)
             raise PluginSendError(e) from e
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e) from e
 

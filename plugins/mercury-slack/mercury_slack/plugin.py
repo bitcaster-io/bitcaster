@@ -21,7 +21,7 @@ class SlackOptions(DispatcherOptions):
 
 
 class SlackSubscription(DispatcherOptions):
-    regipient = serializers.CharField()
+    recipient = serializers.CharField()
 
 
 @dispatcher_registry.register
@@ -62,5 +62,8 @@ class Slack(Dispatcher):
         return 1
 
     def test_connection(self, raise_exception=False):
-        if not self.client.rtm_connect:
+        connection = self._get_connection()
+
+        if not connection.rtm_connect:
             raise PluginValidationError('')
+        return connection

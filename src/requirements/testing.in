@@ -5,9 +5,9 @@ flake8
 isort
 pdbpp
 pytest
-pytest-echo
 pytest-cov
 pytest-django
+pytest-echo
 responses
 selenium
 tox

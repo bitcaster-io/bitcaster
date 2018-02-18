@@ -12,11 +12,11 @@ from mercury.utils.language import classproperty
 logger = getLogger('mercury.plugins.plivo')
 
 
-class Message(MessageType):
+class PlivoMessage(MessageType):
     pass
 
 
-class Options(DispatcherOptions):
+class PlivoOptions(DispatcherOptions):
     sid = serializers.CharField(required=True)
     token = serializers.CharField(required=True)
     sender = serializers.CharField(required=True)
@@ -29,8 +29,8 @@ class PlivoSubscription(SubscriptionOptions):
 @dispatcher_registry.register
 class Plivo(Dispatcher):
     subscription_class = PlivoSubscription
-    options_class = Options
-    message_class = MessageType
+    options_class = PlivoOptions
+    message_class = PlivoMessage
     __license__ = 'MIT'
     __author__ = 'unknown'
 
@@ -45,23 +45,27 @@ class Plivo(Dispatcher):
 
     def _get_connection(self) -> plivo.RestClient:
         return plivo.RestClient(auth_id=self.config['sid'],
-                                  auth_token=self.config['token'])
+                                auth_token=self.config['token'])
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection: object, *args, **kwargs) -> None:
+             connection=None, *args, **kwargs) -> int:
         try:
             recipient = subscription.config['recipient']
             logger.info('Processing {0}'.format(subscription, recipient))
             connection = connection or self._get_connection()
 
-            connection.messages.create(
-                src=self.config['source'],
+            ret = connection.messages.create(
+                src=self.config['sender'],
                 dst=recipient,
                 text=message
             )
-        except Exception as e:
+            if 'message_uuid' not in ret:
+                raise PluginSendError(ret)
+            return 1
+        except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e)
 
     def test_connection(self, raise_exception=False):
-        raise NotImplementedError
+        conn = self._get_connection()
+        return conn.request('GET', '/')

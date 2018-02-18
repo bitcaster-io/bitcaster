@@ -1,3 +1,4 @@
 include-recursive mercury_{{cookiecutter.name}} *.py
 include README.rst
 include setup.py
+include pytest.ini

@@ -2,20 +2,25 @@
 
 from setuptools import setup
 
-tests_requires = ['pytest',
-                  'pytest-django',
-                  'pytest-coverage',
-                  'pytest-pythonpath']
+tests_require = ['pytest',
+                 'pytest-django',
+                 'pytest-coverage',
+                 'pytest-echo',
+                 'pytest-pythonpath']
 
 setup(
     name='mercury-skype',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['mercury', 'skpy'],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_skype'],
+    install_requires=['mercury', 'skpy'],
+    tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     entry_points={'mercury': ['skype = mercury_skype.plugin:Skype']},
     license="MIT License",
     classifiers=[

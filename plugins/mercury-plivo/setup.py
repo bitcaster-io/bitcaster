@@ -2,15 +2,25 @@
 
 from setuptools import setup
 
+tests_require = ['pytest',
+                 'pytest-django',
+                 'pytest-coverage',
+                 'pytest-echo',
+                 'pytest-pythonpath']
+
 setup(
     name='mercury-plivo',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['mercury', 'plivo'],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_plivo'],
+    install_requires=['mercury', 'plivo'],
+    tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     entry_points={'mercury': ['plivo = mercury_plivo.plugin:Plivo']},
     license="MIT License",
     classifiers=[

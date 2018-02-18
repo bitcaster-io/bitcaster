@@ -3,13 +3,10 @@ from django.conf import settings
 from rest_framework import serializers
 
 from mercury.exceptions import PluginValidationError
-from mercury.logging import getLogger
 
 from mercury.dispatchers.base import DispatcherOptions, MessageType
 from mercury.dispatchers.email import Email
 from mercury.dispatchers.registry import dispatcher_registry
-
-# logger = getLogger(__name__)
 
 
 class EmailMessage(MessageType):

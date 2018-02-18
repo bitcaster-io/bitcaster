@@ -16,6 +16,10 @@ class PluginValidationError(DRFValidationError, _ValidationError):
     pass
 
 
+class PluginSubscriptionError(MercuryError):
+    pass
+
+
 class PluginSendError(MercuryError):
     pass
 

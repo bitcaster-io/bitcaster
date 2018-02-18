@@ -2,3 +2,4 @@
 .env
 mercury_gmail.egg-info
 /~build
+tests/cassettes/*

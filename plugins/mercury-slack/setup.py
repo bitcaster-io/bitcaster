@@ -2,17 +2,26 @@
 
 from setuptools import setup
 
+tests_require = ['pytest',
+                 'pytest-django',
+                 'pytest-coverage',
+                 'pytest-echo',
+                 'pytest-pythonpath']
+
 setup(
     name='mercury-slack',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['slackclient'],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_slack'],
+    install_requires=['slackclient'],
+    tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     entry_points={'mercury': ['slack = mercury_slack:Slack']},
-    # install_requires=['mercury>=1.0a'],
     license="MIT License",
     classifiers=[
         'Development Status :: 5 - Production/Stable',

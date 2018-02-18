@@ -5,9 +5,10 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from mercury.exceptions import PluginValidationError
 
 from mercury_facebook import Facebook
+
+from mercury.exceptions import PluginValidationError
 
 env = Env(MERCURY_FACEBOOK_KEY='',
           MERCURY_FACEBOOK_PASSWORD='',
@@ -17,10 +18,24 @@ env = Env(MERCURY_FACEBOOK_KEY='',
 env.read_env(str(Path(__file__).parent / '.env'))
 
 
-def before_record_cb(request):
-    if request.path == '/login.php':
-        request.body = "<removed>"
+def before_record_request(request):
+    original = str(request.body)
+    for e in [env('MERCURY_FACEBOOK_KEY', str), env('MERCURY_FACEBOOK_PASSWORD', str),
+              env('MERCURY_FACEBOOK_RECIPIENT', str)]:
+        original = original.replace(e, "----")
+    request.body = original.encode('utf8')
+
+    original = request.uri
+    for e in [env('MERCURY_FACEBOOK_KEY', str), env('MERCURY_FACEBOOK_PASSWORD', str),
+              env('MERCURY_FACEBOOK_RECIPIENT', str)]:
+        original = original.replace(e, "----")
+    request.uri = original
+
     return request
+
+
+def before_record_response(response):
+    return response
 
 
 vcr = _vcr.VCR(
@@ -28,11 +43,11 @@ vcr = _vcr.VCR(
     cassette_library_dir=str(Path(__file__).parent / 'cassettes'),
     record_mode='once',
     match_on=['uri', 'method'],
-    # filter_headers=['authorization'],
-    # filter_query_parameters=['mail', 'pass'],
-    # filter_post_data_parameters=['mail', 'pass'],
-    before_record_request=before_record_cb,
-    # sensitive HTTP request goes here
+    # use these to clear sensitive data
+    filter_headers=['authorization'],
+    filter_post_data_parameters=['From', 'To'],
+    before_record_request=before_record_request,
+    before_record_response=before_record_response,
 )
 
 
@@ -65,7 +80,6 @@ def test_validate_subscription_fail(subscription):
 
 
 def test_send(subscription, monkeypatch):
-    # monkeypatch.setattr('mercury_facebook.plugin.Client.login', Mock())
     with vcr.use_cassette('test_send.yaml'):
         d = Facebook(subscription.channel)
         assert d.emit(subscription,
@@ -73,7 +87,7 @@ def test_send(subscription, monkeypatch):
                       'Mercury is on Facebook...enjoy') == 1
 
 
-def test_connection(subscription):
+def test_connection(subscription, monkeypatch):
     with vcr.use_cassette('test_connection.yaml'):
         d = Facebook(subscription.channel)
         assert d.test_connection()

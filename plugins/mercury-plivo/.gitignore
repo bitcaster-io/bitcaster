@@ -1,0 +1,5 @@
+.pytest_cache
+.env
+mercury_plivo.egg-info
+/~build
+tests/cassettes/*

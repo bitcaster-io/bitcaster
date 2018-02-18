@@ -2,3 +2,4 @@
 .env
 mercury_hangout.egg-info
 /~build
+tests/cassettes/*

@@ -2,17 +2,25 @@
 
 from setuptools import setup
 
+tests_require = ['pytest',
+                 'pytest-django',
+                 'pytest-coverage',
+                 'pytest-echo',
+                 'pytest-pythonpath']
+
 setup(
     name='mercury-hangout',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['mercury',
-                      'vcrpy',
-                      'pyxmpp2'],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_hangout'],
+    install_requires=['mercury', 'DNSPython', 'pyxmpp2'],
+    tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     entry_points={'mercury': ['hangout = mercury_hangout.plugin:Hangout']},
     license="MIT License",
     classifiers=[

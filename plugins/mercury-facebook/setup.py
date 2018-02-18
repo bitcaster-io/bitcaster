@@ -2,15 +2,26 @@
 
 from setuptools import setup
 
+tests_require = ['pytest',
+                 'tox',
+                 'pytest-django',
+                 'pytest-coverage',
+                 'pytest-echo',
+                 'pytest-pythonpath']
+
 setup(
     name='mercury-facebook',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['mercury', 'fbchat', 'vcrpy'],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_facebook'],
+    install_requires=['mercury', 'fbchat', 'vcrpy'],
+    tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     entry_points={'mercury': ['facebook = mercury_facebook.plugin:Facebook']},
     license="MIT License",
     classifiers=[

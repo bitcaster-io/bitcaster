@@ -2,15 +2,25 @@
 
 from setuptools import setup
 
+tests_require = ['pytest',
+                 'pytest-django',
+                 'pytest-coverage',
+                 'pytest-echo',
+                 'pytest-pythonpath']
+
 setup(
     name='mercury-gmail',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['mercury'],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_gmail'],
+    install_requires=['mercury'],
+    tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     entry_points={'mercury': ['gmail = mercury_gmail.plugin:Gmail']},
     license="MIT License",
     classifiers=[

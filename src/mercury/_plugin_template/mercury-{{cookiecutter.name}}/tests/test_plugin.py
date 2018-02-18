@@ -17,19 +17,26 @@ env = Env(MERCURY_{{cookiecutter.name|upper}}_USERNAME='',
 env.read_env(str(Path(__file__).parent / '.env'))
 
 
-def before_record_cb(request):
-    if request.path == '/login.php':
-        request.body = "<removed>"
+def before_record_request(request):
+    original = str(request.body)
+    for e in [env('MERCURY_{{cookiecutter.name|upper}}_USERNAME', str),
+              env('MERCURY_{{cookiecutter.name|upper}}_PASSWORD', str),
+              env('MERCURY_{{cookiecutter.name|upper}}_RECIPIENT', str)]:
+        original = original.replace(e, "----")
+    request.body = original.encode('utf8')
+
+    original = request.uri
+    for e in [env('MERCURY_{{cookiecutter.name|upper}}_USERNAME', str),
+              env('MERCURY_{{cookiecutter.name|upper}}_PASSWORD', str),
+              env('MERCURY_{{cookiecutter.name|upper}}_RECIPIENT', str)]:
+        original = original.replace(e, "----")
+    request.uri = original
+
     return request
 
 
-vcr = _vcr.VCR(
-    serializer='yaml',
-    cassette_library_dir=str(Path(__file__).parent / 'cassettes'),
-    record_mode='once',
-    match_on=['uri', 'method'],
-    before_record_request=before_record_cb,
-)
+def before_record_response(response):
+    return response
 
 
 @pytest.fixture

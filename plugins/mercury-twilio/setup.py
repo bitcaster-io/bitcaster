@@ -2,6 +2,12 @@
 
 from setuptools import setup
 
+tests_require = ['pytest',
+                 'pytest-django',
+                 'pytest-coverage',
+                 'pytest-echo',
+                 'pytest-pythonpath']
+
 setup(
     name='mercury-twilio',
     version='0.1',
@@ -11,6 +17,10 @@ setup(
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_twilio'],
     install_requires=['twilio'],
+    tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     entry_points={'mercury': ['twilio = mercury_twilio.plugin:Twilio']},
     license="MIT License",
     classifiers=[

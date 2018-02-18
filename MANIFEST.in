@@ -4,6 +4,7 @@ include MANIFEST.in
 include LICENSE
 include *.py
 include tox.ini
+include pytest.ini
 include src/mercury/_plugin_template/mercury-{{cookiecutter.name}}/tests/.env
 
 recursive-include docs *

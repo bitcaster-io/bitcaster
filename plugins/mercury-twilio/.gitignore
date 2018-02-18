@@ -1,0 +1,5 @@
+.pytest_cache
+.env
+mercury_twilio.egg-info
+/~build
+tests/cassettes/*

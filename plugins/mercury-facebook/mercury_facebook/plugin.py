@@ -69,5 +69,5 @@ class Facebook(Dispatcher):
         try:
             self._get_connection()
             return True
-        except:
+        except Exception as e:
             return False

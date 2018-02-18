@@ -10,7 +10,6 @@ from mercury.exceptions import PluginValidationError
 
 from mercury_hangout import Hangout
 
-
 env = Env(MERCURY_HANGOUT_USERNAME='',
           MERCURY_HANGOUT_PASSWORD='',
           MERCURY_HANGOUT_RECIPIENT='',
@@ -28,7 +27,7 @@ def before_record_cb(request):
 vcr = _vcr.VCR(
     serializer='yaml',
     cassette_library_dir=str(Path(__file__).parent / 'cassettes'),
-    record_mode='always',
+    record_mode='once',
     match_on=['uri', 'method'],
     # filter_headers=['authorization'],
     # filter_query_parameters=['mail', 'pass'],
@@ -36,6 +35,8 @@ vcr = _vcr.VCR(
     before_record_request=before_record_cb,
     # sensitive HTTP request goes here
 )
+
+
 @pytest.fixture
 def subscription():
     application = Mock()
@@ -58,7 +59,6 @@ def test_validate_subscription(subscription):
 
 
 def test_validate_subscription_fail(subscription):
-
     subscription.config = {}
     d = Hangout(subscription.channel)
     with pytest.raises(PluginValidationError):
@@ -66,18 +66,13 @@ def test_validate_subscription_fail(subscription):
 
 
 def test_send(subscription, monkeypatch):
-    monkeypatch.setattr('django.contrib.sites.models.Site', Mock(id=1))
-    # monkeypatch.setattr('raven.contrib.django.client.Site', Mock(id=1))
-    with vcr.use_cassette('test_send.yaml'):
-
-        d = Hangout(subscription.channel)
-        assert d.emit(subscription,
-                      'subject',
-                      'Mercury is on Hangout...enjoy') == 1
+    monkeypatch.setattr('mercury_hangout.plugin.Client', Mock())
+    d = Hangout(subscription.channel)
+    assert d.emit(subscription,
+                  'subject',
+                  'Mercury is on Hangout...enjoy') == 1
 
 
 def test_connection(subscription, monkeypatch):
-    monkeypatch.setattr('django.contrib.sites.models.Site', Mock(id=1))
-    with vcr.use_cassette('test_send.yaml'):
-        d = Hangout(subscription.channel)
-        assert d.test_connection()
+    d = Hangout(subscription.channel)
+    assert d.test_connection()
