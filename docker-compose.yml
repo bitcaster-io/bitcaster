@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+      - sentry
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  db:
+    image: mdillon/postgis
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD:
+      POSTGRES_USER: postgres
+    volumes:
+      - ${DOCKER_POSTGRES_DATA}:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  sentry:
+    image: saxix/sentry-localdev
+    environment:
+      - SENTRY_SECRET_KEY=abc
+      - SENTRY_REDIS_HOST=redis
+      - SENTRY_DB_NAME=sentry
+      - SENTRY_POSTGRES_HOST=postgres
+      - SENTRY_ADMIN_USERNAME=sax
+      - SENTRY_ADMIN_PASSWORD=123
+      - C_FORCE_ROOT=1 # never in production
+    links:
+      - "redis:redis"
+      - "db:postgres"
+    ports:
+      - 9000:9000
+    volumes:
+      - ${DOCKER_SENTRY_DATA}:/conf
+    restart: unless-stopped
