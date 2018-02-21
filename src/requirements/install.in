@@ -24,3 +24,6 @@ pycountry
 pycrypto
 raven
 redis
+
+social-auth-core
+social-auth-app-django

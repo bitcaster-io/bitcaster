@@ -175,6 +175,14 @@ gitflow_success() {
 #
 ## Function to get a list of files that will be committed by extension
 ## you can for example do "$(commit_files js css)" to get a list of js and css files that will be committed
+
+gitflow_python_files() {
+	regex="\.py$"
+	echo $(git diff-index --name-only --diff-filter=ACM --cached HEAD -- | \
+	        grep -E "$regex" | \
+	        grep -E -v '(_plugin_template|migrations)' )
+}
+
 gitflow_commit_files() {
 
 	if [ $# -eq 0 ] ; then

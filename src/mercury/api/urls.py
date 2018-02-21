@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import include, url
-
 from rest_framework_nested.routers import DefaultRouter, NestedSimpleRouter
 
 from mercury import logging

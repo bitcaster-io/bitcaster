@@ -3,30 +3,30 @@ from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions,)
 from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import PluginSendError, ValidationError
+from mercury.exceptions import PluginSendError, PluginValidationError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
 
 logger = getLogger('mercury.plugins.{{cookiecutter.name}}')
 
 
-class Message(MessageType):
+class {{cookiecutter.classname}}Message(MessageType):
     pass
 
 
-class Options(DispatcherOptions):
+class {{cookiecutter.classname}}Options(DispatcherOptions):
     pass
 
 
-class RecipientOptions(SubscriptionOptions):
-    recipient = serializers.CharField()
+class {{cookiecutter.classname}}SubscriptionOptions(SubscriptionOptions):
+    recipient = serializers.CharField(validators=[])
 
 
 @dispatcher_registry.register
 class {{cookiecutter.classname}}(Dispatcher):
-    options_class = Options
-    message_class = Message
-    subscription_class = RecipientOptions
+    options_class = {{cookiecutter.classname}}Options
+    message_class = {{cookiecutter.classname}}Message
+    subscription_class = {{cookiecutter.classname}}SubscriptionOptions
     __license__ = 'MIT'
     __author__ = 'unknown'
 
@@ -34,10 +34,13 @@ class {{cookiecutter.classname}}(Dispatcher):
     def name(cls):
         return '{{cookiecutter.classname}}'
 
+    def _get_connection(self):
+        raise NotImplementedError
+
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = RecipientOptions(data=subscription.config)
+        ser = self.subscription_class(data=subscription.config)
         if not ser.is_valid():
-            raise ValidationError(ser.errors)
+            raise PluginValidationError(ser.errors)
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:

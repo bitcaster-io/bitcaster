@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+
+from cryptography.fernet import Fernet, MultiFernet
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField as _JSONField
 from django.contrib.postgres.forms import JSONField as _JSONFormField
 from django.utils.functional import cached_property
-
-from cryptography.fernet import Fernet, MultiFernet
 from fernet_fields import hkdf
 from jsoneditor.forms import JSONEditor
 

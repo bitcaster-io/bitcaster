@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
+
+from admin_extra_urls.extras import ExtraUrlMixin, action
 from django.contrib import admin, messages
 from django.shortcuts import render
 from django.urls import reverse
-
-from admin_extra_urls.extras import ExtraUrlMixin, action
 
 from mercury.models import Event
 from mercury.tasks import emit_event

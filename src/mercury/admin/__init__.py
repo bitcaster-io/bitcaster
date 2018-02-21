@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import Group, Permission
-
 # django-constance
 from constance.admin import Config, ConstanceAdmin
+from django.contrib.auth.models import Group, Permission
 
 from .application import ApplicationAdmin  # noqa
 from .channel import ChannelAdmin  # noqa

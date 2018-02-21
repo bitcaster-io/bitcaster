@@ -1,12 +1,14 @@
+from admin_extra_urls.extras import ExtraUrlMixin, action
 from django.contrib import admin, messages
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.postgres import fields as pg
+from django.db import router, transaction
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-
-from admin_extra_urls.extras import ExtraUrlMixin, action
 from jsoneditor.forms import JSONEditor
+from rest_framework.reverse import reverse
 from strategy_field.utils import fqn
 
 from mercury.exceptions import PluginValidationError
@@ -64,6 +66,8 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
     def get_exclude(self, request, obj=None):
         if not obj:
             return ['config', 'deprecated', 'enabled']
+        # elif hasattr(obj.handler, 'oauth_request'):
+        #     return ['config']
 
     @action()
     def test(self, request, pk):
@@ -105,5 +109,29 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
             ctx['serializer'] = serializer
             return render(request, 'admin/mercury/channel/test.html', ctx)
 
+    @action(visible=False)
+    def oauth_request(self, request, object_id):
+        url = reverse(admin_urlname(self.model._meta, 'change'),
+                      args=[object_id],
+                      request=request)
+
+        obj = self.get_object(request, object_id)
+        return obj.handler.oauth_request(request, url)
+
     def handler_name(self, obj):
         return fqn(obj.handler) if obj.handler else ''
+
+    def add_view(self, request, form_url='', extra_context=None):
+        return self.changeform_view(request, None, form_url, extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        obj = self.get_object(request, object_id)
+        if hasattr(obj.handler, 'oauth_request'):
+            extra_context = {'oauth_request': '------'}
+
+        return self.changeform_view(request, object_id, form_url, extra_context)
+
+    @csrf_protect_m
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        with transaction.atomic(using=router.db_for_write(self.model)):
+            return self._changeform_view(request, object_id, form_url, extra_context)

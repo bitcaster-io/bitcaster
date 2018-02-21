@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from uuid import uuid4
+
+from bitfield import BitField
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core import validators
@@ -6,9 +9,6 @@ from django.db import models
 from django.db.models import Q, UUIDField
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from uuid import uuid4
-
-from bitfield import BitField
 from timezone_field import TimeZoneField
 
 from mercury import logging

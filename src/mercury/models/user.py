@@ -5,7 +5,6 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-
 from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
 

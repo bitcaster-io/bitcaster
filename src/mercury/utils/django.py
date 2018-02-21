@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+
 from django.db.models import F
 from django.db.transaction import get_connection
 

@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
 
-from mercury.exceptions import PluginValidationError, PluginSendError
-
-from mercury.logging import getLogger
 from mercury.dispatchers.base import Dispatcher, DispatcherOptions, MessageType
 from mercury.dispatchers.registry import dispatcher_registry
+from mercury.exceptions import PluginSendError, PluginValidationError
+from mercury.logging import getLogger
 
 logger = getLogger(__name__)
 
@@ -36,7 +35,7 @@ class Slack(Dispatcher):
         return SlackClient(self.config['token'])
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = SlackSubscription(data=subscription.config)
+        ser = self.subscription_class(data=subscription.config)
         if not ser.is_valid():
             raise PluginValidationError(ser.errors)
 

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
+
+from adminfilters.filters import ForeignKeyFieldFilter, RelatedFieldComboFilter
 from django.contrib import admin, messages
 
 from mercury.exceptions import PluginValidationError
@@ -17,12 +19,21 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('application',
                     'event', 'subscriber', 'channel', 'active')
     list_editable = ('active',)
-    list_filter = ('event__application', 'channel', 'active')
+    list_filter = ('event__application',
+                   ('channel', RelatedFieldComboFilter),
+                   ForeignKeyFieldFilter.factory('subscriber|username|icontains'),
+                   'active')
     search_fields = ('subscriber__username', 'subscriber__last_name')
     form = SubscriptionForm
     actions = ('activate',
                'validate_subscription',
                deactivator_factory('active'))
+
+    def get_exclude(self, request, obj=None):
+        if not obj:
+            return ['config', 'active']
+        # elif hasattr(obj.handler, 'oauth_request'):
+        #     return ['config']
 
     def application(self, obj):
         return obj.event.application
@@ -47,3 +58,8 @@ class SubscriptionAdmin(admin.ModelAdmin):
                 subscription.save()
                 self.message_user(request, f"{subscription.name} invalid configuration {e}",
                                   messages.ERROR)
+
+    # def change_view(self, request, object_id, form_url='', extra_context=None):
+    #     obj = self.get_object(request, object_id)
+    #     # extra_context = {'show_save_and_continue': False}
+    #     return self.changeform_view(request, object_id, form_url, extra_context)

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.utils.translation import gettext_lazy as _

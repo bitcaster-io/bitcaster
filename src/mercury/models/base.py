@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.db import models
-
 from concurrency.fields import IntegerVersionField
+from django.db import models
 
 from mercury import logging
 

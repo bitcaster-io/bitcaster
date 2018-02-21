@@ -1,12 +1,12 @@
 import os
 import sys
+
+import environ
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-
-import environ
 from strategy_field.utils import fqn, import_by_name
 
 from mercury.models import Application, Channel, Subscription, User

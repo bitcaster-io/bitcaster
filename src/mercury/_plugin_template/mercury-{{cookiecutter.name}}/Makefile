@@ -6,9 +6,10 @@ test:
 	py.test
 
 qa:
-	flake8 src/ tests/
-	isort -rc src/ --check-only
+	flake8 {{cookiecutter.package_name}}/ tests/
+	isort -rc {{cookiecutter.package_name}}/ --check-only
 	check-manifest
+	pytest tests/
 
 clean:
 	rm -fr .pytest_cache *.egg-info ~build .coverage .tox dist

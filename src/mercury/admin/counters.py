@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+
 from django.contrib import admin
 
 from mercury.models import Counter, Occurence

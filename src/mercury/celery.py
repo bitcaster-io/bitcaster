@@ -1,6 +1,5 @@
-from django.conf import settings
-
 import celery
+from django.conf import settings
 
 
 class MercuryCelery(celery.Celery):

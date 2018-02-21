@@ -50,9 +50,9 @@ LOGGING = {
             'handlers': ['null'],
             'propagate': False,
         },
-        'yowsup': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
+        'oauth2client': {
+            'level': 'ERROR',
+            'handlers': ['sentry'],
             'propagate': False,
         },
         'mercury.plugins': {

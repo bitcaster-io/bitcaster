@@ -6,11 +6,11 @@
 {% endif %}
 
 {% if not original.pk %}
-    <input type="submit" value="{% trans 'Save and continue configuration' %}" name="_addanother" />
+    <input type="submit" value="{% trans 'Save and continue configuration' %}" name="_continue" />
 {% else %}
     {% if show_save %}<input type="submit" value="{% trans 'Save' %}" class="default" name="_save" />{% endif %}
-    {% if show_save_as_new %}<input type="submit" value="{% trans 'Save as new' %}" name="_saveasnew" />{% endif %}
-    {% if show_save_and_add_another %}<input type="submit" value="{% trans 'Save and add another' %}" name="_addanother" />{% endif %}
+{#    {% if show_save_as_new %}<input type="submit" value="{% trans 'Save as new' %}" name="_saveasnew" />{% endif %}#}
+{#    {% if show_save_and_add_another %}<input type="submit" value="{% trans 'Save and add another' %}" name="_addanother" />{% endif %}#}
     {% if show_save_and_continue %}<input type="submit" value="{% trans 'Save and continue editing' %}" name="_continue" />{% endif %}
 {% endif %}
 

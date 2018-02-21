@@ -74,3 +74,8 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     #
     # def log(self, message, level=INFO):
     #     self.logger.log(level, message)
+
+    def test_message(self, subscription, subject, message, *args, **kwargs):
+        # assert subscription.event is None
+        assert subscription.pk is None
+        return self.emit(subscription, subject, message, *args, **kwargs)

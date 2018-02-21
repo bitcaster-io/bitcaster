@@ -1,10 +1,7 @@
-'''
-Test settings
-
-- Used to run tests fast on the continuous integration server and locally
-'''
-
+# flake8: noqa
 from .default import *  # noqa
+
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # DEBUG
 # ------------------------------------------------------------------------------

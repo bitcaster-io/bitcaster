@@ -2,7 +2,6 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.utils.translation import ugettext as _
-
 from rest_framework import exceptions
 from rest_framework.authentication import (BaseAuthentication,
                                            SessionAuthentication,

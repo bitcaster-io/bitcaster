@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
-
-from mercury.exceptions import PluginValidationError, PluginSendError
-
-from mercury.logging import getLogger
-from mercury.dispatchers.base import Dispatcher, DispatcherOptions, MessageType, SubscriptionOptions
-from mercury.dispatchers.registry import dispatcher_registry
 from twilio.rest import Client
+
+from mercury.api.fields import PhoneNumberField
+from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
+                                      MessageType, SubscriptionOptions,)
+from mercury.dispatchers.registry import dispatcher_registry
+from mercury.exceptions import PluginSendError, PluginValidationError
+from mercury.logging import getLogger
 
 logger = getLogger('mercury.plugins.twilio')
 
@@ -16,13 +17,13 @@ class Message(MessageType):
 
 
 class TwilioSubscription(SubscriptionOptions):
-    recipient = serializers.CharField(allow_blank=False, required=True)
+    recipient = PhoneNumberField()
 
 
 class TwilioOptions(DispatcherOptions):
     sid = serializers.CharField(allow_blank=False, required=True)
     token = serializers.CharField(allow_blank=False, required=True)
-    sender = serializers.CharField(allow_blank=False, required=True)
+    sender = PhoneNumberField()
 
 
 @dispatcher_registry.register

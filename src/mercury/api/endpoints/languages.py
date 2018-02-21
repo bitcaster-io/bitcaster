@@ -1,5 +1,4 @@
 from django.conf import settings
-
 from rest_framework.response import Response
 
 from mercury.api.endpoints.base import BaseViewSet

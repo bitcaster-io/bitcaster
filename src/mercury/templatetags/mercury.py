@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+
 from django.template import Context, Library
 
 register = Library()
@@ -17,7 +18,7 @@ def jsonify(value):
     return json.dumps(value)
 
 
-@register.inclusion_tag('admin/mercury/channel/submit_line.html', takes_context=True)
+@register.inclusion_tag('admin/mercury/configurable_submit_line.html', takes_context=True)
 def channel_submit_row(context):
     """
     Display the row of buttons for delete and save.

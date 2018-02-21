@@ -1,3 +1,11 @@
 {% extends "admin_extra_urls/change_form.html" %}{% load i18n admin_urls static mercury %}
 
+{% block content %}
+    {% if oauth_request %}
+            <a href="{% url opts|admin_urlname:'oauth_request' original.pk %}">OAuth</a>
+    {% endif %}
+
+    {{ block.super }}
+{% endblock %}
+
 {% block submit_buttons_bottom %}{% channel_submit_row %}{% endblock %}

@@ -1,11 +1,43 @@
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import empty
+from rest_framework.serializers import Serializer
 
 from mercury import logging
 from mercury.exceptions import PluginValidationError
 from mercury.utils.language import classproperty
 
 logger = logging.getLogger(__name__)
+
+
+def get_configuration(serializer_class: type(Serializer), config: dict,
+                      raise_exception=None):
+    try:
+        ser = serializer_class(data=config)
+        valid = ser.is_valid(raise_exception)
+        errors = dict(ser.errors)
+        for field_name in config.keys():
+            if field_name not in ser.fields:
+                valid = False
+                errors[field_name] = ['Unknown attribute `%s`' % field_name]
+        if not valid and raise_exception:
+            raise PluginValidationError(errors)
+        return (valid, errors)
+    except ValidationError as e:
+        if raise_exception:
+            raise PluginValidationError(e)
+
+
+def get_config_defaults(serializer_class: type(Serializer)):
+    ret = {}
+    ser = serializer_class(data={})
+    for name, f in ser.fields.items():
+        ret[name] = '' if f.default == empty else f.default
+    return ret
+
+
+def get_full_config(serializer_class: type(Serializer), values: dict = None):
+    updates = values or {}
+    return {**get_config_defaults(serializer_class), **updates}
 
 
 class ConfigurableMixin:

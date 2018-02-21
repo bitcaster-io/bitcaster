@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from contextlib import ContextDecorator
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import Group, Permission
 from random import choice
 
 import factory
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group, Permission
 from faker import Faker
 from rest_framework.test import APIClient
 

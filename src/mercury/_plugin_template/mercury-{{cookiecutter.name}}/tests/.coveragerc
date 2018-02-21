@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = mercury_{{cookiecutter.name}}
+source = {{cookiecutter.package_name}}
 
 omit =
 

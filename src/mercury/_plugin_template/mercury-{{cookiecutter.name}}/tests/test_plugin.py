@@ -6,12 +6,11 @@ import pytest
 import vcr as _vcr
 from environ import Env
 from mercury.exceptions import ValidationError
+from {{cookiecutter.package_name}} import {{cookiecutter.classname}}
 
-from mercury_{{cookiecutter.name}} import {{cookiecutter.classname}}
-
-env = Env(MERCURY_{{cookiecutter.name|upper}}_USERNAME='',
-          MERCURY_{{cookiecutter.name|upper}}_PASSWORD='',
-          MERCURY_{{cookiecutter.name|upper}}_RECIPIENT='',
+env = Env(MERCURY_{{cookiecutter.package_name|upper}}_USERNAME='',
+          MERCURY_{{cookiecutter.package_name|upper}}_PASSWORD='',
+          MERCURY_{{cookiecutter.package_name|upper}}_RECIPIENT='',
           )
 
 env.read_env(str(Path(__file__).parent / '.env'))
@@ -19,16 +18,16 @@ env.read_env(str(Path(__file__).parent / '.env'))
 
 def before_record_request(request):
     original = str(request.body)
-    for e in [env('MERCURY_{{cookiecutter.name|upper}}_USERNAME', str),
-              env('MERCURY_{{cookiecutter.name|upper}}_PASSWORD', str),
-              env('MERCURY_{{cookiecutter.name|upper}}_RECIPIENT', str)]:
+    for e in [env('MERCURY_{{cookiecutter.package_name|upper}}_USERNAME', str),
+              env('MERCURY_{{cookiecutter.package_name|upper}}_PASSWORD', str),
+              env('MERCURY_{{cookiecutter.package_name|upper}}_RECIPIENT', str)]:
         original = original.replace(e, "----")
     request.body = original.encode('utf8')
 
     original = request.uri
-    for e in [env('MERCURY_{{cookiecutter.name|upper}}_USERNAME', str),
-              env('MERCURY_{{cookiecutter.name|upper}}_PASSWORD', str),
-              env('MERCURY_{{cookiecutter.name|upper}}_RECIPIENT', str)]:
+    for e in [env('MERCURY_{{cookiecutter.package_name|upper}}_USERNAME', str),
+              env('MERCURY_{{cookiecutter.package_name|upper}}_PASSWORD', str),
+              env('MERCURY_{{cookiecutter.package_name|upper}}_RECIPIENT', str)]:
         original = original.replace(e, "----")
     request.uri = original
 
@@ -39,19 +38,32 @@ def before_record_response(response):
     return response
 
 
+vcr = _vcr.VCR(
+    serializer='yaml',
+    cassette_library_dir=str(Path(__file__).parent / 'cassettes'),
+    record_mode='once',
+    match_on=['uri', 'method'],
+    # use these to clear sensitive data
+    filter_headers=['authorization'],
+    filter_post_data_parameters=['From', 'To'],
+    before_record_request=before_record_request,
+    before_record_response=before_record_response,
+)
+
+
 @pytest.fixture
 def subscription():
     application = Mock()
     user = Mock()
     channel = Mock(application=application,
-                   config={'username': env('MERCURY_{{cookiecutter.name|upper}}_USERNAME', str),
-                           'password': env('MERCURY_{{cookiecutter.name|upper}}_PASSWORD', str)
+                   config={'username': env('MERCURY_{{cookiecutter.package_name|upper}}_USERNAME', str),
+                           'password': env('MERCURY_{{cookiecutter.package_name|upper}}_PASSWORD', str)
                            })
     event = Mock(application=application)
 
     return Mock(subscriber=user,
                 event=event,
-                config={'recipient': env('MERCURY_{{cookiecutter.name|upper}}_RECIPIENT', str)},
+                config={'recipient': env('MERCURY_{{cookiecutter.package_name|upper}}_RECIPIENT', str)},
                 channel=channel)
 
 

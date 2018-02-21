@@ -1,5 +1,6 @@
 import logging
 import os
+from collections import OrderedDict
 
 import environ
 
@@ -50,6 +51,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'constance',
     'django_countries',
+    'adminfilters',
+
+    'social_django',
 
     # Admin
     'django.contrib.admin',
@@ -325,11 +329,15 @@ CONSTANCE_ADDITIONAL_FIELDS = {
     # }],
 }
 
-CONSTANCE_CONFIG = {
+CONSTANCE_CONFIG = OrderedDict({
     'HOST_IP_ADDRESS': ('http://api.hostip.info/get_html.php',
                         'api.hostip.info info',
                         str),
-}
+    'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/',
+                       '===',
+                       str)
+})
+CONSTANCE_CONFIG_FIELDSETS = {"Options": list(CONSTANCE_CONFIG.keys())}
 
 # SENTRY & RAVEN
 if env.bool('ENABLE_SENTRY', False):
@@ -351,3 +359,64 @@ if env.bool('ENABLE_SENTRY', False):
     # We recommend putting this as high in the chain as possible
     MIDDLEWARE = ['raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
                   ] + list(MIDDLEWARE)
+
+# OAUTH2
+MERCURY_SECRET = os.path.expanduser("~/.mercury-client-id.json")
+OAUTH_CLIENT_ID = env.str('OAUTH_CLIENT_ID')
+OAUTH_CLIENT_SECRET = env.str('OAUTH_CLIENT_SECRET')
+
+# SOCIAL AUTH
+SOCIAL_AUTH_TWITTER_KEY = 'foobar'
+SOCIAL_AUTH_TWITTER_SECRET = 'bazqux'
+
+SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
+    # 'social_core.backends.open_id.OpenIdAuth',
+    # 'social_core.backends.google.GoogleOpenId',
+    'social_core.backends.google.GoogleOAuth2',
+    # 'social_core.backends.google.GoogleOAuth',
+    # 'social_core.backends.twitter.TwitterOAuth',
+    # 'social_core.backends.yahoo.YahooOpenId',
+)
+
+AUTHENTICATION_BACKENDS = SOCIAL_AUTH_AUTHENTICATION_BACKENDS + AUTHENTICATION_BACKENDS
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'social_core.pipeline.social_auth.associate_by_email',
+)
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'mercury-195019'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'QOIf4Ryug5hJIB1vEmu1P2kg'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [...]
+
+
+# SYSINFO
+
+def get_plugins(x):
+    from mercury.dispatchers.registry import dispatcher_registry
+    return dispatcher_registry.as_choices()
+
+
+SYSINFO = {"host": True,
+           "os": True,
+           "python": True,
+           "modules": True,
+           "project": {
+               "mail": True,
+               "installed_apps": True,
+               "databases": True,
+               "MEDIA_ROOT": True,
+               "STATIC_ROOT": True,
+               "CACHES": True
+           },
+           "checks": None,
+           "extra": {'plugins': get_plugins}
+           }

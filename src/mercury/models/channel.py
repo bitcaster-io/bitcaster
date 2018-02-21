@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.template import Context, Template
-
 from strategy_field.fields import StrategyField
 
 from mercury import logging

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.hashers import make_password
-
 from rest_framework import status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response

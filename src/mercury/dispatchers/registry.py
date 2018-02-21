@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
-
 import pkg_resources
+from django.conf import settings
 from strategy_field.registry import Registry as Registry
+from strategy_field.utils import fqn
 
 from mercury.exceptions import PluginValidationError
 from mercury.logging import getLogger
@@ -15,10 +15,10 @@ if settings.PLUGINS_AUTOLOAD:
     for ep in pkg_resources.iter_entry_points('mercury'):  # pragma: no-cover
         try:
             plugin = ep.load()
-            # if plugin in dispatcher_registry:
-            #     logger.info('Plugin %s loaded' % fqn(plugin))
-            # else:
-            #     logger.info('%s is not a plugin' % fqn(plugin))
+            if plugin in dispatcher_registry:
+                logger.info('Plugin %s loaded' % fqn(plugin))
+            else:
+                logger.info('%s is not a plugin' % fqn(plugin))
         except (pkg_resources.DistributionNotFound, ImportError) as e:
             logger.exception(e)
         except pkg_resources.VersionConflict as e:

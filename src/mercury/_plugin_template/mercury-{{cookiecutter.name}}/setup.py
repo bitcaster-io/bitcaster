@@ -2,7 +2,8 @@
 
 from setuptools import setup
 
-tests_require = ['vcrpy', 'pdbpp', 'pytest', 'pytest-cov', 'flake8', 'isort', 'check-manifest']
+tests_require = ['vcrpy', 'pdbpp', 'pytest', 'pytest-cov',
+                 'flake8', 'isort', 'check-manifest']
 
 setup(
     name='mercury-{{cookiecutter.name}}',
@@ -16,8 +17,8 @@ setup(
     },
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
-    py_modules=['mercury_{{cookiecutter.name}}'],
-    entry_points={'mercury': ['{{cookiecutter.name}} = mercury_{{cookiecutter.name}}.plugin:{{cookiecutter.classname}}']},
+    py_modules=['{{cookiecutter.package_name}}'],
+    entry_points={'mercury': ['{{cookiecutter.name}} = {{cookiecutter.package_name}}.plugin:{{cookiecutter.classname}}']},
     license="MIT License",
     classifiers=[
         'Development Status :: 5 - Production/Stable',

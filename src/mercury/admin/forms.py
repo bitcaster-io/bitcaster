@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
@@ -9,14 +10,16 @@ from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.forms import Form
+from django.forms.utils import ErrorList
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-
 # from bitfield.forms import BitFormField
 from jsoneditor.forms import JSONEditor
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from mercury import logging
+from mercury.configurable import get_full_config
 from mercury.models import Application, Channel, Event, Subscription, User
 from mercury.utils import import_by_name
 from mercury.utils.language import flatten
@@ -147,6 +150,31 @@ class SubscriptionForm(forms.ModelForm):
     class Meta:
         model = Subscription
         exclude = []
+
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
+                 label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None):
+        if instance and not initial:
+            initial = {'config': get_full_config(instance.channel.handler.subscription_class,
+                                                 instance.config)}
+        super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
+                         use_required_attribute)
+
+    def clean_config(self):
+        config = self.cleaned_data['config']
+        if self.instance:
+            handler = self.instance.channel.handler
+            serializer_class = handler.subscription_class
+            try:
+                ser = serializer_class(data=config)
+                ser.is_valid(True)
+                self.cleaned_data['config'] = ser.data
+            except serializers.ValidationError as e:
+                config = get_full_config(serializer_class, config)
+                self.cleaned_data['config'] = config
+                self.instance.config = config
+                raise DjangoValidationError(str(e))
+
+        return self.cleaned_data['config']
 
 
 class EventTriggerForm(Form):

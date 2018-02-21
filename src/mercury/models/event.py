@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from uuid import uuid4
+
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 from django.db.models import UUIDField
-from uuid import uuid4
 
 from mercury import logging
 from mercury.models import AbstractModel, Application

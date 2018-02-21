@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import plivo
 
+from mercury.api.fields import PhoneNumberField
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                      MessageType, SubscriptionOptions, )
+                                      MessageType, SubscriptionOptions,)
 from mercury.dispatchers.registry import dispatcher_registry
 from mercury.exceptions import PluginSendError, PluginValidationError
 from mercury.logging import getLogger
@@ -23,7 +24,7 @@ class PlivoOptions(DispatcherOptions):
 
 
 class PlivoSubscription(SubscriptionOptions):
-    recipient = serializers.CharField()
+    recipient = PhoneNumberField()
 
 
 @dispatcher_registry.register
@@ -39,7 +40,7 @@ class Plivo(Dispatcher):
         return 'Plivo'
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = PlivoSubscription(data=subscription.config)
+        ser = self.subscription_class(data=subscription.config)
         if not ser.is_valid():
             raise PluginValidationError(ser.errors)
 

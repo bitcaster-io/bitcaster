@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.db.models import F
-
 # from .channel import Application, Channel
 # from .event import Event
 from strategy_field.utils import fqn
