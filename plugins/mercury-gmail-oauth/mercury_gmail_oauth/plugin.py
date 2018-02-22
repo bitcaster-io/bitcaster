@@ -84,13 +84,13 @@ class GmailOAuth(Dispatcher, GmailOAauthHAndler):
         self.save_credentials(credentials, True)
         return build('gmail', 'v1', http=http)
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        validate_email = EmailValidator()
-        try:
-            validate_email(subscription.subscriber.email)
-        except ValidationError:
-            raise PluginValidationError("User {subscription.subscriber} "
-                                        "does not have valid email")
+    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
+    #     validate_email = EmailValidator()
+    #     try:
+    #         validate_email(subscription.subscriber.email)
+    #     except ValidationError:
+    #         raise PluginValidationError("User {subscription.subscriber} "
+    #                                     "does not have valid email")
 
     def emit(self, subscription, subject, message, connection=None, *args, **kwargs):
         recipient = subscription.subscriber

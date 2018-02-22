@@ -36,11 +36,11 @@ class Skype(Dispatcher):
     def name(cls):
         return 'Skype'
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = SkypeSubscription(data=subscription.config)
-        if not ser.is_valid():
-            raise PluginValidationError(ser.errors)
-
+    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
+    #     ser = SkypeSubscription(data=subscription.config)
+    #     if not ser.is_valid():
+    #         raise PluginValidationError(ser.errors)
+    #
     def _get_connection(self) -> skpy.main.Skype:
         return skpy.main.Skype(self.config['username'], self.config['password'])
 

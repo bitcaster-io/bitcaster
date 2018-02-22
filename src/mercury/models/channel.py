@@ -8,12 +8,21 @@ from strategy_field.fields import StrategyField
 
 from mercury import logging
 from mercury.dispatchers import dispatcher_registry
-from mercury.exceptions import PluginValidationError
+from mercury.exceptions import PluginValidationError, HandlerNotFound
 from mercury.fields import EncryptedJSONField
 from mercury.models import AbstractModel, Application
 from mercury.models.counters import Counter
 
 logger = logging.getLogger(__name__)
+
+
+def handler_not_found(fqn, exc):
+    try:
+        raise HandlerNotFound(fqn) from exc
+    except HandlerNotFound as e:
+        logger.exception(e)
+    return None
+    # raise HandlerNotFound(fqn) from exc
 
 
 class Channel(AbstractModel):
@@ -30,6 +39,7 @@ It can be Global or Application specific.
     enabled = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
     handler = StrategyField(verbose_name='Dispatcher',
+                            import_error=handler_not_found,
                             display_attribute='name',
                             registry=dispatcher_registry)
     deprecated = models.BooleanField(default=False)

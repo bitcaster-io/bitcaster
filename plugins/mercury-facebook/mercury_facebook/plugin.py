@@ -37,11 +37,11 @@ class Facebook(Dispatcher):
     def name(cls):
         return 'Facebook'
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = FacebookSubscription(data=subscription.config)
-        if not ser.is_valid():
-            raise PluginValidationError(ser.errors)
-
+    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
+    #     ser = FacebookSubscription(data=subscription.config)
+    #     if not ser.is_valid():
+    #         raise PluginValidationError(ser.errors)
+    #
     def _get_connection(self) -> Client:
         return Client(self.config['key'].encode('utf8'),
                       self.config['password'].encode('utf8'),

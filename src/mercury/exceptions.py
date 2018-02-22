@@ -34,5 +34,9 @@ class RecipientNotFound(InvalidRecipient):
     pass
 
 
+class HandlerNotFound(ImportError):
+    pass
+
+
 class OAuthError(Exception):
     pass

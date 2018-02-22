@@ -65,7 +65,7 @@ class OAauthHAndler(OAauthHAndlerBase):
     authorization_extra_kwargs = {}
     fetch_token_extra_kwargs = {}
     scopes = []
-
+    authority = 'OAuth'
     client_id = ''
     client_secret = ''
 
@@ -118,12 +118,6 @@ class OAauthHAndler(OAauthHAndlerBase):
                              scope=self.scopes)
 
     def oauth_request(self, request, redirect_to=None):
-        # redirect_uri = config.OAUTH_CALLBACK
-        # state = self._get_state(request, redirect_to)
-        # session = OAuth2Session(self.client_id,
-        #                         redirect_uri=redirect_uri,
-        #                         state=state,
-        #                         scope=self.scopes)
         session = self.get_session(request, redirect_to)
 
         authorization_url, state = session.authorization_url(
@@ -136,12 +130,6 @@ class OAauthHAndler(OAauthHAndlerBase):
             return self.oauth_failure(request)
         else:
             session = self.get_session(request)
-            # state = request.GET['state']
-            # args = parse_qs(state)
-            # session = OAuth2Session(self.client_id,
-            #                         redirect_uri=config.OAUTH_CALLBACK,
-            #                         state=state,
-            #                         scope=self.scopes)
             session.fetch_token(
                 self.fetch_token_url,
                 authorization_response=request.get_full_path(),
@@ -153,14 +141,5 @@ class OAauthHAndler(OAauthHAndlerBase):
         if args['redirect_to']:
             return HttpResponseRedirect(args['redirect_to'][0])
 
-    # def refresh_token(self):
-    #     try:
-    #         session = self.get_session(None)
-    #         session.refresh_token(token_url=self.authorization_url,
-    #                               refresh_token=self.config['credentials']['refresh_token'])
-    #         # FIXME: remove me (print)
-    #         print(111, session.token)
-    #         return session.token
-    #     except Exception as e:
-    #         self.logger.exception(e)
-    #         raise
+    def render_button(self):
+        return f'Authorise with {self.authority}'

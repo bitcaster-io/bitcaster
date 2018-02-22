@@ -2,7 +2,7 @@
 
 {% block content %}
     {% if oauth_request %}
-            <a href="{% url opts|admin_urlname:'oauth_request' original.pk %}">OAuth</a>
+            {% oauth_button original %}
     {% endif %}
 
     {{ block.super }}

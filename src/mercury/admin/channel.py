@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from admin_extra_urls.extras import ExtraUrlMixin, action
 from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
@@ -13,7 +15,7 @@ from strategy_field.utils import fqn
 
 from mercury.exceptions import PluginValidationError
 from mercury.logging import getLogger
-from mercury.models import Channel
+from mercury.models import Channel, Event
 from mercury.models.subscription import Subscription
 from mercury.utils.django import deactivator_factory
 
@@ -99,7 +101,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
             serializer = channel.handler.subscription_class(data=request.POST)
             if serializer.is_valid():
                 s = Subscription(subscriber=request.user,
-                                 event=None,
+                                 event=Event(),
                                  channel=channel,
                                  active=True,
                                  config=serializer.data)

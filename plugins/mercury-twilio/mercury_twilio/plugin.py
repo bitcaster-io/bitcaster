@@ -33,10 +33,10 @@ class Twilio(Dispatcher):
     options_class = TwilioOptions
     message_class = MessageType
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = TwilioSubscription(data=subscription.config)
-        if not ser.is_valid():
-            raise PluginValidationError(ser.errors)
+    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
+    #     ser = TwilioSubscription(data=subscription.config)
+    #     if not ser.is_valid():
+    #         raise PluginValidationError(ser.errors)
 
     def _get_connection(self) -> Client:
         return Client(self.config['sid'],

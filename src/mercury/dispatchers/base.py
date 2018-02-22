@@ -1,7 +1,7 @@
 # from rest_framework import serializers
 import abc
 
-from mercury.configurable import ConfigurableMixin
+from mercury.configurable import ConfigurableMixin, get_full_config
 from mercury.logging import getLogger
 
 from . import serializers
@@ -64,13 +64,18 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         """
         pass  # pragma: no-cover
 
-    @abc.abstractmethod
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        pass  # pragma: no-cover
+        cfg = get_full_config(self.subscription_class, subscription.config)
+        return self.subscription_class(data=cfg).is_valid(True)
+
+    def validate_config(self, config, *args, **kwargs) -> None:
+        cfg = get_full_config(self.options_class, config)
+        return self.options_class(data=cfg).is_valid(True)
 
     @abc.abstractmethod
     def test_connection(self, raise_exception=False):
         pass
+
     #
     # def log(self, message, level=INFO):
     #     self.logger.log(level, message)

@@ -34,10 +34,10 @@ class Slack(Dispatcher):
         from slackclient import SlackClient
         return SlackClient(self.config['token'])
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = self.subscription_class(data=subscription.config)
-        if not ser.is_valid():
-            raise PluginValidationError(ser.errors)
+    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
+    #     ser = self.subscription_class(data=subscription.config)
+    #     if not ser.is_valid():
+    #         raise PluginValidationError(ser.errors)
 
     def emit(self, subscription: object, subject: str, message: str,
              connection=None, *args, **kwargs) -> int:

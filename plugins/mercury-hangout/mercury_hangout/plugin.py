@@ -90,10 +90,10 @@ class Hangout(Dispatcher):
     def name(cls):
         return 'Hangout'
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = HangoutSubscription(data=subscription.config)
-        if not ser.is_valid():
-            raise PluginValidationError(ser.errors)
+    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
+    #     ser = HangoutSubscription(data=subscription.config)
+    #     if not ser.is_valid():
+    #         raise PluginValidationError(ser.errors)
 
     def _get_connection(self) -> FireAndForget:
         settings = XMPPSettings({"starttls": True,

@@ -2,6 +2,10 @@
 import json
 
 from django.template import Context, Library
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+
+from mercury.models import Channel
 
 register = Library()
 
@@ -16,6 +20,13 @@ def httpiefy(value):
 @register.filter()
 def jsonify(value):
     return json.dumps(value)
+
+
+@register.simple_tag(takes_context=True)
+def oauth_button(context, channel: Channel):
+    label = channel.handler.render_button() or f'Authorise with {channel.handler.name}'
+    url = reverse("admin:mercury_channel_oauth_request", args=[channel.pk])
+    return mark_safe(f'<a href="{url}">{label}</a>')
 
 
 @register.inclusion_tag('admin/mercury/configurable_submit_line.html', takes_context=True)
