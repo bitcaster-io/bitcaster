@@ -1,7 +1,10 @@
 # from rest_framework import serializers
 import abc
 
+from django.core.exceptions import ValidationError
+
 from mercury.configurable import ConfigurableMixin, get_full_config
+from mercury.exceptions import PluginValidationError
 from mercury.logging import getLogger
 
 from . import serializers
@@ -66,7 +69,10 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
         cfg = get_full_config(self.subscription_class, subscription.config)
-        return self.subscription_class(data=cfg).is_valid(True)
+        try:
+            return self.subscription_class(data=cfg).is_valid(True)
+        except (serializers.ValidationError, ValidationError) as e:
+            raise PluginValidationError(str(e)) from e
 
     def validate_config(self, config, *args, **kwargs) -> None:
         cfg = get_full_config(self.options_class, config)

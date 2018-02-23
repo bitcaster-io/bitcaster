@@ -2,10 +2,9 @@
 from fbchat import Client, Message
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                      MessageType, SubscriptionOptions, )
+                                      MessageType, SubscriptionOptions,)
 from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import (PluginSendError, PluginValidationError,
-                                RecipientNotFound, )
+from mercury.exceptions import PluginSendError, RecipientNotFound
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
 

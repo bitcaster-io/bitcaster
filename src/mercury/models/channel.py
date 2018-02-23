@@ -8,7 +8,7 @@ from strategy_field.fields import StrategyField
 
 from mercury import logging
 from mercury.dispatchers import dispatcher_registry
-from mercury.exceptions import PluginValidationError, HandlerNotFound
+from mercury.exceptions import HandlerNotFound, PluginValidationError
 from mercury.fields import EncryptedJSONField
 from mercury.models import AbstractModel, Application
 from mercury.models.counters import Counter

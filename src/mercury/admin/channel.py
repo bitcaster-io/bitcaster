@@ -1,5 +1,3 @@
-from unittest.mock import Mock
-
 from admin_extra_urls.extras import ExtraUrlMixin, action
 from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
@@ -99,16 +97,19 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
             return render(request, 'admin/mercury/channel/test.html', ctx)
         elif request.method == 'POST':
             serializer = channel.handler.subscription_class(data=request.POST)
-            if serializer.is_valid():
-                s = Subscription(subscriber=request.user,
-                                 event=Event(),
-                                 channel=channel,
-                                 active=True,
-                                 config=serializer.data)
-                channel.handler.test_message(s,
-                                             "",
-                                             request.POST['message'])
             ctx['serializer'] = serializer
+            try:
+                if serializer.is_valid():
+                    s = Subscription(subscriber=request.user,
+                                     event=Event(),
+                                     channel=channel,
+                                     active=True,
+                                     config=serializer.data)
+                    channel.handler.test_message(s,
+                                                 "",
+                                                 request.POST['message'])
+            except Exception as e:
+                self.message_user(request, str(e), messages.ERROR)
             return render(request, 'admin/mercury/channel/test.html', ctx)
 
     @action(visible=False)

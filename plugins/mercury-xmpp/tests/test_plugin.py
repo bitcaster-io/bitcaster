@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
+import vcr as _vcr
 from environ import Env
-from pathlib import Path
-
 from mercury.exceptions import PluginValidationError
 
 from mercury_xmpp import Xmpp
-import vcr as _vcr
 
 env = Env(MERCURY_XMPP_USERNAME='',
           MERCURY_XMPP_PASSWORD='',

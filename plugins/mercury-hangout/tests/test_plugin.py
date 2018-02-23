@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-from environ import Env
-from pathlib import Path
 import vcr as _vcr
-
+from environ import Env
 from mercury.exceptions import PluginValidationError
 
 from mercury_hangout import Hangout

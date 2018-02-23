@@ -2,9 +2,7 @@
 import base64
 import datetime
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.core.handlers.wsgi import WSGIRequest
-from django.core.validators import EmailValidator
 from email.mime.text import MIMEText
 
 import httplib2
@@ -12,7 +10,6 @@ from googleapiclient.discovery import Resource, build
 from mercury.dispatchers.base import Dispatcher, DispatcherOptions, MessageType
 from mercury.dispatchers.oauth import OAauthHAndler, credentials_from_dict
 from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import PluginValidationError
 from oauth2client.client import EXPIRY_FORMAT, HttpAccessTokenRefreshError
 from requests_oauthlib import OAuth2Session
 from rest_framework import serializers
@@ -83,14 +80,6 @@ class GmailOAuth(Dispatcher, GmailOAauthHAndler):
         credentials.refresh(http)
         self.save_credentials(credentials, True)
         return build('gmail', 'v1', http=http)
-
-    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
-    #     validate_email = EmailValidator()
-    #     try:
-    #         validate_email(subscription.subscriber.email)
-    #     except ValidationError:
-    #         raise PluginValidationError("User {subscription.subscriber} "
-    #                                     "does not have valid email")
 
     def emit(self, subscription, subject, message, connection=None, *args, **kwargs):
         recipient = subscription.subscriber

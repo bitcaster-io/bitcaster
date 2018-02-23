@@ -6,7 +6,7 @@ from mercury.api.fields import PhoneNumberField
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions,)
 from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import PluginSendError, PluginValidationError
+from mercury.exceptions import PluginSendError
 from mercury.logging import getLogger
 
 logger = getLogger('mercury.plugins.twilio')

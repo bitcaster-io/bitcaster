@@ -6,14 +6,12 @@ from django.core.mail import get_connection, send_mail
 from django.core.validators import EmailValidator
 from rest_framework import serializers
 
-from mercury.configurable import get_full_config
 from mercury.exceptions import PluginValidationError
 from mercury.utils import fqn
 
 from .base import (Dispatcher, DispatcherOptions,
-                   MessageType, SubscriptionOptions, )
+                   MessageType, SubscriptionOptions,)
 from .registry import dispatcher_registry
-
 
 # logger = getLogger(__name__)
 
@@ -43,13 +41,13 @@ class Email(Dispatcher):
     subscription_class = EmailSubscription
     message_class = EmailMessage
 
-    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
-    #     validate_email = EmailValidator()
-    #     try:
-    #         validate_email(subscription.subscriber.email)
-    #     except ValidationError:
-    #         raise PluginValidationError("User {subscription.subscriber} "
-    #                                     "does not have valid email")
+    def validate_subscription(self, subscription, *args, **kwargs) -> None:
+        validate_email = EmailValidator()
+        try:
+            validate_email(subscription.subscriber.email)
+        except ValidationError as e:
+            raise PluginValidationError("User {subscription.subscriber} "
+                                        "does not have valid email") from e
 
     def _get_connection(self) -> object:
         config = self.config
