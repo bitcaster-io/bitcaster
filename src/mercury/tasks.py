@@ -23,14 +23,14 @@ def trigger_event(event_id, context):
     emit_event(event, context)
 
 
-def emit_event(event, context):
+def emit_event(event, context, ignore_disabled=False):
     from mercury.models import Channel
     from mercury.models.counters import Counter, Occurence
 
     logger.debug("Event [{0.name} {0.enabled}] emit()".format(event))
     total_success = 0
     total_failure = 0
-    if not event.enabled:
+    if not event.enabled and not ignore_disabled:
         raise LogicError("Cannot emit disabled event")
     channels = event.subscriptions.valid().values('channel').annotate(dcount=Count('channel'))
     ids = [channel['channel'] for channel in channels]

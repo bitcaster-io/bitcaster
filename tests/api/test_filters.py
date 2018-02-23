@@ -2,9 +2,9 @@
 from __future__ import absolute_import, unicode_literals
 
 import logging
-from django.contrib.auth.models import AnonymousUser
 from unittest.mock import Mock
 
+from django.contrib.auth.models import AnonymousUser
 from tests_utils import override_threadlocals
 
 from mercury.api.filters import ApplicationOwnedFilter, IsOwnerFilter

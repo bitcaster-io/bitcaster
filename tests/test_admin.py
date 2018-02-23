@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import django.core.mail
 import json
 
+import django.core.mail
 from rest_framework.reverse import reverse
 
 
@@ -13,15 +13,18 @@ def test_application_detail(django_app, admin, application1):
 
 
 # channel
+def test_channel_fail_configure(django_app, admin, channel1):
+    url = reverse("admin:mercury_channel_configure", args=[channel1.pk])
+    res = django_app.get(url, user=admin.username)
+    res.form['port'] = json.dumps({'port': 'abc'})
+    res = res.form.submit()
+    assert res.status_code == 200
+    assert 'port' in res.context['serializer'].errors
+
+
 def test_channel_fail(django_app, admin, channel1):
     url = reverse("admin:mercury_channel_change", args=[channel1.pk])
     res = django_app.get(url, user=admin.username)
-    res.form['config'] = json.dumps({'port': 'abc'})
-    res = res.form.submit()
-    assert res.status_code == 200
-    assert 'config' in res.context['adminform'].form.errors
-
-    res.form['config'] = {}
     res.form['handler'].force_value('0000')
     res = res.form.submit()
     assert 'handler' in res.context['adminform'].form.errors

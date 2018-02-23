@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from django.urls import reverse
-
 import pytest
+from django.urls import reverse
 
 
 @pytest.mark.django_db

@@ -21,7 +21,7 @@ class EmailMessage(MessageType):
 
 
 class EmailSubscription(SubscriptionOptions):
-    email = serializers.EmailField()
+    pass
 
 
 class EmailOptions(DispatcherOptions):
