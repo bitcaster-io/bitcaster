@@ -1,0 +1,4 @@
+.pytest_cache
+.env
+slack_webhook.egg-info
+/~build
