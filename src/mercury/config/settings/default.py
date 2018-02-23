@@ -53,8 +53,6 @@ INSTALLED_APPS = [
     'django_countries',
     'adminfilters',
 
-    'social_django',
-
     # Admin
     'django.contrib.admin',
 
@@ -236,27 +234,19 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CACHES = {
-    'default': env.cache(),
+    'default': env.cache(default="dummycache://", backend='django.core.cache.backends.dummy.DummyCache'),
     # 'locking': env.cache('CACHE_LOCK')
 }
 
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
-
-    # 'social_core.backends.google.GoogleOAuth2',
-    # 'mercury.social.github.GithubOAuth2',
-
     'django.contrib.auth.backends.ModelBackend',
 )
 # Some really nice defaults
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-
-ACCOUNT_ALLOW_REGISTRATION = env.bool('DJANGO_ACCOUNT_ALLOW_REGISTRATION', True)
-ACCOUNT_ADAPTER = 'mercury.users.adapters.AccountAdapter'
-SOCIALACCOUNT_ADAPTER = 'mercury.users.adapters.SocialAccountAdapter'
 
 # Custom user app defaults
 # Select the correct user model
@@ -362,40 +352,8 @@ if env.bool('ENABLE_SENTRY', False):
 
 # OAUTH2
 MERCURY_SECRET = os.path.expanduser("~/.mercury-client-id.json")
-OAUTH_CLIENT_ID = env.str('OAUTH_CLIENT_ID')
-OAUTH_CLIENT_SECRET = env.str('OAUTH_CLIENT_SECRET')
-
-# SOCIAL AUTH
-SOCIAL_AUTH_TWITTER_KEY = 'foobar'
-SOCIAL_AUTH_TWITTER_SECRET = 'bazqux'
-
-SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
-    # 'social_core.backends.open_id.OpenIdAuth',
-    # 'social_core.backends.google.GoogleOpenId',
-    'social_core.backends.google.GoogleOAuth2',
-    # 'social_core.backends.google.GoogleOAuth',
-    # 'social_core.backends.twitter.TwitterOAuth',
-    # 'social_core.backends.yahoo.YahooOpenId',
-)
-
-AUTHENTICATION_BACKENDS = SOCIAL_AUTH_AUTHENTICATION_BACKENDS + AUTHENTICATION_BACKENDS
-
-SOCIAL_AUTH_PIPELINE = (
-    'social_core.pipeline.social_auth.social_details',
-    'social_core.pipeline.social_auth.social_uid',
-    'social_core.pipeline.social_auth.social_user',
-    'social_core.pipeline.user.get_username',
-    'social_core.pipeline.user.create_user',
-    'social_core.pipeline.social_auth.associate_user',
-    'social_core.pipeline.social_auth.load_extra_data',
-    'social_core.pipeline.user.user_details',
-    'social_core.pipeline.social_auth.associate_by_email',
-)
-SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'mercury-195019'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'QOIf4Ryug5hJIB1vEmu1P2kg'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [...]
+OAUTH_CLIENT_ID = env.str('OAUTH_CLIENT_ID', '')
+OAUTH_CLIENT_SECRET = env.str('OAUTH_CLIENT_SECRET', '')
 
 
 # SYSINFO

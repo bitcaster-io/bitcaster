@@ -71,11 +71,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # is_social = serializers.SerializerMethodField()
     timezone = TimezoneField(default='UTC')
-
-    # def get_is_social(self, obj):
-    #     return bool(UserSocialAuth.get_social_auth_for_user(obj))
 
     class Meta:
         model = User

@@ -7,7 +7,7 @@ else
     # stashing all unindexed changes
     git stash -q --keep-index
 #    FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -e '\.py$')
-    FILES=$(gitflow_commit_files py)
+    FILES=$(gitflow_python_files)
     if [ -n "$FILES" ]; then
         OUT=`isort -c $FILES`
         RET=$?

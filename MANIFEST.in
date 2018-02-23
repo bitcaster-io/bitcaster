@@ -18,6 +18,7 @@ exclude plugins
 exclude src/requirements/*.in
 exclude .pytest_cache
 exclude .demo
+exclude .env
 exclude .demo-sax
 exclude .DS_Store
 
