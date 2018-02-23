@@ -251,7 +251,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 # Custom user app defaults
 # Select the correct user model
 LOGIN_REDIRECT_URL = 'users:redirect'
-LOGIN_URL = 'account_login'
+LOGIN_URL = 'admin:login'
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = r'^admin/'
