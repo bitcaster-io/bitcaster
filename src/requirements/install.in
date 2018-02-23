@@ -11,7 +11,7 @@ django-fernet-fields
 django-jsoneditor
 django-redis
 django-regex
-django-strategy-field>=1.3
+django-strategy-field>=1.3.1
 django-sysinfo>=1.3.1
 django-timezone-field
 djangorestframework

@@ -9,6 +9,10 @@ SUBDIRS := $(wildcard plugins/mercury-*)
 .mkbuilddir:
 	mkdir -p ${BUILDDIR}
 
+help:
+	echo "develop"
+	echo "reset-migrations"
+
 develop: .setup-git
 	@pip install -U pip setuptools
 	$(MAKE) .init-db sync-requirements

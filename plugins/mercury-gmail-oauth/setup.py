@@ -17,7 +17,8 @@ setup(
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_gmail_oauth'],
     install_requires=['mercury',
-                      'requests-oauth'
+                      'requests-oauthlib',
+                      'google-api-python-client',
                       ],
     tests_require=tests_require,
     extras_require={
