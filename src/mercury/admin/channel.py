@@ -5,6 +5,7 @@ from django.contrib.postgres import fields as pg
 from django.db import router, transaction
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from jsoneditor.forms import JSONEditor
@@ -42,6 +43,39 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
                deactivator_factory('enabled'),
                ]
 
+    @action()
+    def configure(self, request, pk):
+        channel = self.get_object(request, pk)
+        opts = channel._meta
+        ctx = {'opts': opts,
+               'app_label': opts.app_label,
+               'original': channel,
+               'handler_fqn': fqn(channel.handler),
+               'change': True,
+               'is_popup': False,
+               'save_as': False,
+               'has_delete_permission': False,
+               'has_add_permission': False,
+               'has_change_permission': False}
+
+        if request.method == 'GET':
+            serializer = channel.handler.options_class(instance=channel.config)
+            ctx['serializer'] = serializer
+            return render(request, 'admin/mercury/channel/configure.html', ctx)
+        elif request.method == 'POST':
+            serializer = channel.handler.options_class(data=request.POST)
+            ctx['serializer'] = serializer
+            try:
+                if serializer.is_valid():
+                    channel.config = serializer.data
+                    channel.save()
+                    self.message_user(request, _('Configuration saved'),
+                                      messages.SUCCESS)
+
+            except Exception as e:
+                self.message_user(request, str(e), messages.ERROR)
+            return render(request, 'admin/mercury/channel/configure.html', ctx)
+
     def activate(self, request, queryset):
         for channel in queryset.all():
             try:
@@ -66,8 +100,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
     def get_exclude(self, request, obj=None):
         if not obj:
             return ['config', 'deprecated', 'enabled']
-        # elif hasattr(obj.handler, 'oauth_request'):
-        #     return ['config']
+        return ['config']
 
     @action()
     def test(self, request, pk):

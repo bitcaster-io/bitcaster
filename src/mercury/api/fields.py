@@ -9,6 +9,10 @@ from mercury.api.validators import PhoneNumberValidator
 logger = logging.getLogger(__name__)
 
 
+class PasswordField(CharField):
+    pass
+
+
 class PhoneNumberField(CharField):
     default_error_messages = {
         'invalid': _('Enter a valid phone number.')

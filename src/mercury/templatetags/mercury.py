@@ -5,6 +5,7 @@ from django.template import Context, Library
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+from mercury.api.renderers import MercuryHTMLFormRenderer
 from mercury.models import Channel
 
 register = Library()
@@ -27,6 +28,19 @@ def oauth_button(context, channel: Channel):
     label = channel.handler.render_button() or f'Authorise with {channel.handler.name}'
     url = reverse("admin:mercury_channel_oauth_request", args=[channel.pk])
     return mark_safe(f'<a href="{url}">{label}</a>')
+
+
+@register.simple_tag
+def render_serializer(serializer, template_pack=None):
+    style = {'template_pack': template_pack} if template_pack else {}
+    renderer = MercuryHTMLFormRenderer()
+    return renderer.render(serializer.data, None, {'style': style})
+
+
+@register.simple_tag
+def render_field(field, style):
+    renderer = style.get('renderer', MercuryHTMLFormRenderer())
+    return renderer.render_field(field, style)
 
 
 @register.inclusion_tag('admin/mercury/configurable_submit_line.html', takes_context=True)

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from mercury.api.fields import PasswordField
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions,)
@@ -17,7 +18,7 @@ class Message(MessageType):
 
 class XmppOptions(DispatcherOptions):
     username = serializers.CharField(required=True)
-    password = serializers.CharField(required=True)
+    password = PasswordField(required=True)
 
 
 class XmppSubscription(SubscriptionOptions):

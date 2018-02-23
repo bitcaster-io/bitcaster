@@ -5,6 +5,7 @@ from rest_framework.serializers import Serializer
 from mercury import logging
 from mercury.exceptions import PluginValidationError
 from mercury.utils.language import classproperty
+from mercury.utils.reflect import package_name
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,14 @@ class ConfigurableMixin:
     @classproperty
     def author(cls):
         return cls.__author__
+
+    @classproperty
+    def version(cls):
+        try:
+            import pkg_resources  # part of setuptools
+            return pkg_resources.require("mercury-" + package_name(cls))[0].version
+        except Exception:
+            return "unknown"
 
     @classproperty
     def license(cls):

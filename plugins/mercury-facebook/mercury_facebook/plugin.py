@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from fbchat import Client, Message
+from mercury.api.fields import PasswordField
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions,)
@@ -17,7 +18,7 @@ class FacebookMessage(MessageType):
 
 class FacebookOptions(DispatcherOptions):
     key = serializers.CharField()
-    password = serializers.CharField()
+    password = PasswordField()
 
 
 class FacebookSubscription(SubscriptionOptions):

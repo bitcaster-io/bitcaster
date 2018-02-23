@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from .plugin import {{cookiecutter.classname}}
+from .plugin import {{cookiecutter.classname}}  # noqa

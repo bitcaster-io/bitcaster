@@ -46,7 +46,7 @@ class Command(BaseCommand):
             sys.exit(1)
         base_dir = Path(mercury.__file__).parent / '_plugin_template'
         name = str(name).lower()
-        package_name = name.lower().replace('-', '_')
+        package_name = "mercury_" + name.lower().replace('-', '_')
         classname = str(name).title().replace('-', '').replace('Oauth', 'OAuth')
 
         context = {'cookiecutter': {'name': name,

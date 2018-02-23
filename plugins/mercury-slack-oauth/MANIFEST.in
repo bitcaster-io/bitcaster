@@ -1,0 +1,4 @@
+include-recursive slack_oauth *.py
+include README.rst
+include setup.py
+include pytest.ini
