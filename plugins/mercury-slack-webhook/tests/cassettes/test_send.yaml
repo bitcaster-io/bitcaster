@@ -1,0 +1,28 @@
+interactions:
+- request:
+    body: b'username=test&icon_url=http%3A%2F%2Fgoogle.com%2F&channel=sax&text=Mercury+is+on+SlackWebhook...enjoy'
+    headers:
+      Content-Length: ['101']
+      Content-Type: [application/x-www-form-urlencoded]
+      user-agent: [mercury]
+    method: POST
+    uri: '----'
+  response:
+    body: {string: invalid_payload}
+    headers:
+      Access-Control-Allow-Origin: ['*']
+      Connection: [keep-alive]
+      Content-Length: ['15']
+      Content-Type: [text/html]
+      Date: ['Sun, 25 Feb 2018 10:08:47 GMT']
+      Referrer-Policy: [no-referrer]
+      Server: [Apache]
+      Strict-Transport-Security: [max-age=31536000; includeSubDomains; preload]
+      Vary: [Accept-Encoding]
+      Via: [1.1 c5ad7defce0694621f07129d852e42da.cloudfront.net (CloudFront)]
+      X-Amz-Cf-Id: [pg40E-cYhCxcfPStx7LWHfWE9WfsksbiJrn-Rh_bswzLiv3oM8zQ4g==]
+      X-Cache: [Error from cloudfront]
+      X-Frame-Options: [SAMEORIGIN]
+      X-Slack-Backend: [h]
+    status: {code: 400, message: Bad Request}
+version: 1

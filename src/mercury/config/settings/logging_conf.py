@@ -55,6 +55,16 @@ LOGGING = {
             'handlers': ['sentry'],
             'propagate': False,
         },
+        'mercury.security': {
+            'level': 'INFO',
+            'handlers': ['sentry'],
+            'propagate': False,
+        },
+        'mercury.dispatchers': {
+            'level': 'ERROR',
+            'handlers': ['console', 'sentry'],
+            'propagate': False,
+        },
         'mercury.plugins': {
             'level': 'ERROR',
             'handlers': ['console', 'sentry'],

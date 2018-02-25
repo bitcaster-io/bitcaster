@@ -172,14 +172,14 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = str(MERCURY_DIR('staticfiles'))
+STATIC_ROOT = str(MERCURY_DIR('static'))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
-    str(APPS_DIR.path('static')),
+    str(APPS_DIR.path('staticfiles')),
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
@@ -333,10 +333,12 @@ CONSTANCE_CONFIG_FIELDSETS = {"Options": list(CONSTANCE_CONFIG.keys())}
 if env.bool('ENABLE_SENTRY', False):
     import raven
     import os
+    import mercury.env
 
     LOGGING['handlers']['sentry'] = {'level': 'ERROR',
-                                     'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-                                     'tags': {'custom-tag': 'x'},
+                                    # 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+                                     'class': 'mercury.logging.MercuryHandler',
+                                     'extra': {'state': mercury.env.env},
                                      }
 
     INSTALLED_APPS += ['raven.contrib.django.raven_compat', ]
@@ -352,8 +354,14 @@ if env.bool('ENABLE_SENTRY', False):
 
 # OAUTH2
 MERCURY_SECRET = os.path.expanduser("~/.mercury-client-id.json")
-OAUTH_CLIENT_ID = env.str('OAUTH_CLIENT_ID', '')
-OAUTH_CLIENT_SECRET = env.str('OAUTH_CLIENT_SECRET', '')
+GOOGLE_APP_ID = env.str('GOOGLE_APP_ID', '')
+GOOGLE_APP_SECRET = env.str('GOOGLE_APP_SECRET', '')
+
+SLACK_APP_ID = env.str('SLACK_APP_ID', '')
+SLACK_APP_SECRET = env.str('SLACK_APP_SECRET', '')
+
+TWITTER_APP_ID = env.str('TWITTER_APP_ID', '')
+TWITTER_APP_SECRET = env.str('TWITTER_APP_SECRET', '')
 
 
 # SYSINFO

@@ -52,11 +52,11 @@ class SubscriptionAdmin(admin.ModelAdmin):
     def validate_subscription(self, request, queryset):
         for subscription in queryset.all():
             try:
-                subscription.channel.validate_subscription(subscription, True)
+                subscription.channel.validate_subscription(subscription)
             except PluginValidationError as e:
                 subscription.enabled = False
                 subscription.save()
-                self.message_user(request, f"{subscription.name} invalid configuration {e}",
+                self.message_user(request, f"{subscription.id} invalid configuration {e}",
                                   messages.ERROR)
 
     # def change_view(self, request, object_id, form_url='', extra_context=None):

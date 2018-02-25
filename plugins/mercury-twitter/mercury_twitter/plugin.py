@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-import requests
+# import twitter
+from mercury.api.fields import PasswordField
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                      MessageType, SubscriptionOptions,)
+                                      MessageType, SubscriptionOptions, )
 from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import PluginSendError, PluginValidationError
+from mercury.exceptions import PluginValidationError, PluginSendError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
+from .python_twitter import api
 
 logger = getLogger('mercury.plugins.twitter')
 
@@ -16,11 +18,14 @@ class TwitterMessage(MessageType):
 
 
 class TwitterOptions(DispatcherOptions):
-    pass
+    consumer_key = serializers.CharField()
+    consumer_secret = PasswordField()
+    access_token_key = PasswordField()
+    access_token_secret = PasswordField()
 
 
 class TwitterSubscriptionOptions(SubscriptionOptions):
-    recipient = serializers.CharField(validators=[])
+    pass
 
 
 @dispatcher_registry.register
@@ -30,16 +35,20 @@ class Twitter(Dispatcher):
     subscription_class = TwitterSubscriptionOptions
     __license__ = 'MIT'
     __author__ = 'unknown'
+    __help__ = """
+    https://apps.twitter.com/
+"""
 
     @classproperty
     def name(cls):
         return 'Twitter'
 
     def _get_connection(self):
-        s = requests.Session()
-        s.headers = {'user-agent': 'mercury',
-                     'Content-type': 'application/json'}
-        return s
+        config = self.owner.config
+        return api.Api(config['consumer_key'],
+                       config['consumer_secret'],
+                       config['access_token_key'],
+                       config['access_token_secret'], )
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
         ser = self.subscription_class(data=subscription.config)
@@ -48,30 +57,18 @@ class Twitter(Dispatcher):
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:
-            recipient = subscription.config['recipient']
-            logger.info('Processing {0}'.format(subscription, recipient))
-            conn = self._get_connection()
-            payload = {
-                "event": {
-                    "type": "message_create",
-                    "message_create": {
-                        "target": {
-                            "recipient_id": "844385345234"
-                        },
-                        "message_data": {
-                            "text": "Hello World!",
-                        }
-                    }
-                }
-            }
-            url = '/1.1/direct_messages/events/new.json'
-            ret = conn.post(url, json=payload)
-            if ret.status_code != 200:
-                raise PluginSendError(ret.content)
+            api = self._get_connection()
+            api.PostUpdate(message)
             return 1
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)
 
     def test_connection(self, raise_exception=False):
-        raise NotImplementedError
+        api = self._get_connection()
+        try:
+            api.GetBlocks()
+            return True
+        except Exception as e:
+            logger.exception(e)
+            return False

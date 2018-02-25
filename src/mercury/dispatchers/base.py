@@ -36,7 +36,6 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     subscription_class = SubscriptionOptions
     options_class = DispatcherOptions
     message_class = MessageType
-
     __media__ = None
 
     def __init__(self, owner=None):
@@ -73,10 +72,6 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
             return self.subscription_class(data=cfg).is_valid(True)
         except (serializers.ValidationError, ValidationError) as e:
             raise PluginValidationError(str(e)) from e
-
-    def validate_config(self, config, *args, **kwargs) -> None:
-        cfg = get_full_config(self.options_class, config)
-        return self.options_class(data=cfg).is_valid(True)
 
     @abc.abstractmethod
     def test_connection(self, raise_exception=False):

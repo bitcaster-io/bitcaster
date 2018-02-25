@@ -4,12 +4,15 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.template import Context, Template
+from django.utils.functional import cached_property
 from strategy_field.fields import StrategyField
 
 from mercury import logging
 from mercury.dispatchers import dispatcher_registry
+from mercury.env import env
 from mercury.exceptions import HandlerNotFound, PluginValidationError
 from mercury.fields import EncryptedJSONField
+from mercury.logging import secLog
 from mercury.models import AbstractModel, Application
 from mercury.models.counters import Counter
 
@@ -36,6 +39,7 @@ It can be Global or Application specific.
                                     on_delete=models.CASCADE,
                                     related_name='owned_channels')
     config = EncryptedJSONField(null=True, blank=True)
+    # configured = models.BooleanField(default=False)
     enabled = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
     handler = StrategyField(verbose_name='Dispatcher',
@@ -63,8 +67,12 @@ It can be Global or Application specific.
         :return:
         """
 
-    def validate_config(self):
-        self.handler.config
+    @cached_property
+    def is_configured(self):
+        return self.handler.validate_configuration(self.config, False)
+
+    # def validate_config(self):
+    #     self.handler.config
 
     # def validate_subscription(self, user):
     #     """
@@ -76,16 +84,17 @@ It can be Global or Application specific.
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.config = self.handler.get_full_config(self.config)
+        # self.configured = self.handler.validate_config(self.config)
         super().save(force_insert, force_update, using, update_fields)
 
-    def send(self, subscription, subject, message, *args, **kwargs):
-        if not self.enabled:
-            logger.error("Channel {0} disabled".format(self))
-            return
-        logger.debug("Channel [{0.name}] send to {1}".format(self, subscription.subscriber))
-        self.handler.validate_subscription(subscription)
-        return self.handler.emit(subscription, subject,
-                                 message, *args, **kwargs)
+    # def send(self, subscription, subject, message, *args, **kwargs):
+    #     if not self.enabled:
+    #         logger.error("Channel {0} disabled".format(self))
+    #         return
+    #     logger.debug("Channel [{0.name}] send to {1}".format(self, subscription.subscriber))
+    #     self.handler.validate_subscription(subscription)
+    #     return self.handler.emit(subscription, subject,
+    #                              message, *args, **kwargs)
 
     def process_event(self, event, context):
         if not self.enabled:
@@ -95,11 +104,12 @@ It can be Global or Application specific.
             message = self.messages.get(event=event)
             body = Template(message.body)
             subject = Template(message.subject)
-
+            env.data['event'] = event
             # logger.debug(f"Processing event {event}")
             conn = self.handler._get_connection()
             success, failures = 0, 0
             for subscription in event.subscriptions.valid(channel=self):
+                env.data['subscription'] = subscription
                 logger.debug(f"Processing {subscription}")
                 try:
                     ctx = dict(context or {})
@@ -142,12 +152,18 @@ class Wrapper:
 
     def __getattr__(self, item):
         if isinstance(self.__wrapped, Stop):
-            return Wrapper('=====')
+            return Wrapper('*******')
 
-        if item in ['key', 'token', 'password']:
+        if item in ['key', 'token', 'password', 'handler', 'owner']:
+            secLog.error(f'Access forbidden attribute `{item}`',
+                         extra={'attribute': item,
+                                'object': self.__wrapped})
             return '******'
         original = getattr(self.__wrapped, item)
         if callable(original):
+            secLog.error(f'Access forbidden attribute `{item}`',
+                         extra={'attribute': item,
+                                'object': self.__wrapped})
             return Wrapper(Stop())
 
         return Wrapper(original)

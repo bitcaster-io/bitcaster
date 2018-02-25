@@ -8,7 +8,7 @@ from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
                                        UserCreationForm as _UserCreationForm,
                                        UsernameField,)
 from django.contrib.postgres.forms import JSONField
-from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.exceptions import ValidationError
 from django.forms import Form
 from django.forms.utils import ErrorList
 from django.utils.safestring import mark_safe
@@ -16,7 +16,7 @@ from django.utils.translation import gettext_lazy as _
 # from bitfield.forms import BitFormField
 from jsoneditor.forms import JSONEditor
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from mercury import logging
 from mercury.configurable import get_full_config
@@ -118,8 +118,8 @@ class ValidateJsonMixin(object):
         if handler_class and enabled:
             try:
                 handler = import_by_name(handler_class)
-            except ValidationError as e:
-                raise DjangoValidationError(e)
+            except DRFValidationError as e:
+                raise ValidationError(e)
             if not config:
                 config = handler.defaults()
             else:
@@ -133,17 +133,26 @@ class ValidateJsonMixin(object):
                 ret = []
                 for k, v in errors.items():
                     ret.append("<b>{0}</b>:{1} ".format(k, ",".join(flatten(v))))
-                raise DjangoValidationError({'config': mark_safe(" ".join(flatten(ret)))})
+                raise ValidationError({'config': mark_safe(" ".join(flatten(ret)))})
 
         return super().clean()
 
 
-class DispatcherConfigForm(ValidateJsonMixin, forms.ModelForm):
+class ChannelForm(forms.ModelForm):
     class Meta:
         model = Channel
         exclude = []
         fields = ('name', 'application', 'handler', 'config', 'description',
                   'enabled', 'deprecated')
+
+    def clean_enabled(self):
+        value = self.cleaned_data['enabled']
+        if value:
+            if not self.instance:
+                raise ValidationError("Channel must be configured")
+            elif not self.instance.is_configured:
+                raise ValidationError("Configure channel before enable it")
+        return value
 
 
 class SubscriptionForm(forms.ModelForm):
@@ -172,7 +181,7 @@ class SubscriptionForm(forms.ModelForm):
                 config = get_full_config(serializer_class, config)
                 self.cleaned_data['config'] = config
                 self.instance.config = config
-                raise DjangoValidationError(str(e))
+                raise ValidationError(str(e))
 
         return self.cleaned_data['config']
 
@@ -194,4 +203,4 @@ class EventTriggerForm(Form):
                     errors.append('Invalid argument %s' % k)
 
         if errors:
-            raise ValidationError({'arguments': errors})
+            raise DRFValidationError({'arguments': errors})

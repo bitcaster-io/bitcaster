@@ -2,7 +2,8 @@
 
 from setuptools import setup
 
-tests_require = ['pytest',
+tests_require = ['mercury',
+                 'pytest',
                  'pytest-django',
                  'pytest-coverage',
                  'pytest-echo',
@@ -16,8 +17,7 @@ setup(
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_gmail_oauth'],
-    install_requires=['mercury',
-                      'requests-oauthlib',
+    install_requires=['requests-oauthlib',
                       'google-api-python-client',
                       ],
     tests_require=tests_require,

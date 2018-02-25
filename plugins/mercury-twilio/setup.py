@@ -2,7 +2,8 @@
 
 from setuptools import setup
 
-tests_require = ['pytest',
+tests_require = ['mercury'
+                 'pytest',
                  'pytest-django',
                  'pytest-coverage',
                  'pytest-echo',

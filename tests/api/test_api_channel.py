@@ -115,6 +115,6 @@ def test_channel_enable_check_config(channel1):
     res = client.patch(url, {'enabled': True})
     payload = res.json()
     assert res.status_code == 400, str(res.content)
-    assert payload['config'] == [{'port': ['This field is required.'],
-                                  'sender': ['This field is required.'],
-                                  'server': ['This field is required.']}]
+    assert payload['config'] == [{'port': ['A valid integer is required.'],
+                                  'sender': ['This field may not be blank.'],
+                                  'server': ['This field may not be blank.']}]

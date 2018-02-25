@@ -41,7 +41,7 @@ def before_record_response(response):
 vcr = _vcr.VCR(
     serializer='yaml',
     cassette_library_dir=str(Path(__file__).parent / 'cassettes'),
-    record_mode='always',
+    record_mode='once',
     match_on=['uri', 'method'],
     filter_headers=['authorization', 'location', 'x-skypetoken'],
     filter_query_parameters=['mail', 'pass', 'client_id'],
@@ -68,7 +68,7 @@ def subscription():
                 channel=channel)
 
 
-def test_validate_config(subscription):
+def test_validate_configuration(subscription):
     d = Skype.options_class(data=subscription.channel.config)
     assert d.is_valid(), d.errors
 

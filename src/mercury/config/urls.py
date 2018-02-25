@@ -7,6 +7,7 @@ from django.conf.urls import include
 from django.conf.urls.static import static
 from django.http import HttpResponse
 from django.urls import path, re_path
+from django.views.static import serve
 from django_sysinfo.views import admin_sysinfo, http_basic_login, sysinfo
 from strategy_field.utils import import_by_name
 
@@ -39,6 +40,8 @@ urlpatterns = [path(r'api/', include(mercury.api.urls), name='api'),
                path('admin/info/html/', admin_sysinfo, name="admin_info"),
                path('info/json/', http_basic_login(sysinfo), name="sys-info"),
 
+               path('favicon.ico', serve, kwargs={'document_root': settings.STATIC_ROOT,
+                                                  'path': 'favicon.ico'}),
                path('', site.urls),
                re_path('plugins/icon/(?P<fqn>.*)', plugin_icon, name="plugin-icon"),
 

@@ -13,10 +13,14 @@
 {% block content %}
 <form action="." method="POST">
     {% csrf_token %}
-    <table>
-        {% render_form serializer  "_rest_framework/table" %}
-    <tr><td>Message</td><td><textarea name="message">Test message</textarea></td></tr>
-    </table>
+        {% render_form serializer  "rest_framework/inline2" %}
+    <div class="form-group">
+        <div class="label">Message</div>
+        <div class="field">
+            <textarea name="message">Test message</textarea>
+        </div>
+    </div>
+
     <input type="submit" value="Send">
 </form>
 {% endblock %}

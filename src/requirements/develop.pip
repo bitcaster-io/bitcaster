@@ -31,6 +31,7 @@ django-environ==0.4.4
 django-extensions==2.0.0
 django-fernet-fields==0.5
 django-jsoneditor==0.0.12
+django-model-utils==3.1.1
 django-picklefield==1.0.0
 django-redis==4.8.0
 django-regex==0.2.1
@@ -41,7 +42,7 @@ django-timezone-field==2.0
 django-webtest==1.9.2
 django==2.0.2
 djangorestframework==3.7.7
-drfpasswordless==1.1.2
+drfpasswordless==1.1.5
 factory-boy==2.10.0
 faker==0.8.11
 fancycompleter==0.8
@@ -83,7 +84,7 @@ py==1.5.2
 pyasn1-modules==0.2.1
 pyasn1==0.4.2
 pycodestyle==2.3.1
-pycountry==17.9.23
+pycountry==18.2.23
 pycparser==2.18
 pycrypto==2.6.1
 pyflakes==1.6.0

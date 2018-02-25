@@ -11,26 +11,64 @@
 {% endblock %}
 
 {% block content %}
+    <style>
+    .errors{
+        {#float:right;#}
+        color: red;
+    }
+        .form-group {
+            padding: 10px;
+        }
+        .help-block{
+            color: grey;
+        }
+        .form-group .label {
+            width: 100%;
+            display: inline-block;
+        }
+        .form-group .field {
+            width: 100%;
+            display: inline-block;
+        }
+        .form-group .field input{
+            width: 100%;
+            display: inline-block;
+        }
+    </style>
     <table with="100%">
         <tr>
             <td width="80%">
-                <form action="." method="POST">
-                    {% csrf_token %}
-                    <table>
-                        {% render_serializer serializer "_rest_framework/table" %}
-                    </table>
-                    <input type="submit" value="Save configuration">
-                </form>
-        </td>
-        <td>
-            <div>
-                <img width="100" height="100" src="{% url "plugin-icon" handler_fqn %}">
-            </div>
-<div>{{ original.handler.name }}</div>
-<div>{{ original.handler.author }}</div>
-<div>{{ original.handler.license }}</div>
-<div>{{ original.handler.version }}</div>
-        </td>
+                {% if oauth_request %}
+                    {% oauth_button original %}
+                {% else %}
+
+                    <form action="." method="POST">
+                        {% csrf_token %}
+                            {% render_serializer serializer "rest_framework/inline2" %}
+                            <input type="submit" value="Save configuration">
+                    </form>
+                {% endif %}
+
+            </td>
+            <td>
+
+                <div>
+                    <img width="100" height="100" src="{% url "plugin-icon" handler_fqn %}">
+                </div>
+                <div>{{ original.handler.name }}</div>
+
+                <div>Author</div>
+                <div>{{ original.handler.author }}</div>
+
+                <div>Version</div>
+                <div>{{ original.handler.version }}</div>
+
+                <div>License</div>
+                <div>{{ original.handler.license }}</div>
+
+
+                <div>{{ original.handler.help }}</div>
+            </td>
         </tr>
     </table>
 {% endblock %}

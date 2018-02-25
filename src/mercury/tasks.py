@@ -41,7 +41,6 @@ def emit_event(event, context, ignore_disabled=False):
     for channel in Channel.objects.filter(id__in=ids, enabled=True):
         try:
             logger.debug(f"Processing channel {channel}")
-            channel.validate_config()
             success, failure = channel.process_event(event, context)
             total_success += success
             Counter.objects.increment(event)

@@ -45,6 +45,7 @@ class ConfigurableMixin:
     options_class = None
     __license__ = 'MIT'
     __author__ = 'unknown'
+    __help__ = ""
 
     def __init__(self, owner=None):
         self.owner = owner
@@ -57,6 +58,10 @@ class ConfigurableMixin:
     @classproperty
     def author(cls):
         return cls.__author__
+
+    @classproperty
+    def help(cls):
+        return cls.__help__
 
     @classproperty
     def version(cls):
@@ -72,35 +77,40 @@ class ConfigurableMixin:
 
     def get_full_config(self, custom):
         updates = custom or {}
-        return {**self.defaults(), **updates}
+        return {**get_config_defaults(self.options_class), **updates}
+
+    # @classmethod
+    # def defaults(cls):
+    #     ret = {}
+    #     if cls.options_class:
+    #         ser = cls.options_class(data={})
+    #         for name, f in ser.fields.items():
+    #             ret[name] = '' if f.default == empty else f.default
+    #     return ret
+
+    # @classmethod
+    # def validate_configuration(self, config, raise_exception=False):
+    #     if self.options_class:
+    #         try:
+    #             ser = self.options_class(data=config)
+    #             valid = ser.is_valid(raise_exception)
+    #             errors = dict(ser.errors)
+    #             for field_name in config.keys():
+    #                 if field_name not in ser.fields:
+    #                     valid = False
+    #                     errors[field_name] = ['Unknown attribute `%s`' % field_name]
+    #             if not valid and raise_exception:
+    #                 raise PluginValidationError(errors)
+    #             return (valid, errors)
+    #         except ValidationError as e:
+    #             if raise_exception:
+    #                 raise PluginValidationError(e)
+    #     return True, []
 
     @classmethod
-    def defaults(cls):
-        ret = {}
-        if cls.options_class:
-            ser = cls.options_class(data={})
-            for name, f in ser.fields.items():
-                ret[name] = '' if f.default == empty else f.default
-        return ret
-
-    @classmethod
-    def validate_configuration(self, config, raise_exception=False):
-        if self.options_class:
-            try:
-                ser = self.options_class(data=config)
-                valid = ser.is_valid(raise_exception)
-                errors = dict(ser.errors)
-                for field_name in config.keys():
-                    if field_name not in ser.fields:
-                        valid = False
-                        errors[field_name] = ['Unknown attribute `%s`' % field_name]
-                if not valid and raise_exception:
-                    raise PluginValidationError(errors)
-                return (valid, errors)
-            except ValidationError as e:
-                if raise_exception:
-                    raise PluginValidationError(e)
-        return True, []
+    def validate_configuration(self, config, raise_exception=True, *args, **kwargs) -> None:
+        cfg = get_full_config(self.options_class, config)
+        return self.options_class(data=cfg).is_valid(raise_exception)
 
     @property
     def config(self):

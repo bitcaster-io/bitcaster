@@ -18,7 +18,7 @@ from mercury.models import Channel, Event
 from mercury.models.subscription import Subscription
 from mercury.utils.django import deactivator_factory
 
-from .forms import DispatcherConfigForm
+from .forms import ChannelForm
 from .site import site
 
 logger = getLogger(__name__)
@@ -31,7 +31,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
     list_display = ('name', 'application', 'handler_name', 'enabled')
     list_filter = ('application',)
     list_editable = ('enabled',)
-    form = DispatcherConfigForm
+    form = ChannelForm
 
     change_form_template = None
 
@@ -57,6 +57,8 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
                'has_delete_permission': False,
                'has_add_permission': False,
                'has_change_permission': False}
+        if hasattr(channel.handler, 'oauth_request'):
+            ctx['oauth_request'] = True
 
         if request.method == 'GET':
             serializer = channel.handler.options_class(instance=channel.config)
@@ -160,12 +162,12 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
     def add_view(self, request, form_url='', extra_context=None):
         return self.changeform_view(request, None, form_url, extra_context)
 
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        obj = self.get_object(request, object_id)
-        if hasattr(obj.handler, 'oauth_request'):
-            extra_context = {'oauth_request': '------'}
-
-        return self.changeform_view(request, object_id, form_url, extra_context)
+    # def change_view(self, request, object_id, form_url='', extra_context=None):
+    #     obj = self.get_object(request, object_id)
+    #     if hasattr(obj.handler, 'oauth_request'):
+    #         extra_context = {'oauth_request': '------'}
+    #
+    #     return self.changeform_view(request, object_id, form_url, extra_context)
 
     @csrf_protect_m
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):

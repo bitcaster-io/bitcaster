@@ -174,10 +174,12 @@ class Command(BaseCommand):
                                                   defaults=defs)[0]
 
             def create_channel(handler):
-                prefix = "CHANNEL_%s_" % handler.name.upper()
+                prefix = "CHANNEL__%s__" % handler.__module__.split('.')[0].replace('mercury_', '').upper()
                 attrs = {k.replace(prefix, "").lower(): v for k, v in env.ENVIRON.items()
                          if k.startswith(prefix)}
-                ok, __ = handler.validate_configuration(attrs)
+                if not attrs:
+                    sys.stderr.write(f"No valid configuration for {handler}")
+                ok = handler.validate_configuration(attrs, False)
                 return app.owned_channels.get_or_create(name=handler.name,
                                                         defaults=dict(
                                                             handler=fqn(handler),
@@ -210,18 +212,18 @@ class Command(BaseCommand):
                 user2.tokens.create()
                 users.append(user2)
 
-            configured_channels = {"{1}".format(*k.split('_'))
-                                   for k, v in env.ENVIRON.items() if k.startswith('CHANNEL_')}
+            configured_channels = {"{1}".format(*k.split('__'))
+                                   for k, v in env.ENVIRON.items() if k.startswith('CHANNEL__')}
 
             for name in configured_channels:
                 try:
                     if name == "EMAIL":
                         plugin = "mercury.dispatchers.%s.%s" % (name.lower(), name.title())
                     else:
-                        plugin = "mercury_%s.%s" % (name.lower(), name.title())
+                        plugin = "mercury_%s.%s" % (name.lower(), name.title().replace('_', ''))
                     h = import_by_name(plugin)
                     ch = create_channel(h)
-                    self.stdout.write(f"Create channel {ch}")
+                    self.stdout.write(f"Created channel {ch}")
                     msg.channels.add(ch)
                     for i, user in enumerate(users, 1):
                         recipient = env.str(f'USER{i}_{name}', '')

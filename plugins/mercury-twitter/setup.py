@@ -2,15 +2,19 @@
 
 from setuptools import setup
 
-tests_require = ['vcrpy', 'pdbpp', 'pytest', 'pytest-cov',
-                 'flake8', 'isort', 'check-manifest']
+tests_require = ['mercury',
+                 'pytest',
+                 'pytest-django',
+                 'pytest-coverage',
+                 'pytest-echo',
+                 'pytest-pythonpath']
 
 setup(
     name='mercury-twitter',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['mercury', ],
+    install_requires=['python-twitter'],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

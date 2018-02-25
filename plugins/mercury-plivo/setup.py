@@ -2,7 +2,8 @@
 
 from setuptools import setup
 
-tests_require = ['pytest',
+tests_require = ['mercury',
+                 'pytest',
                  'pytest-django',
                  'pytest-coverage',
                  'pytest-echo',
@@ -16,7 +17,7 @@ setup(
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_plivo'],
-    install_requires=['mercury', 'plivo'],
+    install_requires=['plivo'],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

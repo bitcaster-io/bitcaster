@@ -5,12 +5,12 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from mercury.exceptions import ValidationError
 from mercury_twitter import Twitter
 
-env = Env(MERCURY_MERCURY_TWITTER_USERNAME='',
-          MERCURY_MERCURY_TWITTER_PASSWORD='',
-          MERCURY_MERCURY_TWITTER_RECIPIENT='',
+env = Env(MERCURY_TWITTER_CONSUMER_KEY='',
+          MERCURY_TWITTER_CONSUMER_SECRET='',
+          MERCURY_TWITTER_ACCESS_TOKEN_KEY='',
+          MERCURY_TWITTER_ACCESS_TOKEN_SECRET='',
           )
 
 env.read_env(str(Path(__file__).parent / '.env'))
@@ -18,16 +18,18 @@ env.read_env(str(Path(__file__).parent / '.env'))
 
 def before_record_request(request):
     original = str(request.body)
-    for e in [env('MERCURY_MERCURY_TWITTER_USERNAME', str),
-              env('MERCURY_MERCURY_TWITTER_PASSWORD', str),
-              env('MERCURY_MERCURY_TWITTER_RECIPIENT', str)]:
+    for e in [env('MERCURY_TWITTER_CONSUMER_KEY', str),
+              env('MERCURY_TWITTER_CONSUMER_SECRET', str),
+              env('MERCURY_TWITTER_ACCESS_TOKEN_KEY', str),
+              env('MERCURY_TWITTER_ACCESS_TOKEN_SECRET', str)]:
         original = original.replace(e, "----")
     request.body = original.encode('utf8')
 
     original = request.uri
-    for e in [env('MERCURY_MERCURY_TWITTER_USERNAME', str),
-              env('MERCURY_MERCURY_TWITTER_PASSWORD', str),
-              env('MERCURY_MERCURY_TWITTER_RECIPIENT', str)]:
+    for e in [env('MERCURY_TWITTER_CONSUMER_KEY', str),
+              env('MERCURY_TWITTER_CONSUMER_SECRET', str),
+              env('MERCURY_TWITTER_ACCESS_TOKEN_KEY', str),
+              env('MERCURY_TWITTER_ACCESS_TOKEN_SECRET', str)]:
         original = original.replace(e, "----")
     request.uri = original
 
@@ -56,14 +58,16 @@ def subscription():
     application = Mock()
     user = Mock()
     channel = Mock(application=application,
-                   config={'username': env('MERCURY_MERCURY_TWITTER_USERNAME', str),
-                           'password': env('MERCURY_MERCURY_TWITTER_PASSWORD', str)
+                   config={'consumer_key': env('MERCURY_TWITTER_CONSUMER_KEY', str),
+                           'consumer_secret': env('MERCURY_TWITTER_CONSUMER_SECRET', str),
+                           'access_token_key': env('MERCURY_TWITTER_ACCESS_TOKEN_KEY', str),
+                           'access_token_secret': env('MERCURY_TWITTER_ACCESS_TOKEN_SECRET', str)
                            })
     event = Mock(application=application)
 
     return Mock(subscriber=user,
                 event=event,
-                config={'recipient': env('MERCURY_MERCURY_TWITTER_RECIPIENT', str)},
+                config={'recipient': env('MERCURY_TWITTER_RECIPIENT', str)},
                 channel=channel)
 
 
@@ -76,8 +80,7 @@ def test_validate_subscription_fail(subscription):
 
     subscription.config = {}
     d = Twitter(subscription.channel)
-    with pytest.raises(ValidationError):
-        d.validate_subscription(subscription)
+    d.validate_subscription(subscription)
 
 
 def test_send(subscription):

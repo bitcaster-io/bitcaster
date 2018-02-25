@@ -27,7 +27,7 @@ class GmailOAauthHAndler(OAauthHAndler):
     authorization_extra_kwargs = {'access_type': 'offline',
                                   'include_granted_scopes': 'true',
                                   'prompt': "select_account"}
-    fetch_token_extra_kwargs = {'client_secret': settings.OAUTH_CLIENT_SECRET}
+    fetch_token_extra_kwargs = {'client_secret': settings.GOOGLE_APP_SECRET}
     scopes = ['https://www.googleapis.com/auth/gmail.send',
               # 'https://www.googleapis.com/auth/gmail.readonly',
               'https://www.googleapis.com/auth/gmail.metadata',

@@ -2,7 +2,8 @@
 
 from setuptools import setup
 
-tests_require = ['pytest',
+tests_require = ['mercury',
+                 'pytest',
                  'pytest-django',
                  'pytest-coverage',
                  'pytest-echo',
@@ -16,7 +17,7 @@ setup(
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_hangout'],
-    install_requires=['mercury', 'DNSPython', 'pyxmpp2'],
+    install_requires=['DNSPython', 'pyxmpp2'],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

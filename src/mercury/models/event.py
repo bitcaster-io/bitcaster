@@ -32,7 +32,7 @@ class Event(AbstractModel):
         unique_together = ('application', 'name')
 
     def __str__(self):
-        return self.name
+        return f"{self.name} #{self.pk} "
 
     def get_message(self, channel):
         return self.messages.get(channels=channel)

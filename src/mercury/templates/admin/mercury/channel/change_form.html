@@ -1,10 +1,6 @@
 {% extends "admin_extra_urls/change_form.html" %}{% load i18n admin_urls static mercury %}
 
 {% block content %}
-    {% if oauth_request %}
-            {% oauth_button original %}
-    {% endif %}
-
     {{ block.super }}
 {% endblock %}
 

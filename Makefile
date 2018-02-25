@@ -14,7 +14,7 @@ help:
 	echo "reset-migrations"
 
 develop: .setup-git
-	@pip install -U pip setuptools
+	@pip install -U pip-tools
 	$(MAKE) .init-db sync-requirements
 
 .setup-git:
@@ -36,7 +36,7 @@ reset-migrations: .init-db
 #	./manage.py makemigrations geo
 
 test:
-	py.test -v --create-db
+	py.test tests -v --create-db
 
 qa:
 	flake8 src/ tests/
@@ -94,19 +94,16 @@ sync-requirements:
 	pip install -e .[dev]
 	$(MAKE) install-plugins
 
+cache-requirements:
+	devpi-builder src/requirements/develop.pip  http://localhost:3141/sax/cache --user sax
+
 test-all:
 	pytest tests
 	$(MAKE) test-plugins
 
-cache-requirements:
-	pip freeze > freeze.txt
-	devpi-builder freeze.txt  http://localhost:3141/sax/dev --user sax
-
-
-
 test-plugins:
 	@for dir in $(SUBDIRS); do \
-		pytest $$dir/tests; \
+		pytest $$dir/tests || exit 1; \
  	done
 
 clean-plugins:

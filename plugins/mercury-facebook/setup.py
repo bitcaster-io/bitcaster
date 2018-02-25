@@ -2,12 +2,15 @@
 
 from setuptools import setup
 
-tests_require = ['pytest',
+tests_require = ['mercury',
+                 'pytest',
                  'tox',
                  'pytest-django',
                  'pytest-coverage',
                  'pytest-echo',
-                 'pytest-pythonpath']
+                 'pytest-pythonpath',
+                 'vcrpy'
+                 ]
 
 setup(
     name='mercury-facebook',
@@ -17,7 +20,7 @@ setup(
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_facebook'],
-    install_requires=['mercury', 'fbchat', 'vcrpy'],
+    install_requires=['fbchat', ],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

@@ -54,7 +54,7 @@ def subscription():
                 channel=channel)
 
 
-def test_validate_config(subscription):
+def test_validate_configuration(subscription):
     d = Plivo.options_class(data=subscription.channel.config)
     assert d.is_valid(), d.errors
 

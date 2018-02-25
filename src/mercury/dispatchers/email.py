@@ -3,7 +3,6 @@ import smtplib
 
 from django.core.exceptions import ValidationError
 from django.core.mail import get_connection, send_mail
-from django.core.validators import EmailValidator
 from rest_framework import serializers
 
 from mercury.exceptions import PluginValidationError
@@ -21,7 +20,7 @@ class EmailMessage(MessageType):
 
 
 class EmailSubscription(SubscriptionOptions):
-    pass
+    email = serializers.EmailField()
 
 
 class EmailOptions(DispatcherOptions):
@@ -42,12 +41,11 @@ class Email(Dispatcher):
     message_class = EmailMessage
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        validate_email = EmailValidator()
+        cfg = {'email': self.owner.config.get('email', subscription.subscriber.email)}
         try:
-            validate_email(subscription.subscriber.email)
-        except ValidationError as e:
-            raise PluginValidationError("User {subscription.subscriber} "
-                                        "does not have valid email") from e
+            return self.subscription_class(data=cfg).is_valid(True)
+        except (serializers.ValidationError, ValidationError) as e:
+            raise PluginValidationError(str(e)) from e
 
     def _get_connection(self) -> object:
         config = self.config

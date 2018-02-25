@@ -1,0 +1,53 @@
+interactions:
+- request:
+    body: None
+    headers:
+      Accept:
+      - !!binary |
+        Ki8q
+      Accept-Encoding:
+      - !!binary |
+        Z3ppcCwgZGVmbGF0ZQ==
+      Connection:
+      - !!binary |
+        a2VlcC1hbGl2ZQ==
+      User-Agent:
+      - !!binary |
+        cHl0aG9uLXJlcXVlc3RzLzIuMTguNA==
+    method: GET
+    uri: https://api.twitter.com/1.1/blocks/list.json?skip_status=False&include_entities=False&stringify_ids=False&cursor=-1&tweet_mode=compat
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAKpWKi1OLSpWsoqO1VHKS60oiU8uLSrOL1KyMkDhxxeXAMWUDJR0lAqKUssy80uL
+        kVWiicFV1wIAAAD//wMAWd0uzmAAAAA=
+    headers:
+      cache-control: ['no-cache, no-store, must-revalidate, pre-check=0, post-check=0']
+      content-disposition: [attachment; filename=json.json]
+      content-encoding: [gzip]
+      content-length: ['80']
+      content-type: [application/json;charset=utf-8]
+      date: ['Sun, 25 Feb 2018 14:54:31 GMT']
+      expires: ['Tue, 31 Mar 1981 05:00:00 GMT']
+      last-modified: ['Sun, 25 Feb 2018 14:54:31 GMT']
+      pragma: [no-cache]
+      server: [tsa_o]
+      set-cookie: ['personalization_id="v1_7R4U8mrosdEHBLlmv4wVWg=="; Expires=Tue,
+          25 Feb 2020 14:54:31 UTC; Path=/; Domain=.twitter.com', lang=en-gb; Path=/,
+        'guest_id=v1%3A151957047167152251; Expires=Tue, 25 Feb 2020 14:54:31 UTC;
+          Path=/; Domain=.twitter.com']
+      status: [200 OK]
+      strict-transport-security: [max-age=631138519]
+      x-access-level: [read-write-directmessages]
+      x-connection-hash: [df724a8688437da1426bb89f085aad05]
+      x-content-type-options: [nosniff]
+      x-frame-options: [SAMEORIGIN]
+      x-rate-limit-limit: ['15']
+      x-rate-limit-remaining: ['12']
+      x-rate-limit-reset: ['1519571055']
+      x-response-time: ['116']
+      x-transaction: [00a60d39007dd926]
+      x-twitter-response-tags: [BouncerCompliant]
+      x-xss-protection: ['1; mode=block; report=https://twitter.com/i/xss_report']
+    status: {code: 200, message: OK}
+version: 1

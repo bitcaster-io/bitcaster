@@ -5,12 +5,11 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from mercury.exceptions import ValidationError
-from slack_webhook import SlackWebhook
+from mercury.exceptions import PluginValidationError
+from mercury_slack_webhook import SlackWebhook
 
-env = Env(MERCURY_SLACK_WEBHOOK_USERNAME='',
-          MERCURY_SLACK_WEBHOOK_PASSWORD='',
-          MERCURY_SLACK_WEBHOOK_RECIPIENT='',
+env = Env(MERCURY_SLACK_WEBHOOK_URL='',
+          MERCURY_SLACK_WEBHOOK_RECIPIENT=''
           )
 
 env.read_env(str(Path(__file__).parent / '.env'))
@@ -18,16 +17,12 @@ env.read_env(str(Path(__file__).parent / '.env'))
 
 def before_record_request(request):
     original = str(request.body)
-    for e in [env('MERCURY_SLACK_WEBHOOK_USERNAME', str),
-              env('MERCURY_SLACK_WEBHOOK_PASSWORD', str),
-              env('MERCURY_SLACK_WEBHOOK_RECIPIENT', str)]:
+    for e in [env('MERCURY_SLACK_WEBHOOK_URL', str)]:
         original = original.replace(e, "----")
     request.body = original.encode('utf8')
 
     original = request.uri
-    for e in [env('MERCURY_SLACK_WEBHOOK_USERNAME', str),
-              env('MERCURY_SLACK_WEBHOOK_PASSWORD', str),
-              env('MERCURY_SLACK_WEBHOOK_RECIPIENT', str)]:
+    for e in [env('MERCURY_SLACK_WEBHOOK_URL', str)]:
         original = original.replace(e, "----")
     request.uri = original
 
@@ -41,7 +36,7 @@ def before_record_response(response):
 vcr = _vcr.VCR(
     serializer='yaml',
     cassette_library_dir=str(Path(__file__).parent / 'cassettes'),
-    record_mode='once',
+    record_mode='always',
     match_on=['uri', 'method'],
     # use these to clear sensitive data
     filter_headers=['authorization'],
@@ -56,9 +51,12 @@ def subscription():
     application = Mock()
     user = Mock()
     channel = Mock(application=application,
-                   config={'username': env('MERCURY_SLACK_WEBHOOK_USERNAME', str),
-                           'password': env('MERCURY_SLACK_WEBHOOK_PASSWORD', str)
+                   config={'url': env('MERCURY_SLACK_WEBHOOK_URL', str),
+                           'bot_name': "test",
+                           'icon_url': "http://google.com/",
                            })
+    SlackWebhook.validate_configuration(channel.config)
+    # SlackWebhook.validate_configuration()
     event = Mock(application=application)
 
     return Mock(subscriber=user,
@@ -73,19 +71,18 @@ def test_validate_subscription(subscription):
 
 
 def test_validate_subscription_fail(subscription):
-
     subscription.config = {}
     d = SlackWebhook(subscription.channel)
-    with pytest.raises(ValidationError):
+    with pytest.raises(PluginValidationError):
         d.validate_subscription(subscription)
 
 
 def test_send(subscription):
-    with vcr.use_cassette('test_send.yaml'):
-        d = SlackWebhook(subscription.channel)
-        assert d.emit(subscription,
-                      'subject',
-                      'Mercury is on SlackWebhook...enjoy') == 1
+    # with vcr.use_cassette('test_send.yaml'):
+    d = SlackWebhook(subscription.channel)
+    assert d.emit(subscription,
+                  'subject',
+                  'Mercury is on SlackWebhook...enjoy') == 1
 
 
 def test_connection(subscription):

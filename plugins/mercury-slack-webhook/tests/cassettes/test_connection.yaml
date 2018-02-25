@@ -1,0 +1,25 @@
+interactions:
+- request:
+    body: None
+    headers:
+      user-agent: [mercury]
+    method: HEAD
+    uri: '----'
+  response:
+    body: {string: ''}
+    headers:
+      Access-Control-Allow-Origin: ['*']
+      Connection: [keep-alive]
+      Content-Type: [text/html]
+      Date: ['Sun, 25 Feb 2018 10:02:16 GMT']
+      Referrer-Policy: [no-referrer]
+      Server: [Apache]
+      Strict-Transport-Security: [max-age=31536000; includeSubDomains; preload]
+      Vary: [Accept-Encoding]
+      Via: [1.1 7a04ed7b69e0edefa91e397390fa9ad0.cloudfront.net (CloudFront)]
+      X-Amz-Cf-Id: [OrHZ2OCjmORQ9AThfGDn5mvVs7OFKEqwHBNAmuIfT90AvJaOM3g22w==]
+      X-Cache: [Error from cloudfront]
+      X-Frame-Options: [SAMEORIGIN]
+      X-Slack-Backend: [h]
+    status: {code: 400, message: Bad Request}
+version: 1

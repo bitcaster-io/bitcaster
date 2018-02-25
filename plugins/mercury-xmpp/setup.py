@@ -2,14 +2,19 @@
 
 from setuptools import setup
 
+tests_require = ['mercury',
+                 'pytest',
+                 'pytest-django',
+                 'pytest-coverage',
+                 'pytest-echo',
+                 'pytest-pythonpath']
+
 setup(
     name='mercury-xmpp',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['mercury',
-                      'pyxmpp2',
-                      ],
+    install_requires=['pyxmpp2'],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['mercury_xmpp'],

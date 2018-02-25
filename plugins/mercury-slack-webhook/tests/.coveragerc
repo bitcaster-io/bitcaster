@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = slack_webhook
+source = mercury_slack_webhook
 
 omit =
 

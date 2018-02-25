@@ -1,4 +1,4 @@
-include-recursive slack_webhook *.py
+include-recursive mercury_slack_webhook *.py
 include README.rst
 include setup.py
 include pytest.ini
