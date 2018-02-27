@@ -1,0 +1,36 @@
+{% extends "bitcaster/base.html" %}
+{% block content %}
+    <h2>Subscriptions</h2>
+        <table class="table table-striped table-hover col-12">
+            <thead>
+            <tr>
+                <th scope="col">Event</th>
+                <th scope="col">Channel</th>
+                <th class="text-center" scope="col">active</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for subscription in object_list %}
+                <tr>
+                    <td>
+                        {{ subscription.event }}
+                    </td>
+                    <td>
+                        {{ subscription.channel }}
+                    </td>
+                    <td class="text-center">
+                        {% if subscription.active %}
+                        <i class="fa fa-check-circle green"></i>
+                        {% else %}
+                        <i class="fa fa-exclamation-circle red"></i>
+                        {% endif %}
+{#                        {{ subscription.active }}#}
+                    </td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+
+        </table>
+
+{% endblock content %}

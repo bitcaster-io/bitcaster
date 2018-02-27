@@ -18,7 +18,10 @@ body {
   //box-sizing: border-box;
 }
 
-
+.page-content{
+  padding: 10px;
+  padding-left: 200px;
+}
 .pointer {
   cursor: pointer;
 }
@@ -76,4 +79,12 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
     box-shadow: 0 1px 12px rgba(0, 0, 0, .15);
     border-color: #cbc3d3;
   }
+}
+
+.red{
+  color: red;
+}
+
+.green{
+  color: darkgreen;
 }

@@ -4,16 +4,16 @@
 {% block header %}{% endblock header %}
 {% block footer %}{% endblock footer %}
 {% block sidebar %}{% endblock sidebar %}
-{% block content %}
+{% block container %}
     <div class="container">
-        <div class="content">
-            <div class="box box-modal p-3 login-form">
-            <div class="box box-header">
-                <a href="//bitcaster.io/"><img src="{% asset "logos/bitcaster32.png" %}">
-                    bitcaster
-                </a>
-            </div>
-                <div class="row  p-3 justify-content-center align-items-center">
+        <div class="row col-12 justify-content-center align-items-center">
+            <div class="box box-modal login-form col-6 p-3">
+                <div class="box box-header">
+                    <a href="//bitcaster.io/"><img src="{% asset "logos/bitcaster32.png" %}">
+                        bitcaster
+                    </a>
+                </div>
+                <div class="container-fluid p-3">
                     <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="next" value="/">

@@ -28,19 +28,36 @@
                 </div>
 
                 <span class="top-menu">
-                <i class="fa fa-bars pointer" data-toggle="collapse" onclick="$('#sidebar').toggle()"></i>
-            </span>
+{#                    <i class="fa fa-bars pointer" data-toggle="collapse" onclick="$('#sidebar').toggle()"></i>#}
+                    <div class="dropdown">
+                        <a class="dropdown-toggle"
+                           href="#" role="button"
+                           id="appMenuLink" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Applications
+                      </a>
+                        <div class="dropdown-menu dropdown-menu-left" aria-labelledby="appMenuLink">
+                            {% for app in applications %}
+                                <a class="dropdown-item" href="{% url "app-index" app.pk %}">{{ app.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </span>
                 {% block user-menu %}
                     <span class="pull-right user-menu ">
                 {% if user.is_authenticated %}
                     <div class="dropdown">
                         <a class="dropdown-toggle"
                            href="#" role="button"
-                           id="dropdownMenuLink" data-toggle="dropdown"
+                           id="userMenuLink" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">
                         {{ user }}
                       </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuLink">
+                {% if user.is_superuser %}
+                    <a class="dropdown-item" href="{% url "admin:index" %}">Admin</a>
+                {% endif %}
+
                             <a class="dropdown-item" href="#">Settings</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
@@ -59,14 +76,25 @@
                     <div class="float-left pl-0 collapse width show" id="sidebar">
                         {% if user.is_authenticated %}
                             <div class="list-group">
-                                ------
+                                <div class="col-md-2 org-sidebar">
+                                    <div>
+                                        <ul class="nav nav-stacked">
+                                            <li><a href="{% url 'user-subscriptions' %}">Subscriptions</a></li>
+                                            <li><a href="#">Events</a></li>
+                                            <li><a href="#">Applications</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         {% endif %}
                     </div>
                 </div>
             {% endblock sidebar %}
-            {% block content %}
-            {% endblock content %}
+            <div class="page-content">
+                {% block content %}
+                {% endblock content %}
+
+            </div>
         </div>
         {% block footer %}
             <footer>
