@@ -16,6 +16,7 @@ help:
 develop: .setup-git
 	@pip install -U pip-tools
 	$(MAKE) .init-db sync-requirements
+	npm install
 
 .setup-git:
 	git config branch.autosetuprebase always
@@ -116,13 +117,13 @@ clean-plugins:
 tox-plugins:
 	@for dir in $(SUBDIRS); do \
 		pushd $$dir;\
-		tox; \
+		tox || exit 1; \
 		popd; \
  	done
 
 install-plugins:
 	@for dir in $(SUBDIRS); do \
-		pip install -e $$dir; \
+		pip install -e $$dir || exit 1; \
  	done
 
 

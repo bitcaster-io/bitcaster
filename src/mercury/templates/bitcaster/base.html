@@ -1,0 +1,117 @@
+{# Load the tag library #}
+{% load bootstrap4 bc_assets %}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    {#    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"#}
+    {#          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">#}
+
+    <link rel="stylesheet" href="{% asset "dist/bitcaster.css" %}">
+    {#    <script src="{% static "fontawesome-all.min.js" %}"></script>#}
+    <title>Bitcaster</title>
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+{% block body %}
+
+    <div class="app">
+    <!-- Content here -->
+    {% block container %}
+        {% block header %}
+            <header>
+                <div class="logo text-center">
+                    bitcaster
+                </div>
+
+                <span class="top-menu">
+                <i class="fa fa-bars pointer" data-toggle="collapse" onclick="$('#sidebar').toggle()"></i>
+            </span>
+                {% block user-menu %}
+                    <span class="pull-right user-menu ">
+                {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <a class="dropdown-toggle"
+                           href="#" role="button"
+                           id="dropdownMenuLink" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                        {{ user }}
+                      </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="#">Settings</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                {% endif %}
+            </span>
+                {% endblock user-menu %}
+            </header>
+        {% endblock header %}
+        <div class="container-fluid main-content">
+            {% block sidebar %}
+                <div class="row d-flex d-md-block flex-nowrap wrapper">
+                    <div class="float-left pl-0 collapse width show" id="sidebar">
+                        {% if user.is_authenticated %}
+                            <div class="list-group">
+                                ------
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endblock sidebar %}
+            {% block content %}
+            {% endblock content %}
+        </div>
+        {% block footer %}
+            <footer>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm justify-content-start">
+                            <span class="pull-left">bitcaster
+                            <span>{{ bitcaster_version }} </span>
+                            <span class="git-status d-inline d-sm-none d-md-inline">{{ git_status }}</span>
+                            </span>
+                        </div>
+                        <div class="col-sm justify-content-center">
+                            <a href="//bitcaster.io/"><img src="{% asset "logos/bitcaster32.png" %}"></a>
+                        </div>
+                        <div class="col-sm justify-content-end">
+                            <span class="pull-right">
+                            <a class="d-none d-md-block" href="/api/">API</a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </footer>
+        {% endblock footer %}
+    {% endblock container %}
+{% endblock body %}
+
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{% asset "dist/vendor.js" %}"></script>
+<script src="{% asset "dist/bitcaster.js" %}"></script>
+
+{#<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"#}
+{#        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"#}
+{#        crossorigin="anonymous"></script>#}
+{#<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"#}
+{#        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"#}
+{#        crossorigin="anonymous"></script>#}
+{#<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"#}
+{#        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"#}
+{#        crossorigin="anonymous"></script>#}
+<script>
+    console.log($);
+</script>
+</body>
+</html>

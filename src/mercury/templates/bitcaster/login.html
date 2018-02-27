@@ -1,0 +1,28 @@
+{% extends "bitcaster/base.html" %}
+{% load i18n crispy_forms_tags bc_assets %}
+
+{% block header %}{% endblock header %}
+{% block footer %}{% endblock footer %}
+{% block sidebar %}{% endblock sidebar %}
+{% block content %}
+    <div class="container">
+        <div class="content">
+            <div class="box box-modal p-3 login-form">
+            <div class="box box-header">
+                <a href="//bitcaster.io/"><img src="{% asset "logos/bitcaster32.png" %}">
+                    bitcaster
+                </a>
+            </div>
+                <div class="row  p-3 justify-content-center align-items-center">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="/">
+                        {{ form|crispy }}
+                        <input type="submit" value="Login"
+                               class="btn btn-primary"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

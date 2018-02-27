@@ -1,0 +1,79 @@
+@font-face {
+  font-family: platformicons;
+  src: url(fonts/lato-regular.eot),
+  url(fonts/lato-regular.eot?#iefix) format("embedded-opentype"),
+  url(fonts/lato-regular.woff) format("woff"),
+  url(fonts/lato-regular.woff2) format("woff2"),
+  url(fonts/lato-regular.ttf) format("truetype"),
+  url(fonts/lato-regular.svg#platformicons) format("svg");
+  font-weight: 400;
+  font-style: normal;
+}
+
+body {
+  font: normal normal normal 16px/1 platformicons;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  //box-sizing: border-box;
+}
+
+
+.pointer {
+  cursor: pointer;
+}
+
+.logo {
+  width: 150px;
+  font-size: 24px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+a {
+  color: black;
+  &:hover {
+    text-transform: none;
+  }
+}
+
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
+  display: block;
+}
+
+.box {
+  background: #fff;
+  border: 1px solid #e2dee6;
+  border-radius: 3px;
+  margin: 0 0 20px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .03);
+  &.login-form {
+    margin-top: 100px !important;
+  }
+  .box-header {
+    background: #fbfbfc;
+    color: #2f2936;
+    line-height: 1;
+    padding: 0 20px;
+    border-radius: 3px 3px 0 0;
+    border-bottom: 1px solid #e2dee6;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: rgb(226, 222, 230);
+    padding-top: 9px;
+    padding-bottom: 8px;
+    position: relative;
+  }
+  &.box-modal {
+    box-shadow: 0 1px 12px rgba(0, 0, 0, .15);
+    border-color: #cbc3d3;
+  }
+}

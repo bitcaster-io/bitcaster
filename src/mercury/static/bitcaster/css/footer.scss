@@ -1,0 +1,88 @@
+/*
+  footer.scss
+ */
+
+footer {
+  border-top-color: rgb(226, 222, 230);
+  border-top-style: solid;
+  border-top-width: 1px;
+  color: rgb(98, 84, 113);
+  height: 100px;
+  line-height: 30px;
+  margin-top: 20px;
+  padding-bottom: 28px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 28px;
+  text-align: center;
+
+  .container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 30px;
+    padding-right: 30px;
+    position: relative;
+    width: 100%;
+  }
+
+  a {
+    color: rgb(98, 84, 113);
+    text-decoration-line: none;
+    text-decoration-style: initial;
+    text-decoration-color: initial;
+    background-color: transparent;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+    transition-delay: initial;
+    transition-property: color;
+    cursor: pointer;
+    &:hover {
+      text-decoration-line: none;
+      text-decoration-style: initial;
+      text-decoration-color: initial;
+      color: rgb(73, 62, 84);
+    }
+    &:focus {
+      outline-color: -webkit-focus-ring-color;
+      outline-style: auto;
+      outline-width: 5px;
+      outline-offset: -2px;
+      text-decoration-line: none;
+      text-decoration-style: initial;
+      text-decoration-color: initial;
+    }
+  }
+  .version {
+    margin-left: 10px;
+  }
+  .pull-right a {
+    margin-left: 20px;
+  }
+  .git-status {
+    font-size: 80%;
+  }
+  .icon-logo {
+    color: rgb(98, 84, 113);
+    font-size: 28px;
+    width: 32px;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    display: block;
+  }
+
+  .icon, [class*=" icon-"], [class^="icon-"] {
+    speak: none;
+    font-style: normal;
+    font-weight: 400;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-variant-east-asian: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+}

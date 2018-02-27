@@ -1,0 +1,16 @@
+/*
+  sidebar.scss
+ */
+#sidebar {
+  background-color: #333;
+  z-index: 3;
+  width: 200px;
+  color: white;
+  .list-group {
+    background-color: #333;
+    min-height: 100vh;
+  }
+  i {
+    margin-right: 6px;
+  }
+}

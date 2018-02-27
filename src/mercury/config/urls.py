@@ -12,7 +12,7 @@ from django_sysinfo.views import admin_sysinfo, http_basic_login, sysinfo
 from strategy_field.utils import import_by_name
 
 import mercury.api.urls
-import mercury.views
+import mercury.web.urls
 from mercury.admin import site
 
 
@@ -42,7 +42,10 @@ urlpatterns = [path(r'api/', include(mercury.api.urls), name='api'),
 
                path('favicon.ico', serve, kwargs={'document_root': settings.STATIC_ROOT,
                                                   'path': 'favicon.ico'}),
-               path('', site.urls),
+               re_path('^admin/', site.urls),
+               path('', include(mercury.web.urls)),
+
                re_path('plugins/icon/(?P<fqn>.*)', plugin_icon, name="plugin-icon"),
 
-               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT,
+                       show_indexes=True)

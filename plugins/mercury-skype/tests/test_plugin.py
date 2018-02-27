@@ -41,7 +41,7 @@ def before_record_response(response):
 vcr = _vcr.VCR(
     serializer='yaml',
     cassette_library_dir=str(Path(__file__).parent / 'cassettes'),
-    record_mode='once',
+    record_mode='always',
     match_on=['uri', 'method'],
     filter_headers=['authorization', 'location', 'x-skypetoken'],
     filter_query_parameters=['mail', 'pass', 'client_id'],

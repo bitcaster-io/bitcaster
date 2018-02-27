@@ -1,6 +1,7 @@
 import logging
 import os
 from collections import OrderedDict
+from pathlib import Path
 
 import environ
 
@@ -8,9 +9,9 @@ from .logging_conf import LOGGING
 
 logger = logging.getLogger(__name__)
 
-MERCURY_DIR = environ.Path(__file__) - 3  # (mercury/config/settings/base.py - 3 = mercury/)
-PROJECT_DIR = MERCURY_DIR - 2
-APPS_DIR = MERCURY_DIR.path('.')
+MERCURY_DIR = Path(__file__).parent.parent.parent  # (mercury/config/settings/base.py - 3 = mercury/)
+PROJECT_DIR = MERCURY_DIR.parent.parent
+APPS_DIR = MERCURY_DIR
 
 # Load operating system environment variables and then prepare to use them
 env = environ.Env(ENABLE_SENTRY=False,
@@ -23,7 +24,7 @@ env = environ.Env(ENABLE_SENTRY=False,
 # Operating System Environment variables have precedence over variables defined in the .env file,
 # that is to say variables from the .env files will only be used if not defined
 # as environment variables.
-env_file = str(PROJECT_DIR.path('.env'))
+env_file = str(PROJECT_DIR / '.env')
 if os.path.exists(env_file):
     env.read_env(env_file)
     logger.info('The .env `%s` file has been loaded. ' % env_file)
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     # Useful libraries and add-ons
+    'crispy_forms',
     'jsoneditor',
     'django_sysinfo',
     'admin_extra_urls',
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'constance',
     'django_countries',
     'adminfilters',
+    'bootstrap4',
 
     # Admin
     'django.contrib.admin',
@@ -129,7 +132,10 @@ USE_L10N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
+TEMPLATES_DIR = [
+    str(MERCURY_DIR / 'templates'),
 
+]
 # TEMPLATE_DEMO CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#templates
@@ -139,7 +145,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
         'DIRS': [
-            str(MERCURY_DIR.path('templates')),
+            str(MERCURY_DIR / 'templates'),
         ],
         'OPTIONS': {
             # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
@@ -160,6 +166,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'mercury.context_processors.bitcaster',
                 # Your stuff: custom template context processors go here
             ],
         },
@@ -172,14 +179,14 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = str(MERCURY_DIR('static'))
+STATIC_ROOT = str(MERCURY_DIR / 'static' / "dist")
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
-    str(APPS_DIR.path('staticfiles')),
+    # str(APPS_DIR / 'static'),
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
@@ -191,7 +198,7 @@ STATICFILES_FINDERS = [
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
-MEDIA_ROOT = str(APPS_DIR('media'))
+MEDIA_ROOT = str(APPS_DIR / 'media')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
@@ -320,9 +327,12 @@ CONSTANCE_ADDITIONAL_FIELDS = {
 }
 
 CONSTANCE_CONFIG = OrderedDict({
-    'HOST_IP_ADDRESS': ('http://api.hostip.info/get_html.php',
-                        'api.hostip.info info',
-                        str),
+    'SITE_URL': ('',
+                 'bitcaster web url',
+                 str),
+    'HOSTIP_ADDRESS': ('http://api.hostip.info/get_html.php',
+                       'api.hostip.info info',
+                       str),
     'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/',
                        '===',
                        str)
@@ -336,7 +346,7 @@ if env.bool('ENABLE_SENTRY', False):
     import mercury.env
 
     LOGGING['handlers']['sentry'] = {'level': 'ERROR',
-                                    # 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+                                     # 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
                                      'class': 'mercury.logging.MercuryHandler',
                                      'extra': {'state': mercury.env.env},
                                      }
