@@ -1,10 +1,10 @@
 {% extends "bitcaster/base.html" %}
 {% block content %}
-    Welcome page.....
-
-    <ul>
-        <li><a href="{% url "user-register" %}">Register here</a></li>
-        <li><a href="{% url "login" %}">Login</a></li>
-    </ul>
-
+    {% if not user.is_authenticated %}
+        Welcome page.....
+        <ul>
+            <li><a href="{% url "user-register" %}">Register here</a></li>
+            <li><a href="{% url "login" %}">Login</a></li>
+        </ul>
+    {% endif %}
 {% endblock content %}
