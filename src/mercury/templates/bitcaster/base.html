@@ -27,41 +27,40 @@
                     bitcaster
                 </div>
                 {% if user.is_authenticated %}
-
                     <span class="top-menu">
-                    <div class="dropdown">
-                        <a class="dropdown-toggle2"
-                           href="#" role="button"
-                           id="appMenuLink" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
-                            Applications <i class="fa fa-angle-down"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-left" aria-labelledby="appMenuLink">
-                            {% for app in applications %}
-                                <a class="dropdown-item" href="{% url "app-index" app.pk %}">{{ app.name }}</a>
-                            {% endfor %}
+                        <div class="dropdown">
+                            <a class="dropdown-toggle2"
+                               href="#" role="button"
+                               id="appMenuLink" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                Applications <i class="fa fa-angle-down"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="appMenuLink">
+                                {% for app in applications %}
+                                    <a class="dropdown-item" href="{% url "app-index" app.pk %}">{{ app.name }}</a>
+                                {% endfor %}
+                            </div>
                         </div>
-                    </div>
-                </span>
+                    </span>
                     {% block user-menu %}
-                        <span class="pull-right user-menu ">
-                    <div class="dropdown">
-                        <a class="dropdown-toggle2"
-                           href="#" role="button"
-                           id="userMenuLink" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
-                        {{ user }}<i class="fa fa-angle-down"></i>
-                      </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuLink">
-                            {% if user.is_superuser %}
-                                <a class="dropdown-item" href="{% url "admin:index" %}">Admin</a>
-                            {% endif %}
-                            <a class="dropdown-item" href="#">Settings</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                    <span class="pull-right user-menu ">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle2"
+                               href="#" role="button"
+                               id="userMenuLink" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                            {{ user }}<i class="fa fa-angle-down"></i>
+                          </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuLink">
+                                {% if user.is_superuser %}
+                                    <a class="dropdown-item" href="{% url "admin:index" %}">Admin</a>
+                                {% endif %}
+                                <a class="dropdown-item" href="#">Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                            </div>
                         </div>
-                    </div>
-            </span>
+                    </span>
                     {% endblock user-menu %}
                 {% endif %}
             </header>
