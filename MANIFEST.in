@@ -1,7 +1,11 @@
 include README.rst
+include CONTRIBUTING.rst
 include CHANGES
 include MANIFEST.in
 include LICENSE
+include package.json
+include package-lock.json
+include webpack.config.js
 include *.py
 include tox.ini
 include pytest.ini
