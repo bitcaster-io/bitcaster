@@ -30,12 +30,12 @@
                 <span class="top-menu">
 {#                    <i class="fa fa-bars pointer" data-toggle="collapse" onclick="$('#sidebar').toggle()"></i>#}
                     <div class="dropdown">
-                        <a class="dropdown-toggle"
+                        <a class="dropdown-toggle2"
                            href="#" role="button"
                            id="appMenuLink" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">
-                            Applications
-                      </a>
+                            Applications <i class="fa fa-angle-down"></i>
+                        </a>
                         <div class="dropdown-menu dropdown-menu-left" aria-labelledby="appMenuLink">
                             {% for app in applications %}
                                 <a class="dropdown-item" href="{% url "app-index" app.pk %}">{{ app.name }}</a>
@@ -47,11 +47,11 @@
                     <span class="pull-right user-menu ">
                 {% if user.is_authenticated %}
                     <div class="dropdown">
-                        <a class="dropdown-toggle"
+                        <a class="dropdown-toggle2"
                            href="#" role="button"
                            id="userMenuLink" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">
-                        {{ user }}
+                        {{ user }}<i class="fa fa-angle-down"></i>
                       </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuLink">
                 {% if user.is_superuser %}

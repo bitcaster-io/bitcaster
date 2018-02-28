@@ -9,8 +9,7 @@ from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
 
 from mercury import logging
-from mercury.fields import EncryptedJSONField
-from mercury.models.fields import LanguageField
+from mercury.fields import EncryptedJSONField, LanguageField
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +88,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.first_name
 
     def is_admin(self, application):
-        return application.owner == self or application.maintainers.filter(id=self.pk).exists()
+        return application.owner == self # or application.maintainers.filter(id=self.pk).exists()
 
     def set_password(self, raw_password):
         super(User, self).set_password(raw_password)

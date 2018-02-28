@@ -90,26 +90,26 @@ class UserSerializerLight(UserSerializer):
         fields = ['id', 'username', 'email']
 
 
-class MaintainerSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
-
-    class Meta:
-        model = User
-        fields = ('email',)
-        read_only_fields = ('email',)
-
-    def validate_email(self, value):
-        if not User.objects.filter(email=value).exists():
-            raise ValidationError("Invalid user")
-        return value
+# class MaintainerSerializer(serializers.ModelSerializer):
+#     email = serializers.EmailField(required=True)
+#
+#     class Meta:
+#         model = User
+#         fields = ('email',)
+#         read_only_fields = ('email',)
+#
+#     def validate_email(self, value):
+#         if not User.objects.filter(email=value).exists():
+#             raise ValidationError("Invalid user")
+#         return value
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
     timezone = TimezoneField(default='UTC')
     owner = UserSerializerLight(read_only=True)
-    maintainers = serializers.PrimaryKeyRelatedField(many=True,
-                                                     queryset=User.objects.all(),
-                                                     required=False)
+    # maintainers = serializers.PrimaryKeyRelatedField(many=True,
+    #                                                  queryset=User.objects.all(),
+    #                                                  required=False)
 
     class Meta:
         model = Application

@@ -1,14 +1,47 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import (LoginView as _LoginView,
                                        LogoutView as _LogoutView,)
+from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
 from django.views.generic import DetailView, ListView, TemplateView
 
-from mercury.models import Application, Subscription
+from mercury.models import Application, Organization, Subscription
 
 
 class LogoutView(_LogoutView):
     next_page = 'login'
+
+
+class SecuredViewMixin:
+
+    def check_perms(self, request, obj=None, raise_exception=False):
+        if not self.permissions:
+            return True
+        for p in self.permissions:
+            if request.user.has_perm(p, obj):
+                return True
+        if raise_exception:
+            raise PermissionDenied('Sorry you have no access to this %s' % obj._meta.verbose_name)
+        return False
+
+
+class SelectedOrganizationMixin:
+
+    @cached_property
+    def selected_office(self):  # returns selected office and caches the office
+        office = Organization.objects.get(slug=self.kwargs['org'])
+        self.check_perms(self.request, office, True)
+        return office
+
+
+class SelectedProjectMixin:
+
+    @cached_property
+    def selected_project(self):
+        project = self.get_queryset().get(slug=self.kwargs['project'])
+        self.check_perms(self.request, project, True)
+        return project
 
 
 class ApplicationListMixin:

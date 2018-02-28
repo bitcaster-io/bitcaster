@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @admin.register(Application, site=site)
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'timezone', 'owner')
+    list_display = ('organization', 'name', 'timezone', )
+    list_filter = ('organization', )
     inlines = [ChannelInline, EventInline]
-    filter_horizontal = ('maintainers',)
     form = ApplicationForm

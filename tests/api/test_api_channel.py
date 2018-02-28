@@ -20,7 +20,7 @@ def test_channel_list(channel1):
 @pytest.mark.django_db
 def test_channel_create(application1):
     url = reverse('api:application-channel-list', [application1.pk])
-    client = client_factory(application1.owner)
+    client = client_factory(application1.organization.owner)
     res = client.post(url, {'name': 'Name1',
                             'handler': fqn(Email),
                             'config': {'server': 'smtp.mail.com',
@@ -65,7 +65,7 @@ def test_channel_create_wrong_owner(channel1, user2):
 def test_channel_create_invalid_handler(application1):
     """ channel creations needvalid against handler"""
     url = reverse('api:application-channel-list', [application1.pk])
-    client = client_factory(application1.owner)
+    client = client_factory(application1.organization.owner)
     res = client.post(url, {'name': 'Name1',
                             'handler': '---',
                             'config': {'server': 'smtp.mail.com',
@@ -80,7 +80,7 @@ def test_channel_create_invalid_handler(application1):
 def test_channel_create_invalid_handler_configuration(application1):
     """ channel creations need to be validated against handler validator"""
     url = reverse('api:application-channel-list', [application1.pk])
-    client = client_factory(application1.owner)
+    client = client_factory(application1.organization.owner)
     res = client.post(url, {'name': 'Name1',
                             'handler': '---',
                             'config': {'server': 'smtp.mail.com',
@@ -95,7 +95,7 @@ def test_channel_create_invalid_handler_configuration(application1):
 def test_channel_update_invalid(channel1):
     application1 = channel1.application
     url = reverse('api:application-channel-detail', [application1.pk, channel1.pk])
-    client = client_factory(application1.owner)
+    client = client_factory(application1.organization.owner)
     res = client.patch(url, {'name': 'Name21',
                              'config': {'server': '--',
                                         'sender': 'sender@mail.com',
@@ -111,7 +111,7 @@ def test_channel_enable_check_config(channel1):
     channel1.config = {}
     channel1.save()
     url = reverse('api:application-channel-detail', [application1.pk, channel1.pk])
-    client = client_factory(application1.owner)
+    client = client_factory(application1.organization.owner)
     res = client.patch(url, {'enabled': True})
     payload = res.json()
     assert res.status_code == 400, str(res.content)

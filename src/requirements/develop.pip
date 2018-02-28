@@ -1,5 +1,6 @@
 admin-extra-urls==1.8.0
 amqp==2.2.2
+appnope==0.1.0            # via ipython
 arrow==0.12.1             # via jinja2-time
 asn1crypto==0.24.0
 attrs==17.4.0
@@ -58,6 +59,7 @@ first==2.0.1              # via pip-tools
 flake8==3.5.0
 future==0.16.0            # via cookiecutter
 html5lib==1.0.1
+httpie==0.9.9
 httplib2==0.10.3
 idna==2.6
 ipython-genutils==0.2.0   # via traitlets
@@ -105,6 +107,7 @@ pytest-django==3.1.2
 pytest-echo==1.5.1
 pytest==3.4.1
 python-dateutil==2.6.1
+python-redis-lock[django]==3.2.0
 pytz==2018.3
 pyyaml==3.12
 raven==6.5.0

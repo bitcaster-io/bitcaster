@@ -27,5 +27,6 @@ oauth2client
 psycopg2-binary
 pycountry
 pycrypto
+python-redis-lock[django]
 raven
 redis

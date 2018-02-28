@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'constance',
     'django_countries',
     'adminfilters',
-    'bootstrap4',
 
     # Admin
     'django.contrib.admin',

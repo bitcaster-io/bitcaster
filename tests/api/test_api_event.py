@@ -21,7 +21,7 @@ def test_event_list(event1):
 @pytest.mark.django_db
 def test_event_create(application1):
     url = reverse('api:application-event-list', args=[application1.pk])
-    client = client_factory(application1.owner)
+    client = client_factory(application1.organization.owner)
     res = client.post(url, {'name': 'Event1'})
     assert res.status_code == 201, str(res.content)
     result = res.json()
@@ -33,7 +33,7 @@ def test_event_create(application1):
 def test_event_update(event1):
     application = event1.application
     url = reverse('api:application-event-detail', args=[application.pk, event1.pk])
-    client = client_factory(application.owner)
+    client = client_factory(application.organization.owner)
     res = client.put(url, {'name': 'Event21'})
     assert res.status_code == 200, str(res.content)
 
@@ -42,7 +42,7 @@ def test_event_update(event1):
 def test_event_delete(event1):
     application = event1.application
     url = reverse('api:application-event-detail', args=[application.pk, event1.pk])
-    client = client_factory(application.owner)
+    client = client_factory(application.organization.owner)
     res = client.delete(url)
     assert res.status_code == 204, str(res.content)
     with pytest.raises(Event.DoesNotExist):

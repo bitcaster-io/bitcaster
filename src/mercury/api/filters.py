@@ -25,8 +25,8 @@ class ApplicationOwnedFilter(BaseFilterBackend):
             return queryset
         if not request.user.is_authenticated:
             return []
-        return queryset.filter(Q(application__owner=request.user) |
-                               Q(application__maintainers=request.user))
+        return queryset.filter(Q(application__organization__owner=request.user) |
+                               Q(application__organization__members=request.user))
 
 
 class IsOwnerFilter(BaseFilterBackend):
@@ -39,7 +39,8 @@ class IsOwnerFilter(BaseFilterBackend):
         # else:
         if request.user.is_superuser:
             return queryset
-        return queryset.filter(Q(owner=request.user) | Q(maintainers=request.user))
+        return queryset.filter(Q(organization__owner=request.user) |
+                               Q(organization__members=request.user))
 
 
 class MasterChildFilterBackend(BaseFilterBackend):

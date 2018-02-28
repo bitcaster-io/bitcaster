@@ -31,9 +31,21 @@ def admin(db):
 
 
 @pytest.fixture
-def application1(user1):
+def organization1(user1):
+    from mercury.utils.tests.factories import OrganizationFactory
+    return OrganizationFactory(owner=user1)
+
+
+@pytest.fixture
+def organization2(user2):
+    from mercury.utils.tests.factories import OrganizationFactory
+    return OrganizationFactory(owner=user2)
+
+
+@pytest.fixture
+def application1(organization1):
     from mercury.utils.tests.factories import ApplicationFactory
-    return ApplicationFactory(owner=user1)
+    return ApplicationFactory(organization=organization1)
 
 
 @pytest.fixture
@@ -44,9 +56,9 @@ def maintaner1(application1):
 
 
 @pytest.fixture
-def application2(user2):
+def application2(organization2):
     from mercury.utils.tests.factories import ApplicationFactory
-    return ApplicationFactory(owner=user2)
+    return ApplicationFactory(organization=organization2)
 
 
 @pytest.fixture

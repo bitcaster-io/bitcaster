@@ -9,7 +9,8 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from strategy_field.utils import fqn, import_by_name
 
-from mercury.models import Application, Channel, Subscription, User
+from mercury.models import (Application, Channel,
+                            Organization, Subscription, User,)
 
 TEMPLATE_ENV = b"""
 ADMIN_EMAIL=
@@ -137,11 +138,12 @@ class Command(BaseCommand):
 
         self.stdout.write("Created superuser `sax` with password `{}`".format(pwd))
 
+        org, __ = Organization.objects.get_or_create(name='bitcaster',
+                                                     owner=admin)
         app, __ = Application.objects.get_or_create(name='Default Application',
-                                                    owner=admin,
-                                                    )
+                                                    organization=org)
         admin.tokens.create(application=app)
-        env_file = str(settings.PROJECT_DIR.path('.env'))
+        env_file = str(settings.PROJECT_DIR / '.env')
         if not os.path.exists(env_file):
             self.stderr.write(""""{0} has not found.
  Environment file has not been found and a new empty one has been created.
@@ -153,7 +155,7 @@ class Command(BaseCommand):
 
         if demo:
             env = environ.Env(ENABLE_SENTRY=False)
-            env_demo_file = str(settings.PROJECT_DIR.path('.demo'))
+            env_demo_file = str(settings.PROJECT_DIR / '.demo')
             if not os.path.exists(env_demo_file):
                 self.stderr.write(""""{0} has not found.
  Environment file has not been found and a new empty one has been created.

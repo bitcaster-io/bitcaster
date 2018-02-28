@@ -22,7 +22,7 @@ def test_message_list(subscription1):
 @pytest.mark.django_db
 def test_message_create(application1, event1, channel1):
     url = reverse('api:application-message-list', [application1.pk])
-    client = client_factory(application1.owner)
+    client = client_factory(application1.organization.owner)
     res = client.post(url, {'name': 'Name1',
                             'event': event1.pk,
                             'channels': [channel1.pk],

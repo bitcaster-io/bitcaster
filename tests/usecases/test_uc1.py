@@ -67,7 +67,7 @@ def test_access_owned_objects(live_server, demo):
     channel1 = message1.channels.first()
     channel2 = message2.channels.first()
 
-    client = Client(application1.owner, live_server)
+    client = Client(application1.organization.owner, live_server)
 
     # Anonmymous cannot access applications list
     url = reverse('api:application-list')

@@ -2,4 +2,5 @@ cookiecutter
 devpi-client
 pip-tools
 django-extensions
+httpie
 ipython

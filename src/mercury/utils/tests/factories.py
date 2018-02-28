@@ -154,25 +154,22 @@ class AdminFactory(UserFactory):
         ApiTokenFactory(user=self)
 
 
+class OrganizationFactory(factory.DjangoModelFactory):
+    name = factory.Sequence(lambda n: "Organization %03d" % n)
+    owner = factory.SubFactory(UserFactory)
+
+    class Meta:
+        model = models.Organization
+        django_get_or_create = ('name',)
+
+
 class ApplicationFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Application
         django_get_or_create = ('name',)
 
     name = factory.Sequence(lambda n: "Application %03d" % n)
-    owner = factory.SubFactory(UserFactory)
-
-    @factory.post_generation
-    def maintainers(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-        ApiTokenFactory(application=self, user=self.owner)
-        ApiTriggerKeyFactory(application=self)
-        if extracted:
-            # A list of groups were passed in, use them
-            for user in extracted:
-                self.maintainers.add(user)
+    organization = factory.SubFactory(OrganizationFactory)
 
 
 class ApiTriggerKeyFactory(factory.DjangoModelFactory):
