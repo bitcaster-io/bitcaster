@@ -16,6 +16,10 @@ recursive-include src/mercury *
 recursive-include src/requirements *.pip
 recursive-include tests *
 
+exclude Dockerfile
+exclude docker-compose.yml
+exclude .dockerignore
+
 exclude hooks
 exclude extras
 exclude plugins

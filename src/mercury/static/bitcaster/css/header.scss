@@ -62,26 +62,29 @@ header {
     }
   }
   .dropdown-menu {
-    &:before {
-      border-left: 9px solid transparent;
-      border-right: 9px solid transparent;
-      border-bottom: 9px solid rgba(52, 60, 69, .35);
-      top: -9px;
-      left: 11px;
-      z-index: -2;
-      width: 0;
-      height: 0;
-      content: "";
-      display: block;
-      position: absolute;
-    }
-    &:after {
-      width: 0;
-      height: 0;
-      content: "";
-      display: block;
-      position: absolute;
-    }
+    top: 8px !important;
+    left: 1px !important;
+    min-width: 10px;
+    //&:before {
+    //  border-left: 9px solid transparent;
+    //  border-right: 9px solid transparent;
+    //  border-bottom: 9px solid rgba(52, 60, 69, .35);
+    //  top: -9px;
+    //  left: 11px;
+    //  z-index: -2;
+    //  width: 0;
+    //  height: 0;
+    //  content: "";
+    //  display: block;
+    //  position: absolute;
+    //}
+    //&:after {
+    //  width: 0;
+    //  height: 0;
+    //  content: "";
+    //  display: block;
+    //  position: absolute;
+    //}
   }
   // -.dropdown-menu
 }

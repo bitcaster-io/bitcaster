@@ -21,3 +21,6 @@ before_success:
 after_success:
   - coverage combine
   - codecov
+
+notifications:
+    slack: bitcaster-io:lfI1bJDyLzctx1Jp5H2arJKY

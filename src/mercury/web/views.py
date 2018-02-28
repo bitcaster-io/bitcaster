@@ -2,11 +2,17 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import (LoginView as _LoginView,
                                        LogoutView as _LogoutView,)
 from django.core.exceptions import PermissionDenied
+from django.forms import modelform_factory
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
-from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, UpdateView,)
+from django.views.generic.base import View
 
-from mercury.models import Application, Organization, Subscription
+from mercury.admin.forms import UserCreationForm
+from mercury.models import Application, Organization, Subscription, User
+from mercury.utils.wsgi import get_client_ip
 
 
 class LogoutView(_LogoutView):
@@ -44,7 +50,8 @@ class SelectedProjectMixin:
         return project
 
 
-class ApplicationListMixin:
+@method_decorator(login_required, name='dispatch')
+class ApplicationListMixin(View):
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
         ret['applications'] = Application.objects.all()
@@ -55,8 +62,8 @@ class LoginView(_LoginView):
     template_name = 'bitcaster/login.html'
 
 
-class HomeView(ApplicationListMixin, TemplateView):
-    template_name = 'bitcaster/index.html'
+class MercuryTemplateView(ApplicationListMixin, TemplateView):
+    pass
 
 
 @method_decorator(login_required, name='dispatch')
@@ -70,3 +77,40 @@ class SubscriptionList(ApplicationListMixin, ListView):
 
     def get_queryset(self):
         return Subscription.objects.filter(subscriber=self.request.user)
+
+
+class UserProfile(UpdateView):
+    template_name = 'bitcaster/users/profile.html'
+    model = User
+    form_class = UserCreationForm
+    success_url = reverse_lazy('home')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_form_class(self):
+        fields = UserCreationForm._meta.fields
+        return modelform_factory(User, fields=fields)
+
+
+class UserRegister(CreateView):
+    template_name = 'bitcaster/users/register.html'
+    model = User
+    form_class = UserCreationForm
+    success_url = reverse_lazy('home')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        remote_ip = get_client_ip(self.request)
+        initial['language'] = self.request.LANGUAGE_CODE
+        if remote_ip:
+            from geolite2 import geolite2
+            reader = geolite2.reader()
+            match = reader.get(remote_ip)
+            if match:
+                # code = match['country']['iso_code'].lower()
+                # c = pycountry.languages.get(alpha_2=code)
+                # initial['language'] = c.alpha_2.lower()
+                initial['country'] = match['country']['iso_code']
+                initial['timezone'] = match['location']['time_zone']
+        return initial

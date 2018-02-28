@@ -5,6 +5,8 @@ from urllib.parse import parse_qs
 from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls.static import static
+# from mercury.admin import site
+from django.contrib.admin import site
 from django.http import HttpResponse
 from django.urls import path, re_path
 from django.views.static import serve
@@ -13,7 +15,6 @@ from strategy_field.utils import import_by_name
 
 import mercury.api.urls
 import mercury.web.urls
-from mercury.admin import site
 
 
 def plugin_icon(request, fqn):
@@ -36,7 +37,6 @@ def oauth2callback(request):
 
 urlpatterns = [path(r'api/', include(mercury.api.urls), name='api'),
                path(r'oauth2callback/', oauth2callback),
-               # path(r'sys/', include(django_sysinfo.urls)),
                path('admin/info/html/', admin_sysinfo, name="admin_info"),
                path('info/json/', http_basic_login(sysinfo), name="sys-info"),
 
@@ -48,4 +48,4 @@ urlpatterns = [path(r'api/', include(mercury.api.urls), name='api'),
                re_path('plugins/icon/(?P<fqn>.*)', plugin_icon, name="plugin-icon"),
 
                ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT,
-                       show_indexes=True)
+                          show_indexes=True)

@@ -1,27 +1,27 @@
 version: '3'
 
 services:
-  web:
-    build: .
-    command: python3 manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-      - redis
-      - sentry
-
+#  web:
+#    build: .
+#    command: python3 manage.py runserver 0.0.0.0:8000
+#    volumes:
+#      - .:/code
+#    ports:
+#      - "${DOCKER_WEB_PORT}:8000"
+#    depends_on:
+#      - db
+#      - redis
+#      - sentry
+#
   redis:
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - "${DOCKER_REDIS_PORT}:6379"
 
   db:
     image: mdillon/postgis
     ports:
-      - "5432:5432"
+      - "${DOCKER_POSTGRES_PORT}:5432"
     environment:
       POSTGRES_PASSWORD:
       POSTGRES_USER: postgres
@@ -43,7 +43,7 @@ services:
       - "redis:redis"
       - "db:postgres"
     ports:
-      - 9000:9000
+      - ${DOCKER_SENTRY_PORT}:9000
     volumes:
       - ${DOCKER_SENTRY_DATA}:/conf
     restart: unless-stopped

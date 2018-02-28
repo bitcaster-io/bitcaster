@@ -13,9 +13,23 @@ MERCURY_DIR = Path(__file__).parent.parent.parent  # (mercury/config/settings/ba
 PROJECT_DIR = MERCURY_DIR.parent.parent
 APPS_DIR = MERCURY_DIR
 
+
 # Load operating system environment variables and then prepare to use them
-env = environ.Env(ENABLE_SENTRY=False,
-                  MERCURY_PLUGINS_AUTOLOAD=True)
+class Env2(environ.Env):
+    def get_value(self, var, cast=None, default=environ.Env.NOTSET, parse_default=False):
+        import re
+        value = super().get_value(var, cast, default, parse_default)
+        # Resolve any proxied values
+        if hasattr(value, 'startswith') and '${' in value:
+            m = environ.re.search(r'(\${(.*?)})', value)
+            while m:
+                value = re.sub(re.escape(m.group(1)), self.get_value(m.group(2)), value)
+                m = environ.re.search(r'(\${(.*?)})', value)
+        return value
+
+
+env = Env2(ENABLE_SENTRY=False,
+           MERCURY_PLUGINS_AUTOLOAD=True)
 
 # .env file, should load only in development environment
 # READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=False)
@@ -54,7 +68,7 @@ INSTALLED_APPS = [
     'constance',
     'django_countries',
     'adminfilters',
-
+    'social_django',
     # Admin
     'django.contrib.admin',
 
@@ -166,6 +180,8 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 'mercury.context_processors.bitcaster',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
                 # Your stuff: custom template context processors go here
             ],
         },
@@ -257,7 +273,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 # Custom user app defaults
 # Select the correct user model
 LOGIN_REDIRECT_URL = 'users:redirect'
-LOGIN_URL = 'admin:login'
+LOGIN_URL = 'login'
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = r'^admin/'
@@ -395,3 +411,50 @@ SYSINFO = {"host": True,
            "checks": None,
            "extra": {'plugins': get_plugins}
            }
+# SOCIAL-AUTH
+SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
+    # 'social_core.backends.open_id.OpenIdAuth',
+    # 'social_core.backends.google.GoogleOpenId',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.linkedin.LinkedinOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    # 'social_core.backends.google.GoogleOAuth',
+    # 'social_core.backends.twitter.TwitterOAuth',
+    # 'social_core.backends.yahoo.YahooOpenId',
+    # ...
+)
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'mercury.social_auth.associate',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
+SOCIAL_AUTH_LOGIN_URL = '/login-url/'
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/new-user/'
+SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/new-association-redirect-url/'
+SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/account-disconnected-redirect-url/'
+SOCIAL_AUTH_INACTIVE_USER_URL = '/inactive-user/'
+SOCIAL_AUTH_USER_MODEL = 'mercury.User'
+SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + SOCIAL_AUTH_AUTHENTICATION_BACKENDS
+SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email', 'first_name', 'last_name']
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
+                                   'https://www.googleapis.com/auth/userinfo.profile',
+                                   ]
+SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
+    'access_type': 'offline'
+}

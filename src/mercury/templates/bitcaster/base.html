@@ -24,7 +24,7 @@
         {% block header %}
             <header>
                 <div class="logo text-center">
-                    bitcaster
+                    <a href="/">bitcaster</a>
                 </div>
                 {% if user.is_authenticated %}
                     <span class="top-menu">
@@ -43,7 +43,7 @@
                         </div>
                     </span>
                     {% block user-menu %}
-                    <span class="pull-right user-menu ">
+                        <span class="pull-right user-menu ">
                         <div class="dropdown">
                             <a class="dropdown-toggle2"
                                href="#" role="button"
@@ -55,6 +55,7 @@
                                 {% if user.is_superuser %}
                                     <a class="dropdown-item" href="{% url "admin:index" %}">Admin</a>
                                 {% endif %}
+                                <a class="dropdown-item" href="{% url "user-profile" %}">Profile</a>
                                 <a class="dropdown-item" href="#">Settings</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
@@ -105,9 +106,11 @@
                             <a href="//bitcaster.io/"><img src="{% asset "logos/bitcaster32.png" %}"></a>
                         </div>
                         <div class="col-sm justify-content-end">
-                            <span class="pull-right">
-                            <a class="d-none d-md-block" href="/api/">API</a>
-                            </span>
+                            {% if user.is_authenticated %}
+                                <span class="pull-right">
+                                    <a class="d-none d-md-block" href="/api/">API</a>
+                                </span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
