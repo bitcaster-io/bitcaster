@@ -1,5 +1,5 @@
 {# Load the tag library #}
-{% load bootstrap4 bc_assets %}
+{% load bc_assets %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -26,9 +26,9 @@
                 <div class="logo text-center">
                     bitcaster
                 </div>
+                {% if user.is_authenticated %}
 
-                <span class="top-menu">
-{#                    <i class="fa fa-bars pointer" data-toggle="collapse" onclick="$('#sidebar').toggle()"></i>#}
+                    <span class="top-menu">
                     <div class="dropdown">
                         <a class="dropdown-toggle2"
                            href="#" role="button"
@@ -43,9 +43,8 @@
                         </div>
                     </div>
                 </span>
-                {% block user-menu %}
-                    <span class="pull-right user-menu ">
-                {% if user.is_authenticated %}
+                    {% block user-menu %}
+                        <span class="pull-right user-menu ">
                     <div class="dropdown">
                         <a class="dropdown-toggle2"
                            href="#" role="button"
@@ -54,20 +53,17 @@
                         {{ user }}<i class="fa fa-angle-down"></i>
                       </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuLink">
-                {% if user.is_superuser %}
-                    <a class="dropdown-item" href="{% url "admin:index" %}">Admin</a>
-                {% endif %}
-
+                            {% if user.is_superuser %}
+                                <a class="dropdown-item" href="{% url "admin:index" %}">Admin</a>
+                            {% endif %}
                             <a class="dropdown-item" href="#">Settings</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
                         </div>
                     </div>
-                {% else %}
-                    <a href="{% url 'login' %}">Login</a>
-                {% endif %}
             </span>
-                {% endblock user-menu %}
+                    {% endblock user-menu %}
+                {% endif %}
             </header>
         {% endblock header %}
         <div class="container-fluid main-content">

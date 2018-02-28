@@ -4,8 +4,9 @@ from django.core.signals import request_finished
 from django.db import models
 
 from mercury.fields import EncryptedPickledObjectField
-from mercury.models import Organization
-from mercury.models.base import sane_repr
+
+from .base import sane_repr
+from .organization import Organization
 
 
 class OptionManager(models.Manager):
