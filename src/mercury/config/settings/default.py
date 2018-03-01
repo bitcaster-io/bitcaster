@@ -103,6 +103,12 @@ DEBUG = env.bool('DJANGO_DEBUG', False)
 EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
                     default='django.core.mail.backends.smtp.EmailBackend')
 
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = env('EMAIL_PORT')
+
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
@@ -264,6 +270,7 @@ CACHES = {
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
+    'mercury.backends.BitcasterBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 # Some really nice defaults
@@ -298,7 +305,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'mercury.permissions.TokenAuthentication',
+        'mercury.api.permissions.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
@@ -413,7 +420,6 @@ SYSINFO = {"host": True,
            "extra": {'plugins': get_plugins}
            }
 
-
 # SOCIAL-AUTH
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
     # 'social_core.backends.open_id.OpenIdAuth',
@@ -475,3 +481,10 @@ SOCIAL_AUTH_GITHUB_SECRET = env('SOCIAL_AUTH_GITHUB_SECRET')
 # DJANGO-RECAPTCHA
 RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')
+os.environ['RECAPTCHA_DISABLE'] = 'True'
+
+# DJANGO-REGISTRATION
+ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window; you may, of course, use a different value.
+
+OTP_KEY = 'A' * 32
+CONFIRM_EMAIL_EXPIRE= 60 * 60 * 24  # 1 day

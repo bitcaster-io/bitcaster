@@ -12,8 +12,10 @@
 
             <div class="row">
                 <div class="col-xl-10 offset-xl-1">
+                    <img src="{% asset "/logos/bitcaster32.png" %}">
+                </div>
+                <div class="col-xl-10 offset-xl-1">
                     <h1 class=" color-white">Sign up for bitcaster</h1>
-
                     <p class="mb-0 color-purple-light family-mono">
                         Fire your events everywhere, by all means
                     </p>
@@ -25,30 +27,15 @@
         </div>
     </section>
     <div class="container-fluid">
-        {#        <div>#}
-        {#            <div class="col-12 social-auth">#}
-        {#                Register with:#}
-        {#                <div class="row  justify-content-center">#}
-        {#                    <a href="{% url "social:begin" "google-oauth2" %}">#}
-        {#                        <img src="{% asset "social_auth_google.png" %}">#}
-        {#                    </a>#}
-        {#                    <a href="{% url "social:begin" "github" %}">#}
-        {#                        <img src="{% asset "social_auth_github.png" %}">#}
-        {#                    </a>#}
-        {#                    <a href="{% url "social:begin" "linkedin" %}">#}
-        {#                        <img src="{% asset "social_auth_linkedin.png" %}">#}
-        {#                    </a>#}
-        {#                </div>#}
-        {#            </div>#}
-        {#        </div>#}
-        {#        <div class="row col-12 pl-3 justify-content-center">#}
-        {#            OR#}
-        {#        </div>#}
         <div class="col-12">
             <form method="post">
                 {% csrf_token %}
                 {{ form|crispy }}
                 {{ org_form|crispy }}
+                <div>
+                    I agree to the <a href="{% url "legal-terms" %}">Terms of Service</a>
+                    and the <a href="{% url "legal-privacy" %}">Privacy Policy</a>
+                </div>
                 <input type="submit" value="Register" class="btn btn-primary">
             </form>
         </div>

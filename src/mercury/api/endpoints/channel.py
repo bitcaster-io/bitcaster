@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from mercury import logging
-from mercury.api.endpoints.base import BaseModelViewSet
-from mercury.api.filters import ApplicationOwnedFilter
-from mercury.api.serializers import ChannelSerializer
 from mercury.models import Channel
-from mercury.permissions import IsApplicationRelated
+
+from ..filters import ApplicationOwnedFilter
+from ..permissions import IsApplicationRelated
+from ..serializers import ChannelSerializer
+from .base import BaseModelViewSet
 
 logger = logging.getLogger(__name__)
 

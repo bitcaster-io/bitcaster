@@ -60,7 +60,7 @@ pyparsing==2.2.0          # via packaging
 python-redis-lock[django]==3.2.0
 python3-openid==3.1.0     # via social-auth-core
 pytz==2018.3              # via celery, django, django-sysinfo, django-timezone-field
-raven==6.5.0
+raven==6.6.0
 redis==2.10.6
 requests-oauthlib==0.8.0  # via social-auth-core
 requests==2.18.4          # via django-fobi, django-recaptcha2, requests-oauthlib, social-auth-core

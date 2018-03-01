@@ -47,7 +47,7 @@ RESERVED_NAMES = frozenset(('bitcaster', 'sax', 'mercury',
                             'subscribe', 'enterprise', 'about', 'jobs', 'thanks', 'guide',
                             'privacy', 'security', 'terms', 'from', 'sponsorship', 'for',
                             'at', 'platforms', 'branding', 'vs', 'answers', '_admin',
-                            'support',
+                            'support', 'register', 'user', 'profile',
                             ))
 
 RESERVED_ORGANIZATION_NAME = frozenset(RESERVED_NAMES)

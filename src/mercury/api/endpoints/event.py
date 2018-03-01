@@ -3,13 +3,14 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from mercury import logging
-from mercury.api.endpoints.base import BaseModelViewSet
-from mercury.api.filters import ApplicationFilterBackend
-from mercury.api.serializers import EventSerializer
 from mercury.models import Event
-from mercury.permissions import (EventTriggerPermission, IsApplicationRelated,
-                                 TriggerTokenAuthentication,)
 from mercury.tasks import trigger_event
+
+from ..filters import ApplicationFilterBackend
+from ..permissions import (EventTriggerPermission, IsApplicationRelated,
+                           TriggerTokenAuthentication,)
+from ..serializers import EventSerializer
+from .base import BaseModelViewSet
 
 logger = logging.getLogger(__name__)
 

@@ -2,6 +2,7 @@
 from .default import *  # noqa
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['RECAPTCHA_DISABLE'] = 'True'
 
 # DEBUG
 # ------------------------------------------------------------------------------

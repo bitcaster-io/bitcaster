@@ -9,8 +9,8 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
 from mercury.models import Application
-from mercury.permissions import (CsrfExemptSessionAuthentication,
-                                 TokenAuthentication,)
+
+from ..permissions import CsrfExemptSessionAuthentication, TokenAuthentication
 
 
 class BaseViewSet(viewsets.ViewSet):

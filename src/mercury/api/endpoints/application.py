@@ -5,11 +5,12 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from mercury import logging
-from mercury.api.endpoints.base import BaseModelViewSet
-from mercury.api.filters import IsOwnerFilter
-from mercury.api.serializers import ApplicationSerializer
 from mercury.models import ApiAuthToken, Application
-from mercury.permissions import IsOwner, IsOwnerOrMaintainter
+
+from ..filters import IsOwnerFilter
+from ..permissions import IsOwner, IsOwnerOrMaintainter
+from ..serializers import ApplicationSerializer
+from .base import BaseModelViewSet
 
 logger = logging.getLogger(__name__)
 

@@ -1,0 +1,12 @@
+{% extends "bitcaster/emails/base.html" %}
+
+{% load i18n %}
+
+{% block main %}
+    <h3>Confirm Email</h3>
+    {% if is_new_user %}
+        <p>Thanks for signing up for Bitcaster!</p>
+    {% endif %}
+    <p>Please confirm your email ({{ confirm_email }}) by clicking the button below. This link will expire in 48 hours.</p>
+    <a href="{{ url }}" class="btn confirmation">Confirm</a>
+{% endblock %}

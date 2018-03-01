@@ -1,7 +1,7 @@
 import pytz
 from rest_framework.response import Response
 
-from mercury.api.endpoints.base import BaseViewSet
+from .base import BaseViewSet
 
 
 class TimezoneViewSet(BaseViewSet):

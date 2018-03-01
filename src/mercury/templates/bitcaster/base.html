@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     {% block css %}
-    <link rel="stylesheet" href="{% asset "dist/bitcaster.css" %}">
+        <link rel="stylesheet" href="{% asset "dist/bitcaster.css" %}">
     {% endblock %}
     {% block js %}{% endblock %}
 
@@ -27,6 +27,8 @@
                 </div>
                 {% if user.is_authenticated %}
                     <span class="top-menu">
+
+{% if organization %}
                         <div class="dropdown">
                             <a class="dropdown-toggle2"
                                href="#" role="button"
@@ -36,10 +38,26 @@
                             </a>
                             <div class="dropdown-menu dropdown-menu-left" aria-labelledby="appMenuLink">
                                 {% for app in applications %}
-                                    <a class="dropdown-item" href="{% url "app-index" app.pk %}">{{ app.name }}</a>
+                                    <a class="dropdown-item" href="{% url "app-index" organization.slug app.slug %}">{{ organization.name }}/{{ app.name }}</a>
                                 {% endfor %}
                             </div>
                         </div>
+{% else %}
+    <div class="dropdown">
+                            <a class="dropdown-toggle2"
+                               href="#" role="button"
+                               id="appMenuLink" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                Organizations <i class="fa fa-angle-down"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="appMenuLink">
+                                {% for org in user.organizations.all %}
+                                    <a class="dropdown-item" href="{% url "org-index" org.slug %}">{{ org.name }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+{% endif %}
                     </span>
                     {% block user-menu %}
                         <span class="pull-right user-menu ">
@@ -67,32 +85,32 @@
         {% endblock header %}
 
         <div class="container-fluid main-content">
-        {% block page %}
-{#            {% block sidebar %}#}
-{#                <div class="row d-flex d-md-block flex-nowrap wrapper">#}
-{#                    <div class="float-left pl-0 collapse width show" id="sidebar">#}
-{#                        {% if user.is_authenticated %}#}
-{#                            <div class="list-group">#}
-{#                                <div class="col-md-2 org-sidebar">#}
-{#                                    <div>#}
-{#                                        <ul class="nav nav-stacked">#}
-{#                                            <li><a href="{% url 'user-subscriptions' %}">Subscriptions</a></li>#}
-{#                                            <li><a href="#">Events</a></li>#}
-{#                                            <li><a href="#">Applications</a></li>#}
-{#                                        </ul>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        {% endif %}#}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endblock sidebar %}#}
-{#            <div class="page-content">#}
-{#                {% block content %}#}
-{#                {% endblock content %}#}
-{##}
-{#            </div>#}
-        {% endblock page %}
+            {% block page %}
+                {#            {% block sidebar %}#}
+                {#                <div class="row d-flex d-md-block flex-nowrap wrapper">#}
+                {#                    <div class="float-left pl-0 collapse width show" id="sidebar">#}
+                {#                        {% if user.is_authenticated %}#}
+                {#                            <div class="list-group">#}
+                {#                                <div class="col-md-2 org-sidebar">#}
+                {#                                    <div>#}
+                {#                                        <ul class="nav nav-stacked">#}
+                {#                                            <li><a href="{% url 'user-subscriptions' %}">Subscriptions</a></li>#}
+                {#                                            <li><a href="#">Events</a></li>#}
+                {#                                            <li><a href="#">Applications</a></li>#}
+                {#                                        </ul>#}
+                {#                                    </div>#}
+                {#                                </div>#}
+                {#                            </div>#}
+                {#                        {% endif %}#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#            {% endblock sidebar %}#}
+                {#            <div class="page-content">#}
+                {#                {% block content %}#}
+                {#                {% endblock content %}#}
+                {##}
+                {#            </div>#}
+            {% endblock page %}
         </div>
         {% block footer %}
             <footer>

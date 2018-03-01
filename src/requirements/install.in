@@ -24,6 +24,7 @@ django-rest-framework-nested
 drfpasswordless
 jsonfield
 maxminddb-geolite2
+oath
 oauth2client
 psycopg2-binary
 pycountry

@@ -1,0 +1,14 @@
+{% extends "bitcaster/app.html" %}
+{% block page %}
+    {% if not valid %}
+        There was an error confirming your email. Please try again
+        <form method="post">
+         {% csrf_token %}
+            <input type="submit" value="Resend">
+        </form>
+        {# TODO: add form to resend email here #}
+    {% else %}
+        {# Email confirmed. Step1: Create Application #}
+        Create application
+    {% endif %}
+{% endblock %}

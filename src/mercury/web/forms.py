@@ -10,16 +10,15 @@ import json
 
 from django import forms
 from django.contrib.auth import password_validation
-from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
-                                       UserCreationForm as _UserCreationForm)
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.forms import (UserCreationForm as _UserCreationForm,)
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.forms import Form, PasswordInput
 from django.forms.utils import ErrorList
+from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from jsoneditor.forms import JSONEditor
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRFValidationError
@@ -27,21 +26,20 @@ from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from mercury.configurable import get_full_config
-from mercury.models import Application, Channel, Event, Subscription, User
-from mercury.models.organizationmember import OrganizationRole
+from mercury.models import (Application, Channel, Event,
+                            Organization, Subscription, User,)
 from mercury.utils import import_by_name
 from mercury.utils.language import flatten
-
-from mercury.models import Organization
 
 
 class RegistrationForm(forms.Form):
     name = forms.CharField()
     email = forms.EmailField()
     password = forms.CharField(widget=PasswordInput)
-    organization = forms.CharField(help_text="If you're signing up for a personal account, try using your own name.")
+    organization = forms.CharField(help_text=_("If you're signing up for a personal account, try using your own name."))
     billing_email = forms.EmailField(required=False,
-        help_text="If provided, we will send all billing-related notifications to this address.")
+                                     help_text=_(
+                                         "If provided, we will send all billing-related notifications to this address."))
     terms = forms.BooleanField()
     captcha = ReCaptchaField(widget=ReCaptchaWidget())
 
@@ -60,19 +58,6 @@ class RegistrationForm(forms.Form):
         if Organization.objects.filter(name__iexact=value).exists():
             raise forms.ValidationError(_('This Organization name is already used.'))
         return value.lower()
-
-    @transaction.atomic()
-    def save(self, commit=True):
-        u = User.objects.create(email=self.cleaned_data['email'],
-                                name=self.cleaned_data['name'],
-                                password=make_password(self.cleaned_data['password']),
-                                )
-        org = Organization.objects.create(name=self.cleaned_data['organization'],
-                                    billing_email=self.cleaned_data['billing_email'],
-                                    owner=u
-                                    )
-        org.add_member(u, OrganizationRole.OWNER)
-        return org
 
 
 class OrganizationForm(forms.ModelForm):

@@ -3,10 +3,11 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from mercury import logging
-from mercury.api.endpoints.base import BaseModelViewSet
-from mercury.api.filters import UserFilterBackend
-from mercury.api.serializers import SubscriptionSerializer
 from mercury.models.subscription import Subscription
+
+from ..filters import UserFilterBackend
+from ..serializers import SubscriptionSerializer
+from .base import BaseModelViewSet
 
 logger = logging.getLogger(__name__)
 

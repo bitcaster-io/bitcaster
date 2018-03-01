@@ -5,12 +5,13 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from mercury import logging
-from mercury.api.endpoints.base import BaseModelViewSet
-from mercury.api.filters import IsAdministratorOrSameUser
-from mercury.api.serializers import (CreateUserSerializer,
-                                     PasswordSerializer, UserSerializer,)
 from mercury.models import User
-from mercury.permissions import DjangoModelPermissions, SameUser
+
+from ..filters import IsAdministratorOrSameUser
+from ..permissions import DjangoModelPermissions, SameUser
+from ..serializers import (CreateUserSerializer,
+                           PasswordSerializer, UserSerializer,)
+from .base import BaseModelViewSet
 
 logger = logging.getLogger(__name__)
 

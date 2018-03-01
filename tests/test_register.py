@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import pytest
+from django.core import mail
 from rest_framework.reverse import reverse
 from faker import Faker
-
+from requests_html import HTML
 from mercury.models import User, Organization
 from mercury.models.organizationmember import OrganizationRole, OrganizationMember
 
@@ -22,7 +23,7 @@ def test_registration(django_app):
     res.form['billing_email'] = billing_email
     res.form['terms'] = True
     res = res.form.submit()
-    assert res.status_code == 302, res.showbrowser()
+    assert res.status_code == 302
 
     user = User.objects.filter(email=user_email).first()
     org = Organization.objects.filter(billing_email=billing_email).first()
@@ -32,3 +33,15 @@ def test_registration(django_app):
     assert org.owner == user
     assert OrganizationMember.objects.get(organization=org,
         user__email=user_email).role == int(OrganizationRole.OWNER)
+
+    assert len(mail.outbox) == 1
+    assert mail.outbox[0].subject == '[Bitcaster] Confirm Email'
+    # get confirmation email from url
+    html = HTML(html=mail.outbox[0].alternatives[0][0])
+    link = html.find('a[class~=confirmation]')[0]
+    url = link.attrs['href']
+    # FIXME: remove me (print)
+    print(111,  url)
+    res = django_app.get(url)
+    # FIXME: remove me (print)
+    print(111, res)
