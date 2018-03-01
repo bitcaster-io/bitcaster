@@ -180,6 +180,7 @@ class Command(BaseCommand):
             def create_user(prefix):
                 defs = dict(name=env(f'{prefix}_NAME'),
                             friendly_name=env(f'{prefix}_FRIENDLY_NAME'),
+                            password=make_password('123'),
                             )
                 return User.objects.get_or_create(email=env(f'{prefix}_EMAIL'),
                                                   defaults=defs)[0]

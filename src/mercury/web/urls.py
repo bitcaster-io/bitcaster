@@ -1,11 +1,13 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
+from mercury.web.views.setup import SetupView
 from .views import (ApplicationDetail, ChannelList, EventList, LoginView,
                     LogoutView, MessageList, OrganizationDetail,
                     SubscriptionList, UserProfile, UserRegister, confirm_email,)
 
 urlpatterns = [
+    path(r'setup/', SetupView.as_view(), name='setup'),
     path(r'login/', LoginView.as_view(), name='login'),
     path(r'logout/', LogoutView.as_view(), name='logout'),
 

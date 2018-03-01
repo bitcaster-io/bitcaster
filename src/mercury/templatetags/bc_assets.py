@@ -38,4 +38,4 @@ def asset(path):
         {% static variable_with_path as varname %}
     """
     commit = mercury.get_full_version()
-    return absolute_uri(get_asset_url(f"{path}?{commit}"))
+    return get_asset_url(f"{path}?{commit}")

@@ -79,6 +79,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE = [
+    'mercury.middleware.setup.SetupMiddleware',
     'mercury.middleware.env.MercuryEnvMiddleware',
     'mercury.middleware.security.SecurityHeadersMiddleware',
     'django.middleware.security.SecurityMiddleware',

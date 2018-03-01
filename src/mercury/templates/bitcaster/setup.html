@@ -1,0 +1,6 @@
+{% extends "bitcaster/modal.html" %}{% load crispy_forms_tags crispy_forms_field %}
+{% block modal %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-primary" value="Save Configuration">
+{% endblock %}
+

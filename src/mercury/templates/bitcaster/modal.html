@@ -1,0 +1,24 @@
+{% extends "bitcaster/base.html" %}
+{% load i18n crispy_forms_tags bc_assets %}
+
+{#{% block header %}{% endblock header %}#}
+{% block footer %}{% endblock footer %}
+{% block sidebar %}{% endblock sidebar %}
+{% block page %}
+    <div class="container">
+    <div class="row col-12 justify-content-center align-items-center">
+        <div class="box box-modal login-form col-6 p-3">
+            {% block modal-header %}
+                <div class="box box-header">
+                    <a href="//bitcaster.io/"><img src="{% asset "logos/bitcaster32.png" %}">
+                        bitcaster
+                    </a>
+                </div>
+            {% endblock modal-header %}
+            <div class="container-fluid p-3">
+                {% block modal %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

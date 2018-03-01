@@ -10,7 +10,7 @@ import json
 
 from django import forms
 from django.contrib.auth import password_validation
-from django.contrib.auth.forms import UserCreationForm as _UserCreationForm
+from django.contrib.auth.forms import UserCreationForm as _UserCreationForm, UserChangeForm as _UserChangeForm
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError
 from django.forms import Form, PasswordInput
@@ -65,7 +65,7 @@ class OrganizationForm(forms.ModelForm):
         fields = ("name", 'slug', 'billing_email')
 
 
-class UserChangeForm(forms.ModelForm):
+class UserChangeForm(_UserChangeForm):
     last_password_change = forms.DateTimeField(disabled=True, required=False)
     date_joined = forms.DateTimeField(disabled=True, required=False)
     last_login = forms.DateTimeField(disabled=True, required=False)
