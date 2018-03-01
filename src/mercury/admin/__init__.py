@@ -6,3 +6,4 @@ from .event import EventAdmin  # noqa
 from .message import MessageAdmin  # noqa
 from .security import ApiAuthTokenAdmin, ApiTriggerKeyAdmin, UserAdmin  # noqa
 from .subscription import SubscriptionAdmin  # noqa
+from .organization import OrganizationAdmin  # noqa

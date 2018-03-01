@@ -22,10 +22,10 @@ urlpatterns = [
     path(r'new-association/', TemplateView.as_view(template_name='bitcaster/new-association.html')),
 
     path(r'', include('social_django.urls', namespace='social')),
-    path(r'home/',
-         MercuryTemplateView.as_view(template_name='bitcaster/home.html'),
-         name='home'),
-    path(r'', TemplateView.as_view(template_name='bitcaster/index.html'),
+    # path(r'home/',
+    #      MercuryTemplateView.as_view(template_name='bitcaster/home.html'),
+    #      name='home'),
+    path(r'', MercuryTemplateView.as_view(template_name='bitcaster/index.html'),
          name='index'),
 
 ]

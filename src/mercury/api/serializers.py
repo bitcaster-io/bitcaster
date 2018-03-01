@@ -58,7 +58,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'last_name', 'first_name', 'email', 'username',
+        fields = ('id', 'last_name', 'first_name', 'email',
                   'password2', 'password',)
         write_only_fields = ('password', 'password2')
         read_only_fields = ('id',)
@@ -75,7 +75,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['last_name', 'first_name', 'username', 'email', 'id',
+        fields = ['name', 'email', 'id',
                   'timezone', 'language',
                   ]
         read_only_fields = ['id', ]
@@ -87,7 +87,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserSerializerLight(UserSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ['id', 'name', 'email']
 
 
 # class MaintainerSerializer(serializers.ModelSerializer):

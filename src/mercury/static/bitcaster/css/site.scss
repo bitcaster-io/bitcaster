@@ -10,6 +10,11 @@
   font-style: normal;
 }
 
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px white inset;
+    background-color: inherit;
+}
+
 body {
   font: normal normal normal 16px/1 platformicons;
   text-rendering: auto;
@@ -17,7 +22,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   //box-sizing: border-box;
 }
+.page{
 
+}
 .page-content{
   padding: 10px;
   padding-left: 200px;

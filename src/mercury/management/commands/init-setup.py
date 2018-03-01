@@ -39,9 +39,8 @@ DEBUG=True
 DATABASE_URL=psql://postgres:@127.0.0.1:5432/mercury
 MERCURY_SECRET_KEY=123
 
-USER1_USERNAME=
-USER1_FIRST_NAME=
-USER1_LAST_NAME=
+USER1_NAME=
+USER1_FRIENDLY_NAME=
 USER1_EMAIL=
 USER1_WHATSAPP=
 USER1_TWILIO=
@@ -50,9 +49,8 @@ USER1_IRC_RECIPIENT=
 USER1_XMPP_RECIPIENT=
 USER1_SKYPE_RECIPIENT=
 
-USER2_USERNAME=
-USER2_FIRST_NAME=
-USER2_LAST_NAME=
+USER2_NAME=
+USER2_FRIENDLY_NAME=
 USER2_EMAIL=
 USER2_WHATSAPP=
 USER2_TWILIO=
@@ -131,7 +129,7 @@ class Command(BaseCommand):
         else:
             pwd = ModelUser.objects.make_random_password()
 
-        admin, __ = ModelUser.objects.get_or_create(username='sax',
+        admin, __ = ModelUser.objects.get_or_create(email='sax@saxix.org',
                                                     defaults=dict(is_superuser=True,
                                                                   is_staff=True,
                                                                   password=make_password(pwd)))
@@ -167,12 +165,10 @@ class Command(BaseCommand):
             env.read_env(env_demo_file)
 
             def create_user(prefix):
-                uname = env(f'{prefix}_USERNAME')
-                defs = dict(first_name=env(f'{prefix}_FIRST_NAME'),
-                            last_name=env(f'{prefix}_LAST_NAME'),
-                            email=env(f'{prefix}_EMAIL')
+                defs = dict(name=env(f'{prefix}_NAME'),
+                            friendly_name=env(f'{prefix}_FRIENDLY_NAME'),
                             )
-                return User.objects.get_or_create(username=uname,
+                return User.objects.get_or_create(email=env(f'{prefix}_EMAIL'),
                                                   defaults=defs)[0]
 
             def create_channel(handler):
@@ -201,7 +197,7 @@ class Command(BaseCommand):
                                                    )
             users = []
 
-            if env('USER1_USERNAME'):
+            if env('USER1_EMAIL'):
                 user1 = create_user('USER1')
                 user1.tokens.create()
                 users.append(user1)
@@ -209,7 +205,7 @@ class Command(BaseCommand):
                 self.stderr.write('set USER1_USERNAME in your env file')
                 sys.exit(1)
 
-            if env('USER2_USERNAME'):
+            if env('USER2_EMAIL'):
                 user2 = create_user('USER2')
                 user2.tokens.create()
                 users.append(user2)

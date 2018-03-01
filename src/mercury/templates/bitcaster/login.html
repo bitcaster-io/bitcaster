@@ -1,17 +1,20 @@
 {% extends "bitcaster/base.html" %}
 {% load i18n crispy_forms_tags bc_assets %}
 
-{% block header %}{% endblock header %}
+{#{% block header %}{% endblock header %}#}
 {% block footer %}{% endblock footer %}
 {% block sidebar %}{% endblock sidebar %}
-{% block container %}
+{% block page %}
     <div class="container">
         <div class="row col-12 justify-content-center align-items-center">
             <div class="box box-modal login-form col-6 p-3">
-                <div class="box box-header">
-                    <a href="//bitcaster.io/"><img src="{% asset "logos/bitcaster32.png" %}">
-                        bitcaster
-                    </a>
+{#                <div class="box box-header">#}
+{#                    <a href="//bitcaster.io/"><img src="{% asset "logos/bitcaster32.png" %}">#}
+{#                        bitcaster#}
+{#                    </a>#}
+{#                </div>#}
+                <div class="pull-right">
+                    <a href="{% url "user-register" %}">Register</a>
                 </div>
                 <div class="container-fluid p-3">
                     <form method="post">

@@ -20,6 +20,7 @@ cookies==2.2.1
 coverage==4.5.1
 cryptography==2.1.4
 decorator==4.2.1          # via ipython, traitlets
+defusedxml==0.5.0
 devpi-client==4.0.1
 devpi-common==3.2.1       # via devpi-client
 django-adminfilters==1.0.0
@@ -30,16 +31,18 @@ django-concurrency==1.4
 django-constance[database,redis]==2.1.0
 django-countries==5.1.1
 django-crispy-forms==1.7.0
+django-debug-toolbar==1.9.1
 django-environ==0.4.4
 django-extensions==2.0.0
 django-fernet-fields==0.5
-django-fobi==0.13
+django-fobi==0.13.1
 django-formtools==2.1
 django-jsoneditor==0.0.12
 django-model-utils==3.1.1
 django-nine==0.1.13
 django-nonefield==0.2
 django-picklefield==1.0.0
+django-recaptcha2==1.0.3
 django-redis==4.8.0
 django-regex==0.2.1
 django-rest-framework-nested==0.0.1
@@ -76,7 +79,8 @@ maxminddb==1.3.0
 mccabe==0.6.1
 multidict==4.1.0
 oauth2client==4.1.2
-packaging==16.8
+oauthlib==2.0.6
+packaging==17.1
 parse-type==0.4.2
 parse==1.8.2
 parso==0.1.1              # via jedi
@@ -101,6 +105,7 @@ pycparser==2.18
 pycrypto==2.6.1
 pyflakes==1.6.0
 pygments==2.2.0
+pyjwt==1.5.3
 pyparsing==2.2.0
 pytest-cov==2.5.1
 pytest-django==3.1.2
@@ -108,10 +113,12 @@ pytest-echo==1.5.1
 pytest==3.4.1
 python-dateutil==2.6.1
 python-redis-lock[django]==3.2.0
+python3-openid==3.1.0
 pytz==2018.3
 pyyaml==3.12
 raven==6.5.0
 redis==2.10.6
+requests-oauthlib==0.8.0
 requests==2.18.4
 responses==0.8.1
 rsa==3.4.2
@@ -119,6 +126,9 @@ selenium==3.9.0
 simplegeneric==0.8.1      # via ipython
 simplejson==3.13.2
 six==1.11.0
+social-auth-app-django==2.1.0
+social-auth-core==1.7.0
+sqlparse==0.2.4           # via django-debug-toolbar
 text-unidecode==1.2
 tox==2.9.1
 traitlets==4.3.2          # via ipython

@@ -15,6 +15,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
+from timezone_field import TimeZoneField
 
 from mercury.utils import locks
 from mercury.utils.retries import TimedRetryPolicy
@@ -88,10 +89,8 @@ class OrganizationManager(models.Manager):
 
 class Organization(models.Model):
     """
-    An organization represents a group of individuals which maintain ownership of projects.
+    An organization represents a group of individuals which maintain ownership of applications.
     """
-    __core__ = True
-
     name = models.CharField(max_length=64)
     slug = models.SlugField(unique=True, blank=True)
     status = models.PositiveIntegerField(choices=(
@@ -100,8 +99,10 @@ class Organization(models.Model):
         (int(OrganizationStatus.DELETION_IN_PROGRESS), _('Deletion in Progress')),
     ), default=int(OrganizationStatus.ACTIVE))
     date_added = models.DateTimeField(default=timezone.now)
+    # default_timezone = TimeZoneField()
     members = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      through='mercury.OrganizationMember')
+    billing_email = models.EmailField(blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE,
                               related_name='organizations')
@@ -116,8 +117,8 @@ class Organization(models.Model):
             status=OrganizationStatus.VISIBLE,
         ).first()
 
-    def __unicode__(self):
-        return u'%s (%s)' % (self.name, self.slug)
+    def __str__(self):
+        return '%s (%s)' % (self.name, self.slug)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -136,7 +137,7 @@ class Organization(models.Model):
 
     @cached_property
     def is_default(self):
-        if not settings.SENTRY_SINGLE_ORGANIZATION:
+        if not settings.ON_PREMISE:
             return False
 
         return self == type(self).get_default()
@@ -147,6 +148,12 @@ class Organization(models.Model):
             queryset = queryset.filter(type__lte=access)
 
         return queryset.exists()
+
+    def add_member(self, user, role):
+        from mercury.models import OrganizationMember
+        return OrganizationMember.objects.get_or_create(organization=self,
+                                                        user=user,
+                                                        role=int(role))[0]
 
     def get_owners(self):
         from mercury.models import User

@@ -1,12 +1,20 @@
 {% extends "bitcaster/base.html" %}{% load crispy_forms_utils crispy_forms_tags crispy_forms_filters i18n %}
-{% block content %}
+{% block page %}
     <div class="container-fluid">
-        <div class="col-10">
-            <form method="post">
-                 {% csrf_token %}
-                {{ form|crispy }}
-                <input type="submit" value="Save" class="btn btn-primary">
-            </form>
+    <div class="row col-12">
+        <h3>Profile</h3>
+        <div class="container-fluid">
+            <div class="col-4">
+
+            </div>
+            <div class="col-8">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <input type="submit" value="Save" class="btn btn-primary">
+                </form>
+            </div>
         </div>
+    </div>
     </div>
 {% endblock %}

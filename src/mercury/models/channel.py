@@ -49,7 +49,7 @@ It can be Global or Application specific.
     deprecated = models.BooleanField(default=False)
 
     def __repr__(self):
-        return "<Channel [{0.pk}] {0.handler}>".format(self, id(self))
+        return f"<Channel #{self.id} {self.name}>"
 
     def __str__(self):
         return self.name

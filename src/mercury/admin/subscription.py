@@ -21,7 +21,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_editable = ('active',)
     list_filter = ('event__application',
                    ('channel', RelatedFieldComboFilter),
-                   ForeignKeyFieldFilter.factory('subscriber|username|icontains'),
+                   ForeignKeyFieldFilter.factory('subscriber|name|icontains'),
                    'active')
     search_fields = ('subscriber__username', 'subscriber__last_name')
     form = SubscriptionForm

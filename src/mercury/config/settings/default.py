@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     # Useful libraries and add-ons
+    'snowpenguin.django.recaptcha2',
     'crispy_forms',
     'jsoneditor',
     'django_sysinfo',
@@ -266,7 +267,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 # Some really nice defaults
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
@@ -411,12 +412,15 @@ SYSINFO = {"host": True,
            "checks": None,
            "extra": {'plugins': get_plugins}
            }
+
+
 # SOCIAL-AUTH
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
     # 'social_core.backends.open_id.OpenIdAuth',
     # 'social_core.backends.google.GoogleOpenId',
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.github.GithubOAuth2',
+    # 'social_core.backends.github.GithubOrganizationOAuth2',
     'social_core.backends.linkedin.LinkedinOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
     # 'social_core.backends.google.GoogleOAuth',
@@ -428,13 +432,15 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
     'social_core.pipeline.social_auth.social_user',
-    'social_core.pipeline.user.get_username',
+    # 'social_core.pipeline.user.get_username',
     'social_core.pipeline.social_auth.associate_by_email',
     'mercury.social_auth.associate',
     'social_core.pipeline.user.create_user',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
+    'social_core.pipeline.debug.debug'
+
 )
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
@@ -458,3 +464,14 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.ema
 SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
     'access_type': 'offline'
 }
+
+# SOCIAL_AUTH_GITHUB_ORG_NAME = 'bitcaster-io'
+SOCIAL_AUTH_GITHUB_KEY = env('SOCIAL_AUTH_GITHUB_KEY')
+SOCIAL_AUTH_GITHUB_SECRET = env('SOCIAL_AUTH_GITHUB_SECRET')
+
+# SOCIAL_AUTH_GITHUB_KEY = env('SOCIAL_AUTH_GITHUB_KEY')
+# SOCIAL_AUTH_GITHUB_SECRET = env('SOCIAL_AUTH_GITHUB_SECRET')
+
+# DJANGO-RECAPTCHA
+RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')

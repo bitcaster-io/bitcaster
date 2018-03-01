@@ -37,4 +37,10 @@ PASSWORD_HASHERS = [
 ]
 CELERY_TASK_ALWAYS_EAGER = True
 
-INSTALLED_APPS = INSTALLED_APPS + ['django_extensions']
+INSTALLED_APPS = INSTALLED_APPS + ['django_extensions',]
+
+# DEBUG-TOOLBAR
+INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar']
+MIDDLEWARE = MIDDLEWARE + ['debug_toolbar.middleware.DebugToolbarMiddleware',]
+DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda r: True}
+INTERNAL_IPS= ['127.0.0.1']

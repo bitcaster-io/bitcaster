@@ -14,7 +14,7 @@ setup(
     version='0.1',
     description='',
     long_description='',
-    install_requires=['python-twitter'],
+    install_requires=[],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

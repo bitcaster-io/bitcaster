@@ -65,7 +65,7 @@ from .twitter_utils import (
     enf_type,
     parse_arg_list)
 
-from twitter.error import (
+from .error import (
     TwitterError,
     PythonTwitterDeprecationWarning330,
 )

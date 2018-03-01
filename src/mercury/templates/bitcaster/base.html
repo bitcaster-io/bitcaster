@@ -6,13 +6,12 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    {#    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"#}
-    {#          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">#}
-
+    {% block css %}
     <link rel="stylesheet" href="{% asset "dist/bitcaster.css" %}">
-    {#    <script src="{% static "fontawesome-all.min.js" %}"></script>#}
+    {% endblock %}
+    {% block js %}{% endblock %}
+
+    {% block extrahead %}{% endblock %}
     <title>Bitcaster</title>
 </head>
 <body class="{% block bodyclass %}{% endblock %}">
@@ -66,31 +65,34 @@
                 {% endif %}
             </header>
         {% endblock header %}
-        <div class="container-fluid main-content">
-            {% block sidebar %}
-                <div class="row d-flex d-md-block flex-nowrap wrapper">
-                    <div class="float-left pl-0 collapse width show" id="sidebar">
-                        {% if user.is_authenticated %}
-                            <div class="list-group">
-                                <div class="col-md-2 org-sidebar">
-                                    <div>
-                                        <ul class="nav nav-stacked">
-                                            <li><a href="{% url 'user-subscriptions' %}">Subscriptions</a></li>
-                                            <li><a href="#">Events</a></li>
-                                            <li><a href="#">Applications</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endblock sidebar %}
-            <div class="page-content">
-                {% block content %}
-                {% endblock content %}
 
-            </div>
+        <div class="container-fluid main-content">
+        {% block page %}
+{#            {% block sidebar %}#}
+{#                <div class="row d-flex d-md-block flex-nowrap wrapper">#}
+{#                    <div class="float-left pl-0 collapse width show" id="sidebar">#}
+{#                        {% if user.is_authenticated %}#}
+{#                            <div class="list-group">#}
+{#                                <div class="col-md-2 org-sidebar">#}
+{#                                    <div>#}
+{#                                        <ul class="nav nav-stacked">#}
+{#                                            <li><a href="{% url 'user-subscriptions' %}">Subscriptions</a></li>#}
+{#                                            <li><a href="#">Events</a></li>#}
+{#                                            <li><a href="#">Applications</a></li>#}
+{#                                        </ul>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endblock sidebar %}#}
+{#            <div class="page-content">#}
+{#                {% block content %}#}
+{#                {% endblock content %}#}
+{##}
+{#            </div>#}
+        {% endblock page %}
         </div>
         {% block footer %}
             <footer>
@@ -122,22 +124,8 @@
 
 </div>
 
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="{% asset "dist/vendor.js" %}"></script>
 <script src="{% asset "dist/bitcaster.js" %}"></script>
 
-{#<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"#}
-{#        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"#}
-{#        crossorigin="anonymous"></script>#}
-{#<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"#}
-{#        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"#}
-{#        crossorigin="anonymous"></script>#}
-{#<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"#}
-{#        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"#}
-{#        crossorigin="anonymous"></script>#}
-<script>
-    console.log($);
-</script>
 </body>
 </html>

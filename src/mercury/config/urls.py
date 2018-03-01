@@ -49,3 +49,9 @@ urlpatterns = [path(r'api/', include(mercury.api.urls), name='api'),
 
                ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT,
                           show_indexes=True)
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path(r'__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

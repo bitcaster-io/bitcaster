@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from mercury import logging
-from mercury.models import ApiAuthToken, ApiTriggerKey, Channel, Event
+from mercury.models import ApiAuthToken, ApiTriggerKey, Channel, Event, Application, OrganizationMember
 from mercury.models.message import Message
 from mercury.utils import fqn
 
@@ -42,3 +42,19 @@ class ChannelInline(admin.TabularInline):
 
     def dispatcher_name(self, obj):
         return fqn(obj.handler)
+
+
+class ApplicationInline(admin.TabularInline):
+    model = Application
+    extra = 0
+    can_delete = False
+    show_change_link = True
+    readonly_fields = fields = ('name', 'timezone')
+
+
+class OrganizationMemberInline(admin.TabularInline):
+    model = OrganizationMember
+    extra = 0
+    can_delete = False
+    show_change_link = True
+    readonly_fields = fields = ('user', 'role')

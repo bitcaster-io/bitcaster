@@ -8,7 +8,7 @@ from mercury.dispatchers.registry import dispatcher_registry
 from mercury.exceptions import PluginValidationError, PluginSendError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
-from .python_twitter import api
+from python_twitter import api
 
 logger = getLogger('mercury.plugins.twitter')
 

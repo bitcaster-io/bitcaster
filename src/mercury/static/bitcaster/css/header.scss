@@ -36,6 +36,12 @@ header {
     float: left;
     min-width: 200px;
     height: 100%;
+    a {
+      color: white;
+      &:hover {
+        color: white;
+      }
+    }
   }
   .top-menu {
     display: inline-block;
@@ -65,6 +71,7 @@ header {
     top: 8px !important;
     left: 1px !important;
     min-width: 10px;
+    z-index: 10;
     //&:before {
     //  border-left: 9px solid transparent;
     //  border-right: 9px solid transparent;

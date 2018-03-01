@@ -21,13 +21,15 @@ class UserAdmin(_UserAdmin):
     # add_form_template = 'admin/auth/user/add_form.html'
     add_form = UserCreationForm
     form = UserChangeForm
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff',
+    list_display = ('email', 'name', 'is_staff',
                     'language', 'timezone')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups',)
+    ordering = ('email',)
+
     fieldsets = (
-        (None, {'fields': (('username', 'password'),)}),
-        (_('Personal info'), {'fields': (('first_name', 'last_name'),
-                                         ('email', 'language'),
+        (None, {'fields': (('email', 'password'),)}),
+        (_('Personal info'), {'fields': (('name', 'friendly_name'),
+                                         ('language', ),
                                          ('country', 'timezone'))}),
         # (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
         #                                'groups', 'user_permissions')}),
@@ -38,8 +40,7 @@ class UserAdmin(_UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username',
-                       ('email', 'language'),
+            'fields': (('email', 'language'),
                        ('country', 'timezone'),
                        ('password1', 'password2'),),
         }),

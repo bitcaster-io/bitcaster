@@ -15,8 +15,17 @@ from django.utils import timezone
 
 
 class OrganizationRole(Enum):
-    ADMIN = 1
-    MEMBER = 2
+    OWNER = 99
+    ADMIN = 90
+    MEMBER = 50
+
+    def __new__(cls, value):
+        member = object.__new__(cls)
+        member._value_ = value
+        return member
+
+    def __int__(self):
+        return self.value
 
 
 class OrganizationMember(models.Model):
@@ -38,10 +47,11 @@ class OrganizationMember(models.Model):
     email = models.EmailField(null=True, blank=True)
 
     role = models.IntegerField(
-        choices=((OrganizationRole.ADMIN, 'Admin'),
-                 (OrganizationRole.MEMBER, 'Member'),
+        choices=((int(OrganizationRole.OWNER), 'Owner'),
+                 (int(OrganizationRole.ADMIN), 'Admin'),
+                 (int(OrganizationRole.MEMBER), 'Member'),
                  ),
-        default=OrganizationRole.MEMBER,
+        default=int(OrganizationRole.MEMBER),
     )
 
     date_added = models.DateTimeField(default=timezone.now)
@@ -51,6 +61,9 @@ class OrganizationMember(models.Model):
             ('organization', 'user'),
             ('organization', 'email'),
         )
+
+    def __str__(self):
+        return f"{self.organization} {self.user}/{self.role}"
 
     @transaction.atomic
     def save(self, *args, **kwargs):

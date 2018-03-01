@@ -93,7 +93,7 @@ def client_factory(user, token=None, force=False):
     if force:
         client.force_authenticate(user=user)
     else:
-        assert client.login(username=user.username, password='123')
+        assert client.login(email=user.email, password='123')
         client.handler._force_user = user
     return client
 
@@ -113,9 +113,7 @@ class GroupFactory(factory.DjangoModelFactory):
 class UserFactory(factory.DjangoModelFactory):
     class Meta:
         model = mercury.models.user.User
-        django_get_or_create = ('username',)
-
-    username = factory.Sequence(lambda n: "user%03d" % n)
+        django_get_or_create = ('email',)
 
     last_name = factory.Faker('last_name')
     first_name = factory.Faker('first_name')
@@ -141,7 +139,7 @@ class UserFactory(factory.DjangoModelFactory):
 class AdminFactory(UserFactory):
     class Meta:
         model = models.User
-        django_get_or_create = ('username',)
+        django_get_or_create = ('email',)
 
     is_superuser = True
     is_staff = True
