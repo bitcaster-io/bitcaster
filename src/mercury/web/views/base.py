@@ -26,6 +26,12 @@ class SecuredViewMixin(View):
         return request.user.has_perm(obj)
 
 
+class OrganizationListMixin(SecuredViewMixin):
+    def get_context_data(self, **kwargs):
+        ret = super().get_context_data(**kwargs)
+        ret['organizations'] = Organization.objects.filter(members=self.request.user)
+        return ret
+
 class ApplicationListMixin(SecuredViewMixin):
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
@@ -58,5 +64,5 @@ class SelectedApplicationMixin(SelectedOrganizationMixin):
         return app
 
 
-class MercuryTemplateView(ApplicationListMixin, TemplateView):
+class MercuryTemplateView(ApplicationListMixin, OrganizationListMixin, TemplateView):
     pass
