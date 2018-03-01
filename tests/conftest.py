@@ -120,28 +120,29 @@ def token1(db):
     from mercury.utils.tests.factories import ApiTokenFactory
     return ApiTokenFactory()
 
-
-class DjangoTestApp2(DjangoTestApp):
-
-    def do_request(self, req, status, expect_errors):
-        response = super().do_request(req, status, expect_errors)
-        html = lambda self: HTML(self.content)
-        response.html = property(html, response)
-        return response
-
-class WebTestMixin2(WebTestMixin):
-    app_class = DjangoTestApp2
-
-@pytest.fixture(scope='session')
-def django_app_mixin2():
-    app_mixin = WebTestMixin2()
-    return app_mixin
-
-
-@pytest.yield_fixture
-def crawler(django_app_mixin2):
-    django_app_mixin2._patch_settings()
-    django_app_mixin2.renew_app()
-    yield django_app_mixin2.app
-    django_app_mixin2._unpatch_settings()
-
+#
+# class DjangoTestApp2(DjangoTestApp):
+#
+#     def do_request(self, req, status, expect_errors):
+#         response = super().do_request(req, status, expect_errors)
+#         html = lambda self: HTML(self.content)
+#         response.html = property(html, response)
+#         return response
+#
+#
+# class WebTestMixin2(WebTestMixin):
+#     app_class = DjangoTestApp2
+#
+#
+# @pytest.fixture(scope='session')
+# def django_app_mixin2():
+#     app_mixin = WebTestMixin2()
+#     return app_mixin
+#
+#
+# @pytest.yield_fixture
+# def crawler(django_app_mixin2):
+#     django_app_mixin2._patch_settings()
+#     django_app_mixin2.renew_app()
+#     yield django_app_mixin2.app
+#     django_app_mixin2._unpatch_settings()

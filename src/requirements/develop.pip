@@ -9,6 +9,7 @@ behave==1.2.6
 billiard==3.5.0.3
 binaryornot==0.4.4        # via cookiecutter
 bleach==2.1.2
+bs4==0.0.1
 celery==4.1.0
 certifi==2018.1.18
 cffi==1.11.5
@@ -19,6 +20,7 @@ cookiecutter==1.6.0
 cookies==2.2.1
 coverage==4.5.1
 cryptography==2.1.4
+cssselect==1.0.3
 decorator==4.2.1          # via ipython, traitlets
 defusedxml==0.5.0
 devpi-client==4.0.1
@@ -43,19 +45,20 @@ django-nine==0.1.13
 django-nonefield==0.2
 django-picklefield==1.0.0
 django-recaptcha2==1.0.3
-django-redis==4.8.0
+django-redis==4.9.0
 django-regex==0.2.1
 django-rest-framework-nested==0.0.1
 django-scribbler==0.9.0
 django-strategy-field==1.3.1
 django-sysinfo==1.3.1
-django-timezone-field==2.0
+django-timezone-field==2.1
 django-webtest==1.9.2
 django==2.0.2
 djangorestframework==3.7.7
 drfpasswordless==1.1.5
 easy-thumbnails==2.5
 factory-boy==2.10.0
+fake-useragent==0.1.10
 faker==0.8.11
 fancycompleter==0.8
 first==2.0.1              # via pip-tools
@@ -73,11 +76,13 @@ jinja2-time==0.2.0        # via cookiecutter
 jinja2==2.10              # via cookiecutter, jinja2-time
 jsonfield==2.0.2
 kombu==4.1.0
+lxml==4.1.1
 markupsafe==1.0           # via jinja2
 maxminddb-geolite2==2017.803
 maxminddb==1.3.0
 mccabe==0.6.1
 multidict==4.1.0
+oath==1.4.1
 oauth2client==4.1.2
 oauthlib==2.0.6
 packaging==17.1
@@ -103,10 +108,13 @@ pycodestyle==2.3.1
 pycountry==18.2.23
 pycparser==2.18
 pycrypto==2.6.1
+pyee==5.0.0
 pyflakes==1.6.0
 pygments==2.2.0
 pyjwt==1.5.3
 pyparsing==2.2.0
+pyppeteer==0.0.12
+pyquery==1.4.0
 pytest-cov==2.5.1
 pytest-django==3.1.2
 pytest-echo==1.5.1
@@ -118,6 +126,7 @@ pytz==2018.3
 pyyaml==3.12
 raven==6.6.0
 redis==2.10.6
+requests-html==0.7.2
 requests-oauthlib==0.8.0
 requests==2.18.4
 responses==0.8.1
@@ -139,10 +148,12 @@ vcrpy==1.11.1
 vine==1.1.4
 virtualenv==15.1.0
 vishap==0.1.5
+w3lib==1.19.0
 waitress==1.1.0
 wcwidth==0.1.7            # via prompt-toolkit
 webencodings==0.5.1
 webob==1.7.4
+websockets==4.0.1
 webtest==2.0.29
 whichcraft==0.4.1         # via cookiecutter
 wmctrl==0.3
