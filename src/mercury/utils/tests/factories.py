@@ -115,8 +115,7 @@ class UserFactory(factory.DjangoModelFactory):
         model = mercury.models.user.User
         django_get_or_create = ('email',)
 
-    last_name = factory.Faker('last_name')
-    first_name = factory.Faker('first_name')
+    name = factory.Faker('name')
 
     email = factory.Sequence(lambda n: "m%03d@mailinator.com" % n)
     password = '123'

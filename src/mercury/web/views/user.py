@@ -10,7 +10,6 @@ mercury / user
 import logging
 
 from django.urls import reverse_lazy
-from django.utils.translation import gettext as _
 from django.views.generic import UpdateView
 
 from mercury.models import User

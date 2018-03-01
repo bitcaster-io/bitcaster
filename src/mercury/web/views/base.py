@@ -10,33 +10,30 @@ mercury / base
 import logging
 
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
-from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import TemplateView
 
-from mercury.models import Organization, Application
-from mercury.security import is_member_of
+from mercury.models import Organization
 
 logger = logging.getLogger(__name__)
 
 
-class SecuredViewMixin:
+@method_decorator(login_required, name='dispatch')
+class SecuredViewMixin(View):
     def check_perms(self, request, obj=None, raise_exception=False):
         return request.user.has_perm(obj)
 
 
-@method_decorator(login_required, name='dispatch')
-class ApplicationListMixin(View):
+class ApplicationListMixin(SecuredViewMixin):
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
         ret['applications'] = self.selected_organization.applications.all()
         return ret
 
 
-class SelectedOrganizationMixin(SecuredViewMixin):
+class SelectedOrganizationMixin(ApplicationListMixin):
     def get_context_data(self, **kwargs):
         kwargs['organization'] = self.selected_organization
         return super().get_context_data(**kwargs)
@@ -48,7 +45,7 @@ class SelectedOrganizationMixin(SecuredViewMixin):
         return organization
 
 
-class SelectedApplicationMixin(ApplicationListMixin, SelectedOrganizationMixin):
+class SelectedApplicationMixin(SelectedOrganizationMixin):
     def get_context_data(self, **kwargs):
         kwargs['application'] = self.selected_application
         return super().get_context_data(**kwargs)

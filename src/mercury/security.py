@@ -9,9 +9,6 @@ mercury / security
 
 import logging
 
-from django.contrib.auth.backends import ModelBackend
-from django.utils.translation import gettext as _
-
 logger = logging.getLogger(__name__)
 
 

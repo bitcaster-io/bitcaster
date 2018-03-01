@@ -8,14 +8,14 @@ from rest_framework.reverse import reverse
 # application
 def test_application_detail(django_app, admin, application1):
     url = reverse("admin:mercury_application_change", args=[application1.pk])
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
     assert res.status_code == 200
 
 
 # channel
 def test_channel_fail_configure(django_app, admin, channel1):
     url = reverse("admin:mercury_channel_configure", args=[channel1.pk])
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
     res.form['port'] = json.dumps({'port': 'abc'})
     res = res.form.submit()
     assert res.status_code == 200
@@ -24,7 +24,7 @@ def test_channel_fail_configure(django_app, admin, channel1):
 
 def test_channel_fail(django_app, admin, channel1):
     url = reverse("admin:mercury_channel_change", args=[channel1.pk])
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
     res.form['handler'].force_value('0000')
     res = res.form.submit()
     assert 'handler' in res.context['adminform'].form.errors
@@ -33,7 +33,7 @@ def test_channel_fail(django_app, admin, channel1):
 
 def test_channel_test(django_app, admin, channel1):
     url = reverse("admin:mercury_channel_test", args=[channel1.pk])
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
     assert res.status_code == 302
 
 
@@ -42,39 +42,39 @@ def test_channel_test1(django_app, admin, channel1, monkeypatch):
                         lambda *args: True)
     url = reverse("admin:mercury_channel_test", args=[channel1.pk])
 
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
     assert res.status_code == 302
 
 
 def test_channel_list(django_app, admin, channel1):
     url = reverse("admin:mercury_channel_changelist")
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
     assert res.status_code == 200
 
 
 # message
 def test_message_detail(django_app, admin, message1):
     url = reverse("admin:mercury_message_change", args=[message1.pk])
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
     assert res.status_code == 200
 
 
 def test_message_create(django_app, admin):
     url = reverse("admin:mercury_message_add")
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
     assert res.status_code == 200
 
 
 # event
 def test_event_detail(django_app, admin, event1):
     url = reverse("admin:mercury_event_change", args=[event1.pk])
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
     assert res.status_code == 200
 
 
 def test_event_create(django_app, admin):
     url = reverse("admin:mercury_event_add")
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
     assert res.status_code == 200
 
 
@@ -86,7 +86,7 @@ def test_event_trigger(django_app, admin, subscription1, settings):
     assert subscription1.channel.enabled
     assert subscription1.channel.handler
     url = reverse("admin:mercury_event_trigger", [event.pk])
-    res = django_app.get(url, user=admin.username)
+    res = django_app.get(url, user=admin.email)
 
     res = res.form.submit()
     assert res.status_code == 200

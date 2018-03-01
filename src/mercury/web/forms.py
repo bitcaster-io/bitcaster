@@ -10,13 +10,11 @@ import json
 
 from django import forms
 from django.contrib.auth import password_validation
-from django.contrib.auth.forms import (UserCreationForm as _UserCreationForm,)
+from django.contrib.auth.forms import UserCreationForm as _UserCreationForm
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError
-from django.db import transaction
 from django.forms import Form, PasswordInput
 from django.forms.utils import ErrorList
-from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from jsoneditor.forms import JSONEditor
@@ -36,10 +34,11 @@ class RegistrationForm(forms.Form):
     name = forms.CharField()
     email = forms.EmailField()
     password = forms.CharField(widget=PasswordInput)
-    organization = forms.CharField(help_text=_("If you're signing up for a personal account, try using your own name."))
+    organization = forms.CharField(help_text=_("If you're signing up for a personal account, "
+                                               "try using your own name."))
     billing_email = forms.EmailField(required=False,
-                                     help_text=_(
-                                         "If provided, we will send all billing-related notifications to this address."))
+                                     help_text=_("If provided, we will send all billing-related notifications "
+                                                 "to this address."))
     terms = forms.BooleanField()
     captcha = ReCaptchaField(widget=ReCaptchaWidget())
 

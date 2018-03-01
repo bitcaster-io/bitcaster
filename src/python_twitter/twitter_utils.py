@@ -9,9 +9,11 @@ from tempfile import NamedTemporaryFile
 from unicodedata import normalize
 from urllib.parse import urlparse
 
-import requests
-from . import TwitterError
 import python_twitter
+import requests
+
+from .error import TwitterError
+
 unicode = str
 
 CHAR_RANGES = [

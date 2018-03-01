@@ -9,8 +9,8 @@ mercury / login_logout
 
 import logging
 
-from django.contrib.auth.views import LogoutView as _LogoutView, LoginView as _LoginView
-from django.utils.translation import gettext as _
+from django.contrib.auth.views import (LoginView as _LoginView,
+                                       LogoutView as _LogoutView,)
 
 logger = logging.getLogger(__name__)
 

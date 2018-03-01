@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import pytest
 from django.core import mail
+from requests_html import HTML
 from rest_framework.reverse import reverse
 from faker import Faker
-from requests_html import HTML
 from mercury.models import User, Organization
 from mercury.models.organizationmember import OrganizationRole, OrganizationMember
 
@@ -40,8 +40,5 @@ def test_registration(django_app):
     html = HTML(html=mail.outbox[0].alternatives[0][0])
     link = html.find('a[class~=confirmation]')[0]
     url = link.attrs['href']
-    # FIXME: remove me (print)
-    print(111,  url)
     res = django_app.get(url)
-    # FIXME: remove me (print)
-    print(111, res)
+    assert 'Create application' in str(res.content)

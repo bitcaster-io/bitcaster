@@ -1,1 +1,1 @@
-from mercury.web.forms import *
+from mercury.web.forms import *  # noqa

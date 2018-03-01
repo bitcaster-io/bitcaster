@@ -29,6 +29,7 @@ class Application(AbstractModel):
     """Application """
     uuid = UUIDField(default=uuid4, editable=False, blank=False, null=False)
     organization = models.ForeignKey(Organization,
+                                     related_name='applications',
                                      on_delete=models.CASCADE)
     name = models.CharField(_('Name'),
                             max_length=300,

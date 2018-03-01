@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from unittest.mock import Mock
 
-from mercury.permissions import TokenAuthentication
+from mercury.api.permissions import TokenAuthentication
 
 
 def test_tokenauthentication(rf, monkeypatch):

@@ -26,6 +26,6 @@ class RedisRateLimiter(RateLimiter):
             key = 'rl:%s:%s' % (key_hex, bucket)
 
         result = self.redis.incr(key)
-        client.expire(key, window)
+        self.redis.expire(key, window)
 
         return result.value > limit

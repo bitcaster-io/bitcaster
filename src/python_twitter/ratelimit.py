@@ -1,11 +1,13 @@
-from collections import namedtuple
 import re
+from collections import namedtuple
+
+from .twitter_utils import enf_type
+
 try:
     from urllib.parse import urlparse
 except ImportError:
     from urlparse import urlparse
 
-from .twitter_utils import enf_type
 
 EndpointRateLimit = namedtuple('EndpointRateLimit',
                                ['limit', 'remaining', 'reset'])

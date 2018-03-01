@@ -1,11 +1,9 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-# from mercury.web.views.register import confirm_email
-# from mercury.web.views.views import OrganizationDetail
-from .views import (ApplicationDetail, LoginView, LogoutView,
-                    MercuryTemplateView, OrganizationDetail, SubscriptionList,
-                    UserProfile, UserRegister, confirm_email,)
+from .views import (ApplicationDetail, ChannelList, EventList, LoginView,
+                    LogoutView, MessageList, OrganizationDetail,
+                    SubscriptionList, UserProfile, UserRegister, confirm_email,)
 
 urlpatterns = [
     path(r'login/', LoginView.as_view(), name='login'),
@@ -31,7 +29,16 @@ urlpatterns = [
     path(r'<slug:org>/<slug:app>/', ApplicationDetail.as_view(), name='app-index'),
 
     path(r'<slug:org>/<slug:app>/subscriptions/',
-         SubscriptionList.as_view(), name='user-subscriptions'),
+         SubscriptionList.as_view(), name='app-subscriptions'),
+
+    path(r'<slug:org>/<slug:app>/events/',
+         EventList.as_view(), name='app-events'),
+
+    path(r'<slug:org>/<slug:app>/channels/',
+         ChannelList.as_view(), name='app-channels'),
+
+    path(r'<slug:org>/<slug:app>/messages/',
+         MessageList.as_view(), name='app-messages'),
 
     path(r'', include('social_django.urls', namespace='social')),
     path(r'', TemplateView.as_view(template_name='bitcaster/index.html'),

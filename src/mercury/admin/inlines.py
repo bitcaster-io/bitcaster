@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from mercury import logging
-from mercury.models import ApiAuthToken, ApiTriggerKey, Channel, Event, Application, OrganizationMember
+from mercury.models import (ApiAuthToken, ApiTriggerKey, Application,
+                            Channel, Event, OrganizationMember,)
 from mercury.models.message import Message
 from mercury.utils import fqn
 

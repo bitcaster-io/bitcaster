@@ -1,3 +1,0 @@
-include mercury_slack.py
-include README.rst
-include setup.py

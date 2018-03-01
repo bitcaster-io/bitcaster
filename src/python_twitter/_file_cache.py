@@ -2,7 +2,6 @@
 import errno
 import os
 import tempfile
-
 from hashlib import md5
 
 

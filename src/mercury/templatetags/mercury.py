@@ -76,3 +76,8 @@ def channel_submit_row(context):
         'show_save': show_save,
     })
     return ctx
+
+
+@register.filter()
+def describe_channels(channels):
+    return mark_safe(", ".join([f"<span class=enabled{c.enabled}>{c.name}</span>" for c in channels.all()]))

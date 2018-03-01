@@ -5,14 +5,15 @@
             {% block sidebar %}
                 <div class="row d-flex d-md-block flex-nowrap wrapper">
                     <div class="float-left pl-0 collapse width show" id="sidebar">
-                        {% if user.is_authenticated %}
+                        {% if user.is_authenticated and application %}
                             <div class="list-group">
                                 <div class="col-md-2 org-sidebar">
                                     <div>
                                         <ul class="nav nav-stacked">
-                                            <li><a href="{% url 'user-subscriptions' %}">Subscriptions</a></li>
-                                            <li><a href="#">Events</a></li>
-                                            <li><a href="#">Applications</a></li>
+                                            <li><a href="{% url 'app-subscriptions' organization.slug application.slug %}">Subscriptions</a></li>
+                                            <li><a href="{% url 'app-events' organization.slug application.slug %}">Events</a></li>
+                                            <li><a href="{% url 'app-channels' organization.slug application.slug %}">Channels</a></li>
+                                            <li><a href="{% url 'app-messages' organization.slug application.slug %}">Messages</a></li>
                                         </ul>
                                     </div>
                                 </div>

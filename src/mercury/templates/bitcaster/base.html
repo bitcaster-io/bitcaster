@@ -27,18 +27,21 @@
                 </div>
                 {% if user.is_authenticated %}
                     <span class="top-menu">
-
-{% if organization %}
+{% if organization and applications %}
                         <div class="dropdown">
+
+                            <a href="{% url "org-index" organization.slug %}">{{ organization.name }}</a>
+{#                            {% if application %}{{ application }}{% endif %}#}
                             <a class="dropdown-toggle2"
                                href="#" role="button"
                                id="appMenuLink" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
-                                Applications <i class="fa fa-angle-down"></i>
+                                / {% if application %}{{ application }}{% else %}Applications{% endif %}
+                                <i class="fa fa-angle-down"></i>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="appMenuLink">
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="appMenuLink">
                                 {% for app in applications %}
-                                    <a class="dropdown-item" href="{% url "app-index" organization.slug app.slug %}">{{ organization.name }}/{{ app.name }}</a>
+                                    <a class="dropdown-item application" href="{% url "app-index" organization.slug app.slug %}">{{ organization.name }}/{{ app.name }}</a>
                                 {% endfor %}
                             </div>
                         </div>
@@ -46,13 +49,14 @@
     <div class="dropdown">
                             <a class="dropdown-toggle2"
                                href="#" role="button"
-                               id="appMenuLink" data-toggle="dropdown"
+                               id="orgMenuLink" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
-                                Organizations <i class="fa fa-angle-down"></i>
+                              {% if organization %}{{ organization }}{% else %}Organizations{% endif %}
+                                <i class="fa fa-angle-down"></i>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="appMenuLink">
+                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="orkMenuLink">
                                 {% for org in user.organizations.all %}
-                                    <a class="dropdown-item" href="{% url "org-index" org.slug %}">{{ org.name }}</a>
+                                    <a class="dropdown-item organization" href="{% url "org-index" org.slug %}">{{ org.name }}</a>
                                 {% endfor %}
                             </div>
                         </div>

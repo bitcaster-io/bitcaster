@@ -15,7 +15,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
-from timezone_field import TimeZoneField
 
 from mercury.utils import locks
 from mercury.utils.retries import TimedRetryPolicy

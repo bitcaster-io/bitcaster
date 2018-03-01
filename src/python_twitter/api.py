@@ -17,23 +17,32 @@
 # limitations under the License.
 
 """A library that provides a Python interface to the Twitter API"""
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
-import json
-import sys
-import gzip
-import time
 import base64
-import re
-import logging
-import requests
-from requests_oauthlib import OAuth1, OAuth2
+import gzip
 import io
+import json
+import logging
+import os
+import re
+import sys
+import time
 import warnings
 from uuid import uuid4
-import os
+
+import requests
+from requests_oauthlib import OAuth1, OAuth2
+from python_twitter import __version__
+from .models import (Category,DirectMessage, List, Status, Trend, User,
+                     UserStatus)
+from ._file_cache import _FileCache
+# noqa
+
+from .error import PythonTwitterDeprecationWarning330, TwitterError
+from .ratelimit import RateLimit
+from .twitter_utils import (calc_expected_status_length, enf_type,
+                            is_url, parse_arg_list, parse_media_file,)
 
 try:
     # python 3
@@ -44,31 +53,9 @@ except ImportError:
     from urllib import urlencode, quote_plus
     from urllib import __version__ as urllib_version
 
-from . import (
-    __version__,
-    _FileCache,
-    Category,
-    DirectMessage,
-    List,
-    Status,
-    Trend,
-    User,
-    UserStatus,
-)
 
-from .ratelimit import RateLimit
 
-from .twitter_utils import (
-    calc_expected_status_length,
-    is_url,
-    parse_media_file,
-    enf_type,
-    parse_arg_list)
 
-from .error import (
-    TwitterError,
-    PythonTwitterDeprecationWarning330,
-)
 
 if sys.version_info > (3,):
     long = int  # pylint: disable=invalid-name,redefined-builtin

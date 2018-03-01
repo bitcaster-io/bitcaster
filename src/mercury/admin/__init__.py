@@ -4,6 +4,6 @@ from .channel import ChannelAdmin  # noqa
 from .counters import CounterAdmin, LogEntryAdmin, OccurenceAdmin  # noqa
 from .event import EventAdmin  # noqa
 from .message import MessageAdmin  # noqa
+from .organization import OrganizationAdmin  # noqa
 from .security import ApiAuthTokenAdmin, ApiTriggerKeyAdmin, UserAdmin  # noqa
 from .subscription import SubscriptionAdmin  # noqa
-from .organization import OrganizationAdmin  # noqa

@@ -9,26 +9,23 @@ mercury / register
 
 import logging
 
-import time
 from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse_lazy, reverse
-from django.utils.translation import gettext as _
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.http import require_http_methods
 from django.views.generic import FormView
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
-from oath import accept_totp, from_b32key
+from oath import from_b32key
 from strategy_field.utils import fqn
 
-from mercury.models import User, Organization
+from mercury.models import Organization, User
 from mercury.models.organizationmember import OrganizationRole
-from mercury.utils.ratelimits import ratelimiter
+
 from ..forms import RegistrationForm
 
 logger = logging.getLogger(__name__)

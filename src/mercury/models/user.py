@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
-from uuid import uuid4
-
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.core.mail import send_mail
 from django.db import models
-from django.template import Template, Context
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
-from oath import totp
 from timezone_field import TimeZoneField
 
 from mercury import logging
@@ -85,6 +81,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
 
     objects = UserManager()
+
+    def is_admin(self, organization):
+        """return true if user is an admin of target
+        @target: Organization or Application
+        """
+
+    def is_member(self, organization):
+        """return true if user is an admin of target
+        @target: Organization or Application
+        """
+
+    def is_owner(self, organization):
+        """return true if user is an admin of target
+        @target: Organization or Application
+        """
 
     def set_password(self, raw_password):
         super(User, self).set_password(raw_password)

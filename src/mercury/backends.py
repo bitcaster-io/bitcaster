@@ -3,7 +3,7 @@ import logging
 
 from django.contrib.auth.backends import ModelBackend
 
-from mercury.models import Organization, Application
+from mercury.models import Application, Organization
 
 logger = logging.getLogger(__name__)
 
