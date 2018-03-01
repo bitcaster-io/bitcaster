@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'status', 'owner',)
     inlines = [ApplicationInline, OrganizationMemberInline]
-    form = OrganizationForm
+    # form = OrganizationForm
 
 
 @admin.register(OrganizationMember, site=site)

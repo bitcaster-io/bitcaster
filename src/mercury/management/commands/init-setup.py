@@ -11,6 +11,7 @@ from strategy_field.utils import fqn, import_by_name
 
 from mercury.models import (Application, Channel,
                             Organization, Subscription, User,)
+from mercury.models.organizationmember import OrganizationRole
 
 TEMPLATE_ENV = b"""
 ADMIN_EMAIL=
@@ -180,10 +181,12 @@ class Command(BaseCommand):
             def create_user(prefix):
                 defs = dict(name=env(f'{prefix}_NAME'),
                             friendly_name=env(f'{prefix}_FRIENDLY_NAME'),
-                            password=make_password('123'),
                             )
-                return User.objects.get_or_create(email=env(f'{prefix}_EMAIL'),
+                u = User.objects.get_or_create(email=env(f'{prefix}_EMAIL'),
                                                   defaults=defs)[0]
+                u.set_password('123')
+                u.save()
+                org.add_member(u, OrganizationRole.OWNER)
 
             def create_channel(handler):
                 prefix = "CHANNEL__%s__" % handler.__module__.split('.')[0].replace('mercury_', '').upper()
