@@ -34,10 +34,7 @@ urlpatterns = [
          SubscriptionList.as_view(), name='user-subscriptions'),
 
     path(r'', include('social_django.urls', namespace='social')),
-    # path(r'home/',
-    #      MercuryTemplateView.as_view(template_name='bitcaster/home.html'),
-    #      name='home'),
-    path(r'', MercuryTemplateView.as_view(template_name='bitcaster/index.html'),
+    path(r'', TemplateView.as_view(template_name='bitcaster/index.html'),
          name='index'),
 
 ]
