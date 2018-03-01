@@ -350,6 +350,9 @@ CONSTANCE_ADDITIONAL_FIELDS = {
 }
 
 CONSTANCE_CONFIG = OrderedDict({
+    'INITIALIZED': (False,
+                    '',
+                    bool),
     'SITE_URL': ('',
                  'bitcaster web url',
                  str),
@@ -487,4 +490,4 @@ os.environ['RECAPTCHA_DISABLE'] = 'True'
 ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window; you may, of course, use a different value.
 
 OTP_KEY = 'A' * 32
-CONFIRM_EMAIL_EXPIRE= 60 * 60 * 24  # 1 day
+CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
