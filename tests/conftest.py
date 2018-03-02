@@ -1,14 +1,20 @@
 import os
 import sys
+from unittest.mock import Mock
 
 import pytest
-
-from mercury.utils.tests.factories import UserFactory
 
 
 def pytest_configure(config):
     here = os.path.dirname(__file__)
     sys.path.insert(0, os.path.join(here, 'extras'))
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mercury.config.settings.test')
+    os.environ.setdefault('MERCURY_CONF', '.aaaa')
+
+
+@pytest.fixture(autouse=True)
+def patch(monkeypatch):
+    monkeypatch.setattr('mercury.utils.locks.get', lambda key, duration: Mock())
 
 
 @pytest.fixture
@@ -52,6 +58,7 @@ def application1(organization1):
 
 @pytest.fixture
 def maintaner1(application1):
+    from mercury.utils.tests.factories import UserFactory
     u = UserFactory()
     application1.maintainers.add(u)
     return u

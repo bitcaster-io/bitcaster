@@ -35,7 +35,22 @@ LOGGING = {
         }
     },
     'loggers': {
+        '': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
         'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'redis_lock': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'redis': {
             'level': 'ERROR',
             'handlers': ['console'],
             'propagate': False,
@@ -71,7 +86,7 @@ LOGGING = {
             'propagate': False,
         },
         'mercury': {
-            'level': 'DEBUG',
+            'level': 'ERROR',
             'handlers': ['console', 'sentry'],
             'propagate': False,
         },

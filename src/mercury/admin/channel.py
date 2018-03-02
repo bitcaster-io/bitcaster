@@ -50,10 +50,13 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
         ctx = {'opts': opts,
                'app_label': opts.app_label,
                'original': channel,
+               'media': '',
+               'title': '',
                'handler_fqn': fqn(channel.handler),
                'change': True,
                'is_popup': False,
                'save_as': False,
+               'has_permission': True,
                'has_delete_permission': False,
                'has_add_permission': False,
                'has_change_permission': False}

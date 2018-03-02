@@ -60,6 +60,8 @@ class ApplicationListMixin(SelectedOrganizationMixin):
         ret = super().get_context_data(**kwargs)
         if self.selected_organization:
             ret['applications'] = self.selected_organization.applications.all()
+        else:
+            ret['applications'] = None
         return ret
 
 

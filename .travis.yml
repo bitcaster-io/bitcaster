@@ -5,6 +5,10 @@ python:
 addons:
     postgresql: "9.6"
 
+services:
+  - redis-server
+  - postgresql
+
 env:
   - DJANGO=2.0
 
