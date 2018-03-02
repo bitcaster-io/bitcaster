@@ -3,11 +3,18 @@
     <div class="container-fluid">
         <div class="row col-12">
             <h3>Profile</h3>
-            <div class="container-fluid">
+            <div class="container-fluid user-profile">
                 <form method="post" enctype="multipart/form-data" action=".">
                     <div class="row">
                         <div class="col-4">
-                            {{ form.avatar|as_crispy_field }}
+                            <div class="avatar">
+                                {% if form.instance.avatar %}
+                                    <img src="{{ form.instance.avatar.url }}"/>
+                                {% endif %}
+                            </div>
+{#                            {{ form.avatar|as_crispy_field }}#}
+
+                            {{ form.avatar }}
                         </div>
                         <div class="col-8">
                             {% for field in form %}

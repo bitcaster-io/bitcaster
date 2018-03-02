@@ -47,6 +47,11 @@ setup(name=name,
           'dev': dev_requires,
           'test': test_requires,
       },
+      entry_points={
+          'console_scripts': [
+              'bitcaster = mercury.cli:main',
+          ],
+      },
       license="MIT",
       zip_safe=False,
       keywords='',

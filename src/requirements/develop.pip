@@ -15,7 +15,7 @@ certifi==2018.1.18
 cffi==1.11.5
 chardet==3.0.4
 check-manifest==0.36      # via devpi-client
-click==6.7                # via cookiecutter, pip-tools
+click==6.7
 cookiecutter==1.6.0
 cookies==2.2.1
 coverage==4.5.1
@@ -132,6 +132,7 @@ requests==2.18.4
 responses==0.8.1
 rsa==3.4.2
 selenium==3.9.0
+setproctitle==1.1.10
 simplegeneric==0.8.1      # via ipython
 simplejson==3.13.2
 six==1.11.0

@@ -30,6 +30,10 @@ class InvalidRecipient(MercuryError):
     pass
 
 
+class ImproperlyConfigured(MercuryError):
+    pass
+
+
 class RecipientNotFound(InvalidRecipient):
     pass
 

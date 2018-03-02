@@ -3,33 +3,15 @@ import os
 from collections import OrderedDict
 from pathlib import Path
 
-import environ
+from mercury.config.environ import env
 
 from .logging_conf import LOGGING
 
 logger = logging.getLogger(__name__)
 
 MERCURY_DIR = Path(__file__).parent.parent.parent  # (mercury/config/settings/base.py - 3 = mercury/)
-PROJECT_DIR = MERCURY_DIR.parent.parent
-APPS_DIR = MERCURY_DIR
-
-
-# Load operating system environment variables and then prepare to use them
-class Env2(environ.Env):
-    def get_value(self, var, cast=None, default=environ.Env.NOTSET, parse_default=False):
-        import re
-        value = super().get_value(var, cast, default, parse_default)
-        # Resolve any proxied values
-        if hasattr(value, 'startswith') and '${' in value:
-            m = environ.re.search(r'(\${(.*?)})', value)
-            while m:
-                value = re.sub(re.escape(m.group(1)), self.get_value(m.group(2)), value)
-                m = environ.re.search(r'(\${(.*?)})', value)
-        return value
-
-
-env = Env2(ENABLE_SENTRY=False,
-           MERCURY_PLUGINS_AUTOLOAD=True)
+SOURCE_DIR = MERCURY_DIR.parent  # (mercury/config/settings/base.py - 3 = mercury/)
+PROJECT_DIR = SOURCE_DIR.parent
 
 # .env file, should load only in development environment
 # READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=False)
@@ -38,13 +20,13 @@ env = Env2(ENABLE_SENTRY=False,
 # Operating System Environment variables have precedence over variables defined in the .env file,
 # that is to say variables from the .env files will only be used if not defined
 # as environment variables.
-env_file = str(PROJECT_DIR / '.env')
-if os.path.exists(env_file):
-    env.read_env(env_file)
-    logger.info('The .env `%s` file has been loaded. ' % env_file)
-else:
-    logger.info('`%s` not found. ' % env_file)
-
+# env_file = str(PROJECT_DIR / '.env')
+# if os.path.exists(env_file):
+#     env.read_env(env_file)
+#     logger.info('The .env `%s` file has been loaded. ' % env_file)
+# else:
+#     logger.info('`%s` not found. ' % env_file)
+#
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
 INSTALLED_APPS = [
@@ -90,7 +72,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'mercury.middleware.logger.LoggerMiddleware'
+    'social_django.middleware.SocialAuthExceptionMiddleware',
+    'mercury.middleware.logger.LoggerMiddleware',
 ]
 AUTH_USER_MODEL = 'mercury.user'
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
@@ -99,24 +82,24 @@ SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 # DEBUG
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = env.bool('DJANGO_DEBUG', False)
+DEBUG = env.bool('DEBUG', False)
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
 EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
                     default='django.core.mail.backends.smtp.EmailBackend')
 
-EMAIL_USE_TLS = env('EMAIL_USE_TLS')
-EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = env('EMAIL_PORT')
+# EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
+# EMAIL_HOST = env.str('EMAIL_HOST')
+# EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD')
+# EMAIL_PORT = env('EMAIL_PORT')
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = [
-    ("""Stefano Apostolico""", 's.apostolico@gmail.com'),
+
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
@@ -127,7 +110,6 @@ MANAGERS = ADMINS
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 # Uses django-environ to accept uri format
 # See: https://django-environ.readthedocs.io/en/latest/#supported-types
-environ.Env.DB_SCHEMES['psql'] = 'mercury.db.postgresql'
 DATABASES = {
     'default': env.db('DATABASE_URL',
                       default='psql://postgres:@127.0.0.1:5432/mercury'),
@@ -201,11 +183,12 @@ TEMPLATES = [
 
 # See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_FAIL_SILENTLY = not env.bool('DEBUG', False)
 
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = str(MERCURY_DIR / 'static' / "dist")
+STATIC_ROOT = env.str('STATIC_ROOT', str(MERCURY_DIR / 'static' / "dist"))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
@@ -224,7 +207,7 @@ STATICFILES_FINDERS = [
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
-MEDIA_ROOT = str(APPS_DIR / 'media')
+MEDIA_ROOT = env.str('MEDIA_ROOT', str(PROJECT_DIR / 'media'))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
@@ -267,7 +250,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CACHES = {
-    'default': env.cache(default="dummycache://", backend='django.core.cache.backends.dummy.DummyCache'),
+    'default': env.cache(default="dummycache://",
+                         backend='django.core.cache.backends.dummy.DummyCache'),
     # 'locking': env.cache('CACHE_LOCK')
 }
 
@@ -278,9 +262,9 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 # Some really nice defaults
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 # Custom user app defaults
 # Select the correct user model
@@ -360,12 +344,51 @@ CONSTANCE_CONFIG = OrderedDict({
     'SITE_URL': ('',
                  'bitcaster web url',
                  str),
+
+    'EMAIL_USE_TLS': (False,
+                      'bitcaster web url',
+                      bool),
+
+    'EMAIL_TIMEOUT': (60,
+                      'bitcaster web url',
+                      int),
+
+    'EMAIL_HOST': ('',
+                   'bitcaster web url',
+                   str),
+
+    'EMAIL_PORT': (0,
+                   'bitcaster web url',
+                   int),
+
+    'EMAIL_SENDER': ('bitcaster@noreply.org',
+                     'bitcaster web url',
+                     str),
+
+    'EMAIL_SUBJECT_PREFIX': ('[bitcaster] ',
+                             'bitcaster web url',
+                             str),
+
+    'EMAIL_HOST_PASSWORD': ('',
+                            'bitcaster web url',
+                            str),
+
     'HOSTIP_ADDRESS': ('http://api.hostip.info/get_html.php',
                        'api.hostip.info info',
                        str),
     'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/',
                        '===',
-                       str)
+                       str),
+
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY': ('', '', str),
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET': ('', '', str),
+    'SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY': ('', '', str),
+    'SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET': ('', '', str),
+    'SOCIAL_AUTH_GITHUB_KEY': ('', '', str),
+    'SOCIAL_AUTH_GITHUB_SECRET': ('', '', str),
+    'SOCIAL_AUTH_FACEBOOK_KEY': ('', '', str),
+    'SOCIAL_AUTH_FACEBOOK_SECRET': ('', '', str),
+
 })
 CONSTANCE_CONFIG_FIELDSETS = {"Options": list(CONSTANCE_CONFIG.keys())}
 
@@ -448,11 +471,12 @@ SOCIAL_AUTH_PIPELINE = (
     # 'social_core.pipeline.user.get_username',
     'social_core.pipeline.social_auth.associate_by_email',
     'mercury.social_auth.associate',
+    'mercury.social_auth.avatar',
     'social_core.pipeline.user.create_user',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
-    'social_core.pipeline.debug.debug'
+    # 'social_core.pipeline.debug.debug',
 
 )
 
@@ -467,28 +491,30 @@ SOCIAL_AUTH_USER_MODEL = 'mercury.User'
 SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + SOCIAL_AUTH_AUTHENTICATION_BACKENDS
-SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email', 'first_name', 'last_name']
+SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email', 'name', ]
+SOCIAL_AUTH_STRATEGY = 'mercury.social_auth.MercuryStrategy'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
-                                   'https://www.googleapis.com/auth/userinfo.profile',
-                                   ]
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
+#                                    'https://www.googleapis.com/auth/userinfo.profile',
+#                                    ]
 SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
     'access_type': 'offline'
 }
 
-# SOCIAL_AUTH_GITHUB_ORG_NAME = 'bitcaster-io'
-SOCIAL_AUTH_GITHUB_KEY = env('SOCIAL_AUTH_GITHUB_KEY')
-SOCIAL_AUTH_GITHUB_SECRET = env('SOCIAL_AUTH_GITHUB_SECRET')
-
+#
+# # SOCIAL_AUTH_GITHUB_ORG_NAME = 'bitcaster-io'
 # SOCIAL_AUTH_GITHUB_KEY = env('SOCIAL_AUTH_GITHUB_KEY')
 # SOCIAL_AUTH_GITHUB_SECRET = env('SOCIAL_AUTH_GITHUB_SECRET')
-
-# DJANGO-RECAPTCHA
-RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')
-os.environ['RECAPTCHA_DISABLE'] = 'True'
+#
+# # SOCIAL_AUTH_GITHUB_KEY = env('SOCIAL_AUTH_GITHUB_KEY')
+# # SOCIAL_AUTH_GITHUB_SECRET = env('SOCIAL_AUTH_GITHUB_SECRET')
+#
+# # DJANGO-RECAPTCHA
+# RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
+# RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')
+# os.environ['RECAPTCHA_DISABLE'] = 'True'
 
 # DJANGO-REGISTRATION
 ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window; you may, of course, use a different value.

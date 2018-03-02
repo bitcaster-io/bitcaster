@@ -289,3 +289,36 @@ class EventTriggerForm(Form):
 
         if errors:
             raise DRFValidationError({'arguments': errors})
+
+
+class SettingsOAuthForm(Form):
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = forms.CharField(required=False)
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = forms.CharField(required=False)
+
+    SOCIAL_AUTH_GITHUB_KEY = forms.CharField(required=False)
+    SOCIAL_AUTH_GITHUB_SECRET = forms.CharField(required=False)
+
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = forms.CharField(required=False)
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = forms.CharField(required=False)
+
+
+class SettingsChannelsForm(Form):
+    pass
+
+
+class SettingsMainForm(Form):
+    SITE_URL = forms.CharField()
+    RECAPTCHA_PUBLIC_KEY = forms.CharField()
+    RECAPTCHA_PRIVATE_KEY = forms.CharField()
+    RAVEN_DSN = forms.CharField()
+    ENABLE_SENTRY = forms.BooleanField()
+
+
+class SettingsEmailForm(Form):
+    EMAIL_HOST = forms.CharField()
+    EMAIL_PORT = forms.IntegerField()
+    EMAIL_HOST_USER = forms.CharField()
+    EMAIL_HOST_PASSWORD = forms.CharField(widget=forms.PasswordInput)
+    EMAIL_USE_TLS = forms.BooleanField()
+    EMAIL_SENDER = forms.EmailField()
+    EMAIL_SUBJECT_PREFIX = forms.CharField()

@@ -11,6 +11,7 @@ celery==4.1.0
 certifi==2018.1.18
 cffi==1.11.5
 chardet==3.0.4
+click==6.7
 cookies==2.2.1            # via responses
 coverage==4.5.1           # via pytest-cov
 cryptography==2.1.4
@@ -104,6 +105,7 @@ requests==2.18.4
 responses==0.8.1
 rsa==3.4.2
 selenium==3.9.0
+setproctitle==1.1.10
 simplejson==3.13.2
 six==1.11.0
 social-auth-app-django==2.1.0

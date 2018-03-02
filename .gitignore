@@ -1,9 +1,10 @@
 .DS_Store
-.env
+.env*
+.conf*
 .local-*
 .*client-id*
 !/src/mercury/_plugin_template/mercury-{{cookiecutter.name}}/tests/.env
-.demo
+.demo*
 .demo-sax
 .yowsup
 *.egg-info

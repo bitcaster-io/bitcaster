@@ -10,7 +10,7 @@ mercury / base
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views import View
@@ -27,21 +27,21 @@ class SecuredViewMixin(View):
         return request.user.has_perm(obj)
 
 
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
+class SuperuserViewMixin(SecuredViewMixin):
+    def check_perms(self, request, obj=None, raise_exception=False):
+        return request.user.has_perm(obj)
+
+
+
 class OrganizationListMixin(SecuredViewMixin):
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
         ret['organizations'] = Organization.objects.filter(members=self.request.user)
         return ret
 
-class ApplicationListMixin(SecuredViewMixin):
-    def get_context_data(self, **kwargs):
-        ret = super().get_context_data(**kwargs)
-        if self.selected_organization:
-            ret['applications'] = self.selected_organization.applications.all()
-        return ret
 
-
-class SelectedOrganizationMixin(ApplicationListMixin):
+class SelectedOrganizationMixin(SecuredViewMixin):
     def get_context_data(self, **kwargs):
         kwargs['organization'] = self.selected_organization
         return super().get_context_data(**kwargs)
@@ -53,6 +53,14 @@ class SelectedOrganizationMixin(ApplicationListMixin):
         organization = Organization.objects.get(slug=self.kwargs['org'])
         self.check_perms(self.request, organization, True)
         return organization
+
+
+class ApplicationListMixin(SelectedOrganizationMixin):
+    def get_context_data(self, **kwargs):
+        ret = super().get_context_data(**kwargs)
+        if self.selected_organization:
+            ret['applications'] = self.selected_organization.applications.all()
+        return ret
 
 
 class SelectedApplicationMixin(SelectedOrganizationMixin):
@@ -75,11 +83,14 @@ class MessageUserMixin(object):
                      fail_silently=False):
         messages.add_message(self.request, level, message, extra_tags=extra_tags, fail_silently=fail_silently)
 
-class MercuryTemplateView(ApplicationListMixin, OrganizationListMixin, TemplateView):
+
+class MercuryTemplateView(ApplicationListMixin,
+                          OrganizationListMixin,
+                          TemplateView):
     pass
 
 
-class MercuryBaseViewMixin(MessageUserMixin, SelectedOrganizationMixin, ApplicationListMixin):
+class MercuryBaseViewMixin(MessageUserMixin, ApplicationListMixin):
     pass
 
 

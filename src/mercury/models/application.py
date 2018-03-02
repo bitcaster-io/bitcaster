@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
 from mercury import logging
+from mercury.file_storage import app_media_root, MediaFileSystemStorage
 from mercury.models.organization import RESERVED_NAMES, Organization
 from mercury.utils import locks
 from mercury.utils.retries import TimedRetryPolicy
@@ -49,6 +50,16 @@ class Application(AbstractModel):
     flags = BitField(flags=(
         # ('has_releases', 'This Project has sent release data'),
     ), default=0, null=True)
+
+    avatar = models.ImageField(blank=True, null=True,
+                               # upload_to="pictures",
+                               upload_to=app_media_root,
+                               storage=MediaFileSystemStorage(),
+                               height_field='picture_height',
+                               width_field='picture_width'
+                               )
+    picture_height = models.IntegerField(editable=False, null=True)
+    picture_width = models.IntegerField(editable=False, null=True)
 
     class Meta:
         app_label = 'mercury'

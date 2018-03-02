@@ -6,6 +6,15 @@ mercury / social_auth
 :copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
 """
+from constance import config
+from django.conf import settings
+from django.shortcuts import resolve_url
+from django.utils.encoding import force_text
+from django.utils.functional import Promise
+from social_core.backends import google
+from social_core.backends.facebook import FacebookOAuth2
+from social_core.strategy import BaseStrategy
+from social_django.strategy import DjangoStrategy
 
 
 def associate(backend, details, user=None, *args, **kwargs):
@@ -19,3 +28,29 @@ def associate(backend, details, user=None, *args, **kwargs):
     default.
     """
     return None
+
+
+def avatar(backend, details, user=None, *args, **kwargs):
+    # user.is_new = True
+    is_new = kwargs.get('is_new', False)
+    print(111, details)
+    print(111, user)
+    print(111, backend)
+    if is_new:
+        pass
+
+    return False
+
+
+
+class MercuryStrategy(DjangoStrategy):
+    def get_setting(self, name):
+        value = getattr(config, name, None)
+        if value is None:
+            value = getattr(settings, name)
+        # Force text on URL named settings that are instance of Promise
+        if name.endswith('_URL'):
+            if isinstance(value, Promise):
+                value = force_text(value)
+            value = resolve_url(value)
+        return value

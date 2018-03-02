@@ -12,6 +12,7 @@ ALLOWED_HOSTS = ['*']
 # Turn debug off so tests run faster
 DEBUG = True
 TEMPLATES[0]['OPTIONS']['debug'] = True
+CRISPY_FAIL_SILENTLY = True
 
 # SECRET CONFIGURATION
 # ------------------------------------------------------------------------------

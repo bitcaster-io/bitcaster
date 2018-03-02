@@ -7,6 +7,7 @@ celery==4.1.0
 certifi==2018.1.18        # via requests
 cffi==1.11.5              # via cryptography
 chardet==3.0.4            # via requests
+click==6.7
 cryptography==2.1.4       # via django-fernet-fields
 defusedxml==0.5.0         # via python3-openid, social-auth-core
 django-adminfilters==1.0.0
@@ -66,6 +67,7 @@ redis==2.10.6
 requests-oauthlib==0.8.0  # via social-auth-core
 requests==2.18.4          # via django-fobi, django-recaptcha2, requests-oauthlib, social-auth-core
 rsa==3.4.2                # via oauth2client
+setproctitle==1.1.10
 simplejson==3.13.2        # via django-fobi
 six==1.11.0               # via admin-extra-urls, bleach, cryptography, django-bitfield, django-concurrency, django-environ, django-fobi, django-sysinfo, html5lib, oauth2client, packaging, social-auth-app-django, social-auth-core, vishap
 social-auth-app-django==2.1.0

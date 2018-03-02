@@ -16,6 +16,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
+from mercury.file_storage import MediaFileSystemStorage, org_media_root
 from mercury.utils import locks
 from mercury.utils.retries import TimedRetryPolicy
 from mercury.utils.slug import slugify_instance
@@ -107,6 +108,17 @@ class Organization(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE,
                               related_name='organizations')
+
+    avatar = models.ImageField(blank=True, null=True,
+                                # upload_to="pictures",
+                                upload_to=org_media_root,
+                                storage=MediaFileSystemStorage(),
+                                height_field='picture_height',
+                                width_field='picture_width'
+                                )
+    picture_height = models.IntegerField(editable=False, null=True)
+    picture_width = models.IntegerField(editable=False, null=True)
+
     objects = OrganizationManager()
 
     @classmethod
