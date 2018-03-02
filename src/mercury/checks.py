@@ -32,7 +32,7 @@ def check(app_configs, **kwargs):
             )
         )
     try:
-        cur = connection.cursor()
+        connection.cursor()
     except OperationalError as e:
         errors.append(
             Error(

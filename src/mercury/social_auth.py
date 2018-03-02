@@ -11,9 +11,6 @@ from django.conf import settings
 from django.shortcuts import resolve_url
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
-from social_core.backends import google
-from social_core.backends.facebook import FacebookOAuth2
-from social_core.strategy import BaseStrategy
 from social_django.strategy import DjangoStrategy
 
 
@@ -40,7 +37,6 @@ def avatar(backend, details, user=None, *args, **kwargs):
         pass
 
     return False
-
 
 
 class MercuryStrategy(DjangoStrategy):

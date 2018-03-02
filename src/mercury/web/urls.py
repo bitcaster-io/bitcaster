@@ -2,10 +2,13 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from mercury.web.views.setup import SetupView
-from mercury.web.views.views import OrganizationCreate, ApplicationCreate, SettingsView
+from mercury.web.views.views import (ApplicationCreate,
+                                     OrganizationCreate, SettingsView,)
+
 from .views import (ApplicationDetail, ChannelList, EventList, LoginView,
                     LogoutView, MessageList, OrganizationDetail,
-                    SubscriptionList, UserProfileView, UserRegister, confirm_email, )
+                    SubscriptionList, UserProfileView, UserRegister,
+                    confirm_email,)
 
 urlpatterns = [
     path(r'setup/', SetupView.as_view(), name='setup'),

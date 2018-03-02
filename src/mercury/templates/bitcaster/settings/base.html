@@ -32,7 +32,7 @@
                 {% block content %}
                     <h2>{{ title }}</h2>
                     <div>
-                        <form method="POST">
+                        <form method="POST" action=".">
                             {% csrf_token %}
                             {{ form|crispy }}
                             <input type="submit" class="btn btn-primary" value="Save">

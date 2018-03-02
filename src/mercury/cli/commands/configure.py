@@ -3,7 +3,7 @@ from functools import lru_cache
 from pathlib import Path
 
 import click
-from environ import ImproperlyConfigured
+
 
 class AddressParamType(click.ParamType):
     name = 'address'
@@ -31,6 +31,7 @@ class AddressParamType(click.ParamType):
 
 Address = AddressParamType()
 
+
 def read_current_env(param):
     ctx = click.get_current_context()
     env = ctx.obj['env']
@@ -53,8 +54,6 @@ def get_database_url_param():
                 'user': 'postgres',
                 'password': '',
                 'database': 'mercury'}
-
-
 
 
 @click.command()

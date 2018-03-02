@@ -110,12 +110,12 @@ class Organization(models.Model):
                               related_name='organizations')
 
     avatar = models.ImageField(blank=True, null=True,
-                                # upload_to="pictures",
-                                upload_to=org_media_root,
-                                storage=MediaFileSystemStorage(),
-                                height_field='picture_height',
-                                width_field='picture_width'
-                                )
+                               # upload_to="pictures",
+                               upload_to=org_media_root,
+                               storage=MediaFileSystemStorage(),
+                               height_field='picture_height',
+                               width_field='picture_width'
+                               )
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
 

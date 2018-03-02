@@ -7,11 +7,11 @@ mercury / setup
 :license: BSD, see LICENSE for more details.
 """
 from constance import config
-from django.utils.translation import ugettext as _
 from django import forms
 from django.contrib.auth import password_validation
+from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
-from django.views.generic.edit import ProcessFormView, FormMixin
+from django.views.generic.edit import FormMixin, ProcessFormView
 
 from mercury.models import User
 

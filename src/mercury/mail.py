@@ -10,8 +10,7 @@ mercury / mail
 import logging
 
 from constance import config
-from django.utils.translation import gettext as _
-from django.core.mail import send_mail as _send_mail, get_connection
+from django.core.mail import get_connection, send_mail as _send_mail
 
 logger = logging.getLogger(__name__)
 

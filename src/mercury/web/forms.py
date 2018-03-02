@@ -10,10 +10,10 @@ import json
 
 from django import forms
 from django.contrib.auth import password_validation
-from django.contrib.auth.forms import UserCreationForm as _UserCreationForm, UserChangeForm as _UserChangeForm
+from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
+                                       UserCreationForm as _UserCreationForm,)
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError
-from django.core.files.images import get_image_dimensions
 from django.forms import Form, PasswordInput
 from django.forms.utils import ErrorList
 from django.utils.safestring import mark_safe
@@ -26,7 +26,7 @@ from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from mercury.configurable import get_full_config
 from mercury.models import (Application, Channel, Event,
-                            Organization, Subscription, User, )
+                            Organization, Subscription, User,)
 from mercury.utils import import_by_name
 from mercury.utils.language import flatten
 

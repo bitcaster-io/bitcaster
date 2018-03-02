@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-# Load operating system environment variables and then prepare to use them
-from environ import environ, warnings, re, os, ImproperlyConfigured
-from mercury import logging
 from pathlib import Path
-import re
+
+from environ import ImproperlyConfigured, environ, os, re, warnings
+
+from mercury import logging
 from mercury.config import DEFAULT_CONFIG
 
 logger = logging.getLogger(__name__)
 
-DEFAULTS=dict(
+DEFAULTS = dict(
     DEBUG=False,
 
     MEDIA_ROOT='',
@@ -30,6 +30,7 @@ DEFAULTS=dict(
 
     REDIS_CONNECTION='',
 )
+
 
 class Env(environ.Env):
     def get_value(self, var, cast=None, default=environ.Env.NOTSET, parse_default=False):
@@ -80,7 +81,6 @@ class Env(environ.Env):
                 if m3:
                     val = re.sub(r'\\(.)', r'\1', m3.group(1))
                 self.ENVIRON[key] = str(val)
-
 
     def write_env(self, env_file=None, **overrides):
         with open(env_file, 'w') as f:

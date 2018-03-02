@@ -164,6 +164,7 @@ TEMPLATES = [
             ],
             # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
             'context_processors': [
+                'constance.context_processors.config',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -345,40 +346,21 @@ CONSTANCE_CONFIG = OrderedDict({
                  'bitcaster web url',
                  str),
 
-    'EMAIL_USE_TLS': (False,
-                      'bitcaster web url',
-                      bool),
-
-    'EMAIL_TIMEOUT': (60,
-                      'bitcaster web url',
-                      int),
-
-    'EMAIL_HOST': ('',
-                   'bitcaster web url',
-                   str),
-
-    'EMAIL_PORT': (0,
-                   'bitcaster web url',
-                   int),
-
-    'EMAIL_SENDER': ('bitcaster@noreply.org',
-                     'bitcaster web url',
-                     str),
-
-    'EMAIL_SUBJECT_PREFIX': ('[bitcaster] ',
-                             'bitcaster web url',
-                             str),
-
-    'EMAIL_HOST_PASSWORD': ('',
-                            'bitcaster web url',
-                            str),
-
     'HOSTIP_ADDRESS': ('http://api.hostip.info/get_html.php',
                        'api.hostip.info info',
                        str),
     'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/',
                        '===',
                        str),
+
+    'EMAIL_USE_TLS': (False, '', bool),
+    'EMAIL_TIMEOUT': (60, '', int),
+    'EMAIL_HOST': ('', '', str),
+    'EMAIL_PORT': (0, '', int),
+    'EMAIL_HOST_USER': ('', '', str),
+    'EMAIL_HOST_PASSWORD': ('', '', str),
+    'EMAIL_SENDER': ('bitcaster@noreply.org', '', str),
+    'EMAIL_SUBJECT_PREFIX': ('[bitcaster] ', '', str),
 
     'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY': ('', '', str),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET': ('', '', str),

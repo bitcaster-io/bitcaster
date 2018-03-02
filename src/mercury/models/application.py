@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
 from mercury import logging
-from mercury.file_storage import app_media_root, MediaFileSystemStorage
+from mercury.file_storage import MediaFileSystemStorage, app_media_root
 from mercury.models.organization import RESERVED_NAMES, Organization
 from mercury.utils import locks
 from mercury.utils.retries import TimedRetryPolicy

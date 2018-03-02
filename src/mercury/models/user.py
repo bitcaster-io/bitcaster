@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-from urllib.request import urlopen
-
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin, UserManager as _UserManager
-from mercury.mail import send_mail
+from django.contrib.auth.models import (PermissionsMixin,
+                                        UserManager as _UserManager,)
 from django.db import models
 from django.template.loader import get_template
 from django.urls import reverse
@@ -12,20 +10,18 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
-from requests import HTTPError
-from social_core.backends import google
-from social_core.backends.facebook import FacebookOAuth2
 from timezone_field import TimeZoneField
-from django.db.models.signals import post_save
+
+from mercury import logging
+from mercury.fields import EncryptedJSONField, LanguageField
+from mercury.file_storage import MediaFileSystemStorage, profile_media_root
+from mercury.mail import send_mail
+from mercury.utils.http import absolute_uri
 
 # from social_auth.backends.facebook import FacebookBackend
 # from social_auth.backends import google
 # from social_auth.signals import socialauth_registered
 
-from mercury import logging
-from mercury.fields import EncryptedJSONField, LanguageField
-from mercury.file_storage import MediaFileSystemStorage, profile_media_root
-from mercury.utils.http import absolute_uri
 
 logger = logging.getLogger(__name__)
 
@@ -111,12 +107,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     )
     avatar = models.ImageField(blank=True, null=True,
-                                # upload_to="pictures",
-                                upload_to=profile_media_root,
-                                storage=MediaFileSystemStorage(),
-                                height_field='picture_height',
-                                width_field='picture_width'
-                                )
+                               # upload_to="pictures",
+                               upload_to=profile_media_root,
+                               storage=MediaFileSystemStorage(),
+                               height_field='picture_height',
+                               width_field='picture_width'
+                               )
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
     timezone = TimeZoneField()

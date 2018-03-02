@@ -1,8 +1,7 @@
 import warnings
 
-from django.db.backends.base.introspection import (
-    BaseDatabaseIntrospection, FieldInfo, TableInfo,
-)
+from django.db.backends.base.introspection import (BaseDatabaseIntrospection,
+                                                   FieldInfo, TableInfo,)
 from django.db.models.indexes import Index
 from django.utils.deprecation import RemovedInDjango21Warning
 

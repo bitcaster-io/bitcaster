@@ -10,12 +10,12 @@ mercury / user
 import logging
 
 from django.contrib import messages
-from django.views.generic import UpdateView
 from django.utils.translation import gettext as _
+
 from mercury.models import User
 from mercury.utils.wsgi import get_client_ip
 from mercury.web.forms import UserProfileForm
-from mercury.web.views.base import MessageUserMixin, MercuryBaseUpdateView
+from mercury.web.views.base import MercuryBaseUpdateView
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,6 @@ class UserProfileView(MercuryBaseUpdateView):
                     if not user.timezone:
                         initial['timezone'] = match['location']['time_zone']
         return initial
-
 
     def form_valid(self, form):
         ret = super().form_valid(form)

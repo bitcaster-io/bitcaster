@@ -183,7 +183,7 @@ class Command(BaseCommand):
                             friendly_name=env(f'{prefix}_FRIENDLY_NAME'),
                             )
                 u = User.objects.get_or_create(email=env(f'{prefix}_EMAIL'),
-                                                  defaults=defs)[0]
+                                               defaults=defs)[0]
                 u.set_password('123')
                 u.save()
                 org.add_member(u, OrganizationRole.OWNER)

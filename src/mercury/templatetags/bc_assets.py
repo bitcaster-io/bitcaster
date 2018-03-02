@@ -2,7 +2,6 @@ from django import template
 from django.conf import settings
 
 import mercury
-from mercury.utils.http import absolute_uri
 
 register = template.Library()
 

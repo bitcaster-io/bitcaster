@@ -1,5 +1,4 @@
 import psycopg2
-
 from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 
 

@@ -1,20 +1,19 @@
 from constance import config
 from django.contrib import messages
-from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView, CreateView
+from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.views.generic.base import TemplateResponseMixin
-from django.views.generic.detail import SingleObjectTemplateResponseMixin
-from django.views.generic.edit import ProcessFormView, FormView
+from django.views.generic import DetailView, ListView
+from django.views.generic.edit import FormView
 
 from mercury.models import (Application, Channel, Event,
-                            Message, Organization, Subscription, )
-from mercury.web.forms import OrganizationForm, ApplicationForm, ApplicationCreateForm, SettingsEmailForm, \
-    SettingsEmailForm, SettingsMainForm, SettingsChannelsForm, SettingsOAuthForm
-from mercury.web.views.base import (ApplicationListMixin,
+                            Message, Organization, Subscription,)
+from mercury.web.forms import (ApplicationCreateForm, OrganizationForm,
+                               SettingsChannelsForm, SettingsEmailForm,
+                               SettingsMainForm, SettingsOAuthForm,)
+from mercury.web.views.base import (MercuryBaseCreateView,
+                                    MercuryBaseDetailView, MercuryTemplateView,
                                     SelectedApplicationMixin,
-                                    SelectedOrganizationMixin, MercuryBaseCreateView, MercuryBaseDetailView,
-                                    MercuryTemplateView, SuperuserViewMixin)
+                                    SuperuserViewMixin,)
 
 
 # @method_decorator(login_required, name='dispatch')
@@ -38,7 +37,10 @@ class OrganizationCreate(MercuryBaseCreateView):
 class ApplicationCreate(MercuryBaseCreateView):
     model = Application
     form_class = ApplicationCreateForm
-    success_url = '.'
+
+    def get_success_url(self):
+        return reverse('app-index', args=[self.selected_organization.slug,
+                                          self.object.slug])
 
     def form_valid(self, form):
         # form.cleaned_data['owner'] = self.request.user
@@ -83,7 +85,7 @@ class MessageList(SelectedApplicationMixin, ListView):
 
 
 class SettingsView(SuperuserViewMixin, MercuryTemplateView, FormView):
-    success_url = reverse_lazy('settings')
+    success_url = '.'
     form_map = {'email': SettingsEmailForm,
                 'main': SettingsMainForm,
                 'channels': SettingsChannelsForm,

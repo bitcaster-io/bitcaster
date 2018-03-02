@@ -5,10 +5,10 @@ from pathlib import Path
 import click
 from setproctitle import setproctitle
 from strategy_field.utils import import_by_name
-from mercury.config.environ import env
 
 import mercury
 from mercury.config import DEFAULT_CONFIG
+from mercury.config.environ import env
 
 _global_options = [
     click.option('-c',

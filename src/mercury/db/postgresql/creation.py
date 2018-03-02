@@ -1,8 +1,7 @@
 import sys
 
-from psycopg2 import errorcodes
-
 from django.db.backends.base.creation import BaseDatabaseCreation
+from psycopg2 import errorcodes
 
 
 class DatabaseCreation(BaseDatabaseCreation):

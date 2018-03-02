@@ -4,7 +4,6 @@ import logging
 from django.contrib import admin
 
 from mercury.models import Organization, OrganizationMember
-from mercury.web.forms import OrganizationForm
 
 from .inlines import ApplicationInline, OrganizationMemberInline
 from .site import site

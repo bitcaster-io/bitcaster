@@ -8,15 +8,12 @@ mercury / file_storage
 """
 
 import logging
-
 import os
 from functools import wraps
 
 from django.core.files.storage import FileSystemStorage
 
 logger = logging.getLogger(__name__)
-
-
 
 
 def _get_media_root(prefix):

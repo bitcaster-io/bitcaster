@@ -14,7 +14,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views import View
-from django.views.generic import TemplateView, CreateView, UpdateView, DetailView
+from django.views.generic import (CreateView, DetailView,
+                                  TemplateView, UpdateView,)
 
 from mercury.models import Organization
 
@@ -31,7 +32,6 @@ class SecuredViewMixin(View):
 class SuperuserViewMixin(SecuredViewMixin):
     def check_perms(self, request, obj=None, raise_exception=False):
         return request.user.has_perm(obj)
-
 
 
 class OrganizationListMixin(SecuredViewMixin):
@@ -63,7 +63,7 @@ class ApplicationListMixin(SelectedOrganizationMixin):
         return ret
 
 
-class SelectedApplicationMixin(SelectedOrganizationMixin):
+class SelectedApplicationMixin(ApplicationListMixin):
     def get_context_data(self, **kwargs):
         kwargs['application'] = self.selected_application
         return super().get_context_data(**kwargs)
