@@ -51,5 +51,4 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
         User.objects.create_superuser(form.cleaned_data['email'],
                                       form.cleaned_data['password1'])
         config.INITIALIZED = 1
-        config.save()
         return super().form_valid(form)

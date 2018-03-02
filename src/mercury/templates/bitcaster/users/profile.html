@@ -1,20 +1,26 @@
-{% extends "bitcaster/base.html" %}{% load crispy_forms_utils crispy_forms_tags crispy_forms_filters i18n %}
+{% extends "bitcaster/base.html" %}{% load crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
 {% block page %}
     <div class="container-fluid">
-    <div class="row col-12">
-        <h3>Profile</h3>
-        <div class="container-fluid">
-            <div class="col-4">
-
-            </div>
-            <div class="col-8">
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form|crispy }}
-                    <input type="submit" value="Save" class="btn btn-primary">
+        <div class="row col-12">
+            <h3>Profile</h3>
+            <div class="container-fluid">
+                <form method="post" enctype="multipart/form-data" action=".">
+                    <div class="row">
+                        <div class="col-4">
+                            {{ form.avatar|as_crispy_field }}
+                        </div>
+                        <div class="col-8">
+                            {% for field in form %}
+                                {% if field.name != "avatar" %}
+                                    {{ field|as_crispy_field }}
+                                {% endif %}
+                            {% endfor %}
+                            {% csrf_token %}
+                            <input type="submit" value="Save" class="btn btn-primary">
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
-    </div>
     </div>
 {% endblock %}

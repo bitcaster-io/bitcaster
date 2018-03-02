@@ -7,12 +7,14 @@ from django.db import models
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
 
 from mercury import logging
 from mercury.fields import EncryptedJSONField, LanguageField
+from mercury.file_storage import MediaFileSystemStorage, media_file_name
 from mercury.utils.http import absolute_uri
 
 logger = logging.getLogger(__name__)
@@ -97,11 +99,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text=_('Where store handler related user data')
 
     )
-    picture = models.ImageField(blank=True, null=True,
+    avatar = models.ImageField(blank=True, null=True,
+                                # upload_to="pictures",
+                                upload_to=media_file_name,
+                                storage=MediaFileSystemStorage(),
                                 height_field='picture_height',
-                                width_field='picture_width')
-    picture_height = models.ImageField(editable=False)
-    picture_width = models.ImageField(editable=False)
+                                width_field='picture_width'
+                                )
+    picture_height = models.IntegerField(editable=False, null=True)
+    picture_width = models.IntegerField(editable=False, null=True)
     timezone = TimeZoneField()
     language = LanguageField(default='en')
     country = CountryField()
@@ -124,6 +130,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         """return true if user is an admin of target
         @target: Organization or Application
         """
+
+    @cached_property
+    def display_name(self):
+        return self.friendly_name or self.email
 
     def set_password(self, raw_password):
         super(User, self).set_password(raw_password)

@@ -1,4 +1,21 @@
 {% extends "bitcaster/app.html" %}
 {% block content %}
     <h2>{{ organization }}</h2>
+    <div>
+        <ul>
+            <li>
+                <a href="{% url "application-add" organization.slug %}">Create new Application</a>
+            </li>
+        </ul>
+    </div>
+
+
+    <div>
+        <ul>{% for app in applications %}
+            <li>
+                <a href="{% url "app-index" organization.slug app.slug %}">{{ app }}</a>
+            </li>
+        {% endfor %}</ul>
+    </div>
+
 {% endblock content %}

@@ -1,0 +1,12 @@
+{% extends "bitcaster/app.html" %}{% load crispy_forms_tags %}
+{% block content %}
+    <h2>Add new </h2>
+    <div>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" class="btn btn-primary" value="Save">
+    </form>
+    </div>
+
+{% endblock content %}

@@ -32,6 +32,8 @@ develop: .setup-git
 reset-migrations: .init-db
 	find src -name '000[1,2,3,4,5,6,7,8,9]*' | xargs rm -f
 	./manage.py makemigrations mercury
+	./manage.py migrate
+	./manage.py constance set INITIALIZED 0
 
 #	find extras -name '000[1,3,4,5,6,7,8,9]*' | xargs rm -f
 #	./manage.py makemigrations geo

@@ -1,16 +1,42 @@
-from django.views.generic import DetailView, ListView
-
+from django.contrib import messages
+from django.views.generic import DetailView, ListView, CreateView
+from django.utils.translation import gettext as _
 from mercury.models import (Application, Channel, Event,
-                            Message, Organization, Subscription,)
+                            Message, Organization, Subscription, )
+from mercury.web.forms import OrganizationForm, ApplicationForm, ApplicationCreateForm
 from mercury.web.views.base import (ApplicationListMixin,
                                     SelectedApplicationMixin,
-                                    SelectedOrganizationMixin,)
+                                    SelectedOrganizationMixin, MercuryBaseCreateView, MercuryBaseDetailView)
 
 
 # @method_decorator(login_required, name='dispatch')
-class OrganizationDetail(SelectedOrganizationMixin, ApplicationListMixin, DetailView):
+class OrganizationDetail(MercuryBaseDetailView):
     model = Organization
     slug_url_kwarg = 'org'
+
+
+class OrganizationCreate(MercuryBaseCreateView):
+    model = Organization
+    form_class = OrganizationForm
+    success_url = '.'
+
+    def form_valid(self, form):
+        # form.cleaned_data['owner'] = self.request.user
+        form.instance.owner = self.request.user
+        self.message_user(_('Organization created'), messages.SUCCESS)
+        return super().form_valid(form)
+
+
+class ApplicationCreate(MercuryBaseCreateView):
+    model = Application
+    form_class = ApplicationCreateForm
+    success_url = '.'
+
+    def form_valid(self, form):
+        # form.cleaned_data['owner'] = self.request.user
+        form.instance.organization = self.selected_organization
+        self.message_user(_('Application created'), messages.SUCCESS)
+        return super().form_valid(form)
 
 
 # @method_decorator(login_required, name='dispatch')

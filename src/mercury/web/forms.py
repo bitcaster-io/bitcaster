@@ -13,6 +13,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.forms import UserCreationForm as _UserCreationForm, UserChangeForm as _UserChangeForm
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError
+from django.core.files.images import get_image_dimensions
 from django.forms import Form, PasswordInput
 from django.forms.utils import ErrorList
 from django.utils.safestring import mark_safe
@@ -25,7 +26,7 @@ from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from mercury.configurable import get_full_config
 from mercury.models import (Application, Channel, Event,
-                            Organization, Subscription, User,)
+                            Organization, Subscription, User, )
 from mercury.utils import import_by_name
 from mercury.utils.language import flatten
 
@@ -81,7 +82,41 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('friendly_name', 'email', 'timezone', 'language', 'country')
+        fields = ('friendly_name', 'avatar', 'email',
+                  'timezone', 'language', 'country')
+
+    # def clean_picture(self):
+    #     picture = self.cleaned_data['picture']
+    #     if picture:
+    #     try:
+    #         w, h = get_image_dimensions(picture)
+    #
+    #         # validate dimensions
+    #         max_width = max_height = 100
+    #         if w > max_width or h > max_height:
+    #             raise forms.ValidationError(
+    #                 u'Please use an image that is '
+    #                 '%s x %s pixels or smaller.' % (max_width, max_height))
+    #
+    #         # validate content type
+    #         main, sub = picture.content_type.split('/')
+    #         if not (main == 'image' and sub in ['jpeg', 'pjpeg', 'gif', 'png']):
+    #             raise forms.ValidationError(u'Please use a JPEG, '
+    #                                         'GIF or PNG image.')
+    #
+    #         # validate file size
+    #         if len(picture) > (20 * 1024):
+    #             raise forms.ValidationError(
+    #                 u'Avatar file size may not exceed 20k.')
+    #
+    #     except AttributeError:
+    #         """
+    #         Handles case when we are updating the user profile
+    #         and do not supply a new avatar
+    #         """
+    #         pass
+    #
+    #     return picture
 
 
 class UserCreationForm(_UserCreationForm):
@@ -129,6 +164,12 @@ class UserCreationForm(_UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class ApplicationCreateForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ['name', 'timezone', 'allowed_origins', 'slug']
 
 
 class ApplicationForm(forms.ModelForm):

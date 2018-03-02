@@ -44,8 +44,8 @@ class Application(AbstractModel):
                                  blank=True,
                                  null=True)
     first_event = models.DateTimeField(null=True, editable=False)
-    rate_limit_count = models.PositiveIntegerField(null=True)
-    rate_limit_window = models.PositiveIntegerField(null=True)
+    rate_limit_count = models.PositiveIntegerField(null=True, default=0, blank=True)
+    rate_limit_window = models.PositiveIntegerField(null=True, default=0, blank=True)
     flags = BitField(flags=(
         # ('has_releases', 'This Project has sent release data'),
     ), default=0, null=True)

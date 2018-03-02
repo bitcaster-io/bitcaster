@@ -2,9 +2,10 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from mercury.web.views.setup import SetupView
+from mercury.web.views.views import OrganizationCreate, ApplicationCreate
 from .views import (ApplicationDetail, ChannelList, EventList, LoginView,
                     LogoutView, MessageList, OrganizationDetail,
-                    SubscriptionList, UserProfile, UserRegister, confirm_email,)
+                    SubscriptionList, UserProfileView, UserRegister, confirm_email, )
 
 urlpatterns = [
     path(r'setup/', SetupView.as_view(), name='setup'),
@@ -12,13 +13,15 @@ urlpatterns = [
     path(r'logout/', LogoutView.as_view(), name='logout'),
 
     path(r'user/register/', UserRegister.as_view(), name='user-register'),
+    path(r'org/add/', OrganizationCreate.as_view(), name='org-add'),
+    path(r'<slug:org>/add/', ApplicationCreate.as_view(), name='application-add'),
 
     path(r'user/register/register-wait-email/<int:pk>/',
          TemplateView.as_view(template_name='bitcaster/registration/register_wait_email.html'),
          name='register-wait-email'),
     path(r'user/register/confirm-email/<int:pk>/<str:check>/',
          confirm_email, name='confirm-email'),
-    path(r'user/profile/', UserProfile.as_view(), name='user-profile'),
+    path(r'user/profile/', UserProfileView.as_view(), name='user-profile'),
 
     path(r'new-user/', TemplateView.as_view(template_name='bitcaster/new-user.html')),
     path(r'new-association/', TemplateView.as_view(template_name='bitcaster/new-association.html')),

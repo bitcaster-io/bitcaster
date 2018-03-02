@@ -1,10 +1,7 @@
 from __future__ import absolute_import
 
-import redis.exceptions
 from constance import config
-from django.db import connection, OperationalError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template.response import TemplateResponse
 
 
 class SetupMiddleware(object):

@@ -7,6 +7,11 @@
             <li><a href="{% url "login" %}">Login</a></li>
         </ul>
     {% else %}
-        Welcome back
+        Welcome back.
+        <ul>
+            <li>
+                <a href="{% url "org-add" %}">Create new Organization</a>
+            </li>
+        </ul>
     {% endif %}
 {% endblock %}

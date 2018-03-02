@@ -37,17 +37,19 @@ class OrganizationStatus(Enum):
         return self.value
 
 
-RESERVED_NAMES = frozenset(('bitcaster', 'sax', 'mercury',
-                            'admin', 'manage', 'login', 'account', 'register', 'api',
-                            'accept', 'organization', 'organizations', 'teams', 'projects', 'help',
-                            'docs', 'logout', '404', '500', '_static', 'out', 'debug',
-                            'remote', 'get-cli', 'blog', 'welcome', 'features',
-                            'customers', 'integrations', 'signup', 'pricing',
-                            'subscribe', 'enterprise', 'about', 'jobs', 'thanks', 'guide',
-                            'privacy', 'security', 'terms', 'from', 'sponsorship', 'for',
-                            'at', 'platforms', 'branding', 'vs', 'answers', '_admin',
-                            'support', 'register', 'user', 'profile',
-                            ))
+RESERVED_NAMES = frozenset((
+    'add', 'edit', 'remove', 'delete', 'del',
+    'bitcaster', 'sax', 'mercury',
+    'admin', 'manage', 'login', 'account', 'register', 'api',
+    'accept', 'organization', 'organizations', 'teams', 'projects', 'help',
+    'docs', 'logout', '404', '500', '_static', 'out', 'debug',
+    'remote', 'get-cli', 'blog', 'welcome', 'features',
+    'customers', 'integrations', 'signup', 'pricing',
+    'subscribe', 'enterprise', 'about', 'jobs', 'thanks', 'guide',
+    'privacy', 'security', 'terms', 'from', 'sponsorship', 'for',
+    'at', 'platforms', 'branding', 'vs', 'answers', '_admin',
+    'support', 'register', 'user', 'profile',
+))
 
 RESERVED_ORGANIZATION_NAME = frozenset(RESERVED_NAMES)
 RESERVED_ORGANIZATION_SLUGS = frozenset(RESERVED_NAMES)
