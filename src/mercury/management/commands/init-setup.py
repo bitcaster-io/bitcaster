@@ -187,6 +187,7 @@ class Command(BaseCommand):
                 u.set_password('123')
                 u.save()
                 org.add_member(u, OrganizationRole.OWNER)
+                return u
 
             def create_channel(handler):
                 prefix = "CHANNEL__%s__" % handler.__module__.split('.')[0].replace('mercury_', '').upper()

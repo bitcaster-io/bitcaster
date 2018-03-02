@@ -29,7 +29,7 @@ class Config(AppConfig):
         from django.conf import settings  # noqa
         from .dispatchers.registry import dispatcher_registry  # noqa
         from . import tasks  # noqa
-
+        from . import checks
 
 # post_migrate.connect(create_extra_permission,
 #                      dispatch_uid='create_extra_permission')

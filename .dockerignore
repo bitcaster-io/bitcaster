@@ -1,1 +1,10 @@
 .git
+.demo
+.env
+/node_modules
+.tox
+~build
+~OLD
+/extras
+/hooks
+/docs

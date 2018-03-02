@@ -1,5 +1,8 @@
 from __future__ import absolute_import
 
+import redis.exceptions
+from constance import config
+from django.db import connection, OperationalError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 
@@ -13,8 +16,7 @@ class SetupMiddleware(object):
 
     def __call__(self, request):
         response = self.get_response(request)
-        # if request.path != '/setup/':
-        #     return HttpResponseRedirect("/setup/")
+        if not config.INITIALIZED:
+            if request.path != '/setup/':
+                return HttpResponseRedirect("/setup/")
         return response
-        # ctx = {}
-        # return TemplateResponse(request, "bitcaster/setup.html", ctx)

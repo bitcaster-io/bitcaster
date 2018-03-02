@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     # Default Django apps:
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    # 'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -93,7 +93,9 @@ MIDDLEWARE = [
     'mercury.middleware.logger.LoggerMiddleware'
 ]
 AUTH_USER_MODEL = 'mercury.user'
-
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_COOKIE_NAME = "bitcasterid"
+SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 # DEBUG
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
@@ -125,6 +127,7 @@ MANAGERS = ADMINS
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 # Uses django-environ to accept uri format
 # See: https://django-environ.readthedocs.io/en/latest/#supported-types
+environ.Env.DB_SCHEMES['psql'] = 'mercury.db.postgresql'
 DATABASES = {
     'default': env.db('DATABASE_URL',
                       default='psql://postgres:@127.0.0.1:5432/mercury'),

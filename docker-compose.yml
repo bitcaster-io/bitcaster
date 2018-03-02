@@ -15,8 +15,11 @@ services:
 #
   redis:
     image: redis:alpine
+    command: redis-server --appendonly yes
     ports:
       - "${DOCKER_REDIS_PORT}:6379"
+    volumes:
+      - ${DOCKER_REDIS_DATA}:/data
 
   db:
     image: mdillon/postgis
