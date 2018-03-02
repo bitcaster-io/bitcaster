@@ -3,6 +3,8 @@ import os
 from collections import OrderedDict
 from pathlib import Path
 
+from django.utils.translation import ugettext_lazy as _
+
 from mercury.config.environ import env
 
 from .logging_conf import LOGGING
@@ -66,6 +68,7 @@ MIDDLEWARE = [
     'mercury.middleware.security.SecurityHeadersMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -126,6 +129,13 @@ TIME_ZONE = 'Europe/Rome'
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = 'en-us'
+LANGUAGES = (
+    ('en', _('English')),
+    ('fr', _('French')),
+)
+LOCALE_PATHS = (
+    str(MERCURY_DIR / 'locale'),
+)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1
@@ -377,13 +387,12 @@ CONSTANCE_CONFIG_FIELDSETS = {"Options": list(CONSTANCE_CONFIG.keys())}
 # SENTRY & RAVEN
 if env.bool('ENABLE_SENTRY', False):
     import raven
-    import os
-    import mercury.env
+    import mercury.state
 
     LOGGING['handlers']['sentry'] = {'level': 'ERROR',
                                      # 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
                                      'class': 'mercury.logging.MercuryHandler',
-                                     'extra': {'state': mercury.env.env},
+                                     'extra': {'state': mercury.state.state},
                                      }
 
     INSTALLED_APPS += ['raven.contrib.django.raven_compat', ]

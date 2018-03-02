@@ -46,6 +46,9 @@ qa:
 	isort -rc src/ --check-only
 	check-manifest
 
+messages:
+	cd src && ../manage.py makemessages -l en -l fr -l es
+	cd src && ../manage.py compilemessages -l en -l fr -l es
 
 clean:
 	rm -fr ${BUILDDIR} dist *.egg-info .coverage coverage.xml .eggs

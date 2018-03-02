@@ -14,4 +14,4 @@ class State(local):
         self.request = None
 
 
-env = State()
+state = State()

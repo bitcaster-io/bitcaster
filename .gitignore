@@ -13,5 +13,5 @@
 .idea
 .tox
 /dist
-/~*
+~*
 /node_modules
