@@ -2,12 +2,12 @@
 from django.urls import reverse
 
 
-def test_login(django_app, admin_user):
+def test_login(django_app, admin):
     url = reverse('admin:login')
     res = django_app.get(url)
-    res.form['email'] = admin_user.email
-    res.form['password'] = 'password'
+    res.form['username'] = admin.email
+    res.form['password'] = '123'
     res = res.form.submit()
     assert res.status_code == 302
     res = res.follow()
-    assert res.context['user'].email == admin_user.email
+    assert res.context['user'].email == admin.email

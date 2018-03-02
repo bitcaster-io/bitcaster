@@ -5,7 +5,7 @@ from django.utils.translation import ugettext as _
 import requests
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                      MessageType, SubscriptionOptions, )
+                                      MessageType, SubscriptionOptions,)
 from mercury.dispatchers.registry import dispatcher_registry
 from mercury.exceptions import PluginSendError, PluginValidationError
 from mercury.logging import getLogger
@@ -75,14 +75,9 @@ class SlackWebhook(Dispatcher):
                 raise PluginSendError(ret.content)
             return 1
         except Exception as e:
-            # FIXME: remove me (print)
-            print(111, recipient)
             logger.exception(e)
             raise PluginSendError(e) from e
 
     def test_connection(self, raise_exception=False):
         conn = self._get_connection()
-        # ret = conn.head(self.config['url'])
-        # FIXME: remove me (print)
-        # print(111, ret)
         return conn

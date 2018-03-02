@@ -9,12 +9,12 @@ from strategy_field.fields import StrategyField
 
 from mercury import logging
 from mercury.dispatchers import dispatcher_registry
-from mercury.env import env
 from mercury.exceptions import HandlerNotFound, PluginValidationError
 from mercury.fields import EncryptedJSONField
 from mercury.logging import secLog
 from mercury.models import AbstractModel, Application
 from mercury.models.counters import Counter
+from mercury.state import state
 
 logger = logging.getLogger(__name__)
 
@@ -104,12 +104,12 @@ It can be Global or Application specific.
             message = self.messages.get(event=event)
             body = Template(message.body)
             subject = Template(message.subject)
-            env.data['event'] = event
+            state.data['event'] = event
             # logger.debug(f"Processing event {event}")
             conn = self.handler._get_connection()
             success, failures = 0, 0
             for subscription in event.subscriptions.valid(channel=self):
-                env.data['subscription'] = subscription
+                state.data['subscription'] = subscription
                 logger.debug(f"Processing {subscription}")
                 try:
                     ctx = dict(context or {})

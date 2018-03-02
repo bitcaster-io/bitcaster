@@ -17,7 +17,7 @@ def test_user_return(django_app, application1):
 
     # get the application dropdown
     link = res.pyquery('.dropdown-menu a.dropdown-item.application')[0]
-    res = res.click(href=link.get('href'))
+    res = res.click(href=link.get('href'), index=1)
 
     # goto subscriptions
     res = res.click('Subscriptions')

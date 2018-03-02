@@ -26,6 +26,8 @@ def user2(db):
 
 @pytest.fixture
 def admin(db):
+    # pytest `django_admin` fixture cannot be used because
+    # we do not have username field
     from mercury.utils.tests.factories import AdminFactory
     return AdminFactory()
 

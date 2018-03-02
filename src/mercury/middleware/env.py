@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from django.core.signals import request_finished
 
-from mercury.env import env
+from mercury.state import state
 
 
 class MercuryEnvMiddleware:
@@ -10,13 +10,13 @@ class MercuryEnvMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        env.request = request
+        state.request = request
         response = self.get_response(request)
         return response
 
 
 def clear_request(**kwargs):
-    env.clear()
+    state.clear()
 
 
 request_finished.connect(clear_request)

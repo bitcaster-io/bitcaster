@@ -366,7 +366,7 @@ CONSTANCE_CONFIG = OrderedDict({
     'EMAIL_USE_TLS': (False, '', bool),
     'EMAIL_TIMEOUT': (60, '', int),
     'EMAIL_HOST': ('', '', str),
-    'EMAIL_PORT': (0, '', int),
+    'EMAIL_HOST_PORT': (0, '', int),
     'EMAIL_HOST_USER': ('', '', str),
     'EMAIL_HOST_PASSWORD': ('', '', str),
     'EMAIL_SENDER': ('bitcaster@noreply.org', '', str),
