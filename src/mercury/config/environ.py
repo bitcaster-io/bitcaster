@@ -117,10 +117,7 @@ class Env(environ.Env):
         try:
             content = Path(env_file).read_text()
         except IOError:
-            warnings.warn(
-                "Error reading %s - if you're not configuring your "
-                "environment separately, check this." % env_file)
-            return
+            raise ImproperlyConfigured(f'{env_file} not found')
 
         logger.debug('Read environment variables from: {0}'.format(env_file))
 
@@ -134,7 +131,7 @@ class Env(environ.Env):
                 m3 = re.match(r'\A"(.*)"\Z', val)
                 if m3:
                     val = re.sub(r'\\(.)', r'\1', m3.group(1))
-                self.ENVIRON[key] = str(val)
+                self.ENVIRON[f"{self.prefix}{key}"] = str(val)
 
     def write_env(self, env_file=None, **overrides):
         with open(env_file, 'w') as f:
@@ -146,5 +143,4 @@ class Env(environ.Env):
 
 # env = Env('BITCASTER_', **dict((k, type(v)) for k, v in DEFAULTS.items()))
 env = Env('BITCASTER_', **DEFAULTS)
-
-env.read_env(os.environ.get('BITCASTER_CONF', DEFAULT_CONFIG))
+env.load_config(os.environ.get('BITCASTER_CONF', DEFAULT_CONFIG))

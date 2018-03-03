@@ -77,6 +77,7 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'mercury.middleware.logger.LoggerMiddleware',
 ]
+
 AUTH_USER_MODEL = 'mercury.user'
 SECRET_KEY = env('SECRET_KEY')
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
