@@ -8,9 +8,12 @@ mercury / checks
 """
 
 import logging
+from pathlib import Path
 
 import redis.exceptions
 from constance import config
+from django.conf import settings
+from django.core.cache import caches
 from django.core.checks import Error, register
 from django.db import OperationalError, connection
 
@@ -40,6 +43,48 @@ def check(app_configs, **kwargs):
                 hint='check your database configuration',
                 obj=None,
                 id='bitcaster.E002',
+            )
+        )
+
+    try:
+        caches['default'].set('check', 1)
+    except Exception as e:
+        errors.append(
+            Error(
+                'Unable to contact cache backend',
+                hint='check your database configuration',
+                obj=None,
+                id='bitcaster.E003',
+            )
+        )
+    try:
+        caches['lock'].set('check', 1)
+    except Exception as e:
+        errors.append(
+            Error(
+                'Unable to contact lock backend',
+                hint=str(e),
+                obj=None,
+                id='bitcaster.E003',
+            )
+        )
+
+    if not Path(settings.MEDIA_ROOT).exists():
+        errors.append(
+            Error(
+                f"MEDIA_ROOT '{settings.MEDIA_ROOT}' does not exists",
+                hint='check your configuration',
+                obj=None,
+                id='bitcaster.E004',
+            )
+        )
+    if not Path(settings.STATIC_ROOT).exists():
+        errors.append(
+            Error(
+                f"STATIC_ROOT '{settings.STATIC_ROOT}' does not exists",
+                hint='check your configuration',
+                obj=None,
+                id='bitcaster.E005',
             )
         )
     return errors

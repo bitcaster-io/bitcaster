@@ -9,43 +9,97 @@ from mercury.config import DEFAULT_CONFIG
 logger = logging.getLogger(__name__)
 
 DEFAULTS = dict(
-    DEBUG=False,
+    DEBUG=(bool, False),
+    SECRET_KEY=(str, ''),
+    MEDIA_ROOT=(str, str(Path('~/.bitcaster/media').expanduser())),
+    STATIC_ROOT=(str, str(Path('~/.bitcaster/static').expanduser())),
+    #
+    ENABLE_SENTRY=(bool, False),
+    SENTRY_DSN=(str, ''),
+    PLUGINS_AUTOLOAD=(bool, False),
+    DATABASE_URL=(str, 'psql://postgres:@127.0.0.1:5432/mercury'),
+    REDIS_CACHE_URL=(str, 'redis://localhost:6379/0'),
+    REDIS_LOCK_URL=(str, 'redis://localhost:6379/1'),
+    CELERY_BROKER_URL=(str, 'redis://localhost:6379/2'),
+    REDIS_CONSTANCE_URL=(str, 'redis://localhost:6379/3'),
 
-    MEDIA_ROOT='',
-    STATIC_ROOT='',
-
-    ENABLE_SENTRY=True,
-    SENTRY_DSN='',
-    MERCURY_PLUGINS_AUTOLOAD=False,
-
-    EMAIL_USE_TLS=True,
-    EMAIL_HOST='',
-    EMAIL_HOST_USER='',
-    EMAIL_HOST_PASSWORD='',
-    EMAIL_PORT='',
-
-    DATABASE_URL='',
-
-    CELERY_BROKER_URL='',
-
-    REDIS_CONNECTION='',
 )
 
 
 class Env(environ.Env):
-    def get_value(self, var, cast=None, default=environ.Env.NOTSET, parse_default=False):
-        try:
+    def __init__(self, prefix, **scheme):
+        self.scheme = scheme
+        self.prefix = prefix or ''
 
-            value = super().get_value(var, cast, default, parse_default)
-            # Resolve any proxied values
-            if hasattr(value, 'startswith') and '${' in value:
+    def get_value(self, var, cast=None, default=environ.Env.NOTSET, parse_default=False):
+        """Return value for given environment variable.
+
+                :param var: Name of variable.
+                :param cast: Type to cast return value as.
+                :param default: If var not present in environ, return this instead.
+                :param parse_default: force to parse default..
+
+                :returns: Value from environment or default (if set)
+                """
+
+        logger.debug("get '{0}' casted as '{1}' with default '{2}'".format(
+            var, cast, default
+        ))
+
+        env_var = f"{self.prefix}{var}"
+        if var in self.scheme:
+            var_info = self.scheme[var]
+
+            try:
+                has_default = len(var_info) == 2
+            except TypeError:
+                has_default = False
+
+            if has_default:
+                if not cast:
+                    cast = var_info[0]
+
+                if default is self.NOTSET:
+                    try:
+                        default = var_info[1]
+                    except IndexError:
+                        pass
+            else:
+                if not cast:
+                    cast = var_info
+
+        try:
+            value = self.ENVIRON[env_var]
+        except KeyError:
+            if default is self.NOTSET:
+                error_msg = "Set the {0} environment variable".format(var)
+                raise ImproperlyConfigured(error_msg)
+
+            value = default
+
+        # Resolve any proxied values
+        if hasattr(value, 'startswith') and '${' in value:
+            m = environ.re.search(r'(\${(.*?)})', value)
+            while m:
+                value = re.sub(re.escape(m.group(1)), self.get_value(m.group(2)), value)
                 m = environ.re.search(r'(\${(.*?)})', value)
-                while m:
-                    value = re.sub(re.escape(m.group(1)), self.get_value(m.group(2)), value)
-                    m = environ.re.search(r'(\${(.*?)})', value)
-            return value
-        except Exception as e:
-            raise ImproperlyConfigured(f"Error getting configuration value {var}: {e}") from e
+
+        if value != default or (parse_default and value):
+            value = self.parse_value(value, cast)
+
+        return value
+
+        # try:
+        #     var = f"{self.prefix}{var}"
+        #     value = super().get_value(var, cast, default, parse_default)
+        #     if hasattr(value, 'startswith') and '${' in value:
+        #         m = environ.re.search(r'(\${(.*?)})', value)
+        #         while m:
+        #             value = re.sub(re.escape(m.group(1)), self.get_value(m.group(2)), value)
+        #             m = environ.re.search(r'(\${(.*?)})', value)
+        #     return value
+        # except Exception as e:
+        #     raise ImproperlyConfigured(f"Error getting configuration value {var}: {e}") from e
 
     def load_config(self, env_file):
         """Read a .env file into os.environ.
@@ -90,26 +144,7 @@ class Env(environ.Env):
 
 # Env.DB_SCHEMES['psql'] = 'mercury.db.postgresql'
 
-env = Env(
-    DEBUG=bool,
-
-    MEDIA_ROOT=str,
-    STATIC_ROOT=str,
-
-    ENABLE_SENTRY=bool,
-    MERCURY_PLUGINS_AUTOLOAD=bool,
-
-    EMAIL_USE_TLS=bool,
-    EMAIL_HOST=str,
-    EMAIL_HOST_USER=str,
-    EMAIL_HOST_PASSWORD=str,
-    EMAIL_PORT=str,
-
-    DATABASE_URL=str,
-
-    CELERY_BROKER_URL=str,
-
-    REDIS_CONNECTION=str,
-)
+# env = Env('BITCASTER_', **dict((k, type(v)) for k, v in DEFAULTS.items()))
+env = Env('BITCASTER_', **DEFAULTS)
 
 env.read_env(os.environ.get('BITCASTER_CONF', DEFAULT_CONFIG))

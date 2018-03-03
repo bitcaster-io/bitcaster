@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 MERCURY_DIR = Path(__file__).parent.parent.parent  # (mercury/config/settings/base.py - 3 = mercury/)
 SOURCE_DIR = MERCURY_DIR.parent  # (mercury/config/settings/base.py - 3 = mercury/)
 PROJECT_DIR = SOURCE_DIR.parent
-
 # .env file, should load only in development environment
 # READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=False)
 
@@ -79,6 +78,7 @@ MIDDLEWARE = [
     'mercury.middleware.logger.LoggerMiddleware',
 ]
 AUTH_USER_MODEL = 'mercury.user'
+SECRET_KEY = env('SECRET_KEY')
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 SESSION_COOKIE_NAME = "bitcasterid"
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
@@ -261,9 +261,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CACHES = {
-    'default': env.cache(default="dummycache://",
-                         backend='django.core.cache.backends.dummy.DummyCache'),
-    # 'locking': env.cache('CACHE_LOCK')
+    'default':  env.cache('REDIS_CACHE_URL'),
+    'lock': env.cache('REDIS_LOCK_URL'),
 }
 
 # AUTHENTICATION CONFIGURATION
@@ -286,7 +285,7 @@ LOGIN_URL = 'login'
 ADMIN_URL = r'^admin/'
 
 # MERCURY
-PLUGINS_AUTOLOAD = env.bool('MERCURY_PLUGINS_AUTOLOAD', True)
+PLUGINS_AUTOLOAD = env.bool('PLUGINS_AUTOLOAD', True)
 
 # Your common stuff: Below this line define 3rd party library settings
 # ------------------------------------------------------------------------------
@@ -325,17 +324,13 @@ CELERYD_LOG_FILE = None
 CELERY_REDIRECT_STDOUTS = True
 
 CELERY_TASK_ALWAYS_EAGER = False
-CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://localhost:6379/0')
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 # CONSTANCE
-CONSTANCE_REDIS_CONNECTION = {
-    'host': 'localhost',
-    'port': 6379,
-    'db': 0,
-}
+CONSTANCE_REDIS_CONNECTION = env('REDIS_CONSTANCE_URL')
 
 CONSTANCE_ADDITIONAL_FIELDS = {
     'yes_no_null_select': ['django.forms.fields.ChoiceField', {

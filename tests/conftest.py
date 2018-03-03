@@ -3,13 +3,15 @@ import sys
 from unittest.mock import Mock
 
 import pytest
+from constance import config
 
 
-def pytest_configure(config):
+def pytest_configure(cfg):
     here = os.path.dirname(__file__)
     sys.path.insert(0, os.path.join(here, 'extras'))
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mercury.config.settings.test')
-    os.environ.setdefault('MERCURY_CONF', '.aaaa')
+    os.environ.setdefault('BITCASTER_CONF', '.aaaa')
+    config.INITIALIZED = 1
 
 
 @pytest.fixture(autouse=True)

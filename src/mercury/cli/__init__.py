@@ -34,7 +34,7 @@ def cli(ctx, config, **kwargs):
     """Bitcaster is cross-platform .
 
     The configuration file is looked up in the `~/.bitcaster/conf` config
-    directory but this can be overridden with the `MERCURY_CONF`
+    directory but this can be overridden with the `BITCASTER_CONF`
     environment variable or be explicitly provided through the
     `--config` parameter.
     """
@@ -44,7 +44,7 @@ def cli(ctx, config, **kwargs):
 
     cfg_file = Path(config)
     if not cfg_file.exists():
-        cfg_file.parent.mkdir(mode=0o770, parents=True)
+        cfg_file.parent.mkdir(mode=0o770, parents=True, exist_ok=True)
         cfg_file.touch(mode=0o660)
     env.load_config(cfg_file)
     ctx.obj = {'env': env,

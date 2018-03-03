@@ -1,0 +1,79 @@
+# Bitcaster dev environment
+#
+# NOTE: Do NOT use this in production!
+#
+# Instructions:
+#
+#   Build the container:
+#     $ docker build --rm -t bitcaster:dev -f Dockerfile.dev .
+#   Bootstrap the container:
+#     $ docker run --name=bitcaster-dev -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/:/etc/bitcaster bitcaster:dev
+#   Run the container:
+#     $ docker start bitcaster-dev
+#   Attach into the container:
+#     $ docker exec -it bitcaster-dev bash
+#   Run devserver:
+#     $ docker exec -it bitcaster-dev ./manage.py runserver 0.0.0.0:8000
+#   Stop container:
+#     $ docker stop bitcaster-dev
+#   Remove container:
+#     $ docker rm -f bitcaster-dev
+#
+FROM python:3.6
+ENV PYTHONUNBUFFERED 1
+ENV PG_MAJOR 9.6
+ENV PG_VERSION 9.6.*
+ENV DATABASE_NAME mercury
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ntp \
+    && rm -rf /var/lib/apt/lists/*
+
+# make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
+RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ENV LANG en_US.utf8
+
+RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
+
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        postgresql-common \
+        postgresql-$PG_MAJOR=$PG_VERSION \
+        postgresql-client-$PG_MAJOR=$PG_VERSION \
+        postgresql-contrib-$PG_MAJOR=$PG_VERSION \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
+    && touch "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
+    && chown -R postgres "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
+    && { echo; echo "host all all 0.0.0.0/0 trust"; } >> "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
+    &&  { echo; echo "local all all trust"; } >> "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf"
+
+RUN service postgresql start \
+    && createdb -U postgres -E utf-8 --template template0 $DATABASE_NAME \
+    && service postgresql stop
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        redis-server \
+        memcached \
+        postfix \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV BITCASTER_MEDIA_ROOT /var/bitcaster/media
+ENV BITCASTER_STATIC_ROOT /var/bitcaster/static
+ENV BITCASTER_CONF_DIR /etc/bitcaster/
+ENV BITCASTER_CONF $BITCASTER_CONF_DIR/conf
+
+RUN mkdir -p /usr/src/bitcaster -m 770
+RUN mkdir -p $BITCASTER_MEDIA_ROOT -m 770
+RUN mkdir -p $BITCASTER_STATIC_ROOT -m 770
+RUN mkdir -p $BITCASTER_CONF_DIR -m 770
+WORKDIR /usr/src/bitcaster
+
+
+ADD docker/docker-entrypoint.sh /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
+
+EXPOSE 8000
+CMD [ "bash" ]

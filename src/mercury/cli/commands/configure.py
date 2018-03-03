@@ -1,42 +1,62 @@
 import re
+import urllib
 from functools import lru_cache
 from pathlib import Path
 
 import click
 
+from mercury.config.environ import DEFAULTS
+
+
+def generate_secret_key():
+    from django.utils.crypto import get_random_string
+    chars = u'abcdefghijklmnopqrstuvwxyz0123456789!@#%^&*(-_=+)'
+    return get_random_string(50, chars)
+
 
 class AddressParamType(click.ParamType):
     name = 'address'
 
-    def __call__(self, value, param=None, ctx=None):
-        return self.convert(value, param, ctx)
-
     def convert(self, value, param, ctx):
-        if callable(param.default):
-            defaults = param.default().split(":")
-        elif isinstance(param.default, str):
-            defaults = param.default.split(":")
-        else:
-            defaults = ('', '')
-        if not value:
-            host, port = defaults
-        elif ':' in value:
+        try:
             host, port = value.split(':', 1)
-            port = int(port)
-        else:
-            host = value
-            port = defaults[1]
-        return ":".join([host, str(port)])
+            int(port)
+            return value
+        except (ValueError, AssertionError):
+            self.fail(
+                click.style(
+                    f'{value} is not a vlid address. Please use <host>:<port>',
+                    fg='red'))
 
 
 Address = AddressParamType()
 
 
+class RedisUrlParamType(click.ParamType):
+    name = 'url'
+
+    def convert(self, value, param, ctx):
+        try:
+            url = urllib.parse.urlparse(value)
+            assert url.scheme == 'redis'
+            assert url.hostname
+            assert url.port
+            assert url.path
+            return value
+        except (ValueError, AssertionError):
+            self.fail(
+                click.style(
+                    f'{value} is not a redis url. Please use redis://<hostname>:<port>/<database>',
+                    fg='red'))
+
+
+RedisURL = RedisUrlParamType()
+
+
 def read_current_env(param):
     ctx = click.get_current_context()
     env = ctx.obj['env']
-    # env = ctx['env']
-    return env(param)
+    return env(param) or DEFAULTS.get(param)[1]
 
 
 @lru_cache(1)
@@ -58,63 +78,77 @@ def get_database_url_param():
 
 @click.command()
 @click.option('--debug',
-              default=False,
+              default=lambda: read_current_env('DEBUG'),
               is_flag=True)
-# @click.option('--no-input', default=False, is_flag=True, help='debug mode')
-# @click.option('--admin-email',
-#               envvar='ADMIN_EMAIL',
-#               default=lambda: read_current_env('ADMIN_EMAIL'),
-#               help="Administrator email", prompt=True)
-# @click.option('--admin-password',
-#               envvar='MERCURY_ADMIN_PASSWORD',
-#               help="Administrator password",
-#               metavar='PASSWORD', prompt=True, hide_input=True,
-#               confirmation_prompt=True)
-# @click.option('--email-port',
-#               default=lambda: read_current_env('EMAIL_PORT'),
-#               type=click.INT)
-# @click.option('--email-use-tls',
-#               default=lambda: read_current_env('EMAIL_USE_TLS'),
-#               is_flag=True)
-# @click.option('--email-host',
-#               default=lambda: read_current_env('EMAIL_HOST'),
-#               prompt=True)
-# @click.option('--email-host-user',
-#               default=lambda: read_current_env('EMAIL_HOST_USER'),
-#               metavar='USERNAME')
-# @click.option('--email-host-password',
-#               default=lambda: read_current_env('EMAIL_HOST_PASSWORD'),
-#               metavar='PASSWORD',
-#               hide_input=True, confirmation_prompt=True)
-@click.option('--redis-host',
-              envvar='MERCURY_REDIS_HOST',
-              default=lambda: read_current_env('REDIS_HOST'),
-              prompt=True)
+@click.option('--sentry-dsn',
+              default=lambda: read_current_env('SENTRY_DSN'))
+@click.option('--media-root',
+              default=lambda: read_current_env('MEDIA_ROOT'),
+              type=click.Path(file_okay=False))
+@click.option('--static-root',
+              default=lambda: read_current_env('STATIC_ROOT'),
+              type=click.Path(file_okay=False))
+@click.option('--redis-cache-url',
+              default=lambda: read_current_env('REDIS_CACHE_URL'),
+              type=RedisURL)
+@click.option('--redis-lock-url',
+              default=lambda: read_current_env('REDIS_LOCK_URL'),
+              type=RedisURL)
+@click.option('--celery-broker-url',
+              default=lambda: read_current_env('CELERY_BROKER_URL'),
+              type=RedisURL)
+@click.option('--redis-constance-url',
+              default=lambda: read_current_env('REDIS_CONSTANCE_URL'),
+              type=RedisURL)
 @click.option('--database-address',
               default=lambda: "{0[host]}:{0[port]}".format(get_database_url_param()),
-              prompt=True,
-              type=Address
-              )
+              type=Address)
 @click.option('--database-user',
-              default=lambda: get_database_url_param()["user"],
-              prompt=True)
+              default=lambda: get_database_url_param()["user"])
 @click.option('--database-password',
-              default=lambda: get_database_url_param()["password"],
-              prompt=True)
+              default=lambda: get_database_url_param()["password"])
 @click.option('--database-name',
-              default=lambda: get_database_url_param()["database"],
-              prompt=True)
+              default=lambda: get_database_url_param()["database"])
+@click.option('-p', '--prompt-all',
+              default=False,
+              help='Prompt for any argument even if it has default value',
+              is_flag=True)
+@click.option('--prompt/--noinput',
+              default=True,
+              help='Do not prompt for parameters',
+              is_flag=True)
+@click.option('--write/--dry-run',
+              default=True,
+              help='Do not prompt for parameters',
+              is_flag=True)
 @click.pass_context
-def configure(ctx, debug, database_user, database_password,
-              database_address, database_name, **kwargs):
+def configure(ctx, prompt, prompt_all, write, **kwargs):
     cfg_file = Path(ctx.obj['config'])
-
     click.echo(f"Configuration file: {cfg_file}")
     env = ctx.obj['env']
-    # if not cfg_file.exists():
-    #     cfg_file.parent.mkdir(mode=0o770,  parents=True)
-    #     cfg_file.touch(mode=0o660)
-    # env.load_config(cfg_file)
-    env.ENVIRON['DEBUG'] = str(debug)
-    env.ENVIRON['DATABASE_URL'] = f"psql://{database_user}:{database_password}@{database_address}/{database_name}"
-    env.write_env(cfg_file)
+
+    if prompt:
+        for opt in ctx.command.params:
+            if opt.name not in ['prompt', 'prompt_all', 'write']:
+                if prompt_all or not kwargs.get(opt.name):
+                    prompt = opt.name.replace('_', ' ').capitalize()
+
+                    v = click.prompt(prompt,
+                                     default=opt.get_default(ctx),
+                                     value_proc=lambda x: opt.process_value(ctx, x))
+                    kwargs[opt.name] = v
+
+    kwargs["database_url"] = "psql://{database_user}:{database_password}@{database_address}/{database_name}".format(
+        **kwargs)
+    kwargs["enable_sentry"] = bool(kwargs['sentry_dsn'])
+    kwargs["plugins_autoload"] = bool(kwargs['sentry_dsn'])
+    kwargs["secret_key"] = generate_secret_key()
+
+    for key, value in env.scheme.items():
+        env.ENVIRON[key] = str(kwargs.get(key.lower(), ''))
+    if write:
+        env.write_env(cfg_file)
+    else:
+        for key, __ in env.scheme.items():
+            value = str(kwargs.get(key.lower(), ''))
+            click.echo(f"{key:20} {value}")
