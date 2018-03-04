@@ -7,7 +7,9 @@ from django.db import models
 from django.db.models import UUIDField
 
 from mercury import logging
-from mercury.models import AbstractModel, Application
+
+from .application import Application
+from .base import AbstractModel
 
 logger = logging.getLogger(__name__)
 

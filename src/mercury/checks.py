@@ -17,6 +17,8 @@ from django.core.cache import caches
 from django.core.checks import Error, register
 from django.db import OperationalError, connection
 
+from mercury.config.environ import env
+
 logger = logging.getLogger(__name__)
 
 
@@ -51,8 +53,8 @@ def check(app_configs, **kwargs):
     except Exception as e:
         errors.append(
             Error(
-                'Unable to contact cache backend',
-                hint='check your database configuration',
+                "Unable to contact cache backend at '%s'" % env('REDIS_CACHE_URL'),
+                hint="check your database configuration",
                 obj=None,
                 id='bitcaster.E003',
             )
@@ -62,7 +64,7 @@ def check(app_configs, **kwargs):
     except Exception as e:
         errors.append(
             Error(
-                'Unable to contact lock backend',
+                "Unable to contact lock backend at '%s'" % env('REDIS_LOCK_URL'),
                 hint=str(e),
                 obj=None,
                 id='bitcaster.E003',

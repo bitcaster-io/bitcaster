@@ -30,7 +30,7 @@ CACHE_URL=rediscache://127.0.0.1:6379/1?client_class=django_redis.client.Default
 CELERY_BROKER_URL=redis://127.0.0.1:6379/0
 
 ENABLE_SENTRY=0
-RAVEN_DSN=
+SENTRY_DSN=
 
 SLACK_APP_ID=
 SLACK_APP_SECRET=

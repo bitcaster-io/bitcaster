@@ -1,0 +1,51 @@
+'''
+Test settings
+
+- Used to run tests fast on the continuous integration server and locally
+'''
+
+from .default import *  # noqa
+
+ALLOWED_HOSTS = ['*']
+# DEBUG
+# ------------------------------------------------------------------------------
+# Turn debug off so tests run faster
+DEBUG = True
+TEMPLATES[0]['OPTIONS']['debug'] = True
+CRISPY_FAIL_SILENTLY = True
+
+# SECRET CONFIGURATION
+# ------------------------------------------------------------------------------
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+# Note: This key only used for development and testing.
+# SECRET_KEY = env('SECRET_KEY', default='CHANGEME!!!')
+
+# CACHING
+# ------------------------------------------------------------------------------
+# Speed advantages of in-memory caching without having to run Memcached
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#         'LOCATION': ''
+#     },
+#     'lock': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#         'LOCATION': ''
+#     }
+# }
+
+# PASSWORD HASHING
+# ------------------------------------------------------------------------------
+# Use fast password hasher so tests run faster
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+]
+CELERY_TASK_ALWAYS_EAGER = True
+
+INSTALLED_APPS = INSTALLED_APPS + ['django_extensions',]
+
+# DEBUG-TOOLBAR
+INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar']
+MIDDLEWARE = MIDDLEWARE + ['debug_toolbar.middleware.DebugToolbarMiddleware',]
+DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda r: True}
+INTERNAL_IPS= ['127.0.0.1']

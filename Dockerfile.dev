@@ -7,7 +7,7 @@
 #   Build the container:
 #     $ docker build --rm -t bitcaster:dev -f Dockerfile.dev .
 #   Bootstrap the container:
-#     $ docker run --name=bitcaster-dev -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/:/etc/bitcaster bitcaster:dev
+#     $ docker run --name=bitcaster-dev -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/etc/:/etc/bitcaster -v-v $PWD/~build/var/bitcaster/:/var/bitcaster bitcaster:dev
 #   Run the container:
 #     $ docker start bitcaster-dev
 #   Attach into the container:
@@ -24,6 +24,8 @@ ENV PYTHONUNBUFFERED 1
 ENV PG_MAJOR 9.6
 ENV PG_VERSION 9.6.*
 ENV DATABASE_NAME mercury
+ENV NGINX_VERSION 1.13.7-1~stretch
+ENV NJS_VERSION   1.13.7.0.1.15-1~stretch
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ntp \
@@ -70,6 +72,16 @@ RUN mkdir -p $BITCASTER_MEDIA_ROOT -m 770
 RUN mkdir -p $BITCASTER_STATIC_ROOT -m 770
 RUN mkdir -p $BITCASTER_CONF_DIR -m 770
 WORKDIR /usr/src/bitcaster
+RUN pip install uwsgi
+# Make NGINX run on the foreground
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+# Remove default configuration from Nginx
+RUN rm /etc/nginx/conf.d/default.conf
+# Copy the modified Nginx conf
+COPY nginx.conf /etc/nginx/conf.d/
+# Copy the base uWSGI ini file to enable default dynamic uwsgi process number
+COPY uwsgi.ini /etc/uwsgi/
+
 
 
 ADD docker/docker-entrypoint.sh /entrypoint.sh

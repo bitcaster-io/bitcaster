@@ -11,7 +11,7 @@ def get_full_version(git_commit=True):
     commit = ""
     if git_commit:
         res = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
-        commit = "-" + res.decode('utf8')
+        commit = "-" + res.decode('utf8')[:-1]
     return f"{VERSION}{commit}"
 
 

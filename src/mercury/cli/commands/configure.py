@@ -109,11 +109,13 @@ def get_database_url_param():
               default=lambda: get_database_url_param()["password"])
 @click.option('--database-name',
               default=lambda: get_database_url_param()["database"])
+@click.option('--organization',
+              default=lambda: read_current_env('ORGANIZATION'))
 @click.option('-p', '--prompt-all',
               default=False,
               help='Prompt for any argument even if it has default value',
               is_flag=True)
-@click.option('--prompt/--noinput',
+@click.option('--prompt/--no-input',
               default=True,
               help='Do not prompt for parameters',
               is_flag=True)

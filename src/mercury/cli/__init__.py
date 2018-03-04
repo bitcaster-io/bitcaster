@@ -1,9 +1,11 @@
 import os
 import sys
+from functools import update_wrapper
 from pathlib import Path
 
 import click
 from setproctitle import setproctitle
+
 from strategy_field.utils import import_by_name
 
 import mercury
@@ -26,6 +28,14 @@ def global_options(func):
     return func
 
 
+def need_setup(f):
+    def new_func(*args, **kwargs):
+        import django
+        django.setup()
+        return f(*args, **kwargs)
+    return update_wrapper(new_func, f)
+
+
 @click.group()
 @global_options
 @click.version_option(version=mercury.get_full_version())
@@ -39,7 +49,7 @@ def cli(ctx, config, **kwargs):
     `--config` parameter.
     """
     filepath = os.path.realpath(os.path.expanduser(config))
-    os.environ['BITCASTER_CONF'] = ctx.obj['config'] = filepath
+    os.environ['BITCASTER_CONF'] = filepath
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mercury.config.settings.default')
 
     cfg_file = Path(config)
@@ -53,6 +63,10 @@ def cli(ctx, config, **kwargs):
 
 cli.add_command(import_by_name('mercury.cli.commands.check.check'))
 cli.add_command(import_by_name('mercury.cli.commands.configure.configure'))
+cli.add_command(import_by_name('mercury.cli.commands.upgrade.upgrade'))
+cli.add_command(import_by_name('mercury.cli.commands.option.option'))
+cli.add_command(import_by_name('mercury.cli.commands.devserver.devserver'))
+cli.add_command(import_by_name('mercury.cli.commands.createuser.createuser'))
 
 
 def main():  # pragma: no cover

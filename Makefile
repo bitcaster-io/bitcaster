@@ -29,6 +29,10 @@ develop: .setup-git
 	dropdb --if-exists -h 127.0.0.1 -U postgres mercury
 	createdb -h 127.0.0.1 -U postgres mercury
 
+.reset-env: .init-db
+	bitcaster option set INITIALIZED 0
+	bitcaster upgrade --no-input
+
 reset-migrations: .init-db
 	find src -name '000[1,2,3,4,5,6,7,8,9]*' | xargs rm -f
 	./manage.py makemigrations mercury

@@ -11,11 +11,12 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views import View
 from django.views.generic import (CreateView, DetailView,
-                                  TemplateView, UpdateView,)
+                                  TemplateView, UpdateView, )
 
 from mercury.models import Organization
 
@@ -37,11 +38,12 @@ class SuperuserViewMixin(SecuredViewMixin):
 class OrganizationListMixin(SecuredViewMixin):
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
-        ret['organizations'] = Organization.objects.filter(members=self.request.user)
+        ret['organizations'] = Organization.objects.filter(Q(members=self.request.user) |
+                                                           Q(owner=self.request.user))
         return ret
 
 
-class SelectedOrganizationMixin(SecuredViewMixin):
+class SelectedOrganizationMixin(OrganizationListMixin):
     def get_context_data(self, **kwargs):
         kwargs['organization'] = self.selected_organization
         return super().get_context_data(**kwargs)

@@ -14,7 +14,8 @@ class SetupMiddleware(object):
 
     def __call__(self, request):
         response = self.get_response(request)
-        if not config.INITIALIZED:
+        # if config.INITIALIZED in ["0", 0, None, False, ""]:
+        if not bool(config.INITIALIZED):
             if request.path != '/setup/':
                 return HttpResponseRedirect("/setup/")
         return response

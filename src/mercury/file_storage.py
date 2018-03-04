@@ -26,9 +26,16 @@ def _get_media_root(prefix):
     return media_file_name
 
 
-profile_media_root = _get_media_root('profile')
-org_media_root = _get_media_root('org')
-app_media_root = _get_media_root('app')
+def profile_media_root(instance, filename):
+    return _get_media_root('profile')(instance, filename)
+
+
+def org_media_root(instance, filename):
+    return _get_media_root('org')(instance, filename)
+
+
+def app_media_root(instance, filename):
+    return _get_media_root('app')(instance, filename)
 
 
 class MediaFileSystemStorage(FileSystemStorage):

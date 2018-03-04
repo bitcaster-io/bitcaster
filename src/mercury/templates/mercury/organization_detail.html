@@ -1,4 +1,29 @@
 {% extends "bitcaster/app.html" %}
+{% block sidebar %}
+    <div class="row d-flex d-md-block flex-nowrap wrapper">
+        <div class="float-left pl-0 collapse width show" id="sidebar">
+            {% if user.is_authenticated %}
+                <div class="list-group">
+                    <div class="col-md-2 org-sidebar">
+                        <div>
+                            <ul class="nav nav-stacked">
+                                <li>
+                                    <a href="#">Channels</a>
+                                </li>
+                                <li>
+                                    <a href="#">Configuration</a>
+                                </li>
+                                <li>
+                                    <a href="#">Members</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
 {% block content %}
     <h2>{{ organization }}</h2>
     <div>

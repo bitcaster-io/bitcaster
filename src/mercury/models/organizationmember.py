@@ -1,24 +1,8 @@
-from __future__ import absolute_import, print_function
-
-from enum import Enum
-
 from django.conf import settings
 from django.db import models, transaction
 from django.utils import timezone
-
-
-class OrganizationRole(Enum):
-    OWNER = 99
-    ADMIN = 90
-    MEMBER = 50
-
-    def __new__(cls, value):
-        member = object.__new__(cls)
-        member._value_ = value
-        return member
-
-    def __int__(self):
-        return self.value
+from django.utils.translation import ugettext_lazy as _
+from .organization import Organization, OrganizationRole
 
 
 class OrganizationMember(models.Model):
@@ -31,20 +15,21 @@ class OrganizationMember(models.Model):
     """
     __core__ = True
 
-    organization = models.ForeignKey('mercury.Organization',
+    organization = models.ForeignKey(Organization,
                                      on_delete=models.CASCADE,
                                      related_name='+')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE,
-                             related_name='+')
+                             related_name='memberships')
     email = models.EmailField(null=True, blank=True)
 
     role = models.IntegerField(
-        choices=((int(OrganizationRole.OWNER), 'Owner'),
-                 (int(OrganizationRole.ADMIN), 'Admin'),
-                 (int(OrganizationRole.MEMBER), 'Member'),
+        choices=((int(OrganizationRole.OWNER), _('Owner')),
+                 (int(OrganizationRole.ADMIN), _('Admin')),
+                 (int(OrganizationRole.MEMBER), _('Member')),
+                 (int(OrganizationRole.RECIPIENT), _('Recipient')),
                  ),
-        default=int(OrganizationRole.MEMBER),
+        default=int(OrganizationRole.RECIPIENT),
     )
 
     date_added = models.DateTimeField(default=timezone.now)

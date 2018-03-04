@@ -1,10 +1,11 @@
+!.tx
+!/src/mercury/_plugin_template/mercury-{{cookiecutter.name}}/tests/.env
+!/tests/.conf
 .DS_Store
 .env*
 .conf*
 .local-*
 .*client-id*
-!.tx
-!/src/mercury/_plugin_template/mercury-{{cookiecutter.name}}/tests/.env
 .demo*
 .demo-sax
 .yowsup

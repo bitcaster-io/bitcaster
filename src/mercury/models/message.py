@@ -3,7 +3,11 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from mercury import logging
-from mercury.models import AbstractModel, Application, Channel, Event
+
+from .application import Application
+from .base import AbstractModel
+from .channel import Channel
+from .event import Event
 
 logger = logging.getLogger(__name__)
 

@@ -1,17 +1,25 @@
 {% extends "bitcaster/base.html" %}
 {% block page %}
-    {% if not user.is_authenticated %}
-        Welcome page.....
-        <ul>
-            <li><a href="{% url "user-register" %}">Register here</a></li>
-            <li><a href="{% url "login" %}">Login</a></li>
-        </ul>
-    {% else %}
-        Welcome back.
-        <ul>
-            <li>
-                <a href="{% url "org-add" %}">Create new Organization</a>
-            </li>
-        </ul>
-    {% endif %}
+    <div class="container-fluid">
+        <div class="row col-10">
+            <div>
+                {% if not user.is_authenticated %}
+                    Welcome page.....
+                    <ul>
+                        <li><a href="{% url "user-register" %}">Register here</a></li>
+                        <li><a href="{% url "login" %}">Login</a></li>
+                    </ul>
+                {% else %}
+                    {{ user.organizations.all }}
+                    <h1>Welcome back.</h1>
+                    {% for membership in user.memberships.all %}
+                        <li>
+                            {{ org }}
+                            <a href="{% url "org-index" membership.organization.slug %}">{{ membership.organization.name }}</a>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

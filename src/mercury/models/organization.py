@@ -1,21 +1,13 @@
 # -*- coding: utf-8 -*-
-"""
-mercury / organization
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
-
-import logging
 from enum import Enum
 
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
+from mercury import logging
 from mercury.file_storage import MediaFileSystemStorage, org_media_root
 from mercury.utils import locks
 from mercury.utils.retries import TimedRetryPolicy
@@ -28,6 +20,21 @@ class OrganizationStatus(Enum):
     ACTIVE = 1
     PENDING_DELETION = 2
     DELETION_IN_PROGRESS = 3
+
+    def __new__(cls, value):
+        member = object.__new__(cls)
+        member._value_ = value
+        return member
+
+    def __int__(self):
+        return self.value
+
+
+class OrganizationRole(Enum):
+    OWNER = 99
+    ADMIN = 90
+    MEMBER = 50
+    RECIPIENT = 40
 
     def __new__(cls, value):
         member = object.__new__(cls)
@@ -107,7 +114,7 @@ class Organization(models.Model):
     billing_email = models.EmailField(blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE,
-                              related_name='organizations')
+                              related_name='+')
 
     avatar = models.ImageField(blank=True, null=True,
                                # upload_to="pictures",
@@ -123,15 +130,12 @@ class Organization(models.Model):
 
     @classmethod
     def get_default(cls):
-        """
-        Return the organization used in single organization mode.
-        """
         return cls.objects.filter(
             status=OrganizationStatus.VISIBLE,
         ).first()
 
     def __str__(self):
-        return '%s (%s)' % (self.name, self.slug)
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -162,7 +166,7 @@ class Organization(models.Model):
 
         return queryset.exists()
 
-    def add_member(self, user, role):
+    def add_member(self, user, role=OrganizationRole.RECIPIENT):
         from mercury.models import OrganizationMember
         return OrganizationMember.objects.get_or_create(organization=self,
                                                         user=user,

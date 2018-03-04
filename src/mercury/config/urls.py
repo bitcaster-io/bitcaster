@@ -5,7 +5,6 @@ from urllib.parse import parse_qs
 from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls.static import static
-# from mercury.admin import site
 from django.contrib.admin import site
 from django.http import HttpResponse
 from django.urls import path, re_path
@@ -52,6 +51,6 @@ urlpatterns = [path(r'api/', include(mercury.api.urls), name='api'),
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns = [
-        path(r'__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
+
+    urlpatterns = [path(r'__debug__/', include(debug_toolbar.urls)),
+                   ] + urlpatterns

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 
-from environ import ImproperlyConfigured, environ, os, re, warnings
+from environ import ImproperlyConfigured, environ, os, re
 
 from mercury import logging
 from mercury.config import DEFAULT_CONFIG
@@ -13,7 +13,7 @@ DEFAULTS = dict(
     SECRET_KEY=(str, ''),
     MEDIA_ROOT=(str, str(Path('~/.bitcaster/media').expanduser())),
     STATIC_ROOT=(str, str(Path('~/.bitcaster/static').expanduser())),
-    #
+
     ENABLE_SENTRY=(bool, False),
     SENTRY_DSN=(str, ''),
     PLUGINS_AUTOLOAD=(bool, False),
@@ -23,6 +23,7 @@ DEFAULTS = dict(
     CELERY_BROKER_URL=(str, 'redis://localhost:6379/2'),
     REDIS_CONSTANCE_URL=(str, 'redis://localhost:6379/3'),
 
+    ORGANIZATION=(str, 'Bitcaster'),
 )
 
 
@@ -31,7 +32,8 @@ class Env(environ.Env):
         self.scheme = scheme
         self.prefix = prefix or ''
 
-    def get_value(self, var, cast=None, default=environ.Env.NOTSET, parse_default=False):
+    def get_value(self, var, cast=None, default=environ.Env.NOTSET,   # noqa: C901
+                  parse_default=False):
         """Return value for given environment variable.
 
                 :param var: Name of variable.
@@ -89,18 +91,6 @@ class Env(environ.Env):
 
         return value
 
-        # try:
-        #     var = f"{self.prefix}{var}"
-        #     value = super().get_value(var, cast, default, parse_default)
-        #     if hasattr(value, 'startswith') and '${' in value:
-        #         m = environ.re.search(r'(\${(.*?)})', value)
-        #         while m:
-        #             value = re.sub(re.escape(m.group(1)), self.get_value(m.group(2)), value)
-        #             m = environ.re.search(r'(\${(.*?)})', value)
-        #     return value
-        # except Exception as e:
-        #     raise ImproperlyConfigured(f"Error getting configuration value {var}: {e}") from e
-
     def load_config(self, env_file):
         """Read a .env file into os.environ.
 
@@ -139,8 +129,5 @@ class Env(environ.Env):
                 f.write(f"{k}={self.ENVIRON[k]}\n")
 
 
-# Env.DB_SCHEMES['psql'] = 'mercury.db.postgresql'
-
-# env = Env('BITCASTER_', **dict((k, type(v)) for k, v in DEFAULTS.items()))
 env = Env('BITCASTER_', **DEFAULTS)
 env.load_config(os.environ.get('BITCASTER_CONF', DEFAULT_CONFIG))

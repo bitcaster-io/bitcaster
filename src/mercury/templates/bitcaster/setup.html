@@ -1,16 +1,37 @@
 {% extends "bitcaster/modal.html" %}
-{% load crispy_forms_tags crispy_forms_field %}
+{% load crispy_forms_tags crispy_forms_field bc_assets %}
 {% block modal-header %}
     <div class="box box-header">
         Create Administrator
     </div>
 {% endblock modal-header %}
-
+{% block bodyclass %}setup{% endblock %}
 {% block modal %}
     <form method="post">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input type="submit" class="btn btn-primary" value="Save Configuration">
-    </form>
-{% endblock %}
+        {% csrf_token %}
+        <div class="container form-container">
+            {{ form.email|as_crispy_field }}
+            {{ register_form|as_crispy_errors }}
 
+            {#        {{ form|crispy }}#}
+
+            {{ form.password1|as_crispy_field }}
+            <div class="password-strength"></div>
+            {{ form.password2|as_crispy_field }}
+        </div>
+        <input type="submit" class="btn btn-primary" value="Save Configuration">
+    </form>
+
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script src="{% asset "dist/pwstrength.js" %}"></script>
+    <script>
+        if (window.pwds) {
+            window.pwds.addStrengthIndicator(
+                "#id_password1",
+                ".password-strength"
+            );
+        }
+    </script>
+{% endblock %}

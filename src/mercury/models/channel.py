@@ -12,9 +12,12 @@ from mercury.dispatchers import dispatcher_registry
 from mercury.exceptions import HandlerNotFound, PluginValidationError
 from mercury.fields import EncryptedJSONField
 from mercury.logging import secLog
-from mercury.models import AbstractModel, Application
-from mercury.models.counters import Counter
 from mercury.state import state
+
+from .application import Application
+from .base import AbstractModel
+from .counters import Counter
+from .organization import Organization
 
 logger = logging.getLogger(__name__)
 
@@ -33,11 +36,16 @@ class Channel(AbstractModel):
 It can be Global or Application specific.
     """
     name = models.CharField(max_length=255, unique=True)
+    organization = models.ForeignKey(Organization,
+                                     null=True,
+                                     blank=True,
+                                     on_delete=models.CASCADE,
+                                     related_name='channels')
     application = models.ForeignKey(Application,
                                     null=True,
                                     blank=True,
                                     on_delete=models.CASCADE,
-                                    related_name='owned_channels')
+                                    related_name='channels')
     config = EncryptedJSONField(null=True, blank=True)
     # configured = models.BooleanField(default=False)
     enabled = models.BooleanField(default=False)

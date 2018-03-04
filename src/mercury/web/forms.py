@@ -34,13 +34,14 @@ from mercury.utils.language import flatten
 class RegistrationForm(forms.Form):
     name = forms.CharField()
     email = forms.EmailField()
-    password = forms.CharField(widget=PasswordInput)
+    password = forms.CharField(widget=PasswordInput(attrs={'autocomplete': 'new-password'}))
     organization = forms.CharField(help_text=_("If you're signing up for a personal account, "
                                                "try using your own name."))
     billing_email = forms.EmailField(required=False,
                                      help_text=_("If provided, we will send all billing-related notifications "
                                                  "to this address."))
-    terms = forms.BooleanField()
+    terms = forms.BooleanField(label=_("I agree to the Terms of Service the Privacy Policy"))
+
     captcha = ReCaptchaField(widget=ReCaptchaWidget())
 
     def clean_email(self):
@@ -310,7 +311,7 @@ class SettingsMainForm(Form):
     SITE_URL = forms.CharField()
     RECAPTCHA_PUBLIC_KEY = forms.CharField()
     RECAPTCHA_PRIVATE_KEY = forms.CharField()
-    RAVEN_DSN = forms.CharField()
+    SENTRY_DSN = forms.CharField()
     ENABLE_SENTRY = forms.BooleanField()
 
 

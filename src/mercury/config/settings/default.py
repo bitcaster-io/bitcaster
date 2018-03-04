@@ -14,22 +14,7 @@ logger = logging.getLogger(__name__)
 MERCURY_DIR = Path(__file__).parent.parent.parent  # (mercury/config/settings/base.py - 3 = mercury/)
 SOURCE_DIR = MERCURY_DIR.parent  # (mercury/config/settings/base.py - 3 = mercury/)
 PROJECT_DIR = SOURCE_DIR.parent
-# .env file, should load only in development environment
-# READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=False)
-
-# if READ_DOT_ENV_FILE:
-# Operating System Environment variables have precedence over variables defined in the .env file,
-# that is to say variables from the .env files will only be used if not defined
-# as environment variables.
-# env_file = str(PROJECT_DIR / '.env')
-# if os.path.exists(env_file):
-#     env.read_env(env_file)
-#     logger.info('The .env `%s` file has been loaded. ' % env_file)
-# else:
-#     logger.info('`%s` not found. ' % env_file)
-#
-# APP CONFIGURATION
-# ------------------------------------------------------------------------------
+ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     # Default Django apps:
     'django.contrib.auth',
@@ -53,6 +38,8 @@ INSTALLED_APPS = [
     'django_countries',
     'adminfilters',
     'social_django',
+    'django_extensions',
+
     # Admin
     'django.contrib.admin',
 
@@ -235,7 +222,7 @@ WSGI_APPLICATION = 'mercury.config.wsgi.application'
 # ------------------------------------------------------------------------------
 # See https://docs.djangoproject.com/en/dev/topics/auth/passwords/#using-argon2-with-django
 PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    # 'django.contrib.auth.hashers.Argon2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
@@ -262,8 +249,32 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CACHES = {
-    'default':  env.cache('REDIS_CACHE_URL'),
-    'lock': env.cache('REDIS_LOCK_URL'),
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'KEY_PREFIX': 'bitcaster-',
+        'LOCATION': env('REDIS_CACHE_URL'),
+        # "LOCATION": "redis://127.0.0.1:6379/1",
+
+        'OPTIONS': {
+            'PICKLE_VERSION': -1,  # default
+            # 'PARSER_CLASS': 'redis.connection.HiredisParser',
+            # 'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+
+        },
+    },
+    'lock': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'KEY_PREFIX': 'bitcaster-lock',
+        'LOCATION': env('REDIS_LOCK_URL'),
+        'OPTIONS': {
+            'PICKLE_VERSION': -1,  # default
+            # 'PARSER_CLASS': 'redis.connection.HiredisParser',
+            # 'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+
+        },
+    },
 }
 
 # AUTHENTICATION CONFIGURATION
@@ -359,6 +370,7 @@ CONSTANCE_CONFIG = OrderedDict({
                        '===',
                        str),
 
+    'ALLOW_REGISTRATION': (False, '', bool),
     'EMAIL_USE_TLS': (False, '', bool),
     'EMAIL_TIMEOUT': (60, '', int),
     'EMAIL_HOST': ('', '', str),
@@ -393,7 +405,7 @@ if env.bool('ENABLE_SENTRY', False):
 
     INSTALLED_APPS += ['raven.contrib.django.raven_compat', ]
     RAVEN_CONFIG = {
-        'dsn': env('RAVEN_DSN'),
+        'dsn': env('SENTRY_DSN'),
         # If you are using git, you can also automatically configure the
         # release based on the git info.
         'release': raven.fetch_git_sha(str(PROJECT_DIR)),
@@ -498,9 +510,9 @@ SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
 # # SOCIAL_AUTH_GITHUB_KEY = env('SOCIAL_AUTH_GITHUB_KEY')
 # # SOCIAL_AUTH_GITHUB_SECRET = env('SOCIAL_AUTH_GITHUB_SECRET')
 #
-# # DJANGO-RECAPTCHA
-# RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
-# RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')
+# DJANGO-RECAPTCHA
+RECAPTCHA_PUBLIC_KEY = ''
+RECAPTCHA_PRIVATE_KEY = ''
 # os.environ['RECAPTCHA_DISABLE'] = 'True'
 
 # DJANGO-REGISTRATION
@@ -508,3 +520,10 @@ ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window; you may, of course, u
 
 OTP_KEY = 'A' * 32
 CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
+
+# DEBUG-TOOLBAR
+if DEBUG:
+    INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar']
+    MIDDLEWARE = MIDDLEWARE + ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
+    DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda r: r.user.is_superuser}
+    INTERNAL_IPS = ['127.0.0.1']

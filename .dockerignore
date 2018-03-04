@@ -1,6 +1,7 @@
 .git
-.demo
-.env
+.demo*
+.env*
+.conf*
 /node_modules
 .tox
 ~build

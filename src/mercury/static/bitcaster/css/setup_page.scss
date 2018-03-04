@@ -1,0 +1,20 @@
+@import "password-strength";
+
+body.setup {
+  .form-container{
+    //padding-bottom: 10px;
+    margin-bottom: 40px;
+  }
+  .box-modal {
+    top: 50px;
+  }
+  #div_id_password1 {
+    margin-bottom: 0;
+    #hint_id_password1 {
+      display: none;
+    }
+  }
+  #div_id_password2 {
+    margin-top: 10px;
+  }
+}

@@ -13,7 +13,9 @@ from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin, ProcessFormView
 
-from mercury.models import User
+from mercury.config.environ import env
+from mercury.models import Organization, User
+from mercury.models.organization import OrganizationRole, OrganizationStatus
 
 
 class SetupForm(forms.Form):
@@ -48,7 +50,12 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
     success_url = '/'
 
     def form_valid(self, form):
-        User.objects.create_superuser(form.cleaned_data['email'],
-                                      form.cleaned_data['password1'])
+        user = User.objects.create_superuser(form.cleaned_data['email'],
+                                             form.cleaned_data['password1'])
+        org = Organization.objects.create(name=env('ORGANIZATION'),
+                                    # slug='',
+                                    status=int(OrganizationStatus.ACTIVE),
+                                    owner=user)
+        org.add_member(user, OrganizationRole.OWNER)
         config.INITIALIZED = 1
         return super().form_valid(form)

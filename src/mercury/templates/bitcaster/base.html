@@ -1,6 +1,4 @@
-{# Load the tag library #}
-{% load bc_assets static %}
-<!doctype html>
+{% load bc_assets %}<!doctype html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -9,7 +7,7 @@
     {% block css %}
         <link rel="stylesheet" href="{% asset "dist/bitcaster.css" %}">
     {% endblock %}
-    {% block js %}{% endblock %}
+    {% block head-js %}{% endblock %}
 
     {% block extrahead %}{% endblock %}
     <title>Bitcaster</title>
@@ -22,20 +20,19 @@
         {% block header %}
             <header>
                 <div class="logo text-center">
-                    <a href="/"><img src="{% static "logos/logo_regular_white_160w.png" %}" alt=""></a>
+                    <a href="/"><img src="{% asset "logos/logo_regular_white_160w.png" %}" alt=""></a>
                 </div>
                 {% if user.is_authenticated %}
                     <span class="top-menu">
 {% if organization and applications %}
     <div class="dropdown">
 
-                            <a href="{% url "org-index" organization.slug %}">{{ organization.name }}</a>
-{#                            {% if application %}{{ application }}{% endif %}#}
+                            <a href="{% url "org-index" organization.slug %}">[{{ organization.name }}]</a>
                             <a class="dropdown-toggle2"
                                href="#" role="button"
                                id="appMenuLink" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
-                                / {% if application %}{{ application }}{% else %}Applications{% endif %}
+                                / {% if application %}{{ application }}{% else %}applications{% endif %}
                                 <i class="fa fa-angle-down"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="appMenuLink">
@@ -45,7 +42,7 @@
                                 {% endfor %}
                             </div>
                         </div>
-{% else %}
+{% elif organizations %}
     <div class="dropdown">
                             <a class="dropdown-toggle2"
                                href="#" role="button"
@@ -131,9 +128,9 @@
 {% endblock body %}
 
 </div>
-
-<script src="{% asset "dist/vendor.js" %}"></script>
-<script src="{% asset "dist/bitcaster.js" %}"></script>
-
 </body>
+{% block js %}
+    <script src="{% asset "dist/vendor.js" %}"></script>
+    <script src="{% asset "dist/bitcaster.js" %}"></script>
+{% endblock %}
 </html>
