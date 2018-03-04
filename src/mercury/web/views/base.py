@@ -16,7 +16,7 @@ from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views import View
 from django.views.generic import (CreateView, DetailView,
-                                  TemplateView, UpdateView, )
+                                  TemplateView, UpdateView,)
 
 from mercury.models import Organization
 

@@ -371,6 +371,7 @@ CONSTANCE_CONFIG = OrderedDict({
                        str),
 
     'ALLOW_REGISTRATION': (False, '', bool),
+    'ON_PREMISE': (True, '', bool),
     'EMAIL_USE_TLS': (False, '', bool),
     'EMAIL_TIMEOUT': (60, '', int),
     'EMAIL_HOST': ('', '', str),

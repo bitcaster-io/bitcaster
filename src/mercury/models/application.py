@@ -12,12 +12,13 @@ from timezone_field import TimeZoneField
 
 from mercury import logging
 from mercury.file_storage import MediaFileSystemStorage, app_media_root
-from mercury.models.organization import RESERVED_NAMES, Organization
 from mercury.utils import locks
 from mercury.utils.retries import TimedRetryPolicy
 from mercury.utils.slug import slugify_instance
 
 from .base import AbstractModel
+from .organization import RESERVED_NAMES, Organization
+from .user import User
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,9 @@ class Application(AbstractModel):
     organization = models.ForeignKey(Organization,
                                      related_name='applications',
                                      on_delete=models.CASCADE)
+    owner = models.ForeignKey(User,
+                              related_name='applications',
+                              on_delete=models.CASCADE)
     name = models.CharField(_('Name'),
                             max_length=300,
                             validators=[

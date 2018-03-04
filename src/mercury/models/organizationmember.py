@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+
 from .organization import Organization, OrganizationRole
 
 
@@ -17,7 +18,7 @@ class OrganizationMember(models.Model):
 
     organization = models.ForeignKey(Organization,
                                      on_delete=models.CASCADE,
-                                     related_name='+')
+                                     related_name='memberships')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE,
                              related_name='memberships')

@@ -1,53 +1,13 @@
-from django.contrib import messages
-from django.urls import reverse
-from django.utils.translation import gettext as _
-from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic import ListView, TemplateView
 
-from mercury.models import (Application, Channel, Event,
-                            Message, Organization, Subscription,)
-from mercury.web.forms import (ApplicationCreateForm, OrganizationForm,
-                               )
-from mercury.web.views.base import (MercuryBaseCreateView,
-                                    MercuryBaseDetailView, SelectedApplicationMixin)
+from mercury.models import Channel, Event, Message, Subscription
+from mercury.web.views.base import SelectedApplicationMixin
+
+__all__ = ("ChannelList", "EventList", "IndexView",
+           "MessageList", "SubscriptionList",)
 
 
 # @method_decorator(login_required, name='dispatch')
-class OrganizationDetail(MercuryBaseDetailView):
-    model = Organization
-    slug_url_kwarg = 'org'
-
-
-class OrganizationCreate(MercuryBaseCreateView):
-    model = Organization
-    form_class = OrganizationForm
-    success_url = '.'
-
-    def form_valid(self, form):
-        # form.cleaned_data['owner'] = self.request.user
-        form.instance.owner = self.request.user
-        self.message_user(_('Organization created'), messages.SUCCESS)
-        return super().form_valid(form)
-
-
-class ApplicationCreate(MercuryBaseCreateView):
-    model = Application
-    form_class = ApplicationCreateForm
-
-    def get_success_url(self):
-        return reverse('app-index', args=[self.selected_organization.slug,
-                                          self.object.slug])
-
-    def form_valid(self, form):
-        # form.cleaned_data['owner'] = self.request.user
-        form.instance.organization = self.selected_organization
-        self.message_user(_('Application created'), messages.SUCCESS)
-        return super().form_valid(form)
-
-
-# @method_decorator(login_required, name='dispatch')
-class ApplicationDetail(SelectedApplicationMixin, DetailView):
-    model = Application
-    slug_url_kwarg = 'app'
 
 
 # @method_decorator(login_required, name='dispatch')

@@ -1,16 +1,23 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from mercury.web.views.settings import (SettingsChannelView, SettingsEmailView,
-                                        SettingsOAuthView, SettingsView,)
-from mercury.web.views.setup import SetupView
-from mercury.web.views.views import (ApplicationCreate, IndexView,
-                                     OrganizationCreate,)
+from mercury.web.views.register import confirm_email
 
-from .views import (ApplicationDetail, ChannelList, EventList, LoginView,
-                    LogoutView, MessageList, OrganizationDetail,
-                    SubscriptionList, UserProfileView, UserRegister,
-                    confirm_email,)
+from .views import (ApplicationCreate, ApplicationDetail, ChannelList,
+                    EventList, IndexView, LoginView, LogoutView, MessageList,
+                    OrganizationApplications, OrganizationChannels,
+                    OrganizationCreate, OrganizationDetail, OrganizationMembers,
+                    OrganizationUpdate, SettingsChannelView, SettingsEmailView,
+                    SettingsOAuthView, SettingsView, SetupView,
+                    SubscriptionList, UserProfileView, UserRegister,)
+
+# from mercury.web.views.settings import (SettingsChannelView, SettingsEmailView,
+#                                         SettingsOAuthView, SettingsView,)
+# from mercury.web.views.setup import SetupView
+# from mercury.web.views.views import (IndexView,
+#                                      OrganizationCreate, )
+# from mercury.web.views.application import ApplicationCreate
+
 
 urlpatterns = [
     path(r'setup/', SetupView.as_view(), name='setup'),
@@ -24,7 +31,6 @@ urlpatterns = [
     path(r'', include('social_django.urls', namespace='social')),
 
     path(r'user/register/', UserRegister.as_view(), name='user-register'),
-    path(r'org/add/', OrganizationCreate.as_view(), name='org-add'),
     path(r'<slug:org>/add/', ApplicationCreate.as_view(), name='application-add'),
 
     path(r'user/register/register-wait-email/<int:pk>/',
@@ -40,9 +46,15 @@ urlpatterns = [
     path(r'terms/', TemplateView.as_view(template_name='bitcaster/legal/terms.html'), name='legal-terms'),
     path(r'privacy/', TemplateView.as_view(template_name='bitcaster/legal/privacy.html'), name='legal-privacy'),
 
-    path(r'<slug:org>/', OrganizationDetail.as_view(), name='org-index'),
+    path(r'org/add/', OrganizationCreate.as_view(), name='org-add'),
+    path(r'<slug:org>/details/', OrganizationDetail.as_view(), name='org-index'),
+    path(r'<slug:org>/update/', OrganizationUpdate.as_view(), name='org-config'),
+    path(r'<slug:org>/members/', OrganizationMembers.as_view(), name='org-members'),
+    path(r'<slug:org>/channels/', OrganizationChannels.as_view(), name='org-channels'),
+    path(r'<slug:org>/applications/', OrganizationApplications.as_view(), name='org-applications'),
 
-    path(r'<slug:org>/<slug:app>/', ApplicationDetail.as_view(), name='app-index'),
+    path(r'<slug:org>/<slug:app>/',
+         ApplicationDetail.as_view(), name='app-index'),
 
     path(r'<slug:org>/<slug:app>/subscriptions/',
          SubscriptionList.as_view(), name='app-subscriptions'),

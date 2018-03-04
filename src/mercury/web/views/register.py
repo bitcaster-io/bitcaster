@@ -23,12 +23,13 @@ from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from oath import from_b32key
 from strategy_field.utils import fqn
 
-from mercury.models import Organization, User
-from mercury.models.organizationmember import OrganizationRole
+from mercury.models import Organization, OrganizationRole, User
 
 from ..forms import RegistrationForm
 
 logger = logging.getLogger(__name__)
+
+__all__ = ["UserRegister"]
 
 
 class UserRegister(SingleObjectTemplateResponseMixin, FormView):

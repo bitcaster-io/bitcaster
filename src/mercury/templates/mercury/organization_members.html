@@ -1,0 +1,13 @@
+{% extends "mercury/organization_detail.html" %}{% load crispy_forms_tags %}
+{% block content %}
+    <h2>{{ organization }} Members</h2>
+    <div class="container">
+        {% for membership in organization.memberships.all %}
+            <div class="row">
+                <div class="col-sm">{{ membership.user }}</div>
+                <div class="col-sm">{{ membership.get_role_display }}</div>
+                <div class="col-sm">{{ membership.date_added }}</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

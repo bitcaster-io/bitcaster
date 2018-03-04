@@ -17,6 +17,8 @@ from mercury.config.environ import env
 from mercury.models import Organization, User
 from mercury.models.organization import OrganizationRole, OrganizationStatus
 
+__all__ = ["SetupView"]
+
 
 class SetupForm(forms.Form):
     email = forms.EmailField()
@@ -53,9 +55,9 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
         user = User.objects.create_superuser(form.cleaned_data['email'],
                                              form.cleaned_data['password1'])
         org = Organization.objects.create(name=env('ORGANIZATION'),
-                                    # slug='',
-                                    status=int(OrganizationStatus.ACTIVE),
-                                    owner=user)
+                                          # slug='',
+                                          status=int(OrganizationStatus.ACTIVE),
+                                          owner=user)
         org.add_member(user, OrganizationRole.OWNER)
         config.INITIALIZED = 1
         return super().form_valid(form)

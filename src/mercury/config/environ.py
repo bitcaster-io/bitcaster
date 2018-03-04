@@ -24,6 +24,7 @@ DEFAULTS = dict(
     REDIS_CONSTANCE_URL=(str, 'redis://localhost:6379/3'),
 
     ORGANIZATION=(str, 'Bitcaster'),
+    ON_PREMISE=(bool, True),
 )
 
 
@@ -32,7 +33,7 @@ class Env(environ.Env):
         self.scheme = scheme
         self.prefix = prefix or ''
 
-    def get_value(self, var, cast=None, default=environ.Env.NOTSET,   # noqa: C901
+    def get_value(self, var, cast=None, default=environ.Env.NOTSET,  # noqa: C901
                   parse_default=False):
         """Return value for given environment variable.
 

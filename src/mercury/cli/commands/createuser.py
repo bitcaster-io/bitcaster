@@ -1,5 +1,6 @@
-import click
 import sys
+
+import click
 
 from mercury.cli import need_setup
 

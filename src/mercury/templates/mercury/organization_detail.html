@@ -8,13 +8,19 @@
                         <div>
                             <ul class="nav nav-stacked">
                                 <li>
-                                    <a href="#">Channels</a>
+                                    <a href="{% url "org-index" organization.slug %}">Home</a>
                                 </li>
                                 <li>
-                                    <a href="#">Configuration</a>
+                                    <a href="{% url "org-config" organization.slug %}">Configuration</a>
                                 </li>
                                 <li>
-                                    <a href="#">Members</a>
+                                    <a href="{% url "org-channels" organization.slug %}">Channels</a>
+                                </li>
+                                <li>
+                                    <a href="{% url "org-members" organization.slug %}">Members</a>
+                                </li>
+                                <li>
+                                    <a href="{% url "org-applications" organization.slug %}">Applications</a>
                                 </li>
                             </ul>
                         </div>

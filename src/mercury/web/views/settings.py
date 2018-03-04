@@ -12,11 +12,15 @@ import logging
 from constance import config
 from django.views.generic import FormView
 
-from mercury.web.forms import SettingsEmailForm, SettingsMainForm, SettingsOAuthForm
+from mercury.web.forms import (SettingsEmailForm, SettingsMainForm,
+                               SettingsOAuthForm,)
 from mercury.web.views import MercuryTemplateView
 from mercury.web.views.base import SuperuserViewMixin
 
 logger = logging.getLogger(__name__)
+
+__all__ = ["SettingsView", "SettingsOAuthView",
+           "SettingsEmailView", "SettingsChannelView"]
 
 
 class SettingsBaseView(SuperuserViewMixin, MercuryTemplateView, FormView):

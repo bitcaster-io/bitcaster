@@ -5,7 +5,6 @@ from pathlib import Path
 
 import click
 from setproctitle import setproctitle
-
 from strategy_field.utils import import_by_name
 
 import mercury
@@ -65,7 +64,7 @@ cli.add_command(import_by_name('mercury.cli.commands.check.check'))
 cli.add_command(import_by_name('mercury.cli.commands.configure.configure'))
 cli.add_command(import_by_name('mercury.cli.commands.upgrade.upgrade'))
 cli.add_command(import_by_name('mercury.cli.commands.option.option'))
-cli.add_command(import_by_name('mercury.cli.commands.devserver.devserver'))
+# cli.add_command(import_by_name('mercury.cli.commands.devserver.devserver'))
 cli.add_command(import_by_name('mercury.cli.commands.createuser.createuser'))
 
 
