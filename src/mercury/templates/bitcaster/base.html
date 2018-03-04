@@ -1,5 +1,5 @@
 {# Load the tag library #}
-{% load bc_assets %}
+{% load bc_assets static %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -22,7 +22,7 @@
         {% block header %}
             <header>
                 <div class="logo text-center">
-                    <a href="/">bitcaster</a>
+                    <a href="/"><img src="{% static "logos/logo_regular_white_160w.png" %}" alt=""></a>
                 </div>
                 {% if user.is_authenticated %}
                     <span class="top-menu">

@@ -7,6 +7,11 @@ header {
   border-bottom: 1px solid #c4c4c4;
   //padding-bottom: 10px;
   //margin-bottom: 10px;
+  background: #0072e2; /* For browsers that do not support gradients */
+  background: linear-gradient(to right, #5b9fe2, #4494e2); /* Standard syntax (must be last) */
+  a{
+    color: white;
+  }
   a.dropdown-toggle2 {
     text-decoration: none !important;
     &:hover {
@@ -31,16 +36,16 @@ header {
     }
   }
   .logo {
+    padding: 2px;
     color: white;
-    background-color: #333;
+    border-right: 1px solid #c4c4c4;
+    background: #0072e2;
+    background: linear-gradient(to bottom right, #6aa7e2, #519ae2); /* Standard syntax (must be last) */
     float: left;
     min-width: 200px;
     height: 100%;
-    a {
-      color: white;
-      &:hover {
-        color: white;
-      }
+    img{
+      height: 100%;
     }
   }
   .top-menu {

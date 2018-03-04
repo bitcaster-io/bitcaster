@@ -2,16 +2,20 @@
   sidebar.scss
  */
 #sidebar {
-  background-color: #333;
+  background: #0072e2; /* For browsers that do not support gradients */
+  background: linear-gradient(to right, #5b9fe2, #4494e2); /* Standard syntax (must be last) */
   z-index: 3;
   width: 200px;
   color: white;
   a{
-    color: white !important;
+    color: white;
+    &:hover {
+      color: blue;
+    }
   }
   .list-group {
     padding-top: 20px;
-    background-color: #333;
+    //background-color: #333;
     min-height: 100vh;
     li{
       padding-top: 10px;
