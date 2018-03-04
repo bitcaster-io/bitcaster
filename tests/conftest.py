@@ -12,6 +12,8 @@ def pytest_configure(config):
     sys.path.insert(0, os.path.join(here, 'extras'))
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mercury.config.settings.default')
     os.environ.setdefault('BITCASTER_CONF', str(Path(__file__).parent / '.conf'))
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    os.environ['RECAPTCHA_DISABLE'] = 'True'
     c.INITIALIZED = 1
 
 
