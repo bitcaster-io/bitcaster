@@ -26,6 +26,7 @@ django-constance[database,redis]==2.1.0
 django-countries==5.1.1
 django-crispy-forms==1.7.0
 django-environ==0.4.4
+django-extensions==2.0.0
 django-fernet-fields==0.5
 django-fobi==0.13.1
 django-formtools==2.1
@@ -84,7 +85,7 @@ pycrypto==2.6.1
 pyee==5.0.0               # via pyppeteer
 pyflakes==1.6.0           # via flake8
 pygments==2.2.0           # via pdbpp
-pyjwt==1.5.3
+pyjwt==1.6.0
 pyparsing==2.2.0
 pyppeteer==0.0.12         # via requests-html
 pyquery==1.4.0            # via requests-html
@@ -99,7 +100,7 @@ pytz==2018.3
 pyyaml==3.12              # via vcrpy
 raven==6.6.0
 redis==2.10.6
-requests-html==0.7.2
+requests-html==0.8.0
 requests-oauthlib==0.8.0
 requests==2.18.4
 responses==0.8.1
@@ -112,6 +113,7 @@ social-auth-app-django==2.1.0
 social-auth-core==1.7.0
 text-unidecode==1.2       # via faker
 tox==2.9.1
+typing==3.6.4
 unidecode==1.0.22
 urllib3==1.22
 vcrpy==1.11.1

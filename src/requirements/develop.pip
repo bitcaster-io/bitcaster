@@ -111,7 +111,7 @@ pycrypto==2.6.1
 pyee==5.0.0
 pyflakes==1.6.0
 pygments==2.2.0
-pyjwt==1.5.3
+pyjwt==1.6.0
 pyparsing==2.2.0
 pyppeteer==0.0.12
 pyquery==1.4.0
@@ -121,12 +121,13 @@ pytest-echo==1.5.1
 pytest==3.4.1
 python-dateutil==2.6.1
 python-redis-lock[django]==3.2.0
+python-slugify==1.2.4     # via transifex-client
 python3-openid==3.1.0
 pytz==2018.3
 pyyaml==3.12
 raven==6.6.0
 redis==2.10.6
-requests-html==0.7.2
+requests-html==0.8.0
 requests-oauthlib==0.8.0
 requests==2.18.4
 responses==0.8.1
@@ -142,7 +143,8 @@ sqlparse==0.2.4           # via django-debug-toolbar
 text-unidecode==1.2
 tox==2.9.1
 traitlets==4.3.2          # via ipython
-typing==3.6.4             # via django-extensions
+transifex-client==0.13.1
+typing==3.6.4
 unidecode==1.0.22
 urllib3==1.22
 vcrpy==1.11.1

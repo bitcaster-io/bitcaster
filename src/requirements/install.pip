@@ -18,6 +18,7 @@ django-constance[database,redis]==2.1.0
 django-countries==5.1.1
 django-crispy-forms==1.7.0
 django-environ==0.4.4
+django-extensions==2.0.0
 django-fernet-fields==0.5
 django-fobi==0.13.1
 django-formtools==2.1     # via django-fobi
@@ -57,7 +58,7 @@ pyasn1==0.4.2             # via oauth2client, pyasn1-modules, rsa
 pycountry==18.2.23
 pycparser==2.18           # via cffi
 pycrypto==2.6.1
-pyjwt==1.5.3              # via social-auth-core
+pyjwt==1.6.0              # via social-auth-core
 pyparsing==2.2.0          # via packaging
 python-redis-lock[django]==3.2.0
 python3-openid==3.1.0     # via social-auth-core
@@ -69,9 +70,10 @@ requests==2.18.4          # via django-fobi, django-recaptcha2, requests-oauthli
 rsa==3.4.2                # via oauth2client
 setproctitle==1.1.10
 simplejson==3.13.2        # via django-fobi
-six==1.11.0               # via admin-extra-urls, bleach, cryptography, django-bitfield, django-concurrency, django-environ, django-fobi, django-sysinfo, html5lib, oauth2client, packaging, social-auth-app-django, social-auth-core, vishap
+six==1.11.0               # via admin-extra-urls, bleach, cryptography, django-bitfield, django-concurrency, django-environ, django-extensions, django-fobi, django-sysinfo, html5lib, oauth2client, packaging, social-auth-app-django, social-auth-core, vishap
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0
+typing==3.6.4             # via django-extensions
 unidecode==1.0.22         # via django-fobi
 urllib3==1.22             # via requests
 vine==1.1.4               # via amqp

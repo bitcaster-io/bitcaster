@@ -9,6 +9,7 @@ django-constance[database,redis]
 django-countries
 django-crispy-forms
 django-environ
+django_extensions
 django-fernet-fields
 django-fobi
 django-jsoneditor

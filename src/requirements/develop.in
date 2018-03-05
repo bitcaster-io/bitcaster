@@ -1,7 +1,6 @@
 cookiecutter
 devpi-client
 django-debug-toolbar
-django-extensions
 httpie
 ipython
 pip-tools
