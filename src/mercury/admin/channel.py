@@ -3,6 +3,7 @@ from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.postgres import fields as pg
 from django.db import router, transaction
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
@@ -76,8 +77,9 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
                     channel.save()
                     self.message_user(request, _('Configuration saved'),
                                       messages.SUCCESS)
-
-            except Exception as e:
+                    return HttpResponseRedirect(reverse("admin:mercury_channel_change",
+                                                args=[channel.pk]))
+            except Exception as e:  # pragma: no-cover
                 self.message_user(request, str(e), messages.ERROR)
             return render(request, 'admin/mercury/channel/configure.html', ctx)
 
@@ -86,7 +88,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
             try:
                 channel.handler.validate_configuration(channel.config, True)
                 channel.enabled = True
-            except PluginValidationError as e:
+            except PluginValidationError as e:  # pragma: no-cover
                 channel.enabled = False
                 self.message_user(request, f"{channel.name} invalid configuration {e}",
                                   messages.ERROR)
@@ -96,7 +98,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
         for channel in queryset.all():
             try:
                 channel.handler.validate_configuration(channel.config, True)
-            except PluginValidationError as e:
+            except PluginValidationError as e:  # pragma: no-cover
                 channel.enabled = False
                 channel.save()
                 self.message_user(request, f"{channel.name} invalid configuration {e}",
@@ -146,7 +148,11 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
                     channel.handler.test_message(s,
                                                  "",
                                                  request.POST['message'])
-            except Exception as e:
+                    self.message_user(request, _("Message successully sent"), messages.SUCCESS)
+                    return HttpResponseRedirect(reverse("admin:mercury_channel_send_sample_message",
+                                                args=[channel.pk]))
+
+            except Exception as e:  # pragma: no-cover
                 self.message_user(request, str(e), messages.ERROR)
             return render(request, 'admin/mercury/channel/test.html', ctx)
 

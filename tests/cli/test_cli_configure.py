@@ -7,10 +7,10 @@ mercury / test_cli_configure
 :license: BSD, see LICENSE for more details.
 """
 from pathlib import Path
+
 from click.testing import CliRunner
 
 from mercury.cli.commands.configure import configure
-
 from mercury.config.environ import env
 
 

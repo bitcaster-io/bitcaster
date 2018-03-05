@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import pytest
 from faker import Faker
-from rest_framework.reverse import reverse
 
 faker = Faker()
 

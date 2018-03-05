@@ -14,8 +14,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
-from django.views import View
-from django.views.generic import (CreateView, DetailView,
+from django.views.generic import (CreateView, DetailView, FormView,
                                   TemplateView, UpdateView,)
 
 from mercury.models import Organization
@@ -23,10 +22,13 @@ from mercury.models import Organization
 logger = logging.getLogger(__name__)
 
 
-@method_decorator(login_required, name='dispatch')
-class SecuredViewMixin(View):
+class SecuredViewMixin:
     def check_perms(self, request, obj=None, raise_exception=False):
         return request.user.has_perm(obj)
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
 
 @method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
@@ -90,7 +92,15 @@ class MessageUserMixin(object):
 
 class MercuryTemplateView(ApplicationListMixin,
                           OrganizationListMixin,
+                          MessageUserMixin,
                           TemplateView):
+    pass
+
+
+class MercuryFormView(ApplicationListMixin,
+                      MessageUserMixin,
+                      OrganizationListMixin,
+                      FormView):
     pass
 
 

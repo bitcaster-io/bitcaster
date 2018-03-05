@@ -120,16 +120,16 @@ class UserFactory(factory.DjangoModelFactory):
     email = factory.Sequence(lambda n: "m%03d@mailinator.com" % n)
     password = '123'
 
+
     # is_active = True
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
         permissions = kwargs.pop('permissions', [])
         raw_password = kwargs.pop('password', cls.password)
-        kwargs['password'] = make_password(raw_password)
         user = super()._get_or_create(model_class, *args, **kwargs)
-        # if password:
-        #     user.set_password(password)
+        if raw_password:
+            user.set_password(raw_password)
         if permissions:
             user_grant_permissions(user, permissions).start()
         return user

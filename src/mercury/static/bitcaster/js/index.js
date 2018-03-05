@@ -1,3 +1,5 @@
+import "./jquery.formset.js";
+
 let _ = {};
 
 _.toggleSidebar = function () {

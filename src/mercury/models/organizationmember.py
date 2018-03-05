@@ -20,6 +20,7 @@ class OrganizationMember(models.Model):
                                      on_delete=models.CASCADE,
                                      related_name='memberships')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             null=True, blank=True,
                              on_delete=models.CASCADE,
                              related_name='memberships')
     email = models.EmailField(null=True, blank=True)
@@ -34,6 +35,12 @@ class OrganizationMember(models.Model):
     )
 
     date_added = models.DateTimeField(default=timezone.now)
+    invited_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             null=True, blank=True,
+                             on_delete=models.CASCADE,
+                             related_name='+')
+    date_enrolled = models.DateTimeField(blank=True,
+                                         null=True)
 
     class Meta:
         unique_together = (

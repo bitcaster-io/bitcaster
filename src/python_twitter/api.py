@@ -32,17 +32,19 @@ import warnings
 from uuid import uuid4
 
 import requests
-from requests_oauthlib import OAuth1, OAuth2
 from python_twitter import __version__
-from .models import (Category,DirectMessage, List, Status, Trend, User,
-                     UserStatus)
-from ._file_cache import _FileCache
-# noqa
+from requests_oauthlib import OAuth1, OAuth2
 
+from ._file_cache import _FileCache
 from .error import PythonTwitterDeprecationWarning330, TwitterError
+from .models import (Category, DirectMessage, List,
+                     Status, Trend, User, UserStatus,)
 from .ratelimit import RateLimit
 from .twitter_utils import (calc_expected_status_length, enf_type,
                             is_url, parse_arg_list, parse_media_file,)
+
+# noqa
+
 
 try:
     # python 3

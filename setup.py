@@ -4,8 +4,10 @@ import ast
 import codecs
 import os
 import re
+import subprocess
 
 from setuptools import setup, find_packages
+from setuptools.command.sdist import sdist
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 init = os.path.join(ROOT, 'src', 'mercury', '__init__.py')
@@ -31,6 +33,13 @@ dev_requires = fread('develop.pip')
 
 readme = codecs.open('README.rst').read()
 
+
+class SDistCommand(sdist):
+    def run(self):
+        subprocess.check_output(['webpack', '--mode', 'production'])
+        super().run()
+
+
 setup(name=name,
       version=version,
       description="""A short description of the project.""",
@@ -46,6 +55,9 @@ setup(name=name,
       extras_require={
           'dev': dev_requires,
           'test': test_requires,
+      },
+      cmdclass={
+          'sdist': SDistCommand,
       },
       entry_points={
           'console_scripts': [

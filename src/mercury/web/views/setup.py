@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-mercury / setup
-~~~~~~~~~~~~~~~~~
+from datetime import datetime
 
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
 from constance import config
 from django import forms
 from django.contrib.auth import password_validation
@@ -58,6 +53,8 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
                                           # slug='',
                                           status=int(OrganizationStatus.ACTIVE),
                                           owner=user)
-        org.add_member(user, OrganizationRole.OWNER)
+        org.add_member(user, OrganizationRole.OWNER,
+                       date_enrolled=datetime.today()
+                       )
         config.INITIALIZED = 1
         return super().form_valid(form)

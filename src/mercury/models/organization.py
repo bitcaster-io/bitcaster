@@ -110,7 +110,8 @@ class Organization(models.Model):
     date_added = models.DateTimeField(default=timezone.now)
     # default_timezone = TimeZoneField()
     members = models.ManyToManyField(settings.AUTH_USER_MODEL,
-                                     through='mercury.OrganizationMember')
+                                     through='mercury.OrganizationMember',
+                                     through_fields=('organization', 'user'))
     billing_email = models.EmailField(blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE,
@@ -143,7 +144,7 @@ class Organization(models.Model):
             with TimedRetryPolicy(10, lock.acquire):
                 slugify_instance(self, self.name,
                                  reserved=RESERVED_ORGANIZATION_SLUGS)
-            super(Organization, self).save(*args, **kwargs)
+                super(Organization, self).save(*args, **kwargs)
         else:
             super(Organization, self).save(*args, **kwargs)
 
@@ -166,11 +167,13 @@ class Organization(models.Model):
 
         return queryset.exists()
 
-    def add_member(self, user, role=OrganizationRole.RECIPIENT):
+    def add_member(self, user, role=OrganizationRole.RECIPIENT, **kwargs):
         from mercury.models import OrganizationMember
         return OrganizationMember.objects.get_or_create(organization=self,
                                                         user=user,
-                                                        role=int(role))[0]
+                                                        role=int(role),
+                                                        **kwargs
+                                                        )[0]
 
     def get_owners(self):
         from mercury.models import User

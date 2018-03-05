@@ -14,7 +14,7 @@ from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
                                        UserCreationForm as _UserCreationForm,)
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError
-from django.forms import Form, PasswordInput
+from django.forms import Form, PasswordInput, inlineformset_factory
 from django.forms.utils import ErrorList
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -25,8 +25,8 @@ from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from mercury.configurable import get_full_config
-from mercury.models import (Application, Channel, Event,
-                            Organization, Subscription, User,)
+from mercury.models import (Application, Channel, Event, Organization,
+                            OrganizationMember, Subscription, User,)
 from mercury.utils import import_by_name
 from mercury.utils.language import flatten
 
@@ -61,10 +61,30 @@ class RegistrationForm(forms.Form):
         return value.lower()
 
 
+class OrganizationInviteForm(forms.ModelForm):
+    email = forms.EmailField(required=True,
+                             widget=forms.EmailInput(attrs={'autocomplete': 'email'}))
+
+    class Meta:
+        model = OrganizationMember
+        fields = ('email', 'role')
+
+
+OrganizationInviteFormSet = inlineformset_factory(Organization,
+                                                  OrganizationMember,
+                                                  form=OrganizationInviteForm,
+                                                  min_num=1,
+                                                  extra=0)
+
+
 class OrganizationForm(forms.ModelForm):
     class Meta:
         model = Organization
         fields = ("name", 'slug', 'billing_email')
+
+    def clean_slug(self):
+        value = self.cleaned_data["slug"]
+        return value.lower()
 
 
 class UserChangeForm(_UserChangeForm):

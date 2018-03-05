@@ -36,8 +36,8 @@ class Event(AbstractModel):
     def __str__(self):
         return f"{self.name} #{self.pk} "
 
-    def get_message(self, channel):
-        return self.messages.get(channels=channel)
-
+    # def get_message(self, channel):
+    #     return self.messages.get(channels=channel)
+    #
     # def emit(self, context, fail_silently=True):
     #     return emit_event.delay(self, context)

@@ -1,6 +1,7 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
+from mercury.web.views.organization import OrganizationInvite
 from mercury.web.views.register import confirm_email
 
 from .views import (ApplicationCreate, ApplicationDetail, ChannelList,
@@ -50,6 +51,7 @@ urlpatterns = [
     path(r'<slug:org>/details/', OrganizationDetail.as_view(), name='org-index'),
     path(r'<slug:org>/update/', OrganizationUpdate.as_view(), name='org-config'),
     path(r'<slug:org>/members/', OrganizationMembers.as_view(), name='org-members'),
+    path(r'<slug:org>/invite/', OrganizationInvite.as_view(), name='org-invite'),
     path(r'<slug:org>/channels/', OrganizationChannels.as_view(), name='org-channels'),
     path(r'<slug:org>/applications/', OrganizationApplications.as_view(), name='org-applications'),
 

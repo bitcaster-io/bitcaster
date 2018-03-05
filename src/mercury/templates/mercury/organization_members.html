@@ -1,13 +1,51 @@
-{% extends "mercury/organization_detail.html" %}{% load crispy_forms_tags %}
+{% extends "mercury/organization_detail.html" %}{% load crispy_forms_tags i18n %}
 {% block content %}
     <h2>{{ organization }} Members</h2>
+
     <div class="container">
-        {% for membership in organization.memberships.all %}
-            <div class="row">
-                <div class="col-sm">{{ membership.user }}</div>
-                <div class="col-sm">{{ membership.get_role_display }}</div>
-                <div class="col-sm">{{ membership.date_added }}</div>
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>
             </div>
-        {% endfor %}
+        </div>
     </div>
+
+
+    <div class="container pl-3 m-3 mb-5">
+        <h4>Members</h4>
+        <div class="content invitations">
+                <div class="row pl-1 m-1 mb-3 border-bottom-1">
+                    <div class="col-sm h6">User</div>
+                    <div class="col-sm h6">Role</div>
+                    <div class="col-sm h6">Enrolled on</div>
+                </div>
+            {% for membership in memberships.all %}
+                <div class="row pl-1">
+                    <div class="col-sm">{{ membership.user }}</div>
+                    <div class="col-sm">{{ membership.get_role_display }}</div>
+                    <div class="col-sm">{{ membership.date_enrolled}}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="container pl-3 m-3 mt-5">
+        <h4>Pending invitations</h4>
+        <div class="content invitations">
+                <div class="row pl-1 mt-5 m-1 mb-3 border-bottom-1">
+                    <div class="col-sm">Email</div>
+                    <div class="col-sm">Role</div>
+                    <div class="col-sm">Invited on</div>
+                </div>
+            {% for membership in invitations.all %}
+                <div class="row pl-1">
+                    <div class="col-sm">{{ membership.email }}</div>
+                    <div class="col-sm">{{ membership.get_role_display }}</div>
+                    <div class="col-sm">{{ membership.date_added }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
 {% endblock %}

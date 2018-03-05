@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import pytest
 from django.core import mail
+from faker import Faker
 from requests_html import HTML
 from rest_framework.reverse import reverse
-from faker import Faker
-from mercury.models import User, Organization
-from mercury.models.organizationmember import OrganizationRole, OrganizationMember
+
+from mercury.models import Organization, User
+from mercury.models.organizationmember import (OrganizationMember,
+                                               OrganizationRole,)
 
 faker = Faker()
 
