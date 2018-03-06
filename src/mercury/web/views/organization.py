@@ -6,8 +6,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.views import View
-from django.views.generic import DeleteView, FormView, CreateView
+from django.views.generic import DeleteView, CreateView
 
 from mercury.models import Organization, OrganizationMember, User
 from mercury.security import totp
@@ -42,6 +41,7 @@ class OrganizationUpdate(OrganizationViewMixin, MercuryBaseUpdateView):
         slug = form.cleaned_data.get('slug', None)
         self.object = form.save()
         url = reverse("org-config", args=[slug or self.object.slug])
+        self.message_user(_("Configuration saved"))
         return HttpResponseRedirect(url)
 
 
@@ -151,17 +151,18 @@ class OrganizationInvite(MercuryFormView):
         if form.is_valid():
             form.instance = self.selected_organization
             for inline_form in form.extra_forms:
-                recipient = inline_form.cleaned_data['email']
                 if not inline_form.has_changed():
                     continue
-                if not self.selected_organization.memberships.filter(email=recipient).exists():
-                    inline_form.instance.organization = self.selected_organization
-                    membership = inline_form.save()
-                    membership.send_email()
-                    sent = True
-                else:
-                    self.message_user(_('Invitation to {0} already sent').format(recipient),
-                                      messages.WARNING)
+                recipient = inline_form.cleaned_data.get('email', None)
+                if recipient:
+                    if not self.selected_organization.memberships.filter(email=recipient).exists():
+                        inline_form.instance.organization = self.selected_organization
+                        membership = inline_form.save()
+                        membership.send_email()
+                        sent = True
+                    else:
+                        self.message_user(_('Invitation to {0} already sent').format(recipient),
+                                          messages.WARNING)
             if sent:
                 self.message_user(_('Invitations sent'), messages.SUCCESS)
         return super(OrganizationInvite, self).form_valid(form)

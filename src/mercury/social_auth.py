@@ -19,6 +19,7 @@ from mercury.models import OrganizationMember
 def associate(backend, details, user=None, *args, **kwargs):
     return None
 
+
 def associate_invitation(backend, details, user=None, *args, **kwargs):
     strategy = kwargs['strategy']
     invitation_id = strategy.session_get('invitation')

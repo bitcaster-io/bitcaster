@@ -9,15 +9,13 @@ mercury / callbacks
 
 import logging
 
-from constance import config
-from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
-from mercury.security import totp
 
-from mercury.models import User, OrganizationMember
+from mercury.models import User
+from mercury.security import totp
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +38,10 @@ def confirm_email(request, pk, check):
     else:
         if user.is_active:
             return render(request, 'bitcaster/registration/already_registered.html')
-        gauth = from_b32key(settings.OTP_KEY)
-        ok = gauth.accept(check,
-                          totp_forward_drift=int(settings.CONFIRM_EMAIL_EXPIRE / 30))
+        # gauth = from_b32key(settings.OTP_KEY)
+        # ok = gauth.accept(check,
+        #                   totp_forward_drift=int(settings.CONFIRM_EMAIL_EXPIRE / 30))
+        ok = totp.verify(check)
         if ok:
             user = User.objects.get(pk=pk)
             user.is_active = True

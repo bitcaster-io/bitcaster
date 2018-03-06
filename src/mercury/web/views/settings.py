@@ -11,11 +11,11 @@ import logging
 
 from constance import config
 from django.views.generic import FormView
-
+from django.utils.translation import ugettext as _
 from mercury.web.forms import (SettingsEmailForm, SettingsMainForm,
-                               SettingsOAuthForm,)
+                               SettingsOAuthForm, )
 from mercury.web.views import MercuryTemplateView
-from mercury.web.views.base import SuperuserViewMixin
+from mercury.web.views.base import SuperuserViewMixin, OrganizationListMixin
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,8 @@ __all__ = ["SettingsView", "SettingsOAuthView",
            "SettingsEmailView", "SettingsChannelView"]
 
 
-class SettingsBaseView(SuperuserViewMixin, MercuryTemplateView, FormView):
+class SettingsBaseView(SuperuserViewMixin,
+                       MercuryTemplateView, FormView):
     success_url = '.'
     title = ""
 
@@ -46,6 +47,7 @@ class SettingsBaseView(SuperuserViewMixin, MercuryTemplateView, FormView):
     def form_valid(self, form):
         for k, v in form.cleaned_data.items():
             setattr(config, k, v)
+        self.message_user(_("Configuration saved"))
         return super().form_valid(form)
 
 

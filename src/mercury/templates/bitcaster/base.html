@@ -48,11 +48,11 @@
                                href="#" role="button"
                                id="orgMenuLink" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
-                              {% if organization %}{{ organization }}{% else %}Organizations{% endif %}
+                              {% if organization %}[{{ organization }}]{% else %}Organizations{% endif %}
                                 <i class="fa fa-angle-down"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-left" aria-labelledby="orkMenuLink">
-                                {% for org in user.organizations.all %}
+                                {% for org in organizations %}
                                     <a class="dropdown-item organization"
                                        href="{% url "org-index" org.slug %}">{{ org.name }}</a>
                                 {% endfor %}

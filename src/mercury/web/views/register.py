@@ -9,18 +9,14 @@ mercury / register
 
 import logging
 
-from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.views.decorators.http import require_http_methods
 from django.views.generic import FormView
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
-from oath import from_b32key
 from strategy_field.utils import fqn
 
 from mercury.db.fields import Role

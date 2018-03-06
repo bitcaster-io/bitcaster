@@ -85,7 +85,7 @@ class SelectedApplicationMixin(ApplicationListMixin):
 
 
 class MessageUserMixin(object):
-    def message_user(self, message, level=messages.INFO, extra_tags='',
+    def message_user(self, message, level=messages.SUCCESS, extra_tags='',
                      fail_silently=False):
         messages.add_message(self.request, level, message, extra_tags=extra_tags, fail_silently=fail_silently)
 

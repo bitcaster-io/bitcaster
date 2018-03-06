@@ -10,7 +10,6 @@ mercury / secure_context
 import logging
 
 from django.template import Context
-from django.utils.translation import gettext as _
 
 from mercury.logging import secLog
 

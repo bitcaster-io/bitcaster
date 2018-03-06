@@ -68,11 +68,10 @@
             var reNumber = function () {
                 var $rows = $("div.invitations>div.row");
                 $rows.each(function (i, e) {
-                    console.log(i, $(e),);
                     $(e).find(":input").each(function () {
                         var name = $(this).attr("name").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
                         var id = "id_" + name;
-                        $(this).attr({"name": name, "id": id}).val("").removeAttr("checked");
+                        $(this).attr({"name": name, "id": id})
                     });
                     $(e).find("label").each(function () {
                         var newFor = $(this).attr("for").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");

@@ -10,7 +10,6 @@ from django.views.generic.edit import FormMixin, ProcessFormView
 
 from mercury.config.environ import env
 from mercury.db.fields import Role
-from mercury.db.validators import mark_core
 from mercury.models import Organization, User
 
 __all__ = ["SetupView"]

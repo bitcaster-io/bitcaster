@@ -14,7 +14,6 @@ from django.core.mail import get_connection, send_mail as _send_mail
 from django.template.loader import get_template
 
 from mercury.tasks import send_mail_async
-from mercury.template.secure_context import SecureContext
 
 logger = logging.getLogger(__name__)
 
