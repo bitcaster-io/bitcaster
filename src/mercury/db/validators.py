@@ -10,6 +10,7 @@ mercury / validators
 import logging
 
 from django.core.exceptions import ValidationError
+from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext as _
 
 logger = logging.getLogger(__name__)
@@ -50,6 +51,7 @@ def mark_core(value):
     return CoreName(value)
 
 
+@deconstructible
 class ReservedWordValidator:
     message = _("'{value}' is a bitcaster reserved word")
 

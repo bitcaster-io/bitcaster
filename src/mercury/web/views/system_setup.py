@@ -3,10 +3,10 @@ from constance import config
 from django import forms
 from django.contrib.auth import password_validation
 from django.utils import timezone
+from django.utils.text import slugify
 from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin, ProcessFormView
-from slugify import slugify
 
 from mercury.config.environ import env
 from mercury.db.fields import Role

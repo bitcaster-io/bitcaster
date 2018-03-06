@@ -5,7 +5,7 @@ attrs==17.4.0             # via pytest
 beautifulsoup4==4.6.0     # via bs4, webtest
 behave==1.2.6             # via django-behave
 billiard==3.5.0.3
-bleach==2.1.2
+bleach==2.1.3
 bs4==0.0.1                # via requests-html
 celery==4.1.0
 certifi==2018.1.18
@@ -24,7 +24,7 @@ django-bitfield==1.9.3
 django-concurrency==1.4
 django-constance[database,redis]==2.1.0
 django-countries==5.1.1
-django-crispy-forms==1.7.0
+django-crispy-forms==1.7.1
 django-environ==0.4.4
 django-extensions==2.0.0
 django-fernet-fields==0.5
@@ -44,7 +44,7 @@ django-strategy-field==1.3.1
 django-sysinfo==1.3.1
 django-timezone-field==2.1
 django-webtest==1.9.2
-django==2.0.2
+django==2.0.3
 djangorestframework==3.7.7
 drfpasswordless==1.1.5
 easy-thumbnails==2.5
@@ -86,13 +86,14 @@ pyee==5.0.0               # via pyppeteer
 pyflakes==1.6.0           # via flake8
 pygments==2.2.0           # via pdbpp
 pyjwt==1.6.0
+pyotp==2.2.6
 pyparsing==2.2.0
 pyppeteer==0.0.12         # via requests-html
 pyquery==1.4.0            # via requests-html
 pytest-cov==2.5.1
 pytest-django==3.1.2
 pytest-echo==1.5.1
-pytest==3.4.1
+pytest==3.4.2
 python-dateutil==2.6.1    # via faker
 python-redis-lock[django]==3.2.0
 python3-openid==3.1.0
@@ -105,7 +106,7 @@ requests-oauthlib==0.8.0
 requests==2.18.4
 responses==0.8.1
 rsa==3.4.2
-selenium==3.9.0
+selenium==3.10.0
 setproctitle==1.1.10
 simplejson==3.13.2
 six==1.11.0

@@ -2,7 +2,7 @@ admin-extra-urls==1.8.0
 amqp==2.2.2               # via kombu
 asn1crypto==0.24.0        # via cryptography
 billiard==3.5.0.3         # via celery
-bleach==2.1.2             # via django-fobi
+bleach==2.1.3             # via django-fobi
 celery==4.1.0
 certifi==2018.1.18        # via requests
 cffi==1.11.5              # via cryptography
@@ -16,7 +16,7 @@ django-bitfield==1.9.3
 django-concurrency==1.4
 django-constance[database,redis]==2.1.0
 django-countries==5.1.1
-django-crispy-forms==1.7.0
+django-crispy-forms==1.7.1
 django-environ==0.4.4
 django-extensions==2.0.0
 django-fernet-fields==0.5
@@ -35,7 +35,7 @@ django-scribbler==0.9.0
 django-strategy-field==1.3.1
 django-sysinfo==1.3.1
 django-timezone-field==2.1
-django==2.0.2
+django==2.0.3
 djangorestframework==3.7.7
 drfpasswordless==1.1.5
 easy-thumbnails==2.5      # via django-fobi
@@ -59,6 +59,7 @@ pycountry==18.2.23
 pycparser==2.18           # via cffi
 pycrypto==2.6.1
 pyjwt==1.6.0              # via social-auth-core
+pyotp==2.2.6
 pyparsing==2.2.0          # via packaging
 python-redis-lock[django]==3.2.0
 python3-openid==3.1.0     # via social-auth-core
