@@ -9,6 +9,7 @@ mercury / callbacks
 
 import logging
 
+from constance import config
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -41,7 +42,7 @@ def confirm_email(request, pk, check):
         # gauth = from_b32key(settings.OTP_KEY)
         # ok = gauth.accept(check,
         #                   totp_forward_drift=int(settings.CONFIRM_EMAIL_EXPIRE / 30))
-        ok = totp.verify(check)
+        ok= totp.verify(check, valid_window=config.INVITATION_EXPIRE)
         if ok:
             user = User.objects.get(pk=pk)
             user.is_active = True

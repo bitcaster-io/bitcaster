@@ -15,7 +15,7 @@ from django.utils.translation import ugettext as _
 from mercury.web.forms import (SettingsEmailForm, SettingsMainForm,
                                SettingsOAuthForm, )
 from mercury.web.views import MercuryTemplateView
-from mercury.web.views.base import SuperuserViewMixin, OrganizationListMixin
+from mercury.web.views.base import SuperuserViewMixin
 
 logger = logging.getLogger(__name__)
 

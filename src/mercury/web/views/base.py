@@ -40,8 +40,7 @@ class SuperuserViewMixin(SecuredViewMixin):
 class OrganizationListMixin(SecuredViewMixin):
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
-        ret['organizations'] = Organization.objects.filter(Q(members=self.request.user) |
-                                                           Q(owner=self.request.user))
+        ret['organizations'] = Organization.objects.filter(members=self.request.user)
         return ret
 
 

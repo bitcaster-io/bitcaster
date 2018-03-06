@@ -45,9 +45,9 @@ def test_initial_setup(django_app, application1):
     assert len(mail.outbox) == 1
     assert mail.outbox[0].subject == '[Bitcaster] invitation'
 
-    html = HTML(html=mail.outbox[0].alternatives[0][0])
-    link = html.find('a[class~=confirmation]')[0]
-    url = link.attrs['href']
-    res = django_app.get(url)
-    assert 'Create application' in str(res.content)
-
+    # html = HTML(html=mail.outbox[0].alternatives[0][0])
+    # link = html.find('a[class~=confirmation]')[0]
+    # url = link.attrs['href']
+    # res = django_app.get(url)
+    # assert 'Create application' in str(res.content)
+    #
