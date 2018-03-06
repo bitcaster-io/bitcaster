@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-
 from constance import config
 from django import forms
 from django.contrib.auth import password_validation
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin, ProcessFormView
@@ -56,7 +55,7 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
                                           is_core=True,
                                           owner=user)
         org.add_member(user, Role.OWNER,
-                       date_enrolled=datetime.today()
+                       date_enrolled=timezone.now()
                        )
         # org.options.create('org:templates:user-invitation',
         #                    USER_)
