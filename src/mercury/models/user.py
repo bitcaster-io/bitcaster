@@ -13,7 +13,7 @@ from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
 
 from mercury import logging
-from mercury.fields import EncryptedJSONField, LanguageField
+from mercury.db.fields import EncryptedJSONField, LanguageField
 from mercury.file_storage import MediaFileSystemStorage, profile_media_root
 from mercury.mail import send_mail
 from mercury.utils.http import absolute_uri
@@ -123,21 +123,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    def is_admin(self, organization):
-        """return true if user is an admin of target
-        @target: Organization or Application
-        """
-
-    def is_member(self, organization):
-        """return true if user is an admin of target
-        @target: Organization or Application
-        """
-
-    def is_owner(self, organization):
-        """return true if user is an admin of target
-        @target: Organization or Application
-        """
-
     @cached_property
     def display_name(self):
         return self.friendly_name or self.email
@@ -150,7 +135,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('User')
         verbose_name_plural = _('Users')
-        app_label = 'mercury'
         permissions = (('activate_user', 'Can activate user'),
                        )
 

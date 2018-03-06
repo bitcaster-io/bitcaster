@@ -8,9 +8,9 @@ from django.utils.functional import cached_property
 from strategy_field.fields import StrategyField
 
 from mercury import logging
+from mercury.db.fields import EncryptedJSONField
 from mercury.dispatchers import dispatcher_registry
 from mercury.exceptions import HandlerNotFound, PluginValidationError
-from mercury.fields import EncryptedJSONField
 from mercury.logging import secLog
 from mercury.state import state
 
@@ -46,6 +46,7 @@ It can be Global or Application specific.
                                     blank=True,
                                     on_delete=models.CASCADE,
                                     related_name='channels')
+    system = models.BooleanField(default=False)
     config = EncryptedJSONField(null=True, blank=True)
     # configured = models.BooleanField(default=False)
     enabled = models.BooleanField(default=False)
@@ -79,30 +80,13 @@ It can be Global or Application specific.
     def is_configured(self):
         return self.handler.validate_configuration(self.config, False)
 
-    # def validate_config(self):
-    #     self.handler.config
-
-    # def validate_subscription(self, user):
-    #     """
-    #         validate user has required
-    #     :param user: mercury.models.User
-    #     :return:
-    #     """
-    #     self.handler.validate_subscription(user)
-
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.system and (self.organization or self.application):
+            raise Exception('System channels cannot belong Organization or Application')
+        if self.application:
+            self.organization = self.application.organization
         self.config = self.handler.get_full_config(self.config)
-        # self.configured = self.handler.validate_config(self.config)
         super().save(force_insert, force_update, using, update_fields)
-
-    # def send(self, subscription, subject, message, *args, **kwargs):
-    #     if not self.enabled:
-    #         logger.error("Channel {0} disabled".format(self))
-    #         return
-    #     logger.debug("Channel [{0.name}] send to {1}".format(self, subscription.subscriber))
-    #     self.handler.validate_subscription(subscription)
-    #     return self.handler.emit(subscription, subject,
-    #                              message, *args, **kwargs)
 
     def process_event(self, event, context):
         if not self.enabled:

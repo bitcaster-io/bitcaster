@@ -1,9 +1,10 @@
 from django.conf import settings
 from django.db import models, transaction
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
 
-from .organization import Organization, OrganizationRole
+from mercury.db.fields import RoleField
+
+from .organization import Organization
 
 
 class OrganizationMember(models.Model):
@@ -25,20 +26,12 @@ class OrganizationMember(models.Model):
                              related_name='memberships')
     email = models.EmailField(null=True, blank=True)
 
-    role = models.IntegerField(
-        choices=((int(OrganizationRole.OWNER), _('Owner')),
-                 (int(OrganizationRole.ADMIN), _('Admin')),
-                 (int(OrganizationRole.MEMBER), _('Member')),
-                 (int(OrganizationRole.RECIPIENT), _('Recipient')),
-                 ),
-        default=int(OrganizationRole.RECIPIENT),
-    )
-
+    role = RoleField()
     date_added = models.DateTimeField(default=timezone.now)
     invited_by = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             null=True, blank=True,
-                             on_delete=models.CASCADE,
-                             related_name='+')
+                                   null=True, blank=True,
+                                   on_delete=models.CASCADE,
+                                   related_name='+')
     date_enrolled = models.DateTimeField(blank=True,
                                          null=True)
 

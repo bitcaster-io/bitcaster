@@ -3,7 +3,7 @@ from django.core.cache import cache
 from django.core.signals import request_finished
 from django.db import models
 
-from mercury.fields import EncryptedPickledObjectField
+from mercury.db.fields import EncryptedPickledObjectField
 
 from .base import sane_repr
 from .organization import Organization

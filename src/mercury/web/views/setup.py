@@ -9,8 +9,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin, ProcessFormView
 
 from mercury.config.environ import env
-from mercury.models import Organization, User
-from mercury.models.organization import OrganizationRole, OrganizationStatus
+from mercury.models import Organization, OrganizationRole, User
 
 __all__ = ["SetupView"]
 
@@ -50,8 +49,7 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
         user = User.objects.create_superuser(form.cleaned_data['email'],
                                              form.cleaned_data['password1'])
         org = Organization.objects.create(name=env('ORGANIZATION'),
-                                          # slug='',
-                                          status=int(OrganizationStatus.ACTIVE),
+                                          is_core=True,
                                           owner=user)
         org.add_member(user, OrganizationRole.OWNER,
                        date_enrolled=datetime.today()

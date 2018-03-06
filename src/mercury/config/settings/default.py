@@ -280,7 +280,7 @@ CACHES = {
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
-    'mercury.backends.BitcasterBackend',
+    # 'mercury.backends.BitcasterBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 # Some really nice defaults
@@ -452,17 +452,10 @@ SYSINFO = {"host": True,
 
 # SOCIAL-AUTH
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
-    # 'social_core.backends.open_id.OpenIdAuth',
-    # 'social_core.backends.google.GoogleOpenId',
-    'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.github.GithubOAuth2',
-    # 'social_core.backends.github.GithubOrganizationOAuth2',
-    'social_core.backends.linkedin.LinkedinOAuth2',
-    'social_core.backends.facebook.FacebookOAuth2',
-    # 'social_core.backends.google.GoogleOAuth',
-    # 'social_core.backends.twitter.TwitterOAuth',
-    # 'social_core.backends.yahoo.YahooOpenId',
-    # ...
+    # 'social_core.backends.google.GoogleOAuth2',
+    # 'social_core.backends.github.GithubOAuth2',
+    # 'social_core.backends.linkedin.LinkedinOAuth2',
+    # 'social_core.backends.facebook.FacebookOAuth2',
 )
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',

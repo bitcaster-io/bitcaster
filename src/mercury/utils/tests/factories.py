@@ -3,7 +3,6 @@ from contextlib import ContextDecorator
 from random import choice
 
 import factory
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group, Permission
 from faker import Faker
 from rest_framework.test import APIClient
@@ -117,11 +116,9 @@ class UserFactory(factory.DjangoModelFactory):
 
     name = factory.Faker('name')
 
-    email = factory.Sequence(lambda n: "m%03d@mailinator.com" % n)
+    email = factory.Sequence(lambda n: "m%03d@example.com" % n)
     password = '123'
-
-
-    # is_active = True
+    is_active = True
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
@@ -158,6 +155,11 @@ class OrganizationFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Organization
         django_get_or_create = ('name',)
+
+    @classmethod
+    def _after_postgeneration(cls, instance, create, results=None):
+        super()._after_postgeneration(instance, create, results)
+        instance.add_member(instance.owner)
 
 
 class ApplicationFactory(factory.DjangoModelFactory):

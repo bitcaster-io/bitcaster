@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from mercury import logging
-from mercury.fields import EncryptedJSONField
+from mercury.db.fields import EncryptedJSONField
 from mercury.utils import generate_subscription_token
 
 from .base import AbstractModel

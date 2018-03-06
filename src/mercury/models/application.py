@@ -18,7 +18,6 @@ from mercury.utils.slug import slugify_instance
 
 from .base import AbstractModel
 from .organization import RESERVED_NAMES, Organization
-from .user import User
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +32,6 @@ class Application(AbstractModel):
     organization = models.ForeignKey(Organization,
                                      related_name='applications',
                                      on_delete=models.CASCADE)
-    owner = models.ForeignKey(User,
-                              related_name='applications',
-                              on_delete=models.CASCADE)
     name = models.CharField(_('Name'),
                             max_length=300,
                             validators=[

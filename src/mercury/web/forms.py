@@ -78,6 +78,8 @@ OrganizationInviteFormSet = inlineformset_factory(Organization,
 
 
 class OrganizationForm(forms.ModelForm):
+    slug = forms.SlugField(required=True)
+
     class Meta:
         model = Organization
         fields = ("name", 'slug', 'billing_email')

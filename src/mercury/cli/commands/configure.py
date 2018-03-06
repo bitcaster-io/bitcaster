@@ -143,7 +143,7 @@ def configure(ctx, prompt, prompt_all, write, **kwargs):
     kwargs["database_url"] = "psql://{database_user}:{database_password}@{database_address}/{database_name}".format(
         **kwargs)
     kwargs["enable_sentry"] = bool(kwargs['sentry_dsn'])
-    kwargs["plugins_autoload"] = bool(kwargs['sentry_dsn'])
+    kwargs["plugins_autoload"] = True
     kwargs["secret_key"] = generate_secret_key()
 
     for key, value in env.scheme.items():
