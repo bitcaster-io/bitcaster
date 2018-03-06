@@ -9,9 +9,9 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from strategy_field.utils import fqn, import_by_name
 
+from mercury.db.fields import Role
 from mercury.models import (Application, Channel,
                             Organization, Subscription, User,)
-from mercury.models.organizationmember import OrganizationRole
 
 TEMPLATE_ENV = b"""
 ADMIN_EMAIL=
@@ -186,7 +186,7 @@ class Command(BaseCommand):
                                                defaults=defs)[0]
                 u.set_password('123')
                 u.save()
-                org.add_member(u, OrganizationRole.OWNER)
+                org.add_member(u, Role.OWNER)
                 return u
 
             def create_channel(handler):

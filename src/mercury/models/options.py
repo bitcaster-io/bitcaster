@@ -135,7 +135,8 @@ class OrganizationOption(Option):
     value: { updated: datetime }
     """
     organization = models.ForeignKey(Organization,
-                                     on_delete=models.CASCADE)
+                                     on_delete=models.CASCADE,
+                                     related_name='options')
 
     class Meta:
         unique_together = (('organization', 'key',),)

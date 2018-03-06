@@ -5,9 +5,9 @@ from faker import Faker
 from requests_html import HTML
 from rest_framework.reverse import reverse
 
+from mercury.db.fields import Role
 from mercury.models import Organization, User
-from mercury.models.organizationmember import (OrganizationMember,
-                                               OrganizationRole,)
+from mercury.models.organizationmember import (OrganizationMember)
 
 faker = Faker()
 
@@ -34,7 +34,7 @@ def test_registration(django_app):
     assert org
     assert org.owner == user
     assert OrganizationMember.objects.get(organization=org,
-        user__email=user_email).role == int(OrganizationRole.OWNER)
+        user__email=user_email).role == Role.OWNER
 
     assert len(mail.outbox) == 1
     assert mail.outbox[0].subject == '[Bitcaster] Confirm Email'

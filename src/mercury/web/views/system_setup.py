@@ -7,9 +7,12 @@ from django.contrib.auth import password_validation
 from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin, ProcessFormView
+from slugify import slugify
 
 from mercury.config.environ import env
-from mercury.models import Organization, OrganizationRole, User
+from mercury.db.fields import Role
+from mercury.db.validators import mark_core
+from mercury.models import Organization, User
 
 __all__ = ["SetupView"]
 
@@ -49,10 +52,13 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
         user = User.objects.create_superuser(form.cleaned_data['email'],
                                              form.cleaned_data['password1'])
         org = Organization.objects.create(name=env('ORGANIZATION'),
+                                          slug=slugify(env('ORGANIZATION')),
                                           is_core=True,
                                           owner=user)
-        org.add_member(user, OrganizationRole.OWNER,
+        org.add_member(user, Role.OWNER,
                        date_enrolled=datetime.today()
                        )
+        # org.options.create('org:templates:user-invitation',
+        #                    USER_)
         config.INITIALIZED = 1
         return super().form_valid(form)

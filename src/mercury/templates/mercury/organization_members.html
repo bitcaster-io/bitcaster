@@ -15,16 +15,16 @@
     <div class="container pl-3 m-3 mb-5">
         <h4>Members</h4>
         <div class="content invitations">
-                <div class="row pl-1 m-1 mb-3 border-bottom-1">
-                    <div class="col-sm h6">User</div>
-                    <div class="col-sm h6">Role</div>
-                    <div class="col-sm h6">Enrolled on</div>
-                </div>
+            <div class="row pl-1 m-1 mb-3 border-bottom-1">
+                <div class="col-sm h6">User</div>
+                <div class="col-sm h6">Role</div>
+                <div class="col-sm h6">Enrolled on</div>
+            </div>
             {% for membership in memberships.all %}
                 <div class="row pl-1">
                     <div class="col-sm">{{ membership.user }}</div>
                     <div class="col-sm">{{ membership.get_role_display }}</div>
-                    <div class="col-sm">{{ membership.date_enrolled}}</div>
+                    <div class="col-sm">{{ membership.date_enrolled }}</div>
                 </div>
             {% endfor %}
         </div>
@@ -33,16 +33,31 @@
     <div class="container pl-3 m-3 mt-5">
         <h4>Pending invitations</h4>
         <div class="content invitations">
-                <div class="row pl-1 mt-5 m-1 mb-3 border-bottom-1">
-                    <div class="col-sm">Email</div>
-                    <div class="col-sm">Role</div>
-                    <div class="col-sm">Invited on</div>
-                </div>
+            <div class="row pl-1 mt-5 m-1 mb-3 border-bottom-1">
+                <div class="col-sm">Email</div>
+                <div class="col-sm">Role</div>
+                <div class="col-sm">Invited on</div>
+            </div>
             {% for membership in invitations.all %}
                 <div class="row pl-1">
                     <div class="col-sm">{{ membership.email }}</div>
                     <div class="col-sm">{{ membership.get_role_display }}</div>
                     <div class="col-sm">{{ membership.date_added }}</div>
+                    <div class="row col-sm align-items-center">
+                        <form method="post" action="{% url "invitation-delete" organization.slug membership.pk %}">
+                            {% csrf_token %}
+                            <button type="submit">
+                                <i class="fa fa-remove"></i>
+                            </button>
+                        </form>
+                        &nbsp;|&nbsp;
+                        <form method="post" action="{% url "invitation-send" organization.slug membership.pk %}">
+                            {% csrf_token %}
+                            <button type="submit">
+                            <i class="fa fa-envelope"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             {% endfor %}
         </div>

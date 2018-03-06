@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from enum import Enum
-
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -8,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from mercury import logging
 from mercury.db.fields import DeletionStatusField, Role, RoleField
+from mercury.db.validators import RESERVED_NAMES, ReservedWordValidator
 from mercury.file_storage import MediaFileSystemStorage, org_media_root
 from mercury.utils import locks
 from mercury.utils.retries import TimedRetryPolicy
@@ -16,36 +15,6 @@ from mercury.utils.slug import slugify_instance
 from .base import AbstractModel
 
 logger = logging.getLogger(__name__)
-
-
-class OrganizationRole(Enum):
-    OWNER = 99
-    ADMIN = 90
-    MEMBER = 50
-    RECIPIENT = 40
-
-    def __new__(cls, value):
-        member = object.__new__(cls)
-        member._value_ = value
-        return member
-
-    def __int__(self):
-        return self.value
-
-
-RESERVED_NAMES = frozenset((
-    'add', 'edit', 'remove', 'delete', 'del',
-    'bitcaster', 'sax', 'mercury',
-    'admin', 'manage', 'login', 'account', 'register', 'api',
-    'accept', 'organization', 'organizations', 'teams', 'projects', 'help',
-    'docs', 'logout', '404', '500', '_static', 'out', 'debug',
-    'remote', 'get-cli', 'blog', 'welcome', 'features',
-    'customers', 'integrations', 'signup', 'pricing',
-    'subscribe', 'enterprise', 'about', 'jobs', 'thanks', 'guide',
-    'privacy', 'security', 'terms', 'from', 'sponsorship', 'for',
-    'at', 'platforms', 'branding', 'vs', 'answers', '_admin',
-    'support', 'register', 'user', 'profile',
-))
 
 RESERVED_ORGANIZATION_NAME = frozenset(RESERVED_NAMES)
 RESERVED_ORGANIZATION_SLUGS = frozenset(RESERVED_NAMES)
@@ -60,7 +29,8 @@ class Organization(AbstractModel):
     An organization represents a group of individuals which maintain ownership of applications.
     """
     name = models.CharField(_("Name"), max_length=64)
-    slug = models.SlugField(_("Short name"), unique=True, blank=True)
+    slug = models.SlugField(_("Short name"), unique=True, blank=True,
+                            validators=[ReservedWordValidator()])
     status = DeletionStatusField()
     date_added = models.DateTimeField(default=timezone.now)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL,
@@ -114,7 +84,7 @@ class Organization(AbstractModel):
 
         return queryset.exists()
 
-    def add_member(self, user, role=OrganizationRole.RECIPIENT, **kwargs):
+    def add_member(self, user, role=Role.RECIPIENT, **kwargs):
         from mercury.models import OrganizationMember
         return OrganizationMember.objects.get_or_create(organization=self,
                                                         user=user,

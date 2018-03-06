@@ -359,9 +359,11 @@ CONSTANCE_CONFIG = OrderedDict({
     'INITIALIZED': (False,
                     '',
                     bool),
-    'SITE_URL': ('',
-                 'bitcaster web url',
-                 str),
+    'SITE_URL': ('', '', str),
+    'RECAPTCHA_PUBLIC_KEY': ('', '', str),
+    'RECAPTCHA_PRIVATE_KEY': ('', '', str),
+    'ENABLE_SENTRY': ('', '', str),
+    'SENTRY_DSN': ('', '', str),
 
     'HOSTIP_ADDRESS': ('http://api.hostip.info/get_html.php',
                        'api.hostip.info info',
@@ -372,6 +374,9 @@ CONSTANCE_CONFIG = OrderedDict({
 
     'ALLOW_REGISTRATION': (False, '', bool),
     'ON_PREMISE': (True, '', bool),
+
+    'INVITATION_EXPIRE': (60 * 60 * 24, '', int),
+
     'EMAIL_USE_TLS': (False, '', bool),
     'EMAIL_TIMEOUT': (60, '', int),
     'EMAIL_HOST': ('', '', str),
@@ -451,11 +456,12 @@ SYSINFO = {"host": True,
            }
 
 # SOCIAL-AUTH
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['key', 'invitation']
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
-    # 'social_core.backends.google.GoogleOAuth2',
-    # 'social_core.backends.github.GithubOAuth2',
-    # 'social_core.backends.linkedin.LinkedinOAuth2',
-    # 'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.linkedin.LinkedinOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
 )
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
@@ -466,6 +472,7 @@ SOCIAL_AUTH_PIPELINE = (
     'mercury.social_auth.associate',
     'mercury.social_auth.avatar',
     'social_core.pipeline.user.create_user',
+    'mercury.social_auth.associate_invitation',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
@@ -477,7 +484,7 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
 SOCIAL_AUTH_LOGIN_URL = '/login-url/'
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/new-user/'
-SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/new-association-redirect-url/'
+SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/'
 SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/account-disconnected-redirect-url/'
 SOCIAL_AUTH_INACTIVE_USER_URL = '/inactive-user/'
 SOCIAL_AUTH_USER_MODEL = 'mercury.User'

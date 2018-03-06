@@ -123,10 +123,10 @@ class DeletionStatus(Enum):
 
     @classmethod
     def as_choices(cls):
-        return sorted([(cls.ACTIVE, _('Active')),
-                       (cls.DEPRECATED, _('Deprecated')),
-                       (cls.PENDING_DELETION, _('Pending Deletion')),
-                       (cls.DELETION_IN_PROGRESS, _('Deletion in Progress')),
+        return sorted([(int(cls.ACTIVE), _('Active')),
+                       (int(cls.DEPRECATED), _('Deprecated')),
+                       (int(cls.PENDING_DELETION), _('Pending Deletion')),
+                       (int(cls.DELETION_IN_PROGRESS), _('Deletion in Progress')),
                        ])
 
 
@@ -159,8 +159,15 @@ class Role(Enum):
         member._value_ = value
         return member
 
+    def __str__(self):
+        return str(self)
+
     def __int__(self):
         return self.value
+
+    def __eq__(self, other):
+
+        return int(self) == int(other)
 
     def __gt__(self, other):
         return int(self) > int(other)
@@ -180,7 +187,7 @@ class Role(Enum):
 class RoleField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
                  choices=Role.as_choices(),
-                 default=Role.MEMBER,
+                 default=int(Role.MEMBER),
                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
         super().__init__(verbose_name=verbose_name, name=name,
                          choices=choices,
@@ -191,3 +198,10 @@ class RoleField(models.IntegerField):
 
     def get_prep_value(self, value):
         return super().get_prep_value(int(value))
+
+    def value_to_string(self, obj):
+        """
+        Return a string value of this field from the passed obj.
+        This is used by the serialization framework.
+        """
+        return str(int(self.value_from_object(obj)))

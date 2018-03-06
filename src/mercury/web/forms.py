@@ -11,7 +11,7 @@ import json
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
-                                       UserCreationForm as _UserCreationForm,)
+                                       UserCreationForm as _UserCreationForm, )
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError
 from django.forms import Form, PasswordInput, inlineformset_factory
@@ -25,8 +25,9 @@ from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from mercury.configurable import get_full_config
+from mercury.db.validators import ReservedWordValidator
 from mercury.models import (Application, Channel, Event, Organization,
-                            OrganizationMember, Subscription, User,)
+                            OrganizationMember, Subscription, User, )
 from mercury.utils import import_by_name
 from mercury.utils.language import flatten
 
@@ -78,15 +79,21 @@ OrganizationInviteFormSet = inlineformset_factory(Organization,
 
 
 class OrganizationForm(forms.ModelForm):
-    slug = forms.SlugField(required=True)
+    def __init__(self, *args, **kwargs):
+        super(OrganizationForm, self).__init__(*args, **kwargs)
+        if not self.instance or self.instance.is_core:
+            self.fields['slug'].disabled = True
+            self.fields['slug'].validators = []
+
+    def clean_slug(self):
+        value = self.cleaned_data['slug']
+        if self.instance and self.instance.is_core:
+            return self.instance.slug
+        return value
 
     class Meta:
         model = Organization
-        fields = ("name", 'slug', 'billing_email')
-
-    def clean_slug(self):
-        value = self.cleaned_data["slug"]
-        return value.lower()
+        fields = ("name", 'billing_email', 'slug', 'avatar')
 
 
 class UserChangeForm(_UserChangeForm):
@@ -97,6 +104,14 @@ class UserChangeForm(_UserChangeForm):
     class Meta:
         model = User
         exclude = ('user_permissions', 'groups')
+
+
+class UserInvitationForm(forms.ModelForm):
+    email = forms.EmailField(disabled=True)
+
+    class Meta:
+        model = User
+        fields = ('friendly_name', 'email')
 
 
 class UserProfileForm(forms.ModelForm):
@@ -190,6 +205,8 @@ class UserCreationForm(_UserCreationForm):
 
 
 class ApplicationCreateForm(forms.ModelForm):
+    slug = forms.SlugField(validators=[ReservedWordValidator()], required=False)
+
     class Meta:
         model = Application
         fields = ['name', 'timezone', 'allowed_origins', 'slug']
@@ -331,17 +348,17 @@ class SettingsChannelsForm(Form):
 
 class SettingsMainForm(Form):
     SITE_URL = forms.CharField()
-    RECAPTCHA_PUBLIC_KEY = forms.CharField()
-    RECAPTCHA_PRIVATE_KEY = forms.CharField()
-    SENTRY_DSN = forms.CharField()
-    ENABLE_SENTRY = forms.BooleanField()
+    RECAPTCHA_PUBLIC_KEY = forms.CharField(required=False)
+    RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
+    SENTRY_DSN = forms.CharField(required=False)
+    ENABLE_SENTRY = forms.BooleanField(required=False)
 
 
 class SettingsEmailForm(Form):
     EMAIL_HOST = forms.CharField()
-    EMAIL_PORT = forms.IntegerField()
+    EMAIL_HOST_PORT = forms.IntegerField()
     EMAIL_HOST_USER = forms.CharField()
-    EMAIL_HOST_PASSWORD = forms.CharField(widget=forms.PasswordInput)
-    EMAIL_USE_TLS = forms.BooleanField()
+    EMAIL_HOST_PASSWORD = forms.CharField()
+    EMAIL_USE_TLS = forms.BooleanField(required=False)
     EMAIL_SENDER = forms.EmailField()
     EMAIL_SUBJECT_PREFIX = forms.CharField()

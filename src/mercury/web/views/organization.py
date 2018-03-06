@@ -1,22 +1,27 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from constance import config
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.views import View
+from django.views.generic import DeleteView, FormView, CreateView
 
-from mercury.models import Organization, OrganizationMember
+from mercury.models import Organization, OrganizationMember, User
+from mercury.security import totp
 from mercury.web.forms import (OrganizationForm, OrganizationInviteForm,
-                               OrganizationInviteFormSet,)
+                               OrganizationInviteFormSet, UserInvitationForm)
 from mercury.web.views.base import (MercuryBaseCreateView,
                                     MercuryBaseDetailView,
-                                    MercuryBaseUpdateView, MercuryFormView,)
+                                    MercuryBaseUpdateView, MercuryFormView, SelectedOrganizationMixin, MessageUserMixin)
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["OrganizationCreate", "OrganizationDetail", "OrganizationUpdate",
            "OrganizationMembers", "OrganizationChannels",
+           "OrganizationInvite", "InviteDelete", "InviteSend", "InviteAccept",
            "OrganizationApplications"]
 
 
@@ -34,8 +39,9 @@ class OrganizationUpdate(OrganizationViewMixin, MercuryBaseUpdateView):
     success_url = '.'
 
     def form_valid(self, form):
-        url = reverse("org-config", args=[form.cleaned_data['slug']])
+        slug = form.cleaned_data.get('slug', None)
         self.object = form.save()
+        url = reverse("org-config", args=[slug or self.object.slug])
         return HttpResponseRedirect(url)
 
 
@@ -59,6 +65,66 @@ class OrganizationMembers(OrganizationViewMixin, MercuryBaseDetailView):
         data['memberships'] = OrganizationMember.objects.filter(user__isnull=False)
         data['invitations'] = OrganizationMember.objects.filter(user__isnull=True)
         return data
+
+
+class InviteAccept(MessageUserMixin, CreateView):
+    model = User
+    form_class = UserInvitationForm
+    template_name = 'bitcaster/users/user_welcome.html'
+    membership = None
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        kwargs['invitation_id'] = self.membership.pk
+        return super().get_context_data(**kwargs)
+
+    def get_initial(self):
+        if self.membership:
+            return {"email": self.membership.email}
+        return {}
+
+    def get(self, request, **kwargs):
+        check = kwargs['check']
+        pk = kwargs['pk']
+        if totp.verify(check, valid_window=config.INVITATION_EXPIRE):
+            self.membership = OrganizationMember.objects.get(pk=pk)
+            return super(InviteAccept, self).get(request, **kwargs)
+
+        self.message_user("Invite expired", messages.ERROR)
+        return HttpResponseRedirect("/")
+
+
+class InviteSend(OrganizationViewMixin, MercuryBaseUpdateView):
+    fields = ()
+
+    def get_success_url(self):
+        return reverse("org-members", args=[self.selected_organization.slug])
+
+    def get_queryset(self):
+        return self.selected_organization.memberships.all()
+
+    def form_valid(self, form):
+        membership = self.get_object()
+        membership.send_email()
+        self.message_user(_("Email sending scheduled"))
+        return super().form_valid(form)
+
+
+class InviteDelete(SelectedOrganizationMixin, DeleteView):
+
+    def get_success_url(self):
+        return reverse("org-members", args=[self.selected_organization.slug])
+
+    def get_queryset(self):
+        return self.selected_organization.memberships.all()
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
 
 
 class OrganizationInvite(MercuryFormView):
@@ -90,7 +156,8 @@ class OrganizationInvite(MercuryFormView):
                     continue
                 if not self.selected_organization.memberships.filter(email=recipient).exists():
                     inline_form.instance.organization = self.selected_organization
-                    inline_form.save()
+                    membership = inline_form.save()
+                    membership.send_email()
                     sent = True
                 else:
                     self.message_user(_('Invitation to {0} already sent').format(recipient),

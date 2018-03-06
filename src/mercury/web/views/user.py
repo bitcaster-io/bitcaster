@@ -14,10 +14,16 @@ from django.utils.translation import gettext as _
 
 from mercury.models import User
 from mercury.utils.wsgi import get_client_ip
-from mercury.web.forms import UserProfileForm
-from mercury.web.views.base import MercuryBaseUpdateView
+from ..forms import UserProfileForm
+from .base import MercuryBaseUpdateView, MercuryTemplateView
 
 logger = logging.getLogger(__name__)
+
+__all__ = ["UserProfileView", "UserWelcomeView"]
+
+
+class UserWelcomeView(MercuryTemplateView):
+    template_name = "bitcaster/users/user-welcome.html"
 
 
 class UserProfileView(MercuryBaseUpdateView):

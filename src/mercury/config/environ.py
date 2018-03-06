@@ -9,6 +9,7 @@ from mercury.config import DEFAULT_CONFIG
 logger = logging.getLogger(__name__)
 
 DEFAULTS = dict(
+    FAKE_OTP=(bool, False),
     DEBUG=(bool, False),
     SECRET_KEY=(str, ''),
     MEDIA_ROOT=(str, str(Path('~/.bitcaster/media').expanduser())),

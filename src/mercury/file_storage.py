@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 def _get_media_root(prefix):
     @wraps(_get_media_root)
     def media_file_name(instance, filename):
-        h = instance.email
+        h = str(instance.pk).zfill(10)
         basename, ext = os.path.splitext(filename)
-        return os.path.join('mediafiles', prefix, h[0:1], h[1:2], h + ext.lower())
+        return os.path.join('mediafiles', prefix, h + ext.lower())
 
     return media_file_name
 

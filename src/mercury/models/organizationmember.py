@@ -1,8 +1,12 @@
 from django.conf import settings
 from django.db import models, transaction
+from django.urls import reverse
 from django.utils import timezone
 
 from mercury.db.fields import RoleField
+from mercury.mail import send_mail_by_template
+from mercury.security import totp
+from mercury.utils.http import absolute_uri
 
 from .organization import Organization
 
@@ -53,3 +57,12 @@ class OrganizationMember(models.Model):
     @property
     def is_pending(self):
         return self.user_id is None
+
+    def send_email(self):
+        code = totp.now()
+        url = reverse('invitation-accept', args=[self.organization.slug, self.pk, code])
+        send_mail_by_template('[Bitcaster] invitation',
+                              'user_invite', {'email': self.email,
+                                              'url': absolute_uri(url)},
+                              [self.email],
+                              async=True)

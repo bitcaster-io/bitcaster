@@ -1,16 +1,15 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from mercury.web.views.organization import OrganizationInvite
-from mercury.web.views.register import confirm_email
-
 from .views import (ApplicationCreate, ApplicationDetail, ChannelList,
                     EventList, IndexView, LoginView, LogoutView, MessageList,
+                    OrganizationInvite, InviteDelete, InviteSend, InviteAccept,
                     OrganizationApplications, OrganizationChannels,
                     OrganizationCreate, OrganizationDetail, OrganizationMembers,
                     OrganizationUpdate, SettingsChannelView, SettingsEmailView,
                     SettingsOAuthView, SettingsView, SetupView,
-                    SubscriptionList, UserProfileView, UserRegister,)
+                    SubscriptionList, UserProfileView, UserRegister,
+                    confirm_email, UserWelcomeView)
 
 # from mercury.web.views.settings import (SettingsChannelView, SettingsEmailView,
 #                                         SettingsOAuthView, SettingsView,)
@@ -48,10 +47,22 @@ urlpatterns = [
     path(r'privacy/', TemplateView.as_view(template_name='bitcaster/legal/privacy.html'), name='legal-privacy'),
 
     path(r'org/add/', OrganizationCreate.as_view(), name='org-add'),
+
+    path(r'<slug:org>/invite/accept/<int:pk>/<str:check>/', InviteAccept.as_view(),
+         name='invitation-accept'),
+    path(r'<slug:org>/invite/delete/<int:pk>/', InviteDelete.as_view(),
+         name='invitation-delete'),
+    path(r'<slug:org>/invite/send/<int:pk>/', InviteSend.as_view(),
+         name='invitation-send'),
+    path(r'<slug:org>/invite/', OrganizationInvite.as_view(),
+         name='org-invite'),
+
+    path(r'<slug:org>/user/<int:pk>/welcome/', UserWelcomeView.as_view(),
+         name='user-welcome'),
+
     path(r'<slug:org>/details/', OrganizationDetail.as_view(), name='org-index'),
     path(r'<slug:org>/update/', OrganizationUpdate.as_view(), name='org-config'),
     path(r'<slug:org>/members/', OrganizationMembers.as_view(), name='org-members'),
-    path(r'<slug:org>/invite/', OrganizationInvite.as_view(), name='org-invite'),
     path(r'<slug:org>/channels/', OrganizationChannels.as_view(), name='org-channels'),
     path(r'<slug:org>/applications/', OrganizationApplications.as_view(), name='org-applications'),
 

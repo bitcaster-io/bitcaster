@@ -3,6 +3,11 @@
     <div class="row d-flex d-md-block flex-nowrap wrapper">
         <div class="float-left pl-0 collapse width show" id="sidebar">
             {% if user.is_authenticated %}
+                <div class="org-logo">
+                    {% if organization.avatar %}
+                        <img src="{{ organization.avatar.url }}"/>
+                    {% endif %}
+                </div>
                 <div class="list-group">
                     <div class="col-md-2 org-sidebar">
                         <div>

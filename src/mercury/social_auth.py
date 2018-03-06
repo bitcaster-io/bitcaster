@@ -13,17 +13,17 @@ from django.utils.encoding import force_text
 from django.utils.functional import Promise
 from social_django.strategy import DjangoStrategy
 
+from mercury.models import OrganizationMember
+
 
 def associate(backend, details, user=None, *args, **kwargs):
-    """
-    Associate current auth with a user with the same email address in the DB.
+    return None
 
-    This pipeline entry is not 100% secure unless you know that the providers
-    enabled enforce email verification on their side, otherwise a user can
-    attempt to take over another user account by using the same (not validated)
-    email address on some provider.  This pipeline entry is disabled by
-    default.
-    """
+def associate_invitation(backend, details, user=None, *args, **kwargs):
+    strategy = kwargs['strategy']
+    invitation_id = strategy.session_get('invitation')
+    if invitation_id:
+        OrganizationMember.objects.filter(pk=invitation_id).update(user=user)
     return None
 
 

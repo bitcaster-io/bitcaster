@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from constance import config
+from django.core.mail import get_connection, EmailMultiAlternatives
 from django.db.models import Count
 
 from mercury.celery import app
@@ -54,31 +56,26 @@ def emit_event(event, context, ignore_disabled=False):
     logger.debug(f"End processing {event}. #{o.submissions} messages sent")
     return total_success, total_failure
 
-    # for subscription in event.subscriptions.valid():
-    #     if subscription.channel not in errored_channels:
-    #         try:
-    #             ctx = dict(context or {})
-    #             ctx.update({
-    #                 'recipient': subscription.subscriber,
-    #                 'today': datetime.datetime.today()})
-    #             message = event.get_message(subscription.channel)
-    #             body = Template(message.body).render(Context(ctx))
-    #             subject = Template(message.subject).render(Context(ctx))
-    #             subscription.channel.send(subscription,
-    #                                       subject, body)
-    #             success += 1
-    #         except Message.DoesNotExist as e:
-    #             logger.exception(e)
-    #             errored_channels.append(subscription.channel)
-    #             subscription.channel.enabled = False
-    #             subscription.channel.save()
-    #             failure += 1
-    #         except Exception as e:
-    #             logger.exception(e)
-    #             failure += 1
-    #         else:
-    #             logger.debug(f"Subscription {subscription.pk} emit successful")
-    #     else:
-    #         logger.debug("Event [{0.name}] emit skipped because channel misconfiguration".format(event))
-    #
-    # return success, failure
+
+@app.task()
+def send_mail_async(subject, message, html_message, recipient_list,
+                    *,
+                    from_email=None,
+                    fail_silently=False):
+    connection = get_connection(
+        fail_silently=fail_silently,
+        username=config.EMAIL_HOST_USER,
+        password=config.EMAIL_HOST_PASSWORD,
+        use_tls=config.EMAIL_USE_TLS,
+        host=config.EMAIL_HOST,
+        port=config.EMAIL_HOST_PORT,
+        timeout=config.EMAIL_TIMEOUT
+    )
+    mail = EmailMultiAlternatives(subject, message,
+                                  from_email,
+                                  recipient_list,
+                                  connection=connection)
+    if html_message:
+        mail.attach_alternative(html_message, 'text/html')
+
+    return mail.send()
