@@ -9,6 +9,7 @@ from rest_framework.test import APIClient
 
 import mercury
 from mercury import models
+from mercury.db.fields import Role
 from mercury.dispatchers import Email
 from mercury.models.token import generate_api_token
 from mercury.utils import fqn
@@ -159,7 +160,7 @@ class OrganizationFactory(factory.DjangoModelFactory):
     @classmethod
     def _after_postgeneration(cls, instance, create, results=None):
         super()._after_postgeneration(instance, create, results)
-        instance.add_member(instance.owner)
+        instance.add_member(instance.owner, role=Role.OWNER)
 
 
 class ApplicationFactory(factory.DjangoModelFactory):

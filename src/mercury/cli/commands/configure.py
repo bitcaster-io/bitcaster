@@ -126,7 +126,6 @@ def get_database_url_param():
 @click.pass_context
 def configure(ctx, prompt, prompt_all, write, **kwargs):
     cfg_file = Path(ctx.obj['config'])
-    click.echo(f"Configuration file: {cfg_file}")
     env = ctx.obj['env']
 
     if prompt:

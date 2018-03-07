@@ -1,8 +1,9 @@
-{% extends "bitcaster/app.html" %}
+{% extends "bitcaster/app.html" %}{% load bc_permissions %}
 {% block sidebar %}
     <div class="row d-flex d-md-block flex-nowrap wrapper">
         <div class="float-left pl-0 collapse width show" id="sidebar">
-            {% if user.is_authenticated %}
+            {% check_permissions organization as "permissions" %}
+            {% if permissions.owner %}
                 <div class="org-logo">
                     {% if organization.avatar %}
                         <img src="{{ organization.avatar.url }}"/>

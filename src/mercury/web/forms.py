@@ -11,7 +11,7 @@ import json
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
-                                       UserCreationForm as _UserCreationForm, )
+                                       UserCreationForm as _UserCreationForm,)
 from django.contrib.postgres.forms import JSONField
 from django.core.exceptions import ValidationError
 from django.forms import Form, PasswordInput, inlineformset_factory
@@ -27,7 +27,7 @@ from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 from mercury.configurable import get_full_config
 from mercury.db.validators import ReservedWordValidator
 from mercury.models import (Application, Channel, Event, Organization,
-                            OrganizationMember, Subscription, User, )
+                            OrganizationMember, Subscription, User,)
 from mercury.utils import import_by_name
 from mercury.utils.language import flatten
 
@@ -111,7 +111,7 @@ class UserInvitationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('friendly_name', 'email')
+        fields = ('friendly_name', 'email', 'password')
 
 
 class UserProfileForm(forms.ModelForm):
@@ -355,10 +355,10 @@ class SettingsMainForm(Form):
 
 
 class SettingsEmailForm(Form):
-    EMAIL_HOST = forms.CharField()
-    EMAIL_HOST_PORT = forms.IntegerField()
-    EMAIL_HOST_USER = forms.CharField()
-    EMAIL_HOST_PASSWORD = forms.CharField()
+    EMAIL_HOST = forms.CharField(required=False)
+    EMAIL_HOST_PORT = forms.IntegerField(required=False)
+    EMAIL_HOST_USER = forms.CharField(required=False)
+    EMAIL_HOST_PASSWORD = forms.CharField(required=False)
     EMAIL_USE_TLS = forms.BooleanField(required=False)
-    EMAIL_SENDER = forms.EmailField()
-    EMAIL_SUBJECT_PREFIX = forms.CharField()
+    EMAIL_SENDER = forms.EmailField(required=False)
+    EMAIL_SUBJECT_PREFIX = forms.CharField(required=False)

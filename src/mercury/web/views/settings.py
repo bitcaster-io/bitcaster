@@ -10,10 +10,11 @@ mercury / settings
 import logging
 
 from constance import config
-from django.views.generic import FormView
 from django.utils.translation import ugettext as _
+from django.views.generic import FormView
+
 from mercury.web.forms import (SettingsEmailForm, SettingsMainForm,
-                               SettingsOAuthForm, )
+                               SettingsOAuthForm,)
 from mercury.web.views import MercuryTemplateView
 from mercury.web.views.base import SuperuserViewMixin
 

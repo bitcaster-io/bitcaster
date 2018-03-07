@@ -280,7 +280,7 @@ CACHES = {
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
-    # 'mercury.backends.BitcasterBackend',
+    'mercury.backends.BitcasterBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 # Some really nice defaults

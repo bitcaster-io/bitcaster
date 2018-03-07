@@ -16,9 +16,10 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from mercury.models import User
-from mercury.security import totp
+from mercury.otp import totp
 
 logger = logging.getLogger(__name__)
+
 
 #
 # @require_http_methods(["GET", "POST"])
@@ -39,10 +40,7 @@ def confirm_email(request, pk, check):
     else:
         if user.is_active:
             return render(request, 'bitcaster/registration/already_registered.html')
-        # gauth = from_b32key(settings.OTP_KEY)
-        # ok = gauth.accept(check,
-        #                   totp_forward_drift=int(settings.CONFIRM_EMAIL_EXPIRE / 30))
-        ok= totp.verify(check, valid_window=config.INVITATION_EXPIRE)
+        ok = totp.verify(check, valid_window=config.INVITATION_EXPIRE)
         if ok:
             user = User.objects.get(pk=pk)
             user.is_active = True

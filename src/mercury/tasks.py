@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from constance import config
-from django.core.mail import get_connection, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, get_connection
 from django.db.models import Count
 
 from mercury.celery import app

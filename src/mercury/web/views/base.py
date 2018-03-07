@@ -11,7 +11,6 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views.generic import (CreateView, DetailView, FormView,

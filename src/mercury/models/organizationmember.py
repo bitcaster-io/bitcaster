@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from mercury.db.fields import RoleField
 from mercury.mail import send_mail_by_template
-from mercury.security import totp
+from mercury.otp import totp
 from mercury.utils.http import absolute_uri
 
 from .organization import Organization

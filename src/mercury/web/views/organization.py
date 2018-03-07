@@ -3,18 +3,26 @@ import logging
 
 from constance import config
 from django.contrib import messages
+from django.contrib.auth import login
+from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth.hashers import make_password
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import DeleteView, CreateView
+from django.views.generic import CreateView, DeleteView
+from strategy_field.utils import fqn
 
 from mercury.models import Organization, OrganizationMember, User
-from mercury.security import totp
+from mercury.otp import totp
+from mercury.security import is_owner
 from mercury.web.forms import (OrganizationForm, OrganizationInviteForm,
-                               OrganizationInviteFormSet, UserInvitationForm)
+                               OrganizationInviteFormSet, UserInvitationForm,)
 from mercury.web.views.base import (MercuryBaseCreateView,
                                     MercuryBaseDetailView,
-                                    MercuryBaseUpdateView, MercuryFormView, SelectedOrganizationMixin, MessageUserMixin)
+                                    MercuryBaseUpdateView, MercuryFormView,
+                                    MessageUserMixin, SelectedOrganizationMixin,)
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +32,14 @@ __all__ = ["OrganizationCreate", "OrganizationDetail", "OrganizationUpdate",
            "OrganizationApplications"]
 
 
-class OrganizationViewMixin:
+class OrganizationViewMixin(SelectedOrganizationMixin):
     model = Organization
     slug_url_kwarg = 'org'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not is_owner(request.user, self.selected_organization):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
 
 class OrganizationDetail(OrganizationViewMixin, MercuryBaseDetailView):
@@ -67,14 +80,22 @@ class OrganizationMembers(OrganizationViewMixin, MercuryBaseDetailView):
         return data
 
 
-class InviteAccept(MessageUserMixin, CreateView):
+class InviteAccept(SelectedOrganizationMixin, MessageUserMixin, CreateView):
     model = User
     form_class = UserInvitationForm
     template_name = 'bitcaster/users/user_welcome.html'
     membership = None
 
     def form_valid(self, form):
-        return super().form_valid(form)
+        with transaction.atomic():
+            user = User.objects.create(email=form.cleaned_data['email'],
+                                       is_active=False,
+                                       name=form.cleaned_data['name'],
+                                       password=make_password(form.cleaned_data['password']),
+                                       )
+            login(self.request, user, backend=fqn(ModelBackend))
+        url = reverse('org-index', args=[self.selected_organization.pk])
+        return HttpResponseRedirect(url)
 
     def get_context_data(self, **kwargs):
         kwargs['invitation_id'] = self.membership.pk
@@ -84,6 +105,9 @@ class InviteAccept(MessageUserMixin, CreateView):
         if self.membership:
             return {"email": self.membership.email}
         return {}
+
+    def post(self, request, **kwargs):
+        super(InviteAccept, self).post(request, **kwargs)
 
     def get(self, request, **kwargs):
         check = kwargs['check']

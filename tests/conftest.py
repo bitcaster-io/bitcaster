@@ -121,7 +121,7 @@ def subscription1(user1, channel1, message1):
 
 
 @pytest.fixture
-def subscription2(user2):
+def subscription2(user2, channel2, message2):
     from mercury.utils.tests.factories import SubscriptionFactory
     return SubscriptionFactory(subscriber=user2)
 

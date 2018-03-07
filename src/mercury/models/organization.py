@@ -2,10 +2,12 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from mercury import logging
 from mercury.db.fields import DeletionStatusField, Role, RoleField
+from mercury.db.manager import DeleteableModelManagerMixin
 from mercury.db.validators import RESERVED_NAMES, ReservedWordValidator
 from mercury.file_storage import MediaFileSystemStorage, org_media_root
 from mercury.utils import locks
@@ -20,7 +22,7 @@ RESERVED_ORGANIZATION_NAME = frozenset(RESERVED_NAMES)
 RESERVED_ORGANIZATION_SLUGS = frozenset(RESERVED_NAMES)
 
 
-class OrganizationManager(models.Manager):
+class OrganizationManager(DeleteableModelManagerMixin, models.Manager):
     pass
 
 
@@ -91,3 +93,7 @@ class Organization(AbstractModel):
                                                         role=int(role),
                                                         **kwargs
                                                         )[0]
+
+    @cached_property
+    def owners(self):
+        return self.members.filter(memberships__role=Role.OWNER)

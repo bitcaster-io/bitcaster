@@ -47,17 +47,19 @@ def cli(ctx, config, **kwargs):
     environment variable or be explicitly provided through the
     `--config` parameter.
     """
-    filepath = os.path.realpath(os.path.expanduser(config))
+    config = Path(config).expanduser().absolute()
+    filepath = str(config)
     os.environ['BITCASTER_CONF'] = filepath
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mercury.config.settings.default')
 
-    cfg_file = Path(config)
-    if not cfg_file.exists():
-        cfg_file.parent.mkdir(mode=0o770, parents=True, exist_ok=True)
-        cfg_file.touch(mode=0o660)
-    env.load_config(cfg_file)
+    if config.exists():
+        # raise click.ClickException(f"config file {filepath} does not exists.")
+        # cfg_file.parent.mkdir(mode=0o770, parents=True, exist_ok=True)
+        # cfg_file.touch(mode=0o660)
+        env.load_config(str(config))
     ctx.obj = {'env': env,
                'config': filepath}
+    click.echo("Configuration file: {}".format(ctx.obj['config']))
 
 
 cli.add_command(import_by_name('mercury.cli.commands.check.check'))

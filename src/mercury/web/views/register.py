@@ -51,4 +51,3 @@ class UserRegister(SingleObjectTemplateResponseMixin, FormView):
             login(self.request, user, backend=fqn(ModelBackend))
             url = reverse('register-wait-email', args=[user.pk])
             return HttpResponseRedirect(url)
-

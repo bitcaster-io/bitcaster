@@ -3,6 +3,7 @@ branch = True
 source = mercury
 
 omit =
+        ~*
         tests/**
         */mercury/config/wsgi.py
         */mercury/config/settings/dev.py

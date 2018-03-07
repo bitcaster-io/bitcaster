@@ -35,7 +35,7 @@ class Env(environ.Env):
         self.prefix = prefix or ''
 
     def get_value(self, var, cast=None, default=environ.Env.NOTSET,  # noqa: C901
-                  parse_default=False):
+                  parse_default=False, raw=False):
         """Return value for given environment variable.
 
                 :param var: Name of variable.
@@ -46,11 +46,13 @@ class Env(environ.Env):
                 :returns: Value from environment or default (if set)
                 """
 
-        logger.debug("get '{0}' casted as '{1}' with default '{2}'".format(
-            var, cast, default
-        ))
+        if raw:
+            env_var = var
+        else:
+            env_var = f"{self.prefix}{var}"
 
-        env_var = f"{self.prefix}{var}"
+        logger.debug(f"get '{env_var}' casted as '{cast}' with default '{default}'")
+
         if var in self.scheme:
             var_info = self.scheme[var]
 
@@ -76,7 +78,7 @@ class Env(environ.Env):
             value = self.ENVIRON[env_var]
         except KeyError:
             if default is self.NOTSET:
-                error_msg = "Set the {0} environment variable".format(var)
+                error_msg = f"Set the {env_var} environment variable"
                 raise ImproperlyConfigured(error_msg)
 
             value = default
@@ -85,7 +87,7 @@ class Env(environ.Env):
         if hasattr(value, 'startswith') and '${' in value:
             m = environ.re.search(r'(\${(.*?)})', value)
             while m:
-                value = re.sub(re.escape(m.group(1)), self.get_value(m.group(2)), value)
+                value = re.sub(re.escape(m.group(1)), self.get_value(m.group(2), raw=True), value)
                 m = environ.re.search(r'(\${(.*?)})', value)
 
         if value != default or (parse_default and value):
@@ -93,7 +95,7 @@ class Env(environ.Env):
 
         return value
 
-    def load_config(self, env_file):
+    def load_config(self, env_file: str):
         """Read a .env file into os.environ.
 
         If not given a path to a dotenv path, does filthy magic stack backtracking
@@ -111,8 +113,7 @@ class Env(environ.Env):
         except IOError:
             raise ImproperlyConfigured(f'{env_file} not found')
 
-        logger.debug('Read environment variables from: {0}'.format(env_file))
-
+        logger.debug(f'Read environment variables from: {env_file}')
         for line in content.splitlines():
             m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
             if m1:

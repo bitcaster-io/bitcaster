@@ -7,7 +7,7 @@ from rest_framework.reverse import reverse
 
 from mercury.db.fields import Role
 from mercury.models import Organization, User
-from mercury.models.organizationmember import (OrganizationMember)
+from mercury.models.organizationmember import OrganizationMember
 
 faker = Faker()
 

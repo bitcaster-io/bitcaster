@@ -14,6 +14,7 @@ from django.utils.translation import gettext as _
 
 from mercury.models import User
 from mercury.utils.wsgi import get_client_ip
+
 from ..forms import UserProfileForm
 from .base import MercuryBaseUpdateView, MercuryTemplateView
 
