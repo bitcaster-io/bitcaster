@@ -1,6 +1,6 @@
 {% extends "mercury/organization_detail.html" %}{% load crispy_forms_tags i18n %}
 {% block content %}
-    <h2>{{ organization }} Members</h2>
+    <h2>{{ organization }} Users</h2>
 
     <div class="container">
         <div class="row col-12">
@@ -10,57 +10,67 @@
             </div>
         </div>
     </div>
-
-
-    <div class="container pl-3 m-3 mb-5">
-        <h4>Members</h4>
-        <div class="content invitations">
-            <div class="row pl-1 m-1 mb-3 border-bottom-1">
-                <div class="col-sm h6">User</div>
-                <div class="col-sm h6">Role</div>
-                <div class="col-sm h6">Enrolled on</div>
-            </div>
-            {% for membership in memberships.all %}
-                <div class="row pl-1">
-                    <div class="col-sm">{{ membership.user }}</div>
-                    <div class="col-sm">{{ membership.get_role_display }}</div>
-                    <div class="col-sm">{{ membership.date_enrolled }}</div>
-                </div>
-            {% endfor %}
-        </div>
+    <div class="container">
+    <h4>Members</h4>
+    <table class="table">
+        <thead>
+        <tr class="d-flex">
+            <th scope="col" class="col-4">User</th>
+            <th scope="col" class="col-3">Role</th>
+            <th scope="col" class="col-3">Enrollment Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for membership in memberships.all %}
+            <tr class="d-flex">
+                <td class="col-4">{{ membership.user }}</td>
+                <td class="col-3">{{ membership.get_role_display }}</td>
+                <td class="col-3">{{ membership.date_enrolled }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
     </div>
+    <div class="container">
+    <h4>Pending invitations</h4>
+    <table class="table">
+        <thead>
+        <tr class="d-flex">
+            <th scope="col" class="col-4">User</th>
+            <th scope="col" class="col-3">Role</th>
+            <th scope="col" class="col-3">Date</th>
+            <th scope="col" class="col-1"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for membership in invitations.all %}
+            <tr class="d-flex">
+                <td class="col-4">
+                    {{ membership.email }}
+                </td>
+                <td class="col-3">{{ membership.get_role_display }}</td>
+                <td class="col-3">{{ membership.date_added }}</td>
+                <td class="text-nowrap col-1">
+                    <form method="post" class="d-inline"
+                          action="{% url "invitation-delete" organization.slug membership.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" title="cancel invitation">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                    </form>&nbsp;|&nbsp;<form method="post" class="d-inline"
+                                              action="{% url "invitation-send" organization.slug membership.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" title="resend email">
+                        <i class="fa fa-envelope"></i>
+                    </button>
+                </form>
 
-    <div class="container pl-3 m-3 mt-5">
-        <h4>Pending invitations</h4>
-        <div class="content invitations">
-            <div class="row pl-1 mt-5 m-1 mb-3 border-bottom-1">
-                <div class="col-sm">Email</div>
-                <div class="col-sm">Role</div>
-                <div class="col-sm">Invited on</div>
-            </div>
-            {% for membership in invitations.all %}
-                <div class="row pl-1">
-                    <div class="col-sm">{{ membership.email }}</div>
-                    <div class="col-sm">{{ membership.get_role_display }}</div>
-                    <div class="col-sm">{{ membership.date_added }}</div>
-                    <div class="row col-sm align-items-center">
-                        <form method="post" action="{% url "invitation-delete" organization.slug membership.pk %}">
-                            {% csrf_token %}
-                            <button type="submit">
-                                <i class="fa fa-remove"></i>
-                            </button>
-                        </form>
-                        &nbsp;|&nbsp;
-                        <form method="post" action="{% url "invitation-send" organization.slug membership.pk %}">
-                            {% csrf_token %}
-                            <button type="submit">
-                            <i class="fa fa-envelope"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
     </div>
 
 {% endblock %}

@@ -525,5 +525,6 @@ CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
 if DEBUG:
     INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar']
     MIDDLEWARE = MIDDLEWARE + ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
-    DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda r: r.user.is_superuser}
-    INTERNAL_IPS = ['127.0.0.1']
+    DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda r: True,
+                            'JQUERY_URL': ''}
+    INTERNAL_IPS = ['127.0.0.1', 'localhost', '0.0.0.0', '*']

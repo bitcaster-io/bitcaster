@@ -21,8 +21,7 @@ from strategy_field.utils import fqn
 
 from mercury.db.fields import Role
 from mercury.models import Organization, User
-
-from ..forms import RegistrationForm
+from mercury.web.forms.user import UserRegistrationForm
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,7 @@ __all__ = ["UserRegister"]
 class UserRegister(SingleObjectTemplateResponseMixin, FormView):
     template_name = 'bitcaster/users/register.html'
     model = User
-    form_class = RegistrationForm
+    form_class = UserRegistrationForm
     success_url = reverse_lazy('register-wait-email')
 
     def form_valid(self, form):

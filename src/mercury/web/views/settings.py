@@ -13,8 +13,10 @@ from constance import config
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
 
-from mercury.web.forms import (SettingsEmailForm, SettingsMainForm,
-                               SettingsOAuthForm,)
+from mercury.models import Channel
+from mercury.web.forms.system_settings import (SettingsEmailForm,
+                                               SettingsMainForm,
+                                               SettingsOAuthForm,)
 from mercury.web.views import MercuryTemplateView
 from mercury.web.views.base import SuperuserViewMixin
 
@@ -70,3 +72,8 @@ class SettingsOAuthView(SettingsBaseView):
 class SettingsChannelView(MercuryTemplateView):
     template_name = 'bitcaster/settings/channels.html'
     title = 'Channels'
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = _("System channels")
+        kwargs['channels'] = Channel.objects.filter(system=True)
+        return super().get_context_data(**kwargs)

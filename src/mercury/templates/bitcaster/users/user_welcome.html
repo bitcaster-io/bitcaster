@@ -3,21 +3,22 @@
     <div class="container">
         <div class="row col-12 justify-content-center align-items-center">
             <div class="box box-modal login-form col-6 p-3">
-                {#                <div class="row">#}
-                {#                    <div class="pull-right">#}
-                {#                        <a href="{% url "user-register" %}">Register</a>#}
-                {#                    </div>#}
-                {#                </div>#}
-                <div class="container-fluid p-3">
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="next" value="/">
-                        {{ form|crispy }}
-                        <input type="submit" value="Login"
-                               class="btn btn-primary"/>
-                    </form>
-                </div>
-                {% include "bitcaster/includes/_oauth.html" %}
+
+                {% if membership.user %}
+                    <div>Registration token already used</div>
+                {% else %}
+                    <div class="container-fluid p-3">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.errors|as_crispy_errors }}
+                            {#                            <input type="hidden" name="next" value="/">#}
+                            {{ form|crispy }}
+                            <input type="submit" value="Register"
+                                   class="btn btn-primary"/>
+                        </form>
+                    </div>
+                    {% include "bitcaster/includes/_oauth.html" %}
+                {% endif %}
             </div>
         </div>
     </div>

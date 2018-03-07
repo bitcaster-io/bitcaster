@@ -1,20 +1,16 @@
-
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView
 
 from mercury.db.fields import Role
-from mercury.models import Channel, Event, Message, Subscription
-from mercury.web.views.base import SelectedApplicationMixin
+from mercury.models import Event, Message, Subscription
 
-__all__ = ("ChannelList", "EventList", "IndexView",
-           "MessageList", "SubscriptionList",)
+from .base import SelectedApplicationMixin
 
-
-# @method_decorator(login_required, name='dispatch')
+__all__ = ("EventList", "IndexView",
+           "MessageList", "SubscriptionList", "WorkInProgressView")
 
 
-# @method_decorator(login_required, name='dispatch')
 class SubscriptionList(SelectedApplicationMixin, ListView):
     model = Subscription
 
@@ -29,18 +25,15 @@ class EventList(SelectedApplicationMixin, ListView):
         return self.selected_application.events.all()
 
 
-class ChannelList(SelectedApplicationMixin, ListView):
-    model = Channel
-
-    def get_queryset(self):
-        return self.selected_application.channels.all()
-
-
 class MessageList(SelectedApplicationMixin, ListView):
     model = Message
 
     def get_queryset(self):
         return self.selected_application.messages.all()
+
+
+class WorkInProgressView(TemplateView):
+    template_name = 'bitcaster/wip.html'
 
 
 class IndexView(TemplateView):

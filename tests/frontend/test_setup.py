@@ -13,7 +13,6 @@ def initialize():
 
 def test_setup(django_app, initialize):
     "home is always accessible"
-    config.INITIALIZED = False
     res = django_app.get('/').follow()
     res.form["email"] = "sax@saxix.org"
     res.form["password1"] = "password"

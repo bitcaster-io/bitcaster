@@ -8,8 +8,9 @@ from .views import (ApplicationCreate, ApplicationDetail, ChannelList,
                     OrganizationCreate, OrganizationDetail, OrganizationInvite,
                     OrganizationMembers, OrganizationUpdate,
                     SettingsChannelView, SettingsEmailView, SettingsOAuthView,
-                    SettingsView, SetupView, SubscriptionList, UserProfileView,
-                    UserRegister, UserWelcomeView, confirm_email,)
+                    SettingsView, SetupView, SubscriptionList,
+                    SystemChannelCreateWizard, UserProfileView, UserRegister,
+                    UserWelcomeView, WorkInProgressView, confirm_email,)
 
 urlpatterns = [
     path('setup/', SetupView.as_view(), name='setup'),
@@ -19,6 +20,7 @@ urlpatterns = [
     path('settings/email/', SettingsEmailView.as_view(), name='settings-email'),
     path('settings/oauth/', SettingsOAuthView.as_view(), name='settings-oauth'),
     path('settings/channel/', SettingsChannelView.as_view(), name='settings-channels'),
+    path('settings/channel/add/', SystemChannelCreateWizard.as_view(), name='system-channel-create'),
 
     path('', include('social_django.urls', namespace='social')),
 
@@ -75,5 +77,8 @@ urlpatterns = [
 
     path('', IndexView.as_view(),
          name='index'),
+
+    path('wip/', WorkInProgressView.as_view(),
+         name='wip'),
 
 ]

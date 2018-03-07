@@ -2,10 +2,12 @@
 import abc
 
 from django.core.exceptions import ValidationError
+from strategy_field.utils import fqn
 
 from mercury.configurable import ConfigurableMixin, get_full_config
 from mercury.exceptions import PluginValidationError
 from mercury.logging import getLogger
+from mercury.utils.language import classproperty
 
 from . import serializers
 
@@ -41,6 +43,10 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     def __init__(self, owner=None):
         super().__init__(owner)
         self.logger = getLogger('mercury.plugins.%s' % self.name)
+
+    @classproperty
+    def fqn(cls):
+        return fqn(cls)
 
     @abc.abstractmethod
     def _get_connection(self) -> object:

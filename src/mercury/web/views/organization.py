@@ -8,8 +8,9 @@ from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView, DeleteView
 from strategy_field.utils import fqn
@@ -17,8 +18,9 @@ from strategy_field.utils import fqn
 from mercury.models import Organization, OrganizationMember, User
 from mercury.otp import totp
 from mercury.security import is_owner
-from mercury.web.forms import (OrganizationForm, OrganizationInviteForm,
-                               OrganizationInviteFormSet, UserInvitationForm,)
+from mercury.web.forms import (OrganizationForm, OrganizationInvitationForm,
+                               OrganizationInvitationFormSet,
+                               UserInviteRegistrationForm,)
 from mercury.web.views.base import (MercuryBaseCreateView,
                                     MercuryBaseDetailView,
                                     MercuryBaseUpdateView, MercuryFormView,
@@ -43,7 +45,9 @@ class OrganizationViewMixin(SelectedOrganizationMixin):
 
 
 class OrganizationDetail(OrganizationViewMixin, MercuryBaseDetailView):
-    pass
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
 
 
 class OrganizationUpdate(OrganizationViewMixin, MercuryBaseUpdateView):
@@ -82,38 +86,49 @@ class OrganizationMembers(OrganizationViewMixin, MercuryBaseDetailView):
 
 class InviteAccept(SelectedOrganizationMixin, MessageUserMixin, CreateView):
     model = User
-    form_class = UserInvitationForm
+    form_class = UserInviteRegistrationForm
     template_name = 'bitcaster/users/user_welcome.html'
-    membership = None
+
+    def check_perms(self, *args, **kwargs):
+        return True
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            raise Http404
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         with transaction.atomic():
             user = User.objects.create(email=form.cleaned_data['email'],
-                                       is_active=False,
-                                       name=form.cleaned_data['name'],
+                                       is_active=True,
+                                       friendly_name=form.cleaned_data['friendly_name'],
                                        password=make_password(form.cleaned_data['password']),
                                        )
+            self.membership.user = user
+            self.membership.save()
             login(self.request, user, backend=fqn(ModelBackend))
-        url = reverse('org-index', args=[self.selected_organization.pk])
+        url = reverse('org-index', args=[self.selected_organization.slug])
         return HttpResponseRedirect(url)
 
+    def form_invalid(self, form):
+        return super().form_invalid(form)
+
     def get_context_data(self, **kwargs):
-        kwargs['invitation_id'] = self.membership.pk
+        kwargs['membership'] = self.membership
+        kwargs['invitation_id'] = self.membership.pk  # this is required by oauth
         return super().get_context_data(**kwargs)
 
     def get_initial(self):
-        if self.membership:
-            return {"email": self.membership.email}
-        return {}
+        return {"email": self.membership.email}
 
-    def post(self, request, **kwargs):
-        super(InviteAccept, self).post(request, **kwargs)
+    @cached_property
+    def membership(self):
+        pk = self.kwargs['pk']
+        return OrganizationMember.objects.get(pk=pk)
 
     def get(self, request, **kwargs):
         check = kwargs['check']
-        pk = kwargs['pk']
         if totp.verify(check, valid_window=config.INVITATION_EXPIRE):
-            self.membership = OrganizationMember.objects.get(pk=pk)
             return super(InviteAccept, self).get(request, **kwargs)
 
         self.message_user("Invite expired", messages.ERROR)
@@ -152,7 +167,7 @@ class InviteDelete(SelectedOrganizationMixin, DeleteView):
 
 
 class OrganizationInvite(MercuryFormView):
-    form_class = OrganizationInviteForm
+    form_class = OrganizationInvitationForm
     template_name = 'mercury/organization_invite.html'
 
     def get_success_url(self):
@@ -164,7 +179,7 @@ class OrganizationInvite(MercuryFormView):
         return data
 
     def get_form_class(self):
-        return OrganizationInviteFormSet
+        return OrganizationInvitationFormSet
 
     def form_invalid(self, form):
         self.message_user(_('invalid'), messages.WARNING)

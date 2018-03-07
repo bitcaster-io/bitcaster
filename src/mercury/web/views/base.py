@@ -43,7 +43,7 @@ class OrganizationListMixin(SecuredViewMixin):
         return ret
 
 
-class SelectedOrganizationMixin(OrganizationListMixin):
+class SelectedOrganizationMixin:
     def get_context_data(self, **kwargs):
         kwargs['organization'] = self.selected_organization
         return super().get_context_data(**kwargs)
@@ -57,7 +57,7 @@ class SelectedOrganizationMixin(OrganizationListMixin):
         return organization
 
 
-class ApplicationListMixin(SelectedOrganizationMixin):
+class ApplicationListMixin(SelectedOrganizationMixin, OrganizationListMixin):
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
         if self.selected_organization:
