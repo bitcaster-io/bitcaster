@@ -19,8 +19,8 @@ def test_setup(django_app, initialize):
     res.form["password1"] = "password"
     res.form["password2"] = "password"
     res = res.form.submit().follow()
-    res = res.click("Login")
-    res.form["username"] = "sax@saxix.org"
-    res.form["password"] = "password"
-    res = res.form.submit()
+    # res = res.click("Login")
+    # res.form["username"] = "sax@saxix.org"
+    # res.form["password"] = "password"
+    # res = res.form.submit()
     assert res.status_code == 302

@@ -356,9 +356,8 @@ CONSTANCE_ADDITIONAL_FIELDS = {
 }
 
 CONSTANCE_CONFIG = OrderedDict({
-    'INITIALIZED': (False,
-                    '',
-                    bool),
+    'INITIALIZED': (False, '', bool),
+    'SYSTEM_CONFIGURED': (False, '', bool),
     'SITE_URL': ('', '', str),
     'RECAPTCHA_PUBLIC_KEY': ('', '', str),
     'RECAPTCHA_PRIVATE_KEY': ('', '', str),

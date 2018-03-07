@@ -30,6 +30,7 @@ develop: .setup-git
 	createdb -h 127.0.0.1 -U postgres mercury
 
 .reset-env: .init-db
+	bitcaster option set SYSTEM_CONFIGURED 0
 	bitcaster option set INITIALIZED 0
 	bitcaster upgrade --no-input
 
