@@ -2,28 +2,24 @@
 import logging
 
 from django import forms
+from django.contrib import messages
+from django.db import IntegrityError
 from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.utils.functional import cached_property
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import ListView
+from django.views.generic import ListView, RedirectView, DetailView
+from formtools.wizard.forms import ManagementForm
 from formtools.wizard.views import SessionWizardView
 from strategy_field.utils import import_by_name
 
 from mercury.dispatchers import dispatcher_registry
 from mercury.models import Channel
-from mercury.web.views.base import (MercuryBaseCreateView, MessageUserMixin,
-                                    SelectedApplicationMixin,)
+from mercury.web.forms.channel import ChannelUpdateConfigurationForm
+from mercury.web.views.base import (MessageUserMixin, SelectedApplicationMixin, MercuryTemplateView,
+                                    MercuryBaseUpdateView, MercuryBaseDeleteView, SelectedOrganizationMixin,
+                                    MercuryBaseCreateView)
 
 logger = logging.getLogger(__name__)
-
-
-class ChannelMixin:
-    model = Channel
-
-
-class ChannelCreateView(ChannelMixin, MercuryBaseCreateView):
-    pass
 
 
 class ChannelCreate1(forms.ModelForm):
@@ -34,53 +30,15 @@ class ChannelCreate1(forms.ModelForm):
         fields = ('handler',)
 
 
-class ChannelCreate2(forms.ModelForm):
-    class Meta:
-        model = Channel
-        fields = ('name', 'description')
-
-
-class ChannelCreate3(forms.Form):
-    config = forms.CharField(widget=forms.HiddenInput, required=False)
-
-    def __init__(self, *args, **kwargs):
-        self.serializer_class = kwargs.pop("serializer")
-        super().__init__(*args, **kwargs)
-
-    class Meta:
-        fields = ()
-
-    @cached_property
-    def serializer(self):
-        if self.data:
-            ser = self.serializer_class(data=self.data)
-            ser.is_valid()
-            return ser
-        return self.serializer_class()
-
-    def is_valid(self):
-        valid = super().is_valid()
-        if self.serializer_class:
-            valid = valid and self.serializer.is_valid()
-        return valid
-
-
-class ChannelCreate4(forms.Form):
-    pass
-
-
-class SystemChannelCreateWizard(MessageUserMixin, SessionWizardView):
+class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
     form_list = [("a", ChannelCreate1),
-                 ("b", ChannelCreate2),
-                 ("c", ChannelCreate3),
+                 ("b", ChannelUpdateConfigurationForm),
                  # todo: add summary screen
-                 # ("d", ChannelCreate4)
                  ]
-    TEMPLATES = {"a": "bitcaster/channel_wizard1.html",
-                 "b": "bitcaster/channel_wizard2.html",
-                 "c": "bitcaster/channel_wizard3.html",
-                 # "d": "bitcaster/channel_wizard4.html",
+    TEMPLATES = {"a": "bitcaster/settings/channel_wizard1.html",
+                 "b": "bitcaster/settings/channel_wizard2.html",
                  }
+    # success_url = reverse_lazy('settings-channels')
 
     def get_form_initial(self, step):
         handler = self.storage.extra_data.get('handler', None)
@@ -93,16 +51,11 @@ class SystemChannelCreateWizard(MessageUserMixin, SessionWizardView):
         if self.steps.current == 'a':
             handler_fqn = form.data.get('a-handler')
             self.storage.extra_data['handler'] = import_by_name(handler_fqn)
-        elif self.steps.current == 'c':
-            self.storage.extra_data['config'] = form.serializer.data
         return ret
-
-    # def get_form_instance(self, step):
-    #     return super().get_form_instance(step)
 
     def get_form_kwargs(self, step=None):
         kwargs = {}
-        if step == 'c':
+        if step == 'b':
             kwargs = {'serializer': None}
             data = self.storage.get_step_data('a')
             if data:
@@ -113,29 +66,123 @@ class SystemChannelCreateWizard(MessageUserMixin, SessionWizardView):
         return kwargs
 
     def get_context_data(self, form, **kwargs):
-        context = super(SystemChannelCreateWizard, self).get_context_data(form=form, **kwargs)
+        context = super().get_context_data(form=form, **kwargs)
         handler_fqn = self.get_all_cleaned_data().get('handler', None)
         if self.steps.current == 'a':
             context.update({'registry': dispatcher_registry,
                             'selection': handler_fqn
                             })
-
+        else:
+            context.update({'handler': self.storage.extra_data['handler']})
         return context
+
+    def post(self, *args, **kwargs):
+        return super().post(*args, **kwargs)
 
     def get_template_names(self):
         return [self.TEMPLATES[self.steps.current]]
 
+    def get_extra_instance_kwargs(self):
+        return {}
+
+    def get_success_url(self):
+        return self.success_url
+
     def done(self, form_list, **kwargs):
         data = self.get_all_cleaned_data()
-        data['config'] = self.storage.extra_data['config']
-        data['handler'] = self.storage.extra_data['handler']
-        Channel.objects.create(system=True,
-                               **data)
+        data.update(self.get_extra_instance_kwargs())
+        try:
+            Channel.objects.create(**dict(data))
+        except IntegrityError:
+            h = self.storage.extra_data['handler']
+
+            data = self.get_all_cleaned_data()
+
+            form = ChannelUpdateConfigurationForm(data=data,
+                                                  serializer=h.options_class)
+
+            self.message_user(_('Error creating channel. '
+                                'Channel with this name already exists.'),
+                              messages.ERROR)
+
+            # this is real ugly. there is a bug somewhere that
+            # prevent a simple `self.storage.current_step = 'b'`
+            # to work properly. So we totally fake 'steps' entry
+            self.storage.current_step = 'b'
+            context = self.get_context_data(form=form, **kwargs)
+            context['wizard'] = {
+                'form': form,
+                'steps': {'prev': 'a', 'current': 'b',
+                          'step1': '2', 'count': '2'},
+                'management_form': ManagementForm(prefix=self.prefix, initial={
+                    'current_step': 'b',
+                }),
+            }
+            return self.render_to_response(context)
+
         self.message_user(_('Channel created'))
-        return HttpResponseRedirect(reverse('settings-channels'))
+        return HttpResponseRedirect(self.get_success_url())
 
 
-class ChannelList(SelectedApplicationMixin, ListView):
+class ChannelCreateView(MercuryBaseCreateView):
+    model = Channel
 
     def get_queryset(self):
-        return self.selected_application.channels.all()
+        return self.selected_organization.channels.all()
+
+
+class ChannelListView(MercuryTemplateView):
+    title = _("Organization channels")
+
+    def get_queryset(self):
+        raise NotImplementedError
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = self.title
+        kwargs['channels'] = self.get_queryset()
+        return super().get_context_data(**kwargs)
+
+
+class ChannelUpdateView(MercuryBaseUpdateView):
+    template_name = 'bitcaster/settings/channel_configure.html'
+    form_class = ChannelUpdateConfigurationForm
+    success_url = reverse_lazy("settings-channels")
+
+    def get_queryset(self):
+        return self.selected_organization.channels
+
+
+class ChannelDeleteView(MercuryBaseDeleteView):
+    def get_queryset(self):
+        return self.selected_organization.channels
+
+
+class ChannelDeprecateView(SelectedOrganizationMixin, MessageUserMixin, RedirectView):
+    url = reverse_lazy("settings-channels")
+
+    def get_queryset(self):
+        return self.selected_organization.channels
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_queryset().get(id=kwargs['pk'])
+        obj.deprecated = not obj.deprecated
+        obj.save()
+        op = "hidden" if obj.deprecated else "visible"
+        self.message_user(f'Channel {op}')
+        return super().get(request, *args, **kwargs)
+
+
+class ChannelToggleView(SelectedOrganizationMixin, MessageUserMixin, RedirectView):
+    url = reverse_lazy("settings-channels")
+
+    def get_queryset(self):
+        return self.selected_organization.channels
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_queryset().get(id=kwargs['pk'])
+        obj.enabled = not obj.enabled
+        obj.save()
+        op = "enabled" if obj.enabled else "disabled"
+        self.message_user(f'Channel {op}')
+        return super().get(request, *args, **kwargs)
+

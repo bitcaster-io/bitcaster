@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views.generic import (CreateView, DetailView, FormView,
-                                  TemplateView, UpdateView,)
+                                  TemplateView, UpdateView, DeleteView)
 
 from mercury.models import Organization
 
@@ -43,7 +43,7 @@ class OrganizationListMixin(SecuredViewMixin):
         return ret
 
 
-class SelectedOrganizationMixin:
+class SelectedOrganizationMixin(SecuredViewMixin):
     def get_context_data(self, **kwargs):
         kwargs['organization'] = self.selected_organization
         return super().get_context_data(**kwargs)
@@ -83,7 +83,7 @@ class SelectedApplicationMixin(ApplicationListMixin):
 
 
 class MessageUserMixin:
-    def message_user(self, message, level=messages.SUCCESS, extra_tags='',
+    def message_user(self, message, level=messages.INFO, extra_tags='',
                      fail_silently=False):
         messages.add_message(self.request, level, message, extra_tags=extra_tags, fail_silently=fail_silently)
 
@@ -111,6 +111,10 @@ class MercuryBaseCreateView(MercuryBaseViewMixin, CreateView):
 
 
 class MercuryBaseUpdateView(MercuryBaseViewMixin, UpdateView):
+    pass
+
+
+class MercuryBaseDeleteView(MercuryBaseViewMixin, DeleteView):
     pass
 
 

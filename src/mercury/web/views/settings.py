@@ -10,20 +10,27 @@ mercury / settings
 import logging
 
 from constance import config
+from django.urls import reverse_lazy, reverse
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
 
 from mercury.models import Channel
+from mercury.web.forms.channel import ChannelUpdateConfigurationForm
 from mercury.web.forms.system_settings import (SettingsEmailForm,
                                                SettingsMainForm,
-                                               SettingsOAuthForm,)
+                                               SettingsOAuthForm, )
 from mercury.web.views import MercuryTemplateView
-from mercury.web.views.base import SuperuserViewMixin
+from mercury.web.views.base import SuperuserViewMixin, MercuryBaseUpdateView, MercuryBaseDeleteView
+from mercury.web.views.channel import ChannelListView, ChannelUpdateView, ChannelDeleteView, ChannelCreateWizard, \
+    ChannelToggleView, ChannelDeprecateView
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["SettingsView", "SettingsOAuthView",
-           "SettingsEmailView", "SettingsChannelView"]
+           "SettingsEmailView", "SettingsChannelListView",
+           "SettingsChannelUpdateView",
+           "SettingsChannelCreateWizard",
+           ]
 
 
 class SettingsBaseView(SuperuserViewMixin,
@@ -69,11 +76,77 @@ class SettingsOAuthView(SettingsBaseView):
     title = 'Oauth'
 
 
-class SettingsChannelView(MercuryTemplateView):
-    template_name = 'bitcaster/settings/channels.html'
+#
+# class SettingsChannelListView(SuperuserViewMixin, MercuryTemplateView):
+#     template_name = 'bitcaster/settings/channel_list.html'
+#     title = 'Channels'
+#
+#     def get_context_data(self, **kwargs):
+#         kwargs['title'] = _("System channels")
+#         kwargs['channels'] = Channel.objects.filter(system=True)
+#         return super().get_context_data(**kwargs)
+#
+#
+# class SettingsChannelUpdateView(SuperuserViewMixin, MercuryBaseUpdateView):
+#     template_name = 'bitcaster/settings/channel_configure.html'
+#     form_class = ChannelUpdateConfigurationForm
+#     queryset = Channel.objects.filter(system=True)
+#     success_url = reverse_lazy("settings-channels")
+#
+#
+# class SettingsChannelDeleteView(SuperuserViewMixin, MercuryBaseDeleteView):
+#     template_name = 'bitcaster/settings/channel_configure.html'
+#     form_class = ChannelUpdateConfigurationForm
+#     queryset = Channel.objects.filter(system=True)
+#     success_url = reverse_lazy("settings-channels")
+class SettingsChannelCreateWizard(ChannelCreateWizard):
+    success_url = reverse_lazy('settings-channels')
+
+    def get_extra_instance_kwargs(self):
+        return {'system': True}
+
+
+class SettingsChannelListView(SuperuserViewMixin, ChannelListView):
+    template_name = 'bitcaster/settings/channel_list.html'
     title = 'Channels'
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = _("System channels")
         kwargs['channels'] = Channel.objects.filter(system=True)
+        kwargs['create-url'] = reverse("system-channel-create")
+
         return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        return Channel.objects.filter(system=True)
+
+
+class SettingsChannelUpdateView(SuperuserViewMixin, ChannelUpdateView):
+    template_name = 'bitcaster/settings/channel_configure.html'
+    form_class = ChannelUpdateConfigurationForm
+    success_url = reverse_lazy("settings-channels")
+
+    def get_queryset(self):
+        return Channel.objects.filter(system=True)
+
+
+class SettingsChannelDeleteView(SuperuserViewMixin, ChannelDeleteView):
+    template_name = 'bitcaster/settings/channel_remove.html'
+    success_url = reverse_lazy("settings-channels")
+
+    def get_queryset(self):
+        return Channel.objects.filter(system=True)
+
+
+class SettingsChannelDeprecateView(SuperuserViewMixin, ChannelDeprecateView):
+    url = reverse_lazy("settings-channels")
+
+    def get_queryset(self):
+        return Channel.objects.filter(system=True)
+
+
+class SettingsChannelToggleView(SuperuserViewMixin, ChannelToggleView):
+    url = reverse_lazy("settings-channels")
+
+    def get_queryset(self):
+        return Channel.objects.filter(system=True)

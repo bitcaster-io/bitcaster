@@ -28,7 +28,6 @@ def handler_not_found(fqn, exc):
     except HandlerNotFound as e:
         logger.exception(e)
     return None
-    # raise HandlerNotFound(fqn) from exc
 
 
 class Channel(AbstractModel):
@@ -58,6 +57,7 @@ It can be Global or Application specific.
 
     class Meta:
         unique_together = (('organization', 'name'),)
+        ordering = ('organization', 'application', 'name')
 
     def __repr__(self):
         return f"<Channel #{self.id} {self.name}>"

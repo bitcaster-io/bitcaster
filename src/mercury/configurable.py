@@ -46,6 +46,7 @@ class ConfigurableMixin:
     __license__ = 'MIT'
     __author__ = 'unknown'
     __help__ = ""
+    __url__ = ""
 
     def __init__(self, owner=None):
         self.owner = owner
@@ -58,6 +59,10 @@ class ConfigurableMixin:
     @classproperty
     def author(cls):
         return cls.__author__
+
+    @classproperty
+    def url(cls):
+        return cls.__url__
 
     @classproperty
     def help(cls):

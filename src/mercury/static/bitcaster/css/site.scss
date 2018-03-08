@@ -10,6 +10,16 @@
   font-style: normal;
 }
 
+ul.messagelist {
+  .alert {
+    &.alert-error {
+      color: #a94442;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+    }
+  }
+}
+
 input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 30px white inset;
   background-color: inherit;

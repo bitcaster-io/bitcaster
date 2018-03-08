@@ -1,0 +1,60 @@
+.channel-form {
+  textarea {
+    height: 50px;
+  }
+  div.invalid-feedback {
+    display: block;
+    font-size: 100%;
+  }
+  p.invalid-feedback {
+    display: block;
+    font-size: 80%;
+    font-weight: normal;
+  }
+}
+
+.channel-list {
+  img {
+    width: 50px;
+    height: 50px;
+  }
+  .handler-row {
+    border-bottom: 1px grey solid;
+    height: 90px;
+    padding: 10px;
+    .fa{
+      padding: 10px;
+    }
+    .fa-ban{
+      color: red;
+    }
+    .fa-check{
+      color: darkgreen;
+    }
+    .handler-name {
+      vertical-align: middle;
+    }
+  }
+}
+
+.plugin-info {
+  ul {
+    margin: 0;
+    padding: 0;
+    li {
+      display: list-item;
+      list-style: none;
+      padding-bottom: 20px;
+      &.name {
+        font-size: larger;
+        font-weight: bold;
+        padding-top: 10px;
+        padding-bottom: 15px;
+      }
+      .label {
+        font-weight: bold;
+        padding-bottom: 5px;
+      }
+    }
+  }
+}

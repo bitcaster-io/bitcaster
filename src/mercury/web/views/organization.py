@@ -9,7 +9,7 @@ from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import Http404, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView, DeleteView
@@ -20,18 +20,20 @@ from mercury.otp import totp
 from mercury.security import is_owner
 from mercury.web.forms import (OrganizationForm, OrganizationInvitationForm,
                                OrganizationInvitationFormSet,
-                               UserInviteRegistrationForm,)
+                               UserInviteRegistrationForm, )
+from mercury.web.views import ChannelListView
 from mercury.web.views.base import (MercuryBaseCreateView,
                                     MercuryBaseDetailView,
                                     MercuryBaseUpdateView, MercuryFormView,
-                                    MessageUserMixin, SelectedOrganizationMixin,)
+                                    MessageUserMixin, SelectedOrganizationMixin, )
+from mercury.web.views.channel import ChannelCreateView, ChannelCreateWizard
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["OrganizationCreate", "OrganizationDetail", "OrganizationUpdate",
            "OrganizationMembers", "OrganizationChannels",
            "OrganizationInvite", "InviteDelete", "InviteSend", "InviteAccept",
-           "OrganizationApplications"]
+           "OrganizationApplications", "OrganizationChannelCreate"]
 
 
 class OrganizationViewMixin(SelectedOrganizationMixin):
@@ -207,10 +209,30 @@ class OrganizationInvite(MercuryFormView):
         return super(OrganizationInvite, self).form_valid(form)
 
 
-class OrganizationChannels(OrganizationViewMixin, MercuryBaseDetailView):
-    form_class = OrganizationForm
+class OrganizationChannels(OrganizationViewMixin, ChannelListView):
     template_name = 'mercury/organization_channels.html'
-    success_url = '.'
+
+    def get_queryset(self):
+        return self.selected_organization.channels.all()
+
+    def get_context_data(self, **kwargs):
+        kwargs['create_url'] = reverse("org-channel-create",
+                                       args=[self.selected_organization.slug])
+        return super().get_context_data(**kwargs)
+
+
+class OrganizationChannelCreate(OrganizationViewMixin, ChannelCreateWizard):
+    # template_name = 'mercury/organization_channels.html'
+    TEMPLATES = {"a": "bitcaster/org_channel_wizard1.html",
+                 "b": "bitcaster/org_channel_wizard2.html",
+                 }
+
+    def get_success_url(self):
+        return reverse_lazy('org-channels', args=[self.selected_organization.slug])
+
+    def get_extra_instance_kwargs(self):
+        return {'organization': self.selected_organization}
+
 
 
 class OrganizationApplications(OrganizationViewMixin, MercuryBaseDetailView):

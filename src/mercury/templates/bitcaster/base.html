@@ -95,7 +95,7 @@
                 {% endif %}
             </div>
         {% endblock messages %}
-        <div class="container-fluid main-content">
+        <div class="container-fluid main-content" id="{% block pageId %}page{% endblock %}">
             {% block page %}
             {% endblock page %}
         </div>

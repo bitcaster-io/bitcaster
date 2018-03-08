@@ -1,0 +1,14 @@
+{% extends "bitcaster/settings/base.html" %}{% load crispy_forms_tags i18n mercury %}
+{% block content %}
+    <h2>Remove Channel</h2>
+    <div class="container-fluid">
+        <div class="row col-12">
+            <div>Confirm channel deletion</div>
+            <div>This action is not recoverable</div>
+            <div>All subcriptions will be removed</div>
+            <form action="" method="post">
+                <input class="btn btn-danger" value="Remove">
+            </form>
+        </div>
+    </div>
+{% endblock content %}

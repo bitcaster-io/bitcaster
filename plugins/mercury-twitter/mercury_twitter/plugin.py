@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # import twitter
+from django.utils.safestring import mark_safe
+
 from mercury.api.fields import PasswordField
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
@@ -35,9 +37,9 @@ class Twitter(Dispatcher):
     subscription_class = TwitterSubscriptionOptions
     __license__ = 'MIT'
     __author__ = 'unknown'
-    __help__ = """
-    https://apps.twitter.com/
-"""
+    __help__ = mark_safe("""
+Get your keys at <a target='_new' href='https://apps.twitter.com/'>https://apps.twitter.com/</a>
+""")
 
     @classproperty
     def name(cls):

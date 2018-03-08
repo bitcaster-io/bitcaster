@@ -1,5 +1,7 @@
 import pytest
 from django.core import mail
+from django.urls import reverse
+from pytest import fail
 from strategy_field.utils import fqn
 
 from mercury.dispatchers import Email
@@ -63,7 +65,6 @@ def test_system_channels_wizard(django_app, admin):
 
     res.form['a-handler'] = fqn(Email)
     res = res.form.submit()
-
     res.form['b-name'] = 'Channel1'
     res = res.form.submit()
 
@@ -79,3 +80,21 @@ def test_system_channels_wizard(django_app, admin):
     assert channel.config['username'] == 'username'
     assert channel.config['password'] == 'password'
     assert channel.config['server'] == 'localhost'
+
+
+def test_system_edit_channel(django_app, admin, system_channel):
+    res = django_app.get(reverse('system-channel-update', args=[system_channel.pk]),
+                         user=admin)
+    res.form['name'] = 'NewName'
+    res = res.form.submit().follow()
+    assert res.status_code == 200
+    system_channel.refresh_from_db()
+    assert system_channel.name == 'NewName'
+
+
+def test_system_edit_channel_validate(django_app, admin, system_channel):
+    res = django_app.get(reverse('system-channel-update', args=[system_channel.pk]),
+                         user=admin)
+    res.form['timeout'] = "abc"
+    res = res.form.submit()
+    assert res.status_code == 200

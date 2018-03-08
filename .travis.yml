@@ -10,13 +10,20 @@ services:
   - postgresql
 
 env:
-  - DJANGO=2.0
-
+  global:
+    - NODE_ENV=production
+    - PIP_DISABLE_PIP_VERSION_CHECK=on
+    - TRAVIS_NODE_VERSION=8.9.1
+    - DJANGO=2.0
 
 install:
+  - 'export PATH=$PATH:~/.bin'
+  - nvm install $TRAVIS_NODE_VERSION
+  - npm install -g yarn@1.3.2
   - pip install tox codecov
 
 script:
+  - npm install
   - tox -e "d${DJANGO//.}-py${TRAVIS_PYTHON_VERSION//.}" -- py.test tests/ --create-db
 
 before_success:

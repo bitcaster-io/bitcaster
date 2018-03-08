@@ -1,16 +1,19 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from .views import (ApplicationCreate, ApplicationDetail, ChannelList,
+from mercury.web.views.settings import SettingsChannelDeleteView, SettingsChannelToggleView, \
+    SettingsChannelDeprecateView
+from .views import (ApplicationCreate, ApplicationDetail, ChannelListView,
                     EventList, IndexView, InviteAccept, InviteDelete,
                     InviteSend, LoginView, LogoutView, MessageList,
                     OrganizationApplications, OrganizationChannels,
                     OrganizationCreate, OrganizationDetail, OrganizationInvite,
                     OrganizationMembers, OrganizationUpdate,
-                    SettingsChannelView, SettingsEmailView, SettingsOAuthView,
+                    SettingsChannelListView, SettingsEmailView, SettingsOAuthView,
                     SettingsView, SetupView, SubscriptionList,
-                    SystemChannelCreateWizard, UserProfileView, UserRegister,
-                    UserWelcomeView, WorkInProgressView, confirm_email,)
+                    SettingsChannelCreateWizard, UserProfileView, UserRegister,
+                    UserWelcomeView, WorkInProgressView, confirm_email, SettingsChannelUpdateView,
+                    OrganizationChannelCreate)
 
 urlpatterns = [
     path('setup/', SetupView.as_view(), name='setup'),
@@ -19,8 +22,14 @@ urlpatterns = [
     path('settings/', SettingsView.as_view(), name='settings'),
     path('settings/email/', SettingsEmailView.as_view(), name='settings-email'),
     path('settings/oauth/', SettingsOAuthView.as_view(), name='settings-oauth'),
-    path('settings/channel/', SettingsChannelView.as_view(), name='settings-channels'),
-    path('settings/channel/add/', SystemChannelCreateWizard.as_view(), name='system-channel-create'),
+    path('settings/channel/list/', SettingsChannelListView.as_view(), name='settings-channels'),
+    path('settings/channel/add/', SettingsChannelCreateWizard.as_view(), name='system-channel-create'),
+    path('settings/channel/<int:pk>/edit/', SettingsChannelUpdateView.as_view(), name='system-channel-update'),
+    path('settings/channel/<int:pk>/delete/', SettingsChannelDeleteView.as_view(), name='system-channel-delete'),
+    path('settings/channel/<int:pk>/toggle/', SettingsChannelToggleView.as_view(), name='system-channel-toggle'),
+    path('settings/channel/<int:pk>/deprecate/', SettingsChannelDeprecateView.as_view(), name='system-channel-deprecate'),
+    path('plugins/info/<str:fqn>/', WorkInProgressView.as_view(),
+         name='plugin-info'),
 
     path('', include('social_django.urls', namespace='social')),
 
@@ -58,6 +67,7 @@ urlpatterns = [
     path('<slug:org>/update/', OrganizationUpdate.as_view(), name='org-config'),
     path('<slug:org>/members/', OrganizationMembers.as_view(), name='org-members'),
     path('<slug:org>/channels/', OrganizationChannels.as_view(), name='org-channels'),
+    path('<slug:org>/channels/add/', OrganizationChannelCreate.as_view(), name='org-channel-create'),
     path('<slug:org>/applications/', OrganizationApplications.as_view(), name='org-applications'),
 
     path('<slug:org>/<slug:app>/',
@@ -70,7 +80,7 @@ urlpatterns = [
          EventList.as_view(), name='app-events'),
 
     path('<slug:org>/<slug:app>/channels/',
-         ChannelList.as_view(), name='app-channels'),
+         ChannelListView.as_view(), name='app-channels'),
 
     path('<slug:org>/<slug:app>/messages/',
          MessageList.as_view(), name='app-messages'),

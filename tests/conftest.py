@@ -130,3 +130,9 @@ def subscription2(user2, channel2, message2):
 def token1(db):
     from mercury.utils.tests.factories import ApiTokenFactory
     return ApiTokenFactory()
+
+
+@pytest.fixture
+def system_channel(db):
+    from mercury.utils.tests.factories import ChannelFactory
+    return ChannelFactory(application=None, system=True)
