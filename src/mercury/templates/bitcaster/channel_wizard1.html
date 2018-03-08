@@ -1,7 +1,11 @@
-{% extends "bitcaster/channel_wizard0.html" %}{% load i18n %}
+{% extends "bitcaster/channel_wizard0.html" %}{% load i18n crispy_forms_filters %}
 
 {% block wizard-content %}
     <div class="row">
+{#    z {{ wizard.errors }}#}
+{#    a {{ wizard.form|crispy }}#}
+{#    b {{ wizard.form.errors|as_crispy_errors }}#}
+{#    c {{ wizard.form.handler.errors|as_crispy_errors }}#}
         {% for handler in registry %}
             <div id="id_{{ handler.fqn|slugify }}" class="col-2 inline text-center align-content-center handler box p-2">
                 <a href="#" class="handler-selector" data-value="{{ handler.fqn }}">
@@ -16,7 +20,6 @@
         {% endfor %}
     </div>
     {{ wizard.form.handler }}
-
 {% endblock wizard-content %}
 
 {% block js %}

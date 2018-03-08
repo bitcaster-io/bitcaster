@@ -1,14 +1,6 @@
-{% extends "bitcaster/channel_wizard0.html" %}{% load i18n crispy_forms_tags mercury %}
+{% extends "bitcaster/channel_wizard0.html" %}{% load i18n crispy_forms_tags bc_wizard mercury %}
 {% block wizard-content %}
     {{ form|crispy }}
-    -----
-    {{ form.config }}
-    {% render_serializer serializer "rest_framework/inline2" %}
+{#    {% render_serializer_errors form.serializer %}#}
+    {% render_serializer form.serializer "rest_framework/inline2" %}
 {% endblock wizard-content %}
-{% block js %}
-    {{ block.super }}
-    <script>
-
-
-    </script>
-{% endblock %}

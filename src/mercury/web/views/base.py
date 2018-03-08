@@ -82,7 +82,7 @@ class SelectedApplicationMixin(ApplicationListMixin):
         return None
 
 
-class MessageUserMixin(object):
+class MessageUserMixin:
     def message_user(self, message, level=messages.SUCCESS, extra_tags='',
                      fail_silently=False):
         messages.add_message(self.request, level, message, extra_tags=extra_tags, fail_silently=fail_silently)

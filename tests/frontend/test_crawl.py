@@ -1,5 +1,9 @@
 import pytest
 from django.core import mail
+from strategy_field.utils import fqn
+
+from mercury.dispatchers import Email
+from mercury.models import Channel
 
 pytestmark = pytest.mark.django_db
 
@@ -49,4 +53,29 @@ def test_initial_setup(django_app, application1):
     # url = link.attrs['href']
     # res = django_app.get(url)
     # assert 'Create application' in str(res.content)
-    #
+
+
+def test_system_channels_wizard(django_app, admin):
+    res = django_app.get('/', user=admin)
+    res = res.click("Settings")
+    res = res.click("Channels")
+    res = res.click("Create channel")
+
+    res.form['a-handler'] = fqn(Email)
+    res = res.form.submit()
+
+    res.form['b-name'] = 'Channel1'
+    res = res.form.submit()
+
+    res.form['username'] = 'username'
+    res.form['password'] = 'password'
+    res.form['server'] = 'localhost'
+    res.form['port'] = '24'
+    res.form['sender'] = 'me@example.com'
+    res = res.form.submit().follow()
+
+    channel = Channel.objects.filter(name='Channel1', system=True).first()
+    assert channel
+    assert channel.config['username'] == 'username'
+    assert channel.config['password'] == 'password'
+    assert channel.config['server'] == 'localhost'

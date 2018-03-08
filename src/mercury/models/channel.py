@@ -35,7 +35,7 @@ class Channel(AbstractModel):
     """ A Channel represent a configured dispatcher.
 It can be Global or Application specific.
     """
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     organization = models.ForeignKey(Organization,
                                      null=True,
                                      blank=True,
@@ -48,7 +48,6 @@ It can be Global or Application specific.
                                     related_name='channels')
     system = models.BooleanField(default=False)
     config = EncryptedJSONField(null=True, blank=True)
-    # configured = models.BooleanField(default=False)
     enabled = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
     handler = StrategyField(verbose_name='Dispatcher',
@@ -56,6 +55,9 @@ It can be Global or Application specific.
                             display_attribute='name',
                             registry=dispatcher_registry)
     deprecated = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = (('organization', 'name'),)
 
     def __repr__(self):
         return f"<Channel #{self.id} {self.name}>"
