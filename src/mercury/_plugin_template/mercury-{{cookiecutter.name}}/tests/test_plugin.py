@@ -5,8 +5,9 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from mercury.exceptions import ValidationError
 from {{cookiecutter.package_name}} import {{cookiecutter.classname}}
+
+from mercury.exceptions import ValidationError
 
 env = Env(MERCURY_{{cookiecutter.package_name|upper}}_USERNAME='',
           MERCURY_{{cookiecutter.package_name|upper}}_PASSWORD='',

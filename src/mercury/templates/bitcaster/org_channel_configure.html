@@ -1,0 +1,42 @@
+{% extends "mercury/organization_detail.html" %}{% load crispy_forms_tags i18n mercury %}
+{% block content %}
+    <h2>Configure</h2>
+    <div class="container-fluid">
+        <div class="row col-12">
+            <div class="col-10">
+                <form method="post"  class="channel-form">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    {% render_serializer form.serializer "rest_framework/inline2" %}
+                    <input type="submit" class="btn btn-primary" value="Save">
+                </form>
+            </div>
+            <div class="col-2 plugin-info">
+                <img width="100" height="100" src="{% url "plugin-icon" channel.handler.fqn %}">
+                <ul>
+                    <li class="name">
+                        {{ channel.handler.name }}
+                        {% if channel.handler.url %}
+                            <a class="url" href="{{ channel.handler.url }}">{{ channel.handler.url }}</a>
+                        {% endif %}
+                    </li>
+                    <li class="author">
+                        <div class="label">Author</div>
+                        {{ channel.handler.author }}</li>
+                    <li class="version">
+                        <div class="label">Version</div>
+                        {{ channel.handler.version }}</li>
+
+                    <li class="version">
+                        <div class="label">License</div>
+                        {{ channel.handler.license }}</li>
+
+                    <li class="version">
+                        <div class="label">Info</div>
+                        {{ channel.handler.help }}</li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -26,7 +26,9 @@ from mercury.web.views.base import (MercuryBaseCreateView,
                                     MercuryBaseDetailView,
                                     MercuryBaseUpdateView, MercuryFormView,
                                     MessageUserMixin, SelectedOrganizationMixin, )
-from mercury.web.views.channel import ChannelCreateView, ChannelCreateWizard
+from mercury.web.views.channel import (ChannelCreateWizard, ChannelDeleteView,
+                                       ChannelDeprecateView,
+                                       ChannelToggleView, ChannelUpdateView, )
 
 logger = logging.getLogger(__name__)
 
@@ -221,8 +223,47 @@ class OrganizationChannels(OrganizationViewMixin, ChannelListView):
         return super().get_context_data(**kwargs)
 
 
+class OrganizationChannelUpdate(OrganizationViewMixin, ChannelUpdateView):
+    template_name = 'bitcaster/org_channel_configure.html'
+
+    def get_queryset(self):
+        return self.selected_organization.channels.all()
+
+
+class OrganizationChannelRemove(OrganizationViewMixin, ChannelDeleteView):
+    template_name = 'bitcaster/org_channel_remove.html'
+
+    def get_success_url(self):
+        return reverse_lazy("org-channels",
+                            args=[self.selected_organization.slug])
+
+    def get_queryset(self):
+        return self.selected_organization.channels.all()
+
+
+class OrganizationChannelToggle(OrganizationViewMixin, ChannelToggleView):
+    pattern_name = 'org-channels'
+
+    def get_queryset(self):
+        return self.selected_organization.channels.all()
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse_lazy("org-channels",
+                            args=[self.selected_organization.slug])
+
+
+class OrganizationChannelDeprecate(OrganizationViewMixin, ChannelDeprecateView):
+    pattern_name = 'org-channels'
+
+    def get_queryset(self):
+        return self.selected_organization.channels.all()
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse_lazy("org-channels",
+                            args=[self.selected_organization.slug])
+
+
 class OrganizationChannelCreate(OrganizationViewMixin, ChannelCreateWizard):
-    # template_name = 'mercury/organization_channels.html'
     TEMPLATES = {"a": "bitcaster/org_channel_wizard1.html",
                  "b": "bitcaster/org_channel_wizard2.html",
                  }
@@ -232,7 +273,6 @@ class OrganizationChannelCreate(OrganizationViewMixin, ChannelCreateWizard):
 
     def get_extra_instance_kwargs(self):
         return {'organization': self.selected_organization}
-
 
 
 class OrganizationApplications(OrganizationViewMixin, MercuryBaseDetailView):

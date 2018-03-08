@@ -13,8 +13,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
-from django.views.generic import (CreateView, DetailView, FormView,
-                                  TemplateView, UpdateView, DeleteView)
+from django.views.generic import (CreateView, DeleteView, DetailView,
+                                  FormView, TemplateView, UpdateView,)
 
 from mercury.models import Organization
 

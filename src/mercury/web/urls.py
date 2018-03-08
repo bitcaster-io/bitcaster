@@ -1,19 +1,24 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from mercury.web.views.settings import SettingsChannelDeleteView, SettingsChannelToggleView, \
-    SettingsChannelDeprecateView
+from mercury.web.views.organization import (OrganizationChannelRemove,
+                                            OrganizationChannelToggle,
+                                            OrganizationChannelUpdate, OrganizationChannelDeprecate)
+from mercury.web.views.settings import (SettingsChannelDeleteView,
+                                        SettingsChannelDeprecateView,
+                                        SettingsChannelToggleView,)
+
 from .views import (ApplicationCreate, ApplicationDetail, ChannelListView,
                     EventList, IndexView, InviteAccept, InviteDelete,
                     InviteSend, LoginView, LogoutView, MessageList,
-                    OrganizationApplications, OrganizationChannels,
-                    OrganizationCreate, OrganizationDetail, OrganizationInvite,
-                    OrganizationMembers, OrganizationUpdate,
-                    SettingsChannelListView, SettingsEmailView, SettingsOAuthView,
-                    SettingsView, SetupView, SubscriptionList,
-                    SettingsChannelCreateWizard, UserProfileView, UserRegister,
-                    UserWelcomeView, WorkInProgressView, confirm_email, SettingsChannelUpdateView,
-                    OrganizationChannelCreate)
+                    OrganizationApplications, OrganizationChannelCreate,
+                    OrganizationChannels, OrganizationCreate,
+                    OrganizationDetail, OrganizationInvite, OrganizationMembers,
+                    OrganizationUpdate, SettingsChannelCreateWizard,
+                    SettingsChannelListView, SettingsChannelUpdateView,
+                    SettingsEmailView, SettingsOAuthView, SettingsView,
+                    SetupView, SubscriptionList, UserProfileView, UserRegister,
+                    UserWelcomeView, WorkInProgressView, confirm_email,)
 
 urlpatterns = [
     path('setup/', SetupView.as_view(), name='setup'),
@@ -22,12 +27,16 @@ urlpatterns = [
     path('settings/', SettingsView.as_view(), name='settings'),
     path('settings/email/', SettingsEmailView.as_view(), name='settings-email'),
     path('settings/oauth/', SettingsOAuthView.as_view(), name='settings-oauth'),
-    path('settings/channel/list/', SettingsChannelListView.as_view(), name='settings-channels'),
+    path('settings/channel/', SettingsChannelListView.as_view(), name='settings-channels'),
     path('settings/channel/add/', SettingsChannelCreateWizard.as_view(), name='system-channel-create'),
     path('settings/channel/<int:pk>/edit/', SettingsChannelUpdateView.as_view(), name='system-channel-update'),
     path('settings/channel/<int:pk>/delete/', SettingsChannelDeleteView.as_view(), name='system-channel-delete'),
-    path('settings/channel/<int:pk>/toggle/', SettingsChannelToggleView.as_view(), name='system-channel-toggle'),
-    path('settings/channel/<int:pk>/deprecate/', SettingsChannelDeprecateView.as_view(), name='system-channel-deprecate'),
+    path('settings/channel/<int:pk>/toggle/',
+         SettingsChannelToggleView.as_view(),
+         name='system-channel-toggle'),
+    path('settings/channel/<int:pk>/deprecate/',
+         SettingsChannelDeprecateView.as_view(),
+         name='system-channel-deprecate'),
     path('plugins/info/<str:fqn>/', WorkInProgressView.as_view(),
          name='plugin-info'),
 
@@ -66,8 +75,15 @@ urlpatterns = [
     path('<slug:org>/details/', OrganizationDetail.as_view(), name='org-index'),
     path('<slug:org>/update/', OrganizationUpdate.as_view(), name='org-config'),
     path('<slug:org>/members/', OrganizationMembers.as_view(), name='org-members'),
-    path('<slug:org>/channels/', OrganizationChannels.as_view(), name='org-channels'),
-    path('<slug:org>/channels/add/', OrganizationChannelCreate.as_view(), name='org-channel-create'),
+    path('<slug:org>/channel/', OrganizationChannels.as_view(), name='org-channels'),
+    path('<slug:org>/channel/add/', OrganizationChannelCreate.as_view(), name='org-channel-create'),
+    path('<slug:org>/channel/<int:pk>/edit/', OrganizationChannelUpdate.as_view(), name='org-channel-update'),
+    path('<slug:org>/channel/<int:pk>/delete/', OrganizationChannelRemove.as_view(), name='org-channel-delete'),
+    path('<slug:org>/channel/<int:pk>/toggle/', OrganizationChannelToggle.as_view(), name='org-channel-toggle'),
+    path('<slug:org>/channel/<int:pk>/deprecate/', OrganizationChannelDeprecate.as_view(),
+         name='org-channel-deprecate'),
+
+
     path('<slug:org>/applications/', OrganizationApplications.as_view(), name='org-applications'),
 
     path('<slug:org>/<slug:app>/',

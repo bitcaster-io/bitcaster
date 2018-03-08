@@ -14,8 +14,8 @@ def upgrade(ctx, prompt, **kwargs):
             noinput = ''
         else:
             noinput = '--no-input'
-        execute_from_command_line(argv=['manage', 'collectstatic', noinput])
         execute_from_command_line(argv=['manage', 'migrate', noinput])
+        execute_from_command_line(argv=['manage', 'collectstatic', noinput])
     except Exception as e:
         click.echo(str(e))
         ctx.abort()

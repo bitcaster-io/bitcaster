@@ -9,8 +9,7 @@ mercury / __init__.py
 from .application import *  # noqa
 from .base import MercuryTemplateView  # noqa
 from .callbacks import confirm_email  # noqa
-from .channel import (ChannelListView,  # noqa
-                      ChannelCreateWizard,)
+from .channel import ChannelCreateWizard, ChannelListView  # noqa
 from .login_logout import LoginView, LogoutView  # noqa
 from .organization import *  # noqa
 from .register import *  # noqa

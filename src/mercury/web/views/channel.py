@@ -5,9 +5,8 @@ from django import forms
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import ListView, RedirectView, DetailView
+from django.views.generic import RedirectView
 from formtools.wizard.forms import ManagementForm
 from formtools.wizard.views import SessionWizardView
 from strategy_field.utils import import_by_name
@@ -15,9 +14,10 @@ from strategy_field.utils import import_by_name
 from mercury.dispatchers import dispatcher_registry
 from mercury.models import Channel
 from mercury.web.forms.channel import ChannelUpdateConfigurationForm
-from mercury.web.views.base import (MessageUserMixin, SelectedApplicationMixin, MercuryTemplateView,
-                                    MercuryBaseUpdateView, MercuryBaseDeleteView, SelectedOrganizationMixin,
-                                    MercuryBaseCreateView)
+from mercury.web.views.base import (MercuryBaseCreateView,
+                                    MercuryBaseDeleteView,
+                                    MercuryBaseUpdateView, MercuryTemplateView,
+                                    MessageUserMixin, SelectedOrganizationMixin,)
 
 logger = logging.getLogger(__name__)
 
@@ -144,9 +144,8 @@ class ChannelListView(MercuryTemplateView):
 
 
 class ChannelUpdateView(MercuryBaseUpdateView):
-    template_name = 'bitcaster/settings/channel_configure.html'
+    # template_name = 'bitcaster/settings/channel_configure.html'
     form_class = ChannelUpdateConfigurationForm
-    success_url = reverse_lazy("settings-channels")
 
     def get_queryset(self):
         return self.selected_organization.channels
@@ -154,14 +153,14 @@ class ChannelUpdateView(MercuryBaseUpdateView):
 
 class ChannelDeleteView(MercuryBaseDeleteView):
     def get_queryset(self):
-        return self.selected_organization.channels
+        raise NotImplementedError
 
 
 class ChannelDeprecateView(SelectedOrganizationMixin, MessageUserMixin, RedirectView):
-    url = reverse_lazy("settings-channels")
+    # url = reverse_lazy("settings-channels")
 
     def get_queryset(self):
-        return self.selected_organization.channels
+        raise NotImplementedError
 
     def get(self, request, *args, **kwargs):
         obj = self.get_queryset().get(id=kwargs['pk'])
@@ -173,10 +172,12 @@ class ChannelDeprecateView(SelectedOrganizationMixin, MessageUserMixin, Redirect
 
 
 class ChannelToggleView(SelectedOrganizationMixin, MessageUserMixin, RedirectView):
-    url = reverse_lazy("settings-channels")
 
     def get_queryset(self):
-        return self.selected_organization.channels
+        raise NotImplemented
+
+    def get_redirect_url(self, *args, **kwargs):
+        raise NotImplemented
 
     def get(self, request, *args, **kwargs):
         obj = self.get_queryset().get(id=kwargs['pk'])
@@ -185,4 +186,3 @@ class ChannelToggleView(SelectedOrganizationMixin, MessageUserMixin, RedirectVie
         op = "enabled" if obj.enabled else "disabled"
         self.message_user(f'Channel {op}')
         return super().get(request, *args, **kwargs)
-

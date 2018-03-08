@@ -136,3 +136,10 @@ def token1(db):
 def system_channel(db):
     from mercury.utils.tests.factories import ChannelFactory
     return ChannelFactory(application=None, system=True)
+
+
+@pytest.fixture
+def org_channel(db, organization1):
+    from mercury.utils.tests.factories import ChannelFactory
+    return ChannelFactory(organization=organization1,
+                          application=None, system=False)

@@ -1,7 +1,6 @@
 import pytest
 from django.core import mail
 from django.urls import reverse
-from pytest import fail
 from strategy_field.utils import fqn
 
 from mercury.dispatchers import Email
@@ -98,3 +97,80 @@ def test_system_edit_channel_validate(django_app, admin, system_channel):
     res.form['timeout'] = "abc"
     res = res.form.submit()
     assert res.status_code == 200
+
+
+def test_system_list_channel(django_app, admin, system_channel):
+    _list = django_app.get(reverse('settings-channels'), user=admin)
+    res = _list.click("Configure")
+    assert res.status_code == 200
+
+    res = _list.click("Hide").follow()
+    system_channel.refresh_from_db()
+    assert system_channel.deprecated
+    res = res.click("Show").follow()
+    system_channel.refresh_from_db()
+    assert not system_channel.deprecated
+
+    res = _list.click("Disable").follow()
+    system_channel.refresh_from_db()
+    assert not system_channel.enabled
+    res = res.click("Enable")
+    system_channel.refresh_from_db()
+    assert system_channel.enabled
+
+    res = _list.click("Remove")
+    res = res.form.submit().follow()
+    with pytest.raises(Channel.DoesNotExist):
+        assert not system_channel.refresh_from_db()
+
+
+def test_organization_channels_wizard(django_app, organization1):
+    res = django_app.get('/', user=organization1.owner).follow()
+    res = res.click(f"{organization1.name}")
+    res = res.click("Channels")
+    res = res.click("Create channel")
+
+    res.form['a-handler'] = fqn(Email)
+    res = res.form.submit()
+    res.form['b-name'] = 'Channel1'
+    res = res.form.submit()
+
+    res.form['username'] = 'username'
+    res.form['password'] = 'password'
+    res.form['server'] = 'localhost'
+    res.form['port'] = '24'
+    res.form['sender'] = 'me@example.com'
+    res = res.form.submit().follow()
+
+    channel = Channel.objects.filter(name='Channel1',
+                                     organization=organization1,
+                                     system=False).first()
+    assert channel
+    assert channel.config['username'] == 'username'
+    assert channel.config['password'] == 'password'
+    assert channel.config['server'] == 'localhost'
+
+
+def test_organization_list_channel(django_app, org_channel):
+    _list = django_app.get(reverse('org-channels',
+                                   args=[org_channel.organization.slug]),
+                           user=org_channel.organization.owner)
+
+    res = _list.click("Hide").follow()
+    org_channel.refresh_from_db()
+    assert org_channel.deprecated
+    res = res.click("Show").follow()
+    org_channel.refresh_from_db()
+    assert not org_channel.deprecated
+
+    res = _list.click("Disable").follow()
+    org_channel.refresh_from_db()
+    assert not org_channel.enabled
+    res = res.click("Enable")
+    org_channel.refresh_from_db()
+    assert org_channel.enabled
+
+    res = _list.click("Remove")
+    res = res.form.submit().follow()
+    with pytest.raises(Channel.DoesNotExist):
+        assert not org_channel.refresh_from_db()

@@ -1,7 +1,0 @@
-{% extends "bitcaster/channel_wizard0.html" %}{% load i18n crispy_forms_tags mercury %}
-{% block wizard-content %}
-    {{ wizard }}
-    {% for k,v in  view.storage.data.items  %}
-    <div class="row col-10">{{ k }}: {{ v }}</div>
-     {% endfor %}
-{% endblock wizard-content %}
