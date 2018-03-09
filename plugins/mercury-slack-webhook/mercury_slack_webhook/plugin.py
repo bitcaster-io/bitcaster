@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+import requests
 from django.conf.urls.static import static
 from django.utils.translation import ugettext as _
 
-import requests
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions,)
@@ -42,11 +42,15 @@ class SlackWebhook(Dispatcher):
     subscription_class = SlackWebhookSubscriptionOptions
     __license__ = 'MIT'
     __author__ = 'unknown'
-    __help__ = "https://saxix.slack.com/apps/A0F7XDUAZ-incoming-webhooks?page=1"
+    __help__ = """To use this plugin you need to enable the `Incoming WebHooks`
+ application in you Slack console.
+Navigate to https://<YOUR_SPACE>.slack.com/apps/" and enable `Incoming WebHooks`.
+
+"""
 
     @classproperty
     def name(cls):
-        return 'SlackWebhook'
+        return 'SlackWebHook'
 
     def _get_connection(self):
         s = requests.Session()

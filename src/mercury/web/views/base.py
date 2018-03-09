@@ -10,13 +10,15 @@ mercury / base
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views.generic import (CreateView, DeleteView, DetailView,
                                   FormView, TemplateView, UpdateView,)
+from strategy_field.utils import import_by_name
 
 from mercury.models import Organization
+from mercury.security import authorized_or_403
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +32,7 @@ class SecuredViewMixin:
         return super().dispatch(request, *args, **kwargs)
 
 
-@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
+@method_decorator(authorized_or_403(lambda u: u.is_superuser), name='dispatch')
 class SuperuserViewMixin(SecuredViewMixin):
     def check_perms(self, request, obj=None, raise_exception=False):
         return request.user.has_perm(obj)
@@ -120,3 +122,14 @@ class MercuryBaseDeleteView(MercuryBaseViewMixin, DeleteView):
 
 class MercuryBaseDetailView(MercuryBaseViewMixin, DetailView):
     pass
+
+
+class PluginInfo(MercuryTemplateView):
+    template_name = "bitcaster/plugin_info.html"
+
+    def get_context_data(self, **kwargs):
+        handler = import_by_name(self.kwargs['fqn'])
+        return super().get_context_data(handler=handler, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)

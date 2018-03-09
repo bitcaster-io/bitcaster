@@ -1,0 +1,96 @@
+# -*- coding: utf-8 -*-
+"""
+mercury / test_system
+~~~~~~~~~~~~~~~~~
+
+:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
+:license: BSD, see LICENSE for more details.
+"""
+
+import logging
+
+import pytest
+from django.urls import reverse
+from strategy_field.utils import fqn
+
+from mercury.dispatchers import Email
+from mercury.models import Channel
+
+logger = logging.getLogger(__name__)
+
+
+def test_system_channels_wizard(django_app, admin):
+    res = django_app.get('/', user=admin)
+    res = res.click("Settings")
+    res = res.click("Channels")
+    res = res.click("Create channel")
+
+    res.form['a-handler'] = fqn(Email)
+    res = res.form.submit()
+    res.form['b-name'] = 'Channel1'
+    res = res.form.submit()
+
+    res.form['username'] = 'username'
+    res.form['password'] = 'password'
+    res.form['server'] = 'localhost'
+    res.form['port'] = '24'
+    res.form['sender'] = 'me@example.com'
+    res = res.form.submit().follow()
+
+    channel = Channel.objects.filter(name='Channel1', system=True).first()
+    assert channel
+    assert channel.config['username'] == 'username'
+    assert channel.config['password'] == 'password'
+    assert channel.config['server'] == 'localhost'
+
+
+def test_system_edit_channel(django_app, admin, system_channel):
+    res = django_app.get(reverse('system-channel-update', args=[system_channel.pk]),
+                         user=admin)
+    res.form['name'] = 'NewName'
+    res = res.form.submit().follow()
+    assert res.status_code == 200
+    system_channel.refresh_from_db()
+    assert system_channel.name == 'NewName'
+
+
+def test_system_edit_channel_validate(django_app, admin, system_channel):
+    res = django_app.get(reverse('system-channel-update', args=[system_channel.pk]),
+                         user=admin)
+    res.form['timeout'] = "abc"
+    res = res.form.submit()
+    assert res.status_code == 200
+
+
+def test_system_list_channel(django_app, admin, system_channel):
+    _list = django_app.get(reverse('settings-channels'), user=admin)
+    res = _list.click("Configure")
+    assert res.status_code == 200
+
+    res = _list.click("Hide").follow()
+    system_channel.refresh_from_db()
+    assert system_channel.deprecated
+    res = res.click("Show").follow()
+    system_channel.refresh_from_db()
+    assert not system_channel.deprecated
+
+    res = _list.click("Disable").follow()
+    system_channel.refresh_from_db()
+    assert not system_channel.enabled
+    res = res.click("Enable")
+    system_channel.refresh_from_db()
+    assert system_channel.enabled
+
+    res = _list.click("Remove")
+    res = res.form.submit().follow()
+    with pytest.raises(Channel.DoesNotExist):
+        assert not system_channel.refresh_from_db()
+
+
+@pytest.mark.parametrize('url', ['system-channel-update', 'system-channel-toggle',
+                                 'system-channel-deprecate', 'system-channel-delete'])
+def test_system_channel_security(url, django_app, organization1, system_channel):
+    res = django_app.get(reverse(url, args=[system_channel.pk]),
+                         expect_errors=True,
+                         user=organization1.owner)
+    assert res.status_code == 403

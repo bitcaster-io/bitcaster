@@ -5,8 +5,8 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from mercury.exceptions import PluginValidationError, RecipientNotFound
 
+from mercury.exceptions import PluginValidationError, RecipientNotFound
 from mercury_skype import Skype
 
 env = Env(MERCURY_SKYPE_USERNAME='',

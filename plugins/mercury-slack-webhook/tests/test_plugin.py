@@ -5,6 +5,7 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
+
 from mercury.exceptions import PluginValidationError
 from mercury_slack_webhook import SlackWebhook
 

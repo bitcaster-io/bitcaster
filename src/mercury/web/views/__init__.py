@@ -7,7 +7,7 @@ mercury / __init__.py
 :license: BSD, see LICENSE for more details.
 """
 from .application import *  # noqa
-from .base import MercuryTemplateView  # noqa
+from .base import *  # noqa
 from .callbacks import confirm_email  # noqa
 from .channel import ChannelCreateWizard, ChannelListView  # noqa
 from .login_logout import LoginView, LogoutView  # noqa

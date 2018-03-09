@@ -30,6 +30,9 @@ logger = logging.getLogger(__name__)
 __all__ = ["SettingsView", "SettingsOAuthView",
            "SettingsEmailView", "SettingsChannelListView",
            "SettingsChannelUpdateView",
+           "SettingsChannelDeleteView",
+           "SettingsChannelDeprecateView",
+           "SettingsChannelToggleView",
            "SettingsChannelCreateWizard",
            ]
 
@@ -86,13 +89,10 @@ class SettingsChannelCreateWizard(ChannelCreateWizard):
 
 class SettingsChannelListView(SuperuserViewMixin, ChannelListView):
     template_name = 'bitcaster/settings/channel_list.html'
-    title = 'Channels'
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = _("System channels")
-        kwargs['channels'] = Channel.objects.filter(system=True)
         kwargs['create_url'] = reverse("system-channel-create")
-
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):

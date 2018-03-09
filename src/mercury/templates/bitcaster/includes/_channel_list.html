@@ -24,16 +24,12 @@
                 <strong>{{ channel.name }}</strong>
                 <div class="pt-3">
                     <a href="{{ channel.pk }}/edit/">Configure</a>
-{#                    | <a href="{% url "system-channel-toggle" channel.pk %}">#}
                     | <a href="{{ channel.pk }}/toggle/">
                     {% if channel.enabled %}Disable{% else %}<strong>Enable</strong>{% endif %}</a>
-{#                    | <a href="{% url "system-channel-delete" channel.pk %}">Remove</a>#}
                     | <a href="{{ channel.pk }}/delete/">Remove</a>
-{#                    | <a href="{% url "system-channel-deprecate" channel.pk %}">#}
                     | <a href="{{ channel.pk }}/deprecate/">
                     {% if channel.deprecated %}<strong>Show</strong>{% else %}Hide{% endif %}
-                </a>
-
+                    | <a class="plugin-info-btn" href="{% url "plugin-info" channel.handler.fqn %}">plugin info</a>
                 </div>
             </div>
             <div class="col-1 text-center vertical-align-center h4">

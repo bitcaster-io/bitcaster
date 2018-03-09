@@ -20,20 +20,21 @@ from mercury.otp import totp
 from mercury.security import is_owner
 from mercury.web.forms import (OrganizationForm, OrganizationInvitationForm,
                                OrganizationInvitationFormSet,
-                               UserInviteRegistrationForm, )
-from mercury.web.views import ChannelListView
-from mercury.web.views.base import (MercuryBaseCreateView,
-                                    MercuryBaseDetailView,
-                                    MercuryBaseUpdateView, MercuryFormView,
-                                    MessageUserMixin, SelectedOrganizationMixin, )
-from mercury.web.views.channel import (ChannelCreateWizard, ChannelDeleteView,
-                                       ChannelDeprecateView,
-                                       ChannelToggleView, ChannelUpdateView, )
+                               UserInviteRegistrationForm,)
+
+from .base import (MercuryBaseCreateView, MercuryBaseDetailView,
+                   MercuryBaseUpdateView, MercuryFormView, MessageUserMixin,
+                   SelectedOrganizationMixin,)
+from .channel import (ChannelCreateWizard, ChannelDeleteView,
+                      ChannelDeprecateView, ChannelListView,
+                      ChannelToggleView, ChannelUpdateView,)
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["OrganizationCreate", "OrganizationDetail", "OrganizationUpdate",
            "OrganizationMembers", "OrganizationChannels",
+           "OrganizationChannelRemove", "OrganizationChannelToggle",
+           "OrganizationChannelUpdate", "OrganizationChannelDeprecate",
            "OrganizationInvite", "InviteDelete", "InviteSend", "InviteAccept",
            "OrganizationApplications", "OrganizationChannelCreate"]
 
@@ -218,6 +219,7 @@ class OrganizationChannels(OrganizationViewMixin, ChannelListView):
         return self.selected_organization.channels.all()
 
     def get_context_data(self, **kwargs):
+        kwargs['title'] = _("Organization Channels")
         kwargs['create_url'] = reverse("org-channel-create",
                                        args=[self.selected_organization.slug])
         return super().get_context_data(**kwargs)
@@ -225,6 +227,10 @@ class OrganizationChannels(OrganizationViewMixin, ChannelListView):
 
 class OrganizationChannelUpdate(OrganizationViewMixin, ChannelUpdateView):
     template_name = 'bitcaster/org_channel_configure.html'
+
+    def get_success_url(self):
+        return reverse_lazy("org-channels",
+                            args=[self.selected_organization.slug])
 
     def get_queryset(self):
         return self.selected_organization.channels.all()

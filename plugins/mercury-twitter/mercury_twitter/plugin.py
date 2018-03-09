@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 # import twitter
 from django.utils.safestring import mark_safe
+from python_twitter import api
 
 from mercury.api.fields import PasswordField
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                      MessageType, SubscriptionOptions, )
+                                      MessageType, SubscriptionOptions,)
 from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import PluginValidationError, PluginSendError
+from mercury.exceptions import PluginSendError, PluginValidationError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
-from python_twitter import api
 
 logger = getLogger('mercury.plugins.twitter')
 
@@ -36,7 +36,7 @@ class Twitter(Dispatcher):
     message_class = TwitterMessage
     subscription_class = TwitterSubscriptionOptions
     __license__ = 'MIT'
-    __author__ = 'unknown'
+    __author__ = 'Bitcaster'
     __help__ = mark_safe("""
 Get your keys at <a target='_new' href='https://apps.twitter.com/'>https://apps.twitter.com/</a>
 """)

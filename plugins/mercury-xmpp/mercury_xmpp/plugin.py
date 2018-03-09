@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from pyxmpp2.simple import send_message
+
 from mercury.api.fields import PasswordField
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
@@ -7,7 +9,6 @@ from mercury.dispatchers.registry import dispatcher_registry
 from mercury.exceptions import PluginSendError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
-from pyxmpp2.simple import send_message
 
 logger = getLogger('mercury.plugins.xmpp')
 
@@ -31,7 +32,7 @@ class Xmpp(Dispatcher):
     options_class = XmppOptions
     message_class = MessageType
     __license__ = 'MIT'
-    __author__ = 'unknown'
+    __author__ = 'Bitcaster'
 
     @classproperty
     def name(cls):

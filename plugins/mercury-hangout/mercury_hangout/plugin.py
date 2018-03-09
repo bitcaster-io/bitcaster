@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+from pyxmpp2.client import Client
+from pyxmpp2.jid import JID
+from pyxmpp2.mainloop.interfaces import QUIT, EventHandler, event_handler
+from pyxmpp2.message import Message
+from pyxmpp2.settings import XMPPSettings
+from pyxmpp2.streamevents import (AuthorizedEvent, ConnectedEvent,
+                                  DisconnectedEvent,)
+
 from mercury.api.fields import PasswordField
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
@@ -7,13 +15,6 @@ from mercury.dispatchers.registry import dispatcher_registry
 from mercury.exceptions import PluginSendError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
-from pyxmpp2.client import Client
-from pyxmpp2.jid import JID
-from pyxmpp2.mainloop.interfaces import QUIT, EventHandler, event_handler
-from pyxmpp2.message import Message
-from pyxmpp2.settings import XMPPSettings
-from pyxmpp2.streamevents import (AuthorizedEvent, ConnectedEvent,
-                                  DisconnectedEvent,)
 
 logger = getLogger('mercury.plugins.hangout')
 
@@ -85,7 +86,7 @@ class Hangout(Dispatcher):
     options_class = HangoutOptions
     message_class = MessageType
     __license__ = 'MIT'
-    __author__ = 'unknown'
+    __author__ = 'Bitcaster'
 
     @classproperty
     def name(cls):

@@ -20,5 +20,5 @@ def test_cli_upgrade(db):
         config_file = Path('./aaa')
         result = runner.invoke(upgrade, ['--no-input'],
                                obj={'config': str(config_file),
-                                             'env': env})
+                                    'env': env})
         assert result.exit_code == 0, result.output

@@ -29,8 +29,9 @@ sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 
 @admin.register(Channel, site=site)
 class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
-    list_display = ('name', 'application', 'handler_name', 'enabled')
-    list_filter = ('application',)
+    list_display = ('name', 'organization', 'application',
+                    'handler_name', 'enabled', 'system')
+    list_filter = ('application', 'system', 'enabled', 'deprecated')
     list_editable = ('enabled',)
     form = ChannelForm
 

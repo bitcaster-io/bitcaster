@@ -33,7 +33,7 @@ class Plivo(Dispatcher):
     options_class = PlivoOptions
     message_class = PlivoMessage
     __license__ = 'MIT'
-    __author__ = 'unknown'
+    __author__ = 'Bitcaster'
 
     @classproperty
     def name(cls):

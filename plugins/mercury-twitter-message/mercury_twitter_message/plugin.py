@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
+from python_twitter import api
+
 from mercury.api.fields import PasswordField
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                      MessageType, SubscriptionOptions, )
+                                      MessageType, SubscriptionOptions,)
 from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import PluginValidationError, PluginSendError
+from mercury.exceptions import PluginSendError, PluginValidationError
 from mercury.logging import getLogger
 from mercury.utils.language import classproperty
-from python_twitter import api
 
 logger = getLogger('mercury.plugins.twitter')
 
@@ -34,7 +35,7 @@ class TwitterMessage(Dispatcher):
     message_class = TwitterMessageType
     subscription_class = TwitterMessageSubscriptionOptions
     __license__ = 'MIT'
-    __author__ = 'unknown'
+    __author__ = 'Bitcaster'
     __help__ = """
     https://apps.twitter.com
 """

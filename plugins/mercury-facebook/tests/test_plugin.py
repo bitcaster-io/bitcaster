@@ -5,8 +5,8 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from mercury.exceptions import PluginValidationError
 
+from mercury.exceptions import PluginValidationError
 from mercury_facebook import Facebook
 
 env = Env(MERCURY_FACEBOOK_KEY='',

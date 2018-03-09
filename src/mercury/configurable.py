@@ -72,9 +72,9 @@ class ConfigurableMixin:
     def version(cls):
         try:
             import pkg_resources  # part of setuptools
-            return pkg_resources.require("mercury-" + package_name(cls))[0].version
+            return pkg_resources.require(package_name(cls))[0].version
         except Exception:
-            return "unknown"
+            return f"unknown"
 
     @classproperty
     def license(cls):

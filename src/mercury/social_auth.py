@@ -31,9 +31,6 @@ def associate_invitation(backend, details, user=None, *args, **kwargs):
 def avatar(backend, details, user=None, *args, **kwargs):
     # user.is_new = True
     is_new = kwargs.get('is_new', False)
-    print(111, details)
-    print(111, user)
-    print(111, backend)
     if is_new:
         pass
 

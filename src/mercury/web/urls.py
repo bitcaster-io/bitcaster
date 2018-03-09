@@ -1,23 +1,20 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from mercury.web.views.organization import (OrganizationChannelRemove,
-                                            OrganizationChannelToggle,
-                                            OrganizationChannelUpdate, OrganizationChannelDeprecate)
-from mercury.web.views.settings import (SettingsChannelDeleteView,
-                                        SettingsChannelDeprecateView,
-                                        SettingsChannelToggleView,)
-
 from .views import (ApplicationCreate, ApplicationDetail, ChannelListView,
                     EventList, IndexView, InviteAccept, InviteDelete,
                     InviteSend, LoginView, LogoutView, MessageList,
                     OrganizationApplications, OrganizationChannelCreate,
-                    OrganizationChannels, OrganizationCreate,
+                    OrganizationChannelDeprecate, OrganizationChannelRemove,
+                    OrganizationChannels, OrganizationChannelToggle,
+                    OrganizationChannelUpdate, OrganizationCreate,
                     OrganizationDetail, OrganizationInvite, OrganizationMembers,
-                    OrganizationUpdate, SettingsChannelCreateWizard,
-                    SettingsChannelListView, SettingsChannelUpdateView,
-                    SettingsEmailView, SettingsOAuthView, SettingsView,
-                    SetupView, SubscriptionList, UserProfileView, UserRegister,
+                    OrganizationUpdate, PluginInfo, SettingsChannelCreateWizard,
+                    SettingsChannelDeleteView, SettingsChannelDeprecateView,
+                    SettingsChannelListView, SettingsChannelToggleView,
+                    SettingsChannelUpdateView, SettingsEmailView,
+                    SettingsOAuthView, SettingsView, SetupView,
+                    SubscriptionList, UserProfileView, UserRegister,
                     UserWelcomeView, WorkInProgressView, confirm_email,)
 
 urlpatterns = [
@@ -37,7 +34,7 @@ urlpatterns = [
     path('settings/channel/<int:pk>/deprecate/',
          SettingsChannelDeprecateView.as_view(),
          name='system-channel-deprecate'),
-    path('plugins/info/<str:fqn>/', WorkInProgressView.as_view(),
+    path('plugins/info/<str:fqn>/', PluginInfo.as_view(),
          name='plugin-info'),
 
     path('', include('social_django.urls', namespace='social')),
@@ -82,7 +79,6 @@ urlpatterns = [
     path('<slug:org>/channel/<int:pk>/toggle/', OrganizationChannelToggle.as_view(), name='org-channel-toggle'),
     path('<slug:org>/channel/<int:pk>/deprecate/', OrganizationChannelDeprecate.as_view(),
          name='org-channel-deprecate'),
-
 
     path('<slug:org>/applications/', OrganizationApplications.as_view(), name='org-applications'),
 

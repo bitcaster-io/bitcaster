@@ -5,8 +5,9 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from mercury.exceptions import PluginValidationError
 from mercury_twitter_message import TwitterMessage
+
+from mercury.exceptions import PluginValidationError
 
 env = Env(MERCURY_TWITTER_CONSUMER_KEY='',
           MERCURY_TWITTER_CONSUMER_SECRET='',

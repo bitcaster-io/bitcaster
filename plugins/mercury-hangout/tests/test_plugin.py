@@ -5,8 +5,8 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from mercury.exceptions import PluginValidationError
 
+from mercury.exceptions import PluginValidationError
 from mercury_hangout import Hangout
 
 env = Env(MERCURY_HANGOUT_USERNAME='',

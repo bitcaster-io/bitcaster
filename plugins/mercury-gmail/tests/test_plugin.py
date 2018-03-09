@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
+import vcr as _vcr
 from environ import Env
-from pathlib import Path
 
 from mercury.exceptions import PluginValidationError
-
 from mercury_gmail import Gmail
-import vcr as _vcr
 
 env = Env(MERCURY_GMAIL_USERNAME='',
           MERCURY_GMAIL_PASSWORD='',

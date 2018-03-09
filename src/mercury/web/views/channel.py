@@ -132,13 +132,11 @@ class ChannelCreateView(MercuryBaseCreateView):
 
 
 class ChannelListView(MercuryTemplateView):
-    title = _("Organization channels")
 
     def get_queryset(self):
         raise NotImplementedError
 
     def get_context_data(self, **kwargs):
-        kwargs['title'] = self.title
         kwargs['channels'] = self.get_queryset()
         return super().get_context_data(**kwargs)
 

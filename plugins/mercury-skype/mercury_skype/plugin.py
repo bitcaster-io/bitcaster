@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import skpy.main
+
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions,)
@@ -30,7 +31,7 @@ class Skype(Dispatcher):
     options_class = SkypeOptions
     message_class = MessageType
     __license__ = 'MIT'
-    __author__ = 'unknown'
+    __author__ = 'Bitcaster'
 
     @classproperty
     def name(cls):

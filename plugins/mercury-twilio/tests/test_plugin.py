@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-
-from mercury_twilio import Twilio
-from environ import Env, json
-from pathlib import Path
 import vcr as _vcr
+from environ import Env, json
+from mercury_twilio import Twilio
 
 from mercury.exceptions import PluginValidationError
 

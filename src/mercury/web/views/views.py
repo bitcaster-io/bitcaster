@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView
 
@@ -30,6 +30,10 @@ class MessageList(SelectedApplicationMixin, ListView):
 
     def get_queryset(self):
         return self.selected_application.messages.all()
+
+
+class Error403(TemplateView):
+    response_class = HttpResponseForbidden
 
 
 class WorkInProgressView(TemplateView):

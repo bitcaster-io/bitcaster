@@ -1,0 +1,44 @@
+{% extends "bitcaster/full_modal.html" %}
+{% block modal-content %}
+    <style>
+        .h100 {
+            height: 100px;
+            line-height: 100px;
+        }
+    </style>
+    <div class="col-12 plugin-info h-100">
+        <div class="row col-12 h100 h1 align-middle">
+            <img width="100" height="100" src="{% url "plugin-icon" handler.fqn %}">
+            <div class="pl-5">{{ handler.name }}</div>
+        </div>
+        <div class="row col-12 h-100">
+            <div class="col-5 p-3 border text-truncate">
+                <ul>
+                    <li class="author">
+                        <div class="label">Author</div>
+                        {{ handler.author }}</li>
+                    <li class="version">
+                        <div class="label">Version</div>
+                        {{ handler.version }}</li>
+
+                    <li class="version">
+                        <div class="label">License</div>
+                        {{ handler.license }}</li>
+                    <li class="version">
+                        <div class="label">Classpath</div>
+                        {{ handler.fqn }}</li>
+                    <li class="author">
+                        <div class="label">Website</div>
+                        {% if handler.url %}
+                            <a class="url" href="{{ handler.url }}">{{ handler.url }}</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+            <div class="col-6 border ml-2">
+                {{ handler.help }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

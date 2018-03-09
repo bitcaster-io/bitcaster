@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from fbchat import Client, Message
+
 from mercury.api.fields import PasswordField
 from mercury.dispatchers import serializers
 from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
@@ -31,7 +32,7 @@ class Facebook(Dispatcher):
     options_class = FacebookOptions
     message_class = FacebookMessage
     __license__ = 'MIT'
-    __author__ = 'unknown'
+    __author__ = 'Bitcaster'
 
     @classproperty
     def name(cls):
