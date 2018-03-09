@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from mercury.db.fields import DeletionStatusField
+from mercury.db.fields import DeletionStatusField, Role, RoleField
 from mercury.utils import locks
 from mercury.utils.retries import TimedRetryPolicy
 from mercury.utils.slug import slugify_instance
@@ -15,8 +15,6 @@ class Team(AbstractModel):
     """
     A team represents a group of individuals which maintain ownership of projects.
     """
-    __core__ = True
-
     organization = models.ForeignKey(Organization,
                                      related_name='teams',
                                      on_delete=models.CASCADE)
@@ -26,7 +24,7 @@ class Team(AbstractModel):
     date_added = models.DateTimeField(default=timezone.now, null=True)
 
     class Meta:
-        unique_together = (('organization', 'slug'), )
+        unique_together = (('organization', 'slug'),)
 
     def __str__(self):
         return self.name
@@ -39,3 +37,14 @@ class Team(AbstractModel):
             super(Team, self).save(*args, **kwargs)
         else:
             super(Team, self).save(*args, **kwargs)
+
+
+class ApplicationTeam(AbstractModel):
+    application = models.ForeignKey('mercury.Application',
+                                    on_delete=models.CASCADE)
+    team = models.ForeignKey('mercury.Team',
+                             on_delete=models.CASCADE)
+    role = RoleField(default=Role.RECIPIENT)
+
+    class Meta:
+        unique_together = (('application', 'team'),)

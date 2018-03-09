@@ -30,4 +30,4 @@ class ApplicationForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        exclude = ['flags']
+        exclude = ['flags', 'teams']

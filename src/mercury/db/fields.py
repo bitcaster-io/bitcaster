@@ -101,11 +101,7 @@ class EncryptedPickledObjectField(PickledObjectField):
         return super().get_prep_value(value)
 
 
-class DeletionStatus(Enum):
-    ACTIVE = 1
-    PENDING_DELETION = 2
-    DELETION_IN_PROGRESS = 3
-    DEPRECATED = 4
+class EnumField(Enum):
 
     def __new__(cls, value):
         member = object.__new__(cls)
@@ -120,6 +116,20 @@ class DeletionStatus(Enum):
 
     def __lt__(self, other):
         return int(self) < int(other)
+
+    def __eq__(self, other):
+        return int(self) == int(other)
+
+    @classmethod
+    def as_choices(cls):
+        raise NotImplementedError
+
+
+class DeletionStatus(EnumField):
+    ACTIVE = 1
+    PENDING_DELETION = 2
+    DELETION_IN_PROGRESS = 3
+    DEPRECATED = 4
 
     @classmethod
     def as_choices(cls):
@@ -153,31 +163,11 @@ class DeletionStatusField(models.IntegerField):
         return str(int(self.value_from_object(obj)))
 
 
-class Role(Enum):
+class Role(EnumField):
     OWNER = 1
     ADMIN = 2
     MEMBER = 3
     RECIPIENT = 4
-
-    def __new__(cls, value):
-        member = object.__new__(cls)
-        member._value_ = value
-        return member
-
-    def __str__(self):
-        return str(self)
-
-    def __int__(self):
-        return self.value
-
-    def __eq__(self, other):
-        return int(self) == int(other)
-
-    def __gt__(self, other):
-        return int(self) > int(other)
-
-    def __lt__(self, other):
-        return int(self) < int(other)
 
     @classmethod
     def as_choices(cls):
@@ -192,6 +182,40 @@ class RoleField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
                  choices=Role.as_choices(),
                  default=int(Role.MEMBER),
+                 help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
+        super().__init__(verbose_name=verbose_name, name=name,
+                         choices=choices,
+                         db_index=db_index, serialize=serialize, default=default,
+                         help_text=help_text,
+                         db_column=db_column, db_tablespace=db_tablespace, validators=validators,
+                         error_messages=error_messages)
+
+    def get_prep_value(self, value):
+        return super().get_prep_value(int(value))
+
+    def value_to_string(self, obj):
+        """
+        Return a string value of this field from the passed obj.
+        This is used by the serialization framework.
+        """
+        return str(int(self.value_from_object(obj)))
+
+
+class SubscriptionPolicy(EnumField):
+    FREE = 1
+    INVITATION = 2
+
+    @classmethod
+    def as_choices(cls):
+        return sorted([(int(cls.FREE), _('Free. ')),
+                       (int(cls.INVITATION), _('Invitation')),
+                       ])
+
+
+class SubscriptionPolicyField(models.IntegerField):
+    def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
+                 choices=Role.as_choices(),
+                 default=int(SubscriptionPolicy.INVITATION),
                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
         super().__init__(verbose_name=verbose_name, name=name,
                          choices=choices,

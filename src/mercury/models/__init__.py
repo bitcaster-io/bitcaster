@@ -9,5 +9,6 @@ from .organization import Organization  # noqa
 from .organizationmember import OrganizationMember  # noqa
 # from .monitor import Monitor  # noqa
 from .subscription import Subscription  # noqa
+from .team import ApplicationTeam, Team  # noqa
 from .token import ApiAuthToken, ApiTriggerKey  # noqa
 from .user import User  # noqa

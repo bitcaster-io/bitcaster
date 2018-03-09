@@ -13,8 +13,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
-from django.views.generic import (CreateView, DeleteView, DetailView,
-                                  FormView, TemplateView, UpdateView,)
+from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
+                                  ListView, TemplateView, UpdateView,)
 from strategy_field.utils import import_by_name
 
 from mercury.models import Organization
@@ -109,6 +109,10 @@ class MercuryBaseViewMixin(MessageUserMixin, ApplicationListMixin):
 
 
 class MercuryBaseCreateView(MercuryBaseViewMixin, CreateView):
+    pass
+
+
+class MercuryBaseListView(MercuryBaseViewMixin, ListView):
     pass
 
 

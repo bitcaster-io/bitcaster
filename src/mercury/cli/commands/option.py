@@ -8,29 +8,28 @@ def option(ctx, **kwargs):
     pass
 
 
-@option.command()
+@option.command(name="set")
 @click.argument('name')
 @click.argument('value')
-def set(name, value, **kwargs):
+def option_set(name, value, **kwargs):
     import constance.settings
     _type = constance.settings.CONFIG[name][2]
     if _type is bool:
-        value = value.lower() in ["1", "true", "t"]
+        value = str(value).lower() in ["1", "true", "t"]
     else:
         value = _type(value)
     setattr(config, name, value)
-    click.echo(getattr(config, name))
 
 
-@option.command()
+@option.command(name='get')
 @click.argument('name')
-def get(name, **kwargs):
+def option_get(name, **kwargs):
     click.echo(getattr(config, name))
 
 
 @option.command(name="del")
 @click.argument('name')
-def delete(name, **kwargs):
+def option_delete(name, **kwargs):
     try:
         delattr(config, name)
         click.echo(getattr(config, name))

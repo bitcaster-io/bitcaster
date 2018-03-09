@@ -56,7 +56,6 @@ It can be Global or Application specific.
     deprecated = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = (('organization', 'name'),)
         ordering = ('organization', 'application', 'name')
 
     def __repr__(self):

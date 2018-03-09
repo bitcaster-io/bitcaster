@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
 from mercury import logging
+from mercury.db.fields import SubscriptionPolicyField
 from mercury.file_storage import MediaFileSystemStorage, app_media_root
 from mercury.utils import locks
 from mercury.utils.retries import TimedRetryPolicy
@@ -50,9 +51,12 @@ class Application(AbstractModel):
     flags = BitField(flags=(
         # ('has_releases', 'This Project has sent release data'),
     ), default=0, null=True)
+    teams = models.ManyToManyField('mercury.Team',
+                                   related_name='teams',
+                                   through='mercury.ApplicationTeam'
+                                   )
 
     avatar = models.ImageField(blank=True, null=True,
-                               # upload_to="pictures",
                                upload_to=app_media_root,
                                storage=MediaFileSystemStorage(),
                                height_field='picture_height',
@@ -60,6 +64,7 @@ class Application(AbstractModel):
                                )
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
+    subscription_policy = SubscriptionPolicyField()
 
     class Meta:
         app_label = 'mercury'
@@ -85,6 +90,10 @@ class Application(AbstractModel):
     def channels(self):
         from .channel import Channel
         return Channel.objects.filter(Q(application=self) | Q(application__isnull=True))
+
+    @property
+    def owners(self):
+        return self.organization.owners
 
     @cached_property
     def owner(self):

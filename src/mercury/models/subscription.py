@@ -36,6 +36,11 @@ class Subscription(AbstractModel):
     deactivation_token = models.CharField(max_length=100,
                                           editable=False,
                                           unique=True)
+    managed = models.BooleanField(default=False,
+                                  help_text="if managed users cannot unsubscribe. "
+                                            "But can still change channel")
+    locked = models.BooleanField(default=False,
+                                 help_text="if locked users cannot change subscription")
 
     class Meta:
         unique_together = ('channel', 'subscriber')

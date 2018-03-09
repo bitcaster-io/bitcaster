@@ -15,7 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView, DeleteView
 from strategy_field.utils import fqn
 
-from mercury.models import Organization, OrganizationMember, User
+from mercury.models import Organization, OrganizationMember, Team, User
 from mercury.otp import totp
 from mercury.security import is_owner
 from mercury.web.forms import (OrganizationForm, OrganizationInvitationForm,
@@ -23,8 +23,8 @@ from mercury.web.forms import (OrganizationForm, OrganizationInvitationForm,
                                UserInviteRegistrationForm,)
 
 from .base import (MercuryBaseCreateView, MercuryBaseDetailView,
-                   MercuryBaseUpdateView, MercuryFormView, MessageUserMixin,
-                   SelectedOrganizationMixin,)
+                   MercuryBaseListView, MercuryBaseUpdateView, MercuryFormView,
+                   MessageUserMixin, SelectedOrganizationMixin,)
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
                       ChannelDeprecateView, ChannelListView,
                       ChannelToggleView, ChannelUpdateView,)
@@ -88,6 +88,16 @@ class OrganizationMembers(OrganizationViewMixin, MercuryBaseDetailView):
         data['invitations'] = OrganizationMember.objects.filter(user__isnull=True)
         return data
 
+
+class OrganizationTeams(OrganizationViewMixin, MercuryBaseListView):
+    form_class = Team
+    template_name = 'bitcaster/organization_teams.html'
+
+    def get_queryset(self):
+        return self.selected_organization.teams.all()
+
+
+# Invitation
 
 class InviteAccept(SelectedOrganizationMixin, MessageUserMixin, CreateView):
     model = User
@@ -212,6 +222,14 @@ class OrganizationInvite(MercuryFormView):
         return super(OrganizationInvite, self).form_valid(form)
 
 
+class OrganizationApplications(OrganizationViewMixin, MercuryBaseDetailView):
+    form_class = OrganizationForm
+    template_name = 'mercury/organization_applications.html'
+    success_url = '.'
+
+
+# Channels
+
 class OrganizationChannels(OrganizationViewMixin, ChannelListView):
     template_name = 'mercury/organization_channels.html'
 
@@ -279,9 +297,3 @@ class OrganizationChannelCreate(OrganizationViewMixin, ChannelCreateWizard):
 
     def get_extra_instance_kwargs(self):
         return {'organization': self.selected_organization}
-
-
-class OrganizationApplications(OrganizationViewMixin, MercuryBaseDetailView):
-    form_class = OrganizationForm
-    template_name = 'mercury/organization_applications.html'
-    success_url = '.'

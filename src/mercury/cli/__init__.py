@@ -68,6 +68,8 @@ cli.add_command(import_by_name('mercury.cli.commands.upgrade.upgrade'))
 cli.add_command(import_by_name('mercury.cli.commands.option.option'))
 # cli.add_command(import_by_name('mercury.cli.commands.devserver.devserver'))
 cli.add_command(import_by_name('mercury.cli.commands.createuser.createuser'))
+cli.add_command(import_by_name('mercury.cli.commands.backup.backup'))
+cli.add_command(import_by_name('mercury.cli.commands.backup.restore'))
 
 
 def main():  # pragma: no cover
