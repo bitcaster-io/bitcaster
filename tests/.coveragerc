@@ -1,13 +1,13 @@
 [run]
 branch = True
-source = mercury
+source = bitcaster
 
 omit =
         ~*
         tests/**
-        */mercury/config/wsgi.py
-        */mercury/config/settings/dev.py
-        */mercury/dispatchers/console.py
+        */bitcaster/config/wsgi.py
+        */bitcaster/config/settings/dev.py
+        */bitcaster/dispatchers/console.py
         */management/commands/*
 
 [report]

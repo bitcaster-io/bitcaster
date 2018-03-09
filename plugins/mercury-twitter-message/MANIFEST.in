@@ -1,4 +1,0 @@
-include-recursive mercury_twitter_message *.py
-include README.rst
-include setup.py
-include pytest.ini

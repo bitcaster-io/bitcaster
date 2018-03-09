@@ -5,9 +5,9 @@ from faker import Faker
 from requests_html import HTML
 from rest_framework.reverse import reverse
 
-from mercury.db.fields import Role
-from mercury.models import Organization, User
-from mercury.models.organizationmember import OrganizationMember
+from bitcaster.db.fields import Role
+from bitcaster.models import Organization, User
+from bitcaster.models.organizationmember import OrganizationMember
 
 faker = Faker()
 

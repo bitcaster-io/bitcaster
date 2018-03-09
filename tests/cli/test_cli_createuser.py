@@ -4,8 +4,8 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from mercury.cli.commands.createuser import createuser
-from mercury.config.environ import env
+from bitcaster.cli.commands.createuser import createuser
+from bitcaster.config.environ import env
 
 
 @pytest.mark.django_db

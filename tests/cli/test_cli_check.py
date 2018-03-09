@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-mercury / test_cli_configure
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
 import os
 from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
 
-from mercury.cli.commands.check import check
-from mercury.config.environ import env
+from bitcaster.cli.commands.check import check
+from bitcaster.config.environ import env
 
 
 @pytest.mark.django_db

@@ -1,0 +1,22 @@
+{% extends "bitcaster/organization_detail.html" %}{% load crispy_forms_tags i18n %}
+{% block content %}
+    <h2>{{ organization }} Applications</h2>
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% url "application-add" organization.slug %}">{% trans "Create new application" %}</a>
+
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        {% for app in organization.applications.all %}
+            <div class="row">
+                <div class="col-sm">{{ app.name }}</div>
+                <div class="col-sm">{{ app.timezone }}</div>
+                <div class="col-sm">{{ membership.date_added }}</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

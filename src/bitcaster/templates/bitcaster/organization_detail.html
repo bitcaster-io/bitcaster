@@ -1,0 +1,51 @@
+{% extends "bitcaster/app.html" %}{% load bc_permissions %}
+{% block sidebar %}
+    <div class="row d-flex d-md-block flex-nowrap wrapper">
+        <div class="float-left pl-0 collapse width show" id="sidebar">
+            {% check_permissions organization as "permissions" %}
+            {% if permissions.owner %}
+                <div class="org-logo">
+                    {% if organization.avatar %}
+                        <img src="{{ organization.avatar.url }}"/>
+                    {% endif %}
+                </div>
+                <div class="list-group">
+                    <div class="col-md-2 org-sidebar">
+                        <div>
+                            <ul class="nav nav-stacked">
+                                <li>
+                                    <a href="{% url "org-index" organization.slug %}">Home</a>
+                                </li>
+                                <li>
+                                    <a href="{% url "org-config" organization.slug %}">Configuration</a>
+                                </li>
+                                <li>
+                                    <a href="{% url "org-channels" organization.slug %}">Channels</a>
+                                </li>
+                                <li>
+                                    <a href="{% url "org-members" organization.slug %}">Members</a>
+                                </li>
+                                <li>
+                                    <a href="{% url "org-team-list" organization.slug %}">Teams</a>
+                                </li>
+                                <li>
+                                    <a href="{% url "org-applications" organization.slug %}">Applications</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+{% block content %}
+    <h2>{{ organization }}</h2>
+    <div class="container">
+        {% for check in checks %}
+            <div class="row">
+            {{check}}
+            </div>
+    {% endfor %}
+    </div>
+{% endblock content %}

@@ -1,4 +1,4 @@
-# Mercury documentation build configuration file, created by
+# Bitcaster documentation build configuration file, created by
 # sphinx-quickstart.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -39,7 +39,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Mercury'
+project = 'Bitcaster'
 copyright = """2018, Stefano Apostolico"""
 
 # The version info for the project you're documenting, acts as replacement for
@@ -163,7 +163,7 @@ html_static_path = ['_static']
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'mercurydoc'
+htmlhelp_basename = 'bitcasterdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -183,8 +183,8 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
     ('index',
-     'mercury.tex',
-     'Mercury Documentation',
+     'bitcaster.tex',
+     'Bitcaster Documentation',
      """Stefano Apostolico""", 'manual'),
 ]
 
@@ -214,7 +214,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'mercury', 'Mercury Documentation',
+    ('index', 'bitcaster', 'Bitcaster Documentation',
      ["""Stefano Apostolico"""], 1)
 ]
 
@@ -228,8 +228,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'mercury', 'Mercury Documentation',
-     """Stefano Apostolico""", 'Mercury',
+    ('index', 'bitcaster', 'Bitcaster Documentation',
+     """Stefano Apostolico""", 'Bitcaster',
      """A short description of the project.""", 'Miscellaneous'),
 ]
 

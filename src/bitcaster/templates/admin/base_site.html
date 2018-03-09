@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}{% load i18n static %}
+{% block extrastyle %}
+{{block.super}}
+  <script defer src="{% static  'fontawesome-all.min.js' %}"></script>
+{% endblock %}
+{% block responsive %}
+{{block.super}}
+{#    <link rel="stylesheet" type="text/css" href="{% static "bitcaster.css" %}" />#}
+
+{% endblock %}
+{% block branding %}
+    <h1 id="site-name">Bitcaster</h1>
+{% endblock %}
+{% block userlinks %}
+    {{ block.super }}
+    {% url 'admin_info' as sysinfos %}
+    {% if sysinfos %}
+        <a href="{{ sysinfos }}">{% trans 'Sys Info' %}</a>
+    {% endif %}
+{% endblock %}

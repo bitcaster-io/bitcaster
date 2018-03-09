@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from mercury.utils.language import flatten, get_attr
-from mercury.utils.net import NetList
+from bitcaster.utils.language import flatten, get_attr
+from bitcaster.utils.net import NetList
 
 values = ([1, 2, 3, 4, 5],
           [1, (2, 3), 4, 5],

@@ -1,3 +1,0 @@
-include-recursive mercury_gmail_oauth *.py
-include README.rst
-include setup.py

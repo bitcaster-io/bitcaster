@@ -1,0 +1,5 @@
+.pytest_cache
+.env
+bitcaster_facebook.egg-info
+/~build
+tests/cassettes/*

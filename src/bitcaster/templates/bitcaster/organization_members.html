@@ -1,0 +1,76 @@
+{% extends "bitcaster/organization_detail.html" %}{% load crispy_forms_tags i18n %}
+{% block content %}
+    <h2>{{ organization }} Users</h2>
+
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+    <h4>Members</h4>
+    <table class="table">
+        <thead>
+        <tr class="d-flex">
+            <th scope="col" class="col-4">User</th>
+            <th scope="col" class="col-3">Role</th>
+            <th scope="col" class="col-3">Enrollment Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for membership in memberships.all %}
+            <tr class="d-flex">
+                <td class="col-4">{{ membership.user }}</td>
+                <td class="col-3">{{ membership.get_role_display }}</td>
+                <td class="col-3">{{ membership.date_enrolled }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="container">
+    <h4>Pending invitations</h4>
+    <table class="table">
+        <thead>
+        <tr class="d-flex">
+            <th scope="col" class="col-4">User</th>
+            <th scope="col" class="col-3">Role</th>
+            <th scope="col" class="col-3">Date</th>
+            <th scope="col" class="col-1"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for membership in invitations.all %}
+            <tr class="d-flex">
+                <td class="col-4">
+                    {{ membership.email }}
+                </td>
+                <td class="col-3">{{ membership.get_role_display }}</td>
+                <td class="col-3">{{ membership.date_added }}</td>
+                <td class="text-nowrap col-1">
+                    <form method="post" class="d-inline"
+                          action="{% url "invitation-delete" organization.slug membership.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" title="cancel invitation">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                    </form>&nbsp;|&nbsp;<form method="post" class="d-inline"
+                                              action="{% url "invitation-send" organization.slug membership.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" title="resend email">
+                        <i class="fa fa-envelope"></i>
+                    </button>
+                </form>
+
+
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+{% endblock %}

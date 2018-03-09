@@ -1,3 +1,0 @@
-include-recursive mercury_plivo *.py
-include README.rst
-include setup.py

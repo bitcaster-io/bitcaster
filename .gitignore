@@ -1,5 +1,5 @@
 !.tx
-!/src/mercury/_plugin_template/mercury-{{cookiecutter.name}}/tests/.env
+!/bitcaster/_plugin_template/bitcaster-{{cookiecutter.name}}/tests/.env
 !/tests/.conf
 .DS_Store
 .env*
@@ -17,4 +17,4 @@
 /dist
 ~*
 /node_modules
-src/mercury/static/dist/
+src/bitcaster/static/dist/

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 from unittest.mock import Mock
 
-from mercury.api.permissions import TokenAuthentication
+from bitcaster.api.permissions import TokenAuthentication
 
 
 def test_tokenauthentication(rf, monkeypatch):
     t = TokenAuthentication()
-    monkeypatch.setattr('mercury.api.permissions.ApiAuthToken', Mock())
-    monkeypatch.setattr('mercury.api.permissions.ApiTriggerKey', Mock())
-    monkeypatch.setattr('mercury.api.permissions.TokenAuthentication.model', Mock())
-    monkeypatch.setattr('mercury.api.permissions.TriggerTokenAuthentication.model', Mock())
+    monkeypatch.setattr('bitcaster.api.permissions.ApiAuthToken', Mock())
+    monkeypatch.setattr('bitcaster.api.permissions.ApiTriggerKey', Mock())
+    monkeypatch.setattr('bitcaster.api.permissions.TokenAuthentication.model', Mock())
+    monkeypatch.setattr('bitcaster.api.permissions.TriggerTokenAuthentication.model', Mock())
     # request = rf.get('/')
     # assert t.authenticate(request) is None
 

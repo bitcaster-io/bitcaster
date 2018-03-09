@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from unittest.mock import Mock
 
-from mercury.dispatchers import Email
+from bitcaster.dispatchers import Email
 
 
 def test_email(subscription1):

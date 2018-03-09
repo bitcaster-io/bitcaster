@@ -5,7 +5,7 @@ const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 
-const rel = path.resolve.bind(null, __dirname + "/src/mercury/static/");
+const rel = path.resolve.bind(null, __dirname + "/src/bitcaster/static/");
 const outputDir = rel("dist");
 const VERSION = require("./package.json").version;
 

@@ -1,5 +1,0 @@
-.pytest_cache
-.env
-mercury_facebook.egg-info
-/~build
-tests/cassettes/*

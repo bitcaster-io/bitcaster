@@ -1,0 +1,31 @@
+{% extends "bitcaster/organization_detail.html" %}{% load crispy_forms_tags i18n %}
+{% block content %}
+    <h2>{{ organization }} Teams</h2>
+
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% url "org-team-add" organization.slug %}">{% trans "Create Team" %}</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+    <table class="table">
+        <thead>
+        <tr class="d-flex">
+            <th scope="col" class="col-4">Team</th>
+            <th scope="col" class="col-3">Creation Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for team in object_list %}
+            <tr class="d-flex">
+                <td class="col-4">{{ team.name }}</td>
+                <td class="col-3">{{ team.date_added }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% endblock %}

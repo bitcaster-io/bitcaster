@@ -1,0 +1,3 @@
+include-recursive bitcaster_hangout *.py
+include README.rst
+include setup.py

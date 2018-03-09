@@ -1,14 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-mercury / test_cli_configure
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
 from click.testing import CliRunner
 
-from mercury.cli import cli
+from bitcaster.cli import cli
 
 
 def test_hello_world():

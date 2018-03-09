@@ -1,17 +1,10 @@
 # -*- coding: utf-8 -*-
-"""
-mercury / test_cli_configure
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
 from pathlib import Path
 
 from click.testing import CliRunner
 
-from mercury.cli.commands.upgrade import upgrade
-from mercury.config.environ import env
+from bitcaster.cli.commands.upgrade import upgrade
+from bitcaster.config.environ import env
 
 
 def test_cli_upgrade(db):

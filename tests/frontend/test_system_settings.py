@@ -1,20 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-mercury / test_system
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
-
 import logging
 
 import pytest
 from django.urls import reverse
 from strategy_field.utils import fqn
 
-from mercury.dispatchers import Email
-from mercury.models import Channel
+from bitcaster.dispatchers import Email
+from bitcaster.models import Channel
 
 logger = logging.getLogger(__name__)
 

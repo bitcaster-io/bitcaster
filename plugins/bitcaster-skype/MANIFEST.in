@@ -1,0 +1,3 @@
+include-recursive bitcaster_skype *.py
+include README.rst
+include setup.py

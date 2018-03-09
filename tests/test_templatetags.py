@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from mercury.templatetags.mercury import httpiefy, jsonify
+from bitcaster.templatetags.bitcaster import httpiefy, jsonify
 
 
 def test_httpiefy():

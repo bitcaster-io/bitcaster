@@ -1,0 +1,3 @@
+include-recursive bitcaster_gmail *.py
+include README.rst
+include setup.py

@@ -13,7 +13,7 @@ from setuptools import setup, find_packages
 from setuptools.command.sdist import sdist
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
-init = os.path.join(ROOT, 'src', 'mercury', '__init__.py')
+init = os.path.join(ROOT, 'src', 'bitcaster', '__init__.py')
 BUILD_ASSETS = os.environ.get('BITCASTER_BUILD_ASSETS', '1') != '0'
 
 rel = lambda *args: os.path.join(ROOT, 'src', 'requirements', *args)
@@ -41,7 +41,7 @@ readme = codecs.open('README.rst').read()
 class SDistCommand(sdist):
 
     def run(self):
-        if not Path(__file__).parent / 'src' / 'mercury' / 'static' / 'dist':
+        if not Path(__file__).parent / 'src' / 'bitcaster' / 'static' / 'dist':
             env = dict(os.environ)
             env['NODE_ENV'] = 'production'
             subprocess.check_output(['node_modules/.bin/webpack', '--bail'],
@@ -56,7 +56,7 @@ setup(name=name,
       long_description=readme,
       author='Stefano Apostolico',
       author_email='s.apostolico@gmail.com',
-      url='https://github.com/saxix/mercury',
+      url='https://github.com/bitcaster-io/bitcaster',
       package_dir={'': 'src'},
       packages=find_packages('src'),
       include_package_data=True,
@@ -71,7 +71,7 @@ setup(name=name,
       },
       entry_points={
           'console_scripts': [
-              'bitcaster = mercury.cli:main',
+              'bitcaster = bitcaster.cli:main',
           ],
       },
       license="MIT",

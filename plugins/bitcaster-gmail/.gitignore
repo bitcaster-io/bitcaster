@@ -1,0 +1,5 @@
+.pytest_cache
+.env
+bitcaster_gmail.egg-info
+/~build
+tests/cassettes/*

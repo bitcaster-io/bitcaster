@@ -3,7 +3,7 @@ BUILDDIR='~build'
 PYTHONPATH:=${PWD}/tests/:${PWD}
 DBENGINE?=pg
 DJANGO?='last'
-SUBDIRS := $(wildcard plugins/mercury-*)
+SUBDIRS := $(wildcard plugins/bitcaster-*)
 
 
 .mkbuilddir:
@@ -24,10 +24,10 @@ develop: .setup-git
 	cd .git/hooks && ln -fs ../../hooks/* .
 
 .init-db:
-	# initializing '${DBENGINE}' database 'mercury'
-	dropdb --if-exists -h 127.0.0.1 -U postgres test_mercury
-	dropdb --if-exists -h 127.0.0.1 -U postgres mercury
-	createdb -h 127.0.0.1 -U postgres mercury
+	# initializing '${DBENGINE}' database 'bitcaster'
+	dropdb --if-exists -h 127.0.0.1 -U postgres test_bitcaster
+	dropdb --if-exists -h 127.0.0.1 -U postgres bitcaster
+	createdb -h 127.0.0.1 -U postgres bitcaster
 
 .reset-env: .init-db
 	bitcaster option set SYSTEM_CONFIGURED 0
@@ -36,7 +36,7 @@ develop: .setup-git
 
 reset-migrations: .init-db
 	find src -name '000[1,2,3,4,5,6,7,8,9]*' | xargs rm -f
-	./manage.py makemigrations mercury
+	./manage.py makemigrations bitcaster
 	./manage.py migrate
 	./manage.py constance set INITIALIZED 0
 

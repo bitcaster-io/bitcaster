@@ -3,8 +3,8 @@ from django.core import mail
 from django.urls import reverse
 from strategy_field.utils import fqn
 
-from mercury.dispatchers import Email
-from mercury.models import Channel
+from bitcaster.dispatchers import Email
+from bitcaster.models import Channel
 
 pytestmark = pytest.mark.django_db
 

@@ -1,0 +1,43 @@
+{% extends "bitcaster/app.html" %}{% load bitcaster %}
+{% block content %}
+    <style>
+        .enabledTrue{
+            color: green;
+        }
+        .enabledFalse{
+            color: red;
+        }
+    </style>
+    <h2>Messages</h2>
+        <table class="table table-striped table-hover col-12">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Event</th>
+                <th scope="col">Channels</th>
+                <th scope="col">Language</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for message in object_list %}
+                <tr>
+                    <td>
+                        {{ message.name }}
+                    </td>
+                    <td>
+                        {{ message.event }}
+                    </td>
+                    <td>
+                        {{ message.channels|describe_channels }}
+                    </td>
+                    <td>
+                        {{ message.language }}
+                    </td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+
+        </table>
+
+{% endblock content %}
