@@ -1,4 +1,4 @@
-{% load bc_assets %}<!doctype html>
+{% load bc_assets bc_permissions %}<!doctype html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -24,8 +24,10 @@
                 </div>
                 {% if user.is_authenticated %}
                     <span class="top-menu">
-{% if organization and applications %}
-    <div class="dropdown">
+                    {% if organization and applications %}
+                        {% check_permissions organization as "permissions" %}
+                        {% if applications %}
+                            <div class="dropdown">
 
                             <a href="{% url "org-index" organization.slug %}">[{{ organization.name }}]</a>
                             <a class="dropdown-toggle2"
@@ -42,8 +44,8 @@
                                 {% endfor %}
                             </div>
                         </div>
-{% elif organizations %}
-    <div class="dropdown">
+                        {% elif organizations %}
+                            <div class="dropdown">
                             <a class="dropdown-toggle2"
                                href="#" role="button"
                                id="orgMenuLink" data-toggle="dropdown"
@@ -58,8 +60,8 @@
                                 {% endfor %}
                             </div>
                         </div>
-
-{% endif %}
+                        {% endif %}{# organization and applications #}
+                    {% endif %}
                     </span>
                     {% block user-menu %}
                         <span class="pull-right user-menu ">
@@ -82,9 +84,10 @@
                         </div>
                     </span>
                     {% endblock user-menu %}
-                {% endif %}
+                {% endif %}{#  user.is_authenticated #}
             </header>
         {% endblock header %}
+
         {% block messages %}
             <div id="messageBar">
                 {% if messages %}
@@ -99,6 +102,8 @@
             {% block page %}
             {% endblock page %}
         </div>
+
+
         {% block footer %}
             <footer>
                 <div class="container">

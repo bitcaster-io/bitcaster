@@ -11,7 +11,7 @@ from strategy_field.utils import fqn, import_by_name
 
 from bitcaster.db.fields import Role
 from bitcaster.models import (Application, Channel,
-                              Organization, Subscription, User, )
+                              Organization, Subscription, User,)
 
 TEMPLATE_ENV = b"""
 ADMIN_EMAIL=

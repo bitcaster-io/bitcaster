@@ -2,6 +2,7 @@
 from django.conf import settings
 from rest_framework import serializers
 
+from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers.base import DispatcherOptions, MessageType
 from bitcaster.dispatchers.email import Email
 from bitcaster.dispatchers.registry import dispatcher_registry
@@ -14,7 +15,7 @@ class EmailMessage(MessageType):
 
 class GmailOptions(DispatcherOptions):
     username = serializers.CharField(required=True)
-    password = serializers.CharField(required=True)
+    password = PasswordField(allow_blank=True, required=False)
     sender = serializers.EmailField(required=True)
     timeout = serializers.IntegerField(default=60)
 

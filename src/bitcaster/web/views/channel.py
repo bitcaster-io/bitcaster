@@ -16,8 +16,9 @@ from bitcaster.models import Channel
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,
-                                      BitcasterBaseUpdateView, BitcasterTemplateView,
-                                      MessageUserMixin, SelectedOrganizationMixin, )
+                                      BitcasterBaseUpdateView,
+                                      BitcasterTemplateView, MessageUserMixin,
+                                      SelectedOrganizationMixin,)
 
 logger = logging.getLogger(__name__)
 

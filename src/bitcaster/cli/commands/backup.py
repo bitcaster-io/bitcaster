@@ -41,7 +41,6 @@ def backup(ctx, filename, **kwargs):
 @need_setup
 def restore(ctx, filename, **kwargs):
     from bitcaster.models import Channel
-    from constance import config
 
     try:
         input = Path(filename)
@@ -50,7 +49,6 @@ def restore(ctx, filename, **kwargs):
             ctx.invoke(option_set,
                        name=key,
                        value=value)
-        config.INITIALIZED = 0
         for channel in data['channels']:
             del channel['id']
             del channel['last_modify_date']

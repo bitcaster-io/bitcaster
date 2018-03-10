@@ -58,7 +58,6 @@ def test_initial_setup(django_app, application1):
 
 def test_organization_channels_wizard(django_app, organization1):
     res = django_app.get('/', user=organization1.owner).follow()
-    res = res.click(f"{organization1.name}")
     res = res.click("Channels")
     res = res.click("Create channel")
 

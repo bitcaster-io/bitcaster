@@ -10,7 +10,7 @@ from django.urls import reverse
 from bitcaster.models import Event
 from bitcaster.tasks import emit_event
 from bitcaster.utils.django import (activator_factory,
-                                    deactivator_factory, toggler_factory, )
+                                    deactivator_factory, toggler_factory,)
 
 from .forms import EventForm, EventTriggerForm
 from .inlines import MessageInline

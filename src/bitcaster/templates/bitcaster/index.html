@@ -12,9 +12,8 @@
                 {% else %}
                     {{ user.organizations.all }}
                     <h1>Welcome back.</h1>
-                    {% for membership in user.memberships.all %}
+                    {% for membership in user.ownerships.all %}
                         <li>
-                            {{ org }}
                             <a href="{% url "org-index" membership.organization.slug %}">{{ membership.organization.name }}</a>
                         </li>
                     {% endfor %}

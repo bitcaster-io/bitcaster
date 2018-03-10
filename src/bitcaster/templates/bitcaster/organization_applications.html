@@ -1,7 +1,7 @@
-{% extends "bitcaster/organization_detail.html" %}{% load crispy_forms_tags i18n %}
+{% extends "bitcaster/organization_detail.html" %}{% load crispy_forms_tags i18n bitcaster%}
 {% block content %}
     <h2>{{ organization }} Applications</h2>
-    <div class="container">
+    <div class="container-fluid">
         <div class="row col-12">
             <div class="pull-right col-12">
                 <a class="btn btn-danger btn-small pull-right"
@@ -10,13 +10,15 @@
             </div>
         </div>
     </div>
-    <div class="container">
-        {% for app in organization.applications.all %}
-            <div class="row">
-                <div class="col-sm">{{ app.name }}</div>
-                <div class="col-sm">{{ app.timezone }}</div>
-                <div class="col-sm">{{ membership.date_added }}</div>
-            </div>
-        {% endfor %}
+    <div class="container-fluid">
+        <div class="row col-12">
+            {% for app in organization.applications.all %}
+                <div class="row">
+                    <div class="col-sm"><a href="{% org-url "app-index" app.slug %}">{{ app.name }}</a></div>
+                    <div class="col-sm">{{ app.timezone }}</div>
+                    <div class="col-sm">{{ membership.date_added }}</div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

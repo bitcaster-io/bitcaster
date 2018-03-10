@@ -469,16 +469,16 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_by_email',
     'bitcaster.social_auth.associate',
     'bitcaster.social_auth.avatar',
-    'social_core.pipeline.user.create_user',
+    # 'social_core.pipeline.user.create_user',
     'bitcaster.social_auth.associate_invitation',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
-    # 'social_core.pipeline.debug.debug',
+    'social_core.pipeline.debug.debug',
 
 )
 
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/me/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
 SOCIAL_AUTH_LOGIN_URL = '/login-url/'
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/new-user/'

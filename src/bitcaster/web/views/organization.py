@@ -3,31 +3,34 @@ import logging
 
 from constance import config
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import CreateView, DeleteView, ListView
+from django.views.generic import CreateView, DeleteView, UpdateView
 from strategy_field.utils import fqn
 
-from bitcaster.models import Organization, OrganizationMember, Team, User
+from bitcaster.db.fields import Role
+from bitcaster.models import (Organization, OrganizationMember,
+                              Team, TeamMembership, User,)
 from bitcaster.otp import totp
 from bitcaster.security import is_owner
 from bitcaster.web.forms import (OrganizationForm, OrganizationInvitationForm,
-                                 OrganizationInvitationFormSet,
-                                 UserInviteRegistrationForm, )
+                                 OrganizationInvitationFormSet, TeamForm,
+                                 UserInviteRegistrationForm,)
 
-from .base import (BitcasterBaseCreateView, BitcasterBaseDetailView,
-                   BitcasterBaseListView, BitcasterBaseUpdateView, BitcasterFormView,
-                   MessageUserMixin, SelectedOrganizationMixin, )
+from .base import (ApplicationListMixin, BitcasterBaseCreateView,
+                   BitcasterBaseDetailView, BitcasterBaseListView,
+                   BitcasterBaseUpdateView, BitcasterFormView,
+                   MessageUserMixin, SelectedOrganizationMixin,)
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
                       ChannelDeprecateView, ChannelListView,
-                      ChannelToggleView, ChannelUpdateView, )
+                      ChannelToggleView, ChannelUpdateView,)
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +39,12 @@ __all__ = ["OrganizationCreate", "OrganizationDetail", "OrganizationUpdate",
            "OrganizationTeamList", "OrganizationTeamCreate",
            "OrganizationChannelRemove", "OrganizationChannelToggle",
            "OrganizationChannelUpdate", "OrganizationChannelDeprecate",
+           "OrganizationTeamUpdate", "OrganizationTeamMember",
            "OrganizationInvite", "InviteDelete", "InviteSend", "InviteAccept",
            "OrganizationApplications", "OrganizationChannelCreate"]
 
 
-class OrganizationViewMixin(SelectedOrganizationMixin):
+class OrganizationViewMixin(ApplicationListMixin):
     model = Organization
     slug_url_kwarg = 'org'
 
@@ -92,17 +96,23 @@ class OrganizationMembers(OrganizationViewMixin, BitcasterBaseDetailView):
 
 # Invitation
 
-class InviteAccept(SelectedOrganizationMixin, MessageUserMixin, CreateView):
+class InviteAccept(MessageUserMixin, CreateView):
     model = User
     form_class = UserInviteRegistrationForm
     template_name = 'bitcaster/users/user_welcome.html'
+
+    @cached_property
+    def selected_organization(self):  # returns selected office and caches the office
+        organization = Organization.objects.get(slug=self.kwargs['org'])
+        return organization
 
     def check_perms(self, *args, **kwargs):
         return True
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            raise Http404
+            logout(request)
+            # return HttpResponseBadRequest("User already logged")
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -115,7 +125,10 @@ class InviteAccept(SelectedOrganizationMixin, MessageUserMixin, CreateView):
             self.membership.user = user
             self.membership.save()
             login(self.request, user, backend=fqn(ModelBackend))
-        url = reverse('org-index', args=[self.selected_organization.slug])
+        if self.membership.role in [Role.OWNER, Role.ADMIN]:
+            url = reverse('org-index', args=[self.selected_organization.slug])
+        else:
+            url = reverse('me-home')
         return HttpResponseRedirect(url)
 
     def form_invalid(self, form):
@@ -228,6 +241,11 @@ class OrganizationChannels(OrganizationViewMixin, ChannelListView):
 
     def get_queryset(self):
         return self.selected_organization.channels.all()
+        # TODO(sax) display system channels too.
+        # need to review the template to hide editing/remove... links
+
+        # return Channel.objects.filter(Q(system=True)|
+        #                                 Q(organization=self.selected_organization))
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = _("Organization Channels")
@@ -302,16 +320,82 @@ class OrganizationTeamMixin(OrganizationViewMixin):
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = _("Organization Teams")
-        # kwargs['create_url'] = reverse("org-team-add",
-        #                                args=[self.selected_organization.slug])
         return super().get_context_data(**kwargs)
 
 
-class OrganizationTeamList(OrganizationTeamMixin, ListView):
+class OrganizationTeamList(OrganizationTeamMixin, BitcasterBaseListView):
     pass
-    # template_name = 'bitcaster/organization_teams.html'
 
 
-class OrganizationTeamCreate(OrganizationTeamMixin, CreateView):
-    # template_name = 'bitcaster/organization_teams.html'
+class OrganizationTeamCreate(OrganizationTeamMixin, BitcasterBaseCreateView):
+    form_class = TeamForm
+
+    def get_success_url(self):
+        return reverse('org-team-list', args=[self.selected_organization.slug])
+
+    def get_initial(self):
+        return {'manager': self.request.user}
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'organization': self.selected_organization})
+        return kwargs
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            obj = Team.objects.create(
+                name=form.cleaned_data['name'],
+                manager=form.cleaned_data['manager'],
+                organization=self.selected_organization)
+            for member in form.cleaned_data['members']:
+                TeamMembership.objects.get_or_create(team=obj,
+                                                     member=member)
+
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class OrganizationTeamUpdate(OrganizationTeamMixin, BitcasterBaseUpdateView):
+    form_class = TeamForm
+    slug_url_kwarg = 'slug'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'organization': self.selected_organization})
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('org-team-list', args=[self.selected_organization.slug])
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            obj = self.get_object()
+            obj.name = form.cleaned_data['name']
+            obj.manager = form.cleaned_data['manager']
+            existing = obj.members.all()
+            selection = form.cleaned_data['members']
+            for member in selection:
+                if member not in existing:
+                    TeamMembership.objects.get_or_create(team=obj,
+                                                         member=member)
+            obj.memberships.exclude(member__in=selection).delete()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class OrganizationTeamMember(OrganizationTeamMixin, UpdateView):
+    #
+    #
+    #
     fields = ('name',)
+    slug_url_kwarg = 'slug'
+
+    def get_success_url(self):
+        return reverse('org-team-list', args=[self.selected_organization.slug])
+
+    def get_initial(self):
+        return super().get_initial()
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.organization = self.selected_organization
+        obj.save()
+        return HttpResponseRedirect(self.get_success_url())

@@ -6,7 +6,7 @@ from bitcaster import logging
 from bitcaster.api.endpoints import (ApplicationViewSet, ChannelViewSet,
                                      DispatcherViewSet, EventViewSet,
                                      MessageViewSet, SubscriptionViewSet,
-                                     TimezoneViewSet, UserViewSet, )
+                                     TimezoneViewSet, UserViewSet,)
 from bitcaster.api.endpoints.languages import LanguageViewSet
 
 logger = logging.getLogger(__name__)

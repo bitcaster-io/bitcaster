@@ -19,6 +19,10 @@ recursive-include tests *
 exclude Dockerfile
 exclude docker-compose.yml
 exclude .dockerignore
+exclude .flake8
+exclude .isort.cfg
+exclude .tx
+exclude docker
 
 exclude hooks
 exclude extras
@@ -30,6 +34,8 @@ exclude .env
 exclude .demo-sax
 exclude .DS_Store
 
+recursive-exclude docker *
+recursive-exclude .tx *
 recursive-exclude extras *
 recursive-exclude plugins *
 recursive-exclude hooks *

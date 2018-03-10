@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.core.mail import get_connection, send_mail
 from rest_framework import serializers
 
+from bitcaster.api.fields import PasswordField
 from bitcaster.exceptions import PluginValidationError
 from bitcaster.utils import fqn
 
@@ -27,7 +28,7 @@ class EmailOptions(DispatcherOptions):
     server = serializers.CharField()
     port = serializers.IntegerField()
     username = serializers.CharField(allow_blank=True, required=False)
-    password = serializers.CharField(allow_blank=True, required=False)
+    password = PasswordField(allow_blank=True, required=False)
     tls = serializers.BooleanField(default=False)
     sender = serializers.EmailField(required=True)
     timeout = serializers.IntegerField(default=60)

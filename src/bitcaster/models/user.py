@@ -13,7 +13,7 @@ from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
 
 from bitcaster import logging
-from bitcaster.db.fields import EncryptedJSONField, LanguageField
+from bitcaster.db.fields import EncryptedJSONField, LanguageField, Role
 from bitcaster.file_storage import MediaFileSystemStorage, profile_media_root
 from bitcaster.mail import send_mail
 from bitcaster.utils.http import absolute_uri
@@ -126,6 +126,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     @cached_property
     def display_name(self):
         return self.friendly_name or self.email
+
+    @cached_property
+    def ownerships(self):
+        return self.memberships.filter(role=Role.OWNER)
 
     def set_password(self, raw_password):
         super(User, self).set_password(raw_password)

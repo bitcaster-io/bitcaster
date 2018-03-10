@@ -10,27 +10,10 @@ bitcaster / organization
 import logging
 
 from django import forms
-from django.forms import inlineformset_factory
 
-from bitcaster.models import Organization, OrganizationMember
+from bitcaster.models import Organization
 
 logger = logging.getLogger(__name__)
-
-
-class OrganizationInvitationForm(forms.ModelForm):
-    email = forms.EmailField(required=True,
-                             widget=forms.EmailInput(attrs={'autocomplete': 'email'}))
-
-    class Meta:
-        model = OrganizationMember
-        fields = ('email', 'role')
-
-
-OrganizationInvitationFormSet = inlineformset_factory(Organization,
-                                                      OrganizationMember,
-                                                      form=OrganizationInvitationForm,
-                                                      min_num=1,
-                                                      extra=0)
 
 
 class OrganizationForm(forms.ModelForm):

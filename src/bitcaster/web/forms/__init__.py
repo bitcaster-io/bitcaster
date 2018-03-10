@@ -1,14 +1,13 @@
-from .application import ApplicationCreateForm, ApplicationForm  # noqa
-from .channel import ChannelForm  # noqa
-from .event import EventForm, EventTriggerForm  # noqa
-from .message import MessageForm  # noqa
-from .organization import OrganizationForm  # noqa
-from .organization import OrganizationInvitationFormSet  # noqa
-from .subscription import SubscriptionForm  # noqa
-
-from .organization import OrganizationInvitationForm  # noqa; noqa
-from .system_settings import (SettingsChannelsForm,  # noqa; noqa
-                              SettingsEmailForm, SettingsMainForm,
-                              SettingsOAuthForm,)
-from .user import (UserChangeForm, UserCreationForm,  # noqa; noqa
+# flake8: noqa
+from .application import ApplicationCreateForm, ApplicationForm
+from .channel import ChannelForm
+from .event import EventForm, EventTriggerForm
+from .formsets import OrganizationInvitationForm, OrganizationInvitationFormSet
+from .message import MessageForm
+from .organization import OrganizationForm
+from .subscription import SubscriptionForm
+from .system_settings import (SettingsChannelsForm, SettingsEmailForm,
+                              SettingsMainForm, SettingsOAuthForm,)
+from .team import TeamForm
+from .user import (UserChangeForm, UserCreationForm,
                    UserInviteRegistrationForm, UserProfileForm,)

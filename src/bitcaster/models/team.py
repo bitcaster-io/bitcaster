@@ -9,6 +9,7 @@ from bitcaster.utils.slug import slugify_instance
 
 from .base import AbstractModel
 from .organization import Organization
+from .user import User
 
 
 class Team(AbstractModel):
@@ -18,6 +19,12 @@ class Team(AbstractModel):
     organization = models.ForeignKey(Organization,
                                      related_name='teams',
                                      on_delete=models.CASCADE)
+    members = models.ManyToManyField(User,
+                                     related_name='teams',
+                                     through='bitcaster.TeamMembership')
+    manager = models.ForeignKey(User,
+                                related_name='+',
+                                on_delete=models.CASCADE)
     slug = models.SlugField()
     name = models.CharField(_("Name"), max_length=64)
     status = DeletionStatusField()
@@ -37,6 +44,12 @@ class Team(AbstractModel):
             super(Team, self).save(*args, **kwargs)
         else:
             super(Team, self).save(*args, **kwargs)
+
+
+class TeamMembership(AbstractModel):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE,
+                             related_name='memberships')
+    member = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class ApplicationTeam(AbstractModel):

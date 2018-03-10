@@ -19,7 +19,7 @@ from bitcaster.models import Application
 from bitcaster.security import is_owner
 from bitcaster.web.forms import ApplicationCreateForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
-                                      SelectedApplicationMixin, )
+                                      SelectedApplicationMixin,)
 
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
                       ChannelDeprecateView, ChannelListView,

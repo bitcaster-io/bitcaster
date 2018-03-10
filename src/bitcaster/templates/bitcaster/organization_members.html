@@ -32,6 +32,7 @@
     </table>
     </div>
     <div class="container">
+    {% if invitations %}
     <h4>Pending invitations</h4>
     <table class="table">
         <thead>
@@ -71,6 +72,7 @@
         {% endfor %}
         </tbody>
     </table>
+    {% endif %}
     </div>
 
 {% endblock %}

@@ -43,6 +43,12 @@ def render_field(field, style):
     return renderer.render_field(field, style)
 
 
+@register.simple_tag(name="org-url", takes_context=True)
+def org_reverse(context, url_name, *args, **kwargs):
+    org = context["organization"]
+    return reverse(url_name, args=(org.slug,) + args, **kwargs)
+
+
 @register.inclusion_tag('admin/bitcaster/configurable_submit_line.html', takes_context=True)
 def channel_submit_row(context):
     """
