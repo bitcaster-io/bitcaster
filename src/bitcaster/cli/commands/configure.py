@@ -2,7 +2,8 @@ from pathlib import Path
 
 import click
 
-from bitcaster.cli.utils import generate_secret_key, Address, RedisURL, read_current_env, get_database_url_param
+from bitcaster.cli.utils import (Address, RedisURL, generate_secret_key,
+                                 get_database_url_param, read_current_env,)
 
 
 @click.command()

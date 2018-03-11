@@ -15,6 +15,10 @@ def pytest_configure(config):
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     os.environ['RECAPTCHA_DISABLE'] = 'True'
     c.INITIALIZED = 1
+    import django
+    django.setup()
+    from django.conf import settings
+    settings.CELERY_ALWAYS_EAGER = True
 
 
 @pytest.fixture(autouse=True)

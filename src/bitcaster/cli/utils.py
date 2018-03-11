@@ -8,6 +8,7 @@ mercury / utils
 """
 
 import logging
+import os
 import re
 import urllib
 from functools import lru_cache
@@ -85,3 +86,23 @@ def get_database_url_param():
                 'user': 'postgres',
                 'password': '',
                 'database': 'bitcaster'}
+
+
+LOG_LEVELS = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'FATAL')
+
+
+class CaseInsensitiveChoice(click.Choice):
+    def convert(self, value, param, ctx):
+        self.choices = [choice.upper() for choice in self.choices]
+        return super(CaseInsensitiveChoice, self).convert(value.upper(), param, ctx)
+
+
+class LogLeveParamType(CaseInsensitiveChoice):
+
+    def __init__(self, choices=LOG_LEVELS):
+        super().__init__(choices)
+
+    def convert(self, value, param, ctx):
+        value = super(CaseInsensitiveChoice, self).convert(value.upper(), param, ctx)
+        os.environ['BITCASTER_LOG_LEVEL'] = value.upper()
+        return value

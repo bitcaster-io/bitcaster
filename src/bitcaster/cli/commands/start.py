@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
-
-import click
+import os
 import sys
 
-import os
+import click
 
-from bitcaster.cli.utils import Address
+from bitcaster.cli.utils import Address, LogLeveParamType
 from bitcaster.services.http import HTTPServer
 
 logger = logging.getLogger(__name__)
@@ -21,28 +20,24 @@ def start(ctx, **kwargs):
 @start.command()
 @click.option('--hostname', '-n',
               help=('Set custom hostname, e.g. \'w1.%h\'. Expands: %h'
-                    '(hostname), %n (name) and %d, (domain).')
-              )
+                    '(hostname), %n (name) and %d, (domain).'))
 @click.option('--queues', '-Q',
               help=('List of queues to enable for this worker, separated by '
                     'comma. By default all configured queues are enabled. '
                     'Example: -Q video,image'
-                    )
-              )
+                    ))
 @click.option('--concurrency', '-c', default=os.cpu_count(),
               help=('Number of child processes processing the queue. The '
                     'default is the number of CPUs available on your '
                     'system.'
-                    )
-              )
+                    ))
 @click.option('--logfile', '-f',
               help=('Path to log file. '
-                    'If no logfile is specified, stderr is used.')
-              )
-@click.option('--loglevel', '-l', default='debug',
+                    'If no logfile is specified, stderr is used.'))
+@click.option('--loglevel', '-l', default='info',
+              type=LogLeveParamType(),
               help=('Logging level, choose between DEBUG, INFO, WARNING,'
-                    ' ERROR, CRITICAL, or FATAL.')
-              )
+                    ' ERROR, CRITICAL, or FATAL.'))
 @click.option('--detach', '-D', is_flag=True, default=False,
               help="Start worker as a background process.")
 @click.option('--quiet', '-q', is_flag=True, default=False)
@@ -92,6 +87,10 @@ def workers(**options):
               help='Do not prompt the user for input of any kind.')
 @click.option('--autoreload', default=False, is_flag=True,
               help='Restart server on server change')
+@click.option('--loglevel', '-l', default='info',
+              type=LogLeveParamType(),
+              help=('Logging level, choose between DEBUG, INFO, WARNING,'
+                    ' ERROR, CRITICAL, or FATAL.'))
 @click.option('--logfile', default=None,
               help='logfile')
 @click.pass_context

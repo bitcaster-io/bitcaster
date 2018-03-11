@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
+from celery.utils.log import get_task_logger
 from constance import config
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.db.models import Count
 
 from bitcaster.celery import app
 from bitcaster.exceptions import LogicError
-from bitcaster.logging import getLogger
 
-logger = getLogger(__name__)
+logger = get_task_logger(__name__)
 
 app.conf.beat_schedule = {
     'add-every-60-seconds': {
@@ -62,20 +62,25 @@ def send_mail_async(subject, message, html_message, recipient_list,
                     *,
                     from_email=None,
                     fail_silently=False):
-    connection = get_connection(
-        fail_silently=fail_silently,
-        username=config.EMAIL_HOST_USER,
-        password=config.EMAIL_HOST_PASSWORD,
-        use_tls=config.EMAIL_USE_TLS,
-        host=config.EMAIL_HOST,
-        port=config.EMAIL_HOST_PORT,
-        timeout=config.EMAIL_TIMEOUT
-    )
-    mail = EmailMultiAlternatives(subject, message,
-                                  from_email,
-                                  recipient_list,
-                                  connection=connection)
-    if html_message:
-        mail.attach_alternative(html_message, 'text/html')
-
-    return mail.send()
+    try:
+        connection = get_connection(
+            fail_silently=fail_silently,
+            username=config.EMAIL_HOST_USER,
+            password=config.EMAIL_HOST_PASSWORD,
+            use_tls=config.EMAIL_USE_TLS,
+            host=config.EMAIL_HOST,
+            port=config.EMAIL_HOST_PORT,
+            timeout=config.EMAIL_TIMEOUT
+        )
+        mail = EmailMultiAlternatives(subject, message,
+                                      from_email,
+                                      recipient_list,
+                                      connection=connection)
+        if html_message:
+            mail.attach_alternative(html_message, 'text/html')
+        sent = mail.send()
+        assert sent == 1
+        logger.debug(f"Email '{subject}' sent to {recipient_list}")
+    except Exception as e:
+        logger.exception(e)
+        raise

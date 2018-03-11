@@ -10,6 +10,7 @@ bitcaster / mail
 import logging
 
 from constance import config
+from django.conf import settings
 from django.core.mail import get_connection, send_mail as _send_mail
 from django.template.loader import get_template
 
@@ -31,17 +32,19 @@ def send_mail_by_template(subject, template_name, context,
                           async=True,
                           fail_silently=False):
     html_message, message = make_message(template_name, context)
-
+    logger.debug(f"Sending email to {recipient_list}")
     if async:
+        if settings.CELERY_ALWAYS_EAGER:
+            logger.warning("Celery task invoked but CELERY_ALWAYS_EAGER set.")
+        return send_mail_async.delay(subject, message, html_message,
+                                     recipient_list,
+                                     from_email=from_email,
+                                     fail_silently=fail_silently)
+    else:
         return send_mail_async(subject, message, html_message,
                                recipient_list,
                                from_email=from_email,
                                fail_silently=fail_silently)
-    else:
-        return send_mail(subject, message, html_message,
-                         recipient_list,
-                         from_email=from_email,
-                         fail_silently=fail_silently)
 
 
 def send_mail(subject, message, html_message,
