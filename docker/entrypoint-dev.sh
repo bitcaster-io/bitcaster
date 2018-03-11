@@ -4,17 +4,18 @@ set -ex
 # Make sure to always start all the background services
 service postgresql start
 service redis-server start
-service memcached start
-service postfix start
-service ntp start
+#service postfix start
+#service ntp start
 
-if [ ! -f /.bootstrapped ]; then
+if [ ! -f /var/bitcaster/.bootstrapped ]; then
     echo $PWD
     pip install -e .[dev]
-    bitcaster upgrade
-    bitcaster configure --noinput
-    touch /.bootstrapped
+    bitcaster configure --no-input
+    bitcaster upgrade --no-input
+    touch /var/bitcaster/.bootstrapped
     echo "done" && exit 0
 fi
+#bitcaster start web -l debug &
+#bitcaster start workers -l debug &
 
 exec "$@"

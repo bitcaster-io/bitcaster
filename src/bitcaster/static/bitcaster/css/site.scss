@@ -10,12 +10,28 @@
   font-style: normal;
 }
 
-ul.messagelist {
-  .alert {
-    &.alert-error {
-      color: #a94442;
-      background-color: #f2dede;
-      border-color: #ebccd1;
+#messageBar {
+  ul {
+    li.alert-dismissible {
+      button.close {
+        padding-top: 0.50rem;
+        span {
+          font-size: 20px;
+          line-height: 20px;
+        }
+      }
+    }
+  }
+
+  ul.messagelist {
+    li {
+      &.alert {
+        &.alert-error {
+          color: #a94442;
+          background-color: #f2dede;
+          border-color: #ebccd1;
+        }
+      }
     }
   }
 }

@@ -41,6 +41,11 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
+        'gunicorn': {
+            'level': os.environ.get('BITCASTER_LOG_LEVEL','ERROR'),
+            'handlers': ['console'],
+            'propagate': False,
+        },
         'bitcaster': {
             'level': os.environ.get('BITCASTER_LOG_LEVEL','ERROR'),
             'handlers': ['console', 'sentry'],

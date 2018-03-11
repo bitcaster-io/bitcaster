@@ -41,7 +41,7 @@ def _get_superuser():
 @click.option('--password', type=Password)
 @click.option('--superuser/--no-superuser', default=None, is_flag=True)
 @click.option('--no-password', default=False, is_flag=True)
-@click.option('--prompt/--noinput',
+@click.option('--prompt/--no-input',
               default=True,
               help='Do not prompt for parameters',
               is_flag=True)

@@ -105,9 +105,12 @@ class Env(environ.Env):
 
         https://gist.github.com/bennylope/2999704
         """
+        if not os.path.exists(env_file):
+            return
         # set defaults
         for key, value in DEFAULTS.items():
             self.ENVIRON.setdefault(key, str(value[1]))
+
         try:
             content = Path(env_file).read_text()
         except IOError:

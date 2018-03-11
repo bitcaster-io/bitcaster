@@ -5,6 +5,7 @@ import sys
 
 import click
 
+from bitcaster.cli.commands.upgrade import upgrade
 from bitcaster.cli.utils import Address, LogLeveParamType
 from bitcaster.services.http import HTTPServer
 
@@ -12,10 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 @click.group()
-@click.pass_context
-def start(ctx, **kwargs):
+def start(**kwargs):
     pass
-
 
 @start.command()
 @click.option('--hostname', '-n',
@@ -83,7 +82,7 @@ def workers(**options):
               help='Daemonize and exit')
 @click.option('--pidfile', '-p', default=None,
               help='pidfile to')
-@click.option('--noinput', default=False, is_flag=True,
+@click.option('--no-input', default=False, is_flag=True,
               help='Do not prompt the user for input of any kind.')
 @click.option('--autoreload', default=False, is_flag=True,
               help='Restart server on server change')
@@ -93,11 +92,16 @@ def workers(**options):
                     ' ERROR, CRITICAL, or FATAL.'))
 @click.option('--logfile', default=None,
               help='logfile')
+@click.option('--upgrade', 'run_upgrade', is_flag=True, default=False,
+              help="Run upgrade before start")
 @click.pass_context
-def web(ctx, bind, daemonize, pidfile, workers, autoreload, debug, logfile, **kwargs):
+def web(ctx, bind, daemonize, pidfile, workers, autoreload, debug, logfile, run_upgrade, **kwargs):
     host, port = bind.split(":")
     if debug:
         os.environ['BITCASTER_DEBUG'] = 'True'
+
+    if run_upgrade:
+        ctx.invoke(upgrade, prompt=False)
 
     HTTPServer(host=host,
                port=port,

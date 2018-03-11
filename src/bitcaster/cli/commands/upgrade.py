@@ -1,6 +1,9 @@
 import os
+from pathlib import Path
 
 import click
+
+from bitcaster.config.environ import env
 
 
 @click.command()
@@ -12,11 +15,28 @@ import click
 def upgrade(ctx, prompt, **kwargs):
     try:
         from django.core.management import execute_from_command_line
+
         if prompt:
             extra = []
         else:
             extra = ['--no-input']
+
         os.environ['BITCASTER_DEBUG'] = 'True'
+        os.environ['BITCASTER_PLUGINS_AUTOLOAD'] = 'False'
+        for _dir in ('MEDIA_ROOT', 'STATIC_ROOT'):
+            target = Path(env.str(_dir))
+            if not target.exists():
+                if prompt:
+                    ok = click.prompt(f"{_dir} set to '{target}' but it does not exists. Create it now?")
+                else:
+                    ok = True
+                if ok:
+                    click.echo(f"Create {_dir} '{target}'")
+                    target.mkdir(parents=True)
+
+        os.environ['BITCASTER_STATIC_ROOT'] = 'False'
+        os.environ['BITCASTER_MEDIA_ROOT'] = 'False'
+
 
         execute_from_command_line(argv=['manage', 'migrate'] + extra)
         execute_from_command_line(argv=['manage', 'collectstatic'] + extra)

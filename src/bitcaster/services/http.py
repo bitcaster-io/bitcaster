@@ -42,6 +42,7 @@ class HTTPServer(Service):
         self.host = host
         self.port = port
         self.app = Application({
+            'proc_name': 'bitcaster',
             'bind': '%s:%s' % (self.host, self.port),
             'debug': debug,
             'daemon': daemonize,

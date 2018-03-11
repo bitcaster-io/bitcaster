@@ -55,13 +55,13 @@
                     <form method="post" class="d-inline"
                           action="{% url "invitation-delete" organization.slug membership.pk %}">
                         {% csrf_token %}
-                        <button type="submit" title="cancel invitation">
+                        <button type="submit" title="cancel invitation" class="pointer">
                             <i class="fa fa-remove"></i>
                         </button>
                     </form>&nbsp;|&nbsp;<form method="post" class="d-inline"
                                               action="{% url "invitation-send" organization.slug membership.pk %}">
                     {% csrf_token %}
-                    <button type="submit" title="resend email">
+                    <button type="submit" title="resend email" class="pointer">
                         <i class="fa fa-envelope"></i>
                     </button>
                 </form>

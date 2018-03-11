@@ -7,13 +7,13 @@
 #   Build the container:
 #     $ docker build --rm -t bitcaster:dev -f Dockerfile.dev .
 #   Bootstrap the container:
-#     $ docker run --name=bitcaster-dev -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/etc/:/etc/bitcaster -v-v $PWD/~build/var/bitcaster/:/var/bitcaster bitcaster:dev
+#     $ docker run --name=bitcaster-dev -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/etc/:/etc/bitcaster -v $PWD/~build/var/bitcaster/:/var/bitcaster bitcaster:dev
 #   Run the container:
 #     $ docker start bitcaster-dev
 #   Attach into the container:
 #     $ docker exec -it bitcaster-dev bash
 #   Run devserver:
-#     $ docker exec -it bitcaster-dev ./manage.py runserver 0.0.0.0:8000
+#     $ docker exec -it bitcaster-dev bitcaster start devserver 0.0.0.0:8000
 #   Stop container:
 #     $ docker stop bitcaster-dev
 #   Remove container:
@@ -52,7 +52,7 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJ
     &&  { echo; echo "local all all trust"; } >> "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf"
 
 RUN service postgresql start \
-    && createdb -U postgres -E utf-8 --template template0 $DATABASE_NAME \
+    && createdb -U postgres -E utf-8 --template template0 ${DATABASE_NAME} \
     && service postgresql stop
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -65,26 +65,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV BITCASTER_MEDIA_ROOT /var/bitcaster/media
 ENV BITCASTER_STATIC_ROOT /var/bitcaster/static
 ENV BITCASTER_CONF_DIR /etc/bitcaster/
-ENV BITCASTER_CONF $BITCASTER_CONF_DIR/conf
-
+ENV BITCASTER_CONF ${BITCASTER_CONF_DIR}conf
 RUN mkdir -p /usr/src/bitcaster -m 770
-RUN mkdir -p $BITCASTER_MEDIA_ROOT -m 770
-RUN mkdir -p $BITCASTER_STATIC_ROOT -m 770
-RUN mkdir -p $BITCASTER_CONF_DIR -m 770
+RUN mkdir -p ${BITCASTER_MEDIA_ROOT} -m 770
+RUN mkdir -p ${BITCASTER_STATIC_ROOT} -m 770
+RUN mkdir -p ${BITCASTER_CONF_DIR} -m 770
+RUN touch ${BITCASTER_CONF}
+
 WORKDIR /usr/src/bitcaster
-RUN pip install uwsgi
-# Make NGINX run on the foreground
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-# Remove default configuration from Nginx
-RUN rm /etc/nginx/conf.d/default.conf
-# Copy the modified Nginx conf
-COPY nginx.conf /etc/nginx/conf.d/
-# Copy the base uWSGI ini file to enable default dynamic uwsgi process number
-COPY uwsgi.ini /etc/uwsgi/
 
-
-
-ADD docker/docker-entrypoint.sh /entrypoint.sh
+COPY docker/entrypoint-dev.sh /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 EXPOSE 8000

@@ -71,6 +71,7 @@ cli.add_command(import_by_name('bitcaster.cli.commands.createuser.createuser'))
 cli.add_command(import_by_name('bitcaster.cli.commands.backup.backup'))
 cli.add_command(import_by_name('bitcaster.cli.commands.backup.restore'))
 cli.add_command(import_by_name('bitcaster.cli.commands.start.start'))
+cli.add_command(import_by_name('bitcaster.cli.commands.devserver.devserver'))
 
 
 def main():  # pragma: no cover
