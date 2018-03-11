@@ -37,6 +37,7 @@ class EmailOptions(DispatcherOptions):
 
 @dispatcher_registry.register
 class Email(Dispatcher):
+    __core__ = True
     options_class = EmailOptions
     subscription_class = EmailSubscription
     message_class = EmailMessage

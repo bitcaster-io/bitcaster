@@ -367,19 +367,13 @@ CONSTANCE_CONFIG = OrderedDict({
     'RECAPTCHA_PRIVATE_KEY': ('', '', str),
     'ENABLE_SENTRY': ('', '', str),
     'SENTRY_DSN': ('', '', str),
-
     'HOSTIP_ADDRESS': ('http://api.hostip.info/get_html.php',
                        'api.hostip.info info',
                        str),
-    'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/',
-                       '===',
-                       str),
-
+    'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/', '',str),
     'ALLOW_REGISTRATION': (False, '', bool),
     'ON_PREMISE': (True, '', bool),
-
     'INVITATION_EXPIRE': (60 * 60 * 24, '', int),
-
     'EMAIL_USE_TLS': (False, '', bool),
     'EMAIL_TIMEOUT': (60, '', int),
     'EMAIL_HOST': ('', '', str),
@@ -388,7 +382,6 @@ CONSTANCE_CONFIG = OrderedDict({
     'EMAIL_HOST_PASSWORD': ('', '', str),
     'EMAIL_SENDER': ('bitcaster@noreply.org', '', str),
     'EMAIL_SUBJECT_PREFIX': ('[bitcaster] ', '', str),
-
     'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY': ('', '', str),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET': ('', '', str),
     'SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY': ('', '', str),

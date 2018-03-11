@@ -29,8 +29,13 @@ def global_options(func):
 
 def need_setup(f):
     def new_func(*args, **kwargs):
-        import django
-        django.setup()
+        try:
+            import django
+            django.setup()
+        except Exception as e:
+            click.echo(f"Error configuring environment. "
+                       f"Run 'bitcaster configure' first: ({e})")
+            sys.exit(1)
         return f(*args, **kwargs)
     return update_wrapper(new_func, f)
 
@@ -72,6 +77,7 @@ cli.add_command(import_by_name('bitcaster.cli.commands.backup.backup'))
 cli.add_command(import_by_name('bitcaster.cli.commands.backup.restore'))
 cli.add_command(import_by_name('bitcaster.cli.commands.start.start'))
 cli.add_command(import_by_name('bitcaster.cli.commands.devserver.devserver'))
+cli.add_command(import_by_name('bitcaster.cli.commands.plugin.plugin'))
 
 
 def main():  # pragma: no cover

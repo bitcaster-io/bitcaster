@@ -7,10 +7,8 @@ from bitcaster.config.environ import env
 
 
 @click.command()
-@click.option('--prompt/--no-input',
-              default=True,
-              help='Do not prompt for parameters',
-              is_flag=True)
+@click.option('--prompt/--no-input', default=True, is_flag=True,
+              help='Do not prompt for parameters')
 @click.pass_context
 def upgrade(ctx, prompt, **kwargs):
     try:
@@ -33,10 +31,6 @@ def upgrade(ctx, prompt, **kwargs):
                 if ok:
                     click.echo(f"Create {_dir} '{target}'")
                     target.mkdir(parents=True)
-
-        os.environ['BITCASTER_STATIC_ROOT'] = 'False'
-        os.environ['BITCASTER_MEDIA_ROOT'] = 'False'
-
 
         execute_from_command_line(argv=['manage', 'migrate'] + extra)
         execute_from_command_line(argv=['manage', 'collectstatic'] + extra)

@@ -39,6 +39,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     options_class = DispatcherOptions
     message_class = MessageType
     __media__ = None
+    __core__ = False
 
     def __init__(self, owner=None):
         super().__init__(owner)

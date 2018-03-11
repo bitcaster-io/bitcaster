@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 def start(**kwargs):
     pass
 
+
 @start.command()
 @click.option('--hostname', '-n',
               help=('Set custom hostname, e.g. \'w1.%h\'. Expands: %h'

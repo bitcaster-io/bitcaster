@@ -83,5 +83,7 @@ def configure(ctx, prompt, prompt_all, write, **kwargs):
         for key, __ in env.scheme.items():
             value = str(kwargs.get(key.lower(), ''))
             click.echo(f"{key:20} {value}")
-    from constance import config
-    config.ON_PREMISE = True
+    # from django.conf import settings
+    # settings.configure()
+    # from constance import config
+    # config.ON_PREMISE = True

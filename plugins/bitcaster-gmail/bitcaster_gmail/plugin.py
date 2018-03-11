@@ -22,6 +22,7 @@ class GmailOptions(DispatcherOptions):
 
 @dispatcher_registry.register
 class Gmail(Email):
+    __core__ = False
     options_class = GmailOptions
     message_class = EmailMessage
 

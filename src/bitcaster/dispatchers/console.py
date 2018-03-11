@@ -7,6 +7,8 @@ from .registry import dispatcher_registry
 
 @dispatcher_registry.register
 class ConsoleDispatcher(Dispatcher):
+    __core__ = True
+
     def emit(self, **kwargs):
         print(**kwargs)
 
