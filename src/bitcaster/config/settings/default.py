@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'social_django',
     'django_extensions',
 
+    # 'django_celery_beat',
+    # 'django_celery_results',
+
     # Admin
     'django.contrib.admin',
 
@@ -331,13 +334,14 @@ REST_FRAMEWORK = {
 }
 
 # CELERY SETTINGS
+CELERY_ALWAYS_EAGER=False
 CELERYD_HIJACK_ROOT_LOGGER = False
 CELERYD_LOG_FILE = None
 CELERY_REDIRECT_STDOUTS = True
 
 CELERY_TASK_ALWAYS_EAGER = False
-CELERY_BROKER_URL = env('CELERY_BROKER_URL')
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
+CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 

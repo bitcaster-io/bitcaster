@@ -24,6 +24,7 @@ django-timezone-field
 djangorestframework
 django-rest-framework-nested
 drfpasswordless
+gunicorn
 jsonfield
 maxminddb-geolite2
 oath

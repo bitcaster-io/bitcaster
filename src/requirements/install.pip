@@ -15,10 +15,10 @@ django-autoslug-iplweb==1.9.4.dev0  # via django-fobi
 django-bitfield==1.9.3
 django-concurrency==1.4
 django-constance[database,redis]==2.1.0
-django-countries==5.1.1
-django-crispy-forms==1.7.1
+django-countries==5.2
+django-crispy-forms==1.7.2
 django-environ==0.4.4
-django-extensions==2.0.0
+django-extensions==2.0.5
 django-fernet-fields==0.5
 django-fobi==0.13.1
 django-formtools==2.1     # via django-fobi
@@ -39,6 +39,7 @@ django==2.0.3
 djangorestframework==3.7.7
 drfpasswordless==1.1.5
 easy-thumbnails==2.5      # via django-fobi
+gunicorn==19.7.1
 html5lib==1.0.1           # via bleach
 httplib2==0.10.3          # via oauth2client
 idna==2.6                 # via cryptography, requests
@@ -74,7 +75,6 @@ simplejson==3.13.2        # via django-fobi
 six==1.11.0               # via admin-extra-urls, bleach, cryptography, django-bitfield, django-concurrency, django-environ, django-extensions, django-fobi, django-sysinfo, html5lib, oauth2client, packaging, social-auth-app-django, social-auth-core, vishap
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0
-typing==3.6.4             # via django-extensions
 unidecode==1.0.22         # via django-fobi
 urllib3==1.22             # via requests
 vine==1.1.4               # via amqp

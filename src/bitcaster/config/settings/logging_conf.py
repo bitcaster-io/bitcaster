@@ -25,8 +25,9 @@ LOGGING = {
         },
         'console': {
             'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'short'
+            # 'class': 'logging.StreamHandler',
+            'class': 'logging.NullHandler',
+            'formatter': 'verbose'
         },
         'null': {
             'level': 'DEBUG',
@@ -55,8 +56,18 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
+        'gunicorn': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
         'django': {
             'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'django.middleware': {
+            'level': 'INFO',
             'handlers': ['console'],
             'propagate': False,
         },

@@ -107,7 +107,7 @@ class Env(environ.Env):
         """
         # set defaults
         for key, value in DEFAULTS.items():
-            self.ENVIRON.setdefault(key, str(value))
+            self.ENVIRON.setdefault(key, str(value[1]))
         try:
             content = Path(env_file).read_text()
         except IOError:

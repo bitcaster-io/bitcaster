@@ -1,10 +1,11 @@
 import inspect
+import re
 from pathlib import Path
 from urllib.parse import parse_qs
 
 from django.conf import settings
 from django.conf.urls import include
-from django.conf.urls.static import static
+# from django.conf.urls.static import static
 from django.contrib.admin import site
 from django.http import HttpResponse
 from django.urls import path, re_path
@@ -34,6 +35,10 @@ def oauth2callback(request):
     return channel.handler.oauth_callback(request)
 
 
+def static(prefix, view=serve, **kwargs):
+    return re_path(r'^%s(?P<path>.*)$' % re.escape(prefix.lstrip('/')), view, kwargs=kwargs)
+
+
 urlpatterns = [path(r'api/', include(bitcaster.api.urls), name='api'),
                path(r'oauth2callback/', oauth2callback),
                path('admin/info/html/', admin_sysinfo, name="admin_info"),
@@ -46,9 +51,12 @@ urlpatterns = [path(r'api/', include(bitcaster.api.urls), name='api'),
 
                re_path('plugins/icon/(?P<fqn>.*)', plugin_icon, name="plugin-icon"),
 
-               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT,
-                          show_indexes=True)
+               static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT,
+                      show_indexes=True),
+               static(settings.STATIC_URL, document_root=settings.STATIC_ROOT,
+                      show_indexes=True)
 
+               ]
 if settings.DEBUG:
     import debug_toolbar
 

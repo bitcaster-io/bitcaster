@@ -1,24 +1,34 @@
-{% extends "bitcaster/organization_detail.html" %}{% load crispy_forms_tags i18n bitcaster%}
+{% extends "bitcaster/organization_detail.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block content %}
     <h2>{{ organization }} Applications</h2>
-    <div class="container-fluid">
+
+    <div class="container">
         <div class="row col-12">
-            <div class="pull-right col-12">
+            <div class="pull-right col-12 p-4">
                 <a class="btn btn-danger btn-small pull-right"
                    href="{% url "application-add" organization.slug %}">{% trans "Create new application" %}</a>
-
             </div>
         </div>
     </div>
-    <div class="container-fluid">
-        <div class="row col-12">
+
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr class="d-flex">
+                <th scope="col" class="col-sm">Name</th>
+                <th scope="col" class="col-sm">Timezone</th>
+                <th scope="col" class="col-sm">Creation Date</th>
+            </tr>
+            </thead>
+            <tbody>
             {% for app in organization.applications.all %}
-                <div class="row">
-                    <div class="col-sm"><a href="{% org-url "app-index" app.slug %}">{{ app.name }}</a></div>
-                    <div class="col-sm">{{ app.timezone }}</div>
-                    <div class="col-sm">{{ membership.date_added }}</div>
-                </div>
+                <tr class="row">
+                    <td class="col-sm"><a href="{% org-url "app-index" app.slug %}">{{ app.name }}</a></td>
+                    <td class="col-sm">{{ app.timezone }}</td>
+                    <td class="col-sm">{{ membership.date_added }}</td>
+                </tr>
             {% endfor %}
-        </div>
+            </tbody>
+        </table>
     </div>
 {% endblock %}
