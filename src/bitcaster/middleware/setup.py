@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from constance import config
+from django.conf import settings
 from django.http import HttpResponseRedirect
 
 
@@ -13,9 +14,7 @@ class SetupMiddleware(object):
         self.get_response = get_response
 
     def __call__(self, request):
-        response = self.get_response(request)
-        # if config.INITIALIZED in ["0", 0, None, False, ""]:
         if not bool(config.INITIALIZED):
-            if request.path != '/setup/':
+            if request.path != '/setup/' and not request.path.startswith(settings.STATIC_URL):
                 return HttpResponseRedirect("/setup/")
-        return response
+        return self.get_response(request)

@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth import login, password_validation
 from django.contrib.auth.backends import ModelBackend
 from django.db import transaction
+from django.http import HttpResponse, HttpResponseNotFound
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import ugettext as _
@@ -48,6 +49,11 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
     template_name = 'bitcaster/setup.html'
     form_class = SetupForm
     success_url = '/'
+
+    def get(self, request, *args, **kwargs):
+        if bool(config.INITIALIZED):
+            return HttpResponseNotFound("Not Found")
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         with transaction.atomic():

@@ -11,7 +11,7 @@ from bitcaster.utils.json import Decoder, Encoder
 @click.command()
 @click.option('--file',
               'filename',
-              default=str(Path('~/.bitcaster/backups/1.json').expanduser()),
+              default=str(Path('~/.bitcaster/backups/sys.json').expanduser()),
               type=click.Path())
 @click.pass_context
 @need_setup

@@ -521,8 +521,13 @@ CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
 
 # DEBUG-TOOLBAR
 if DEBUG:
+    def show_ddt(request):
+        if request.path in ('/setup/',):
+            return False
+        return True
+
     INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar']
     MIDDLEWARE = MIDDLEWARE + ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
-    DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda r: True,
+    DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': show_ddt,
                             'JQUERY_URL': ''}
     INTERNAL_IPS = ['127.0.0.1', 'localhost', '0.0.0.0', '*']
