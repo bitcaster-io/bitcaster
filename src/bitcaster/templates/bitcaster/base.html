@@ -121,7 +121,7 @@
                             </span>
                         </div>
                         <div class="col-sm justify-content-center">
-                            <a href="//bitcaster.io/"><img src="{% asset "images/bitcaster32.png" %}"></a>
+                            <a href="//bitcaster.io/"><img src="{% asset "dist/images/bitcaster32.png" %}"></a>
                         </div>
                         <div class="col-sm justify-content-end">
                             {% if user.is_authenticated %}
@@ -144,7 +144,7 @@
     <script src="{% asset "dist/bitcaster.js" %}"></script>
     {% if messages %}
     <script>
-            setTimeout(function(){$('.alert').alert('close');}, 10000);
+            setTimeout(function(){$('.alert').alert('close');}, 5000);
     </script>
     {% endif %}
 {% endblock %}

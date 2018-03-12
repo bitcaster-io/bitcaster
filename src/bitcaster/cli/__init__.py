@@ -27,15 +27,19 @@ def global_options(func):
     return func
 
 
+def configure():
+    try:
+        import django
+        django.setup()
+    except Exception as e:
+        click.echo(f"Error configuring environment. "
+                   f"Run 'bitcaster configure' first: ({e})")
+        sys.exit(1)
+
+
 def need_setup(f):
     def new_func(*args, **kwargs):
-        try:
-            import django
-            django.setup()
-        except Exception as e:
-            click.echo(f"Error configuring environment. "
-                       f"Run 'bitcaster configure' first: ({e})")
-            sys.exit(1)
+        configure()
         return f(*args, **kwargs)
     return update_wrapper(new_func, f)
 

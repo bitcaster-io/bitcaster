@@ -15,7 +15,7 @@ from django.core.management import execute_from_command_line
 from django.utils.autoreload import (I18N_MODIFIED,
                                      reset_translations, RUN_RELOADER, ensure_echo_on)
 
-from bitcaster.cli import need_setup
+from bitcaster.cli import need_setup, configure
 from bitcaster.cli.utils import Address, LogLeveParamType
 from bitcaster.services.http import HTTPServer
 from bitcaster.utils.os import touch
@@ -147,7 +147,6 @@ def monitor():
                     ' ERROR, CRITICAL, or FATAL.'))
 @click.option('--logfile', default=None,
               help='logfile')
-@need_setup
 def devserver(bind, workers, autoreload, debug,
               webpack, logfile, **kwargs):
     host, port = bind.split(":")
@@ -157,6 +156,7 @@ def devserver(bind, workers, autoreload, debug,
         os.environ['CELERY_ALWAYS_EAGER'] = 'True'
 
     if webpack:
+        configure()
         _thread.start_new_thread(monitor, ())
 
     HTTPServer(host=host,
