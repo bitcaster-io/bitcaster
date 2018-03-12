@@ -190,7 +190,7 @@ CRISPY_FAIL_SILENTLY = not env.bool('DEBUG', False)
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = env.str('STATIC_ROOT', str(BITCASTER_DIR / 'static' / "dist"))
+STATIC_ROOT = env.str('STATIC_ROOT', '')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
@@ -209,7 +209,7 @@ STATICFILES_FINDERS = [
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
-MEDIA_ROOT = env.str('MEDIA_ROOT', str(PROJECT_DIR / 'media'))
+MEDIA_ROOT = env.str('MEDIA_ROOT', '')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'

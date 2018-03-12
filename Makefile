@@ -136,5 +136,10 @@ install-plugins:
 		pip install -e $$dir || exit 1; \
  	done
 
+docker-beta:
+	docker rm bitcaster-beta
+	docker build --rm -t bitcaster:beta -f Dockerfile .
+	docker run --name=bitcaster-beta -p 8000:8000 -it -v ${PWD}:/usr/src/bitcaster -v ${PWD}/~build/etc/:/etc/bitcaster -v ${PWD}/~build/var/bitcaster/:/var/bitcaster bitcaster:beta
+	docker start bitcaster-beta
 
 .PHONY: test-plugins clean-plugins install-plugins

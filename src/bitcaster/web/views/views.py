@@ -1,3 +1,5 @@
+from constance import config
+from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView
@@ -48,4 +50,6 @@ class IndexView(TemplateView):
             if request.user.memberships.filter(role=Role.OWNER):
                 url = reverse('org-index', args=[request.user.memberships.first().organization.slug])
                 return HttpResponseRedirect(url)
+        elif not config.ALLOW_REGISTRATION:
+            return HttpResponseRedirect(settings.LOGIN_URL)
         return super().get(request, *args, **kwargs)

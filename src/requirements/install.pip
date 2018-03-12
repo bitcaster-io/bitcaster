@@ -17,6 +17,7 @@ django-concurrency==1.4
 django-constance[database,redis]==2.1.0
 django-countries==5.2
 django-crispy-forms==1.7.2
+django-debug-toolbar==1.9.1
 django-environ==0.4.4
 django-extensions==2.0.5
 django-fernet-fields==0.5
@@ -75,6 +76,7 @@ simplejson==3.13.2        # via django-fobi
 six==1.11.0               # via admin-extra-urls, bleach, cryptography, django-bitfield, django-concurrency, django-environ, django-extensions, django-fobi, django-sysinfo, html5lib, oauth2client, packaging, social-auth-app-django, social-auth-core, vishap
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0
+sqlparse==0.2.4           # via django-debug-toolbar
 unidecode==1.0.22         # via django-fobi
 urllib3==1.22             # via requests
 vine==1.1.4               # via amqp

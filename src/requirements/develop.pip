@@ -121,7 +121,7 @@ pytest-cov==2.5.1
 pytest-django==3.1.2
 pytest-echo==1.5.1
 pytest==3.4.2
-python-dateutil==2.6.1
+python-dateutil==2.7.0
 python-redis-lock[django]==3.2.0
 python-slugify==1.2.4     # via transifex-client
 python3-openid==3.1.0
@@ -141,7 +141,7 @@ simplejson==3.13.2
 six==1.11.0
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0
-sqlparse==0.2.4           # via django-debug-toolbar
+sqlparse==0.2.4
 text-unidecode==1.2
 tox==2.9.1
 traitlets==4.3.2          # via ipython

@@ -47,9 +47,18 @@ def uninstall(name, prompt, **kwargs):
 @plugin.command()
 @click.argument('name', required=False)
 @click.option('--from-dir', '-d', default=None, type=click.Path())
+@click.option('--recursive', '-r', default=False, is_flag=True)
 @click.option('--prompt/--no-input', default=True, is_flag=True,
               help='Do not prompt for parameters')
 @need_setup
-def install(name, prompt, from_dir, **kwargs):
-    os.chdir(from_dir)
-    pip.main(["install", '.'])
+def install(name, prompt, recursive, from_dir, **kwargs):
+    os.environ['BITCASTER_PLUGINS_AUTOLOAD'] = 'False'
+    if from_dir:
+        if recursive:
+            for root, subdirs, files in os.walk(from_dir):
+                if os.path.exists(os.path.join(root, 'setup.py')):
+                    pip.main(["install", root])
+
+        else:
+            os.chdir(from_dir)
+            pip.main(["install", '.'])

@@ -1,158 +1,89 @@
-FROM python:3.6-stretch
+# Bitcaster dev environment
+#
+# NOTE: Do NOT use this in production!
+#
+# Instructions:
+#
+#   Build the container:
+#     $ docker build --rm -t bitcaster:beta -f Dockerfile .
+#   Bootstrap the container:
+#     $ docker run --name=bitcaster-beta -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/etc/:/etc/bitcaster -v $PWD/~build/var/bitcaster/:/var/bitcaster bitcaster:beta
+#   Run the container:
+#     $ docker start bitcaster-beta
+#   Attach into the container:
+#     $ docker exec -it bitcaster-beta bash
+#   Run devserver:
+#     $ docker exec -it bitcaster-beta bitcaster start devserver 0.0.0.0:8000
+#   Stop container:
+#     $ docker stop bitcaster-beta
+#   Remove container:
+#     $ docker rm -f bitcaster-beta
+#
+# Sample development flow
+#  docker build --rm -t bitcaster:beta -f Dockerfile.dev .
+#  docker run --name=bitcaster-beta -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/etc/:/etc/bitcaster -v $PWD/~build/var/bitcaster/:/var/bitcaster bitcaster:beta
+#  docker start bitcaster-beta
+#  docker exec -it bitcaster-beta bitcaster upgrade
+#  docker exec -it bitcaster-beta bitcaster plugin install -r -d plugins
+#  docker exec -it bitcaster-beta bitcaster devserver -b 0.0.0.0:8000
+
+FROM python:3.6
 ENV PYTHONUNBUFFERED 1
+ENV PG_MAJOR 9.6
+ENV PG_VERSION 9.6.*
+ENV DATABASE_NAME bitcaster
 ENV NGINX_VERSION 1.13.7-1~stretch
 ENV NJS_VERSION   1.13.7.0.1.15-1~stretch
 
-FROM python:3.6-stretch
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ntp \
+    && rm -rf /var/lib/apt/lists/*
 
-# Standard set up Nginx
-ENV NGINX_VERSION 1.13.7-1~stretch
-ENV NJS_VERSION   1.13.7.0.1.15-1~stretch
+# make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
+RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ENV LANG en_US.utf8
 
-RUN set -x \
-    && apt-get update \
-    && apt-get install --no-install-recommends --no-install-suggests -y gnupg1 \
-    && \
-    NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
-    found=''; \
-    for server in \
-        ha.pool.sks-keyservers.net \
-        hkp://keyserver.ubuntu.com:80 \
-        hkp://p80.pool.sks-keyservers.net:80 \
-        pgp.mit.edu \
-    ; do \
-        echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
-        apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
-    done; \
-    test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
-    apt-get remove --purge --auto-remove -y gnupg1 && rm -rf /var/lib/apt/lists/* \
-    && dpkgArch="$(dpkg --print-architecture)" \
-    && nginxPackages=" \
-        nginx=${NGINX_VERSION} \
-        nginx-module-xslt=${NGINX_VERSION} \
-        nginx-module-geoip=${NGINX_VERSION} \
-        nginx-module-image-filter=${NGINX_VERSION} \
-        nginx-module-njs=${NJS_VERSION} \
-    " \
-    && case "$dpkgArch" in \
-        amd64|i386) \
-# arches officialy built by upstream
-            echo "deb http://nginx.org/packages/mainline/debian/ stretch nginx" >> /etc/apt/sources.list \
-            && apt-get update \
-            ;; \
-        *) \
-# we're on an architecture upstream doesn't officially build for
-# let's build binaries from the published source packages
-            echo "deb-src http://nginx.org/packages/mainline/debian/ stretch nginx" >> /etc/apt/sources.list \
-            \
-# new directory for storing sources and .deb files
-            && tempDir="$(mktemp -d)" \
-            && chmod 777 "$tempDir" \
-# (777 to ensure APT's "_apt" user can access it too)
-            \
-# save list of currently-installed packages so build dependencies can be cleanly removed later
-            && savedAptMark="$(apt-mark showmanual)" \
-            \
-# build .deb files from upstream's source packages (which are verified by apt-get)
-            && apt-get update \
-            && apt-get build-dep -y $nginxPackages \
-            && ( \
-                cd "$tempDir" \
-                && DEB_BUILD_OPTIONS="nocheck parallel=$(nproc)" \
-                    apt-get source --compile $nginxPackages \
-            ) \
-# we don't remove APT lists here because they get re-downloaded and removed later
-            \
-# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
-# (which is done after we install the built packages so we don't have to redownload any overlapping dependencies)
-            && apt-mark showmanual | xargs apt-mark auto > /dev/null \
-            && { [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
-            \
-# create a temporary local APT repo to install from (so that dependency resolution can be handled by APT, as it should be)
-            && ls -lAFh "$tempDir" \
-            && ( cd "$tempDir" && dpkg-scanpackages . > Packages ) \
-            && grep '^Package: ' "$tempDir/Packages" \
-            && echo "deb [ trusted=yes ] file://$tempDir ./" > /etc/apt/sources.list.d/temp.list \
-# work around the following APT issue by using "Acquire::GzipIndexes=false" (overriding "/etc/apt/apt.conf.d/docker-gzip-indexes")
-#   Could not open file /var/lib/apt/lists/partial/_tmp_tmp.ODWljpQfkE_._Packages - open (13: Permission denied)
-#   ...
-#   E: Failed to fetch store:/var/lib/apt/lists/partial/_tmp_tmp.ODWljpQfkE_._Packages  Could not open file /var/lib/apt/lists/partial/_tmp_tmp.ODWljpQfkE_._Packages - open (13: Permission denied)
-            && apt-get -o Acquire::GzipIndexes=false update \
-            ;; \
-    esac \
-    \
-    && apt-get install --no-install-recommends --no-install-suggests -y \
-                        $nginxPackages \
-                        gettext-base \
+RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
+
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        postgresql-common \
+        postgresql-$PG_MAJOR=$PG_VERSION \
+        postgresql-client-$PG_MAJOR=$PG_VERSION \
+        postgresql-contrib-$PG_MAJOR=$PG_VERSION \
     && rm -rf /var/lib/apt/lists/* \
-    \
-# if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
-    && if [ -n "$tempDir" ]; then \
-        apt-get purge -y --auto-remove \
-        && rm -rf "$tempDir" /etc/apt/sources.list.d/temp.list; \
-    fi
+    && rm "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
+    && touch "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
+    && chown -R postgres "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
+    && { echo; echo "host all all 0.0.0.0/0 trust"; } >> "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
+    &&  { echo; echo "local all all trust"; } >> "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf"
 
-# forward request and error logs to docker log collector
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log
+RUN service postgresql start \
+    && createdb -U postgres -E utf-8 --template template0 ${DATABASE_NAME} \
+    && service postgresql stop
 
-EXPOSE 80
-# Standard set up Nginx finished
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        redis-server \
+        memcached \
+        postfix \
+    && rm -rf /var/lib/apt/lists/*
 
-# Expose 443, in case of LTS / HTTPS
-EXPOSE 443
+ENV BITCASTER_MEDIA_ROOT /var/bitcaster/media
+ENV BITCASTER_STATIC_ROOT /var/bitcaster/static
+ENV BITCASTER_CONF_DIR /etc/bitcaster/
+ENV BITCASTER_CONF ${BITCASTER_CONF_DIR}conf
+RUN mkdir -p /usr/src/bitcaster -m 770
+RUN mkdir -p ${BITCASTER_MEDIA_ROOT} -m 770
+RUN mkdir -p ${BITCASTER_STATIC_ROOT} -m 770
+RUN mkdir -p ${BITCASTER_CONF_DIR} -m 770
+RUN touch ${BITCASTER_CONF}
 
-# Install uWSGI
-RUN pip install uwsgi
+WORKDIR /usr/src/bitcaster
 
-# Make NGINX run on the foreground
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-# Remove default configuration from Nginx
-RUN rm /etc/nginx/conf.d/default.conf
-# Copy the modified Nginx conf
-COPY docker/nginx.conf /etc/nginx/conf.d/
-# Copy the base uWSGI ini file to enable default dynamic uwsgi process number
-COPY docker/uwsgi.ini /etc/uwsgi/
-
-# Install Supervisord
-RUN apt-get update && apt-get install -y supervisor \
-&& rm -rf /var/lib/apt/lists/*
-# Custom Supervisord config
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Which uWSGI .ini file should be used, to make it customizable
-ENV UWSGI_INI /app/uwsgi.ini
-
-# By default, allow unlimited file sizes, modify it to limit the file sizes
-# To have a maximum of 1 MB (Nginx's default) change the line to:
-# ENV NGINX_MAX_UPLOAD 1m
-ENV NGINX_MAX_UPLOAD 1m
-
-# By default, Nginx will run a single worker process, setting it to auto
-# will create a worker for each CPU core
-ENV NGINX_WORKER_PROCESSES 1
-
-# By default, Nginx listens on port 80.
-# To modify this, change LISTEN_PORT environment variable.
-# (in a Dockerfile or with an option for `docker run`)
-ENV LISTEN_PORT 80
-
-# Copy the entrypoint that will generate Nginx additional configs
 COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
 
-ENTRYPOINT ["/entrypoint.sh"]
-
-
-RUN mkdir /code
-WORKDIR /code
-ADD . /code/
-RUN pip install .
-
-
-CMD ["/usr/bin/supervisord"]
-
-
-
-
-
+EXPOSE 8000
+CMD [ "bash" ]

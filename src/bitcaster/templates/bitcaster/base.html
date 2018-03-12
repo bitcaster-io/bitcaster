@@ -4,6 +4,8 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" type="image/png" href="/images/favicon.ico"/>
+{#    <link rel="shortcut icon" type="image/png" href="http://example.com/favicon.png"/>#}
     {% block css %}
         <link rel="stylesheet" href="{% asset "dist/bitcaster.css" %}">
     {% endblock %}
@@ -119,7 +121,7 @@
                             </span>
                         </div>
                         <div class="col-sm justify-content-center">
-                            <a href="//bitcaster.io/"><img src="{% asset "logos/bitcaster32.png" %}"></a>
+                            <a href="//bitcaster.io/"><img src="{% asset "images/bitcaster32.png" %}"></a>
                         </div>
                         <div class="col-sm justify-content-end">
                             {% if user.is_authenticated %}

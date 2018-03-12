@@ -1,14 +1,132 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import signal
 import sys
 
-import click
+import _thread
+from pathlib import Path
 
+import click
+import time
+import subprocess
+from django.apps import apps
+from django.conf import settings
+from django.core.management import execute_from_command_line
+from django.utils.autoreload import (I18N_MODIFIED,
+                                     reset_translations, RUN_RELOADER, ensure_echo_on)
+
+from bitcaster.cli import need_setup
 from bitcaster.cli.utils import Address, LogLeveParamType
 from bitcaster.services.http import HTTPServer
+from bitcaster.utils.os import touch
 
 logger = logging.getLogger(__name__)
+
+_mtimes = {}
+_win = (sys.platform == "win32")
+_cached_filenames = []
+
+ASSET_MODIFIED = 90
+HTML_MODIFIED = 91
+SOURCE_MODIFIED = 92
+IMAGES = ('.png', '.ico')
+JS = ('.js', '.jsx')
+PAGES = ('.html', '.html')
+SOURCE = ('.py', )
+I18N = ('.mo', )
+
+MONITOR_FILES = IMAGES + PAGES + I18N + JS
+
+def gen_filenames(only_new=False):
+    """
+    Return a list of filenames referenced in sys.modules and translation files.
+    """
+    global _cached_filenames
+    new_filenames = []
+    for root, subdirs, files in os.walk(settings.SOURCE_DIR):
+        for filename in files:
+            __, ext = os.path.splitext(filename)
+            if ext in MONITOR_FILES:
+                new_filenames.append(os.path.join(root, filename))
+
+    if not _cached_filenames and settings.USE_I18N:
+        # Add the names of the .mo files that can be generated
+        # by compilemessages management command to the list of files watched.
+        basedirs = [os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                 'conf', 'locale'),
+                    'locale']
+        for app_config in reversed(list(apps.get_app_configs())):
+            basedirs.append(os.path.join(app_config.path, 'locale'))
+        basedirs.extend(settings.LOCALE_PATHS)
+        basedirs = [os.path.abspath(basedir) for basedir in basedirs
+                    if os.path.isdir(basedir)]
+        for basedir in basedirs:
+            for dirpath, dirnames, locale_filenames in os.walk(basedir):
+                for filename in locale_filenames:
+                    if filename.endswith('.mo'):
+                        new_filenames.append(os.path.join(dirpath, filename))
+
+    # _cached_modules = _cached_modules.union(new_modules)
+    _cached_filenames += new_filenames
+    if only_new:
+        return new_filenames
+    else:
+        return _cached_filenames
+
+
+def code_changed():
+    global _mtimes, _win
+    for filename in gen_filenames():
+        stat = os.stat(filename)
+        mtime = stat.st_mtime
+        if _win:
+            mtime -= stat.st_ctime
+        if filename not in _mtimes:
+            _mtimes[filename] = mtime
+            continue
+        if mtime != _mtimes[filename]:
+            _mtimes = {}
+            __, ext = os.path.splitext(filename)
+            if ext == '.mo':
+                return I18N_MODIFIED
+            elif ext in ('.html', ):
+                return HTML_MODIFIED
+            elif ext in ('.py', ):
+                return SOURCE_MODIFIED
+            elif ext in ('.css', '.scss', '.js', 'png', '.jpg'):
+                # FIXME: remove me (print)
+                print(111, 4444)
+                return ASSET_MODIFIED
+
+    return False
+
+
+def monitor():
+    ensure_echo_on()
+    # if USE_INOTIFY:
+    #     fn = inotify_code_changed
+    # else:
+    # TODO: implement inotify. See django.utils.autoreload
+    fn = code_changed
+    while RUN_RELOADER:
+        change = fn()
+        if change == SOURCE_MODIFIED:
+            # this is handle by gunicorn
+            # sys.exit(3)  # force reload
+            pass
+        elif change == HTML_MODIFIED:
+            touch(Path(__file__).absolute())
+        elif change == ASSET_MODIFIED:
+            sys.stdout.write("Asset change detected run webpack/collectstatic\n")
+            subprocess.check_call(['webpack', '--mode', 'development'],
+                             stdout=sys.stdout,
+                             stderr=sys.stderr)
+            execute_from_command_line(argv=['manage', 'collectstatic', '--noinput'])
+
+        elif change == I18N_MODIFIED:
+            reset_translations()
+        time.sleep(1)
 
 
 @click.command()
@@ -32,27 +150,20 @@ logger = logging.getLogger(__name__)
                     ' ERROR, CRITICAL, or FATAL.'))
 @click.option('--logfile', default=None,
               help='logfile')
+@need_setup
 def devserver(bind, workers, autoreload, debug,
               webpack, logfile, **kwargs):
     host, port = bind.split(":")
-    webpack_proc = None
 
     if debug:
         os.environ['BITCASTER_DEBUG'] = 'True'
         os.environ['CELERY_ALWAYS_EAGER'] = 'True'
 
     if webpack:
-        import subprocess
-
-        webpack_proc = subprocess.Popen(['webpack', '--mode', 'development', '--watch'],
-                             stdout=sys.stdout,
-                             stderr=sys.stderr)
+        _thread.start_new_thread(monitor, ())
 
     HTTPServer(host=host,
                port=port,
                debug=debug,
                workers=workers,
                reload=autoreload).run()
-
-    if webpack_proc:
-        webpack_proc.kill()

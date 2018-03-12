@@ -19,6 +19,14 @@
 #   Remove container:
 #     $ docker rm -f bitcaster-dev
 #
+# Sample development flow
+#  docker build --rm -t bitcaster:dev -f Dockerfile.dev .
+#  docker run --name=bitcaster-dev -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/etc/:/etc/bitcaster -v $PWD/~build/var/bitcaster/:/var/bitcaster bitcaster:dev
+#  docker start bitcaster-dev
+#  docker exec -it bitcaster-dev bitcaster upgrade
+#  docker exec -it bitcaster-dev bitcaster plugin install -r -d plugins
+#  docker exec -it bitcaster-dev bitcaster devserver -b 0.0.0.0:8000
+
 FROM python:3.6
 ENV PYTHONUNBUFFERED 1
 ENV PG_MAJOR 9.6
