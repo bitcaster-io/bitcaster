@@ -22,7 +22,8 @@ def backup(ctx, filename, **kwargs):
     try:
         data = {}
         data['channels'] = list(Channel.objects.filter(system=True).values())
-        data['options'] = [(key, getattr(config, key)) for key, value in sett.CONFIG.items()]
+        data['options'] = [(key, getattr(config, key))
+                           for key, value in sett.CONFIG.items()]
 
         output = Path(filename)
         output.parent.mkdir(parents=True, exist_ok=True)

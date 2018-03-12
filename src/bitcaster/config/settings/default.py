@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     # Useful libraries and add-ons
+    'constance.backends.database',
     'snowpenguin.django.recaptcha2',
     'crispy_forms',
     'jsoneditor',
@@ -346,7 +347,8 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 # CONSTANCE
-CONSTANCE_REDIS_CONNECTION = env('REDIS_CONSTANCE_URL')
+# CONSTANCE_REDIS_CONNECTION = env('REDIS_CONSTANCE_URL')
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_ADDITIONAL_FIELDS = {
     'yes_no_null_select': ['django.forms.fields.ChoiceField', {

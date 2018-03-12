@@ -53,7 +53,7 @@ class RedisUrlParamType(click.ParamType):
             assert url.scheme == 'redis'
             assert url.hostname
             assert url.port
-            assert url.path
+            # assert url.path
             return value
         except (ValueError, AssertionError):
             self.fail(

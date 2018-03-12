@@ -41,8 +41,8 @@ from bitcaster.cli.utils import (Address, RedisURL, generate_secret_key,
               default=lambda: get_database_url_param()["database"])
 @click.option('--organization',
               default=lambda: read_current_env('ORGANIZATION'))
-@click.option('-p', '--prompt-all',
-              default=False,
+@click.option('--prompt-all/--lazy',
+              default=True,
               help='Prompt for any argument even if it has default value',
               is_flag=True)
 @click.option('--prompt/--no-input',
