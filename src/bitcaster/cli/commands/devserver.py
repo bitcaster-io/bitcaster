@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import subprocess
 import sys
-
-import _thread
+import time
 from pathlib import Path
 
+import _thread
 import click
-import time
-import subprocess
 from django.apps import apps
 from django.conf import settings
 from django.core.management import execute_from_command_line
-from django.utils.autoreload import (I18N_MODIFIED,
-                                     reset_translations, RUN_RELOADER, ensure_echo_on)
+from django.utils.autoreload import (I18N_MODIFIED, RUN_RELOADER,
+                                     ensure_echo_on, reset_translations,)
 
-from bitcaster.cli import need_setup, configure
+from bitcaster.cli import configure
 from bitcaster.cli.utils import Address, LogLeveParamType
 from bitcaster.services.http import HTTPServer
 from bitcaster.utils.os import touch

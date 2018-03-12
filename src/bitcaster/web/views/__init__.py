@@ -1,19 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
-bitcaster / __init__.py
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
-from .application import *  # noqa
-from .base import *  # noqa
-from .callbacks import confirm_email  # noqa
-from .channel import ChannelCreateWizard, ChannelListView  # noqa
-from .login_logout import LoginView, LogoutView  # noqa
-from .organization import *  # noqa
-from .register import *  # noqa
-from .settings import *  # noqa
-from .system_setup import *  # noqa
-from .user import *  # noqa
-from .views import *  # noqa
+# flake8: noqa
+from .application import *
+from .base import *
+from .callbacks import confirm_email
+from .channel import ChannelCreateWizard, ChannelListView
+from .login_logout import LoginView, LogoutView
+from .organization import *
+from .register import *
+from .settings import *
+from .system_setup import *
+from .user import *
+from .views import *
+from .event import EventList, EventCreate, EventUpdate, EventDelete, EventToggle

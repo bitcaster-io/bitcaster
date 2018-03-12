@@ -49,6 +49,14 @@ def org_reverse(context, url_name, *args, **kwargs):
     return reverse(url_name, args=(org.slug,) + args, **kwargs)
 
 
+@register.simple_tag(name="app-url", takes_context=True)
+def app_reverse(context, url_name, *args, **kwargs):
+    org = context["organization"]
+    app = context["application"]
+    return reverse(url_name, args=(org.slug,
+                                   app.slug) + args, **kwargs)
+
+
 @register.inclusion_tag('admin/bitcaster/configurable_submit_line.html', takes_context=True)
 def channel_submit_row(context):
     """

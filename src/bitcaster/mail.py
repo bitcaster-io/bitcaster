@@ -33,9 +33,9 @@ def send_mail_by_template(subject, template_name, context,
                           fail_silently=False):
     html_message, message = make_message(template_name, context)
     logger.debug(f"Sending email to {recipient_list}")
-    if async:
-        if settings.CELERY_ALWAYS_EAGER:
-            logger.warning("Celery task invoked but CELERY_ALWAYS_EAGER set.")
+    if settings.CELERY_ALWAYS_EAGER and async:
+        logger.warning("Celery task invoked but CELERY_ALWAYS_EAGER set.")
+    if async and not settings.CELERY_ALWAYS_EAGER:
         return send_mail_async.delay(subject, message, html_message,
                                      recipient_list,
                                      from_email=from_email,

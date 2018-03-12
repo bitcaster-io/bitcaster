@@ -10,7 +10,7 @@ LOGGING = {
     },
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s '
+            'format': '%(levelname)s %(asctime)s %(name)s'
                       '%(process)d %(thread)d %(message)s'
         },
         'short': {
@@ -61,11 +61,11 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
-        # 'django.db.backends': {
-        #     'level': 'ERROR',
-        #     'handlers': ['console'],
-        #     'propagate': False,
-        # },
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
         # 'redis_lock': {
         #     'level': 'ERROR',
         #     'handlers': ['console'],

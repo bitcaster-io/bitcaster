@@ -3,10 +3,14 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
+from bitcaster.web.views import EventDelete
+from bitcaster.web.views.event import EventToggle
 from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     ApplicationChannelRemove, ApplicationChannels,
                     ApplicationChannelToggle, ApplicationChannelUpdate,
-                    ApplicationCreate, ApplicationDetail, EventList, IndexView,
+                    ApplicationCreate, ApplicationDetail,
+                    EventList, EventCreate, EventUpdate,
+                    IndexView,
                     InviteAccept, InviteDelete, InviteSend, LoginView,
                     LogoutView, MessageList, OrganizationApplications,
                     OrganizationChannelCreate, OrganizationChannelDeprecate,
@@ -21,7 +25,7 @@ from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     SettingsChannelToggleView, SettingsChannelUpdateView,
                     SettingsEmailView, SettingsOAuthView, SettingsView,
                     SetupView, SubscriptionList, UserProfileView, UserRegister,
-                    UserWelcomeView, WorkInProgressView, confirm_email,)
+                    UserWelcomeView, WorkInProgressView, confirm_email, )
 
 urlpatterns = [
     path('setup/', SetupView.as_view(), name='setup'),
@@ -42,18 +46,43 @@ urlpatterns = [
     path('settings/channel/<int:pk>/edit/', SettingsChannelUpdateView.as_view(), name='system-channel-update'),
     path('settings/channel/<int:pk>/delete/', SettingsChannelDeleteView.as_view(), name='system-channel-delete'),
     path('settings/channel/<int:pk>/toggle/', SettingsChannelToggleView.as_view(), name='system-channel-toggle'),
-    path('settings/channel/<int:pk>/deprecate/', SettingsChannelDeprecateView.as_view(), name='system-channel-deprecate'),
+    path('settings/channel/<int:pk>/deprecate/', SettingsChannelDeprecateView.as_view(),
+         name='system-channel-deprecate'),
     path('plugins/info/<str:fqn>/', PluginInfo.as_view(), name='plugin-info'),
 
     # Social
     path('', include('social_django.urls', namespace='social')),
     path('user/register/', UserRegister.as_view(), name='user-register'),
-    path('user/register/register-wait-email/<int:pk>/', TemplateView.as_view(template_name='bitcaster/registration/register_wait_email.html'), name='register-wait-email'),
+    path('user/register/register-wait-email/<int:pk>/',
+         TemplateView.as_view(template_name='bitcaster/registration/register_wait_email.html'),
+         name='register-wait-email'),
     path('user/register/confirm-email/<int:pk>/<str:check>/', confirm_email, name='confirm-email'),
     path('user/profile/', UserProfileView.as_view(), name='user-profile'),
     path('new-user/', TemplateView.as_view(template_name='bitcaster/new-user.html')),
     path('new-association/', TemplateView.as_view(template_name='bitcaster/new-association.html')),
     path('login-error/', TemplateView.as_view(template_name='bitcaster/wip.html')),
+
+    # Applications
+    path('<slug:org>/a/add/', ApplicationCreate.as_view(), name='application-add'),
+    path('<slug:org>/a/<slug:app>/', ApplicationDetail.as_view(), name='app-index'),
+    path('<slug:org>/a/<slug:app>/subscriptions/', SubscriptionList.as_view(), name='app-subscriptions'),
+    path('<slug:org>/a/<slug:app>/event/', EventList.as_view(), name='app-event-list'),
+    path('<slug:org>/a/<slug:app>/event/<int:pk>/edit/', EventUpdate.as_view(), name='app-event-update'),
+    path('<slug:org>/a/<slug:app>/event/<int:pk>/toggle/', EventToggle.as_view(), name='app-event-toggle'),
+    path('<slug:org>/a/<slug:app>/event/<int:pk>/delete/', EventDelete.as_view(), name='app-event-delete'),
+
+    path('<slug:org>/a/<slug:app>/event/add/', EventCreate.as_view(), name='app-event-add'),
+    path('<slug:org>/a/<slug:app>/channel/', ApplicationChannels.as_view(), name='app-channels'),
+    path('<slug:org>/a/<slug:app>/channel/add/', ApplicationChannelCreate.as_view(), name='app-channel-create'),
+    path('<slug:org>/a/<slug:app>/channel/<int:pk>/edit/', ApplicationChannelUpdate.as_view(),
+         name='app-channel-update'),
+    path('<slug:org>/a/<slug:app>/channel/<int:pk>/delete/', ApplicationChannelRemove.as_view(),
+         name='app-channel-delete'),
+    path('<slug:org>/a/<slug:app>/channel/<int:pk>/toggle/', ApplicationChannelToggle.as_view(),
+         name='app-channel-toggle'),
+    path('<slug:org>/a/<slug:app>/channel/<int:pk>/deprecate/', ApplicationChannelDeprecate.as_view(),
+         name='app-channel-deprecate'),
+    path('<slug:org>/a/<slug:app>/messages/', MessageList.as_view(), name='app-messages'),
 
     # Organization
     path('org/add/', OrganizationCreate.as_view(), name='org-add'),
@@ -77,20 +106,9 @@ urlpatterns = [
     path('<slug:org>/channel/<int:pk>/edit/', OrganizationChannelUpdate.as_view(), name='org-channel-update'),
     path('<slug:org>/channel/<int:pk>/delete/', OrganizationChannelRemove.as_view(), name='org-channel-delete'),
     path('<slug:org>/channel/<int:pk>/toggle/', OrganizationChannelToggle.as_view(), name='org-channel-toggle'),
-    path('<slug:org>/channel/<int:pk>/deprecate/', OrganizationChannelDeprecate.as_view(), name='org-channel-deprecate'),
+    path('<slug:org>/channel/<int:pk>/deprecate/', OrganizationChannelDeprecate.as_view(),
+         name='org-channel-deprecate'),
     path('<slug:org>/applications/', OrganizationApplications.as_view(), name='org-applications'),
-    # Applications
-    path('<slug:org>/add/', ApplicationCreate.as_view(), name='application-add'),
-    path('<slug:org>/<slug:app>/', ApplicationDetail.as_view(), name='app-index'),
-    path('<slug:org>/<slug:app>/subscriptions/', SubscriptionList.as_view(), name='app-subscriptions'),
-    path('<slug:org>/<slug:app>/events/', EventList.as_view(), name='app-events'),
-    path('<slug:org>/<slug:app>/channel/', ApplicationChannels.as_view(), name='app-channels'),
-    path('<slug:org>/<slug:app>/channel/add/', ApplicationChannelCreate.as_view(), name='app-channel-create'),
-    path('<slug:org>/<slug:app>/channel/<int:pk>/edit/', ApplicationChannelUpdate.as_view(), name='app-channel-update'),
-    path('<slug:org>/<slug:app>/channel/<int:pk>/delete/', ApplicationChannelRemove.as_view(), name='app-channel-delete'),
-    path('<slug:org>/<slug:app>/channel/<int:pk>/toggle/', ApplicationChannelToggle.as_view(), name='app-channel-toggle'),
-    path('<slug:org>/<slug:app>/channel/<int:pk>/deprecate/', ApplicationChannelDeprecate.as_view(), name='app-channel-deprecate'),
-    path('<slug:org>/<slug:app>/messages/', MessageList.as_view(), name='app-messages'),
 
     path('', IndexView.as_view(), name='index'),
     path('wip/', WorkInProgressView.as_view(), name='wip'),

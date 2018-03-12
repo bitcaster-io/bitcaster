@@ -16,8 +16,8 @@ def test_cli_check():
         result = runner.invoke(createuser,
                                ['--email', 'test@test.com',
                                 '--password', '123',
-                                '--noinput'
+                                '--no-input'
                                 ],
                                obj={'config': str(config_file),
                                     'env': env})
-        assert result.exit_code == 0
+        assert result.exit_code == 0, result.output

@@ -5,11 +5,11 @@ from django.urls import reverse
 from django.views.generic import ListView, TemplateView
 
 from bitcaster.db.fields import Role
-from bitcaster.models import Event, Message, Subscription
+from bitcaster.models import Message, Subscription
 
 from .base import SelectedApplicationMixin
 
-__all__ = ("EventList", "IndexView",
+__all__ = ("IndexView",
            "MessageList", "SubscriptionList", "WorkInProgressView")
 
 
@@ -18,13 +18,6 @@ class SubscriptionList(SelectedApplicationMixin, ListView):
 
     def get_queryset(self):
         return Subscription.objects.filter(event__application=self.selected_application)
-
-
-class EventList(SelectedApplicationMixin, ListView):
-    model = Event
-
-    def get_queryset(self):
-        return self.selected_application.events.all()
 
 
 class MessageList(SelectedApplicationMixin, ListView):
