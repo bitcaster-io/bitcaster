@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
-import signal
 import sys
 
 import _thread
@@ -33,15 +32,13 @@ SOURCE_MODIFIED = 92
 IMAGES = ('.png', '.ico')
 JS = ('.js', '.jsx')
 PAGES = ('.html', '.html')
-SOURCE = ('.py', )
-I18N = ('.mo', )
+SOURCE = ('.py',)
+I18N = ('.mo',)
 
 MONITOR_FILES = IMAGES + PAGES + I18N + JS
 
+
 def gen_filenames(only_new=False):
-    """
-    Return a list of filenames referenced in sys.modules and translation files.
-    """
     global _cached_filenames
     new_filenames = []
     for root, subdirs, files in os.walk(settings.SOURCE_DIR):
@@ -90,9 +87,9 @@ def code_changed():
             __, ext = os.path.splitext(filename)
             if ext == '.mo':
                 return I18N_MODIFIED
-            elif ext in ('.html', ):
+            elif ext in ('.html',):
                 return HTML_MODIFIED
-            elif ext in ('.py', ):
+            elif ext in ('.py',):
                 return SOURCE_MODIFIED
             elif ext in ('.css', '.scss', '.js', 'png', '.jpg'):
                 # FIXME: remove me (print)
@@ -120,8 +117,8 @@ def monitor():
         elif change == ASSET_MODIFIED:
             sys.stdout.write("Asset change detected run webpack/collectstatic\n")
             subprocess.check_call(['webpack', '--mode', 'development'],
-                             stdout=sys.stdout,
-                             stderr=sys.stderr)
+                                  stdout=sys.stdout,
+                                  stderr=sys.stderr)
             execute_from_command_line(argv=['manage', 'collectstatic', '--noinput'])
 
         elif change == I18N_MODIFIED:
