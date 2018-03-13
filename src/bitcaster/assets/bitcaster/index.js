@@ -10,6 +10,7 @@ import './logos/bitcaster100.png';
 import './logos/bitcaster500.png';
 
 import './images/favicon.ico';
+import './images/plugin.png';
 import './images/email-icon.png';
 import './images/social_auth_github.png';
 import './images/social_auth_google.png';

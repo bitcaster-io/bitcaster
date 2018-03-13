@@ -24,7 +24,7 @@ def plugin_icon(request, fqn):
     try:
         return HttpResponse(icon.read_bytes(), content_type='image/png')
     except FileNotFoundError:
-        icon = Path(str(settings.BITCASTER_DIR)) / 'static/plugin.png'
+        icon = Path(str(settings.BITCASTER_DIR)) / 'assets/bitcaster/images/plugin.png'
         return HttpResponse(icon.read_bytes(), content_type='image/png')
 
 
