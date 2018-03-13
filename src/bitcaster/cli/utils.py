@@ -29,7 +29,7 @@ class AddressParamType(click.ParamType):
         except (ValueError, AssertionError):
             self.fail(
                 click.style(
-                    f'{value} is not a vlid address. Please use <host>:<port>',
+                    f'{value} is not a valid address. Please use <host>:<port>',
                     fg='red'))
 
 
