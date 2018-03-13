@@ -1,17 +1,71 @@
-{% load bc_assets %}
-<!DOCTYPE html>
+{% load bc_assets %}<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  {% block head %}{% endblock %}
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block head %}
+        {#        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">#}
+    {% endblock %}
+    <style>
+        div {
+            width: 100%;
+            font-family: arial, sans-serif;
+        }
+        .pl-1{
+            padding: 5px;
+        }
+        .center {
+            text-align: center !important;
+            box-sizing: border-box;
+            color: black;
+            display: block;
+        }
 
+        .btn2 {
+            background: #22b8eb;
+            padding: 10px 20px 10px 20px;
+            border-radius: 3px;
+            margin-bottom: 2px;
+            color: #fff;
+            font-size: .85rem;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .headline {
+            background: #fff;
+            margin: 0 auto;
+            padding: 20px;
+            max-width: 550px;
+            font-weight: 200;
+            color: #868686;
+            font-size: 1.25rem;
+        {#font-weight:200;#} line-height: 1.5rem;
+        }
+
+        .footline {
+            font-size: 80%;
+
+        }
+    </style>
 </head>
 <body class="{% block bodyclass %}{% endblock %}">
+<div class="center">
+    <div>
+        <a href="{% aurl "index" %}" target="_blank">
+            <img src="{% aasset "dist/images/bitcaster100.png" %}">
+        </a>
+    </div>
+    <div class="">
+        {% block main %}
+            <div class="headline">{% block headline %}{% endblock %}</div>
+            <a href="{{ url }}" class="btn2">{% block button_label %}{% endblock %}</a>
+            <div class="footline">{% block footline %}{% endblock %}</div>
+        {% endblock %}
+    </div>
+</div>
 
-
-{% block main %}
-{% endblock %}
 
 </body>
 </html>

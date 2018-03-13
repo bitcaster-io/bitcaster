@@ -2,17 +2,17 @@
     <div class="row  justify-content-center">
         {% if config.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY %}
             <a href="{% url "social:begin" "google-oauth2" %}?invitation={{ invitation_id }}">
-                <img src="{% asset "social_auth_google.png" %}">
+                <img src="{% asset "dist/images/social_auth_google.png" %}">
             </a>
         {% endif %}
         {% if config.SOCIAL_AUTH_GITHUB_KEY %}
             <a href="{% url "social:begin" "github" %}?invitation={{ invitation_id }}">
-                <img src="{% asset "social_auth_github.png" %}">
+                <img src="{% asset "dist/images/social_auth_github.png" %}">
             </a>
         {% endif %}
         {% if config.SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY %}
             <a href="{% url "social:begin" "linkedin" %}?invitation={{ invitation_id }}">
-                <img src="{% asset "social_auth_linkedin.png" %}">
+                <img src="{% asset "dist/images/social_auth_linkedin.png" %}">
             </a>
         {% endif %}
     </div>

@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from bitcaster import logging
-from bitcaster.utils import fqn
+from bitcaster.utils.reflect import fqn
 
 logger = logging.getLogger(__name__)
 

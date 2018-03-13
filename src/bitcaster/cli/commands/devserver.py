@@ -9,7 +9,7 @@ from pathlib import Path
 import _thread
 import click
 from django.apps import apps
-from django.conf import settings
+
 from django.core.management import execute_from_command_line
 from django.utils.autoreload import (I18N_MODIFIED, RUN_RELOADER,
                                      ensure_echo_on, reset_translations,)
@@ -18,6 +18,7 @@ from bitcaster.cli import configure
 from bitcaster.cli.utils import Address, LogLeveParamType
 from bitcaster.services.http import HTTPServer
 from bitcaster.utils.os import touch
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,7 @@ MONITOR_FILES = IMAGES + PAGES + I18N + JS
 
 
 def gen_filenames(only_new=False):
+    from django.conf import settings
     global _cached_filenames
     new_filenames = []
     for root, subdirs, files in os.walk(settings.SOURCE_DIR):
@@ -91,8 +93,6 @@ def code_changed():
             elif ext in ('.py',):
                 return SOURCE_MODIFIED
             elif ext in ('.css', '.scss', '.js', 'png', '.jpg'):
-                # FIXME: remove me (print)
-                print(111, 4444)
                 return ASSET_MODIFIED
 
     return False
@@ -152,12 +152,17 @@ def devserver(bind, workers, autoreload, debug,
 
     if debug:
         os.environ['BITCASTER_DEBUG'] = 'True'
-        os.environ['CELERY_ALWAYS_EAGER'] = 'True'
+        os.environ['BITCASTER_CELERY_TASK_ALWAYS_EAGER'] = 'True'
 
+    configure()
     if webpack:
-        configure()
         _thread.start_new_thread(monitor, ())
+    # import gunicorn.reloader
+    #
+    # class Bit(gunicorn.reloader.Reloader):
+    #     pass
 
+    # gunicorn.reloader.reloader_engines['bit'] = Bit
     HTTPServer(host=host,
                port=port,
                debug=debug,

@@ -56,9 +56,9 @@ def start(**kwargs):
 def workers(**options):
     "Run background worker instance."
     from django.conf import settings
-    if settings.CELERY_ALWAYS_EAGER:
+    if settings.CELERY_TASK_ALWAYS_EAGER:
         raise click.ClickException(
-            'Disable CELERY_ALWAYS_EAGER in your settings file to spawn workers.'
+            'Disable CELERY_TASK_ALWAYS_EAGER in your settings file to spawn workers.'
         )
     from bitcaster.celery import app
     # from celery.apps.worker import Worker

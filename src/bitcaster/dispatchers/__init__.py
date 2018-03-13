@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from .base import Dispatcher  # noqa
-from .console import ConsoleDispatcher  # noqa
-from .email import Email  # noqa
+# from .console import ConsoleDispatcher  # noqa
+# from .email import Email  # noqa
 # from .gmail import Gmail  # noqa
 from .registry import dispatcher_registry  # noqa
 

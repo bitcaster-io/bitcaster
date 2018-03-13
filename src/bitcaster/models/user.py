@@ -15,7 +15,7 @@ from timezone_field import TimeZoneField
 from bitcaster import logging
 from bitcaster.db.fields import EncryptedJSONField, LanguageField, Role
 from bitcaster.file_storage import MediaFileSystemStorage, profile_media_root
-from bitcaster.mail import send_mail
+from bitcaster.mail import send_mail_async
 from bitcaster.utils.http import absolute_uri
 
 # from social_auth.backends.facebook import FacebookBackend
@@ -159,7 +159,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         message = get_template('bitcaster/emails/confirm_email.txt').render(ctx)
         html_message = get_template('bitcaster/emails/confirm_email.html').render(ctx)
 
-        ret = send_mail(subject=subject,
+        ret = send_mail_async(subject=subject,
                         message=message,
                         html_message=html_message,
                         from_email='bitcaster@os4d.org',

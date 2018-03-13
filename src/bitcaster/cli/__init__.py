@@ -8,8 +8,11 @@ from setproctitle import setproctitle
 from strategy_field.utils import import_by_name
 
 import bitcaster
+from bitcaster.logging import getLogger
 from bitcaster.config import DEFAULT_CONFIG
 from bitcaster.config.environ import env
+
+logger = getLogger(__name__)
 
 _global_options = [
     click.option('-c',
@@ -32,6 +35,7 @@ def configure():
         import django
         django.setup()
     except Exception as e:
+        logger.exception(e)
         click.echo(f"Error configuring environment. "
                    f"Run 'bitcaster configure' first: ({e})")
         sys.exit(1)
@@ -41,6 +45,7 @@ def need_setup(f):
     def new_func(*args, **kwargs):
         configure()
         return f(*args, **kwargs)
+
     return update_wrapper(new_func, f)
 
 
@@ -62,13 +67,15 @@ def cli(ctx, config, **kwargs):
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings.default')
 
     if config.exists():
-        # raise click.ClickException(f"config file {filepath} does not exists.")
+        env.load_config(str(config))
+        click.echo(f"Loaded configuration from {filepath}")
+    else:
+        cli(f"Configuration file {filepath} does not exists.")
         # cfg_file.parent.mkdir(mode=0o770, parents=True, exist_ok=True)
         # cfg_file.touch(mode=0o660)
-        env.load_config(str(config))
+
     ctx.obj = {'env': env,
                'config': filepath}
-    click.echo("Configuration file: {}".format(ctx.obj['config']))
 
 
 cli.add_command(import_by_name('bitcaster.cli.commands.check.check'))

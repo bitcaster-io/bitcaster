@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from mercury.dispatchers import serializers
-from mercury.dispatchers.base import (Dispatcher, DispatcherOptions,
+from bitcaster.dispatchers import serializers
+from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
                                       MessageType, SubscriptionOptions,)
-from mercury.dispatchers.registry import dispatcher_registry
-from mercury.exceptions import PluginSendError, PluginValidationError
-from mercury.logging import getLogger
-from mercury.utils.language import classproperty
+from bitcaster.dispatchers.registry import dispatcher_registry
+from bitcaster.exceptions import PluginSendError, PluginValidationError
+from bitcaster.logging import getLogger
+from bitcaster.utils.language import classproperty
 
-logger = getLogger('mercury.plugins.{{cookiecutter.name}}')
+logger = getLogger('bitcaster.plugins.{{cookiecutter.name}}')
 
 
 class {{cookiecutter.classname}}Message(MessageType):

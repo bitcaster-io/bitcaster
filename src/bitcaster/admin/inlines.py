@@ -4,7 +4,7 @@ from bitcaster import logging
 from bitcaster.models import (ApiAuthToken, ApiTriggerKey, Application, Channel,
                               Event, OrganizationMember, TeamMembership,)
 from bitcaster.models.message import Message
-from bitcaster.utils import fqn
+from bitcaster.utils.reflect import fqn
 
 logger = logging.getLogger(__name__)
 

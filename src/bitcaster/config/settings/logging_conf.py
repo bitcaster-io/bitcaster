@@ -10,8 +10,8 @@ LOGGING = {
     },
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(name)s'
-                      '%(process)d %(thread)d %(message)s'
+            'format': '%(levelname)s %(asctime)s %(name)s '
+                      '%(lineno)d %(message)s'
         },
         'short': {
             'format': '%(levelname)-10s %(name)s '

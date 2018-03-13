@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-import logging
 from threading import local
-
-logger = logging.getLogger(__name__)
 
 
 class State(local):

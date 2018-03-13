@@ -10,12 +10,19 @@ __author__ = 'Stefano Apostolico'
 def get_full_version(git_commit=True):
     commit = ""
     if git_commit:
-        res = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
-        commit = "-" + res.decode('utf8')[:-1]
+        try:
+            res = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
+            commit = "-" + res.decode('utf8')[:-1]
+        except subprocess.CalledProcessError:
+            commit = 'unknown'
+
     return f"{VERSION}{commit}"
 
 
 @lru_cache(1)
 def get_git_status(clean=" (nothing to commit)", dirty=" (uncommitted changes)"):
-    uncommited = subprocess.check_output(['git', 'status', '-s'])
-    return dirty if uncommited else clean
+    try:
+        uncommited = subprocess.check_output(['git', 'status', '-s'])
+        return dirty if uncommited else clean
+    except subprocess.CalledProcessError:
+        return ''

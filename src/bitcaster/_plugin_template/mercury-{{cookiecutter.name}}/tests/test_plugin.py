@@ -5,12 +5,12 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from mercury.exceptions import ValidationError
+from bitcaster.exceptions import ValidationError
 from {{cookiecutter.package_name}} import {{cookiecutter.classname}}
 
-env = Env(MERCURY_{{cookiecutter.package_name|upper}}_USERNAME='',
-          MERCURY_{{cookiecutter.package_name|upper}}_PASSWORD='',
-          MERCURY_{{cookiecutter.package_name|upper}}_RECIPIENT='',
+env = Env(BITCASTER_{{cookiecutter.package_name|upper}}_USERNAME='',
+          BITCASTER_{{cookiecutter.package_name|upper}}_PASSWORD='',
+          BITCASTER_{{cookiecutter.package_name|upper}}_RECIPIENT='',
           )
 
 env.read_env(str(Path(__file__).parent / '.env'))
@@ -18,16 +18,16 @@ env.read_env(str(Path(__file__).parent / '.env'))
 
 def before_record_request(request):
     original = str(request.body)
-    for e in [env('MERCURY_{{cookiecutter.package_name|upper}}_USERNAME', str),
-              env('MERCURY_{{cookiecutter.package_name|upper}}_PASSWORD', str),
-              env('MERCURY_{{cookiecutter.package_name|upper}}_RECIPIENT', str)]:
+    for e in [env('BITCASTER_{{cookiecutter.package_name|upper}}_USERNAME', str),
+              env('BITCASTER_{{cookiecutter.package_name|upper}}_PASSWORD', str),
+              env('BITCASTER_{{cookiecutter.package_name|upper}}_RECIPIENT', str)]:
         original = original.replace(e, "----")
     request.body = original.encode('utf8')
 
     original = request.uri
-    for e in [env('MERCURY_{{cookiecutter.package_name|upper}}_USERNAME', str),
-              env('MERCURY_{{cookiecutter.package_name|upper}}_PASSWORD', str),
-              env('MERCURY_{{cookiecutter.package_name|upper}}_RECIPIENT', str)]:
+    for e in [env('BITCASTER_{{cookiecutter.package_name|upper}}_USERNAME', str),
+              env('BITCASTER_{{cookiecutter.package_name|upper}}_PASSWORD', str),
+              env('BITCASTER_{{cookiecutter.package_name|upper}}_RECIPIENT', str)]:
         original = original.replace(e, "----")
     request.uri = original
 
@@ -56,14 +56,14 @@ def subscription():
     application = Mock()
     user = Mock()
     channel = Mock(application=application,
-                   config={'username': env('MERCURY_{{cookiecutter.package_name|upper}}_USERNAME', str),
-                           'password': env('MERCURY_{{cookiecutter.package_name|upper}}_PASSWORD', str)
+                   config={'username': env('BITCASTER_{{cookiecutter.package_name|upper}}_USERNAME', str),
+                           'password': env('BITCASTER_{{cookiecutter.package_name|upper}}_PASSWORD', str)
                            })
     event = Mock(application=application)
 
     return Mock(subscriber=user,
                 event=event,
-                config={'recipient': env('MERCURY_{{cookiecutter.package_name|upper}}_RECIPIENT', str)},
+                config={'recipient': env('BITCASTER_{{cookiecutter.package_name|upper}}_RECIPIENT', str)},
                 channel=channel)
 
 
@@ -85,7 +85,7 @@ def test_send(subscription):
         d = {{cookiecutter.classname}}(subscription.channel)
         assert d.emit(subscription,
                       'subject',
-                      'Mercury is on {{cookiecutter.classname}}...enjoy') == 1
+                      'Bitcaster is on {{cookiecutter.classname}}...enjoy') == 1
 
 
 def test_connection(subscription):

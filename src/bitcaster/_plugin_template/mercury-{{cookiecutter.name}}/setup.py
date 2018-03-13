@@ -6,11 +6,11 @@ tests_require = ['vcrpy', 'pdbpp', 'pytest', 'pytest-cov',
                  'flake8', 'isort', 'check-manifest']
 
 setup(
-    name='mercury-{{cookiecutter.name}}',
+    name='bitcaster-{{cookiecutter.name}}',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['mercury', ],
+    install_requires=['bitcaster', ],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,
@@ -18,7 +18,7 @@ setup(
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     py_modules=['{{cookiecutter.package_name}}'],
-    entry_points={'mercury': ['{{cookiecutter.name}} = {{cookiecutter.package_name}}.plugin:{{cookiecutter.classname}}']},
+    entry_points={'bitcaster': ['{{cookiecutter.name}} = {{cookiecutter.package_name}}.plugin:{{cookiecutter.classname}}']},
     license="MIT License",
     classifiers=[
         'Development Status :: 5 - Production/Stable',

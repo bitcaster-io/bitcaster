@@ -25,11 +25,13 @@ class Config(AppConfig):
     name = 'bitcaster'
 
     def ready(self):
-        from . import celery  # noqa
-        from django.conf import settings  # noqa
-        from .dispatchers.registry import dispatcher_registry  # noqa
-        from . import tasks  # noqa
-        from . import checks  # noqa
-
+        pass
+        # from .config.environ import env # noqa
+        # from . import celery  # noqa
+        # from django.conf import settings  # noqa
+        # from .dispatchers.registry import dispatcher_registry  # noqa
+        # from . import tasks  # noqa
+        # from . import checks  # noqa
+#
 # post_migrate.connect(create_extra_permission,
 #                      dispatch_uid='create_extra_permission')

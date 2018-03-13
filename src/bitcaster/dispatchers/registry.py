@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import pkg_resources
-from django.conf import settings
 from strategy_field.registry import Registry as Registry
 from strategy_field.utils import fqn
 
+from bitcaster.config.environ import env
 from bitcaster.exceptions import PluginValidationError
 from bitcaster.logging import getLogger
 
@@ -11,7 +11,7 @@ logger = getLogger(__name__)
 
 dispatcher_registry = Registry('bitcaster.dispatchers.base.Dispatcher')
 
-if settings.PLUGINS_AUTOLOAD:
+if env('PLUGINS_AUTOLOAD'):
     for ep in pkg_resources.iter_entry_points('bitcaster'):  # pragma: no-cover
         try:
             plugin = ep.load()

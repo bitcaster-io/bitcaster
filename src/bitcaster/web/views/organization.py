@@ -167,8 +167,11 @@ class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
 
     def form_valid(self, form):
         membership = self.get_object()
-        membership.send_email()
-        self.message_user(_("Email sending scheduled"))
+        try:
+            membership.send_email()
+            self.message_user(_("Email sending scheduled"))
+        except Exception:
+            self.message_user(_("Error sending email"), messages.ERROR)
         return super().form_valid(form)
 
 

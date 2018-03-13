@@ -5,6 +5,7 @@ from django.views.generic import TemplateView
 
 from bitcaster.web.views import EventDelete
 from bitcaster.web.views.event import EventToggle
+from bitcaster.web.views.views import PreviewView
 from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     ApplicationChannelRemove, ApplicationChannels,
                     ApplicationChannelToggle, ApplicationChannelUpdate,
@@ -112,5 +113,7 @@ urlpatterns = [
 
     path('', IndexView.as_view(), name='index'),
     path('wip/', WorkInProgressView.as_view(), name='wip'),
+
+    path('tpl/<str:path>', PreviewView.as_view(), name='wip'),
 
 ]

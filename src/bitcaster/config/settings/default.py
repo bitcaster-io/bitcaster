@@ -1,9 +1,9 @@
 import logging
-import os
 from collections import OrderedDict
 from pathlib import Path
 
 from django.utils.translation import ugettext_lazy as _
+from django_regex.utils import RegexList
 
 from bitcaster.config.environ import env
 
@@ -335,12 +335,11 @@ REST_FRAMEWORK = {
 }
 
 # CELERY SETTINGS
-CELERY_ALWAYS_EAGER=env.bool('CELERY_ALWAYS_EAGER', False)
+CELERY_TASK_ALWAYS_EAGER = env.bool('CELERY_TASK_ALWAYS_EAGER', False)
 CELERYD_HIJACK_ROOT_LOGGER = False
 CELERYD_LOG_FILE = None
 CELERY_REDIRECT_STDOUTS = True
 
-CELERY_TASK_ALWAYS_EAGER = False
 CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
@@ -372,7 +371,7 @@ CONSTANCE_CONFIG = OrderedDict({
     'HOSTIP_ADDRESS': ('http://api.hostip.info/get_html.php',
                        'api.hostip.info info',
                        str),
-    'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/', '',str),
+    'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/', '', str),
     'ALLOW_REGISTRATION': (False, '', bool),
     'ON_PREMISE': (True, '', bool),
     'INVITATION_EXPIRE': (60 * 60 * 24, '', int),
@@ -521,9 +520,11 @@ CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
 
 # DEBUG-TOOLBAR
 if DEBUG:
+    ignored = RegexList(('/setup/', '/tpl/.*'))
     def show_ddt(request):
-        if request.path in ('/setup/',):
-            return False
+        if request.user.is_authenticated:
+            if request.path in ignored:
+                return False
         return True
 
     INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar']

@@ -7,7 +7,7 @@ from bitcaster.logging import getLogger
 from bitcaster.models.application import Application
 from bitcaster.models.base import AbstractModel
 from bitcaster.models.user import User
-from bitcaster.utils import generate_api_token
+from bitcaster.utils.tokens import generate_api_token
 
 logger = getLogger(__name__)
 

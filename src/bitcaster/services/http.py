@@ -6,7 +6,7 @@ from gunicorn.arbiter import Arbiter
 from .base import Service
 
 
-class Application(WSGIApplication):
+class BitApplication(WSGIApplication):
     def __init__(self, options):
         super().__init__(self, None)
         self.usage = None
@@ -25,6 +25,12 @@ class Application(WSGIApplication):
     def load_config(self):
         pass
 
+    def reload(self):
+        # FIXME: remove me (print)
+        print(111, 9999999999)
+        super().reload()
+        # reload()
+
     def init(self, parser, opts, args):
         pass
 
@@ -41,14 +47,16 @@ class HTTPServer(Service):
         super().__init__(debug=debug)
         self.host = host
         self.port = port
-        self.app = Application({
+        self.app = BitApplication({
             'proc_name': 'bitcaster',
             'bind': '%s:%s' % (self.host, self.port),
             'debug': debug,
             'daemon': daemonize,
             'workers': workers,
+            'worker_int': None,
             'reload': reload,
             'pidfile': pidfile,
+            # 'reload_engine': 'bit',
             'errorlog': logfile,
         })
 

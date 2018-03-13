@@ -4,7 +4,7 @@ from django.db import models
 
 from bitcaster import logging
 from bitcaster.db.fields import EncryptedJSONField
-from bitcaster.utils import generate_subscription_token
+from bitcaster.utils.tokens import generate_subscription_token
 
 from .base import AbstractModel
 from .channel import Channel

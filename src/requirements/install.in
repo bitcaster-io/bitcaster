@@ -8,10 +8,11 @@ django-concurrency
 django-constance[database,redis]
 django-countries
 django-crispy-forms
+django-debug-toolbar
 django-environ
 django_extensions
 django-fernet-fields
-django-fobi
+django-formtools
 django-jsoneditor
 django-model-utils
 django-redis
@@ -26,9 +27,12 @@ django-rest-framework-nested
 drfpasswordless
 gunicorn
 jsonfield
+lxml<4
 maxminddb-geolite2
 oath
 oauth2client
+pillow
+premailer
 psycopg2-binary
 pycountry
 pycrypto

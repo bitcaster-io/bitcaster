@@ -1,6 +1,7 @@
 from constance import config
 from django.conf import settings
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
+from django.template.loader import get_template
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView
 
@@ -33,6 +34,21 @@ class Error403(TemplateView):
 
 class WorkInProgressView(TemplateView):
     template_name = 'bitcaster/wip.html'
+
+
+class PreviewView(TemplateView):
+    template_name = 'bitcaster/wip.html'
+
+    def get(self, request, *args, **kwargs):
+        tplname = kwargs['path'].replace("|", "/")
+        tpl = get_template(tplname)
+        content = tpl.render({}, request)
+        from premailer import transform
+        content = transform(content)
+        return HttpResponse(content)
+
+    # def get_template_names(self):
+    #     return self.kwargs['path'].replace("|", "/")
 
 
 class IndexView(TemplateView):

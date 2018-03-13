@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from celery.utils.log import get_task_logger
 from constance import config
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.db.models import Count
 
 from bitcaster.celery import app
 from bitcaster.exceptions import LogicError
+from bitcaster.logging import getLogger
 
-logger = get_task_logger(__name__)
+logger = getLogger(__name__)
 
 app.conf.beat_schedule = {
     'add-every-60-seconds': {
@@ -62,6 +62,7 @@ def send_mail_async(subject, message, html_message, recipient_list,
                     *,
                     from_email=None,
                     fail_silently=False):
+    logger.debug("aaaaaaaaa")
     try:
         connection = get_connection(
             fail_silently=fail_silently,

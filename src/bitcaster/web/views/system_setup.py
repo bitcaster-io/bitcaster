@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth import login, password_validation
 from django.contrib.auth.backends import ModelBackend
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponseNotFound
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import ugettext as _

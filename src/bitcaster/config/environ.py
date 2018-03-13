@@ -4,28 +4,26 @@ from pathlib import Path
 from environ import ImproperlyConfigured, environ, os, re
 
 from bitcaster import logging
-from bitcaster.config import DEFAULT_CONFIG
 
 logger = logging.getLogger(__name__)
 
 DEFAULTS = dict(
-    FAKE_OTP=(bool, False),
-    DEBUG=(bool, False),
-    SECRET_KEY=(str, ''),
-    MEDIA_ROOT=(str, str(Path('~/.bitcaster/media').expanduser())),
-    STATIC_ROOT=(str, str(Path('~/.bitcaster/static').expanduser())),
-
-    ENABLE_SENTRY=(bool, False),
-    SENTRY_DSN=(str, ''),
-    PLUGINS_AUTOLOAD=(bool, False),
-    DATABASE_URL=(str, 'psql://postgres:@127.0.0.1:5432/bitcaster'),
-    REDIS_CACHE_URL=(str, 'redis://localhost:6379/0'),
-    REDIS_LOCK_URL=(str, 'redis://localhost:6379/1'),
     CELERY_BROKER_URL=(str, 'redis://localhost:6379/2'),
-    REDIS_CONSTANCE_URL=(str, 'redis://localhost:6379/3'),
-
-    ORGANIZATION=(str, 'Bitcaster'),
+    CELERY_TASK_ALWAYS_EAGER=(bool, False),
+    DATABASE_URL=(str, 'psql://postgres:@127.0.0.1:5432/bitcaster'),
+    DEBUG=(bool, False),
+    ENABLE_SENTRY=(bool, False),
+    FAKE_OTP=(bool, False),
+    MEDIA_ROOT=(str, str(Path('~/.bitcaster/media').expanduser())),
     ON_PREMISE=(bool, True),
+    ORGANIZATION=(str, 'Bitcaster'),
+    PLUGINS_AUTOLOAD=(bool, False),
+    REDIS_CACHE_URL=(str, 'redis://localhost:6379/0'),
+    REDIS_CONSTANCE_URL=(str, 'redis://localhost:6379/3'),
+    REDIS_LOCK_URL=(str, 'redis://localhost:6379/1'),
+    SECRET_KEY=(str, ''),
+    SENTRY_DSN=(str, ''),
+    STATIC_ROOT=(str, str(Path('~/.bitcaster/static').expanduser())),
 )
 
 
@@ -33,6 +31,10 @@ class Env(environ.Env):
     def __init__(self, prefix, **scheme):
         self.scheme = scheme
         self.prefix = prefix or ''
+
+    def __getattr__(self, var):
+        # t = f"{self.prefix}{var}"
+        return self.get_value(var)
 
     def get_value(self, var, cast=None, default=environ.Env.NOTSET,  # noqa: C901
                   parse_default=False, raw=False):
@@ -93,6 +95,7 @@ class Env(environ.Env):
         if value != default or (parse_default and value):
             value = self.parse_value(value, cast)
 
+        logger.debug(f"get '{var}' returns '{value}'")
         return value
 
     def load_config(self, env_file: str):
@@ -105,18 +108,18 @@ class Env(environ.Env):
 
         https://gist.github.com/bennylope/2999704
         """
+        logger.debug(f'Read environment variables from: {env_file}')
         if not os.path.exists(env_file):
             return
         # set defaults
         for key, value in DEFAULTS.items():
-            self.ENVIRON.setdefault(key, str(value[1]))
+            self.ENVIRON.setdefault(f"{self.prefix}{key}", str(value[1]))
 
         try:
             content = Path(env_file).read_text()
         except IOError:
             raise ImproperlyConfigured(f'{env_file} not found')
 
-        logger.debug(f'Read environment variables from: {env_file}')
         for line in content.splitlines():
             m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
             if m1:
@@ -136,4 +139,4 @@ class Env(environ.Env):
 
 
 env = Env('BITCASTER_', **DEFAULTS)
-env.load_config(os.environ.get('BITCASTER_CONF', DEFAULT_CONFIG))
+# env.load_config(os.environ.get('BITCASTER_CONF', DEFAULT_CONFIG))

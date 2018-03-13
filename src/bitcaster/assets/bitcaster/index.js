@@ -3,7 +3,12 @@
 import './js/index';
 import './css/index.scss';
 
+import './logos/bitcaster.png';
 import './logos/bitcaster32.png';
+import './logos/bitcaster64.png';
+import './logos/bitcaster100.png';
+import './logos/bitcaster500.png';
+
 import './images/favicon.ico';
 import './images/email-icon.png';
 import './images/social_auth_github.png';
