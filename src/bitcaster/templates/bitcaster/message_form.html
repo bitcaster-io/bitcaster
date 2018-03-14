@@ -20,5 +20,6 @@
     {{ block.super }}
     <script>
         $("#form-message").removeClass("d-none").show();
+        $("select").select2();
     </script>
 {% endblock %}

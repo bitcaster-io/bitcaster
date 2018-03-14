@@ -21,12 +21,17 @@
     <div class="container-fluid channel-list">
         {% for message in object_list %}
             <div class="row col-10 handler-row">
-                <div class="col-7 handler-name">
+                <div class="col-4    handler-name">
                     <strong>{{ message.name }}</strong>
                     <div class="pt-3">
                         <a href="{% app-url "app-message-update" message.pk %}">Edit</a>
-{#                        <a href="{{ message.pk }}/edit/">Edit</a>#}
                     </div>
+                </div>
+                <div class="col-2 handler-name">
+                    {{ message.event }}
+                </div>
+                <div class="col-2 handler-name">
+                    {{ message.channels }}
                 </div>
             </div>
         {% endfor %}

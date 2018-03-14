@@ -12,7 +12,8 @@ class MessageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)
         super().__init__(*args, **kwargs)
-
+        if self.application:
+            self.fields['event'].queryset = self.application.events.all()
     class Meta:
         model = Message
         fields = ('name', 'event', 'subject', 'body')
