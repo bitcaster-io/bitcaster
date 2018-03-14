@@ -27,9 +27,9 @@ from bitcaster.cli.utils import (Address, RedisURL, generate_secret_key,
 @click.option('--celery-broker-url',
               default=lambda: read_current_env('CELERY_BROKER_URL'),
               type=RedisURL)
-@click.option('--redis-constance-url',
-              default=lambda: read_current_env('REDIS_CONSTANCE_URL'),
-              type=RedisURL)
+# @click.option('--redis-constance-url',
+#               default=lambda: read_current_env('REDIS_CONSTANCE_URL'),
+#               type=RedisURL)
 @click.option('--database-address',
               default=lambda: "{0[host]}:{0[port]}".format(get_database_url_param()),
               type=Address)
