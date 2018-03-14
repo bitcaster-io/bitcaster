@@ -45,10 +45,12 @@ def mark_core(value):
 
 @deconstructible
 class ReservedWordValidator:
-    message = _("'{value}' is a bitcaster reserved word")
+    message = _("'%(value)s' is a bitcaster reserved word")
 
     def __call__(self, value):
         # if isinstance(value, CoreName):
         #     return
         if value.lower() in RESERVED_NAMES:
             raise ValidationError(self.message, params={"value": value})
+
+check_reserved = ReservedWordValidator()

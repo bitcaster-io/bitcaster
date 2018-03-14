@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from bitcaster import logging
 from bitcaster.db.fields import DeletionStatusField, Role, RoleField
 from bitcaster.db.manager import DeleteableModelManagerMixin
-from bitcaster.db.validators import RESERVED_NAMES, ReservedWordValidator
+from bitcaster.db.validators import RESERVED_NAMES, ReservedWordValidator, check_reserved
 from bitcaster.file_storage import MediaFileSystemStorage, org_media_root
 from bitcaster.utils import locks
 from bitcaster.utils.retries import TimedRetryPolicy
@@ -32,7 +32,7 @@ class Organization(AbstractModel):
     """
     name = models.CharField(_("Name"), max_length=64)
     slug = models.SlugField(_("Short name"), unique=True, blank=True,
-                            validators=[ReservedWordValidator()])
+                            validators=[])
     status = DeletionStatusField()
     date_added = models.DateTimeField(default=timezone.now)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL,
@@ -63,6 +63,10 @@ class Organization(AbstractModel):
     @property
     def invitations(self):
         return self.memberships.filter(user__isnull=True)
+
+    def clean_slug(self, value):
+        if not self.is_core:
+            check_reserved(value)
 
     def save(self, *args, **kwargs):
         if not self.slug:
