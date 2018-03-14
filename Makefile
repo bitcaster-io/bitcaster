@@ -6,7 +6,7 @@ DJANGO?='last'
 SUBDIRS:=$(wildcard plugins/bitcaster-*)
 DEVPI_CACHE_URL?=""
 BITCASTER_DATABASE_HOST?=127.0.0.1
-BITCASTER_DATABASE_PORT?=9999
+BITCASTER_DATABASE_PORT?=5432
 
 .mkbuilddir:
 	mkdir -p ${BUILDDIR}
