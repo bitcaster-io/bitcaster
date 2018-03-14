@@ -11,21 +11,27 @@
     </div>
     <div class="row col-12 p-3 m-1">
         <div class="card mr-3" style="width:30%">
-            <div class="card-header bg-{{ data.box_members }}">Members</div>
+            <div class="card-header bg-{{ data.box_members }}">Members
+                <a href="{% url "org-members" organization.slug %}" class="pull-right"><i class="fa fa-wrench"></i></a>
+            </div>
             <div class="card-body ">
                 {% metric "Active Users" data.active_users %}
                 {% metric "Pending Invitations" data.pending_users %}
             </div>
         </div>
         <div class="card mr-3" style="width:30%">
-            <div class="card-header bg-{{ data.box_channels }}">Channels</div>
+            <div class="card-header bg-{{ data.box_channels }}">Channels
+                <a href="{% url "org-channels" organization.slug %}" class="pull-right"><i class="fa fa-wrench"></i></a>
+            </div>
             <div class="card-body ">
                 {% metric "Enabled Channels" data.enabled_channels %}
                 {% metric "Disabled Channels" data.disabled_channels %}
             </div>
         </div>
         <div class="card mr-3" style="width:30%">
-            <div class="card-header bg-{{ data.box_apps }}">Applications</div>
+            <div class="card-header bg-{{ data.box_apps }}">Applications
+                <a href="{% url "org-applications" organization.slug %}" class="pull-right"><i class="fa fa-wrench"></i></a>
+            </div>
             <div class="card-body">
                 {% metric "Total" data.applications %}
             </div>
