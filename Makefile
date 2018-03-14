@@ -3,15 +3,32 @@ BUILDDIR='~build'
 PYTHONPATH:=${PWD}/tests/:${PWD}
 DBENGINE?=pg
 DJANGO?='last'
-SUBDIRS := $(wildcard plugins/bitcaster-*)
-
+SUBDIRS:=$(wildcard plugins/bitcaster-*)
+DEVPI_CACHE_URL?=""
+BITCASTER_DATABASE_HOST?=127.0.0.1
+BITCASTER_DATABASE_PORT?=9999
 
 .mkbuilddir:
 	mkdir -p ${BUILDDIR}
 
 help:
-	echo "develop"
-	echo "reset-migrations"
+	@echo "develop                 setup development environment"
+	@echo "qa                      run quality assurance test"
+	@echo "clean                   clean dev environment"
+	@echo "fullclean               totally remove any development related files"
+	@echo "static                  run webpack to compile static files"
+	@echo "messages                create translations files"
+	@echo ""
+	@echo "DANGEROUS COMMANDS"
+	@echo "reset-migrations        reset all database migrations"
+	@echo "reset-dev-env           reset dev environment"
+	@echo "compile-requirements    compile .pip requirement files from .in"
+	@echo "sync-requirements       sync virtualenv to only contains bitcaster requirements"
+
+
+
+static:
+	webback --mode development
 
 develop: .setup-git
 	@pip install -U pip-tools
@@ -25,11 +42,11 @@ develop: .setup-git
 
 .init-db:
 	# initializing '${DBENGINE}' database 'bitcaster'
-	dropdb --if-exists -h 127.0.0.1 -U postgres test_bitcaster
-	dropdb --if-exists -h 127.0.0.1 -U postgres bitcaster
-	createdb -h 127.0.0.1 -U postgres bitcaster
+	dropdb --if-exists -h ${BITCASTER_DATABASE_HOST} -p ${BITCASTER_DATABASE_PORT} -U postgres test_bitcaster
+	dropdb --if-exists -h ${BITCASTER_DATABASE_HOST} -p ${BITCASTER_DATABASE_PORT} -U postgres bitcaster
+	createdb -h ${BITCASTER_DATABASE_HOST} -p ${BITCASTER_DATABASE_PORT} -U postgres bitcaster
 
-.reset-env: .init-db
+reset-dev-env: .init-db
 	bitcaster option set SYSTEM_CONFIGURED 0
 	bitcaster option set INITIALIZED 0
 	bitcaster upgrade --no-input
@@ -39,9 +56,6 @@ reset-migrations: .init-db
 	./manage.py makemigrations bitcaster
 	./manage.py migrate
 	./manage.py constance set INITIALIZED 0
-
-#	find extras -name '000[1,3,4,5,6,7,8,9]*' | xargs rm -f
-#	./manage.py makemigrations geo
 
 test:
 	py.test tests -v --create-db
@@ -106,7 +120,7 @@ sync-requirements:
 	$(MAKE) install-plugins
 
 cache-requirements:
-	devpi-builder src/requirements/develop.pip  http://localhost:3141/sax/cache --user sax
+	devpi-builder src/requirements/develop.pip  ${DEVPI_CACHE_URL}
 
 test-all:
 	pytest tests
