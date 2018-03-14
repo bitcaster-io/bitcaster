@@ -48,8 +48,6 @@ develop: .setup-git
 	createdb -h ${BITCASTER_DATABASE_HOST} -p ${BITCASTER_DATABASE_PORT} -U postgres bitcaster
 
 reset-dev-env: .init-db
-	bitcaster option set SYSTEM_CONFIGURED 0
-	bitcaster option set INITIALIZED 0
 	bitcaster upgrade --no-input
 
 reset-migrations: .init-db
