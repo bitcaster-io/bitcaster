@@ -1,22 +1,18 @@
 # -*- coding: utf-8 -*-
-"""
-bitcaster / organization
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
-
 import logging
 
 from django import forms
 
 from bitcaster.models import Organization
+from bitcaster.web.forms.fields import EmailField
 
 logger = logging.getLogger(__name__)
 
 
 class OrganizationForm(forms.ModelForm):
+    name = forms.CharField(widget=forms.TextInput(attrs={'autocomplete': 'organization'}))
+    billing_email = EmailField()
+
     def __init__(self, *args, **kwargs):
         super(OrganizationForm, self).__init__(*args, **kwargs)
         if not self.instance or self.instance.is_core:

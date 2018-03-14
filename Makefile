@@ -28,7 +28,8 @@ help:
 
 
 static:
-	webback --mode development
+	webpack --mode development
+	bitcaster upgrade --no-migrate --no-input
 
 develop: .setup-git
 	@pip install -U pip-tools

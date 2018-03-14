@@ -1,0 +1,24 @@
+{% extends "bitcaster/app.html" %}{% load crispy_forms_tags i18n %}
+{% block pageId %}message{% endblock %}
+{% block content %}
+    <h2>{{ title }}</h2>
+    <div class="container-fluid border p-3">
+        <form method="post" class="d-none" id="form-message">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="pt-5">
+                <input id="btn-submit"
+                       name="submit"
+                       value="{{ save_label }}"
+                       type="submit" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $("#form-message").removeClass("d-none").show();
+    </script>
+{% endblock %}

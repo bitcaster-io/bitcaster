@@ -12,8 +12,9 @@ import logging
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
-                                       UserCreationForm as _UserCreationForm,)
+                                       UserCreationForm as _UserCreationForm, )
 from django.forms import PasswordInput
+from django.contrib.auth.forms import AuthenticationForm as _AuthenticationForm
 from django.utils.translation import ugettext_lazy as _
 from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
@@ -24,12 +25,13 @@ logger = logging.getLogger(__name__)
 
 
 class UserRegistrationForm(forms.Form):
-    name = forms.CharField()
-    email = forms.EmailField()
+    name = forms.CharField(widget=forms.TextInput(attrs={'autocomplete': 'name'}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'autocomplete': 'email'}))
     password = forms.CharField(widget=PasswordInput(attrs={'autocomplete': 'new-password'}))
     organization = forms.CharField(help_text=_("If you're signing up for a personal account, "
                                                "try using your own name."))
     billing_email = forms.EmailField(required=False,
+                                     widget=forms.EmailInput(attrs={'autocomplete': 'email'}),
                                      help_text=_("If provided, we will send all billing-related notifications "
                                                  "to this address."))
     terms = forms.BooleanField(label=_("I agree to the Terms of Service the Privacy Policy"))
@@ -51,6 +53,11 @@ class UserRegistrationForm(forms.Form):
         if Organization.objects.filter(name__iexact=value).exists():
             raise forms.ValidationError(_('This Organization name is already used.'))
         return value.lower()
+
+
+class AuthenticationForm(_AuthenticationForm):
+    username = forms.EmailField(widget=forms.EmailInput(attrs={'autocomplete': 'email'}))
+    password = forms.CharField(widget=PasswordInput(attrs={'autocomplete': 'current-password'}))
 
 
 class UserChangeForm(_UserChangeForm):

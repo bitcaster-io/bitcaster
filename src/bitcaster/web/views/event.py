@@ -6,7 +6,7 @@ from django.views.generic import ListView, CreateView, RedirectView
 from django.utils.translation import ugettext as _
 from bitcaster.models import Event
 from bitcaster.web.forms import EventForm
-from bitcaster.web.views import SelectedApplicationMixin, UpdateView, DeleteView, MessageUserMixin
+from bitcaster.web.views import SelectedApplicationMixin, UpdateView, DeleteView, MessageUserMixin, messages
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +23,6 @@ class EventMixin(SelectedApplicationMixin, MessageUserMixin):
         return self.selected_application.events.all()
 
 
-class EventList(EventMixin, ListView):
-    template_name = "bitcaster/event_list.html"
-
-
 class EventFormMixin:
     form_class = EventForm
 
@@ -39,6 +35,10 @@ class EventFormMixin:
         kwargs["title"] = self.title
         return super().get_context_data(**kwargs)
 
+
+
+class EventList(EventMixin, ListView):
+    template_name = "bitcaster/event_list.html"
 
 class EventCreate(EventMixin, EventFormMixin, CreateView):
     title = "Create Event"
@@ -55,6 +55,9 @@ class EventUpdate(EventMixin, EventFormMixin, UpdateView):
         return super().get_context_data(save_label=_("Save Event"),
                                         **kwargs)
 
+    def form_valid(self, form):
+        self.message_user(_("Event saved"), messages.SUCCESS)
+        return super().form_valid(form)
 
 class EventDelete(EventMixin, EventFormMixin, DeleteView):
     title = "Edit Event"

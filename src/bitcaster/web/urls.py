@@ -3,17 +3,15 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from bitcaster.web.views import EventDelete
-from bitcaster.web.views.event import EventToggle
 from bitcaster.web.views.views import PreviewView
 from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     ApplicationChannelRemove, ApplicationChannels,
                     ApplicationChannelToggle, ApplicationChannelUpdate,
                     ApplicationCreate, ApplicationDetail,
                     EventList, EventCreate, EventUpdate,
-                    IndexView,
+                    IndexView, EventToggle, EventDelete,
                     InviteAccept, InviteDelete, InviteSend, LoginView,
-                    LogoutView, MessageList, OrganizationApplications,
+                    LogoutView, OrganizationApplications,
                     OrganizationChannelCreate, OrganizationChannelDeprecate,
                     OrganizationChannelRemove, OrganizationChannels,
                     OrganizationChannelToggle, OrganizationChannelUpdate,
@@ -26,7 +24,8 @@ from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     SettingsChannelToggleView, SettingsChannelUpdateView,
                     SettingsEmailView, SettingsOAuthView, SettingsView,
                     SetupView, SubscriptionList, UserProfileView, UserRegister,
-                    UserWelcomeView, WorkInProgressView, confirm_email, )
+                    UserWelcomeView, WorkInProgressView, confirm_email,
+                    MessageList, MessageCreate, MessageUpdate)
 
 urlpatterns = [
     path('setup/', SetupView.as_view(), name='setup'),
@@ -64,7 +63,7 @@ urlpatterns = [
     path('login-error/', TemplateView.as_view(template_name='bitcaster/wip.html')),
 
     # Applications
-    path('<slug:org>/a/add/', ApplicationCreate.as_view(), name='application-add'),
+    path('<slug:org>/a/add/', ApplicationCreate.as_view(), name='application-create'),
     path('<slug:org>/a/<slug:app>/', ApplicationDetail.as_view(), name='app-index'),
     path('<slug:org>/a/<slug:app>/subscriptions/', SubscriptionList.as_view(), name='app-subscriptions'),
     path('<slug:org>/a/<slug:app>/event/', EventList.as_view(), name='app-event-list'),
@@ -72,8 +71,8 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/event/<int:pk>/toggle/', EventToggle.as_view(), name='app-event-toggle'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/delete/', EventDelete.as_view(), name='app-event-delete'),
 
-    path('<slug:org>/a/<slug:app>/event/add/', EventCreate.as_view(), name='app-event-add'),
-    path('<slug:org>/a/<slug:app>/channel/', ApplicationChannels.as_view(), name='app-channels'),
+    path('<slug:org>/a/<slug:app>/event/add/', EventCreate.as_view(), name='app-event-create'),
+    path('<slug:org>/a/<slug:app>/channel/', ApplicationChannels.as_view(), name='app-channel-list'),
     path('<slug:org>/a/<slug:app>/channel/add/', ApplicationChannelCreate.as_view(), name='app-channel-create'),
     path('<slug:org>/a/<slug:app>/channel/<int:pk>/edit/', ApplicationChannelUpdate.as_view(),
          name='app-channel-update'),
@@ -83,10 +82,13 @@ urlpatterns = [
          name='app-channel-toggle'),
     path('<slug:org>/a/<slug:app>/channel/<int:pk>/deprecate/', ApplicationChannelDeprecate.as_view(),
          name='app-channel-deprecate'),
-    path('<slug:org>/a/<slug:app>/messages/', MessageList.as_view(), name='app-messages'),
+
+    path('o/<slug:org>/a/<slug:app>/message/', MessageList.as_view(), name='app-message-list'),
+    path('o/<slug:org>/a/<slug:app>/message/add/', MessageCreate.as_view(), name='app-message-create'),
+    path('o/<slug:org>/a/<slug:app>/message/<int:pk>/edit/', MessageUpdate.as_view(), name='app-message-update'),
 
     # Organization
-    path('org/add/', OrganizationCreate.as_view(), name='org-add'),
+    path('org/add/', OrganizationCreate.as_view(), name='org-create'),
     path('<slug:org>/details/', OrganizationDetail.as_view(), name='org-index'),
     path('<slug:org>/update/', OrganizationUpdate.as_view(), name='org-config'),
 
@@ -98,7 +100,7 @@ urlpatterns = [
     path('<slug:org>/invite/', OrganizationInvite.as_view(), name='org-invite'),
 
     path('<slug:org>/team/', OrganizationTeamList.as_view(), name='org-team-list'),
-    path('<slug:org>/team/add/', OrganizationTeamCreate.as_view(), name='org-team-add'),
+    path('<slug:org>/team/add/', OrganizationTeamCreate.as_view(), name='org-team-create'),
     path('<slug:org>/team/<slug:slug>/', OrganizationTeamUpdate.as_view(), name='org-team-update'),
     path('<slug:org>/team/<slug:slug>/members/', OrganizationTeamMember.as_view(), name='org-team-member'),
 

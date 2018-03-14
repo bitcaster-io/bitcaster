@@ -1,51 +1,34 @@
-{% extends "bitcaster/app.html" %}{% load bc_permissions %}
-{% block sidebar %}
-    <div class="row d-flex d-md-block flex-nowrap wrapper">
-        <div class="float-left pl-0 collapse width show" id="sidebar">
-            {% check_permissions organization as "permissions" %}
-            {% if permissions.owner %}
-                <div class="org-logo">
-                    {% if organization.avatar %}
-                        <img src="{{ organization.avatar.url }}"/>
-                    {% endif %}
-                </div>
-                <div class="list-group">
-                    <div class="col-md-2 org-sidebar">
-                        <div>
-                            <ul class="nav nav-stacked">
-                                <li>
-                                    <a href="{% url "org-index" organization.slug %}">Home</a>
-                                </li>
-                                <li>
-                                    <a href="{% url "org-config" organization.slug %}">Configuration</a>
-                                </li>
-                                <li>
-                                    <a href="{% url "org-channels" organization.slug %}">Channels</a>
-                                </li>
-                                <li>
-                                    <a href="{% url "org-members" organization.slug %}">Members</a>
-                                </li>
-                                <li>
-                                    <a href="{% url "org-team-list" organization.slug %}">Teams</a>
-                                </li>
-                                <li>
-                                    <a href="{% url "org-applications" organization.slug %}">Applications</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-{% endblock %}
+{% extends "bitcaster/organization_base.html" %}{% load bc_permissions bc_dashboard %}
+
 {% block content %}
     <h2>{{ organization }}</h2>
     <div class="container">
         {% for check in checks %}
             <div class="row">
-            {{check}}
+                {{ check }}
             </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
+    <div class="row col-12 p-3 m-1">
+        <div class="card mr-3" style="width:30%">
+            <div class="card-header bg-{{ data.box_members }}">Members</div>
+            <div class="card-body ">
+                {% metric "Active Users" data.active_users %}
+                {% metric "Pending Invitations" data.pending_users %}
+            </div>
+        </div>
+        <div class="card mr-3" style="width:30%">
+            <div class="card-header bg-{{ data.box_channels }}">Channels</div>
+            <div class="card-body ">
+                {% metric "Enabled Channels" data.enabled_channels %}
+                {% metric "Disabled Channels" data.disabled_channels %}
+            </div>
+        </div>
+        <div class="card mr-3" style="width:30%">
+            <div class="card-header bg-{{ data.box_apps }}">Applications</div>
+            <div class="card-body">
+                {% metric "Total" data.applications %}
+            </div>
+        </div>
     </div>
 {% endblock content %}

@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
+from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpResponseRedirect
@@ -17,20 +18,20 @@ from strategy_field.utils import fqn
 
 from bitcaster.db.fields import Role
 from bitcaster.models import (Organization, OrganizationMember,
-                              Team, TeamMembership, User,)
+                              Team, TeamMembership, User, )
 from bitcaster.otp import totp
 from bitcaster.security import is_owner
 from bitcaster.web.forms import (OrganizationForm, OrganizationInvitationForm,
                                  OrganizationInvitationFormSet, TeamForm,
-                                 UserInviteRegistrationForm,)
+                                 UserInviteRegistrationForm, )
 
 from .base import (ApplicationListMixin, BitcasterBaseCreateView,
                    BitcasterBaseDetailView, BitcasterBaseListView,
                    BitcasterBaseUpdateView, BitcasterFormView,
-                   MessageUserMixin, SelectedOrganizationMixin,)
+                   MessageUserMixin, SelectedOrganizationMixin, )
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
                       ChannelDeprecateView, ChannelListView,
-                      ChannelToggleView, ChannelUpdateView,)
+                      ChannelToggleView, ChannelUpdateView, )
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,29 @@ __all__ = ["OrganizationCreate", "OrganizationDetail", "OrganizationUpdate",
            "OrganizationTeamUpdate", "OrganizationTeamMember",
            "OrganizationInvite", "InviteDelete", "InviteSend", "InviteAccept",
            "OrganizationApplications", "OrganizationChannelCreate"]
+
+
+def get_status(value=None, ok_limit=0, warn_limit=1, error_limit=10, call=None):
+    if call:
+        value = call()
+    if value == ok_limit:
+        return "success"
+    elif value >= error_limit:
+        return "danger"
+    elif value >= warn_limit:
+        return "warning"
+    else:
+        return ""
+
+
+def check_channels(org_data):
+    if org_data['enabled_channels'] == 0:
+        v = 11
+    elif org_data['disabled_channels'] > 1:
+        v = 2
+    else:
+        v = 0
+    return get_status(v)
 
 
 class OrganizationViewMixin(ApplicationListMixin):
@@ -57,6 +81,22 @@ class OrganizationViewMixin(ApplicationListMixin):
 class OrganizationDetail(OrganizationViewMixin, BitcasterBaseDetailView):
 
     def get_context_data(self, **kwargs):
+        org = self.get_object()
+        cache_key = f"org:dashboard:{org.pk}"
+        org_data = cache.get(cache_key)
+        if not org_data:
+            org_data = {
+                "active_users": org.members.count(),
+                "pending_users": org.invitations.count(),
+                "enabled_channels": org.channels.filter(enabled=True).count(),
+                "disabled_channels": org.channels.filter(enabled=False).count(),
+                "applications": org.applications.count(),
+            }
+            org_data["box_members"] = get_status(org_data["pending_users"], 0, 1, 9999)
+            org_data["box_channels"] = check_channels(org_data)
+            org_data["box_apps"] = get_status(org_data["applications"], 1, 9999, 9999)
+            cache.set(cache_key, org_data)
+        kwargs['data'] = org_data
         return super().get_context_data(**kwargs)
 
 
@@ -68,7 +108,7 @@ class OrganizationUpdate(OrganizationViewMixin, BitcasterBaseUpdateView):
         slug = form.cleaned_data.get('slug', None)
         self.object = form.save()
         url = reverse("org-config", args=[slug or self.object.slug])
-        self.message_user(_("Configuration saved"))
+        self.message_user(_("Configuration saved"), messages.SUCCESS)
         return HttpResponseRedirect(url)
 
 

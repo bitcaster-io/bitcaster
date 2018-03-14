@@ -255,7 +255,7 @@ AUTH_PASSWORD_VALIDATORS = [
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'KEY_PREFIX': 'bitcaster-',
+        'KEY_PREFIX': 'bitcaster',
         'LOCATION': env('REDIS_CACHE_URL'),
         # "LOCATION": "redis://127.0.0.1:6379/1",
 

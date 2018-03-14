@@ -1,22 +1,18 @@
 # -*- coding: utf-8 -*-
-"""
-bitcaster / message
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
-
 import logging
 
 from django import forms
 
-from bitcaster.models import Event
+from bitcaster.models import Message
 
 logger = logging.getLogger(__name__)
 
 
 class MessageForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.application = kwargs.pop('application', None)
+        super().__init__(*args, **kwargs)
+
     class Meta:
-        model = Event
-        exclude = []
+        model = Message
+        fields = ('name', 'event', 'subject', 'body')

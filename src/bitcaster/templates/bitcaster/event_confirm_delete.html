@@ -15,6 +15,7 @@
         </div>
         <form method="post">
             {% csrf_token %}
+            <input type="button" class="btn btn-secondary" onclick="history.back();" value="Cancel">
             <input type="submit" class="btn btn-danger" value="Remove">
         </form>
     </div>

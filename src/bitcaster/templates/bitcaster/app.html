@@ -10,9 +10,9 @@
                                 <div class="col-md-2 org-sidebar">
                                     <div>
                                         <ul class="nav nav-stacked">
-                                            <li><a href="{% url 'app-channels' organization.slug application.slug %}">Channels</a></li>
+                                            <li><a href="{% url 'app-channel-list' organization.slug application.slug %}">Channels</a></li>
                                             <li><a href="{% url 'app-event-list' organization.slug application.slug %}">Events</a></li>
-                                            <li><a href="{% url 'app-messages' organization.slug application.slug %}">Messages</a></li>
+                                            <li><a href="{% url 'app-message-list' organization.slug application.slug %}">Messages</a></li>
                                             <li><a href="{% url 'app-subscriptions' organization.slug application.slug %}">Subscriptions</a></li>
                                             <li><a href="#">Roles</a></li>
                                         </ul>

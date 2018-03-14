@@ -10,7 +10,9 @@ bitcaster / login_logout
 import logging
 
 from django.contrib.auth.views import (LoginView as _LoginView,
-                                       LogoutView as _LogoutView,)
+                                       LogoutView as _LogoutView, )
+
+from bitcaster.web.forms.user import AuthenticationForm
 
 logger = logging.getLogger(__name__)
 
@@ -20,4 +22,6 @@ class LogoutView(_LogoutView):
 
 
 class LoginView(_LoginView):
+    form_class = AuthenticationForm
+
     template_name = 'bitcaster/login.html'

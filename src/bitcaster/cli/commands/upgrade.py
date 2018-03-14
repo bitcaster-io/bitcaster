@@ -9,8 +9,10 @@ from bitcaster.config.environ import env
 @click.command()
 @click.option('--prompt/--no-input', default=True, is_flag=True,
               help='Do not prompt for parameters')
+@click.option('--migrate/--no-migrate', default=True, is_flag=True,
+              help='Do not prompt for parameters')
 @click.pass_context
-def upgrade(ctx, prompt, **kwargs):
+def upgrade(ctx, prompt, migrate, **kwargs):
     try:
         from django.core.management import execute_from_command_line
 
@@ -31,8 +33,8 @@ def upgrade(ctx, prompt, **kwargs):
                 if ok:
                     click.echo(f"Create {_dir} '{target}'")
                     target.mkdir(parents=True)
-
-        execute_from_command_line(argv=['manage', 'migrate'] + extra)
+        if migrate:
+            execute_from_command_line(argv=['manage', 'migrate'] + extra)
         execute_from_command_line(argv=['manage', 'collectstatic'] + extra)
     except Exception as e:
         click.echo(str(e))
