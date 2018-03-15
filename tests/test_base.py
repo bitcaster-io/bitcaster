@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import pytest
 from django.urls import reverse
 
 
+@pytest.mark.django_db
 def test_login(django_app, admin):
     url = reverse('admin:login')
     res = django_app.get(url)

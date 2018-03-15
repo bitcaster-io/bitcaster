@@ -1,4 +1,4 @@
-{% extends "bitcaster/base.html" %}
+{% extends "bitcaster/base.html" %}{% load bitcaster %}
 {% block page %}
     <div class="container-fluid">
         <div class=" main-content">
@@ -10,10 +10,11 @@
                                 <div class="col-md-2 org-sidebar">
                                     <div>
                                         <ul class="nav nav-stacked">
-                                            <li><a href="{% url 'app-channel-list' organization.slug application.slug %}">Channels</a></li>
-                                            <li><a href="{% url 'app-event-list' organization.slug application.slug %}">Events</a></li>
-                                            <li><a href="{% url 'app-message-list' organization.slug application.slug %}">Messages</a></li>
-                                            <li><a href="{% url 'app-subscriptions' organization.slug application.slug %}">Subscriptions</a></li>
+                                            <li><a href="{% app-url 'app-dashboard' %}">{{ application }}</a></li>
+                                            <li><a href="{% app-url 'app-channel-list' %}">Channels</a></li>
+                                            <li><a href="{% app-url 'app-event-list' %}">Events</a></li>
+                                            <li><a href="{% app-url 'app-message-list' %}">Messages</a></li>
+                                            <li><a href="{% app-url 'app-subscriptions'%}">Subscriptions</a></li>
                                             <li><a href="#">Roles</a></li>
                                         </ul>
                                     </div>

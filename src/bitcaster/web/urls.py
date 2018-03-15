@@ -7,7 +7,7 @@ from bitcaster.web.views.views import PreviewView
 from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     ApplicationChannelRemove, ApplicationChannels,
                     ApplicationChannelToggle, ApplicationChannelUpdate,
-                    ApplicationCreate, ApplicationDetail,
+                    ApplicationCreate, ApplicationDetail, ApplicationDashboard,
                     EventList, EventCreate, EventUpdate,
                     IndexView, EventToggle, EventDelete,
                     InviteAccept, InviteDelete, InviteSend, LoginView,
@@ -15,7 +15,7 @@ from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     OrganizationChannelCreate, OrganizationChannelDeprecate,
                     OrganizationChannelRemove, OrganizationChannels,
                     OrganizationChannelToggle, OrganizationChannelUpdate,
-                    OrganizationCreate, OrganizationDetail, OrganizationInvite,
+                    OrganizationCreate, OrganizationDashboard, OrganizationInvite,
                     OrganizationMembers, OrganizationTeamCreate,
                     OrganizationTeamList, OrganizationTeamMember,
                     OrganizationTeamUpdate, OrganizationUpdate, PluginInfo,
@@ -25,7 +25,7 @@ from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     SettingsEmailView, SettingsOAuthView, SettingsView,
                     SetupView, SubscriptionList, UserProfileView, UserRegister,
                     UserWelcomeView, WorkInProgressView, confirm_email,
-                    MessageList, MessageCreate, MessageUpdate)
+                    MessageList, MessageCreate, MessageUpdate, MessageDelete)
 
 urlpatterns = [
     path('setup/', SetupView.as_view(), name='setup'),
@@ -64,7 +64,7 @@ urlpatterns = [
 
     # Applications
     path('<slug:org>/a/add/', ApplicationCreate.as_view(), name='application-create'),
-    path('<slug:org>/a/<slug:app>/', ApplicationDetail.as_view(), name='app-index'),
+    path('<slug:org>/a/<slug:app>/', ApplicationDashboard.as_view(), name='app-dashboard'),
     path('<slug:org>/a/<slug:app>/subscriptions/', SubscriptionList.as_view(), name='app-subscriptions'),
     path('<slug:org>/a/<slug:app>/event/', EventList.as_view(), name='app-event-list'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/edit/', EventUpdate.as_view(), name='app-event-update'),
@@ -86,10 +86,11 @@ urlpatterns = [
     path('o/<slug:org>/a/<slug:app>/message/', MessageList.as_view(), name='app-message-list'),
     path('o/<slug:org>/a/<slug:app>/message/add/', MessageCreate.as_view(), name='app-message-create'),
     path('o/<slug:org>/a/<slug:app>/message/<int:pk>/edit/', MessageUpdate.as_view(), name='app-message-update'),
+    path('o/<slug:org>/a/<slug:app>/message/<int:pk>/delete/', MessageDelete.as_view(), name='app-message-delete'),
 
     # Organization
     path('org/add/', OrganizationCreate.as_view(), name='org-create'),
-    path('<slug:org>/details/', OrganizationDetail.as_view(), name='org-index'),
+    path('<slug:org>/', OrganizationDashboard.as_view(), name='org-dashboard'),
     path('<slug:org>/update/', OrganizationUpdate.as_view(), name='org-config'),
 
     path('<slug:org>/members/', OrganizationMembers.as_view(), name='org-members'),
@@ -104,7 +105,7 @@ urlpatterns = [
     path('<slug:org>/team/<slug:slug>/', OrganizationTeamUpdate.as_view(), name='org-team-update'),
     path('<slug:org>/team/<slug:slug>/members/', OrganizationTeamMember.as_view(), name='org-team-member'),
 
-    path('<slug:org>/channel/', OrganizationChannels.as_view(), name='org-channels'),
+    path('<slug:org>/channel/', OrganizationChannels.as_view(), name='org-channel-list'),
     path('<slug:org>/channel/add/', OrganizationChannelCreate.as_view(), name='org-channel-create'),
     path('<slug:org>/channel/<int:pk>/edit/', OrganizationChannelUpdate.as_view(), name='org-channel-update'),
     path('<slug:org>/channel/<int:pk>/delete/', OrganizationChannelRemove.as_view(), name='org-channel-delete'),

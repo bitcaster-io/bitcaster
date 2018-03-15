@@ -83,7 +83,7 @@ def test_organization_channels_wizard(django_app, organization1):
 
 
 def test_organization_list_channel(django_app, org_channel):
-    _list = django_app.get(reverse('org-channels',
+    _list = django_app.get(reverse('org-channel-list',
                                    args=[org_channel.organization.slug]),
                            user=org_channel.organization.owner)
 

@@ -73,8 +73,12 @@ class EventToggle(EventMixin, EventFormMixin, RedirectView):
 
     def get(self, request, *args, **kwargs):
         obj = self.selected_application.events.get(id=kwargs['pk'])
-        obj.enabled = not obj.enabled
-        obj.save()
-        op = "enabled" if obj.enabled else "disabled"
-        self.message_user(f'Event {op}')
+        if obj.messages.count() == 0:
+            self.message_user(f'No messages configured for this event. '
+                              f'Cannot be enabled', messages.ERROR)
+        else:
+            obj.enabled = not obj.enabled
+            obj.save()
+            op = "enabled" if obj.enabled else "disabled"
+            self.message_user(f'Event {op}')
         return super().get(request, *args, **kwargs)

@@ -93,6 +93,7 @@ class SettingsChannelListView(SuperuserViewMixin, ChannelListView):
     def get_context_data(self, **kwargs):
         kwargs['title'] = _("System channels")
         kwargs['create_url'] = reverse("system-channel-create")
+        kwargs['edit_system_channel'] = True
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):

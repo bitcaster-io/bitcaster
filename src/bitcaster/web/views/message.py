@@ -15,7 +15,7 @@ from django.views.generic import ListView
 
 from bitcaster.models import Message
 from bitcaster.web.forms import MessageForm
-from bitcaster.web.views import SelectedApplicationMixin, CreateView, MessageUserMixin, UpdateView
+from bitcaster.web.views import SelectedApplicationMixin, CreateView, MessageUserMixin, UpdateView, DeleteView
 
 logger = logging.getLogger(__name__)
 
@@ -66,3 +66,6 @@ class MessageCreate(MessageMixin, MessageFormMixin, CreateView):
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_("Create Message"),
                                         **kwargs)
+
+class MessageDelete(MessageMixin, DeleteView):
+    pass

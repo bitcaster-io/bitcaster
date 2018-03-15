@@ -1,4 +1,4 @@
-{% extends "bitcaster/app.html" %}{% load bitcaster i18n %}
+{% extends "bitcaster/application_base.html" %}{% load bitcaster i18n %}
 {% block content %}
     <style>
         .enabledTrue{
@@ -25,6 +25,7 @@
                     <strong>{{ message.name }}</strong>
                     <div class="pt-3">
                         <a href="{% app-url "app-message-update" message.pk %}">Edit</a>
+                        | <a href="{% app-url "app-message-delete" message.pk %}">Remove</a>
                     </div>
                 </div>
                 <div class="col-2 handler-name">

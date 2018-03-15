@@ -14,7 +14,7 @@
                     <h1>Welcome back.</h1>
                     {% for membership in user.ownerships.all %}
                         <li>
-                            <a href="{% url "org-index" membership.organization.slug %}">{{ membership.organization.name }}</a>
+                            <a href="{% url "org-dashboard" membership.organization.slug %}">{{ membership.organization.name }}</a>
                         </li>
                     {% endfor %}
                 {% endif %}

@@ -11,9 +11,10 @@ from bitcaster.models.organizationmember import OrganizationMember
 
 faker = Faker()
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
-def test_registration(django_app):
+
+def test_registration(django_app, initialized):
     url = reverse('user-register')
     user_email = faker.email()
     billing_email = faker.email()
@@ -40,6 +41,8 @@ def test_registration(django_app):
     assert mail.outbox[0].subject == '[Bitcaster] Confirm Email'
     # get confirmation email from url
     html = HTML(html=mail.outbox[0].alternatives[0][0])
+    # FIXME: remove me (print)
+    print(111, html)
     link = html.find('a[class~=confirmation]')[0]
     url = link.attrs['href']
     res = django_app.get(url)

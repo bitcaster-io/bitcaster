@@ -50,7 +50,7 @@ class IndexView(TemplateView):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             if request.user.memberships.filter(role=Role.OWNER):
-                url = reverse('org-index', args=[request.user.memberships.first().organization.slug])
+                url = reverse('org-dashboard', args=[request.user.memberships.first().organization.slug])
                 return HttpResponseRedirect(url)
         elif not config.ALLOW_REGISTRATION:
             return HttpResponseRedirect(settings.LOGIN_URL)

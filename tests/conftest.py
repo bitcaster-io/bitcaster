@@ -4,30 +4,38 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-from constance import config as c
 
 
 def pytest_configure(config):
     here = os.path.dirname(__file__)
     sys.path.insert(0, os.path.join(here, 'extras'))
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings.default')
     os.environ.setdefault('BITCASTER_CONF', str(Path(__file__).parent / '.conf'))
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings.default')
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     os.environ['RECAPTCHA_DISABLE'] = 'True'
-    c.INITIALIZED = 1
+    from bitcaster.config.environ import env
+    env.load_config(str(Path(__file__).parent / '.conf'))
     import django
     django.setup()
     from django.conf import settings
-    settings.CELERY_ALWAYS_EAGER = True
+
+    # from constance import config as c
+    # c.INITIALIZED = True
+    settings.CELERY_TASK_ALWAYS_EAGER = True
 
 
 @pytest.fixture(autouse=True)
-def patch(monkeypatch):
+def patch(monkeypatch, db):
     monkeypatch.setattr('bitcaster.utils.locks.get', lambda key, duration: Mock())
 
 
 @pytest.fixture
-def user1(db):
+def initialized(db, monkeypatch):
+    monkeypatch.setattr('constance.config.INITIALIZED', True)
+
+
+@pytest.fixture
+def user1(db, initialized):
     from bitcaster.utils.tests.factories import UserFactory
     return UserFactory()
 
@@ -40,7 +48,7 @@ def user2(db):
 
 
 @pytest.fixture
-def admin(db):
+def admin(db, initialized):
     # pytest `django_admin` fixture cannot be used because
     # we do not have username field
     from bitcaster.utils.tests.factories import AdminFactory

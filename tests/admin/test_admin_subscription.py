@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+import pytest
 from rest_framework.reverse import reverse
 
+pytestmark = pytest.mark.django_db
 
 def test_subscriptions_list(django_app, admin):
     url = reverse("admin:bitcaster_subscription_changelist")

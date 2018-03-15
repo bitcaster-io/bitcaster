@@ -12,6 +12,7 @@ from bitcaster.models import Channel
 
 logger = logging.getLogger(__name__)
 
+pytestmark = pytest.mark.django_db
 
 def test_channel_create(django_app, admin, application1):
     url = reverse("admin:bitcaster_channel_add")

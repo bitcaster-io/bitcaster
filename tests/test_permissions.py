@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from unittest.mock import Mock
 
+import pytest
+
 from bitcaster.api.permissions import TokenAuthentication
 
 
+@pytest.mark.django_db
 def test_tokenauthentication(rf, monkeypatch):
     t = TokenAuthentication()
     monkeypatch.setattr('bitcaster.api.permissions.ApiAuthToken', Mock())

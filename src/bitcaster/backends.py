@@ -7,6 +7,10 @@ from bitcaster.models import Application, Organization
 
 logger = logging.getLogger(__name__)
 
+PERMISSIONS = ("org:configure",
+               "app:configure",
+               )
+
 
 class BitcasterBackend(ModelBackend):
     def has_perm(self, user_obj, perm, obj=None):

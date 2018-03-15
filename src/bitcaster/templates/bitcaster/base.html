@@ -1,4 +1,4 @@
-{% load bc_assets bc_permissions %}<!doctype html>
+{% load bc_assets bc_permissions bitcaster %}<!doctype html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -30,7 +30,7 @@
                         {% if applications %}
                             <div class="dropdown">
 
-                            <a href="{% url "org-index" organization.slug %}">[{{ organization.name }}]</a>
+                            <a href="{% url "org-dashboard" organization.slug %}">[{{ organization.name }}]</a>
                             <a class="dropdown-toggle2"
                                href="#" role="button"
                                id="appMenuLink" data-toggle="dropdown"
@@ -41,7 +41,7 @@
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="appMenuLink">
                                 {% for app in applications %}
                                     <a class="dropdown-item application"
-                                       href="{% url "app-index" organization.slug app.slug %}">{{ organization.name }}/{{ app.name }}</a>
+                                       href="{% org-url "app-dashboard" app.slug %}">{{ organization.name }}/{{ app.name }}</a>
                                 {% endfor %}
                             </div>
                         </div>
@@ -57,7 +57,7 @@
                             <div class="dropdown-menu dropdown-menu-left" aria-labelledby="orkMenuLink">
                                 {% for org in organizations %}
                                     <a class="dropdown-item organization"
-                                       href="{% url "org-index" org.slug %}">{{ org.name }}</a>
+                                       href="{% url "org-dashboard" org.slug %}">{{ org.name }}</a>
                                 {% endfor %}
                             </div>
                         </div>

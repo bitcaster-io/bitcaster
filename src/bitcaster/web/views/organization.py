@@ -18,9 +18,10 @@ from strategy_field.utils import fqn
 
 from bitcaster.db.fields import Role
 from bitcaster.models import (Organization, OrganizationMember,
-                              Team, TeamMembership, User, )
+                              Team, TeamMembership, User)
 from bitcaster.otp import totp
 from bitcaster.security import is_owner
+from bitcaster.utils.dashboard import get_status, check_channels
 from bitcaster.web.forms import (OrganizationForm, OrganizationInvitationForm,
                                  OrganizationInvitationFormSet, TeamForm,
                                  UserInviteRegistrationForm, )
@@ -35,7 +36,7 @@ from .channel import (ChannelCreateWizard, ChannelDeleteView,
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["OrganizationCreate", "OrganizationDetail", "OrganizationUpdate",
+__all__ = ["OrganizationCreate", "OrganizationDashboard", "OrganizationUpdate",
            "OrganizationMembers", "OrganizationChannels",
            "OrganizationTeamList", "OrganizationTeamCreate",
            "OrganizationChannelRemove", "OrganizationChannelToggle",
@@ -43,29 +44,6 @@ __all__ = ["OrganizationCreate", "OrganizationDetail", "OrganizationUpdate",
            "OrganizationTeamUpdate", "OrganizationTeamMember",
            "OrganizationInvite", "InviteDelete", "InviteSend", "InviteAccept",
            "OrganizationApplications", "OrganizationChannelCreate"]
-
-
-def get_status(value=None, ok_limit=0, warn_limit=1, error_limit=10, call=None):
-    if call:
-        value = call()
-    if value == ok_limit:
-        return "success"
-    elif value >= error_limit:
-        return "danger"
-    elif value >= warn_limit:
-        return "warning"
-    else:
-        return ""
-
-
-def check_channels(org_data):
-    if org_data['enabled_channels'] == 0:
-        v = 11
-    elif org_data['disabled_channels'] > 1:
-        v = 2
-    else:
-        v = 0
-    return get_status(v)
 
 
 class OrganizationViewMixin(ApplicationListMixin):
@@ -78,7 +56,8 @@ class OrganizationViewMixin(ApplicationListMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class OrganizationDetail(OrganizationViewMixin, BitcasterBaseDetailView):
+class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
+    template_name = 'bitcaster/organization_dashboard.html'
 
     def get_context_data(self, **kwargs):
         org = self.get_object()
@@ -166,7 +145,7 @@ class InviteAccept(MessageUserMixin, CreateView):
             self.membership.save()
             login(self.request, user, backend=fqn(ModelBackend))
         if self.membership.role in [Role.OWNER, Role.ADMIN]:
-            url = reverse('org-index', args=[self.selected_organization.slug])
+            url = reverse('org-dashboard', args=[self.selected_organization.slug])
         else:
             url = reverse('me-home')
         return HttpResponseRedirect(url)
@@ -292,6 +271,7 @@ class OrganizationChannels(OrganizationViewMixin, ChannelListView):
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = _("Organization Channels")
+        kwargs['title'] = _("Organization Channels")
         kwargs['create_url'] = reverse("org-channel-create",
                                        args=[self.selected_organization.slug])
         return super().get_context_data(**kwargs)
@@ -301,7 +281,7 @@ class OrganizationChannelUpdate(OrganizationViewMixin, ChannelUpdateView):
     template_name = 'bitcaster/org_channel_configure.html'
 
     def get_success_url(self):
-        return reverse_lazy("org-channels",
+        return reverse_lazy("org-channel-list",
                             args=[self.selected_organization.slug])
 
     def get_queryset(self):
@@ -312,7 +292,7 @@ class OrganizationChannelRemove(OrganizationViewMixin, ChannelDeleteView):
     template_name = 'bitcaster/org_channel_remove.html'
 
     def get_success_url(self):
-        return reverse_lazy("org-channels",
+        return reverse_lazy("org-channel-list",
                             args=[self.selected_organization.slug])
 
     def get_queryset(self):
@@ -320,24 +300,24 @@ class OrganizationChannelRemove(OrganizationViewMixin, ChannelDeleteView):
 
 
 class OrganizationChannelToggle(OrganizationViewMixin, ChannelToggleView):
-    pattern_name = 'org-channels'
+    pattern_name = 'org-channel-list'
 
     def get_queryset(self):
         return self.selected_organization.channels.all()
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy("org-channels",
+        return reverse_lazy("org-channel-list",
                             args=[self.selected_organization.slug])
 
 
 class OrganizationChannelDeprecate(OrganizationViewMixin, ChannelDeprecateView):
-    pattern_name = 'org-channels'
+    pattern_name = 'org-channel-list'
 
     def get_queryset(self):
         return self.selected_organization.channels.all()
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy("org-channels",
+        return reverse_lazy("org-channel-list",
                             args=[self.selected_organization.slug])
 
 
@@ -347,7 +327,7 @@ class OrganizationChannelCreate(OrganizationViewMixin, ChannelCreateWizard):
                  }
 
     def get_success_url(self):
-        return reverse_lazy('org-channels', args=[self.selected_organization.slug])
+        return reverse_lazy('org-channel-list', args=[self.selected_organization.slug])
 
     def get_extra_instance_kwargs(self):
         return {'organization': self.selected_organization}

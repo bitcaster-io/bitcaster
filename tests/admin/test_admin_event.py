@@ -2,10 +2,12 @@
 import logging
 
 import django.core
+import pytest
 from rest_framework.reverse import reverse
 
 logger = logging.getLogger(__name__)
 
+pytestmark = pytest.mark.django_db
 
 def test_event_detail(django_app, admin, event1):
     url = reverse("admin:bitcaster_event_change", args=[event1.pk])

@@ -10,6 +10,7 @@ from bitcaster.models import Channel
 
 logger = logging.getLogger(__name__)
 
+pytestmark = pytest.mark.django_db
 
 def test_system_channels_wizard(django_app, admin):
     res = django_app.get('/', user=admin)

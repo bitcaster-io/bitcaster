@@ -21,7 +21,7 @@
         </div>
         <div class="card mr-3" style="width:30%">
             <div class="card-header bg-{{ data.box_channels }}">Channels
-                <a href="{% url "org-channels" organization.slug %}" class="pull-right"><i class="fa fa-wrench"></i></a>
+                <a href="{% url "org-channel-list" organization.slug %}" class="pull-right"><i class="fa fa-wrench"></i></a>
             </div>
             <div class="card-body ">
                 {% metric "Enabled Channels" data.enabled_channels %}

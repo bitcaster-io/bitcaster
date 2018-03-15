@@ -1,4 +1,4 @@
-{% extends "bitcaster/app.html" %}
+{% extends "bitcaster/application_base.html" %}
 {% block content %}
     {% if not user.is_authenticated %}
         <a href="{% url "login" %}">Login</a>

@@ -1,0 +1,17 @@
+{% extends "bitcaster/emails/base.html" %}{% load bc_assets %}
+{% block body %}
+<div class="center">
+    <div>
+        <a href="{% aurl "index" %}" target="_blank">
+            <img src="{% aasset "dist/images/bitcaster100.png" %}">
+        </a>
+    </div>
+    <div class="">
+        {% block main %}
+            <div class="headline">{% block headline %}{% endblock %}</div>
+            <a class="confirmation" href="{{ url }}" class="btn2">{% block button_label %}{% endblock %}</a>
+            <div class="footline">{% block footline %}{% endblock %}</div>
+        {% endblock %}
+    </div>
+</div>
+{% endblock body %}

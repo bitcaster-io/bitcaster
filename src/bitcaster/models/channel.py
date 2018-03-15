@@ -77,6 +77,14 @@ It can be Global or Application specific.
         :return:
         """
 
+    def is_configurable_by(self, user):
+        if user.is_superuser:
+            return True
+        if self.system:
+            return user.is_superuser
+        if not self.application:
+            return
+
     @cached_property
     def is_configured(self):
         return self.handler.validate_configuration(self.config, False)
