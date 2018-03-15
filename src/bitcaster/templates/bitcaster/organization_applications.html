@@ -1,4 +1,4 @@
-{% extends "bitcaster/organization_detail.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% extends "bitcaster/organization_base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block content %}
     <h2>Organization Applications</h2>
 
@@ -23,7 +23,7 @@
             <tbody>
             {% for app in organization.applications.all %}
                 <tr class="row">
-                    <td class="col-sm"><a href="{% app-url "app-dashboard" %}">{{ app.name }}</a></td>
+                    <td class="col-sm"><a href="{% org-url "app-dashboard" app.slug %}">{{ app.name }}</a></td>
                     <td class="col-sm">{{ app.timezone }}</td>
                     <td class="col-sm">{{ membership.date_added }}</td>
                 </tr>
