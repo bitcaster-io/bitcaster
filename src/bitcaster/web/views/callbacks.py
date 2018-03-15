@@ -47,40 +47,4 @@ def confirm_email(request, pk, check):
             user.save()
         ctx = {'valid': ok}
         return render(request, 'bitcaster/registration/email-confirmed.html', ctx)
-    # if ratelimiter.is_limited(
-    #         'auth:confirm-email:{}'.format(request.user.id),
-    #         limit=10, window=60,  # 10 per minute should be enough for anyone
-    # ):
-    #     return HttpResponse(
-    #         'You have made too many email confirmation requests. Please try again later.',
-    #         content_type='text/plain',
-    #         status=429,
-    #     )
-    #
-    # if 'primary-email' in request.POST:
-    #     email = request.POST.get('email')
-    #     try:
-    #         email_to_send = UserEmail.objects.get(user=request.user, email=email)
-    #     except UserEmail.DoesNotExist:
-    #         msg = _('There was an error confirming your email.')
-    #         level = messages.ERROR
-    #     else:
-    #         request.user.send_confirm_email_singular(email_to_send)
-    #         msg = _('A verification email has been sent to %s.') % (email)
-    #         level = messages.SUCCESS
-    #     messages.add_message(request, level, msg)
-    #     return HttpResponseRedirect(reverse('sentry-account-settings'))
-    # elif request.user.has_unverified_emails():
-    #     request.user.send_confirm_emails()
-    #     unverified_emails = [e.email for e in request.user.get_unverified_emails()]
-    #     msg = _('A verification email has been sent to %s.') % (', ').join(unverified_emails)
-    #     for email in unverified_emails:
-    #         logger.info('user.email.start_confirm', extra={
-    #             'user_id': request.user.id,
-    #             'ip_address': request.META['REMOTE_ADDR'],
-    #             'email': email,
-    #         })
-    # else:
-    #     msg = _('Your email (%s) has already been verified.') % request.user.email
-    # messages.add_message(request, messages.SUCCESS, msg)
-    # return HttpResponseRedirect(reverse('sentry-account-settings-emails'))
+

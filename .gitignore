@@ -1,6 +1,3 @@
-!.tx
-!/bitcaster/_plugin_template/bitcaster-{{cookiecutter.name}}/tests/.env
-!/tests/.conf
 .virtualenv_hooks
 .DS_Store
 .env*
@@ -19,3 +16,7 @@
 ~*
 /node_modules
 src/bitcaster/static/dist/
+
+!.tx
+!/bitcaster/_plugin_template/bitcaster-{{cookiecutter.name}}/tests/.env
+!/tests/.conf

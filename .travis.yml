@@ -24,7 +24,7 @@ install:
 
 script:
   - npm install
-  - tox -e "d${DJANGO//.}-py${TRAVIS_PYTHON_VERSION//.}" -- py.test tests/ --create-db
+  - tox -e "d${DJANGO//.}-py${TRAVIS_PYTHON_VERSION//.}"
 
 before_success:
   - coverage erase
