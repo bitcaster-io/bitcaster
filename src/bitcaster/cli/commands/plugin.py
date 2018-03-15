@@ -1,10 +1,30 @@
-import click
 import os
-import pip
+import re
 import sys
+from pathlib import Path
 
+import click
+import pip
+from cookiecutter.generate import generate_files
+
+import bitcaster
 from bitcaster.cli import need_setup
 from bitcaster.utils.reflect import package_name
+
+name_char_blacklist_regexp = re.compile('[a-z-]*\d*$')
+
+
+def is_valid_name(name):
+    return name_char_blacklist_regexp.match(name)
+
+
+def cook(input_dir, output_dir, context=None, overwrite=True):
+    generate_files(
+        repo_dir=input_dir,
+        context=context,
+        output_dir=output_dir,
+        overwrite_if_exists=overwrite
+    )
 
 
 @click.group()
@@ -62,3 +82,35 @@ def install(name, prompt, recursive, from_dir, **kwargs):
         else:
             os.chdir(from_dir)
             pip.main(["install", '.'])
+
+
+@plugin.command(name="new")
+@click.argument('plugin_name')
+@click.option('--author', prompt=True, )
+@click.option('--license', prompt=True, default='MIT')
+@click.option('--version', prompt=True, deffault='0.1')
+@click.option('--description',prompt=True, )
+@click.option('--overwrite', '-o', is_flag=True)
+@click.option('-d', '--directory', prompt=True,
+              default=str(Path(bitcaster.__file__).parent.parent.parent / 'plugins'))
+def new_plugin(plugin_name, directory, overwrite, **options):
+    name = plugin_name.lower()
+    directory = options['directory']
+    description = options['description']
+    if not is_valid_name(name):
+        click.echo("Invalid package name %s" % name)
+        sys.exit(1)
+    base_dir = Path(bitcaster.__file__).parent / '_plugin_template'
+    package_name = "bitcaster_" + name.replace('-', '_')
+    classname = str(name).title().replace('-', '').replace('Oauth', 'OAuth')
+
+    context = {'cookiecutter': {'name': name,
+                                'package_name': package_name,
+                                'classname': classname,
+                                'description': description}
+               }
+    context['cookiecutter'].update(options)
+    cook(str(base_dir), directory, context, overwrite=overwrite)
+
+    click.echo('%s plugin structure was succesfully created.' % name)
+    click.echo(directory)
