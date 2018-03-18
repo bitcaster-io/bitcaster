@@ -42,9 +42,10 @@ class Message(AbstractModel):
     def parse_body(self, ctx):
         return self.body.format(**ctx)
 
-    # def clean(self):
-    #     if self.pk and self.channels.exclude(application=self.event.application).exists():
-    #         raise ValidationError('Invalid channel')
+        # if self.pk and self.channels.exclude(application=self.event.application).exists():
+        # if self.pk and Message.objects.filter(event=self.event,
+        #                                       channels__in=self.channels.all()).exclude(pk=self.pk).exists():
+        #     raise ValidationError('A Message for this channel already exists')
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.application = self.event.application

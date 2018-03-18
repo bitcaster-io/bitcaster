@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import functools
-
-import sys
 import pdb
+import sys
 
 
 def debug_on(*exceptions):

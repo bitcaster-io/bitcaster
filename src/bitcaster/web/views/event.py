@@ -8,10 +8,10 @@ from django.views.generic import CreateView, ListView, RedirectView
 from formtools.wizard.views import SessionWizardView
 
 from bitcaster.models import Event, Message
-from bitcaster.web.forms.event import (EventForm, EventCreateSelectChannel,
-                                       EventCreateSetupMessage)
+from bitcaster.web.forms.event import (EventCreateSelectChannel,
+                                       EventCreateSetupMessage, EventForm,)
 from bitcaster.web.views import (DeleteView, MessageUserMixin,
-                                 SelectedApplicationMixin, UpdateView, messages, )
+                                 SelectedApplicationMixin, UpdateView, messages,)
 
 logger = logging.getLogger(__name__)
 

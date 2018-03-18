@@ -8,8 +8,8 @@ from django.utils.translation import gettext_lazy as _
 from bitcaster import logging
 from bitcaster.db.fields import DeletionStatusField, Role, RoleField
 from bitcaster.db.manager import DeleteableModelManagerMixin
-from bitcaster.db.validators import (RESERVED_NAMES,
-                                     check_reserved, RateLimitValidator)
+from bitcaster.db.validators import (RESERVED_NAMES, RateLimitValidator,
+                                     check_reserved,)
 from bitcaster.file_storage import MediaFileSystemStorage, org_media_root
 from bitcaster.utils import locks
 from bitcaster.utils.retries import TimedRetryPolicy

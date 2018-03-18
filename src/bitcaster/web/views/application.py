@@ -14,11 +14,11 @@ from bitcaster.utils.dashboard import check_channels, check_events
 from bitcaster.web.forms import ApplicationCreateForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDetailView,
-                                      SelectedApplicationMixin)
+                                      SelectedApplicationMixin,)
 
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
                       ChannelDeprecateView,
-                      ChannelToggleView, ChannelUpdateView, )
+                      ChannelToggleView, ChannelUpdateView,)
 
 logger = logging.getLogger(__name__)
 

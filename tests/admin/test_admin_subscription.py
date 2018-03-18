@@ -4,11 +4,11 @@ from rest_framework.reverse import reverse
 
 pytestmark = pytest.mark.django_db
 
+
 def test_subscriptions_list(django_app, admin):
     url = reverse("admin:bitcaster_subscription_changelist")
     res = django_app.get(url, user=admin.email)
     assert res.status_code == 200
-
 
 # def test_subscriptions_add(django_app, admin, event1, channel1, user1):
 #     url = reverse("admin:bitcaster_subscription_add")

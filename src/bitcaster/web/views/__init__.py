@@ -4,8 +4,8 @@ from .application import *
 from .base import *
 from .callbacks import confirm_email
 from .channel import ChannelCreateWizard, ChannelListView
-from .event import (EventCreate, EventDelete, EventList, EventToggle,
-                    EventUpdate, EventCreateWizard)
+from .event import (EventCreate, EventCreateWizard, EventDelete,
+                    EventList, EventToggle, EventUpdate,)
 from .login_logout import LoginView, LogoutView
 from .message import MessageCreate, MessageDelete, MessageList, MessageUpdate
 from .organization import *

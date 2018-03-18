@@ -5,7 +5,7 @@ from bitfield import BitField
 from django.contrib.postgres.fields import ArrayField
 from django.core import validators
 from django.db import models
-from django.db.models import Q, UUIDField
+from django.db.models import UUIDField
 from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 

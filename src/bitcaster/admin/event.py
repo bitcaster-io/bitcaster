@@ -11,9 +11,9 @@ from bitcaster.models import Event
 from bitcaster.tasks import emit_event
 from bitcaster.utils.django import (activator_factory,
                                     deactivator_factory, toggler_factory,)
-
 # from .forms.event import EventForm, EventTriggerForm
 from bitcaster.web.forms.event import EventTriggerForm
+
 from .inlines import MessageInline
 from .site import site
 

@@ -1,5 +1,5 @@
 from .application import Application  # noqa
-from .audit import AuditLogEntry, AuditEvent, audit_log  # noqa
+from .audit import AuditEvent, AuditLogEntry, audit_log  # noqa
 from .base import AbstractModel  # noqa
 from .channel import Channel  # noqa
 from .counters import Counter, Occurence  # noqa

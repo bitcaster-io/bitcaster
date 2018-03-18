@@ -14,26 +14,26 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import CreateView, DeleteView, UpdateView, ListView
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from strategy_field.utils import fqn
 
 from bitcaster.db.fields import Role
-from bitcaster.models import (Organization, OrganizationMember,
-                              Team, TeamMembership, User, audit_log, AuditEvent)
+from bitcaster.models import (AuditEvent, Organization, OrganizationMember,
+                              Team, TeamMembership, User, audit_log,)
 from bitcaster.otp import totp
 from bitcaster.security import is_owner
 from bitcaster.utils.dashboard import check_channels, get_status
 from bitcaster.web.forms import (OrganizationForm, OrganizationInvitationForm,
                                  OrganizationInvitationFormSet, TeamForm,
-                                 UserInviteRegistrationForm, )
+                                 UserInviteRegistrationForm,)
 
 from .base import (ApplicationListMixin, BitcasterBaseCreateView,
                    BitcasterBaseDetailView, BitcasterBaseListView,
                    BitcasterBaseUpdateView, BitcasterFormView,
-                   MessageUserMixin, SelectedOrganizationMixin)
+                   MessageUserMixin, SelectedOrganizationMixin,)
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
                       ChannelDeprecateView,
-                      ChannelToggleView, ChannelUpdateView, )
+                      ChannelToggleView, ChannelUpdateView,)
 
 logger = logging.getLogger(__name__)
 

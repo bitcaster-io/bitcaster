@@ -10,12 +10,12 @@ from bitcaster.models import Channel
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsMainForm,
-                                                 SettingsOAuthForm, )
+                                                 SettingsOAuthForm,)
 from bitcaster.web.views import BitcasterTemplateView, ListView
 from bitcaster.web.views.base import SuperuserViewMixin
 from bitcaster.web.views.channel import (ChannelCreateWizard, ChannelDeleteView,
                                          ChannelDeprecateView,
-                                         ChannelToggleView, ChannelUpdateView, )
+                                         ChannelToggleView, ChannelUpdateView,)
 
 logger = logging.getLogger(__name__)
 
