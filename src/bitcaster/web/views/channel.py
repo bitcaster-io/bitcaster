@@ -130,13 +130,14 @@ class ChannelCreateView(BitcasterBaseCreateView):
 
 
 class ChannelListView(BitcasterTemplateView):
-
-    def get_queryset(self):
-        raise NotImplementedError
-
-    def get_context_data(self, **kwargs):
-        kwargs['channels'] = self.get_queryset()
-        return super().get_context_data(**kwargs)
+    pass
+    # def get_queryset(self):
+    #     raise NotImplementedError
+    #
+    # def get_context_data(self, **kwargs):
+    #     kwargs['channel_context'] = 1111
+    #     kwargs['channels'] = self.get_queryset()
+    #     return super().get_context_data(**kwargs)
 
 
 class ChannelUpdateView(BitcasterBaseUpdateView):

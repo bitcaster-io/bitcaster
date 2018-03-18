@@ -89,10 +89,10 @@ class Application(AbstractModel):
     @property
     def channels(self):
         from .channel import Channel
-        # return Channel.objects.filter(system=False)
-        return Channel.objects.filter(Q(organization=self.organization) |
-                                      Q(system=True) |
-                                      Q(application=self))
+        return Channel.objects.selectable(self)
+        # return Channel.objects.filter(Q(organization=self.organization) |
+        #                               Q(system=True) |
+        #                               Q(application=self))
 
     @property
     def owners(self):

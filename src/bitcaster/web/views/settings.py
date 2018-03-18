@@ -10,12 +10,12 @@ from bitcaster.models import Channel
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsMainForm,
-                                                 SettingsOAuthForm,)
-from bitcaster.web.views import BitcasterTemplateView
+                                                 SettingsOAuthForm, )
+from bitcaster.web.views import BitcasterTemplateView, ListView
 from bitcaster.web.views.base import SuperuserViewMixin
 from bitcaster.web.views.channel import (ChannelCreateWizard, ChannelDeleteView,
-                                         ChannelDeprecateView, ChannelListView,
-                                         ChannelToggleView, ChannelUpdateView,)
+                                         ChannelDeprecateView,
+                                         ChannelToggleView, ChannelUpdateView, )
 
 logger = logging.getLogger(__name__)
 
@@ -79,13 +79,12 @@ class SettingsChannelCreateWizard(ChannelCreateWizard):
         return {'system': True}
 
 
-class SettingsChannelListView(SuperuserViewMixin, ChannelListView):
+class SettingsChannelListView(SuperuserViewMixin, ListView):
     template_name = 'bitcaster/settings/channel_list.html'
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = _("System channels")
         kwargs['create_url'] = reverse("system-channel-create")
-        kwargs['edit_system_channel'] = True
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):

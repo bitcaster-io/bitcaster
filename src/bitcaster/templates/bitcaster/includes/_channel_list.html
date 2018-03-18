@@ -9,7 +9,7 @@
     </div>
 </div>
 <div class="container-fluid channel-list">
-    {% for channel in channels %}
+    {% for channel in object_list %}
         <div class="row col-10 handler-row">
             <style>
                 .blur {
@@ -23,7 +23,8 @@
             <div class="col-7 handler-name">
                 <strong>{{ channel.name }}</strong>
                 {% channel_type channel %}
-                {% if not channel.system or edit_system_channel %}
+                {% channel_configurable channel as configurable %}
+                {% if configurable %}
                 <div class="pt-3">
                     <a href="{{ channel.pk }}/edit/">Configure</a>
                     | <a href="{{ channel.pk }}/toggle/">

@@ -38,8 +38,8 @@ def touch(fname, times=None):
 
 
 def gen_filenames(only_new=False):
-    from django.conf import settings
-    from django.apps import apps
+    # from django.conf import settings
+    # from django.apps import apps
     # from django.core.management import execute_from_command_line
     # from django.utils.autoreload import (I18N_MODIFIED, RUN_RELOADER,
     #                                      ensure_echo_on, reset_translations,)
@@ -104,8 +104,8 @@ def code_changed():
 
 
 def monitor():
-    from django.core.management import execute_from_command_line
-    from django.utils.autoreload import reset_translations
+    # from django.core.management import execute_from_command_line
+    # from django.utils.autoreload import reset_translations
 
     # ensure_echo_on()
     # if USE_INOTIFY:
@@ -169,35 +169,11 @@ def devserver(bind, workers, autoreload, debug,
     # configure()
     if webpack:
         _thread.start_new_thread(monitor, ())
-    if use_pdb:
-        from django.views import debug
-        debug.technical_500_response = reraise
+    # if use_pdb:
+    #     from django.views import debug
+    #     debug.technical_500_response = reraise
     HTTPServer(host=host,
                port=port,
                debug=debug,
                workers=workers,
                reload=autoreload).run()
-
-# def reraise(request, exc_type, exc_value, tb):
-#     import pdb
-#     print(
-#         "Exception occured: %s, %s" % (exc_type, exc_value),
-#         file=sys.stderr)
-#     pdb.post_mortem(tb)
-#
-# import sys
-#
-# def info(type, value, tb):
-#    if hasattr(sys, 'ps1') or not sys.stderr.isatty():
-#       # we are in interactive mode or we don't have a tty-like
-#       # device, so we call the default hook
-#       sys.__excepthook__(type, value, tb)
-#    else:
-#       import traceback, pdb
-#       # we are NOT in interactive mode, print the exception...
-#       traceback.print_exception(type, value, tb)
-#       print("")
-#       # ...then start the debugger in post-mortem mode.
-#       pdb.pm()
-#
-# sys.excepthook = info

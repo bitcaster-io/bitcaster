@@ -3,6 +3,7 @@ import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models import Q
 from django.template import Template
 from strategy_field.fields import StrategyField
 
@@ -29,6 +30,28 @@ def handler_not_found(fqn, exc):
     return None
 
 
+class ChannelQuerySet(models.QuerySet):
+    def organization_configurable(self, organization):
+        return self.filter(organization=organization,
+                           application=None,
+                           system=False)
+
+    def application_configurable(self, application):
+        return self.filter(application=application, system=False)
+
+    def system_configurable(self):
+        return self.filter(system=True)
+
+    def selectable(self, application):
+        return self.filter(Q(organization=application.organization) |
+                           Q(system=True) |
+                           Q(application=application))
+
+    def enabled(self, application):
+        return self.filter(application=application,
+                           )
+
+
 class Channel(AbstractModel):
     """ A Channel represent a configured dispatcher.
 It can be Global or Application specific.
@@ -51,6 +74,8 @@ It can be Global or Application specific.
                             display_attribute='name',
                             registry=dispatcher_registry)
     deprecated = models.BooleanField(default=False)
+
+    objects = ChannelQuerySet().as_manager()
 
     class Meta:
         ordering = ('organization', 'application', 'name')

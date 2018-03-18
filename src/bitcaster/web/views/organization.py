@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.views.generic import CreateView, DeleteView, UpdateView, ListView
 from strategy_field.utils import fqn
 
 from bitcaster.db.fields import Role
@@ -30,9 +30,9 @@ from bitcaster.web.forms import (OrganizationForm, OrganizationInvitationForm,
 from .base import (ApplicationListMixin, BitcasterBaseCreateView,
                    BitcasterBaseDetailView, BitcasterBaseListView,
                    BitcasterBaseUpdateView, BitcasterFormView,
-                   MessageUserMixin, SelectedOrganizationMixin, )
+                   MessageUserMixin, SelectedOrganizationMixin)
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
-                      ChannelDeprecateView, ChannelListView,
+                      ChannelDeprecateView,
                       ChannelToggleView, ChannelUpdateView, )
 
 logger = logging.getLogger(__name__)
@@ -278,20 +278,15 @@ class OrganizationApplications(OrganizationViewMixin, BitcasterBaseDetailView):
 
 # Channels
 
-class OrganizationChannels(OrganizationViewMixin, ChannelListView):
+class OrganizationChannels(OrganizationAuditMixin, ApplicationListMixin, ListView):
     template_name = 'bitcaster/organization_channels.html'
 
     def get_queryset(self):
         return self.selected_organization.channels.all()
-        # TODO(sax) display system channels too.
-        # need to review the template to hide editing/remove... links
-
-        # return Channel.objects.filter(Q(system=True)|
-        #                                 Q(organization=self.selected_organization))
 
     def get_context_data(self, **kwargs):
-        kwargs['title'] = _("Organization Channels")
-        kwargs['title'] = _("Organization Channels")
+        kwargs['channel_context'] = self.selected_organization
+        kwargs['title'] = _("Organization Channels22")
         kwargs['create_url'] = reverse("org-channel-create",
                                        args=[self.selected_organization.slug])
         return super().get_context_data(**kwargs)

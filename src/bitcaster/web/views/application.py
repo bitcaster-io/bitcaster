@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.cache import cache
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 from rest_framework.exceptions import PermissionDenied
 
 from bitcaster.models import Application
@@ -14,11 +14,11 @@ from bitcaster.utils.dashboard import check_channels, check_events
 from bitcaster.web.forms import ApplicationCreateForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDetailView,
-                                      SelectedApplicationMixin,)
+                                      SelectedApplicationMixin)
 
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
-                      ChannelDeprecateView, ChannelListView,
-                      ChannelToggleView, ChannelUpdateView,)
+                      ChannelDeprecateView,
+                      ChannelToggleView, ChannelUpdateView, )
 
 logger = logging.getLogger(__name__)
 
@@ -88,15 +88,6 @@ class ApplicationDetail(ApplicationViewMixin, DetailView):
 
 # Channels
 class ChannelViewMixin:
-    def get_queryset(self):
-        return self.selected_application.channels.all()
-        # TODO(sax) display system channels too.
-        # need to review the template to hide editing/remove... links
-        # return Channel.objects.filter(Q(system=True, enabled=True) |
-        #                               Q(organization=self.selected_organization, application=None) |
-        #                               Q(application=self.selected_application)
-        #                               )
-
     def get_success_url(self):
         return reverse_lazy("app-channel-list",
                             args=[self.selected_organization.slug,
@@ -104,10 +95,14 @@ class ChannelViewMixin:
 
 
 class ApplicationChannels(ApplicationViewMixin,
-                          ChannelViewMixin, ChannelListView):
+                          ChannelViewMixin, ListView):
     template_name = 'bitcaster/application_channels.html'
 
+    def get_queryset(self):
+        return self.selected_application.channels.all()
+
     def get_context_data(self, **kwargs):
+        kwargs['channel_context'] = self.selected_application
         kwargs['title'] = _("Application Channels")
         kwargs['create_url'] = reverse("app-channel-create",
                                        args=[self.selected_organization.slug,
@@ -120,6 +115,10 @@ class ApplicationChannelUpdate(ApplicationViewMixin, ChannelViewMixin,
                                ChannelUpdateView):
     template_name = 'bitcaster/app_channel_configure.html'
 
+    def get_queryset(self):
+        return self.selected_application.channels.filter(system=False,
+                                                         application=self)
+
     def get_extra_instance_kwargs(self):
         return {'organization': self.selected_organization,
                 'application': self.selected_application}
@@ -128,10 +127,23 @@ class ApplicationChannelUpdate(ApplicationViewMixin, ChannelViewMixin,
 class ApplicationChannelRemove(ApplicationViewMixin, ChannelDeleteView):
     template_name = 'bitcaster/app_channel_remove.html'
 
+    def get_queryset(self):
+        return self.selected_application.channels.filter(system=False,
+                                                         application=self)
+
 
 class ApplicationChannelToggle(ApplicationViewMixin, ChannelViewMixin,
                                ChannelToggleView):
     pattern_name = 'app-channel-list'
+
+    def get_queryset(self):
+        return self.selected_application.channels.filter(system=False,
+                                                         application=self.selected_application)
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse_lazy("app-channel-list",
+                            args=[self.selected_organization.slug,
+                                  self.selected_application.slug])
 
 
 class ApplicationChannelDeprecate(ApplicationViewMixin, ChannelViewMixin, ChannelDeprecateView):
