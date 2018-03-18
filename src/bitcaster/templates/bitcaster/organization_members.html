@@ -6,7 +6,7 @@
         <div class="row col-12">
             <div class="pull-right col-12 p-4">
                 <a class="btn btn-danger btn-small pull-right"
-                   href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>
+                   href="{% url "org-member-invite" organization.slug %}">{% trans "Invite members" %}</a>
             </div>
         </div>
     </div>
@@ -53,13 +53,13 @@
                 <td class="col-3">{{ membership.date_added }}</td>
                 <td class="text-nowrap col-1">
                     <form method="post" class="d-inline"
-                          action="{% url "invitation-delete" organization.slug membership.pk %}">
+                          action="{% url "org-member-delete" organization.slug membership.pk %}">
                         {% csrf_token %}
                         <button type="submit" title="cancel invitation" class="pointer">
                             <i class="fa fa-remove"></i>
                         </button>
                     </form>&nbsp;|&nbsp;<form method="post" class="d-inline"
-                                              action="{% url "invitation-send" organization.slug membership.pk %}">
+                                              action="{% url "org-member-send" organization.slug membership.pk %}">
                     {% csrf_token %}
                     <button type="submit" title="resend email" class="pointer">
                         <i class="fa fa-envelope"></i>

@@ -8,17 +8,9 @@ from pathlib import Path
 
 import _thread
 import click
-from django.apps import apps
 
-from django.core.management import execute_from_command_line
-from django.utils.autoreload import (I18N_MODIFIED, RUN_RELOADER,
-                                     ensure_echo_on, reset_translations,)
-
-from bitcaster.cli import configure
 from bitcaster.cli.utils import Address, LogLeveParamType
 from bitcaster.services.http import HTTPServer
-from bitcaster.utils.os import touch
-
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +18,8 @@ _mtimes = {}
 _win = (sys.platform == "win32")
 _cached_filenames = []
 
+I18N_MODIFIED = 80
+RUN_RELOADER = True
 ASSET_MODIFIED = 90
 HTML_MODIFIED = 91
 SOURCE_MODIFIED = 92
@@ -38,8 +32,18 @@ I18N = ('.mo',)
 MONITOR_FILES = IMAGES + PAGES + I18N + JS
 
 
+def touch(fname, times=None):
+    with open(fname, 'a'):
+        os.utime(fname, times)
+
+
 def gen_filenames(only_new=False):
     from django.conf import settings
+    from django.apps import apps
+    # from django.core.management import execute_from_command_line
+    # from django.utils.autoreload import (I18N_MODIFIED, RUN_RELOADER,
+    #                                      ensure_echo_on, reset_translations,)
+
     global _cached_filenames
     new_filenames = []
     for root, subdirs, files in os.walk(settings.SOURCE_DIR):
@@ -99,7 +103,10 @@ def code_changed():
 
 
 def monitor():
-    ensure_echo_on()
+    from django.core.management import execute_from_command_line
+    from django.utils.autoreload import reset_translations
+
+    # ensure_echo_on()
     # if USE_INOTIFY:
     #     fn = inotify_code_changed
     # else:
@@ -154,17 +161,37 @@ def devserver(bind, workers, autoreload, debug,
         os.environ['BITCASTER_DEBUG'] = 'True'
         os.environ['BITCASTER_CELERY_TASK_ALWAYS_EAGER'] = 'True'
 
-    configure()
+    # configure()
     if webpack:
         _thread.start_new_thread(monitor, ())
-    # import gunicorn.reloader
-    #
-    # class Bit(gunicorn.reloader.Reloader):
-    #     pass
-
-    # gunicorn.reloader.reloader_engines['bit'] = Bit
+    # from django.views import debug
+    # debug.technical_500_response = reraise
     HTTPServer(host=host,
                port=port,
                debug=debug,
                workers=workers,
                reload=autoreload).run()
+
+# def reraise(request, exc_type, exc_value, tb):
+#     import pdb
+#     print(
+#         "Exception occured: %s, %s" % (exc_type, exc_value),
+#         file=sys.stderr)
+#     pdb.post_mortem(tb)
+#
+# import sys
+#
+# def info(type, value, tb):
+#    if hasattr(sys, 'ps1') or not sys.stderr.isatty():
+#       # we are in interactive mode or we don't have a tty-like
+#       # device, so we call the default hook
+#       sys.__excepthook__(type, value, tb)
+#    else:
+#       import traceback, pdb
+#       # we are NOT in interactive mode, print the exception...
+#       traceback.print_exception(type, value, tb)
+#       print("")
+#       # ...then start the debugger in post-mortem mode.
+#       pdb.pm()
+#
+# sys.excepthook = info

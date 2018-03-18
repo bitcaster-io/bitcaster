@@ -34,12 +34,13 @@ django-countries==5.2
 django-crispy-forms==1.7.2
 django-debug-toolbar==1.9.1
 django-environ==0.4.4
-django-extensions==2.0.5
+django-extensions==2.0.6
 django-fernet-fields==0.5
 django-formtools==2.1
 django-jsoneditor==0.0.12
 django-model-utils==3.1.1
 django-picklefield==1.0.0
+django-ratelimit==1.1.0
 django-recaptcha2==1.0.3
 django-redis==4.9.0
 django-regex==0.2.1
@@ -89,7 +90,7 @@ pexpect==4.4.0            # via ipython
 pickleshare==0.7.4        # via ipython
 pillow==5.0.0
 pip-tools==1.11.0
-pkginfo==1.4.1            # via devpi-client
+pkginfo==1.4.2            # via devpi-client
 pluggy==0.6.0
 poyo==0.4.1               # via cookiecutter
 premailer==3.1.1
@@ -110,7 +111,7 @@ pygments==2.2.0
 pyjwt==1.6.0
 pyotp==2.2.6
 pyparsing==2.2.0
-pyppeteer==0.0.13
+pyppeteer==0.0.14
 pyquery==1.4.0
 pytest-cov==2.5.1
 pytest-django==3.1.2

@@ -1,13 +1,17 @@
-{% extends "bitcaster/application_detail.html" %}{% load i18n crispy_forms_tags bc_wizard %}
+{% extends "bitcaster/organization_base.html" %}{% load i18n crispy_forms_tags bc_wizard %}
 
 {% block head %}
     {{ wizard.form.media }}
 {% endblock %}
 
 {% block content %}
-    <h2>Create new application channel</h2>
+    <h2>Create application event</h2>
     <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
     <h2>{{title}}</h2>
+    <h5>{% block subtitle %}{% endblock %}</h5>
+    <div class="card p-3">{% block istructions %}{% endblock %}</div>
+    {% block top %}
+    {% endblock %}
     <form action="" method="post" id="form">{% csrf_token %}
         {{ wizard.management_form }}
         <div class="container-fluid" id="handler-list">
@@ -21,7 +25,7 @@
                         value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
             {% endif %}
             {% if wizard.steps.next %}
-{#                <input type="submit" class="btn btn-primary" value="{% trans "next step" %}"/>#}
+                <input type="submit" class="btn btn-primary" value="{% trans "next step" %}"/>
             {% else %}
                 <input type="submit" class="btn btn-primary" value="{% trans "Save" %}"/>
             {% endif %}

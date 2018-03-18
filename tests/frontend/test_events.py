@@ -26,21 +26,21 @@ def add_argument(form, name, _type):
     form[total_forms_field_name] = idx + 1
 
 
-def test_create_event(django_app, application1):
-    organization = application1.organization
-    owner = organization.owner
-    url = reverse('app-event-list', args=[organization.slug,
-                                          application1.slug])
-    res = django_app.get(url, user=owner.email)
-    res = res.click("Create Event")
-    res.form['name'] = 'Event1'
-    add_argument(res.form, "field22", fqn(serializers.CharField))
-    res.form.submit().follow()
-
-    event = application1.events.first()
-    assert event
-    assert event.arguments == {"fields": [{"name": "field22",
-                                           "type": fqn(serializers.CharField)}]}
+# def test_create_event(django_app, application1):
+#     organization = application1.organization
+#     owner = organization.owner
+#     url = reverse('app-event-list', args=[organization.slug,
+#                                           application1.slug])
+#     res = django_app.get(url, user=owner.email)
+#     res = res.click("Create Event")
+#     res.form['name'] = 'Event1'
+#     add_argument(res.form, "field22", fqn(serializers.CharField))
+#     res.form.submit().follow()
+#
+#     event = application1.events.first()
+#     assert event
+#     assert event.arguments == {"fields": [{"name": "field22",
+#                                            "type": fqn(serializers.CharField)}]}
 
 
 def test_update_event(django_app, event1):

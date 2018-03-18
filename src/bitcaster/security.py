@@ -36,4 +36,3 @@ def authorized_or_403(test_func):
         return _wrapped_view
 
     return decorator
-

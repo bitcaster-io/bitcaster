@@ -28,7 +28,7 @@ def test_initial_setup(django_app, application1):
     #   channels
     res = res.click("Channels")
 
-    #   channels
+    #   Members
     res = res.click("Members")
 
     #   applications

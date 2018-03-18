@@ -6,7 +6,6 @@ from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import ApiAuthToken, ApiTriggerKey, User
-from bitcaster.utils.wsgi import get_client_ip
 
 from .forms import UserChangeForm, UserCreationForm
 from .inlines import ApiKeyInline, ApiTokenInline
@@ -46,21 +45,21 @@ class UserAdmin(_UserAdmin):
         }),
     )
 
-    def get_changeform_initial_data(self, request):
-        initial = super().get_changeform_initial_data(request)
-        remote_ip = get_client_ip(request)
-        initial['language'] = request.LANGUAGE_CODE
-        if remote_ip:
-            from geolite2 import geolite2
-            reader = geolite2.reader()
-            match = reader.get(remote_ip)
-            if match:
-                # code = match['country']['iso_code'].lower()
-                # c = pycountry.languages.get(alpha_2=code)
-                # initial['language'] = c.alpha_2.lower()
-                initial['country'] = match['country']['iso_code']
-                initial['timezone'] = match['location']['time_zone']
-        return initial
+    # def get_changeform_initial_data(self, request):
+    #     initial = super().get_changeform_initial_data(request)
+    #     remote_ip = get_client_ip(request)
+    #     initial['language'] = request.LANGUAGE_CODE
+    #     if remote_ip:
+    #         from geolite2 import geolite2
+    #         reader = geolite2.reader()
+    #         match = reader.get(remote_ip)
+    #         if match:
+    #             # code = match['country']['iso_code'].lower()
+    #             # c = pycountry.languages.get(alpha_2=code)
+    #             # initial['language'] = c.alpha_2.lower()
+    #             initial['country'] = match['country']['iso_code']
+    #             initial['timezone'] = match['location']['time_zone']
+    #     return initial
 
 
 @admin.register(ApiAuthToken, site=site)

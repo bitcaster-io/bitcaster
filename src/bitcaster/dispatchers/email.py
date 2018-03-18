@@ -17,7 +17,8 @@ from .registry import dispatcher_registry
 
 
 class EmailMessage(MessageType):
-    pass
+    has_subject = True
+    allow_html = True
 
 
 class EmailSubscription(SubscriptionOptions):

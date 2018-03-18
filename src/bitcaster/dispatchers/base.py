@@ -22,8 +22,10 @@ logger = getLogger(__name__)
 # MEDIA_CHOICES = zip(MEDIA, MEDIA)
 
 
-class MessageType(object):
-    pass
+class MessageType:
+    has_subject = False
+    allow_html = False
+    allow_attachment = False
 
 
 class SubscriptionOptions(serializers.Serializer):

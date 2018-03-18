@@ -1,9 +1,12 @@
 import click
 from constance import config
 
+from bitcaster.cli import need_setup
+
 
 @click.group()
 @click.pass_context
+@need_setup
 def option(ctx, **kwargs):
     pass
 

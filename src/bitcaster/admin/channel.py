@@ -69,7 +69,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
             serializer = channel.handler.options_class(instance=channel.config)
             ctx['serializer'] = serializer
             return render(request, 'admin/bitcaster/channel/configure.html', ctx)
-        elif request.method == 'POST':
+        else:  # if request.method == 'POST':
             serializer = channel.handler.options_class(data=request.POST)
             ctx['serializer'] = serializer
             try:
@@ -79,7 +79,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
                     self.message_user(request, _('Configuration saved'),
                                       messages.SUCCESS)
                     return HttpResponseRedirect(reverse("admin:bitcaster_channel_change",
-                                                args=[channel.pk]))
+                                                        args=[channel.pk]))
             except Exception as e:  # pragma: no-cover
                 self.message_user(request, str(e), messages.ERROR)
             return render(request, 'admin/bitcaster/channel/configure.html', ctx)
@@ -136,7 +136,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
             serializer = channel.handler.subscription_class()
             ctx['serializer'] = serializer
             return render(request, 'admin/bitcaster/channel/test.html', ctx)
-        elif request.method == 'POST':
+        else:  # if request.method == 'POST':
             serializer = channel.handler.subscription_class(data=request.POST)
             ctx['serializer'] = serializer
             try:
@@ -151,7 +151,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
                                                  request.POST['message'])
                     self.message_user(request, _("Message successully sent"), messages.SUCCESS)
                     return HttpResponseRedirect(reverse("admin:bitcaster_channel_send_sample_message",
-                                                args=[channel.pk]))
+                                                        args=[channel.pk]))
 
             except Exception as e:  # pragma: no-cover
                 self.message_user(request, str(e), messages.ERROR)

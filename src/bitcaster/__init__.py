@@ -13,7 +13,7 @@ def get_full_version(git_commit=True):
         try:
             res = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
             commit = "-" + res.decode('utf8')[:-1]
-        except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError:  # pragma: no-cover
             commit = 'unknown'
 
     return f"{VERSION}{commit}"
@@ -24,5 +24,5 @@ def get_git_status(clean=" (nothing to commit)", dirty=" (uncommitted changes)")
     try:
         uncommited = subprocess.check_output(['git', 'status', '-s'])
         return dirty if uncommited else clean
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError:  # pragma: no-cover
         return ''

@@ -26,12 +26,13 @@ django-countries==5.2
 django-crispy-forms==1.7.2
 django-debug-toolbar==1.9.1
 django-environ==0.4.4
-django-extensions==2.0.5
+django-extensions==2.0.6
 django-fernet-fields==0.5
 django-formtools==2.1
 django-jsoneditor==0.0.12
 django-model-utils==3.1.1
 django-picklefield==1.0.0
+django-ratelimit==1.1.0
 django-recaptcha2==1.0.3
 django-redis==4.9.0
 django-regex==0.2.1
@@ -85,7 +86,7 @@ pygments==2.2.0           # via pdbpp
 pyjwt==1.6.0
 pyotp==2.2.6
 pyparsing==2.2.0
-pyppeteer==0.0.13         # via requests-html
+pyppeteer==0.0.14         # via requests-html
 pyquery==1.4.0            # via requests-html
 pytest-cov==2.5.1
 pytest-django==3.1.2

@@ -12,7 +12,8 @@ from bitcaster.tasks import emit_event
 from bitcaster.utils.django import (activator_factory,
                                     deactivator_factory, toggler_factory,)
 
-from .forms import EventForm, EventTriggerForm
+# from .forms.event import EventForm, EventTriggerForm
+from bitcaster.web.forms.event import EventTriggerForm
 from .inlines import MessageInline
 from .site import site
 
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 @admin.register(Event, site=site)
 class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
-    form = EventForm
+    # form = EventForm
     list_display = ('name', 'application', 'enabled')
     list_filter = ('application', 'enabled')
     search_fields = ('name', 'application__name')

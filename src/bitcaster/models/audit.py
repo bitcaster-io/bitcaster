@@ -1,34 +1,54 @@
 # -*- coding: utf-8 -*-
 import logging
+from collections import namedtuple
+from enum import Enum
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
-from django.utils.translation import ugettext as _
+from django.utils.deconstruct import deconstructible
 
-from bitcaster.db.fields import EnumField
-from bitcaster.models import Organization, Application
+from bitcaster.utils.wsgi import get_client_ip
 
 logger = logging.getLogger(__name__)
 
+AuditLogEntryTuple = namedtuple("aaa", "id,label,verbose")
 
-class AuditLogEntryEvent(EnumField):
-    MEMBER_INVITE = (1, "{actor} invited member {data['email']} as data['role']")
 
+@deconstructible
+class AuditEvent(Enum):
+    MEMBER_INVITE = (1, "member:invite",
+                     "{0.actor} invited member {0.data[email]} to {0.organization} as {0.data[role]}")
+
+    MEMBER_ACCEPT = (2, "member:accept",
+                     "{0.actor} accepted invitation from {0.data[invited_by]} to {0.organization} as {0.data[role]}")
+
+    def __init__(self, value, label, description):
+        self.int = value
+        self.label = label
+        self.description = description
+
+    def verbose(self, data):
+        return self.description.format(**data)
+
+    def __eq__(self, other):
+        return self.int == other
+
+    def __gt__(self, other):
+        return self.int > other
+
+    def __lt__(self, other):
+        return self.int < other
 
     @classmethod
     def as_choices(cls):
-        return sorted([(int(cls.MEMBER_INVITE[0]), _('Active')),
-                       (int(cls.M), _('Deprecated')),
-                       (int(cls.PENDING_DELETION), _('Pending Deletion')),
-                       (int(cls.DELETION_IN_PROGRESS), _('Deletion in Progress')),
-                       ])
+        return [(a.int, a.label) for a in cls]
 
 
 class AuditEventField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
-                 choices=AuditLogEntryEvent.as_choices(),
+                 choices=AuditEvent.as_choices(),
                  default=None,
                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
         super().__init__(verbose_name=verbose_name, name=name,
@@ -39,20 +59,22 @@ class AuditEventField(models.IntegerField):
                          error_messages=error_messages)
 
     def get_prep_value(self, value):
-        return super().get_prep_value(int(value))
+        return super().get_prep_value(value.int)
 
     def value_to_string(self, obj):
         """
         Return a string value of this field from the passed obj.
         This is used by the serialization framework.
         """
-        return str(int(self.value_from_object(obj)))
+        return str(self.value_from_object(obj).int)
 
 
 class AuditLogEntry(models.Model):
-    organization = models.ForeignKey(Organization,
+    organization = models.ForeignKey('bitcaster.Organization',
+                                     blank=True, null=True,
                                      on_delete=models.CASCADE)
-    application = models.ForeignKey(Application,
+    application = models.ForeignKey('bitcaster.Application',
+                                    blank=True, null=True,
                                     on_delete=models.CASCADE)
     actor = models.CharField(max_length=64, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -63,5 +85,31 @@ class AuditLogEntry(models.Model):
     data = JSONField()
     datetime = models.DateTimeField(default=timezone.now)
 
-# if self.event == AuditLogEntryEvent.MEMBER_INVITE:
-#     return 'invited member %s' % (self.data['email'],)
+    def __str__(self):
+        description = next((a for a in AuditEvent if a.int == self.event)).description
+        return description.format(self)
+
+    class Meta:
+        ordering = ('-datetime',)
+        get_latest_by = 'datetime'
+
+
+def audit_log(request, event, logger=None, organization=None, application=None, **kwargs):
+    user = request.user if request.user.is_authenticated else None
+    logger = logging.getLogger('bitcaster.audit') if logger is None else logger
+    actor = user.email
+
+    entry = AuditLogEntry(
+        actor=actor,
+        user=user,
+        organization=organization,
+        application=application,
+        event=event,
+        ip_address=get_client_ip(request),
+        data=kwargs
+    )
+    entry.save()
+    if logger:
+        logger.info(str(entry))
+
+    return entry

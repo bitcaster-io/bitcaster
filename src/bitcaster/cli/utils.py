@@ -7,7 +7,7 @@ from functools import lru_cache
 
 import click
 
-from bitcaster.config.environ import DEFAULTS
+from bitcaster.config import DEFAULTS
 
 logger = logging.getLogger(__name__)
 

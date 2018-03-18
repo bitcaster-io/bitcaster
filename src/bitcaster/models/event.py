@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import UUIDField
 
 from bitcaster import logging
+from bitcaster.db.validators import RateLimitValidator
 
 from .application import Application
 from .base import AbstractModel
@@ -22,13 +23,15 @@ class Event(AbstractModel):
                                     related_name='events')
     name = models.CharField(max_length=100)
 
-    allowed_origins = ArrayField(models.CharField(max_length=50),
+    allowed_origins = ArrayField(models.GenericIPAddressField(max_length=50),
                                  blank=True,
                                  null=True)
-    # preferences = JSONField(null=True, blank=True)
     group = models.CharField(max_length=30, null=True, blank=True)
     arguments = JSONField(null=True, blank=True)
     enabled = models.BooleanField(default=False)
+    rate_limit = models.CharField(max_length=100,
+                                  null=True, default=None, blank=True,
+                                  validators=[RateLimitValidator()])
 
     class Meta:
         unique_together = ('application', 'name')

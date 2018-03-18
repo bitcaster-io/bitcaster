@@ -1,6 +1,7 @@
 from constance import config
 from django.conf import settings
-from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
+from django.http import (HttpResponse, HttpResponseForbidden,
+                         HttpResponseRedirect,)
 from django.template.loader import get_template
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView

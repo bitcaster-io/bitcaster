@@ -5,8 +5,9 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from bitcaster.exceptions import ValidationError
 from {{cookiecutter.package_name}} import {{cookiecutter.classname}}
+
+from bitcaster.exceptions import ValidationError
 
 env = Env(BITCASTER_{{cookiecutter.package_name|upper}}_USERNAME='',
           BITCASTER_{{cookiecutter.package_name|upper}}_PASSWORD='',

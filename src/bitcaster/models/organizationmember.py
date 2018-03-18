@@ -60,7 +60,7 @@ class OrganizationMember(models.Model):
 
     def send_email(self):
         code = totp.now()
-        url = reverse('invitation-accept', args=[self.organization.slug, self.pk, code])
+        url = reverse('org-member-accept', args=[self.organization.slug, self.pk, code])
         send_mail_by_template('[Bitcaster] invitation',
                               'user_invite', {'membership': self,
                                               'url': absolute_uri(url)},

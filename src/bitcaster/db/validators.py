@@ -4,6 +4,7 @@ import logging
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext as _
+from ratelimit.utils import _split_rate
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +49,19 @@ class ReservedWordValidator:
     message = _("'%(value)s' is a bitcaster reserved word")
 
     def __call__(self, value):
-        # if isinstance(value, CoreName):
-        #     return
         if value.lower() in RESERVED_NAMES:
             raise ValidationError(self.message, params={"value": value})
 
+
 check_reserved = ReservedWordValidator()
+
+
+@deconstructible
+class RateLimitValidator:
+    message = _("'%(value)s'is not a valid ratelimit value ")
+
+    def __call__(self, value):
+        try:
+            _split_rate(value)
+        except Exception:
+            raise ValidationError(self.message, params={"value": value})

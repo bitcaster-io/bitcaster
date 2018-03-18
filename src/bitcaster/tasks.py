@@ -62,7 +62,6 @@ def send_mail_async(subject, message, html_message, recipient_list,
                     *,
                     from_email=None,
                     fail_silently=False):
-    logger.debug("aaaaaaaaa")
     try:
         connection = get_connection(
             fail_silently=fail_silently,

@@ -8,9 +8,9 @@ from setproctitle import setproctitle
 from strategy_field.utils import import_by_name
 
 import bitcaster
-from bitcaster.logging import getLogger
 from bitcaster.config import DEFAULT_CONFIG
 from bitcaster.config.environ import env
+from bitcaster.logging import getLogger
 
 logger = getLogger(__name__)
 

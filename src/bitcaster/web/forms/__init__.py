@@ -1,7 +1,7 @@
 # flake8: noqa
 from .application import ApplicationCreateForm, ApplicationForm
 from .channel import ChannelForm
-from .event import EventForm, EventTriggerForm
+# from .event import (EventForm, EventTriggerForm, EventCreateSelectChannel, EventCreateSetupMessage)
 from .formsets import OrganizationInvitationForm, OrganizationInvitationFormSet
 from .message import MessageForm
 from .organization import OrganizationForm

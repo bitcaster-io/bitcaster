@@ -4,7 +4,6 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.template import Template
-from django.utils.functional import cached_property
 from strategy_field.fields import StrategyField
 
 from bitcaster import logging
@@ -38,13 +37,11 @@ It can be Global or Application specific.
     organization = models.ForeignKey(Organization,
                                      null=True,
                                      blank=True,
-                                     on_delete=models.CASCADE,
-                                     related_name='channels')
+                                     on_delete=models.CASCADE)
     application = models.ForeignKey(Application,
                                     null=True,
                                     blank=True,
-                                    on_delete=models.CASCADE,
-                                    related_name='channels')
+                                    on_delete=models.CASCADE)
     system = models.BooleanField(default=False)
     config = EncryptedJSONField(null=True, blank=True)
     enabled = models.BooleanField(default=False)
@@ -85,7 +82,7 @@ It can be Global or Application specific.
         if not self.application:
             return
 
-    @cached_property
+    @property
     def is_configured(self):
         return self.handler.validate_configuration(self.config, False)
 

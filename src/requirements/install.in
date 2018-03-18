@@ -15,6 +15,7 @@ django-fernet-fields
 django-formtools
 django-jsoneditor
 django-model-utils
+django-ratelimit
 django-redis
 django-regex
 django-recaptcha2

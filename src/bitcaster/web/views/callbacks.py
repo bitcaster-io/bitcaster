@@ -47,4 +47,3 @@ def confirm_email(request, pk, check):
             user.save()
         ctx = {'valid': ok}
         return render(request, 'bitcaster/registration/email-confirmed.html', ctx)
-

@@ -11,22 +11,22 @@ import logging
 
 from django.contrib import messages
 from django.core.cache import cache
-from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.generic import DetailView
 from rest_framework.exceptions import PermissionDenied
 
-from bitcaster.models import Application, Channel
+from bitcaster.models import Application
 from bitcaster.security import is_owner
-from bitcaster.utils.dashboard import get_status, check_channels, check_events
+from bitcaster.utils.dashboard import check_channels, check_events
 from bitcaster.web.forms import ApplicationCreateForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
-                                      SelectedApplicationMixin, BitcasterBaseDetailView)
+                                      BitcasterBaseDetailView,
+                                      SelectedApplicationMixin,)
 
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
                       ChannelDeprecateView, ChannelListView,
-                      ChannelToggleView, ChannelUpdateView, )
+                      ChannelToggleView, ChannelUpdateView,)
 
 logger = logging.getLogger(__name__)
 

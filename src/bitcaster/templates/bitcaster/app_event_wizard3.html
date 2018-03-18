@@ -1,0 +1,12 @@
+{% extends "bitcaster/app_event_wizard0.html" %}{% load i18n crispy_forms_tags bc_wizard %}
+{% block subtitle %}Message{% endblock %}
+{% block istructions %}This is the common message for the selected channels.
+
+{% endblock %}
+{% block wizard-content %}
+    {% csrf_token %}
+    {{ form|crispy }}
+    {% for msgForm in form.msgForms %}
+        {{ msgForm|crispy }}
+    {% endfor %}
+{% endblock wizard-content %}

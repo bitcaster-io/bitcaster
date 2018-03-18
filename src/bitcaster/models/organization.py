@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
 from bitcaster.db.fields import DeletionStatusField, Role, RoleField
 from bitcaster.db.manager import DeleteableModelManagerMixin
-from bitcaster.db.validators import RESERVED_NAMES, ReservedWordValidator, check_reserved
+from bitcaster.db.validators import (RESERVED_NAMES,
+                                     check_reserved, RateLimitValidator)
 from bitcaster.file_storage import MediaFileSystemStorage, org_media_root
 from bitcaster.utils import locks
 from bitcaster.utils.retries import TimedRetryPolicy
@@ -54,6 +55,9 @@ class Organization(AbstractModel):
     picture_width = models.IntegerField(editable=False, null=True)
     is_core = models.BooleanField(editable=False, default=False)
     default_role = RoleField(default=Role.MEMBER)
+    rate_limit = models.CharField(max_length=100,
+                                  null=True, default=None, blank=True,
+                                  validators=[RateLimitValidator()])
 
     objects = OrganizationManager()
 
@@ -98,6 +102,11 @@ class Organization(AbstractModel):
                                                         **kwargs
                                                         )[0]
 
-    @cached_property
+    @property
     def owners(self):
         return self.members.filter(memberships__role=Role.OWNER)
+
+    @property
+    def channels(self):
+        from .channel import Channel
+        return Channel.objects.filter(Q(organization=self) | Q(system=True))

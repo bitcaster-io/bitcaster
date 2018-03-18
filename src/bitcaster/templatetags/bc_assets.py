@@ -34,6 +34,7 @@ def asset(path):
     commit = bitcaster.get_full_version()
     return get_asset_url(f"{path}?{commit}")
 
+
 @register.simple_tag
 def aasset(path):
     """
@@ -52,6 +53,7 @@ def aasset(path):
     """
     commit = bitcaster.get_full_version()
     return absolute_uri(get_asset_url(f"{path}?{commit}"))
+
 
 @register.simple_tag
 def aurl(name, *args, **kwargs):

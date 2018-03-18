@@ -7,7 +7,6 @@ from django.db import models
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
@@ -123,11 +122,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    @cached_property
+    @property
     def display_name(self):
         return self.friendly_name or self.email
 
-    @cached_property
+    @property
     def ownerships(self):
         return self.memberships.filter(role=Role.OWNER)
 

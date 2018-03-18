@@ -11,10 +11,10 @@ import logging
 
 from django import forms
 from django.contrib.auth import password_validation
-from django.contrib.auth.forms import (UserChangeForm as _UserChangeForm,
-                                       UserCreationForm as _UserCreationForm, )
+from django.contrib.auth.forms import (AuthenticationForm as _AuthenticationForm,
+                                       UserChangeForm as _UserChangeForm,
+                                       UserCreationForm as _UserCreationForm,)
 from django.forms import PasswordInput
-from django.contrib.auth.forms import AuthenticationForm as _AuthenticationForm
 from django.utils.translation import ugettext_lazy as _
 from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget

@@ -11,6 +11,7 @@ def pytest_configure(config):
     sys.path.insert(0, os.path.join(here, 'extras'))
     os.environ.setdefault('BITCASTER_CONF', str(Path(__file__).parent / '.conf'))
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings.default')
+    os.environ['CELERY_TASK_ALWAYS_EAGER'] = 'True'
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     os.environ['RECAPTCHA_DISABLE'] = 'True'
     from bitcaster.config.environ import env

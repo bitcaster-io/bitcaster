@@ -10,6 +10,7 @@ from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
@@ -18,10 +19,10 @@ from strategy_field.utils import fqn
 
 from bitcaster.db.fields import Role
 from bitcaster.models import (Organization, OrganizationMember,
-                              Team, TeamMembership, User)
+                              Team, TeamMembership, User, audit_log, AuditEvent)
 from bitcaster.otp import totp
 from bitcaster.security import is_owner
-from bitcaster.utils.dashboard import get_status, check_channels
+from bitcaster.utils.dashboard import check_channels, get_status
 from bitcaster.web.forms import (OrganizationForm, OrganizationInvitationForm,
                                  OrganizationInvitationFormSet, TeamForm,
                                  UserInviteRegistrationForm, )
@@ -46,7 +47,15 @@ __all__ = ["OrganizationCreate", "OrganizationDashboard", "OrganizationUpdate",
            "OrganizationApplications", "OrganizationChannelCreate"]
 
 
-class OrganizationViewMixin(ApplicationListMixin):
+class OrganizationAuditMixin:
+
+    def audit_log(self, event, **kwargs):
+        audit_log(self.request, event,
+                  organization=self.selected_organization,
+                  **kwargs)
+
+
+class OrganizationViewMixin(OrganizationAuditMixin, ApplicationListMixin):
     model = Organization
     slug_url_kwarg = 'org'
 
@@ -115,7 +124,7 @@ class OrganizationMembers(OrganizationViewMixin, BitcasterBaseDetailView):
 
 # Invitation
 
-class InviteAccept(MessageUserMixin, CreateView):
+class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
     model = User
     form_class = UserInviteRegistrationForm
     template_name = 'bitcaster/users/user_welcome.html'
@@ -144,6 +153,11 @@ class InviteAccept(MessageUserMixin, CreateView):
             self.membership.user = user
             self.membership.save()
             login(self.request, user, backend=fqn(ModelBackend))
+            assert self.request.user == user
+            self.audit_log(AuditEvent.MEMBER_ACCEPT,
+                           role=self.membership.get_role_display(),
+                           invited_by=self.membership.invited_by.email)
+
         if self.membership.role in [Role.OWNER, Role.ADMIN]:
             url = reverse('org-dashboard', args=[self.selected_organization.slug])
         else:
@@ -164,7 +178,8 @@ class InviteAccept(MessageUserMixin, CreateView):
     @cached_property
     def membership(self):
         pk = self.kwargs['pk']
-        return OrganizationMember.objects.get(pk=pk)
+        return get_object_or_404(OrganizationMember, pk=pk,
+                                 organization=self.selected_organization)
 
     def get(self, request, **kwargs):
         check = kwargs['check']
@@ -179,7 +194,7 @@ class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
     fields = ()
 
     def get_success_url(self):
-        return reverse("org-members", args=[self.selected_organization.slug])
+        return reverse("org-member-list", args=[self.selected_organization.slug])
 
     def get_queryset(self):
         return self.selected_organization.memberships.all()
@@ -189,7 +204,8 @@ class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
         try:
             membership.send_email()
             self.message_user(_("Email sending scheduled"))
-        except Exception:
+        except Exception as e:
+            logger.exception(e)
             self.message_user(_("Error sending email"), messages.ERROR)
         return super().form_valid(form)
 
@@ -197,7 +213,7 @@ class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
 class InviteDelete(SelectedOrganizationMixin, DeleteView):
 
     def get_success_url(self):
-        return reverse("org-members", args=[self.selected_organization.slug])
+        return reverse("org-member-list", args=[self.selected_organization.slug])
 
     def get_queryset(self):
         return self.selected_organization.memberships.all()
@@ -209,12 +225,12 @@ class InviteDelete(SelectedOrganizationMixin, DeleteView):
         return HttpResponseRedirect(success_url)
 
 
-class OrganizationInvite(BitcasterFormView):
+class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
     form_class = OrganizationInvitationForm
     template_name = 'bitcaster/organization_invite.html'
 
     def get_success_url(self):
-        return reverse("org-members", args=[self.selected_organization.slug])
+        return reverse("org-member-list", args=[self.selected_organization.slug])
 
     def get_context_data(self, **kwargs):
         data = super(OrganizationInvite, self).get_context_data(**kwargs)
@@ -239,8 +255,12 @@ class OrganizationInvite(BitcasterFormView):
                 if recipient:
                     if not self.selected_organization.memberships.filter(email=recipient).exists():
                         inline_form.instance.organization = self.selected_organization
+                        inline_form.instance.invited_by = self.request.user
                         membership = inline_form.save()
                         membership.send_email()
+                        self.audit_log(AuditEvent.MEMBER_INVITE,
+                                       role=membership.get_role_display(),
+                                       email=membership.email)
                         sent = True
                     else:
                         self.message_user(_('Invitation to {0} already sent').format(recipient),
@@ -405,9 +425,6 @@ class OrganizationTeamUpdate(OrganizationTeamMixin, BitcasterBaseUpdateView):
 
 
 class OrganizationTeamMember(OrganizationTeamMixin, UpdateView):
-    #
-    #
-    #
     fields = ('name',)
     slug_url_kwarg = 'slug'
 

@@ -1,9 +1,4 @@
 from django import template
-from django.conf import settings
-from django.urls import reverse
-
-import bitcaster
-from bitcaster.utils.http import absolute_uri
 
 register = template.Library()
 

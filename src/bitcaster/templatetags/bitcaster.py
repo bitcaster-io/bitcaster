@@ -93,5 +93,11 @@ def channel_submit_row(context):
 
 
 @register.filter()
+def display_queryset(qs, fields):
+    fields = fields.split(",")
+    return mark_safe(", ".join(qs.values_list(*fields, flat=True)))
+
+
+@register.filter()
 def describe_channels(channels):
     return mark_safe(", ".join([f"<span class=enabled{c.enabled}>{c.name}</span>" for c in channels.all()]))

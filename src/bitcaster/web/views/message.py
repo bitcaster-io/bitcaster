@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-mercury / message
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
-
 import logging
 
 from django.urls import reverse
@@ -15,7 +7,8 @@ from django.views.generic import ListView
 
 from bitcaster.models import Message
 from bitcaster.web.forms import MessageForm
-from bitcaster.web.views import SelectedApplicationMixin, CreateView, MessageUserMixin, UpdateView, DeleteView
+from bitcaster.web.views import (CreateView, DeleteView, MessageUserMixin,
+                                 SelectedApplicationMixin, UpdateView, )
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +59,7 @@ class MessageCreate(MessageMixin, MessageFormMixin, CreateView):
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_("Create Message"),
                                         **kwargs)
+
 
 class MessageDelete(MessageMixin, DeleteView):
     pass

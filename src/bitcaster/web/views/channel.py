@@ -77,9 +77,6 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
             context.update({'handler': self.storage.extra_data['handler']})
         return context
 
-    def post(self, *args, **kwargs):
-        return super().post(*args, **kwargs)
-
     def get_template_names(self):
         return [self.TEMPLATES[self.steps.current]]
 
@@ -107,7 +104,7 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
                               messages.ERROR)
 
             # this is real ugly. there is a bug somewhere that
-            # prevent a simple `self.storage.current_step = 'b'`
+            # prevents a simple `self.storage.current_step = 'b'`
             # to work properly. So we totally fake 'steps' entry
             self.storage.current_step = 'b'
             context = self.get_context_data(form=form, **kwargs)

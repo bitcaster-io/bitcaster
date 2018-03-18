@@ -88,8 +88,8 @@ def install(name, prompt, recursive, from_dir, **kwargs):
 @click.argument('plugin_name')
 @click.option('--author', prompt=True, )
 @click.option('--license', prompt=True, default='MIT')
-@click.option('--version', prompt=True, deffault='0.1')
-@click.option('--description',prompt=True, )
+@click.option('--version', prompt=True, default='0.1')
+@click.option('--description', prompt=True, )
 @click.option('--overwrite', '-o', is_flag=True)
 @click.option('-d', '--directory', prompt=True,
               default=str(Path(bitcaster.__file__).parent.parent.parent / 'plugins'))
