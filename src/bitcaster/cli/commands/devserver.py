@@ -45,6 +45,7 @@ def gen_filenames(only_new=False):
     #                                      ensure_echo_on, reset_translations,)
 
     global _cached_filenames
+    from bitcaster.config.settings import default as settings
     new_filenames = []
     for root, subdirs, files in os.walk(settings.SOURCE_DIR):
         for filename in files:
@@ -58,8 +59,8 @@ def gen_filenames(only_new=False):
         basedirs = [os.path.join(os.path.dirname(os.path.dirname(__file__)),
                                  'conf', 'locale'),
                     'locale']
-        for app_config in reversed(list(apps.get_app_configs())):
-            basedirs.append(os.path.join(app_config.path, 'locale'))
+        # for app_config in reversed(list(apps.get_app_configs())):
+        #     basedirs.append(os.path.join(app_config.path, 'locale'))
         basedirs.extend(settings.LOCALE_PATHS)
         basedirs = [os.path.abspath(basedir) for basedir in basedirs
                     if os.path.isdir(basedir)]
@@ -121,6 +122,7 @@ def monitor():
         elif change == HTML_MODIFIED:
             touch(Path(__file__).absolute())
         elif change == ASSET_MODIFIED:
+            from django.core.management import execute_from_command_line
             sys.stdout.write("Asset change detected run webpack/collectstatic\n")
             subprocess.check_call(['webpack', '--mode', 'development'],
                                   stdout=sys.stdout,
@@ -128,6 +130,7 @@ def monitor():
             execute_from_command_line(argv=['manage', 'collectstatic', '--noinput'])
 
         elif change == I18N_MODIFIED:
+            from django.utils.autoreload import reset_translations
             reset_translations()
         time.sleep(1)
 
@@ -139,6 +142,8 @@ def monitor():
               help='The number of worker processes for handling requests.')
 @click.option('--upgrade', default=False, is_flag=True,
               help='Upgrade before starting.')
+@click.option('--pdb', 'use_pdb', default=False, is_flag=True,
+              help='')
 @click.option('--debug', '-d', default=False, is_flag=True,
               help='Start server in debug mode')
 @click.option('--webpack', default=False, is_flag=True,
@@ -154,7 +159,7 @@ def monitor():
 @click.option('--logfile', default=None,
               help='logfile')
 def devserver(bind, workers, autoreload, debug,
-              webpack, logfile, **kwargs):
+              webpack, use_pdb, logfile, **kwargs):
     host, port = bind.split(":")
 
     if debug:
@@ -164,8 +169,9 @@ def devserver(bind, workers, autoreload, debug,
     # configure()
     if webpack:
         _thread.start_new_thread(monitor, ())
-    # from django.views import debug
-    # debug.technical_500_response = reraise
+    if use_pdb:
+        from django.views import debug
+        debug.technical_500_response = reraise
     HTTPServer(host=host,
                port=port,
                debug=debug,

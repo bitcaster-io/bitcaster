@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-bitcaster / social_auth
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
 from constance import config
 from django.conf import settings
 from django.shortcuts import resolve_url

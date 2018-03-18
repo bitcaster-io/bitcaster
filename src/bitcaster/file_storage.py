@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-bitcaster / file_storage
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
-
 import logging
 import os
 from functools import wraps

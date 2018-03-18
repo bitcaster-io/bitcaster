@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-bitcaster / login_logout
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
-
 import logging
 
 from django.contrib.auth.views import (LoginView as _LoginView,

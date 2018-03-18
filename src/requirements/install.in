@@ -1,6 +1,7 @@
 admin-extra-urls>=1.8
 celery
 click
+cookiecutter
 django>=2.0
 django-bitfield
 django-adminfilters>=1.0.0

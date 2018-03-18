@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-bitcaster / locks
-~~~~~~~~~~~~~~~~~
-
-:copyright: (c) 2018 Stefano Apostolico, see AUTHORS for more details.
-:license: BSD, see LICENSE for more details.
-"""
-
 import logging
 
 import redis_lock

@@ -1,13 +1,13 @@
 admin-extra-urls==1.8.0
 amqp==2.2.2
 appnope==0.1.0            # via ipython
-arrow==0.12.1             # via jinja2-time
+arrow==0.12.1
 asn1crypto==0.24.0
 attrs==17.4.0
 beautifulsoup4==4.6.0
 behave==1.2.6
 billiard==3.5.0.3
-binaryornot==0.4.4        # via cookiecutter
+binaryornot==0.4.4
 bs4==0.0.1
 celery==4.1.0
 certifi==2018.1.18
@@ -59,7 +59,7 @@ faker==0.8.12
 fancycompleter==0.8
 first==2.0.1              # via pip-tools
 flake8==3.5.0
-future==0.16.0            # via cookiecutter
+future==0.16.0
 gunicorn==19.7.1
 httpie==0.9.9
 httplib2==0.10.3
@@ -68,12 +68,12 @@ ipython-genutils==0.2.0   # via traitlets
 ipython==6.2.1
 isort==4.3.4
 jedi==0.11.1              # via ipython
-jinja2-time==0.2.0        # via cookiecutter
-jinja2==2.10              # via cookiecutter, jinja2-time
+jinja2-time==0.2.0
+jinja2==2.10
 jsonfield==2.0.2
 kombu==4.1.0
 lxml==3.8.0
-markupsafe==1.0           # via jinja2
+markupsafe==1.0
 maxminddb-geolite2==2017.803
 maxminddb==1.3.0
 mccabe==0.6.1
@@ -92,7 +92,7 @@ pillow==5.0.0
 pip-tools==1.11.0
 pkginfo==1.4.2            # via devpi-client
 pluggy==0.6.0
-poyo==0.4.1               # via cookiecutter
+poyo==0.4.1
 premailer==3.1.1
 prompt-toolkit==1.0.15    # via ipython
 psutil==5.4.3
@@ -152,7 +152,7 @@ wcwidth==0.1.7            # via prompt-toolkit
 webob==1.7.4
 websockets==4.0.1
 webtest==2.0.29
-whichcraft==0.4.1         # via cookiecutter
+whichcraft==0.4.1
 wmctrl==0.3
 wrapt==1.10.11
 yarl==1.1.1
