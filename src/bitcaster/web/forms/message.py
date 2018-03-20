@@ -9,8 +9,24 @@ from bitcaster.models import Channel, Message
 logger = logging.getLogger(__name__)
 
 
+class MessageCreateForm(forms.ModelForm):
+    # channels = forms.ModelMultipleChoiceField(queryset=Channel.objects.none())
+
+    class Meta:
+        model = Message
+        fields = ('id', 'channels', 'subject', 'body', 'language')
+
+    # def __init__(self, *args, **kwargs):
+    #     self.application = kwargs.pop('application', None)
+    #     super().__init__(*args, **kwargs)
+
+
 class MessageForm(forms.ModelForm):
     channels = forms.ModelMultipleChoiceField(queryset=Channel.objects.none())
+
+    class Meta:
+        model = Message
+        fields = ('name', 'subject', 'body', 'channels', 'language')
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)
@@ -28,7 +44,3 @@ class MessageForm(forms.ModelForm):
         for channel in self.cleaned_data['channels']:
             if qs.filter(channels=channel).exists():
                 raise ValidationError(f'A message for channel {channel} already exists')
-
-    class Meta:
-        model = Message
-        fields = ('name', 'event', 'subject', 'body', 'channels', 'language')

@@ -69,11 +69,11 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/', ApplicationDashboard.as_view(), name='app-dashboard'),
     path('<slug:org>/a/<slug:app>/subscriptions/', SubscriptionList.as_view(), name='app-subscriptions'),
     path('<slug:org>/a/<slug:app>/event/', EventList.as_view(), name='app-event-list'),
-    path('<slug:org>/a/<slug:app>/event/<int:pk>/edit/', EventUpdate.as_view(), name='app-event-update'),
+    path('<slug:org>/a/<slug:app>/event/add/', EventCreateWizard.as_view(), name='app-event-create'),
+    path('<slug:org>/a/<slug:app>/event/<int:pk>/edit/', EventCreateWizard.as_view(), name='app-event-update'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/toggle/', EventToggle.as_view(), name='app-event-toggle'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/delete/', EventDelete.as_view(), name='app-event-delete'),
 
-    path('<slug:org>/a/<slug:app>/event/add/', EventCreateWizard.as_view(), name='app-event-create'),
     path('<slug:org>/a/<slug:app>/channel/', ApplicationChannels.as_view(), name='app-channel-list'),
     path('<slug:org>/a/<slug:app>/channel/add/', ApplicationChannelCreate.as_view(), name='app-channel-create'),
     path('<slug:org>/a/<slug:app>/channel/<int:pk>/edit/', ApplicationChannelUpdate.as_view(),
