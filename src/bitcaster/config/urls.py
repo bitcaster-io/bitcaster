@@ -5,27 +5,36 @@ from urllib.parse import parse_qs
 
 from django.conf import settings
 from django.conf.urls import include
-# from django.conf.urls.static import static
 from django.contrib.admin import site
 from django.http import HttpResponse
 from django.urls import path, re_path
+from django.views.decorators.cache import cache_page
 from django.views.static import serve
 from django_sysinfo.views import admin_sysinfo, http_basic_login, sysinfo
 from strategy_field.utils import import_by_name
 
 import bitcaster.api.urls
 import bitcaster.web.urls
+from bitcaster.models import Channel
 
 
+@cache_page(60 * 60 * 24)
+def channel_icon(request, pk):
+    ch = Channel.objects.get(pk=pk)
+    return plugin_icon(request, ch.handler.fqn)
+
+
+@cache_page(60 * 60 * 24)
 def plugin_icon(request, fqn):
     h = import_by_name(fqn)
     loc = inspect.getfile(h)
     icon = Path(loc).parent / 'icon.png'
     try:
-        return HttpResponse(icon.read_bytes(), content_type='image/png')
-    except FileNotFoundError:
+        image = icon.read_bytes()
+    except (Exception, FileNotFoundError):
         icon = Path(str(settings.BITCASTER_DIR)) / 'assets/bitcaster/images/plugin.png'
-        return HttpResponse(icon.read_bytes(), content_type='image/png')
+        image = icon.read_bytes()
+    return HttpResponse(image, content_type='image/png')
 
 
 def oauth2callback(request):
@@ -49,7 +58,8 @@ urlpatterns = [path(r'api/', include(bitcaster.api.urls), name='api'),
                re_path('^admin/', site.urls),
                path('', include(bitcaster.web.urls)),
 
-               re_path('plugins/icon/(?P<fqn>.*)', plugin_icon, name="plugin-icon"),
+               path('plugins/icons/channel/<int:pk>/', channel_icon, name="channel-icon"),
+               path('plugins/icons/<str:fqn>/', plugin_icon, name="plugin-icon"),
 
                static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT,
                       show_indexes=True),

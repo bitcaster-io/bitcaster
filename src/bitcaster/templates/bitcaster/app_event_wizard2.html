@@ -8,12 +8,12 @@
 {% endblock %}
 {% block top %}
     <style>
-    .messageForm{
-        border: 1px solid grey;
-        padding: 10px;
-        margin-bottom: 10px;
-        background-color: #e4e4e4;
-    }
+        .messageForm {
+            border: 1px solid grey;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #e4e4e4;
+        }
     </style>
     <div id="empty-form" class="d-none">
         <div class="messageForm">
@@ -33,22 +33,37 @@
         </div>
     </div>
     <div>
-    {{ form.errors|as_crispy_errors }}
+        {{ form.errors|as_crispy_errors }}
     </div>
     {{ form.management_form }}
     <div class="messages">
         {% for form in form.forms %}
             <div class="messageForm">{{ form|crispy }}</div>
-    {% endfor %}
+        {% endfor %}
     </div>
 {% endblock wizard-content %}
 {% block js %}
     {{ block.super }}
     <script>
-        $('.messages select').select2()
     </script>
     <script>
         (function () {
+            function formatData(data) {
+                //if (!data.id) {
+                //    return data.text;
+                //}
+
+                return $(
+                    "<span><img width=40 height=40 src='/plugins/icons/channel/" + data.id + "/'/> " + data.text + "</span>"
+                );
+            }
+
+            $(".messages select[multiple='multiple']").select2({
+                    templateResult: formatData,
+                    templateSelection: formatData
+                }
+            );
+
             var formsetName = "b";
             var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
             var selector = "div.messages";
@@ -108,8 +123,11 @@
                 $(selector).append($newElement);
                 setTimeout(function () {
                     reNumber();
-                    $newElement.find("select").each(function () {
-                        $(this).select2();
+                    $newElement.find("select[multiple='multiple']").each(function () {
+                        $(this).select2({
+                            templateResult: formatData,
+                            templateSelection: formatData
+                        });
                     });
                 }, 20);
             };
