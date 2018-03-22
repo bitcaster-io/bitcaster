@@ -1,0 +1,33 @@
+{% extends "bitcaster/application_base.html" %}{% load i18n bitcaster crispy_forms_filters %}
+{% block content %}
+    <h2>{{ event }}: {{ title }}</h2>
+    <style>
+        .messageForm {
+            border: 1px solid grey;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #e4e4e4;
+        }
+    </style>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.management_form }}
+        {{ form.errors }}
+        {% for frm in form.forms %}
+            <div class="messageForm">
+            {{ frm.channel }}{{ frm.id }}
+            <div>
+                <img width=40 height=40 src="{% url "channel-icon" frm.instance.channel.pk %}"/>
+                {{ frm.instance.channel }}
+            </div>
+            {{ frm.name|as_crispy_field }}
+{#            {% if frm.instance.channel.handler.message_class.has_subject %}#}
+            {% if frm.has_subject %}
+                {{ frm.subject|as_crispy_field }}
+            {% endif %}
+            {{ frm.body|as_crispy_field }}
+            </div>
+        {% endfor %}
+        <input type="submit" class="btn btn-primary" value="Save">
+    </form>
+{% endblock %}

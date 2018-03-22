@@ -229,32 +229,16 @@ class MessageFactory(factory.DjangoModelFactory):
 
     name = factory.Sequence(lambda n: "Message %03d" % n)
     event = factory.SubFactory(EventFactory)
+    channel = factory.SubFactory(ChannelFactory)
     language = factory.Iterator(['it', 'en', 'es', 'fr'])
     subject = factory.Sequence(lambda n: "Subject %03d" % n)
     body = factory.LazyAttribute(lambda n: faker.text(max_nb_chars=200), )
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
-        # channels = kwargs.pop('channels', None)
         message = super()._get_or_create(model_class, *args, **kwargs)
         message.clean()
-        # if not channels:
-        #     channels = [ChannelFactory(application=message.event.application)]
-        #
-        # for e in channels:
-        #     message.channels.add(e)
         return message
-
-    @factory.post_generation
-    def channels(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-        if not extracted:
-            extracted = [ChannelFactory(application=self.event.application)]
-
-        for e in extracted:
-            self.channels.add(e)
 
 
 class SubscriptionFactory(factory.DjangoModelFactory):

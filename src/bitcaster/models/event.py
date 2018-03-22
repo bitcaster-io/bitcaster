@@ -32,6 +32,9 @@ class Event(AbstractModel):
     rate_limit = models.CharField(max_length=100,
                                   null=True, default=None, blank=True,
                                   validators=[RateLimitValidator()])
+    channels = models.ManyToManyField('bitcaster.Channel',
+                                      # through='bitcaster.EventChannel'
+                                      )
 
     class Meta:
         unique_together = ('application', 'name')

@@ -115,8 +115,7 @@ def event2(channel2):
 @pytest.fixture
 def message1(event1, channel1):
     from bitcaster.utils.tests.factories import MessageFactory
-    return MessageFactory(event=event1,
-                          channels=[channel1])
+    return MessageFactory(event=event1, channel=channel1)
 
 
 @pytest.fixture

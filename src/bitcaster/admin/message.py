@@ -14,10 +14,9 @@ logger = logging.getLogger(__name__)
 @admin.register(Message, site=site)
 class MessageAdmin(admin.ModelAdmin):
     form = MessageForm
-    list_display = ('name', 'event', 'language')
+    list_display = ('name', 'event', 'channel', 'language')
     list_filter = ('event__application', 'language')
     search_fields = ('name',)
-    filter_horizontal = ('channels',)
 
     def get_fieldsets(self, request, obj=None):
         if obj:
@@ -27,7 +26,7 @@ class MessageAdmin(admin.ModelAdmin):
                 }),
                 ('Configuration', {
                     'classes': ('collapse',),
-                    'fields': ('name', 'event', 'channels')
+                    'fields': ('name', 'event', 'channel')
                 }),
             )
         else:
@@ -35,7 +34,7 @@ class MessageAdmin(admin.ModelAdmin):
 
     def get_exclude(self, request, obj=None):
         if not obj:
-            return ('channels',)
+            return ('channel',)
 
     def get_readonly_fields(self, request, obj=None):
         if obj:

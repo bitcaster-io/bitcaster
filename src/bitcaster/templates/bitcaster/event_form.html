@@ -51,10 +51,19 @@
 {% block js %}
     {{ block.super }}
     <script>
-        {#$("#id_manager").select2({});#}
-        {#$("#id_members").select2({});#}
-        $("#form-event").removeClass("d-none").show();
         (function () {
+            $("#form-event").removeClass("d-none").show();
+            function formatData(data) {
+                return $(
+                    "<span><img width=20 height=20 src='/plugins/icons/channel/" + data.id + "/'/> " + data.text + "</span>"
+                );
+            }
+
+            $("#id_channels").select2({
+                    templateResult: formatData,
+                    templateSelection: formatData
+                }
+            );
             var formsetName = "form";
             var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
             var selector = "div.arguments";

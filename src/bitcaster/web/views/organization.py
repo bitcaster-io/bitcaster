@@ -286,7 +286,7 @@ class OrganizationChannels(OrganizationAuditMixin, ApplicationListMixin, ListVie
 
     def get_context_data(self, **kwargs):
         kwargs['channel_context'] = self.selected_organization
-        kwargs['title'] = _("Organization Channels22")
+        kwargs['title'] = _("Organization Channels")
         kwargs['create_url'] = reverse("org-channel-create",
                                        args=[self.selected_organization.slug])
         return super().get_context_data(**kwargs)

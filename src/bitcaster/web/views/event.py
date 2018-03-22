@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django import forms
-from django.forms.models import BaseModelFormSet
-from django.http import HttpResponseRedirect
+from django.forms import BaseInlineFormSet
+from django.forms.models import inlineformset_factory
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, ListView, RedirectView
-from formtools.wizard.views import SessionWizardView
 
 from bitcaster.models import Event, Message
 from bitcaster.web.forms.event import EventForm
-from bitcaster.web.forms.message import MessageCreateForm
+from bitcaster.web.forms.message import MessageForm
 from bitcaster.web.views import (DeleteView, MessageUserMixin,
                                  SelectedApplicationMixin, UpdateView, messages,)
 
@@ -54,6 +52,9 @@ class EventCreate(EventMixin, EventFormMixin, CreateView):
         return super().get_context_data(save_label=_("Create Event"),
                                         **kwargs)
 
+    def form_valid(self, form):
+        return super().form_valid(form)
+
 
 class EventUpdate(EventMixin, EventFormMixin, UpdateView):
     title = "Edit Event"
@@ -64,7 +65,16 @@ class EventUpdate(EventMixin, EventFormMixin, UpdateView):
 
     def form_valid(self, form):
         self.message_user(_("Event saved"), messages.SUCCESS)
-        return super().form_valid(form)
+        ret = super().form_valid(form)
+        event = self.object
+        for i, channel in enumerate(event.channels.all()):
+            Message.objects.get_or_create(event=event,
+                                          channel=channel,
+                                          defaults={
+                                              "name": f"{event} {channel}",
+                                          })
+        self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
+        return ret
 
 
 class EventDelete(EventMixin, EventFormMixin, DeleteView):
@@ -92,117 +102,173 @@ class EventToggle(EventMixin, EventFormMixin, RedirectView):
         return super().get(request, *args, **kwargs)
 
 
-MessageFormSet = forms.modelformset_factory(Message,
-                                            form=MessageCreateForm,
-                                            extra=0,
-                                            # max_num=10,
-                                            can_delete=True)
+class MessageInlineFormSet(BaseInlineFormSet):
+    pass
+    # def clean(self):
+    #     forms_to_delete = self.deleted_forms
+    #     for form in self.forms:
+    #         if form not in forms_to_delete:
+    #             # FIXME: remove me (print)
+    #             print(111, form.instance.channel.handler.validate_message())
+    #     return super().clean()
 
 
-class EventCreateWizard(EventMixin, MessageUserMixin, SessionWizardView):
-    form_list = [("a", EventForm),
-                 ("b", MessageFormSet),
-                 ]
-    TEMPLATES = {"a": "bitcaster/app_event_wizard1.html",
-                 "b": "bitcaster/app_event_wizard2.html",
-                 }
+#
+#
+# def messageformset_factory(application):
+#     FormSet = modelformset_factory(Message,
+#                                    form=MessageForm,
+#                                    # formset=MessageInlineFormSet,
+#                                    extra=0)
+#     # FormSet.fk = _get_foreign_key(Event, Message)
+#     FormSet.model = Message
+#     return FormSet
 
-    # def get_form_initial(self, step):
-    #     ret = super().get_form_initial(step)
-    #     ret['application'] = self.selected_application
-    #     return ret
 
-    def get_object(self):
-        return Event.objects.get(pk=self.kwargs['pk'])
+class EventMessages(EventMixin, EventFormMixin, UpdateView):
+    template_name = 'bitcaster/event_messages.html'
+    title = 'Messages'
 
-    def get_form_kwargs(self, step=None):
-        kwargs = super().get_form_kwargs(step)
-        if step == 'a':
-            if self.kwargs.get('pk', None):
-                kwargs['instance'] = self.get_object()
-            kwargs['application'] = self.selected_application
-        else:
-            if self.kwargs.get('pk', None):
-                event = self.get_object()
-                kwargs['queryset'] = event.messages.all()
-            else:
-                kwargs['queryset'] = Message.objects.none()
+    def get_context_data(self, **kwargs):
+        # kwargs['formset'] =
+        # kwargs['formset'] = inlineformset_factory()
+        return super().get_context_data(**kwargs)
 
-        return kwargs
-
-    def get_form(self, step=None, data=None, files=None):
-        if step == 'b':
-            def cb(field, **kw):
-                if field.name == 'channels':
-                    return forms.ModelMultipleChoiceField(queryset=self.selected_application.channels,
-                                                          **kw)
-                return field.formfield(**kw)
-
-            fs = forms.inlineformset_factory(Event,
-                                             Message,
-                                             form=MessageCreateForm,
-                                             formset=BaseModelFormSet,
-                                             extra=0,
-                                             can_delete=False,
-                                             formfield_callback=cb,
-                                             )
-            kwargs = self.get_form_kwargs(step)
-            kwargs.update({
-                'data': data,
-                'files': files,
-                'prefix': self.get_form_prefix(step, fs),
-                'initial': self.get_form_initial(step),
-            })
-            return fs(**kwargs)
-        else:
-            ret = super().get_form(step, data, files)
-
+    def get_form_kwargs(self):
+        ret = super().get_form_kwargs()
+        ret.pop('application')
         return ret
 
-    def get_context_data(self, form, **kwargs):
-        context = super().get_context_data(form=form, **kwargs)
-        if self.steps.current == 'a':
-            pass
-        elif self.steps.current == 'b':
-            pass
-        else:
-            pass
-        return context
+    def get_form_class(self):
+        form = type("MessageForm", (MessageForm,), dict(event=self.get_object()))
+        return inlineformset_factory(Event, Message, form,
+                                     formset=MessageInlineFormSet,
+                                     extra=0)
 
-    def get_template_names(self):
-        return [self.TEMPLATES[self.steps.current]]
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+        formset = form_class(**self.get_form_kwargs())
+        event = self.get_object()
+        for form in formset:
+            form.event = event
+            form.has_subject = form.instance.channel.handler.message_class.has_subject
+        # frm.instance = self.get_object()
 
-    def done(self, form_list, **kwargs):
-        event_data = self.storage.get_step_data('a')
-        messages_data = self.storage.get_step_data('b')
-        try:
-            if self.kwargs.get('pk'):
-                form1 = self.get_form('a', event_data)
-                form1.is_valid()
-                event = form1.save()
+        return formset
 
-                fs = self.get_form('b', messages_data)
-                fs.instance = event
-                fs.is_valid()
-                fs.save()
-                self.message_user(_('Event updated'))
-
-            else:
-                form1 = self.get_form('a', event_data)
-                form1.is_valid()
-                event = form1.save()
-
-                fs = self.get_form('b', messages_data)
-                for i in range(0, fs.total_form_count()):
-                    form = fs.forms[i]
-                    form.instance.event = event
-                fs.is_valid()
-                fs.save()
-                self.message_user(_('Event created'))
-        except Exception as e:
-            logger.exception(e)
-            raise
-
-        return HttpResponseRedirect(reverse("app-event-list",
-                                            args=[self.selected_organization.slug,
-                                                  self.selected_application.slug]))
+    # def form_valid(self, form):
+    #     return super().form_valid(form)
+    #
+    # def post(self, request, *args, **kwargs):
+    #     return super().post(request, *args, **kwargs)
+    #
+    # def form_invalid(self, form):
+    #     return super().form_invalid(form)
+#
+# class EventCreateWizard(EventMixin, MessageUserMixin, SessionWizardView):
+#     form_list = [("a", EventForm),
+#                  ("b", MessageFormSet),
+#                  ]
+#     TEMPLATES = {"a": "bitcaster/app_event_wizard1.html",
+#                  "b": "bitcaster/app_event_wizard2.html",
+#                  }
+#
+#     # def get_form_initial(self, step):
+#     #     ret = super().get_form_initial(step)
+#     #     ret['application'] = self.selected_application
+#     #     return ret
+#
+#     def get_object(self):
+#         return Event.objects.get(pk=self.kwargs['pk'])
+#
+#     def get_form_kwargs(self, step=None):
+#         kwargs = super().get_form_kwargs(step)
+#         if step == 'a':
+#             if self.kwargs.get('pk', None):
+#                 kwargs['instance'] = self.get_object()
+#             kwargs['application'] = self.selected_application
+#         else:
+#             if self.kwargs.get('pk', None):
+#                 event = self.get_object()
+#                 kwargs['queryset'] = event.messages.all()
+#             else:
+#                 kwargs['queryset'] = Message.objects.none()
+#
+#         return kwargs
+#
+#     def get_form(self, step=None, data=None, files=None):
+#         if step == 'b':
+#             def cb(field, **kw):
+#                 if field.name == 'channels':
+#                     return forms.ModelMultipleChoiceField(queryset=self.selected_application.channels,
+#                                                           **kw)
+#                 return field.formfield(**kw)
+#
+#             fs = forms.modelformset_factory(Message,
+#                                             form=MessageCreateForm,
+#                                             formset=BaseModelFormSet,
+#                                             extra=0,
+#                                             can_delete=False,
+#                                             formfield_callback=cb,
+#                                             )
+#             kwargs = self.get_form_kwargs(step)
+#             kwargs.update({
+#                 'data': data,
+#                 'files': files,
+#                 'prefix': self.get_form_prefix(step, fs),
+#                 'initial': self.get_form_initial(step),
+#             })
+#             return fs(**kwargs)
+#         else:
+#             ret = super().get_form(step, data, files)
+#
+#         return ret
+#
+#     def get_context_data(self, form, **kwargs):
+#         context = super().get_context_data(form=form, **kwargs)
+#         if self.steps.current == 'a':
+#             pass
+#         elif self.steps.current == 'b':
+#             pass
+#         else:
+#             pass
+#         return context
+#
+#     def get_template_names(self):
+#         return [self.TEMPLATES[self.steps.current]]
+#
+#     def done(self, form_list, **kwargs):
+#         event_data = self.storage.get_step_data('a')
+#         messages_data = self.storage.get_step_data('b')
+#         try:
+#             if self.kwargs.get('pk'):
+#                 form1 = self.get_form('a', event_data)
+#                 form1.is_valid()
+#                 event = form1.save()
+#
+#                 fs = self.get_form('b', messages_data)
+#                 fs.instance = event
+#                 fs.is_valid()
+#                 fs.save()
+#                 self.message_user(_('Event updated'))
+#
+#             else:
+#                 form1 = self.get_form('a', event_data)
+#                 form1.is_valid()
+#                 event = form1.save()
+#
+#                 fs = self.get_form('b', messages_data)
+#                 for i in range(0, fs.total_form_count()):
+#                     form = fs.forms[i]
+#                     form.instance.event = event
+#                 fs.is_valid()
+#                 fs.save()
+#                 self.message_user(_('Event created'))
+#         except Exception as e:
+#             logger.exception(e)
+#             raise
+#
+#         return HttpResponseRedirect(reverse("app-event-list",
+#                                             args=[self.selected_organization.slug,
+#                                                   self.selected_application.slug]))

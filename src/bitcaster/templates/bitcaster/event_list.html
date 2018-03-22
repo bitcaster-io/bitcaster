@@ -17,6 +17,7 @@
                     <strong>{{ event.name }}</strong>
                     <div class="pt-3">
                         <a href="{{ event.pk }}/edit/">Configure</a>
+                        | <a href="{{ event.pk }}/messages/">Messages</a>
                         | <a href="{{ event.pk }}/toggle/">
                         {% if event.enabled %}Disable{% else %}<strong>Enable</strong>{% endif %}</a>
                         | <a href="{{ event.pk }}/delete/">Remove</a>

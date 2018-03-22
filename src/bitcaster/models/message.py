@@ -25,8 +25,9 @@ class Message(AbstractModel):
     event = models.ForeignKey(Event,
                               on_delete=models.CASCADE,
                               related_name='messages')
-    channels = models.ManyToManyField(Channel,
-                                      related_name='messages')
+    channel = models.ForeignKey(Channel,
+                                on_delete=models.CASCADE,
+                                related_name='messages')
     language = models.CharField(choices=LANGUAGES,
                                 default='all',
                                 max_length=3)
@@ -35,6 +36,10 @@ class Message(AbstractModel):
                                default='',
                                blank=True, null=False)
     body = models.TextField()
+    html = models.TextField()
+
+    class Meta:
+        unique_together = ('event', 'channel', 'language')
 
     def __str__(self):
         return self.name
@@ -50,3 +55,6 @@ class Message(AbstractModel):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.application = self.event.application
         super().save(force_insert, force_update, using, update_fields)
+
+    def clean(self):
+        self.channel.validate_message(self)

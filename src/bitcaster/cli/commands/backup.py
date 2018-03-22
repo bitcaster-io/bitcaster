@@ -16,15 +16,15 @@ from bitcaster.utils.json import Decoder, Encoder
 @click.pass_context
 @need_setup
 def backup(ctx, filename, **kwargs):
-    from bitcaster.models import Channel
+    from bitcaster.models import Channel, User
     from constance import config, settings as sett
 
     try:
-        data = {}
-        data['channels'] = list(Channel.objects.filter(system=True).values())
-        data['options'] = [(key, getattr(config, key))
-                           for key, value in sett.CONFIG.items()]
-
+        data = {'users': list(User.objects.filter(is_superuser=True).values()),
+                'channels': list(Channel.objects.filter(system=True).values()),
+                'options': [(key, getattr(config, key)) for key, value in
+                            sett.CONFIG.items()]
+                }
         output = Path(filename)
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(data, cls=Encoder))
@@ -42,6 +42,7 @@ def backup(ctx, filename, **kwargs):
 @need_setup
 def restore(ctx, filename, **kwargs):
     from bitcaster.models import Channel
+    from bitcaster.models import User
 
     try:
         input = Path(filename)
@@ -54,6 +55,10 @@ def restore(ctx, filename, **kwargs):
             del channel['id']
             del channel['last_modify_date']
             Channel.objects.get_or_create(**channel)
+        for user in data['users']:
+            User.objects.get_or_create(**user)
+        for user in data['users']:
+            User.objects.get_or_create(**user)
     except Exception as e:
         click.echo(str(e))
         ctx.abort()

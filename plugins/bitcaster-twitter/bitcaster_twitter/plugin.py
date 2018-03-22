@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# import twitter
 from django.utils.safestring import mark_safe
 from python_twitter import api
 
@@ -8,6 +7,7 @@ from bitcaster.dispatchers import serializers
 from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions, )
 from bitcaster.dispatchers.registry import dispatcher_registry
+from bitcaster.dispatchers.validators import MaxBodyLengthValidator
 from bitcaster.exceptions import PluginSendError, PluginValidationError
 from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
@@ -16,7 +16,7 @@ logger = getLogger('bitcaster.plugins.twitter')
 
 
 class TwitterMessage(MessageType):
-    pass
+    validators = [MaxBodyLengthValidator(140, "Twitter message can be max %(limit_value)s chars")]
 
 
 class TwitterOptions(DispatcherOptions):

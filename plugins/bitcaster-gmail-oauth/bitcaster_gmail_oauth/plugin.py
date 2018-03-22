@@ -17,7 +17,8 @@ from strategy_field.utils import fqn
 
 
 class EmailMessage(MessageType):
-    pass
+    has_subject = True
+    allow_html = True
 
 
 # https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=<ACCESS_TOKEN>

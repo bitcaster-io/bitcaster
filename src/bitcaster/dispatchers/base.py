@@ -25,7 +25,10 @@ logger = getLogger(__name__)
 class MessageType:
     has_subject = False
     allow_html = False
+    max_size = None
     allow_attachment = False
+    max_attachment_size = None
+    validators = []
 
 
 class SubscriptionOptions(serializers.Serializer):
@@ -74,6 +77,10 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         :return:
         """
         pass  # pragma: no-cover
+
+    def validate_message(self, message, **kwargs):
+        for validator in self.message_class.validators:
+            validator(message, **kwargs)
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
         cfg = get_full_config(self.subscription_class, subscription.config)

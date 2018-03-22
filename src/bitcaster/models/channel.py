@@ -92,12 +92,13 @@ It can be Global or Application specific.
         except Exception:
             raise PluginValidationError()
 
-    def validate_message(self, message):
+    def validate_message(self, message, **kwargs):
         """
 
         :param message: Message instance
         :return:
         """
+        self.handler.validate_message(message, **kwargs)
 
     def is_configurable_by(self, user):
         if user.is_superuser:

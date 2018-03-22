@@ -27,7 +27,7 @@ class ArgumentLineForm(forms.Form):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ('name', 'allowed_origins', 'group')
+        fields = ('name', 'channels', 'allowed_origins')
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)

@@ -10,7 +10,8 @@ from bitcaster.exceptions import PluginValidationError
 
 
 class EmailMessage(MessageType):
-    pass
+    has_subject = True
+    allow_html = True
 
 
 class GmailOptions(DispatcherOptions):
