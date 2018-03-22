@@ -95,7 +95,6 @@ def install(name, prompt, recursive, from_dir, **kwargs):
               default=str(Path(bitcaster.__file__).parent.parent.parent / 'plugins'))
 def new_plugin(plugin_name, directory, overwrite, **options):
     name = plugin_name.lower()
-    directory = options['directory']
     description = options['description']
     if not is_valid_name(name):
         click.echo("Invalid package name %s" % name)

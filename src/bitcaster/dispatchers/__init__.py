@@ -3,7 +3,6 @@
 from .base import Dispatcher  # noqa
 from .console import ConsoleDispatcher  # noqa
 from .email import Email  # noqa
-# from .gmail import Gmail  # noqa
 from .registry import dispatcher_registry  # noqa
 
 # Telegram: https://github.com/python-telegram-bot/python-telegram-bot
