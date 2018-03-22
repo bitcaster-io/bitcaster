@@ -13,7 +13,7 @@ class MessageForm(forms.ModelForm):
     channel = forms.ModelChoiceField(queryset=Channel.objects.none(),
                                      widget=forms.HiddenInput)
     event = None
-    
+
     class Meta:
         model = Message
         fields = ('name', 'subject', 'body', 'channel', 'id')

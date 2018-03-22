@@ -12,22 +12,63 @@
     <form method="post">
         {% csrf_token %}
         {{ form.management_form }}
-        {{ form.errors }}
         {% for frm in form.forms %}
             <div class="messageForm">
-            {{ frm.channel }}{{ frm.id }}
-            <div>
-                <img width=40 height=40 src="{% url "channel-icon" frm.instance.channel.pk %}"/>
-                {{ frm.instance.channel }}
-            </div>
-            {{ frm.name|as_crispy_field }}
-{#            {% if frm.instance.channel.handler.message_class.has_subject %}#}
-            {% if frm.has_subject %}
-                {{ frm.subject|as_crispy_field }}
-            {% endif %}
-            {{ frm.body|as_crispy_field }}
+                {{ frm.channel }}{{ frm.id }}
+                <div>
+                    <img width=40 height=40 src="{% url "channel-icon" frm.instance.channel.pk %}"/>
+                    {{ frm.instance.channel }}
+                </div>
+                {{ frm.name|as_crispy_field }}
+                {% if frm.has_subject %}
+                    {{ frm.subject|as_crispy_field }}
+                {% endif %}
+                {{ frm.body|as_crispy_field }}
+                <div>
+                    <a href="#" title="copy text" class="btn btn-small fa fa-copy copyText" data-target="#{{ frm.body.auto_id }}"></a>
+                    <a href="#" class="btn btn-small fa fa-paste pasteText" data-target="#{{ frm.body.auto_id }}"></a>
+                    <a href="#" title="broadcast input" class="btn btn-small fa fa-wifi broadcast" data-target="#{{ frm.body.auto_id }}"></a>
+                </div>
             </div>
         {% endfor %}
         <input type="submit" class="btn btn-primary" value="Save">
     </form>
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        (function () {
+            let broadcast = false;
+            let $source = null;
+
+            $(".copyText").click(function (event) {
+                event.preventDefault();
+                let target = $(this).data("target");
+                $(target).select();
+                document.execCommand("Copy");
+                $source = $(target);
+            });
+            $(".pasteText").click(function (event) {
+                event.preventDefault();
+                let target = $(this).data("target");
+                $(target).val( $source.val() );
+            });
+
+            $(".broadcast").click(function (event) {
+                event.preventDefault();
+                broadcast = !broadcast;
+                $(".broadcast").css("color", broadcast ? "red" : "black");
+                var target = $(this).data("target");
+                if (broadcast) {
+                    $(target).keyup(function () {
+                        $("textarea").not(target).val($(target).val());
+                    });
+                } else {
+                    $(target).unbind("keyup");
+                }
+            });
+
+        })($);
+
+    </script>
 {% endblock %}
