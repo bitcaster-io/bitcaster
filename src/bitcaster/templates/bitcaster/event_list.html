@@ -21,9 +21,7 @@
                         | <a href="{{ event.pk }}/toggle/">
                         {% if event.enabled %}Disable{% else %}<strong>Enable</strong>{% endif %}</a>
                         | <a href="{{ event.pk }}/delete/">Remove</a>
-{#                        | <a href="{{ channel.pk }}/deprecate/">#}
-{#                        {% if channel.deprecated %}<strong>Show</strong>{% else %}Hide{% endif %}#}
-{#                        | <a class="plugin-info-btn" href="{% url "plugin-info" channel.handler.fqn %}">plugin info</a>#}
+                        | <a href="{{ event.pk }}/test/">Test</a>
                     </div>
                 </div>
                 <div class="col-1 text-center vertical-align-center h4">

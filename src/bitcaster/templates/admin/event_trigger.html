@@ -33,7 +33,6 @@
             z-index: -1000;
             resize: none;
             border: 0 transparent;
-
         }
     </style>
     {% if not user_token %}
@@ -59,7 +58,7 @@ http POST {{ api_url }} \
     {{ arguments|httpiefy }}
 </pre>
         </div>
-        <div class="right">copy multilinetted command <input type="checkbox" id="multiline"></div>
+        <div class="right">copy multiline command <input type="checkbox" id="multiline"></div>
 
     {% endif %}
 

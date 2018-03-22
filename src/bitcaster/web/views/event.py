@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django.core.exceptions import ValidationError
-from django.forms import BaseInlineFormSet
+from django import forms
 from django.forms.models import inlineformset_factory
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, ListView, RedirectView
+from rest_framework.serializers import Serializer
 
 from bitcaster.models import Event, Message
 from bitcaster.web.forms.event import EventForm
 from bitcaster.web.forms.message import MessageForm
-from bitcaster.web.views import (DeleteView, MessageUserMixin,
-                                 SelectedApplicationMixin, UpdateView, messages,)
+from bitcaster.web.views import (DeleteView, DetailView, MessageUserMixin,
+                                 SelectedApplicationMixin, UpdateView,
+                                 import_by_name, messages,)
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +97,33 @@ class EventDelete(EventMixin, EventFormMixin, DeleteView):
                                         **kwargs)
 
 
+def eventform_factory(event: Event):
+    attrs = {}
+    for fld in event.arguments['fields']:
+        attrs[fld['name']] = import_by_name(fld['type'])()
+
+    return type("AAA", (Serializer,), attrs)()
+
+
+class EventTest(EventMixin, EventFormMixin, DetailView):
+    template_name = 'bitcaster/event_test.html'
+    title = 'Test'
+
+    def get_context_data(self, **kwargs):
+        event = self.get_object()
+        key = self.request.user.triggers.filter(application=event.application).first()
+        if not key:
+            key = self.request.user.triggers.create(application=event.application)
+
+        extra = {'serializer': eventform_factory(event),
+                 'user_token': key,
+                 'api_url': self.request.build_absolute_uri(reverse('api:application-event-trigger',
+                                                                    args=[event.application.pk, event.pk]))}
+
+        kwargs.update(extra)
+        return super().get_context_data(**kwargs)
+
+
 class EventToggle(EventMixin, EventFormMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         return self.get_success_url()
@@ -116,14 +144,13 @@ class EventToggle(EventMixin, EventFormMixin, RedirectView):
 
                     msg.clean()
 
-
             obj.save()
             op = "enabled" if obj.enabled else "disabled"
             self.message_user(f'Event {op}')
         return super().get(request, *args, **kwargs)
 
 
-class MessageInlineFormSet(BaseInlineFormSet):
+class MessageInlineFormSet(forms.BaseInlineFormSet):
     pass
     # def clean(self):
     #     forms_to_delete = self.deleted_forms

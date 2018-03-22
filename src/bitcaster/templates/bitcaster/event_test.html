@@ -1,0 +1,132 @@
+{% extends "bitcaster/application_base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block pageId %}event{% endblock %}
+{% block content %}
+    <style>
+        pre {
+            padding: 8px;
+            width: 90%;
+            font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, sans-serif;
+            font-size: 15px;
+            color: #e8e8e8;
+            background-color: black;
+        }
+
+        #_hiddenCopyText_ {
+            width: 0;
+            height: 0;
+            position: fixed;
+            left: -9999px;
+            right: 0;
+            z-index: -1000;
+            resize: none;
+            border: 0 transparent;
+        }
+
+    </style>
+    <h2>Test {{ event }}</h2>
+    <div class="container-fluid border p-3">
+        <form id="ser">
+            {% render_serializer serializer "rest_framework/inline2" %}
+        </form>
+    </div>
+    <div class="pull-right p-2">copy multiline command
+        <input type="checkbox" id="multiline">
+    </div>
+
+    {#    <div class="p-4">#}
+    {#        <button id="copyCurl" data-target="#curl">Copy</button>#}
+    {#    </div>#}
+    {#    <div class="p-4">#}
+    {#        <button id="copyHttpie" data-target="#httpie">Copy</button>#}
+    {##}
+    {#    </div>#}
+    <textarea id="_hiddenCopyText_"></textarea>
+
+    <div class="p-2 m-3">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                   aria-selected="true">cUrl</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                   aria-controls="profile"
+                   aria-selected="false">Httpie</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#wget" role="tab"
+                   aria-controls="profile"
+                   aria-selected="false">wget</a>
+            </li>
+        </ul>
+
+        <div class="tab-content p-2" id="myTabContent">
+            <div class="tab-pane show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="pb-2">
+                    <button data-target="#curl" class="fa fa-copy"></button>
+                </div>
+                <pre id="curl">
+curl -H "Content-Type: application/json" \
+     -H "Authorization:Token {{ user_token.token }}" \
+     -X POST \<span id="params1"></span>
+     {{ api_url }}
+</pre>
+            </div>
+
+
+            <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="pb-2">
+                    <button data-target="#httpie" class="fa fa-copy"></button>
+                </div>
+                <pre id="httpie">
+http POST {{ api_url }} \
+    Authorization:"Token {{ user_token.token }}" \
+    <span id="params2"></span>
+</pre>
+
+            </div>
+
+            <div class="tab-pane" id="wget" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="pb-2">
+                    <button data-target="#wget" class="fa fa-copy"></button>
+                </div>
+                <pre id="wget">
+
+            </pre>
+            </div>
+
+
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $("#ser input").change(function () {
+            var args = "";
+            var j = {};
+            $("#ser input").each(function () {
+                if ($(this).val() !== "") {
+                    console.log($(this).attr("name"), $(this).val());
+                    args += "\n     " + $(this).attr("name") + "=" + $(this).val() + " \\";
+                    j[$(this).attr("name")] = $(this).val();
+                }
+            });
+            $("#params1").text(args);
+            $("#params2").text("-d " + JSON.stringify(j));
+        });
+    </script>
+    <script>
+        $("button.fa-copy").click(function () {
+            var $target = $($(this).data("target"));
+            var command = $target.text();
+            if (!document.getElementById("multiline").checked) {
+                command = command.replace(/[\n\\]/g, "").replace(/ {2,}/g, " ");
+            }
+            console.log(command);
+            $("#_hiddenCopyText_").val(command).select();
+            var succeed = document.execCommand("Copy");
+            console.log(1111, succeed);
+        });
+    </script>
+{% endblock %}
