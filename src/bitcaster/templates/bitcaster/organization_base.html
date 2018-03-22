@@ -1,7 +1,7 @@
 {% extends "bitcaster/application_base.html" %}{% load bc_permissions %}
 {% block sidebar %}
     <div class="row d-flex d-md-block flex-nowrap wrapper">
-        <div class="float-left pl-0 collapse width show" id="sidebar">
+        <div class="float-left pl-0 collapse width show organization-sidebar" id="sidebar">
             {% check_permissions organization as "permissions" %}
             {% if permissions.owner %}
                 <div class="org-logo">

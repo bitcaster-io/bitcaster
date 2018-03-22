@@ -57,4 +57,5 @@ class Message(AbstractModel):
         super().save(force_insert, force_update, using, update_fields)
 
     def clean(self):
+
         self.channel.validate_message(self)

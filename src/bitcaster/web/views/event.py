@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
 from django.urls import reverse
@@ -53,7 +54,17 @@ class EventCreate(EventMixin, EventFormMixin, CreateView):
                                         **kwargs)
 
     def form_valid(self, form):
-        return super().form_valid(form)
+        self.message_user(_("Event created"), messages.SUCCESS)
+        ret = super().form_valid(form)
+        event = self.object
+        for i, channel in enumerate(event.channels.all()):
+            Message.objects.get_or_create(event=event,
+                                          channel=channel,
+                                          defaults={
+                                              "name": f"{event} {channel}",
+                                          })
+        self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
+        return ret
 
 
 class EventUpdate(EventMixin, EventFormMixin, UpdateView):
@@ -96,6 +107,16 @@ class EventToggle(EventMixin, EventFormMixin, RedirectView):
                               f'Cannot be enabled', messages.ERROR)
         else:
             obj.enabled = not obj.enabled
+            if obj.enabled:
+                for msg in obj.messages.all():
+                    if not msg.body:
+                        self.message_user(f'Event cannot be enabled because '
+                                          f'message "{msg.name}" does not validate', messages.ERROR)
+                        return super().get(request, *args, **kwargs)
+
+                    msg.clean()
+
+
             obj.save()
             op = "enabled" if obj.enabled else "disabled"
             self.message_user(f'Event {op}')
