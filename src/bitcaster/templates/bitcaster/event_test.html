@@ -133,16 +133,24 @@ wget -O- "{{ api_url }}" \
             xhttp.onprogress = function () {
                 $monitor.append("LOADING\n"); // readyState will be 3
             };
+            /*
             xhttp.onload = function () {
                 $monitor.append("SUCCESS\n"); // readyState will be 4
             };
+            */
             xhttp.open("POST", "{{ api_url }}", false);
-            $monitor.append("OPEN CONNECTION\n"); // readyState will be 4
+            $monitor.append("OPEN CONNECTION\n");
              xhttp.setRequestHeader("Content-type", "application/json");
             xhttp.setRequestHeader("Authorization", "Token {{ user_token.token }}");
-            $monitor.append("SENDING REQUEST\n"); // readyState will be 4
+            $monitor.append("SENDING REQUEST\n");
             xhttp.send();
-            $monitor.append(xhttp.responseText, "\n"); // readyState will be 4
+            console.log(xhttp.status);
+            if ( xhttp.status !== 201){
+                $monitor.append("ERROR ", xhttp.status, "\n");
+            }else {
+                $monitor.append("SUCCESS ", "\n");
+            }
+            $monitor.append(xhttp.responseText, "\n");
         });
 
         $("button.fa-copy").click(function () {

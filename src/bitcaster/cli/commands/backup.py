@@ -16,11 +16,13 @@ from bitcaster.utils.json import Decoder, Encoder
 @click.pass_context
 @need_setup
 def backup(ctx, filename, **kwargs):
-    from bitcaster.models import Channel, User
+    from bitcaster.models import Channel, User, Organization, OrganizationMember
     from constance import config, settings as sett
 
     try:
-        data = {'users': list(User.objects.filter(is_superuser=True).values()),
+        data = {'org': list(Organization.objects.filter(is_core=True).values()),
+                'memberships': list(OrganizationMember.objects.filter(organization__is_core=True).values()),
+                'users': list(User.objects.filter(is_superuser=True).values()),
                 'channels': list(Channel.objects.filter(system=True).values()),
                 'options': [(key, getattr(config, key)) for key, value in
                             sett.CONFIG.items()]
@@ -41,8 +43,7 @@ def backup(ctx, filename, **kwargs):
 @click.pass_context
 @need_setup
 def restore(ctx, filename, **kwargs):
-    from bitcaster.models import Channel
-    from bitcaster.models import User
+    from bitcaster.models import Channel, Organization, OrganizationMember, User
 
     try:
         input = Path(filename)
@@ -55,10 +56,23 @@ def restore(ctx, filename, **kwargs):
             del channel['id']
             del channel['last_modify_date']
             Channel.objects.get_or_create(**channel)
+
         for user in data['users']:
+            del user['last_password_change']
+            del user['last_login']
+            del user['date_joined']
             User.objects.get_or_create(**user)
-        for user in data['users']:
-            User.objects.get_or_create(**user)
+
+        for org in data['org']:
+            del org['date_added']
+            del org['last_modify_date']
+            Organization.objects.get_or_create(**org)
+
+        for m in data['memberships']:
+            del m['date_enrolled']
+            del m['date_added']
+            OrganizationMember.objects.get_or_create(**m)
+
     except Exception as e:
         click.echo(str(e))
         ctx.abort()

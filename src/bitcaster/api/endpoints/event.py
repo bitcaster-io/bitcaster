@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from bitcaster import logging
 from bitcaster.models import Event
 from bitcaster.tasks import trigger_event
+from bitcaster.utils.wsgi import get_client_ip
 
 from ..filters import ApplicationFilterBackend
 from ..permissions import (EventTriggerPermission, IsApplicationRelated,
@@ -35,6 +36,9 @@ class EventViewSet(BaseModelViewSet):
         event = self.get_object()
         if not event.enabled:
             return Response({"error": "Event disabled"}, status=400)
-        trigger_event.delay(event.id, request.data)
+        trigger_event.delay(event.id, request.data,
+                            user=request.user,
+                            token=request.token.token,
+                            origin=get_client_ip(request))
         return Response({"message": "Event triggered",
                          "timestamp": timezone.now()}, status=201)
