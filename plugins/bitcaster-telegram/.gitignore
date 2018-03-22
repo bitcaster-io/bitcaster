@@ -1,0 +1,4 @@
+.pytest_cache
+.env
+bitcaster_telegram.egg-info
+/~build
