@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 from rest_framework import serializers
 from strategy_field.utils import fqn
-from webtest import Text, Select
+from webtest import Select, Text
 from webtest.forms import MultipleSelect
 
 pytestmark = pytest.mark.django_db
@@ -75,7 +75,7 @@ def test_create_event(django_app, channel1):
     res.form[f'form-{idx}-type'] = fqn(serializers.CharField)
 
     res = res.form.submit().follow()
-    res.click("Messages", index=1)
+    res.click("Messages")
     # idx = add_message(res.form, application)
     # res.form[f'b-{idx}-channels'].select_multiple([str(channel1.pk)])
     # res.form[f'b-{idx}-subject'] = 'subject'
