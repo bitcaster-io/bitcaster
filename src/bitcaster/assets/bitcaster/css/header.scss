@@ -4,13 +4,20 @@
 
 header {
   height: 40px;
-  border-bottom: 1px solid #c4c4c4;
+  //border-bottom: 1px solid #c4c4c4;
   //padding-bottom: 10px;
   //margin-bottom: 10px;
   background: #0072e2; /* For browsers that do not support gradients */
   background: linear-gradient(to right, #5b9fe2, #4494e2); /* Standard syntax (must be last) */
   a{
     color: white;
+  }
+  &.application{
+    background: #004c97; /* For browsers that do not support gradients */
+    background: linear-gradient(to right, #506297, #395497); /* Standard syntax (must be last) */
+    a:hover{
+      color: #f9fd13;
+    }
   }
   a.dropdown-toggle2 {
     text-decoration: none !important;
@@ -39,9 +46,9 @@ header {
     padding: 2px;
     padding-top: 6px;
     color: white;
-    border-right: 1px solid #c4c4c4;
-    background: #0072e2;
-    background: linear-gradient(to bottom right, #6aa7e2, #519ae2); /* Standard syntax (must be last) */
+    //border-right: 1px solid #c4c4c4;
+    //background: #0072e2;
+    //background: linear-gradient(to bottom right, #6aa7e2, #519ae2); /* Standard syntax (must be last) */
     float: left;
     min-width: 200px;
     height: 100%;
@@ -78,26 +85,5 @@ header {
     left: 1px !important;
     min-width: 10px;
     z-index: 10;
-    //&:before {
-    //  border-left: 9px solid transparent;
-    //  border-right: 9px solid transparent;
-    //  border-bottom: 9px solid rgba(52, 60, 69, .35);
-    //  top: -9px;
-    //  left: 11px;
-    //  z-index: -2;
-    //  width: 0;
-    //  height: 0;
-    //  content: "";
-    //  display: block;
-    //  position: absolute;
-    //}
-    //&:after {
-    //  width: 0;
-    //  height: 0;
-    //  content: "";
-    //  display: block;
-    //  position: absolute;
-    //}
   }
-  // -.dropdown-menu
 }

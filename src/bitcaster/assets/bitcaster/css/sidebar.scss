@@ -7,6 +7,10 @@
   z-index: 3;
   width: 200px;
   color: white;
+  &.application-sidebar{
+    background: #004c97; /* For browsers that do not support gradients */
+    background: linear-gradient(to right, #506297, #395497); /* Standard syntax (must be last) */
+  }
   .org-logo{
     display: block;
     max-width: 200px;
