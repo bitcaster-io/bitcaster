@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.utils import timezone
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
@@ -35,4 +36,5 @@ class EventViewSet(BaseModelViewSet):
         if not event.enabled:
             return Response({"error": "Event disabled"}, status=400)
         trigger_event.delay(event.id, request.data)
-        return Response(status=201)
+        return Response({"message": "Event triggered",
+                         "timestamp": timezone.now()}, status=201)

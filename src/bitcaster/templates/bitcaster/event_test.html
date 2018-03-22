@@ -45,23 +45,28 @@
     <div class="p-2 m-3">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-curl" role="tab" aria-controls="home"
                    aria-selected="true">cUrl</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-httpie" role="tab"
                    aria-controls="profile"
                    aria-selected="false">Httpie</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#wget" role="tab"
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-wget" role="tab"
                    aria-controls="profile"
                    aria-selected="false">wget</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-web" role="tab"
+                   aria-controls="profile"
+                   aria-selected="false">web</a>
             </li>
         </ul>
 
         <div class="tab-content p-2" id="myTabContent">
-            <div class="tab-pane show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <div class="tab-pane show active" id="tab-curl" role="tabpanel" aria-labelledby="home-tab">
                 <div class="pb-2">
                     <button data-target="#curl" class="fa fa-copy"></button>
                 </div>
@@ -73,28 +78,32 @@ curl -H "Content-Type: application/json" \
 </pre>
             </div>
 
-
-            <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="tab-pane" id="tab-httpie" role="tabpanel" aria-labelledby="profile-tab">
                 <div class="pb-2">
                     <button data-target="#httpie" class="fa fa-copy"></button>
                 </div>
                 <pre id="httpie">
 http POST {{ api_url }} \
-    Authorization:"Token {{ user_token.token }}" \
-    <span id="params2"></span>
+     Authorization:"Token {{ user_token.token }}" <span id="params2"></span>
 </pre>
 
             </div>
 
-            <div class="tab-pane" id="wget" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="tab-pane" id="tab-wget" role="tabpanel" aria-labelledby="profile-tab">
                 <div class="pb-2">
                     <button data-target="#wget" class="fa fa-copy"></button>
                 </div>
                 <pre id="wget">
-
+wget -O- "{{ api_url }}" \
+     --header=Content-Type:application/json \
+     --header="Authorization:Token {{ user_token.token }}" <span id="params3"></span>
             </pre>
             </div>
 
+            <div class="tab-pane" id="tab-web" role="tabpanel" aria-labelledby="profile-tab">
+                <button id="trigger" class="btn btn-primary">Trigger</button>
+<pre id="web"></pre>
+            </div>
 
         </div>
     </div>
@@ -112,21 +121,38 @@ http POST {{ api_url }} \
                     j[$(this).attr("name")] = $(this).val();
                 }
             });
-            $("#params1").text(args);
-            $("#params2").text("-d " + JSON.stringify(j));
+            $("#params1").text("\\\n     -d '" + JSON.stringify(j) + "'");
+            $("#params2").text(args);
+            $("#params3").text("\\\n     --post-data='" + JSON.stringify(j) + "'");
         });
     </script>
     <script>
+        $("#trigger").click(function () {
+            var xhttp = new XMLHttpRequest();
+            $monitor = $('#web');
+            xhttp.onprogress = function () {
+                $monitor.append("LOADING\n"); // readyState will be 3
+            };
+            xhttp.onload = function () {
+                $monitor.append("SUCCESS\n"); // readyState will be 4
+            };
+            xhttp.open("POST", "{{ api_url }}", false);
+            $monitor.append("OPEN CONNECTION\n"); // readyState will be 4
+             xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.setRequestHeader("Authorization", "Token {{ user_token.token }}");
+            $monitor.append("SENDING REQUEST\n"); // readyState will be 4
+            xhttp.send();
+            $monitor.append(xhttp.responseText, "\n"); // readyState will be 4
+        });
+
         $("button.fa-copy").click(function () {
             var $target = $($(this).data("target"));
             var command = $target.text();
             if (!document.getElementById("multiline").checked) {
                 command = command.replace(/[\n\\]/g, "").replace(/ {2,}/g, " ");
             }
-            console.log(command);
             $("#_hiddenCopyText_").val(command).select();
             var succeed = document.execCommand("Copy");
-            console.log(1111, succeed);
         });
     </script>
 {% endblock %}
