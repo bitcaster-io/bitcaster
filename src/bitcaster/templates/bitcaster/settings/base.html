@@ -1,7 +1,13 @@
-{% extends "bitcaster/application_base.html" %}{% load crispy_forms_tags %}
+{% extends "bitcaster/base.html" %}{% load crispy_forms_tags %}
 {% block bodyclass %}settings{% endblock %}
 {% block pageId %}settings{% endblock %}
 {% block header_class %}settings{% endblock %}
+{% block nav-menu%}<span class="top-menu">Administation</span>{% endblock nav-menu %}
+{% block user-menu %}
+    <span class="pull-right user-menu ">
+        <a class="pull-right" href="{% url "admin:index" %}">admin</a>
+    </span>
+{% endblock user-menu %}
 {% block page %}
     <div class="container-fluid">
         <div class=" main-content">
@@ -23,6 +29,12 @@
                                         </li>
                                         <li>
                                             <a href="{% url 'settings-channels' %}">Channels</a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'settings-org-list' %}">Organizations</a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'settings-sysinfo' %}">Environment</a>
                                         </li>
                                     </ul>
                                 </div>

@@ -83,7 +83,7 @@ DEBUG = env.bool('DEBUG', False)
 # ------------------------------------------------------------------------------
 EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
                     default='django.core.mail.backends.smtp.EmailBackend')
-
+EMAIL_SUBJECT_PREFIX = '[Bitcaster]'
 # EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
 # EMAIL_HOST = env.str('EMAIL_HOST')
 # EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
@@ -119,8 +119,9 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 # In a Windows environment this must be set to your system time zone.
 TIME_ZONE = 'Europe/Rome'
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#GUAguage-code
 LANGUAGE_CODE = 'en-us'
+LANGUAGE_COOKIE_NAME = 'bitcaster-language'
 LANGUAGES = (
     ('en', _('English')),
     ('fr', _('French')),
@@ -198,7 +199,8 @@ STATIC_URL = '/static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
-    # str(APPS_DIR / 'static'),
+    # '/data/PROGETTI/saxix/mercury/src/bitcaster/static',
+    # str(PROJECT_DIR / 'static'),
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
@@ -519,8 +521,9 @@ OTP_KEY = 'A' * 32
 CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
 
 # DEBUG-TOOLBAR
-if DEBUG:
+if False:
     ignored = RegexList(('/setup/', '/tpl/.*'))
+
     def show_ddt(request):
         if request.user.is_authenticated:
             if request.path in ignored:

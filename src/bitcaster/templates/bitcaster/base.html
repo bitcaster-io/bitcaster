@@ -1,4 +1,4 @@
-{% load bc_assets bc_permissions bitcaster %}<!doctype html>
+{% load bc_assets bc_permissions bitcaster static %}<!doctype html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" type="image/png" href="/images/favicon.ico"/>
     {% block css %}
-        <link rel="stylesheet" href="{% asset "dist/bitcaster.css" %}">
+        <link rel="stylesheet" href="{% static "bitcaster/bitcaster.css" %}">
     {% endblock %}
     {% block head-js %}{% endblock %}
 
@@ -23,7 +23,9 @@
                 <div class="logo text-center">
                     <a href="/">bitcaster</a>
                 </div>
+                {% block header-content %}
                 {% if user.is_authenticated %}
+                    {% block nav-menu %}
                     <span class="top-menu">
                     {% if organization and applications %}
                         {% check_permissions organization as "permissions" %}
@@ -64,6 +66,7 @@
                         {% endif %}{# organization and applications #}
                     {% endif %}
                     </span>
+                    {% endblock nav-menu %}
                     {% block user-menu %}
                         <span class="pull-right user-menu ">
                         <div class="dropdown">
@@ -86,6 +89,7 @@
                     </span>
                     {% endblock user-menu %}
                 {% endif %}{#  user.is_authenticated #}
+                {% endblock header-content %}
             </header>
         {% endblock header %}
 
@@ -120,7 +124,7 @@
                             </span>
                         </div>
                         <div class="col-sm justify-content-center">
-                            <a href="//bitcaster.io/"><img src="{% asset "dist/images/bitcaster32.png" %}"></a>
+                            <a href="//bitcaster.io/"><img src="{% asset "bitcaster/images/bitcaster32.png" %}"></a>
                         </div>
                         <div class="col-sm justify-content-end">
                             {% if user.is_authenticated %}
@@ -139,8 +143,8 @@
 
 </div>
 {% block js %}
-    <script src="{% asset "dist/vendor.js" %}"></script>
-    <script src="{% asset "dist/bitcaster.js" %}"></script>
+    <script src="{% static "bitcaster/vendor.js" %}"></script>
+    <script src="{% static "bitcaster/bitcaster.js" %}"></script>
     {% if messages %}
     <script>
             setTimeout(function(){$('.alert').alert('close');}, 5000);

@@ -7,17 +7,10 @@ header {
   //border-bottom: 1px solid #c4c4c4;
   //padding-bottom: 10px;
   //margin-bottom: 10px;
-  background: #0072e2; /* For browsers that do not support gradients */
-  background: linear-gradient(to right, #5b9fe2, #4494e2); /* Standard syntax (must be last) */
+  //background: #0072e2; /* For browsers that do not support gradients */
+  //background: linear-gradient(to right, #5b9fe2, #4494e2); /* Standard syntax (must be last) */
   a{
     color: white;
-  }
-  &.application{
-    background: #004c97; /* For browsers that do not support gradients */
-    background: linear-gradient(to right, #506297, #395497); /* Standard syntax (must be last) */
-    a:hover{
-      color: #f9fd13;
-    }
   }
   a.dropdown-toggle2 {
     text-decoration: none !important;

@@ -1,0 +1,24 @@
+{% extends "bitcaster/settings/base.html" %}{% load i18n bitcaster %}
+{% block content %}
+    <h2>Organizations</h2>
+    <div class="container-fluid channel-list">
+        {% for org in object_list %}
+            <div class="row col-10 handler-row">
+                <div class="col-7 handler-name">
+                    <strong>{{ org.name }}</strong>
+                    <div class="pt-3">
+                        <a href="{% url "org-dashboard" org.slug %}">Home</a>
+                        | <a href="{{ org.pk }}/edit/">Configure</a>
+                    </div>
+                </div>
+                <div class="col-1 text-center vertical-align-center h4">
+                    {% if org.enabled %}
+                        <i class="fa fa-check"></i>
+                    {% else %}
+                        <i class="fa fa-ban"></i>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

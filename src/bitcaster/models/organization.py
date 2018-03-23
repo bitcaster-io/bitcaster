@@ -35,6 +35,7 @@ class Organization(AbstractModel):
     slug = models.SlugField(_("Short name"), unique=True, blank=True,
                             validators=[])
     status = DeletionStatusField()
+    enabled = models.BooleanField(default=True)
     date_added = models.DateTimeField(default=timezone.now)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      through='bitcaster.OrganizationMember',

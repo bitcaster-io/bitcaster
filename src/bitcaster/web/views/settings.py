@@ -2,16 +2,19 @@
 import logging
 
 from constance import config
+from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
 
 from bitcaster.models import Channel
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
+from bitcaster.web.forms.organization import OrganizationSystemForm
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsMainForm,
                                                  SettingsOAuthForm,)
-from bitcaster.web.views import BitcasterTemplateView, ListView
+from bitcaster.web.views import (BitcasterTemplateView, ListView,
+                                 Organization, UpdateView,)
 from bitcaster.web.views.base import SuperuserViewMixin
 from bitcaster.web.views.channel import (ChannelCreateWizard, ChannelDeleteView,
                                          ChannelDeprecateView,
@@ -25,6 +28,9 @@ __all__ = ["SettingsView", "SettingsOAuthView",
            "SettingsChannelDeleteView",
            "SettingsChannelDeprecateView",
            "SettingsChannelToggleView",
+           "SettingsOrgUpdateView",
+           "SettingsOrgListView",
+           "SettingsSystemInfo",
            "SettingsChannelCreateWizard",
            ]
 
@@ -65,6 +71,57 @@ class SettingsView(SettingsBaseView):
 class SettingsEmailView(SettingsBaseView):
     form_class = SettingsEmailForm
     title = 'Email'
+
+
+class SettingsOrgUpdateView(SuperuserViewMixin, UpdateView):
+    template_name = 'bitcaster/settings/org_update.html'
+    form_class = OrganizationSystemForm
+    model = Organization
+
+    def get_success_url(self):
+        return reverse('settings-org-list')
+
+
+class SettingsSystemInfo(SuperuserViewMixin,
+                         BitcasterTemplateView):
+    template_name = 'bitcaster/settings/sysinfo.html'
+
+    def _filter(self, target):
+        reserved = ('PASSWORD', 'SECRET', 'KEY', 'AUTHENTICATION_BACKENDS')
+        hidden = ('CONSTANCE', 'SOCIAL_AUTH')
+        ret = []
+        for k in sorted(dir(target)):
+            v_repr = repr(getattr(target, k))
+            if any(r.lower() in v_repr.lower() for r in hidden):
+                continue
+            if any(r in k for r in hidden):
+                continue
+            if k.startswith('_'):
+                continue
+            if k.upper() != k:
+                continue
+
+            if any(r.lower() in v_repr.lower() for r in reserved):
+                v_repr = '*' * 16
+            if any(r in k for r in reserved):
+                v_repr = '*' * 16
+
+            ret.append((k, v_repr))
+        return ret
+
+    def get_context_data(self, **kwargs):
+        from django_sysinfo.api import get_sysinfo
+
+        return super().get_context_data(
+            config=self._filter(config),
+            settings=self._filter(settings),
+            sysinfo=get_sysinfo(self.request),
+            **kwargs)
+
+
+class SettingsOrgListView(SuperuserViewMixin, ListView):
+    template_name = 'bitcaster/settings/org_list.html'
+    model = Organization
 
 
 class SettingsOAuthView(SettingsBaseView):

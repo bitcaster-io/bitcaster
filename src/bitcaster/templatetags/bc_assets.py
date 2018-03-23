@@ -1,6 +1,7 @@
 from django import template
-from django.conf import settings
+from django.templatetags.static import static as _static
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 import bitcaster
 from bitcaster.utils.http import absolute_uri
@@ -8,11 +9,12 @@ from bitcaster.utils.http import absolute_uri
 register = template.Library()
 
 
-def get_asset_url(path):
-    return '{}/{}'.format(
-        settings.STATIC_URL.rstrip('/'),
-        path,
-    )
+# def get_asset_url(path):
+#     return _static(path)
+# return '{}/{}'.format(
+#     settings.STATIC_URL.rstrip('/'),
+#     path,
+# )
 
 
 @register.simple_tag
@@ -32,7 +34,7 @@ def asset(path):
         {% static variable_with_path as varname %}
     """
     commit = bitcaster.get_full_version()
-    return get_asset_url(f"{path}?{commit}")
+    return mark_safe("{0}?{1}".format(_static(path), commit))
 
 
 @register.simple_tag
@@ -52,7 +54,7 @@ def aasset(path):
         {% static variable_with_path as varname %}
     """
     commit = bitcaster.get_full_version()
-    return absolute_uri(get_asset_url(f"{path}?{commit}"))
+    return absolute_uri(_static(f"{path}?{commit}"))
 
 
 @register.simple_tag

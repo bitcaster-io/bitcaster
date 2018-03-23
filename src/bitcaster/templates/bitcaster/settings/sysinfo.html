@@ -1,0 +1,64 @@
+{% extends "bitcaster/settings/base.html" %}{% load i18n bitcaster %}
+{% block content %}
+    <style>
+        pre {
+            margin: 0;
+            padding: 5px;
+        }
+
+        dt {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        dd {
+            margin: 0;
+            padding: 2px;
+            background-color: #f1f1f1;
+            line-height: 1.6;
+
+        }
+    </style>
+    <input type="text" class="pull-right col-4" id="filter">
+    <span class="pull-right">Filter:&nbsp;</span>
+    <h2>Configuration</h2>
+    <div class="container-fluid channel-list">
+        <dl>
+            {% for a,b in config %}
+                <dt>{{ a }}</dt>
+                <dd>
+                    <pre class="val">{{ b }}</pre>
+                </dd>
+            {% endfor %}
+        </dl>
+    </div>
+    <h2>Settings</h2>
+    <div class="container-fluid channel-list">
+        <dl>
+            {% for a,b in settings %}
+                <dt>{{ a }}
+                <dd>
+                    <pre class="val">{{ b }}</pre>
+                </dd>
+            {% endfor %}
+        </dl>
+    </div>
+{% endblock content %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $("#filter").keyup(function () {
+            var target = $(this).val().toUpperCase();
+            $("dl").find("dt").each(function () {
+                var label = $(this).text();
+                if (~label.indexOf(target)) {
+                    $(this).show();
+                    $(this).next().show();
+                } else {
+                    $(this).hide();
+                    $(this).next().hide();
+                }
+            });
+        });
+    </script>
+{% endblock %}

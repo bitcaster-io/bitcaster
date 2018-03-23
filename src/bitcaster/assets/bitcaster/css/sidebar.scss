@@ -10,6 +10,9 @@
   &.application-sidebar{
     background: #004c97; /* For browsers that do not support gradients */
     background: linear-gradient(to right, #506297, #395497); /* Standard syntax (must be last) */
+    a:hover{
+      color: #f9fd13;
+    }
   }
   .org-logo{
     display: block;

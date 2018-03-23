@@ -1,0 +1,11 @@
+{% extends "bitcaster/settings/base.html" %}{% load i18n bitcaster crispy_forms_filters %}
+{% block content %}
+    <h2>{{ organization }}</h2>
+    <div class="container-fluid channel-list">
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-primary" value="Save">
+        </form>
+    </div>
+{% endblock content %}

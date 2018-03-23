@@ -9,9 +9,20 @@ from bitcaster.web.forms.fields import EmailField
 logger = logging.getLogger(__name__)
 
 
+class OrganizationSystemForm(forms.ModelForm):
+    class Meta:
+        model = Organization
+        fields = ("name", 'billing_email', 'slug', 'avatar',
+                  'default_role', 'rate_limit')
+
+
 class OrganizationForm(forms.ModelForm):
     name = forms.CharField(widget=forms.TextInput(attrs={'autocomplete': 'organization'}))
     billing_email = EmailField()
+
+    class Meta:
+        model = Organization
+        fields = ("name", 'billing_email', 'slug', 'avatar')
 
     def __init__(self, *args, **kwargs):
         super(OrganizationForm, self).__init__(*args, **kwargs)
@@ -24,7 +35,3 @@ class OrganizationForm(forms.ModelForm):
         if self.instance and self.instance.is_core:
             return self.instance.slug
         return value
-
-    class Meta:
-        model = Organization
-        fields = ("name", 'billing_email', 'slug', 'avatar')

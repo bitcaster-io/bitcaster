@@ -61,4 +61,12 @@ class HTTPServer(Service):
             sys.stderr.flush()
             sys.exit(1)
 
-    start = run
+
+class DevHTTPServer(HTTPServer):
+    def run(self):
+        try:
+            Arbiter(self.app).run()
+        except RuntimeError as e:
+            sys.stderr.write("\nError: %s\n\n" % e)
+            sys.stderr.flush()
+            sys.exit(1)

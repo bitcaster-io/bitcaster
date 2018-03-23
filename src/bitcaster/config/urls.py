@@ -6,6 +6,7 @@ from urllib.parse import parse_qs
 from django.conf import settings
 from django.conf.urls import include
 from django.contrib.admin import site
+from django.contrib.staticfiles.views import serve as static_serve
 from django.http import HttpResponse
 from django.urls import path, re_path
 from django.views.decorators.cache import cache_page
@@ -56,17 +57,19 @@ urlpatterns = [path(r'api/', include(bitcaster.api.urls), name='api'),
                path('favicon.ico', serve, kwargs={'document_root': settings.STATIC_ROOT,
                                                   'path': 'favicon.ico'}),
                re_path('^admin/', site.urls),
-               path('', include(bitcaster.web.urls)),
 
                path('plugins/icons/channel/<int:pk>/', channel_icon, name="channel-icon"),
-               path('plugins/icons/<str:fqn>/', plugin_icon, name="plugin-icon"),
+               path('plugins/icons/<str:fqn>/', plugin_icon, name="plugin-icon")]
 
-               static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT,
-                      show_indexes=True),
-               static(settings.STATIC_URL, document_root=settings.STATIC_ROOT,
-                      show_indexes=True)
+if settings.DEBUG:
+    urlpatterns += [static(settings.MEDIA_URL, static_serve, show_indexes=True, insecure=True),
+                    static(settings.STATIC_URL, static_serve, show_indexes=True, insecure=True)]
+else:
+    urlpatterns += [static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
+                    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)]
 
-               ]
+urlpatterns += [path('', include(bitcaster.web.urls)), ]
+
 if settings.DEBUG:
     import debug_toolbar
 

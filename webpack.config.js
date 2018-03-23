@@ -6,16 +6,28 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 
 const rel = path.resolve.bind(null, __dirname + "/src/bitcaster/assets/");
-const outputDir = path.resolve.bind(null, __dirname + "/src/bitcaster/static/dist/")();
+const outputDir = path.resolve.bind(null, __dirname + "/src/bitcaster/static/bitcaster/")();
 const VERSION = require("./package.json").version;
+
+let IS_PRODUCTION = process.env.NODE_ENV === "production";
+let WITH_CSS_SOURCEMAPS = true;
+// var WITH_CSS_SOURCEMAPS = !!process.env.WITH_CSS_SOURCEMAPS || IS_PRODUCTION;
 
 const loaders = {
     css: {
-        loader: "css-loader"
+        loader: "css-loader",
+        options: {
+            sourceMap: true,
+            minimize: false,
+             devtool: 'source-map',
+        },
     },
     postcss: {
         loader: "postcss-loader",
         options: {
+            sourceMap: true,
+            minimize: false,
+             devtool: 'source-map',
             plugins: (loader) => [
                 autoprefixer({
                     browsers: ["last 2 versions"]
@@ -25,8 +37,12 @@ const loaders = {
     },
     scss: {
         loader: "sass-loader",
+
         options: {
             indentedSyntax: true,
+            sourceMap: true,
+            minimize: false,
+             devtool: 'source-map',
             // includePaths: [path.resolve(__dirname, "./src")]
         }
     }
@@ -74,7 +90,7 @@ module.exports = [
                         options: {
                             // limit: 8000, // Convert images < 8kb to base64 strings
                             outputPath: "images",
-                            name: '[name].[ext]'
+                            name: "[name].[ext]"
                         },
                     }],
                 },
@@ -100,12 +116,14 @@ module.exports = [
                 {
                     test: /\.scss$/,
                     use: ExtractTextPlugin.extract({
-                        fallback: "style-loader",
+                        fallback: ["style-loader"],
+
                         use: [loaders.css, loaders.postcss, loaders.scss]
                     })
-                }
-            ]// -rules
+                },
+            ], // -rules
         }, // -module
+        devtool: 'source-map',
         output: {
             filename: "[name].js",
             path: outputDir
@@ -136,4 +154,4 @@ module.exports = [
             poll: 1000
         }
     }
-    ];
+];

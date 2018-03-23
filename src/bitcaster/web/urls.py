@@ -24,7 +24,8 @@ from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     SettingsChannelCreateWizard, SettingsChannelDeleteView,
                     SettingsChannelDeprecateView, SettingsChannelListView,
                     SettingsChannelToggleView, SettingsChannelUpdateView,
-                    SettingsEmailView, SettingsOAuthView, SettingsView,
+                    SettingsEmailView, SettingsOAuthView, SettingsOrgListView,
+                    SettingsOrgUpdateView, SettingsSystemInfo, SettingsView,
                     SetupView, SubscriptionList, UserProfileView, UserRegister,
                     UserWelcomeView, WorkInProgressView, confirm_email,)
 
@@ -42,6 +43,10 @@ urlpatterns = [
     path('settings/', SettingsView.as_view(), name='settings'),
     path('settings/email/', SettingsEmailView.as_view(), name='settings-email'),
     path('settings/oauth/', SettingsOAuthView.as_view(), name='settings-oauth'),
+    path('settings/sysinfo/', SettingsSystemInfo.as_view(), name='settings-sysinfo'),
+    path('settings/organizations/', SettingsOrgListView.as_view(), name='settings-org-list'),
+    path('settings/organizations/<int:pk>/edit/', SettingsOrgUpdateView.as_view(), name='settings-org-update'),
+
     path('settings/channel/', SettingsChannelListView.as_view(), name='settings-channels'),
     path('settings/channel/add/', SettingsChannelCreateWizard.as_view(), name='system-channel-create'),
     path('settings/channel/<int:pk>/edit/', SettingsChannelUpdateView.as_view(), name='system-channel-update'),
