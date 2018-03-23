@@ -230,6 +230,7 @@ class MessageFactory(factory.DjangoModelFactory):
     name = factory.Sequence(lambda n: "Message %03d" % n)
     event = factory.SubFactory(EventFactory)
     channel = factory.SubFactory(ChannelFactory)
+    enabled = True
     language = factory.Iterator(['it', 'en', 'es', 'fr'])
     subject = factory.Sequence(lambda n: "Subject %03d" % n)
     body = factory.LazyAttribute(lambda n: faker.text(max_nb_chars=200), )

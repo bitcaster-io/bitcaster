@@ -38,11 +38,17 @@
                     </div>
                 {% endfor %}
             </div>
+{#            <div class="m-5">&nbsp;</div>#}
             <div class="pt-5">
+                <input
+                       name="save_edit_messages"
+                       value="Save and edit messages"
+                       type="submit" class="pull-right btn btn-default btn-primary">
+
                 <input id="btn-submit"
-                       name="submit"
+                       name="save_and_exit"
                        value="{{ save_label }}"
-                       type="submit" class="btn btn-primary">
+                       type="submit" class="btn btn-outline-primary">
             </div>
         </form>
     </div>
@@ -53,6 +59,7 @@
     <script>
         (function () {
             $("#form-event").removeClass("d-none").show();
+            $("#id_name").focus();
             function formatData(data) {
                 return $(
                     "<span><img width=20 height=20 src='/plugins/icons/channel/" + data.id + "/'/> " + data.text + "</span>"
@@ -70,7 +77,7 @@
             var $rows = $("div.arguments>div.row");
 
             $(".remove_line").click(function () {
-                $("#btn-submit").prop("disabled", true);
+                $("button[type='submit']").prop("disabled", true);
                 var $target = $(this).parent().parent();
                 $target.remove();
                 setTimeout(function () {
@@ -78,7 +85,7 @@
                 }, 20);
             });
             $("#add_more").click(function () {
-                $("#btn-submit").prop("disabled", true);
+                $("button[type='submit']").prop("disabled", true);
                 cloneMore();
             });
             var reNumber = function () {
@@ -99,7 +106,7 @@
                     });
                 });
                 $TOTAL_FORMS.val($rows.length);
-                $("#btn-submit").prop("disabled", parseInt($TOTAL_FORMS.val()) < 1);
+                $("button[type='submit']").prop("disabled", parseInt($TOTAL_FORMS.val()) < 1);
 
             };
 

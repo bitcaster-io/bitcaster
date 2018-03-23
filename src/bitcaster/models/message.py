@@ -35,6 +35,7 @@ class Message(AbstractModel):
     subject = models.CharField(max_length=100,
                                default='',
                                blank=True, null=False)
+    enabled = models.BooleanField(default=False)
     body = models.TextField()
     html = models.TextField()
 
@@ -57,5 +58,5 @@ class Message(AbstractModel):
         super().save(force_insert, force_update, using, update_fields)
 
     def clean(self):
-
-        self.channel.validate_message(self)
+        if self.enabled:
+            self.channel.validate_message(self)

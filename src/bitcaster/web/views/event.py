@@ -22,7 +22,14 @@ class EventMixin(SelectedApplicationMixin, MessageUserMixin):
     model = Event
 
     def get_success_url(self):
-        return reverse("app-event-list",
+        if 'save_edit_messages' in self.request.POST:
+            return reverse("app-event-messages",
+                       args=[self.selected_organization.slug,
+                             self.selected_application.slug,
+                             self.object.pk]
+                           )
+        else:
+            return reverse("app-event-list",
                        args=[self.selected_organization.slug,
                              self.selected_application.slug])
 
@@ -52,6 +59,7 @@ class EventCreate(EventMixin, EventFormMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_("Create Event"),
+                                        mode_create=True,
                                         **kwargs)
 
     def form_valid(self, form):
@@ -82,6 +90,7 @@ class EventUpdate(EventMixin, EventFormMixin, UpdateView):
         for i, channel in enumerate(event.channels.all()):
             Message.objects.get_or_create(event=event,
                                           channel=channel,
+                                          enabled=False,
                                           defaults={
                                               "name": f"{event} {channel}",
                                           })
