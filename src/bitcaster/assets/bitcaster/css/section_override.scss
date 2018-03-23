@@ -10,81 +10,80 @@ $sett-bgcolor: rgba(232, 232, 232, 0.8);
 $sett-link: black;
 $sett-hover: rgba(0, 128, 232, 0.69);
 
-.org-link {
-  color: $org-link;
-  &:hover {
-    color: $org-hover;
-  }
-}
+$user-bgcolor: #004c97;
+$user-link: lightgray;
+$user-hover: white;
 
-.app-link {
-  color: $app-link;
-  &:hover {
-    color: $app-hover;
-  }
-}
-
-.sett-link {
-  color: $sett-link;
-  &:hover {
-    color: $sett-hover;
-  }
-}
-
+//.org-link {
+//  color: $org-link;
+//  &:hover {
+//    color: $org-hover;
+//  }
+//}
+//
+//.app-link {
+//}
+//
+//.sett-link {
+//  color: $sett-link;
+//  &:hover {
+//    color: $sett-hover;
+//  }
+//}
 
 body {
   header {
     a.dropdown-item {
-      color: black;
+      color: black !important;
       &:hover {
-        background-color: lightgrey;
+        background-color: lightgrey !important;
       }
     }
 
   }
   &.organization {
-    header {
+    header, #sidebar {
       background: $org-bgcolor; /* For browsers that do not support gradients */
-      //background: linear-gradient(to right, #5b9fe2, #4494e2); /* Standard syntax (must be last) */
+      //background: linear-gradient(to right, #506297, #395497); /* Standard syntax (must be last) */
       a {
-        @extend .org-link;
-      }
-    }
-    // header
-    #sidebar {
-      background: $org-bgcolor; /* For browsers that do not support gradients */
-      a {
-        @extend .org-link;
+        color: $org-link;
+        &:hover {
+          color: $org-hover;
+        }
       }
     }
   }
   &.application {
-    header {
+    header, #sidebar {
       background: $app-bgcolor; /* For browsers that do not support gradients */
       //background: linear-gradient(to right, #506297, #395497); /* Standard syntax (must be last) */
       a {
-        @extend .app-link;
-      }
-    }
-    #sidebar {
-      background: $app-bgcolor; /* For browsers that do not support gradients */
-      a {
-        @extend .app-link;
+        color: $app-link;
+        &:hover {
+          color: $app-hover;
+        }
       }
     }
   }
   &.settings {
-    header {
+    header, #sidebar {
       background: $sett-bgcolor; /* For browsers that do not support gradients */
-      //background: linear-gradient(to right, #506297, #395497); /* Standard syntax (must be last) */
       a {
-        @extend .sett-link;
+        color: $sett-link;
+        &:hover {
+          color: $sett-hover;
+        }
       }
     }
-    #sidebar {
-      background: $sett-bgcolor; /* For browsers that do not support gradients */
+  }
+  &.user {
+    header, #sidebar {
+      background: $user-bgcolor; /* For browsers that do not support gradients */
       a {
-        @extend .sett-link;
+        color: $user-link;
+        &:hover {
+          color: $user-hover;
+        }
       }
     }
   }

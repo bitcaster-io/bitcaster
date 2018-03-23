@@ -32,12 +32,12 @@
                         {% if applications %}
                             <div class="dropdown">
 
-                            <a href="{% url "org-dashboard" organization.slug %}">[{{ organization.name }}]</a>
+                            <a href="{% url "org-dashboard" organization.slug %}">[{{ organization.name }}]</a>/
                             <a class="dropdown-toggle2"
                                href="#" role="button"
                                id="appMenuLink" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
-                                / {% if application %}{{ application }}{% else %}applications{% endif %}
+                                {% if application %}{{ application }}{% else %}<span class="italic">~</span>{% endif %}
                                 <i class="fa fa-angle-down"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="appMenuLink">

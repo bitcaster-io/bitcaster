@@ -13,15 +13,17 @@
     <div class="container-fluid channel-list">
         {% for event in object_list %}
             <div class="row col-10 handler-row">
-                <div class="col-7 handler-name">
+                <div class="col-10 handler-name">
                     <strong>{{ event.name }}</strong>
-                    <div class="pt-3">
+                    <div class="pt-4">
                         <a href="{{ event.pk }}/edit/">Configure</a>
                         | <a href="{{ event.pk }}/messages/">Messages</a>
                         | <a href="{{ event.pk }}/toggle/">
                         {% if event.enabled %}Disable{% else %}<strong>Enable</strong>{% endif %}</a>
                         | <a href="{{ event.pk }}/delete/">Remove</a>
                         | <a href="{{ event.pk }}/test/">Test</a>
+                        | <a href="{{ event.pk }}/test/">Subscribers</a>
+                        | <a href="{{ event.pk }}/test/">Monitor</a>
                     </div>
                 </div>
                 <div class="col-1 text-center vertical-align-center h4">

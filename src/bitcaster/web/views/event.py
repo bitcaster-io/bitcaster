@@ -145,6 +145,12 @@ class EventToggle(EventMixin, EventFormMixin, RedirectView):
         else:
             obj.enabled = not obj.enabled
             if obj.enabled:
+                ok = obj.messages.filter(enabled=True).exists()
+                if not ok:
+                    self.message_user(f'Event cannot be enabled because '
+                                      f'all messages are disabled', messages.ERROR)
+                    return super().get(request, *args, **kwargs)
+
                 for msg in obj.messages.all():
                     if not msg.body:
                         self.message_user(f'Event cannot be enabled because '
@@ -163,9 +169,9 @@ class MessageInlineFormSet(forms.BaseInlineFormSet):
     pass
     # def clean(self):
     #     forms_to_delete = self.deleted_forms
+    #     at_least_one_enabled = False
     #     for form in self.forms:
     #         if form not in forms_to_delete:
-    #             # FIXME: remove me (print)
     #             print(111, form.instance.channel.handler.validate_message())
     #     return super().clean()
 

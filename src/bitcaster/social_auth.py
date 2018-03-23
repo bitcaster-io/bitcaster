@@ -28,7 +28,7 @@ def associate_invitation(backend, details, user=None, *args, **kwargs):
             is_new = True
             fields = {"email": details['email'],
                       "name": details['fullname'],
-                      "username": details['username'],
+                      # "username": details['username'],
                       "friendly_name": details['username']}
             user = strategy.create_user(**fields)
         OrganizationMember.objects.filter(pk=invitation_id).update(user=user,

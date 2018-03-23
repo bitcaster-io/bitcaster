@@ -12,11 +12,13 @@ class MessageForm(forms.ModelForm):
     id = forms.IntegerField(widget=forms.HiddenInput)
     channel = forms.ModelChoiceField(queryset=Channel.objects.none(),
                                      widget=forms.HiddenInput)
+    enabled = forms.BooleanField(widget=forms.HiddenInput, required=False)
+
     event = None
 
     class Meta:
         model = Message
-        fields = ('name', 'subject', 'body', 'channel', 'id')
+        fields = ('name', 'subject', 'body', 'channel', 'id', 'enabled')
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)

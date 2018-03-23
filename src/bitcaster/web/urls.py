@@ -64,8 +64,8 @@ urlpatterns = [
          name='register-wait-email'),
     path('user/register/confirm-email/<int:pk>/<str:check>/', confirm_email, name='confirm-email'),
     path('user/profile/', UserProfileView.as_view(), name='user-profile'),
-    path('new-user/', TemplateView.as_view(template_name='bitcaster/new-user.html')),
-    path('new-association/', TemplateView.as_view(template_name='bitcaster/new-association.html')),
+    path('new-user/', TemplateView.as_view(template_name='bitcaster/users/user_new.html')),
+    path('new-association/', TemplateView.as_view(template_name='bitcaster/users/user_associated.html')),
     path('login-error/', TemplateView.as_view(template_name='bitcaster/wip.html')),
 
     # Applications

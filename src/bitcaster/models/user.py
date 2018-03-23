@@ -37,7 +37,7 @@ class UserManager(_UserManager):
         return user
 
     def create_user(self, email=None, password=None, **extra_fields):
-        extra_fields.pop('username')
+        extra_fields.pop('username', None)
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
         return self._create_user(email, password, **extra_fields)

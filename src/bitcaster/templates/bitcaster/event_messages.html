@@ -1,6 +1,6 @@
 {% extends "bitcaster/application_base.html" %}{% load i18n bitcaster crispy_forms_filters %}
 {% block content %}
-    <h2>{{ event }}: {{ title }}</h2>
+    <h2><a href="../..">{{ event }}</a>: {{ title }}</h2>
     <style>
         .messageForm {
             border: 1px solid grey;
@@ -18,12 +18,20 @@
                 <div>
                     <img width=40 height=40 src="{% url "channel-icon" frm.instance.channel.pk %}"/>
                     {{ frm.instance.channel }}
+                    <span class="pull-right">
+                                            <a href="#" title="enable/disable message"
+                       class="btn btn-small fa toggle {% if frm.instance.enabled %}fa-check green{% else %}fa-ban red{% endif %}"
+                       data-target="#{{ frm.enabled.auto_id }}"></a>
+
+
+                    </span>
                 </div>
                 {{ frm.name|as_crispy_field }}
                 {% if frm.has_subject %}
                     {{ frm.subject|as_crispy_field }}
                 {% endif %}
                 {{ frm.body|as_crispy_field }}
+                {{ frm.enabled|as_crispy_field }}
                 <div>
                     <a href="#" title="copy text" class="btn btn-small fa fa-copy copyText" data-target="#{{ frm.body.auto_id }}"></a>
                     <a href="#" class="btn btn-small fa fa-paste pasteText" data-target="#{{ frm.body.auto_id }}"></a>
@@ -52,6 +60,19 @@
                 event.preventDefault();
                 let target = $(this).data("target");
                 $(target).val( $source.val() );
+            });
+
+            $(".toggle").click(function (event) {
+                event.preventDefault();
+                var target = $(this).data("target");
+                $(target).prop("checked", !$(target).prop("checked"));
+                if ($(target).prop("checked")){
+                    $(this).removeClass('fa-ban red').addClass('fa-check green')
+                }else{
+                    $(this).removeClass('fa-check green').addClass('fa-ban red')
+                }
+                {#$(".broadcast").css("color", broadcast ? "red" : "black");#}
+
             });
 
             $(".broadcast").click(function (event) {
