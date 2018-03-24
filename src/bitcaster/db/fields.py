@@ -203,18 +203,22 @@ class RoleField(models.IntegerField):
 
 class SubscriptionPolicy(EnumField):
     FREE = 1
-    INVITATION = 2
+    REQUIRE_CONFIRMATION = 2
+    INVITATION = 3
+    MANAGED = 4
 
     @classmethod
     def as_choices(cls):
-        return sorted([(int(cls.FREE), _('Free. ')),
-                       (int(cls.INVITATION), _('Invitation')),
+        return sorted([(int(cls.FREE), _('Free. (Everybody can automatically subscribe)')),
+                       (int(cls.INVITATION), _('Invitation. (Require invitation. Event will not be visible)')),
+                       (int(cls.REQUIRE_CONFIRMATION), _('Require Confirmation. (User can ask to subscribe)')),
+                       (int(cls.MANAGED), _('Managed. (User cannot subscribe/unsubscribe but can change channel)')),
                        ])
 
 
 class SubscriptionPolicyField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
-                 choices=Role.as_choices(),
+                 choices=SubscriptionPolicy.as_choices(),
                  default=int(SubscriptionPolicy.INVITATION),
                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
         super().__init__(verbose_name=verbose_name, name=name,

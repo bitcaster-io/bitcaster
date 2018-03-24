@@ -168,9 +168,12 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
-        kwargs['membership'] = self.membership
-        kwargs['invitation_id'] = self.membership.pk  # this is required by oauth
-        return super().get_context_data(**kwargs)
+        if self.membership:
+            kwargs['membership'] = self.membership
+            kwargs['invitation_id'] = self.membership.pk  # this is required by oauth
+            return super().get_context_data(**kwargs)
+        else:
+            return {}
 
     def get_initial(self):
         return {"email": self.membership.email}
@@ -178,13 +181,14 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
     @cached_property
     def membership(self):
         pk = self.kwargs['pk']
-        return get_object_or_404(OrganizationMember, pk=pk,
-                                 organization=self.selected_organization)
+        return OrganizationMember.objects.filter(pk=pk,
+                                 organization__slug=self.kwargs['org']).first()
 
     def get(self, request, **kwargs):
         check = kwargs['check']
         if totp.verify(check, valid_window=config.INVITATION_EXPIRE):
-            return super(InviteAccept, self).get(request, **kwargs)
+            pass
+        return super(InviteAccept, self).get(request, **kwargs)
 
         self.message_user("Invite expired", messages.ERROR)
         return HttpResponseRedirect("/")

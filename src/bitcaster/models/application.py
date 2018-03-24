@@ -62,7 +62,7 @@ class Application(AbstractModel):
                                )
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
-    subscription_policy = SubscriptionPolicyField()
+    default_subscription_policy = SubscriptionPolicyField()
     enabled = models.BooleanField(default=True)
 
     rate_limit = models.CharField(max_length=100,

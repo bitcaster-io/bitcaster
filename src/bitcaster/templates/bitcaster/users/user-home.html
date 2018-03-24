@@ -1,0 +1,23 @@
+{% extends "bitcaster/users/user_base.html" %}
+{% block page %}
+    -- {{ organization }} --
+    -- {{ user.memberships.count }} --
+{#    <div class="container-fluid">#}
+{#        <div class="row col-10">#}
+{#            <div>#}
+{#                {% if user.is_authenticated %}#}
+{#                    {{ user.organizations }}#}
+{#                    <h1>Welcome back.</h1>#}
+{#                    {% for membership in user.memberships.all %}#}
+{#                        <li>#}
+{#                            <ul>{{ membership.organization.name }}</ul>#}
+{#                            {% for app in  membership.organization.applications.all %}#}
+{#                                <li>{{ app }}</li>#}
+{#                            {% endfor %}#}
+{#                        </li>#}
+{#                    {% endfor %}#}
+{#                {% endif %}#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{% endblock %}

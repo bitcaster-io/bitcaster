@@ -521,7 +521,7 @@ OTP_KEY = 'A' * 32
 CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
 
 # DEBUG-TOOLBAR
-if False:
+if DEBUG:
     ignored = RegexList(('/setup/', '/tpl/.*'))
 
     def show_ddt(request):

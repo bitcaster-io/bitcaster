@@ -10,23 +10,22 @@ const outputDir = path.resolve.bind(null, __dirname + "/src/bitcaster/static/bit
 const VERSION = require("./package.json").version;
 
 let IS_PRODUCTION = process.env.NODE_ENV === "production";
-let WITH_CSS_SOURCEMAPS = true;
-// var WITH_CSS_SOURCEMAPS = !!process.env.WITH_CSS_SOURCEMAPS || IS_PRODUCTION;
+let WITH_CSS_SOURCEMAPS = !!process.env.WITH_CSS_SOURCEMAPS || IS_PRODUCTION;
 
 const loaders = {
     css: {
         loader: "css-loader",
         options: {
-            sourceMap: true,
-            minimize: false,
+            sourceMap: WITH_CSS_SOURCEMAPS,
+            minimize: !IS_PRODUCTION,
              devtool: 'source-map',
         },
     },
     postcss: {
         loader: "postcss-loader",
         options: {
-            sourceMap: true,
-            minimize: false,
+            sourceMap: WITH_CSS_SOURCEMAPS,
+            minimize: !IS_PRODUCTION,
              devtool: 'source-map',
             plugins: (loader) => [
                 autoprefixer({

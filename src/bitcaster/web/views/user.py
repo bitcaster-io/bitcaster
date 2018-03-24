@@ -2,17 +2,46 @@
 import logging
 
 from django.contrib import messages
+from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
-from bitcaster.models import User
+from bitcaster.models import User, Organization
 from bitcaster.utils.wsgi import get_client_ip
 
 from ..forms import UserProfileForm
-from .base import BitcasterBaseUpdateView, BitcasterTemplateView
+from .base import BitcasterBaseUpdateView, BitcasterTemplateView, BitcasterBaseDetailView
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["UserProfileView", "UserWelcomeView"]
+__all__ = ["UserProfileView", "UserWelcomeView", "UserHomeView"]
+
+
+class UserHomeView(BitcasterBaseDetailView):
+    template_name = "bitcaster/users/user-home.html"
+    model = User
+
+    @cached_property
+    def selected_organization(self):
+        return Organization.objects.get(slug=self.kwargs['org'],
+                                        members=self.request.user,
+                                        )
+
+    @cached_property
+    def selected_application(self):
+        return self.selected_organization.applications.get(slug=self.kwargs['app'])
+
+    def get_context_data(self, **kwargs):
+        kwargs['application'] = self.selected_application
+        allowed_applications = []
+        for m in self.request.user.memberships.all():
+            for application in m.organization.applications.all():
+                allowed_applications.append(
+                (m.organization, application)
+            )
+        return super().get_context_data(**kwargs)
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
 
 class UserWelcomeView(BitcasterTemplateView):

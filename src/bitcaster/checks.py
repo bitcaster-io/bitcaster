@@ -13,7 +13,7 @@ from bitcaster.config.environ import env
 logger = logging.getLogger(__name__)
 
 
-@register()
+@register(deploy=True)
 def check(app_configs, **kwargs):
     errors = []
     try:

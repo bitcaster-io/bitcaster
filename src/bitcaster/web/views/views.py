@@ -53,6 +53,10 @@ class IndexView(TemplateView):
             if request.user.memberships.filter(role=Role.OWNER):
                 url = reverse('org-dashboard', args=[request.user.memberships.first().organization.slug])
                 return HttpResponseRedirect(url)
+            elif request.user.memberships.filter(role=Role.RECIPIENT):
+                url = reverse('user-org', args=[request.user.memberships.first().organization.slug])
+                return HttpResponseRedirect(url)
+
         elif not config.ALLOW_REGISTRATION:
             return HttpResponseRedirect(settings.LOGIN_URL)
         return super().get(request, *args, **kwargs)

@@ -35,7 +35,7 @@ class Env(environ.Env):
         else:
             env_var = f"{self.prefix}{var}"
 
-        logger.debug(f"get '{env_var}' casted as '{cast}' with default '{default}'")
+        # logger.debug(f"get '{env_var}' casted as '{cast}' with default '{default}'")
 
         if var in self.scheme:
             var_info = self.scheme[var]

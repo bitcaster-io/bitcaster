@@ -10,7 +10,7 @@
                         <li><a href="{% url "login" %}">Login</a></li>
                     </ul>
                 {% else %}
-                    {{ user.organizations.all }}
+                    {{ user.organizations }}
                     <h1>Welcome back.</h1>
                     {% for membership in user.ownerships.all %}
                         <li>

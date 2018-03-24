@@ -1,9 +1,23 @@
 {% extends 'bitcaster/base.html' %}
 {% block bodyclass %}user{% endblock %}
+{% block nav-menu %}
+    <span class="top-menu">
+        <div class="dropdown">
+            <a class="dropdown-toggle2"
+               href="#" role="button"
+               id="orgMenuLink" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+               [{{ organization }}]
+                / {% if application %}{{ application }}{% else %}~~~{% endif %}
+                <i class="fa fa-angle-down"></i>
+            </a>
 
-{% block page %}
-    <h1>Welcome to bitcaster!!</h1>
-    <div>
-        ddd
-    </div>
-{% endblock %}
+            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="orkMenuLink">
+                {% for link, name in allowed_applications %}
+                    <a class="dropdown-item organization"
+                       href="{% url 'user-app' organization.slug app.slug %}">{{ app.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </span>
+{% endblock nav-menu %}

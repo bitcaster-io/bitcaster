@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import UUIDField
 
 from bitcaster import logging
+from bitcaster.db.fields import SubscriptionPolicyField
 from bitcaster.db.validators import RateLimitValidator
 
 from .application import Application
@@ -35,6 +36,7 @@ class Event(AbstractModel):
     channels = models.ManyToManyField('bitcaster.Channel',
                                       # through='bitcaster.EventChannel'
                                       )
+    subscription_policy = SubscriptionPolicyField()
 
     class Meta:
         unique_together = ('application', 'name')
