@@ -45,7 +45,9 @@ class SubscriptionStatus(EnumField):
 class Subscription(AbstractModel):
     """ """
     subscriber = models.ForeignKey(User, models.CASCADE,
+                                   # blank=True, null=True,
                                    related_name='subscriptions')
+    # email = models.EmailField(blank=True, null=True)
 
     trigger_by = models.ForeignKey(User, models.CASCADE,
                                    related_name='+')

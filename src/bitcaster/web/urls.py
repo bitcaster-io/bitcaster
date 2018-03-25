@@ -3,7 +3,6 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from bitcaster.web.views import EventSubscriptionsSubscribe
 from bitcaster.web.views.views import PreviewView
 
 from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
@@ -13,6 +12,7 @@ from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     ApplicationUpdateView, EventCreate, EventDelete, EventList,
                     EventMessages, EventSubscriptions, EventTest, EventToggle,
                     EventUpdate, IndexView, InviteAccept, InviteDelete,
+                    EventSubscriptionsSubscribe, EventSubscriptionsInvite,
                     InviteSend, LoginView, LogoutView, MessageCreate,
                     MessageDelete, MessageList, MessageUpdate,
                     OrganizationApplications, OrganizationChannelCreate,
@@ -90,6 +90,7 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/event/<int:pk>/messages/', EventMessages.as_view(), name='app-event-messages'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/subscriptions/', EventSubscriptions.as_view(), name='app-event-subscriptions'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/subscriptions/subscribe/', EventSubscriptionsSubscribe.as_view(), name='app-event-subscriptions-subscribe'),
+    path('<slug:org>/a/<slug:app>/event/<int:pk>/subscriptions/invite/', EventSubscriptionsInvite.as_view(), name='app-event-subscriptions-invite'),
 
     path('<slug:org>/a/<slug:app>/channel/', ApplicationChannels.as_view(), name='app-channel-list'),
     path('<slug:org>/a/<slug:app>/channel/add/', ApplicationChannelCreate.as_view(), name='app-channel-create'),

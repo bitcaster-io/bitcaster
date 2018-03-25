@@ -11,21 +11,19 @@
     <div class="container">
         <div class="row col-12">
             <div class="pull-right col-12 p-4">
-                    <a class="btn btn-outline-danger btn-small pull-right tooltip"
-                       href="{% app-url "app-event-subscriptions-subscribe" event.pk %}">{% trans "Subscribe User" %}
-{#                    <span class="tooltiptext">Tooltip text</span>#}
-                    </a>
-{#                <a class="btn btn-outline-danger btn-small pull-right tooltip mr-3"#}
-{#                   href="#">{% trans "Send Invitation" %}#}
-{#                    <span class="tooltiptext">Tooltip text</span>#}
-{#                </a>#}
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% app-url "app-event-subscriptions-subscribe" event.pk %}">{% trans "Subscribe User" %}
+                </a>
+                <a class="btn btn-danger btn-small pull-right mr-3"
+                   href="{% app-url "app-event-subscriptions-invite" event.pk %}">{% trans "Send Invitation" %}
+                </a>
             </div>
         </div>
     </div>
     <div class="container">
-    {% for s in event.subscriptions.all %}
-        <div>{{ s }}</div>
-    {% endfor %}
+        {% for s in event.subscriptions.all %}
+            <div>{{ s }}</div>
+        {% endfor %}
     </div>
 {% endblock %}
 {% block js %}

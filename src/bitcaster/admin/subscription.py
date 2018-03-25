@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 @admin.register(Subscription, site=site)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('application',
-                    'event', 'subscriber', 'channel', 'active')
+                    'event', 'subscriber', 'trigger_by', 'channel', 'active')
     list_editable = ('active',)
     list_filter = ('event__application',
                    ('channel', RelatedFieldComboFilter),
