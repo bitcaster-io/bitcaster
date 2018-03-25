@@ -1,8 +1,14 @@
-{% extends "bitcaster/application_base.html" %}{% load crispy_forms_tags i18n %}
+{% extends "bitcaster/application_base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block pageId %}event{% endblock %}
 {% block content %}
     <h2>{{ title }}</h2>
-    <div class="container-fluid border p-3">
+    <div class="breadcrumbs pb-4">
+        <a href="{% app-url "app-event-list" %}">events</a> :
+        {% if event %}
+            <a href="{% app-url "app-event-update" event.pk %}">{{ event }}</a>
+        {% endif %}
+    </div>
+    <div class="container-fluid">
         <div id="empty-form" class="d-none">
             <div class="row">
                 <div class="row col-sm">{{ form.arguments.empty_form.name|as_crispy_field }}</div>

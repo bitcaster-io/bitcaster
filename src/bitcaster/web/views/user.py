@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from django import forms
 from django.contrib import messages
+from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
+from django.views.generic import FormView
 
-from bitcaster.models import User, Organization
+from bitcaster.models import Address, Organization, User
 from bitcaster.utils.wsgi import get_client_ip
 
 from ..forms import UserProfileForm
-from .base import BitcasterBaseUpdateView, BitcasterTemplateView, BitcasterBaseDetailView
+from .base import (BitcasterBaseDetailView,
+                   BitcasterBaseUpdateView, BitcasterTemplateView,)
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["UserProfileView", "UserWelcomeView", "UserHomeView"]
+__all__ = ("UserProfileView", "UserWelcomeView", "UserHomeView", "UserAddressesView")
 
 
 class UserHomeView(BitcasterBaseDetailView):
@@ -36,8 +40,8 @@ class UserHomeView(BitcasterBaseDetailView):
         for m in self.request.user.memberships.all():
             for application in m.organization.applications.all():
                 allowed_applications.append(
-                (m.organization, application)
-            )
+                    (m.organization, application)
+                )
         return super().get_context_data(**kwargs)
 
     def get_object(self, queryset=None):
@@ -46,6 +50,50 @@ class UserHomeView(BitcasterBaseDetailView):
 
 class UserWelcomeView(BitcasterTemplateView):
     template_name = "bitcaster/users/user-welcome.html"
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ('id', 'user', 'dispatcher', 'address')
+
+
+# class SubscriptionBaseFormSet(BaseInlineFormSet):
+#
+#     def __init__(self, *args, **kwargs):
+#         self.event = kwargs.pop('event')
+#         super().__init__(*args, **kwargs)
+#         self.form_kwargs['event'] = self.event
+
+
+AddressFormSet = forms.inlineformset_factory(User,
+                                             Address,
+                                             form=AddressForm,
+                                             # formset=SubscriptionBaseFormSet,
+                                             min_num=1,
+                                             extra=0)
+
+
+class UserAddressesView(FormView):
+    template_name = 'bitcaster/users/addresses.html'
+    model = Address
+    form_class = AddressForm
+
+    def get_success_url(self):
+        return reverse('user-addresses')
+
+    def get_form_class(self):
+        return AddressFormSet
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = self.request.user
+        return kwargs
+
+    def form_valid(self, formset):
+        formset.instance = self.request.user
+        formset.save()
+        return super().form_valid(formset)
 
 
 class UserProfileView(BitcasterBaseUpdateView):

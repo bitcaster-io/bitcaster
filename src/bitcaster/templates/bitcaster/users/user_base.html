@@ -2,6 +2,7 @@
 {% block bodyclass %}user{% endblock %}
 {% block nav-menu %}
     <span class="top-menu">
+    {% if organization %}
         <div class="dropdown">
             <a class="dropdown-toggle2"
                href="#" role="button"
@@ -19,5 +20,6 @@
                 {% endfor %}
             </div>
         </div>
+    {% endif %}
     </span>
 {% endblock nav-menu %}

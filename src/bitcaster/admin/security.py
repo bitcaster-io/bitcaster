@@ -5,13 +5,18 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from bitcaster.models import ApiAuthToken, ApiTriggerKey, User
+from bitcaster.models import Address, ApiAuthToken, ApiTriggerKey, User
 
 from .forms import UserChangeForm, UserCreationForm
 from .inlines import ApiKeyInline, ApiTokenInline
 from .site import site
 
 logger = logging.getLogger(__name__)
+
+
+@admin.register(Address, site=site)
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ('user', 'address', 'dispatcher')
 
 
 @admin.register(User, site=site)
@@ -28,7 +33,7 @@ class UserAdmin(_UserAdmin):
     fieldsets = (
         (None, {'fields': (('email', 'password'),)}),
         (_('Personal info'), {'fields': (('name', 'friendly_name'),
-                                         ('language', ),
+                                         ('language',),
                                          ('country', 'timezone'))}),
         # (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
         #                                'groups', 'user_permissions')}),

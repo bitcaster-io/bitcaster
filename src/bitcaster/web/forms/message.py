@@ -12,7 +12,7 @@ class MessageForm(forms.ModelForm):
     id = forms.IntegerField(widget=forms.HiddenInput)
     channel = forms.ModelChoiceField(queryset=Channel.objects.none(),
                                      widget=forms.HiddenInput)
-    enabled = forms.BooleanField(widget=forms.HiddenInput, required=False)
+    enabled = forms.BooleanField(required=False)
 
     event = None
 

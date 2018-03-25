@@ -18,8 +18,8 @@ class ApplicationCreateForm(forms.ModelForm):
 
 
 class ApplicationForm(forms.ModelForm):
-    # flags = BitFormField(initial=0)
 
     class Meta:
         model = Application
-        exclude = ['flags', 'teams']
+        fields = ['name', 'timezone', 'allowed_origins', 'avatar',
+                  'enabled', 'default_subscription_policy']

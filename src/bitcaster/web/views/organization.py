@@ -10,7 +10,6 @@ from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
@@ -182,7 +181,7 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
     def membership(self):
         pk = self.kwargs['pk']
         return OrganizationMember.objects.filter(pk=pk,
-                                 organization__slug=self.kwargs['org']).first()
+                                                 organization__slug=self.kwargs['org']).first()
 
     def get(self, request, **kwargs):
         check = kwargs['check']

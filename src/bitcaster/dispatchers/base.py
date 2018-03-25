@@ -14,14 +14,6 @@ from . import serializers
 logger = getLogger(__name__)
 
 
-# MEDIUM_EMAIL = 'email'
-# MEDIUM_SMS = 'sms'
-# MEDIUM_URL = 'url'
-#
-# MEDIA = [MEDIUM_EMAIL, MEDIUM_SMS, MEDIUM_URL]
-# MEDIA_CHOICES = zip(MEDIA, MEDIA)
-
-
 class MessageType:
     has_subject = False
     allow_html = False
@@ -81,6 +73,9 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     def validate_message(self, message, **kwargs):
         for validator in self.message_class.validators:
             validator(message, **kwargs)
+
+    def validate_address(self, address, *args, **kwargs) -> bool:
+        return True
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
         cfg = get_full_config(self.subscription_class, subscription.config)

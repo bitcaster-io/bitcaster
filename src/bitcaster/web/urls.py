@@ -3,16 +3,18 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
 
+from bitcaster.web.views import EventSubscriptionsSubscribe
 from bitcaster.web.views.views import PreviewView
 
 from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     ApplicationChannelRemove, ApplicationChannels,
                     ApplicationChannelToggle, ApplicationChannelUpdate,
-                    ApplicationCreate, ApplicationDashboard, EventCreate,
-                    EventDelete, EventList, EventMessages, EventTest,
-                    EventToggle, EventUpdate, IndexView, InviteAccept,
-                    InviteDelete, InviteSend, LoginView, LogoutView,
-                    MessageCreate, MessageDelete, MessageList, MessageUpdate,
+                    ApplicationCreate, ApplicationDashboard,
+                    ApplicationUpdateView, EventCreate, EventDelete, EventList,
+                    EventMessages, EventSubscriptions, EventTest, EventToggle,
+                    EventUpdate, IndexView, InviteAccept, InviteDelete,
+                    InviteSend, LoginView, LogoutView, MessageCreate,
+                    MessageDelete, MessageList, MessageUpdate,
                     OrganizationApplications, OrganizationChannelCreate,
                     OrganizationChannelDeprecate, OrganizationChannelRemove,
                     OrganizationChannels, OrganizationChannelToggle,
@@ -26,8 +28,8 @@ from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     SettingsChannelToggleView, SettingsChannelUpdateView,
                     SettingsEmailView, SettingsOAuthView, SettingsOrgListView,
                     SettingsOrgUpdateView, SettingsSystemInfo, SettingsView,
-                    SetupView, SubscriptionList, UserProfileView, UserRegister,
-UserHomeView,
+                    SetupView, SubscriptionList, UserAddressesView,
+                    UserHomeView, UserProfileView, UserRegister,
                     UserWelcomeView, WorkInProgressView, confirm_email,)
 
 urlpatterns = [
@@ -65,6 +67,7 @@ urlpatterns = [
          name='register-wait-email'),
     path('user/register/confirm-email/<int:pk>/<str:check>/', confirm_email, name='confirm-email'),
     path('user/profile/', UserProfileView.as_view(), name='user-profile'),
+    path('user/addresses/', UserAddressesView.as_view(), name='user-addresses'),
 
     path('new-user/', TemplateView.as_view(template_name='bitcaster/users/user_new.html')),
     path('new-association/', TemplateView.as_view(template_name='bitcaster/users/user_associated.html')),
@@ -76,6 +79,7 @@ urlpatterns = [
     # Applications
     path('<slug:org>/a/add/', ApplicationCreate.as_view(), name='application-create'),
     path('<slug:org>/a/<slug:app>/', ApplicationDashboard.as_view(), name='app-dashboard'),
+    path('<slug:org>/a/<slug:app>/edit/', ApplicationUpdateView.as_view(), name='app-update'),
     path('<slug:org>/a/<slug:app>/subscriptions/', SubscriptionList.as_view(), name='app-subscriptions'),
     path('<slug:org>/a/<slug:app>/event/', EventList.as_view(), name='app-event-list'),
     path('<slug:org>/a/<slug:app>/event/add/', EventCreate.as_view(), name='app-event-create'),
@@ -84,6 +88,8 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/event/<int:pk>/test/', EventTest.as_view(), name='app-event-test'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/delete/', EventDelete.as_view(), name='app-event-delete'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/messages/', EventMessages.as_view(), name='app-event-messages'),
+    path('<slug:org>/a/<slug:app>/event/<int:pk>/subscriptions/', EventSubscriptions.as_view(), name='app-event-subscriptions'),
+    path('<slug:org>/a/<slug:app>/event/<int:pk>/subscriptions/subscribe/', EventSubscriptionsSubscribe.as_view(), name='app-event-subscriptions-subscribe'),
 
     path('<slug:org>/a/<slug:app>/channel/', ApplicationChannels.as_view(), name='app-channel-list'),
     path('<slug:org>/a/<slug:app>/channel/add/', ApplicationChannelCreate.as_view(), name='app-channel-create'),

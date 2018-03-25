@@ -9,15 +9,17 @@ const rel = path.resolve.bind(null, __dirname + "/src/bitcaster/assets/");
 const outputDir = path.resolve.bind(null, __dirname + "/src/bitcaster/static/bitcaster/")();
 const VERSION = require("./package.json").version;
 
-let IS_PRODUCTION = process.env.NODE_ENV === "production";
-let WITH_CSS_SOURCEMAPS = !!process.env.WITH_CSS_SOURCEMAPS || IS_PRODUCTION;
+let IS_PRODUCTION = false;
+let WITH_CSS_SOURCEMAPS = true;
+console.log(1111, IS_PRODUCTION);
+console.log(1111, WITH_CSS_SOURCEMAPS);
 
 const loaders = {
     css: {
         loader: "css-loader",
         options: {
             sourceMap: WITH_CSS_SOURCEMAPS,
-            minimize: !IS_PRODUCTION,
+            minimize: IS_PRODUCTION,
              devtool: 'source-map',
         },
     },
@@ -25,7 +27,7 @@ const loaders = {
         loader: "postcss-loader",
         options: {
             sourceMap: WITH_CSS_SOURCEMAPS,
-            minimize: !IS_PRODUCTION,
+            minimize: IS_PRODUCTION,
              devtool: 'source-map',
             plugins: (loader) => [
                 autoprefixer({
@@ -39,8 +41,8 @@ const loaders = {
 
         options: {
             indentedSyntax: true,
-            sourceMap: true,
-            minimize: false,
+            sourceMap: WITH_CSS_SOURCEMAPS,
+            minimize: IS_PRODUCTION,
              devtool: 'source-map',
             // includePaths: [path.resolve(__dirname, "./src")]
         }

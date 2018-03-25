@@ -248,6 +248,7 @@ class SubscriptionFactory(factory.DjangoModelFactory):
         django_get_or_create = ('subscriber', 'event', 'channel')
 
     subscriber = factory.SubFactory(UserFactory)
+    trigger_by = factory.SubFactory(AdminFactory)
     channel = factory.SubFactory(ChannelFactory)
     event = factory.SubFactory(EventFactory)
     config = {}

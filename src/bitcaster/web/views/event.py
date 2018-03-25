@@ -2,18 +2,20 @@
 import logging
 
 from django import forms
-from django.forms.models import inlineformset_factory
+from django.forms.models import BaseInlineFormSet, inlineformset_factory
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, ListView, RedirectView
 from rest_framework.serializers import Serializer
 
-from bitcaster.models import Event, Message
+from bitcaster.models import Event, Message, Subscription
+from bitcaster.models.subscription import SubscriptionStatus
 from bitcaster.web.forms.event import EventForm
 from bitcaster.web.forms.message import MessageForm
-from bitcaster.web.views import (DeleteView, DetailView, MessageUserMixin,
-                                 SelectedApplicationMixin, UpdateView,
-                                 import_by_name, messages,)
+from bitcaster.web.views import (DeleteView, DetailView, FormView,
+                                 MessageUserMixin, SelectedApplicationMixin,
+                                 UpdateView, import_by_name, messages,)
 
 logger = logging.getLogger(__name__)
 
@@ -24,17 +26,21 @@ class EventMixin(SelectedApplicationMixin, MessageUserMixin):
     def get_success_url(self):
         if 'save_edit_messages' in self.request.POST:
             return reverse("app-event-messages",
-                       args=[self.selected_organization.slug,
-                             self.selected_application.slug,
-                             self.object.pk]
+                           args=[self.selected_organization.slug,
+                                 self.selected_application.slug,
+                                 self.object.pk]
                            )
         else:
             return reverse("app-event-list",
-                       args=[self.selected_organization.slug,
-                             self.selected_application.slug])
+                           args=[self.selected_organization.slug,
+                                 self.selected_application.slug])
 
     def get_queryset(self):
         return self.selected_application.events.all()
+
+    def get_context_data(self, **kwargs):
+        kwargs["title"] = self.title
+        return super().get_context_data(**kwargs)
 
 
 class EventFormMixin:
@@ -45,13 +51,10 @@ class EventFormMixin:
         kwargs.update({"application": self.selected_application})
         return kwargs
 
-    def get_context_data(self, **kwargs):
-        kwargs["title"] = self.title
-        return super().get_context_data(**kwargs)
-
 
 class EventList(EventMixin, ListView):
     template_name = "bitcaster/event_list.html"
+    title = 'Application Events'
 
 
 class EventCreate(EventMixin, EventFormMixin, CreateView):
@@ -174,6 +177,80 @@ class MessageInlineFormSet(forms.BaseInlineFormSet):
     #         if form not in forms_to_delete:
     #             print(111, form.instance.channel.handler.validate_message())
     #     return super().clean()
+
+
+class EventSubscriptions(EventMixin, EventFormMixin, DetailView):
+    template_name = 'bitcaster/event_subscriptions.html'
+    title = 'Subscribers'
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
+
+
+class SubscriptionForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        self.application = kwargs.pop('application', None)
+        self.event = kwargs.pop('event', None)
+        super().__init__(*args, **kwargs)
+        self.fields['channel'].queryset = self.event.channels
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cleaned_data['event'] = self.event
+        return cleaned_data
+
+    class Meta:
+        model = Subscription
+        fields = ('subscriber', 'channel', 'event', 'locked')
+
+
+class SubscriptionBaseFormSet(BaseInlineFormSet):
+
+    def __init__(self, *args, **kwargs):
+        self.event = kwargs.pop('event')
+        super().__init__(*args, **kwargs)
+        self.form_kwargs['event'] = self.event
+
+
+SubscriptionFormSet = forms.inlineformset_factory(Event,
+                                                  Subscription,
+                                                  form=SubscriptionForm,
+                                                  formset=SubscriptionBaseFormSet,
+                                                  min_num=1,
+                                                  extra=0)
+
+
+class EventSubscriptionsSubscribe(EventMixin, FormView):
+    template_name = 'bitcaster/event_subscriptions_subscribe.html'
+    title = 'Subscribers'
+    form_class = SubscriptionForm
+
+    def get_object(self):
+        return self.get_queryset().get(pk=self.kwargs['pk'])
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['event'] = self.get_object()
+        return kwargs
+
+    def form_valid(self, form):
+        for frm in form:
+            data = frm.cleaned_data.copy()
+            data['event'] = self.get_object()
+            data.pop('DELETE')
+            Subscription.objects.create(status=SubscriptionStatus.MANAGED,
+                                        trigger_by=self.request.user,
+                                        **data)
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_form_class(self):
+        return SubscriptionFormSet
+
+    def get_context_data(self, **kwargs):
+        kwargs['event'] = self.get_object()
+        return super().get_context_data(**kwargs)
 
 
 #

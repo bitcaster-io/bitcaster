@@ -1,12 +1,33 @@
 {% extends "bitcaster/organization_base.html" %}{% load crispy_forms_tags %}
 {% block content %}
-    <h2>Add new application</h2>
-    <div>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <input type="submit" class="btn btn-primary" value="Save">
-    </form>
+    <div class="container-fluid">
+        <div class="row col-12">
+    <h2>Application Configuration</h2>
+            <div class="container-fluid user-profile">
+                <form method="post" enctype="multipart/form-data" action=".">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="avatar">
+                                {% if form.instance.avatar %}
+                                    <img src="{{ form.instance.avatar.url }}"/>
+                                {% endif %}
+                            </div>
+                            {{ form.avatar }}
+                        </div>
+                        <div class="col-8">
+                            {% for field in form %}
+                                {% if field.name != "avatar" %}
+                                    {{ field|as_crispy_field }}
+                                {% endif %}
+                            {% endfor %}
+                            {% csrf_token %}
+                            <input type="submit" value="Save" class="btn btn-primary">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+
 
 {% endblock content %}

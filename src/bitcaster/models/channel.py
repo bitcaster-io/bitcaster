@@ -5,12 +5,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q
 from django.template import Template
-from strategy_field.fields import StrategyField
 
 from bitcaster import logging
-from bitcaster.db.fields import EncryptedJSONField
-from bitcaster.dispatchers import dispatcher_registry
-from bitcaster.exceptions import HandlerNotFound, PluginValidationError
+from bitcaster.db.fields import DispatcherField, EncryptedJSONField
+from bitcaster.exceptions import PluginValidationError
 from bitcaster.state import state
 from bitcaster.template.secure_context import SecureContext
 
@@ -20,14 +18,6 @@ from .counters import Counter
 from .organization import Organization
 
 logger = logging.getLogger(__name__)
-
-
-def handler_not_found(fqn, exc):
-    try:
-        raise HandlerNotFound(fqn) from exc
-    except HandlerNotFound as e:
-        logger.exception(e)
-    return None
 
 
 class ChannelQuerySet(models.QuerySet):
@@ -69,10 +59,11 @@ It can be Global or Application specific.
     config = EncryptedJSONField(null=True, blank=True)
     enabled = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
-    handler = StrategyField(verbose_name='Dispatcher',
-                            import_error=handler_not_found,
-                            display_attribute='name',
-                            registry=dispatcher_registry)
+    handler = DispatcherField()
+    # handler = StrategyField(verbose_name='Dispatcher',
+    #                         import_error=handler_not_found,
+    #                         display_attribute='name',
+    #                         registry=dispatcher_registry)
     deprecated = models.BooleanField(default=False)
 
     objects = ChannelQuerySet().as_manager()

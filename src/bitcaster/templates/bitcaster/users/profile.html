@@ -13,6 +13,11 @@
                                 {% endif %}
                             </div>
                             {{ form.avatar }}
+                        <div class="text-center p-4">
+                        <a href="{% url "user-addresses" %}"
+                                style="width: 100%"
+                                class="btn btn-primary">Addresses</a>
+                        </div>
                         </div>
                         <div class="col-8">
                             {% for field in form %}

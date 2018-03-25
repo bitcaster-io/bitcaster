@@ -8,11 +8,16 @@ from django.conf import settings
 from django.contrib.postgres.fields import JSONField as _JSONField
 from django.contrib.postgres.forms import JSONField as _JSONFormField
 from django.db import models
+from django.db.models import Field
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 from fernet_fields import hkdf
 from jsoneditor.forms import JSONEditor
 from picklefield import PickledObjectField
+from strategy_field.fields import StrategyField
+
+from bitcaster.dispatchers import dispatcher_registry
+from bitcaster.exceptions import HandlerNotFound
 
 logger = logging.getLogger(__name__)
 
@@ -237,3 +242,25 @@ class SubscriptionPolicyField(models.IntegerField):
         This is used by the serialization framework.
         """
         return str(int(self.value_from_object(obj)))
+
+
+def handler_not_found(fqn, exc):
+    try:
+        raise HandlerNotFound(fqn) from exc
+    except HandlerNotFound as e:
+        logger.exception(e)
+    return None
+
+
+class DispatcherField(StrategyField):
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault('verbose_name', 'Dispatcher')
+        kwargs.setdefault('display_attribute', 'name')
+        kwargs.setdefault('import_error', handler_not_found)
+        kwargs.setdefault('registry', dispatcher_registry)
+        super().__init__(**kwargs)
+
+    def __eq__(self, other):
+        if isinstance(other, Field):
+            return self.creation_counter == other.creation_counter

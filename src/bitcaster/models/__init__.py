@@ -1,3 +1,4 @@
+from .address import Address  # noqa
 from .application import Application  # noqa
 from .audit import AuditEvent, AuditLogEntry, audit_log  # noqa
 from .base import AbstractModel  # noqa

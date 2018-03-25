@@ -24,6 +24,12 @@
 
     </style>
     <h2><a href="../..">{{ event }}</a>: Test</h2>
+    <div class="breadcrumbs pb-4">
+        <a href="{% app-url "app-event-list" %}">events</a> :
+        <a href="{% app-url "app-event-update" event.pk %}">{{ event }}</a> :
+        <a href="{% app-url "app-event-test" event.pk %}">test</a>
+    </div>
+
     <div class="container-fluid border p-3">
         <form id="ser">
             {% render_serializer serializer "rest_framework/inline2" %}

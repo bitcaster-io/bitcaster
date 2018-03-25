@@ -11,9 +11,10 @@ from rest_framework.exceptions import PermissionDenied
 from bitcaster.models import Application
 from bitcaster.security import is_owner
 from bitcaster.utils.dashboard import check_channels, check_events
-from bitcaster.web.forms import ApplicationCreateForm
+from bitcaster.web.forms import ApplicationCreateForm, ApplicationForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDetailView,
+                                      BitcasterBaseUpdateView,
                                       SelectedApplicationMixin,)
 
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
@@ -25,6 +26,7 @@ logger = logging.getLogger(__name__)
 __all__ = ["ApplicationCreate",
            "ApplicationDetail",
            "ApplicationChannels",
+           "ApplicationUpdateView",
            "ApplicationChannelUpdate",
            "ApplicationChannelToggle",
            "ApplicationChannelRemove",
@@ -42,6 +44,15 @@ class ApplicationViewMixin(SelectedApplicationMixin):
         if not is_owner(request.user, self.selected_application):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
+
+
+class ApplicationUpdateView(ApplicationViewMixin, BitcasterBaseUpdateView):
+    model = Application
+    form_class = ApplicationForm
+
+    def get_success_url(self):
+        return reverse('app-dashboard', args=[self.selected_organization.slug,
+                                              self.object.slug])
 
 
 class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):

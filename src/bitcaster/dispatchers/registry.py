@@ -11,7 +11,8 @@ logger = getLogger(__name__)
 
 dispatcher_registry = Registry('bitcaster.dispatchers.base.Dispatcher')
 
-if env('PLUGINS_AUTOLOAD'):
+
+def load_plugins():
     for ep in pkg_resources.iter_entry_points('bitcaster'):  # pragma: no-cover
         try:
             plugin = ep.load()
@@ -24,9 +25,13 @@ if env('PLUGINS_AUTOLOAD'):
         except pkg_resources.VersionConflict as e:
             raise PluginValidationError(
                 "Plugin %r could not be loaded: %s!" % (ep.name, e))
-        # else:
-        #     if plugin not in dispatcher_registry:
-        #         dispatcher_registry.append(plugin)
-        #         logger.info('Dispatcher registered')
-        #     else:
-        #         logger.info('Dispatcher %s already registered' % fqn(plugin))
+        else:
+            if plugin not in dispatcher_registry:
+                dispatcher_registry.append(plugin)
+                logger.info('Dispatcher registered')
+            else:
+                logger.info('Dispatcher %s already registered' % fqn(plugin))
+
+
+if env.bool('PLUGINS_AUTOLOAD'):
+    load_plugins()

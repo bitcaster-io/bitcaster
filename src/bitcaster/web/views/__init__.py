@@ -5,6 +5,7 @@ from .base import *
 from .callbacks import confirm_email
 from .channel import ChannelCreateWizard, ChannelListView
 from .event import (EventCreate, EventDelete, EventList, EventMessages,
+                    EventSubscriptions, EventSubscriptionsSubscribe,
                     EventTest, EventToggle, EventUpdate,)
 from .login_logout import LoginView, LogoutView
 from .message import MessageCreate, MessageDelete, MessageList, MessageUpdate

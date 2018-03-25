@@ -1,36 +1,52 @@
-{% extends "bitcaster/application_base.html" %}
+{% extends "bitcaster/application_base.html" %}{% load i18n %}
 {% block content %}
     <h2>Application Subscriptions</h2>
-        <table class="table table-striped table-hover col-12">
-            <thead>
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <div lass="tooltip">
+                    <a class="btn btn-outline-danger btn-small pull-right tooltip"
+                       href="#">{% trans "Subscribe User" %}
+{#                    <span class="tooltiptext">Tooltip text</span>#}
+                    </a>
+                </div>
+                <a class="btn btn-outline-danger btn-small pull-right tooltip mr-3"
+                   href="#">{% trans "Send Invitation" %}
+{#                    <span class="tooltiptext">Tooltip text</span>#}
+                </a>
+            </div>
+        </div>
+    </div>
+    <table class="table table-striped table-hover col-12">
+        <thead>
+        <tr>
+            <th scope="col">Event</th>
+            <th scope="col">Channel</th>
+            <th class="text-center" scope="col">active</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for subscription in object_list %}
             <tr>
-                <th scope="col">Event</th>
-                <th scope="col">Channel</th>
-                <th class="text-center" scope="col">active</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for subscription in object_list %}
-                <tr>
-                    <td>
-                        {{ subscription.event }}
-                    </td>
-                    <td>
-                        {{ subscription.channel }}
-                    </td>
-                    <td class="text-center">
-                        {% if subscription.active %}
+                <td>
+                    {{ subscription.event }}
+                </td>
+                <td>
+                    {{ subscription.channel }}
+                </td>
+                <td class="text-center">
+                    {% if subscription.active %}
                         <i class="fa fa-check-circle green"></i>
-                        {% else %}
+                    {% else %}
                         <i class="fa fa-exclamation-circle red"></i>
-                        {% endif %}
-{#                        {{ subscription.active }}#}
-                    </td>
-                </tr>
+                    {% endif %}
+                    {#                        {{ subscription.active }}#}
+                </td>
+            </tr>
 
-            {% endfor %}
-            </tbody>
+        {% endfor %}
+        </tbody>
 
-        </table>
+    </table>
 
 {% endblock content %}
