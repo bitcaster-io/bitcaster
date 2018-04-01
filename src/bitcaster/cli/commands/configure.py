@@ -21,6 +21,10 @@ from bitcaster.cli.utils import (Address, RedisURL, generate_secret_key,
 @click.option('--redis-cache-url',
               default=lambda: read_current_env('REDIS_CACHE_URL'),
               type=RedisURL)
+@click.option('--autoload-plugins', 'plugins_autoload',
+              is_flag=True,
+              default=lambda: read_current_env('PLUGINS_AUTOLOAD'),
+              type=bool)
 @click.option('--redis-lock-url',
               default=lambda: read_current_env('REDIS_LOCK_URL'),
               type=RedisURL)
@@ -72,7 +76,6 @@ def configure(ctx, prompt, prompt_all, write, **kwargs):
     kwargs["database_url"] = "psql://{database_user}:{database_password}@{database_address}/{database_name}".format(
         **kwargs)
     kwargs["enable_sentry"] = bool(kwargs['sentry_dsn'])
-    kwargs["plugins_autoload"] = True
     kwargs["secret_key"] = generate_secret_key()
 
     for key, value in env.scheme.items():
@@ -83,6 +86,17 @@ def configure(ctx, prompt, prompt_all, write, **kwargs):
         for key, __ in env.scheme.items():
             value = str(kwargs.get(key.lower(), ''))
             click.echo(f"{key:20} {value}")
+    for _dir in ['media_root', 'static_root']:
+        target = Path(kwargs[_dir])
+        if not target.exists():
+            if prompt:
+                ok = click.prompt(f"{_dir} set to '{target}' but it does not exists. Create it now?")
+            else:
+                ok = True
+            if ok:
+                click.echo(f"Create {_dir} '{target}'")
+                target.mkdir(parents=True)
+
     # from django.conf import settings
     # settings.configure()
     # from constance import config

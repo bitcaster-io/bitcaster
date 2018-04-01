@@ -34,3 +34,9 @@
         </div>
     </div>
 {% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $("select").select2();
+    </script>
+{% endblock %}

@@ -3,13 +3,14 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
                                   ListView, TemplateView, UpdateView,)
 from strategy_field.utils import import_by_name
 
-from bitcaster.models import Organization
+from bitcaster.models import Application, Organization
 from bitcaster.security import authorized_or_403
 
 logger = logging.getLogger(__name__)
@@ -46,8 +47,11 @@ class SelectedOrganizationMixin(SecuredViewMixin):
     def selected_organization(self):  # returns selected office and caches the office
         if 'org' not in self.kwargs:
             return None
-        organization = Organization.objects.get(slug=self.kwargs['org'])
-        self.check_perms(self.request, organization, True)
+        try:
+            organization = Organization.objects.get(slug=self.kwargs['org'])
+            self.check_perms(self.request, organization, True)
+        except Organization.DoesNotExist:
+            raise Http404
         return organization
 
 
@@ -70,8 +74,11 @@ class SelectedApplicationMixin(ApplicationListMixin):
     def selected_application(self):
         if self.selected_organization and 'app' in self.kwargs:
             slug = self.kwargs['app']
-            app = self.selected_organization.applications.get(slug=slug)
-            self.check_perms(self.request, app, True)
+            try:
+                app = self.selected_organization.applications.get(slug=slug)
+                self.check_perms(self.request, app, True)
+            except Application.DoesNotExist:
+                raise Http404
             return app
         return None
 

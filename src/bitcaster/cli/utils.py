@@ -36,6 +36,24 @@ class AddressParamType(click.ParamType):
 Address = AddressParamType()
 
 
+class VerbosityParamType(click.ParamType):
+    name = 'address'
+
+    def __init__(self) -> None:
+        self.quit = False
+
+    def convert(self, value, param, ctx):
+        self.total = value
+        if param.name == 'quit':
+            self.quit = True
+        if self.quit:
+            value = 0
+        return value
+
+
+Verbosity = VerbosityParamType()
+
+
 class RedisUrlParamType(click.ParamType):
     name = 'url'
 
@@ -89,7 +107,7 @@ class CaseInsensitiveChoice(click.Choice):
         return super(CaseInsensitiveChoice, self).convert(value.upper(), param, ctx)
 
 
-class LogLeveParamType(CaseInsensitiveChoice):
+class LogLevelParamType(CaseInsensitiveChoice):
 
     def __init__(self, choices=LOG_LEVELS):
         super().__init__(choices)
@@ -98,3 +116,42 @@ class LogLeveParamType(CaseInsensitiveChoice):
         value = super(CaseInsensitiveChoice, self).convert(value.upper(), param, ctx)
         os.environ['BITCASTER_LOG_LEVEL'] = value.upper()
         return value
+
+
+ERROR_LEVELS = ('CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG')
+
+
+class ErrorLeveParamType(CaseInsensitiveChoice):
+
+    def __init__(self, choices=ERROR_LEVELS):
+        super().__init__(choices)
+
+
+def wait_for_service(address, timeout=30, caption='', stdout=None, sleep=0):
+    import socket
+    import time
+
+    if isinstance(address, (list, tuple)):
+        ip, port = address
+    else:
+        url = urllib.parse.urlparse(address)
+        ip = url.hostname
+        port = url.port
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    start = time.time()
+    end = start + timeout
+    while True:
+        if stdout:
+            stdout.write(caption + '\r')
+            stdout.flush()
+        try:
+            s.connect((ip, port))
+            s.close()
+            break
+        except socket.error as ex:
+            time.sleep(0.5)
+        if time.time() > end:
+            raise TimeoutError
+    stdout.write(caption + 'OK\n')
+    time.sleep(sleep)

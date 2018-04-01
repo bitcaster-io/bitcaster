@@ -6,7 +6,7 @@ from django.core import mail
 from django.urls import reverse
 from requests_html import HTML
 
-from bitcaster.models import AuditLogEntry, AuditEvent
+from bitcaster.models import AuditEvent, AuditLogEntry
 
 pytestmark = pytest.mark.django_db
 

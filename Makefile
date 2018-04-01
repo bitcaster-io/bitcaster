@@ -24,6 +24,9 @@ help:
 	@echo "reset-dev-env           reset dev environment"
 	@echo "compile-requirements    compile .pip requirement files from .in"
 	@echo "sync-requirements       sync virtualenv to only contains bitcaster requirements"
+	@echo ""
+	@echo "DOCKER"
+	@echo "docker-reset-dev        reset/rebuild development docker container"
 
 
 
@@ -54,6 +57,7 @@ reset-dev-env: .init-db
 reset-migrations: .init-db
 	find src -name '000[1,2,3,4,5,6,7,8,9]*' | xargs rm -f
 	./manage.py makemigrations bitcaster
+	./manage.py makemigrations bitcaster
 	bitcaster upgrade --no-input
 	bitcaster option set INITIALIZED 0
 
@@ -70,7 +74,7 @@ messages:
 	cd src && ../manage.py compilemessages -l en -l fr -l es
 
 clean:
-	rm -fr ${BUILDDIR} dist *.egg-info .coverage coverage.xml .eggs
+	rm -fr ${BUILDDIR} build dist src/*.egg-info .coverage coverage.xml .eggs
 	find src -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
 	find tests -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
 	find src/concurrency/locale -name django.mo | xargs rm -f
@@ -150,10 +154,34 @@ install-plugins:
 		pip install -e $$dir || exit 1; \
  	done
 
-docker-beta:
-	docker rm bitcaster-beta
-	docker build --rm -t bitcaster:beta -f Dockerfile .
-	docker run --name=bitcaster-beta -p 8000:8000 -it -v ${PWD}:/usr/src/bitcaster -v ${PWD}/~build/etc/:/etc/bitcaster -v ${PWD}/~build/var/bitcaster/:/var/bitcaster bitcaster:beta
-	docker start bitcaster-beta
+uninstall-plugins:
+	@for dir in $(SUBDIRS); do \
+		pip uninstall $$dir || exit 1; \
+ 	done
+
+
+docker-reset-dev:
+	rm -fr ${PWD}/~build/docker/
+	-@docker stop bitcaster-dev
+	-@docker rm bitcaster-dev
+	-@docker rmi --force bitcaster:dev
+	docker build --rm --squash -t bitcaster:dev -f Dockerfile.dev .
+	docker run --name=bitcaster-dev -p 8000:8000 -it -v ${PWD}:/usr/src/bitcaster -v ${PWD}/~build/docker/etc/:/etc/bitcaster -v ${PWD}/~build/docker/var/bitcaster/:/var/bitcaster bitcaster:dev
+	docker start bitcaster-dev
+	docker exec -it bitcaster-dev bitcaster devserver -b 0.0.0.0:8000
+
+docker-reset-beta:
+	@rm -fr ${PWD}/~build/docker/
+	@-docker stop bitcaster-beta
+	@-docker rm bitcaster-beta
+	@-docker rmi --force bitcaster:beta
+	pip wheel . -w ./dist --cache-dir /dist
+	@for dir in $(SUBDIRS); do \
+		pushd $$dir; \
+		python setup.py sdist -d ../../dist || exit 1; \
+		popd; \
+ 	done
+	docker build --rm --squash -t bitcaster:beta -f Dockerfile .
+#	docker-compose start db redis
 
 .PHONY: test-plugins clean-plugins install-plugins

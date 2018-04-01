@@ -5,7 +5,7 @@ from django.utils.translation import ugettext as _
 
 from bitcaster.dispatchers import serializers
 from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                        MessageType, SubscriptionOptions, )
+                                        MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError, PluginValidationError
 from bitcaster.logging import getLogger

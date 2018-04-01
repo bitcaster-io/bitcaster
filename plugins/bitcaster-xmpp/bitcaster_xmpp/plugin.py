@@ -4,7 +4,7 @@ from pyxmpp2.simple import send_message
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
 from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                        MessageType, SubscriptionOptions, )
+                                        MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
 from bitcaster.logging import getLogger

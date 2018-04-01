@@ -4,8 +4,8 @@ from unittest.mock import Mock
 
 import pytest
 import vcr as _vcr
-from environ import Env
 from bitcaster_twitter_message import TwitterMessage
+from environ import Env
 
 from bitcaster.exceptions import PluginValidationError
 

@@ -1,3 +1,5 @@
+include bitcaster_gmail
 include-recursive bitcaster_gmail *.py
+include bitcaster_gmail/icon.png
 include README.rst
 include setup.py

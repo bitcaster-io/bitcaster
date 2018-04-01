@@ -19,9 +19,10 @@ app.conf.beat_schedule = {
 
 
 @app.task()
-def trigger_event(event_id, context, *, user=None, token=None, origin=None):
-    from bitcaster.models import Event
+def trigger_event(event_id, context, *, user_id=None, token=None, origin=None):
+    from bitcaster.models import Event, User
     event = Event.objects.get(id=event_id)
+    user = User.objects.get(id=user_id)
     emit_event(event, context, user=user, token=token, origin=origin)
 
 

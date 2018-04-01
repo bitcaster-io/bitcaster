@@ -185,6 +185,14 @@ TEMPLATES = [
     },
 ]
 
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
+
 # See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not env.bool('DEBUG', False)
@@ -271,13 +279,13 @@ CACHES = {
     },
     'lock': {
         'BACKEND': 'django_redis.cache.RedisCache',
+        # 'BACKEND': 'redis_lock.django_cache.RedisCache',
         'KEY_PREFIX': 'bitcaster-lock',
         'LOCATION': env('REDIS_LOCK_URL'),
         'OPTIONS': {
             'PICKLE_VERSION': -1,  # default
-            # 'PARSER_CLASS': 'redis.connection.HiredisParser',
-            # 'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient'
+            # "CLIENT_CLASS": "redis.client.StrictRedis"
 
         },
     },
@@ -399,7 +407,6 @@ CONSTANCE_CONFIG_FIELDSETS = {"Options": list(CONSTANCE_CONFIG.keys())}
 
 # SENTRY & RAVEN
 if env.bool('ENABLE_SENTRY', False):
-    import raven
     import bitcaster.state
 
     LOGGING['handlers']['sentry'] = {'level': 'ERROR',
@@ -413,7 +420,6 @@ if env.bool('ENABLE_SENTRY', False):
         'dsn': env('SENTRY_DSN'),
         # If you are using git, you can also automatically configure the
         # release based on the git info.
-        'release': raven.fetch_git_sha(str(PROJECT_DIR)),
     }
     # We recommend putting this as high in the chain as possible
     MIDDLEWARE = ['raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',

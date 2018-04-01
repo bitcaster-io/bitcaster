@@ -3,7 +3,6 @@ import pkg_resources
 from strategy_field.registry import Registry as Registry
 from strategy_field.utils import fqn
 
-from bitcaster.config.environ import env
 from bitcaster.exceptions import PluginValidationError
 from bitcaster.logging import getLogger
 
@@ -20,8 +19,8 @@ def load_plugins():
                 logger.info('Plugin %s loaded' % fqn(plugin))
             else:
                 logger.info('%s is not a plugin' % fqn(plugin))
-        except (pkg_resources.DistributionNotFound, ImportError) as e:
-            logger.exception(e)
+        except (pkg_resources.DistributionNotFound, ImportError, ModuleNotFoundError) as e:
+            logger.error(e)
         except pkg_resources.VersionConflict as e:
             raise PluginValidationError(
                 "Plugin %r could not be loaded: %s!" % (ep.name, e))
@@ -33,5 +32,5 @@ def load_plugins():
                 logger.info('Dispatcher %s already registered' % fqn(plugin))
 
 
-if env.bool('PLUGINS_AUTOLOAD'):
-    load_plugins()
+# if env.bool('PLUGINS_AUTOLOAD'):
+#     load_plugins()

@@ -4,8 +4,8 @@ from unittest.mock import Mock
 
 import pytest
 import vcr as _vcr
-from environ import Env
 from bitcaster_twitter import Twitter
+from environ import Env
 
 env = Env(BITCASTER_TWITTER_CONSUMER_KEY='',
           BITCASTER_TWITTER_CONSUMER_SECRET='',

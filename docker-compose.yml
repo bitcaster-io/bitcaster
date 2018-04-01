@@ -1,18 +1,32 @@
 version: '3'
 
 services:
-#  web:
+  web:
 #    build: .
-#    command: python3 manage.py runserver 0.0.0.0:8000
-#    volumes:
-#      - .:/code
-#    ports:
-#      - "${DOCKER_WEB_PORT}:8000"
-#    depends_on:
-#      - db
-#      - redis
-#      - sentry
-#
+    image: bitcaster:beta
+    command: bash
+    tty: true
+    volumes:
+#      - $PWD:/usr/src/bitcaster
+      - /data/storage/bitcaster/etc/:/etc/bitcaster
+      - /data/storage/bitcaster/var/bitcaster/:/var/bitcaster
+    ports:
+      - "${DOCKER_WEB_PORT}:8000"
+    depends_on:
+      - db
+      - redis
+      - sentry
+
+  workers:
+    image: bitcaster:beta
+    command: bitcaster start workers -l debug
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+      - sentry
+
   redis:
     image: redis:alpine
     command: redis-server --appendonly yes
@@ -38,15 +52,18 @@ services:
       - SENTRY_SECRET_KEY=abc
       - SENTRY_REDIS_HOST=redis
       - SENTRY_DB_NAME=sentry
-      - SENTRY_POSTGRES_HOST=postgres
+      - SENTRY_POSTGRES_HOST=db
       - SENTRY_ADMIN_USERNAME=sax
       - SENTRY_ADMIN_PASSWORD=123
       - C_FORCE_ROOT=1 # never in production
     links:
       - "redis:redis"
-      - "db:postgres"
+      - "db:db"
     ports:
       - ${DOCKER_SENTRY_PORT}:9000
     volumes:
       - ${DOCKER_SENTRY_DATA}:/conf
     restart: unless-stopped
+    depends_on:
+      - db
+      - redis

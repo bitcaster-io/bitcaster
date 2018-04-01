@@ -5,8 +5,8 @@ from unittest.mock import Mock
 import pytest
 import vcr as _vcr
 from environ import Env
-from bitcaster.exceptions import PluginValidationError
 
+from bitcaster.exceptions import PluginValidationError
 from bitcaster_gmail import Gmail
 
 env = Env(BITCASTER_GMAIL_USERNAME='',

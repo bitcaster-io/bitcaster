@@ -1,4 +1,6 @@
+include bitcaster_twitter
 include-recursive bitcaster_twitter *.py
+include bitcaster_twitter/icon.png
 include README.rst
 include setup.py
 include pytest.ini

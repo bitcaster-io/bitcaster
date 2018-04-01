@@ -214,3 +214,13 @@ gitflow_commit_files() {
 #	esac
 #	return $_return
 #}
+
+
+function stash() {
+    git stash -q --keep-index
+    trap unstash INT
+}
+
+function unstash() {
+    git stash pop -q
+}

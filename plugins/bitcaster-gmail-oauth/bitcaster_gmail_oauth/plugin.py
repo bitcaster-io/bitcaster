@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 import base64
 import datetime
-from django.conf import settings
-from django.core.handlers.wsgi import WSGIRequest
 from email.mime.text import MIMEText
 
 import httplib2
+from django.conf import settings
+from django.core.handlers.wsgi import WSGIRequest
 from googleapiclient.discovery import Resource, build
-from bitcaster.dispatchers.base import Dispatcher, DispatcherOptions, MessageType
-from bitcaster.dispatchers.oauth import OAauthHAndler, credentials_from_dict
-from bitcaster.dispatchers.registry import dispatcher_registry
 from oauth2client.client import EXPIRY_FORMAT, HttpAccessTokenRefreshError
 from requests_oauthlib import OAuth2Session
 from rest_framework import serializers
 from strategy_field.utils import fqn
+
+from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
+                                        MessageType,)
+from bitcaster.dispatchers.oauth import OAauthHAndler, credentials_from_dict
+from bitcaster.dispatchers.registry import dispatcher_registry
 
 
 class EmailMessage(MessageType):

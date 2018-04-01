@@ -7,7 +7,7 @@ from django.utils.encoding import force_text
 from django.utils.functional import Promise
 from social_django.strategy import DjangoStrategy
 
-from bitcaster.models import OrganizationMember
+from bitcaster.models import OrganizationMember, User
 
 # from social_core.pipeline.user import create_user
 
@@ -30,7 +30,8 @@ def associate_invitation(backend, details, user=None, *args, **kwargs):
                       "name": details['fullname'],
                       # "username": details['username'],
                       "friendly_name": details['username']}
-            user = strategy.create_user(**fields)
+            # user = strategy.create_user(**fields)
+            user = User.objects.create(**fields)
         OrganizationMember.objects.filter(pk=invitation_id).update(user=user,
                                                                    date_enrolled=timezone.now(),
                                                                    )

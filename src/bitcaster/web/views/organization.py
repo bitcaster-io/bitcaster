@@ -25,6 +25,7 @@ from bitcaster.utils.dashboard import check_channels, get_status
 from bitcaster.web.forms import (OrganizationForm, OrganizationInvitationForm,
                                  OrganizationInvitationFormSet, TeamForm,
                                  UserInviteRegistrationForm,)
+from bitcaster.web.forms.user import NewMemberForm
 
 from .base import (ApplicationListMixin, BitcasterBaseCreateView,
                    BitcasterBaseDetailView, BitcasterBaseListView,
@@ -42,6 +43,7 @@ __all__ = ["OrganizationCreate", "OrganizationDashboard", "OrganizationUpdate",
            "OrganizationChannelRemove", "OrganizationChannelToggle",
            "OrganizationChannelUpdate", "OrganizationChannelDeprecate",
            "OrganizationTeamUpdate", "OrganizationTeamMember",
+           "OrganizationMemberRegister",
            "OrganizationInvite", "InviteDelete", "InviteSend", "InviteAccept",
            "OrganizationApplications", "OrganizationChannelCreate"]
 
@@ -107,6 +109,26 @@ class OrganizationCreate(OrganizationViewMixin, BitcasterBaseCreateView):
         form.instance.owner = self.request.user
         self.message_user(_('Organization created'), messages.SUCCESS)
         return super().form_valid(form)
+
+
+class OrganizationMemberRegister(OrganizationViewMixin, CreateView):
+    template_name = 'bitcaster/organization_new_member.html'
+    model = User
+    form_class = NewMemberForm
+
+    def get_success_url(self):
+        return reverse('org-member-list',
+                       args=[self.selected_organization.slug])
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.selected_organization.memberships.create(user=self.object,
+                                                      invited_by=self.request.user,
+
+                                                      )
+        return super().form_valid(form)
+
+        # return super().form_valid(form)
 
 
 class OrganizationMembers(OrganizationViewMixin, BitcasterBaseDetailView):
@@ -189,8 +211,8 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
             pass
         return super(InviteAccept, self).get(request, **kwargs)
 
-        self.message_user("Invite expired", messages.ERROR)
-        return HttpResponseRedirect("/")
+        # self.message_user("Invite expired", messages.ERROR)
+        # return HttpResponseRedirect("/")
 
 
 class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
@@ -249,27 +271,26 @@ class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
 
     def form_valid(self, form):
         sent = False
-        if form.is_valid():
-            form.instance = self.selected_organization
-            for inline_form in form.extra_forms:
-                if not inline_form.has_changed():
-                    continue
-                recipient = inline_form.cleaned_data.get('email', None)
-                if recipient:
-                    if not self.selected_organization.memberships.filter(email=recipient).exists():
-                        inline_form.instance.organization = self.selected_organization
-                        inline_form.instance.invited_by = self.request.user
-                        membership = inline_form.save()
-                        membership.send_email()
-                        self.audit_log(AuditEvent.MEMBER_INVITE,
-                                       role=membership.get_role_display(),
-                                       email=membership.email)
-                        sent = True
-                    else:
-                        self.message_user(_('Invitation to {0} already sent').format(recipient),
-                                          messages.WARNING)
-            if sent:
-                self.message_user(_('Invitations sent'), messages.SUCCESS)
+        form.instance = self.selected_organization
+        for inline_form in form.extra_forms:
+            if not inline_form.has_changed():
+                continue
+            recipient = inline_form.cleaned_data.get('email', None)
+            if recipient:
+                if not self.selected_organization.memberships.filter(email=recipient).exists():
+                    inline_form.instance.organization = self.selected_organization
+                    inline_form.instance.invited_by = self.request.user
+                    membership = inline_form.save()
+                    membership.send_email()
+                    self.audit_log(AuditEvent.MEMBER_INVITE,
+                                   role=membership.get_role_display(),
+                                   email=membership.email)
+                    sent = True
+                else:
+                    self.message_user(_('Invitation to {0} already sent').format(recipient),
+                                      messages.WARNING)
+        if sent:
+            self.message_user(_('Invitations sent'), messages.SUCCESS)
         return super(OrganizationInvite, self).form_valid(form)
 
 

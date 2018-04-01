@@ -6,7 +6,7 @@ import sys
 import click
 
 from bitcaster.cli.commands.upgrade import upgrade
-from bitcaster.cli.utils import Address, LogLeveParamType
+from bitcaster.cli.utils import Address, LogLevelParamType
 from bitcaster.services.http import HTTPServer
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ def start(**kwargs):
               help=('Path to log file. '
                     'If no logfile is specified, stderr is used.'))
 @click.option('--loglevel', '-l', default='info',
-              type=LogLeveParamType(),
+              type=LogLevelParamType(),
               help=('Logging level, choose between DEBUG, INFO, WARNING,'
                     ' ERROR, CRITICAL, or FATAL.'))
 @click.option('--detach', '-D', is_flag=True, default=False,
@@ -88,7 +88,7 @@ def workers(**options):
 @click.option('--autoreload', default=False, is_flag=True,
               help='Restart server on server change')
 @click.option('--loglevel', '-l', default='info',
-              type=LogLeveParamType(),
+              type=LogLevelParamType(),
               help=('Logging level, choose between DEBUG, INFO, WARNING,'
                     ' ERROR, CRITICAL, or FATAL.'))
 @click.option('--logfile', default=None,

@@ -61,6 +61,10 @@ urlpatterns = [path(r'api/', include(bitcaster.api.urls), name='api'),
                path('plugins/icons/channel/<int:pk>/', channel_icon, name="channel-icon"),
                path('plugins/icons/<str:fqn>/', plugin_icon, name="plugin-icon")]
 
+
+handler404 = 'bitcaster.web.views.handler404'
+handler500 = 'bitcaster.web.views.handler500'
+
 if settings.DEBUG:
     urlpatterns += [static(settings.MEDIA_URL, static_serve, show_indexes=True, insecure=True),
                     static(settings.STATIC_URL, static_serve, show_indexes=True, insecure=True)]

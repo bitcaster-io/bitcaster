@@ -1,0 +1,22 @@
+{% load bc_assets %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Page not found</title>
+    <link rel="shortcut icon" type="image/png" href="/images/favicon.ico"/>
+    <link rel="stylesheet" href="{% asset "bitcaster/bitcaster.css" %}">
+</head>
+<body class="">
+<h1 class="p-5">bitcaster</h1>
+<div class="row pl-5 ">
+    <div class="col-7">
+        <h3><b>404.</b> Page Not Found</h3>
+        <h4>The requested URL '{{request.path}}' was not found.</h4>
+        <h4 class="pt-5"><a href="/">Back to home page</a></h4>
+    </div>
+    <div class="col-4">
+        <img src="{% asset "bitcaster/images/bitcaster100.png" %}">
+    </div>
+</div>
+</body>
+</html>

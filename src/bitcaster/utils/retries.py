@@ -8,6 +8,10 @@ from django.utils.encoding import force_bytes
 logger = logging.getLogger(__name__)
 
 
+class ResourceLocked(Exception):
+    pass
+
+
 class RetryException(Exception):
     def __init__(self, message, exception):
         self.message = message
@@ -48,9 +52,6 @@ class TimedRetryPolicy:
         self.clock = time
         self.function = func
 
-    # def __enter__(self):
-    #     pass
-
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
@@ -58,7 +59,9 @@ class TimedRetryPolicy:
         start = self.clock.time()
         for i in itertools.count(1):
             try:
-                return self.function()
+                if self.function():
+                    return True
+                raise ResourceLocked
             except self.exceptions as error:
                 delay = self.delay(i)
                 now = self.clock.time()

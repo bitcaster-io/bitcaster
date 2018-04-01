@@ -2,15 +2,15 @@
 import logging
 from uuid import uuid4
 
-from django.template.defaultfilters import slugify
 from django.utils.crypto import get_random_string
+from django.utils.text import slugify
 
 logger = logging.getLogger(__name__)
 
 
 def slugify_instance(inst, label, reserved=(), max_length=30,
                      field_name='slug', *args, **kwargs):
-    base_value = slugify(label)[:max_length]
+    base_value = str(slugify(label)[:max_length])
 
     if base_value is not None:
         base_value = base_value.strip()

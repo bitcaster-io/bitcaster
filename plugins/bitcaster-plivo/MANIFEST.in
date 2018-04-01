@@ -1,3 +1,5 @@
+include bitcaster_plivo
 include-recursive bitcaster_plivo *.py
+include bitcaster_plivo/icon.png
 include README.rst
 include setup.py

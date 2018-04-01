@@ -1,3 +1,4 @@
+
 if git diff-index --quiet HEAD --; then
     # no changes between index and working copy; just run tests
     OUT=`isort -c -rc src/ tests/`
@@ -5,8 +6,7 @@ if git diff-index --quiet HEAD --; then
 else
     # Test the version that's about to be committed,
     # stashing all unindexed changes
-    git stash -q --keep-index
-#    FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -e '\.py$')
+    stash;
     FILES=$(gitflow_python_files)
     if [ -n "$FILES" ]; then
         OUT=`isort -c $FILES`
@@ -15,7 +15,7 @@ else
         gitflow_ok "iSort skipped (no .py file in commit)"
         RET=-1
     fi
-    git stash pop -q
+    unstash;
 fi
 
 if [ $RET -eq 0 ];then

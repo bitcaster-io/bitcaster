@@ -4,8 +4,8 @@ from unittest.mock import Mock
 
 import pytest
 import vcr as _vcr
-from environ import Env, json
 from bitcaster_twilio import Twilio
+from environ import Env, json
 
 from bitcaster.exceptions import PluginValidationError
 

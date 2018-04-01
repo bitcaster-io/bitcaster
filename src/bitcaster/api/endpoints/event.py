@@ -37,7 +37,7 @@ class EventViewSet(BaseModelViewSet):
         if not event.enabled:
             return Response({"error": "Event disabled"}, status=400)
         trigger_event.delay(event.id, request.data,
-                            user=request.user,
+                            user_id=request.user.pk,
                             token=request.token.token,
                             origin=get_client_ip(request))
         return Response({"message": "Event triggered",

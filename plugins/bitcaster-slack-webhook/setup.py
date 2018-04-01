@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 tests_require = ['bitcaster',
                  'pytest',
@@ -21,7 +21,12 @@ setup(
     },
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
-    py_modules=['bitcaster_slack_webhook'],
+    package_dir={'': '.'},
+    packages=find_packages('.'),
+    include_package_data=True,
+    package_data={
+        'bitcaster_slack_webhook': ['*.png', ],
+    },
     entry_points={'bitcaster': ['slack-webhook = bitcaster_slack_webhook.plugin:SlackWebhook']},
     license="MIT License",
     classifiers=[

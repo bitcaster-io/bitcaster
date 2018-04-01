@@ -3,16 +3,20 @@ from pathlib import Path
 
 import click
 
+from bitcaster.cli import global_options
 from bitcaster.config.environ import env
 
 
 @click.command()
+@global_options
 @click.option('--prompt/--no-input', default=True, is_flag=True,
               help='Do not prompt for parameters')
 @click.option('--migrate/--no-migrate', default=True, is_flag=True,
-              help='Do not prompt for parameters')
+              help='Run database migrations')
+@click.option('--static/--no-static', default=True, is_flag=True,
+              help='Collect static assets')
 @click.pass_context
-def upgrade(ctx, prompt, migrate, **kwargs):
+def upgrade(ctx, prompt, migrate, static, verbose, **kwargs):
     try:
         from django.core.management import execute_from_command_line
 
@@ -20,6 +24,8 @@ def upgrade(ctx, prompt, migrate, **kwargs):
             extra = []
         else:
             extra = ['--no-input']
+
+        extra.extend(['-v', str(verbose)])
 
         os.environ['BITCASTER_DEBUG'] = 'True'
         os.environ['BITCASTER_PLUGINS_AUTOLOAD'] = 'False'
@@ -31,11 +37,14 @@ def upgrade(ctx, prompt, migrate, **kwargs):
                 else:
                     ok = True
                 if ok:
-                    click.echo(f"Create {_dir} '{target}'")
+                    if verbose > 0:
+                        click.echo(f"Create {_dir} '{target}'")
                     target.mkdir(parents=True)
+        if static:
+            execute_from_command_line(argv=['manage', 'collectstatic'] + extra)
         if migrate:
             execute_from_command_line(argv=['manage', 'migrate'] + extra)
-        execute_from_command_line(argv=['manage', 'collectstatic'] + extra)
+
     except Exception as e:
         click.echo(str(e))
         ctx.abort()

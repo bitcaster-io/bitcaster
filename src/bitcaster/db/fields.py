@@ -179,7 +179,7 @@ class Role(EnumField):
         return sorted([(int(cls.OWNER), _('Owner')),
                        (int(cls.ADMIN), _('Admin')),
                        (int(cls.MEMBER), _('Member')),
-                       (int(cls.RECIPIENT), _('Recipient')),
+                       (int(cls.RECIPIENT), _('Subscriber')),
                        ])
 
 

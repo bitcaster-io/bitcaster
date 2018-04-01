@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 tests_require = ['bitcaster',
                  'pytest',
@@ -16,7 +16,12 @@ setup(
     long_description='',
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
-    py_modules=['bitcaster_gmail_oauth'],
+    package_dir={'': '.'},
+    packages=find_packages('.'),
+    include_package_data=True,
+    package_data={
+        'bitcaster_gmail_oauth': ['*.png', ],
+    },
     install_requires=['requests-oauthlib',
                       'google-api-python-client',
                       ],

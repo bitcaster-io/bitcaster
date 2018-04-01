@@ -5,27 +5,19 @@
 # Instructions:
 #
 #   Build the container:
-#     $ docker build --rm -t bitcaster:dev -f Dockerfile.dev .
+#     $ docker build --rm --squash -t bitcaster:dev -f Dockerfile.dev .
 #   Bootstrap the container:
-#     $ docker run --name=bitcaster-dev -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/etc/:/etc/bitcaster -v $PWD/~build/var/bitcaster/:/var/bitcaster bitcaster:dev
+#     $ docker run --name=bitcaster-dev -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/docker/etc/:/etc/bitcaster -v $PWD/~build/docker/var/bitcaster/:/var/bitcaster bitcaster:dev
 #   Run the container:
 #     $ docker start bitcaster-dev
 #   Attach into the container:
 #     $ docker exec -it bitcaster-dev bash
 #   Run devserver:
-#     $ docker exec -it bitcaster-dev bitcaster start devserver 0.0.0.0:8000
+#     $ docker exec -it bitcaster-dev bitcaster devserver 0.0.0.0:8000
 #   Stop container:
 #     $ docker stop bitcaster-dev
 #   Remove container:
 #     $ docker rm -f bitcaster-dev
-#
-# Sample development flow
-#  docker build --rm -t bitcaster:dev -f Dockerfile.dev .
-#  docker run --name=bitcaster-dev -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/etc/:/etc/bitcaster -v $PWD/~build/var/bitcaster/:/var/bitcaster bitcaster:dev
-#  docker start bitcaster-dev
-#  docker exec -it bitcaster-dev bitcaster upgrade
-#  docker exec -it bitcaster-dev bitcaster plugin install -r -d plugins
-#  docker exec -it bitcaster-dev bitcaster devserver -b 0.0.0.0:8000
 
 FROM python:3.6
 ENV PYTHONUNBUFFERED 1

@@ -2,6 +2,7 @@
 import logging
 
 from django import forms
+from django.forms import BaseFormSet
 from django.forms.models import BaseInlineFormSet, inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -9,13 +10,16 @@ from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, ListView, RedirectView
 from rest_framework.serializers import Serializer
 
-from bitcaster.models import Event, Message, Subscription
-from bitcaster.models.subscription import SubscriptionStatus
+from bitcaster.db.fields import Role
+from bitcaster.models import (AuditEvent, Event, Message,
+                              OrganizationMember, Subscription,)
 from bitcaster.web.forms.event import EventForm
 from bitcaster.web.forms.message import MessageForm
 from bitcaster.web.views import (DeleteView, DetailView, FormView,
-                                 MessageUserMixin, SelectedApplicationMixin,
-                                 UpdateView, import_by_name, messages, )
+                                 MessageUserMixin, Organization,
+                                 SelectedApplicationMixin, UpdateView,
+                                 import_by_name, messages,)
+from bitcaster.web.views.organization import OrganizationAuditMixin
 
 logger = logging.getLogger(__name__)
 
@@ -187,13 +191,6 @@ class EventSubscriptions(EventMixin, EventFormMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class InviteForm(forms.Form):
-    pass
-
-
-InviteFormSet = forms.formset_factory(InviteForm, min_num=1, extra=0)
-
-
 class SubscriptionForm(forms.ModelForm):
     trigger_by = forms.CharField(required=False)
 
@@ -260,10 +257,42 @@ class EventSubscriptionsSubscribe(EventMixin, FormView):
         return super().get_context_data(**kwargs)
 
 
-class EventSubscriptionsInvite(EventMixin, FormView):
+class InviteForm(forms.ModelForm):
+    email = forms.EmailField()
+
+    def __init__(self, *args, **kwargs):
+        self.application = kwargs.pop('application', None)
+        self.event = kwargs.pop('event', None)
+        self.requestor = kwargs.pop('requestor', None)
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = OrganizationMember
+        fields = ('email',)
+
+
+class InviteBaseFormSet(BaseFormSet):
+
+    def __init__(self, *args, **kwargs):
+        self.event = kwargs.pop('event')
+        self.requestor = kwargs.pop('requestor')
+        super().__init__(*args, **kwargs)
+        self.form_kwargs['event'] = self.event
+        self.form_kwargs['requestor'] = self.requestor
+
+
+InviteFormSet = forms.inlineformset_factory(Organization,
+                                            OrganizationMember,
+                                            form=InviteForm,
+                                            formset=InviteBaseFormSet,
+                                            min_num=1,
+                                            extra=0)
+
+
+class EventSubscriptionsInvite(EventMixin, FormView, OrganizationAuditMixin):
     template_name = 'bitcaster/event_subscriptions_invite.html'
     title = 'Subscribers'
-    form_class = SubscriptionForm
+    form_class = InviteFormSet
 
     def get_object(self):
         return self.get_queryset().get(pk=self.kwargs['pk'])
@@ -271,21 +300,24 @@ class EventSubscriptionsInvite(EventMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['event'] = self.get_object()
+        kwargs['requestor'] = self.request.user
         return kwargs
 
-    def form_valid(self, form):
-        for frm in form:
-            data = frm.cleaned_data.copy()
-            data['event'] = self.get_object()
-            data.pop('DELETE')
-            Subscription.objects.create(status=SubscriptionStatus.MANAGED,
-                                        trigger_by=self.request.user,
-                                        **data)
+    def form_valid(self, formset):
+        formset.instance = self.selected_organization
+        for form in formset:
+            recipient = form.cleaned_data.get('email', None)
+            if not self.selected_organization.memberships.filter(email=recipient).exists():
+                form.instance.organization = self.selected_organization
+                form.instance.event = self.get_object()
+                form.instance.role = int(Role.RECIPIENT)
+                membership = form.save()
+                membership.send_email()
+                self.audit_log(AuditEvent.MEMBER_INVITE,
+                               role=membership.get_role_display(),
+                               email=membership.email)
 
         return HttpResponseRedirect(self.get_success_url())
-
-    def get_form_class(self):
-        return SubscriptionFormSet
 
     def get_context_data(self, **kwargs):
         kwargs['event'] = self.get_object()

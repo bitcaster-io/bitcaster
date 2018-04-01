@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
-import logging
+# import logging
 
 import redis_lock
-from redis import StrictRedis
+# logger = logging.getLogger(__name__)
+from django.core.cache import caches
 
-logger = logging.getLogger(__name__)
+# from redis import StrictRedis
 
-conn = StrictRedis()
+cache = caches['lock']
+# conn = StrictRedis()
 
 
-def get(key, duration):
-    return redis_lock.Lock(conn, key, expire=duration, auto_renewal=True)
+def get(key, timeout=600, blocking_timeout=1) -> redis_lock.Lock:
+    """
+
+    :param key:
+    :param timeout: lock TTL
+    :param blocking_timeout: number of seconds to wait for lock
+    :return:
+    """
+    # return cache.lock(key, expire=timeout)
+    return cache.lock(key, timeout=timeout, blocking_timeout=blocking_timeout)

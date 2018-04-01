@@ -5,27 +5,19 @@
 # Instructions:
 #
 #   Build the container:
-#     $ docker build --rm -t bitcaster:beta -f Dockerfile .
+#     $ docker build --rm --squash -t bitcaster:beta -f Dockerfile.dev .
 #   Bootstrap the container:
-#     $ docker run --name=bitcaster-beta -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/etc/:/etc/bitcaster -v $PWD/~build/var/bitcaster/:/var/bitcaster bitcaster:beta
+#     $ docker run --name=bitcaster-beta -p 8000:8000 -it -v /data/storage/bitcaster/etc/:/etc/bitcaster -v /data/storage/bitcaster/var/bitcaster/:/var/bitcaster bitcaster:beta
 #   Run the container:
 #     $ docker start bitcaster-beta
 #   Attach into the container:
 #     $ docker exec -it bitcaster-beta bash
 #   Run devserver:
-#     $ docker exec -it bitcaster-beta bitcaster start devserver 0.0.0.0:8000
+#     $ docker exec -it bitcaster-beta bitcaster devserver 0.0.0.0:8000
 #   Stop container:
 #     $ docker stop bitcaster-beta
 #   Remove container:
 #     $ docker rm -f bitcaster-beta
-#
-# Sample development flow
-#  docker build --rm -t bitcaster:beta -f Dockerfile.dev .
-#  docker run --name=bitcaster-beta -p 8000:8000 -it -v $PWD:/usr/src/bitcaster -v $PWD/~build/etc/:/etc/bitcaster -v $PWD/~build/var/bitcaster/:/var/bitcaster bitcaster:beta
-#  docker start bitcaster-beta
-#  docker exec -it bitcaster-beta bitcaster upgrade
-#  docker exec -it bitcaster-beta bitcaster plugin install -r -d plugins
-#  docker exec -it bitcaster-beta bitcaster devserver -b 0.0.0.0:8000
 
 FROM python:3.6
 ENV PYTHONUNBUFFERED 1
@@ -37,6 +29,7 @@ ENV NJS_VERSION   1.13.7.0.1.15-1~stretch
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ntp \
+        vim \
     && rm -rf /var/lib/apt/lists/*
 
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
@@ -46,32 +39,15 @@ ENV LANG en_US.utf8
 
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
 
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list \
-    && apt-get update && apt-get install -y --no-install-recommends \
-        postgresql-common \
-        postgresql-$PG_MAJOR=$PG_VERSION \
-        postgresql-client-$PG_MAJOR=$PG_VERSION \
-        postgresql-contrib-$PG_MAJOR=$PG_VERSION \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
-    && touch "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
-    && chown -R postgres "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
-    && { echo; echo "host all all 0.0.0.0/0 trust"; } >> "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf" \
-    &&  { echo; echo "local all all trust"; } >> "/etc/postgresql/$PG_MAJOR/main/pg_hba.conf"
-
-RUN service postgresql start \
-    && createdb -U postgres -E utf-8 --template template0 ${DATABASE_NAME} \
-    && service postgresql stop
-
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        redis-server \
-        memcached \
-        postfix \
-    && rm -rf /var/lib/apt/lists/*
-
 ENV BITCASTER_MEDIA_ROOT /var/bitcaster/media
 ENV BITCASTER_STATIC_ROOT /var/bitcaster/static
+
+ENV BITCASTER_DATABASE_HOST db
+ENV BITCASTER_REDIS_CACHE_URL redis://redis:6379/0
+ENV BITCASTER_REDIS_LOCK_URL redis://redis:6379/1
+ENV BITCASTER_CELERY_BROKER_URL redis://redis:6379/2
+ENV BITCASTER_DATABASE_URL psql://postgres:@db:5432/bitcaster
+
 ENV BITCASTER_CONF_DIR /etc/bitcaster/
 ENV BITCASTER_CONF ${BITCASTER_CONF_DIR}conf
 RUN mkdir -p /usr/src/bitcaster -m 770
@@ -79,6 +55,21 @@ RUN mkdir -p ${BITCASTER_MEDIA_ROOT} -m 770
 RUN mkdir -p ${BITCASTER_STATIC_ROOT} -m 770
 RUN mkdir -p ${BITCASTER_CONF_DIR} -m 770
 RUN touch ${BITCASTER_CONF}
+COPY dist /cache
+RUN pip install bitcaster \
+    bitcaster-facebook \
+    bitcaster-gmail \
+    bitcaster-hangout \
+    bitcaster-plivo \
+    bitcaster-skype \
+    bitcaster-slack-webhook \
+    bitcaster-twilio \
+    bitcaster-twitter \
+    bitcaster-twitter-message \
+    bitcaster-xmpp \
+    --find-links file:///cache \
+    --cache-dir /cache
+
 
 WORKDIR /usr/src/bitcaster
 

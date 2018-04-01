@@ -48,6 +48,7 @@ def _get_superuser():
 @click.pass_context
 def createuser(ctx, email, password, superuser, no_password, prompt):
     "Create a new user."
+
     if prompt:
         if not email:
             email = click.prompt('Email')

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 tests_require = ['bitcaster',
                  'pytest',
@@ -17,7 +17,12 @@ setup(
     install_requires=['pyxmpp2'],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
-    py_modules=['bitcaster_xmpp'],
+    package_dir={'': '.'},
+    packages=find_packages('.'),
+    include_package_data=True,
+    package_data={
+        'bitcaster_xmpp': ['*.png', ],
+    },
     entry_points={'bitcaster': ['xmpp = bitcaster_xmpp.plugin:Xmpp']},
     license="MIT License",
     classifiers=[

@@ -19,7 +19,6 @@ class OrganizationMember(models.Model):
     and could be thought of as team owners (though their access level may not)
     be set to ownership.
     """
-    __core__ = True
 
     organization = models.ForeignKey(Organization,
                                      on_delete=models.CASCADE,
@@ -31,13 +30,18 @@ class OrganizationMember(models.Model):
     email = models.EmailField(null=True, blank=True)
 
     role = RoleField()
-    date_added = models.DateTimeField(default=timezone.now)
+    date_added = models.DateTimeField(default=timezone.now,
+                                      help_text='date when email was sent')
     invited_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                    null=True, blank=True,
                                    on_delete=models.CASCADE,
                                    related_name='+')
-    date_enrolled = models.DateTimeField(blank=True,
-                                         null=True)
+    date_enrolled = models.DateTimeField(blank=True, null=True,
+                                         help_text='date when user first login')
+    #
+    event = models.ForeignKey('bitcaster.Event',
+                              default=None, blank=True, null=True,
+                              on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
+import vcr as _vcr
 from bitcaster_plivo import Plivo
 from environ import Env
-from pathlib import Path
-import vcr as _vcr
 
 from bitcaster.exceptions import PluginValidationError
 

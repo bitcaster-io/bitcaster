@@ -12,6 +12,7 @@ if [ ! -f /var/bitcaster/.bootstrapped ]; then
     pip install -e .[dev]
     bitcaster configure --no-input
     bitcaster upgrade --no-input
+    bitcaster plugin install -r -d plugins
     touch /var/bitcaster/.bootstrapped
     echo "done" && exit 0
 fi

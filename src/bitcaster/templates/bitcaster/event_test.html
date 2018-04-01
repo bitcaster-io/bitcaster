@@ -135,7 +135,7 @@ wget -O- "{{ api_url }}" \
             };
             */
             xhttp.open("POST", "{{ api_url }}", false);
-            $monitor.append("OPEN CONNECTION\n");
+            $monitor.append("OPEN CONNECTION: {{ api_url }}\n");
              xhttp.setRequestHeader("Content-type", "application/json");
             xhttp.setRequestHeader("Authorization", "Token {{ user_token.token }}");
             $monitor.append("SENDING REQUEST\n");

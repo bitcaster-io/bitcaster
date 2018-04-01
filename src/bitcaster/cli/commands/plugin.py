@@ -4,21 +4,19 @@ import sys
 from pathlib import Path
 
 import click
-import pip
-from cookiecutter.generate import generate_files
 
 import bitcaster
 from bitcaster.cli import need_setup
 from bitcaster.utils.reflect import package_name
 
-name_char_blacklist_regexp = re.compile('[a-z-]*\d*$')
-
 
 def is_valid_name(name):
+    name_char_blacklist_regexp = re.compile('[a-z-]*\d*$')
     return name_char_blacklist_regexp.match(name)
 
 
 def cook(input_dir, output_dir, context=None, overwrite=True):
+    from cookiecutter.generate import generate_files
     generate_files(
         repo_dir=input_dir,
         context=context,
@@ -28,15 +26,17 @@ def cook(input_dir, output_dir, context=None, overwrite=True):
 
 
 @click.group()
-@click.pass_context
-def plugin(ctx, **kwargs):
+def plugin(**kwargs):
+    os.environ['BITCASTER_PLUGINS_AUTOLOAD'] = 'False'
     pass
 
 
 @plugin.command(name="list")
 @need_setup
 def _list(**kwargs):
+    # need_setup(lambda : True)()
     from bitcaster.dispatchers.registry import dispatcher_registry
+
     for entry in sorted(dispatcher_registry,
                         key=lambda e: e.name):
         core = "*" if entry.__core__ else " "
@@ -50,6 +50,7 @@ def _list(**kwargs):
 @need_setup
 def uninstall(name, prompt, **kwargs):
     from bitcaster.dispatchers.registry import dispatcher_registry
+    import pip
     import pkg_resources  # part of setuptools
     found = [entry for entry in dispatcher_registry if entry.name.lower() == name.lower()]
     if not found:
@@ -72,12 +73,13 @@ def uninstall(name, prompt, **kwargs):
               help='Do not prompt for parameters')
 @need_setup
 def install(name, prompt, recursive, from_dir, **kwargs):
-    os.environ['BITCASTER_PLUGINS_AUTOLOAD'] = 'False'
+    import pip
     if from_dir:
         if recursive:
             for root, subdirs, files in os.walk(from_dir):
                 if os.path.exists(os.path.join(root, 'setup.py')):
-                    pip.main(["install", root])
+                    click.echo(f"Found plugin in {root}")
+                    pip.main(["install", "-q", "--ignore-installed", root])
 
         else:
             os.chdir(from_dir)

@@ -2,8 +2,6 @@
 import logging
 from pathlib import Path
 
-import redis.exceptions
-from constance import config
 from django.core.cache import caches
 from django.core.checks import Error, register
 from django.db import OperationalError, connection
@@ -16,17 +14,17 @@ logger = logging.getLogger(__name__)
 @register(deploy=True)
 def check(app_configs, **kwargs):
     errors = []
-    try:
-        config.INITIALIZED
-    except redis.exceptions.ConnectionError as e:
-        errors.append(
-            Error(
-                'Unable to contact Redis',
-                hint='check your redis configuration',
-                obj=None,
-                id='bitcaster.E001',
-            )
-        )
+    # try:
+    #     config.INITIALIZED
+    # except redis.exceptions.ConnectionError as e:
+    #     errors.append(
+    #         Error(
+    #             'Unable to contact Redis',
+    #             hint='check your redis configuration',
+    #             obj=None,
+    #             id='bitcaster.E001',
+    #         )
+    #     )
     try:
         connection.cursor()
     except OperationalError as e:

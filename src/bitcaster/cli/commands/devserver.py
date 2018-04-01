@@ -9,7 +9,7 @@ from pathlib import Path
 import _thread
 import click
 
-from bitcaster.cli.utils import Address, LogLeveParamType
+from bitcaster.cli.utils import Address, LogLevelParamType
 from bitcaster.services.http import HTTPServer
 
 logger = logging.getLogger(__name__)
@@ -153,7 +153,7 @@ def monitor():
 @click.option('--autoreload/--noreload/', default=True, is_flag=True,
               help='Restart server on server change')
 @click.option('--loglevel', '-l', default='debug',
-              type=LogLeveParamType(),
+              type=LogLevelParamType(),
               help=('Logging level, choose between DEBUG, INFO, WARNING,'
                     ' ERROR, CRITICAL, or FATAL.'))
 @click.option('--logfile', default=None,
