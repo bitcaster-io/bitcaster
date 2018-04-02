@@ -5,8 +5,6 @@ from django.contrib import admin
 
 from bitcaster.models import AuditLogEntry
 
-from .forms import ApplicationForm
-from .inlines import ChannelInline, EventInline
 from .site import site
 
 logger = logging.getLogger(__name__)
@@ -16,5 +14,3 @@ logger = logging.getLogger(__name__)
 class AuditLogEntryAdmin(admin.ModelAdmin):
     list_display = ('datetime', 'organization', 'application', 'actor')
     list_filter = ('organization', 'application')
-    inlines = [ChannelInline, EventInline]
-    form = ApplicationForm

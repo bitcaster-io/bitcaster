@@ -1,9 +1,6 @@
-import itertools
 import logging
 import random
 import time
-
-from django.utils.encoding import force_bytes
 
 logger = logging.getLogger(__name__)
 
@@ -16,9 +13,6 @@ class RetryException(Exception):
     def __init__(self, message, exception):
         self.message = message
         self.exception = exception
-
-    def __str__(self):
-        return force_bytes(self.message, errors='replace')
 
     def __repr__(self):
         return u'<{}: {!r}>'.format(
@@ -57,7 +51,10 @@ class TimedRetryPolicy:
 
     def __enter__(self):
         start = self.clock.time()
-        for i in itertools.count(1):
+        end = start + self.timeout
+        i = 0
+        while True:
+            i += 1
             try:
                 if self.function():
                     return True
@@ -65,7 +62,7 @@ class TimedRetryPolicy:
             except self.exceptions as error:
                 delay = self.delay(i)
                 now = self.clock.time()
-                if (now + delay) > (start + self.timeout):
+                if (now + delay) > end:
                     raise RetryException(
                         'Could not successfully execute %r within %.3f seconds (%s attempts.)' % (
                             self.function, now - start, i),

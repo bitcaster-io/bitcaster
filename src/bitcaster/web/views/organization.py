@@ -208,11 +208,9 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
     def get(self, request, **kwargs):
         check = kwargs['check']
         if totp.verify(check, valid_window=config.INVITATION_EXPIRE):
-            pass
-        return super(InviteAccept, self).get(request, **kwargs)
-
-        # self.message_user("Invite expired", messages.ERROR)
-        # return HttpResponseRedirect("/")
+            return super(InviteAccept, self).get(request, **kwargs)
+        self.message_user("Invite expired", messages.ERROR)
+        return HttpResponseRedirect("/")
 
 
 class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):

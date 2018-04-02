@@ -49,8 +49,8 @@ class OrganizationMember(models.Model):
             ('organization', 'email'),
         )
 
-    def __str__(self):
-        return f"{self.organization} {self.user}/{self.role}"
+    # def __str__(self):
+    #     return f"{self.organization} {self.user}/{self.role}"
 
     @transaction.atomic
     def save(self, *args, **kwargs):
@@ -58,9 +58,9 @@ class OrganizationMember(models.Model):
             'Must set user or email'
         super(OrganizationMember, self).save(*args, **kwargs)
 
-    @property
-    def is_pending(self):
-        return self.user_id is None
+    # @property
+    # def is_pending(self):
+    #     return self.user_id is None
 
     def send_email(self):
         code = totp.now()

@@ -11,7 +11,7 @@ cache = caches['lock']
 # conn = StrictRedis()
 
 
-def get(key, timeout=600, blocking_timeout=1) -> redis_lock.Lock:
+def get(key, blocking_timeout=1, timeout=600) -> redis_lock.Lock:
     """
 
     :param key:

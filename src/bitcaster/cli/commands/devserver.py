@@ -9,6 +9,7 @@ from pathlib import Path
 import _thread
 import click
 
+from bitcaster.cli import global_options
 from bitcaster.cli.utils import Address, LogLevelParamType
 from bitcaster.services.http import HTTPServer
 
@@ -53,24 +54,24 @@ def gen_filenames(only_new=False):
             if ext in MONITOR_FILES:
                 new_filenames.append(os.path.join(root, filename))
 
-    if not _cached_filenames and settings.USE_I18N:
-        # Add the names of the .mo files that can be generated
-        # by compilemessages management command to the list of files watched.
-        basedirs = [os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                 'conf', 'locale'),
-                    'locale']
-        # for app_config in reversed(list(apps.get_app_configs())):
-        #     basedirs.append(os.path.join(app_config.path, 'locale'))
-        basedirs.extend(settings.LOCALE_PATHS)
-        basedirs = [os.path.abspath(basedir) for basedir in basedirs
-                    if os.path.isdir(basedir)]
-        for basedir in basedirs:
-            for dirpath, dirnames, locale_filenames in os.walk(basedir):
-                for filename in locale_filenames:
-                    if filename.endswith('.mo'):
-                        new_filenames.append(os.path.join(dirpath, filename))
-
-    # _cached_modules = _cached_modules.union(new_modules)
+    # if not _cached_filenames and settings.USE_I18N:
+    #     # Add the names of the .mo files that can be generated
+    #     # by compilemessages management command to the list of files watched.
+    #     basedirs = [os.path.join(os.path.dirname(os.path.dirname(__file__)),
+    #                              'conf', 'locale'),
+    #                 'locale']
+    #     # for app_config in reversed(list(apps.get_app_configs())):
+    #     #     basedirs.append(os.path.join(app_config.path, 'locale'))
+    #     basedirs.extend(settings.LOCALE_PATHS)
+    #     basedirs = [os.path.abspath(basedir) for basedir in basedirs
+    #                 if os.path.isdir(basedir)]
+    #     for basedir in basedirs:
+    #         for dirpath, dirnames, locale_filenames in os.walk(basedir):
+    #             for filename in locale_filenames:
+    #                 if filename.endswith('.mo'):
+    #                     new_filenames.append(os.path.join(dirpath, filename))
+    #
+    # # _cached_modules = _cached_modules.union(new_modules)
     _cached_filenames += new_filenames
     if only_new:
         return new_filenames
@@ -103,7 +104,7 @@ def code_changed():
     return False
 
 
-def monitor():
+def monitor(fn=code_changed, stdout=None, stderr=None):
     # from django.core.management import execute_from_command_line
     # from django.utils.autoreload import reset_translations
 
@@ -112,7 +113,7 @@ def monitor():
     #     fn = inotify_code_changed
     # else:
     # TODO: implement inotify. See django.utils.autoreload
-    fn = code_changed
+    # fn = code_changed
     while RUN_RELOADER:
         change = fn()
         if change == SOURCE_MODIFIED:
@@ -123,10 +124,10 @@ def monitor():
             touch(Path(__file__).absolute())
         elif change == ASSET_MODIFIED:
             from django.core.management import execute_from_command_line
-            sys.stdout.write("Asset change detected run webpack/collectstatic\n")
+            stdout.write("Asset change detected run webpack/collectstatic\n")
             subprocess.check_call(['webpack', '--mode', 'development'],
-                                  stdout=sys.stdout,
-                                  stderr=sys.stderr)
+                                  stdout=stdout,
+                                  stderr=stderr)
             execute_from_command_line(argv=['manage', 'collectstatic', '--noinput'])
 
         elif change == I18N_MODIFIED:
@@ -136,12 +137,11 @@ def monitor():
 
 
 @click.command()
+@global_options
 @click.option('--bind', '-b', default='localhost:8000', type=Address,
               help='Bind address.')
 @click.option('--workers', '-w', default=1,
               help='The number of worker processes for handling requests.')
-@click.option('--upgrade', default=False, is_flag=True,
-              help='Upgrade before starting.')
 @click.option('--pdb', 'use_pdb', default=False, is_flag=True,
               help='')
 @click.option('--debug', '-d', default=False, is_flag=True,
@@ -158,7 +158,10 @@ def monitor():
                     ' ERROR, CRITICAL, or FATAL.'))
 @click.option('--logfile', default=None,
               help='logfile')
-def devserver(bind, workers, autoreload, debug,
+@click.option('--pidfile', '-p', default=None,
+              help='pid filename ')
+@click.pass_context
+def devserver(ctx, bind, workers, autoreload, debug, pidfile, verbose,
               webpack, use_pdb, logfile, **kwargs):
     host, port = bind.split(":")
 
@@ -166,14 +169,18 @@ def devserver(bind, workers, autoreload, debug,
         os.environ['BITCASTER_DEBUG'] = 'True'
         os.environ['BITCASTER_CELERY_TASK_ALWAYS_EAGER'] = 'True'
 
-    # configure()
     if webpack:
         _thread.start_new_thread(monitor, ())
+
     # if use_pdb:
     #     from django.views import debug
     #     debug.technical_500_response = reraise
+    if verbose > 0:
+        click.echo(f"Starting Bitcaster server on {bind}")
+
     HTTPServer(host=host,
                port=port,
                debug=debug,
                workers=workers,
+               pidfile=pidfile,
                reload=autoreload).run()

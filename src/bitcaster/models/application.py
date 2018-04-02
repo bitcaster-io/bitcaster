@@ -78,21 +78,16 @@ class Application(AbstractModel):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.slug:
-            lock = locks.get('slug:application', duration=5)
+            lock = locks.get('slug:application', 5)
             with TimedRetryPolicy(10, lock.acquire):
                 slugify_instance(self, self.name,
                                  reserved=RESERVED_APPLICATION_SLUGS)
-            super(Application, self).save(force_insert, force_update, using, update_fields)
-        else:
-            super(Application, self).save(force_insert, force_update, using, update_fields)
+        super(Application, self).save(force_insert, force_update, using, update_fields)
 
     @property
     def channels(self):
         from .channel import Channel
         return Channel.objects.selectable(self)
-        # return Channel.objects.filter(Q(organization=self.organization) |
-        #                               Q(system=True) |
-        #                               Q(application=self))
 
     @property
     def owners(self):

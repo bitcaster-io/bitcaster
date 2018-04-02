@@ -9,6 +9,7 @@ omit =
         */bitcaster/config/settings/dev.py
         */bitcaster/dispatchers/console.py
         */management/commands/*
+        */bitcaster/admin/*
 
 [report]
 # Regexes for lines to exclude from consideration

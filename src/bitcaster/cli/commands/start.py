@@ -82,7 +82,7 @@ def workers(**options):
 @click.option('--daemonize', '-D', default=False, is_flag=True,
               help='Daemonize and exit')
 @click.option('--pidfile', '-p', default=None,
-              help='pidfile to')
+              help='pid filename ')
 @click.option('--no-input', default=False, is_flag=True,
               help='Do not prompt the user for input of any kind.')
 @click.option('--autoreload', default=False, is_flag=True,

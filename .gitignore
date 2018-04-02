@@ -16,6 +16,7 @@
 /build
 ~*
 /node_modules
+*.mo
 
 !.tx
 !/bitcaster/_plugin_template/bitcaster-{{cookiecutter.name}}/tests/.env

@@ -12,29 +12,27 @@ from bitcaster.models import OrganizationMember, User
 # from social_core.pipeline.user import create_user
 
 
-def associate(backend, details, user=None, *args, **kwargs):
-    return None
+# def associate(backend, details, user=None, *args, **kwargs):
+#     return None
 
 
 USER_FIELDS = ['username', 'email', 'fullname']
 
 
-def associate_invitation(backend, details, user=None, *args, **kwargs):
-    strategy = kwargs['strategy']
+def associate_invitation(backend, details, user=None, strategy=None, *args, **kwargs):
     invitation_id = strategy.session_get('invitation')
     is_new = False
     if invitation_id:
-        if not user:
-            is_new = True
-            fields = {"email": details['email'],
-                      "name": details['fullname'],
-                      # "username": details['username'],
-                      "friendly_name": details['username']}
-            # user = strategy.create_user(**fields)
-            user = User.objects.create(**fields)
-        OrganizationMember.objects.filter(pk=invitation_id).update(user=user,
-                                                                   date_enrolled=timezone.now(),
-                                                                   )
+        invite = OrganizationMember.objects.get(pk=invitation_id, user__isnull=True)
+        # if not user:
+        is_new = True
+        fields = {"email": details['email'],
+                  "name": details['fullname'],
+                  "friendly_name": details['username']}
+        user = User.objects.create(**fields)
+        invite.user = user
+        invite.date_enrolled = timezone.now()
+        invite.save()
 
     return {
         'is_new': is_new,
@@ -42,17 +40,17 @@ def associate_invitation(backend, details, user=None, *args, **kwargs):
     }
 
 
-def avatar(backend, details, user=None, *args, **kwargs):
-    # user.is_new = True
-    is_new = kwargs.get('is_new', False)
-    if is_new:
-        pass
-
-    return False
+# def avatar(backend, details, user=None, *args, **kwargs):
+#     is_new = kwargs.get('is_new', False)
+#     if is_new:
+#         pass
+#
+#     return False
 
 
 class BitcasterStrategy(DjangoStrategy):
     def get_setting(self, name):
+        "get configuration from 'constance.config' first "
         value = getattr(config, name, None)
         if value is None:
             value = getattr(settings, name)

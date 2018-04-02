@@ -1,7 +1,6 @@
 import sys
 
 from gunicorn.app.wsgiapp import WSGIApplication
-from gunicorn.arbiter import Arbiter
 
 from .base import Service
 
@@ -23,14 +22,19 @@ class BitApplication(WSGIApplication):
                 self.cfg.set(k.lower(), v)
 
     def load_config(self):
+        # disable argument parsing
         pass
 
     def init(self, parser, opts, args):
+        # disable argument parsing
         pass
 
     def load(self):
         from bitcaster.config.wsgi import application
         return application
+
+    def run(self):
+        super().run()
 
 
 class HTTPServer(Service):
@@ -55,7 +59,8 @@ class HTTPServer(Service):
 
     def run(self):
         try:
-            Arbiter(self.app).run()
+            self.app.run()
+            # Arbiter(self.app).run()
         except RuntimeError as e:
             sys.stderr.write("\nError: %s\n\n" % e)
             sys.stderr.flush()
@@ -63,10 +68,11 @@ class HTTPServer(Service):
 
 
 class DevHTTPServer(HTTPServer):
-    def run(self):
-        try:
-            Arbiter(self.app).run()
-        except RuntimeError as e:
-            sys.stderr.write("\nError: %s\n\n" % e)
-            sys.stderr.flush()
-            sys.exit(1)
+    pass
+    # def run(self):
+    #     try:
+    #         self.app.run()
+    #     except RuntimeError as e:
+    #         sys.stderr.write("\nError: %s\n\n" % e)
+    #         sys.stderr.flush()
+    #         sys.exit(1)

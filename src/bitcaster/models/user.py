@@ -141,6 +141,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         permissions = (('activate_user', 'Can activate user'),
                        )
 
+    def add_trigger(self, application):
+        return self.triggers.create(application=application,
+                                    active=True)
+
+    def add_token(self, application):
+        return self.tokens.create(application=application,
+                                  active=True)
+
     def send_confirmation_email(self):
         from oath.google_authenticator import from_b32key
         # check = totp(settings.OTP_KEY, period=settings.CONFIRM_EMAIL_EXPIRE)
@@ -159,8 +167,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         html_message = get_template('bitcaster/emails/confirm_email.html').render(ctx)
 
         ret = send_mail_async(subject=subject,
-                        message=message,
-                        html_message=html_message,
-                        from_email='bitcaster@os4d.org',
-                        recipient_list=[self.email])
+                              message=message,
+                              html_message=html_message,
+                              from_email='bitcaster@os4d.org',
+                              recipient_list=[self.email])
         return ret

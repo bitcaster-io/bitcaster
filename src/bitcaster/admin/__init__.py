@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
 from .application import ApplicationAdmin
+from .audit import AuditLogEntryAdmin
 from .channel import ChannelAdmin
 from .counters import CounterAdmin, LogEntryAdmin, OccurenceAdmin
 from .event import EventAdmin
