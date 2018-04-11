@@ -55,7 +55,7 @@ class Organization(AbstractModel):
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
     is_core = models.BooleanField(editable=False, default=False)
-    default_role = RoleField(default=Role.MEMBER)
+    default_role = RoleField(default=Role.ADMIN)
     rate_limit = models.CharField(max_length=100,
                                   null=True, default=None, blank=True,
                                   validators=[RateLimitValidator()])
@@ -75,7 +75,7 @@ class Organization(AbstractModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            lock = locks.get('slug:organization', duration=5)
+            lock = locks.get('slug:organization', 5)
             with TimedRetryPolicy(10, lock.acquire):
                 slugify_instance(self, self.name,
                                  reserved=RESERVED_ORGANIZATION_SLUGS)
@@ -95,7 +95,7 @@ class Organization(AbstractModel):
 
         return queryset.exists()
 
-    def add_member(self, user, role=Role.RECIPIENT, **kwargs):
+    def add_member(self, user, role=Role.SUBSCRIBER, **kwargs):
         from bitcaster.models import OrganizationMember
         return OrganizationMember.objects.get_or_create(organization=self,
                                                         user=user,

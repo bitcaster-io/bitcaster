@@ -125,6 +125,9 @@ class EnumField(Enum):
     def __eq__(self, other):
         return int(self) == int(other)
 
+    def __hash__(self):
+        return int(self)
+
     @classmethod
     def as_choices(cls):
         raise NotImplementedError
@@ -171,22 +174,20 @@ class DeletionStatusField(models.IntegerField):
 class Role(EnumField):
     OWNER = 1
     ADMIN = 2
-    MEMBER = 3
-    RECIPIENT = 4
+    SUBSCRIBER = 4
 
     @classmethod
     def as_choices(cls):
         return sorted([(int(cls.OWNER), _('Owner')),
                        (int(cls.ADMIN), _('Admin')),
-                       (int(cls.MEMBER), _('Member')),
-                       (int(cls.RECIPIENT), _('Subscriber')),
+                       (int(cls.SUBSCRIBER), _('Subscriber')),
                        ])
 
 
 class RoleField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
                  choices=Role.as_choices(),
-                 default=int(Role.MEMBER),
+                 default=int(Role.ADMIN),
                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
         super().__init__(verbose_name=verbose_name, name=name,
                          choices=choices,

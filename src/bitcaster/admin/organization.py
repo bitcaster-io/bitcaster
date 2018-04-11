@@ -20,5 +20,5 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 @admin.register(OrganizationMember, site=site)
 class OrganizationMemberAdmin(admin.ModelAdmin):
-    list_display = ('organization', 'user', 'role', 'date_added', 'date_enrolled')
-    list_filter = ('role', )
+    list_display = ('organization', 'user', 'date_added', 'date_enrolled')
+    list_filter = ('organization', )

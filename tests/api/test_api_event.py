@@ -5,6 +5,22 @@ from rest_framework.test import APIClient
 
 
 @pytest.mark.django_db
+def test_api_event_list(event1, event2):
+    url = reverse('api:application-event-list', args=[event1.application.pk])
+    client = APIClient()
+
+    ret = client.get(url, format='json')
+    assert ret.status_code == 403
+
+    key = event1.application.organization.owner.add_token(event1.application)
+    client.credentials(HTTP_AUTHORIZATION='Token ' + key.token)
+    ret = client.get(url, format='json')
+    assert ret.status_code == 200
+    assert len(ret.json()) == 1
+    assert ret.json()[0]['id'] == event1.pk
+
+
+@pytest.mark.django_db
 def test_event_trigger(event1):
     url = reverse('api:application-event-trigger', args=[event1.application.pk,
                                                          event1.pk])

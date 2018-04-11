@@ -133,6 +133,19 @@ class UserFactory(factory.DjangoModelFactory):
         return user
 
 
+class MemberFactory(UserFactory):
+    role = Role.SUBSCRIBER
+
+    @classmethod
+    def _get_or_create(cls, model_class, *args, **kwargs):
+        organization = kwargs.pop('organization')
+        role = kwargs.pop('role')
+        user = super()._get_or_create(model_class, *args, **kwargs)
+        organization.add_member(user, role=role)
+
+        return user
+
+
 class AdminFactory(UserFactory):
     class Meta:
         model = models.User
@@ -170,6 +183,42 @@ class ApplicationFactory(factory.DjangoModelFactory):
 
     name = factory.Sequence(lambda n: "Application %03d" % n)
     organization = factory.SubFactory(OrganizationFactory)
+
+
+class TeamFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = bitcaster.models.Team
+        django_get_or_create = ('name',)
+
+    organization = factory.SubFactory(OrganizationFactory)
+    manager = factory.SubFactory(UserFactory)
+    name = factory.Faker('name')
+    # members = []
+
+    # @classmethod
+    # def _get_or_create(cls, model_class, *args, **kwargs):
+    #     cls.members = kwargs.pop('members')
+    #     return super()._get_or_create(model_class, *args, **kwargs)
+    #
+    # @classmethod
+    # def _after_postgeneration(cls, instance, create, results=None):
+    #     super()._after_postgeneration(instance, create, results)
+    #     for member in cls.members:
+    #         # m, __ = OrganizationMember.objects.get_or_create(
+    #         #     organization=instance.organization,
+    #         #     user=member
+    #         # )
+    #         TeamMembership.objects.create(team=instance, member=member)
+
+
+class ApplicationTeamFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = bitcaster.models.ApplicationTeam
+        django_get_or_create = ('name',)
+
+    application = factory.SubFactory(ApplicationFactory)
+    team = factory.SubFactory(TeamFactory)
+    role = Role.SUBSCRIBER
 
 
 class ApiTriggerKeyFactory(factory.DjangoModelFactory):

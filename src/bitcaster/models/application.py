@@ -50,7 +50,7 @@ class Application(AbstractModel):
         # ('has_releases', 'This Project has sent release data'),
     ), default=0, null=True)
     teams = models.ManyToManyField('bitcaster.Team',
-                                   related_name='teams',
+                                   # related_name='teams',
                                    through='bitcaster.ApplicationTeam'
                                    )
 

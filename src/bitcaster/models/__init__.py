@@ -1,16 +1,18 @@
-from .address import Address  # noqa
-from .application import Application  # noqa
-from .audit import AuditEvent, AuditLogEntry, audit_log  # noqa
-from .base import AbstractModel  # noqa
-from .channel import Channel  # noqa
-from .counters import Counter, Occurence  # noqa
-from .event import Event  # noqa
-from .message import Message  # noqa
-from .options import OrganizationOption  # noqa
-from .organization import Organization  # noqa
-from .organizationmember import OrganizationMember  # noqa
-# from .monitor import Monitor  # noqa
-from .subscription import Subscription  # noqa
-from .team import ApplicationTeam, Team, TeamMembership  # noqa
-from .token import ApiAuthToken, ApiTriggerKey  # noqa
-from .user import User  # noqa
+# -*- coding: utf-8 -*-
+# flake8: noqa
+from .address import Address
+from .application import Application
+from .audit import AuditEvent, AuditLogEntry, audit_log
+from .base import AbstractModel
+from .channel import Channel
+from .counters import Counter, Occurence
+from .event import Event
+from .message import Message
+from .options import OrganizationOption
+from .organization import Organization
+from .organizationmember import OrganizationMember
+# from .monitor import Monitor
+from .subscription import Subscription
+from .team import ApplicationTeam, Team, TeamMembership
+from .token import ApiAuthToken, ApiTriggerKey
+from .user import User

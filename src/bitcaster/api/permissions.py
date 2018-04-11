@@ -26,22 +26,26 @@ class EventTriggerPermission(BasePermission):
         return getattr(request, 'token', None) and request.token.application == obj.application
 
 
-# class IsApplicationRelated(IsAuthenticated):
-#     attr = None
-#
-#     @classmethod
-#     def create(cls, attr):
-#         return type("-", (cls,), {'attr': attr})
-#
-#     def has_permission(self, request, view):
-#         if 'application__pk' in view.kwargs:
-#             app = view.get_selected_application()
-#             return request.user.is_authenticated and request.user.is_admin(app)
-#         return request.user.is_authenticated
-#
-#     def has_object_permission(self, request, view, obj):
-#         app = get_attr(obj, self.attr)
-#         return request.user.is_superuser or (request.user == app.owner)
+class IsApplicationRelated(IsAuthenticated):
+    attr = None
+
+    @classmethod
+    def create(cls, attr):
+        return type("-", (cls,), {'attr': attr})
+
+    def has_permission(self, request, view):
+        # if 'application__pk' in view.kwargs:
+        app = view.get_selected_application()
+        user = request.user
+        return user.is_superuser or app.owners.filter(pk=user.pk).exists()
+
+        # return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        app = obj.application
+        user = request.user
+        return user.is_superuser or app.owners.filter(pk=user.pk).exists()
+        # return request.user.is_superuser or (request.user == app.owner)
 
 
 class IsOwnerOrMaintainter(IsAuthenticated):
@@ -138,8 +142,6 @@ class IsOwnerOrMaintainter(IsAuthenticated):
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
-    def authenticate(self, request):
-        return super().authenticate(request)
 
     def enforce_csrf(self, request):
         return  # To not perform the csrf check previously happening

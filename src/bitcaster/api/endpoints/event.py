@@ -4,11 +4,13 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from bitcaster import logging
+from bitcaster.api.filters import ApplicationFilterBackend
 from bitcaster.models import Event
 from bitcaster.tasks import trigger_event
 from bitcaster.utils.wsgi import get_client_ip
 
-from ..permissions import EventTriggerPermission, TriggerTokenAuthentication
+from ..permissions import (EventTriggerPermission, IsApplicationRelated,
+                           TriggerTokenAuthentication,)
 from ..serializers import EventSerializer
 from .base import BaseModelViewSet
 
@@ -18,9 +20,8 @@ logger = logging.getLogger(__name__)
 class EventViewSet(BaseModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    # permission_classes = [IsApplicationRelated.create('application')]
-    # filter_backends = [ApplicationFilterBackend.create('application',
-    #                                                    'application__pk')]
+    permission_classes = [IsApplicationRelated.create('application')]
+    filter_backends = [ApplicationFilterBackend]
 
     # def get_serializer(self, *args, **kwargs):
     #     ret = super().get_serializer(*args, **kwargs)

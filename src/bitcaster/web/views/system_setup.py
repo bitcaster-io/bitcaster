@@ -63,9 +63,9 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
                                               slug=slugify(env('ORGANIZATION')),
                                               is_core=True,
                                               owner=user)
-            org.add_member(user, Role.OWNER,
-                           date_enrolled=timezone.now()
-                           )
+            org.add_member(user, role=Role.OWNER, date_enrolled=timezone.now())
+            # org.teams.create(name='Owners', manager=user)
+
             org.options.create(key='org:configured', value=False)
             config.INITIALIZED = 1
             config.SYSTEM_CONFIGURED = 0

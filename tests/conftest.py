@@ -49,6 +49,13 @@ def user2(db):
 
 
 @pytest.fixture
+def user3(db):
+    from bitcaster.utils.tests.factories import UserFactory
+
+    return UserFactory()
+
+
+@pytest.fixture
 def admin(db, initialized):
     # pytest `django_admin` fixture cannot be used because
     # we do not have username field

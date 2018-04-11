@@ -11,8 +11,10 @@ def test_cli_configure():
     runner = CliRunner(echo_stdin=True)
     with runner.isolated_filesystem():
         config_file = Path('./aaa')
-        result = runner.invoke(configure, obj={'config': str(config_file),
-                                               'env': env})
+        result = runner.invoke(configure,
+                               args=['--no-input'],
+                               obj={'config': str(config_file),
+                                    'env': env})
         assert result.exit_code == 0
         config = config_file.read_text()
         assert 'DATABASE_URL' in config

@@ -1,6 +1,8 @@
 import pytest
 from constance import config
 
+from bitcaster.models import User
+
 pytestmark = pytest.mark.django_db
 
 
@@ -12,14 +14,16 @@ def initialize():
 
 
 def test_setup(django_app, initialize):
-    "home is always accessible"
+    email = "sax@saxix.org"
     res = django_app.get('/').follow()
-    res.form["email"] = "sax@saxix.org"
+    res.form["email"] = email
     res.form["password1"] = "password"
     res.form["password2"] = "password"
     res = res.form.submit().follow()
-    # res = res.click("Login")
-    # res.form["username"] = "sax@saxix.org"
-    # res.form["password"] = "password"
-    # res = res.form.submit()
     assert res.status_code == 302
+
+    user = User.objects.filter(email=email).first()
+    assert user
+
+    org = user.memberships.first().organization
+    assert org.memberships.filter(user=user).exists()

@@ -1,9 +1,10 @@
 from django.contrib import admin
 
 from bitcaster import logging
-from bitcaster.models import (ApiAuthToken, ApiTriggerKey, Application, Channel,
-                              Event, OrganizationMember, TeamMembership,)
+from bitcaster.models import (ApiAuthToken, ApiTriggerKey, Application,
+                              Channel, Event, OrganizationMember,)
 from bitcaster.models.message import Message
+from bitcaster.models.team import TeamMembership
 from bitcaster.utils.reflect import fqn
 
 logger = logging.getLogger(__name__)
@@ -58,7 +59,7 @@ class OrganizationMemberInline(admin.TabularInline):
     extra = 0
     can_delete = False
     show_change_link = True
-    readonly_fields = fields = ('user', 'role')
+    readonly_fields = fields = ('user', )
 
 
 class TeamMemberInline(admin.TabularInline):

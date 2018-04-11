@@ -27,8 +27,13 @@ class OrganizationMember(models.Model):
                              null=True, blank=True,
                              on_delete=models.CASCADE,
                              related_name='memberships')
+    # email and team are used only during invitation phase
+    # email to check the user invitation, team to automatically
+    # enroll the user to selected team
     email = models.EmailField(null=True, blank=True)
-
+    team = models.ForeignKey('bitcaster.Team',
+                             blank=True, null=True,
+                             on_delete=models.CASCADE)
     role = RoleField()
     date_added = models.DateTimeField(default=timezone.now,
                                       help_text='date when email was sent')

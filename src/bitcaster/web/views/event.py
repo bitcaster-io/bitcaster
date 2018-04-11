@@ -310,7 +310,7 @@ class EventSubscriptionsInvite(EventMixin, FormView, OrganizationAuditMixin):
             if not self.selected_organization.memberships.filter(email=recipient).exists():
                 form.instance.organization = self.selected_organization
                 form.instance.event = self.get_object()
-                form.instance.role = int(Role.RECIPIENT)
+                form.instance.role = int(Role.SUBSCRIBER)
                 membership = form.save()
                 membership.send_email()
                 self.audit_log(AuditEvent.MEMBER_INVITE,
