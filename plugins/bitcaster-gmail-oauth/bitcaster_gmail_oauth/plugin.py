@@ -85,7 +85,7 @@ class GmailOAuth(Dispatcher, GmailOAauthHAndler):
         return build('gmail', 'v1', http=http)
 
     def emit(self, subscription, subject, message, connection=None, *args, **kwargs):
-        recipient = subscription.subscriber
+        recipient = self.get_recipient_address(subscription)
         try:
             service = self._get_connection()
             message = MIMEText(message)

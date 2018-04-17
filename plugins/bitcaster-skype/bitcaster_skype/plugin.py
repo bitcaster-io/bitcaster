@@ -48,7 +48,7 @@ class Skype(Dispatcher):
     def emit(self, subscription: object, subject: str, message: str,
              connection=None, *args, **kwargs) -> int:
         try:
-            recipient = subscription.config['recipient']
+            recipient = self.get_recipient_address(subscription)
             self.logger.info('Processing {0}'.format(subscription, recipient))
             connection = connection or self._get_connection()
             ch = connection.contacts[recipient].chat  # 1-to-1 conversation

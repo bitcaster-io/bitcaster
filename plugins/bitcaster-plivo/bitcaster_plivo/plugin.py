@@ -51,7 +51,7 @@ class Plivo(Dispatcher):
     def emit(self, subscription: object, subject: str, message: str,
              connection=None, *args, **kwargs) -> int:
         try:
-            recipient = subscription.config['recipient']
+            recipient = self.get_recipient_address(subscription)
             logger.info('Processing {0}'.format(subscription, recipient))
             connection = connection or self._get_connection()
 

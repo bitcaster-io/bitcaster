@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import smtplib
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.mail import get_connection, send_mail
 from rest_framework import serializers
 
@@ -44,7 +44,8 @@ class Email(Dispatcher):
     message_class = EmailMessage
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        cfg = {'email': self.owner.config.get('email', subscription.subscriber.email)}
+        email = self.get_recipient_address(subscription)
+        cfg = {'email': self.owner.config.get('email', email)}
         try:
             return self.subscription_class(data=cfg).is_valid(True)
         except (serializers.ValidationError, ValidationError) as e:
@@ -61,16 +62,22 @@ class Email(Dispatcher):
             use_tls=config["tls"],
             fail_silently=False)
 
+    def get_recipient_address(self, subscription):
+        try:
+            return super().get_recipient_address(subscription)
+        except ObjectDoesNotExist:
+            return subscription.subscriber.email
+
     def emit(self, subscription, subject, message, connection=None, *args, **kwargs):
-        recipient = subscription.subscriber
+        email = self.get_recipient_address(subscription)
         try:
             connection = connection or self._get_connection()
             ret = send_mail(subject=subject,
                             message=message,
                             connection=connection,
                             from_email=self.config["sender"],
-                            recipient_list=[recipient.email])
-            self.logger.debug("{0} email sent to {1.email}".format(fqn(self), recipient))
+                            recipient_list=[email])
+            self.logger.debug(f"{fqn(self)} email sent to {email}")
             return ret
         except smtplib.SMTPException as e:
             raise ValidationError(str(e)) from e

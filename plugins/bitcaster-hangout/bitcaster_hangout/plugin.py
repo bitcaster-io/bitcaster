@@ -108,7 +108,7 @@ class Hangout(Dispatcher):
     def emit(self, subscription: object, subject: str, message: str,
              connection=None, *args, **kwargs) -> int:
         try:
-            recipient = subscription.config['recipient'] or subscription.subscriber.email
+            recipient = self.get_recipient_address(subscription)
             logger.debug(f"Processing {subscription} '{recipient}'")
             conn = connection or self._get_connection()
 

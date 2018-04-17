@@ -5,6 +5,8 @@ import django.core
 import pytest
 from rest_framework.reverse import reverse
 
+from bitcaster.dispatchers import Email
+
 logger = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.django_db
@@ -36,4 +38,4 @@ def test_event_trigger(django_app, admin, subscription1, settings):
     assert res.status_code == 200
     assert django.core.mail.outbox
     mail = django.core.mail.outbox[0]
-    assert mail.to == [subscription1.subscriber.email]
+    assert mail.to == [subscription1.subscriber.addresses.get_address(Email)]

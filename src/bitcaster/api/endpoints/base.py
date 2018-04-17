@@ -35,7 +35,7 @@ class BaseViewSet(viewsets.ViewSet):
 
 class BaseModelViewSet(viewsets.ModelViewSet):
     # remove this when write mode will be re-enabled
-    http_method_names = ['get']
+    http_method_names = ['get', 'post']
 
     # http_method_names = ['get', 'post', 'put', 'patch', 'delete',
     #                      'head', 'options', 'trace']

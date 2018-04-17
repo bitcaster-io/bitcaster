@@ -46,7 +46,9 @@ def oauth2callback(request):
 
 
 def static(prefix, view=serve, **kwargs):
-    return re_path(r'^%s(?P<path>.*)$' % re.escape(prefix.lstrip('/')), view, kwargs=kwargs)
+    return re_path(r'^%s(?P<path>.*)$' % re.escape(prefix.lstrip('/')),
+                   view,
+                   kwargs=kwargs)
 
 
 urlpatterns = [path(r'api/', include(bitcaster.api.urls), name='api'),
@@ -66,8 +68,12 @@ handler404 = 'bitcaster.web.views.handler404'
 handler500 = 'bitcaster.web.views.handler500'
 
 if settings.DEBUG:
-    urlpatterns += [static(settings.MEDIA_URL, static_serve, show_indexes=True, insecure=True),
-                    static(settings.STATIC_URL, static_serve, show_indexes=True, insecure=True)]
+    urlpatterns += [static(settings.MEDIA_URL,
+                           document_root=settings.MEDIA_ROOT,
+                           show_indexes=True),
+                    static(settings.STATIC_URL, static_serve,
+                           # document_root=settings.STATIC_ROOT,
+                           show_indexes=True, insecure=True)]
 else:
     urlpatterns += [static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
                     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)]

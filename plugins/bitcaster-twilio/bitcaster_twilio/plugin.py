@@ -46,7 +46,7 @@ class Twilio(Dispatcher):
              connection=None, *args, **kwargs) -> int:
         try:
             self.validate_subscription(subscription)
-            recipient = subscription.config['recipient']
+            recipient = self.get_recipient_address(subscription)
             connection = connection or self._get_connection()
             connection.messages.create(
                 to=recipient.encode('utf8'),

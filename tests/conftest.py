@@ -4,6 +4,10 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
+from faker import Faker
+from strategy_field.utils import fqn
+
+faker = Faker()
 
 
 def pytest_configure(config):
@@ -38,14 +42,16 @@ def initialized(db, monkeypatch):
 @pytest.fixture
 def user1(db, initialized):
     from bitcaster.utils.tests.factories import UserFactory
-    return UserFactory()
+    from bitcaster.dispatchers import Email
+    addresses = {fqn(Email): faker.email()}
+    return UserFactory(addresses=addresses)
 
 
 @pytest.fixture
 def user2(db):
     from bitcaster.utils.tests.factories import UserFactory
-
-    return UserFactory()
+    addresses = {}
+    return UserFactory(addresses=addresses)
 
 
 @pytest.fixture

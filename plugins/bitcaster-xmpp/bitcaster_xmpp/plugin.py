@@ -53,7 +53,7 @@ class Xmpp(Dispatcher):
     def emit(self, subscription: object, subject: str, message: str,
              connection=None, *args, **kwargs) -> int:
         try:
-            recipient = subscription.config['recipient']
+            recipient = self.get_recipient_address(subscription)
             logger.debug(f"Processing {subscription} '{recipient}'")
             send_message(self.config['username'],
                          self.config['password'],

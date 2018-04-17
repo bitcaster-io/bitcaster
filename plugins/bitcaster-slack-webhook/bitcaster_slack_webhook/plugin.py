@@ -65,7 +65,7 @@ Navigate to https://<YOUR_SPACE>.slack.com/apps/" and enable `Incoming WebHooks`
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:
-            recipient = subscription.config['recipient']
+            recipient = self.get_recipient_address(subscription)
             logger.info('Processing {0}'.format(subscription, recipient))
             conn = self._get_connection()
             ret = conn.post(self.config['url'],

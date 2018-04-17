@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext as _
 
@@ -58,7 +57,6 @@ class Subscription(AbstractModel):
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=SubscriptionStatus.as_choices(),
                                  default=SubscriptionStatus.ACCEPTED)
-    objects = SubscriptionQuerySet.as_manager()
     deactivation_token = models.CharField(max_length=100,
                                           editable=False,
                                           unique=True)
@@ -67,6 +65,8 @@ class Subscription(AbstractModel):
     #                                         "But can still change channel")
     locked = models.BooleanField(default=False,
                                  help_text="if locked users cannot change subscription")
+
+    objects = SubscriptionQuerySet.as_manager()
 
     class Meta:
         unique_together = ('channel', 'subscriber')
@@ -83,7 +83,11 @@ class Subscription(AbstractModel):
     def update_token(self):
         self.deactivation_token = generate_subscription_token(self)
 
-    def clean(self):
-        if not self.channel.messages.filter(event=self.event).exists():
-            raise ValidationError({'channel': 'Channel cannot be used as no messages are configured for it'})
-        return super().clean()
+    # def clean(self):
+    #     try:
+    #         if not self.channel.messages.filter(event=self.event).exists():
+    #             raise ValidationError({'channel': 'Channel cannot be used as no messages are configured for it'})
+    #     except ObjectDoesNotExist:
+    #         raise ValidationError({'channel': 'Cannot save subscription without a channel'})
+    #
+    #     return super().clean()

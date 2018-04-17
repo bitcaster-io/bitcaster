@@ -58,6 +58,10 @@ def test_system_edit_channel_validate(django_app, admin, system_channel):
 
 def test_system_list_channel(django_app, admin, system_channel):
     _list = django_app.get(reverse('settings-channels'), user=admin)
+
+    res = _list.click("Plugin Info", index=1)
+    assert res.status_code == 200
+
     res = _list.click("Configure")
     assert res.status_code == 200
 

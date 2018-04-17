@@ -93,30 +93,30 @@ def test_create_event(django_app, channel1):
     # assert message.subject == 'subject'
     # assert message.body == 'body'
 
-# def test_update_event(django_app, message1):
-#     event = message1.event
-#     application = event.application
-#     organization = application.organization
-#     owner = organization.owner
-#     url = reverse('app-event-update', args=[organization.slug,
-#                                             application.slug,
-#                                             event.pk])
-#     res = django_app.get(url, user=owner.email)
-#     res.form['a-name'] = 'Event-updated'
-#     idx = add_argument(res.form)
-#     res.form[f'form-{idx}-name'] = "field-added"
-#     res.form[f'form-{idx}-type'] = fqn(serializers.CharField)
-#
-#     res = res.form.submit()
-#     res.form[f'b-0-subject'] = 'subject-updated'
-#     res.form[f'b-0-body'] = 'body-updated'
-#     res = res.form.submit().follow()
-#
-#     event.refresh_from_db()
-#     assert event.arguments == {"fields": [{"name": "field-added",
-#                                            "type": fqn(serializers.CharField)}]}
-#
-#     message = event.messages.first()
-#     # assert list(message.channels.all()) == [channel1]
-#     assert message.subject == 'subject-updated'
-#     assert message.body == 'body-updated'
+
+def test_update_event(django_app, message1):
+    event = message1.event
+    application = event.application
+    organization = application.organization
+    owner = organization.owner
+    url = reverse('app-event-update', args=[organization.slug,
+                                            application.slug,
+                                            event.pk])
+    res = django_app.get(url, user=owner.email)
+    res.form['name'] = 'Event-updated'
+    res.form['channels'] = [application.channels.first().pk]
+    idx = add_argument(res.form)
+    res.form[f'form-{idx}-name'] = "field-added"
+    res.form[f'form-{idx}-type'] = fqn(serializers.CharField)
+    res.form.submit().follow()
+    assert res.status_code == 200
+
+    event.refresh_from_db()
+    assert event.arguments == {"fields": [{"name": "field-added",
+                                           "type": fqn(serializers.CharField)}]}
+    assert event.name == 'Event-updated'
+
+    # message = event.messages.first()
+    # assert list(message.channels.all()) == [channel1]
+    # assert message.subject == 'subject-updated'
+    # assert message.body == 'body-updated'

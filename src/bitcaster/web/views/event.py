@@ -77,6 +77,7 @@ class EventCreate(EventMixin, EventFormMixin, CreateView):
             Message.objects.get_or_create(event=event,
                                           channel=channel,
                                           defaults={
+                                              "enabled": True,
                                               "name": f"{event} {channel}",
                                           })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
@@ -97,8 +98,8 @@ class EventUpdate(EventMixin, EventFormMixin, UpdateView):
         for i, channel in enumerate(event.channels.all()):
             Message.objects.get_or_create(event=event,
                                           channel=channel,
-                                          enabled=False,
                                           defaults={
+                                              "enabled": True,
                                               "name": f"{event} {channel}",
                                           })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
@@ -199,7 +200,7 @@ class SubscriptionForm(forms.ModelForm):
         self.event = kwargs.pop('event', None)
         self.requestor = kwargs.pop('requestor', None)
         super().__init__(*args, **kwargs)
-        self.fields['channel'].queryset = self.event.channels
+        self.fields['channel'].queryset = self.event.enabled_channels()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -238,6 +239,9 @@ class EventSubscriptionsSubscribe(EventMixin, FormView):
     def get_object(self):
         return self.get_queryset().get(pk=self.kwargs['pk'])
 
+    def get_form_class(self):
+        return SubscriptionFormSet
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['event'] = self.get_object()
@@ -246,11 +250,8 @@ class EventSubscriptionsSubscribe(EventMixin, FormView):
 
     def form_valid(self, formset):
         formset.instance = self.get_object()
-        formset.save()
+        # formset.save()
         return HttpResponseRedirect(self.get_success_url())
-
-    def get_form_class(self):
-        return SubscriptionFormSet
 
     def get_context_data(self, **kwargs):
         kwargs['event'] = self.get_object()

@@ -123,13 +123,18 @@ class UserFactory(factory.DjangoModelFactory):
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
-        permissions = kwargs.pop('permissions', [])
+        permissions = kwargs.pop('permissions', None)
+        addresses = kwargs.pop('addresses', None)
         raw_password = kwargs.pop('password', cls.password)
         user = super()._get_or_create(model_class, *args, **kwargs)
         if raw_password:
             user.set_password(raw_password)
         if permissions:
             user_grant_permissions(user, permissions).start()
+        if addresses:
+            for dispatcher, address in addresses.items():
+                user.addresses.create(address=address,
+                                      dispatcher=dispatcher)
         return user
 
 

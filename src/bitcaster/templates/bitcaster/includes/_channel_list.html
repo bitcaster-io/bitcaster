@@ -27,12 +27,10 @@
                 {% if configurable %}
                 <div class="pt-3">
                     <a href="{{ channel.pk }}/edit/">Configure</a>
-                    | <a href="{{ channel.pk }}/toggle/">
-                    {% if channel.enabled %}Disable{% else %}<strong>Enable</strong>{% endif %}</a>
+                    | <a href="{{ channel.pk }}/toggle/">{% if channel.enabled %}Disable{% else %}<strong>Enable</strong>{% endif %}</a>
                     | <a href="{{ channel.pk }}/delete/">Remove</a>
-                    | <a href="{{ channel.pk }}/deprecate/">
-                    {% if channel.deprecated %}<strong>Show</strong>{% else %}Hide{% endif %}
-                    | <a class="plugin-info-btn" href="{% url "plugin-info" channel.handler.fqn %}">plugin info</a>
+                    | <a href="{{ channel.pk }}/deprecate/">{% if channel.deprecated %}<strong>Show</strong>{% else %}Hide{% endif %}
+                    | <a href="{% url "plugin-info" channel.handler.fqn %}">Plugin Info</a>
                 </div>
                 {% endif %}
             </div>

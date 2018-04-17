@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class SecuredViewMixin:
     def check_perms(self, request, obj=None, raise_exception=False):
-        return request.user.has_perm(obj)
+        return request.user.has_perm('', obj)
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):

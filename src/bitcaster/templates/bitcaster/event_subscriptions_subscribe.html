@@ -58,7 +58,7 @@
     {{ block.super }}
         <script>
         (function() {
-            var formsetName = "form";
+            var formsetName = "subscriptions";
             var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
             var selector = "div.invitations";
             var $rows = $("div.invitations>div.row");
@@ -87,12 +87,19 @@
                         var newFor = $(this).attr("for").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
                         $(this).attr("for", newFor);
                     });
-                    $(e).find("div.form-group").each(function () {
-                        var newId = $(this).attr("id").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
-                        $(this).attr("id", newId);
+                    ///*
+                    $(e).find("div").each(function () {
+                        var _id = $(this).attr("id");
+                        console.log(_id, $(this));
+                        if ( _id ){
+                            var newId = $(this).attr("id").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
+                            $(this).attr("id", newId);
+                        }
                     });
+                    //*/
                 });
-                $TOTAL_FORMS.val($rows.length);
+                $TOTAL_FORMS.val(parseInt($rows.length));
+                console.log(11111, $TOTAL_FORMS, $TOTAL_FORMS.val(), $rows.length );
                 $("#btn-submit").prop("disabled", parseInt($TOTAL_FORMS.val()) < 1);
 
             };

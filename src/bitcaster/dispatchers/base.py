@@ -57,6 +57,10 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         """
         pass  # pragma: no-cover
 
+    def get_recipient_address(self, subscription):
+        user = subscription.subscriber
+        return user.addresses.get_address(self)
+
     @abc.abstractmethod
     def emit(self, subscription: object, subject: str, message: str,
              connection=None, *args, **kwargs) -> int:
@@ -79,6 +83,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
         cfg = get_full_config(self.subscription_class, subscription.config)
+        cfg['recipient'] = self.get_recipient_address(subscription)
         try:
             return self.subscription_class(data=cfg).is_valid(True)
         except (serializers.ValidationError, ValidationError) as e:

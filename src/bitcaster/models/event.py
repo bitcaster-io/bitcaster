@@ -44,6 +44,8 @@ class Event(AbstractModel):
     def __str__(self):
         return self.name
 
+    def enabled_channels(self):
+        return self.channels.filter(messages__enabled=True)
     # def get_message(self, channel):
     #     return self.messages.get(channels=channel)
     #

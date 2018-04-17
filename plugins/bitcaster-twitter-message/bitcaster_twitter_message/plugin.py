@@ -59,7 +59,7 @@ class TwitterMessage(Dispatcher):
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:
-            recipient = subscription.config['recipient']
+            recipient = self.get_recipient_address(subscription)
             conn = self._get_connection()
             conn.PostDirectMessage(message, screen_name=recipient)
             return 1

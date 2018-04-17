@@ -43,7 +43,7 @@ __all__ = ["OrganizationCreate", "OrganizationDashboard", "OrganizationUpdate",
            "OrganizationChannelRemove", "OrganizationChannelToggle",
            "OrganizationChannelUpdate", "OrganizationChannelDeprecate",
            "OrganizationTeamUpdate", "OrganizationTeamMember",
-           "OrganizationMemberRegister",
+           "OrganizationCreateMember",
            "OrganizationInvite", "InviteDelete", "InviteSend", "InviteAccept",
            "OrganizationApplications", "OrganizationChannelCreate"]
 
@@ -111,7 +111,7 @@ class OrganizationCreate(OrganizationViewMixin, BitcasterBaseCreateView):
         return super().form_valid(form)
 
 
-class OrganizationMemberRegister(OrganizationViewMixin, CreateView):
+class OrganizationCreateMember(OrganizationViewMixin, CreateView):
     template_name = 'bitcaster/organization_new_member.html'
     model = User
     form_class = NewMemberForm
