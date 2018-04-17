@@ -223,4 +223,5 @@ function stash() {
 
 function unstash() {
     git stash pop -q
+    trap '' INT
 }

@@ -8,8 +8,10 @@ else
     stash
 #    FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -e '\.py$')
     FILES=$(gitflow_python_files)
-    OUT=`flake8 $FILES`
-    RET=$?
+    if [ ! -z $FILES ];then
+        OUT=`flake8 $FILES`
+        RET=$?
+    fi
     unstash
 fi
 
