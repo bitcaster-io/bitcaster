@@ -1,3 +1,4 @@
+RET=0
 if git diff-index --quiet HEAD --; then
     # no changes between index and working copy; just run tests
     OUT=`flake8 src`
