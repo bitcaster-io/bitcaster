@@ -81,7 +81,7 @@ def send_address_verification_email(user):
     code = totp.now()
     url = reverse('confirm-address', args=[user.pk, user.email, code])
 
-    send_mail_by_template('Email address confirmation',
+    send_mail_by_template('[Bitcaster] Verify email address',
                           'confirm_email',
                           {'user': user,
                            'url': absolute_uri(url)},

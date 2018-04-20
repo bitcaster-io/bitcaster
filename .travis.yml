@@ -24,6 +24,7 @@ install:
 
 script:
   - npm install
+  - mkdir /tmp/static
   - tox -e "d${DJANGO//.}-py${TRAVIS_PYTHON_VERSION//.}"
 
 before_success:

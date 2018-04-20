@@ -74,7 +74,7 @@
                                href="#" role="button"
                                id="userMenuLink" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
-                            {{ user.display_name }} <img src="{{ user|gravatar:20 }}" /><i class="fa fa-angle-down"></i>
+                            {{ user.display_name }} <img src="{{ user|gravatar:30 }}" /><i class="fa fa-angle-down"></i>
                           </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuLink">
                                 <a class="dropdown-item" href="{% url "user-profile" %}">Profile</a>
