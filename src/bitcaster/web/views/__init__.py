@@ -2,7 +2,7 @@
 # flake8: noqa
 from .application import *
 from .base import *
-from .callbacks import confirm_email
+from .callbacks import confirm_registration
 from .channel import ChannelCreateWizard, ChannelListView
 from .event import (EventCreate, EventDelete, EventList, EventMessages,
                     EventSubscriptions, EventSubscriptionsInvite,

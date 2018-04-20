@@ -83,6 +83,7 @@ def send_mail_async(subject, message, html_message, recipient_list,
         sent = mail.send()
         assert sent == 1
         logger.debug(f"Email '{subject}' sent to {recipient_list}")
+        return sent
     except Exception as e:
         logger.exception(e)
         raise

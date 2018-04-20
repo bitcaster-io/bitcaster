@@ -61,6 +61,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                                      help_text="display/friendly name. Can be given name or nickname")
     email = models.EmailField(_('email address'), null=True,
                               unique=True)
+
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -156,7 +157,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         check = gauth.generate()
         ctx = {
             'user': self,
-            'url': absolute_uri(reverse('confirm-email',
+            'url': absolute_uri(reverse('confirm-registratiom',
                                         args=[self.id, check])
                                 ),
             'confirm_email': self.email,

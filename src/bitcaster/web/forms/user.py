@@ -7,12 +7,18 @@ from django.contrib.auth.forms import (AuthenticationForm as _AuthenticationForm
                                        UserChangeForm as _UserChangeForm,
                                        UserCreationForm as _UserCreationForm,)
 from django.forms import PasswordInput
+from django.forms.utils import ErrorList
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from bitcaster.db.fields import Role
+from bitcaster.mail import send_mail_by_template
 from bitcaster.models import Organization, User
+from bitcaster.otp import totp
+from bitcaster.utils.email_verification import get_new_email_request
+from bitcaster.utils.http import absolute_uri
 
 logger = logging.getLogger(__name__)
 
@@ -71,15 +77,48 @@ class UserInviteRegistrationForm(forms.ModelForm):
         fields = ('friendly_name', 'email', 'password')
 
 
+def send_address_verification_email(user):
+    code = totp.now()
+    url = reverse('confirm-address', args=[user.pk, user.email, code])
+
+    send_mail_by_template('Email address confirmation',
+                          'confirm_email',
+                          {'user': user,
+                           'url': absolute_uri(url)},
+                          [user.email])
+
+
 class UserProfileForm(forms.ModelForm):
     friendly_name = forms.CharField(required=False)
-    email = forms.EmailField(disabled=True)
+    email = forms.EmailField()
 
     class Meta:
         model = User
         fields = ('friendly_name', 'avatar', 'email',
                   'timezone', 'language', 'country')
 
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
+                 label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None):
+        super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
+                         use_required_attribute)
+        self.new_email_pending = get_new_email_request(instance)
+        if self.new_email_pending:
+            self.fields['email'].disabled = True
+            self.fields['email'].help_text = f'new email verification pending ({self.new_email_pending})'
+
+    # def get_new_email_key(self):
+    #     return f'new-email-{self.instance.pk}'
+
+    # def save(self, commit=True):
+        # email_changed = self.fields['email'].has_changed(self.initial.get('email'),
+        #                                               self.data.get('email'))
+        #
+        # if email_changed:
+        #     cache.set(self.get_new_email_key(), self.data['email'])
+        #     send_address_verification_email(self.instance)
+        #     self.instance.email = self.initial['email']
+        # super().save(commit)
+        # return self.instance
     # def clean_picture(self):
     #     picture = self.cleaned_data['picture']
     #     if picture:
@@ -184,7 +223,7 @@ class NewMemberForm(_UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('email', 'role', )
+        fields = ('email', 'role',)
 
     def _post_clean(self):
         super()._post_clean()

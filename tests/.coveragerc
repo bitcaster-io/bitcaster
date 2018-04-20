@@ -1,7 +1,8 @@
 [run]
 branch = True
 source = bitcaster
-
+# partial_branches =
+# fail_under = 90
 omit =
         ~*
         tests/**

@@ -5,11 +5,10 @@ import codecs
 import os
 import re
 import subprocess
-
 import sys
 from pathlib import Path
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 from setuptools.command.sdist import sdist
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
@@ -60,8 +59,8 @@ setup(name=name,
       package_dir={'': 'src'},
       packages=find_packages('src'),
       include_package_data=True,
-      install_requires=install_requires,
-      tests_require=dev_requires,
+      # install_requires=install_requires,
+      # tests_require=dev_requires,
       extras_require={
           'dev': dev_requires,
           'test': test_requires,

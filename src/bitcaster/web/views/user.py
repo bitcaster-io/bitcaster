@@ -9,7 +9,9 @@ from django.utils.translation import gettext as _
 from django.views.generic import FormView
 
 from bitcaster.models import Address, Organization, User
+from bitcaster.utils.email_verification import set_new_email_request
 from bitcaster.utils.wsgi import get_client_ip
+from bitcaster.web.forms.user import send_address_verification_email
 
 from ..forms import UserProfileForm
 from .base import (BitcasterBaseDetailView,
@@ -105,6 +107,13 @@ class UserProfileView(BitcasterBaseUpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
+    def get_context_data(self, **kwargs):
+        ret = super().get_context_data(**kwargs)
+
+        if ret['form'].new_email_pending:
+            ret['newemail'] = ret['form'].new_email_pending
+        return ret
+
     def get_initial(self):
         initial = super().get_initial()
         user = self.get_object()
@@ -119,15 +128,27 @@ class UserProfileView(BitcasterBaseUpdateView):
                 match = reader.get(remote_ip)
                 if match:
                     if not user.country:
-                        initial['country'] = match['country']['iso_code']
+                        try:
+                            initial['country'] = match['country']['iso_code']
+                        except KeyError:
+                            initial['country'] = None
+
                     if not user.timezone:
-                        initial['timezone'] = match['location']['time_zone']
+                        try:
+                            initial['timezone'] = match['location']['time_zone']
+                        except KeyError:
+                            initial['timezone'] = None
         return initial
 
     def form_valid(self, form):
+        email_changed = form.fields['email'].has_changed(form.initial.get('email'),
+                                                         form.data.get('email'))
+
+        if email_changed:
+            set_new_email_request(form.instance, form.data['email'])
+            send_address_verification_email(form.instance)
+            form.instance.email = form.initial['email']
+            self.message_user(_('Check your inbox to validate your new email address'), messages.SUCCESS)
         ret = super().form_valid(form)
         self.message_user(_('Profile Updated'), messages.SUCCESS)
         return ret
-    # def get_form_class(self):
-    #     fields = UserCreationForm._meta.fields
-    #     return modelform_factory(User, fields=fields)
