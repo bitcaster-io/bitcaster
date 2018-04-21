@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+from django.core.validators import RegexValidator
+from django.utils.translation import ugettext_lazy as _
 from python_twitter import api
 
 from bitcaster.api.fields import PasswordField
@@ -23,6 +24,10 @@ class TwitterMessageOptions(DispatcherOptions):
     consumer_secret = PasswordField()
     access_token_key = PasswordField()
     access_token_secret = PasswordField()
+
+
+validate_username = RegexValidator('^@?(\w){1,15}$',
+                                   message=_('Use a valid twitter account'))
 
 
 class TwitterMessageSubscriptionOptions(SubscriptionOptions):

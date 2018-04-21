@@ -12,14 +12,17 @@
     </div>
 
     <div id="empty-form" class="d-none">
-        <div class="row">
-            {{ form.empty_form.user }}
-            {{ form.empty_form.id }}
-            <div class="row col-sm">{{ form.empty_form.dispatcher|as_crispy_field }}</div>
-            <div class="row col-sm">{{ form.empty_form.address|as_crispy_field }}</div>
-            <div class="row col-sm align-items-center"><a href="#" class="remove_line">
-                <i class="fa fa-remove"></i></a>
+        <div class="row col-12">
+            <div class="row col-12">
+                {{ form.empty_form.user }}
+                {{ form.empty_form.id }}
+                <div class="row col-sm">{{ form.empty_form.dispatcher|as_crispy_field }}</div>
+                <div class="row col-sm">{{ form.empty_form.address|as_crispy_field }}</div>
+                <div class="row col-sm align-items-center"><a href="#" class="remove_line">
+                    <i class="fa fa-remove"></i></a>
+                </div>
             </div>
+            <div class="red">{{ form.empty_form.non_field_errors.as_text }}</div>
         </div>
     </div>
     <div class="container">
@@ -28,16 +31,19 @@
             {% csrf_token %}
             <div class="content invitations">
                 {% for form in form.forms %}
-                    <div class="row">
-                        {{ form.user }}
-                        {{ form.id }}
-                        <div class="row col-sm">{{ form.dispatcher|as_crispy_field }}</div>
-                        <div class="row col-sm">{{ form.address|as_crispy_field }}</div>
-                        <div class="row col-sm align-items-center">
-                            <a href="#" class="remove_line">
-                                <i class="fa fa-remove"></i>
-                            </a>
+                    <div class="row col-12">
+                        <div class="row col-12">
+                            {{ form.user }}
+                            {{ form.id }}
+                            <div class="row col-sm">{{ form.dispatcher|as_crispy_field }}</div>
+                            <div class="row col-sm">{{ form.address|as_crispy_field }}</div>
+                            <div class="row col-sm align-items-center">
+                                <a href="#" class="remove_line">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            </div>
                         </div>
+                        <div class="red">{{ form.non_field_errors.as_text }}</div>
                     </div>
                 {% endfor %}
             </div>
@@ -49,8 +55,8 @@
 {% endblock %}
 {% block js %}
     {{ block.super }}
-        <script>
-        (function() {
+    <script>
+        (function () {
             var formsetName = "addresses";
             var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
             var selector = "div.invitations";
@@ -58,7 +64,7 @@
 
             $(".remove_line").click(function () {
                 $("#btn-submit").prop("disabled", true);
-                var $target = $(this).parent().parent();
+                var $target = $(this).parent().parent().parent();
                 $target.remove();
                 setTimeout(function () {
                     reNumber();
@@ -74,7 +80,7 @@
                     $(e).find(":input").each(function () {
                         var name = $(this).attr("name").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
                         var id = "id_" + name;
-                        $(this).attr({"name": name, "id": id})
+                        $(this).attr({"name": name, "id": id});
                     });
                     $(e).find("label").each(function () {
                         var newFor = $(this).attr("for").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
@@ -98,7 +104,7 @@
                     reNumber();
                 }, 20);
             };
-        })($)
+        })($);
     </script>
 
 {% endblock %}

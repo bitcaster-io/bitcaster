@@ -28,7 +28,7 @@ class Address(models.Model):
     objects = AddressQuerySet.as_manager()
 
     class Meta:
-        unique_together = ('user', 'dispatcher')
+        unique_together = ('user', 'dispatcher'),
 
     def __str__(self):
         return self.address

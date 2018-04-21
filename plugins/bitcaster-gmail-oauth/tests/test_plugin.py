@@ -62,6 +62,7 @@ def test_validate_subscription(subscription):
 def test_validate_subscription_fail(subscription):
     d = Gmail(subscription.channel)
     subscription.subscriber.email = ''
+    subscription.config['recipient'] = ''
     with pytest.raises(PluginValidationError):
         d.validate_subscription(subscription)
 

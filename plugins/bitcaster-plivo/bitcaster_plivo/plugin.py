@@ -37,7 +37,7 @@ class Plivo(Dispatcher):
 
     @classproperty
     def name(cls):
-        return 'Plivo'
+        return 'Plivo (SMS)'
 
     # def validate_subscription(self, subscription, *args, **kwargs) -> None:
     #     ser = self.subscription_class(data=subscription.config)

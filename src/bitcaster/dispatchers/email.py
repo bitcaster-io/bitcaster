@@ -22,7 +22,7 @@ class EmailMessage(MessageType):
 
 
 class EmailSubscription(SubscriptionOptions):
-    email = serializers.EmailField()
+    recipient = serializers.EmailField()
 
 
 class EmailOptions(DispatcherOptions):
@@ -45,7 +45,7 @@ class Email(Dispatcher):
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
         email = self.get_recipient_address(subscription)
-        cfg = {'email': self.owner.config.get('email', email)}
+        cfg = {'recipient': self.owner.config.get('recipient', email)}
         try:
             return self.subscription_class(data=cfg).is_valid(True)
         except (serializers.ValidationError, ValidationError) as e:
@@ -63,6 +63,7 @@ class Email(Dispatcher):
             fail_silently=False)
 
     def get_recipient_address(self, subscription):
+        # super(Email, self).get_recipient_address(subscription)
         try:
             return super().get_recipient_address(subscription)
         except ObjectDoesNotExist:

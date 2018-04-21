@@ -41,8 +41,8 @@ class Gmail(Email):
                 self.logger.error("Invalid configuration")
                 raise PluginValidationError(opts.errors)
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        super().validate_subscription(subscription, *args, **kwargs)
+    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
+    #     super().validate_subscription(subscription, *args, **kwargs)
 
     def test_connection(self, raise_exception=False):
         try:

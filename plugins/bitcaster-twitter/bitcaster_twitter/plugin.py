@@ -26,15 +26,15 @@ class TwitterOptions(DispatcherOptions):
     access_token_secret = PasswordField()
 
 
-class TwitterSubscriptionOptions(SubscriptionOptions):
-    pass
-
+# class TwitterSubscriptionOptions(SubscriptionOptions):
+#     pass
+#
 
 @dispatcher_registry.register
 class Twitter(Dispatcher):
     options_class = TwitterOptions
     message_class = TwitterMessage
-    subscription_class = TwitterSubscriptionOptions
+    subscription_class = None
     __license__ = 'MIT'
     __author__ = 'Bitcaster'
     __help__ = mark_safe("""
@@ -53,9 +53,11 @@ Get your keys at <a target='_new' href='https://apps.twitter.com/'>https://apps.
                        config['access_token_secret'], )
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = self.subscription_class(data=subscription.config)
-        if not ser.is_valid():
-            raise PluginValidationError(ser.errors)
+        return
+
+    @classmethod
+    def validate_address(cls, address, *args, **kwargs) -> bool:
+        pass
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:

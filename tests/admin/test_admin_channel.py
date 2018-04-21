@@ -86,7 +86,7 @@ def test_channel_test(django_app, admin, channel1):
 def test_channel_send_sample_message(django_app, admin, channel1):
     url = reverse("admin:bitcaster_channel_send_sample_message", args=[channel1.pk])
     res = django_app.get(url, user=admin.email)
-    res.form["email"] = "sample@mailnator.com"
+    res.form["recipient"] = "sample@mailnator.com"
     res = res.form.submit()
     assert res.status_code == 302
 

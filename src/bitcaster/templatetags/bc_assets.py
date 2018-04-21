@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 from django.templatetags.static import static as _static
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -10,11 +11,8 @@ register = template.Library()
 
 
 # def get_asset_url(path):
-#     return _static(path)
-# return '{}/{}'.format(
-#     settings.STATIC_URL.rstrip('/'),
-#     path,
-# )
+#     # return _static(path)
+#     return '{}/{}'.format(settings.STATIC_URL.rstrip('/'), path,)
 
 
 @register.simple_tag
@@ -54,7 +52,7 @@ def aasset(path):
         {% static variable_with_path as varname %}
     """
     commit = bitcaster.get_full_version()
-    return absolute_uri(_static(f"{path}?{commit}"))
+    return "%s?%s" % (absolute_uri(_static(path)), commit)
 
 
 @register.simple_tag

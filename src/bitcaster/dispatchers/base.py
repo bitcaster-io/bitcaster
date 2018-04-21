@@ -59,7 +59,10 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
 
     def get_recipient_address(self, subscription):
         user = subscription.subscriber
-        return user.addresses.get_address(self)
+        try:
+            return subscription.config['recipient']
+        except KeyError:
+            return user.addresses.get_address(self)
 
     @abc.abstractmethod
     def emit(self, subscription: object, subject: str, message: str,
@@ -78,8 +81,9 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         for validator in self.message_class.validators:
             validator(message, **kwargs)
 
-    def validate_address(self, address, *args, **kwargs) -> bool:
-        return True
+    @classmethod
+    def validate_address(cls, address, *args, **kwargs) -> bool:
+        return cls.subscription_class().fields['recipient'].run_validators(address)
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
         cfg = get_full_config(self.subscription_class, subscription.config)

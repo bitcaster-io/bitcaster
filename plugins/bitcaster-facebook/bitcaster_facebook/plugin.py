@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.core.validators import RegexValidator
+from django.utils.translation import ugettext_lazy as _
 from fbchat import Client, Message
 
 from bitcaster.api.fields import PasswordField
@@ -20,6 +22,10 @@ class FacebookMessage(MessageType):
 class FacebookOptions(DispatcherOptions):
     key = serializers.CharField()
     password = PasswordField()
+
+
+validate_username = RegexValidator('/^[a-z\d.]{5,}$/i',
+                                   message=_('Use a valid facebook account'))
 
 
 class FacebookSubscription(SubscriptionOptions):
