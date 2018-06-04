@@ -9,6 +9,7 @@ service redis-server start
 
 if [ ! -f /var/bitcaster/.bootstrapped ]; then
     echo $PWD
+    pip install "pip<10"
     pip install -e .[dev]
     bitcaster configure --no-input
     bitcaster upgrade --no-input

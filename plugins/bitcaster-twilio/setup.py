@@ -22,7 +22,7 @@ setup(
     package_data={
         'bitcaster_twilio': ['*.png', ],
     },
-    install_requires=['twilio'],
+    install_requires=['twilio', 'lxml'],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

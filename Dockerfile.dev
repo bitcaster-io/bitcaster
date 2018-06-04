@@ -60,7 +60,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         redis-server \
         memcached \
         postfix \
+
     && rm -rf /var/lib/apt/lists/*
+
 
 ENV BITCASTER_MEDIA_ROOT /var/bitcaster/media
 ENV BITCASTER_STATIC_ROOT /var/bitcaster/static

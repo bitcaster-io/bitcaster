@@ -34,7 +34,7 @@ install_requires = fread('install.pip')
 test_requires = fread('testing.pip')
 dev_requires = fread('develop.pip')
 
-readme = codecs.open('README.rst').read()
+readme = codecs.open('README.md').read()
 
 
 class SDistCommand(sdist):
@@ -79,7 +79,7 @@ setup(name=name,
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Framework :: Django',
-          'License :: OSI Approved :: MIT',
+          'License :: OSI Approved :: MIT License',
           'Natural Language :: English',
           'Programming Language :: Python :: 3.6'
       ])

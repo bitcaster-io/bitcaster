@@ -22,7 +22,7 @@ setup(
     package_data={
         'bitcaster_plivo': ['*.png', ],
     },
-    install_requires=['plivo'],
+    install_requires=['plivo', 'lxml'],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,
