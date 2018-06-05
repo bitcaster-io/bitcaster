@@ -15,9 +15,11 @@
 
 Bitcaster is a system-to-user signal-to-message notification system.
 
-Bitcaster will receive signals from any of your systems and will convert them in messages to be distributed to you users via a plethora of channels using any of the channel's available formatting syntax. 
+Bitcaster will receive signals from any of your applications/systems using a simple RESTful API and will convert them in messages to be distributed to you users via a plethora of channels.
 
-Your user will be empowered with an easy to use console to choose how to receive the messages configured in Bitcaster or using .
+Messages content is customised at user/receiver level using a flexible template system.
+
+Your user will be empowered with an easy to use console to choose how to receive the messages configured in Bitcaster.
 
 Bitcaster comes loaded with all of the following channel plugins:
 * Facebook
@@ -37,7 +39,6 @@ In addition a plugin SDK will allow you to create your own plugins in order to e
 **Code** https://github.com/bitcaster-io/bitcaster
 
 **Transifex** https://www.transifex.com/sax9/bitcaster/(Translate Bitcaster!)
-
 
 
 [travis-build]:https://secure.travis-ci.org/bitcaster-io/bitcaster.png?branch=develop
