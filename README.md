@@ -1,4 +1,4 @@
-#Bitcaster
+# Bitcaster
 
 [![pypi-version]][pypi] [![travis-build]][travis-link] [![codecov-badge]][codecov] 
 
@@ -11,7 +11,7 @@
  </p>
 </p>
 
-##What's Bitcaster
+## What's Bitcaster
 
 Bitcaster is a system-to-user signal-to-message notification system.
 
@@ -30,7 +30,7 @@ Bitcaster comes loaded with all of the following channel plugins:
 
 In addition a plugin SDK will allow you to create your own plugins in order to extend the reach of your signals to any possible conceivable target. 
 
-##Resources
+## Resources
 
 **Bug Tracker** https://github.com/bitcaster-io/bitcaster/issues
 
