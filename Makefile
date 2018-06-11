@@ -7,6 +7,7 @@ SUBDIRS:=$(wildcard plugins/bitcaster-*)
 DEVPI_CACHE_URL?=""
 BITCASTER_DATABASE_HOST?=127.0.0.1
 BITCASTER_DATABASE_PORT?=5432
+PIPVER:=$(shell pip --version | cut -d " " -f 2 | cut -d "." -f 1)
 
 .mkbuilddir:
 	mkdir -p ${BUILDDIR}
@@ -160,7 +161,15 @@ uninstall-plugins:
  	done
 
 
-docker-reset-dev:
+.check_pip:
+    #check for preventing Module pip no attribute main
+    #https://stackoverflow.com/questions/49839610/attributeerror-module-pip-has-no-attribute-main
+	-@if [ ${PIPVER} -ne 9 ]; then \
+		echo "Upgrading/Downgrading pip to 9.0.3"; \
+		python3 -m pip install --user --upgrade pip==9.0.3; \
+	fi
+
+docker-reset-dev: .check_pip
 	rm -fr ${PWD}/~build/docker/
 	-@docker stop bitcaster-dev
 	-@docker rm bitcaster-dev
