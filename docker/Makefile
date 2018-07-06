@@ -17,6 +17,9 @@ clean:
 	-docker rmi ${DOCKER_IMAGE}
 #	-docker rmi `docker images -q -f "reference=${DOCKER_IMAGE}"`
 
+push:
+#	docker login bitcasterio
+	docker push ${DOCKER_IMAGE}
 
 build:
 	cd .. && docker build ${BUILD_OPTIONS} \

@@ -54,9 +54,9 @@ RUN pipenv install -v --system --deploy \
     && mkdir -p /root/.bitcaster/ -m 770 \
     && pip install .
 
-#RUN apk del .build-deps\
-#    && rm -fr /code \
-#    && rm -fr /root/.cache
+RUN apk del .build-deps\
+    && rm -fr /code \
+    && rm -fr /root/.cache
 
 ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
