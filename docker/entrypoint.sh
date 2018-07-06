@@ -1,15 +1,17 @@
-#!/bin/bash
+#!/bin/sh
 set -ex
 
 if [ ! -f /var/bitcaster/.bootstrapped ]; then
-    echo $PWD
-    bitcaster configure --no-input
-    bitcaster check --wait-services --deploy --sleep 10
-    bitcaster upgrade --no-input
     touch /var/bitcaster/.bootstrapped
-    echo "done" && exit 0
+    echo "done"
 fi
-#bitcaster start web -l debug &
-#bitcaster start workers -l debug &
-
-exec "$@"
+if [ "$@" == "bitcaster" ];then
+    pg-control start
+    redis-server &
+    bitcaster configure --no-input
+    bitcaster upgrade --no-input
+    bitcaster start web -l debug --bind 0.0.0.0:8000 &
+    bitcaster start workers -l debug &
+else
+    exec "$@"
+fi

@@ -23,7 +23,7 @@ FROM python:3.6
 ENV PYTHONUNBUFFERED 1
 ENV PG_MAJOR 9.6
 ENV PG_VERSION 9.6.*
-ENV DATABASE_NAME bitcaster
+ENV POSTGRES_DB bitcaster
 ENV NGINX_VERSION 1.13.7-1~stretch
 ENV NJS_VERSION   1.13.7.0.1.15-1~stretch
 
@@ -46,7 +46,9 @@ ENV BITCASTER_DATABASE_HOST db
 ENV BITCASTER_REDIS_CACHE_URL redis://redis:6379/0
 ENV BITCASTER_REDIS_LOCK_URL redis://redis:6379/1
 ENV BITCASTER_CELERY_BROKER_URL redis://redis:6379/2
-ENV BITCASTER_DATABASE_URL psql://postgres:@db:5432/bitcaster
+ENV BITCASTER_DATABASE_URL psql://postgres:@db:5432/${POSTGRES_DB}
+ENV HOME /root
+RUN mkdir -p /root/.bitcaster/
 
 ENV BITCASTER_CONF_DIR /etc/bitcaster/
 ENV BITCASTER_CONF ${BITCASTER_CONF_DIR}conf
@@ -54,6 +56,7 @@ RUN mkdir -p /usr/src/bitcaster -m 770
 RUN mkdir -p ${BITCASTER_MEDIA_ROOT} -m 770
 RUN mkdir -p ${BITCASTER_STATIC_ROOT} -m 770
 RUN mkdir -p ${BITCASTER_CONF_DIR} -m 770
+RUN mkdir -p /var/bitcaster/ -m 770
 RUN touch ${BITCASTER_CONF}
 COPY dist /cache
 RUN pip install bitcaster \
@@ -68,11 +71,13 @@ RUN pip install bitcaster \
     bitcaster-twitter-message \
     bitcaster-xmpp \
     --find-links file:///cache \
-    --cache-dir /cache
+    --cache-dir /cache \
+    && rm -fr /cache /root/.cache
 
 
 WORKDIR /usr/src/bitcaster
 
+RUN
 COPY docker/entrypoint.sh /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
 

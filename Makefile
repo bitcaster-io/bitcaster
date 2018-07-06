@@ -23,8 +23,7 @@ help:
 	@echo "DANGEROUS COMMANDS"
 	@echo "reset-migrations        reset all database migrations"
 	@echo "reset-dev-env           reset dev environment"
-	@echo "compile-requirements    compile .pip requirement files from .in"
-	@echo "sync-requirements       sync virtualenv to only contains bitcaster requirements"
+	@echo "requirements            compile .pip requirement files from .in"
 	@echo ""
 	@echo "DOCKER"
 	@echo "docker-reset-dev        reset/rebuild development docker container"
@@ -36,8 +35,9 @@ static:
 	bitcaster upgrade --no-migrate --no-input
 
 develop: .setup-git
-	@pip install -U pip-tools
-	$(MAKE) .init-db sync-requirements
+	$(MAKE) .init-db
+	pipenv clean
+	pipenv sync
 	npm install
 
 .setup-git:
@@ -58,7 +58,7 @@ reset-dev-env: .init-db
 reset-migrations: .init-db
 	find src -name '000[1,2,3,4,5,6,7,8,9]*' | xargs rm -f
 	./manage.py makemigrations bitcaster
-	./manage.py makemigrations bitcaster
+	./manage.py makemigrations --check
 	bitcaster upgrade --no-input
 	bitcaster option set INITIALIZED 0
 
@@ -93,36 +93,10 @@ ifdef BROWSE
 	firefox ${BUILDDIR}/docs/index.html
 endif
 
-compile-requirements:
-	pip install pip-tools devpi-builder
-	@pip-compile src/requirements/install.in \
-		--upgrade \
-		--annotate \
-		--rebuild \
-		--no-header \
-		--no-emit-trusted-host \
-		--no-index -o src/requirements/install.pip
-	@pip-compile src/requirements/testing.in \
-		src/requirements/install.pip \
-		--upgrade \
-		--annotate \
-		--rebuild \
-		--no-header \
-		--no-emit-trusted-host \
-		--no-index -o src/requirements/testing.pip
-	@pip-compile src/requirements/develop.in \
-		src/requirements/testing.pip \
-		--upgrade \
-		--annotate \
-		--rebuild \
-		--no-header \
-		--no-emit-trusted-host \
-		--no-index -o src/requirements/develop.pip
 
-sync-requirements:
-	pip-sync src/requirements/develop.pip
-	pip install -e .[dev]
-	$(MAKE) install-plugins
+requirements:
+	pipenv lock -r > src/requirements/install.pip
+	pipenv lock -r -d > src/requirements/testing.pip
 
 cache-requirements:
 	devpi-builder src/requirements/develop.pip  ${DEVPI_CACHE_URL}

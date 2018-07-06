@@ -11,19 +11,21 @@ faker = Faker()
 
 
 def pytest_configure(config):
-    here = os.path.dirname(__file__)
-    sys.path.insert(0, os.path.join(here, 'extras'))
-    os.environ.setdefault('BITCASTER_CONF', str(Path(__file__).parent / '.conf'))
+    here = Path(__file__).parent
+    root = here.parent
+    sys.path.insert(0, str(here / 'extras'))
+    sys.path.insert(0, str(root / 'src'))
+    os.environ.setdefault('BITCASTER_CONF', str(here / '.conf'))
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings.default')
     os.environ['CELERY_TASK_ALWAYS_EAGER'] = 'True'
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     os.environ['RECAPTCHA_DISABLE'] = 'True'
     from bitcaster.config.environ import env
-    env.load_config(str(Path(__file__).parent / '.conf'))
+    env.load_config(str(here / '.conf'))
     import django
     django.setup()
     from django.conf import settings
-
+    os.makedirs("/tmp/static", exist_ok=True)
     # from constance import config as c
     # c.INITIALIZED = True
     settings.CELERY_TASK_ALWAYS_EAGER = True

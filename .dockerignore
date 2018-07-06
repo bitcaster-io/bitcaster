@@ -8,4 +8,7 @@
 ~OLD
 /extras
 /hooks
-/docs
+.venv
+.virtualenv_hooks
+.tx
+docs

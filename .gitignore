@@ -1,6 +1,7 @@
 .virtualenv_hooks
 .DS_Store
 .env*
+.venv
 .conf*
 .local-*
 .*client-id*

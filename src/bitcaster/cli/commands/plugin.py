@@ -50,7 +50,7 @@ def _list(**kwargs):
 @need_setup
 def uninstall(name, prompt, **kwargs):
     from bitcaster.dispatchers.registry import dispatcher_registry
-    import pip
+    from pip._internal import main as pipmain
     import pkg_resources  # part of setuptools
     found = [entry for entry in dispatcher_registry if entry.name.lower() == name.lower()]
     if not found:
@@ -62,7 +62,7 @@ def uninstall(name, prompt, **kwargs):
         sys.exit(1)
     r = pkg_resources.require(package_name(found.__module__))
     if click.prompt(f"Uninstall plugin {found.name}?"):
-        pip.main(["uninstall", r[0].project_name, '--yes'])
+        pipmain(["uninstall", r[0].project_name, '--yes'])
 
 
 @plugin.command()
@@ -73,17 +73,17 @@ def uninstall(name, prompt, **kwargs):
               help='Do not prompt for parameters')
 @need_setup
 def install(name, prompt, recursive, from_dir, **kwargs):
-    import pip
+    from pip._internal import main as pipmain
     if from_dir:
         if recursive:
             for root, subdirs, files in os.walk(from_dir):
                 if os.path.exists(os.path.join(root, 'setup.py')):
                     click.echo(f"Found plugin in {root}")
-                    pip.main(["install", "-q", "--ignore-installed", root])
+                    pipmain(["install", "-q", "--ignore-installed", root])
 
         else:
             os.chdir(from_dir)
-            pip.main(["install", '.'])
+            pipmain(["install", '.'])
 
 
 @plugin.command(name="new")
