@@ -7,9 +7,6 @@ ENV PIPSI_BIN_DIR /usr/local/bin
 RUN apk add --no-cache redis
 EXPOSE 6379
 
-#RUN apk add --no-cache --virtual .runtime-deps \
-#    postgresql-libs
-
 RUN apk upgrade && apk update && \
     apk add --no-cache --virtual .build-deps \
         curl \
@@ -22,9 +19,11 @@ RUN apk upgrade && apk update && \
         libxslt-dev \
         libffi-dev \
 #        openssl-dev \
+#        django-sysinfo / psutil
+        linux-headers
+
+RUN apk add --no-cache --virtual .runtime-deps \
         # Pillow dependencies
-        jpeg-dev \
-        zlib-dev \
         freetype-dev \
         lcms2-dev \
         openjpeg-dev \
@@ -33,8 +32,9 @@ RUN apk upgrade && apk update && \
         tcl-dev \
         harfbuzz-dev \
         fribidi-dev \
-#        django-sysinfo / psutil
-        linux-headers
+        jpeg-dev \
+        zlib-dev
+
 
 RUN mkdir -p /code /root/.local/bin
 
@@ -58,7 +58,7 @@ RUN apk del .build-deps\
     && rm -fr /code \
     && rm -fr /root/.cache
 
-ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-ENTRYPOINT ["docker-entrypoint.sh"]
+ADD docker/entrypoint.sh /usr/local/bin2/docker-entrypoint.sh
+ENTRYPOINT ["/usr/local/bin2/docker-entrypoint.sh"]
 
 CMD ["bitcaster"]

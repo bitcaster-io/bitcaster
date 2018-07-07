@@ -1,5 +1,5 @@
 RELEASE=.alpine
-DOCKER_IMAGE=bitcaster/demo
+DOCKER_IMAGE=bitcaster/demo:1.0
 BUILD_OPTIONS?=--squash
 DOCKERFILE?=docker/Dockerfile.dev${RELEASE}
 PYPI_SERVER?="pypi.org"
@@ -14,8 +14,11 @@ builder:
 			-t ${DOCKER_IMAGE} \
 			-f ${DOCKERFILE} .
 clean:
+	-docker stop bitcaster_demo
 	-docker rmi ${DOCKER_IMAGE}
-#	-docker rmi `docker images -q -f "reference=${DOCKER_IMAGE}"`
+
+fullclean: clean
+	-rm -fr ../~build/volumes
 
 push:
 #	docker login bitcasterio
@@ -25,7 +28,6 @@ build:
 	cd .. && docker build ${BUILD_OPTIONS} \
 			--build-arg PYPI_SERVER=${PYPI_SERVER} \
 			--build-arg PYPI_INDEX=${PYPI_INDEX} \
-			--build-arg GITHUB_CREDENTIALS=${GITHUB_CREDENTIALS} \
 			-t ${DOCKER_IMAGE} \
 			-f ${DOCKERFILE} .
 
@@ -36,12 +38,15 @@ run:
 			-e BITCASTER_CONF=/etc/bitcaster/conf \
 			-v $$PWD/~build/volumes/data:/var/postgresql/data \
 			-v $$PWD/~build/volumes/etc/bitcaster:/etc/bitcaster \
-			-it ${DOCKER_IMAGE} \
+			-v $$PWD/~build/volumes/var/bitcaster:/var/bitcaster \
+			--name bitcaster_demo \
+			-d \
+			${DOCKER_IMAGE} \
 			${CMD}
 
 test:
 #	CMD="\"sh -c \'python -c \\\"import sir\'\\\"\"" $(MAKE) run
-	CMD='django-admin check --deploy' $(MAKE) run
+	CMD='bitcaster check --deploy' $(MAKE) run
 
 shell:
 #	CMD="\"sh -c \'python -c \\\"import sir\'\\\"\"" $(MAKE) run

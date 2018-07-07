@@ -46,7 +46,7 @@ ENV BITCASTER_DATABASE_HOST db
 ENV BITCASTER_REDIS_CACHE_URL redis://redis:6379/0
 ENV BITCASTER_REDIS_LOCK_URL redis://redis:6379/1
 ENV BITCASTER_CELERY_BROKER_URL redis://redis:6379/2
-ENV BITCASTER_DATABASE_URL psql://postgres:@db:5432/${POSTGRES_DB}
+ENV BITCASTER_DATABASE_URL psql://postgres:@db:5432/bitcaster
 ENV HOME /root
 RUN mkdir -p /root/.bitcaster/
 
@@ -77,7 +77,7 @@ RUN pip install bitcaster \
 
 WORKDIR /usr/src/bitcaster
 
-RUN
+
 COPY docker/entrypoint.sh /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
 
