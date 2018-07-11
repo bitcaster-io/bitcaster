@@ -6,6 +6,8 @@ if [ "$@" == "bitcaster" ];then
     pg-control start
     redis-server &
     if [ ! -f /var/bitcaster/.bootstrapped ]; then
+        export BITCASTER_ORGANIZATION=`perl -e 'srand; rand($.) < 1 && ($line = $_) while <>; print $line;' /marvel.txt`
+
         touch /var/bitcaster/.bootstrapped
         bitcaster configure --no-input
         bitcaster upgrade --no-input

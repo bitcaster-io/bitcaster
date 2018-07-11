@@ -125,9 +125,7 @@ tox-plugins:
  	done
 
 install-plugins:
-	@for dir in $(SUBDIRS); do \
-		pip install -e $$dir || exit 1; \
- 	done
+	plugins/install-plugins.sh
 
 uninstall-plugins:
 	@for dir in $(SUBDIRS); do \

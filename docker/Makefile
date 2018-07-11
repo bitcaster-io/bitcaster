@@ -1,10 +1,10 @@
 RELEASE=.alpine
-DOCKER_IMAGE=bitcaster/demo:1.0
+DOCKER_IMAGE=bitcaster/demo:1.1
 BUILD_OPTIONS?=--squash
 DOCKERFILE?=docker/Dockerfile.dev${RELEASE}
 PYPI_SERVER?="pypi.org"
 PYPI_INDEX?="https://${PYPI_SERVER}/simple/"
-
+EXTRA?=-d
 
 builder:
 	cd .. && docker build ${BUILD_OPTIONS} \
@@ -21,7 +21,8 @@ fullclean: clean
 	-rm -fr ../~build/volumes
 
 push:
-#	docker login bitcasterio
+	docker login -u saxix
+	docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}
 	docker push ${DOCKER_IMAGE}
 
 build:
@@ -33,6 +34,7 @@ build:
 
 run:
 	cd .. && docker run -p 8000:8000 --rm \
+			${EXTRA} \
 			-e PGDATA=/var/postgresql/data \
 			-e BITCASTER_CONF_DIR=/etc/bitcaster \
 			-e BITCASTER_CONF=/etc/bitcaster/conf \
@@ -40,7 +42,6 @@ run:
 			-v $$PWD/~build/volumes/etc/bitcaster:/etc/bitcaster \
 			-v $$PWD/~build/volumes/var/bitcaster:/var/bitcaster \
 			--name bitcaster_demo \
-			-d \
 			${DOCKER_IMAGE} \
 			${CMD}
 
@@ -50,4 +51,4 @@ test:
 
 shell:
 #	CMD="\"sh -c \'python -c \\\"import sir\'\\\"\"" $(MAKE) run
-	CMD='/bin/sh' $(MAKE) run
+	EXTRA='-it' CMD='/bin/sh' $(MAKE) run

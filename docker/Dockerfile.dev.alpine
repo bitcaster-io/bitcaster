@@ -52,13 +52,17 @@ ENV BITCASTER_DATABASE_URL psql://postgres:@127.0.0.1:5432/${POSTGRES_DB}
 RUN pipenv install -v --system --deploy \
     && mkdir -p /var/bitcaster/ -m 770 \
     && mkdir -p /root/.bitcaster/ -m 770 \
-    && pip install .
+    && pip install . \
+    && /code/plugins/install-plugins.sh /code/plugins/
+
+
 
 RUN apk del .build-deps\
     && rm -fr /code \
     && rm -fr /root/.cache
 
-ADD docker/entrypoint.sh /usr/local/bin2/docker-entrypoint.sh
-ENTRYPOINT ["/usr/local/bin2/docker-entrypoint.sh"]
+ADD docker/marvel.txt /
+ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 CMD ["bitcaster"]
