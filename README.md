@@ -4,7 +4,7 @@
 
 <p align="center">
  <p align="center">
-   <img src="https://raw.githubusercontent.com/bitcaster-io/bitcaster/develop/src/bitcaster/static/bitcaster/images/bitcaster500.png" alt="Bitcaster" height="128"
+   <img src="https://raw.githubusercontent.com/bitcaster-io/bitcaster/develop/src/bitcaster/static/bitcaster/images/bitcaster500.png" alt="Bitcaster" height="128">
  </p>
  <p align="center">
    <i>Broadcast your bits!</i>
@@ -39,6 +39,8 @@ In addition a plugin SDK will allow you to create your own plugins in order to e
 **Code** https://github.com/bitcaster-io/bitcaster
 
 **Transifex** https://www.transifex.com/sax9/bitcaster/(Translate Bitcaster!)
+
+**Docker** https://hub.docker.com/r/bitcaster/demo/
 
 
 [travis-build]:https://secure.travis-ci.org/bitcaster-io/bitcaster.png?branch=develop
