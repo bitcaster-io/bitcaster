@@ -51,6 +51,7 @@ social-auth-core = "*"
 social-auth-app-django = "*"
 Django = ">=2.0"
 Pillow = "*"
+docker = "*"
 
 [dev-packages]
 pytest = "*"
