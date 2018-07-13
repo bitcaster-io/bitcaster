@@ -7,15 +7,15 @@ jobs:
         environment:
           PGHOST: 127.0.0.1
           PIPENV_VENV_IN_PROJECT: 1
-          DATABASE_URL: "postgres://postgres:postgres@127.0.0.1:5432/test_sir"
+          DATABASE_URL: "postgres://postgres:postgres@127.0.0.1:5432/bitcaster"
           RELEASE_MATCH: "release/*"
       - image: circleci/postgres:9.6-alpine-postgis
         environment:
           POSTGRES_USER: postgres
           PGUSER: postgres
-          POSTGRES_DB: test_sir
+          POSTGRES_DB: bitcaster
           POSTGRES_PASSWORD: postgres
-
+      - image: redis/alpine
     steps:
       - restore_cache:
           keys:
@@ -60,62 +60,62 @@ jobs:
               else
                 echo "Skipped as '$CIRCLE_BRANCH' does not match '$RELEASE_MATCH' branch"
               fi
-#  tag:
-#    docker:
-#      - image: circleci/python:3.6
-#        environment:
-#          API_URL: https://api.github.com/repos/unicef/sir-poc
-#    steps:
-#      - checkout
-#      - add_ssh_keys:
-#          fingerprints:
-#            - "36:e1:ae:c3:f2:0f:27:67:85:44:78:5d:ec:2f:b2:0d"
-#      - run:
-#          name: package and release
-#          command: |
-#            export PATH=/home/circleci/.local/bin:$PATH
-#            export TAG=${TAG:=${CIRCLE_BRANCH#*/}}
-#            git status
-#            git reset --hard
-#
-#            git config user.email "ci@unicef.org"
-#            git config user.name "CI"
-#
-#            git checkout master
-#            git merge --no-ff release/$TAG -m "merge release/$TAG"
-#            git tag -a -m "v$TAG" $TAG
-#            git checkout develop
-#            git merge --no-ff release/$TAG -m "merge release/$TAG"
-#            git push --verbose --tags
-#            git push origin --verbose --delete release/$TAG
-#      - run:
-#          name: release
-#          command: |
-#            export TAG=${TAG:=${CIRCLE_BRANCH#*/}}
-#            export TODAY=`date '+%d %B %Y at %H:%M'`
-#            function is_pre()
-#            {
-#                [[ "$(echo "$TAG" | sed 's/[0-9.]//g')" == "" ]] && echo false || echo true
-#            }
-#            function data() {
-#            cat <<EOF
-#            { "tag_name": "$TAG",
-#              "target_commitish": "${CIRCLE_BRANCH}",
-#              "name": "v$TAG",
-#              "body": "version $TAG - Built on $TODAY",
-#              "draft": false,
-#              "prerelease": $(is_pre)
-#            }
-#            EOF
-#            }
-#            data=$(data)
-#            curl -X POST -s \
-#              --fail --verbose \
-#              -H "Accept: application/json" \
-#              -H "Content-Type:application/json" \
-#              -H "Authorization: token ${GITHUB_TOKEN}" \
-#              ${API_URL}/releases \
-#              -d "$data"
+  tag:
+    docker:
+      - image: circleci/python:3.6
+        environment:
+          API_URL: https://api.github.com/repos/bitcaster-io/bitcaster
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "36:e1:ae:c3:f2:0f:27:67:85:44:78:5d:ec:2f:b2:0d"
+      - run:
+          name: package and release
+          command: |
+            export PATH=/home/circleci/.local/bin:$PATH
+            export TAG=${TAG:=${CIRCLE_BRANCH#*/}}
+            git status
+            git reset --hard
+
+            git config user.email "ci@bitcaster.org"
+            git config user.name "CI"
+
+            git checkout master
+            git merge --no-ff release/$TAG -m "merge release/$TAG"
+            git tag -a -m "v$TAG" $TAG
+            git checkout develop
+            git merge --no-ff release/$TAG -m "merge release/$TAG"
+            git push --verbose --tags
+            git push origin --verbose --delete release/$TAG
+      - run:
+          name: guthub release
+          command: |
+            export TAG=${TAG:=${CIRCLE_BRANCH#*/}}
+            export TODAY=`date '+%d %B %Y at %H:%M'`
+            function is_pre()
+            {
+                [[ "$(echo "$TAG" | sed 's/[0-9.]//g')" == "" ]] && echo false || echo true
+            }
+            function data() {
+            cat <<EOF
+            { "tag_name": "$TAG",
+              "target_commitish": "${CIRCLE_BRANCH}",
+              "name": "v$TAG",
+              "body": "version $TAG - Built on $TODAY",
+              "draft": false,
+              "prerelease": $(is_pre)
+            }
+            EOF
+            }
+            data=$(data)
+            curl -X POST -s \
+              --fail --verbose \
+              -H "Accept: application/json" \
+              -H "Content-Type:application/json" \
+              -H "Authorization: token ${GITHUB_TOKEN}" \
+              ${API_URL}/releases \
+              -d "$data"
 
 #            curl -u ${CIRCLE_TOKEN}: \
 #              https://circleci.com/api/v1.1/project/github/unicef/sir-releases/tree/develop
