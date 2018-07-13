@@ -15,7 +15,7 @@ jobs:
           PGUSER: postgres
           POSTGRES_DB: bitcaster
           POSTGRES_PASSWORD: postgres
-      - image: redis/alpine
+      - image: redis:alpine
     steps:
       - restore_cache:
           keys:
