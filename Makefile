@@ -101,38 +101,6 @@ requirements:
 cache-requirements:
 	devpi-builder src/requirements/develop.pip  ${DEVPI_CACHE_URL}
 
-test-all:
-	pytest tests
-	$(MAKE) test-plugins
-
-test-plugins:
-	@for dir in $(SUBDIRS); do \
-		pytest $$dir/tests || exit 1; \
- 	done
-
-clean-plugins:
-	@for dir in $(SUBDIRS); do \
-		pushd $$dir;\
-		make clean; \
-		popd; \
- 	done
-
-tox-plugins:
-	@for dir in $(SUBDIRS); do \
-		pushd $$dir;\
-		tox || exit 1; \
-		popd; \
- 	done
-
-install-plugins:
-	plugins/install-plugins.sh
-
-uninstall-plugins:
-	@for dir in $(SUBDIRS); do \
-		pip uninstall $$dir || exit 1; \
- 	done
-
-
 .check_pip:
     #check for preventing Module pip no attribute main
     #https://stackoverflow.com/questions/49839610/attributeerror-module-pip-has-no-attribute-main

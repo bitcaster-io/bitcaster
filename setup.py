@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+from distutils.errors import DistutilsError
 from pathlib import Path
 
 from setuptools import find_packages, setup
@@ -30,16 +31,35 @@ def fread(fname):
     return open(rel(fname)).read()
 
 
-install_requires = fread('install.pip')
-test_requires = fread('testing.pip')
-dev_requires = fread('develop.pip')
+def read(*files):
+    content = []
+    for f in files:
+        content.extend(codecs.open(os.path.join(ROOT, 'src', 'requirements', f), 'r').readlines())
+    return "\n".join(filter(lambda l: not l.startswith('-'), content))
 
-readme = codecs.open('README.md').read()
+
+def check(cmd, filename):
+    out = subprocess.run(cmd, stdout=subprocess.PIPE)
+    f = os.path.join('src', 'requirements', filename)
+    reqs = codecs.open(os.path.join(ROOT, f), 'r').readlines()
+    existing = {name[:-1] for name in reqs if name and not name.startswith('-')}
+    declared = {name for name in out.stdout.decode('utf8').split("\n") if name and not name.startswith('-')}
+
+    if existing != declared:
+        msg = """Requirements file not updated.
+Run 'make requirements'
+""".format(' '.join(cmd), f)
+        raise DistutilsError(msg)
 
 
 class SDistCommand(sdist):
 
     def run(self):
+        checks = {'install.pip': ['pipenv', 'lock', '--requirements'],
+                  'testing.pip': ['pipenv', 'lock', '-d', '--requirements']}
+
+        for filename, cmd in checks.items():
+            check(cmd, filename)
         if not Path(__file__).parent / 'src' / 'bitcaster' / 'static' / 'dist':
             env = dict(os.environ)
             env['NODE_ENV'] = 'production'
@@ -48,6 +68,11 @@ class SDistCommand(sdist):
                                     env=env)
         super().run()
 
+
+install_requires = read('install.pip')
+test_requires = read('testing.pip')
+
+readme = codecs.open('README.md').read()
 
 setup(name=name,
       version=version,
@@ -59,10 +84,10 @@ setup(name=name,
       package_dir={'': 'src'},
       packages=find_packages('src'),
       include_package_data=True,
-      # install_requires=install_requires,
-      # tests_require=dev_requires,
+      install_requires=install_requires,
+      tests_require=test_requires,
       extras_require={
-          'dev': dev_requires,
+          'dev': test_requires,
           'test': test_requires,
       },
       cmdclass={
