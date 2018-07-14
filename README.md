@@ -40,7 +40,7 @@ In addition a plugin SDK will allow you to create your own plugins in order to e
 
 **Transifex** https://www.transifex.com/sax9/bitcaster/(Translate Bitcaster!)
 
-**Docker** https://hub.docker.com/r/bitcaster/demo/
+**Docker** https://hub.docker.com/r/bitcaster/
 
 
 [travis-build]:https://secure.travis-ci.org/bitcaster-io/bitcaster.png?branch=develop
