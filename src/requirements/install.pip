@@ -1,33 +1,34 @@
-admin-extra-urls==1.8.0
-amqp==2.2.2               # via kombu
-arrow==0.12.1             # via jinja2-time
-asn1crypto==0.24.0        # via cryptography
-billiard==3.5.0.3         # via celery
-binaryornot==0.4.4        # via cookiecutter
-celery==4.1.0
-certifi==2018.1.18        # via requests
-cffi==1.11.5              # via cryptography
-chardet==3.0.4            # via binaryornot, requests
+-i https://pypi.org/simple
+admin-extra-urls==1.9.0
+amqp==2.3.2
+arrow==0.12.1
+asn1crypto==0.24.0
+billiard==3.5.0.4
+binaryornot==0.4.4
+celery==4.2.0
+certifi==2018.4.16
+cffi==1.11.5; platform_python_implementation != 'pypy'
+chardet==3.0.4
 click==6.7
 cookiecutter==1.6.0
-cryptography==2.1.4       # via django-fernet-fields
-cssselect==1.0.3          # via premailer
-cssutils==1.0.2           # via premailer
-defusedxml==0.5.0         # via python3-openid, social-auth-core
+cryptography==2.2.2
+cssselect==1.0.3
+cssutils==1.0.2
+defusedxml==0.5.0; python_version >= '3.0'
 django-adminfilters==1.0.0
 django-bitfield==1.9.3
 django-concurrency==1.4
-django-constance[database,redis]==2.1.0
-django-countries==5.2
+django-constance==2.2.0
+django-countries==5.3.1
 django-crispy-forms==1.7.2
 django-debug-toolbar==1.9.1
-django-environ==0.4.4
-django-extensions==2.0.6
+django-environ==0.4.5
+django-extensions==2.0.7
 django-fernet-fields==0.5
 django-formtools==2.1
 django-jsoneditor==0.0.12
-django-model-utils==3.1.1
-django-picklefield==1.0.0  # via django-constance
+django-model-utils==3.1.2
+django-picklefield==1.0.0
 django-ratelimit==1.1.0
 django-recaptcha2==1.0.3
 django-redis==4.9.0
@@ -35,54 +36,57 @@ django-regex==0.2.1
 django-rest-framework-nested==0.0.1
 django-scribbler==0.9.0
 django-strategy-field==1.3.1
-django-sysinfo==1.3.1
+django-sysinfo==1.3.2
 django-timezone-field==2.1
-django==2.0.3
-djangorestframework==3.7.7
-drfpasswordless==1.1.5
-future==0.16.0            # via cookiecutter
-gunicorn==19.7.1
-httplib2==0.10.3          # via oauth2client
-idna==2.6                 # via cryptography, requests
-jinja2-time==0.2.0        # via cookiecutter
-jinja2==2.10              # via cookiecutter, jinja2-time
+django==2.0.7
+djangorestframework==3.8.2
+docker-pycreds==0.3.0
+docker==3.4.1
+drfpasswordless==1.2.0
+future==0.16.0
+gunicorn==19.9.0
+httplib2==0.11.3
+idna==2.7
+jinja2-time==0.2.0
+jinja2==2.10
 jsonfield==2.0.2
-kombu==4.1.0              # via celery
+kombu==4.2.1
 lxml==3.8.0
-markupsafe==1.0           # via jinja2
-maxminddb-geolite2==2017.803
-maxminddb==1.3.0          # via maxminddb-geolite2
+markupsafe==1.0
+maxminddb-geolite2==2018.308
+maxminddb==1.4.1
 oath==1.4.1
 oauth2client==4.1.2
-oauthlib==2.0.6           # via requests-oauthlib, social-auth-core
-packaging==17.1           # via django-jsoneditor
-pillow==5.0.0
-poyo==0.4.1               # via cookiecutter
-premailer==3.1.1
-psutil==5.4.3             # via django-sysinfo
-psycopg2-binary==2.7.4
-pyasn1-modules==0.2.1     # via oauth2client
-pyasn1==0.4.2             # via oauth2client, pyasn1-modules, rsa
-pycountry==18.2.23
-pycparser==2.18           # via cffi
+oauthlib==2.1.0
+packaging==17.1
+pillow==5.2.0; python_version >= '2.7'
+poyo==0.4.1
+premailer==3.2.0
+psutil==5.4.6
+psycopg2-binary==2.7.5
+pyasn1-modules==0.2.2
+pyasn1==0.4.3
+pycountry==18.5.26
+pycparser==2.18
 pycrypto==2.6.1
-pyjwt==1.6.0              # via social-auth-core
+pyjwt==1.6.4
 pyotp==2.2.6
-pyparsing==2.2.0          # via packaging
-python-dateutil==2.7.0    # via arrow
-python-redis-lock[django]==3.2.0
-python3-openid==3.1.0     # via social-auth-core
-pytz==2018.3              # via celery, django, django-sysinfo, django-timezone-field
-raven==6.6.0
+pyparsing==2.2.0
+python-dateutil==2.7.3
+python-redis-lock==3.2.0
+python3-openid==3.1.0; python_version >= '3.0'
+pytz==2018.5
+raven==6.9.0
 redis==2.10.6
-requests-oauthlib==0.8.0  # via social-auth-core
-requests==2.18.4          # via cookiecutter, django-recaptcha2, premailer, requests-oauthlib, social-auth-core
-rsa==3.4.2                # via oauth2client
+requests-oauthlib==1.0.0
+requests==2.19.1
+rsa==3.4.2
 setproctitle==1.1.10
-six==1.11.0               # via admin-extra-urls, cryptography, django-bitfield, django-concurrency, django-environ, django-extensions, django-sysinfo, oauth2client, packaging, python-dateutil, social-auth-app-django, social-auth-core
+six==1.11.0
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0
-sqlparse==0.2.4           # via django-debug-toolbar
-urllib3==1.22             # via requests
-vine==1.1.4               # via amqp
-whichcraft==0.4.1         # via cookiecutter
+sqlparse==0.2.4
+urllib3==1.23
+vine==1.1.4
+websocket-client==0.48.0
+whichcraft==0.4.1
