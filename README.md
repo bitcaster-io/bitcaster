@@ -1,6 +1,6 @@
 # Bitcaster
 
-[![pypi-version]][pypi] [![travis-build]][travis-link] [![codecov-badge]][codecov] 
+[![pypi-version]][pypi] [![codecov-badge]][codecov] [![circle-build]][circle-link]  
 
 <p align="center">
  <p align="center">
@@ -45,6 +45,8 @@ In addition a plugin SDK will allow you to create your own plugins in order to e
 
 [travis-build]:https://secure.travis-ci.org/bitcaster-io/bitcaster.png?branch=develop
 [travis-link]: https://travis-ci.org/bitcaster-io/bitcaster?branch=develop
+[circle-build]: https://circleci.com/gh/bitcaster-io/bitcaster.svg?style=svg
+[circle-link]: https://circleci.com/gh/bitcaster-io/bitcaster
 
 [codecov-badge]: https://codecov.io/gh/bitcaster-io/bitcaster/branch/develop/graph/badge.svg
 [codecov]: https://codecov.io/gh/bitcaster-io/bitcaster
