@@ -32,7 +32,7 @@ jobs:
             export PATH=/home/circleci/.local/bin:$PATH
             export PYTHONHASHSEED=${RANDOM}
             pip install tox --user
-            tox -re py36-d20
+            tox -re d20-py36
 
       - store_artifacts:
           path: ~build/coverage
@@ -89,7 +89,7 @@ jobs:
             git push --verbose --tags
             git push origin --verbose --delete release/$TAG
       - run:
-          name: guthub release
+          name: github release
           command: |
             export TAG=${TAG:=${CIRCLE_BRANCH#*/}}
             export TODAY=`date '+%d %B %Y at %H:%M'`
@@ -116,27 +116,14 @@ jobs:
               -H "Authorization: token ${GITHUB_TOKEN}" \
               ${API_URL}/releases \
               -d "$data"
+      - run:
+          name: notify slack
+          command: |
+            WEBHOOK_URL=https://hooks.slack.com/services/${SLACK_WEBHOOK}
+            CHANNEL=ci
+            escapedText=$(echo "Released new version $TAG" | sed 's/"/\"/g' | sed "s/'/\'/g" )
+            json="{\"channel\": \"$CHANNEL\", \"username\":\"CircleCI\", \"attachments\":[{\"color\":\"good\" , \"text\": \"$escapedText\"}]}"
 
-#            curl -u ${CIRCLE_TOKEN}: \
-#              https://circleci.com/api/v1.1/project/github/unicef/sir-releases/tree/develop
+            echo $json | jq .
 
-#workflows:
-#  version: 2
-#  test:
-#    jobs:
-#      - build
-#  test_tag_release:
-#    jobs:
-#      - build
-#      - tag:
-#          requires:
-#            - build
-#          filters:
-#            branches:
-#              only: /releases\/.*/
-#      - release:
-#          requires:
-#            - tag
-#          filters:
-#            branches:
-#              only: /releases\/.*/
+            curl -s -d "payload=$json" "$WEBHOOK_URL"
