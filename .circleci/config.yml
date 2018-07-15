@@ -142,3 +142,14 @@ jobs:
             echo $json | jq .
 
             curl -s -d "payload=$json" "$WEBHOOK_URL"
+      - run:
+          name: trigger docker
+          command: |
+              if [[ $CIRCLE_BRANCH == $RELEASE_MATCH ]]; then
+                curl --user ${CIRCLE_TOKEN}: \
+                  --data build_parameters[TAG]=$TAG \
+                  --data build_parameters[JOB]=dockerize \
+                  https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/bitcaster-docker/tree/develop
+              else
+                echo "Skipped as '$CIRCLE_BRANCH' does not match '$RELEASE_MATCH' branch"
+              fi
