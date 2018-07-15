@@ -49,6 +49,11 @@ case $1 in
         shift # past argument
         shift # past value
         ;;
+    --token)
+        CIRCLE_TOKEN="$2"
+        shift # past argument
+        shift # past value
+        ;;
     -h|--help)
             help
             ;;
@@ -67,10 +72,16 @@ if [ "$VERBOSE" -gt "0" ]; then
     echo "verbose: $VERBOSE"
 fi
 
-curl --user ${CIRCLE_TOKEN} \
+if [ -z "$CIRCLE_TOKEN" ]; then
+    read -p 'CircleCI token: ' CIRCLE_TOKEN
+fi
+
+curl --user "${CIRCLE_TOKEN}:" \
     --request POST \
+    -q \
     --form build_parameters[TAG]=$TAG \
     --form build_parameters[CIRCLE_JOB]=$JOB \
     --form config=@config.yml \
     --form notify=false \
-        https://circleci.com/api/v1.1/project/github/unicef/sir-releases/tree/$BRANCH
+        https://circleci.com/api/v1.1/project/github/bitcaster-io/bitcaster/tree/$BRANCH
+

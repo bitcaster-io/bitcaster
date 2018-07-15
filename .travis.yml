@@ -20,7 +20,7 @@ install:
   - 'export PATH=$PATH:~/.bin'
   - nvm install $TRAVIS_NODE_VERSION
   - npm install -g yarn@1.3.2
-  - pip install tox codecov
+  - pip install tox codecov pipenv
 
 script:
   - npm install

@@ -32,7 +32,7 @@ jobs:
             export PATH=/home/circleci/.local/bin:$PATH
             export PYTHONHASHSEED=${RANDOM}
             pip install tox --user
-            tox -re py36-d20
+            tox -re d20-py36
 
       - store_artifacts:
           path: ~build/coverage
@@ -54,6 +54,7 @@ jobs:
           command: |
               if [[ $CIRCLE_BRANCH == $RELEASE_MATCH ]]; then
                 curl --user ${CIRCLE_TOKEN}: \
+                  --fail \
                   --data build_parameters[CIRCLE_JOB]=tag \
                   --data revision=$CIRCLE_SHA1 \
                   https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
@@ -69,7 +70,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - "36:e1:ae:c3:f2:0f:27:67:85:44:78:5d:ec:2f:b2:0d"
+            - "94:2a:64:58:7b:db:51:94:e6:8a:1c:0e:f3:33:c8:32	"
       - run:
           name: package and release
           command: |
@@ -89,7 +90,21 @@ jobs:
             git push --verbose --tags
             git push origin --verbose --delete release/$TAG
       - run:
-          name: guthub release
+          name: release
+          command: |
+              curl --user ${CIRCLE_TOKEN}: \
+                  --data build_parameters[CIRCLE_JOB]=release \
+                  --data revision=$CIRCLE_SHA1 \
+                  https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
+
+  release:
+    docker:
+      - image: circleci/python:3.6
+        environment:
+          API_URL: https://api.github.com/repos/bitcaster-io/bitcaster
+    steps:
+      - run:
+          name: github release
           command: |
             export TAG=${TAG:=${CIRCLE_BRANCH#*/}}
             export TODAY=`date '+%d %B %Y at %H:%M'`
@@ -100,7 +115,6 @@ jobs:
             function data() {
             cat <<EOF
             { "tag_name": "$TAG",
-              "target_commitish": "${CIRCLE_BRANCH}",
               "name": "v$TAG",
               "body": "version $TAG - Built on $TODAY",
               "draft": false,
@@ -109,34 +123,33 @@ jobs:
             EOF
             }
             data=$(data)
-            curl -X POST -s \
-              --fail --verbose \
+            curl -X POST \
+              --fail \
+              --trace \
               -H "Accept: application/json" \
               -H "Content-Type:application/json" \
               -H "Authorization: token ${GITHUB_TOKEN}" \
               ${API_URL}/releases \
               -d "$data"
+      - run:
+          name: notify slack
+          command: |
+            WEBHOOK_URL=https://hooks.slack.com/services/${SLACK_WEBHOOK}
+            CHANNEL=ci
+            escapedText=$(echo "Released new version $TAG" | sed 's/"/\"/g' | sed "s/'/\'/g" )
+            json="{\"channel\": \"$CHANNEL\", \"username\":\"CircleCI\", \"attachments\":[{\"color\":\"good\" , \"text\": \"$escapedText\"}]}"
 
-#            curl -u ${CIRCLE_TOKEN}: \
-#              https://circleci.com/api/v1.1/project/github/unicef/sir-releases/tree/develop
+            echo $json | jq .
 
-#workflows:
-#  version: 2
-#  test:
-#    jobs:
-#      - build
-#  test_tag_release:
-#    jobs:
-#      - build
-#      - tag:
-#          requires:
-#            - build
-#          filters:
-#            branches:
-#              only: /releases\/.*/
-#      - release:
-#          requires:
-#            - tag
-#          filters:
-#            branches:
-#              only: /releases\/.*/
+            curl -s -d "payload=$json" "$WEBHOOK_URL"
+      - run:
+          name: trigger docker
+          command: |
+              if [[ $CIRCLE_BRANCH == $RELEASE_MATCH ]]; then
+                curl --user ${CIRCLE_TOKEN}: \
+                  --data build_parameters[TAG]=$TAG \
+                  --data build_parameters[JOB]=dockerize \
+                  https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/bitcaster-docker/tree/develop
+              else
+                echo "Skipped as '$CIRCLE_BRANCH' does not match '$RELEASE_MATCH' branch"
+              fi
