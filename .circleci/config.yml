@@ -89,6 +89,20 @@ jobs:
             git push --verbose --tags
             git push origin --verbose --delete release/$TAG
       - run:
+          name: release
+          command: |
+              curl --user ${CIRCLE_TOKEN}: \
+                  --data build_parameters[CIRCLE_JOB]=release \
+                  --data revision=$CIRCLE_SHA1 \
+                  https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
+
+  release:
+    docker:
+      - image: circleci/python:3.6
+        environment:
+          API_URL: https://api.github.com/repos/bitcaster-io/bitcaster
+    steps:
+      - run:
           name: github release
           command: |
             export TAG=${TAG:=${CIRCLE_BRANCH#*/}}
@@ -100,7 +114,6 @@ jobs:
             function data() {
             cat <<EOF
             { "tag_name": "$TAG",
-              "target_commitish": "${CIRCLE_BRANCH}",
               "name": "v$TAG",
               "body": "version $TAG - Built on $TODAY",
               "draft": false,
@@ -109,8 +122,9 @@ jobs:
             EOF
             }
             data=$(data)
-            curl -X POST -s \
-              --fail --verbose \
+            curl -X POST \
+              --fail \
+              --trace \
               -H "Accept: application/json" \
               -H "Content-Type:application/json" \
               -H "Authorization: token ${GITHUB_TOKEN}" \
