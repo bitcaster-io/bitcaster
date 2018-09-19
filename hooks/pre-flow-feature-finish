@@ -1,4 +1,0 @@
-#!/bin/bash
-. ${BASH_SOURCE%/*}/checks/lib.bash
-
-gitflow_update_authors
