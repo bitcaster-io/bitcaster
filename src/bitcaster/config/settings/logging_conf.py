@@ -37,22 +37,22 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'level': os.environ.get('BITCASTER_LOG_LEVEL','ERROR'),
+            'level': os.environ.get('BITCASTER_LOG_LEVEL', 'ERROR'),
             'handlers': ['console'],
             'propagate': False,
         },
         'gunicorn': {
-            'level': os.environ.get('BITCASTER_LOG_LEVEL','ERROR'),
+            'level': os.environ.get('BITCASTER_LOG_LEVEL', 'ERROR'),
             'handlers': ['console'],
             'propagate': False,
         },
         'bitcaster': {
-            'level': os.environ.get('BITCASTER_LOG_LEVEL','ERROR'),
+            'level': os.environ.get('BITCASTER_LOG_LEVEL', 'ERROR'),
             'handlers': ['console', 'sentry'],
             'propagate': False,
         },
         'celery': {
-            'level': os.environ.get('BITCASTER_LOG_LEVEL','ERROR'),
+            'level': os.environ.get('BITCASTER_LOG_LEVEL', 'ERROR'),
             'handlers': ['console', 'sentry'],
             'propagate': False,
         },

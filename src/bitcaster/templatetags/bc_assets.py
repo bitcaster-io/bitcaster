@@ -1,5 +1,4 @@
 from django import template
-from django.conf import settings
 from django.templatetags.static import static as _static
 from django.urls import reverse
 from django.utils.safestring import mark_safe

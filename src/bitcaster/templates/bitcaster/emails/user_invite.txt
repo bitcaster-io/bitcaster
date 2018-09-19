@@ -5,5 +5,3 @@ Please accept your invitation pointing your browser to the address below.
 {{url}}
 
 This link will expire in 2 days.
-
-

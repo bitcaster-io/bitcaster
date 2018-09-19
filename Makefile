@@ -37,8 +37,9 @@ static:
 develop: .setup-git
 	$(MAKE) .init-db
 	pipenv clean
-	pipenv sync
+	pipenv sync -d
 	npm install
+
 
 .setup-git:
 	git config branch.autosetuprebase always
@@ -65,10 +66,8 @@ reset-migrations: .init-db
 test:
 	py.test tests -v --create-db
 
-qa:
-	flake8 src/ tests/
-	isort -rc src/ --check-only
-	check-manifest
+lint:
+	pre-commit run --all-files
 
 messages:
 	cd src && ../manage.py makemessages -l en -l fr -l es

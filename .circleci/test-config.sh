@@ -84,4 +84,3 @@ curl --user "${CIRCLE_TOKEN}:" \
     --form config=@config.yml \
     --form notify=false \
         https://circleci.com/api/v1.1/project/github/bitcaster-io/bitcaster/tree/$BRANCH
-

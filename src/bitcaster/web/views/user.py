@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 
 from django import forms
@@ -7,10 +8,9 @@ from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
 from django.urls import reverse
 from django.utils.functional import cached_property
-from django.utils.html import html_safe
+from django.utils.html import escape, format_html, format_html_join, html_safe
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
-from django.views.generic import FormView
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from bitcaster.models import Address, Organization, User
@@ -64,6 +64,7 @@ class FlatErrorList(ErrorList):
     """
     A collection of errors that knows how to display itself in various formats.
     """
+
     def __init__(self, initlist=None, error_class=None):
         super().__init__(initlist)
 
@@ -125,7 +126,7 @@ class FlatErrorList(ErrorList):
         # `list` for `isinstance` backward compatibility (Refs #17413) we
         # nullify this iterator as it would otherwise result in duplicate
         # entries. (Refs #23594)
-        info = super(UserList, self).__reduce_ex__(*args, **kwargs)
+        info = super().__reduce_ex__(*args, **kwargs)
         return info[:3] + (None, None)
 
 
@@ -140,7 +141,6 @@ class AddressForm(forms.ModelForm):
                          use_required_attribute)
         choices = self.fields['dispatcher'].choices
         self.fields['dispatcher'].choices = [c for c in choices[1:] if import_string(c[0]).subscription_class]
-
 
     def clean(self):
         dispatcher = import_string(self.cleaned_data['dispatcher'])

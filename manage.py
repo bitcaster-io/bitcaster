@@ -2,7 +2,6 @@
 import os
 import sys
 
-
 if __name__ == '__main__':
     # This allows easy placement of apps within the interior
     # bitcaster directory.
@@ -19,7 +18,7 @@ if __name__ == '__main__':
         # exceptions on Python 2.
         try:
             import django  # noqa
-            from django.conf import settings
+            from django.conf import settings # noqa
 
         except ImportError:
             raise ImportError(

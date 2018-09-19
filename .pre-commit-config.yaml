@@ -15,10 +15,11 @@ repos:
     rev: v1.4.0
     hooks:
     -   id: debug-statements
+        exclude: (_plugin_template|python_twitter)
     -   id: end-of-file-fixer
     -   id: flake8
         include: (src|tests)
-        exclude: (_plugin_template|python_twitter)
+        exclude: /(_plugin_template|python_twitter|migrations)/
         args:
         - src/
         - tests/

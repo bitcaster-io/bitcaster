@@ -5,10 +5,10 @@ from python_twitter import api
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
 from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                        MessageType, SubscriptionOptions,)
+                                        MessageType,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.dispatchers.validators import MaxBodyLengthValidator
-from bitcaster.exceptions import PluginSendError, PluginValidationError
+from bitcaster.exceptions import PluginSendError
 from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
