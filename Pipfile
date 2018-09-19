@@ -52,6 +52,7 @@ social-auth-app-django = "*"
 Django = ">=2.0"
 Pillow = "*"
 docker = "*"
+pre-commit = "*"
 
 [dev-packages]
 pytest = "*"
