@@ -27,6 +27,8 @@ push:
 
 build:
 	cd .. && docker build ${BUILD_OPTIONS} \
+			--build-arg VCS_REF=`git rev-parse --short HEAD` \
+			--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 			--build-arg PYPI_SERVER=${PYPI_SERVER} \
 			--build-arg PYPI_INDEX=${PYPI_INDEX} \
 			-t ${DOCKER_IMAGE} \

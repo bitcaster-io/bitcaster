@@ -1,7 +1,10 @@
 # Bitcaster
 
-[![pypi-version]][pypi] [![codecov-badge]][codecov] [![circle-build]][circle-link]  
+[![circle-build]][circle-link]
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6fa79049ba7c44dd9b082a7ed8b5dce9)](https://www.codacy.com/app/bitcaster/bitcaster?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bitcaster-io/bitcaster&amp;utm_campaign=Badge_Grade)
+[![codecov-badge]][codecov]
+[![](https://images.microbadger.com/badges/version/bitcaster/demo.svg)](https://microbadger.com/images/bitcaster/demo "Get your own version badge on microbadger.com")
+[![pypi-version]][pypi] 
 
 <p align="center">
  <p align="center">

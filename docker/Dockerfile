@@ -20,12 +20,21 @@
 #     $ docker rm -f bitcaster-beta
 
 FROM python:3.6
+
+ARG BUILD_DATE
+ARG VCS_REF
+
 ENV PYTHONUNBUFFERED 1
 ENV PG_MAJOR 9.6
 ENV PG_VERSION 9.6.*
 ENV POSTGRES_DB bitcaster
 ENV NGINX_VERSION 1.13.7-1~stretch
 ENV NJS_VERSION   1.13.7.0.1.15-1~stretch
+
+LABEL org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://github.com/bitcaster-io/bitcaster" \
+      org.label-schema.build-date=$BUILD_DATE
+
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ntp \
