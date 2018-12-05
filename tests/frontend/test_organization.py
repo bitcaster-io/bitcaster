@@ -18,7 +18,8 @@ def test_create_member(django_app, organization1):
     res.form['email'] = 'test@noreply.org'
     res.form['password1'] = 'Password123'
     res.form['password2'] = 'Password123'
-    res = res.form.submit().follow()
+    res = res.form.submit()
+    res = res.follow()
     assert User.objects.get(email='test@noreply.org')
 
 
