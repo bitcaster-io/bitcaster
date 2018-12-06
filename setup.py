@@ -65,11 +65,11 @@ To fix run:
 class SDistCommand(sdist):
 
     def run(self):
-        checks = {'install.pip': ['pipenv', 'lock', '--requirements'],
-                  'testing.pip': ['pipenv', 'lock', '-d', '--requirements']}
-
-        for filename, cmd in checks.items():
-            check(cmd, filename)
+        # checks = {'install.pip': ['pipenv', 'lock', '--requirements'],
+        #           'testing.pip': ['pipenv', 'lock', '-d', '--requirements']}
+        #
+        # for filename, cmd in checks.items():
+        #     check(cmd, filename)
         if not Path(__file__).parent / 'src' / 'bitcaster' / 'static' / 'dist':
             env = dict(os.environ)
             env['NODE_ENV'] = 'production'
@@ -94,12 +94,12 @@ setup(name=name,
       package_dir={'': 'src'},
       packages=find_packages('src'),
       include_package_data=True,
-      install_requires=install_requires,
-      tests_require=test_requires,
-      extras_require={
-          'dev': test_requires,
-          'test': test_requires,
-      },
+      # install_requires=install_requires,
+      # tests_require=test_requires,
+      # extras_require={
+      #     'dev': test_requires,
+      #     'test': test_requires,
+      # },
       cmdclass={
           'sdist': SDistCommand,
       },

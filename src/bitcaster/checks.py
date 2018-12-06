@@ -18,7 +18,7 @@ def check(*args, **kwargs):
     try:
         from django.core.cache import cache
         cache.set('cache_connection_test', 'true', 1)
-    except redis.exceptions.ConnectionError as e:
+    except redis.exceptions.ConnectionError:
         errors.append(
             Error(
                 'Unable to contact Redis',
@@ -29,7 +29,7 @@ def check(*args, **kwargs):
         )
     try:
         connection.cursor()
-    except OperationalError as e:  # pragma: no cover
+    except OperationalError:  # pragma: no cover
         errors.append(
             Error(
                 'Database Error',
@@ -41,7 +41,7 @@ def check(*args, **kwargs):
 
     try:
         caches['default'].set('check', 1)
-    except Exception as e:
+    except Exception:
         errors.append(
             Error(
                 "Unable to contact cache backend at '%s'" % env('REDIS_CACHE_URL'),

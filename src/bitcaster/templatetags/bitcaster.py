@@ -84,9 +84,7 @@ def channel_submit_row(context):
                                       not is_popup and
                                       (not save_as or context['add'])
                                       ),
-        'show_save_and_continue': (not is_popup and
-                                   can_change and
-                                   show_save_and_continue),
+        'show_save_and_continue': (not is_popup and can_change and show_save_and_continue),
         'show_save': show_save,
     })
     return ctx

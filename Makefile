@@ -34,17 +34,12 @@ static:
 	webpack --mode development
 	bitcaster upgrade --no-migrate --no-input
 
-develop: .setup-git
-	$(MAKE) .init-db
-	pipenv clean
-	pipenv sync -d
-	npm install
-
-
-.setup-git:
+develop:
 	git config branch.autosetuprebase always
-	chmod +x hooks/*
-	cd .git/hooks && ln -fs ../../hooks/* .
+	@pipenv sync --dev
+	pipenv run pre-commit install
+	pipenv run pre-commit install --hook-type pre-push.
+	$(MAKE) .init-db
 
 .init-db:
 	# initializing '${DBENGINE}' database 'bitcaster'
@@ -67,17 +62,19 @@ test:
 	py.test tests -v --create-db
 
 lint:
-	pre-commit run --all-files
+	pipenv run pre-commit run --all-files
+#	pipenv run pre-commit run --all-files --hook-stage push
+#	pipenv run pre-commit run --all-files --hook-stage manual
 
 messages:
 	cd src && ../manage.py makemessages -l en -l fr -l es
 	cd src && ../manage.py compilemessages -l en -l fr -l es
 
 clean:
-	rm -fr ${BUILDDIR} build dist src/*.egg-info .coverage coverage.xml .eggs
+	rm -fr ${BUILDDIR} build dist src/*.egg-info .coverage coverage.xml .eggs .pytest_cache *.egg-info
 	find src -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
 	find tests -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
-	find src/concurrency/locale -name django.mo | xargs rm -f
+	find src/bitcaster/locale -name django.mo | xargs rm -f
 
 fullclean:
 	rm -fr .tox .cache
@@ -101,7 +98,7 @@ cache-requirements:
 	devpi-builder src/requirements/develop.pip  ${DEVPI_CACHE_URL}
 
 .check_pip:
-    #check for preventing Module pip no attribute main
+    #check for preventing 'Module pip no attribute main'
     #https://stackoverflow.com/questions/49839610/attributeerror-module-pip-has-no-attribute-main
 	-@if [ ${PIPVER} -ne 9 ]; then \
 		echo "Upgrading/Downgrading pip to 9.0.3"; \

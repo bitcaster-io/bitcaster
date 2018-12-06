@@ -149,7 +149,7 @@ def wait_for_service(address, timeout=30, caption='', stdout=None, sleep=0):
             s.connect((ip, port))
             s.close()
             break
-        except socket.error as ex:
+        except socket.error:
             time.sleep(0.5)
         if time.time() > end:
             raise TimeoutError

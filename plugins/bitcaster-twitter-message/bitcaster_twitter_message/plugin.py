@@ -26,7 +26,7 @@ class TwitterMessageOptions(DispatcherOptions):
     access_token_secret = PasswordField()
 
 
-validate_username = RegexValidator('^@?(\w){1,15}$',
+validate_username = RegexValidator(r'^@?(\w){1,15}$',
                                    message=_('Use a valid twitter account'))
 
 

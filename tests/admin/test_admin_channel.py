@@ -79,7 +79,7 @@ def test_channel_action_bulk(extra_action, django_app: django_webtest.DjangoTest
 def test_channel_test(django_app, admin, channel1):
     url = reverse("admin:bitcaster_channel_test", args=[channel1.pk])
     res = django_app.get(url, user=admin.email)
-    assert res.status_code == 302, res.showbrowser()
+    assert res.status_code == 302
 
 
 @pytest.mark.extra_urls_action

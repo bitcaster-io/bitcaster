@@ -171,10 +171,10 @@ class ChannelDeprecateView(SelectedOrganizationMixin, MessageUserMixin, Redirect
 class ChannelToggleView(SelectedOrganizationMixin, MessageUserMixin, RedirectView):
 
     def get_queryset(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def get_redirect_url(self, *args, **kwargs):
-        raise NotImplemented
+        raise NotImplementedError
 
     def get(self, request, *args, **kwargs):
         obj = self.get_queryset().get(id=kwargs['pk'])

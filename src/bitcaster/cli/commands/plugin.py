@@ -11,7 +11,7 @@ from bitcaster.utils.reflect import package_name
 
 
 def is_valid_name(name):
-    name_char_blacklist_regexp = re.compile('[a-z-]*\d*$')
+    name_char_blacklist_regexp = re.compile(r'[a-z-]*\d*$')
     return name_char_blacklist_regexp.match(name)
 
 

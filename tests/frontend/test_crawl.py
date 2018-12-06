@@ -38,7 +38,7 @@ def test_initial_setup(django_app, application1):
     res = res.form.submit().follow()
     # now we are in Application screen
     # go beck to Organization
-    res = res.click(f"\[{organization.name}\]")
+    res = res.click(fr"\[{organization.name}\]")
 
     # invite someone
     res = res.click("Members")

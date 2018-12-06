@@ -38,7 +38,7 @@ router.register(r'applications', ApplicationViewSet)
 # user.register(r'applications', ApplicationViewSet, base_name='user-application')
 
 app = NestedSimpleRouter(router, r'applications', lookup='application')
-app.register(r'events', EventViewSet, base_name='application-event')
+app.register(r'events', EventViewSet, basename='application-event')
 # app.register(r'channels', ChannelViewSet, base_name='application-channel')
 # app.register(r'messages', MessageViewSet, base_name='application-message')
 

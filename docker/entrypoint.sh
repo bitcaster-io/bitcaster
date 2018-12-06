@@ -1,20 +1,22 @@
-#!/bin/bash
-set -ex
+#!/bin/bash -e
+set -e
+
+mkdir -p /var/bitcaster/{static,log,conf,run}
+rm -f /var/datamart/run/*
 
 
-if [ "$@" == "bitcaster" ];then
-    pg-control start
-    redis-server &
-    if [ ! -f /var/bitcaster/.bootstrapped ]; then
-        export BITCASTER_ORGANIZATION=`perl -e 'srand; rand($.) < 1 && ($line = $_) while <>; print $line;' /marvel.txt`
-
-        touch /var/bitcaster/.bootstrapped
-        bitcaster configure --no-input
-        bitcaster upgrade --no-input
-        echo "done"
-    fi
-    bitcaster start workers -l debug &
-    exec bitcaster start web -l debug --bind 0.0.0.0:8000
+if [[ "$*" == "workers" ]];then
+    django-admin db-isready --wait --timeout 60 --sleep 5
+    django-admin db-isready --wait --timeout 300  --sleep 5 --connection etools
+    celery worker -A etools_datamart --loglevel=DEBUG --concurrency=4 --purge --pidfile run/celery.pid
+elif [[ "$*" == "beat" ]];then
+    celery beat -A etools_datamart.celery --loglevel=DEBUG --pidfile run/celerybeat.pid
+elif [[ "$*" == "bitcaster" ]];then
+    django-admin db-isready --wait --timeout 60
+    django-admin check --deploy
+    django-admin init-setup --all --verbosity 1
+    django-admin db-isready --wait --timeout 300 --connection etools
+    gunicorn -b 0.0.0.0:8000 etools_datamart.config.wsgi
 else
     exec "$@"
 fi

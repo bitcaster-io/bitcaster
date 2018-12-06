@@ -33,7 +33,6 @@ def test_event_trigger(django_app, admin, subscription1, settings):
     assert subscription1.channel.handler
     url = reverse("admin:bitcaster_event_trigger", [event.pk])
     res = django_app.get(url, user=admin.email)
-    res.showbrowser()
     res = res.form.submit()
     assert res.status_code == 200
     assert django.core.mail.outbox

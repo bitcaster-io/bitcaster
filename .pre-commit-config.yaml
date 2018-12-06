@@ -25,3 +25,21 @@ repos:
         - tests/
     -   id: check-merge-conflict
     -   id: check-case-conflict
+
+-   repo: https://github.com/saxix/pch
+    rev: fc387f4
+    hooks:
+    -   id: check-version-release-match
+        args:
+        - --pythonpath=src
+        - --package=etools_datamart
+        stages: [push]
+    -   id: check-untracked
+        args:
+        - src
+        - tests
+        stages: [push]
+    -   id: check-forbidden
+        args:
+        - -p
+        - \.showbrowser\(

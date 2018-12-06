@@ -24,7 +24,7 @@ class FacebookOptions(DispatcherOptions):
     password = PasswordField()
 
 
-validate_username = RegexValidator('/^[a-z\d.]{5,}$/i',
+validate_username = RegexValidator(r'/^[a-z\d.]{5,}$/i',
                                    message=_('Use a valid facebook account'))
 
 
@@ -76,5 +76,5 @@ class Facebook(Dispatcher):
         try:
             self._get_connection()
             return True
-        except Exception as e:
+        except Exception:
             return False
