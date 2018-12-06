@@ -32,7 +32,7 @@ jobs:
             export PATH=/home/circleci/.local/bin:$PATH
             export PYTHONHASHSEED=${RANDOM}
             pip install tox --user
-            tox -re d20-py36
+            tox -re d21-py36
 
       - store_artifacts:
           path: ~build/coverage
