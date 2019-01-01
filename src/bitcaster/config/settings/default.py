@@ -71,6 +71,7 @@ MIDDLEWARE = [
 
 AUTH_USER_MODEL = 'bitcaster.user'
 SECRET_KEY = env('SECRET_KEY')
+ON_PREMISE = env('ON_PREMISE')
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 SESSION_COOKIE_NAME = "bitcasterid"
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
@@ -383,7 +384,6 @@ CONSTANCE_CONFIG = OrderedDict({
                        str),
     'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/', '', str),
     'ALLOW_REGISTRATION': (False, '', bool),
-    'ON_PREMISE': (True, '', bool),
     'INVITATION_EXPIRE': (60 * 60 * 24, '', int),
     'EMAIL_USE_TLS': (False, '', bool),
     'EMAIL_TIMEOUT': (60, '', int),

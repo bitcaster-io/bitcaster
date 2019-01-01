@@ -27,12 +27,14 @@
                                         <li>
                                             <a href="{% url 'settings-oauth' %}">OAuth</a>
                                         </li>
+                                        {% if settings.ON_PREMISE %}
                                         <li>
                                             <a href="{% url 'settings-channels' %}">Channels</a>
                                         </li>
                                         <li>
                                             <a href="{% url 'settings-org-list' %}">Organizations</a>
                                         </li>
+                                        {% endif %}
                                         <li>
                                             <a href="{% url 'settings-sysinfo' %}">Environment</a>
                                         </li>

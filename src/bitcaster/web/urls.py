@@ -1,5 +1,6 @@
 # line too long
 # flake8: noqa: E501
+from django.conf import settings
 from django.urls import include, path
 from django.views.generic import TemplateView
 
@@ -49,9 +50,15 @@ urlpatterns = [
     path('settings/email/', SettingsEmailView.as_view(), name='settings-email'),
     path('settings/oauth/', SettingsOAuthView.as_view(), name='settings-oauth'),
     path('settings/sysinfo/', SettingsSystemInfo.as_view(), name='settings-sysinfo'),
-    path('settings/organizations/', SettingsOrgListView.as_view(), name='settings-org-list'),
-    path('settings/organizations/<int:pk>/edit/', SettingsOrgUpdateView.as_view(), name='settings-org-update'),
+]
 
+if not settings.ON_PREMISE:
+    urlpatterns += [path('settings/organizations/', SettingsOrgListView.as_view(), name='settings-org-list'),
+                    path('settings/organizations/<int:pk>/edit/', SettingsOrgUpdateView.as_view(),
+                         name='settings-org-update'),
+                    ]
+
+urlpatterns += [
     path('settings/channel/', SettingsChannelListView.as_view(), name='settings-channels'),
     path('settings/channel/add/', SettingsChannelCreateWizard.as_view(), name='system-channel-create'),
     path('settings/channel/<int:pk>/edit/', SettingsChannelUpdateView.as_view(), name='system-channel-update'),

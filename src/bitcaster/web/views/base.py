@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
@@ -34,7 +35,8 @@ class SuperuserViewMixin(SecuredViewMixin):
 class OrganizationListMixin(SecuredViewMixin):
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
-        ret['organizations'] = Organization.objects.filter(members=self.request.user)
+        if not settings.ON_PREMISE:
+            ret['organizations'] = Organization.objects.filter(members=self.request.user)
         return ret
 
 
