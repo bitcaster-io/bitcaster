@@ -80,7 +80,7 @@ class Env(environ.Env):
         logger.debug(f"get '{var}' returns '{value}'")
         return value
 
-    def load_config(self, env_file: str):
+    def load_config(self, env_file: str = None, check_exists: bool = False):
         """Read a .env file into os.environ.
 
         If not given a path to a dotenv path, does filthy magic stack backtracking
@@ -90,8 +90,13 @@ class Env(environ.Env):
 
         https://gist.github.com/bennylope/2999704
         """
+        if env_file is None:
+            env_file = os.environ.get('BITCASTER_CONF', DEFAULT_CONFIG)
         logger.debug(f'Read environment variables from: {env_file}')
         if not os.path.exists(env_file):
+            if check_exists:
+                raise ImproperlyConfigured(f"Configuration file '{env_file}' does not exists or cannot be read")
+
             return
         # set defaults
         for key, value in DEFAULTS.items():
@@ -121,4 +126,4 @@ class Env(environ.Env):
 
 
 env = Env('BITCASTER_', **DEFAULTS)
-env.load_config(os.environ.get('BITCASTER_CONF', DEFAULT_CONFIG))
+env.load_config(os.environ.get('BITCASTER_CONF', DEFAULT_CONFIG), False)

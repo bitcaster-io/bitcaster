@@ -1,10 +1,9 @@
 # envs to set before use this script
-DATABASE_URL?=
-DATABASE_URL_ETOOLS?=
+BITCASTER_DATABASE_URL?=${BITCASTER_DATABASE_URL}
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET?=dev
+TARGET?=0.3.0a2
 # below vars are used internally
 BUILD_OPTIONS?=--squash
 CMD?=bitcaster
@@ -49,27 +48,13 @@ build:
 	 		--rm \
 	 		--name=${CONTAINER_NAME} \
 			-p 8000:8000 \
-			-e CACHE_URL=redis://127.0.0.1:6379/1 \
-			-e CELERY_BROKER_URL=redis://127.0.0.1:6379/2 \
-			-e CELERY_RESULT_BACKEND=redis://127.0.0.1:6379/3 \
-			-e CSRF_COOKIE_SECURE=false \
-			-e DATABASE_URL=${DATABASE_URL} \
-			-e DATABASE_URL_ETOOLS=${DATABASE_URL_ETOOLS} \
-			-e DEBUG=true \
-			-e DJANGO_SETTINGS_MODULE=etools_datamart.config.settings \
-			-e SECURE_BROWSER_XSS_FILTER=0 \
-			-e SECURE_CONTENT_TYPE_NOSNIFF=0 \
-			-e SECURE_FRAME_DENY=0 \
-			-e SECURE_HSTS_SECONDS=0 \
-			-e SECURE_HSTS_PRELOAD=false \
-			-e SECURE_SSL_REDIRECT=false \
-			-e SESSION_COOKIE_HTTPONLY=false \
-			-e SESSION_COOKIE_SECURE=false \
-			-e STATIC_ROOT=/var/datamart/static/ \
-			-e DEVELOPMENT_MODE=0 \
-			-e STACK=1 \
-			-e X_FRAME_OPTIONS="SAMEORIGIN" \
-			-v $$PWD/~build/volumes/var/datamart:/var/datamart/ \
+			-e BITCASTER_SECRET_KEY=123123124 \
+			-e BITCASTER_REDIS_CACHE_URL=${BITCASTER_REDIS_CACHE_URL} \
+			-e BITCASTER_REDIS_LOCK_URL=${BITCASTER_REDIS_LOCK_URL} \
+			-e BITCASTER_CELERY_BROKER_URL=${BITCASTER_CELERY_BROKER_URL} \
+			-e BITCASTER_DATABASE_URL=${BITCASTER_DATABASE_URL} \
+			-e BITCASTER_DEBUG=true \
+			-v $$PWD/~build/volumes/var/bitcaster:/var/bitcaster/ \
 			${RUN_OPTIONS} \
 			${DOCKER_IMAGE} \
 			${CMD}
@@ -90,13 +75,13 @@ run:
 	$(MAKE) .run
 
 test:
-	RUN_OPTIONS="-e DEBUG=0 \
+	RUN_OPTIONS="-e BITCASTER_DEBUG=1 \
 				 -e X_FRAME_OPTIONS=DENY \
 				 -e SESSION_COOKIE_SECURE=1 \
 				 -e CSRF_COOKIE_SECURE=1 \
 				 -e SECURE_HSTS_PRELOAD=1 \
 				 -e SECURE_SSL_REDIRECT=1" \
-	CMD='bash -c "touch /var/datamart/.touch && django-admin check --deploy "' \
+	CMD='bash -c "whoami && touch /var/bitcaster/.touch && bitcaster check --deploy "' \
 	$(MAKE) .run
 
 scratch:

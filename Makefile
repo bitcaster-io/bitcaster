@@ -49,14 +49,12 @@ develop:
 
 reset-dev-env: .init-db
 	bitcaster upgrade --no-input
-	bitcaster option set INITIALIZED 0
 
 reset-migrations: .init-db
 	find src -name '000[1,2,3,4,5,6,7,8,9]*' | xargs rm -f
 	./manage.py makemigrations bitcaster
 	./manage.py makemigrations --check
 	bitcaster upgrade --no-input
-	bitcaster option set INITIALIZED 0
 
 test:
 	py.test tests -v --create-db

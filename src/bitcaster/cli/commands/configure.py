@@ -61,7 +61,6 @@ from bitcaster.cli.utils import (Address, RedisURL, generate_secret_key,
 def configure(ctx, prompt, prompt_all, write, **kwargs):
     cfg_file = Path(ctx.obj['config'])
     env = ctx.obj['env']
-
     if prompt:
         for opt in ctx.command.params:
             if opt.name not in ['prompt', 'prompt_all', 'write']:
@@ -77,6 +76,7 @@ def configure(ctx, prompt, prompt_all, write, **kwargs):
         **kwargs)
     kwargs["enable_sentry"] = bool(kwargs['sentry_dsn'])
     kwargs["secret_key"] = generate_secret_key()
+    kwargs["fernet_keys"] = generate_secret_key()
 
     for key, value in env.scheme.items():
         env.ENVIRON[key] = str(kwargs.get(key.lower(), ''))
@@ -90,14 +90,9 @@ def configure(ctx, prompt, prompt_all, write, **kwargs):
         target = Path(kwargs[_dir])
         if not target.exists():
             if prompt:
-                ok = click.prompt(f"{_dir} set to '{target}' but it does not exists. Create it now?")
+                ok = click.prompt(f"{_dir} set to '{target.absolute()}' but it does not exists. Create it now?")
             else:
                 ok = True
             if ok:
                 click.echo(f"Create {_dir} '{target}'")
                 target.mkdir(parents=True)
-
-    # from django.conf import settings
-    # settings.configure()
-    # from constance import config
-    # config.ON_PREMISE = True

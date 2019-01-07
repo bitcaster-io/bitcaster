@@ -8,6 +8,7 @@ from functools import lru_cache
 import click
 
 from bitcaster.config import DEFAULTS
+from bitcaster.exceptions import ImproperlyConfigured
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +49,7 @@ class VerbosityParamType(click.ParamType):
             self.quit = True
         if self.quit:
             value = 0
-        return value
+        return int(value)
 
 
 Verbosity = VerbosityParamType()
@@ -151,6 +152,8 @@ def wait_for_service(address, timeout=30, caption='', stdout=None, sleep=0):
             break
         except socket.error:
             time.sleep(0.5)
+        except Exception as e:
+            raise ImproperlyConfigured(f"Error checking {address}. {e}")
         if time.time() > end:
             raise TimeoutError
     stdout.write(caption + 'OK\n')

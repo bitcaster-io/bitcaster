@@ -1,94 +1,91 @@
-# Bitcaster dev environment
-#
-# NOTE: Do NOT use this in production!
-#
-# Instructions:
-#
-#   Build the container:
-#     $ docker build --rm --squash -t bitcaster:beta -f Dockerfile.dev .
-#   Bootstrap the container:
-#     $ docker run --name=bitcaster-beta -p 8000:8000 -it -v /data/storage/bitcaster/etc/:/etc/bitcaster -v /data/storage/bitcaster/var/bitcaster/:/var/bitcaster bitcaster:beta
-#   Run the container:
-#     $ docker start bitcaster-beta
-#   Attach into the container:
-#     $ docker exec -it bitcaster-beta bash
-#   Run devserver:
-#     $ docker exec -it bitcaster-beta bitcaster devserver 0.0.0.0:8000
-#   Stop container:
-#     $ docker stop bitcaster-beta
-#   Remove container:
-#     $ docker rm -f bitcaster-beta
+FROM pstauffer/curl:latest as builder
+ARG DEVELOP
+ARG GITHUB_CREDENTIALS
+ARG VERSION
 
-FROM python:3.6
+RUN mkdir /code
+ADD . /code
+
+RUN set -o pipefail && if [ "${DEVELOP}" = "1" ]; then \
+    echo "${VERSION}-develop"; \
+    else \
+    echo "Download package: https://github.com/bitcaster-io/bitcaster/archive/${VERSION}.tar.gz" \
+    && curl ${GITHUB_CREDENTIALS}: -L "https://github.com/bitcaster-io/bitcaster/archive/${VERSION}.tar.gz" | tar -xzf - --strip-components=1; \
+    fi
+
+FROM python:3.6.7-slim as base
+RUN apt-get update \
+ 	&& apt-get install -y --no-install-recommends \
+ 	    gcc \
+ 	    gdal-bin \
+ 	    python-dev
+
+RUN pip install pip==18.0 pipenv --upgrade \
+    && adduser --system bitcaster
+
+FROM base
+COPY --from=builder /code /code
+
+LABEL org.label.name="Bitcaster" \
+      org.label.maintainer="bitcaster@os4d.org" \
+      org.label.description="" \
+      org.label.url="https://bitcaster.io/" \
+      org.label.vcs-url="https://github.com/bitcaster-io/bitcaster" \
+      org.label.version=$VERSION
+
 
 ARG BUILD_DATE
-ARG VCS_REF
+ARG PIPENV_ARGS
+ARG VERSION
 
+ENV VERSION ${VERSION}
+
+ENV PIPENV_PYPI_MIRROR ${PIPENV_PYPI_MIRROR}
+ENV PIPENV_ARGS ${PIPENV_ARGS}
+ENV HOME /var/bitcaster/
+ENV PIPSI_HOME=/usr/local/pipsi/environments
+ENV PIPSI_BIN_DIR=/usr/local/bin
 ENV PYTHONUNBUFFERED 1
-ENV PG_MAJOR 9.6
-ENV PG_VERSION 9.6.*
-ENV POSTGRES_DB bitcaster
-ENV NGINX_VERSION 1.13.7-1~stretch
-ENV NJS_VERSION   1.13.7.0.1.15-1~stretch
+ENV GUNICORN_CMD_ARGS "-b 0.0.0.0:8000 \
+--chdir /var/bitcaster \
+--access-logfile - \
+--access-logformat \"%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s\" "
 
-LABEL org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.vcs-url="https://github.com/bitcaster-io/bitcaster" \
-      org.label-schema.build-date=$BUILD_DATE
+ENV BITCASTER_MEDIA_ROOT $HOME/media
+ENV BITCASTER_STATIC_ROOT $HOME/static
+ENV BITCASTER_CONF $HOME/conf/config
+ENV BITCASTER_DATABASE_URL ""
+ENV BITCASTER_CELERY_BROKER_URL ""
+ENV BITCASTER_REDIS_CACHE_URL ""
+ENV BITCASTER_REDIS_LOCK_URL ""
 
+RUN mkdir -p \
+    /var/bitcaster/ \
+    && chown bitcaster /var/bitcaster/ \
+    && pip install pip==18.0 pipenv --upgrade
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        ntp \
-        vim \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /code
 
-# make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
-RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-ENV LANG en_US.utf8
+RUN set -ex \
+    ls -al /code \
+    && pipenv install --verbose --system --deploy --ignore-pipfile $PIPENV_ARGS
 
-#RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
-
-ENV BITCASTER_MEDIA_ROOT /var/bitcaster/media
-ENV BITCASTER_STATIC_ROOT /var/bitcaster/static
-
-ENV BITCASTER_DATABASE_HOST db
-ENV BITCASTER_REDIS_CACHE_URL redis://redis:6379/0
-ENV BITCASTER_REDIS_LOCK_URL redis://redis:6379/1
-ENV BITCASTER_CELERY_BROKER_URL redis://redis:6379/2
-ENV BITCASTER_DATABASE_URL psql://postgres:@db:5432/bitcaster
-ENV HOME /root
-RUN mkdir -p /root/.bitcaster/
-
-ENV BITCASTER_CONF_DIR /etc/bitcaster/
-ENV BITCASTER_CONF ${BITCASTER_CONF_DIR}conf
-RUN mkdir -p /usr/src/bitcaster -m 770
-RUN mkdir -p ${BITCASTER_MEDIA_ROOT} -m 770
-RUN mkdir -p ${BITCASTER_STATIC_ROOT} -m 770
-RUN mkdir -p ${BITCASTER_CONF_DIR} -m 770
-RUN mkdir -p /var/bitcaster/ -m 770
-RUN touch ${BITCASTER_CONF}
-COPY dist /cache
-RUN pip install bitcaster \
-    bitcaster-facebook \
-    bitcaster-gmail \
-    bitcaster-hangout \
-    bitcaster-plivo \
-    bitcaster-skype \
-    bitcaster-slack-webhook \
-    bitcaster-twilio \
-    bitcaster-twitter \
-    bitcaster-twitter-message \
-    bitcaster-xmpp \
-    --find-links file:///cache \
-    --cache-dir /cache \
-    && rm -fr /cache /root/.cache
+RUN pip install . \
+    && bitcaster plugin install --from-dir plugins/ -r \
+    && rm -fr /code
 
 
-WORKDIR /usr/src/bitcaster
+#RUN apk del .build-deps \
+#    && rm -rf /var/cache/apk/* \
+#    && rm -fr /root/.cache/
 
-
-COPY docker/entrypoint.sh /entrypoint.sh
-ENTRYPOINT [ "/entrypoint.sh" ]
+WORKDIR /var/bitcaster
 
 EXPOSE 8000
-CMD [ "bash" ]
+
+USER bitcaster
+
+ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+CMD ["datamart"]

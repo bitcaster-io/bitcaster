@@ -70,14 +70,13 @@ def cli(ctx, config, verbose, **kwargs):
     filepath = str(config)
     os.environ['BITCASTER_CONF'] = filepath
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings.default')
-
     from bitcaster.config.environ import env
-    if config.exists():
-        env.load_config(str(config))
-        if verbose > 0:
-            click.echo(f"Loaded configuration from {filepath}")
-    # else:
-    #     click.echo(f"Configuration file {filepath} does not exists.")
+    if verbose > 0:
+        if config.exists():
+            click.echo(f"Using configuration from {filepath}")
+        else:
+            click.echo(f"Configuration file '{filepath}' does not exists.")
+        env.load_config(str(config), False)
 
     ctx.obj = {'env': env,
                'config': filepath}
@@ -86,14 +85,9 @@ def cli(ctx, config, verbose, **kwargs):
 cli.add_command(import_by_name('bitcaster.cli.commands.check.check'))
 cli.add_command(import_by_name('bitcaster.cli.commands.configure.configure'))
 cli.add_command(import_by_name('bitcaster.cli.commands.upgrade.upgrade'))
-cli.add_command(import_by_name('bitcaster.cli.commands.option.option'))
 cli.add_command(import_by_name('bitcaster.cli.commands.createuser.createuser'))
-cli.add_command(import_by_name('bitcaster.cli.commands.backup.backup'))
-cli.add_command(import_by_name('bitcaster.cli.commands.backup.restore'))
-cli.add_command(import_by_name('bitcaster.cli.commands.start.start'))
-cli.add_command(import_by_name('bitcaster.cli.commands.devserver.devserver'))
 cli.add_command(import_by_name('bitcaster.cli.commands.plugin.plugin'))
-cli.add_command(import_by_name('bitcaster.cli.commands.shell.shell'))
+# cli.add_command(import_by_name('bitcaster.cli.commands.shell.shell'))
 
 
 def main():  # pragma: no cover

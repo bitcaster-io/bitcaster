@@ -34,7 +34,7 @@ class UserRegister(SingleObjectTemplateResponseMixin, FormView):
                                        password=make_password(form.cleaned_data['password']),
                                        )
             org = Organization.objects.create(name=form.cleaned_data['organization'],
-                                              billing_email=form.cleaned_data['billing_email'],
+                                              admin_email=form.cleaned_data['admin_email'],
                                               owner=user
                                               )
             org.add_member(user, Role.OWNER)

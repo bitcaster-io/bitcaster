@@ -4,7 +4,6 @@ from pathlib import Path
 import click
 
 from bitcaster.cli import global_options
-from bitcaster.config.environ import env
 
 
 @click.command()
@@ -19,6 +18,7 @@ from bitcaster.config.environ import env
 def upgrade(ctx, prompt, migrate, static, verbose, **kwargs):
     try:
         from django.core.management import execute_from_command_line
+        from bitcaster.config.environ import env
 
         if prompt:
             extra = []

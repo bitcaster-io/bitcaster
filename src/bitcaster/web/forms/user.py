@@ -29,10 +29,10 @@ class UserRegistrationForm(forms.Form):
     password = forms.CharField(widget=PasswordInput(attrs={'autocomplete': 'new-password'}))
     organization = forms.CharField(help_text=_("If you're signing up for a personal account, "
                                                "try using your own name."))
-    billing_email = forms.EmailField(required=False,
-                                     widget=forms.EmailInput(attrs={'autocomplete': 'email'}),
-                                     help_text=_("If provided, we will send all billing-related notifications "
-                                                 "to this address."))
+    admin_email = forms.EmailField(required=False,
+                                   widget=forms.EmailInput(attrs={'autocomplete': 'email'}),
+                                   help_text=_("If provided, we will send all admin-related notifications "
+                                               "to this address."))
     terms = forms.BooleanField(label=_("I agree to the Terms of Service the Privacy Policy"))
 
     captcha = ReCaptchaField(widget=ReCaptchaWidget())
@@ -110,15 +110,15 @@ class UserProfileForm(forms.ModelForm):
     #     return f'new-email-{self.instance.pk}'
 
     # def save(self, commit=True):
-        # email_changed = self.fields['email'].has_changed(self.initial.get('email'),
-        #                                               self.data.get('email'))
-        #
-        # if email_changed:
-        #     cache.set(self.get_new_email_key(), self.data['email'])
-        #     send_address_verification_email(self.instance)
-        #     self.instance.email = self.initial['email']
-        # super().save(commit)
-        # return self.instance
+    # email_changed = self.fields['email'].has_changed(self.initial.get('email'),
+    #                                               self.data.get('email'))
+    #
+    # if email_changed:
+    #     cache.set(self.get_new_email_key(), self.data['email'])
+    #     send_address_verification_email(self.instance)
+    #     self.instance.email = self.initial['email']
+    # super().save(commit)
+    # return self.instance
     # def clean_picture(self):
     #     picture = self.cleaned_data['picture']
     #     if picture:

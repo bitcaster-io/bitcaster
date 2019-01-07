@@ -57,6 +57,7 @@ responses = "*"
 coverage = "*"
 vcrpy = "*"
 pre-commit = "*"
+django-picklefield = "*"
 
 [dev-packages]
 "flake8" = "*"

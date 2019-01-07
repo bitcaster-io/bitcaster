@@ -61,6 +61,7 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
                                                  form.cleaned_data['password1'])
             org = Organization.objects.create(name=env('ORGANIZATION'),
                                               slug=slugify(env('ORGANIZATION')),
+                                              admin_email=user.email,
                                               is_core=True,
                                               owner=user)
             org.add_member(user, role=Role.OWNER, date_enrolled=timezone.now())

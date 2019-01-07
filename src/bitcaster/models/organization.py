@@ -40,7 +40,7 @@ class Organization(AbstractModel):
     members = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      through='bitcaster.OrganizationMember',
                                      through_fields=('organization', 'user'))
-    billing_email = models.EmailField(blank=True)
+    admin_email = models.EmailField(blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE,
                               related_name='+')

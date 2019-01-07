@@ -71,7 +71,6 @@ def uninstall(name, prompt, **kwargs):
 @click.option('--recursive', '-r', default=False, is_flag=True)
 @click.option('--prompt/--no-input', default=True, is_flag=True,
               help='Do not prompt for parameters')
-@need_setup
 def install(name, prompt, recursive, from_dir, **kwargs):
     from pip._internal import main as pipmain
     if from_dir:
@@ -84,6 +83,8 @@ def install(name, prompt, recursive, from_dir, **kwargs):
         else:
             os.chdir(from_dir)
             pipmain(["install", '.'])
+    else:
+        click.echo("install [DIR]")
 
 
 @plugin.command(name="new")

@@ -3,6 +3,8 @@ import logging
 from pathlib import Path
 
 import redis
+from cryptography.fernet import InvalidToken
+from django.contrib.auth import get_user_model
 from django.core.cache import caches
 from django.core.checks import Error, register
 from django.db import OperationalError, connection
@@ -58,10 +60,14 @@ def check(*args, **kwargs):
                 "Unable to contact lock backend at '%s'" % env('REDIS_LOCK_URL'),
                 hint=str(e),
                 obj=None,
-                id='bitcaster.E003',
+                id='bitcaster.E004',
             )
         )
 
+
+@register(deploy=True)
+def check_dirs():
+    errors = []
     for _dir in ('MEDIA_ROOT', 'STATIC_ROOT'):
         if not Path(env(_dir)).exists():
             errors.append(
@@ -69,7 +75,25 @@ def check(*args, **kwargs):
                     f"{_dir} '{Path(env(_dir))}' does not exists",
                     hint='check your configuration',
                     obj=None,
-                    id='bitcaster.E004',
+                    id='bitcaster.E005',
                 )
             )
+
+
+@register(deploy=True)
+def check_fernets():
+    errors = []
+    try:
+        UserModel = get_user_model()
+        UserModel.objects.first()
+    except InvalidToken:
+        errors.append(
+            Error(
+                'Unable to decrypt database',
+                hint='SECRET_KEY seems changed. Cannot decrypt existing data',
+                obj=None,
+                id='bitcaster.E006',
+            )
+        )
+
     return errors
