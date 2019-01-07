@@ -3,7 +3,7 @@ BITCASTER_DATABASE_URL?=${BITCASTER_DATABASE_URL}
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET?=0.3.0a2
+TARGET=0.3.0a2
 # below vars are used internally
 BUILD_OPTIONS?=--squash
 CMD?=bitcaster
@@ -70,6 +70,7 @@ release:
 	docker push ${DOCKER_IMAGE_NAME}:latest
 	docker push ${DOCKER_IMAGE_NAME}:${TARGET}
 	wget https://hooks.microbadger.com/images/bitcaster/demo/6gZxAyENUmnjeP10rFqqv3RVNeU=
+	cd .. && bumpversion --tag --config-file=.bumpversion.cfg num
 
 run:
 	$(MAKE) .run

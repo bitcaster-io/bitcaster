@@ -17,6 +17,7 @@ repos:
     -   id: debug-statements
         exclude: (_plugin_template|python_twitter)
     -   id: end-of-file-fixer
+        exclude: .bumpversion.cfg
     -   id: flake8
         include: (src|tests)
         exclude: /(_plugin_template|python_twitter|migrations)/
