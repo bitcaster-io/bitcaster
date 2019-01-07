@@ -63,10 +63,11 @@ def check(*args, **kwargs):
                 id='bitcaster.E004',
             )
         )
+    return errors
 
 
 @register(deploy=True)
-def check_dirs():
+def check_dirs(*args, **kwargs):
     errors = []
     for _dir in ('MEDIA_ROOT', 'STATIC_ROOT'):
         if not Path(env(_dir)).exists():
@@ -78,10 +79,11 @@ def check_dirs():
                     id='bitcaster.E005',
                 )
             )
+    return errors
 
 
 @register(deploy=True)
-def check_fernets():
+def check_fernets(*args, **kwargs):
     errors = []
     try:
         UserModel = get_user_model()
