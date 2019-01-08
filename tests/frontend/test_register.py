@@ -17,19 +17,19 @@ pytestmark = pytest.mark.django_db
 def test_registration(django_app, initialized):
     url = reverse('user-register')
     user_email = faker.email()
-    billing_email = faker.email()
+    admin_email = faker.email()
     res = django_app.get(url)
     res.form['name'] = faker.name()
     res.form['email'] = user_email
     res.form['password'] = '123'
     res.form['organization'] = faker.company()
-    res.form['billing_email'] = billing_email
+    res.form['admin_email'] = admin_email
     res.form['terms'] = True
     res = res.form.submit()
     assert res.status_code == 302
 
     user = User.objects.filter(email=user_email).first()
-    org = Organization.objects.filter(billing_email=billing_email).first()
+    org = Organization.objects.filter(admin_email=admin_email).first()
 
     assert user
     assert org

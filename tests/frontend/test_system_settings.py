@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 pytestmark = pytest.mark.django_db
 
 
-def test_system_channels_wizard(django_app, admin):
+def test_system_channels_wizard(django_app, admin, settings):
+    settings.ON_PREMISE = False
     res = django_app.get('/', user=admin)
     res = res.click("Settings")
     res = res.click("Channels")
@@ -30,7 +31,6 @@ def test_system_channels_wizard(django_app, admin):
     res.form['port'] = '24'
     res.form['sender'] = 'me@example.com'
     res = res.form.submit().follow()
-
     channel = Channel.objects.filter(name='Channel1', system=True).first()
     assert channel
     assert channel.config['username'] == 'username'
@@ -38,7 +38,9 @@ def test_system_channels_wizard(django_app, admin):
     assert channel.config['server'] == 'localhost'
 
 
-def test_system_edit_channel(django_app, admin, system_channel):
+def test_system_edit_channel(django_app, admin, system_channel, settings):
+    settings.ON_PREMISE = False
+
     res = django_app.get(reverse('system-channel-update', args=[system_channel.pk]),
                          user=admin)
     res.form['name'] = 'NewName'
@@ -48,7 +50,9 @@ def test_system_edit_channel(django_app, admin, system_channel):
     assert system_channel.name == 'NewName'
 
 
-def test_system_edit_channel_validate(django_app, admin, system_channel):
+def test_system_edit_channel_validate(django_app, admin, system_channel, settings):
+    settings.ON_PREMISE = False
+
     res = django_app.get(reverse('system-channel-update', args=[system_channel.pk]),
                          user=admin)
     res.form['timeout'] = "abc"
@@ -56,7 +60,9 @@ def test_system_edit_channel_validate(django_app, admin, system_channel):
     assert res.status_code == 200
 
 
-def test_system_list_channel(django_app, admin, system_channel):
+def test_system_list_channel(django_app, admin, system_channel, settings):
+    settings.ON_PREMISE = False
+
     _list = django_app.get(reverse('settings-channels'), user=admin)
 
     res = _list.click("Plugin Info", index=1)

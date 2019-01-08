@@ -47,6 +47,7 @@ class SettingsBaseView(SuperuserViewMixin,
     def get_context_data(self, **kwargs):
         kwargs = super(SettingsBaseView, self).get_context_data(**kwargs)
         kwargs['title'] = self.title
+        kwargs['settings'] = settings
         return kwargs
 
     def get_form(self, form_class=None):
