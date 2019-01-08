@@ -36,6 +36,7 @@ from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     UserWelcomeView, WorkInProgressView, confirm_registration,)
 
 urlpatterns = [
+    path('', IndexView.as_view(), name='index'),
     path('setup/', SetupView.as_view(), name='setup'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
@@ -148,7 +149,6 @@ urlpatterns += [
          name='org-channel-deprecate'),
     path('<slug:org>/applications/', OrganizationApplications.as_view(), name='org-applications'),
 
-    path('', IndexView.as_view(), name='index'),
     path('wip/', WorkInProgressView.as_view(), name='wip'),
 
     path('tpl/<str:path>', PreviewView.as_view(), name='wip'),

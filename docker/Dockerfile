@@ -88,4 +88,4 @@ USER bitcaster
 ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["datamart"]
+CMD ["bitcaster"]

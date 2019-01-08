@@ -49,6 +49,7 @@ class IndexView(TemplateView):
     template_name = 'bitcaster/index.html'
 
     def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect('/me/')
         if request.user.is_authenticated:
             if request.user.memberships.filter(role=Role.OWNER):
                 url = reverse('org-dashboard', args=[request.user.memberships.first().organization.slug])
