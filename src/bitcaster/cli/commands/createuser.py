@@ -47,7 +47,7 @@ def _get_superuser():
               is_flag=True)
 @click.pass_context
 def createuser(ctx, email, password, superuser, no_password, prompt):
-    "Create a new user."
+    'Create a new user.'
 
     if prompt:
         if not email:
@@ -84,12 +84,12 @@ def createuser(ctx, email, password, superuser, no_password, prompt):
             if superuser:
                 user.is_superuser = superuser
 
-            op = "updated"
+            op = 'updated'
         else:
             click.echo('Nothing to do. User exists', err=True, color='red')
             sys.exit(1)
     else:
-        op = "created"
+        op = 'created'
         user = User(
             email=email,
             is_superuser=superuser,

@@ -30,7 +30,7 @@ def read(*files):
     content = []
     for f in files:
         content.extend(codecs.open(os.path.join(ROOT, 'src', 'requirements', f), 'r').readlines())
-    return "\n".join(filter(lambda l: not l.startswith('-'), content))
+    return '\n'.join(filter(lambda l: not l.startswith('-'), content))
 
 
 # install_requires = read('install.pip')
@@ -53,7 +53,7 @@ setup(name=name,
               'bitcaster = bitcaster.cli:main',
           ],
       },
-      license="MIT",
+      license='MIT',
       zip_safe=False,
       keywords='',
       classifiers=[

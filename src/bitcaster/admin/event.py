@@ -40,7 +40,7 @@ class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
             key = request.user.triggers.create(application=event.application)
         subscriptions = event.subscriptions.valid().values('channel').annotate(dcount=Count('channel'))
         if not subscriptions:
-            self.message_user(request, "Warning no valid subscriptions for this event",
+            self.message_user(request, 'Warning no valid subscriptions for this event',
                               messages.WARNING)
         ctx = {'opts': opts,
                'app_label': opts.app_label,
@@ -71,7 +71,7 @@ class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
                     success, fail = emit_event(event,
                                                form.cleaned_data['arguments'],
                                                ignore_disabled=True)
-                    self.message_user(request, f"Success:{success} - Failures:{fail}", messages.INFO)
+                    self.message_user(request, f'Success:{success} - Failures:{fail}', messages.INFO)
                     # return render(request, 'admin/event_trigger.html', ctx)
 
                 except Exception as e:

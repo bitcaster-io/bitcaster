@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class FF(F):
-    _name = ""
+    _name = ''
 
     def __init__(self):
         super().__init__(self._name)
@@ -19,7 +19,7 @@ def toggler_factory(field_name):
         conn = get_connection()
         cursor = conn.cursor()
         tablename = modeladmin.model._meta.db_table
-        update_status = f"UPDATE {tablename} SET {field_name} = (NOT {tablename}.{field_name})"
+        update_status = f'UPDATE {tablename} SET {field_name} = (NOT {tablename}.{field_name})'
         cursor.execute(update_status)
 
     return toggle_activation

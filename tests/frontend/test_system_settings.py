@@ -15,10 +15,10 @@ pytestmark = pytest.mark.django_db
 
 def test_system_channels_wizard(django_app, admin, settings):
     settings.ON_PREMISE = False
-    res = django_app.get('/', user=admin)
-    res = res.click("Settings")
-    res = res.click("Channels")
-    res = res.click("Create channel")
+    res = django_app.get('/', user=admin).follow()
+    res = res.click('Settings')
+    res = res.click('Channels')
+    res = res.click('Create channel')
 
     res.form['a-handler'] = fqn(Email)
     res = res.form.submit()
@@ -55,7 +55,7 @@ def test_system_edit_channel_validate(django_app, admin, system_channel, setting
 
     res = django_app.get(reverse('system-channel-update', args=[system_channel.pk]),
                          user=admin)
-    res.form['timeout'] = "abc"
+    res.form['timeout'] = 'abc'
     res = res.form.submit()
     assert res.status_code == 200
 
@@ -65,27 +65,27 @@ def test_system_list_channel(django_app, admin, system_channel, settings):
 
     _list = django_app.get(reverse('settings-channels'), user=admin)
 
-    res = _list.click("Plugin Info", index=1)
+    res = _list.click('Plugin Info', index=1)
     assert res.status_code == 200
 
-    res = _list.click("Configure")
+    res = _list.click('Configure')
     assert res.status_code == 200
 
-    res = _list.click("Hide").follow()
+    res = _list.click('Hide').follow()
     system_channel.refresh_from_db()
     assert system_channel.deprecated
-    res = res.click("Show").follow()
+    res = res.click('Show').follow()
     system_channel.refresh_from_db()
     assert not system_channel.deprecated
 
-    res = _list.click("Disable").follow()
+    res = _list.click('Disable').follow()
     system_channel.refresh_from_db()
     assert not system_channel.enabled
-    res = res.click("Enable")
+    res = res.click('Enable')
     system_channel.refresh_from_db()
     assert system_channel.enabled
 
-    res = _list.click("Remove")
+    res = _list.click('Remove')
     res = res.form.submit().follow()
     with pytest.raises(Channel.DoesNotExist):
         assert not system_channel.refresh_from_db()

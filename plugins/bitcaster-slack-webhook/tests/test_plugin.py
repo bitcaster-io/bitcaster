@@ -19,12 +19,12 @@ env.read_env(str(Path(__file__).parent / '.env'))
 def before_record_request(request):
     original = str(request.body)
     for e in [env('BITCASTER_SLACK_WEBHOOK_URL', str)]:
-        original = original.replace(e, "----")
+        original = original.replace(e, '----')
     request.body = original.encode('utf8')
 
     original = request.uri
     for e in [env('BITCASTER_SLACK_WEBHOOK_URL', str)]:
-        original = original.replace(e, "----")
+        original = original.replace(e, '----')
     request.uri = original
 
     return request
@@ -53,8 +53,8 @@ def subscription():
     user = Mock()
     channel = Mock(application=application,
                    config={'url': env('BITCASTER_SLACK_WEBHOOK_URL', str),
-                           'bot_name': "test",
-                           'icon_url': "http://google.com/",
+                           'bot_name': 'test',
+                           'icon_url': 'http://google.com/',
                            })
     SlackWebhook.validate_configuration(channel.config)
     # SlackWebhook.validate_configuration()

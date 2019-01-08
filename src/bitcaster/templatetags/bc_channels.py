@@ -6,11 +6,11 @@ register = template.Library()
 @register.simple_tag
 def channel_type(channel):
     if channel.system:
-        return "[system]"
+        return '[system]'
     elif not channel.application:
-        return "[org]"
+        return '[org]'
     elif channel.application:
-        return "[app]"
+        return '[app]'
 
 
 @register.simple_tag(takes_context=True)

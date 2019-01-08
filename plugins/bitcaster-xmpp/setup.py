@@ -24,7 +24,7 @@ setup(
         'bitcaster_xmpp': ['*.png', ],
     },
     entry_points={'bitcaster': ['xmpp = bitcaster_xmpp.plugin:Xmpp']},
-    license="MIT License",
+    license='MIT License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',

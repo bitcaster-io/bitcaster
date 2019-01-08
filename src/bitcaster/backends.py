@@ -11,14 +11,14 @@ from bitcaster.models import Application, Event, Organization
 
 logger = logging.getLogger(__name__)
 
-PERMISSIONS = {"org:configure",  # configure
-               "app:create",  # create applications
-               "app:configure",  # configure application (#General, create channels)
-               "app:manage",  # manage application (manage events/messages
-               "evt:trigger",  # trigger events (need triggertoken
+PERMISSIONS = {'org:configure',  # configure
+               'app:create',  # create applications
+               'app:configure',  # configure application (#General, create channels)
+               'app:manage',  # manage application (manage events/messages
+               'evt:trigger',  # trigger events (need triggertoken
                }
 OWNER_PERMISSIONS = PERMISSIONS
-ADMIN_PERMISSIONS = {"app:configure", "evt:trigger"}
+ADMIN_PERMISSIONS = {'app:configure', 'evt:trigger'}
 SUBSCRIBER_PERMISSIONS = ()
 PERM_MAP = {Role.ADMIN: ADMIN_PERMISSIONS,
             Role.OWNER: OWNER_PERMISSIONS,
@@ -61,7 +61,7 @@ class BitcasterBackend(ModelBackend):
             roles = list(obj.application_teams.filter(
                 team__members__user=user_obj,
                 role__in=[Role.ADMIN, Role.OWNER]
-            ).values_list("role", flat=True))
+            ).values_list('role', flat=True))
             if user_obj == org.owner:
                 roles.append(Role.OWNER)
 

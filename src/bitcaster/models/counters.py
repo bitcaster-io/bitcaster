@@ -8,11 +8,11 @@ from bitcaster.models.user import User
 
 class CounterManager(models.Manager):
     def initialize(self, target):
-        t = "{0}-{1.pk}".format(fqn(target), target)
+        t = '{0}-{1.pk}'.format(fqn(target), target)
         self.get_or_create(target=t)
 
     def increment(self, target):
-        t = "{0}-{1.pk}".format(fqn(target), target)
+        t = '{0}-{1.pk}'.format(fqn(target), target)
         self.filter(target=t).update(total=F('total') + 1)
 
 
@@ -38,7 +38,7 @@ class Occurence(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              blank=True, null=True)
     submissions = models.IntegerField(default=0,
-                                      help_text="number of subscriptions")
+                                      help_text='number of subscriptions')
     successes = models.IntegerField(default=0)
     failures = models.IntegerField(default=0)
 

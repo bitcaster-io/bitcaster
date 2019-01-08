@@ -22,24 +22,24 @@ def before_record_request(request):
     original = str(request.body)
     for e in [env('BITCASTER_TWILIO_SID', str), env('BITCASTER_TWILIO_SENDER', str),
               env('BITCASTER_TWILIO_RECIPIENT', str)]:
-        original = original.replace(e, "----")
+        original = original.replace(e, '----')
     request.body = original.encode('utf8')
 
     original = request.uri
     for e in [env('BITCASTER_TWILIO_SID', str), env('BITCASTER_TWILIO_SENDER', str),
               env('BITCASTER_TWILIO_RECIPIENT', str)]:
-        original = original.replace(e, "----")
+        original = original.replace(e, '----')
     request.uri = original
 
     return request
 
 
 def before_record_response(response):
-    original = json.loads(response["body"]["string"])
+    original = json.loads(response['body']['string'])
     for key in ['to', 'from', 'account_sid', 'media', 'uri']:
         original[key] = '----'
 
-    response["body"]["string"] = json.dumps(original).encode('utf8')
+    response['body']['string'] = json.dumps(original).encode('utf8')
     return response
 
 

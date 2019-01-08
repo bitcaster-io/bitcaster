@@ -28,7 +28,7 @@ setup(
         'bitcaster_twitter': ['*.png', ],
     },
     entry_points={'bitcaster': ['twitter = bitcaster_twitter.plugin:Twitter']},
-    license="MIT License",
+    license='MIT License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',

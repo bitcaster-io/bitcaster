@@ -5,6 +5,7 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from bitcaster.web.views.callbacks import confirm_address
+from bitcaster.web.views.user import UserIndexView
 from bitcaster.web.views.views import PreviewView
 
 from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
@@ -44,7 +45,7 @@ urlpatterns = [
     path('terms/', TemplateView.as_view(template_name='bitcaster/legal/terms.html'), name='legal-terms'),
     path('privacy/', TemplateView.as_view(template_name='bitcaster/legal/privacy.html'), name='legal-privacy'),
     # me
-    path('me/', TemplateView.as_view(template_name='bitcaster/me/home.html'), name='me-home'),
+    path('me/', UserIndexView.as_view(), name='me-home'),
 
     # Settings
     path('settings/', SettingsView.as_view(), name='settings'),

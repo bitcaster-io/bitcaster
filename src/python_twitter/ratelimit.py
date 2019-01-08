@@ -15,14 +15,14 @@ EndpointRateLimit = namedtuple('EndpointRateLimit',
 ResourceEndpoint = namedtuple('ResourceEndpoint', ['regex', 'resource'])
 
 
-GEO_ID_PLACE_ID = ResourceEndpoint(re.compile(r'/geo/id/\d+'), "/geo/id/:place_id")
-SAVED_SEARCHES_DESTROY_ID = ResourceEndpoint(re.compile(r'/saved_searches/destroy/\d+'), "/saved_searches/destroy/:id")
-SAVED_SEARCHES_SHOW_ID = ResourceEndpoint(re.compile(r'/saved_searches/show/\d+'), "/saved_searches/show/:id")
-STATUSES_RETWEETS_ID = ResourceEndpoint(re.compile(r'/statuses/retweets/\d+'), "/statuses/retweets/:id")
-STATUSES_SHOW_ID = ResourceEndpoint(re.compile(r'/statuses/show'), "/statuses/show/:id")
-USERS_SHOW_ID = ResourceEndpoint(re.compile(r'/users/show'), "/users/show/:id")
-USERS_SUGGESTIONS_SLUG = ResourceEndpoint(re.compile(r'/users/suggestions/\w+$'), "/users/suggestions/:slug")
-USERS_SUGGESTIONS_SLUG_MEMBERS = ResourceEndpoint(re.compile(r'/users/suggestions/.+/members'), "/users/suggestions/:slug/members")
+GEO_ID_PLACE_ID = ResourceEndpoint(re.compile(r'/geo/id/\d+'), '/geo/id/:place_id')
+SAVED_SEARCHES_DESTROY_ID = ResourceEndpoint(re.compile(r'/saved_searches/destroy/\d+'), '/saved_searches/destroy/:id')
+SAVED_SEARCHES_SHOW_ID = ResourceEndpoint(re.compile(r'/saved_searches/show/\d+'), '/saved_searches/show/:id')
+STATUSES_RETWEETS_ID = ResourceEndpoint(re.compile(r'/statuses/retweets/\d+'), '/statuses/retweets/:id')
+STATUSES_SHOW_ID = ResourceEndpoint(re.compile(r'/statuses/show'), '/statuses/show/:id')
+USERS_SHOW_ID = ResourceEndpoint(re.compile(r'/users/show'), '/users/show/:id')
+USERS_SUGGESTIONS_SLUG = ResourceEndpoint(re.compile(r'/users/suggestions/\w+$'), '/users/suggestions/:slug')
+USERS_SUGGESTIONS_SLUG_MEMBERS = ResourceEndpoint(re.compile(r'/users/suggestions/.+/members'), '/users/suggestions/:slug/members')
 
 NON_STANDARD_ENDPOINTS = [
     GEO_ID_PLACE_ID,
@@ -152,9 +152,9 @@ class RateLimit(object):
         endpoint = self.url_to_resource(url)
         resource_family = endpoint.split('/')[1]
         new_endpoint = {endpoint: {
-            "limit": enf_type('limit', int, limit),
-            "remaining": enf_type('remaining', int, remaining),
-            "reset": enf_type('reset', int, reset)
+            'limit': enf_type('limit', int, limit),
+            'remaining': enf_type('remaining', int, remaining),
+            'reset': enf_type('reset', int, reset)
         }}
 
         if not self.resources.get(resource_family, None):

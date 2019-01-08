@@ -33,7 +33,7 @@ class Env(environ.Env):
         if raw:
             env_var = var
         else:
-            env_var = f"{self.prefix}{var}"
+            env_var = f'{self.prefix}{var}'
 
         # logger.debug(f"get '{env_var}' casted as '{cast}' with default '{default}'")
 
@@ -62,7 +62,7 @@ class Env(environ.Env):
             value = self.ENVIRON[env_var]
         except KeyError:
             if default is self.NOTSET:
-                error_msg = f"Set the {env_var} environment variable"
+                error_msg = f'Set the {env_var} environment variable'
                 raise ImproperlyConfigured(error_msg)
 
             value = default
@@ -100,7 +100,7 @@ class Env(environ.Env):
             return
         # set defaults
         for key, value in DEFAULTS.items():
-            self.ENVIRON.setdefault(f"{self.prefix}{key}", str(value[1]))
+            self.ENVIRON.setdefault(f'{self.prefix}{key}', str(value[1]))
 
         try:
             content = Path(env_file).read_text()
@@ -117,12 +117,12 @@ class Env(environ.Env):
                 m3 = re.match(r'\A"(.*)"\Z', val)
                 if m3:
                     val = re.sub(r'\\(.)', r'\1', m3.group(1))
-                self.ENVIRON[f"{self.prefix}{key}"] = str(val)
+                self.ENVIRON[f'{self.prefix}{key}'] = str(val)
 
     def write_env(self, env_file=None, **overrides):
         with open(env_file, 'w') as f:
             for k, v in self.scheme.items():
-                f.write(f"{k}={self.ENVIRON[k]}\n")
+                f.write(f'{k}={self.ENVIRON[k]}\n')
 
 
 env = Env('BITCASTER_', **DEFAULTS)

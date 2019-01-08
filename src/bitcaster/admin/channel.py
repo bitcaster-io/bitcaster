@@ -78,7 +78,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
                     channel.save()
                     self.message_user(request, _('Configuration saved'),
                                       messages.SUCCESS)
-                    return HttpResponseRedirect(reverse("admin:bitcaster_channel_change",
+                    return HttpResponseRedirect(reverse('admin:bitcaster_channel_change',
                                                         args=[channel.pk]))
             except Exception as e:  # pragma: no-cover
                 self.message_user(request, str(e), messages.ERROR)
@@ -91,7 +91,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
                 channel.enabled = True
             except PluginValidationError as e:  # pragma: no-cover
                 channel.enabled = False
-                self.message_user(request, f"{channel.name} invalid configuration {e}",
+                self.message_user(request, f'{channel.name} invalid configuration {e}',
                                   messages.ERROR)
             channel.save()
 
@@ -102,7 +102,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
             except PluginValidationError as e:  # pragma: no-cover
                 channel.enabled = False
                 channel.save()
-                self.message_user(request, f"{channel.name} invalid configuration {e}",
+                self.message_user(request, f'{channel.name} invalid configuration {e}',
                                   messages.ERROR)
 
     def get_exclude(self, request, obj=None):
@@ -147,10 +147,10 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
                                      active=True,
                                      config=serializer.data)
                     channel.handler.test_message(s,
-                                                 "",
+                                                 '',
                                                  request.POST['message'])
-                    self.message_user(request, _("Message successully sent"), messages.SUCCESS)
-                    return HttpResponseRedirect(reverse("admin:bitcaster_channel_send_sample_message",
+                    self.message_user(request, _('Message successully sent'), messages.SUCCESS)
+                    return HttpResponseRedirect(reverse('admin:bitcaster_channel_send_sample_message',
                                                         args=[channel.pk]))
 
             except Exception as e:  # pragma: no-cover

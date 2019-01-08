@@ -8,13 +8,13 @@ def get_status(value=None, ok_limit=0, warn_limit=1, error_limit=10, call=None):
     if call:
         value = call()
     if value == ok_limit:
-        return "success"
+        return 'success'
     elif value >= error_limit:
-        return "danger"
+        return 'danger'
     elif value >= warn_limit:
-        return "warning"
+        return 'warning'
     else:
-        return ""
+        return ''
 
 
 def check_enabled_disabled(org_data, entry):

@@ -15,26 +15,26 @@ def checkdb(wait=True, timeout=60, debug=False, connection='default'):
     elapsed = 0
     retcode = 0
     try:
-        click.echo(f"Checking db connnection {connection}...")
+        click.echo(f'Checking db connnection {connection}...')
         conn = connections[connection]
         while True:
             try:
                 conn = conn.cursor()
             except OperationalError as e:
                 if wait and elapsed < timeout:
-                    sys.stdout.write("." * elapsed, ending='\r')
+                    sys.stdout.write('.' * elapsed, ending='\r')
                     sys.stdout.flush()
                     time.sleep(1)
                     elapsed += 1
                 else:
                     sys.stderr.write(f"\nDatabase on {conn.settings_dict['HOST']}:{conn.settings_dict['PORT']} "
-                                     f"is not available after {elapsed} secs")
+                                     f'is not available after {elapsed} secs')
                     if debug:
-                        sys.stderr.write(f"Error is: {e}")
+                        sys.stderr.write(f'Error is: {e}')
                     retcode = 1
                     break
             else:
-                sys.stdout.write(f"Connection {connection} successful\n")
+                sys.stdout.write(f'Connection {connection} successful\n')
                 break
     except KeyboardInterrupt:  # pragma: no-cover
         sys.stdout.write('Interrupted')
@@ -89,7 +89,7 @@ def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
                               ('REDIS_LOCK_URL', 'lock server')]:
             try:
                 wait_for_service(env(service),
-                                 caption=f"Check {name}..",
+                                 caption=f'Check {name}..',
                                  sleep=sleep,
                                  timeout=timeout,
                                  stdout=sys.stdout if verbose > 0 else None)

@@ -58,7 +58,7 @@ class Facebook(Dispatcher):
              connection=None, *args, **kwargs) -> int:
         try:
             recipient = self.get_recipient_address(subscription)
-            logger.info(f"Processing {subscription} to {recipient}")
+            logger.info(f'Processing {subscription} to {recipient}')
             connection = connection or self._get_connection()
 
             friends = connection.searchForUsers(recipient)

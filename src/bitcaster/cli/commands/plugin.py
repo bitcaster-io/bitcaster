@@ -31,7 +31,7 @@ def plugin(**kwargs):
     pass
 
 
-@plugin.command(name="list")
+@plugin.command(name='list')
 @need_setup
 def _list(**kwargs):
     # need_setup(lambda : True)()
@@ -39,8 +39,8 @@ def _list(**kwargs):
 
     for entry in sorted(dispatcher_registry,
                         key=lambda e: e.name):
-        core = "*" if entry.__core__ else " "
-        click.echo(f"{entry.name:20} {core} {entry.fqn}")
+        core = '*' if entry.__core__ else ' '
+        click.echo(f'{entry.name:20} {core} {entry.fqn}')
 
 
 @plugin.command()
@@ -61,8 +61,8 @@ def uninstall(name, prompt, **kwargs):
         click.echo(f"Plugin '{name}' is a core component and cannot be removed")
         sys.exit(1)
     r = pkg_resources.require(package_name(found.__module__))
-    if click.prompt(f"Uninstall plugin {found.name}?"):
-        pipmain(["uninstall", r[0].project_name, '--yes'])
+    if click.prompt(f'Uninstall plugin {found.name}?'):
+        pipmain(['uninstall', r[0].project_name, '--yes'])
 
 
 @plugin.command()
@@ -77,17 +77,17 @@ def install(name, prompt, recursive, from_dir, **kwargs):
         if recursive:
             for root, subdirs, files in os.walk(from_dir):
                 if os.path.exists(os.path.join(root, 'setup.py')):
-                    click.echo(f"Found plugin in {root}")
-                    pipmain(["install", "-q", "--ignore-installed", root])
+                    click.echo(f'Found plugin in {root}')
+                    pipmain(['install', '-q', '--ignore-installed', root])
 
         else:
             os.chdir(from_dir)
-            pipmain(["install", '.'])
+            pipmain(['install', '.'])
     else:
-        click.echo("install [DIR]")
+        click.echo('install [DIR]')
 
 
-@plugin.command(name="new")
+@plugin.command(name='new')
 @click.argument('plugin_name')
 @click.option('--author', prompt=True, )
 @click.option('--license', prompt=True, default='MIT')
@@ -100,10 +100,10 @@ def new_plugin(plugin_name, directory, overwrite, **options):
     name = plugin_name.lower()
     description = options['description']
     if not is_valid_name(name):
-        click.echo("Invalid package name %s" % name)
+        click.echo('Invalid package name %s' % name)
         sys.exit(1)
     base_dir = Path(bitcaster.__file__).parent / '_plugin_template'
-    package_name = "bitcaster_" + name.replace('-', '_')
+    package_name = 'bitcaster_' + name.replace('-', '_')
     classname = str(name).title().replace('-', '').replace('Oauth', 'OAuth')
 
     context = {'cookiecutter': {'name': name,

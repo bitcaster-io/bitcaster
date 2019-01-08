@@ -130,7 +130,7 @@ class BitcasterBaseDetailView(BitcasterBaseViewMixin, DetailView):
 
 
 class PluginInfo(BitcasterTemplateView):
-    template_name = "bitcaster/plugin_info.html"
+    template_name = 'bitcaster/plugin_info.html'
 
     def get_context_data(self, **kwargs):
         handler = import_by_name(self.kwargs['fqn'])

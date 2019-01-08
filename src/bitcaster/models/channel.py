@@ -72,7 +72,7 @@ It can be Global or Application specific.
         ordering = ('organization', 'application', 'name')
 
     def __repr__(self):
-        return f"<Channel #{self.id} {self.name}>"
+        return f'<Channel #{self.id} {self.name}>'
 
     def __str__(self):
         return self.name
@@ -113,7 +113,7 @@ It can be Global or Application specific.
 
     def process_event(self, event, context):
         if not self.enabled:
-            logger.error("Channel {0} disabled".format(self))
+            logger.error('Channel {0} disabled'.format(self))
             return 0, 0
         try:
             message = self.messages.get(event=event)
@@ -125,7 +125,7 @@ It can be Global or Application specific.
             success, failures = 0, 0
             for subscription in event.subscriptions.valid(channel=self):
                 state.data['subscription'] = subscription
-                logger.debug(f"Processing {subscription}")
+                logger.debug(f'Processing {subscription}')
                 try:
                     ctx = dict(context or {})
                     ctx.update({
@@ -142,7 +142,7 @@ It can be Global or Application specific.
                     failures += 1
         except ObjectDoesNotExist as e:
             logger.error(e)
-            raise ObjectDoesNotExist(f"Unable to find a message for {self}/{event}") from e
+            raise ObjectDoesNotExist(f'Unable to find a message for {self}/{event}') from e
         except Exception as e:
             logger.exception(e)
             raise

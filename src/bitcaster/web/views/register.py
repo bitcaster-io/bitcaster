@@ -17,7 +17,7 @@ from bitcaster.web.forms.user import UserRegistrationForm
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["UserRegister"]
+__all__ = ['UserRegister']
 
 
 class UserRegister(SingleObjectTemplateResponseMixin, FormView):

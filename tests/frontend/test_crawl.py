@@ -10,39 +10,40 @@ pytestmark = pytest.mark.django_db
 
 
 def test_initial_setup(django_app, application1):
-    "home is always accessible"
+    # 'home is always accessible'
     organization = application1.organization
     owner = organization.owner
-
-    res = django_app.get('/', user=owner.email).follow()
+    url = reverse('org-dashboard', args=[organization.slug])
+    res = django_app.get(url, user=owner.email)
     # res = res.click("Login")
     # res.form["username"] = owner.email
     # res.form["password"] = owner._password
     # res = res.form.submit().follow()
     #
     # res = res.click(organization.name)
-    res = res.click("Configuration")
-    res.form["slug"] = "org_slug"
-    res.form["admin_email"] = "billing@noreply.org"
+
+    res = res.click('Configuration')
+    res.form['slug'] = 'org_slug'
+    res.form['admin_email'] = 'billing@noreply.org'
     res = res.form.submit().follow()
-    #   channels
-    res = res.click("Channels")
+    # channels
+    res = res.click('Channels')
 
-    #   Members
-    res = res.click("Members")
+    # Members
+    res = res.click('Members')
 
-    #   applications
-    res = res.click("Applications")
-    res = res.click("Create new application")
-    res.form["name"] = "Application1"
+    # Applications
+    res = res.click('Applications')
+    res = res.click('Create new application')
+    res.form['name'] = 'Application1'
     res = res.form.submit().follow()
     # now we are in Application screen
     # go beck to Organization
-    res = res.click(fr"\[{organization.name}\]")
+    res = res.click(fr'\[{organization.name}\]')
 
     # invite someone
-    res = res.click("Members")
-    res = res.click("Invite members")
+    res = res.click('Members')
+    res = res.click('Invite members')
     res.form['memberships-0-email'] = 'user1@example.org'
     res = res.form.submit().follow()
 
@@ -57,9 +58,11 @@ def test_initial_setup(django_app, application1):
 
 
 def test_organization_channels_wizard(django_app, organization1):
-    res = django_app.get('/', user=organization1.owner).follow()
-    res = res.click("Channels")
-    res = res.click("Create channel")
+    url = reverse('org-dashboard', args=[organization1.slug])
+
+    res = django_app.get(url, user=organization1.owner)
+    res = res.click('Channels')
+    res = res.click('Create channel')
 
     res.form['a-handler'] = fqn(Email)
     res = res.form.submit()
@@ -87,21 +90,21 @@ def test_organization_list_channel(django_app, org_channel):
                                    args=[org_channel.organization.slug]),
                            user=org_channel.organization.owner)
 
-    res = _list.click("Hide").follow()
+    res = _list.click('Hide').follow()
     org_channel.refresh_from_db()
     assert org_channel.deprecated
-    res = res.click("Show").follow()
+    res = res.click('Show').follow()
     org_channel.refresh_from_db()
     assert not org_channel.deprecated
 
-    res = _list.click("Disable").follow()
+    res = _list.click('Disable').follow()
     org_channel.refresh_from_db()
     assert not org_channel.enabled
-    res = res.click("Enable")
+    res = res.click('Enable')
     org_channel.refresh_from_db()
     assert org_channel.enabled
 
-    res = _list.click("Remove")
+    res = _list.click('Remove')
     res = res.form.submit().follow()
     with pytest.raises(Channel.DoesNotExist):
         assert not org_channel.refresh_from_db()

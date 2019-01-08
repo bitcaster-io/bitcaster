@@ -16,7 +16,7 @@ logger = getLogger('bitcaster.plugins.twitter')
 
 
 class TwitterMessage(MessageType):
-    validators = [MaxBodyLengthValidator(140, "Twitter message can be max %(limit_value)s chars")]
+    validators = [MaxBodyLengthValidator(140, 'Twitter message can be max %(limit_value)s chars')]
 
 
 class TwitterOptions(DispatcherOptions):

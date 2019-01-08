@@ -10,7 +10,7 @@ from .organization import Organization
 
 
 class OptionManager(models.Manager):
-    model_field = ""
+    model_field = ''
 
     def __init__(self, *args, **kwargs):
         super(OptionManager, self).__init__(*args, **kwargs)
@@ -47,7 +47,7 @@ class OptionManager(models.Manager):
 
     def unset_value(self, owner, key):
         try:
-            inst = self.get(**{self.model_field: owner, "key": key})
+            inst = self.get(**{self.model_field: owner, 'key': key})
         except self.model.DoesNotExist:
             return
         inst.delete()
@@ -56,8 +56,8 @@ class OptionManager(models.Manager):
     def set_value(self, owner, key, value):
         self.create_or_update(**{
             self.model_field: owner,
-            "key": key,
-            "values": {
+            'key': key,
+            'values': {
                 'value': value,
             },
         })

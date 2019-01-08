@@ -45,8 +45,8 @@ class ConfigurableMixin:
     options_class = None
     __license__ = 'MIT'
     __author__ = 'unknown'
-    __help__ = ""
-    __url__ = ""
+    __help__ = ''
+    __url__ = ''
 
     def __init__(self, owner=None):
         self.owner = owner
@@ -74,7 +74,7 @@ class ConfigurableMixin:
             import pkg_resources  # part of setuptools
             return pkg_resources.require(package_name(cls))[0].version
         except Exception:
-            return f"unknown"
+            return f'unknown'
 
     @classproperty
     def license(cls):
@@ -129,6 +129,6 @@ class ConfigurableMixin:
             if opts.is_valid():
                 return opts.data
             else:
-                logger.error("Invalid configuration %s " % opts.errors)
+                logger.error('Invalid configuration %s ' % opts.errors)
                 raise PluginValidationError(opts.errors)
         return {}

@@ -149,7 +149,7 @@ class List(TwitterModel):
             self.user = User.NewFromJsonDict(kwargs.get('user'))
 
     def __repr__(self):
-        return "List(ID={list_id}, FullName={full_name!r}, Slug={slug}, User={user})".format(
+        return 'List(ID={list_id}, FullName={full_name!r}, Slug={slug}, User={user})'.format(
             list_id=self.id,
             full_name=self.full_name,
             slug=self.slug,
@@ -171,7 +171,7 @@ class Category(TwitterModel):
             setattr(self, param, kwargs.get(param, default))
 
     def __repr__(self):
-        return "Category(Name={name!r}, Slug={slug}, Size={size})".format(
+        return 'Category(Name={name!r}, Slug={slug}, Size={size})'.format(
             name=self.name,
             slug=self.slug,
             size=self.size)
@@ -203,7 +203,7 @@ class DirectMessage(TwitterModel):
 
     def __repr__(self):
         if self.text and len(self.text) > 140:
-            text = "{text}[...]".format(text=self.text[:140])
+            text = '{text}[...]'.format(text=self.text[:140])
         else:
             text = self.text
         return "DirectMessage(ID={dm_id}, Sender={sender}, Created={time}, Text='{text!r}')".format(
@@ -232,7 +232,7 @@ class Trend(TwitterModel):
             setattr(self, param, kwargs.get(param, default))
 
     def __repr__(self):
-        return "Trend(Name={0!r}, Time={1}, URL={2})".format(
+        return 'Trend(Name={0!r}, Time={1}, URL={2})'.format(
             self.name,
             self.timestamp,
             self.url)
@@ -255,7 +255,7 @@ class Hashtag(TwitterModel):
             setattr(self, param, kwargs.get(param, default))
 
     def __repr__(self):
-        return "Hashtag(Text={text!r})".format(
+        return 'Hashtag(Text={text!r})'.format(
             text=self.text)
 
 
@@ -272,7 +272,7 @@ class Url(TwitterModel):
             setattr(self, param, kwargs.get(param, default))
 
     def __repr__(self):
-        return "URL(URL={url}, ExpandedURL={eurl})".format(
+        return 'URL(URL={url}, ExpandedURL={eurl})'.format(
             url=self.url,
             eurl=self.expanded_url)
 
@@ -322,10 +322,10 @@ class UserStatus(TwitterModel):
 
     def __repr__(self):
         connections = [param for param in self.connections if getattr(self, param)]
-        return "UserStatus(ID={uid}, ScreenName={sn}, Connections=[{conn}])".format(
+        return 'UserStatus(ID={uid}, ScreenName={sn}, Connections=[{conn}])'.format(
             uid=self.id,
             sn=self.screen_name,
-            conn=", ".join(connections))
+            conn=', '.join(connections))
 
 
 class User(TwitterModel):
@@ -380,7 +380,7 @@ class User(TwitterModel):
             setattr(self, param, kwargs.get(param, default))
 
     def __repr__(self):
-        return "User(ID={uid}, ScreenName={sn})".format(
+        return 'User(ID={uid}, ScreenName={sn})'.format(
             uid=self.id,
             sn=self.screen_name)
 
@@ -469,13 +469,13 @@ class Status(TwitterModel):
         else:
             text = self.text
         if self.user:
-            return "Status(ID={0}, ScreenName={1}, Created={2}, Text={3!r})".format(
+            return 'Status(ID={0}, ScreenName={1}, Created={2}, Text={3!r})'.format(
                 self.id,
                 self.user.screen_name,
                 self.created_at,
                 text)
         else:
-            return u"Status(ID={0}, Created={1}, Text={2!r})".format(
+            return u'Status(ID={0}, Created={1}, Text={2!r})'.format(
                 self.id,
                 self.created_at,
                 text)

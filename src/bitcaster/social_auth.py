@@ -26,9 +26,9 @@ def associate_invitation(backend, details, user=None, strategy=None, *args, **kw
         invite = OrganizationMember.objects.get(pk=invitation_id, user__isnull=True)
         # if not user:
         is_new = True
-        fields = {"email": details['email'],
-                  "name": details['fullname'],
-                  "friendly_name": details['username']}
+        fields = {'email': details['email'],
+                  'name': details['fullname'],
+                  'friendly_name': details['username']}
         user = User.objects.create(**fields)
         invite.user = user
         invite.date_enrolled = timezone.now()

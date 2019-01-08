@@ -30,21 +30,21 @@ def emit_event(event, context, origin=None, user=None, token=None, ignore_disabl
     from bitcaster.models import Channel
     from bitcaster.models.counters import Counter, Occurence
 
-    logger.debug("Event [{0.name} {0.enabled}] emit()".format(event))
+    logger.debug('Event [{0.name} {0.enabled}] emit()'.format(event))
     total_success = 0
     total_failure = 0
     if not event.enabled and not ignore_disabled:
-        raise LogicError("Cannot emit disabled event")
+        raise LogicError('Cannot emit disabled event')
     channels = event.subscriptions.valid().values('channel').annotate(dcount=Count('channel'))
     ids = [channel['channel'] for channel in channels]
     if len(channels) == 0:
-        logger.warning(f"No subscriptions/channels found for `{event}`")
+        logger.warning(f'No subscriptions/channels found for `{event}`')
     o = Occurence.objects.create(event=event, user=user,
                                  token=token, origin=origin)
     Counter.objects.initialize(event)
     for channel in Channel.objects.filter(id__in=ids, enabled=True):
         try:
-            logger.debug(f"Processing channel {channel}")
+            logger.debug(f'Processing channel {channel}')
             success, failure = channel.process_event(event, context)
             total_success += success
             Counter.objects.increment(event)
@@ -55,7 +55,7 @@ def emit_event(event, context, origin=None, user=None, token=None, ignore_disabl
     o.successes = total_success
     o.failures = total_failure
     o.save()
-    logger.debug(f"End processing {event}. #{o.submissions} messages sent")
+    logger.debug(f'End processing {event}. #{o.submissions} messages sent')
     return total_success, total_failure
 
 

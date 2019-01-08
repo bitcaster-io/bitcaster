@@ -44,7 +44,7 @@ def get_group(name=None, permissions=None):
         try:
             app_label, codename = permission_name.split('.')
         except ValueError:
-            raise ValueError("Invalid permission name `{0}`".format(permission_name))
+            raise ValueError('Invalid permission name `{0}`'.format(permission_name))
         try:
             permission = Permission.objects.get(content_type__app_label=app_label, codename=codename)
         except Permission.DoesNotExist:
@@ -117,7 +117,7 @@ class UserFactory(factory.DjangoModelFactory):
 
     name = factory.Faker('name')
 
-    email = factory.Sequence(lambda n: "m%03d@example.com" % n)
+    email = factory.Sequence(lambda n: 'm%03d@example.com' % n)
     password = '123'
     is_active = True
 
@@ -168,7 +168,7 @@ class AdminFactory(UserFactory):
 
 
 class OrganizationFactory(factory.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "Organization %03d" % n)
+    name = factory.Sequence(lambda n: 'Organization %03d' % n)
     owner = factory.SubFactory(UserFactory)
 
     class Meta:
@@ -186,7 +186,7 @@ class ApplicationFactory(factory.DjangoModelFactory):
         model = models.Application
         django_get_or_create = ('name',)
 
-    name = factory.Sequence(lambda n: "Application %03d" % n)
+    name = factory.Sequence(lambda n: 'Application %03d' % n)
     organization = factory.SubFactory(OrganizationFactory)
 
 
@@ -251,7 +251,7 @@ class ChannelFactory(factory.DjangoModelFactory):
         model = models.Channel
         django_get_or_create = ('name',)
 
-    name = factory.Sequence(lambda n: "Channel %03d" % n)
+    name = factory.Sequence(lambda n: 'Channel %03d' % n)
     application = factory.SubFactory(ApplicationFactory)
     handler = factory.LazyAttribute(lambda a: fqn(Email))
     enabled = True
@@ -272,7 +272,7 @@ class EventFactory(factory.DjangoModelFactory):
         model = models.Event
         django_get_or_create = ('application', 'name')
 
-    name = factory.Sequence(lambda n: "Event %03d" % n)
+    name = factory.Sequence(lambda n: 'Event %03d' % n)
     application = factory.SubFactory(ApplicationFactory)
 
 
@@ -281,12 +281,12 @@ class MessageFactory(factory.DjangoModelFactory):
         model = models.Message
         django_get_or_create = ('event', 'name',)
 
-    name = factory.Sequence(lambda n: "Message %03d" % n)
+    name = factory.Sequence(lambda n: 'Message %03d' % n)
     event = factory.SubFactory(EventFactory)
     channel = factory.SubFactory(ChannelFactory)
     enabled = True
     language = factory.Iterator(['it', 'en', 'es', 'fr'])
-    subject = factory.Sequence(lambda n: "Subject %03d" % n)
+    subject = factory.Sequence(lambda n: 'Subject %03d' % n)
     body = factory.LazyAttribute(lambda n: faker.text(max_nb_chars=200), )
 
     @classmethod

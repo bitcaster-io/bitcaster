@@ -21,9 +21,9 @@ class ChannelForm(forms.ModelForm):
         value = self.cleaned_data['enabled']
         if value:
             if not self.instance:
-                raise ValidationError("Channel must be configured")
+                raise ValidationError('Channel must be configured')
             elif not self.instance.is_configured:
-                raise ValidationError("Configure channel before enable it")
+                raise ValidationError('Configure channel before enable it')
         return value
 
 
@@ -45,9 +45,9 @@ class ChannelUpdateConfigurationForm(forms.ModelForm):
     def serializer(self):
         args = {}
         if self.data:
-            args = {"data": self.data}
+            args = {'data': self.data}
         elif self.instance:
-            args = {"data": self.instance.config}
+            args = {'data': self.instance.config}
 
         ser = self.serializer_class(**args)
         ser.is_valid()

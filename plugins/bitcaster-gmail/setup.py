@@ -28,7 +28,7 @@ setup(
         'test': tests_require,
     },
     entry_points={'bitcaster': ['gmail = bitcaster_gmail.plugin:Gmail']},
-    license="MIT License",
+    license='MIT License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',

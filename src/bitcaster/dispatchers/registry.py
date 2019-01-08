@@ -23,7 +23,7 @@ def load_plugins():
             logger.error(e)
         except pkg_resources.VersionConflict as e:
             raise PluginValidationError(
-                "Plugin %r could not be loaded: %s!" % (ep.name, e))
+                'Plugin %r could not be loaded: %s!' % (ep.name, e))
         else:
             if plugin not in dispatcher_registry:
                 dispatcher_registry.append(plugin)

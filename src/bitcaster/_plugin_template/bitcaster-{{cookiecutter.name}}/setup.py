@@ -19,7 +19,7 @@ setup(
     author_email='s.apostolico@gmail.com',
     py_modules=['{{cookiecutter.package_name}}'],
     entry_points={'bitcaster': ['{{cookiecutter.name}} = {{cookiecutter.package_name}}.plugin:{{cookiecutter.classname}}']},
-    license="MIT License",
+    license='MIT License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',

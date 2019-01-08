@@ -45,7 +45,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
                 subscription.active = True
             except PluginValidationError as e:
                 subscription.active = False
-                self.message_user(request, f"{subscription}: Invalid configuration {e}",
+                self.message_user(request, f'{subscription}: Invalid configuration {e}',
                                   messages.ERROR)
             subscription.save()
 
@@ -56,7 +56,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
             except PluginValidationError as e:
                 subscription.enabled = False
                 subscription.save()
-                self.message_user(request, f"{subscription.id} invalid configuration {e}",
+                self.message_user(request, f'{subscription.id} invalid configuration {e}',
                                   messages.ERROR)
 
     # def change_view(self, request, object_id, form_url='', extra_context=None):

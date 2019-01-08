@@ -19,7 +19,7 @@ env.read_env(str(Path(__file__).parent / '.env'))
 
 def before_record_cb(request):
     if request.path == '/login.php':
-        request.body = "<removed>"
+        request.body = '<removed>'
     return request
 
 

@@ -13,13 +13,13 @@ pytestmark = pytest.mark.django_db
 
 
 def test_event_detail(django_app, admin, event1):
-    url = reverse("admin:bitcaster_event_change", args=[event1.pk])
+    url = reverse('admin:bitcaster_event_change', args=[event1.pk])
     res = django_app.get(url, user=admin.email)
     assert res.status_code == 200
 
 
 def test_event_create(django_app, admin):
-    url = reverse("admin:bitcaster_event_add")
+    url = reverse('admin:bitcaster_event_add')
     res = django_app.get(url, user=admin.email)
     assert res.status_code == 200
 
@@ -31,7 +31,7 @@ def test_event_trigger(django_app, admin, subscription1, settings):
     assert subscription1.active
     assert subscription1.channel.enabled
     assert subscription1.channel.handler
-    url = reverse("admin:bitcaster_event_trigger", [event.pk])
+    url = reverse('admin:bitcaster_event_trigger', [event.pk])
     res = django_app.get(url, user=admin.email)
     res = res.form.submit()
     assert res.status_code == 200

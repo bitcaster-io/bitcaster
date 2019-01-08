@@ -28,7 +28,7 @@ setup(
         'bitcaster_slack_webhook': ['*.png', ],
     },
     entry_points={'bitcaster': ['slack-webhook = bitcaster_slack_webhook.plugin:SlackWebhook']},
-    license="MIT License",
+    license='MIT License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',

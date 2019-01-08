@@ -48,7 +48,7 @@ class MasterChildFilterBackend(BaseFilterBackend):
 
     @classmethod
     def create(cls, lookup_field, lookup_url_kwarg):
-        return type(f"{lookup_field.title()}MasterChildFilterBackend",
+        return type(f'{lookup_field.title()}MasterChildFilterBackend',
                     (cls,), {'lookup_url_kwarg': lookup_url_kwarg,
                              'lookup_field': lookup_field})
 

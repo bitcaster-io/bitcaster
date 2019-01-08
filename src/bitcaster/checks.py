@@ -47,7 +47,7 @@ def check(*args, **kwargs):
         errors.append(
             Error(
                 "Unable to contact cache backend at '%s'" % env('REDIS_CACHE_URL'),
-                hint="check your database configuration",
+                hint='check your database configuration',
                 obj=None,
                 id='bitcaster.E003',
             )

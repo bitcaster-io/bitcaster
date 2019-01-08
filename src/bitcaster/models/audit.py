@@ -13,16 +13,16 @@ from bitcaster.utils.wsgi import get_client_ip
 
 logger = logging.getLogger(__name__)
 
-AuditLogEntryTuple = namedtuple("aaa", "id,label,verbose")
+AuditLogEntryTuple = namedtuple('aaa', 'id,label,verbose')
 
 
 @deconstructible
 class AuditEvent(Enum):
-    MEMBER_INVITE = (1, "member:invite",
-                     "{0.actor} invited member {0.data[email]} to {0.organization} as {0.data[role]}")
+    MEMBER_INVITE = (1, 'member:invite',
+                     '{0.actor} invited member {0.data[email]} to {0.organization} as {0.data[role]}')
 
-    MEMBER_ACCEPT = (2, "member:accept",
-                     "{0.actor} accepted invitation from {0.data[invited_by]} to {0.organization} as {0.data[role]}")
+    MEMBER_ACCEPT = (2, 'member:accept',
+                     '{0.actor} accepted invitation from {0.data[invited_by]} to {0.organization} as {0.data[role]}')
 
     def __init__(self, value, label, description):
         self.int = value

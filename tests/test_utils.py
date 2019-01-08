@@ -11,7 +11,7 @@ values = ([1, 2, 3, 4, 5],
           )
 
 
-@pytest.mark.parametrize("param", values, ids=list(map(str, values)))
+@pytest.mark.parametrize('param', values, ids=list(map(str, values)))
 def test_flatten(param):
     assert flatten(param) == [1, 2, 3, 4, 5]
 

@@ -3,16 +3,14 @@ from django.conf import settings
 from django.http import (HttpResponse, HttpResponseForbidden,
                          HttpResponseRedirect,)
 from django.template.loader import get_template
-from django.urls import reverse
 from django.views.generic import ListView, TemplateView
 
-from bitcaster.db.fields import Role
 from bitcaster.models import Subscription
 
 from .base import SelectedApplicationMixin
 
-__all__ = ("IndexView",
-           "SubscriptionList", "WorkInProgressView")
+__all__ = ('IndexView',
+           'SubscriptionList', 'WorkInProgressView')
 
 
 class SubscriptionList(SelectedApplicationMixin, ListView):
@@ -34,7 +32,7 @@ class PreviewView(TemplateView):
     template_name = 'bitcaster/wip.html'
 
     def get(self, request, *args, **kwargs):
-        tplname = kwargs['path'].replace("|", "/")
+        tplname = kwargs['path'].replace('|', '/')
         tpl = get_template(tplname)
         content = tpl.render({}, request)
         from premailer import transform
@@ -49,14 +47,14 @@ class IndexView(TemplateView):
     template_name = 'bitcaster/index.html'
 
     def get(self, request, *args, **kwargs):
-        return HttpResponseRedirect('/me/')
         if request.user.is_authenticated:
-            if request.user.memberships.filter(role=Role.OWNER):
-                url = reverse('org-dashboard', args=[request.user.memberships.first().organization.slug])
-                return HttpResponseRedirect(url)
-            elif request.user.memberships.filter(role=Role.SUBSCRIBER):
-                url = reverse('user-org', args=[request.user.memberships.first().organization.slug])
-                return HttpResponseRedirect(url)
+            return HttpResponseRedirect('/me/')
+            # if request.user.memberships.filter(role=Role.OWNER):
+            #     url = reverse('org-dashboard', args=[request.user.memberships.first().organization.slug])
+            #     return HttpResponseRedirect(url)
+            # elif request.user.memberships.filter(role=Role.SUBSCRIBER):
+            #     url = reverse('user-org', args=[request.user.memberships.first().organization.slug])
+            #     return HttpResponseRedirect(url)
 
         elif not config.ALLOW_REGISTRATION:
             return HttpResponseRedirect(settings.LOGIN_URL)

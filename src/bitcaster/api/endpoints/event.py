@@ -34,10 +34,10 @@ class EventViewSet(BaseModelViewSet):
     def trigger(self, request, application__pk, pk):
         event = self.get_object()
         if not event.enabled:
-            return Response({"error": "Event disabled"}, status=400)
+            return Response({'error': 'Event disabled'}, status=400)
         trigger_event.delay(event.id, request.data,
                             user_id=request.user.pk,
                             token=request.token.token,
                             origin=get_client_ip(request))
-        return Response({"message": "Event triggered",
-                         "timestamp": timezone.now()}, status=201)
+        return Response({'message': 'Event triggered',
+                         'timestamp': timezone.now()}, status=201)

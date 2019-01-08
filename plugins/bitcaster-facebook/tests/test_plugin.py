@@ -21,13 +21,13 @@ def before_record_request(request):
     original = str(request.body)
     for e in [env('BITCASTER_FACEBOOK_KEY', str), env('BITCASTER_FACEBOOK_PASSWORD', str),
               env('BITCASTER_FACEBOOK_RECIPIENT', str)]:
-        original = original.replace(e, "----")
+        original = original.replace(e, '----')
     request.body = original.encode('utf8')
 
     original = request.uri
     for e in [env('BITCASTER_FACEBOOK_KEY', str), env('BITCASTER_FACEBOOK_PASSWORD', str),
               env('BITCASTER_FACEBOOK_RECIPIENT', str)]:
-        original = original.replace(e, "----")
+        original = original.replace(e, '----')
     request.uri = original
 
     return request

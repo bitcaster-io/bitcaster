@@ -35,14 +35,14 @@ from bitcaster.cli.utils import (Address, RedisURL, generate_secret_key,
 #               default=lambda: read_current_env('REDIS_CONSTANCE_URL'),
 #               type=RedisURL)
 @click.option('--database-address',
-              default=lambda: "{0[host]}:{0[port]}".format(get_database_url_param()),
+              default=lambda: '{0[host]}:{0[port]}'.format(get_database_url_param()),
               type=Address)
 @click.option('--database-user',
-              default=lambda: get_database_url_param()["user"])
+              default=lambda: get_database_url_param()['user'])
 @click.option('--database-password',
-              default=lambda: get_database_url_param()["password"])
+              default=lambda: get_database_url_param()['password'])
 @click.option('--database-name',
-              default=lambda: get_database_url_param()["database"])
+              default=lambda: get_database_url_param()['database'])
 @click.option('--organization',
               default=lambda: read_current_env('ORGANIZATION'))
 @click.option('--prompt-all/--lazy',
@@ -72,11 +72,11 @@ def configure(ctx, prompt, prompt_all, write, **kwargs):
                                      value_proc=lambda x: opt.process_value(ctx, x))
                     kwargs[opt.name] = v
 
-    kwargs["database_url"] = "psql://{database_user}:{database_password}@{database_address}/{database_name}".format(
+    kwargs['database_url'] = 'psql://{database_user}:{database_password}@{database_address}/{database_name}'.format(
         **kwargs)
-    kwargs["enable_sentry"] = bool(kwargs['sentry_dsn'])
-    kwargs["secret_key"] = generate_secret_key()
-    kwargs["fernet_keys"] = generate_secret_key()
+    kwargs['enable_sentry'] = bool(kwargs['sentry_dsn'])
+    kwargs['secret_key'] = generate_secret_key()
+    kwargs['fernet_keys'] = generate_secret_key()
 
     for key, value in env.scheme.items():
         env.ENVIRON[key] = str(kwargs.get(key.lower(), ''))
@@ -85,7 +85,7 @@ def configure(ctx, prompt, prompt_all, write, **kwargs):
     else:
         for key, __ in env.scheme.items():
             value = str(kwargs.get(key.lower(), ''))
-            click.echo(f"{key:20} {value}")
+            click.echo(f'{key:20} {value}')
     for _dir in ['media_root', 'static_root']:
         target = Path(kwargs[_dir])
         if not target.exists():

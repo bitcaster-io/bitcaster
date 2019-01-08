@@ -52,10 +52,10 @@ class EncryptedJSONField(_JSONField):
         return MultiFernet([Fernet(k) for k in self.fernet_keys])
 
     def from_db_value(self, value, expression, connection, context):
-        return json.loads(self.fernet.decrypt(value["f"].encode("utf8")))
+        return json.loads(self.fernet.decrypt(value['f'].encode('utf8')))
 
     def get_prep_value(self, value):
-        value = {'f': self.fernet.encrypt(json.dumps(value).encode("utf8")).decode("utf8")}
+        value = {'f': self.fernet.encrypt(json.dumps(value).encode('utf8')).decode('utf8')}
         return super().get_prep_value(value)
 
     def formfield(self, **kwargs):
@@ -99,10 +99,10 @@ class EncryptedPickledObjectField(PickledObjectField):
         return MultiFernet([Fernet(k) for k in self.fernet_keys])
 
     def from_db_value(self, value, expression, connection, context):
-        return json.loads(self.fernet.decrypt(value.encode("utf8")))
+        return json.loads(self.fernet.decrypt(value.encode('utf8')))
 
     def get_prep_value(self, value):
-        value = self.fernet.encrypt(value.encode("utf8")).decode("utf8")
+        value = self.fernet.encrypt(value.encode('utf8')).decode('utf8')
         return super().get_prep_value(value)
 
 

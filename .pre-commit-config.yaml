@@ -1,46 +1,47 @@
 exclude: '^$'
 fail_fast: false
 repos:
--   repo: local
+  - repo: local
     hooks:
       - id: isort
         args:
-            - --check-only
+          - --check-only
         name: isort
         entry: isort
         language: system
         types: [python]
 
--   repo: git://github.com/pre-commit/pre-commit-hooks
+  - repo: git://github.com/pre-commit/pre-commit-hooks
     rev: v2.1.0
     hooks:
-    -   id: debug-statements
+      - id: double-quote-string-fixer
+      - id: debug-statements
         exclude: (_plugin_template|python_twitter)
-    -   id: end-of-file-fixer
+      - id: end-of-file-fixer
         exclude: .bumpversion.cfg
-    -   id: flake8
+      - id: flake8
         include: (src|tests)
         exclude: /(_plugin_template|python_twitter|migrations)/
         args:
-        - src/
-        - tests/
-    -   id: check-merge-conflict
-    -   id: check-case-conflict
+          - src/
+          - tests/
+      - id: check-merge-conflict
+      - id: check-case-conflict
 
--   repo: https://github.com/saxix/pch
+  - repo: https://github.com/saxix/pch
     rev: fc387f4
     hooks:
-    -   id: check-version-release-match
+      - id: check-version-release-match
         args:
-        - --pythonpath=src
-        - --package=etools_datamart
+          - --pythonpath=src
+          - --package=etools_datamart
         stages: [push]
-    -   id: check-untracked
+      - id: check-untracked
         args:
-        - src
-        - tests
+          - src
+          - tests
         stages: [push]
-    -   id: check-forbidden
+      - id: check-forbidden
         args:
-        - -p
-        - \.showbrowser\(
+          - -p
+          - \.showbrowser\(

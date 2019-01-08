@@ -58,7 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     title = models.CharField(max_length=5, blank=True, null=True)
     name = models.CharField(_('full name'), max_length=250, blank=True)
     friendly_name = models.CharField(_('display name'), max_length=250, blank=True,
-                                     help_text="display/friendly name. Can be given name or nickname")
+                                     help_text='display/friendly name. Can be given name or nickname')
     email = models.EmailField(_('email address'), null=True,
                               unique=True)
 

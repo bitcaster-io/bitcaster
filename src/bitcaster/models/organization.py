@@ -31,8 +31,8 @@ class Organization(AbstractModel):
     """
     An organization represents a group of individuals which maintain ownership of applications.
     """
-    name = models.CharField(_("Name"), max_length=64)
-    slug = models.SlugField(_("Short name"), unique=True, blank=True,
+    name = models.CharField(_('Name'), max_length=64)
+    slug = models.SlugField(_('Short name'), unique=True, blank=True,
                             validators=[])
     status = DeletionStatusField()
     enabled = models.BooleanField(default=True)

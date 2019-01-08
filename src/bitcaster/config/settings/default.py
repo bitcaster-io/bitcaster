@@ -73,9 +73,9 @@ AUTH_USER_MODEL = 'bitcaster.user'
 SECRET_KEY = env('SECRET_KEY')
 FERNET_KEYS = [SECRET_KEY] + env('FERNET_KEYS')
 ON_PREMISE = env('ON_PREMISE')
-SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-SESSION_COOKIE_NAME = "bitcasterid"
-SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_NAME = 'bitcasterid'
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 # DEBUG
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
@@ -275,7 +275,7 @@ CACHES = {
             'PICKLE_VERSION': -1,  # default
             # 'PARSER_CLASS': 'redis.connection.HiredisParser',
             # 'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient'
 
         },
     },
@@ -364,7 +364,7 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_ADDITIONAL_FIELDS = {
     'yes_no_null_select': ['django.forms.fields.ChoiceField', {
         'widget': 'django.forms.Select',
-        'choices': ((None, "-----"), ("yes", "Yes"), ("no", "No"))
+        'choices': ((None, '-----'), ('yes', 'Yes'), ('no', 'No'))
     }],
     # 'yes_no_null_select': ['django.forms.fields.ChoiceField', {
     #     'widget': 'django.forms.Select',
@@ -404,7 +404,7 @@ CONSTANCE_CONFIG = OrderedDict({
     'SOCIAL_AUTH_FACEBOOK_SECRET': ('', '', str),
 
 })
-CONSTANCE_CONFIG_FIELDSETS = {"Options": list(CONSTANCE_CONFIG.keys())}
+CONSTANCE_CONFIG_FIELDSETS = {'Options': list(CONSTANCE_CONFIG.keys())}
 
 # SENTRY & RAVEN
 if env.bool('ENABLE_SENTRY', False):
@@ -444,20 +444,20 @@ def get_plugins(x):
     return dispatcher_registry.as_choices()
 
 
-SYSINFO = {"host": True,
-           "os": True,
-           "python": True,
-           "modules": True,
-           "project": {
-               "mail": True,
-               "installed_apps": True,
-               "databases": True,
-               "MEDIA_ROOT": True,
-               "STATIC_ROOT": True,
-               "CACHES": True
+SYSINFO = {'host': True,
+           'os': True,
+           'python': True,
+           'modules': True,
+           'project': {
+               'mail': True,
+               'installed_apps': True,
+               'databases': True,
+               'MEDIA_ROOT': True,
+               'STATIC_ROOT': True,
+               'CACHES': True
            },
-           "checks": None,
-           "extra": {'plugins': get_plugins}
+           'checks': None,
+           'extra': {'plugins': get_plugins}
            }
 
 # SOCIAL-AUTH

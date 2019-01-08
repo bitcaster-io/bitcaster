@@ -23,16 +23,16 @@ from .channel import (ChannelCreateWizard, ChannelDeleteView,
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["ApplicationCreate",
-           "ApplicationDetail",
-           "ApplicationChannels",
-           "ApplicationUpdateView",
-           "ApplicationChannelUpdate",
-           "ApplicationChannelToggle",
-           "ApplicationChannelRemove",
-           "ApplicationChannelDeprecate",
-           "ApplicationChannelCreate",
-           "ApplicationDashboard"
+__all__ = ['ApplicationCreate',
+           'ApplicationDetail',
+           'ApplicationChannels',
+           'ApplicationUpdateView',
+           'ApplicationChannelUpdate',
+           'ApplicationChannelToggle',
+           'ApplicationChannelRemove',
+           'ApplicationChannelDeprecate',
+           'ApplicationChannelCreate',
+           'ApplicationDashboard'
            ]
 
 
@@ -60,19 +60,19 @@ class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):
 
     def get_context_data(self, **kwargs):
         app = self.get_object()
-        cache_key = f"org:app:dashboard:{app.pk}"
+        cache_key = f'org:app:dashboard:{app.pk}'
         org_data = cache.get(cache_key)
         if not org_data:
             org_data = {
                 # "active_users": org.members.count(),
                 # "pending_users": org.invitations.count(),
-                "enabled_channels": app.channels.filter(enabled=True).count(),
-                "disabled_channels": app.channels.filter(enabled=False).count(),
-                "enabled_events": app.events.filter(enabled=True).count(),
-                "disabled_events": app.events.filter(enabled=False).count(),
+                'enabled_channels': app.channels.filter(enabled=True).count(),
+                'disabled_channels': app.channels.filter(enabled=False).count(),
+                'enabled_events': app.events.filter(enabled=True).count(),
+                'disabled_events': app.events.filter(enabled=False).count(),
             }
-            org_data["box_channels"] = check_channels(org_data)
-            org_data["box_events"] = check_events(org_data)
+            org_data['box_channels'] = check_channels(org_data)
+            org_data['box_events'] = check_events(org_data)
             # cache.set(cache_key, org_data)
         kwargs['data'] = org_data
         return super().get_context_data(**kwargs)
@@ -100,7 +100,7 @@ class ApplicationDetail(ApplicationViewMixin, DetailView):
 # Channels
 class ChannelViewMixin:
     def get_success_url(self):
-        return reverse_lazy("app-channel-list",
+        return reverse_lazy('app-channel-list',
                             args=[self.selected_organization.slug,
                                   self.selected_application.slug])
 
@@ -114,8 +114,8 @@ class ApplicationChannels(ApplicationViewMixin,
 
     def get_context_data(self, **kwargs):
         kwargs['channel_context'] = self.selected_application
-        kwargs['title'] = _("Application Channels")
-        kwargs['create_url'] = reverse("app-channel-create",
+        kwargs['title'] = _('Application Channels')
+        kwargs['create_url'] = reverse('app-channel-create',
                                        args=[self.selected_organization.slug,
                                              self.selected_application.slug,
                                              ])
@@ -152,7 +152,7 @@ class ApplicationChannelToggle(ApplicationViewMixin, ChannelViewMixin,
                                                          application=self.selected_application)
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy("app-channel-list",
+        return reverse_lazy('app-channel-list',
                             args=[self.selected_organization.slug,
                                   self.selected_application.slug])
 
@@ -162,8 +162,8 @@ class ApplicationChannelDeprecate(ApplicationViewMixin, ChannelViewMixin, Channe
 
 
 class ApplicationChannelCreate(ApplicationViewMixin, ChannelCreateWizard):
-    TEMPLATES = {"a": "bitcaster/app_channel_wizard1.html",
-                 "b": "bitcaster/app_channel_wizard2.html",
+    TEMPLATES = {'a': 'bitcaster/app_channel_wizard1.html',
+                 'b': 'bitcaster/app_channel_wizard2.html',
                  }
 
     def get_extra_instance_kwargs(self):
@@ -171,6 +171,6 @@ class ApplicationChannelCreate(ApplicationViewMixin, ChannelCreateWizard):
                 'application': self.selected_application}
 
     def get_success_url(self):
-        return reverse_lazy("app-channel-list",
+        return reverse_lazy('app-channel-list',
                             args=[self.selected_organization.slug,
                                   self.selected_application.slug])

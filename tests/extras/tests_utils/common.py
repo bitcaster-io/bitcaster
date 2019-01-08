@@ -83,7 +83,7 @@ def temp_environ(**kwargs):
 
 def is_connected():
     try:
-        socket.create_connection(("www.google.com", 80))
+        socket.create_connection(('www.google.com', 80))
         return True
     except OSError:
         pass
@@ -91,6 +91,6 @@ def is_connected():
 
 
 skip_if_no_network = pytest.mark.skipif(not is_connected(),
-                                        reason="no network")
+                                        reason='no network')
 xfail_if_no_network = pytest.mark.xfail(not is_connected(),
-                                        reason="no network")
+                                        reason='no network')

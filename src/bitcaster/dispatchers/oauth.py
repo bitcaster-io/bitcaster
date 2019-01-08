@@ -73,9 +73,9 @@ class OAauthHAndler(OAauthHAndlerBase):
         if request.GET.get('state', None):
             return request.GET['state']
         else:
-            return urllib.parse.urlencode({"channel": self.owner.pk,
-                                           "handler": fqn(self),
-                                           "redirect_to": redirect_to or "",
+            return urllib.parse.urlencode({'channel': self.owner.pk,
+                                           'handler': fqn(self),
+                                           'redirect_to': redirect_to or '',
                                            })
 
     def save_credentials(self, c: OAuth2Credentials, commmit=False):

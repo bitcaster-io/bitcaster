@@ -6,16 +6,16 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True, name='check_permissions')
-def check_permissions(context, org=None, context_name="permissions"):
+def check_permissions(context, org=None, context_name='permissions'):
     """
         {% check_permissions %}
         {% check_permissions org %}
         {% check_permissions org as perms %}
     """
-    organization = org or context["organization"]
-    user = context["request"].user
+    organization = org or context['organization']
+    user = context['request'].user
     context[context_name] = {'owner': is_owner(user, organization)}
-    return ""
+    return ''
 #
 # @register.assignment_tag(takes_context=True)
 # def get_user_perm(context, perm):

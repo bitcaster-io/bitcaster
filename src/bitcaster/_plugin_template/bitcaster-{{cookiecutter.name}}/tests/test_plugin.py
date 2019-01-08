@@ -22,14 +22,14 @@ def before_record_request(request):
     for e in [env('BITCASTER_{{cookiecutter.package_name|upper}}_USERNAME', str),
               env('BITCASTER_{{cookiecutter.package_name|upper}}_PASSWORD', str),
               env('BITCASTER_{{cookiecutter.package_name|upper}}_RECIPIENT', str)]:
-        original = original.replace(e, "----")
+        original = original.replace(e, '----')
     request.body = original.encode('utf8')
 
     original = request.uri
     for e in [env('BITCASTER_{{cookiecutter.package_name|upper}}_USERNAME', str),
               env('BITCASTER_{{cookiecutter.package_name|upper}}_PASSWORD', str),
               env('BITCASTER_{{cookiecutter.package_name|upper}}_RECIPIENT', str)]:
-        original = original.replace(e, "----")
+        original = original.replace(e, '----')
     request.uri = original
 
     return request

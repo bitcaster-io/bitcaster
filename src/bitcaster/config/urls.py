@@ -53,15 +53,15 @@ def static(prefix, view=serve, **kwargs):
 
 urlpatterns = [path(r'api/', include(bitcaster.api.urls), name='api'),
                path(r'oauth2callback/', oauth2callback),
-               path('admin/info/html/', admin_sysinfo, name="admin_info"),
-               path('info/json/', http_basic_login(sysinfo), name="sys-info"),
+               path('admin/info/html/', admin_sysinfo, name='admin_info'),
+               path('info/json/', http_basic_login(sysinfo), name='sys-info'),
 
                path('favicon.ico', serve, kwargs={'document_root': settings.STATIC_ROOT,
                                                   'path': 'favicon.ico'}),
                re_path('^admin/', site.urls),
 
-               path('plugins/icons/channel/<int:pk>/', channel_icon, name="channel-icon"),
-               path('plugins/icons/<str:fqn>/', plugin_icon, name="plugin-icon")]
+               path('plugins/icons/channel/<int:pk>/', channel_icon, name='channel-icon'),
+               path('plugins/icons/<str:fqn>/', plugin_icon, name='plugin-icon')]
 
 
 handler404 = 'bitcaster.web.views.handler404'

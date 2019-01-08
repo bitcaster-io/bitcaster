@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class AutompleteMixin:
-    autocomplete = ""
+    autocomplete = ''
 
     def __init__(self):
         super().__init__()

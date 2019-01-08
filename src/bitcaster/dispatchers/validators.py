@@ -8,7 +8,7 @@ class BaseValidator:
     code = 'limit_value'
 
     def __init__(self, target, limit_value, message=None):
-        assert target in ["body", "subject", "html"], "Target must be a Message field"
+        assert target in ['body', 'subject', 'html'], 'Target must be a Message field'
         self.limit_value = limit_value
         self.target = target
         if message:
@@ -45,4 +45,4 @@ class MaxLengthValidator(BaseValidator):
 
 class MaxBodyLengthValidator(MaxLengthValidator):
     def __init__(self, limit_value, message=None):
-        super().__init__("body", limit_value, message)
+        super().__init__('body', limit_value, message)

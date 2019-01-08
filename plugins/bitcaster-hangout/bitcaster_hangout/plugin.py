@@ -98,9 +98,9 @@ class Hangout(Dispatcher):
     #         raise PluginValidationError(ser.errors)
 
     def _get_connection(self) -> FireAndForget:
-        settings = XMPPSettings({"starttls": True,
-                                 "password": self.config["password"],
-                                 "tls_verify_peer": False})
+        settings = XMPPSettings({'starttls': True,
+                                 'password': self.config['password'],
+                                 'tls_verify_peer': False})
         source_jid = JID(self.config['username'])
 
         return FireAndForget(source_jid, None, settings)

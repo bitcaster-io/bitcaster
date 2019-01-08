@@ -22,23 +22,23 @@ from bitcaster.web.views.channel import (ChannelCreateWizard, ChannelDeleteView,
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["SettingsView", "SettingsOAuthView",
-           "SettingsEmailView", "SettingsChannelListView",
-           "SettingsChannelUpdateView",
-           "SettingsChannelDeleteView",
-           "SettingsChannelDeprecateView",
-           "SettingsChannelToggleView",
-           "SettingsOrgUpdateView",
-           "SettingsOrgListView",
-           "SettingsSystemInfo",
-           "SettingsChannelCreateWizard",
+__all__ = ['SettingsView', 'SettingsOAuthView',
+           'SettingsEmailView', 'SettingsChannelListView',
+           'SettingsChannelUpdateView',
+           'SettingsChannelDeleteView',
+           'SettingsChannelDeprecateView',
+           'SettingsChannelToggleView',
+           'SettingsOrgUpdateView',
+           'SettingsOrgListView',
+           'SettingsSystemInfo',
+           'SettingsChannelCreateWizard',
            ]
 
 
 class SettingsBaseView(SuperuserViewMixin,
                        BitcasterTemplateView, FormView):
     success_url = '.'
-    title = ""
+    title = ''
 
     def get_template_names(self):
         return [f'bitcaster/settings/{self.title.lower()}.html',
@@ -60,7 +60,7 @@ class SettingsBaseView(SuperuserViewMixin,
     def form_valid(self, form):
         for k, v in form.cleaned_data.items():
             setattr(config, k, v)
-        self.message_user(_("Configuration saved"))
+        self.message_user(_('Configuration saved'))
         return super().form_valid(form)
 
 
@@ -141,8 +141,8 @@ class SettingsChannelListView(SuperuserViewMixin, ListView):
     template_name = 'bitcaster/settings/channel_list.html'
 
     def get_context_data(self, **kwargs):
-        kwargs['title'] = _("System channels")
-        kwargs['create_url'] = reverse("system-channel-create")
+        kwargs['title'] = _('System channels')
+        kwargs['create_url'] = reverse('system-channel-create')
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):
@@ -152,7 +152,7 @@ class SettingsChannelListView(SuperuserViewMixin, ListView):
 class SettingsChannelUpdateView(SuperuserViewMixin, ChannelUpdateView):
     template_name = 'bitcaster/settings/channel_configure.html'
     form_class = ChannelUpdateConfigurationForm
-    success_url = reverse_lazy("settings-channels")
+    success_url = reverse_lazy('settings-channels')
 
     def get_queryset(self):
         return Channel.objects.filter(system=True)
@@ -160,27 +160,27 @@ class SettingsChannelUpdateView(SuperuserViewMixin, ChannelUpdateView):
 
 class SettingsChannelDeleteView(SuperuserViewMixin, ChannelDeleteView):
     template_name = 'bitcaster/settings/channel_remove.html'
-    success_url = reverse_lazy("settings-channels")
+    success_url = reverse_lazy('settings-channels')
 
     def get_queryset(self):
         return Channel.objects.filter(system=True)
 
 
 class SettingsChannelDeprecateView(SuperuserViewMixin, ChannelDeprecateView):
-    pattern_name = "settings-channels"
+    pattern_name = 'settings-channels'
 
     def get_queryset(self):
         return Channel.objects.filter(system=True)
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy("settings-channels")
+        return reverse_lazy('settings-channels')
 
 
 class SettingsChannelToggleView(SuperuserViewMixin, ChannelToggleView):
-    pattern_name = "settings-channels"
+    pattern_name = 'settings-channels'
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy("settings-channels")
+        return reverse_lazy('settings-channels')
 
     def get_queryset(self):
         return Channel.objects.filter(system=True)

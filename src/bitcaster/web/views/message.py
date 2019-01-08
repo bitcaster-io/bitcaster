@@ -17,7 +17,7 @@ class MessageMixin(SelectedApplicationMixin, MessageUserMixin):
     model = Message
 
     def get_success_url(self):
-        return reverse("app-message-list",
+        return reverse('app-message-list',
                        args=[self.selected_organization.slug,
                              self.selected_application.slug])
 
@@ -30,11 +30,11 @@ class MessageFormMixin:
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({"application": self.selected_application})
+        kwargs.update({'application': self.selected_application})
         return kwargs
 
     def get_context_data(self, **kwargs):
-        kwargs["title"] = self.title
+        kwargs['title'] = self.title
         return super().get_context_data(**kwargs)
 
 
@@ -46,18 +46,18 @@ class MessageList(SelectedApplicationMixin, ListView):
 
 
 class MessageUpdate(MessageMixin, MessageFormMixin, UpdateView):
-    title = "Edit Message"
+    title = 'Edit Message'
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(save_label=_("Save Message"),
+        return super().get_context_data(save_label=_('Save Message'),
                                         **kwargs)
 
 
 class MessageCreate(MessageMixin, MessageFormMixin, CreateView):
-    title = "Create Message"
+    title = 'Create Message'
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(save_label=_("Create Message"),
+        return super().get_context_data(save_label=_('Create Message'),
                                         **kwargs)
 
 

@@ -52,11 +52,11 @@ class EventForm(forms.ModelForm):
     def save(self, commit=True):
         if self.application:
             self.instance.application = self.application
-        arguments = {"fields": []}
+        arguments = {'fields': []}
         for form in self.arguments:
             if form.cleaned_data:
-                arguments['fields'].append({"name": form.cleaned_data["name"],
-                                            "type": form.cleaned_data["type"],
+                arguments['fields'].append({'name': form.cleaned_data['name'],
+                                            'type': form.cleaned_data['type'],
                                             })
         self.instance.arguments = arguments
         return super().save(commit)

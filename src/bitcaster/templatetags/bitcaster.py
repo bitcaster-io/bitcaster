@@ -14,8 +14,8 @@ register = Library()
 @register.filter()
 def httpiefy(value):
     if not value:
-        return ""
-    return " ".join(["%s=%s" % (k, v) for k, v in value.items()])
+        return ''
+    return ' '.join(['%s=%s' % (k, v) for k, v in value.items()])
 
 
 @register.filter()
@@ -26,7 +26,7 @@ def jsonify(value):
 @register.simple_tag(takes_context=True)
 def oauth_button(context, channel: Channel):
     label = channel.handler.render_button() or f'Authorise with {channel.handler.name}'
-    url = reverse("admin:bitcaster_channel_oauth_request", args=[channel.pk])
+    url = reverse('admin:bitcaster_channel_oauth_request', args=[channel.pk])
     return mark_safe(f'<a href="{url}">{label}</a>')
 
 
@@ -43,16 +43,16 @@ def render_field(field, style):
     return renderer.render_field(field, style)
 
 
-@register.simple_tag(name="org-url", takes_context=True)
+@register.simple_tag(name='org-url', takes_context=True)
 def org_reverse(context, url_name, *args, **kwargs):
-    org = context["organization"]
+    org = context['organization']
     return reverse(url_name, args=(org.slug,) + args, **kwargs)
 
 
-@register.simple_tag(name="app-url", takes_context=True)
+@register.simple_tag(name='app-url', takes_context=True)
 def app_reverse(context, url_name, *args, **kwargs):
-    org = context["organization"]
-    app = context["application"]
+    org = context['organization']
+    app = context['application']
     return reverse(url_name, args=(org.slug,
                                    app.slug) + args, **kwargs)
 
@@ -92,10 +92,10 @@ def channel_submit_row(context):
 
 @register.filter()
 def display_queryset(qs, fields):
-    fields = fields.split(",")
-    return mark_safe(", ".join(qs.values_list(*fields, flat=True)))
+    fields = fields.split(',')
+    return mark_safe(', '.join(qs.values_list(*fields, flat=True)))
 
 
 @register.filter()
 def describe_channels(channels):
-    return mark_safe(", ".join([f"<span class=enabled{c.enabled}>{c.name}</span>" for c in channels.all()]))
+    return mark_safe(', '.join([f'<span class=enabled{c.enabled}>{c.name}</span>' for c in channels.all()]))

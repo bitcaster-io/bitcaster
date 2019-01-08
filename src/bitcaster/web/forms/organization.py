@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class OrganizationSystemForm(forms.ModelForm):
     class Meta:
         model = Organization
-        fields = ("name", 'admin_email', 'slug', 'avatar',
+        fields = ('name', 'admin_email', 'slug', 'avatar',
                   'default_role', 'rate_limit')
 
 
@@ -22,7 +22,7 @@ class OrganizationForm(forms.ModelForm):
 
     class Meta:
         model = Organization
-        fields = ("name", 'admin_email', 'slug', 'avatar')
+        fields = ('name', 'admin_email', 'slug', 'avatar')
 
     def __init__(self, *args, **kwargs):
         super(OrganizationForm, self).__init__(*args, **kwargs)

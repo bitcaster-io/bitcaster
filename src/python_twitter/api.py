@@ -225,7 +225,7 @@ class Api(object):
         self._debugHTTP = debugHTTP
         self._shortlink_size = 19
         if timeout and timeout < 30:
-            warnings.warn("Warning: The Twitter streaming API sends 30s keepalives, the given timeout is shorter!")
+            warnings.warn('Warning: The Twitter streaming API sends 30s keepalives, the given timeout is shorter!')
         self._timeout = timeout
         self.__auth = None
 
@@ -257,13 +257,13 @@ class Api(object):
 
         if self.chunk_size < 1024 * 16:
             warnings.warn((
-                "A chunk size lower than 16384 may result in too many "
-                "requests to the Twitter API when uploading videos. You are "
-                "strongly advised to increase it above 16384"))
+                'A chunk size lower than 16384 may result in too many '
+                'requests to the Twitter API when uploading videos. You are '
+                'strongly advised to increase it above 16384'))
 
         if (consumer_key and not
            (application_only_auth or all([access_token_key, access_token_secret]))):
-            raise TwitterError({'message': "Missing oAuth Consumer Key or Access Token"})
+            raise TwitterError({'message': 'Missing oAuth Consumer Key or Access Token'})
 
         self.SetCredentials(consumer_key, consumer_secret, access_token_key, access_token_secret,
                             application_only_auth)
@@ -278,7 +278,7 @@ class Api(object):
 
             logging.basicConfig()  # you need to initialize logging, otherwise you will not see anything from requests
             logging.getLogger().setLevel(logging.DEBUG)
-            requests_log = logging.getLogger("requests.packages.urllib3")
+            requests_log = logging.getLogger('requests.packages.urllib3')
             requests_log.setLevel(logging.DEBUG)
             requests_log.propagate = True
 
@@ -394,7 +394,7 @@ class Api(object):
                   count=15,
                   lang=None,
                   locale=None,
-                  result_type="mixed",
+                  result_type='mixed',
                   include_entities=None,
                   return_json=False):
         """Return twitter search results for a given term. You must specify one
@@ -504,11 +504,11 @@ class Api(object):
 
         parameters['count'] = enf_type('count', int, count)
 
-        if result_type in ["mixed", "popular", "recent"]:
+        if result_type in ['mixed', 'popular', 'recent']:
             parameters['result_type'] = result_type
 
         if raw_query is not None:
-            url = "{url}?{raw_query}".format(
+            url = '{url}?{raw_query}'.format(
                 url=url,
                 raw_query=raw_query)
             resp = self._RequestUrl(url, 'GET')
@@ -562,7 +562,7 @@ class Api(object):
         try:
             parameters['count'] = int(count)
         except ValueError:
-            raise TwitterError({'message': "count must be an integer"})
+            raise TwitterError({'message': 'count must be an integer'})
 
         # Make and send requests
         url = '%s/users/search.json' % self.base_url
@@ -1098,10 +1098,10 @@ class Api(object):
             u_status = str(status, self._input_encoding)
 
         if verify_status_length and calc_expected_status_length(u_status) > CHARACTER_LIMIT:
-            raise TwitterError("Text must be less than or equal to CHARACTER_LIMIT characters.")
+            raise TwitterError('Text must be less than or equal to CHARACTER_LIMIT characters.')
 
         if auto_populate_reply_metadata and not in_reply_to_status_id:
-            raise TwitterError("If auto_populate_reply_metadata is True, you must set in_reply_to_status_id")
+            raise TwitterError('If auto_populate_reply_metadata is True, you must set in_reply_to_status_id')
 
         parameters = {
             'status': u_status,
@@ -1224,7 +1224,7 @@ class Api(object):
         parameters['media_id'] = media_id
 
         if alt_text:
-            parameters['alt_text'] = {"text": alt_text}
+            parameters['alt_text'] = {'text': alt_text}
 
         resp = self._RequestUrl(url, 'POST', json=parameters)
 
@@ -1301,7 +1301,7 @@ class Api(object):
         """
         url = '%s/media/upload.json' % self.upload_url
 
-        boundary = "--{0}".format(uuid4().hex).encode('utf-8')
+        boundary = '--{0}'.format(uuid4().hex).encode('utf-8')
         media_id_bytes = str(media_id).encode('utf-8')
         headers = {'Content-Type': 'multipart/form-data; boundary={0}'.format(
             boundary.decode('utf8')[2:]
@@ -1433,14 +1433,14 @@ class Api(object):
 
         if len(words) == 1 and not is_url(words[0]):
             if len(words[0]) > CHARACTER_LIMIT:
-                raise TwitterError("Unable to split status into tweetable parts. Word was: {0}/{1}".format(len(words[0]), char_lim))
+                raise TwitterError('Unable to split status into tweetable parts. Word was: {0}/{1}'.format(len(words[0]), char_lim))
             else:
                 tweets.append(words[0])
                 return tweets
 
         for word in words:
             if len(word) > char_lim:
-                raise TwitterError("Unable to split status into tweetable parts. Word was: {0}/{1}".format(len(word), char_lim))
+                raise TwitterError('Unable to split status into tweetable parts. Word was: {0}/{1}'.format(len(word), char_lim))
             new_len = line_length
 
             if is_url(word):
@@ -1661,7 +1661,7 @@ class Api(object):
                 try:
                     parameters['cursor'] = int(cursor)
                 except ValueError:
-                    raise TwitterError({'message': "cursor must be an integer"})
+                    raise TwitterError({'message': 'cursor must be an integer'})
             resp = self._RequestUrl(url, 'GET', data=parameters)
             data = self._ParseAndCheckTwitter(resp.content.decode('utf-8'))
             result += [x for x in data['ids']]
@@ -2045,7 +2045,7 @@ class Api(object):
         elif screen_name:
             post_data['screen_name'] = screen_name
         else:
-            raise TwitterError("You must specify either a user_id or screen_name")
+            raise TwitterError('You must specify either a user_id or screen_name')
 
         if include_entities:
             post_data['include_entities'] = enf_type('include_entities', bool, include_entities)
@@ -2458,10 +2458,10 @@ class Api(object):
 
         if user_id and screen_name:
             warnings.warn(
-                "If both user_id and screen_name are specified, Twitter will "
-                "return the followers of the user specified by screen_name, "
-                "however this behavior is undocumented by Twitter and might "
-                "change without warning.", stacklevel=2)
+                'If both user_id and screen_name are specified, Twitter will '
+                'return the followers of the user specified by screen_name, '
+                'however this behavior is undocumented by Twitter and might '
+                'change without warning.', stacklevel=2)
 
         parameters = {}
 
@@ -2473,7 +2473,7 @@ class Api(object):
         try:
             parameters['count'] = int(count)
         except ValueError:
-            raise TwitterError({'message': "count must be an integer"})
+            raise TwitterError({'message': 'count must be an integer'})
 
         parameters['skip_status'] = skip_status
         parameters['include_user_entities'] = include_user_entities
@@ -2624,8 +2624,8 @@ class Api(object):
         if cursor is not None or count is not None:
             warnings.warn(
                 "Use of 'cursor' and 'count' parameters are deprecated as of "
-                "python-twitter 3.0. Please use GetFriendsPaged or "
-                "GetFollowersPaged instead.",
+                'python-twitter 3.0. Please use GetFriendsPaged or '
+                'GetFollowersPaged instead.',
                 PythonTwitterDeprecationWarning330)
 
         count = 200
@@ -2636,7 +2636,7 @@ class Api(object):
             try:
                 total_count = int(total_count)
             except ValueError:
-                raise TwitterError({'message': "total_count must be an integer"})
+                raise TwitterError({'message': 'total_count must be an integer'})
 
             if total_count <= 200:
                 count = total_count
@@ -2790,7 +2790,7 @@ class Api(object):
           A list of twitter.User objects for the requested users
         """
         if not any([user_id, screen_name, users]):
-            raise TwitterError("Specify at least one of user_id, screen_name, or users.")
+            raise TwitterError('Specify at least one of user_id, screen_name, or users.')
 
         url = '%s/users/lookup.json' % self.base_url
         parameters = {
@@ -2807,7 +2807,7 @@ class Api(object):
             parameters['screen_name'] = parse_arg_list(screen_name, 'screen_name')
 
         if len(uids) > 100:
-            raise TwitterError("No more than 100 users may be requested per request.")
+            raise TwitterError('No more than 100 users may be requested per request.')
 
         print(parameters)
 
@@ -2849,7 +2849,7 @@ class Api(object):
         elif screen_name:
             parameters['screen_name'] = screen_name
         else:
-            raise TwitterError("Specify at least one of user_id or screen_name.")
+            raise TwitterError('Specify at least one of user_id or screen_name.')
 
         resp = self._RequestUrl(url, 'GET', data=parameters)
         data = self._ParseAndCheckTwitter(resp.content.decode('utf-8'))
@@ -3008,7 +3008,7 @@ class Api(object):
         elif screen_name:
             data['screen_name'] = screen_name
         else:
-            raise TwitterError({'message': "Specify at least one of user_id or screen_name."})
+            raise TwitterError({'message': 'Specify at least one of user_id or screen_name.'})
 
         resp = self._RequestUrl(url, 'POST', data=data)
         data = self._ParseAndCheckTwitter(resp.content.decode('utf-8'))
@@ -3085,7 +3085,7 @@ class Api(object):
         elif screen_name:
             data['screen_name'] = screen_name
         else:
-            raise TwitterError("Specify at least one of user_id or screen_name.")
+            raise TwitterError('Specify at least one of user_id or screen_name.')
 
         follow_json = json.dumps(follow)
         data['{}'.format(follow_key)] = follow_json
@@ -3146,7 +3146,7 @@ class Api(object):
         elif screen_name:
             data['screen_name'] = screen_name
         else:
-            raise TwitterError("Specify at least one of user_id or screen_name.")
+            raise TwitterError('Specify at least one of user_id or screen_name.')
 
         resp = self._RequestUrl(url, 'POST', data=data)
         data = self._ParseAndCheckTwitter(resp.content.decode('utf-8'))
@@ -3180,13 +3180,13 @@ class Api(object):
         elif source_screen_name:
             data['source_screen_name'] = source_screen_name
         else:
-            raise TwitterError({'message': "Specify at least one of source_user_id or source_screen_name."})
+            raise TwitterError({'message': 'Specify at least one of source_user_id or source_screen_name.'})
         if target_user_id:
             data['target_id'] = target_user_id
         elif target_screen_name:
             data['target_screen_name'] = target_screen_name
         else:
-            raise TwitterError({'message': "Specify at least one of target_user_id or target_screen_name."})
+            raise TwitterError({'message': 'Specify at least one of target_user_id or target_screen_name.'})
 
         resp = self._RequestUrl(url, 'GET', data=data)
         data = self._ParseAndCheckTwitter(resp.content.decode('utf-8'))
@@ -3229,7 +3229,7 @@ class Api(object):
                         uids.append(user.id)
                     else:
                         uids.append(enf_type('user_id', int, user))
-                parameters['user_id'] = ",".join([str(uid) for uid in uids])
+                parameters['user_id'] = ','.join([str(uid) for uid in uids])
             else:
                 if isinstance(user_id, User):
                     parameters['user_id'] = user_id.id
@@ -3251,7 +3251,7 @@ class Api(object):
                     parameters['screen_name'] = enf_type('screen_name', str, screen_name)
         if not user_id and not screen_name:
             raise TwitterError(
-                "Specify at least one of user_id or screen_name.")
+                'Specify at least one of user_id or screen_name.')
 
         resp = self._RequestUrl(url, 'GET', data=parameters)
         data = self._ParseAndCheckTwitter(resp.content.decode('utf-8'))
@@ -3288,7 +3288,7 @@ class Api(object):
                 try:
                     parameters['count'] = int(cursor)
                 except ValueError:
-                    raise TwitterError({'message': "cursor must be an integer"})
+                    raise TwitterError({'message': 'cursor must be an integer'})
             resp = self._RequestUrl(url, 'GET', data=parameters)
             data = self._ParseAndCheckTwitter(resp.content.decode('utf-8'))
             result += [x for x in data['ids']]
@@ -3332,7 +3332,7 @@ class Api(object):
                 try:
                     parameters['count'] = int(cursor)
                 except ValueError:
-                    raise TwitterError({'message': "cursor must be an integer"})
+                    raise TwitterError({'message': 'cursor must be an integer'})
             resp = self._RequestUrl(url, 'GET', data=parameters)
             data = self._ParseAndCheckTwitter(resp.content.decode('utf-8'))
             result += [x for x in data['ids']]
@@ -3375,7 +3375,7 @@ class Api(object):
         elif status:
             data['id'] = status.id
         else:
-            raise TwitterError({'message': "Specify status_id or status"})
+            raise TwitterError({'message': 'Specify status_id or status'})
         data['include_entities'] = enf_type('include_entities', bool, include_entities)
 
         resp = self._RequestUrl(url, 'POST', data=data)
@@ -3410,7 +3410,7 @@ class Api(object):
         elif status:
             data['id'] = status.id
         else:
-            raise TwitterError({'message': "Specify status_id or status"})
+            raise TwitterError({'message': 'Specify status_id or status'})
         data['include_entities'] = enf_type('include_entities', bool, include_entities)
 
         resp = self._RequestUrl(url, 'POST', data=data)
@@ -4448,9 +4448,9 @@ class Api(object):
         if resp.status_code in [200, 201, 202]:
             return True
         if resp.status_code == 400:
-            raise TwitterError({'message': "Image data could not be processed"})
+            raise TwitterError({'message': 'Image data could not be processed'})
         if resp.status_code == 422:
-            raise TwitterError({'message': "The image could not be resized or is too large."})
+            raise TwitterError({'message': 'The image could not be resized or is too large.'})
 
     def UpdateBanner(self,
                      image,
@@ -4489,11 +4489,11 @@ class Api(object):
         if resp.status_code in [200, 201, 202]:
             return True
         if resp.status_code == 400:
-            raise TwitterError({'message': "Image data could not be processed"})
+            raise TwitterError({'message': 'Image data could not be processed'})
         if resp.status_code == 422:
-            raise TwitterError({'message': "The image could not be resized or is too large."})
+            raise TwitterError({'message': 'The image could not be resized or is too large.'})
 
-        raise TwitterError({'message': "Unkown banner image upload issue"})
+        raise TwitterError({'message': 'Unkown banner image upload issue'})
 
     def GetStreamSample(self, delimited=False, stall_warnings=True):
         """Returns a small sample of public statuses.
@@ -4552,7 +4552,7 @@ class Api(object):
           A twitter stream
         """
         if all((follow is None, track is None, locations is None)):
-            raise ValueError({'message': "No filter parameters specified."})
+            raise ValueError({'message': 'No filter parameters specified.'})
         url = '%s/statuses/filter.json' % self.stream_url
         data = {}
         if follow is not None:
@@ -4857,7 +4857,7 @@ class Api(object):
         if parameters is None:
             return None
         if not isinstance(parameters, dict):
-            raise TwitterError("`parameters` must be a dict.")
+            raise TwitterError('`parameters` must be a dict.')
         else:
             return urlencode(dict((k, v) for k, v in parameters.items() if v is not None))
 
@@ -4871,14 +4871,14 @@ class Api(object):
         try:
             data = json.loads(json_data)
         except ValueError:
-            if "<title>Twitter / Over capacity</title>" in json_data:
-                raise TwitterError({'message': "Capacity Error"})
-            if "<title>Twitter / Error</title>" in json_data:
-                raise TwitterError({'message': "Technical Error"})
-            if "Exceeded connection limit for user" in json_data:
-                raise TwitterError({'message': "Exceeded connection limit for user"})
-            if "Error 401 Unauthorized" in json_data:
-                raise TwitterError({'message': "Unauthorized"})
+            if '<title>Twitter / Over capacity</title>' in json_data:
+                raise TwitterError({'message': 'Capacity Error'})
+            if '<title>Twitter / Error</title>' in json_data:
+                raise TwitterError({'message': 'Technical Error'})
+            if 'Exceeded connection limit for user' in json_data:
+                raise TwitterError({'message': 'Exceeded connection limit for user'})
+            if 'Error 401 Unauthorized' in json_data:
+                raise TwitterError({'message': 'Unauthorized'})
             raise TwitterError({'Unknown error: {0}'.format(json_data)})
         self._CheckForTwitterError(data)
         return data
@@ -4931,7 +4931,7 @@ class Api(object):
         """
         if enforce_auth:
             if not self.__auth:
-                raise TwitterError("The twitter.Api instance must be authenticated.")
+                raise TwitterError('The twitter.Api instance must be authenticated.')
 
             if url and self.sleep_on_rate_limit:
                 limit = self.CheckRateLimit(url)

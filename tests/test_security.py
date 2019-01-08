@@ -12,7 +12,7 @@ from bitcaster.utils.tests.factories import TeamFactory, UserFactory
 def subscriber1(application1):
     org = application1.organization
     user = UserFactory()
-    team = TeamFactory(organization=org, name="Subscribers")
+    team = TeamFactory(organization=org, name='Subscribers')
     membership = OrganizationMember.objects.create(organization=org, user=user)
     ApplicationTeam.objects.create(application=application1,
                                    team=team,

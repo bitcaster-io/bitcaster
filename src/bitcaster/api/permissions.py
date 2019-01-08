@@ -31,7 +31,7 @@ class IsApplicationRelated(IsAuthenticated):
 
     @classmethod
     def create(cls, attr):
-        return type("-", (cls,), {'attr': attr})
+        return type('-', (cls,), {'attr': attr})
 
     def has_permission(self, request, view):
         # if 'application__pk' in view.kwargs:

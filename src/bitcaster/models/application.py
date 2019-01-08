@@ -71,7 +71,7 @@ class Application(AbstractModel):
 
     class Meta:
         app_label = 'bitcaster'
-        ordering = ("name", "id")
+        ordering = ('name', 'id')
 
     def __str__(self):
         return self.name

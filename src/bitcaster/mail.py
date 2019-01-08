@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 def make_message(template_name, context):
-    _html = f"bitcaster/emails/{template_name}.html"
-    _text = f"bitcaster/emails/{template_name}.txt"
+    _html = f'bitcaster/emails/{template_name}.html'
+    _text = f'bitcaster/emails/{template_name}.txt'
     return (get_template(_html).render(context),
             get_template(_text).render(context))
 
@@ -23,12 +23,12 @@ def send_mail_by_template(subject, template_name, context,
     html_message, message = make_message(template_name, context)
 
     from bitcaster.celery import app
-    logger.debug(f"Sending email to {recipient_list} celery eager is {app.conf.CELERY_TASK_ALWAYS_EAGER}")
+    logger.debug(f'Sending email to {recipient_list} celery eager is {app.conf.CELERY_TASK_ALWAYS_EAGER}')
 
     try:
         if async:
             if app.conf.CELERY_TASK_ALWAYS_EAGER:
-                logger.warning("Celery task invoked but CELERY_TASK_ALWAYS_EAGER set.")
+                logger.warning('Celery task invoked but CELERY_TASK_ALWAYS_EAGER set.')
             return send_mail_async.delay(subject, message, html_message,
                                          recipient_list,
                                          from_email=from_email,

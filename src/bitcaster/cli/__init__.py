@@ -45,8 +45,8 @@ def configure():
         import django
         django.setup()
     except Exception as e:
-        click.echo(click.style(f"Error configuring environment. "
-                               f"Run 'bitcaster configure' first: ({e})", fg="red"))
+        click.echo(click.style(f'Error configuring environment. '
+                               f"Run 'bitcaster configure' first: ({e})", fg='red'))
         sys.exit(1)
 
 
@@ -73,7 +73,7 @@ def cli(ctx, config, verbose, **kwargs):
     from bitcaster.config.environ import env
     if verbose > 0:
         if config.exists():
-            click.echo(f"Using configuration from {filepath}")
+            click.echo(f'Using configuration from {filepath}')
         else:
             click.echo(f"Configuration file '{filepath}' does not exists.")
         env.load_config(str(config), False)

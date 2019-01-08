@@ -29,7 +29,7 @@ class GmailOAauthHAndler(OAauthHAndler):
     fetch_token_url = 'https://accounts.google.com/o/oauth2/token'
     authorization_extra_kwargs = {'access_type': 'offline',
                                   'include_granted_scopes': 'true',
-                                  'prompt': "select_account"}
+                                  'prompt': 'select_account'}
     fetch_token_extra_kwargs = {'client_secret': settings.GOOGLE_APP_SECRET}
     scopes = ['https://www.googleapis.com/auth/gmail.send',
               # 'https://www.googleapis.com/auth/gmail.readonly',
@@ -97,7 +97,7 @@ class GmailOAuth(Dispatcher, GmailOAauthHAndler):
                                                        body=msg)
                        .execute())
 
-            self.logger.debug("{0} email sent to {1.email}".format(fqn(self), recipient))
+            self.logger.debug('{0} email sent to {1.email}'.format(fqn(self), recipient))
             return 1
         except Exception as e:
             self.logger.exception(e)

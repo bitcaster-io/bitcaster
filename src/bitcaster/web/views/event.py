@@ -29,13 +29,13 @@ class EventMixin(SelectedApplicationMixin, MessageUserMixin):
 
     def get_success_url(self):
         if 'save_edit_messages' in self.request.POST:
-            return reverse("app-event-messages",
+            return reverse('app-event-messages',
                            args=[self.selected_organization.slug,
                                  self.selected_application.slug,
                                  self.object.pk]
                            )
         else:
-            return reverse("app-event-list",
+            return reverse('app-event-list',
                            args=[self.selected_organization.slug,
                                  self.selected_application.slug])
 
@@ -43,7 +43,7 @@ class EventMixin(SelectedApplicationMixin, MessageUserMixin):
         return self.selected_application.events.all()
 
     def get_context_data(self, **kwargs):
-        kwargs["title"] = self.title
+        kwargs['title'] = self.title
         return super().get_context_data(**kwargs)
 
 
@@ -52,65 +52,65 @@ class EventFormMixin:
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({"application": self.selected_application})
+        kwargs.update({'application': self.selected_application})
         return kwargs
 
 
 class EventList(EventMixin, ListView):
-    template_name = "bitcaster/event_list.html"
+    template_name = 'bitcaster/event_list.html'
     title = 'Application Events'
 
 
 class EventCreate(EventMixin, EventFormMixin, CreateView):
-    title = "Create Event"
+    title = 'Create Event'
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(save_label=_("Create Event"),
+        return super().get_context_data(save_label=_('Create Event'),
                                         mode_create=True,
                                         **kwargs)
 
     def form_valid(self, form):
-        self.message_user(_("Event created"), messages.SUCCESS)
+        self.message_user(_('Event created'), messages.SUCCESS)
         ret = super().form_valid(form)
         event = self.object
         for i, channel in enumerate(event.channels.all()):
             Message.objects.get_or_create(event=event,
                                           channel=channel,
                                           defaults={
-                                              "enabled": True,
-                                              "name": f"{event} {channel}",
+                                              'enabled': True,
+                                              'name': f'{event} {channel}',
                                           })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
         return ret
 
 
 class EventUpdate(EventMixin, EventFormMixin, UpdateView):
-    title = "Edit Event"
+    title = 'Edit Event'
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(save_label=_("Save Event"),
+        return super().get_context_data(save_label=_('Save Event'),
                                         **kwargs)
 
     def form_valid(self, form):
-        self.message_user(_("Event saved"), messages.SUCCESS)
+        self.message_user(_('Event saved'), messages.SUCCESS)
         ret = super().form_valid(form)
         event = self.object
         for i, channel in enumerate(event.channels.all()):
             Message.objects.get_or_create(event=event,
                                           channel=channel,
                                           defaults={
-                                              "enabled": True,
-                                              "name": f"{event} {channel}",
+                                              'enabled': True,
+                                              'name': f'{event} {channel}',
                                           })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
         return ret
 
 
 class EventDelete(EventMixin, EventFormMixin, DeleteView):
-    title = "Edit Event"
+    title = 'Edit Event'
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(save_label=_("Save Event"),
+        return super().get_context_data(save_label=_('Save Event'),
                                         **kwargs)
 
 
@@ -119,7 +119,7 @@ def eventform_factory(event: Event):
     for fld in event.arguments['fields']:
         attrs[fld['name']] = import_by_name(fld['type'])()
 
-    return type("AAA", (Serializer,), attrs)()
+    return type('AAA', (Serializer,), attrs)()
 
 
 class EventTest(EventMixin, EventFormMixin, DetailView):
@@ -168,7 +168,7 @@ class EventToggle(EventMixin, EventFormMixin, RedirectView):
                     msg.clean()
 
             obj.save()
-            op = "enabled" if obj.enabled else "disabled"
+            op = 'enabled' if obj.enabled else 'disabled'
             self.message_user(f'Event {op}')
         return super().get(request, *args, **kwargs)
 
@@ -338,7 +338,7 @@ class EventMessages(EventMixin, EventFormMixin, UpdateView):
         return ret
 
     def get_form_class(self):
-        form = type("MessageForm", (MessageForm,), dict(event=self.get_object()))
+        form = type('MessageForm', (MessageForm,), dict(event=self.get_object()))
         return inlineformset_factory(Event, Message, form,
                                      formset=MessageInlineFormSet,
                                      extra=0)

@@ -32,12 +32,12 @@ class ChannelCreate1(forms.ModelForm):
 
 
 class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
-    form_list = [("a", ChannelCreate1),
-                 ("b", ChannelUpdateConfigurationForm),
+    form_list = [('a', ChannelCreate1),
+                 ('b', ChannelUpdateConfigurationForm),
                  # todo: add summary screen
                  ]
-    TEMPLATES = {"a": "bitcaster/settings/channel_wizard1.html",
-                 "b": "bitcaster/settings/channel_wizard2.html",
+    TEMPLATES = {'a': 'bitcaster/settings/channel_wizard1.html',
+                 'b': 'bitcaster/settings/channel_wizard2.html',
                  }
     # success_url = reverse_lazy('settings-channels')
 
@@ -163,7 +163,7 @@ class ChannelDeprecateView(SelectedOrganizationMixin, MessageUserMixin, Redirect
         obj = self.get_queryset().get(id=kwargs['pk'])
         obj.deprecated = not obj.deprecated
         obj.save()
-        op = "hidden" if obj.deprecated else "visible"
+        op = 'hidden' if obj.deprecated else 'visible'
         self.message_user(f'Channel {op}')
         return super().get(request, *args, **kwargs)
 
@@ -180,6 +180,6 @@ class ChannelToggleView(SelectedOrganizationMixin, MessageUserMixin, RedirectVie
         obj = self.get_queryset().get(id=kwargs['pk'])
         obj.enabled = not obj.enabled
         obj.save()
-        op = "enabled" if obj.enabled else "disabled"
+        op = 'enabled' if obj.enabled else 'disabled'
         self.message_user(f'Channel {op}')
         return super().get(request, *args, **kwargs)

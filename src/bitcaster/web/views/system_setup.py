@@ -16,27 +16,27 @@ from bitcaster.config.environ import env
 from bitcaster.db.fields import Role
 from bitcaster.models import Organization, User
 
-__all__ = ["SetupView"]
+__all__ = ['SetupView']
 
 
 class SetupForm(forms.Form):
     email = forms.EmailField()
     password1 = forms.CharField(
-        label=_("Password"),
+        label=_('Password'),
         strip=False,
         widget=forms.PasswordInput,
         help_text=password_validation.password_validators_help_text_html(),
     )
     password2 = forms.CharField(
-        label=_("Password confirmation"),
+        label=_('Password confirmation'),
         widget=forms.PasswordInput,
         strip=False,
-        help_text=_("Enter the same password as before, for verification."),
+        help_text=_('Enter the same password as before, for verification.'),
     )
 
     def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError(
                 self.error_messages['password_mismatch'],
@@ -52,7 +52,7 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
 
     def get(self, request, *args, **kwargs):
         if bool(config.INITIALIZED):
-            return HttpResponseNotFound("Not Found")
+            return HttpResponseNotFound('Not Found')
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):

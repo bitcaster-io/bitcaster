@@ -87,7 +87,7 @@ def get_database_url_param():
     ctx = click.get_current_context()
     env = ctx.obj['env']
 
-    rex = re.compile(r"psql://(?P<user>.*):(?P<password>.*)@(?P<host>.*):(?P<port>[0-9]+)/(?P<database>.*)")
+    rex = re.compile(r'psql://(?P<user>.*):(?P<password>.*)@(?P<host>.*):(?P<port>[0-9]+)/(?P<database>.*)')
     try:
         m = rex.match(env('DATABASE_URL'))
         return m.groupdict()
@@ -153,7 +153,7 @@ def wait_for_service(address, timeout=30, caption='', stdout=None, sleep=0):
         except socket.error:
             time.sleep(0.5)
         except Exception as e:
-            raise ImproperlyConfigured(f"Error checking {address}. {e}")
+            raise ImproperlyConfigured(f'Error checking {address}. {e}')
         if time.time() > end:
             raise TimeoutError
     stdout.write(caption + 'OK\n')

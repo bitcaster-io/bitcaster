@@ -17,14 +17,14 @@ def test_audit(django_app, application1, caplog):
 
     organization = application1.organization
     owner = organization.owner
-    url = reverse("org-member-invite", args=[organization.slug])
+    url = reverse('org-member-invite', args=[organization.slug])
     res = django_app.get(url, user=organization.owner)
     res.form['memberships-0-email'] = 'user1@example.com'
     res.form['memberships-0-role'] = '1'  # Owner
     res = res.form.submit().follow()
 
     entry = AuditLogEntry.objects.filter(user=owner).latest()
-    assert str(entry) == f"{owner.email} invited member user1@example.com to {organization} as Owner"
+    assert str(entry) == f'{owner.email} invited member user1@example.com to {organization} as Owner'
 
     # get confirmation email from url
     html = HTML(html=mail.outbox[0].alternatives[0][0])
@@ -34,4 +34,4 @@ def test_audit(django_app, application1, caplog):
     res.form['password'] = 'password'
     res = res.form.submit().follow()
     entry = AuditLogEntry.objects.filter(event=AuditEvent.MEMBER_ACCEPT).latest()
-    assert str(entry) == f"user1@example.com accepted invitation from {owner.email} to {organization} as Owner"
+    assert str(entry) == f'user1@example.com accepted invitation from {owner.email} to {organization} as Owner'

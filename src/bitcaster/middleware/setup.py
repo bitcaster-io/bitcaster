@@ -16,5 +16,5 @@ class SetupMiddleware(object):
     def __call__(self, request):
         if not bool(config.INITIALIZED):
             if request.path != '/setup/' and not request.path.startswith(settings.STATIC_URL):
-                return HttpResponseRedirect("/setup/")
+                return HttpResponseRedirect('/setup/')
         return self.get_response(request)

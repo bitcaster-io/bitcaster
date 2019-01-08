@@ -6,7 +6,7 @@ import click
 from django.db import OperationalError, connections
 
 
-@click.command(name="check-ready")
+@click.command(name='check-ready')
 @click.pass_context
 def isready(self, *args, **options):
     conn = connections[options['connection']]
@@ -20,15 +20,15 @@ def isready(self, *args, **options):
                 conn = self._get_cursor(conn)
             except OperationalError as e:
                 if options['wait'] and elapsed < options['timeout']:
-                    self.stdout.write("." * elapsed, ending='\r')
+                    self.stdout.write('.' * elapsed, ending='\r')
                     self.stdout.flush()
                     time.sleep(options['sleep'])
                     elapsed += 1
                 else:
                     self.stderr.write(f"\nDatabase on {conn.settings_dict['HOST']}:{conn.settings_dict['PORT']} "
-                                      f"is not available after {elapsed} secs")
+                                      f'is not available after {elapsed} secs')
                     if options['debug']:
-                        self.stderr.write(f"Error is: {e}")
+                        self.stderr.write(f'Error is: {e}')
                     retcode = 1
                     break
             else:

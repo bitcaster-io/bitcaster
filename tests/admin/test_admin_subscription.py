@@ -6,7 +6,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_subscriptions_list(django_app, admin):
-    url = reverse("admin:bitcaster_subscription_changelist")
+    url = reverse('admin:bitcaster_subscription_changelist')
     res = django_app.get(url, user=admin.email)
     assert res.status_code == 200
 

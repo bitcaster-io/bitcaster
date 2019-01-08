@@ -29,7 +29,7 @@ class Team(AbstractModel):
                                 related_name='+',
                                 on_delete=models.CASCADE)
     slug = models.SlugField()
-    name = models.CharField(_("Name"), max_length=64)
+    name = models.CharField(_('Name'), max_length=64)
     status = DeletionStatusField()
     date_added = models.DateTimeField(default=timezone.now, null=True)
 
@@ -74,7 +74,7 @@ class ApplicationTeam(AbstractModel):
     objects = ApplicationTeamManager()
 
     def __str__(self):
-        return f"{self.application} {self.get_role_display()}"
+        return f'{self.application} {self.get_role_display()}'
 
     @property
     def members(self):

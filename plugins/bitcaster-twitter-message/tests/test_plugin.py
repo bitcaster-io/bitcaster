@@ -24,7 +24,7 @@ def before_record_request(request):
               env('BITCASTER_TWITTER_CONSUMER_SECRET', str),
               env('BITCASTER_TWITTER_ACCESS_TOKEN_KEY', str),
               env('BITCASTER_TWITTER_ACCESS_TOKEN_SECRET', str)]:
-        original = original.replace(e, "----")
+        original = original.replace(e, '----')
     request.body = original.encode('utf8')
 
     original = request.uri
@@ -32,7 +32,7 @@ def before_record_request(request):
               env('BITCASTER_TWITTER_CONSUMER_SECRET', str),
               env('BITCASTER_TWITTER_ACCESS_TOKEN_KEY', str),
               env('BITCASTER_TWITTER_ACCESS_TOKEN_SECRET', str)]:
-        original = original.replace(e, "----")
+        original = original.replace(e, '----')
     request.uri = original
 
     return request

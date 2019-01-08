@@ -31,7 +31,7 @@ setup(
         'test': tests_require,
     },
     entry_points={'bitcaster': ['facebook = bitcaster_facebook.plugin:Facebook']},
-    license="MIT License",
+    license='MIT License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',

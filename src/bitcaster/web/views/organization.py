@@ -37,15 +37,15 @@ from .channel import (ChannelCreateWizard, ChannelDeleteView,
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["OrganizationCreate", "OrganizationDashboard", "OrganizationUpdate",
-           "OrganizationMembers", "OrganizationChannels",
-           "OrganizationTeamList", "OrganizationTeamCreate",
-           "OrganizationChannelRemove", "OrganizationChannelToggle",
-           "OrganizationChannelUpdate", "OrganizationChannelDeprecate",
-           "OrganizationTeamUpdate", "OrganizationTeamMember",
-           "OrganizationCreateMember",
-           "OrganizationInvite", "InviteDelete", "InviteSend", "InviteAccept",
-           "OrganizationApplications", "OrganizationChannelCreate"]
+__all__ = ['OrganizationCreate', 'OrganizationDashboard', 'OrganizationUpdate',
+           'OrganizationMembers', 'OrganizationChannels',
+           'OrganizationTeamList', 'OrganizationTeamCreate',
+           'OrganizationChannelRemove', 'OrganizationChannelToggle',
+           'OrganizationChannelUpdate', 'OrganizationChannelDeprecate',
+           'OrganizationTeamUpdate', 'OrganizationTeamMember',
+           'OrganizationCreateMember',
+           'OrganizationInvite', 'InviteDelete', 'InviteSend', 'InviteAccept',
+           'OrganizationApplications', 'OrganizationChannelCreate']
 
 
 class OrganizationAuditMixin:
@@ -71,19 +71,19 @@ class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
 
     def get_context_data(self, **kwargs):
         org = self.get_object()
-        cache_key = f"org:dashboard:{org.pk}"
+        cache_key = f'org:dashboard:{org.pk}'
         org_data = cache.get(cache_key)
         if not org_data:
             org_data = {
-                "active_users": org.members.count(),
-                "pending_users": org.invitations.count(),
-                "enabled_channels": org.channels.filter(enabled=True).count(),
-                "disabled_channels": org.channels.filter(enabled=False).count(),
-                "applications": org.applications.count(),
+                'active_users': org.members.count(),
+                'pending_users': org.invitations.count(),
+                'enabled_channels': org.channels.filter(enabled=True).count(),
+                'disabled_channels': org.channels.filter(enabled=False).count(),
+                'applications': org.applications.count(),
             }
-            org_data["box_members"] = get_status(org_data["pending_users"], 0, 1, 9999)
-            org_data["box_channels"] = check_channels(org_data)
-            org_data["box_apps"] = get_status(org_data["applications"], 1, 9999, 9999)
+            org_data['box_members'] = get_status(org_data['pending_users'], 0, 1, 9999)
+            org_data['box_channels'] = check_channels(org_data)
+            org_data['box_apps'] = get_status(org_data['applications'], 1, 9999, 9999)
             cache.set(cache_key, org_data)
         kwargs['data'] = org_data
         return super().get_context_data(**kwargs)
@@ -96,8 +96,8 @@ class OrganizationUpdate(OrganizationViewMixin, BitcasterBaseUpdateView):
     def form_valid(self, form):
         slug = form.cleaned_data.get('slug', None)
         self.object = form.save()
-        url = reverse("org-config", args=[slug or self.object.slug])
-        self.message_user(_("Configuration saved"), messages.SUCCESS)
+        url = reverse('org-config', args=[slug or self.object.slug])
+        self.message_user(_('Configuration saved'), messages.SUCCESS)
         return HttpResponseRedirect(url)
 
 
@@ -197,7 +197,7 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
             return {}
 
     def get_initial(self):
-        return {"email": self.membership.email}
+        return {'email': self.membership.email}
 
     @cached_property
     def membership(self):
@@ -209,15 +209,15 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
         check = kwargs['check']
         if totp.verify(check, valid_window=config.INVITATION_EXPIRE):
             return super(InviteAccept, self).get(request, **kwargs)
-        self.message_user("Invite expired", messages.ERROR)
-        return HttpResponseRedirect("/")
+        self.message_user('Invite expired', messages.ERROR)
+        return HttpResponseRedirect('/')
 
 
 class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
     fields = ()
 
     def get_success_url(self):
-        return reverse("org-member-list", args=[self.selected_organization.slug])
+        return reverse('org-member-list', args=[self.selected_organization.slug])
 
     def get_queryset(self):
         return self.selected_organization.memberships.all()
@@ -226,17 +226,17 @@ class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
         membership = self.get_object()
         try:
             membership.send_email()
-            self.message_user(_("Email sending scheduled"))
+            self.message_user(_('Email sending scheduled'))
         except Exception as e:
             logger.exception(e)
-            self.message_user(_("Error sending email"), messages.ERROR)
+            self.message_user(_('Error sending email'), messages.ERROR)
         return super().form_valid(form)
 
 
 class InviteDelete(SelectedOrganizationMixin, DeleteView):
 
     def get_success_url(self):
-        return reverse("org-member-list", args=[self.selected_organization.slug])
+        return reverse('org-member-list', args=[self.selected_organization.slug])
 
     def get_queryset(self):
         return self.selected_organization.memberships.all()
@@ -253,7 +253,7 @@ class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
     template_name = 'bitcaster/organization_invite.html'
 
     def get_success_url(self):
-        return reverse("org-member-list", args=[self.selected_organization.slug])
+        return reverse('org-member-list', args=[self.selected_organization.slug])
 
     def get_context_data(self, **kwargs):
         data = super(OrganizationInvite, self).get_context_data(**kwargs)
@@ -308,8 +308,8 @@ class OrganizationChannels(OrganizationAuditMixin, ApplicationListMixin, ListVie
 
     def get_context_data(self, **kwargs):
         kwargs['channel_context'] = self.selected_organization
-        kwargs['title'] = _("Organization Channels")
-        kwargs['create_url'] = reverse("org-channel-create",
+        kwargs['title'] = _('Organization Channels')
+        kwargs['create_url'] = reverse('org-channel-create',
                                        args=[self.selected_organization.slug])
         return super().get_context_data(**kwargs)
 
@@ -318,7 +318,7 @@ class OrganizationChannelUpdate(OrganizationViewMixin, ChannelUpdateView):
     template_name = 'bitcaster/org_channel_configure.html'
 
     def get_success_url(self):
-        return reverse_lazy("org-channel-list",
+        return reverse_lazy('org-channel-list',
                             args=[self.selected_organization.slug])
 
     def get_queryset(self):
@@ -329,7 +329,7 @@ class OrganizationChannelRemove(OrganizationViewMixin, ChannelDeleteView):
     template_name = 'bitcaster/org_channel_remove.html'
 
     def get_success_url(self):
-        return reverse_lazy("org-channel-list",
+        return reverse_lazy('org-channel-list',
                             args=[self.selected_organization.slug])
 
     def get_queryset(self):
@@ -343,7 +343,7 @@ class OrganizationChannelToggle(OrganizationViewMixin, ChannelToggleView):
         return self.selected_organization.channels.all()
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy("org-channel-list",
+        return reverse_lazy('org-channel-list',
                             args=[self.selected_organization.slug])
 
 
@@ -354,13 +354,13 @@ class OrganizationChannelDeprecate(OrganizationViewMixin, ChannelDeprecateView):
         return self.selected_organization.channels.all()
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy("org-channel-list",
+        return reverse_lazy('org-channel-list',
                             args=[self.selected_organization.slug])
 
 
 class OrganizationChannelCreate(OrganizationViewMixin, ChannelCreateWizard):
-    TEMPLATES = {"a": "bitcaster/org_channel_wizard1.html",
-                 "b": "bitcaster/org_channel_wizard2.html",
+    TEMPLATES = {'a': 'bitcaster/org_channel_wizard1.html',
+                 'b': 'bitcaster/org_channel_wizard2.html',
                  }
 
     def get_success_url(self):
@@ -379,7 +379,7 @@ class OrganizationTeamMixin(OrganizationViewMixin):
         return self.selected_organization.teams.all()
 
     def get_context_data(self, **kwargs):
-        kwargs['title'] = _("Organization Teams")
+        kwargs['title'] = _('Organization Teams')
         return super().get_context_data(**kwargs)
 
 

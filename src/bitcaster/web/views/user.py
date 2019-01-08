@@ -11,6 +11,7 @@ from django.utils.functional import cached_property
 from django.utils.html import escape, format_html, format_html_join, html_safe
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+from django.views.generic import TemplateView
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from bitcaster.models import Address, Organization, User
@@ -24,11 +25,15 @@ from .base import (BitcasterBaseDetailView,
 
 logger = logging.getLogger(__name__)
 
-__all__ = ("UserProfileView", "UserWelcomeView", "UserHomeView", "UserAddressesView")
+__all__ = ('UserProfileView', 'UserWelcomeView', 'UserHomeView', 'UserAddressesView')
+
+
+class UserIndexView(TemplateView):
+    template_name = 'bitcaster/me/home.html'
 
 
 class UserHomeView(BitcasterBaseDetailView):
-    template_name = "bitcaster/users/user-home.html"
+    template_name = 'bitcaster/users/user-home.html'
     model = User
 
     @cached_property
@@ -56,7 +61,7 @@ class UserHomeView(BitcasterBaseDetailView):
 
 
 class UserWelcomeView(BitcasterTemplateView):
-    template_name = "bitcaster/users/user-welcome.html"
+    template_name = 'bitcaster/users/user-welcome.html'
 
 
 @html_safe
@@ -148,7 +153,7 @@ class AddressForm(forms.ModelForm):
         try:
             dispatcher.validate_address(address)
         except DRFValidationError as e:
-            raise ValidationError({'address': ", ".join(e.detail)})
+            raise ValidationError({'address': ', '.join(e.detail)})
         return super().clean()
 
 

@@ -38,7 +38,7 @@ class Gmail(Email):
                 data['tls'] = True
                 return data
             else:
-                self.logger.error("Invalid configuration")
+                self.logger.error('Invalid configuration')
                 raise PluginValidationError(opts.errors)
 
     # def validate_subscription(self, subscription, *args, **kwargs) -> None:
@@ -48,5 +48,5 @@ class Gmail(Email):
         try:
             return super().test_connection(raise_exception)
         except Exception as e:
-            raise Exception("%s. Have you set Application password at "
-                            "https://myaccount.google.com/apppasswords ?" % e) from e
+            raise Exception('%s. Have you set Application password at '
+                            'https://myaccount.google.com/apppasswords ?' % e) from e

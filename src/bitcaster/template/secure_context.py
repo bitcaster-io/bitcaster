@@ -10,10 +10,10 @@ logger = logging.getLogger(__name__)
 
 class Stop:
     def __repr__(self):
-        return ""
+        return ''
 
     def __str__(self):
-        return ""
+        return ''
 
 
 class Wrapper:

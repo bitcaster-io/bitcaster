@@ -25,7 +25,7 @@ def pytest_configure(config):
     import django
     django.setup()
     from django.conf import settings
-    os.makedirs("/tmp/static", exist_ok=True)
+    os.makedirs('/tmp/static', exist_ok=True)
     # from constance import config as c
     # c.INITIALIZED = True
     settings.CELERY_TASK_ALWAYS_EAGER = True

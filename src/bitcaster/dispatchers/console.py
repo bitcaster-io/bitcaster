@@ -20,7 +20,7 @@ class ConsoleDispatcher(Dispatcher):
 
     @classproperty
     def name(self):
-        return "Console"
+        return 'Console'
 
     def _get_connection(self) -> object:
         pass

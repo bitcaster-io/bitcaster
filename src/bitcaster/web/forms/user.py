@@ -28,12 +28,12 @@ class UserRegistrationForm(forms.Form):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'autocomplete': 'email'}))
     password = forms.CharField(widget=PasswordInput(attrs={'autocomplete': 'new-password'}))
     organization = forms.CharField(help_text=_("If you're signing up for a personal account, "
-                                               "try using your own name."))
+                                               'try using your own name.'))
     admin_email = forms.EmailField(required=False,
                                    widget=forms.EmailInput(attrs={'autocomplete': 'email'}),
-                                   help_text=_("If provided, we will send all admin-related notifications "
-                                               "to this address."))
-    terms = forms.BooleanField(label=_("I agree to the Terms of Service the Privacy Policy"))
+                                   help_text=_('If provided, we will send all admin-related notifications '
+                                               'to this address.'))
+    terms = forms.BooleanField(label=_('I agree to the Terms of Service the Privacy Policy'))
 
     captcha = ReCaptchaField(widget=ReCaptchaWidget())
 
@@ -159,18 +159,18 @@ class UserCreationForm(_UserCreationForm):
     }
 
     password1 = forms.CharField(
-        label=_("Password"),
+        label=_('Password'),
         required=False,
         strip=False,
         widget=forms.PasswordInput,
         help_text=password_validation.password_validators_help_text_html(),
     )
     password2 = forms.CharField(
-        label=_("Password confirmation"),
+        label=_('Password confirmation'),
         required=False,
         widget=forms.PasswordInput,
         strip=False,
-        help_text=_("Enter the same password as before, for verification."),
+        help_text=_('Enter the same password as before, for verification.'),
     )
 
     class Meta:
@@ -190,8 +190,8 @@ class UserCreationForm(_UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        if self.cleaned_data["password1"]:
-            user.set_password(self.cleaned_data["password1"])
+        if self.cleaned_data['password1']:
+            user.set_password(self.cleaned_data['password1'])
         else:
             user.set_unusable_password()
 
@@ -207,18 +207,18 @@ class NewMemberForm(_UserCreationForm):
     role = forms.ChoiceField(choices=Role.as_choices())
 
     password1 = forms.CharField(
-        label=_("Password"),
+        label=_('Password'),
         required=False,
         strip=False,
         widget=forms.PasswordInput,
         help_text=password_validation.password_validators_help_text_html(),
     )
     password2 = forms.CharField(
-        label=_("Password confirmation"),
+        label=_('Password confirmation'),
         required=False,
         widget=forms.PasswordInput,
         strip=False,
-        help_text=_("Enter the same password as before, for verification."),
+        help_text=_('Enter the same password as before, for verification.'),
     )
 
     class Meta:
@@ -238,8 +238,8 @@ class NewMemberForm(_UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        if self.cleaned_data["password1"]:
-            user.set_password(self.cleaned_data["password1"])
+        if self.cleaned_data['password1']:
+            user.set_password(self.cleaned_data['password1'])
         else:
             user.set_unusable_password()
 

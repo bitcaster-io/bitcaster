@@ -28,7 +28,7 @@ setup(
         'bitcaster_twitter_message': ['*.png', ],
     },
     entry_points={'bitcaster': ['twittermessage = bitcaster_twitter_message.plugin:TwitterMessage']},
-    license="MIT License",
+    license='MIT License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',

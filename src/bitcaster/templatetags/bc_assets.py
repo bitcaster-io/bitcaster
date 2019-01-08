@@ -31,7 +31,7 @@ def asset(path):
         {% static variable_with_path as varname %}
     """
     commit = bitcaster.get_full_version()
-    return mark_safe("{0}?{1}".format(_static(path), commit))
+    return mark_safe('{0}?{1}'.format(_static(path), commit))
 
 
 @register.simple_tag
@@ -51,7 +51,7 @@ def aasset(path):
         {% static variable_with_path as varname %}
     """
     commit = bitcaster.get_full_version()
-    return "%s?%s" % (absolute_uri(_static(path)), commit)
+    return '%s?%s' % (absolute_uri(_static(path)), commit)
 
 
 @register.simple_tag

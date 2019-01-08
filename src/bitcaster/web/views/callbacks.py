@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 #             render(request, 'bitcaster/user_invite_register.html', )
 
 
-@require_http_methods(["GET", "POST"])
+@require_http_methods(['GET', 'POST'])
 def confirm_registration(request, pk, check):
     user = User.objects.get(pk=pk)
     if request.method == 'POST':
@@ -42,7 +42,7 @@ def confirm_registration(request, pk, check):
         return render(request, 'bitcaster/registration/email-confirmed.html', ctx)
 
 
-@require_http_methods(["GET", "POST"])
+@require_http_methods(['GET', 'POST'])
 def confirm_address(request, pk, address, check):
     ok = totp.verify(check, valid_window=config.INVITATION_EXPIRE)
     if ok:

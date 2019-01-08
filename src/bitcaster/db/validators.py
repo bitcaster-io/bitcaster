@@ -50,7 +50,7 @@ class ReservedWordValidator:
 
     def __call__(self, value):
         if value.lower() in RESERVED_NAMES:
-            raise ValidationError(self.message, params={"value": value})
+            raise ValidationError(self.message, params={'value': value})
 
 
 check_reserved = ReservedWordValidator()
@@ -64,4 +64,4 @@ class RateLimitValidator:
         try:
             _split_rate(value)
         except Exception:
-            raise ValidationError(self.message, params={"value": value})
+            raise ValidationError(self.message, params={'value': value})

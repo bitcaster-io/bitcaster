@@ -64,7 +64,7 @@ class Subscription(AbstractModel):
     #                               help_text="if managed users cannot unsubscribe. "
     #                                         "But can still change channel")
     locked = models.BooleanField(default=False,
-                                 help_text="if locked users cannot change subscription")
+                                 help_text='if locked users cannot change subscription')
 
     objects = SubscriptionQuerySet.as_manager()
 
@@ -73,7 +73,7 @@ class Subscription(AbstractModel):
         get_latest_by = 'id'
 
     def __str__(self):
-        return "Subscription {0.subscriber} on {0.event} via {0.channel}".format(self)
+        return 'Subscription {0.subscriber} on {0.event} via {0.channel}'.format(self)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.pk:

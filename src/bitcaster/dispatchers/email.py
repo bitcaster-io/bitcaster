@@ -55,11 +55,11 @@ class Email(Dispatcher):
         config = self.config
         return get_connection(
             backend=self.config['backend'],
-            host=config["server"],
-            username=config.get("username", ""),
-            password=config.get("password", ""),
-            port=self.config["port"],
-            use_tls=config["tls"],
+            host=config['server'],
+            username=config.get('username', ''),
+            password=config.get('password', ''),
+            port=self.config['port'],
+            use_tls=config['tls'],
             fail_silently=False)
 
     def get_recipient_address(self, subscription):
@@ -76,9 +76,9 @@ class Email(Dispatcher):
             ret = send_mail(subject=subject,
                             message=message,
                             connection=connection,
-                            from_email=self.config["sender"],
+                            from_email=self.config['sender'],
                             recipient_list=[email])
-            self.logger.debug(f"{fqn(self)} email sent to {email}")
+            self.logger.debug(f'{fqn(self)} email sent to {email}')
             return ret
         except smtplib.SMTPException as e:
             raise ValidationError(str(e)) from e
