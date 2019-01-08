@@ -4,20 +4,19 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "bower": "^1.8.4",
+    "bootstrap": "^4.1.2",
     "font-awesome": "^4.7.0",
     "fontawesome": "^4.7.2",
     "jquery": "^3.3.1",
     "js-cookie": "^2.2.0",
     "knockout": "^3.5.0-rc",
     "lscache": "^1.1.0",
-    "popper.js": "^1.14.3",
+    "popper.js": "^1.14.6",
     "underscore": "^1.9.1"
   },
   "devDependencies": {
     "autoprefixer": "^8.6.0",
     "babel-loader": "^7.1.4",
-    "bootstrap": "^4.1.1",
     "bootstrap4": "0.0.1-security",
     "bower": "^1.8.4",
     "clean-webpack-plugin": "^0.1.19",
