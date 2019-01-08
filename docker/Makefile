@@ -3,10 +3,10 @@ BITCASTER_DATABASE_URL?=${BITCASTER_DATABASE_URL}
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET=0.3.0a2
+TARGET=0.3.0a3
 # below vars are used internally
 BUILD_OPTIONS?=--squash
-CMD?=bitcaster
+CMD?=
 CONTAINER_NAME?=bitcaster-${TARGET}
 ORGANIZATION=bitcaster
 IMAGE_NAME=bitcaster
@@ -65,12 +65,12 @@ local:
 	$(MAKE) .run
 
 release:
-	docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+	pass docker/saxix | docker login -u saxix --password-stdin
 	docker tag ${DOCKER_IMAGE_NAME}:${TARGET} ${DOCKER_IMAGE_NAME}:latest
 	docker push ${DOCKER_IMAGE_NAME}:latest
 	docker push ${DOCKER_IMAGE_NAME}:${TARGET}
-	wget https://hooks.microbadger.com/images/bitcaster/demo/6gZxAyENUmnjeP10rFqqv3RVNeU=
-	cd .. && bumpversion --tag --config-file=.bumpversion.cfg num
+	wget https://hooks.microbadger.com/images/bitcaster/bitcaster/MQKzhkSXITqlkZMgcN1sQbKCnQo=
+	cd .. && bumpversion --config-file=.bumpversion.cfg num
 
 run:
 	$(MAKE) .run
