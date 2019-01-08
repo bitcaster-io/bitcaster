@@ -1,8 +1,9 @@
 # Bitcaster
 
-[![circle-build]][circle-link]
+[![travis-badge]][travis-link]
+[![circle-badge]][circle-link]
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6fa79049ba7c44dd9b082a7ed8b5dce9)](https://www.codacy.com/app/bitcaster/bitcaster?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bitcaster-io/bitcaster&amp;utm_campaign=Badge_Grade)
-[![codecov-badge]][codecov]
+[![codecov-badge]][codecov-link]
 [![microbadger]][docker]
 
 
@@ -47,13 +48,13 @@ In addition a plugin SDK will allow you to create your own plugins in order to e
 **Docker** https://hub.docker.com/r/bitcaster/
 
 
-[travis-build]:https://secure.travis-ci.org/bitcaster-io/bitcaster.png?branch=develop
+[travis-badge]: https://secure.travis-ci.org/bitcaster-io/bitcaster.png?branch=develop
 [travis-link]: https://travis-ci.org/bitcaster-io/bitcaster?branch=develop
-[circle-build]: https://circleci.com/gh/bitcaster-io/bitcaster.svg?style=svg
+[circle-badge]: https://circleci.com/gh/bitcaster-io/bitcaster.svg?style=svg
 [circle-link]: https://circleci.com/gh/bitcaster-io/bitcaster
 
 [codecov-badge]: https://codecov.io/gh/bitcaster-io/bitcaster/branch/develop/graph/badge.svg
-[codecov]: https://codecov.io/gh/bitcaster-io/bitcaster
+[codecov-link]: https://codecov.io/gh/bitcaster-io/bitcaster
 
 [pypi-version]: https://img.shields.io/pypi/v/bitcaster.svg
 [pypi]: https://pypi.org/project/bitcaster/

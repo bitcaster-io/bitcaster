@@ -7,7 +7,7 @@ from cryptography.fernet import InvalidToken
 from django.contrib.auth import get_user_model
 from django.core.cache import caches
 from django.core.checks import Error, register
-from django.db import OperationalError, connection
+from django.db import OperationalError, ProgrammingError, connection
 
 from bitcaster.config.environ import env
 
@@ -97,5 +97,7 @@ def check_fernets(*args, **kwargs):
                 id='bitcaster.E006',
             )
         )
-
+    except ProgrammingError:  # pragma: no cover
+        # check fails if first setup, because migrations have not ran
+        pass
     return errors
