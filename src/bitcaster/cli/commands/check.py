@@ -22,7 +22,7 @@ def checkdb(wait=True, timeout=60, debug=False, connection='default'):
                 conn = conn.cursor()
             except OperationalError as e:
                 if wait and elapsed < timeout:
-                    sys.stdout.write('.' * elapsed, ending='\r')
+                    sys.stdout.write('.' * elapsed)
                     sys.stdout.flush()
                     time.sleep(1)
                     elapsed += 1

@@ -70,20 +70,19 @@ RUN set -ex \
 
 RUN pip install . \
     && bitcaster plugin install --from-dir plugins/ -r \
-    && rm -fr /code
-
-
-#RUN apk del .build-deps \
-#    && rm -rf /var/cache/apk/* \
-#    && rm -fr /root/.cache/
+    && rm -fr /code \
+    && apt-get remove -y gcc
 
 WORKDIR /var/bitcaster
 
 EXPOSE 8000
+EXPOSE 15000
+EXPOSE 5555
+EXPOSE 6379
 
 USER bitcaster
 
 ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["bitcaster"]
+CMD ["stack"]

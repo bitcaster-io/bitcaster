@@ -15,6 +15,10 @@ elif [[ "$*" == "bitcaster" ]];then
     bitcaster check --deploy
     bitcaster upgrade --no-input
     gunicorn -b 0.0.0.0:8000 bitcaster.config.wsgi
+elif [[ "$*" == "stack" ]];then
+    bitcaster check --deploy
+    bitcaster upgrade --no-input
+    gunicorn -b 0.0.0.0:8000 bitcaster.config.wsgi
 else
     exec "$@"
 fi

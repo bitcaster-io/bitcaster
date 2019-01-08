@@ -230,7 +230,8 @@ MEDIA_URL = '/media/'
 # URL Configuration
 # ------------------------------------------------------------------------------
 ROOT_URLCONF = 'bitcaster.config.urls'
-
+FORCE_SCRIPT_NAME = env('URL_PREFIX')
+USE_X_FORWARDED_HOST = True
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = 'bitcaster.config.wsgi.application'
 

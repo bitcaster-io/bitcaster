@@ -21,4 +21,5 @@ DEFAULTS = dict(
     SECRET_KEY=(str, ''),
     SENTRY_DSN=(str, ''),
     STATIC_ROOT=(str, str(Path('~/.bitcaster/static').expanduser())),
+    URL_PREFIX=(str, '/'),
 )
