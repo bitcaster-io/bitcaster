@@ -3,7 +3,8 @@ BITCASTER_DATABASE_URL?=${BITCASTER_DATABASE_URL}
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET=0.3.0a5
+TARGET=0.3.0a6
+BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
 CMD?=
@@ -33,6 +34,7 @@ build:
 			--build-arg DEVELOP=${DEVELOP} \
 			--build-arg GITHUB_CREDENTIALS=${GITHUB_CREDENTIALS} \
 			--build-arg VERSION=${TARGET} \
+			--build-arg BUILD_DATE=${BUILD_DATE} \
 			-t ${DOCKER_IMAGE} \
 			-f docker/${DOCKERFILE} .
 	docker tag ${DOCKER_IMAGE_NAME}:${TARGET} ${DOCKER_IMAGE_NAME}:dev
@@ -69,7 +71,7 @@ release:
 	docker tag ${DOCKER_IMAGE_NAME}:${TARGET} ${DOCKER_IMAGE_NAME}:latest
 	docker push ${DOCKER_IMAGE_NAME}:latest
 	docker push ${DOCKER_IMAGE_NAME}:${TARGET}
-	wget https://hooks.microbadger.com/images/bitcaster/bitcaster/MQKzhkSXITqlkZMgcN1sQbKCnQo=
+	curl -XPOST https://hooks.microbadger.com/images/bitcaster/bitcaster/MQKzhkSXITqlkZMgcN1sQbKCnQo=
 	cd .. && bumpversion --config-file=.bumpversion.cfg num
 
 run:
