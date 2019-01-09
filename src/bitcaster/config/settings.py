@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'adminfilters',
     'social_django',
     'django_extensions',
-
     # 'django_celery_beat',
     # 'django_celery_results',
 
@@ -430,7 +429,7 @@ CONSTANCE_CONFIG = OrderedDict({
 CONSTANCE_CONFIG_FIELDSETS = {'Options': list(CONSTANCE_CONFIG.keys())}
 
 # SENTRY & RAVEN
-if env.bool('ENABLE_SENTRY', False):
+if env.bool('SENTRY_ENABLED', False):
     import bitcaster.state
 
     LOGGING['handlers']['sentry'] = {'level': 'ERROR',
@@ -445,9 +444,6 @@ if env.bool('ENABLE_SENTRY', False):
         # If you are using git, you can also automatically configure the
         # release based on the git info.
     }
-    # We recommend putting this as high in the chain as possible
-    MIDDLEWARE = ['raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-                  ] + list(MIDDLEWARE)
 
 # OAUTH2
 GOOGLE_APP_ID = env.str('GOOGLE_APP_ID', '')

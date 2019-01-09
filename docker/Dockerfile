@@ -31,7 +31,7 @@ ENV VERSION ${VERSION}
 
 LABEL org.label.name="Bitcaster" \
       org.label.maintainer="bitcaster@os4d.org" \
-      org.label.description="" \
+      org.label.description="Bitcaster is a system-to-user signal-to-message notification system." \
       org.label.url="https://bitcaster.io/" \
       org.label.vcs-url="https://github.com/bitcaster-io/bitcaster" \
       org.label.version=${VERSION} \

@@ -9,7 +9,6 @@ DEFAULTS = dict(
     CELERY_TASK_ALWAYS_EAGER=(bool, False),
     DATABASE_URL=(str, 'psql://postgres:@127.0.0.1:5432/bitcaster'),
     DEBUG=(bool, False),
-    ENABLE_SENTRY=(bool, False),
     FAKE_OTP=(bool, False),
     FERNET_KEYS=(list, []),
     MEDIA_ROOT=(str, str(Path('~/.bitcaster/media').expanduser())),
@@ -20,6 +19,7 @@ DEFAULTS = dict(
     REDIS_LOCK_URL=(str, 'redis://localhost:6379/1?key_prefix=bs-lock&backend=django_redis.cache.RedisCache'),
     SECRET_KEY=(str, ''),
     SENTRY_DSN=(str, ''),
+    SENTRY_ENABLED=(bool, False),
     STATIC_ROOT=(str, str(Path('~/.bitcaster/static').expanduser())),
     URL_PREFIX=(str, ''),
 )
