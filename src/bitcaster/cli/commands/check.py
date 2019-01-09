@@ -88,8 +88,10 @@ def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
                               ('REDIS_CACHE_URL', 'cache server'),
                               ('REDIS_LOCK_URL', 'lock server')]:
             try:
+                sys.stdout.write(f'Check {name}')
+                sys.stdout.flush()
                 wait_for_service(env(service),
-                                 caption=f'Check {name}..',
+                                 caption='.',
                                  sleep=sleep,
                                  timeout=timeout,
                                  stdout=sys.stdout if verbose > 0 else None)

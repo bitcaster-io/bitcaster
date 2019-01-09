@@ -16,10 +16,10 @@ DEFAULTS = dict(
     ON_PREMISE=(bool, True),
     ORGANIZATION=(str, 'Organization1'),
     PLUGINS_AUTOLOAD=(bool, False),
-    REDIS_CACHE_URL=(str, 'redis://localhost:6379/0'),
-    REDIS_LOCK_URL=(str, 'redis://localhost:6379/1'),
+    REDIS_CACHE_URL=(str, 'redis://localhost:6379/0?key_prefix=bs'),
+    REDIS_LOCK_URL=(str, 'redis://localhost:6379/1?key_prefix=bs-lock&backend=django_redis.cache.RedisCache'),
     SECRET_KEY=(str, ''),
     SENTRY_DSN=(str, ''),
     STATIC_ROOT=(str, str(Path('~/.bitcaster/static').expanduser())),
-    URL_PREFIX=(str, '/'),
+    URL_PREFIX=(str, ''),
 )

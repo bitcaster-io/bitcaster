@@ -59,6 +59,7 @@ coverage = "*"
 vcrpy = "*"
 pre-commit = "*"
 django-picklefield = "*"
+whitenoise = "*"
 
 [dev-packages]
 "flake8" = "*"
@@ -86,3 +87,6 @@ pyflakes = "*"
 
 [requires]
 python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true

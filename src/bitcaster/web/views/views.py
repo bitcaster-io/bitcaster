@@ -3,6 +3,7 @@ from django.conf import settings
 from django.http import (HttpResponse, HttpResponseForbidden,
                          HttpResponseRedirect,)
 from django.template.loader import get_template
+from django.urls import reverse
 from django.views.generic import ListView, TemplateView
 
 from bitcaster.models import Subscription
@@ -48,7 +49,7 @@ class IndexView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return HttpResponseRedirect('/me/')
+            return HttpResponseRedirect(reverse('me'))
             # if request.user.memberships.filter(role=Role.OWNER):
             #     url = reverse('org-dashboard', args=[request.user.memberships.first().organization.slug])
             #     return HttpResponseRedirect(url)

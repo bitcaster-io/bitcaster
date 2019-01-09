@@ -20,29 +20,26 @@ RUN apt-get update \
  	    gdal-bin \
  	    python-dev
 
-RUN pip install pip==18.0 pipenv --upgrade \
-    && adduser --system bitcaster
+RUN adduser --system bitcaster
 
 FROM base
 COPY --from=builder /code /code
+ARG BUILD_DATE
+ARG PIPENV_ARGS
+ARG VERSION
+ENV VERSION ${VERSION}
 
 LABEL org.label.name="Bitcaster" \
       org.label.maintainer="bitcaster@os4d.org" \
       org.label.description="" \
       org.label.url="https://bitcaster.io/" \
       org.label.vcs-url="https://github.com/bitcaster-io/bitcaster" \
-      org.label.version=$VERSION
-
-
-ARG BUILD_DATE
-ARG PIPENV_ARGS
-ARG VERSION
-
-ENV VERSION ${VERSION}
+      org.label.version=${VERSION} \
+      org.label.date=${BUILD_DATE}
 
 ENV PIPENV_PYPI_MIRROR ${PIPENV_PYPI_MIRROR}
 ENV PIPENV_ARGS ${PIPENV_ARGS}
-ENV HOME /var/bitcaster/
+ENV HOME /var/bitcaster
 ENV PYTHONUNBUFFERED 1
 ENV GUNICORN_CMD_ARGS "-b 0.0.0.0:8000 \
 --chdir /var/bitcaster \
@@ -57,32 +54,37 @@ ENV BITCASTER_CELERY_BROKER_URL ""
 ENV BITCASTER_REDIS_CACHE_URL ""
 ENV BITCASTER_REDIS_LOCK_URL ""
 
-RUN mkdir -p \
-    /var/bitcaster/ \
-    && chown bitcaster /var/bitcaster/ \
-    && pip install pip==18.0 pipenv --upgrade
-
 WORKDIR /code
 
 RUN set -ex \
-    ls -al /code \
+    && ls -al /code \
+    && pip install pip==18.0 pipenv --upgrade \
+    && mkdir -p /var/bitcaster/ \
+    && chown bitcaster /var/bitcaster/ \
     && pipenv install --verbose --system --deploy --ignore-pipfile $PIPENV_ARGS
 
 RUN pip install . \
-    && bitcaster plugin install --from-dir plugins/ -r \
-    && rm -fr /code \
-    && apt-get remove -y gcc
+    && bitcaster plugin install --from-dir plugins/ -r
 
 WORKDIR /var/bitcaster
+
+RUN rm -fr /code \
+    && rm -fr /var/bitcaster/.cache \
+    && apt-get remove -y --purge \
+        gcc \
+        python-dev \
+        wget \
+    && apt-get autoremove -y
+
+
+USER bitcaster
 
 EXPOSE 8000
 EXPOSE 15000
 EXPOSE 5555
 EXPOSE 6379
 
-USER bitcaster
-
 ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["stack"]
+CMD ["bitcaster"]

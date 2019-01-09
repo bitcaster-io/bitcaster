@@ -38,14 +38,14 @@ from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
-    path('setup/', SetupView.as_view(), name='setup'),
+    path(settings.SETUP_URL[1:], SetupView.as_view(), name='setup'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     # General
     path('terms/', TemplateView.as_view(template_name='bitcaster/legal/terms.html'), name='legal-terms'),
     path('privacy/', TemplateView.as_view(template_name='bitcaster/legal/privacy.html'), name='legal-privacy'),
     # me
-    path('me/', UserIndexView.as_view(), name='me-home'),
+    path('me/', UserIndexView.as_view(), name='me'),
 
     # Settings
     path('settings/', SettingsView.as_view(), name='settings'),

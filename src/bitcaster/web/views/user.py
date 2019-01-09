@@ -3,6 +3,7 @@ import json
 import logging
 
 from django import forms
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
@@ -29,7 +30,18 @@ __all__ = ('UserProfileView', 'UserWelcomeView', 'UserHomeView', 'UserAddressesV
 
 
 class UserIndexView(TemplateView):
-    template_name = 'bitcaster/me/home.html'
+    template_name = 'bitcaster/users/user-home.html'
+
+    def get_context_data(self, **kwargs):
+        # if settings.ON_PREMISE:
+        membership = self.request.user.memberships.first()
+        if membership:
+            kwargs['setup'] = reverse('org-dashboard', args=[membership.organization.slug])
+        kwargs['settings'] = settings
+        return super().get_context_data(**kwargs)
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
 
 class UserHomeView(BitcasterBaseDetailView):
@@ -54,6 +66,8 @@ class UserHomeView(BitcasterBaseDetailView):
                 allowed_applications.append(
                     (m.organization, application)
                 )
+        kwargs['applications'] = allowed_applications
+        kwargs['organizations'] = self.request.user.memberships.all()
         return super().get_context_data(**kwargs)
 
     def get_object(self, queryset=None):

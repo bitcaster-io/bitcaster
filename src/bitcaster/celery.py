@@ -22,7 +22,7 @@ app = BitcasterCelery('bitcaster',
                       loglevel='info',
                       broker=env.str('CELERY_BROKER_URL'))
 app.config_from_object('django.conf:settings', namespace='CELERY', force=True)
-# app.config_from_object('bitcaster.config.settings.default',
+# app.config_from_object('bitcaster.config.settings',
 #                        namespace='CELERY', force=True)
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 

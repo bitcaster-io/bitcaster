@@ -6,13 +6,12 @@ from django.utils.translation import ugettext_lazy as _
 from django_regex.utils import RegexList
 
 from bitcaster.config.environ import env
-
-from .logging_conf import LOGGING
+from bitcaster.config.logging_conf import LOGGING
 
 logger = logging.getLogger(__name__)
 
-BITCASTER_DIR = Path(__file__).parent.parent.parent  # (bitcaster/config/settings/base.py - 3 = bitcaster/)
-SOURCE_DIR = BITCASTER_DIR.parent  # (bitcaster/config/settings/base.py - 3 = bitcaster/)
+PACKAGE_DIR = Path(__file__).parent.parent  # bitcaster/
+SOURCE_DIR = PACKAGE_DIR.parent  # src/
 PROJECT_DIR = SOURCE_DIR.parent
 ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
@@ -53,6 +52,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'bitcaster.middleware.setup.SetupMiddleware',
     'bitcaster.middleware.env.BitcasterEnvMiddleware',
     'bitcaster.middleware.security.SecurityHeadersMiddleware',
@@ -129,7 +129,7 @@ LANGUAGES = (
     ('fr', _('French')),
 )
 LOCALE_PATHS = (
-    str(BITCASTER_DIR / 'locale'),
+    str(PACKAGE_DIR / 'locale'),
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#site-id
@@ -144,7 +144,7 @@ USE_L10N = True
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
 TEMPLATES_DIR = [
-    str(BITCASTER_DIR / 'templates'),
+    str(PACKAGE_DIR / 'templates'),
 
 ]
 # TEMPLATE_DEMO CONFIGURATION
@@ -156,7 +156,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
         'DIRS': [
-            str(BITCASTER_DIR / 'templates'),
+            str(PACKAGE_DIR / 'templates'),
         ],
         'OPTIONS': {
             # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
@@ -199,13 +199,22 @@ SECURE_SSL_REDIRECT = False
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not env.bool('DEBUG', False)
 
+# URL Configuration
+# ------------------------------------------------------------------------------
+ROOT_URLCONF = 'bitcaster.config.urls'
+URL_PREFIX = env('URL_PREFIX')
+SETUP_URL = '/setup/'
+USE_X_FORWARDED_HOST = True
+
 # STATIC FILE CONFIGURATION
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
 STATIC_ROOT = env.str('STATIC_ROOT', '')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
-STATIC_URL = '/static/'
+STATIC_URL = f'/{URL_PREFIX}static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
@@ -225,13 +234,8 @@ STATICFILES_FINDERS = [
 MEDIA_ROOT = env.str('MEDIA_ROOT', '')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
-MEDIA_URL = '/media/'
+MEDIA_URL = f'/{URL_PREFIX}media/'
 
-# URL Configuration
-# ------------------------------------------------------------------------------
-ROOT_URLCONF = 'bitcaster.config.urls'
-FORCE_SCRIPT_NAME = env('URL_PREFIX')
-USE_X_FORWARDED_HOST = True
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = 'bitcaster.config.wsgi.application'
 
@@ -266,32 +270,34 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'KEY_PREFIX': 'bitcaster',
-        'LOCATION': env('REDIS_CACHE_URL'),
-        # "LOCATION": "redis://127.0.0.1:6379/1",
-
-        'OPTIONS': {
-            'PICKLE_VERSION': -1,  # default
-            # 'PARSER_CLASS': 'redis.connection.HiredisParser',
-            # 'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient'
-
-        },
-    },
-    'lock': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        # 'BACKEND': 'redis_lock.django_cache.RedisCache',
-        'KEY_PREFIX': 'bitcaster-lock',
-        'LOCATION': env('REDIS_LOCK_URL'),
-        'OPTIONS': {
-            'PICKLE_VERSION': -1,  # default
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient'
-            # "CLIENT_CLASS": "redis.client.StrictRedis"
-
-        },
-    },
+    'default': env.cache('REDIS_CACHE_URL'),
+    'lock': env.cache('REDIS_LOCK_URL'),
+    # 'default': {
+    #     'BACKEND': 'django_redis.cache.RedisCache',
+    #     'KEY_PREFIX': 'bitcaster',
+    #     'LOCATION': env('REDIS_CACHE_URL'),
+    #     # "LOCATION": "redis://127.0.0.1:6379/1",
+    #
+    #     'OPTIONS': {
+    #         'PICKLE_VERSION': -1,  # default
+    #         # 'PARSER_CLASS': 'redis.connection.HiredisParser',
+    #         # 'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
+    #         'CLIENT_CLASS': 'django_redis.client.DefaultClient'
+    #
+    #     },
+    # },
+    # 'lock': {
+    #     'BACKEND': 'django_redis.cache.RedisCache',
+    #     # 'BACKEND': 'redis_lock.django_cache.RedisCache',
+    #     'KEY_PREFIX': 'bitcaster-lock',
+    #     'LOCATION': env('REDIS_LOCK_URL'),
+    #     'OPTIONS': {
+    #         'PICKLE_VERSION': -1,  # default
+    #         'CLIENT_CLASS': 'django_redis.client.DefaultClient'
+    #         # "CLIENT_CLASS": "redis.client.StrictRedis"
+    #
+    #     },
+    # },
 }
 
 # AUTHENTICATION CONFIGURATION
@@ -307,7 +313,7 @@ AUTHENTICATION_BACKENDS = (
 
 # Custom user app defaults
 # Select the correct user model
-LOGIN_REDIRECT_URL = 'users:redirect'
+LOGIN_REDIRECT_URL = 'me'
 LOGIN_URL = 'login'
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
@@ -371,6 +377,22 @@ CONSTANCE_ADDITIONAL_FIELDS = {
     #     'widget': 'django.forms.Select',
     #     'choices': ((None, "-----"), ("yes", "Yes"), ("no", "No"))
     # }],
+    'read_only_text': ['django.forms.fields.CharField', {
+        'required': False,
+        'widget': 'bitcaster.utils.constance.ObfuscatedInput',
+    }],
+    'write_only_text': ['django.forms.fields.CharField', {
+        'required': False,
+        'widget': 'bitcaster.utils.constance.WriteOnlyTextarea',
+    }],
+    'write_only_input': ['django.forms.fields.CharField', {
+        'required': False,
+        'widget': 'bitcaster.utils.constance.WriteOnlyInput',
+    }],
+    'select_group': ['bitcaster.utils.constance.GroupChoiceField', {
+        'required': False,
+        'widget': 'bitcaster.utils.constance.GroupChoice',
+    }],
 }
 
 CONSTANCE_CONFIG = OrderedDict({
@@ -530,7 +552,7 @@ CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
 
 # DEBUG-TOOLBAR
 if DEBUG:
-    ignored = RegexList(('/setup/', '/tpl/.*'))
+    ignored = RegexList((SETUP_URL, '/tpl/.*'))
 
     def show_ddt(request):
         if request.user.is_authenticated:

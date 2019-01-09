@@ -144,7 +144,7 @@ def wait_for_service(address, timeout=30, caption='', stdout=None, sleep=0):
     end = start + timeout
     while True:
         if stdout:
-            stdout.write(caption + '\r')
+            stdout.write(caption)
             stdout.flush()
         try:
             s.connect((ip, port))

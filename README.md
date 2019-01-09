@@ -4,7 +4,9 @@
 [![circle-badge]][circle-link]
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6fa79049ba7c44dd9b082a7ed8b5dce9)](https://www.codacy.com/app/bitcaster/bitcaster?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bitcaster-io/bitcaster&amp;utm_campaign=Badge_Grade)
 [![codecov-badge]][codecov-link]
-[![microbadger]][docker]
+
+[![docker-badge]][docker]
+[![microbadger-badge]][microbadger-link]
 
 
 <p align="center">
@@ -50,6 +52,7 @@ In addition a plugin SDK will allow you to create your own plugins in order to e
 
 [travis-badge]: https://secure.travis-ci.org/bitcaster-io/bitcaster.png?branch=develop
 [travis-link]: https://travis-ci.org/bitcaster-io/bitcaster?branch=develop
+
 [circle-badge]: https://circleci.com/gh/bitcaster-io/bitcaster.svg?style=svg
 [circle-link]: https://circleci.com/gh/bitcaster-io/bitcaster
 
@@ -59,5 +62,8 @@ In addition a plugin SDK will allow you to create your own plugins in order to e
 [pypi-version]: https://img.shields.io/pypi/v/bitcaster.svg
 [pypi]: https://pypi.org/project/bitcaster/
 
-[microbadger]: https://images.microbadger.com/badges/version/bitcaster/bitcaster.svg
+[docker-badge]: https://images.microbadger.com/badges/version/bitcaster/bitcaster.svg
 [docker]: https://hub.docker.com/r/bitcaster/bitcaster "Download docker image"
+
+[microbadger-badge]: https://images.microbadger.com/badges/image/bitcaster/bitcaster.svg
+[microbadger-link]: https://microbadger.com/images/bitcaster/bitcaster "Docker image infos"

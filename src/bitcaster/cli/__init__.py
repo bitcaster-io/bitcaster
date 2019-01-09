@@ -69,7 +69,7 @@ def cli(ctx, config, verbose, **kwargs):
     config = Path(config).expanduser().absolute()
     filepath = str(config)
     os.environ['BITCASTER_CONF'] = filepath
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings.default')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings')
     from bitcaster.config.environ import env
     if verbose > 0:
         if config.exists():
