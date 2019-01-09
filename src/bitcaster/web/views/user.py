@@ -33,11 +33,10 @@ class UserIndexView(TemplateView):
     template_name = 'bitcaster/users/user-home.html'
 
     def get_context_data(self, **kwargs):
-        # if settings.ON_PREMISE:
-        membership = self.request.user.memberships.first()
-        if membership:
-            kwargs['setup'] = reverse('org-dashboard', args=[membership.organization.slug])
-        kwargs['settings'] = settings
+        if settings.ON_PREMISE:
+            membership = self.request.user.memberships.first()
+            if membership:
+                kwargs['setup_url'] = reverse('org-dashboard', args=[membership.organization.slug])
         return super().get_context_data(**kwargs)
 
     def get_object(self, queryset=None):
