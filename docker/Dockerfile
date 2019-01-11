@@ -84,7 +84,7 @@ EXPOSE 5555
 EXPOSE 6379
 
 ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-ADD supervisord.conf /etc/supervisord.conf
+ADD docker/supervisord.conf /etc/supervisord.conf
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
