@@ -49,7 +49,9 @@ class IndexView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('me'))
+            membership = request.user.memberships.first()
+            if membership:
+                return HttpResponseRedirect(reverse('me', args=[membership.organization.slug]))
             # if request.user.memberships.filter(role=Role.OWNER):
             #     url = reverse('org-dashboard', args=[request.user.memberships.first().organization.slug])
             #     return HttpResponseRedirect(url)

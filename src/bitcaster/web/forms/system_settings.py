@@ -26,8 +26,6 @@ class SettingsMainForm(Form):
     SITE_URL = forms.CharField()
     RECAPTCHA_PUBLIC_KEY = forms.CharField(required=False)
     RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
-    SENTRY_DSN = forms.CharField(required=False)
-    ENABLE_SENTRY = forms.BooleanField(required=False)
 
 
 class SettingsEmailForm(Form):

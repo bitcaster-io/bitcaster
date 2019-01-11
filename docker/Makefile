@@ -1,5 +1,6 @@
 # envs to set before use this script
 BITCASTER_DATABASE_URL?=${BITCASTER_DATABASE_URL}
+BITCASTER_SECRET_KEY?=${BITCASTER_SECRET_KEY}
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
@@ -50,7 +51,7 @@ build:
 	 		--rm \
 	 		--name=${CONTAINER_NAME} \
 			-p 8000:8000 \
-			-e BITCASTER_SECRET_KEY=123123124 \
+			-e BITCASTER_SECRET_KEY="${BITCASTER_SECRET_KEY}" \
 			-e BITCASTER_REDIS_CACHE_URL=${BITCASTER_REDIS_CACHE_URL} \
 			-e BITCASTER_REDIS_LOCK_URL=${BITCASTER_REDIS_LOCK_URL} \
 			-e BITCASTER_CELERY_BROKER_URL=${BITCASTER_CELERY_BROKER_URL} \
@@ -84,7 +85,7 @@ test:
 				 -e CSRF_COOKIE_SECURE=1 \
 				 -e SECURE_HSTS_PRELOAD=1 \
 				 -e SECURE_SSL_REDIRECT=1" \
-	CMD='bash -c "whoami && touch /var/bitcaster/.touch && bitcaster check --deploy "' \
+	CMD='bash -c "whoami && touch /var/bitcaster/.touch && bitcaster check --deploy && bitcaster plugin list"' \
 	$(MAKE) .run
 
 scratch:
@@ -96,3 +97,7 @@ shell:
 
 docker-remove:
 	docker-remove.sh ${IMAGE_NAME} -o ${ORGANIZATION}
+
+ignore:
+	cd .. && docker build -f docker/Dockerfile.ignore -t build-context .
+	docker run --rm -it build-context

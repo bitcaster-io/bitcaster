@@ -1,7 +1,31 @@
 {% extends "bitcaster/users/user_base.html" %}
 {% block page %}
-    -- {{ organization }} --
-    -- {{ user.memberships.count }} --
+    {% for application, events in menu.items %}
+        <ul>
+            <h2>{{ application }}</h2>
+        {% for event, channels in events.items %}
+            <li><span class="title">{{ event }}</span>
+                <select>
+                    <option></option>
+                    {% for channel, subscription in channels.items %}
+                        <option {% if subscription %}selected="selected"{% endif %}>{{channel}}</option>
+                    {% endfor %}
+                </select>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+{##}
+{#    {% for subscription in user.subscriptions.all %}#}
+{#        <div>{{ subscription }}</div>#}
+{#    {% endfor %}#}
+{##}
+{##}
+{#    {% for e in events %}#}
+{#        <div>{{ subscription }}</div>#}
+{#    {% endfor %}#}
+
+
 {#    <div class="container-fluid">#}
 {#        <div class="row col-10">#}
 {#            <div>#}

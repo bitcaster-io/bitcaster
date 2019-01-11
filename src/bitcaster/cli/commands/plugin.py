@@ -67,18 +67,28 @@ def uninstall(name, prompt, **kwargs):
 
 @plugin.command()
 @click.argument('name', required=False)
+@click.option('--editable', '-e', default=False, is_flag=True)
 @click.option('--from-dir', '-d', default=None, type=click.Path())
 @click.option('--recursive', '-r', default=False, is_flag=True)
 @click.option('--prompt/--no-input', default=True, is_flag=True,
               help='Do not prompt for parameters')
-def install(name, prompt, recursive, from_dir, **kwargs):
+def install(name, prompt, recursive, from_dir, editable, **kwargs):
     from pip._internal import main as pipmain
+    if editable:
+        editable = '-e'
+    else:
+        editable = ''
     if from_dir:
         if recursive:
-            for root, subdirs, files in os.walk(from_dir):
-                if os.path.exists(os.path.join(root, 'setup.py')):
-                    click.echo(f'Found plugin in {root}')
-                    pipmain(['install', '-q', '--ignore-installed', root])
+            base = os.path.abspath(from_dir)
+            for root, subdirs, files in os.walk(base):
+                os.chdir(base)
+                target = os.path.abspath(root)
+                if os.path.exists(os.path.join(target, 'setup.py')):
+                    click.echo(f'Found plugin in {target}')
+
+                    ret = pipmain(['install', '-q', '--ignore-installed', editable, root])
+                    click.echo(ret)
 
         else:
             os.chdir(from_dir)

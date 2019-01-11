@@ -225,7 +225,7 @@ class SubscriptionPolicy(EnumField):
 class SubscriptionPolicyField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
                  choices=SubscriptionPolicy.as_choices(),
-                 default=int(SubscriptionPolicy.INVITATION),
+                 default=int(SubscriptionPolicy.FREE),
                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
         super().__init__(verbose_name=verbose_name, name=name,
                          choices=choices,

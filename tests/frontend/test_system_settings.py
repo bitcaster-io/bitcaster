@@ -15,7 +15,7 @@ pytestmark = pytest.mark.django_db
 
 def test_system_channels_wizard(django_app, admin, settings):
     settings.ON_PREMISE = False
-    res = django_app.get('/', user=admin).follow()
+    res = django_app.get('/', user=admin)
     res = res.click('Settings')
     res = res.click('Channels')
     res = res.click('Create channel')

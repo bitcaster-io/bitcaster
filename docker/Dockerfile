@@ -13,7 +13,7 @@ RUN set -o pipefail && if [ "${DEVELOP}" = "1" ]; then \
     && curl ${GITHUB_CREDENTIALS}: -L "https://github.com/bitcaster-io/bitcaster/archive/${VERSION}.tar.gz" | tar -xzf - --strip-components=1; \
     fi
 
-FROM python:3.6.7-slim as base
+FROM python:3.6.7-slim-stretch as base
 RUN apt-get update \
  	&& apt-get install -y --no-install-recommends \
  	    gcc \
@@ -63,19 +63,18 @@ RUN set -ex \
     && chown bitcaster /var/bitcaster/ \
     && pipenv install --verbose --system --deploy --ignore-pipfile $PIPENV_ARGS
 
-RUN pip install . \
-    && bitcaster plugin install --from-dir plugins/ -r
+RUN pip --disable-pip-version-check install .
+RUN for dir in plugins/*;do pip --disable-pip-version-check install $dir; done;
+RUN pip list | grep bitcaster
 
 WORKDIR /var/bitcaster
 
 RUN rm -fr /code \
     && rm -fr /var/bitcaster/.cache \
-    && apt-get remove -y --purge \
+    && apt-get purge --auto-remove -y \
         gcc \
-        python-dev \
-        wget \
-    && apt-get autoremove -y
-
+        mysql-common \
+        python-dev
 
 USER bitcaster
 

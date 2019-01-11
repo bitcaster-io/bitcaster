@@ -66,7 +66,7 @@ class SubscriptionOptions(serializers.Serializer):
 
 
 class GmailOAuthOptions(DispatcherOptions):
-    credentials = serializers.JSONField()
+    # credentials = serializers.JSONField()
     sender = serializers.EmailField(required=True)
 
 
@@ -78,7 +78,7 @@ class GmailOAuth(Dispatcher, GmailOAauthHAndler):
 
     def _get_connection(self) -> Resource:
         data = self.config
-        credentials = credentials_from_dict(data['credentials'])
+        credentials = credentials_from_dict('', data['credentials'])
         http = credentials.authorize(httplib2.Http())
         credentials.refresh(http)
         self.save_credentials(credentials, True)

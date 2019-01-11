@@ -9,6 +9,7 @@ tests_require = ['bitcaster',
                  'pytest-echo',
                  'pytest-pythonpath']
 
+reqs = ['skpy']
 setup(
     name='bitcaster-skype',
     version='0.1',
@@ -22,7 +23,7 @@ setup(
     package_data={
         'bitcaster_skype': ['*.png', ],
     },
-    install_requires=['skpy'],
+    install_requires=[],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

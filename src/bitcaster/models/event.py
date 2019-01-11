@@ -22,7 +22,7 @@ class Event(AbstractModel):
     application = models.ForeignKey(Application,
                                     on_delete=models.CASCADE,
                                     related_name='events')
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, db_index=True)
     description = models.TextField(null=True, blank=True)
     allowed_origins = ArrayField(models.GenericIPAddressField(max_length=50),
                                  blank=True,
@@ -40,6 +40,7 @@ class Event(AbstractModel):
 
     class Meta:
         unique_together = ('application', 'name')
+        ordering = ('name', 'id')
 
     def __str__(self):
         return self.name

@@ -1,4 +1,4 @@
-{% load bc_assets bc_permissions bitcaster static gravatar %}<!doctype html>
+{% load bc_assets bc_permissions bitcaster static gravatar cache %}<!doctype html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -77,10 +77,9 @@
                             {{ user.display_name }} <img src="{{ user|gravatar:30 }}" /><i class="fa fa-angle-down"></i>
                           </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuLink">
-                                <a class="dropdown-item" href="{% url "me" %}">Home</a>
-                                {% if setup_url %}
-                                    <a class="dropdown-item" href="{{ setup_url }}">Setup</a>
-                                {% endif %}
+{#                                {% if organization %}#}
+{#                                <a class="dropdown-item" href="{% url "me" organization.slug %}">Home</a>#}
+{#                                {% endif %}#}
                                 <a class="dropdown-item" href="{% url "user-profile" %}">Profile</a>
                                 <a class="dropdown-item" href="{% url "user-addresses" %}">Addresses</a>
                                 {% if user.is_superuser %}
@@ -120,6 +119,7 @@
 
 
         {% block footer %}
+            {% cache 500 footer bitcaster_version %}
             <footer>
                 <div class="container">
                     <div class="row">
@@ -141,8 +141,8 @@
                         </div>
                     </div>
                 </div>
-
             </footer>
+            {% endcache %}
         {% endblock footer %}
     {% endblock container %}
 {% endblock body %}

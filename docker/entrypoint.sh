@@ -1,7 +1,7 @@
 #!/bin/bash -e
 set -e
 
-mkdir -p /var/bitcaster/log,conf,run} ${BITCASTER_MEDIA_ROOT} ${BITCASTER_STATIC_ROOT}
+mkdir -p /var/bitcaster/{log,conf,run} ${BITCASTER_MEDIA_ROOT} ${BITCASTER_STATIC_ROOT}
 rm -f /var/datamart/run/*
 
 

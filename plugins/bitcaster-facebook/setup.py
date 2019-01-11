@@ -12,6 +12,8 @@ tests_require = ['bitcaster',
                  'vcrpy'
                  ]
 
+reqs = ['fbchat', ]
+
 setup(
     name='bitcaster-facebook',
     version='0.1',
@@ -25,7 +27,7 @@ setup(
     package_data={
         'bitcaster_facebook': ['*.png', ],
     },
-    install_requires=['fbchat', ],
+    install_requires=[],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

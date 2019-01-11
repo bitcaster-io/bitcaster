@@ -8,13 +8,13 @@ tests_require = ['bitcaster',
                  'pytest-coverage',
                  'pytest-echo',
                  'pytest-pythonpath']
-
+reqs = ['pyxmpp2']
 setup(
     name='bitcaster-xmpp',
     version='0.1',
     description='',
     long_description='',
-    install_requires=['pyxmpp2'],
+    install_requires=[],
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     package_dir={'': '.'},

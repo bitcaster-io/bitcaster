@@ -48,13 +48,6 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def _get_connection(self) -> object:
-        """
-
-        :param subscription: bitcaster.models.Subscription
-        :param subject: message subject
-        :param message: message body
-        :return:
-        """
         pass  # pragma: no-cover
 
     def get_recipient_address(self, subscription):

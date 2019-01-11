@@ -9,6 +9,9 @@ tests_require = ['bitcaster',
                  'pytest-echo',
                  'pytest-pythonpath']
 
+reqs = ['requests-oauthlib',
+        'google-api-python-client',
+        ]
 setup(
     name='bitcaster-gmail-oauth',
     version='0.1',
@@ -22,9 +25,7 @@ setup(
     package_data={
         'bitcaster_gmail_oauth': ['*.png', ],
     },
-    install_requires=['requests-oauthlib',
-                      'google-api-python-client',
-                      ],
+    install_requires=[],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

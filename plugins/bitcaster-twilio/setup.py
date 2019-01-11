@@ -9,6 +9,8 @@ tests_require = ['bitcaster'
                  'pytest-echo',
                  'pytest-pythonpath']
 
+reqs = ['twilio', 'lxml']
+
 setup(
     name='bitcaster-twilio',
     version='0.1',
@@ -22,7 +24,7 @@ setup(
     package_data={
         'bitcaster_twilio': ['*.png', ],
     },
-    install_requires=['twilio', 'lxml'],
+    install_requires=[],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

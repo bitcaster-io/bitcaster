@@ -8,6 +8,7 @@ tests_require = ['bitcaster',
                  'pytest-coverage',
                  'pytest-echo',
                  'pytest-pythonpath']
+reqs = ['DNSPython', 'pyxmpp2']
 
 setup(
     name='bitcaster-hangout',
@@ -22,7 +23,7 @@ setup(
     package_data={
         'bitcaster_hangout': ['*.png', ],
     },
-    install_requires=['DNSPython', 'pyxmpp2'],
+    install_requires=[],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

@@ -2,24 +2,29 @@
 {% block bodyclass %}user{% endblock %}
 {% block nav-menu %}
     <span class="top-menu">
-    {% if organization %}
+    {% if organizations %}
         <div class="dropdown">
             <a class="dropdown-toggle2"
                href="#" role="button"
                id="orgMenuLink" data-toggle="dropdown"
                aria-haspopup="true" aria-expanded="false">
                [{{ organization }}]
-                / {% if application %}{{ application }}{% else %}~~~{% endif %}
                 <i class="fa fa-angle-down"></i>
             </a>
 
             <div class="dropdown-menu dropdown-menu-left" aria-labelledby="orkMenuLink">
-                {% for link, name in allowed_applications %}
-                    <a class="dropdown-item organization"
-                       href="{% url 'user-app' organization.slug app.slug %}">{{ app.name }}</a>
-                {% endfor %}
+            <a class="dropdown-item organization" href="">Switch organization</a>
             </div>
         </div>
+    {% else %}
+            <div class="dropdown">
+            <a class="dropdown-toggle2"
+               href="#"
+               aria-haspopup="true" aria-expanded="false">
+               [{{ organization }}]
+            </a>
+            </div>
     {% endif %}
+
     </span>
 {% endblock nav-menu %}

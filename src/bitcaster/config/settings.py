@@ -11,6 +11,7 @@ from bitcaster.config.logging_conf import LOGGING
 logger = logging.getLogger(__name__)
 
 PACKAGE_DIR = Path(__file__).parent.parent  # bitcaster/
+BITCASTER_DIR = PACKAGE_DIR  # backward compatibility - needed by plugins
 SOURCE_DIR = PACKAGE_DIR.parent  # src/
 PROJECT_DIR = SOURCE_DIR.parent
 ALLOWED_HOSTS = ['*']
@@ -72,6 +73,7 @@ AUTH_USER_MODEL = 'bitcaster.user'
 SECRET_KEY = env('SECRET_KEY')
 FERNET_KEYS = [SECRET_KEY] + env('FERNET_KEYS')
 ON_PREMISE = env('ON_PREMISE')
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_NAME = 'bitcasterid'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
@@ -312,7 +314,7 @@ AUTHENTICATION_BACKENDS = (
 
 # Custom user app defaults
 # Select the correct user model
-LOGIN_REDIRECT_URL = 'me'
+LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'login'
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
@@ -400,8 +402,8 @@ CONSTANCE_CONFIG = OrderedDict({
     'SITE_URL': ('', '', str),
     'RECAPTCHA_PUBLIC_KEY': ('', '', str),
     'RECAPTCHA_PRIVATE_KEY': ('', '', str),
-    'ENABLE_SENTRY': ('', '', str),
-    'SENTRY_DSN': ('', '', str),
+    # 'ENABLE_SENTRY': ('', '', str),
+    # 'SENTRY_DSN': ('', '', str),
     'HOSTIP_ADDRESS': ('http://api.hostip.info/get_html.php',
                        'api.hostip.info info',
                        str),
@@ -414,7 +416,7 @@ CONSTANCE_CONFIG = OrderedDict({
     'EMAIL_HOST_PORT': (0, '', int),
     'EMAIL_HOST_USER': ('', '', str),
     'EMAIL_HOST_PASSWORD': ('', '', str),
-    'EMAIL_SENDER': ('bitcaster@noreply.org', '', str),
+    'EMAIL_SENDER': ('noreply@bitcaster.io', '', str),
     'EMAIL_SUBJECT_PREFIX': ('[bitcaster] ', '', str),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY': ('', '', str),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET': ('', '', str),
@@ -430,17 +432,17 @@ CONSTANCE_CONFIG_FIELDSETS = {'Options': list(CONSTANCE_CONFIG.keys())}
 
 # SENTRY & RAVEN
 if env.bool('SENTRY_ENABLED', False):
-    import bitcaster.state
+    import bitcaster
 
     LOGGING['handlers']['sentry'] = {'level': 'ERROR',
                                      # 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
                                      'class': 'bitcaster.logging.BitcasterHandler',
-                                     'extra': {'state': bitcaster.state.state},
                                      }
 
     INSTALLED_APPS += ['raven.contrib.django.raven_compat', ]
     RAVEN_CONFIG = {
         'dsn': env('SENTRY_DSN'),
+        'release': bitcaster.get_full_version(),
         # If you are using git, you can also automatically configure the
         # release based on the git info.
     }

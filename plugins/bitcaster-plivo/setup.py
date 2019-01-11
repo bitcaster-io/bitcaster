@@ -8,7 +8,7 @@ tests_require = ['bitcaster',
                  'pytest-coverage',
                  'pytest-echo',
                  'pytest-pythonpath']
-
+reqs = ['plivo', 'lxml']
 setup(
     name='bitcaster-plivo',
     version='0.1',
@@ -22,7 +22,7 @@ setup(
     package_data={
         'bitcaster_plivo': ['*.png', ],
     },
-    install_requires=['plivo', 'lxml'],
+    install_requires=[],
     tests_require=tests_require,
     extras_require={
         'test': tests_require,

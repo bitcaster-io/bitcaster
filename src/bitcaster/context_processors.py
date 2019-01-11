@@ -6,7 +6,7 @@ import bitcaster as app
 
 def bitcaster(request):
     setup_url = ''
-    if settings.ON_PREMISE:
+    if request.user.is_authenticated:
         membership = request.user.memberships.first()
         if membership:
             setup_url = reverse('org-dashboard', args=[membership.organization.slug])

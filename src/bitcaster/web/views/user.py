@@ -3,59 +3,61 @@ import json
 import logging
 
 from django import forms
-from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
 from django.urls import reverse
-from django.utils.functional import cached_property
 from django.utils.html import escape, format_html, format_html_join, html_safe
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
-from bitcaster.models import Address, Organization, User
+from bitcaster.models import Address, User
 from bitcaster.utils.email_verification import set_new_email_request
 from bitcaster.utils.wsgi import get_client_ip
 from bitcaster.web.forms.user import send_address_verification_email
+from bitcaster.web.views.organization import OrganizationViewMixin
 
 from ..forms import UserProfileForm
-from .base import (BitcasterBaseDetailView,
-                   BitcasterBaseUpdateView, BitcasterTemplateView,)
+from .base import (BitcasterBaseDetailView, BitcasterBaseUpdateView,
+                   BitcasterTemplateView, SelectedApplicationMixin,)
 
 logger = logging.getLogger(__name__)
 
 __all__ = ('UserProfileView', 'UserWelcomeView', 'UserHomeView', 'UserAddressesView')
 
 
-class UserIndexView(TemplateView):
+class UserIndexView(OrganizationViewMixin, TemplateView):
     template_name = 'bitcaster/users/user-home.html'
 
     def get_context_data(self, **kwargs):
-        if settings.ON_PREMISE:
-            membership = self.request.user.memberships.first()
-            if membership:
-                kwargs['setup_url'] = reverse('org-dashboard', args=[membership.organization.slug])
-        return super().get_context_data(**kwargs)
+        subscriptions = {}
+        menu = {}
 
-    def get_object(self, queryset=None):
-        return self.request.user
+        ret = super().get_context_data(**kwargs)
+        applications = ret['applications']
+        for subscription in self.request.user.subscriptions.all():
+            subscriptions[f'{subscription.event_id}-{subscription.channel_id}'] = subscription
+
+        for application in applications:
+            menu[application] = {}
+            for event in application.events.all():
+                menu[application][event] = {}
+                for channel in event.channels.all():
+                    menu[application][event][channel] = subscriptions.get(f'{event.id}-{channel.id}')
+                ret['menu'] = menu
+
+        membership = self.request.user.memberships.first()
+        if membership:
+            ret['setup_url'] = reverse('org-dashboard', args=[membership.organization.slug])
+
+        return ret
 
 
-class UserHomeView(BitcasterBaseDetailView):
+class UserHomeView(SelectedApplicationMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/users/user-home.html'
     model = User
-
-    @cached_property
-    def selected_organization(self):
-        return Organization.objects.get(slug=self.kwargs['org'],
-                                        members=self.request.user,
-                                        )
-
-    @cached_property
-    def selected_application(self):
-        return self.selected_organization.applications.get(slug=self.kwargs['app'])
 
     def get_context_data(self, **kwargs):
         kwargs['application'] = self.selected_application

@@ -44,23 +44,15 @@ urlpatterns = [
     # General
     path('terms/', TemplateView.as_view(template_name='bitcaster/legal/terms.html'), name='legal-terms'),
     path('privacy/', TemplateView.as_view(template_name='bitcaster/legal/privacy.html'), name='legal-privacy'),
-    # me
-    path('me/', UserIndexView.as_view(), name='me'),
 
     # Settings
     path('settings/', SettingsView.as_view(), name='settings'),
     path('settings/email/', SettingsEmailView.as_view(), name='settings-email'),
     path('settings/oauth/', SettingsOAuthView.as_view(), name='settings-oauth'),
     path('settings/sysinfo/', SettingsSystemInfo.as_view(), name='settings-sysinfo'),
-]
-
-if not settings.ON_PREMISE:
-    urlpatterns += [path('settings/organizations/', SettingsOrgListView.as_view(), name='settings-org-list'),
-                    path('settings/organizations/<int:pk>/edit/', SettingsOrgUpdateView.as_view(),
-                         name='settings-org-update'),
-                    ]
-
-urlpatterns += [
+    path('settings/organizations/', SettingsOrgListView.as_view(), name='settings-org-list'),
+    path('settings/organizations/<int:pk>/edit/', SettingsOrgUpdateView.as_view(),
+         name='settings-org-update'),
     path('settings/channel/', SettingsChannelListView.as_view(), name='settings-channels'),
     path('settings/channel/add/', SettingsChannelCreateWizard.as_view(), name='system-channel-create'),
     path('settings/channel/<int:pk>/edit/', SettingsChannelUpdateView.as_view(), name='system-channel-update'),
@@ -125,7 +117,9 @@ urlpatterns += [
 
     # Organization
     path('org/add/', OrganizationCreate.as_view(), name='org-create'),
-    path('<slug:org>/', OrganizationDashboard.as_view(), name='org-dashboard'),
+    path('<slug:org>/', UserIndexView.as_view(), name='me'),
+
+    path('<slug:org>/setup', OrganizationDashboard.as_view(), name='org-dashboard'),
     path('<slug:org>/update/', OrganizationUpdate.as_view(), name='org-config'),
 
     path('<slug:org>/member/', OrganizationMembers.as_view(), name='org-member-list'),
