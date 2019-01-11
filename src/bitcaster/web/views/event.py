@@ -6,7 +6,7 @@ from django.forms import BaseFormSet
 from django.forms.models import BaseInlineFormSet, inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, ListView, RedirectView
 from rest_framework.serializers import Serializer
 

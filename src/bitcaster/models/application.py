@@ -13,8 +13,7 @@ from bitcaster import logging
 from bitcaster.db.fields import SubscriptionPolicyField
 from bitcaster.db.validators import RateLimitValidator
 from bitcaster.file_storage import MediaFileSystemStorage, app_media_root
-from bitcaster.utils import locks
-from bitcaster.utils.retries import TimedRetryPolicy
+# from bitcaster.utils import locks
 from bitcaster.utils.slug import slugify_instance
 
 from .base import AbstractModel
@@ -78,10 +77,10 @@ class Application(AbstractModel):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.slug:
-            lock = locks.get('slug:application', 5)
-            with TimedRetryPolicy(10, lock.acquire):
-                slugify_instance(self, self.name,
-                                 reserved=RESERVED_APPLICATION_SLUGS)
+            #     lock = locks.get('slug:application', 5)
+            #     with TimedRetryPolicy(10, lock.acquire):
+            slugify_instance(self, self.name,
+                             reserved=RESERVED_APPLICATION_SLUGS)
         super(Application, self).save(force_insert, force_update, using, update_fields)
 
     @property

@@ -63,10 +63,9 @@ class Email(Dispatcher):
             fail_silently=False)
 
     def get_recipient_address(self, subscription):
-        # super(Email, self).get_recipient_address(subscription)
         try:
             return super().get_recipient_address(subscription)
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, TypeError):
             return subscription.subscriber.email
 
     def emit(self, subscription, subject, message, connection=None, *args, **kwargs):

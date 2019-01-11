@@ -42,6 +42,9 @@ class Occurence(models.Model):
     successes = models.IntegerField(default=0)
     failures = models.IntegerField(default=0)
 
+    class Meta:
+        app_label = 'bitcaster'
+
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.application = self.event.application
         self.organization = self.application.organization
@@ -64,3 +67,6 @@ class LogEntry(models.Model):
                                 null=True,
                                 related_name='+',
                                 on_delete=models.SET_NULL)
+
+    class Meta:
+        app_label = 'bitcaster'

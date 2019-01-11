@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.utils import timezone
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from bitcaster import logging
@@ -28,9 +28,10 @@ class EventViewSet(BaseModelViewSet):
     #     ret.application = self.get_selected_application()
     #     return ret
 
-    @detail_route(methods=['get', 'post'],
-                  authentication_classes=[TriggerTokenAuthentication],
-                  permission_classes=[EventTriggerPermission])
+    @action(methods=['get', 'post'],
+            authentication_classes=[TriggerTokenAuthentication],
+            permission_classes=[EventTriggerPermission],
+            detail=True)
     def trigger(self, request, application__pk, pk):
         event = self.get_object()
         if not event.enabled:

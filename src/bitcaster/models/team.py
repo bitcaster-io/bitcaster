@@ -5,8 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from bitcaster.db.fields import DeletionStatusField, Role, RoleField
 from bitcaster.models import OrganizationMember
-from bitcaster.utils import locks
-from bitcaster.utils.retries import TimedRetryPolicy
+# from bitcaster.utils import locks
 from bitcaster.utils.slug import slugify_instance
 
 from .base import AbstractModel
@@ -33,14 +32,17 @@ class Team(AbstractModel):
     status = DeletionStatusField()
     date_added = models.DateTimeField(default=timezone.now, null=True)
 
+    class Meta:
+        app_label = 'bitcaster'
+
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            lock = locks.get('slug:team', 5)
-            with TimedRetryPolicy(10, lock.acquire):
-                slugify_instance(self, self.name, organization=self.organization)
+            # lock = locks.get('slug:team', 5)
+            # with TimedRetryPolicy(10, lock.acquire):
+            slugify_instance(self, self.name, organization=self.organization)
             super(Team, self).save(*args, **kwargs)
         else:
             super(Team, self).save(*args, **kwargs)

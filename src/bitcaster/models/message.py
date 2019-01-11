@@ -40,6 +40,7 @@ class Message(AbstractModel):
     html = models.TextField()
 
     class Meta:
+        app_label = 'bitcaster'
         unique_together = ('event', 'channel', 'language')
 
     def __str__(self):

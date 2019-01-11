@@ -9,7 +9,7 @@ from django.forms.utils import ErrorList
 from django.urls import reverse
 from django.utils.html import escape, format_html, format_html_join, html_safe
 from django.utils.module_loading import import_string
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
@@ -68,7 +68,7 @@ class UserHomeView(SelectedApplicationMixin, BitcasterBaseDetailView):
                     (m.organization, application)
                 )
         kwargs['applications'] = allowed_applications
-        kwargs['organizations'] = self.request.user.memberships.all()
+        # kwargs['organizations'] = self.request.user.memberships.exclude(id=self.selected_organization.id)
         return super().get_context_data(**kwargs)
 
     def get_object(self, queryset=None):

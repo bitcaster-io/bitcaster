@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
@@ -35,13 +34,16 @@ class SuperuserViewMixin(SecuredViewMixin):
 class OrganizationListMixin(SecuredViewMixin):
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
-        if not settings.ON_PREMISE:
-            ret['organizations'] = Organization.objects.filter(members=self.request.user)
+        ret['organizations'] = Organization.objects.filter(members=self.request.user)
         return ret
 
 
 class SelectedOrganizationMixin(SecuredViewMixin):
     def get_context_data(self, **kwargs):
+        kwargs['organizations'] = Organization.objects.filter(members=self.request.user)
+        if self.selected_organization:
+            kwargs['organizations'] = kwargs['organizations'].exclude(id=self.selected_organization.id)
+
         kwargs['organization'] = self.selected_organization
         return super().get_context_data(**kwargs)
 
@@ -57,7 +59,7 @@ class SelectedOrganizationMixin(SecuredViewMixin):
         return organization
 
 
-class ApplicationListMixin(SelectedOrganizationMixin, OrganizationListMixin):
+class ApplicationListMixin(SelectedOrganizationMixin):
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
         if self.selected_organization:
@@ -92,16 +94,16 @@ class MessageUserMixin:
 
 
 class BitcasterTemplateView(ApplicationListMixin,
-                          OrganizationListMixin,
-                          MessageUserMixin,
-                          TemplateView):
+                            OrganizationListMixin,
+                            MessageUserMixin,
+                            TemplateView):
     pass
 
 
 class BitcasterFormView(ApplicationListMixin,
-                      MessageUserMixin,
-                      OrganizationListMixin,
-                      FormView):
+                        MessageUserMixin,
+                        OrganizationListMixin,
+                        FormView):
     pass
 
 

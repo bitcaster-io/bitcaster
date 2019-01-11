@@ -90,6 +90,7 @@ class AuditLogEntry(models.Model):
         return description.format(self)
 
     class Meta:
+        app_label = 'bitcaster'
         ordering = ('-datetime',)
         get_latest_by = 'datetime'
 

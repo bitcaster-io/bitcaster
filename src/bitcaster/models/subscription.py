@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
 from bitcaster.db.fields import EncryptedJSONField, EnumField
@@ -69,6 +69,7 @@ class Subscription(AbstractModel):
     objects = SubscriptionQuerySet.as_manager()
 
     class Meta:
+        app_label = 'bitcaster'
         unique_together = ('channel', 'subscriber')
         get_latest_by = 'id'
 

@@ -10,7 +10,7 @@ from django.contrib.postgres.forms import JSONField as _JSONFormField
 from django.db import models
 from django.db.models import Field
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from fernet_fields import hkdf
 from jsoneditor.forms import JSONEditor
 from picklefield import PickledObjectField

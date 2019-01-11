@@ -18,7 +18,7 @@ elif [[ "$*" == "bitcaster" ]];then
 elif [[ "$*" == "stack" ]];then
     bitcaster check --deploy
     bitcaster upgrade --no-input
-    gunicorn -b 0.0.0.0:8000 bitcaster.config.wsgi
+    exec supervisord --nodaemon -c /etc/supervisord.conf
 else
     exec "$@"
 fi

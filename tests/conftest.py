@@ -1,7 +1,6 @@
 import os
 import sys
 from pathlib import Path
-from unittest.mock import Mock
 
 import pytest
 from faker import Faker
@@ -33,7 +32,8 @@ def pytest_configure(config):
 
 @pytest.fixture(autouse=True)
 def patch(monkeypatch, db):
-    monkeypatch.setattr('bitcaster.utils.locks.get', lambda key, duration: Mock())
+    pass
+#     monkeypatch.setattr('bitcaster.utils.locks.get', lambda key, duration: Mock())
 
 
 @pytest.fixture

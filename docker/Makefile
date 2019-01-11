@@ -8,7 +8,7 @@ TARGET=0.3.0a9
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
-CMD?=
+CMD?=stack
 CONTAINER_NAME?=bitcaster-${TARGET}
 ORGANIZATION=bitcaster
 IMAGE_NAME=bitcaster
@@ -51,6 +51,7 @@ build:
 	 		--rm \
 	 		--name=${CONTAINER_NAME} \
 			-p 8000:8000 \
+			-p 15000:15000 \
 			-e BITCASTER_SECRET_KEY="${BITCASTER_SECRET_KEY}" \
 			-e BITCASTER_REDIS_CACHE_URL=${BITCASTER_REDIS_CACHE_URL} \
 			-e BITCASTER_REDIS_LOCK_URL=${BITCASTER_REDIS_LOCK_URL} \
@@ -101,3 +102,6 @@ docker-remove:
 ignore:
 	cd .. && docker build -f docker/Dockerfile.ignore -t build-context .
 	docker run --rm -it build-context
+
+onbuild:
+	DOCKER_IMAGE=Dockerfile.onbuild DOCKER_IMAGE=bitcaster:onbuild $(MAKE) build

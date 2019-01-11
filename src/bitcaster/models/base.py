@@ -29,3 +29,4 @@ class AbstractModel(models.Model):
 
     class Meta:
         abstract = True
+        app_label = 'bitcaster'

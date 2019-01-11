@@ -122,6 +122,7 @@ class Option(models.Model):
 
     class Meta:
         abstract = True
+        app_label = 'bitcaster'
 
 
 class OrganizationOption(Option):

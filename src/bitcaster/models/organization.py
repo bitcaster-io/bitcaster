@@ -11,8 +11,7 @@ from bitcaster.db.manager import DeleteableModelManagerMixin
 from bitcaster.db.validators import (RESERVED_NAMES, RateLimitValidator,
                                      check_reserved,)
 from bitcaster.file_storage import MediaFileSystemStorage, org_media_root
-from bitcaster.utils import locks
-from bitcaster.utils.retries import TimedRetryPolicy
+# from bitcaster.utils import locks
 from bitcaster.utils.slug import slugify_instance
 
 from .base import AbstractModel
@@ -62,6 +61,9 @@ class Organization(AbstractModel):
 
     objects = OrganizationManager()
 
+    class Meta:
+        app_label = 'bitcaster'
+
     def __str__(self):
         return self.name
 
@@ -75,11 +77,11 @@ class Organization(AbstractModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            lock = locks.get('slug:organization', 5)
-            with TimedRetryPolicy(10, lock.acquire):
-                slugify_instance(self, self.name,
-                                 reserved=RESERVED_ORGANIZATION_SLUGS)
-                super(Organization, self).save(*args, **kwargs)
+            # lock = locks.get('slug:organization', 5)
+            # with TimedRetryPolicy(10, lock.acquire):
+            slugify_instance(self, self.name,
+                             reserved=RESERVED_ORGANIZATION_SLUGS)
+            super(Organization, self).save(*args, **kwargs)
         else:
             super(Organization, self).save(*args, **kwargs)
 

@@ -4,7 +4,7 @@ import logging
 from django.contrib import messages
 from django.core.cache import cache
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView
 from rest_framework.exceptions import PermissionDenied
 

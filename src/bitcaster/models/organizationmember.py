@@ -49,6 +49,7 @@ class OrganizationMember(models.Model):
                               on_delete=models.CASCADE)
 
     class Meta:
+        app_label = 'bitcaster'
         unique_together = (
             ('organization', 'user'),
             ('organization', 'email'),

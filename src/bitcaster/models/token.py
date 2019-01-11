@@ -28,6 +28,9 @@ class ApiTriggerKey(AbstractModel):
                              default=generate_api_token)
     active = models.BooleanField(default=True, db_index=True)
 
+    class Meta:
+        app_label = 'bitcaster'
+
 
 class ApiAuthToken(AbstractModel):
     # users can generate tokens without being application-bound
@@ -42,6 +45,9 @@ class ApiAuthToken(AbstractModel):
     token = models.CharField(max_length=64, unique=True,
                              default=generate_api_token)
     active = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        app_label = 'bitcaster'
 
     @classmethod
     def generate_token(cls):

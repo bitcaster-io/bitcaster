@@ -7,7 +7,7 @@ from django.db import transaction
 from django.http import HttpResponseNotFound
 from django.utils import timezone
 from django.utils.text import slugify
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin, ProcessFormView
 from strategy_field.utils import fqn

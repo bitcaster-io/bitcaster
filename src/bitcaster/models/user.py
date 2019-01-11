@@ -123,6 +123,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    class Meta:
+        app_label = 'bitcaster'
+        verbose_name = _('User')
+        verbose_name_plural = _('Users')
+        permissions = (('activate_user', 'Can activate user'),
+                       )
+
     @property
     def display_name(self):
         return self.friendly_name or self.email
@@ -135,12 +142,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         super(User, self).set_password(raw_password)
         self.last_password_change = timezone.now()
         self.is_password_expired = False
-
-    class Meta:
-        verbose_name = _('User')
-        verbose_name_plural = _('Users')
-        permissions = (('activate_user', 'Can activate user'),
-                       )
 
     def add_trigger(self, application):
         return self.triggers.create(application=application,

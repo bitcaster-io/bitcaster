@@ -4,7 +4,7 @@ import logging
 from constance import config
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
 from bitcaster.models import Channel

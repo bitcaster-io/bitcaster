@@ -29,6 +29,7 @@ class Address(models.Model):
 
     class Meta:
         unique_together = ('user', 'dispatcher'),
+        app_label = 'bitcaster'
 
     def __str__(self):
         return self.address

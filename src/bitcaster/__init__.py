@@ -17,13 +17,7 @@ def get_full_version(git_commit=True):
         except (subprocess.CalledProcessError, FileNotFoundError):  # pragma: no-cover
             pass
 
-    from django.conf import settings
-    if settings.ON_PREMISE:
-        deployement = '(onpremise)'
-    else:
-        deployement = ''
-
-    return f'{VERSION} {deployement} {commit} '
+    return f'{VERSION} {commit} '
 
 
 @lru_cache(1)

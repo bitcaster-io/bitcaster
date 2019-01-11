@@ -3,7 +3,7 @@ import logging
 
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from ratelimit.utils import _split_rate
 
 logger = logging.getLogger(__name__)

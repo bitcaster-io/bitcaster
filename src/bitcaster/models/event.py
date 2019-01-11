@@ -39,6 +39,7 @@ class Event(AbstractModel):
     subscription_policy = SubscriptionPolicyField()
 
     class Meta:
+        app_label = 'bitcaster'
         unique_together = ('application', 'name')
         ordering = ('name', 'id')
 

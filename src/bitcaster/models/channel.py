@@ -69,6 +69,7 @@ It can be Global or Application specific.
     objects = ChannelQuerySet().as_manager()
 
     class Meta:
+        app_label = 'bitcaster'
         ordering = ('organization', 'application', 'name')
 
     def __repr__(self):

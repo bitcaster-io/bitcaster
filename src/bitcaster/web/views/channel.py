@@ -5,7 +5,7 @@ from django import forms
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 from formtools.wizard.forms import ManagementForm
 from formtools.wizard.views import SessionWizardView
