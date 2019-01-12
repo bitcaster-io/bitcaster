@@ -81,7 +81,6 @@ RUN rm -fr /code \
 USER bitcaster
 
 EXPOSE 8000
-EXPOSE 15000
 EXPOSE 5555
 EXPOSE 6379
 
