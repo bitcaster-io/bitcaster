@@ -4,7 +4,7 @@ BITCASTER_SECRET_KEY?=${BITCASTER_SECRET_KEY}
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET=0.3.0a9
+TARGET=0.3.0a10
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
