@@ -1,8 +1,8 @@
 #!/bin/bash -e
 set -e
 
-mkdir -p /var/bitcaster/{log,conf,run} ${BITCASTER_MEDIA_ROOT} ${BITCASTER_STATIC_ROOT}
-rm -f /var/datamart/run/*
+mkdir -p /var/bitcaster/run ${BITCASTER_MEDIA_ROOT} ${BITCASTER_STATIC_ROOT}
+rm -f /var/bitcaster/run/*
 
 
 if [[ "$*" == "workers" ]];then
@@ -18,7 +18,7 @@ elif [[ "$*" == "bitcaster" ]];then
 elif [[ "$*" == "stack" ]];then
     bitcaster check --deploy
     bitcaster upgrade --no-input
-    exec supervisord --nodaemon -c /etc/supervisord.conf
+    exec circusd /etc/circus.conf
 else
     exec "$@"
 fi

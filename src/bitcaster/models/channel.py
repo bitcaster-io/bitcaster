@@ -131,6 +131,10 @@ It can be Global or Application specific.
                     ctx = dict(context or {})
                     ctx.update({
                         'event': event,
+                        'channel': self,
+                        'application': self.application,
+                        'organization': self.organization,
+                        'subscription': subscription,
                         'recipient': subscription.subscriber,
                         'today': datetime.datetime.today()})
                     m = body.render(SecureContext(ctx))

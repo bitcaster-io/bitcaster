@@ -9,14 +9,6 @@ from bitcaster.logging import getLogger
 
 logger = getLogger(__name__)
 
-app.conf.beat_schedule = {
-    'add-every-60-seconds': {
-        'task': 'bitcaster.tasks.beat',
-        'schedule': 60.0,
-        # 'args': (1,)
-    },
-}
-
 
 @app.task()
 def trigger_event(event_id, context, *, user_id=None, token=None, origin=None):

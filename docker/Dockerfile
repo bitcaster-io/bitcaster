@@ -53,6 +53,8 @@ ENV BITCASTER_DATABASE_URL ""
 ENV BITCASTER_CELERY_BROKER_URL ""
 ENV BITCASTER_REDIS_CACHE_URL ""
 ENV BITCASTER_REDIS_LOCK_URL ""
+ENV BITCASTER_LOG_LEVEL "ERROR"
+
 
 WORKDIR /code
 
@@ -84,7 +86,7 @@ EXPOSE 5555
 EXPOSE 6379
 
 ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-ADD docker/supervisord.conf /etc/supervisord.conf
+ADD docker/circus.conf /etc/circus.conf
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
