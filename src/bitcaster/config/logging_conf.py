@@ -1,5 +1,7 @@
 import os
 
+level = os.environ.get('BITCASTER_LOG_LEVEL', 'ERROR').upper()
+
 LOGGING = {
     'default_level': 'INFO',
     'version': 1,
@@ -37,22 +39,22 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'level': os.environ.get('BITCASTER_LOG_LEVEL', 'ERROR'),
+            'level': level,
             'handlers': ['console'],
             'propagate': False,
         },
         'gunicorn': {
-            'level': os.environ.get('BITCASTER_LOG_LEVEL', 'ERROR'),
+            'level': level,
             'handlers': ['console'],
             'propagate': False,
         },
         'bitcaster': {
-            'level': os.environ.get('BITCASTER_LOG_LEVEL', 'ERROR'),
+            'level': level,
             'handlers': ['console', 'sentry'],
             'propagate': False,
         },
         'celery': {
-            'level': os.environ.get('BITCASTER_LOG_LEVEL', 'ERROR'),
+            'level': level,
             'handlers': ['console', 'sentry'],
             'propagate': False,
         },

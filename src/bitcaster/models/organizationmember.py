@@ -22,9 +22,11 @@ class OrganizationMember(models.Model):
 
     organization = models.ForeignKey(Organization,
                                      on_delete=models.CASCADE,
+                                     db_index=True,
                                      related_name='memberships')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              null=True, blank=True,
+                             db_index=True,
                              on_delete=models.CASCADE,
                              related_name='memberships')
     # email and team are used only during invitation phase

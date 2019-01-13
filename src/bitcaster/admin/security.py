@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import Address, ApiAuthToken, ApiTriggerKey, User
 
-from .forms import UserChangeForm, UserCreationForm
+from .forms import UserCreationForm
 from .inlines import ApiKeyInline, ApiTokenInline
 from .site import site
 
@@ -24,7 +24,7 @@ class UserAdmin(_UserAdmin):
     inlines = [ApiTokenInline, ApiKeyInline, ]
     # add_form_template = 'admin/auth/user/add_form.html'
     add_form = UserCreationForm
-    form = UserChangeForm
+    # form = UserChangeForm
     list_display = ('email', 'name', 'is_staff',
                     'language', 'timezone')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups',)
@@ -35,8 +35,9 @@ class UserAdmin(_UserAdmin):
         (_('Personal info'), {'fields': (('name', 'friendly_name'),
                                          ('language',),
                                          ('country', 'timezone'))}),
-        # (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
-        #                                'groups', 'user_permissions')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                       # 'groups', 'user_permissions'
+                                       )}),
         (_('Important dates'), {'fields': (('last_login',
                                             'last_password_change',
                                             'date_joined'),)}),

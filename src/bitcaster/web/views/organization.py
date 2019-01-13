@@ -12,6 +12,7 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from strategy_field.utils import fqn
@@ -172,6 +173,7 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
                                        password=make_password(form.cleaned_data['password']),
                                        )
             self.membership.user = user
+            self.membership.date_enrolled = now()
             self.membership.save()
             login(self.request, user, backend=fqn(ModelBackend))
             assert self.request.user == user
@@ -183,6 +185,8 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
             url = reverse('org-dashboard', args=[self.selected_organization.slug])
         else:
             url = reverse('me-home')
+        logger.debug(f'Invitation accepted by user {user.email} with role {self.membership.role}. '
+                     f'Redirecting to {url}')
         return HttpResponseRedirect(url)
 
     def form_invalid(self, form):
@@ -197,7 +201,8 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
             return {}
 
     def get_initial(self):
-        return {'email': self.membership.email}
+        return {'email': self.membership.email,
+                'friendly_name': self.membership.email}
 
     @cached_property
     def membership(self):
@@ -209,7 +214,7 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
         check = kwargs['check']
         if totp.verify(check, valid_window=config.INVITATION_EXPIRE):
             return super(InviteAccept, self).get(request, **kwargs)
-        self.message_user('Invite expired', messages.ERROR)
+        self.message_user(_('Invite expired'), messages.ERROR)
         return HttpResponseRedirect('/')
 
 

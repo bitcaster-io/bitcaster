@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'snowpenguin.django.recaptcha2',
     'crispy_forms',
     'jsoneditor',
+    'corsheaders',
     'django_sysinfo',
     'admin_extra_urls',
     'rest_framework',
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'bitcaster.middleware.setup.SetupMiddleware',
     'bitcaster.middleware.env.BitcasterEnvMiddleware',
@@ -563,3 +565,14 @@ if DEBUG:
     DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': show_ddt,
                             'JQUERY_URL': ''}
     INTERNAL_IPS = ['127.0.0.1', 'localhost', '0.0.0.0', '*']
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = rf'{STATIC_URL}.*$'
+CORS_ALLOW_METHODS = (
+    # 'DELETE',
+    'GET',
+    'OPTIONS',
+    # 'PATCH',
+    # 'POST',
+    # 'PUT',
+)

@@ -210,7 +210,7 @@ class SubscriptionForm(forms.ModelForm):
 
     class Meta:
         model = Subscription
-        fields = ('subscriber', 'channel', 'event', 'locked', 'trigger_by')
+        fields = ('subscriber', 'channel', 'event', 'trigger_by')
 
 
 class SubscriptionBaseFormSet(BaseInlineFormSet):

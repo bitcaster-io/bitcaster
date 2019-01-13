@@ -69,6 +69,7 @@ social-auth-core = "*"
 twilio = "*"
 vcrpy = "*"
 whitenoise = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 "flake8" = "*"

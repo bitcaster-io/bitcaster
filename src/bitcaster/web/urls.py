@@ -116,8 +116,8 @@ urlpatterns = [
     path('o/<slug:org>/a/<slug:app>/message/<int:pk>/delete/', MessageDelete.as_view(), name='app-message-delete'),
 
     # Organization
-    path('org/add/', OrganizationCreate.as_view(), name='org-create'),
     path('<slug:org>/', UserIndexView.as_view(), name='me'),
+    path('org/add/', OrganizationCreate.as_view(), name='org-create'),
 
     path('<slug:org>/setup', OrganizationDashboard.as_view(), name='org-dashboard'),
     path('<slug:org>/update/', OrganizationUpdate.as_view(), name='org-config'),

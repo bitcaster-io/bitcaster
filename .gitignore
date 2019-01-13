@@ -22,3 +22,4 @@
 !.tx
 !/bitcaster/_plugin_template/bitcaster-{{cookiecutter.name}}/tests/.env
 !/tests/.conf
+!.bin

@@ -4,7 +4,7 @@ BITCASTER_SECRET_KEY?=${BITCASTER_SECRET_KEY}
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET=0.3.0a11
+TARGET?=0.3.0a11
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
@@ -105,3 +105,6 @@ ignore:
 
 onbuild:
 	DOCKER_IMAGE=Dockerfile.onbuild DOCKER_IMAGE=bitcaster:onbuild $(MAKE) build
+
+deploy:
+	lazo upgrade ${DOCKER_IMAGE_NAME}:${TARGET} --insecure

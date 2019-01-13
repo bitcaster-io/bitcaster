@@ -37,7 +37,7 @@ class Organization(AbstractModel):
     enabled = models.BooleanField(default=True)
     date_added = models.DateTimeField(default=timezone.now)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL,
-                                     through='bitcaster.OrganizationMember',
+                                     through='bitcaster.organizationmember',
                                      through_fields=('organization', 'user'))
     admin_email = models.EmailField(blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -105,9 +105,20 @@ class Organization(AbstractModel):
                                                         **kwargs
                                                         )[0]
 
+    def membership_for(self, user):
+        return self.memberships.filter(user=user).first()
+
     @property
     def owners(self):
         return self.members.filter(memberships__role=Role.OWNER)
+
+    @property
+    def admins(self):
+        return self.members.filter(memberships__role=Role.ADMIN)
+
+    @property
+    def manager(self):
+        return self.members.filter(memberships__role__in=[Role.OWNER, Role.ADMIN])
 
     @property
     def channels(self):

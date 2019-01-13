@@ -23,21 +23,26 @@ class SubscriptionQuerySet(models.QuerySet):
 
 
 class SubscriptionStatus(EnumField):
-    PROPOSED = 1
-    ACCEPTED = 2
+    a = 1
+    b = 2
 
-    REQUESTED = 3
-    APPROVED = 4
+    PROPOSED = 10
+    REQUESTED = 20
 
-    MANAGED = 5
+    ACCEPTED = 30
+    APPROVED = 40
+    MANAGED = 50
+    OWNED = 60
 
     @classmethod
     def as_choices(cls):
         return sorted([(int(cls.PROPOSED), _('Admin has sent subscription proposal to user')),
-                       (int(cls.ACCEPTED), _('User accepted subscription proposal')),
                        (int(cls.REQUESTED), _('User has requested the subscripiton')),
+
+                       (int(cls.ACCEPTED), _('User accepted subscription proposal')),
                        (int(cls.APPROVED), _('Admin approved the subscription request')),
                        (int(cls.MANAGED), _('Admin subscribed user')),
+                       (int(cls.OWNED), _('User subscribed to event')),
                        ])
 
 
@@ -56,15 +61,15 @@ class Subscription(AbstractModel):
     active = models.BooleanField(default=True)
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=SubscriptionStatus.as_choices(),
-                                 default=SubscriptionStatus.ACCEPTED)
+                                 default=SubscriptionStatus.OWNED)
     deactivation_token = models.CharField(max_length=100,
                                           editable=False,
                                           unique=True)
     # managed = models.BooleanField(default=False,
     #                               help_text="if managed users cannot unsubscribe. "
     #                                         "But can still change channel")
-    locked = models.BooleanField(default=False,
-                                 help_text='if locked users cannot change subscription')
+    # locked = models.BooleanField(default=False,
+    #                              help_text='if locked users cannot change subscription')
 
     objects = SubscriptionQuerySet.as_manager()
 
@@ -79,6 +84,8 @@ class Subscription(AbstractModel):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.pk:
             self.update_token()
+        self.active = self.status not in [SubscriptionStatus.PROPOSED,
+                                          SubscriptionStatus.REQUESTED]
         super().save(force_insert, force_update, using, update_fields)
 
     def update_token(self):

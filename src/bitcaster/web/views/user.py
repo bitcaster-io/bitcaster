@@ -17,18 +17,18 @@ from bitcaster.models import Address, User
 from bitcaster.utils.email_verification import set_new_email_request
 from bitcaster.utils.wsgi import get_client_ip
 from bitcaster.web.forms.user import send_address_verification_email
-from bitcaster.web.views.organization import OrganizationViewMixin
 
 from ..forms import UserProfileForm
-from .base import (BitcasterBaseDetailView, BitcasterBaseUpdateView,
-                   BitcasterTemplateView, SelectedApplicationMixin,)
+from .base import (ApplicationListMixin, BitcasterBaseDetailView,
+                   BitcasterBaseUpdateView, BitcasterTemplateView,
+                   SelectedApplicationMixin,)
 
 logger = logging.getLogger(__name__)
 
 __all__ = ('UserProfileView', 'UserWelcomeView', 'UserHomeView', 'UserAddressesView')
 
 
-class UserIndexView(OrganizationViewMixin, TemplateView):
+class UserIndexView(ApplicationListMixin, TemplateView):
     template_name = 'bitcaster/users/user-home.html'
 
     def get_context_data(self, **kwargs):

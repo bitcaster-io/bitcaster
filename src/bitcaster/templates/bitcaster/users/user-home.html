@@ -1,8 +1,9 @@
-{% extends "bitcaster/users/user_base.html" %}
+{% extends "bitcaster/users/user_base.html" %}{% load i18n %}
 {% block page %}
     {% for application, events in menu.items %}
         <ul>
             <h2>{{ application }}</h2>
+        {% if events %}
         {% for event, channels in events.items %}
             <li><span class="title">{{ event }}</span>
                 <select>
@@ -13,6 +14,9 @@
                 </select>
             </li>
         {% endfor %}
+        {% else %}
+            <div>{% trans "No available events configured for this application" %}</div>
+        {% endif %}
         </ul>
     {% endfor %}
 {##}

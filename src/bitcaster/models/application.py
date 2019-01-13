@@ -91,3 +91,6 @@ class Application(AbstractModel):
     @property
     def owners(self):
         return self.organization.owners
+
+    def membership_for(self, user):
+        return self.organization.memberships.filter(user=user).first()

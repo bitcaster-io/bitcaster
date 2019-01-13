@@ -2,7 +2,7 @@
 {% block bodyclass %}user{% endblock %}
 {% block nav-menu %}
     <span class="top-menu">
-    {% if organizations %}
+    {% if organizations and organization%}
         <div class="dropdown">
             <a class="dropdown-toggle2"
                href="#" role="button"
@@ -15,7 +15,7 @@
             <a class="dropdown-item organization" href="">Switch organization</a>
             </div>
         </div>
-    {% else %}
+    {% elif organization %}
             <div class="dropdown">
             <a class="dropdown-toggle2"
                href="#"

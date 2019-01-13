@@ -1,6 +1,6 @@
 from django import template
 
-from bitcaster.security import is_owner
+from bitcaster.db.fields import Role
 
 register = template.Library()
 
@@ -12,9 +12,14 @@ def check_permissions(context, org=None, context_name='permissions'):
         {% check_permissions org %}
         {% check_permissions org as perms %}
     """
-    organization = org or context['organization']
-    user = context['request'].user
-    context[context_name] = {'owner': is_owner(user, organization)}
+    organization = org or context.get('organization', None)
+    if organization:
+        user = context['request'].user
+        membership = organization.membership_for(user=user)
+        context[context_name] = {'owner': membership.role == Role.OWNER,
+                                 'admin': membership.role == Role.ADMIN,
+                                 'manager': membership.role in [Role.OWNER, Role.ADMIN],
+                                 }
     return ''
 #
 # @register.assignment_tag(takes_context=True)

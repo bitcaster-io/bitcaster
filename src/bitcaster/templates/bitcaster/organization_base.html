@@ -1,4 +1,4 @@
-{% extends "bitcaster/application_base.html" %}{% load bc_permissions %}
+{% extends "bitcaster/application_base.html" %}{% load bc_permissions i18n %}
 {% block bodyclass %}organization{% endblock %}
 {% block sidebar %}
     <div class="row d-flex d-md-block flex-nowrap wrapper">
@@ -15,22 +15,22 @@
                         <div>
                             <ul class="nav nav-stacked">
                                 <li>
-                                    <a href="{% url "org-dashboard" organization.slug %}">Home</a>
+                                    <a href="{% url "org-dashboard" organization.slug %}">{% trans "Overview" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url "org-config" organization.slug %}">Configuration</a>
+                                    <a href="{% url "org-config" organization.slug %}">{% trans "Configuration" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url "org-channel-list" organization.slug %}">Channels</a>
+                                    <a href="{% url "org-channel-list" organization.slug %}">{% trans "Channels" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url "org-member-list" organization.slug %}">Members</a>
+                                    <a href="{% url "org-member-list" organization.slug %}">{% trans "Members" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url "org-team-list" organization.slug %}">Teams</a>
+                                    <a href="{% url "org-team-list" organization.slug %}">{% trans "Teams" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url "org-applications" organization.slug %}">Applications</a>
+                                    <a href="{% url "org-applications" organization.slug %}">{% trans "Applications" %}</a>
                                 </li>
                             </ul>
                         </div>
