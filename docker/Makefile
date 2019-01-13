@@ -75,6 +75,7 @@ release:
 	docker push ${DOCKER_IMAGE_NAME}:${TARGET}
 	curl -XPOST https://hooks.microbadger.com/images/bitcaster/bitcaster/MQKzhkSXITqlkZMgcN1sQbKCnQo=
 	cd .. && bumpversion --config-file=.bumpversion.cfg num
+	lazo upgrade ${DOCKER_IMAGE_NAME}:${TARGET} --insecure
 
 run:
 	$(MAKE) .run
