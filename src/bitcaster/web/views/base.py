@@ -3,11 +3,14 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ImproperlyConfigured
+from django.db import models
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
                                   ListView, TemplateView, UpdateView,)
+from django.views.generic.base import TemplateResponseMixin
 from strategy_field.utils import import_by_name
 
 from bitcaster.models import Application, Organization
@@ -39,6 +42,7 @@ class OrganizationListMixin(SecuredViewMixin):
 
 
 class SelectedOrganizationMixin(SecuredViewMixin):
+
     def get_context_data(self, **kwargs):
         kwargs['organizations'] = Organization.objects.filter(members=self.request.user)
         if self.selected_organization:
@@ -111,23 +115,93 @@ class BitcasterBaseViewMixin(MessageUserMixin, ApplicationListMixin):
     pass
 
 
-class BitcasterBaseCreateView(BitcasterBaseViewMixin, CreateView):
-    pass
+class BitcasterSingleObjectTemplateResponseMixin(TemplateResponseMixin):
+    template_name_base = None
+
+    def get_template_names(self):
+        try:
+            if self.template_name is None:
+                raise ImproperlyConfigured(
+                    'TemplateResponseMixin requires either a definition of '
+                    "'template_name' or an implementation of 'get_template_names()'")
+            names = [self.template_name]
+        except ImproperlyConfigured:
+            names = []
+
+            # If self.template_name_field is set, grab the value of the field
+            # of that name from the object; this is the most specific template
+            # name, if given.
+            if self.object and self.template_name_field:
+                name = getattr(self.object, self.template_name_field, None)
+                if name:
+                    names.insert(0, name)
+
+            if self.template_name_base:
+                base = 'bitcaster/%s' % self.template_name_base
+            else:
+                base = 'bitcaster'
+
+            # The least-specific option is the default <app>/<model>_detail.html;
+            # only use this if the object in question is a model.
+            if isinstance(self.object, models.Model):
+                object_meta = self.object._meta
+                names.append('%s/%s%s.html' % (
+                    base,
+                    object_meta.model_name,
+                    self.template_name_suffix
+                ))
+            elif getattr(self, 'model', None) is not None and issubclass(self.model, models.Model):
+                names.append('%s/%s%s.html' % (
+                    base,
+                    self.model._meta.model_name,
+                    self.template_name_suffix
+                ))
+
+            # If we still haven't managed to find any template names, we should
+            # re-raise the ImproperlyConfigured to alert the user.
+            if not names:
+                raise
+
+        return names
 
 
 class BitcasterBaseListView(BitcasterBaseViewMixin, ListView):
+    template_name_base = None
+
+    def get_template_names(self):
+        names = []
+        if self.template_name:
+            names = [self.template_name]
+
+        if hasattr(self.object_list, 'model'):
+            opts = self.object_list.model._meta
+            names.append('%s/%s/%s%s.html' % (opts.app_label,
+                                              self.template_name_base,
+                                              opts.model_name,
+                                              self.template_name_suffix))
+        elif not names:
+            raise ImproperlyConfigured(
+                "%(cls)s requires either a 'template_name' attribute "
+                'or a get_queryset() method that returns a QuerySet.' % {
+                    'cls': self.__class__.__name__,
+                }
+            )
+        return names
+
+
+class BitcasterBaseCreateView(BitcasterBaseViewMixin, BitcasterSingleObjectTemplateResponseMixin, CreateView):
     pass
 
 
-class BitcasterBaseUpdateView(BitcasterBaseViewMixin, UpdateView):
+class BitcasterBaseUpdateView(BitcasterBaseViewMixin, BitcasterSingleObjectTemplateResponseMixin, UpdateView):
+    template_name_suffix = '_edit'
+
+
+class BitcasterBaseDeleteView(BitcasterBaseViewMixin, BitcasterSingleObjectTemplateResponseMixin, DeleteView):
     pass
 
 
-class BitcasterBaseDeleteView(BitcasterBaseViewMixin, DeleteView):
-    pass
-
-
-class BitcasterBaseDetailView(BitcasterBaseViewMixin, DetailView):
+class BitcasterBaseDetailView(BitcasterBaseViewMixin, BitcasterSingleObjectTemplateResponseMixin, DetailView):
     pass
 
 

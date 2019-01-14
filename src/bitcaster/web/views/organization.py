@@ -29,9 +29,10 @@ from bitcaster.web.forms import (OrganizationForm, OrganizationInvitationForm,
 from bitcaster.web.forms.user import NewMemberForm
 
 from .base import (ApplicationListMixin, BitcasterBaseCreateView,
-                   BitcasterBaseDetailView, BitcasterBaseListView,
-                   BitcasterBaseUpdateView, BitcasterFormView,
-                   MessageUserMixin, SelectedOrganizationMixin,)
+                   BitcasterBaseDeleteView, BitcasterBaseDetailView,
+                   BitcasterBaseListView, BitcasterBaseUpdateView,
+                   BitcasterFormView, MessageUserMixin,
+                   SelectedOrganizationMixin,)
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
                       ChannelDeprecateView,
                       ChannelToggleView, ChannelUpdateView,)
@@ -39,11 +40,12 @@ from .channel import (ChannelCreateWizard, ChannelDeleteView,
 logger = logging.getLogger(__name__)
 
 __all__ = ['OrganizationCreate', 'OrganizationDashboard', 'OrganizationUpdate',
-           'OrganizationMembers', 'OrganizationChannels',
+           'OrganizationMembershipList', 'OrganizationChannels',
            'OrganizationTeamList', 'OrganizationTeamCreate',
            'OrganizationChannelRemove', 'OrganizationChannelToggle',
            'OrganizationChannelUpdate', 'OrganizationChannelDeprecate',
            'OrganizationTeamUpdate', 'OrganizationTeamMember',
+           'OrganizationMembershipEdit', 'OrganizationMembershipDelete',
            'OrganizationCreateMember',
            'OrganizationInvite', 'InviteDelete', 'InviteSend', 'InviteAccept',
            'OrganizationApplications', 'OrganizationChannelCreate']
@@ -60,6 +62,7 @@ class OrganizationAuditMixin:
 class OrganizationViewMixin(OrganizationAuditMixin, ApplicationListMixin):
     model = Organization
     slug_url_kwarg = 'org'
+    template_name_base = 'organization'
 
     def dispatch(self, request, *args, **kwargs):
         if not is_owner(request.user, self.selected_organization):
@@ -132,16 +135,53 @@ class OrganizationCreateMember(OrganizationViewMixin, CreateView):
         # return super().form_valid(form)
 
 
-class OrganizationMembers(OrganizationViewMixin, BitcasterBaseDetailView):
-    form_class = OrganizationForm
-    template_name = 'bitcaster/organization_members.html'
+class OrganizationMembershipList(OrganizationViewMixin, BitcasterBaseListView):
+    # form_class = OrganizationForm
+    # template_name = 'bitcaster/organization/member_list.html'
     success_url = '.'
+    model = OrganizationMember
 
     def get_context_data(self, **kwargs):
-        data = super(OrganizationMembers, self).get_context_data(**kwargs)
+        data = super(OrganizationMembershipList, self).get_context_data(**kwargs)
         data['memberships'] = OrganizationMember.objects.filter(user__isnull=False)
         data['invitations'] = OrganizationMember.objects.filter(user__isnull=True)
         return data
+
+
+class OrganizationMembershipEdit(OrganizationViewMixin, BitcasterBaseUpdateView):
+    # form_class = OrganizationForm
+    fields = ('role',)
+    # template_name = 'bitcaster/organization/member_edit.html'
+    success_url = ''
+    model = OrganizationMember
+
+    def get_template_names(self):
+        return super().get_template_names()
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = _('Edit Membership')
+        kwargs['membership'] = self.object
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        self.message_user(_('Updated'))
+        return super(OrganizationMembershipEdit, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('org-member-list', args=[self.selected_organization.slug])
+
+
+class OrganizationMembershipDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
+    def get_success_url(self):
+        return reverse('org-member-list', args=[self.selected_organization.slug])
+
+    def get_queryset(self):
+        return self.selected_organization.memberships.filter(user__isnull=False)
+
+    def delete(self, request, *args, **kwargs):
+        ret = super().delete(request, *args, **kwargs)
+        self.message_user('Membership removed')
+        return ret
 
 
 # Invitation
@@ -244,7 +284,7 @@ class InviteDelete(SelectedOrganizationMixin, DeleteView):
         return reverse('org-member-list', args=[self.selected_organization.slug])
 
     def get_queryset(self):
-        return self.selected_organization.memberships.all()
+        return self.selected_organization.memberships.filter(user__isnull=True)
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
