@@ -48,6 +48,11 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
+        'bitcaster.dispatchers.registry': {
+            'level': 'ERROR',
+            'handlers': ['console', 'sentry'],
+            'propagate': False,
+        },
         'bitcaster': {
             'level': level,
             'handlers': ['console', 'sentry'],

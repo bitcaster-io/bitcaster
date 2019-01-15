@@ -71,7 +71,7 @@ class OrganizationViewMixin(OrganizationAuditMixin, ApplicationListMixin):
 
 
 class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
-    template_name = 'bitcaster/organization_dashboard.html'
+    template_name = 'bitcaster/organization/organization_dashboard.html'
 
     def get_context_data(self, **kwargs):
         org = self.get_object()

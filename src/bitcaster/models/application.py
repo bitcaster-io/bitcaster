@@ -13,6 +13,7 @@ from bitcaster import logging
 from bitcaster.db.fields import SubscriptionPolicyField
 from bitcaster.db.validators import RateLimitValidator
 from bitcaster.file_storage import MediaFileSystemStorage, app_media_root
+from bitcaster.models.validators import ListValidator
 # from bitcaster.utils import locks
 from bitcaster.utils.slug import slugify_instance
 
@@ -35,6 +36,7 @@ class Application(AbstractModel):
     name = models.CharField(_('Name'),
                             max_length=300,
                             validators=[
+                                ListValidator(RESERVED_APPLICATION_NAME),
                                 validators.RegexValidator(r'^[\w -]+$',
                                                           _('Enter a valid name.'),
                                                           'invalid')],

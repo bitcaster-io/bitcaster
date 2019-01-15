@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
@@ -13,6 +12,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
 from django.views.generic.base import TemplateResponseMixin
 from strategy_field.utils import import_by_name
 
+from bitcaster import messages
 from bitcaster.models import Application, Organization
 from bitcaster.security import authorized_or_403
 
@@ -92,9 +92,17 @@ class SelectedApplicationMixin(ApplicationListMixin):
 
 
 class MessageUserMixin:
+    def alarm(self, message, level=messages.ERROR, extra_tags='',
+              fail_silently=False):
+        messages.add_alarm(self.request, level, message,
+                           extra_tags=extra_tags,
+                           fail_silently=fail_silently)
+
     def message_user(self, message, level=messages.INFO, extra_tags='',
                      fail_silently=False):
-        messages.add_message(self.request, level, message, extra_tags=extra_tags, fail_silently=fail_silently)
+        messages.add_message(self.request, level, message,
+                             extra_tags=extra_tags,
+                             fail_silently=fail_silently)
 
 
 class BitcasterTemplateView(ApplicationListMixin,

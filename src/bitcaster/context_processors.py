@@ -2,6 +2,7 @@ from django.conf import settings
 from django.urls import reverse
 
 import bitcaster as app
+from bitcaster.messages import DEFAULT_LEVELS
 
 
 def bitcaster(request):
@@ -17,3 +18,15 @@ def bitcaster(request):
             'ON_PREMISE': settings.ON_PREMISE,
             'git_status': app.get_git_status()
             }
+
+
+def messages(request):
+    """
+    Return a lazy 'messages' context variable as well as
+    'DEFAULT_MESSAGE_LEVELS'.
+    """
+    return {
+        'messages': request._messages,
+        'alarms': request._alarms,
+        'DEFAULT_MESSAGE_LEVELS': DEFAULT_LEVELS,
+    }

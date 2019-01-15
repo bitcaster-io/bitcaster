@@ -64,7 +64,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    'bitcaster.middleware.message.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
@@ -72,8 +72,10 @@ MIDDLEWARE = [
 ]
 
 AUTH_USER_MODEL = 'bitcaster.user'
-SECRET_KEY = env('SECRET_KEY')
-FERNET_KEYS = [SECRET_KEY] + env('FERNET_KEYS')
+# SECRET_KEY = env('SECRET_KEY')
+# FERNET_KEYS = [SECRET_KEY] + env('FERNET_KEYS')
+SECRET_KEY = 's'
+FERNET_KEYS = ['a']
 ON_PREMISE = env('ON_PREMISE')
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
@@ -180,7 +182,7 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
+                'bitcaster.context_processors.messages',
                 'bitcaster.context_processors.bitcaster',
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',

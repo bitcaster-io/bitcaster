@@ -120,8 +120,8 @@ urlpatterns = [
     path('<slug:org>/', UserIndexView.as_view(), name='me'),
     path('org/add/', OrganizationCreate.as_view(), name='org-create'),
 
-    path('<slug:org>/setup', OrganizationDashboard.as_view(), name='org-dashboard'),
-    path('<slug:org>/update/', OrganizationUpdate.as_view(), name='org-config'),
+    path('<slug:org>/dashboard', OrganizationDashboard.as_view(), name='org-dashboard'),
+    path('<slug:org>/config/', OrganizationUpdate.as_view(), name='org-config'),
 
     path('<slug:org>/member/', OrganizationMembershipList.as_view(), name='org-member-list'),
     path('<slug:org>/member/add/', OrganizationCreateMember.as_view(), name='org-member-register'),

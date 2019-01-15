@@ -3,7 +3,6 @@ import json
 import logging
 
 from django import forms
-from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
 from django.urls import reverse
@@ -13,7 +12,9 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
+from bitcaster import messages
 from bitcaster.models import Address, User
+from bitcaster.security import is_manager
 from bitcaster.utils.email_verification import set_new_email_request
 from bitcaster.utils.wsgi import get_client_ip
 from bitcaster.web.forms.user import send_address_verification_email
@@ -21,15 +22,23 @@ from bitcaster.web.forms.user import send_address_verification_email
 from ..forms import UserProfileForm
 from .base import (ApplicationListMixin, BitcasterBaseDetailView,
                    BitcasterBaseUpdateView, BitcasterTemplateView,
-                   SelectedApplicationMixin,)
+                   MessageUserMixin, SelectedApplicationMixin,)
 
 logger = logging.getLogger(__name__)
 
 __all__ = ('UserProfileView', 'UserWelcomeView', 'UserHomeView', 'UserAddressesView')
 
 
-class UserIndexView(ApplicationListMixin, TemplateView):
+class UserIndexView(ApplicationListMixin, MessageUserMixin, TemplateView):
     template_name = 'bitcaster/users/user-home.html'
+
+    def get(self, request, *args, **kwargs):
+        configured = self.selected_organization.options.get_value('org:configured')
+
+        if not configured and is_manager(request.user, self.selected_organization):
+            self.alarm(_('Configuration of this organization is not complete'))
+
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         subscriptions = {}

@@ -12,14 +12,20 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin, ProcessFormView
 from strategy_field.utils import fqn
 
-from bitcaster.config.environ import env
 from bitcaster.db.fields import Role
 from bitcaster.models import Organization, User
+from bitcaster.models.organization import RESERVED_ORGANIZATION_NAME
+from bitcaster.models.validators import ListValidator, NameValidator
 
 __all__ = ['SetupView']
 
 
 class SetupForm(forms.Form):
+    error_messages = {'password_mismatch': _('Passwords do not match')}
+
+    organization = forms.CharField(validators=[ListValidator(RESERVED_ORGANIZATION_NAME),
+                                               NameValidator(),
+                                               ])
     email = forms.EmailField()
     password1 = forms.CharField(
         label=_('Password'),
@@ -57,10 +63,11 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
 
     def form_valid(self, form):
         with transaction.atomic():
+            organization = form.cleaned_data['organization']
             user = User.objects.create_superuser(form.cleaned_data['email'],
                                                  form.cleaned_data['password1'])
-            org = Organization.objects.create(name=env('ORGANIZATION'),
-                                              slug=slugify(env('ORGANIZATION')),
+            org = Organization.objects.create(name=organization,
+                                              slug=slugify(organization),
                                               admin_email=user.email,
                                               is_core=True,
                                               owner=user)
@@ -68,7 +75,6 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
             # org.teams.create(name='Owners', manager=user)
 
             org.options.create(key='org:configured', value=False)
-            config.INITIALIZED = 1
-            config.SYSTEM_CONFIGURED = 0
             login(self.request, user, fqn(ModelBackend))
+            config.INITIALIZED = True
         return super().form_valid(form)

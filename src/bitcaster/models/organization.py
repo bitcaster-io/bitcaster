@@ -11,6 +11,7 @@ from bitcaster.db.manager import DeleteableModelManagerMixin
 from bitcaster.db.validators import (RESERVED_NAMES, RateLimitValidator,
                                      check_reserved,)
 from bitcaster.file_storage import MediaFileSystemStorage, org_media_root
+from bitcaster.models.validators import ListValidator, NameValidator
 # from bitcaster.utils import locks
 from bitcaster.utils.slug import slugify_instance
 
@@ -30,7 +31,11 @@ class Organization(AbstractModel):
     """
     An organization represents a group of individuals which maintain ownership of applications.
     """
-    name = models.CharField(_('Name'), max_length=64)
+    name = models.CharField(_('Name'), max_length=64,
+                            validators=[
+                                ListValidator(RESERVED_ORGANIZATION_NAME),
+                                NameValidator()],
+                            )
     slug = models.SlugField(_('Short name'), unique=True, blank=True,
                             validators=[])
     status = DeletionStatusField()

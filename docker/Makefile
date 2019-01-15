@@ -17,6 +17,7 @@ DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${TARGET}
 DOCKERFILE?=Dockerfile
 RUN_OPTIONS?=
 PIPENV_ARGS?=
+VOLUME=~build/volumes/var/bitcaster/
 
 help:
 	@echo "dev                  build dev image (based on local code)"
@@ -47,6 +48,7 @@ build:
 
 
 .run:
+	mkdir -p ../${VOLUME}
 	cd .. && docker run \
 	 		--rm \
 	 		--name=${CONTAINER_NAME} \
@@ -58,7 +60,7 @@ build:
 			-e BITCASTER_CELERY_BROKER_URL=${BITCASTER_CELERY_BROKER_URL} \
 			-e BITCASTER_DATABASE_URL=${BITCASTER_DATABASE_URL} \
 			-e BITCASTER_DEBUG=true \
-			-v $$PWD/~build/volumes/var/bitcaster:/var/bitcaster/ \
+			-v $$PWD/${VOLUME}:/var/bitcaster/ \
 			${RUN_OPTIONS} \
 			${DOCKER_IMAGE} \
 			${CMD}
@@ -106,6 +108,3 @@ ignore:
 
 onbuild:
 	DOCKER_IMAGE=Dockerfile.onbuild DOCKER_IMAGE=bitcaster:onbuild $(MAKE) build
-
-deploy:
-	lazo upgrade ${DOCKER_IMAGE_NAME}:${TARGET} --insecure

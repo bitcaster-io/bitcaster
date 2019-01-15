@@ -13,7 +13,6 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from fernet_fields import hkdf
 from jsoneditor.forms import JSONEditor
-from picklefield import PickledObjectField
 from strategy_field.fields import StrategyField
 
 from bitcaster.dispatchers import dispatcher_registry
@@ -75,35 +74,6 @@ class LanguageField(models.CharField):
         kwargs.setdefault('max_length', 5)
         kwargs.setdefault('choices', settings.LANGUAGES)
         super().__init__(*args, **kwargs)
-
-
-class EncryptedPickledObjectField(PickledObjectField):
-
-    @cached_property
-    def keys(self):
-        keys = getattr(settings, 'FERNET_KEYS', None)
-        if keys is None:
-            keys = [settings.SECRET_KEY]
-        return keys
-
-    @cached_property
-    def fernet_keys(self):
-        if getattr(settings, 'FERNET_USE_HKDF', True):
-            return [hkdf.derive_fernet_key(k) for k in self.keys]
-        return self.keys
-
-    @cached_property
-    def fernet(self):
-        if len(self.fernet_keys) == 1:
-            return Fernet(self.fernet_keys[0])
-        return MultiFernet([Fernet(k) for k in self.fernet_keys])
-
-    def from_db_value(self, value, expression, connection, context):
-        return json.loads(self.fernet.decrypt(value.encode('utf8')))
-
-    def get_prep_value(self, value):
-        value = self.fernet.encrypt(value.encode('utf8')).decode('utf8')
-        return super().get_prep_value(value)
 
 
 class EnumField(Enum):

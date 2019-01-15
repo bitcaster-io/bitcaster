@@ -16,6 +16,7 @@ def initialize():
 def test_setup(django_app, initialize):
     email = 'sax@saxix.org'
     res = django_app.get('/').follow()
+    res.form['organization'] = 'Organization1'
     res.form['email'] = email
     res.form['password1'] = 'password'
     res.form['password2'] = 'password'
