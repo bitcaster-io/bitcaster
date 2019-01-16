@@ -98,16 +98,6 @@
             </header>
         {% endblock header %}
 
-        {% if alarms %}
-            <div id="alarmBar">
-                <ul class="messagelist">{% for alarm in alarms %}
-                    <li class="alert {% if alarm.tags %} alert-{{ alarm.tags }}{% endif %} fade show ">
-                        <span>{{ alarm|capfirst }}</span>
-                    </li>
-                {% endfor %}</ul>
-            </div>
-        {% endif %}
-
         {% block messages %}
             <div id="messageBar">
                 {% if messages %}
@@ -123,6 +113,17 @@
             </div>
         {% endblock messages %}
         <div class="container-fluid main-content" id="{% block pageId %}page{% endblock %}">
+            {% if alarms %}
+                <div id="alarmBar">
+                    <ul class="messagelist">{% for alarm in alarms %}
+                        <li class="alarm {% if alarm.tags %} alert-{{ alarm.tags }}{% endif %} show ">
+                            <span>{{ alarm|capfirst }}</span>
+                        </li>
+                    {% endfor %}</ul>
+                </div>
+            {% endif %}
+
+
             {% block page %}
             {% endblock page %}
         </div>

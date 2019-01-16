@@ -19,6 +19,7 @@ def pytest_configure(config):
     os.environ['CELERY_TASK_ALWAYS_EAGER'] = 'True'
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     os.environ['RECAPTCHA_DISABLE'] = 'True'
+    os.environ['BITCASTER_LOG_LEVEL'] = 'ERROR'
     from bitcaster.config.environ import env
     env.load_config(str(here / '.conf'))
     import django

@@ -3,6 +3,7 @@ import logging
 
 from constance import config
 from django.conf import settings
+from django.core.mail import get_connection, send_mail
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
@@ -14,7 +15,7 @@ from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsMainForm,
                                                  SettingsOAuthForm,)
 from bitcaster.web.views import (BitcasterTemplateView, ListView,
-                                 Organization, UpdateView,)
+                                 Organization, UpdateView, messages,)
 from bitcaster.web.views.base import SuperuserViewMixin
 from bitcaster.web.views.channel import (ChannelCreateWizard, ChannelDeleteView,
                                          ChannelDeprecateView,
@@ -60,18 +61,55 @@ class SettingsBaseView(SuperuserViewMixin,
     def form_valid(self, form):
         for k, v in form.cleaned_data.items():
             setattr(config, k, v)
-        self.message_user(_('Configuration saved'))
+        self.message_user(_('Configuration saved'), messages.SUCCESS)
+        config.SYSTEM_CONFIGURED |= self.bit
         return super().form_valid(form)
 
 
 class SettingsView(SettingsBaseView):
     form_class = SettingsMainForm
     title = 'General'
+    bit = 1
 
 
 class SettingsEmailView(SettingsBaseView):
     form_class = SettingsEmailForm
     title = 'Email'
+    bit = 2
+
+    def test(self, **kwargs):
+        conn = get_connection(
+            backend=settings.EMAIL_BACKEND,
+            host=kwargs['EMAIL_HOST'],
+            username=kwargs['EMAIL_HOST_USER'],
+            password=kwargs['EMAIL_HOST_PASSWORD'],
+            port=kwargs['EMAIL_HOST_PORT'],
+            use_tls=kwargs['EMAIL_USE_TLS'],
+            fail_silently=False)
+        try:
+            return send_mail(subject='test message',
+                             message='This is only a test message',
+                             connection=conn,
+                             from_email=kwargs['EMAIL_SENDER'],
+                             recipient_list=[self.request.user.email])
+        except Exception:
+            return False
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            if request.POST.get('test') == 'Test':
+                if self.test(**form.cleaned_data):
+                    self.message_user(_('Test succeed. Check your inbox'),
+                                      messages.SUCCESS)
+                else:
+                    self.message_user(_('Configuration problem. Unable to send emails.'),
+                                      messages.ERROR)
+                return self.form_invalid(form)
+            else:
+                return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class SettingsOrgUpdateView(SuperuserViewMixin, UpdateView):

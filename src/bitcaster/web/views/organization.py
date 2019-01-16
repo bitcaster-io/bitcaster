@@ -9,6 +9,8 @@ from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
@@ -18,8 +20,9 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from strategy_field.utils import fqn
 
 from bitcaster.db.fields import Role
-from bitcaster.models import (AuditEvent, Organization, OrganizationMember,
-                              Team, TeamMembership, User, audit_log,)
+from bitcaster.models import (AuditEvent, Channel, Organization,
+                              OrganizationMember, Team,
+                              TeamMembership, User, audit_log,)
 from bitcaster.otp import totp
 from bitcaster.security import is_owner
 from bitcaster.utils.dashboard import check_channels, get_status
@@ -74,7 +77,7 @@ class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/organization/organization_dashboard.html'
 
     def get_context_data(self, **kwargs):
-        org = self.get_object()
+        org = self.selected_organization
         cache_key = f'org:dashboard:{org.pk}'
         org_data = cache.get(cache_key)
         if not org_data:
@@ -90,6 +93,7 @@ class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
             org_data['box_apps'] = get_status(org_data['applications'], 1, 9999, 9999)
             cache.set(cache_key, org_data)
         kwargs['data'] = org_data
+        kwargs['options'] = dict(org.options.values_list('key', 'value'))
         return super().get_context_data(**kwargs)
 
 
@@ -501,3 +505,17 @@ class OrganizationTeamMember(OrganizationTeamMixin, UpdateView):
         obj.organization = self.selected_organization
         obj.save()
         return HttpResponseRedirect(self.get_success_url())
+
+
+@receiver(post_save, sender=Channel)
+def check_config1(sender, instance, **kwargs):
+    org = instance.organization
+    if org:
+        org.options.update(key='configured', value=org.channels.filter(enabled=True).count() > 0)
+
+
+@receiver(post_delete, sender=Channel)
+def check_config2(sender, instance, **kwargs):
+    org = instance.organization
+    if org:
+        org.options.update(key='configured', value=org.channels.filter(enabled=True).count() > 0)

@@ -7,6 +7,7 @@ from django.db import models
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
                                   ListView, TemplateView, UpdateView,)
 from django.views.generic.base import TemplateResponseMixin
@@ -92,15 +93,15 @@ class SelectedApplicationMixin(ApplicationListMixin):
 
 
 class MessageUserMixin:
-    def alarm(self, message, level=messages.ERROR, extra_tags='',
+    def alarm(self, alarm, level=messages.ERROR, extra_tags='',
               fail_silently=False):
-        messages.add_alarm(self.request, level, message,
+        messages.add_alarm(self.request, level, mark_safe(alarm),
                            extra_tags=extra_tags,
                            fail_silently=fail_silently)
 
     def message_user(self, message, level=messages.INFO, extra_tags='',
                      fail_silently=False):
-        messages.add_message(self.request, level, message,
+        messages.add_message(self.request, level, mark_safe(message),
                              extra_tags=extra_tags,
                              fail_silently=fail_silently)
 
@@ -198,7 +199,7 @@ class BitcasterBaseListView(BitcasterBaseViewMixin, ListView):
 
 
 class BitcasterBaseCreateView(BitcasterBaseViewMixin, BitcasterSingleObjectTemplateResponseMixin, CreateView):
-    pass
+    template_name_suffix = '_edit'
 
 
 class BitcasterBaseUpdateView(BitcasterBaseViewMixin, BitcasterSingleObjectTemplateResponseMixin, UpdateView):

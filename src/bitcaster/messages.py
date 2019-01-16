@@ -53,13 +53,13 @@ def add_alarm(request, level, message, extra_tags='', fail_silently=False):
     except AttributeError:
         if not hasattr(request, 'META'):
             raise TypeError(
-                'add_message() argument must be an HttpRequest object, not '
+                'add_alarm() argument must be an HttpRequest object, not '
                 "'%s'." % request.__class__.__name__
             )
         if not fail_silently:
             raise MessageFailure(
-                'You cannot add messages without installing '
-                'django.contrib.messages.middleware.MessageMiddleware'
+                'You cannot add alarms without installing '
+                'bitcaster.middleware.messages.MessageMiddleware'
             )
     else:
         return alarms.add(level, message, extra_tags)

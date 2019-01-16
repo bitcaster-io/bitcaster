@@ -1,6 +1,21 @@
 from django.conf import settings
-from django.contrib.messages.storage import default_storage
+from django.contrib.messages.storage.fallback import (CookieStorage,
+                                                      FallbackStorage,
+                                                      SessionStorage,)
 from django.utils.deprecation import MiddlewareMixin
+
+
+class AlarmsCookieStorage(CookieStorage):
+    cookie_name = 'alarms'
+    not_finished = '__messagesnotfinished__'
+
+
+class AlarmsSessionStorage(SessionStorage):
+    session_key = '_alarms'
+
+
+class AlarmsFallbackStorage(FallbackStorage):
+    storage_classes = (AlarmsCookieStorage, AlarmsSessionStorage)
 
 
 class MessageMiddleware(MiddlewareMixin):
@@ -9,8 +24,8 @@ class MessageMiddleware(MiddlewareMixin):
     """
 
     def process_request(self, request):
-        request._messages = default_storage(request)
-        request._alarms = default_storage(request)
+        request._messages = FallbackStorage(request)
+        request._alarms = AlarmsFallbackStorage(request)
 
     def process_response(self, request, response):
         """

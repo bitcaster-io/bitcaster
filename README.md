@@ -4,9 +4,9 @@
 [![circle-badge]][circle-link]
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6fa79049ba7c44dd9b082a7ed8b5dce9)](https://www.codacy.com/app/bitcaster/bitcaster?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bitcaster-io/bitcaster&amp;utm_campaign=Badge_Grade)
 [![codecov-badge]][codecov-link]
-
 [![docker-badge]][docker]
 [![microbadger-badge]][microbadger-link]
+[![gitter-badge]][gitter-link]
 
 
 <p align="center">
@@ -67,3 +67,6 @@ In addition a plugin SDK will allow you to create your own plugins in order to e
 
 [microbadger-badge]: https://images.microbadger.com/badges/image/bitcaster/bitcaster.svg
 [microbadger-link]: https://microbadger.com/images/bitcaster/bitcaster "Docker image infos"
+
+[gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
+[gitter-link]: https://gitter.im/bitcaster-io/bitcaster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge

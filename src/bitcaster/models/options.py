@@ -99,32 +99,27 @@ from .organization import Organization
 #         request_finished.connect(self.clear_local_cache)
 
 
+class OptionManager(models.Manager):
+
+    def get_value(self, key, *args, **kwargs):
+        return super().get(key=key).value
+
+
 class Option(models.Model):
-    """
-    Organization options apply only to an instance of a organization.
-
-    Options which are specific to a plugin should namespace
-    their key. e.g. key='myplugin:optname'
-
-    key: onboarding:complete
-    value: { updated: datetime }
-    """
     __core__ = True
 
     key = models.CharField(max_length=64)
     value = EncryptedJSONField()
 
-    # objects = OptionManager()
+    objects = OptionManager()
 
     class Meta:
         abstract = True
         app_label = 'bitcaster'
 
 
-class OptionManager(models.Manager):
-
-    def get_value(self, key, *args, **kwargs):
-        return super().get(key=key).value
+class SystemOption(Option):
+    pass
 
 
 class OrganizationOption(Option):
@@ -140,7 +135,6 @@ class OrganizationOption(Option):
     organization = models.ForeignKey(Organization,
                                      on_delete=models.CASCADE,
                                      related_name='options')
-    objects = OptionManager()
 
     class Meta:
         unique_together = (('organization', 'key',),)

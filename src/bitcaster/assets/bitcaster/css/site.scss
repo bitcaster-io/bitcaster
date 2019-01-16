@@ -15,17 +15,21 @@
     left: 0;
     position: relative;
     width: 100%;
-
+    z-index: 1;
+    .alarm{
+        padding: 10px;
+    }
     ul {
         margin-block-start: 0;
         padding-inline-start: 0;
     }
 
     ul.messagelist {
+        margin-bottom: 0;
         li {
             list-style-type: none;
 
-            &.alert {
+            &.alarm {
                 &.alert-error {
                     color: white;
                     background-color: #f2271e;

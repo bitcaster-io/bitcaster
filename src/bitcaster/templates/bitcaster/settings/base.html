@@ -24,9 +24,9 @@
                                         <li>
                                             <a href="{% url 'settings-email' %}">Email</a>
                                         </li>
-                                        <li>
-                                            <a href="{% url 'settings-oauth' %}">OAuth</a>
-                                        </li>
+{#                                        <li>#}
+{#                                            <a href="{% url 'settings-oauth' %}">OAuth</a>#}
+{#                                        </li>#}
                                         {% if not ON_PREMISE %}
                                         <li>
                                             <a href="{% url 'settings-channels' %}">Channels</a>
@@ -53,10 +53,11 @@
                             {% csrf_token %}
                             {{ form|crispy }}
                             <input type="submit" class="btn btn-primary" value="Save">
+                            {% block buttons %}{% endblock buttons %}
                         </form>
                     </div>
-
-                {% endblock content %}            </div>
+                {% endblock content %}
+            </div>
         </div>
     </div>
 {% endblock page %}

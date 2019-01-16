@@ -74,7 +74,7 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
             org.add_member(user, role=Role.OWNER, date_enrolled=timezone.now())
             # org.teams.create(name='Owners', manager=user)
 
-            org.options.create(key='org:configured', value=False)
+            org.options.create(key='configured', value=False)
+            config.SYSTEM_CONFIGURED = 0
             login(self.request, user, fqn(ModelBackend))
-            config.INITIALIZED = True
         return super().form_valid(form)

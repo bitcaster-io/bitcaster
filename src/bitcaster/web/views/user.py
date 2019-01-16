@@ -15,6 +15,7 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from bitcaster import messages
 from bitcaster.models import Address, User
 from bitcaster.security import is_manager
+from bitcaster.system import system
 from bitcaster.utils.email_verification import set_new_email_request
 from bitcaster.utils.wsgi import get_client_ip
 from bitcaster.web.forms.user import send_address_verification_email
@@ -33,10 +34,16 @@ class UserIndexView(ApplicationListMixin, MessageUserMixin, TemplateView):
     template_name = 'bitcaster/users/user-home.html'
 
     def get(self, request, *args, **kwargs):
-        configured = self.selected_organization.options.get_value('org:configured')
+        configured = self.selected_organization.options.get_value('configured')
 
         if not configured and is_manager(request.user, self.selected_organization):
-            self.alarm(_('Configuration of this organization is not complete'))
+            self.alarm(_('Configuration of this organization is not complete. '
+                         '<a href="%s">Configure</a>') % reverse('org-dashboard',
+                                                                 args=[self.selected_organization.slug]))
+
+        if not system.configured and request.user.is_superuser:
+            self.alarm(_('System configuration is not complete. '
+                         '<a href="%s">Configure</a>') % reverse('settings'))
 
         return super().get(request, *args, **kwargs)
 

@@ -24,15 +24,15 @@ class SettingsChannelsForm(Form):
 
 class SettingsMainForm(Form):
     SITE_URL = forms.CharField()
-    RECAPTCHA_PUBLIC_KEY = forms.CharField(required=False)
-    RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
+    # RECAPTCHA_PUBLIC_KEY = forms.CharField(required=False)
+    # RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
 
 
 class SettingsEmailForm(Form):
-    EMAIL_HOST = forms.CharField(required=False)
-    EMAIL_HOST_PORT = forms.IntegerField(required=False)
-    EMAIL_HOST_USER = forms.CharField(required=False)
+    EMAIL_HOST = forms.CharField(required=True)
+    EMAIL_HOST_PORT = forms.IntegerField(required=True)
+    EMAIL_HOST_USER = forms.CharField(required=True)
     EMAIL_HOST_PASSWORD = forms.CharField(required=False)
     EMAIL_USE_TLS = forms.BooleanField(required=False)
-    EMAIL_SENDER = forms.EmailField(required=False)
+    EMAIL_SENDER = forms.EmailField(required=True)
     EMAIL_SUBJECT_PREFIX = forms.CharField(required=False)
