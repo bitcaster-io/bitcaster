@@ -4,7 +4,7 @@
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET?=0.3.0a13
+TARGET?=0.3.0a14
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
@@ -78,7 +78,7 @@ release:
 	docker push ${DOCKER_IMAGE_NAME}:${TARGET}
 	curl -XPOST https://hooks.microbadger.com/images/bitcaster/bitcaster/MQKzhkSXITqlkZMgcN1sQbKCnQo=
 	cd .. && bumpversion --config-file=.bumpversion.cfg num
-	lazo upgrade ${DOCKER_IMAGE_NAME}:${TARGET} --insecure
+	lazo upgrade bitcaster:bitcaster bitcaster:${TARGET} --insecure
 
 run:
 	$(MAKE) .run
