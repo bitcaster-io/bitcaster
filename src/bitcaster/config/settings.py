@@ -148,10 +148,10 @@ USE_L10N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
-TEMPLATES_DIR = [
-    str(PACKAGE_DIR / 'templates'),
-
-]
+# TEMPLATES_DIR = [
+#     str(PACKAGE_DIR / 'templates'),
+#
+# ]
 # TEMPLATE_DEMO CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#templates

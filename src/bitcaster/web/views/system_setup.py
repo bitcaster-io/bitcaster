@@ -76,5 +76,6 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
 
             org.options.create(key='configured', value=False)
             config.SYSTEM_CONFIGURED = 0
+            config.INITIALIZED = 1
             login(self.request, user, fqn(ModelBackend))
         return super().form_valid(form)
