@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
+import datetime
 import json
+from uuid import UUID
 
 import pytz
-from _datetime import datetime
 
 
 class Encoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, datetime):
+        if isinstance(obj, UUID):
+            return obj.hex
+        elif isinstance(obj, datetime.tzinfo):
+            return {'__type__': 'tzinfo',
+                    'value': getattr(obj, 'zone')
+                    }
+        elif isinstance(obj, datetime.datetime):
             return {
                 '__type__': 'datetime',
                 'year': obj.year,
@@ -34,13 +41,15 @@ class Decoder(json.JSONDecoder):
     def dict_to_object(self, d):
         if '__type__' not in d:
             return d
+        elif d['__type__'] == 'tzinfo':
+            return d['value']
+        elif d['__type__'] == 'datetime':
+            type = d.pop('__type__')
+            try:
+                d['tzinfo'] = pytz.timezone(d['tzinfo'])
 
-        type = d.pop('__type__')
-        try:
-            d['tzinfo'] = pytz.timezone(d['tzinfo'])
-
-            dateobj = datetime(**d)
-            return dateobj
-        except Exception:
-            d['__type__'] = type
-            return d
+                dateobj = datetime.datetime(**d)
+                return dateobj
+            except Exception:
+                d['__type__'] = type
+                return d

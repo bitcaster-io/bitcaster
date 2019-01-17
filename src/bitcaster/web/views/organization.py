@@ -13,8 +13,8 @@ from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from strategy_field.utils import fqn
@@ -217,7 +217,7 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
                                        password=make_password(form.cleaned_data['password']),
                                        )
             self.membership.user = user
-            self.membership.date_enrolled = now()
+            self.membership.date_enrolled = timezone.now()
             self.membership.save()
             login(self.request, user, backend=fqn(ModelBackend))
             assert self.request.user == user

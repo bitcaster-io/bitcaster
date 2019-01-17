@@ -20,5 +20,4 @@ class ApplicationForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        fields = ['name', 'timezone', 'allowed_origins', 'avatar',
-                  'enabled', 'default_subscription_policy']
+        fields = ['name', 'timezone', 'avatar', 'enabled', ]
