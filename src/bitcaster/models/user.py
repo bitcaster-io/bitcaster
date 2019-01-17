@@ -143,13 +143,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.last_password_change = timezone.now()
         self.is_password_expired = False
 
-    def add_trigger(self, application):
-        return self.triggers.create(application=application,
-                                    active=True)
-
     def add_token(self, application):
         return self.tokens.create(application=application,
-                                  active=True)
+                                  enabled=True)
 
     def send_confirmation_email(self):
         from oath.google_authenticator import from_b32key

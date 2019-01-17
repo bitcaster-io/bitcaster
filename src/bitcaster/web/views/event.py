@@ -128,12 +128,18 @@ class EventTest(EventMixin, EventFormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         event = self.get_object()
-        key = self.request.user.triggers.filter(application=event.application).first()
+        key = self.selected_application.keys.filter(events=event).first()
         if not key:
-            key = self.request.user.triggers.create(application=event.application)
+            key = self.selected_application.keys.create(name=f'Auto created key for {event}')
+            key.events.add(event)
+            self.message_user('Warning new key has been created', messages.WARNING)
 
+        # key = self.request.user.triggers.filter(application=event.application).first()
+        # if not key:
+        #     key = self.request.user.triggers.create(application=event.application)
+        #
         extra = {'serializer': eventform_factory(event),
-                 'user_token': key,
+                 'key': key,
                  'api_url': self.request.build_absolute_uri(reverse('api:application-event-trigger',
                                                                     args=[event.application.pk, event.pk]))}
 

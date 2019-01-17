@@ -343,7 +343,7 @@ class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
 
 class OrganizationApplications(OrganizationViewMixin, BitcasterBaseDetailView):
     form_class = OrganizationForm
-    template_name = 'bitcaster/organization_applications.html'
+    template_name = 'bitcaster/organization/organization_applications.html'
     success_url = '.'
 
 

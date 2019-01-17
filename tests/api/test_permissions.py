@@ -9,8 +9,7 @@ from bitcaster.api.permissions import (CsrfExemptSessionAuthentication,
                                        IsApplicationRelated,
                                        IsOwnerOrMaintainter,
                                        TokenAuthentication,
-                                       TokenAuthenticationBase,
-                                       TriggerTokenAuthentication,)
+                                       TokenAuthenticationBase,)
 
 
 @pytest.mark.django_db
@@ -67,14 +66,6 @@ def test_tokenauthentication(rf, application1, user1):
 
 
 @pytest.mark.django_db
-def test_triggertokenauthentication(rf, application1, user1):
-    t = TriggerTokenAuthentication()
-    token = user1.add_trigger(application=application1)
-    request = rf.get('/', HTTP_AUTHORIZATION=f'Token {token.token}')
-    assert t.authenticate(request)
-
-
-@pytest.mark.django_db
 def test_isownerormaintainter(rf, organization1, organization2):
     request = rf.get('/')
     request.user = organization1.owner
@@ -92,8 +83,8 @@ def test_isownerormaintainter(rf, organization1, organization2):
 @pytest.mark.django_db
 def test_isapplicationrelated(rf, event1, event2):
     request = rf.get('/')
-    view1 = Mock(get_selected_application=lambda: event1.application)
-    view2 = Mock(get_selected_application=lambda: event2.application)
+    view1 = Mock(selected_application=event1.application)
+    view2 = Mock(selected_application=event2.application)
     request.user = event1.application.organization.owner
     perm = IsApplicationRelated()
 

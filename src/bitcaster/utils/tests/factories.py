@@ -226,14 +226,22 @@ class ApplicationTeamFactory(factory.DjangoModelFactory):
     role = Role.SUBSCRIBER
 
 
-class ApiTriggerKeyFactory(factory.DjangoModelFactory):
+class ApplicationTriggerKeyFactory(factory.DjangoModelFactory):
     application = factory.SubFactory(ApplicationFactory)
-    user = factory.SubFactory(UserFactory)
     token = factory.LazyAttribute(lambda s: generate_api_token())
 
     class Meta:
-        model = models.ApiTriggerKey
+        model = models.ApplicationTriggerKey
         django_get_or_create = ('token',)
+
+    @classmethod
+    def _get_or_create(cls, model_class, *args, **kwargs):
+        events = kwargs.pop('events', None)
+        key = super()._get_or_create(model_class, *args, **kwargs)
+        if events:
+            for e in events:
+                key.events.add(e)
+        return key
 
 
 class ApiTokenFactory(factory.DjangoModelFactory):

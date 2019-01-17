@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import uuid
 
 from admin_extra_urls.extras import ExtraUrlMixin, action
 from django.contrib import admin, messages
@@ -35,9 +36,10 @@ class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
     def trigger(self, request, id):
         event = self.get_object(request, id)
         opts = event._meta
-        key = request.user.triggers.filter(application=event.application).first()
+        key = event.application.keys.filter(events=event).first()
         if not key:
-            key = request.user.triggers.create(application=event.application)
+            key = event.application.keys.create(name=uuid.uuid4())
+            key.events.add(event)
         subscriptions = event.subscriptions.valid().values('channel').annotate(dcount=Count('channel'))
         if not subscriptions:
             self.message_user(request, 'Warning no valid subscriptions for this event',

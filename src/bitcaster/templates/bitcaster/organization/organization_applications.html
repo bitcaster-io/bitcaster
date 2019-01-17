@@ -17,7 +17,7 @@
             <tr class="d-flex">
                 <th scope="col" class="col-sm">Name</th>
                 <th scope="col" class="col-sm">Timezone</th>
-                <th scope="col" class="col-sm">Creation Date</th>
+                <th scope="col" class="col-sm">Enabled</th>
             </tr>
             </thead>
             <tbody>
@@ -25,7 +25,13 @@
                 <tr class="row">
                     <td class="col-sm"><a href="{% org-url "app-dashboard" app.slug %}">{{ app.name }}</a></td>
                     <td class="col-sm">{{ app.timezone }}</td>
-                    <td class="col-sm">{{ membership.date_added }}</td>
+                <td class="col-sm">
+                {% if app.enabled %}
+                    <i class="fa fa-check"></i>
+                {% else %}
+                    <i class="fa fa-ban"></i>
+                {% endif %}
+                </td>
                 </tr>
             {% endfor %}
             </tbody>

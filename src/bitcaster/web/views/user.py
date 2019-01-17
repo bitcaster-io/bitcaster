@@ -34,7 +34,7 @@ class UserIndexView(ApplicationListMixin, MessageUserMixin, TemplateView):
     template_name = 'bitcaster/users/user-home.html'
 
     def get(self, request, *args, **kwargs):
-        configured = self.selected_organization.options.get_value('configured')
+        configured = self.selected_organization.configured
 
         if not configured and is_manager(request.user, self.selected_organization):
             self.alarm(_('Configuration of this organization is not complete. '

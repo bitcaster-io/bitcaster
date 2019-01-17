@@ -1,5 +1,5 @@
-from functools import lru_cache
 
+from django.utils.functional import cached_property
 from rest_framework import viewsets
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.renderers import (AdminRenderer, BrowsableAPIRenderer,
@@ -48,8 +48,8 @@ class BaseModelViewSet(viewsets.ModelViewSet):
     # def get_exception_handler(self):
     #     return handler
 
-    @lru_cache()
-    def get_selected_application(self):
+    @cached_property
+    def selected_application(self):
         # if 'application__pk' in self.kwargs:
         app = Application.objects.get(pk=self.kwargs['application__pk'])
         return app

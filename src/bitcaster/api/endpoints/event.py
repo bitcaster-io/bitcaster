@@ -10,7 +10,7 @@ from bitcaster.tasks import trigger_event
 from bitcaster.utils.wsgi import get_client_ip
 
 from ..permissions import (EventTriggerPermission, IsApplicationRelated,
-                           TriggerTokenAuthentication,)
+                           TriggerKeyAuthentication,)
 from ..serializers import EventSerializer
 from .base import BaseModelViewSet
 
@@ -29,7 +29,7 @@ class EventViewSet(BaseModelViewSet):
     #     return ret
 
     @action(methods=['get', 'post'],
-            authentication_classes=[TriggerTokenAuthentication],
+            authentication_classes=[TriggerKeyAuthentication],
             permission_classes=[EventTriggerPermission],
             detail=True)
     def trigger(self, request, application__pk, pk):
@@ -37,8 +37,7 @@ class EventViewSet(BaseModelViewSet):
         if not event.enabled:
             return Response({'error': 'Event disabled'}, status=400)
         trigger_event.delay(event.id, request.data,
-                            user_id=request.user.pk,
-                            token=request.token.token,
+                            token=request.key.token,
                             origin=get_client_ip(request))
         return Response({'message': 'Event triggered',
                          'timestamp': timezone.now()}, status=201)

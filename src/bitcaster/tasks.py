@@ -11,14 +11,13 @@ logger = getLogger(__name__)
 
 
 @app.task()
-def trigger_event(event_id, context, *, user_id=None, token=None, origin=None):
-    from bitcaster.models import Event, User
+def trigger_event(event_id, context, *, token=None, origin=None):
+    from bitcaster.models import Event
     event = Event.objects.get(id=event_id)
-    user = User.objects.get(id=user_id)
-    emit_event(event, context, user=user, token=token, origin=origin)
+    emit_event(event, context, token=token, origin=origin)
 
 
-def emit_event(event, context, origin=None, user=None, token=None, ignore_disabled=False):
+def emit_event(event, context, origin=None, token=None, ignore_disabled=False):
     from bitcaster.models import Channel
     from bitcaster.models.counters import Counter, Occurence
 
@@ -31,8 +30,7 @@ def emit_event(event, context, origin=None, user=None, token=None, ignore_disabl
     ids = [channel['channel'] for channel in channels]
     if len(channels) == 0:
         logger.warning(f'No subscriptions/channels found for `{event}`')
-    o = Occurence.objects.create(event=event, user=user,
-                                 token=token, origin=origin)
+    o = Occurence.objects.create(event=event, token=token, origin=origin)
     Counter.objects.initialize(event)
     for channel in Channel.objects.filter(id__in=ids, enabled=True):
         try:

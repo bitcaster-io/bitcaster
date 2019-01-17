@@ -79,8 +79,6 @@ class Application(AbstractModel):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.slug:
-            #     lock = locks.get('slug:application', 5)
-            #     with TimedRetryPolicy(10, lock.acquire):
             slugify_instance(self, self.name,
                              reserved=RESERVED_APPLICATION_SLUGS)
         super(Application, self).save(force_insert, force_update, using, update_fields)

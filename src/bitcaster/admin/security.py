@@ -5,10 +5,10 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from bitcaster.models import Address, ApiAuthToken, ApiTriggerKey, User
+from bitcaster.models import Address, ApiAuthToken, ApplicationTriggerKey, User
 
 from .forms import UserCreationForm
-from .inlines import ApiKeyInline, ApiTokenInline
+from .inlines import ApiTokenInline
 from .site import site
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ class AddressAdmin(admin.ModelAdmin):
 
 @admin.register(User, site=site)
 class UserAdmin(_UserAdmin):
-    inlines = [ApiTokenInline, ApiKeyInline, ]
+    inlines = [ApiTokenInline, ]
     # add_form_template = 'admin/auth/user/add_form.html'
     add_form = UserCreationForm
     # form = UserChangeForm
@@ -70,9 +70,9 @@ class UserAdmin(_UserAdmin):
 
 @admin.register(ApiAuthToken, site=site)
 class ApiAuthTokenAdmin(admin.ModelAdmin):
-    list_display = ('application', 'user', 'token', 'active')
+    list_display = ('application', 'user', 'token', 'enabled')
 
 
-@admin.register(ApiTriggerKey, site=site)
-class ApiTriggerKeyAdmin(admin.ModelAdmin):
-    list_display = ('application', 'user', 'token', 'active')
+@admin.register(ApplicationTriggerKey, site=site)
+class ApplicationTriggerKeyAdmin(admin.ModelAdmin):
+    list_display = ('application', 'token', 'enabled')

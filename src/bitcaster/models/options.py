@@ -102,7 +102,10 @@ from .organization import Organization
 class OptionManager(models.Manager):
 
     def get_value(self, key, *args, **kwargs):
-        return super().get(key=key).value
+        try:
+            return super().get(key=key).value
+        except self.model.DoesNotExist:
+            return None
 
 
 class Option(models.Model):

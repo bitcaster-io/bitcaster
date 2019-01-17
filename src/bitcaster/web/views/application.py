@@ -8,12 +8,15 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView
 from rest_framework.exceptions import PermissionDenied
 
-from bitcaster.models import Application
+from bitcaster.models import Application, ApplicationTriggerKey
 from bitcaster.security import is_owner
 from bitcaster.utils.dashboard import check_channels, check_events
 from bitcaster.web.forms import ApplicationCreateForm, ApplicationForm
+from bitcaster.web.forms.key import ApplicationTriggerKeyForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
+                                      BitcasterBaseDeleteView,
                                       BitcasterBaseDetailView,
+                                      BitcasterBaseListView,
                                       BitcasterBaseUpdateView,
                                       SelectedApplicationMixin,)
 
@@ -26,6 +29,10 @@ logger = logging.getLogger(__name__)
 __all__ = ['ApplicationCreate',
            'ApplicationDetail',
            'ApplicationChannels',
+           'ApplicationKeyCreate',
+           'ApplicationKeyDelete',
+           'ApplicationKeyList',
+           'ApplicationKeyUpdate',
            'ApplicationUpdateView',
            'ApplicationChannelUpdate',
            'ApplicationChannelToggle',
@@ -182,3 +189,54 @@ class ApplicationChannelCreate(ApplicationViewMixin, ChannelCreateWizard):
         return reverse_lazy('app-channel-list',
                             args=[self.selected_organization.slug,
                                   self.selected_application.slug])
+
+
+class ApplicationKeyList(ApplicationViewMixin, BitcasterBaseListView):
+    template_name = 'bitcaster/application_keys.html'
+
+    def get_queryset(self):
+        return self.selected_application.keys.all()
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = _('Application Keys')
+        return super().get_context_data(**kwargs)
+
+
+class ApplicationKeyFormMixin:
+    form_class = ApplicationTriggerKeyForm
+    model = ApplicationTriggerKey
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'application': self.selected_application})
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('app-key-list', args=[self.selected_organization.slug,
+                                             self.selected_application.slug])
+
+
+class ApplicationKeyCreate(ApplicationKeyFormMixin, ApplicationViewMixin,
+                           BitcasterBaseCreateView):
+    pass
+
+
+class ApplicationKeyUpdate(ApplicationViewMixin, ApplicationKeyFormMixin, BitcasterBaseUpdateView):
+
+    def get_queryset(self):
+        return self.selected_application.keys.all()
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = _('Application Keys')
+        return super().get_context_data(**kwargs)
+
+
+class ApplicationKeyDelete(ApplicationViewMixin, BitcasterBaseDeleteView):
+    pk_url_kwarg = 'pk'
+
+    def get_object(self, queryset=None):
+        return self.selected_application.keys.get(pk=self.kwargs.get(self.pk_url_kwarg))
+
+    def get_success_url(self):
+        return reverse('app-key-list', args=[self.selected_organization.slug,
+                                             self.selected_application.slug])

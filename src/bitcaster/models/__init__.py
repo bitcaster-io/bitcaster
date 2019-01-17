@@ -14,5 +14,5 @@ from .organizationmember import OrganizationMember
 # from .monitor import Monitor
 from .subscription import Subscription
 from .team import ApplicationTeam, Team, TeamMembership
-from .token import ApiAuthToken, ApiTriggerKey
+from .token import ApiAuthToken, ApplicationTriggerKey
 from .user import User

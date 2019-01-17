@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 
 from bitcaster.logging import getLogger
+from bitcaster.models import Event
 from bitcaster.models.application import Application
 from bitcaster.models.base import AbstractModel
 from bitcaster.models.user import User
@@ -18,15 +19,17 @@ def calculate_expiration():
     return timezone.now() + DEFAULT_EXPIRATION
 
 
-class ApiTriggerKey(AbstractModel):
+class ApplicationTriggerKey(AbstractModel):
     application = models.ForeignKey(Application,
                                     on_delete=models.CASCADE,
-                                    related_name='triggers')
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='triggers')
+                                    related_name='keys')
+    name = models.CharField(max_length=100, unique=True)
     token = models.CharField(max_length=64, unique=True,
                              default=generate_api_token)
-    active = models.BooleanField(default=True, db_index=True)
+    enabled = models.BooleanField(default=True, db_index=True)
+
+    events = models.ManyToManyField(Event)
+    all_events = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'bitcaster'
@@ -44,7 +47,7 @@ class ApiAuthToken(AbstractModel):
 
     token = models.CharField(max_length=64, unique=True,
                              default=generate_api_token)
-    active = models.BooleanField(default=True, db_index=True)
+    enabled = models.BooleanField(default=True, db_index=True)
 
     class Meta:
         app_label = 'bitcaster'

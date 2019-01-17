@@ -1,0 +1,17 @@
+{% extends "bitcaster/application_base.html" %}{% load crispy_forms_tags i18n %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row col-12">
+            <h2>{% trans "Key configuration" %}</h2>
+            <div class="container-fluid user-profile">
+                <form method="post" enctype="multipart/form-data" action=".">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <input type="submit" value="Save" class="btn btn-primary">
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}

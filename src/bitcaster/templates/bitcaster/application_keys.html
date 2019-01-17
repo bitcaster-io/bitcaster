@@ -1,0 +1,60 @@
+{% extends "bitcaster/application_base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block content %}
+    <h2>Application Keys</h2>
+
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% app-url "app-key-create" %}">{% trans "Add Key" %}</a>
+            </div>
+        </div>
+    </div>
+    <div class="container application-keys">
+        <table class="table">
+            <thead>
+            <tr class="d-flex">
+                <th scope="col" class="col-8">name</th>
+                <th scope="col" class="col-1">active</th>
+                <th scope="col" class="col-1">unlimited</th>
+                <th scope="col" class="col-1"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for key in application.keys.all %}
+                <tr class="d-flex">
+                    <td class="col-8">{{ key.name }}
+                        <div class="code ">{{ key.token }}</div>
+                    </td>
+
+                    <td class="col-1 text-center vertical-align-center">
+                        {% if key.active %}
+                            <i class="fa fa-check"></i>
+                        {% else %}
+                            <i class="fa fa-ban"></i>
+                        {% endif %}
+                    </td>
+                    <td class="col-1 text-center vertical-align-center">
+                        {% if key.all_events %}
+                            <i class="fa fa-check"></i>
+                        {% else %}
+                            <i class="fa fa-ban"></i>
+                        {% endif %}
+
+
+                    </td>
+                    <td>
+                        <button onclick="window.location.href = '{% app-url "app-key-update" key.pk %}';">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                        <button onclick="window.location.href = '{% app-url "app-key-delete" key.pk %}';">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

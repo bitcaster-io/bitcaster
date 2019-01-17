@@ -68,7 +68,7 @@
                 </div>
                 <pre id="curl">
 curl -H "Content-Type: application/json" \
-     -H "Authorization:Token {{ user_token.token }}" \
+     -H "Authorization:Key {{ key.token }}" \
      -X POST \<span id="params1"></span>
      {{ api_url }}
 </pre>
@@ -80,7 +80,7 @@ curl -H "Content-Type: application/json" \
                 </div>
                 <pre id="httpie">
 http POST {{ api_url }} \
-     Authorization:"Token {{ user_token.token }}" <span id="params2"></span>
+     Authorization:"Key {{ key.token }}" <span id="params2"></span>
 </pre>
 
             </div>
@@ -92,7 +92,7 @@ http POST {{ api_url }} \
                 <pre id="wget">
 wget -O- "{{ api_url }}" \
      --header=Content-Type:application/json \
-     --header="Authorization:Token {{ user_token.token }}" <span id="params3"></span>
+     --header="Authorization:Key {{ key.token }}" <span id="params3"></span>
             </pre>
             </div>
 
@@ -137,7 +137,7 @@ wget -O- "{{ api_url }}" \
             xhttp.open("POST", "{{ api_url }}", false);
             $monitor.append("OPEN CONNECTION: {{ api_url }}\n");
              xhttp.setRequestHeader("Content-type", "application/json");
-            xhttp.setRequestHeader("Authorization", "Token {{ user_token.token }}");
+            xhttp.setRequestHeader("Authorization", "Key {{ key.token }}");
             $monitor.append("SENDING REQUEST\n");
             xhttp.send();
             console.log(xhttp.status);

@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
@@ -129,3 +130,7 @@ class Organization(AbstractModel):
     def channels(self):
         from .channel import Channel
         return Channel.objects.filter(Q(organization=self) | Q(system=True))
+
+    @cached_property
+    def configured(self):
+        return self.channels.filter(enabled=True)

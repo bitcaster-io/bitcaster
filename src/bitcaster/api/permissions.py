@@ -8,7 +8,8 @@ from rest_framework.authentication import (BaseAuthentication,
                                            get_authorization_header,)
 from rest_framework.permissions import BasePermission, IsAuthenticated
 
-from bitcaster.models import ApiAuthToken, ApiTriggerKey, User
+from bitcaster.models import ApiAuthToken, ApplicationTriggerKey, User
+from bitcaster.sentry import client
 
 # class SameUser(BasePermission):
 #     def has_object_permission(self, request, view, obj):
@@ -19,11 +20,18 @@ from bitcaster.models import ApiAuthToken, ApiTriggerKey, User
 class EventTriggerPermission(BasePermission):
 
     def has_permission(self, request, view):
-        app = view.get_selected_application()
-        return getattr(request, 'token', None) and request.token.application == app
+        try:
+            return request.key.application == view.selected_application
+        except Exception:
+            client.captureException()
+            return False
 
     def has_object_permission(self, request, view, obj):
-        return getattr(request, 'token', None) and request.token.application == obj.application
+        try:
+            return request.key.events.filter(id=obj.id).exists()
+        except Exception:
+            client.captureException()
+            return False
 
 
 class IsApplicationRelated(IsAuthenticated):
@@ -35,7 +43,7 @@ class IsApplicationRelated(IsAuthenticated):
 
     def has_permission(self, request, view):
         # if 'application__pk' in view.kwargs:
-        app = view.get_selected_application()
+        app = view.selected_application
         user = request.user
         return user.is_superuser or app.owners.filter(pk=user.pk).exists()
 
@@ -212,14 +220,23 @@ class TokenAuthentication(TokenAuthenticationBase):
     model = ApiAuthToken
 
 
-class TriggerTokenAuthentication(TokenAuthenticationBase):
+class TriggerKeyAuthentication(TokenAuthenticationBase):
     """
     Simple token based authentication.
 
     Clients should authenticate by passing the token key in the "Authorization"
     HTTP header, prepended with the string "Token ".  For example:
 
-        Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a
+        Authorization: Key 401f7ac837da42b97f613d789819ff93537bee6a
     """
-    keyword = 'Token'
-    model = ApiTriggerKey
+    keyword = 'Key'
+    model = ApplicationTriggerKey
+
+    def authenticate_credentials(self, request, key):
+        try:
+            key = ApplicationTriggerKey.objects.get(token=key, enabled=True)
+            request.key = key
+        except ApplicationTriggerKey.DoesNotExist:
+            raise exceptions.AuthenticationFailed(_('Invalid token.'))
+
+        return (key.application, key)

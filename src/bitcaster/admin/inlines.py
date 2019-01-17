@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from bitcaster import logging
-from bitcaster.models import (ApiAuthToken, ApiTriggerKey, Application,
+from bitcaster.models import (ApiAuthToken, Application, ApplicationTriggerKey,
                               Channel, Event, OrganizationMember,)
 from bitcaster.models.message import Message
 from bitcaster.models.team import TeamMembership
@@ -15,8 +15,8 @@ class ApiTokenInline(admin.TabularInline):
     extra = 0
 
 
-class ApiKeyInline(admin.TabularInline):
-    model = ApiTriggerKey
+class ApplicationTriggerKeyInline(admin.TabularInline):
+    model = ApplicationTriggerKey
     extra = 0
 
 
