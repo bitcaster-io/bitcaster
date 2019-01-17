@@ -87,9 +87,10 @@ cli.add_command(import_by_name('bitcaster.cli.commands.configure.configure'))
 cli.add_command(import_by_name('bitcaster.cli.commands.upgrade.upgrade'))
 cli.add_command(import_by_name('bitcaster.cli.commands.createuser.createuser'))
 cli.add_command(import_by_name('bitcaster.cli.commands.plugin.plugin'))
-# cli.add_command(import_by_name('bitcaster.cli.commands.shell.shell'))
+cli.add_command(import_by_name('bitcaster.cli.commands.backup.backup'))
+cli.add_command(import_by_name('bitcaster.cli.commands.backup.restore'))
 
 
 def main():  # pragma: no cover
-    # setproctitle('{} {}'.format(bitcaster.NAME, " ".join(sys.argv[1:])))
+    os.environ['BITCASTER_LOG_LEVEL'] = 'ERROR'
     cli(prog_name=bitcaster.NAME, obj={}, max_content_width=100)
