@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
+import pytz
 from _datetime import datetime
 
 
@@ -16,6 +17,7 @@ class Encoder(json.JSONEncoder):
                 'minute': obj.minute,
                 'second': obj.second,
                 'microsecond': obj.microsecond,
+                'tzinfo': str(obj.tzinfo)
             }
         return json.JSONEncoder.default(self, obj)
 
@@ -35,6 +37,8 @@ class Decoder(json.JSONDecoder):
 
         type = d.pop('__type__')
         try:
+            d['tzinfo'] = pytz.timezone(d['tzinfo'])
+
             dateobj = datetime(**d)
             return dateobj
         except Exception:

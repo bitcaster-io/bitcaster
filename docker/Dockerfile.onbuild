@@ -1,1 +1,0 @@
-FROM bitcaster/bitcaster:latest as builder

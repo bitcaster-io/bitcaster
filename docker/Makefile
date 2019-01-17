@@ -7,8 +7,8 @@ DOCKER_USER?=
 TARGET?=0.3.0a14
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
-BUILD_OPTIONS?=--squash
-CMD?=stack
+BUILD_OPTIONS?=
+CMD?=bitcaster
 CONTAINER_NAME?=bitcaster-${TARGET}
 ORGANIZATION=bitcaster
 IMAGE_NAME=bitcaster
@@ -24,11 +24,9 @@ help:
 	@echo "build                build production image (based on tag ${TARGET})"
 	@echo "release              release tag ${TARGET} on docker hub"
 	@echo "run                  run ${DOCKER_IMAGE} locally"
+	@echo "ignore               run ${DOCKER_IMAGE} locally"
+	@echo "onbuild	 			run image "
 
-build-base:
-	docker build --target base \
-			-t ${DOCKER_IMAGE_NAME}:base \
-			-f docker/${DOCKERFILE} .
 
 build:
 	cd .. && docker build \
@@ -39,11 +37,7 @@ build:
 			--build-arg BUILD_DATE=${BUILD_DATE} \
 			-t ${DOCKER_IMAGE} \
 			-f docker/${DOCKERFILE} .
-	docker tag ${DOCKER_IMAGE_NAME}:${TARGET} ${DOCKER_IMAGE_NAME}:dev
-#	flatten image
-#	docker create --name foo ${DOCKER_IMAGE_NAME}:${TARGET}
-#	docker export foo | docker import - unicef/datamart:${TARGET}
-#	docker rm foo
+#	docker tag ${DOCKER_IMAGE_NAME}:${TARGET} ${DOCKER_IMAGE_NAME}:dev
 	docker images | grep ${DOCKER_IMAGE_NAME}
 
 
@@ -77,8 +71,10 @@ release:
 	docker push ${DOCKER_IMAGE_NAME}:latest
 	docker push ${DOCKER_IMAGE_NAME}:${TARGET}
 	curl -XPOST https://hooks.microbadger.com/images/bitcaster/bitcaster/MQKzhkSXITqlkZMgcN1sQbKCnQo=
-	cd .. && bumpversion --config-file=.bumpversion.cfg num
 	lazo upgrade bitcaster:bitcaster bitcaster:${TARGET} --insecure
+
+bump:
+	cd .. && bumpversion --config-file=.bumpversion.cfg num
 
 run:
 	$(MAKE) .run
@@ -93,19 +89,10 @@ test:
 	CMD='bash -c "whoami && touch /var/bitcaster/.touch && bitcaster check --deploy && bitcaster plugin list"' \
 	$(MAKE) .run
 
-scratch:
-	RUN_OPTIONS=-it CMD='/bin/bash' $(MAKE) .run
 
 shell:
-#	docker exec -it ${CONTAINER_NAME} /bin/bash
 	RUN_OPTIONS=-it CMD='/bin/bash' $(MAKE) .run
-
-docker-remove:
-	docker-remove.sh ${IMAGE_NAME} -o ${ORGANIZATION}
 
 ignore:
 	cd .. && docker build -f docker/Dockerfile.ignore -t build-context .
 	docker run --rm -it build-context
-
-onbuild:
-	DOCKER_IMAGE=Dockerfile.onbuild DOCKER_IMAGE=bitcaster:onbuild $(MAKE) build
