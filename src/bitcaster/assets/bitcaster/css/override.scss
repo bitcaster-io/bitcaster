@@ -1,8 +1,7 @@
 // override bootstrap4 colors/values
 
 .bg-success {
-  background-color: #95d9a1 !important;
-  //background-color: #28a745 !important;
+  background-color: $success-color;
 }
 
 .bg-info {
@@ -10,11 +9,11 @@
 }
 
 .bg-warning {
-  background-color: #ffc107 !important;
+  background-color: $warning-color;
 }
 
-.bg-danger {
-  background-color: rgba(255, 58, 61, 0.85) !important;
+.bg-danger, .bg-error {
+  background-color: $error-color;
 }
 
 .bg-primary {

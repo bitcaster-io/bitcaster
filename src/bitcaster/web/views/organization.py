@@ -21,7 +21,8 @@ from strategy_field.utils import fqn
 from bitcaster.db.fields import Role
 from bitcaster.models import (AuditEvent, Organization, OrganizationMember,
                               Team, TeamMembership, User, audit_log,)
-from bitcaster.models.configurationissue import check_organization
+from bitcaster.models.configurationissue import (check_application,
+                                                 check_organization,)
 from bitcaster.otp import totp
 from bitcaster.security import is_owner
 from bitcaster.utils.dashboard import check_channels, get_status
@@ -73,14 +74,6 @@ class OrganizationViewMixin(OrganizationAuditMixin, ApplicationListMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class OrganizationCheckConfigView(OrganizationAuditMixin, ApplicationListMixin, RedirectView):
-    pattern_name = 'org-dashboard'
-
-    def get(self, request, *args, **kwargs):
-        check_organization(self.selected_organization)
-        return super().get(request, *args, **kwargs)
-
-
 class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/organization/organization_dashboard.html'
 
@@ -104,6 +97,16 @@ class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
         kwargs['data'] = org_data
         kwargs['options'] = dict(org.options.values_list('key', 'value'))
         return super().get_context_data(**kwargs)
+
+
+class OrganizationCheckConfigView(OrganizationAuditMixin, ApplicationListMixin, RedirectView):
+    pattern_name = 'org-dashboard'
+
+    def get(self, request, *args, **kwargs):
+        check_organization(self.selected_organization)
+        for app in self.selected_organization.applications.all():
+            check_application(app)
+        return super().get(request, *args, **kwargs)
 
 
 class OrganizationUpdate(OrganizationViewMixin, BitcasterBaseUpdateView):

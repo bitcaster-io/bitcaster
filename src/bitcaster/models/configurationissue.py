@@ -10,20 +10,27 @@ TARGETS = [Organization,
            Application,
            Channel, Event, ApplicationTriggerKey, Subscription, Message]
 
-SECTIONS = [m._meta.verbose_name_plural for m in TARGETS]
+SECTIONS = [m._meta.verbose_name_plural.lower() for m in TARGETS]
 
 
 class ConfigurationIssueManager(models.Manager):
+    def _log(self, level, section, msg):
+        return self.update_or_create(section=section._meta.verbose_name_plural.lower(),
+                                     defaults=dict(message=msg, level=level))
+
     def error(self, msg, section=Organization):
-        return self.update_or_create(section=section._meta.verbose_name_plural,
-                                     defaults=dict(message=msg, level=messages.ERROR))
-        # return self.create(message=msg, level=messages.ERROR,
-        #                    section=section._meta.verbose_name_plural)
+        return self._log(messages.ERROR, section, msg)
 
     def warning(self, msg, section=Organization):
-        return self.update_or_create(section=section._meta.verbose_name_plural,
-                                     defaults=dict(message=msg, level=messages.WARNING))
-        # return self.create(message=msg, level=messages.WARNING, section=section._meta.verbose_name_plural)
+        return self._log(messages.WARNING, section, msg)
+
+    def get_tag_for(self, section):
+        if section not in SECTIONS:
+            raise ValueError(f'{section} is not in {SECTIONS}')
+        try:
+            return self.filter(section=section).first().tags
+        except AttributeError:
+            return 'success'
 
 
 class ConfigurationIssue(AbstractModel):
@@ -40,6 +47,9 @@ class ConfigurationIssue(AbstractModel):
 
     class Meta:
         unique_together = ('application', 'organization', 'section')
+
+    def __str__(self):
+        return f'{self.section:10} {self.message}'
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.application:
@@ -91,3 +101,6 @@ def check_application(app):
         app.issues.warning('No Keys configured for this Application', ApplicationTriggerKey)
     elif not app.keys.filter(enabled=True).exists():
         app.issues.warning('No Keys enabled for this Application', ApplicationTriggerKey)
+
+    if app.issues.exists():
+        app.save()

@@ -11,7 +11,6 @@ from rest_framework.exceptions import PermissionDenied
 from bitcaster.models import Application, ApplicationTriggerKey
 from bitcaster.models.configurationissue import check_application
 from bitcaster.security import is_owner
-from bitcaster.utils.dashboard import check_channels, check_events, check_keys
 from bitcaster.web.forms import ApplicationCreateForm, ApplicationForm
 from bitcaster.web.forms.key import ApplicationTriggerKeyForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
@@ -87,9 +86,9 @@ class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):
                 'disabled_keys': app.keys.filter(enabled=False).count(),
                 'access_all_events_keys': app.keys.filter(all_events=True).count(),
             }
-            org_data['box_channels'] = check_channels(org_data)
-            org_data['box_events'] = check_events(org_data)
-            org_data['box_keys'] = check_keys(org_data)
+            org_data['box_channels'] = app.issues.get_tag_for('channels')
+            org_data['box_events'] = app.issues.get_tag_for('events')
+            org_data['box_keys'] = app.issues.get_tag_for('keys')
             # cache.set(cache_key, org_data)
         kwargs['data'] = org_data
         return super().get_context_data(**kwargs)

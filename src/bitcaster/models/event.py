@@ -45,7 +45,7 @@ class Event(AbstractModel):
         ordering = ('name', 'id')
 
     def __str__(self):
-        return self.name
+        return f'{self.application.name}:{self.name}'
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super().save(force_insert, force_update, using, update_fields)
