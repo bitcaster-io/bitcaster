@@ -160,8 +160,8 @@ class EventToggle(EventMixin, EventFormMixin, MessageUserMixin, RedirectView):
             self.message_user(f'No messages configured for this event. '
                               f'Cannot be enabled', messages.ERROR)
         elif not obj.messages.filter(enabled=True):
-                self.message_user(f'No messages enabled for this event. '
-                                  f'Cannot be enabled', messages.ERROR)
+            self.message_user(f'No messages enabled for this event. '
+                              f'Cannot be enabled', messages.ERROR)
         else:
             obj.enabled = not obj.enabled
             if obj.enabled:
@@ -335,6 +335,11 @@ class EventSubscriptionsInvite(EventMixin, FormView, OrganizationAuditMixin):
     def get_context_data(self, **kwargs):
         kwargs['event'] = self.get_object()
         return super().get_context_data(**kwargs)
+
+
+class EventKeys(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
+    template_name = 'bitcaster/event_keys.html'
+    title = 'Keys'
 
 
 class EventMessages(EventMixin, EventFormMixin, BitcasterBaseUpdateView):

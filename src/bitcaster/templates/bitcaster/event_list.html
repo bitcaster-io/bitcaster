@@ -5,7 +5,7 @@
         <div class="row col-12">
             <div class="pull-right col-12 p-4">
                 <a class="btn btn-danger btn-small pull-right"
-                   href="{% app-url "app-event-create" %}">{% trans "Create Event" %}</a>
+                   href="{% app-url "app-event-create" %}">{% trans "Add Event" %}</a>
             </div>
         </div>
     </div>
@@ -27,7 +27,8 @@
                         | <a href="{{ event.pk }}/delete/">Remove</a>
                         | <a href="{{ event.pk }}/test/">Test</a>
                         | <a href="{{ event.pk }}/subscriptions/">Subscribers</a>
-                        | <a href="{{ event.pk }}/test/">Monitor</a>
+                        | <a href="{{ event.pk }}/keys/">Keys</a>
+{#                        | <a href="{{ event.pk }}/test/">Monitor</a>#}
                     </div>
                 </div>
                 <div class="col-1 text-center vertical-align-center h4">

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.urls import include, path
 from django.views.generic import TemplateView
 
+from bitcaster.web.views import EventKeys
 from bitcaster.web.views.callbacks import confirm_address
 from bitcaster.web.views.user import UserIndexView
 from bitcaster.web.views.views import PreviewView
@@ -104,6 +105,7 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/event/<int:pk>/test/', EventTest.as_view(), name='app-event-test'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/delete/', EventDelete.as_view(), name='app-event-delete'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/messages/', EventMessages.as_view(), name='app-event-messages'),
+    path('<slug:org>/a/<slug:app>/event/<int:pk>/keys/', EventKeys.as_view(), name='app-event-keys'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/subscriptions/', EventSubscriptions.as_view(),
          name='app-event-subscriptions'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/subscriptions/subscribe/', EventSubscriptionsSubscribe.as_view(),
