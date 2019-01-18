@@ -22,7 +22,7 @@ def test_initial_setup(django_app, application1):
     #
     # res = res.click(organization.name)
 
-    res = res.click('Configuration')
+    res = res.click('^Configuration$')
     res.form['slug'] = 'org_slug'
     res.form['admin_email'] = 'billing@noreply.org'
     res = res.form.submit().follow()

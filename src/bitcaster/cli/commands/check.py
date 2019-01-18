@@ -3,11 +3,26 @@ import sys
 import time
 
 import click
+from django.core.checks import Warning
 from django.db import OperationalError
 
 from bitcaster.cli import global_options
 from bitcaster.cli.utils import ErrorLeveParamType, wait_for_service
 from bitcaster.exceptions import ImproperlyConfigured
+
+
+def check_configuration(*args, **kwargs):
+    from bitcaster.models import Organization
+    from bitcaster.models.configurationissue import check_organization, check_application
+    errors = []
+    for org in Organization.objects.all():
+        issues = check_organization(org)
+        errors += [Warning(i.message, id=i.pk, obj=org) for i in issues]
+
+        for app in org.applications.all():
+            issues = check_application(app)
+            errors += [Warning(i.message, id=i.pk, obj=app) for i in issues]
+    return errors
 
 
 def checkdb(wait=True, timeout=60, debug=False, connection='default'):
@@ -50,7 +65,7 @@ def checkdb(wait=True, timeout=60, debug=False, connection='default'):
 #         raise ImproperlyConfigured(e)
 #
 
-@click.command()
+@click.command()  # noqa
 @global_options
 @click.option('--debug', '-d', default=False, is_flag=True,
               help='debug mode')
@@ -78,11 +93,13 @@ def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
         os.environ['BITCASTER_PLUGINS_AUTOLOAD'] = 'False'
 
     os.environ['BITCASTER_CONF'] = ctx.obj['config']
+
+    from bitcaster.config.environ import env
+    env.load_config()
+
     if deploy:
         wait_services = True
     if wait_services:
-        from bitcaster.config.environ import env
-        env.load_config()
         for service, name in [('DATABASE_URL', 'database'),
                               ('CELERY_BROKER_URL', 'celery broker'),
                               ('REDIS_CACHE_URL', 'cache server'),
@@ -105,6 +122,7 @@ def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
         checkdb(wait=True, timeout=timeout)
 
     extra = ['--fail-level', fail_level, ]
+
     if deploy:
         extra = ['--deploy']
     if list_tags:
@@ -113,6 +131,10 @@ def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
         from django.core.management import execute_from_command_line
         import django
         django.setup()
+
+        from constance import config
+        if config.INITIALIZED:
+            check_configuration()
 
         execute_from_command_line(argv=['manage'] + ['check'] + extra)
     except Exception as e:

@@ -28,7 +28,7 @@ class EventTriggerPermission(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         try:
-            return request.key.events.filter(id=obj.id).exists()
+            return request.key.all_events or request.key.events.filter(id=obj.id).exists()
         except Exception:
             client.captureException()
             return False

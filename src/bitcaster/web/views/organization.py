@@ -9,20 +9,19 @@ from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.views.generic import (CreateView, DeleteView, ListView,
+                                  RedirectView, UpdateView,)
 from strategy_field.utils import fqn
 
 from bitcaster.db.fields import Role
-from bitcaster.models import (AuditEvent, Channel, Organization,
-                              OrganizationMember, Team,
-                              TeamMembership, User, audit_log,)
+from bitcaster.models import (AuditEvent, Organization, OrganizationMember,
+                              Team, TeamMembership, User, audit_log,)
+from bitcaster.models.configurationissue import check_organization
 from bitcaster.otp import totp
 from bitcaster.security import is_owner
 from bitcaster.utils.dashboard import check_channels, get_status
@@ -45,6 +44,7 @@ logger = logging.getLogger(__name__)
 __all__ = ['OrganizationCreate', 'OrganizationDashboard', 'OrganizationUpdate',
            'OrganizationMembershipList', 'OrganizationChannels',
            'OrganizationTeamList', 'OrganizationTeamCreate',
+           'OrganizationCheckConfigView',
            'OrganizationChannelRemove', 'OrganizationChannelToggle',
            'OrganizationChannelUpdate', 'OrganizationChannelDeprecate',
            'OrganizationTeamUpdate', 'OrganizationTeamMember',
@@ -73,19 +73,28 @@ class OrganizationViewMixin(OrganizationAuditMixin, ApplicationListMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
+class OrganizationCheckConfigView(OrganizationAuditMixin, ApplicationListMixin, RedirectView):
+    pattern_name = 'org-dashboard'
+
+    def get(self, request, *args, **kwargs):
+        check_organization(self.selected_organization)
+        return super().get(request, *args, **kwargs)
+
+
 class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/organization/organization_dashboard.html'
 
     def get_context_data(self, **kwargs):
         org = self.selected_organization
         cache_key = f'org:dashboard:{org.pk}'
-        org_data = cache.get(cache_key)
+        org_data = cache.get(cache_key, version=org.version)
         if not org_data:
             org_data = {
                 'active_users': org.members.count(),
                 'pending_users': org.invitations.count(),
                 'enabled_channels': org.channels.filter(enabled=True).count(),
                 'disabled_channels': org.channels.filter(enabled=False).count(),
+                'deprecated_channels': org.channels.filter(deprecated=True).count(),
                 'applications': org.applications.count(),
             }
             org_data['box_members'] = get_status(org_data['pending_users'], 0, 1, 9999)
@@ -505,17 +514,3 @@ class OrganizationTeamMember(OrganizationTeamMixin, UpdateView):
         obj.organization = self.selected_organization
         obj.save()
         return HttpResponseRedirect(self.get_success_url())
-
-
-@receiver(post_save, sender=Channel)
-def check_config1(sender, instance, **kwargs):
-    org = instance.organization
-    if org:
-        org.options.update(key='configured', value=org.channels.filter(enabled=True).count() > 0)
-
-
-@receiver(post_delete, sender=Channel)
-def check_config2(sender, instance, **kwargs):
-    org = instance.organization
-    if org:
-        org.options.update(key='configured', value=org.channels.filter(enabled=True).count() > 0)

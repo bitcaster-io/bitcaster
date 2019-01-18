@@ -15,7 +15,7 @@
             <thead>
             <tr class="d-flex">
                 <th scope="col" class="col-8">name</th>
-                <th scope="col" class="col-1">active</th>
+                <th scope="col" class="col-1">enabled</th>
                 <th scope="col" class="col-1">unlimited</th>
                 <th scope="col" class="col-1"></th>
             </tr>
@@ -28,7 +28,7 @@
                     </td>
 
                     <td class="col-1 text-center vertical-align-center">
-                        {% if key.active %}
+                        {% if key.enabled %}
                             <i class="fa fa-check"></i>
                         {% else %}
                             <i class="fa fa-ban"></i>

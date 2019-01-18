@@ -23,7 +23,7 @@
             {{ form.empty_form.event }}
             <div class="row col-sm">{{ form.empty_form.subscriber|as_crispy_field }}</div>
             <div class="row col-sm">{{ form.empty_form.channel|as_crispy_field }}</div>
-            <div class="row col-sm">{{ form.empty_form.locked|as_crispy_field }}</div>
+{#            <div class="row col-sm">{{ form.empty_form.locked|as_crispy_field }}</div>#}
             <div class="row col-sm align-items-center"><a href="#" class="remove_line">
                 <i class="fa fa-remove"></i></a>
             </div>
@@ -39,7 +39,7 @@
                         {{ invite.event }}
                         <div class="row col-sm">{{ invite.subscriber|as_crispy_field }}</div>
                         <div class="row col-sm">{{ invite.channel|as_crispy_field }}</div>
-                        <div class="row col-sm">{{ invite.locked|as_crispy_field }}</div>
+{#                        <div class="row col-sm">{{ invite.locked|as_crispy_field }}</div>#}
                         <div class="row col-sm align-items-center">
                             <a href="#" class="remove_line">
                                 <i class="fa fa-remove"></i>

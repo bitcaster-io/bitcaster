@@ -28,11 +28,13 @@ class ApplicationTriggerKey(AbstractModel):
                              default=generate_api_token)
     enabled = models.BooleanField(default=True, db_index=True)
 
-    events = models.ManyToManyField(Event)
+    events = models.ManyToManyField(Event, related_name='keys')
     all_events = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'bitcaster'
+        verbose_name = 'Key'
+        verbose_name_plural = 'Keys'
 
 
 class ApiAuthToken(AbstractModel):

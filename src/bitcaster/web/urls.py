@@ -11,19 +11,20 @@ from bitcaster.web.views.views import PreviewView
 from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     ApplicationChannelRemove, ApplicationChannels,
                     ApplicationChannelToggle, ApplicationChannelUpdate,
-                    ApplicationCreate, ApplicationDashboard,
-                    ApplicationKeyCreate, ApplicationKeyDelete,
-                    ApplicationKeyList, ApplicationKeyUpdate,
-                    ApplicationUpdateView, EventCreate, EventDelete, EventList,
-                    EventMessages, EventSubscriptions, EventSubscriptionsInvite,
-                    EventSubscriptionsSubscribe, EventTest, EventToggle,
-                    EventUpdate, IndexView, InviteAccept, InviteDelete,
-                    InviteSend, LoginView, LogoutView, MessageCreate,
-                    MessageDelete, MessageList, MessageUpdate,
-                    OrganizationApplications, OrganizationChannelCreate,
-                    OrganizationChannelDeprecate, OrganizationChannelRemove,
-                    OrganizationChannels, OrganizationChannelToggle,
-                    OrganizationChannelUpdate, OrganizationCreate,
+                    ApplicationCheckConfigView, ApplicationCreate,
+                    ApplicationDashboard, ApplicationKeyCreate,
+                    ApplicationKeyDelete, ApplicationKeyList,
+                    ApplicationKeyUpdate, ApplicationUpdateView, EventCreate,
+                    EventDelete, EventList, EventMessages, EventSubscriptions,
+                    EventSubscriptionsInvite, EventSubscriptionsSubscribe,
+                    EventTest, EventToggle, EventUpdate, IndexView,
+                    InviteAccept, InviteDelete, InviteSend, LoginView,
+                    LogoutView, MessageCreate, MessageDelete, MessageList,
+                    MessageUpdate, OrganizationApplications,
+                    OrganizationChannelCreate, OrganizationChannelDeprecate,
+                    OrganizationChannelRemove, OrganizationChannels,
+                    OrganizationChannelToggle, OrganizationChannelUpdate,
+                    OrganizationCheckConfigView, OrganizationCreate,
                     OrganizationCreateMember, OrganizationDashboard,
                     OrganizationInvite, OrganizationMembershipDelete,
                     OrganizationMembershipEdit, OrganizationMembershipList,
@@ -85,7 +86,9 @@ urlpatterns = [
 
     # Applications
     path('<slug:org>/a/add/', ApplicationCreate.as_view(), name='application-create'),
+
     path('<slug:org>/a/<slug:app>/', ApplicationDashboard.as_view(), name='app-dashboard'),
+    path('<slug:org>/a/<slug:app>/check/', ApplicationCheckConfigView.as_view(), name='app-check'),
     path('<slug:org>/a/<slug:app>/edit/', ApplicationUpdateView.as_view(), name='app-update'),
     path('<slug:org>/a/<slug:app>/subscriptions/', SubscriptionList.as_view(), name='app-subscriptions'),
 
@@ -125,9 +128,10 @@ urlpatterns = [
     path('o/<slug:org>/a/<slug:app>/message/<int:pk>/delete/', MessageDelete.as_view(), name='app-message-delete'),
 
     # Organization
-    path('<slug:org>/', UserIndexView.as_view(), name='me'),
     path('org/add/', OrganizationCreate.as_view(), name='org-create'),
 
+    path('<slug:org>/', UserIndexView.as_view(), name='me'),
+    path('<slug:org>/check/', OrganizationCheckConfigView.as_view(), name='org-check'),
     path('<slug:org>/dashboard', OrganizationDashboard.as_view(), name='org-dashboard'),
     path('<slug:org>/config/', OrganizationUpdate.as_view(), name='org-config'),
 

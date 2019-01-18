@@ -16,8 +16,12 @@
                 <div class="col-10 handler-name">
                     <strong>{{ event.name }}</strong>
                     <div class="pt-4">
-                        <a href="{{ event.pk }}/edit/">Configure</a>
-                        | <a href="{{ event.pk }}/messages/">Messages</a>
+                        <a href="{{ event.pk }}/edit/">Configure
+                        {% if not event.enabled_channels.exists %}*{% endif %}
+                        </a>
+                        | <a href="{{ event.pk }}/messages/">Messages
+                    {% if not event.valid_channels.exists %}*{% endif %}
+                    </a>
                         | <a href="{{ event.pk }}/toggle/">
                         {% if event.enabled %}Disable{% else %}<strong>Enable</strong>{% endif %}</a>
                         | <a href="{{ event.pk }}/delete/">Remove</a>

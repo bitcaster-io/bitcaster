@@ -5,6 +5,7 @@ from uuid import uuid4
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 from django.db.models import UUIDField
+from django.utils.functional import cached_property
 
 from bitcaster import logging
 from bitcaster.db.fields import SubscriptionPolicyField
@@ -46,8 +47,26 @@ class Event(AbstractModel):
     def __str__(self):
         return self.name
 
-    def enabled_channels(self):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
+
+    def clean(self):
+        super().clean()
+
+    @cached_property
+    def valid_channels(self):
         return self.channels.filter(messages__enabled=True)
+
+    @cached_property
+    def enabled_channels(self):
+        return self.channels.filter(enabled=True)
+
+    def check_enabled(self):
+        original = self.enabled
+        if original:
+            self.enabled = self.valid_channels.exists()
+            if self.enabled != original:
+                self.save()
 
     # def get_message(self, channel):
     #     return self.messages.get(channels=channel)

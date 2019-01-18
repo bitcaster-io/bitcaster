@@ -1,13 +1,18 @@
-{% extends "bitcaster/organization_base.html" %}{% load bc_permissions bc_dashboard %}
+{% extends "bitcaster/organization_base.html" %}{% load bc_permissions bc_dashboard i18n %}
 
 {% block content %}
     <h2>{{ organization }}</h2>
-    <div class="container">
-        {% for check in checks %}
-            <div class="row">
-                {{ check }}
-            </div>
-        {% endfor %}
+    <div class="row col-12 p-3 m-1">
+        {% if organization.issues %}
+            <ul class="col-10 issuelist">{% for issue in organization.issues.all %}
+                <li class="issue {% if issue.tags %} issue-{{ issue.tags }}{% endif %}">{{ issue.message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="col-2">
+            <a class="btn btn-dark btn-small pull-right"
+               href="{% url "org-check" organization.slug %}">{% trans "Validate Configuration" %}</a>
+        </div>
     </div>
     <div class="row col-12 p-3 m-1">
         <div class="card mr-3" style="width:30%">
@@ -26,6 +31,7 @@
             <div class="card-body ">
                 {% metric "Enabled Channels" data.enabled_channels %}
                 {% metric "Disabled Channels" data.disabled_channels %}
+                {% metric "Deprecated Channels" data.deprecated_channels %}
             </div>
         </div>
         <div class="card mr-3" style="width:30%">

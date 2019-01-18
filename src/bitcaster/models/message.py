@@ -57,6 +57,8 @@ class Message(AbstractModel):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.application = self.event.application
         super().save(force_insert, force_update, using, update_fields)
+        if not self.enabled:
+            self.event.check_enabled()
 
     def clean(self):
         if self.enabled:

@@ -3,6 +3,7 @@
 from .application import ApplicationAdmin
 from .audit import AuditLogEntryAdmin
 from .channel import ChannelAdmin
+from .configurationissue import ConfigurationIssueAdmin
 from .counters import CounterAdmin, LogEntryAdmin, OccurenceAdmin
 from .event import EventAdmin
 from .message import MessageAdmin

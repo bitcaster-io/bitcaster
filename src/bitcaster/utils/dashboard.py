@@ -33,3 +33,7 @@ def check_channels(org_data):
 
 def check_events(org_data):
     return check_enabled_disabled(org_data, 'events')
+
+
+def check_keys(org_data):
+    return check_enabled_disabled(org_data, 'keys')

@@ -5,12 +5,13 @@ from django.contrib import messages
 from django.core.cache import cache
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, RedirectView
 from rest_framework.exceptions import PermissionDenied
 
 from bitcaster.models import Application, ApplicationTriggerKey
+from bitcaster.models.configurationissue import check_application
 from bitcaster.security import is_owner
-from bitcaster.utils.dashboard import check_channels, check_events
+from bitcaster.utils.dashboard import check_channels, check_events, check_keys
 from bitcaster.web.forms import ApplicationCreateForm, ApplicationForm
 from bitcaster.web.forms.key import ApplicationTriggerKeyForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
@@ -29,6 +30,7 @@ logger = logging.getLogger(__name__)
 __all__ = ['ApplicationCreate',
            'ApplicationDetail',
            'ApplicationChannels',
+           'ApplicationCheckConfigView',
            'ApplicationKeyCreate',
            'ApplicationKeyDelete',
            'ApplicationKeyList',
@@ -72,7 +74,7 @@ class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):
     def get_context_data(self, **kwargs):
         app = self.get_object()
         cache_key = f'org:app:dashboard:{app.pk}'
-        org_data = cache.get(cache_key)
+        org_data = cache.get(cache_key, version=app.version)
         if not org_data:
             org_data = {
                 # "active_users": org.members.count(),
@@ -81,12 +83,24 @@ class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):
                 'disabled_channels': app.channels.filter(enabled=False).count(),
                 'enabled_events': app.events.filter(enabled=True).count(),
                 'disabled_events': app.events.filter(enabled=False).count(),
+                'enabled_keys': app.keys.filter(enabled=True).count(),
+                'disabled_keys': app.keys.filter(enabled=False).count(),
+                'access_all_events_keys': app.keys.filter(all_events=True).count(),
             }
             org_data['box_channels'] = check_channels(org_data)
             org_data['box_events'] = check_events(org_data)
+            org_data['box_keys'] = check_keys(org_data)
             # cache.set(cache_key, org_data)
         kwargs['data'] = org_data
         return super().get_context_data(**kwargs)
+
+
+class ApplicationCheckConfigView(ApplicationViewMixin, RedirectView):
+    pattern_name = 'app-dashboard'
+
+    def get(self, request, *args, **kwargs):
+        check_application(self.selected_application)
+        return super().get(request, *args, **kwargs)
 
 
 class ApplicationCreate(BitcasterBaseCreateView):

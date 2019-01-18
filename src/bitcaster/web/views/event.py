@@ -7,7 +7,7 @@ from django.forms.models import BaseInlineFormSet, inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import CreateView, ListView, RedirectView
+from django.views.generic import RedirectView
 from rest_framework.serializers import Serializer
 
 from bitcaster.db.fields import Role
@@ -15,16 +15,19 @@ from bitcaster.models import (AuditEvent, Event, Message,
                               OrganizationMember, Subscription,)
 from bitcaster.web.forms.event import EventForm
 from bitcaster.web.forms.message import MessageForm
-from bitcaster.web.views import (DeleteView, DetailView, FormView,
+from bitcaster.web.views import (BitcasterBaseCreateView,
+                                 BitcasterBaseDeleteView,
+                                 BitcasterBaseDetailView, BitcasterBaseListView,
+                                 BitcasterBaseUpdateView, DetailView, FormView,
                                  MessageUserMixin, Organization,
-                                 SelectedApplicationMixin, UpdateView,
-                                 import_by_name, messages,)
+                                 SelectedApplicationMixin, import_by_name,
+                                 messages,)
 from bitcaster.web.views.organization import OrganizationAuditMixin
 
 logger = logging.getLogger(__name__)
 
 
-class EventMixin(SelectedApplicationMixin, MessageUserMixin):
+class EventMixin(SelectedApplicationMixin):
     model = Event
 
     def get_success_url(self):
@@ -56,12 +59,12 @@ class EventFormMixin:
         return kwargs
 
 
-class EventList(EventMixin, ListView):
+class EventList(EventMixin, BitcasterBaseListView):
     template_name = 'bitcaster/event_list.html'
     title = 'Application Events'
 
 
-class EventCreate(EventMixin, EventFormMixin, CreateView):
+class EventCreate(EventMixin, EventFormMixin, BitcasterBaseCreateView):
     title = 'Create Event'
 
     def get_context_data(self, **kwargs):
@@ -84,7 +87,7 @@ class EventCreate(EventMixin, EventFormMixin, CreateView):
         return ret
 
 
-class EventUpdate(EventMixin, EventFormMixin, UpdateView):
+class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
     title = 'Edit Event'
 
     def get_context_data(self, **kwargs):
@@ -106,8 +109,8 @@ class EventUpdate(EventMixin, EventFormMixin, UpdateView):
         return ret
 
 
-class EventDelete(EventMixin, EventFormMixin, DeleteView):
-    title = 'Edit Event'
+class EventDelete(EventMixin, EventFormMixin, BitcasterBaseDeleteView):
+    title = 'Delete Event'
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_('Save Event'),
@@ -122,7 +125,7 @@ def eventform_factory(event: Event):
     return type('AAA', (Serializer,), attrs)()
 
 
-class EventTest(EventMixin, EventFormMixin, DetailView):
+class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/event_test.html'
     title = 'Test'
 
@@ -147,15 +150,18 @@ class EventTest(EventMixin, EventFormMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class EventToggle(EventMixin, EventFormMixin, RedirectView):
+class EventToggle(EventMixin, EventFormMixin, MessageUserMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         return self.get_success_url()
 
     def get(self, request, *args, **kwargs):
         obj = self.selected_application.events.get(id=kwargs['pk'])
-        if obj.messages.count() == 0:
+        if not obj.messages.exists():
             self.message_user(f'No messages configured for this event. '
                               f'Cannot be enabled', messages.ERROR)
+        elif not obj.messages.filter(enabled=True):
+                self.message_user(f'No messages enabled for this event. '
+                                  f'Cannot be enabled', messages.ERROR)
         else:
             obj.enabled = not obj.enabled
             if obj.enabled:
@@ -206,7 +212,7 @@ class SubscriptionForm(forms.ModelForm):
         self.event = kwargs.pop('event', None)
         self.requestor = kwargs.pop('requestor', None)
         super().__init__(*args, **kwargs)
-        self.fields['channel'].queryset = self.event.enabled_channels()
+        self.fields['channel'].queryset = self.event.enabled_channels.all()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -331,7 +337,7 @@ class EventSubscriptionsInvite(EventMixin, FormView, OrganizationAuditMixin):
         return super().get_context_data(**kwargs)
 
 
-class EventMessages(EventMixin, EventFormMixin, UpdateView):
+class EventMessages(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/event_messages.html'
     title = 'Messages'
 
