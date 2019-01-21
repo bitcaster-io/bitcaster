@@ -47,6 +47,7 @@ class ConfigurationIssue(AbstractModel):
 
     class Meta:
         unique_together = ('application', 'organization', 'section')
+        app_label = 'bitcaster'
 
     def __str__(self):
         return f'{self.section:10} {self.message}'

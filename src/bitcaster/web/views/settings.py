@@ -40,6 +40,7 @@ class SettingsBaseView(SuperuserViewMixin,
                        BitcasterTemplateView, FormView):
     success_url = '.'
     title = ''
+    bit = None
 
     def get_template_names(self):
         return [f'bitcaster/settings/{self.title.lower()}.html',
@@ -62,7 +63,8 @@ class SettingsBaseView(SuperuserViewMixin,
         for k, v in form.cleaned_data.items():
             setattr(config, k, v)
         self.message_user(_('Configuration saved'), messages.SUCCESS)
-        config.SYSTEM_CONFIGURED |= self.bit
+        if self.bit:
+            config.SYSTEM_CONFIGURED |= self.bit
         return super().form_valid(form)
 
 
@@ -110,6 +112,11 @@ class SettingsEmailView(SettingsBaseView):
                 return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+
+class SettingsOAuthView(SettingsBaseView):
+    form_class = SettingsOAuthForm
+    title = 'Oauth'
 
 
 class SettingsOrgUpdateView(SuperuserViewMixin, UpdateView):
@@ -161,11 +168,6 @@ class SettingsSystemInfo(SuperuserViewMixin,
 class SettingsOrgListView(SuperuserViewMixin, ListView):
     template_name = 'bitcaster/settings/org_list.html'
     model = Organization
-
-
-class SettingsOAuthView(SettingsBaseView):
-    form_class = SettingsOAuthForm
-    title = 'Oauth'
 
 
 class SettingsChannelCreateWizard(ChannelCreateWizard):

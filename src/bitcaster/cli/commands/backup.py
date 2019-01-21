@@ -9,7 +9,7 @@ from bitcaster.cli.commands.option import option_set
 from bitcaster.utils.json import Decoder, Encoder
 
 DATA = ['organization', 'channel',
-        'user', 'organizationmember',
+        'user', 'organizationmember', 'address',
         'application', 'event', 'message', 'applicationtriggerkey',
         ]
 POP_FIELDS = ['version', 'last_modifed_date']

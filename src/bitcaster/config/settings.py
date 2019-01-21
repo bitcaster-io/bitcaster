@@ -19,7 +19,7 @@ INSTALLED_APPS = [
     # Default Django apps:
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    # 'django.contrib.sessions',
+    'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -67,8 +67,8 @@ MIDDLEWARE = [
     'bitcaster.middleware.message.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware',
     'bitcaster.middleware.logger.LoggerMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 AUTH_USER_MODEL = 'bitcaster.user'
@@ -85,6 +85,7 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool('DEBUG', False)
+DEBUG_TOOLBAR = env.bool('DEBUG_TOOLBAR', False)
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -148,6 +149,10 @@ USE_L10N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
+
+SILENCED_SYSTEM_CHECKS = ['admin.E404',  # 'django.contrib.messages.context_processors.messages' must be enabled ...
+                          'admin.E409',
+                          ]
 # TEMPLATES_DIR = [
 #     str(PACKAGE_DIR / 'templates'),
 #
@@ -420,14 +425,23 @@ CONSTANCE_CONFIG = OrderedDict({
     'EMAIL_HOST_PASSWORD': ('', '', str),
     'EMAIL_SENDER': ('noreply@bitcaster.io', '', str),
     'EMAIL_SUBJECT_PREFIX': ('[bitcaster] ', '', str),
+
     'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY': ('', '', str),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET': ('', '', str),
-    'SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY': ('', '', str),
-    'SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET': ('', '', str),
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS': ('', 'aaa', str),
+
+    'SOCIAL_AUTH_GITHUB_ORG_KEY': ('', '', str),
+    'SOCIAL_AUTH_GITHUB_ORG_SECRET': ('', '', str),
+    'SOCIAL_AUTH_GITHUB_ORG_NAME': ('', '', str),
+
     'SOCIAL_AUTH_GITHUB_KEY': ('', '', str),
     'SOCIAL_AUTH_GITHUB_SECRET': ('', '', str),
-    'SOCIAL_AUTH_FACEBOOK_KEY': ('', '', str),
-    'SOCIAL_AUTH_FACEBOOK_SECRET': ('', '', str),
+
+    # 'SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY': ('', '', str),
+    # 'SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET': ('', '', str),
+    #
+    # 'SOCIAL_AUTH_FACEBOOK_KEY': ('', '', str),
+    # 'SOCIAL_AUTH_FACEBOOK_SECRET': ('', '', str),
 
 })
 CONSTANCE_CONFIG_FIELDSETS = {'Options': list(CONSTANCE_CONFIG.keys())}
@@ -487,27 +501,39 @@ SYSINFO = {'host': True,
 SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['key', 'invitation']
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.github.GithubOAuth2',
-    'social_core.backends.linkedin.LinkedinOAuth2',
-    'social_core.backends.facebook.FacebookOAuth2',
+    # 'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.github.GithubOrganizationOAuth2',
+    # 'social_core.backends.linkedin.LinkedinOAuth2',
+    # 'social_core.backends.facebook.FacebookOAuth2',
 )
 SOCIAL_AUTH_PIPELINE = (
-    'social_core.pipeline.social_auth.social_details',
-    'social_core.pipeline.social_auth.social_uid',
-    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.social_auth.social_details',  # 0
+    'social_core.pipeline.social_auth.social_uid',  # 1
+    'social_core.pipeline.social_auth.auth_allowed',  # 2
+    'social_core.pipeline.social_auth.social_user',  # 3
+    'social_core.pipeline.user.get_username',  # 4
+    'social_core.pipeline.social_auth.associate_by_email',  # 5
+    'social_core.pipeline.social_auth.associate_user',  # 6
+    'social_core.pipeline.social_auth.load_extra_data',  # 7
+    'social_core.pipeline.user.user_details',  # 8
+    'bitcaster.social_auth.associate_invitation',  # 9
+    'bitcaster.social_auth.create_default_membership',  # 10
+    # 'social_core.pipeline.social_auth.social_details',
+    # 'social_core.pipeline.social_auth.social_uid',
+    # 'social_core.pipeline.social_auth.social_user',
     # 'social_core.pipeline.user.get_username',
-    'social_core.pipeline.social_auth.associate_by_email',
+    # 'social_core.pipeline.social_auth.associate_by_email',
     # 'bitcaster.social_auth.associate',
     # 'bitcaster.social_auth.avatar',
     # 'social_core.pipeline.user.create_user',
-    'bitcaster.social_auth.associate_invitation',
-    'social_core.pipeline.social_auth.associate_user',
-    'social_core.pipeline.social_auth.load_extra_data',
-    'social_core.pipeline.user.user_details',
+    # 'bitcaster.social_auth.create_user',
+    # 'social_core.pipeline.social_auth.associate_user',
+    # 'social_core.pipeline.social_auth.load_extra_data',
+    # 'social_core.pipeline.user.user_details',
     # 'social_core.pipeline.debug.debug',
 
 )
-
+SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
 SOCIAL_AUTH_LOGIN_URL = '/login-url/'
@@ -522,11 +548,6 @@ AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + SOCIAL_AUTH_AUTHENTICATION_B
 SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email', 'name', ]
 SOCIAL_AUTH_STRATEGY = 'bitcaster.social_auth.BitcasterStrategy'
 
-# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
-#                                    'https://www.googleapis.com/auth/userinfo.profile',
-#                                    ]
 SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
     'access_type': 'offline'
 }
@@ -551,7 +572,7 @@ OTP_KEY = 'A' * 32
 CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
 
 # DEBUG-TOOLBAR
-if DEBUG:
+if DEBUG_TOOLBAR:
     ignored = RegexList((SETUP_URL, '/tpl/.*'))
 
     def show_ddt(request):

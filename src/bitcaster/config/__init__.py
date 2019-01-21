@@ -9,6 +9,7 @@ DEFAULTS = dict(
     CELERY_TASK_ALWAYS_EAGER=(bool, False),
     DATABASE_URL=(str, 'psql://postgres:@127.0.0.1:5432/bitcaster'),
     DEBUG=(bool, False),
+    DEBUG_TOOLBAR=(bool, False),
     FAKE_OTP=(bool, False),
     FERNET_KEYS=(list, []),
     MEDIA_ROOT=(str, str(Path('~/.bitcaster/media').expanduser())),

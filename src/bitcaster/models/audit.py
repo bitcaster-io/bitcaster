@@ -9,6 +9,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.deconstruct import deconstructible
 
+from bitcaster.utils import json
 from bitcaster.utils.wsgi import get_client_ip
 
 logger = logging.getLogger(__name__)
@@ -99,16 +100,17 @@ def audit_log(request, event, logger=None, organization=None, application=None, 
     user = request.user if request.user.is_authenticated else None
     logger = logging.getLogger('bitcaster.audit') if logger is None else logger
     actor = user.email
-
-    entry = AuditLogEntry(
-        actor=actor,
-        user=user,
-        organization=organization,
-        application=application,
-        event=event,
-        ip_address=get_client_ip(request),
-        data=kwargs
-    )
+    entry = AuditLogEntry(actor=actor,
+                          user=user,
+                          organization=organization,
+                          application=application,
+                          event=event,
+                          ip_address=get_client_ip(request),
+                          # encode/decode to force lazy objects
+                          data=json.loads(
+                              json.dumps(kwargs, cls=json.Encoder),
+                              cls=json.Decoder)
+                          )
     entry.save()
     if logger:
         logger.info(str(entry))

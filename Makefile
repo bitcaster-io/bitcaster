@@ -1,20 +1,16 @@
 VERSION=2.0.0
 BUILDDIR='~build'
 PYTHONPATH:=${PWD}/tests/:${PWD}
-DBENGINE?=pg
-DJANGO?='last'
 SUBDIRS:=$(wildcard plugins/bitcaster-*)
-DEVPI_CACHE_URL?=""
 BITCASTER_DATABASE_HOST?=127.0.0.1
 BITCASTER_DATABASE_PORT?=5432
-PIPVER:=$(shell pip --version | cut -d " " -f 2 | cut -d "." -f 1)
 
 .mkbuilddir:
 	mkdir -p ${BUILDDIR}
 
 help:
 	@echo "develop                 setup development environment"
-	@echo "qa                      run quality assurance test"
+	@echo "lint                    lint source code"
 	@echo "clean                   clean dev environment"
 	@echo "fullclean               totally remove any development related files"
 	@echo "static                  run webpack to compile static files"
@@ -22,11 +18,7 @@ help:
 	@echo ""
 	@echo "DANGEROUS COMMANDS"
 	@echo "reset-migrations        reset all database migrations"
-	@echo "reset-dev-env           reset dev environment"
-	@echo "requirements            compile .pip requirement files from .in"
 	@echo ""
-	@echo "DOCKER"
-	@echo "docker-reset-dev        reset/rebuild development docker container"
 
 
 
@@ -36,19 +28,19 @@ static:
 
 develop:
 	git config branch.autosetuprebase always
-	@pipenv sync --dev
+	@pipenv install --ignore-pipfile --dev
 	pipenv run pre-commit install
-	pipenv run pre-commit install --hook-type pre-push.
+	pipenv run pre-commit install --hook-type pre-push
 	$(MAKE) .init-db
+	pip install -e .
+	for dir in plugins/*; do pip --disable-pip-version-check install $$dir; done;
 
 .init-db:
 	# initializing '${DBENGINE}' database 'bitcaster'
-	dropdb --if-exists -h ${BITCASTER_DATABASE_HOST} -p ${BITCASTER_DATABASE_PORT} -U postgres test_bitcaster
-	dropdb --if-exists -h ${BITCASTER_DATABASE_HOST} -p ${BITCASTER_DATABASE_PORT} -U postgres bitcaster
-	createdb -h ${BITCASTER_DATABASE_HOST} -p ${BITCASTER_DATABASE_PORT} -U postgres bitcaster
+	psql -h ${BITCASTER_DATABASE_HOST} -p ${BITCASTER_DATABASE_PORT} -U postgres -c "DROP DATABASE IF EXISTS test_bitcaster"
+	psql -h ${BITCASTER_DATABASE_HOST} -p ${BITCASTER_DATABASE_PORT} -U postgres -c "DROP DATABASE IF EXISTS bitcaster"
+	psql -h ${BITCASTER_DATABASE_HOST} -p ${BITCASTER_DATABASE_PORT} -U postgres -c "CREATE DATABASE bitcaster"
 
-reset-dev-env: .init-db
-	bitcaster upgrade --no-input
 
 reset-migrations: .init-db
 	find src -name '000[1,2,3,4,5,6,7,8,9]*' | xargs rm -f
@@ -61,8 +53,6 @@ test:
 
 lint:
 	pipenv run pre-commit run --all-files
-#	pipenv run pre-commit run --all-files --hook-stage push
-#	pipenv run pre-commit run --all-files --hook-stage manual
 
 messages:
 	cd src && ../manage.py makemessages -l en -l fr -l es
@@ -87,44 +77,5 @@ ifdef BROWSE
 	firefox ${BUILDDIR}/docs/index.html
 endif
 
-
-requirements:
-	pipenv lock -r > src/requirements/install.pip
-	pipenv lock -r -d > src/requirements/testing.pip
-
-cache-requirements:
-	devpi-builder src/requirements/develop.pip  ${DEVPI_CACHE_URL}
-
-.check_pip:
-    #check for preventing 'Module pip no attribute main'
-    #https://stackoverflow.com/questions/49839610/attributeerror-module-pip-has-no-attribute-main
-	-@if [ ${PIPVER} -ne 9 ]; then \
-		echo "Upgrading/Downgrading pip to 9.0.3"; \
-		python3 -m pip install --user --upgrade pip==9.0.3; \
-	fi
-
-docker-reset-dev: .check_pip
-	rm -fr ${PWD}/~build/docker/
-	-@docker stop bitcaster-dev
-	-@docker rm bitcaster-dev
-	-@docker rmi --force bitcaster:dev
-	docker build --rm --squash -t bitcaster:dev -f Dockerfile.dev .
-	docker run --name=bitcaster-dev -p 8000:8000 -it -v ${PWD}:/usr/src/bitcaster -v ${PWD}/~build/docker/etc/:/etc/bitcaster -v ${PWD}/~build/docker/var/bitcaster/:/var/bitcaster bitcaster:dev
-	docker start bitcaster-dev
-	docker exec -it bitcaster-dev bitcaster devserver -b 0.0.0.0:8000
-
-docker-reset-beta:
-	@rm -fr ${PWD}/~build/docker/
-	@-docker stop bitcaster-beta
-	@-docker rm bitcaster-beta
-	@-docker rmi --force bitcaster:beta
-	pip wheel . -w ./dist --cache-dir /dist
-	@for dir in $(SUBDIRS); do \
-		pushd $$dir; \
-		python setup.py sdist -d ../../dist || exit 1; \
-		popd; \
- 	done
-	docker build --rm --squash -t bitcaster:beta -f Dockerfile .
-#	docker-compose start db redis
 
 .PHONY: test-plugins clean-plugins install-plugins

@@ -20,6 +20,7 @@ def pytest_configure(config):
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     os.environ['RECAPTCHA_DISABLE'] = 'True'
     os.environ['BITCASTER_LOG_LEVEL'] = 'ERROR'
+    os.environ['DEBUG_TOOLBAR'] = '1'
     from bitcaster.config.environ import env
     env.load_config(str(here / '.conf'))
     import django

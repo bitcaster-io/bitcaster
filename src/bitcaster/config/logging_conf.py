@@ -73,11 +73,11 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
-        # 'redis_lock': {
-        #     'level': 'ERROR',
-        #     'handlers': ['console'],
-        #     'propagate': False,
-        # },
+        'social_django': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
         # 'redis': {
         #     'level': 'ERROR',
         #     'handlers': ['console'],

@@ -67,7 +67,7 @@ def test_create_event(django_app, channel1):
     url = reverse('app-event-list', args=[organization.slug,
                                           application.slug])
     res = django_app.get(url, user=owner.email)
-    res = res.click('Create Event')
+    res = res.click('Add Event')
     res.form['name'] = 'Event1'
     res.form['channels'] = [channel1.pk]
     idx = add_argument(res.form)

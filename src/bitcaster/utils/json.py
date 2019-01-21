@@ -4,6 +4,7 @@ import json
 from uuid import UUID
 
 import pytz
+from strategy_field.utils import fqn
 
 
 class Encoder(json.JSONEncoder):
@@ -26,6 +27,8 @@ class Encoder(json.JSONEncoder):
                 'microsecond': obj.microsecond,
                 'tzinfo': str(obj.tzinfo)
             }
+        elif fqn(obj) == 'django.utils.functional.__proxy__':
+            return str(obj)
         return json.JSONEncoder.default(self, obj)
 
 
@@ -53,3 +56,7 @@ class Decoder(json.JSONDecoder):
             except Exception:
                 d['__type__'] = type
                 return d
+
+
+loads = json.loads
+dumps = json.dumps

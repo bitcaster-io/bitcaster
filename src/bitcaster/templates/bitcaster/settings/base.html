@@ -2,12 +2,12 @@
 {% block bodyclass %}settings{% endblock %}
 {% block pageId %}settings{% endblock %}
 {% block header_class %}settings{% endblock %}
-{% block nav-menu%}<span class="top-menu">Administation</span>{% endblock nav-menu %}
-{% block user-menu %}
-    <span class="pull-right user-menu ">
-        <a class="pull-right" href="{% url "admin:index" %}">admin</a>
-    </span>
-{% endblock user-menu %}
+{% block nav-menu %}<span class="top-menu">System Configuration</span>{% endblock nav-menu %}
+{#{% block user-menu %}#}
+{#    <span class="pull-right user-menu ">#}
+{#        <a class="pull-right" href="{% url "admin:index" %}">admin</a>#}
+{#    </span>#}
+{#{% endblock user-menu %}#}
 {% block page %}
     <div class="container-fluid">
         <div class=" main-content">
@@ -24,16 +24,16 @@
                                         <li>
                                             <a href="{% url 'settings-email' %}">Email</a>
                                         </li>
-{#                                        <li>#}
-{#                                            <a href="{% url 'settings-oauth' %}">OAuth</a>#}
-{#                                        </li>#}
+                                        <li>
+                                            <a href="{% url 'settings-oauth' %}">OAuth</a>
+                                        </li>
                                         {% if not ON_PREMISE %}
-                                        <li>
-                                            <a href="{% url 'settings-channels' %}">Channels</a>
-                                        </li>
-                                        <li>
-                                            <a href="{% url 'settings-org-list' %}">Organizations</a>
-                                        </li>
+                                            <li>
+                                                <a href="{% url 'settings-channels' %}">Channels</a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'settings-org-list' %}">Organizations</a>
+                                            </li>
                                         {% endif %}
                                         <li>
                                             <a href="{% url 'settings-sysinfo' %}">Environment</a>
@@ -48,14 +48,8 @@
             <div class="page-content">
                 {% block content %}
                     <h2>{{ title }}</h2>
-                    <div>
-                        <form method="POST" action=".">
-                            {% csrf_token %}
-                            {{ form|crispy }}
-                            <input type="submit" class="btn btn-primary" value="Save">
-                            {% block buttons %}{% endblock buttons %}
-                        </form>
-                    </div>
+                    {% crispy form %}
+{#                    {{ form|crispy }}#}
                 {% endblock content %}
             </div>
         </div>
