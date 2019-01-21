@@ -134,6 +134,7 @@ def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
 
         from constance import config
         if config.INITIALIZED:
+            click.echo(f'Checking configuration')
             check_configuration()
 
         execute_from_command_line(argv=['manage'] + ['check'] + extra)

@@ -105,3 +105,4 @@ def check_application(app):
 
     if app.issues.exists():
         app.save()
+    return app.issues.all()
