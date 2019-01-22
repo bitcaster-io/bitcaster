@@ -17,26 +17,26 @@
 
                     <td class="col-1 text-center vertical-align-center">
                         {% if key.enabled %}
-                            <i class="fa fa-check"></i>
+                            <i class="far fa-check-circle"></i>
                         {% else %}
-                            <i class="fa fa-ban"></i>
+                            <i class="far fa-circle"></i>
                         {% endif %}
                     </td>
                     <td class="col-1 text-center vertical-align-center">
                         {% if key.all_events %}
-                            <i class="fa fa-check"></i>
+                            <i class="far fa-check-circle"></i>
                         {% else %}
-                            <i class="fa fa-ban"></i>
+                            <i class="far fa-circle"></i>
                         {% endif %}
 
 
                     </td>
                     <td>
                         <button onclick="window.location.href = '{% app-url "app-key-update" key.pk %}';">
-                            <i class="fa fa-pencil"></i>
+                            <i class="far fa-edit pointer"></i>
                         </button>
                         <button onclick="window.location.href = '{% app-url "app-key-delete" key.pk %}';">
-                            <i class="fa fa-remove"></i>
+                            <i class="far fa-trash-alt pointer"></i>
                         </button>
                     </td>
                 </tr>

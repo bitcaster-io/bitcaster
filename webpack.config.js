@@ -11,8 +11,6 @@ const VERSION = require("./package.json").version;
 
 let IS_PRODUCTION = false;
 let WITH_CSS_SOURCEMAPS = true;
-console.log(1111, IS_PRODUCTION);
-console.log(1111, WITH_CSS_SOURCEMAPS);
 
 const loaders = {
     css: {

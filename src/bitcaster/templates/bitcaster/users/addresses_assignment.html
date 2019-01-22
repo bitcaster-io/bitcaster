@@ -29,7 +29,7 @@
                     <div class="row col-4">{{ form.empty_form.dispatcher|as_crispy_field }}</div>
                     <div class="row col-7">{{ form.empty_form.address|as_crispy_field }}</div>
                     <div class="row col-1 align-items-center"><a href="#" class="remove_line">
-                        <i class="fa fa-remove"></i></a>
+                        <i class="far fa-trash-alt"></i></a>
                     </div>
                 </div>
                 <div class="red">{{ form.empty_form.non_field_errors.as_text }}</div>
@@ -50,8 +50,13 @@
                                 <span class="row col-7">{{ form.address|as_crispy_field }}</span>
                                 <span class="row col-1 align-items-center">
                                     <a href="#" class="remove_line">
-                                        <i class="fa fa-remove"></i>
+                                        <i class="far fa-trash-alt"></i>
                                     </a>
+                                    &nbsp;
+                                    <a href="{% url  'user-address-info' form.instance.address.id %}" class="">
+                                        <i class="fas fa-info-circle"></i>
+                                    </a>
+
                                 </span>
                             </div>
                             <div class="red">{{ form.non_field_errors.as_text }}</div>

@@ -27,7 +27,7 @@ from .base import (ApplicationListMixin, BitcasterBaseDetailView,
 logger = logging.getLogger(__name__)
 
 __all__ = ('UserProfileView', 'UserWelcomeView', 'UserHomeView', 'UserAddressesView',
-           'UserAddressesAssignmentView')
+           'UserAddressesInfoView', 'UserAddressesAssignmentView')
 
 
 class UserIndexView(ApplicationListMixin, MessageUserMixin, TemplateView):
@@ -166,6 +166,11 @@ class UserAddressesView(BitcasterBaseUpdateView):
         formset.save()
         self.message_user('Addresses updated', messages.SUCCESS)
         return super().form_valid(formset)
+
+
+class UserAddressesInfoView(BitcasterBaseDetailView):
+    template_name = 'bitcaster/users/address_info.html'
+    model = Address
 
 
 class UserAddressesAssignmentView(BitcasterBaseUpdateView):

@@ -10,7 +10,11 @@
 @import "header";
 @import "content";
 @import "footer";
-@import "font-awesome";
+@import "fa/fontawesome.scss";
+@import "fa/solid.scss";
+@import "fa/regular.scss";
+@import "fa/brands.scss";
+//@import "fontawesome";
 @import "social-auth";
 @import "handlers";
 @import "tooltip";

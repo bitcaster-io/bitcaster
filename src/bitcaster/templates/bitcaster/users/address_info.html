@@ -4,73 +4,23 @@
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link active" href="{% url "user-addresses" %}">Address</a>
+            <a class="nav-link" href="{% url "user-addresses" %}">Address</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{% url "user-address-assignment" %}">Assignments</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="#">{{ address }}</a>
+        </li>
     </ul>
     <div class="tab-content">
-        <div class="row">
-            <div class="row col-12">
-                <div class="pull-right col-12 p-4">
-                    <a id="add_more" class="btn btn-danger btn-small pull-right m-2"
-                       href="#">{% trans "Add Address" %}
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div id="empty-form" class="d-none">
-            <div class="row col-12">
-                <div class="row col-12">
-                    {{ form.empty_form.user }}
-                    {{ form.empty_form.id }}
-                    <div class="row col-4">{{ form.empty_form.label|as_crispy_field }}</div>
-                    <div class="row col-7">{{ form.empty_form.address|as_crispy_field }}</div>
-                    <div class="row col-1 align-items-center"><a href="#" class="remove_line">
-                        <i class="far fa-trash-alt"></i></a>
-                    </div>
-                </div>
-                <div class="red">{{ form.empty_form.non_field_errors.as_text }}</div>
-            </div>
-        </div>
         <div class="container">
-            <form method="post">
-                {{ form.management_form }}
-                {% csrf_token %}
-                <div class="content invitations">
-                    {% for form in form.forms %}
-                        <div class="row col-12">
-                            <div class="row col-12">
-                                {{ form.user }}
-                                {{ form.id }}
-                                {{ form.DELETE }}
-                                <span class="row col-4">{{ form.label|as_crispy_field }}</span>
-                                <span class="row col-7">{{ form.address|as_crispy_field }}</span>
-                                <span class="row col-1 align-items-center">
-                                    <a href="#" class="remove_line">
-                                        <i class="far fa-trash-alt"></i>
-                                    </a>
-                                    &nbsp;
-                                    <a href="{% url  'user-address-info' form.instance.id %}" class="">
-                                        <i class="fas fa-info-circle"></i>
-                                    </a>
-                                </span>
-                            </div>
-                            <div class="red">{{ form.non_field_errors.as_text }}</div>
-                        </div>
-                    {% endfor %}
-                </div>
-                <div class="row col-12 p-4">
-                    <div class="row col-11"></div>
-                    <div class="row col-1">
-                        <input type="submit" id="btn-submit"
-                               value="{% trans "Save" %}"
-                               class="btn btn-primary btn-small">
-                    </div>
-                </div>
-            </form>
+            <h3>{{ address }} - {{address.address}}</h3>
+            <ul>
+            {% for a in address.used_by.all %}
+                <li>{{ a.dispatcher.name }}</li>
+            {% endfor %}
+            </ul>
         </div>
     </div> <!-- tab-content -->
 {% endblock %}

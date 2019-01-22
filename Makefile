@@ -23,7 +23,7 @@ help:
 
 
 static:
-	webpack --mode development
+	node_modules/.bin/webpack --mode development
 	bitcaster upgrade --no-migrate --no-input
 
 develop:
