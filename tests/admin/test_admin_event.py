@@ -37,4 +37,4 @@ def test_event_trigger(django_app, admin, subscription1, settings):
     assert res.status_code == 200
     assert django.core.mail.outbox
     mail = django.core.mail.outbox[0]
-    assert mail.to == [subscription1.subscriber.addresses.get_address(Email)]
+    assert mail.to == [subscription1.subscriber.assignments.get_address(Email)]

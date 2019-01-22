@@ -44,16 +44,13 @@ def backup(ctx, filename):
 
 
 @click.command()
-@click.option('--filename',
-              default='bitcaster.json',
-              type=click.Path())
-@click.option('-o', '--overwrite',
-              'overwrite',
-              default=False,
-              is_flag=True)
+@click.option('--filename', default='bitcaster.json', type=click.Path())
+@click.option('-o', '--overwrite', 'overwrite', default=False, is_flag=True)
+@click.option('-i', '--ignore-errors', default=False, is_flag=True,
+              help='Try to continueon error')
 @click.pass_context
 @need_setup
-def restore(ctx, filename, overwrite):
+def restore(ctx, filename, overwrite, ignore_errors):
     from django.apps import apps
 
     input_file = Path(filename)
@@ -80,4 +77,5 @@ def restore(ctx, filename, overwrite):
                     click.echo(str(e))
                     click.echo(model_name)
                     click.echo(record)
-                    ctx.abort()
+                    if not ignore_errors:
+                        ctx.abort()

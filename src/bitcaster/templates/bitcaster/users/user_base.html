@@ -1,5 +1,20 @@
 {% extends 'bitcaster/base.html' %}
 {% block bodyclass %}user{% endblock %}
+{% block pageId %}user{% endblock %}
+{% block css %}
+    {{ block.super }}
+    <style>
+        #user {
+            padding: 15px 60px;
+        }
+    .tab-content{
+        border-color: #dee2e6 #dee2e6 #fff;
+        border-left: 1px solid  #dee2e6;
+        border-right: 1px solid  #dee2e6;
+        border-bottom: 1px solid  #dee2e6;
+    }
+    </style>
+{% endblock css %}
 {% block nav-menu %}
     <span class="top-menu">
     {% if organizations and organization%}

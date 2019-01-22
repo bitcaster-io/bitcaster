@@ -31,15 +31,16 @@ from .views import (ApplicationChannelCreate, ApplicationChannelDeprecate,
                     OrganizationMembershipEdit, OrganizationMembershipList,
                     OrganizationTeamCreate, OrganizationTeamList,
                     OrganizationTeamMember, OrganizationTeamUpdate,
-                    OrganizationUpdate, PluginInfo, SettingsChannelCreateWizard,
-                    SettingsChannelDeleteView, SettingsChannelDeprecateView,
-                    SettingsChannelListView, SettingsChannelToggleView,
-                    SettingsChannelUpdateView, SettingsEmailView,
-                    SettingsOAuthView, SettingsOrgListView,
+                    OrganizationUpdate, PluginInfo,
+                    SettingsChannelCreateWizard, SettingsChannelDeleteView,
+                    SettingsChannelDeprecateView, SettingsChannelListView,
+                    SettingsChannelToggleView, SettingsChannelUpdateView,
+                    SettingsEmailView, SettingsOAuthView, SettingsOrgListView,
                     SettingsOrgUpdateView, SettingsSystemInfo, SettingsView,
-                    SetupView, SubscriptionList, UserAddressesView,
-                    UserHomeView, UserProfileView, UserRegister,
-                    UserWelcomeView, WorkInProgressView, confirm_registration,)
+                    SetupView, SubscriptionList, UserAddressesAssignmentView,
+                    UserAddressesView, UserHomeView, UserProfileView,
+                    UserRegister, UserWelcomeView, WorkInProgressView,
+                    confirm_registration,)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
@@ -77,6 +78,7 @@ urlpatterns = [
     path('user/register/confirm-address/<int:pk>/<str:address>/<str:check>/', confirm_address, name='confirm-address'),
     path('user/profile/', UserProfileView.as_view(), name='user-profile'),
     path('user/addresses/', UserAddressesView.as_view(), name='user-addresses'),
+    path('user/assignment/', UserAddressesAssignmentView.as_view(), name='user-address-assignment'),
 
     path('new-user/', TemplateView.as_view(template_name='bitcaster/users/user_new.html')),
     path('new-association/', TemplateView.as_view(template_name='bitcaster/users/user_associated.html')),

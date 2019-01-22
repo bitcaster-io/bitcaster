@@ -25,5 +25,9 @@ class ConsoleDispatcher(Dispatcher):
     def _get_connection(self) -> object:
         pass
 
+    @classmethod
+    def validate_address(cls, address, *args, **kwargs):
+        return True
+
     def validate_subscription(self, subscription, *args, **kwargs):
         return subscription.config == {}

@@ -99,8 +99,7 @@
         {% endblock header %}
 
         {% block messages %}
-            <div id="messageBar">
-                {% if messages %}
+            <div id="messageBar">{% if messages %}
                     <ul class="messagelist">{% for message in messages %}
                         <li class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %} fade show alert-dismissible ">
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -109,8 +108,7 @@
                             <span>{{ message|capfirst }}</span>
                         </li>
                     {% endfor %}</ul>
-                {% endif %}
-            </div>
+                {% endif %}</div>
         {% endblock messages %}
         <div class="container-fluid main-content" id="{% block pageId %}page{% endblock %}">
             {% if alarms %}

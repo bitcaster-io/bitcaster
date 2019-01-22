@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
-from .address import Address
+from .address import Address, AddressAssignment
 from .application import Application
 from .audit import AuditEvent, AuditLogEntry, audit_log
 from .base import AbstractModel

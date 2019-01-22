@@ -55,7 +55,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         try:
             return subscription.config['recipient']
         except KeyError:
-            return user.addresses.get_address(self)
+            return user.assignments.get_address(self)
 
     @abc.abstractmethod
     def emit(self, subscription: object, subject: str, message: str,
