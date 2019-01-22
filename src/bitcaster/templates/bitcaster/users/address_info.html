@@ -15,10 +15,11 @@
     </ul>
     <div class="tab-content">
         <div class="container">
-            <h3>{{ address }} - {{address.address}}</h3>
+            <h3 class="p-2">{{ address }} ({{address.address}})</h3>
+            <div>used by:</div>
             <ul>
             {% for a in address.used_by.all %}
-                <li>{{ a.dispatcher.name }}</li>
+                <li class="p-3">{{ a.dispatcher.name }}</li>
             {% endfor %}
             </ul>
         </div>
