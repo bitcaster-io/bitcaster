@@ -1,4 +1,4 @@
-FROM pstauffer/curl:latest as builder
+FROM pstauffer/curl:latest as retriever
 ARG DEVELOP
 ARG GITHUB_CREDENTIALS
 ARG VERSION
@@ -23,7 +23,7 @@ RUN apt-get update \
 RUN adduser --system bitcaster
 
 FROM base
-COPY --from=builder /code /code
+COPY --from=retriever /code /code
 ARG BUILD_DATE
 ARG PIPENV_ARGS
 ARG VERSION

@@ -69,6 +69,8 @@ fullclean:
 	$(MAKE) clean
 	$(MAKE) clean-plugins
 
+wheel:
+
 
 docs: .mkbuilddir
 	mkdir -p ${BUILDDIR}/docs
