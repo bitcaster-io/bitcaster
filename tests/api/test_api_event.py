@@ -47,6 +47,32 @@ def test_event_trigger_no_auth(event1):
 
 
 @pytest.mark.django_db
+def test_event_trigger_wrong_auth(event1):
+    url = reverse('api:application-event-trigger', args=[event1.application.pk,
+                                                         event1.pk])
+    client = APIClient()
+
+    client.credentials(HTTP_AUTHORIZATION='Key abcs')
+    ret = client.get(url, format='json')
+    assert ret.status_code == 403
+
+
+@pytest.mark.django_db
+def test_event_trigger_key_disabled(event1):
+    url = reverse('api:application-event-trigger', args=[event1.application.pk,
+                                                         event1.pk])
+    client = APIClient()
+
+    key = ApplicationTriggerKeyFactory(application=event1.application,
+                                       enabled=False,
+                                       events=[event1])
+
+    client.credentials(HTTP_AUTHORIZATION='Key ' + key.token)
+    ret = client.get(url, format='json')
+    assert ret.status_code == 403
+
+
+@pytest.mark.django_db
 def test_event_trigger_disabled(event1):
     event1.enabled = False
     event1.save()

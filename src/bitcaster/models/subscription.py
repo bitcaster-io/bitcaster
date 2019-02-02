@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
 from bitcaster.db.fields import EncryptedJSONField, EnumField
-from bitcaster.utils.tokens import generate_subscription_token
 
 from .base import AbstractModel
 from .channel import Channel
@@ -15,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 class SubscriptionQuerySet(models.QuerySet):
-    def enabled(self, *args, **kwargs):
-        return self.filter(active=True, channel__enabled=True, *args, **kwargs)
+    # def enabled(self, *args, **kwargs):
+    #     return self.filter(active=True, channel__enabled=True, *args, **kwargs)
 
     def valid(self, *args, **kwargs):
         return self.filter(active=True, channel__enabled=True, *args, **kwargs)
@@ -62,9 +61,9 @@ class Subscription(AbstractModel):
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=SubscriptionStatus.as_choices(),
                                  default=SubscriptionStatus.OWNED)
-    deactivation_token = models.CharField(max_length=100,
-                                          editable=False,
-                                          unique=True)
+    # deactivation_token = models.CharField(max_length=100,
+    #                                       editable=False,
+    #                                       unique=True)
     # managed = models.BooleanField(default=False,
     #                               help_text="if managed users cannot unsubscribe. "
     #                                         "But can still change channel")
@@ -82,15 +81,15 @@ class Subscription(AbstractModel):
         return 'Subscription {0.subscriber} on {0.event} via {0.channel}'.format(self)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if not self.pk:
-            self.update_token()
+        # if not self.pk:
+        #     self.update_token()
         self.active = self.status not in [SubscriptionStatus.PROPOSED,
                                           SubscriptionStatus.REQUESTED]
         super().save(force_insert, force_update, using, update_fields)
 
-    def update_token(self):
-        self.deactivation_token = generate_subscription_token(self)
-
+    # def update_token(self):
+    #     self.deactivation_token = generate_subscription_token(self)
+    #
     # def clean(self):
     #     try:
     #         if not self.channel.messages.filter(event=self.event).exists():

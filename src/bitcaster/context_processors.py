@@ -26,7 +26,7 @@ def messages(request):
     'DEFAULT_MESSAGE_LEVELS'.
     """
     return {
-        'messages': request._messages,
-        'alarms': request._alarms,
+        'messages': getattr(request, '_messages', []),
+        'alarms': getattr(request, '_alarms', []),
         'DEFAULT_MESSAGE_LEVELS': DEFAULT_LEVELS,
     }

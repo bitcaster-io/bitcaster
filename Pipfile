@@ -90,6 +90,7 @@ selenium = "*"
 tox = "*"
 vcrpy = "*"
 bumpversion = "*"
+django-impersonate = "*"
 
 [requires]
 python_version = "3.6"

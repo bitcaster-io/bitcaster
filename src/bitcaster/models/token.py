@@ -1,7 +1,6 @@
 import datetime
 
 from django.db import models
-from django.utils import timezone
 
 from bitcaster.logging import getLogger
 from bitcaster.models import Event
@@ -15,9 +14,9 @@ logger = getLogger(__name__)
 DEFAULT_EXPIRATION = datetime.timedelta(days=30)
 
 
-def calculate_expiration():
-    return timezone.now() + DEFAULT_EXPIRATION
-
+# def calculate_expiration():
+#     return timezone.now() + DEFAULT_EXPIRATION
+#
 
 class ApplicationTriggerKey(AbstractModel):
     application = models.ForeignKey(Application,
@@ -54,6 +53,7 @@ class ApiAuthToken(AbstractModel):
     class Meta:
         app_label = 'bitcaster'
 
-    @classmethod
-    def generate_token(cls):
-        return generate_api_token()
+    # @classmethod
+    # def generate_token(cls):
+    #     return generate_api_token()
+#

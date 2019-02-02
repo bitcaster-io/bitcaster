@@ -5,17 +5,17 @@ rm -f /var/bitcaster/run/*
 
 
 if [[ "$*" == "workers" ]];then
-    bitcaster check --deploy
+    bitcaster check --deploy --wait-services
     celery worker -A bitcaster --loglevel=DEBUG --concurrency=4 --purge --pidfile run/celery.pid
 elif [[ "$*" == "beat" ]];then
-    bitcaster check --deploy
+    bitcaster check --deploy --wait-services
     celery beat -A bitcaster --loglevel=DEBUG --pidfile run/celerybeat.pid
 elif [[ "$*" == "bitcaster" ]];then
-    bitcaster check --deploy
+    bitcaster check --deploy --wait-services
     bitcaster upgrade --no-input
     gunicorn -b 0.0.0.0:8000 bitcaster.config.wsgi
 elif [[ "$*" == "stack" ]];then
-    bitcaster check --deploy
+    bitcaster check --deploy --wait-services
     bitcaster upgrade --no-input
     exec circusd /etc/circus.conf
 else

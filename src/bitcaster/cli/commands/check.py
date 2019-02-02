@@ -80,11 +80,11 @@ def checkdb(wait=True, timeout=60, debug=False, connection='default'):
 @click.option('--deploy', default=False, is_flag=True,
               help='Check deployment settings.')
 @click.option('--wait-services', default=False, is_flag=True,
-              help='debug mode')
+              help='wait until required services are ready')
 @click.option('--timeout', default=60, type=int,
-              help='debug mode')
+              help='Timeout for waiting for services')
 @click.option('--sleep', default=5, type=int,
-              help='debug mode')
+              help='Sleep time waiting for services')
 @click.pass_context
 def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
           timeout, sleep, verbose, **kwargs):

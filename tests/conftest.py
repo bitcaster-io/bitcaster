@@ -172,3 +172,20 @@ def org_channel(db, organization1):
     from bitcaster.utils.tests.factories import ChannelFactory
     return ChannelFactory(organization=organization1,
                           application=None, system=False)
+
+
+@pytest.fixture()
+def rf():
+    from django.test.client import RequestFactory
+    from django.contrib.auth.models import AnonymousUser
+
+    class BRequestFactory(RequestFactory):
+
+        def generic(self, method, path, data='', content_type='application/octet-stream', secure=False, **extra):
+            ret = super().generic(method, path, data, content_type, secure, **extra)
+            ret.user = AnonymousUser()
+            ret._messages = []
+            ret._alarms = []
+            return ret
+
+    return BRequestFactory()
