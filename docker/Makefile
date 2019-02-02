@@ -4,10 +4,10 @@
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET?=0.3.0a15
+TARGET?=0.3.0a15-alpine
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
-BUILD_OPTIONS?=
+BUILD_OPTIONS?=--squash
 CMD?=bitcaster
 CONTAINER_NAME?=bitcaster-${TARGET}
 ORGANIZATION=bitcaster
@@ -32,7 +32,6 @@ build:
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
 			--build-arg DEVELOP=${DEVELOP} \
-			--build-arg GITHUB_CREDENTIALS=${GITHUB_CREDENTIALS} \
 			--build-arg VERSION=${TARGET} \
 			--build-arg BUILD_DATE=${BUILD_DATE} \
 			-t ${DOCKER_IMAGE} \
@@ -55,10 +54,11 @@ build:
 			-e BITCASTER_CELERY_BROKER_URL=${BITCASTER_CELERY_BROKER_URL} \
 			-e BITCASTER_DATABASE_URL=${BITCASTER_DATABASE_URL} \
 			-e BITCASTER_DEBUG=true \
-			-v $$PWD/${VOLUME}:/var/bitcaster/ \
 			${RUN_OPTIONS} \
 			${DOCKER_IMAGE} \
 			${CMD}
+
+#			-v $$PWD/${VOLUME}:/var/bitcaster/ \
 
 local:
 	RUN_OPTIONS="-v ${PWD}/..:/code -e PYTHONPATH=/code -it" \
@@ -91,7 +91,7 @@ test:
 
 
 shell:
-	RUN_OPTIONS=-it CMD='/bin/bash' $(MAKE) .run
+	RUN_OPTIONS=-it CMD='/bin/sh' $(MAKE) .run
 
 ignore:
 	cd .. && docker build -f docker/Dockerfile.ignore -t build-context .

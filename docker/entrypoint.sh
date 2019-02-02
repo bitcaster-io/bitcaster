@@ -1,5 +1,4 @@
-#!/bin/bash -e
-set -e
+#!/bin/sh -e
 
 mkdir -p /var/bitcaster/run ${BITCASTER_MEDIA_ROOT} ${BITCASTER_STATIC_ROOT}
 rm -f /var/bitcaster/run/*

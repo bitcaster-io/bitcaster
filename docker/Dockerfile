@@ -1,33 +1,81 @@
-FROM pstauffer/curl:latest as retriever
-ARG DEVELOP
-ARG GITHUB_CREDENTIALS
-ARG VERSION
+FROM python:3.6.8-alpine3.8
 
-RUN mkdir /code
+ARG BUILD_DATE
+ARG PIPENV_ARGS
+ARG VERSION
+ARG DEVELOP
+
+ENV CPLUS_INCLUDE_PATH /usr/include/libxml2/
+ENV C_INCLUDE_PATH /usr/include/libxml2/
+
+#RUN apk add --no-cache --virtual .fetch-deps \
+#        curl
+
+RUN apk add --no-cache --virtual .build-deps \
+        gcc \
+        musl-dev \
+        python3-dev \
+        libffi-dev \
+        libressl-dev \
+        libxml2-dev \
+        libxslt-dev \
+        jpeg-dev \
+        linux-headers \
+        postgresql-dev \
+        zeromq-dev
+
+#        autoconf
+#        automake \
+#        libxml2-dev \
+#        libxslt-dev \
+#        pkgconf \
+#        g++ \
+#        json-c-dev \
+#        libtool \
+#        libxml2-dev \
+#        make \
+#        perl \
+#        freetype-dev \
+#        fontconfig-dev \
+#        freetype-dev \
+#        jpeg-dev \
+#        lcms2-dev \
+#        libffi-dev \
+#        libressl-dev \
+#        linux-headers \
+#        musl-dev \
+#        openjpeg-dev \
+#        postgresql-dev \
+#        python3-dev \
+#        tcl-dev \
+#        tiff-dev \
+#        tk-dev \
+#        zlib-dev
+#
+RUN apk add --no-cache --virtual .run-deps \
+        libpq
+#        postgresql-libs \
+#        json-c \
+#        bash
+
+RUN mkdir -p /code
 ADD . /code
+WORKDIR /code
 
 RUN set -o pipefail && if [ "${DEVELOP}" = "1" ]; then \
     echo "${VERSION}-develop"; \
     else \
     echo "Download package: https://github.com/bitcaster-io/bitcaster/archive/${VERSION}.tar.gz" \
-    && curl ${GITHUB_CREDENTIALS}: -L "https://github.com/bitcaster-io/bitcaster/archive/${VERSION}.tar.gz" | tar -xzf - --strip-components=1; \
+    && curl -L "https://github.com/bitcaster-io/bitcaster/archive/${VERSION}.tar.gz" | tar -xzf - --strip-components=1; \
     fi
 
-FROM python:3.6.7-slim-stretch as base
-RUN apt-get update \
- 	&& apt-get install -y --no-install-recommends \
- 	    gcc \
- 	    gdal-bin \
- 	    python-dev
+RUN pip install pip==18.0 pipenv --upgrade
 
-RUN adduser --system bitcaster
 
-FROM base
-COPY --from=retriever /code /code
-ARG BUILD_DATE
-ARG PIPENV_ARGS
-ARG VERSION
-ENV VERSION ${VERSION}
+RUN set -ex \
+    ls -al /code \
+    && pipenv install --verbose --system --deploy --ignore-pipfile $PIPENV_ARGS \
+    && pip3 install .
 
 LABEL org.label.name="Bitcaster" \
       org.label.maintainer="bitcaster@os4d.org" \
@@ -37,9 +85,9 @@ LABEL org.label.name="Bitcaster" \
       org.label.version=${VERSION} \
       org.label.date=${BUILD_DATE}
 
-ENV PIPENV_PYPI_MIRROR ${PIPENV_PYPI_MIRROR}
+ENV VERSION ${VERSION}
 ENV PIPENV_ARGS ${PIPENV_ARGS}
-ENV HOME /var/bitcaster
+#ENV HOME /var/bitcaster
 ENV PYTHONUNBUFFERED 1
 ENV GUNICORN_CMD_ARGS "-b 0.0.0.0:8000 \
 --chdir /var/bitcaster \
@@ -56,36 +104,27 @@ ENV BITCASTER_REDIS_LOCK_URL ""
 ENV BITCASTER_LOG_LEVEL "ERROR"
 
 
-WORKDIR /code
-
-RUN set -ex \
-    && ls -al /code \
-    && pip install pip==18.0 pipenv --upgrade \
-    && mkdir -p /var/bitcaster/ \
-    && chown bitcaster /var/bitcaster/ \
-    && pipenv install --verbose --system --deploy --ignore-pipfile $PIPENV_ARGS
-
-RUN pip --disable-pip-version-check install .
-RUN for dir in plugins/*;do pip --disable-pip-version-check install $dir; done;
-RUN pip list | grep bitcaster
-
-WORKDIR /var/bitcaster
-
-RUN rm -fr /code \
-    && rm -fr /var/bitcaster/.cache \
-    && apt-get purge --auto-remove -y \
-        gcc \
-        mysql-common \
-        python-dev
-
-USER bitcaster
-
 EXPOSE 8000
-EXPOSE 5555
-EXPOSE 6379
+RUN apk del .build-deps
+RUN rm -rf /var/cache/apk/* \
+    rm -fr /root/.cache/ \
+    rm -fr /code \
+    rm -fr /var/bitcaster/.cache/ \
+    rm -fr /usr/include/ \
+    pip uninstall pipenv
+
+RUN find /usr/local/lib/python3.6/ -name *.pyc | xargs rm -f \
+    && python -O -m compileall -x _plugin_template.* -fqb /usr/local/lib/python3.6/ \
+    && find /usr/local/lib/python3.6/ -name *.py | xargs rm -f
 
 ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-ADD docker/circus.conf /etc/circus.conf
+
+RUN adduser -S bitcaster \
+    && mkdir -p /var/bitcaster \
+    && chown bitcaster /var/bitcaster/
+
+WORKDIR /var/bitcaster
+#USER bitcaster
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 

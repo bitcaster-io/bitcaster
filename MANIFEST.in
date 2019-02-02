@@ -34,6 +34,9 @@ exclude .demo
 exclude .env
 exclude .demo-sax
 exclude .DS_Store
+exclude .css.map
+exclude .js.map
+
 excude src/bitcaster/config/settings/~dev.py
 
 recursive-exclude docker *
