@@ -31,7 +31,7 @@ jobs:
           command: |
             export PATH=/home/circleci/.local/bin:$PATH
             export PYTHONHASHSEED=${RANDOM}
-            pip install tox --user
+            pip install tox==3.7.0 --user
             tox -re lint,d21-py36
 
       - store_artifacts:
