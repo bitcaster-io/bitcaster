@@ -65,11 +65,8 @@ clean:
 	find src/bitcaster/locale -name django.mo | xargs rm -f
 
 fullclean:
-	rm -fr .tox .cache
+	rm -fr .tox .cache .venv node_modules
 	$(MAKE) clean
-	$(MAKE) clean-plugins
-
-wheel:
 
 
 docs: .mkbuilddir
