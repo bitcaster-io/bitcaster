@@ -59,7 +59,7 @@ RUN apk add --no-cache --virtual .run-deps \
 #        bash
 
 RUN mkdir -p /code
-ADD . /code
+COPY . /code
 WORKDIR /code
 
 RUN set -o pipefail && if [ "${DEVELOP}" = "1" ]; then \
@@ -117,7 +117,7 @@ RUN find /usr/local/lib/python3.6/ -name *.pyc | xargs rm -f \
     && python -O -m compileall -x _plugin_template.* -fqb /usr/local/lib/python3.6/ \
     && find /usr/local/lib/python3.6/ -name *.py | xargs rm -f
 
-ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 RUN adduser -S bitcaster \
     && mkdir -p /var/bitcaster \

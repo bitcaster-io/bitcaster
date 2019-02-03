@@ -1,7 +1,6 @@
 # Bitcaster
 
 [![travis-badge]][travis-link]
-[![circle-badge]][circle-link]
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6fa79049ba7c44dd9b082a7ed8b5dce9)](https://www.codacy.com/app/bitcaster/bitcaster?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bitcaster-io/bitcaster&amp;utm_campaign=Badge_Grade)
 [![codecov-badge]][codecov-link]
 [![docker-badge]][docker]
