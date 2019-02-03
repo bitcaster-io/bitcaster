@@ -86,7 +86,7 @@ test:
 				 -e CSRF_COOKIE_SECURE=1 \
 				 -e SECURE_HSTS_PRELOAD=1 \
 				 -e SECURE_SSL_REDIRECT=1" \
-	CMD='bash -c "whoami && touch /var/bitcaster/.touch && bitcaster check --deploy && bitcaster plugin list"' \
+	CMD='sh -c "whoami && touch /var/bitcaster/.touch && bitcaster check --deploy && bitcaster plugin list"' \
 	$(MAKE) .run
 
 
