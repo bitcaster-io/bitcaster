@@ -23,7 +23,6 @@ repos:
         exclude: /(_plugin_template|python_twitter|migrations)/
         args:
           - src/
-          - tests/
       - id: check-merge-conflict
       - id: check-case-conflict
 
