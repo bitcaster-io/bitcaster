@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import ipaddress
+
 import pytest
 
 from bitcaster.utils.language import flatten, get_attr
@@ -40,3 +42,13 @@ def test_netlist():
     ranges = NetList('0.0.0.0/0')
     assert '1.1.1.1' in ranges
     assert '192.168.1.1' in ranges
+
+    ranges = NetList('0.0.0.0/0')
+    ranges[0] = '192.168.10.0/24'
+    assert ranges[0] == ipaddress.ip_network('192.168.10.0/24')
+    assert '1.1.1.1' not in ranges
+    assert '192.168.10.1' in ranges
+
+    ranges = NetList('10.0.0.0/24', '192.168.10.0/24')
+    for net in ranges:
+        assert isinstance(net, ipaddress.IPv4Network)

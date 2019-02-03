@@ -98,3 +98,35 @@ def test_system_channel_security(url, django_app, organization1, system_channel)
                          expect_errors=True,
                          user=organization1.owner)
     assert res.status_code == 403
+
+
+@pytest.mark.django_db
+def test_settings_general(django_app, organization1, admin):
+    url = reverse('settings')
+    res = django_app.get(url, user=admin)
+    res.form['SITE_URL'] = 'pippo'
+    res = res.form.submit().follow()
+    assert res.status_code == 200
+
+
+@pytest.mark.django_db
+def test_settings_email(django_app, organization1, admin):
+    url = reverse('settings-email')
+    res = django_app.get(url, user=admin)
+    res.form['EMAIL_HOST'] = 'smtp.example.org'
+    res.form['EMAIL_HOST_PORT'] = '25'
+    res.form['EMAIL_HOST_USER'] = 'user'
+    res.form['EMAIL_HOST_PASSWORD'] = 'password'
+    res = res.form.submit()
+    assert res.status_code == 302, f"Submit failed with: {repr(res.context['form'].errors)}"
+    res = res.follow()
+    assert res.status_code == 200
+
+
+@pytest.mark.django_db
+def test_settings_oauth(django_app, organization1, admin):
+    url = reverse('settings-oauth')
+    res = django_app.get(url, user=admin)
+    res = res.form.submit()
+    res = res.follow()
+    assert res.status_code == 200

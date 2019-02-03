@@ -47,9 +47,16 @@
             {% endblock sidebar %}
             <div class="page-content">
                 {% block content %}
-                    <h2>{{ title }}</h2>
-                    {% crispy form %}
-{#                    {{ form|crispy }}#}
+                    <form method="post">
+                        {% csrf_token %}
+                        <h2>{{ title }}</h2>
+                        {{ form|crispy }}
+                        {% block buttons %}
+                            <input type="submit" name="save" class="btn btn-primary" value="Save">
+
+                        {% endblock buttons %}
+                    </form>
+
                 {% endblock content %}
             </div>
         </div>

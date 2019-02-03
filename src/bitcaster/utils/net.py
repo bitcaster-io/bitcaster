@@ -17,7 +17,7 @@ class NetList:
     def __setitem__(self, key, value):
         self._list[key] = ipaddress.ip_network(value)
 
-    def __getitem__(self, key, value):
+    def __getitem__(self, key):
         return self._list[key]
 
     def __iter__(self):
