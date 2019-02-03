@@ -69,7 +69,7 @@ RUN set -o pipefail && if [ "${DEVELOP}" = "1" ]; then \
     && curl -L "https://github.com/bitcaster-io/bitcaster/archive/${VERSION}.tar.gz" | tar -xzf - --strip-components=1; \
     fi
 
-RUN pip install pip==18.0 pipenv --upgrade
+RUN pip install pip==18.0 pipenv==2018.11.26
 
 
 RUN set -ex \
