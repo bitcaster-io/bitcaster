@@ -112,7 +112,6 @@ wget -O- "{{ api_url }}" \
             var j = {};
             $("#ser input").each(function () {
                 if ($(this).val() !== "") {
-                    console.log($(this).attr("name"), $(this).val());
                     args += "\n     " + $(this).attr("name") + "=" + $(this).val() + " \\";
                     j[$(this).attr("name")] = $(this).val();
                 }
@@ -140,7 +139,6 @@ wget -O- "{{ api_url }}" \
             xhttp.setRequestHeader("Authorization", "Key {{ key.token }}");
             $monitor.append("SENDING REQUEST\n");
             xhttp.send();
-            console.log(xhttp.status);
             if ( xhttp.status !== 201){
                 $monitor.append("ERROR ", xhttp.status, "\n");
             }else {

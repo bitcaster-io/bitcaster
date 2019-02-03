@@ -93,9 +93,6 @@ module.exports = (function() {
       };
 
       $(passwordSel).on('input', throttle(setStrengthHandler));
-    }else{
-      console.log(111.1, $);
-      console.log(111.2, zxcvbn);
     }
   };
 

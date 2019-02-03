@@ -30,7 +30,6 @@
             $("#form").submit();
         });
         {% if selection %}
-            console.log("{{ selection }}");
             $('#id_{{ selection|slugify }}').addClass('selected');
         {% endif %}
     </script>
