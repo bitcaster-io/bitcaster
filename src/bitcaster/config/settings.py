@@ -501,7 +501,7 @@ SYSINFO = {'host': True,
 SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['key', 'invitation']
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
-    # 'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.github.GithubOAuth2',
     'social_core.backends.github.GithubOrganizationOAuth2',
     # 'social_core.backends.linkedin.LinkedinOAuth2',
     # 'social_core.backends.facebook.FacebookOAuth2',
@@ -547,6 +547,8 @@ SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + SOCIAL_AUTH_AUTHENTICATION_BACKENDS
 SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email', 'name', ]
 SOCIAL_AUTH_STRATEGY = 'bitcaster.social_auth.BitcasterStrategy'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_LOGIN_URL = '/'
 
 SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
     'access_type': 'offline'

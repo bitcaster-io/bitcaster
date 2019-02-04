@@ -76,5 +76,26 @@ ifdef BROWSE
 	firefox ${BUILDDIR}/docs/index.html
 endif
 
+clean-plugins:
+	@for dir in $(SUBDIRS); do \
+		pushd $$dir;\
+		make clean; \
+		popd; \
+ 	done
+
+tox-plugins:
+	@for dir in $(SUBDIRS); do \
+		pushd $$dir;\
+		tox || exit 1; \
+		popd; \
+ 	done
+
+install-plugins:
+	plugins/install-plugins.sh
+
+uninstall-plugins:
+	@for dir in $(SUBDIRS); do \
+		pip uninstall $$dir || exit 1; \
+ 	done
 
 .PHONY: test-plugins clean-plugins install-plugins

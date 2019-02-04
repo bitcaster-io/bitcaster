@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2d6012f80cd9ee6bd5ed8c8dea290e0edcd69087c144f038c809ce43688a0bb3"
+            "sha256": "4e4ff15d027a6c78b27c62cff131cbdec5c747df601728ea4cb256baa04fb473"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -428,11 +428,11 @@
         },
         "fbchat": {
             "hashes": [
-                "sha256:1259bb486d3ceede518b0f75d36f54fac6141325e207727045d14defddcc6ecf",
-                "sha256:dfdbd9a99d1057172c076328db466e398604e751871fcff2e24e73c611f42e82"
+                "sha256:3341366736761580d751b544ee7c89240d81e6676a549c8fc0ddedb2005467d4",
+                "sha256:a3230fe11ca669edcbc1e33ce25464037434a45a4b80335f6e0f356440029a18"
             ],
             "index": "pypi",
-            "version": "==1.6.2"
+            "version": "==1.6.3"
         },
         "future": {
             "hashes": [
@@ -1010,6 +1010,14 @@
             ],
             "version": "==1.2.0"
         },
+        "websocket-client": {
+            "hashes": [
+                "sha256:8c8bf2d4f800c3ed952df206b18c28f7070d9e3dcbd6ca6291127574f57ee786",
+                "sha256:e51562c91ddb8148e791f0155fdb01325d99bb52c4cdbb291aee7a3563fd0849"
+            ],
+            "index": "pypi",
+            "version": "==0.54.0"
+        },
         "whichcraft": {
             "hashes": [
                 "sha256:7533870f751901a0ce43c93cc9850186e9eba7fe58c924dfb435968ba9c9fa4e",
@@ -1555,11 +1563,11 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:41568ea7ecb4a68d7f63837cf65b92ce8d0105e43196ff2b26622995bb3dc4b2",
-                "sha256:c3c573a29d7c9547fb90217ece8a8843aa0c1328a797e200290dc3d0b4b823be"
+                "sha256:65aeaa77ae87c7fc95de56285282546cfa9c886dc8e5dc78313db1c25e21bc07",
+                "sha256:6ac6d467d9f053e95aaacd79f831dbecfe730f419c6c7022cb316b365cd9199d"
             ],
             "index": "pypi",
-            "version": "==4.1.1"
+            "version": "==4.2.0"
         },
         "pytest-cov": {
             "hashes": [
@@ -1571,11 +1579,11 @@
         },
         "pytest-django": {
             "hashes": [
-                "sha256:6904d28606d8360c31946d25904fc1fd1b247dc48b6ada4ffb4f125ae098b543",
-                "sha256:be6c653527c95f13fe2bc5e35f04785546434c1db1f059143d011d7056072964"
+                "sha256:3d489db7c9bd18d7c154347b1bdfb82cc6b1ec8539543508b199c77e5eb2caec",
+                "sha256:87c31e53ad09ca4f061b82a9d71ad1e3e399c7a5ec9d28f7c3c38a9a9afbd027"
             ],
             "index": "pypi",
-            "version": "==3.4.6"
+            "version": "==3.4.7"
         },
         "pytest-echo": {
             "hashes": [
@@ -1753,6 +1761,7 @@
                 "sha256:8c8bf2d4f800c3ed952df206b18c28f7070d9e3dcbd6ca6291127574f57ee786",
                 "sha256:e51562c91ddb8148e791f0155fdb01325d99bb52c4cdbb291aee7a3563fd0849"
             ],
+            "index": "pypi",
             "version": "==0.54.0"
         },
         "websockets": {

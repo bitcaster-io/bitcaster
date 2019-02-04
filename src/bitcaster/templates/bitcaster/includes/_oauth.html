@@ -10,6 +10,11 @@
                 <img src="{% asset "bitcaster/images/social_auth_github.png" %}">
             </a>
         {% endif %}
+        {% if config.SOCIAL_AUTH_GITHUB_ORG_KEY %}
+            <a href="{% url "social:begin" "github-org" %}?invitation={{ invitation_id }}">
+                <img src="{% asset "bitcaster/images/social_auth_github.png" %}">
+            </a>
+        {% endif %}
         {% if config.SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY %}
             <a href="{% url "social:begin" "linkedin" %}?invitation={{ invitation_id }}">
                 <img src="{% asset "bitcaster/images/social_auth_linkedin.png" %}">

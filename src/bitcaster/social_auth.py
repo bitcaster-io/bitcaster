@@ -63,11 +63,18 @@ def create_default_membership(backend, details, new_association=False, uid=None,
 
 class BitcasterStrategy(DjangoStrategy):
 
+    def redirect(self, url):
+        return super().redirect(url or '/')
+
     def get_setting(self, name):
         "get configuration from 'constance.config' first "
         value = getattr(config, name, None)
+        value = value.strip()
         if name == 'SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS':
-            return value.split(',')
+            if value:
+                return value.split(',')
+            else:
+                return []
 
         if value is None:
             value = getattr(settings, name)

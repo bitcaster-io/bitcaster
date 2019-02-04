@@ -64,6 +64,7 @@ social-auth-app-django = "*"
 social-auth-core = "*"
 twilio = "*"
 whitenoise = "*"
+websocket-client = "*"
 
 [dev-packages]
 coverage = "*"

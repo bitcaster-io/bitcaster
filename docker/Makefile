@@ -4,7 +4,7 @@
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET?=0.5.0a
+TARGET?=0.5.0a1
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
@@ -91,7 +91,7 @@ test:
 
 
 shell:
-	RUN_OPTIONS=-it CMD='/bin/sh' $(MAKE) .run
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:latest RUN_OPTIONS=-it CMD='/bin/sh' $(MAKE) .run
 
 ignore:
 	cd .. && docker build -f docker/Dockerfile.ignore -t build-context .

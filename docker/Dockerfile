@@ -24,39 +24,11 @@ RUN apk add --no-cache --virtual .build-deps \
         postgresql-dev \
         zeromq-dev
 
-#        autoconf
-#        automake \
-#        libxml2-dev \
-#        libxslt-dev \
-#        pkgconf \
-#        g++ \
-#        json-c-dev \
-#        libtool \
-#        libxml2-dev \
-#        make \
-#        perl \
-#        freetype-dev \
-#        fontconfig-dev \
-#        freetype-dev \
-#        jpeg-dev \
-#        lcms2-dev \
-#        libffi-dev \
-#        libressl-dev \
-#        linux-headers \
-#        musl-dev \
-#        openjpeg-dev \
-#        postgresql-dev \
-#        python3-dev \
-#        tcl-dev \
-#        tiff-dev \
-#        tk-dev \
-#        zlib-dev
-#
 RUN apk add --no-cache --virtual .run-deps \
-        libpq
-#        postgresql-libs \
-#        json-c \
-#        bash
+        libpq \
+        libxslt \
+        libzmq \
+        jpeg
 
 RUN mkdir -p /code
 COPY . /code
@@ -75,7 +47,9 @@ RUN pip install pip==18.0 pipenv==2018.11.26
 RUN set -ex \
     ls -al /code \
     && pipenv install --verbose --system --deploy --ignore-pipfile $PIPENV_ARGS \
-    && pip3 install .
+    && pip3 install . \
+    && ./plugins/install-plugins.sh /code/plugins/
+
 
 LABEL org.label.name="Bitcaster" \
       org.label.maintainer="bitcaster@os4d.org" \
@@ -87,15 +61,14 @@ LABEL org.label.name="Bitcaster" \
 
 ENV VERSION ${VERSION}
 ENV PIPENV_ARGS ${PIPENV_ARGS}
-#ENV HOME /var/bitcaster
 ENV PYTHONUNBUFFERED 1
 ENV GUNICORN_CMD_ARGS "-b 0.0.0.0:8000 \
 --chdir /var/bitcaster \
 --access-logfile - \
 --access-logformat \"%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s\" "
 
-ENV BITCASTER_MEDIA_ROOT $HOME/media
-ENV BITCASTER_STATIC_ROOT $HOME/static
+ENV BITCASTER_MEDIA_ROOT /var/bitcaster/media
+ENV BITCASTER_STATIC_ROOT /var/bitcaster/static
 ENV BITCASTER_CONF $HOME/conf/config
 ENV BITCASTER_DATABASE_URL ""
 ENV BITCASTER_CELERY_BROKER_URL ""
@@ -105,6 +78,7 @@ ENV BITCASTER_LOG_LEVEL "ERROR"
 
 
 EXPOSE 8000
+#  clean all and removes all non needed files
 RUN apk del .build-deps
 RUN rm -rf /var/cache/apk/* \
     rm -fr /root/.cache/ \
@@ -117,14 +91,17 @@ RUN find /usr/local/lib/python3.6/ -name *.pyc | xargs rm -f \
     && python -O -m compileall -x _plugin_template.* -fqb /usr/local/lib/python3.6/ \
     && find /usr/local/lib/python3.6/ -name *.py | xargs rm -f
 
+# end clean
+
 COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY docker/circus.conf /etc/circus.conf
 
 RUN adduser -S bitcaster \
     && mkdir -p /var/bitcaster \
     && chown bitcaster /var/bitcaster/
 
 WORKDIR /var/bitcaster
-#USER bitcaster
+USER bitcaster
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
