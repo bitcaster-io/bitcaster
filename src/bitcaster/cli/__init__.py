@@ -83,10 +83,8 @@ def cli(ctx, config, verbose, **kwargs):
 
 
 cli.add_command(import_by_name('bitcaster.cli.commands.check.check'))
-cli.add_command(import_by_name('bitcaster.cli.commands.configure.configure'))
 cli.add_command(import_by_name('bitcaster.cli.commands.upgrade.upgrade'))
 cli.add_command(import_by_name('bitcaster.cli.commands.createuser.createuser'))
-cli.add_command(import_by_name('bitcaster.cli.commands.plugin.plugin'))
 cli.add_command(import_by_name('bitcaster.cli.commands.backup.backup'))
 cli.add_command(import_by_name('bitcaster.cli.commands.backup.restore'))
 
