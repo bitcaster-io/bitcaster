@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from rest_framework.exceptions import ValidationError as DRFValidationError
+from social_core.exceptions import AuthFailed
 
 
 class BitcasterError(Exception):
@@ -43,4 +44,8 @@ class HandlerNotFound(ImportError):
 
 
 class OAuthError(Exception):
+    pass
+
+
+class NotMemberOfOrganization(AuthFailed):
     pass

@@ -111,6 +111,9 @@
                 {% endif %}</div>
         {% endblock messages %}
         <div class="container-fluid main-content" id="{% block pageId %}page{% endblock %}">
+
+            {% block alarms %}
+
             {% if alarms %}
                 <div id="alarmBar">
                     <ul class="messagelist">{% for alarm in alarms %}
@@ -120,6 +123,7 @@
                     {% endfor %}</ul>
                 </div>
             {% endif %}
+        {% endblock alarms %}
 
 
             {% block page %}

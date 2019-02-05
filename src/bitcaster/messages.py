@@ -1,4 +1,6 @@
-from django.contrib.messages import MessageFailure
+from functools import partial
+
+from django.contrib.messages import MessageFailure, constants
 
 DEBUG = 10
 INFO = 20
@@ -23,43 +25,58 @@ DEFAULT_LEVELS = {
 }
 
 
-def add_message(request, level, message, extra_tags='', fail_silently=False):
-    """
-    Attempt to add a message to the request using the 'messages' app.
-    """
+def add(target, request, level, message, extra_tags='', fail_silently=False):
     try:
-        messages = request._messages
-    except AttributeError:
+        targets = getattr(request, target)
+    except AttributeError:  # pragma: no cover
         if not hasattr(request, 'META'):
             raise TypeError(
-                'add_message() argument must be an HttpRequest object, not '
+                'add() argument must be an HttpRequest object, not '
                 "'%s'." % request.__class__.__name__
             )
         if not fail_silently:
             raise MessageFailure(
-                'You cannot add messages without installing '
-                'django.contrib.messages.middleware.MessageMiddleware'
-            )
-    else:
-        return messages.add(level, message, extra_tags)
-
-
-def add_alarm(request, level, message, extra_tags='', fail_silently=False):
-    """
-    Attempt to add a message to the request using the 'messages' app.
-    """
-    try:
-        alarms = request._alarms
-    except AttributeError:
-        if not hasattr(request, 'META'):
-            raise TypeError(
-                'add_alarm() argument must be an HttpRequest object, not '
-                "'%s'." % request.__class__.__name__
-            )
-        if not fail_silently:
-            raise MessageFailure(
-                'You cannot add alarms without installing '
+                'You cannot add alarms/messages without installing '
                 'bitcaster.middleware.messages.MessageMiddleware'
             )
     else:
-        return alarms.add(level, message, extra_tags)
+        return targets.add(level, message, extra_tags)
+
+
+add_alarm = partial(add, '_alarms')
+add_message = partial(add, '_messages')
+
+
+class Wrapper:
+    def __init__(self, target_name):
+        self.target_name = target_name
+
+    def debug(self, request, message, extra_tags='', fail_silently=False):
+        """Add a message with the ``DEBUG`` level."""
+        add(self.target_name, request, constants.DEBUG, message, extra_tags=extra_tags,
+            fail_silently=fail_silently)
+
+    def info(self, request, message, extra_tags='', fail_silently=False):
+        """Add a message with the ``INFO`` level."""
+        add(self.target_name,
+            request, constants.INFO, message, extra_tags=extra_tags,
+            fail_silently=fail_silently)
+
+    def success(self, request, message, extra_tags='', fail_silently=False):
+        """Add a message with the ``SUCCESS`` level."""
+        add(self.target_name, request, constants.SUCCESS, message, extra_tags=extra_tags,
+            fail_silently=fail_silently)
+
+    def warning(self, request, message, extra_tags='', fail_silently=False):
+        """Add a message with the ``WARNING`` level."""
+        add(self.target_name, request, constants.WARNING, message, extra_tags=extra_tags,
+            fail_silently=fail_silently)
+
+    def error(self, request, message, extra_tags='', fail_silently=False):
+        """Add a message with the ``ERROR`` level."""
+        add(self.target_name, request, constants.ERROR, message, extra_tags=extra_tags,
+            fail_silently=fail_silently)
+
+
+msgs = Wrapper('_messages')
+alarms = Wrapper('_alarms')

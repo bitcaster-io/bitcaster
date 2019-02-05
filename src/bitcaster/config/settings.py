@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE = [
+    'bitcaster.middleware.exception.ExceptionHandlerMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'bitcaster.middleware.setup.SetupMiddleware',
@@ -501,8 +502,9 @@ SYSINFO = {'host': True,
 SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['key', 'invitation']
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.github.GithubOAuth2',
-    'social_core.backends.github.GithubOrganizationOAuth2',
+    # 'social_core.backends.github.GithubOAuth2',
+    # 'social_core.backends.github.GithubOrganizationOAuth2',
+    'bitcaster.social_auth.BitcasterGithubOrganizationOAuth2',
     # 'social_core.backends.linkedin.LinkedinOAuth2',
     # 'social_core.backends.facebook.FacebookOAuth2',
 )

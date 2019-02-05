@@ -105,7 +105,13 @@ def test_settings_general(django_app, organization1, admin):
     url = reverse('settings')
     res = django_app.get(url, user=admin)
     res.form['SITE_URL'] = 'pippo'
-    res = res.form.submit().follow()
+    res = res.form.submit()
+    assert res.status_code == 200
+
+    res.form['SITE_URL'] = 'http://localhost:80'
+    res = res.form.submit()
+    assert res.status_code == 302, f"Submit failed with: {repr(res.context['form'].errors)}"
+    res = res.follow()
     assert res.status_code == 200
 
 
