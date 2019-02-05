@@ -97,7 +97,7 @@ class SettingsEmailForm(Form):
     EMAIL_HOST = forms.CharField(required=True)
     EMAIL_HOST_PORT = forms.IntegerField(required=True)
     EMAIL_HOST_USER = forms.CharField(required=True)
-    EMAIL_HOST_PASSWORD = forms.CharField(required=False, widget=forms.PasswordInput)
+    EMAIL_HOST_PASSWORD = forms.CharField(required=False)
     EMAIL_USE_TLS = forms.BooleanField(required=False)
     EMAIL_SENDER = forms.EmailField(required=True)
     EMAIL_SUBJECT_PREFIX = forms.CharField(required=False)
