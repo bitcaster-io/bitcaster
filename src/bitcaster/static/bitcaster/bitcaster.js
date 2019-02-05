@@ -10680,8 +10680,8 @@ _.toggleSidebar = function () {
             },
 
             insertDeleteLink = function(row) {
-                var delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.'),
-                    addCssSelector = $.trim(options.addCssClass).replace(/\s+/g, '.');
+                var delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, "."),
+                    addCssSelector = $.trim(options.addCssClass).replace(/\s+/g, ".");
                 if (row.is('TR')) {
                     // If the forms are laid out in table rows, insert
                     // the remove button into the last table cell:

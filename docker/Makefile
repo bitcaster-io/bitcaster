@@ -18,6 +18,7 @@ DOCKERFILE?=Dockerfile
 RUN_OPTIONS?=
 PIPENV_ARGS?=
 VOLUME=~build/volumes/var/bitcaster/
+VERSION?=$(shell cat ../VERSION)
 
 help:
 	@echo "dev                  build dev image (based on local code)"
@@ -26,6 +27,15 @@ help:
 	@echo "run                  run ${DOCKER_IMAGE} locally"
 	@echo "ignore               run ${DOCKER_IMAGE} locally"
 	@echo "onbuild	 			run image "
+
+build-base:
+	cd .. && docker build \
+			${BUILD_OPTIONS} \
+			--build-arg DEVELOP=${DEVELOP} \
+			-t ${DOCKER_IMAGE_NAME}-${VERSION}:base \
+			-f docker/Dockerfile.base .
+#	docker tag ${DOCKER_IMAGE_NAME}:${TARGET} ${DOCKER_IMAGE_NAME}:dev
+	docker images | grep ${DOCKER_IMAGE_NAME}
 
 
 build:

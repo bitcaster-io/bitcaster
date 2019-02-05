@@ -2,9 +2,12 @@
 import logging
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Fieldset, Layout, Submit
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django import forms
 from django.forms import Form
+from rest_framework.reverse import reverse
+
+from bitcaster.state import state
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +16,20 @@ class SettingsForm(Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+
+
+HELP = '''
+<div class="oauth-help">
+<div class="line1">Follow instruction at <a href="{help_url}">{help_label}</a></div>
+<div class="line2">Set callback url to <div class="cb">{callback}</div></div>
+</div>
+'''
+
+
+# .format("https://developers.google.com/+/web/signin/",
+# reverse_lazy("social:complete", args=['google-oauth2'])
+# "http://localhost:8000/complete/google-oauth2/"
+# )
 
 
 class SettingsOAuthForm(SettingsForm):
@@ -26,9 +43,9 @@ class SettingsOAuthForm(SettingsForm):
     SOCIAL_AUTH_GITHUB_ORG_KEY = forms.CharField(label='Key', required=False)
     SOCIAL_AUTH_GITHUB_ORG_SECRET = forms.CharField(label='Secret', required=False)
 
-    SOCIAL_AUTH_GITHUB_KEY = forms.CharField(label='Key', required=False)
-    SOCIAL_AUTH_GITHUB_SECRET = forms.CharField(label='Secret', required=False)
-
+    # SOCIAL_AUTH_GITHUB_KEY = forms.CharField(label='Key', required=False)
+    # SOCIAL_AUTH_GITHUB_SECRET = forms.CharField(label='Secret', required=False)
+    #
     # SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = forms.CharField(required=False)
     # SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = forms.CharField(required=False)\
 
@@ -37,19 +54,31 @@ class SettingsOAuthForm(SettingsForm):
 
         self.helper.layout = Layout(
             Fieldset('Google',
+                     HTML(HELP.format(help_url='https://developers.google.com/+/web/signin/',
+                                      help_label='https://developers.google.com/+/web/signin/',
+                                      callback=reverse('social:complete',
+                                                       args=['google-oauth2'],
+                                                       request=state.request))),
                      'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY',
                      'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET',
                      'SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS',
                      ),
-            Fieldset('GitHub - ORg',
+
+            Fieldset('GitHub - Organization',
+                     HTML(HELP.format(
+                         help_url='https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/',
+                         help_label='https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/',
+                         callback=reverse('social:complete',
+                                          args=['github-org'],
+                                          request=state.request))),
                      'SOCIAL_AUTH_GITHUB_ORG_NAME',
                      'SOCIAL_AUTH_GITHUB_ORG_KEY',
                      'SOCIAL_AUTH_GITHUB_ORG_SECRET',
                      ),
-            Fieldset('GitHub',
-                     'SOCIAL_AUTH_GITHUB_KEY',
-                     'SOCIAL_AUTH_GITHUB_SECRET',
-                     ),
+            # Fieldset('GitHub',
+            #          'SOCIAL_AUTH_GITHUB_KEY',
+            #          'SOCIAL_AUTH_GITHUB_SECRET',
+            #          ),
             Submit('submit', 'Save')
         )
 
@@ -59,7 +88,7 @@ class SettingsChannelsForm(Form):
 
 
 class SettingsMainForm(Form):
-    SITE_URL = forms.CharField()
+    SITE_URL = forms.URLField()
     # RECAPTCHA_PUBLIC_KEY = forms.CharField(required=False)
     # RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
 

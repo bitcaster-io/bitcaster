@@ -46,36 +46,7 @@ RUN pip install pip==18.0 pipenv==2018.11.26
 
 RUN set -ex \
     ls -al /code \
-    && pipenv install --verbose --system --deploy --ignore-pipfile $PIPENV_ARGS \
-    && pip3 install . \
-    && ./plugins/install-plugins.sh /code/plugins/
-
-FROM base
-
-LABEL org.label.name="Bitcaster" \
-      org.label.maintainer="bitcaster@os4d.org" \
-      org.label.description="Bitcaster is a system-to-user signal-to-message notification system." \
-      org.label.url="https://bitcaster.io/" \
-      org.label.vcs-url="https://github.com/bitcaster-io/bitcaster" \
-      org.label.version=${VERSION} \
-      org.label.date=${BUILD_DATE}
-
-ENV VERSION ${VERSION}
-ENV PIPENV_ARGS ${PIPENV_ARGS}
-ENV PYTHONUNBUFFERED 1
-ENV GUNICORN_CMD_ARGS "-b 0.0.0.0:8000 \
---chdir /var/bitcaster \
---access-logfile - \
---access-logformat \"%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s\" "
-
-ENV BITCASTER_MEDIA_ROOT /var/bitcaster/media
-ENV BITCASTER_STATIC_ROOT /var/bitcaster/static
-ENV BITCASTER_CONF $HOME/conf/config
-ENV BITCASTER_DATABASE_URL ""
-ENV BITCASTER_CELERY_BROKER_URL ""
-ENV BITCASTER_REDIS_CACHE_URL ""
-ENV BITCASTER_REDIS_LOCK_URL ""
-ENV BITCASTER_LOG_LEVEL "ERROR"
+    && pipenv install --verbose --system --deploy --ignore-pipfile $PIPENV_ARGS
 
 
 EXPOSE 8000

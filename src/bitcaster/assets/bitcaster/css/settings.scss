@@ -1,10 +1,40 @@
 #settings {
-    #sidebar{
-        ul{
-            li{
+    #sidebar {
+        ul {
+            li {
                 white-space: nowrap;
                 padding: 5px;
             }
         }
+    }
+}
+
+.oauth-help {
+    font-size: 9pt;
+
+    div {
+        display: inline;
+    }
+
+    .line1 {
+
+    }
+
+    .line2 {
+
+    }
+
+    a {
+        color: $blue;
+
+        :hover {
+            color: $blue;
+        }
+    }
+
+    .cb {
+        color: black;
+        font-weight: bold;
+        font-family: monospace;
     }
 }
