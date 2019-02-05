@@ -316,3 +316,13 @@ class SubscriptionFactory(factory.DjangoModelFactory):
     channel = factory.SubFactory(ChannelFactory)
     event = factory.SubFactory(EventFactory)
     config = {}
+
+
+class AddressFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Address
+        django_get_or_create = ('user', 'label')
+
+    user = factory.SubFactory(UserFactory)
+    label = factory.Sequence(lambda n: 'Label %03d' % n)
+    address = factory.Sequence(lambda n: 'Address %03d' % n)

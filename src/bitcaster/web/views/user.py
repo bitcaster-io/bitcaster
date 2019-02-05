@@ -16,17 +16,15 @@ from bitcaster.security import is_manager
 from bitcaster.state import state
 from bitcaster.system import system
 from bitcaster.utils.email_verification import set_new_email_request
-from bitcaster.utils.wsgi import get_client_ip
 from bitcaster.web.forms.user import send_address_verification_email
 
 from ..forms import UserProfileForm
 from .base import (ApplicationListMixin, BitcasterBaseDetailView,
-                   BitcasterBaseUpdateView, BitcasterTemplateView,
-                   MessageUserMixin, SelectedApplicationMixin,)
+                   BitcasterBaseUpdateView, MessageUserMixin,)
 
 logger = logging.getLogger(__name__)
 
-__all__ = ('UserProfileView', 'UserWelcomeView', 'UserHomeView', 'UserAddressesView',
+__all__ = ('UserProfileView', 'UserAddressesView',
            'UserAddressesInfoView', 'UserAddressesAssignmentView')
 
 
@@ -64,36 +62,37 @@ class UserIndexView(ApplicationListMixin, MessageUserMixin, TemplateView):
                     menu[application][event][channel] = subscriptions.get(f'{event.id}-{channel.id}')
                 ret['menu'] = menu
 
-        membership = self.request.user.memberships.first()
-        if membership:
-            ret['setup_url'] = reverse('org-dashboard', args=[membership.organization.slug])
+        # membership = self.request.user.memberships.first()
+        # if membership:
+        #     ret['setup_url'] = reverse('org-dashboard', args=[membership.organization.slug])
 
         return ret
 
 
-class UserHomeView(SelectedApplicationMixin, BitcasterBaseDetailView):
-    template_name = 'bitcaster/users/user-home.html'
-    model = User
+#
+# class UserHomeView(SelectedApplicationMixin, BitcasterBaseDetailView):
+#     template_name = 'bitcaster/users/user-home.html'
+#     model = User
+#
+#     def get_context_data(self, **kwargs):
+#         kwargs['application'] = self.selected_application
+#         allowed_applications = []
+#         for m in self.request.user.memberships.all():
+#             for application in m.organization.applications.all():
+#                 allowed_applications.append(
+#                     (m.organization, application)
+#                 )
+#         kwargs['applications'] = allowed_applications
+#         # kwargs['organizations'] = self.request.user.memberships.exclude(id=self.selected_organization.id)
+#         return super().get_context_data(**kwargs)
+#
+#     def get_object(self, queryset=None):
+#         return self.request.user
 
-    def get_context_data(self, **kwargs):
-        kwargs['application'] = self.selected_application
-        allowed_applications = []
-        for m in self.request.user.memberships.all():
-            for application in m.organization.applications.all():
-                allowed_applications.append(
-                    (m.organization, application)
-                )
-        kwargs['applications'] = allowed_applications
-        # kwargs['organizations'] = self.request.user.memberships.exclude(id=self.selected_organization.id)
-        return super().get_context_data(**kwargs)
-
-    def get_object(self, queryset=None):
-        return self.request.user
-
-
-class UserWelcomeView(BitcasterTemplateView):
-    template_name = 'bitcaster/users/user-welcome.html'
-
+#
+# class UserWelcomeView(BitcasterTemplateView):
+#     template_name = 'bitcaster/users/user-welcome.html'
+#
 
 class AddressForm(forms.ModelForm):
     class Meta:
@@ -118,7 +117,7 @@ class AddressAssignmentForm(forms.ModelForm):
 
     def clean(self):
         super().clean()
-        if self.cleaned_data:
+        if self.cleaned_data:  # pragma: no branch
             dispatcher = import_string(self.cleaned_data['dispatcher'])
             address = self.cleaned_data.get('address', None)
             if address and address.address:
@@ -218,31 +217,31 @@ class UserProfileView(BitcasterBaseUpdateView):
             ret['newemail'] = ret['form'].new_email_pending
         return ret
 
-    def get_initial(self):
-        initial = super().get_initial()
-        user = self.get_object()
-        if not user.language:
-            initial['language'] = self.request.LANGUAGE_CODE
-
-        if not user.country or user.timezone:
-            remote_ip = get_client_ip(self.request)
-            if remote_ip:
-                from geolite2 import geolite2
-                reader = geolite2.reader()
-                match = reader.get(remote_ip)
-                if match:
-                    if not user.country:
-                        try:
-                            initial['country'] = match['country']['iso_code']
-                        except KeyError:
-                            initial['country'] = None
-
-                    if not user.timezone:
-                        try:
-                            initial['timezone'] = match['location']['time_zone']
-                        except KeyError:
-                            initial['timezone'] = None
-        return initial
+    # def get_initial(self):
+    #     initial = super().get_initial()
+    #     user = self.get_object()
+    # if not user.language:
+    #     initial['language'] = self.request.LANGUAGE_CODE
+    #
+    # if not user.country or user.timezone:
+    #     remote_ip = get_client_ip(self.request)
+    #     if remote_ip:
+    #         from geolite2 import geolite2
+    #         reader = geolite2.reader()
+    #         match = reader.get(remote_ip)
+    #         if match:
+    #             if not user.country:
+    #                 try:
+    #                     initial['country'] = match['country']['iso_code']
+    #                 except KeyError:
+    #                     initial['country'] = None
+    #
+    #             if not user.timezone:
+    #                 try:
+    #                     initial['timezone'] = match['location']['time_zone']
+    #                 except KeyError:
+    #                     initial['timezone'] = None
+    # return initial
 
     def form_valid(self, form):
         email_changed = form.fields['email'].has_changed(form.initial.get('email'),

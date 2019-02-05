@@ -78,7 +78,7 @@ else:
 
 urlpatterns += [path('', include(bitcaster.web.urls)), ]
 
-if settings.DEBUG_TOOLBAR:
+if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns = [path(r'__debug__/', include(debug_toolbar.urls)),

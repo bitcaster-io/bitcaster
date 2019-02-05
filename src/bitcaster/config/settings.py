@@ -86,7 +86,6 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool('DEBUG', False)
-DEBUG_TOOLBAR = env.bool('DEBUG_TOOLBAR', False)
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -575,8 +574,8 @@ ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window; you may, of course, u
 OTP_KEY = 'A' * 32
 CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
 
-# DEBUG-TOOLBAR
-if DEBUG_TOOLBAR:
+
+if DEBUG:
     ignored = RegexList((SETUP_URL, '/tpl/.*'))
 
     def show_ddt(request):

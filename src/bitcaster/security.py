@@ -18,13 +18,16 @@ def is_owner(user, organization):
     # return organization.owners.filter(pk=user.pk).exists()
 
 
-def is_admin(user, organization):
-    return organization.membership_for(user).role == Role.ADMIN
+# def is_admin(user, organization):
+#     return organization.membership_for(user).role == Role.ADMIN
     # return organization.admins.filter(pk=user.pk).exists()
 
 
 def is_manager(user, organization):
-    return organization.membership_for(user).role in [Role.ADMIN, Role.OWNER]
+    try:
+        return organization.membership_for(user).role in [Role.ADMIN, Role.OWNER]
+    except AttributeError:
+        return False
     # return organization.admins.filter(pk=user.pk).exists()
 
 
