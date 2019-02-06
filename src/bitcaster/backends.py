@@ -2,9 +2,7 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.functional import cached_property
 
 from bitcaster.db.fields import Role
 from bitcaster.models import Application, Event, Organization
@@ -15,7 +13,6 @@ PERMISSIONS = {'org:configure',  # configure
                'app:create',  # create applications
                'app:configure',  # configure application (#General, create channels)
                'app:manage',  # manage application (manage events/messages
-               'evt:trigger',  # trigger events (need triggertoken
                }
 OWNER_PERMISSIONS = PERMISSIONS
 ADMIN_PERMISSIONS = {'app:configure', 'evt:trigger'}
@@ -25,31 +22,34 @@ PERM_MAP = {Role.ADMIN: ADMIN_PERMISSIONS,
             Role.SUBSCRIBER: SUBSCRIBER_PERMISSIONS}
 
 
-class RulesManager:
-    def has_perm(self, user_obj, perm, obj):
-        pass
+# class RulesManager:
+#     def has_perm(self, user_obj, perm, obj):
+#         pass
+#
+#
+# class OrgRulesManager(RulesManager):
+#     pass
+#
+#
+# class AppRulesManager(RulesManager):
+#     pass
 
 
-class OrgRulesManager(RulesManager):
-    pass
+class BitcasterBackend:
 
+    # def __init__(self) -> None:
+    #     super().__init__()
 
-class AppRulesManager(RulesManager):
-    pass
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        return None
 
-
-class BitcasterBackend(ModelBackend):
-
-    def __init__(self) -> None:
-        super().__init__()
-
-    @cached_property
-    def app_manager(self):
-        return AppRulesManager()
-
-    @cached_property
-    def org_manager(self):
-        return OrgRulesManager()
+    # @cached_property
+    # def app_manager(self):
+    #     return AppRulesManager()
+    #
+    # @cached_property
+    # def org_manager(self):
+    #     return OrgRulesManager()
 
     def get_all_permissions(self, user_obj, obj=None):
         perms = []
@@ -77,7 +77,13 @@ class BitcasterBackend(ModelBackend):
             return False
 
         if obj:
-            if isinstance(obj, Event):
+            if isinstance(obj, Organization):
+                return obj.owner == user_obj or user_obj in obj.owners
+            elif isinstance(obj, Application):
+                return (obj.organization.owner == user_obj or
+                        user_obj in obj.organization.owners or
+                        user_obj in obj.owners)
+            elif isinstance(obj, Event):
                 app = obj.application
                 org = app.organization
                 User = get_user_model()

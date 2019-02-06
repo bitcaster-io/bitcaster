@@ -7,6 +7,19 @@ from bitcaster.db.fields import Role
 from bitcaster.models import ApplicationTeam, OrganizationMember, TeamMembership
 from bitcaster.utils.tests.factories import TeamFactory, UserFactory
 
+pytestmark = pytest.mark.django_db
+
+
+def test_backend(event1):
+    app = event1.application
+    org = app.organization
+    b = BitcasterBackend()
+    assert b.has_perm(org.owner, 'org:configure', org)
+    assert b.has_perm(org.owner, 'app:configure', app)
+
+    assert not b.has_perm(org.owner, 'app:configure')
+    assert not b.has_perm(org.owner, 'app:configure', object())
+
 
 @pytest.fixture
 def subscriber1(application1):
@@ -19,6 +32,7 @@ def subscriber1(application1):
                                    role=Role.SUBSCRIBER)
     TeamMembership.objects.create(team=team, member=membership)
     return user
+
 
 #
 # @pytest.fixture
@@ -73,7 +87,7 @@ def test_get_all_permisssions(event1, event2, admin, user3, admin1, subscriber1)
 
 
 @pytest.mark.django_db
-def test_backend(event1, event2, admin, user3, admin1, admin2):
+def test_backend2(event1, event2, admin, user3, admin1, admin2):
     backend = BitcasterBackend()
 
     app1 = event1.application

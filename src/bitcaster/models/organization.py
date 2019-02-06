@@ -123,7 +123,7 @@ class Organization(AbstractModel):
         return self.members.filter(memberships__role=Role.ADMIN)
 
     @property
-    def manager(self):
+    def managers(self):
         return self.members.filter(memberships__role__in=[Role.OWNER, Role.ADMIN])
 
     @property

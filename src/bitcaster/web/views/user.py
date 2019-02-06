@@ -62,9 +62,9 @@ class UserIndexView(ApplicationListMixin, MessageUserMixin, TemplateView):
                     menu[application][event][channel] = subscriptions.get(f'{event.id}-{channel.id}')
                 ret['menu'] = menu
 
-        # membership = self.request.user.memberships.first()
-        # if membership:
-        #     ret['setup_url'] = reverse('org-dashboard', args=[membership.organization.slug])
+        membership = self.request.user.memberships.first()
+        if membership:
+            ret['setup_url'] = reverse('org-dashboard', args=[membership.organization.slug])
 
         return ret
 

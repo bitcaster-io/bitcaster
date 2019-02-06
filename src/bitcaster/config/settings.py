@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms',
 
     # Useful template tags:
     'django.contrib.humanize',

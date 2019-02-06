@@ -16,9 +16,11 @@ def check_permissions(context, org=None, context_name='permissions'):
     if organization:
         user = context['request'].user
         membership = organization.membership_for(user=user)
-        context[context_name] = {'owner': membership and membership.role == Role.OWNER,
+        owner = (organization.owner == user) or (membership and membership.role == Role.OWNER)
+        context[context_name] = {'owner': owner,
                                  'admin': membership and membership.role == Role.ADMIN,
-                                 'manager': membership and membership.role in [Role.OWNER, Role.ADMIN],
+                                 'manager': owner or (membership and membership.role in [Role.OWNER,
+                                                                                         Role.ADMIN]),
                                  }
     return ''
 #
