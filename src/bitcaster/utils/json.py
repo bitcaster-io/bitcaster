@@ -9,6 +9,8 @@ from strategy_field.utils import fqn
 
 class Encoder(json.JSONEncoder):
     def default(self, obj):
+        if isinstance(obj, list):
+            return tuple(obj)
         if isinstance(obj, UUID):
             return obj.hex
         elif isinstance(obj, datetime.tzinfo):

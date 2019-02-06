@@ -10,7 +10,10 @@ from bitcaster.utils.json import Decoder, Encoder
 
 DATA = ['organization', 'channel',
         'user', 'organizationmember', 'address',
-        'application', 'event', 'message', 'applicationtriggerkey',
+        'application',
+        ('event', ['channels']),
+        'message',
+        ('applicationtriggerkey', ['events']),
         ]
 POP_FIELDS = ['version', 'last_modifed_date']
 
@@ -26,12 +29,20 @@ def backup(ctx, filename):
     from django.apps import apps
     try:
         data = {'options': [(key, getattr(config, key)) for key, value in
-                            sett.CONFIG.items()]
+                            sett.CONFIG.items()],
+                'many2many': {}
                 }
         for model_name in DATA:
+            m2ms = []
+            if isinstance(model_name, (list, tuple)):
+                model_name, m2ms = model_name
             click.echo(f'backup...{model_name}')
+            data['many2many'][model_name] = dict()
             model = apps.get_model(f'bitcaster.{model_name}')
             data[model_name] = list(model.objects.all().values())
+            for m2m in m2ms:
+                data['many2many'][model_name][m2m] = list(
+                    model.objects.filter(**{f'{m2m}__isnull': False}).values('id', m2m))
             json.dumps(data, cls=Encoder)
 
         output = Path(filename)
@@ -43,7 +54,7 @@ def backup(ctx, filename):
         ctx.abort()
 
 
-@click.command()
+@click.command()  # noqa: C901
 @click.option('--filename', default='bitcaster.json', type=click.Path())
 @click.option('-o', '--overwrite', 'overwrite', default=False, is_flag=True)
 @click.option('-i', '--ignore-errors', default=False, is_flag=True,
@@ -62,6 +73,10 @@ def restore(ctx, filename, overwrite, ignore_errors):
             ctx.invoke(option_set, name=key, value=value)
 
         for model_name in DATA:
+            m2ms = []
+            if isinstance(model_name, (list, tuple)):
+                model_name, m2ms = model_name
+
             model = apps.get_model(f'bitcaster.{model_name}')
             click.echo(f'restore...{model_name}')
             for record in data[model_name]:
@@ -79,3 +94,13 @@ def restore(ctx, filename, overwrite, ignore_errors):
                     click.echo(record)
                     if not ignore_errors:
                         ctx.abort()
+        # ManyToMany
+        for model_name, m2ms in data['many2many'].items():
+            model = apps.get_model(f'bitcaster.{model_name}')
+            for field, records in m2ms.items():
+                click.echo(f'restore...{model_name}.{field}')
+                for entry in records:
+                    parent = model.objects.get(id=entry['id'])
+                    m2m_field = getattr(parent, field)
+                    m2m_model = m2m_field.model
+                    m2m_field.add(m2m_model.objects.get(id=entry[field]))

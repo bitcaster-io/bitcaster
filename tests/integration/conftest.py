@@ -5,7 +5,6 @@ import docker
 import pytest
 
 base = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, 'docker'))
-assert base == '/data/PROGETTI/saxix/bitcaster/mercury/docker'
 build = os.path.join(base, '~build')
 export = os.path.join(build, 'export')
 data = os.path.join(build, 'data')
@@ -33,7 +32,7 @@ def image(client, image_name):
 def container(image, client):
     c = client.containers.run(image_name,
                               volumes={data: '/mnt'},
-                              ports={3141: 13141},
+                              ports={8000: 9999},
                               remove=True,
                               detach=True)
     sleep(5)
