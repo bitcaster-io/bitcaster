@@ -7,6 +7,7 @@ from django import forms
 from django.forms import Form
 from rest_framework.reverse import reverse
 
+from bitcaster.forms import PasswordEyeInput
 from bitcaster.state import state
 
 logger = logging.getLogger(__name__)
@@ -97,7 +98,7 @@ class SettingsEmailForm(Form):
     EMAIL_HOST = forms.CharField(required=True)
     EMAIL_HOST_PORT = forms.IntegerField(required=True)
     EMAIL_HOST_USER = forms.CharField(required=True)
-    EMAIL_HOST_PASSWORD = forms.CharField(required=False, widget=forms.PasswordInput)
+    EMAIL_HOST_PASSWORD = forms.CharField(required=False, widget=PasswordEyeInput)
     EMAIL_USE_TLS = forms.BooleanField(required=False)
     EMAIL_SENDER = forms.EmailField(required=True)
     EMAIL_SUBJECT_PREFIX = forms.CharField(required=False)

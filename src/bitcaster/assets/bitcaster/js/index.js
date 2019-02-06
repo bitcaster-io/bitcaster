@@ -1,4 +1,5 @@
-import "./jquery.formset.js";
+// import "./jquery.formset.js";
+// import "./password.input.js";
 
 let _ = {};
 
@@ -7,5 +8,5 @@ _.toggleSidebar = function () {
     that.style.flex = "auto";
     that.style["max-width"] = "none";
 };
-
-export default _;
+_.passwords = require("./password.input.js");
+module.exports = _;

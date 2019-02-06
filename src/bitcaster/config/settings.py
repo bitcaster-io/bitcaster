@@ -154,11 +154,6 @@ USE_TZ = True
 SILENCED_SYSTEM_CHECKS = ['admin.E404',  # 'django.contrib.messages.context_processors.messages' must be enabled ...
                           'admin.E409',
                           ]
-# TEMPLATES_DIR = [
-#     str(PACKAGE_DIR / 'templates'),
-#
-# ]
-# TEMPLATE_DEMO CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#templates
 TEMPLATES = [
@@ -197,6 +192,7 @@ TEMPLATES = [
         },
     },
 ]
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True

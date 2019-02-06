@@ -50,6 +50,8 @@ class BitcasterBackend:
     # @cached_property
     # def org_manager(self):
     #     return OrgRulesManager()
+    def get_user(self, *args):
+        return None
 
     def get_all_permissions(self, user_obj, obj=None):
         perms = []
