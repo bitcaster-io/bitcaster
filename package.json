@@ -8,6 +8,7 @@
     "font-awesome": "^4.7.0",
     "fontawesome": "^4.7.2",
     "jquery": "^3.3.1",
+    "jquery-modal": "^0.9.1",
     "js-cookie": "^2.2.0",
     "knockout": "^3.5.0-rc",
     "lscache": "^1.1.0",

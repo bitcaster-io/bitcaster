@@ -1,13 +1,7 @@
 {% extends "bitcaster/_full_modal.html" %}
 {% block modal-content %}
-    <style>
-        .h100 {
-            height: 100px;
-            line-height: 100px;
-        }
-    </style>
     <div class="col-12 plugin-info h-100">
-        <div class="row col-12 h100 h1 align-middle">
+        <div class="row col-12 h1 align-middle" style="line-height: 100px">
             <img width="100" height="100" src="{% url "plugin-icon" handler.fqn %}">
             <div class="pl-5">{{ handler.name }}</div>
         </div>
@@ -35,7 +29,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-6 border ml-2">
+            <div class="col-6">
                 {{ handler.help }}
             </div>
         </div>

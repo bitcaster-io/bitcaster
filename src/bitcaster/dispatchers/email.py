@@ -39,6 +39,7 @@ class EmailOptions(DispatcherOptions):
 @dispatcher_registry.register
 class Email(Dispatcher):
     __core__ = True
+    icon = '/bitcaster/images/email-icon.png'
     options_class = EmailOptions
     subscription_class = EmailSubscription
     message_class = EmailMessage

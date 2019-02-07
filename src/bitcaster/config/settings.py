@@ -276,6 +276,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+KEY_FUNCTION = 'bitcaster.utils.cache.make_key'
+
 CACHES = {
     'default': env.cache('REDIS_CACHE_URL'),
     'lock': env.cache('REDIS_LOCK_URL'),

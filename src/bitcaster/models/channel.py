@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.db.models import Q
 from django.template import Template
@@ -21,6 +21,16 @@ logger = logging.getLogger(__name__)
 
 
 class ChannelQuerySet(models.QuerySet):
+    def valid(self):
+        for c in self.all():
+            try:
+                assert c.handler
+            except Exception:
+                c.handler = None
+                c.enabled = False
+                c.save()
+        return self.all()
+
     def organization_configurable(self, organization):
         return self.filter(organization=organization,
                            application=None,
@@ -59,7 +69,7 @@ It can be Global or Application specific.
     config = EncryptedJSONField(null=True, blank=True)
     enabled = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
-    handler = DispatcherField()
+    handler = DispatcherField(null=True)
     # handler = StrategyField(verbose_name='Dispatcher',
     #                         import_error=handler_not_found,
     #                         display_attribute='name',
@@ -103,6 +113,11 @@ It can be Global or Application specific.
     @property
     def is_configured(self):
         return self.handler.validate_configuration(self.config, False)
+
+    def clean(self):
+        if not self.handler and self.enabled:
+            raise ValidationError('Cannot enable Channel without handler')
+        super().clean()
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.system and (self.organization or self.application):

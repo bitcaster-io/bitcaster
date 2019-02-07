@@ -365,7 +365,7 @@ class OrganizationChannels(OrganizationAuditMixin, ApplicationListMixin, ListVie
     template_name = 'bitcaster/organization_channels.html'
 
     def get_queryset(self):
-        return self.selected_organization.channels.all()
+        return self.selected_organization.channels.valid()
 
     def get_context_data(self, **kwargs):
         kwargs['channel_context'] = self.selected_organization

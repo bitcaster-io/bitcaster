@@ -35,6 +35,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     subscription_class = SubscriptionOptions
     options_class = DispatcherOptions
     message_class = MessageType
+    icon = 'icon.png'
     __media__ = None
     __core__ = False
 

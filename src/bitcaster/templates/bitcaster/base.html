@@ -100,30 +100,30 @@
 
         {% block messages %}
             <div id="messageBar">{% if messages %}
-                    <ul class="messagelist">{% for message in messages %}
-                        <li class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %} fade show alert-dismissible ">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            <span>{{ message|capfirst }}</span>
-                        </li>
-                    {% endfor %}</ul>
-                {% endif %}</div>
+                <ul class="messagelist">{% for message in messages %}
+                    <li class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %} fade show alert-dismissible ">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <span>{{ message|capfirst }}</span>
+                    </li>
+                {% endfor %}</ul>
+            {% endif %}</div>
         {% endblock messages %}
         <div class="container-fluid main-content" id="{% block pageId %}page{% endblock %}">
 
             {% block alarms %}
 
-            {% if alarms %}
-                <div id="alarmBar">
-                    <ul class="messagelist">{% for alarm in alarms %}
-                        <li class="alarm {% if alarm.tags %} alert-{{ alarm.tags }}{% endif %} show ">
-                            <span>{{ alarm|capfirst }}</span>
-                        </li>
-                    {% endfor %}</ul>
-                </div>
-            {% endif %}
-        {% endblock alarms %}
+                {% if alarms %}
+                    <div id="alarmBar">
+                        <ul class="messagelist">{% for alarm in alarms %}
+                            <li class="alarm {% if alarm.tags %} alert-{{ alarm.tags }}{% endif %} show ">
+                                <span>{{ alarm|capfirst }}</span>
+                            </li>
+                        {% endfor %}</ul>
+                    </div>
+                {% endif %}
+            {% endblock alarms %}
 
 
             {% block page %}
@@ -160,6 +160,8 @@
     {% endblock container %}
 {% endblock body %}
 
+<div id="myModal" class="reveal" data-reveal></div>
+
 </div>
 {% block js %}
     <script src="{% static "bitcaster/vendor.js" %}"></script>
@@ -171,6 +173,16 @@
             }, 5000);
         </script>
     {% endif %}
+
+    <script>
+        $('a.open-modal').on('click', function () {
+            $.get("url", function (data) {
+                $("#myModal").html(data).foundation("open");
+            });
+        })
+    </script>
+
+
 {% endblock %}
 </body>
 </html>

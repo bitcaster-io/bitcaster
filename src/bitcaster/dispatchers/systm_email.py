@@ -19,6 +19,7 @@ class EmailOptions(DispatcherOptions):
 class SystemEmail(Email):
     __core__ = True
     options_class = EmailOptions
+    icon = '/bitcaster/images/email-icon.png'
 
     def _get_connection(self) -> object:
         return get_connection(

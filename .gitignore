@@ -24,3 +24,4 @@ bitcaster.json
 !/bitcaster/_plugin_template/bitcaster-{{cookiecutter.name}}/tests/.env
 !/tests/.conf
 !.bin
+ghostdriver.log
