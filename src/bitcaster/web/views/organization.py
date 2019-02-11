@@ -14,8 +14,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import (CreateView, DeleteView, ListView,
-                                  RedirectView, UpdateView,)
+from django.views.generic import CreateView, ListView, RedirectView, UpdateView
 from strategy_field.utils import fqn
 
 from bitcaster.db.fields import Role
@@ -34,8 +33,7 @@ from bitcaster.web.forms.user import NewMemberForm
 from .base import (ApplicationListMixin, BitcasterBaseCreateView,
                    BitcasterBaseDeleteView, BitcasterBaseDetailView,
                    BitcasterBaseListView, BitcasterBaseUpdateView,
-                   BitcasterFormView, MessageUserMixin,
-                   SelectedOrganizationMixin,)
+                   BitcasterFormView, MessageUserMixin,)
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
                       ChannelDeprecateView,
                       ChannelToggleView, ChannelUpdateView,)
@@ -69,6 +67,8 @@ class OrganizationViewMixin(OrganizationAuditMixin, ApplicationListMixin):
     template_name_base = 'organization'
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
         if not is_owner(request.user, self.selected_organization):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
@@ -243,7 +243,7 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
         if self.membership.role in [Role.OWNER, Role.ADMIN]:
             url = reverse('org-dashboard', args=[self.selected_organization.slug])
         else:
-            url = reverse('me-home')
+            url = reverse('me', args=[self.selected_organization.slug])
         logger.debug(f'Invitation accepted by user {user.email} with role {self.membership.role}. '
                      f'Redirecting to {url}')
         return HttpResponseRedirect(url)
@@ -297,7 +297,7 @@ class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
         return super().form_valid(form)
 
 
-class InviteDelete(SelectedOrganizationMixin, DeleteView):
+class InviteDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
 
     def get_success_url(self):
         return reverse('org-member-list', args=[self.selected_organization.slug])
@@ -306,10 +306,15 @@ class InviteDelete(SelectedOrganizationMixin, DeleteView):
         return self.selected_organization.memberships.filter(user__isnull=True)
 
     def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        success_url = self.get_success_url()
-        self.object.delete()
-        return HttpResponseRedirect(success_url)
+        ret = super().delete(request, *args, **kwargs)
+        self.message_user('Invite canceled')
+        return ret
+
+    # def delete(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     success_url = self.get_success_url()
+    #     self.object.delete()
+    #     return HttpResponseRedirect(success_url)
 
 
 class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
@@ -324,6 +329,11 @@ class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
         data['invitations'] = data['form']
         return data
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.instance = self.selected_organization
+        return form
+
     def get_form_class(self):
         return OrganizationInvitationFormSet
 
@@ -333,7 +343,7 @@ class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
 
     def form_valid(self, form):
         sent = False
-        form.instance = self.selected_organization
+        # form.instance = self.selected_organization
         for inline_form in form.extra_forms:
             if not inline_form.has_changed():
                 continue

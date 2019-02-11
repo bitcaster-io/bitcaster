@@ -45,7 +45,7 @@ class OrganizationMember(models.Model):
                                    related_name='+')
     date_enrolled = models.DateTimeField(blank=True, null=True,
                                          help_text='date when user first login')
-    #
+
     event = models.ForeignKey('bitcaster.Event',
                               default=None, blank=True, null=True,
                               on_delete=models.CASCADE)

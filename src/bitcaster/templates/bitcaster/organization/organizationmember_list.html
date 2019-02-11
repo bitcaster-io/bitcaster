@@ -70,13 +70,11 @@
                         <td class="col-3">{{ membership.get_role_display }}</td>
                         <td class="col-3">{{ membership.date_added }}</td>
                         <td class="text-nowrap col-1">
-                            <form method="post" class="d-inline"
-                                  action="{% url "org-invite-delete" organization.slug membership.pk %}">
-                                {% csrf_token %}
-                                <button type="submit" title="cancel invitation" class="pointer">
-                                    <i class="far fa-trash-alt pointer"></i>
-                                </button>
-                            </form>&nbsp;|&nbsp;<form method="post" class="d-inline"
+
+                        <button onclick="window.location.href = '{% org-url "org-invite-delete" membership.pk %}';">
+                            <i class="far fa-trash-alt pointer"></i>
+                        </button>
+                            | <form method="post" class="d-inline"
                                                       action="{% url "org-member-send" organization.slug membership.pk %}">
                             {% csrf_token %}
                             <button type="submit" title="resend email" class="pointer">
