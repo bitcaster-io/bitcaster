@@ -103,7 +103,7 @@ class BitcasterBackend:
 
                 except ObjectDoesNotExist:
                     return False
-            return True
+            return None
 
         return None
 

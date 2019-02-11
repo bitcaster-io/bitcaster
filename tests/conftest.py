@@ -147,9 +147,9 @@ def message2(event2):
 
 
 @pytest.fixture
-def subscription1(user1, application1, message1):
-    from bitcaster.utils.tests.factories import SubscriptionFactory
-    return SubscriptionFactory(subscriber=user1,
+def subscription1(application1, message1):
+    from bitcaster.utils.tests.factories import SubscriptionFactory, UserFactory
+    return SubscriptionFactory(subscriber=UserFactory(),
                                event=message1.event,
                                channel=message1.channel)
 

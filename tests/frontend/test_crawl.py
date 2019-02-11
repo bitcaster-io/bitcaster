@@ -90,10 +90,10 @@ def test_organization_list_channel(django_app, org_channel):
                                    args=[org_channel.organization.slug]),
                            user=org_channel.organization.owner)
 
-    res = _list.click('Hide').follow()
+    res = _list.click('Deprecate').follow()
     org_channel.refresh_from_db()
     assert org_channel.deprecated
-    res = res.click('Show').follow()
+    res = res.click('Enable').follow()
     org_channel.refresh_from_db()
     assert not org_channel.deprecated
 

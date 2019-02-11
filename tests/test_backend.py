@@ -10,15 +10,19 @@ from bitcaster.utils.tests.factories import TeamFactory, UserFactory
 pytestmark = pytest.mark.django_db
 
 
-def test_backend(event1):
-    app = event1.application
+def test_backend(subscription1):
+    event = subscription1.event
+    app = event.application
     org = app.organization
+    subscriber = subscription1.subscriber
+
     b = BitcasterBackend()
     assert b.has_perm(org.owner, 'org:configure', org)
     assert b.has_perm(org.owner, 'app:configure', app)
 
+    assert not b.has_perm(subscriber, 'app:configure', app)
     assert not b.has_perm(org.owner, 'app:configure')
-    assert not b.has_perm(org.owner, 'app:configure', object())
+    assert b.has_perm(org.owner, 'app:configure', object()) is None
 
 
 @pytest.fixture

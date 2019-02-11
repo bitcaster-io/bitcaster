@@ -71,10 +71,10 @@ def test_system_list_channel(django_app, admin, system_channel, settings):
     res = _list.click('Configure')
     assert res.status_code == 200
 
-    res = _list.click('Hide').follow()
+    res = _list.click('Deprecate').follow()
     system_channel.refresh_from_db()
     assert system_channel.deprecated
-    res = res.click('Show').follow()
+    res = res.click('Enable').follow()
     system_channel.refresh_from_db()
     assert not system_channel.deprecated
 
