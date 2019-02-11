@@ -5,7 +5,7 @@
     <div class="row col-12 p-3 m-1">
         {% if organization.issues %}
             <ul class="col-10 issuelist">{% for issue in organization.issues.all %}
-                <li class="issue {% if issue.tags %} issue-{{ issue.tags }}{% endif %}">{{ issue.message }}</li>
+                <li class="issue {% if issue.tags %} issue-{{ issue.tags }}{% endif %}">{{ issue.message|safe }}</li>
             {% endfor %}
             </ul>
         {% endif %}

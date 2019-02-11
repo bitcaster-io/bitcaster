@@ -6,7 +6,7 @@
         {% if application.issues %}
             <ul class="col-10 issuelist">{% for issue in application.issues.all %}
                 <li class="issue {% if issue.tags %} issue-{{ issue.tags }}{% endif %}">
-                <b>{{ issue.section }}</b>: {{ issue.message }}
+                <b>{{ issue.section }}</b>: {{ issue.message|safe }}
                 </li>
             {% endfor %}
             </ul>

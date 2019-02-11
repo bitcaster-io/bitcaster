@@ -20,7 +20,6 @@ def trigger_event(event_id, context, *, token=None, origin=None):
 def emit_event(event, context, origin=None, token=None, ignore_disabled=False):
     from bitcaster.models import Channel
     from bitcaster.models.counters import Counter, Occurence
-
     logger.debug('Event [{0.name} {0.enabled}] emit()'.format(event))
     total_success = 0
     total_failure = 0

@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db import models, transaction
+from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
@@ -60,7 +60,7 @@ class OrganizationMember(models.Model):
     # def __str__(self):
     #     return f"{self.organization} {self.user}/{self.role}"
 
-    @transaction.atomic
+    # @transaction.atomic
     def save(self, *args, **kwargs):
         assert self.user_id or self.email, \
             'Must set user or email'

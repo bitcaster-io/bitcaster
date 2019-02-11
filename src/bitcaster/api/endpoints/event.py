@@ -40,4 +40,5 @@ class EventViewSet(BaseModelViewSet):
                             token=request.key.token,
                             origin=get_client_ip(request))
         return Response({'message': 'Event triggered',
+                         'subscriptions': event.subscriptions.count(),
                          'timestamp': timezone.now()}, status=201)

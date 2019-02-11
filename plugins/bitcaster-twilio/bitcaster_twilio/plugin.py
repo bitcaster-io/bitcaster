@@ -28,6 +28,9 @@ class TwilioOptions(DispatcherOptions):
 
 @dispatcher_registry.register
 class Twilio(Dispatcher):
+    __help__ = """get your token at https://www.twilio.com/console
+get twilio number  at https://www.twilio.com/console/phone-numbers/incoming
+"""
     name = 'Twilio'
     subscription_class = TwilioSubscription
     options_class = TwilioOptions
@@ -51,7 +54,7 @@ class Twilio(Dispatcher):
             connection.messages.create(
                 to=recipient.encode('utf8'),
                 from_=self.config['sender'].encode('utf8'),
-                body=message.encode('utf8')
+                body=message
             )
             return 1
         except Exception as e:  # pragma: no cover

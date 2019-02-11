@@ -6,6 +6,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core import validators
 from django.db import models
 from django.db.models import UUIDField
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
@@ -94,3 +95,6 @@ class Application(AbstractModel):
 
     def membership_for(self, user):
         return self.organization.memberships.filter(user=user).first()
+
+    def get_absolute_url(self):
+        return reverse('app-dashboard', args=[self.organization.slug, self.slug])

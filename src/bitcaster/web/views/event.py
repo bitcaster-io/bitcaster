@@ -99,7 +99,7 @@ class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
         ret = super().form_valid(form)
         event = self.object
         for i, channel in enumerate(event.channels.all()):
-            Message.objects.get_or_create(event=event,
+            Message.objects.update_or_create(event=event,
                                           channel=channel,
                                           defaults={
                                               'enabled': True,
@@ -302,7 +302,7 @@ InviteFormSet = forms.inlineformset_factory(Organization,
                                             extra=0)
 
 
-class EventSubscriptionsInvite(EventMixin, FormView, OrganizationAuditMixin):
+class EventSubscriptionsInvite(EventMixin, MessageUserMixin, FormView, OrganizationAuditMixin):
     template_name = 'bitcaster/event_subscriptions_invite.html'
     title = 'Subscribers'
     form_class = InviteFormSet
@@ -320,10 +320,13 @@ class EventSubscriptionsInvite(EventMixin, FormView, OrganizationAuditMixin):
         formset.instance = self.selected_organization
         for form in formset:
             recipient = form.cleaned_data.get('email', None)
-            if not self.selected_organization.memberships.filter(email=recipient).exists():
+            if self.selected_organization.memberships.filter(email=recipient).exists():
+                self.message_user(_('Email %s already exists in this organization' % recipient), messages.WARNING)
+            else:
                 form.instance.organization = self.selected_organization
                 form.instance.event = self.get_object()
                 form.instance.role = int(Role.SUBSCRIBER)
+                form.instance.invited_by = self.request.user
                 membership = form.save()
                 membership.send_email()
                 self.audit_log(AuditEvent.MEMBER_INVITE,

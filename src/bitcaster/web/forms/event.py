@@ -25,40 +25,43 @@ class ArgumentLineForm(forms.Form):
 
 
 class EventForm(forms.ModelForm):
+    description = forms.CharField(required=False,
+                                  widget=forms.Textarea(attrs={'rows': '2'}))
+
     class Meta:
         model = Event
-        fields = ('name', 'description', 'channels', )
+        fields = ('name', 'description', 'channels',)
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)
-        self.arg_formset_class = forms.formset_factory(ArgumentLineForm,
-                                                       extra=0)
+        # self.arg_formset_class = forms.formset_factory(ArgumentLineForm,
+        #                                                extra=0)
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.arguments:
-            fields_def = self.instance.arguments['fields']
-            self.arguments = self.arg_formset_class(initial=fields_def)
-        elif self.data:
-            self.arguments = self.arg_formset_class(data=self.data)
-        else:
-            self.arguments = self.arg_formset_class()
+        # if self.instance and self.instance.arguments:
+        #     fields_def = self.instance.arguments['fields']
+        #     self.arguments = self.arg_formset_class(initial=fields_def)
+        # elif self.data:
+        #     self.arguments = self.arg_formset_class(data=self.data)
+        # else:
+        #     self.arguments = self.arg_formset_class()
 
     def full_clean(self):
         super().full_clean()
 
-    def is_valid(self):
-        self.arguments = self.arg_formset_class(data=self.data)
-        return super().is_valid() and self.arguments.is_valid()
+    # def is_valid(self):
+    #     self.arguments = self.arg_formset_class(data=self.data)
+    #     return super().is_valid() and self.arguments.is_valid()
 
     def save(self, commit=True):
         if self.application:
             self.instance.application = self.application
-        arguments = {'fields': []}
-        for form in self.arguments:
-            if form.cleaned_data:
-                arguments['fields'].append({'name': form.cleaned_data['name'],
-                                            'type': form.cleaned_data['type'],
-                                            })
-        self.instance.arguments = arguments
+        # arguments = {'fields': []}
+        # for form in self.arguments:
+        #     if form.cleaned_data:
+        #         arguments['fields'].append({'name': form.cleaned_data['name'],
+        #                                     'type': form.cleaned_data['type'],
+        #                                     })
+        # self.instance.arguments = arguments
         return super().save(commit)
 
 

@@ -1,5 +1,6 @@
 from django.contrib.messages.storage.base import LEVEL_TAGS
 from django.db import models
+from django.utils.safestring import mark_safe
 
 from bitcaster import messages
 from bitcaster.models import (AbstractModel, Application,
@@ -70,6 +71,12 @@ class ConfigurationIssue(AbstractModel):
         return LEVEL_TAGS.get(self.level, '')
 
 
+def as_link(obj):
+    if hasattr(obj, 'get_absolute_url'):
+        return mark_safe('<a href="{0}">{1}</a>'.format(obj.get_absolute_url(), obj))
+    return str(obj)
+
+
 def check_organization(org):
     org.issues.all().delete()
     if org.channels.count() == 0:
@@ -78,9 +85,9 @@ def check_organization(org):
         org.issues.error('No Channel enabled for this Organization', Channel)
 
     if org.applications.filter().count() == 0:
-        org.issues.warning('No Application configured for this Organization', Application)
+        org.issues.warning('No Applications configured for this Organization', Application)
     elif org.applications.filter(enabled=True).count() == 0:
-        org.issues.warning('No Application enabled for this Organization', Application)
+        org.issues.warning('No Applications enabled for this Organization', Application)
 
     return org.issues.all()
 
@@ -90,13 +97,15 @@ def check_application(app):
     if app.events.count() == 0:
         app.issues.warning('No Events configured for this Application', Event)
     elif app.events.filter(enabled=True).count() == 0:
-        app.issues.error('No Events enabled for this Application', Event)
+        app.issues.error('No Events enabled for Application %s' % as_link(app), Event)
 
     for event in app.events.all():
         if not event.messages.filter(enabled=True).exists():
-            app.issues.error(f"Event '{event}' does not have enabled messages", Event)
+            app.issues.error(f"Event '%s' does not have enabled messages" % as_link(event),
+                             Event)
         if not event.keys.filter(enabled=True).exists():
-            app.issues.error(f"Event '{event}' does not have enabled keys", ApplicationTriggerKey)
+            app.issues.error(f"Event '{event}' does not have enabled keys",
+                             ApplicationTriggerKey)
 
     if not app.keys.exists():
         app.issues.warning('No Keys configured for this Application', ApplicationTriggerKey)

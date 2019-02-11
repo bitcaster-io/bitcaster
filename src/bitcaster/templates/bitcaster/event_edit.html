@@ -9,53 +9,55 @@
         {% endif %}
     </div>
     <div class="container-fluid">
-        <div id="empty-form" class="d-none">
-            <div class="row">
-                <div class="row col-sm">{{ form.arguments.empty_form.name|as_crispy_field }}</div>
-                <div class="row col-sm">{{ form.arguments.empty_form.type|as_crispy_field }}</div>
-                <div class="row col-sm align-items-center"><a href="#" class="remove_line">
-                    <i class="fa fa-remove"></i></a>
-                </div>
-            </div>
-        </div>
+{#        <div id="empty-form" class="d-none">#}
+{#            <div class="row">#}
+{#                <div class="row col-sm">{{ form.arguments.empty_form.name|as_crispy_field }}</div>#}
+{#                <div class="row col-sm">{{ form.arguments.empty_form.type|as_crispy_field }}</div>#}
+{#                <div class="row col-sm align-items-center"><a href="#" class="remove_line">#}
+{#                    <i class="fa fa-remove"></i></a>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
 
         <form method="post" class="d-none" id="form-event">
             {% csrf_token %}
             {{ form|crispy }}
-            <div class="container">
-                <div class="row col-12">
-                    <div class="pull-right col-12 p-4">
-                        <a id="add_more" class="btn btn-danger btn-small pull-right"
-                           href="#">{% trans "Add Argument" %}</a>
-                    </div>
-                </div>
-            </div>
-            {{ form.arguments.management_form }}
-            <div class="content arguments p-4">
-                {% for argument in form.arguments.forms %}
-                    <div class="row">
-                        <div class="row col-sm">{{ argument.name|as_crispy_field }}</div>
-                        <div class="row col-sm">{{ argument.type|as_crispy_field }}</div>
-                        <div class="row col-sm align-items-center">
-                            <a href="#" class="remove_line">
-                                <i class="fa fa-remove"></i>
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-{#            <div class="m-5">&nbsp;</div>#}
             <div class="pt-5">
                 <input
-                       name="save_edit_messages"
-                       value="Save and edit messages"
-                       type="submit" class="pull-right btn btn-default btn-primary">
+                    name="save_edit_messages"
+                    value="Save and edit messages"
+                    type="submit" class="pull-right btn btn-default btn-primary">
 
                 <input id="btn-submit"
                        name="save_and_exit"
                        value="{{ save_label }}"
                        type="submit" class="btn btn-outline-primary">
             </div>
+            {#  Arguments #}
+{#            <a name="arguments"></a>#}
+{#            <div class="container">#}
+{#                <div class="row col-12">#}
+{#                    <div class="pull-right col-12 p-4">#}
+{#                        <a id="add_more" class="btn btn-danger btn-small pull-right"#}
+{#                           href="#arguments">{% trans "Add Argument" %}</a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            {{ form.arguments.management_form }}#}
+{#            <div class="content arguments p-4">#}
+{#                {% for argument in form.arguments.forms %}#}
+{#                    <div class="row">#}
+{#                        <div class="row col-sm">{{ argument.name|as_crispy_field }}</div>#}
+{#                        <div class="row col-sm">{{ argument.type|as_crispy_field }}</div>#}
+{#                        <div class="row col-sm align-items-center">#}
+{#                            <a href="#" class="remove_line">#}
+{#                                <i class="fa fa-remove">-----</i>#}
+{#                            </a>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#            </div>#}
+            {# End of Arguments #}
         </form>
     </div>
 
@@ -66,6 +68,7 @@
         (function () {
             $("#form-event").removeClass("d-none").show();
             $("#id_name").focus();
+
             function formatData(data) {
                 return $(
                     "<span><img width=20 height=20 src='/plugins/icons/channel/" + data.id + "/'/> " + data.text + "</span>"
