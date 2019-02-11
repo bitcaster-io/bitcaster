@@ -33,7 +33,7 @@ develop:
 	pipenv run pre-commit install --hook-type pre-push
 	$(MAKE) .init-db
 	pip install -e .
-	for dir in plugins/*; do pip --disable-pip-version-check install $$dir; done;
+	for dir in plugins/*; do pip --disable-pip-version-check install -e $$dir; done;
 
 .init-db:
 	# initializing '${DBENGINE}' database 'bitcaster'
