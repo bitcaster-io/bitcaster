@@ -22,17 +22,26 @@
             </tr>
             </thead>
             <tbody>
+            <tr class="d-flex">
+                <td class="col-4">
+                    {{ organization.owner }}{% if organization.owner == user %}<span class="you">you</span>{% endif %}
+                </td>
+                <td class="col-3">Owner</td>
+                <td class="col-3"></td>
+            </tr>
             {% for membership in memberships.all %}
                 <tr class="d-flex">
-                    <td class="col-4">{{ membership.user }}</td>
+                    <td class="col-4">
+                        {{ membership.user }}{% if membership.user == user %}<span class="you">you</span>{% endif %}
+                    </td>
                     <td class="col-3">{{ membership.get_role_display }}</td>
                     <td class="col-3">{{ membership.date_enrolled }}</td>
                     <td>
                         <button onclick="window.location.href = '{% org-url "org-member-delete" membership.pk %}';">
-                            <i class="fa fa-remove"></i>
+                            <i class="far fa-trash-alt pointer"></i>
                         </button>
                         <button onclick="window.location.href = '{% org-url "org-member-edit" membership.pk %}';">
-                            <i class="fa fa-pencil"></i>
+                            <i class="far fa-edit pointer"></i>
                         </button>
                     </td>
                 </tr>
@@ -65,7 +74,7 @@
                                   action="{% url "org-invite-delete" organization.slug membership.pk %}">
                                 {% csrf_token %}
                                 <button type="submit" title="cancel invitation" class="pointer">
-                                    <i class="fa fa-remove"></i>
+                                    <i class="far fa-trash-alt pointer"></i>
                                 </button>
                             </form>&nbsp;|&nbsp;<form method="post" class="d-inline"
                                                       action="{% url "org-member-send" organization.slug membership.pk %}">

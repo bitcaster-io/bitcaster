@@ -159,8 +159,11 @@ class OrganizationMembershipList(OrganizationViewMixin, BitcasterBaseListView):
 
     def get_context_data(self, **kwargs):
         data = super(OrganizationMembershipList, self).get_context_data(**kwargs)
-        data['memberships'] = OrganizationMember.objects.filter(user__isnull=False)
-        data['invitations'] = OrganizationMember.objects.filter(user__isnull=True)
+        # data['memberships'] = OrganizationMember.objects.filter(user__isnull=False)
+        # data['invitations'] = OrganizationMember.objects.filter(user__isnull=True)
+        base = self.selected_organization.memberships.exclude(user=self.selected_organization.owner)
+        data['memberships'] = base.filter(user__isnull=False)
+        data['invitations'] = base.filter(user__isnull=True)
         return data
 
 
