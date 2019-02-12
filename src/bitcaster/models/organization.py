@@ -8,11 +8,12 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
-from bitcaster.db.fields import DeletionStatusField, Role, RoleField
+from bitcaster.db.fields import (AvatarField, DeletionStatusField,
+                                 Role, RoleField,)
 from bitcaster.db.manager import DeleteableModelManagerMixin
 from bitcaster.db.validators import (RESERVED_NAMES, RateLimitValidator,
                                      check_reserved,)
-from bitcaster.file_storage import MediaFileSystemStorage, org_media_root
+from bitcaster.file_storage import org_media_root
 from bitcaster.models.validators import ListValidator, NameValidator
 # from bitcaster.utils import locks
 from bitcaster.utils.slug import slugify_instance
@@ -50,14 +51,7 @@ class Organization(AbstractModel):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE,
                               related_name='+')
-
-    avatar = models.ImageField(blank=True, null=True,
-                               # upload_to="pictures",
-                               upload_to=org_media_root,
-                               storage=MediaFileSystemStorage(),
-                               height_field='picture_height',
-                               width_field='picture_width'
-                               )
+    avatar = AvatarField(upload_to=org_media_root)
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
     is_core = models.BooleanField(editable=False, default=False)
@@ -91,9 +85,7 @@ class Organization(AbstractModel):
             # with TimedRetryPolicy(10, lock.acquire):
             slugify_instance(self, self.name,
                              reserved=RESERVED_ORGANIZATION_SLUGS)
-            super(Organization, self).save(*args, **kwargs)
-        else:
-            super(Organization, self).save(*args, **kwargs)
+        super(Organization, self).save(*args, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
         if self.is_core:

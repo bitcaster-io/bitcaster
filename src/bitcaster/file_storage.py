@@ -31,7 +31,14 @@ def app_media_root(instance, filename):
 
 
 class MediaFileSystemStorage(FileSystemStorage):
-    def get_available_name(self, name, max_length=None):
-        if self.exists(name):
-            self.delete(name)
-        return name
+    pass
+    # def get_available_name(self, name, max_length=None):
+    #     if self.exists(name):
+    #         self.delete(name)
+    #     return name
+
+
+class AvatarFileSystemStorage(MediaFileSystemStorage):
+    pass
+    # def get_available_name(self, name, max_length=None):
+    #     return name

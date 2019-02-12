@@ -17,6 +17,7 @@ from strategy_field.fields import StrategyField
 
 from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.exceptions import HandlerNotFound
+from bitcaster.file_storage import AvatarFileSystemStorage
 
 logger = logging.getLogger(__name__)
 
@@ -235,3 +236,33 @@ class DispatcherField(StrategyField):
     def __eq__(self, other):
         if isinstance(other, Field):
             return self.creation_counter == other.creation_counter
+
+
+class AvatarField(models.ImageField):
+
+    def __init__(self, verbose_name=None, name=None, **kwargs):
+        kwargs.setdefault('blank', True)
+        kwargs.setdefault('null', True)
+        kwargs.setdefault('storage', AvatarFileSystemStorage())
+        kwargs.setdefault('height_field', 'picture_height')
+        kwargs.setdefault('width_field', 'picture_width')
+        super().__init__(verbose_name, name, **kwargs)
+
+    # def generate_filename(self, instance, filename):
+    #     filename = super().generate_filename(instance, filename)
+    #     if instance.pk:
+    #         ext = os.path.splitext(filename)[1]
+    #         filename = f"{instance.pk}.{ext}"
+    #     return filename
+
+    # def save_form_data(self, instance, data):
+    #     super(AvatarField, self).save_form_data(instance, data)
+#
+#
+#
+# avatar = models.ImageField(blank=True, null=True,
+#                             upload_to=app_media_root,
+#                             storage=AvatarFileSystemStorage(),
+#                             height_field='picture_height',
+#                             width_field='picture_width'
+#                             )

@@ -1,4 +1,5 @@
 import inspect
+import re
 from pathlib import Path
 from urllib.parse import parse_qs
 
@@ -7,7 +8,7 @@ from django.conf.urls import include
 from django.contrib.admin import site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.templatetags.static import static
-from django.urls import path
+from django.urls import path, re_path
 from django.views.decorators.cache import cache_page
 from django.views.static import serve
 from django_sysinfo.views import admin_sysinfo, http_basic_login, sysinfo
@@ -60,17 +61,9 @@ urlpatterns = [path('api/', include(bitcaster.api.urls), name='api'),
 handler404 = 'bitcaster.web.views.handler404'
 handler500 = 'bitcaster.web.views.handler500'
 
-# if settings.DEBUG:
-#     urlpatterns += [static(settings.MEDIA_URL,
-#                            document_root=settings.MEDIA_ROOT,
-#                            show_indexes=True),
-#                     static(settings.STATIC_URL,
-#                            document_root=settings.STATIC_ROOT,
-#                            document_root=settings.STATIC_ROOT,
-#                            show_indexes=True, insecure=True)]
-# # else:
-#     urlpatterns += [static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
-#                     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)]
+urlpatterns += [re_path(r'^%s(?P<path>.*)$' % re.escape(settings.MEDIA_URL.lstrip('/')),
+                        serve, kwargs=dict(document_root=settings.MEDIA_ROOT,
+                                           show_indexes=True))]
 
 urlpatterns += [path('', include(bitcaster.web.urls)), ]
 

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'adminfilters',
     'social_django',
     'django_extensions',
+    'django_cleanup.apps.CleanupConfig',
     # 'django_celery_beat',
     # 'django_celery_results',
 

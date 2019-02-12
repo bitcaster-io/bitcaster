@@ -11,9 +11,9 @@ from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
 from bitcaster import logging
-from bitcaster.db.fields import SubscriptionPolicyField
+from bitcaster.db.fields import AvatarField, SubscriptionPolicyField
 from bitcaster.db.validators import RateLimitValidator
-from bitcaster.file_storage import MediaFileSystemStorage, app_media_root
+from bitcaster.file_storage import app_media_root
 from bitcaster.models.validators import ListValidator
 # from bitcaster.utils import locks
 from bitcaster.utils.slug import slugify_instance
@@ -56,12 +56,13 @@ class Application(AbstractModel):
                                    through='bitcaster.ApplicationTeam'
                                    )
 
-    avatar = models.ImageField(blank=True, null=True,
-                               upload_to=app_media_root,
-                               storage=MediaFileSystemStorage(),
-                               height_field='picture_height',
-                               width_field='picture_width'
-                               )
+    avatar = AvatarField(upload_to=app_media_root)
+    # avatar = models.ImageField(blank=True, null=True,
+    #                            upload_to=app_media_root,
+    #                            storage=AvatarFileSystemStorage(),
+    #                            height_field='picture_height',
+    #                            width_field='picture_width'
+    #                            )
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
     default_subscription_policy = SubscriptionPolicyField()
