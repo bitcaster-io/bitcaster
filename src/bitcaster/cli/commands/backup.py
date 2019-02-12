@@ -9,7 +9,7 @@ from bitcaster.cli.commands.option import option_set
 from bitcaster.utils.json import Decoder, Encoder
 
 DATA = ['organization', 'channel',
-        'user', 'organizationmember', 'address',
+        'user', 'organizationmember', 'address', 'addressassignment',
         'application',
         ('event', ['channels']),
         'message',
