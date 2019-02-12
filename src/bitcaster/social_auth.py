@@ -3,6 +3,7 @@ from urllib.parse import urljoin
 
 from constance import config
 from django.conf import settings
+from django.db import IntegrityError
 from django.shortcuts import resolve_url
 from django.utils import timezone
 from django.utils.encoding import force_text
@@ -11,16 +12,8 @@ from requests import HTTPError
 from social_core.backends.github import GithubOAuth2
 from social_django.strategy import DjangoStrategy
 
-from bitcaster.db.fields import Role
 from bitcaster.exceptions import NotMemberOfOrganization
-from bitcaster.models import Organization, OrganizationMember, User
-
-# from social_core.pipeline.user import create_user
-
-
-# def associate(backend, details, user=None, *args, **kwargs):
-#     return None
-
+from bitcaster.models import OrganizationMember, User
 
 USER_FIELDS = ['username', 'email', 'fullname']
 
@@ -47,21 +40,22 @@ def associate_invitation(backend, details, user=None, strategy=None, *args, **kw
 
 
 def create_default_membership(backend, details, new_association=False, uid=None, *args, **kwargs):
-    if new_association:
-        fields = {'email': details['email'],
-                  'name': details['fullname'],
-                  'friendly_name': details['username']}
+    # this must be called AFTER associate_invitation
+    # invitation_id = backend.strategy.session_get('invitation')
+    # if invitation_id:
+    #     invite = OrganizationMember.objects.filter(pk=invitation_id, user__isnull=False).first()
 
-        user, created = User.objects.get_or_create(email=details['email'], defaults=fields)
-        if created:
-            user.memberships.create(organization=Organization.objects.first(),
-                                    role=Role.SUBSCRIBER)
-            social = backend.strategy.storage.user.create_social_auth(
-                user, uid, backend.name
-            )
-        else:
-            social = kwargs['social']
+    if new_association:
+        storage = backend.strategy.storage
+        user = User.objects.get(email=details['email'])
+        try:
+            social = storage.user.create_social_auth(user, uid, backend.name)
+        except IntegrityError:
+            social = storage.user.get_social_auth(backend.name, uid)
+
         return {'user': user,
+                'is_new': user is None,
+                'new_association': social is None,
                 'social': social}
     return {}
 
