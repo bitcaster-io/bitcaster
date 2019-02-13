@@ -11,6 +11,7 @@ from .message import Message
 from .options import OrganizationOption
 from .organization import Organization
 from .organizationmember import OrganizationMember
+from .registry import Registry
 # from .monitor import Monitor
 from .subscription import Subscription
 from .team import ApplicationTeam, Team, TeamMembership

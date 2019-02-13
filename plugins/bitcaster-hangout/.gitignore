@@ -1,5 +1,0 @@
-.pytest_cache
-.env
-bitcaster_hangout.egg-info
-/~build
-tests/cassettes/*

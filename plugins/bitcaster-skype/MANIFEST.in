@@ -1,5 +1,0 @@
-include bitcaster_skype
-include-recursive bitcaster_skype *.py
-include bitcaster_skype/icon.png
-include README.rst
-include setup.py

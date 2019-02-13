@@ -57,3 +57,8 @@ def aasset(path):
 @register.simple_tag
 def aurl(name, *args, **kwargs):
     return absolute_uri(reverse(name, *args, **kwargs))
+
+
+@register.simple_tag
+def plugin_icon_url(channel):
+    return ''

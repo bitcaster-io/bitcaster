@@ -6,3 +6,7 @@ ignore = E401,W391,E128,E261,E731,Q000,W504,W606
 putty-ignore =
     ;    tests/test_choice_as_instance.py : E501
     tests/test_multiple.py : E501
+    src/bitcaster/dispatchers/handlers/__init__.py:F401
+
+per-file-ignores =
+    src/bitcaster/dispatchers/handlers/__init__.py:F401

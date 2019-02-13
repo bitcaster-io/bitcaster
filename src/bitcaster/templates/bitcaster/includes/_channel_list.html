@@ -1,4 +1,4 @@
-{% load crispy_forms_tags i18n bc_channels %}
+{% load crispy_forms_tags i18n bc_channels bc_assets %}
 <h2>{{ title }}</h2>
 <div class="container">
     <div class="row col-12">
@@ -18,7 +18,7 @@
             </style>
             <div class="col-2 handler-logo">
                 <img width="100" class="{% if channel.enabled and channel.deprecated %}blur{% endif %}" height="100"
-                     src="{% url "plugin-icon" channel.handler.fqn %}">
+                     src="{% plugin_icon_url channel %}">
             </div>
             <div class="col-7 handler-name">
                 <strong>{{ channel.name }}</strong>
@@ -30,7 +30,7 @@
                     | <a href="{{ channel.pk }}/toggle/">{% if channel.enabled %}Disable{% else %}<strong>Enable</strong>{% endif %}</a>
                     | <a href="{{ channel.pk }}/delete/">Remove</a>
                     | <a href="{{ channel.pk }}/deprecate/">{% if channel.deprecated %}<strong>Enable</strong>{% else %}Deprecate{% endif %}
-                    | <a rel="modal:open" href="{% url "plugin-info" channel.handler.fqn %}">Plugin Info</a>
+                    | <a rel="modal:open" href="{% plugin_icon_url channel %}">Plugin Info</a>
                 </div>
                 {% endif %}
             </div>

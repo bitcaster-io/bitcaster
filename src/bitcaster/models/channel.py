@@ -124,7 +124,8 @@ It can be Global or Application specific.
             raise Exception('System channels cannot belong Organization or Application')
         if self.application:
             self.organization = self.application.organization
-        self.config = self.handler.get_full_config(self.config)
+        if self.handler:
+            self.config = self.handler.get_full_config(self.config)
         super().save(force_insert, force_update, using, update_fields)
 
     def process_event(self, event, context):

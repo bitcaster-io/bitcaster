@@ -1,5 +1,0 @@
-.pytest_cache
-.env
-bitcaster_xmpp.egg-info
-/~build
-tests/cassettes/*

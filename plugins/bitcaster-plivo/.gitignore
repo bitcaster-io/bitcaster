@@ -1,5 +1,0 @@
-.pytest_cache
-.env
-bitcaster_plivo.egg-info
-/~build
-tests/cassettes/*

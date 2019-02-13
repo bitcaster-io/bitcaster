@@ -1,6 +1,0 @@
-include README.rst
-include setup.py
-
-include bitcaster_facebook
-include bitcaster_facebook/icon.png
-include-recursive bitcaster_facebook *.py

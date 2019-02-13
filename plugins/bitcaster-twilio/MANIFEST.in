@@ -1,6 +1,0 @@
-include README.rst
-include setup.py
-
-include bitcaster_twilio
-include-recursive bitcaster_twilio *.py
-include bitcaster_twilio/icon.png

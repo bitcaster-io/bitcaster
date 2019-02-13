@@ -8,8 +8,7 @@ class Config(AppConfig):
         from .config.environ import env  # noqa
         from . import celery  # noqa
         from django.conf import settings  # noqa
-        from .dispatchers.registry import dispatcher_registry, load_plugins  # noqa
+        from .dispatchers.registry import dispatcher_registry  # noqa
         from . import tasks  # noqa
         from . import checks  # noqa
         from . import handlers  # noqa
-        load_plugins()

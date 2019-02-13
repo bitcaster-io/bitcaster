@@ -1,6 +1,0 @@
-include bitcaster_slack_webhook
-include-recursive bitcaster_slack_webhook *.py
-include bitcaster_slack_webhook/icon.png
-include README.rst
-include setup.py
-include pytest.ini

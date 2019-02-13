@@ -1,5 +1,0 @@
-include bitcaster_gmail_oauth
-include-recursive bitcaster_gmail_oauth *.py
-include bitcaster_gmail_oauth/icon.png
-include README.rst
-include setup.py

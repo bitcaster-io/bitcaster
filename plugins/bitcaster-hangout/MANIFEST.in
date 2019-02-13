@@ -1,5 +1,0 @@
-include bitcaster_hangout
-include-recursive bitcaster_hangout *.py
-include bitcaster_hangout/icon.png
-include README.rst
-include setup.py

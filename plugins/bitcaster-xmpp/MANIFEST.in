@@ -1,5 +1,0 @@
-include bitcaster_xmpp
-include-recursive bitcaster_xmpp *.py
-include bitcaster_xmpp/icon.png
-include README.rst
-include setup.py

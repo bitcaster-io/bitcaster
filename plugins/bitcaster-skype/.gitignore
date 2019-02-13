@@ -1,5 +1,0 @@
-.pytest_cache
-.env
-bitcaster_skype.egg-info
-tests/cassettes/*
-~build
