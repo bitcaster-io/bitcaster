@@ -18,7 +18,7 @@ class EmailOptions(DispatcherOptions):
 class SystemEmail(Email):
     __core__ = True
     options_class = EmailOptions
-    icon = '/bitcaster/images/email-icon.png'
+    icon = 'email'
 
     # def _configure(self):
     #     return super()._configure()

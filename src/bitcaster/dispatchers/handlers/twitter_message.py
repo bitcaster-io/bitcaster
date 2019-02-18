@@ -39,6 +39,7 @@ class TwitterMessage(Dispatcher):
     options_class = TwitterMessageOptions
     message_class = TwitterMessageType
     subscription_class = TwitterMessageSubscriptionOptions
+    icon = 'twitter'
     __core__ = True
     __license__ = 'MIT'
     __author__ = 'Bitcaster'

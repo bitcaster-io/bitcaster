@@ -64,8 +64,7 @@ def test_system_list_channel(django_app, admin, system_channel, settings):
     settings.ON_PREMISE = False
 
     _list = django_app.get(reverse('settings-channels'), user=admin)
-
-    res = _list.click('Plugin Info', index=1)
+    res = _list.click('Channels')
     assert res.status_code == 200
 
     res = _list.click('Configure')

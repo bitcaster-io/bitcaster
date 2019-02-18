@@ -3,19 +3,17 @@ import logging
 
 from django.conf import settings
 from django.db import models
-from strategy_field.utils import fqn
 
 from bitcaster.db.fields import DispatcherField
-from bitcaster.dispatchers import Dispatcher
 
 logger = logging.getLogger(__name__)
 
 
 class AssignmentQuerySet(models.QuerySet):
     def get_address(self, klass):
-        if isinstance(klass, Dispatcher):
-            klass = fqn(klass)
-        return super().get(dispatcher=klass).address
+        # if isinstance(klass, Dispatcher):
+        #     klass = fqn(klass)
+        return super().get(dispatcher=klass).address.address
 
 
 class Address(models.Model):

@@ -18,6 +18,7 @@ from strategy_field.fields import StrategyField
 from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.exceptions import HandlerNotFound
 from bitcaster.file_storage import AvatarFileSystemStorage
+from bitcaster.monitor.registry import monitor_registry
 
 logger = logging.getLogger(__name__)
 
@@ -231,6 +232,20 @@ class DispatcherField(StrategyField):
         kwargs.setdefault('display_attribute', 'name')
         kwargs.setdefault('import_error', handler_not_found)
         kwargs.setdefault('registry', dispatcher_registry)
+        super().__init__(**kwargs)
+
+    def __eq__(self, other):
+        if isinstance(other, Field):
+            return self.creation_counter == other.creation_counter
+
+
+class MonitorField(StrategyField):
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault('verbose_name', 'Dispatcher')
+        kwargs.setdefault('display_attribute', 'name')
+        kwargs.setdefault('import_error', handler_not_found)
+        kwargs.setdefault('registry', monitor_registry)
         super().__init__(**kwargs)
 
     def __eq__(self, other):

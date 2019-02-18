@@ -41,6 +41,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     __version__ = '1.0'
 
     def __init__(self, owner=None):
+
         super().__init__(owner)
         self.logger = getLogger('bitcaster.plugins.%s' % self.name)
 
