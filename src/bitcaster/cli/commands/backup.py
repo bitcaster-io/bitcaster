@@ -10,7 +10,7 @@ from bitcaster.cli.commands.option import option_set
 from bitcaster.utils.json import Decoder, Encoder
 
 DATA = ['user',
-        'monitor', 'dispatcher',
+        'monitormetadata', 'dispatchermetadata',
         'organization',
         'application',
         'channel',

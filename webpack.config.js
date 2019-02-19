@@ -82,8 +82,19 @@ module.exports = [
             ],
             rules: [
                 {
-                    test: /\.(png|gif|jpg|ico)$/i,
+                    test: /icons\/.*\.png$/i,
                     exclude: /(node_modules)/,
+                    use: [{
+                        loader: "file-loader",
+                        options: {
+                            outputPath: "images/icons",
+                            name: "[name].[ext]"
+                        },
+                    }],
+                },
+                {
+                    test: /\.(png|gif|jpg|ico)$/i,
+                    exclude: /(node_modules|icons)/,
                     use: [{
                         loader: "file-loader",
                         options: {

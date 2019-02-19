@@ -4,7 +4,9 @@ from django.conf import settings
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from bitcaster.web.views import EventKeys
+from bitcaster.web.views import (EventKeys, EventSubscriptions,
+                                 EventSubscriptionsInvite,
+                                 EventSubscriptionsSubscribe,)
 from bitcaster.web.views.callbacks import confirm_address
 from bitcaster.web.views.user import UserIndexView
 from bitcaster.web.views.views import PreviewView
@@ -17,8 +19,7 @@ from .views import (ApplicationChannelCreate,  # UserHomeView,; UserWelcomeView,
                     ApplicationKeyCreate, ApplicationKeyDelete,
                     ApplicationKeyList, ApplicationKeyUpdate,
                     ApplicationUpdateView, EventCreate, EventDelete, EventList,
-                    EventMessages, EventSubscriptions, EventSubscriptionsInvite,
-                    EventSubscriptionsSubscribe, EventTest, EventToggle,
+                    EventMessages, EventTest, EventToggle,
                     EventUpdate, IndexView, InviteAccept, InviteDelete,
                     InviteSend, LoginView, LogoutView, MessageCreate,
                     MessageDelete, MessageList, MessageUpdate,
@@ -39,7 +40,7 @@ from .views import (ApplicationChannelCreate,  # UserHomeView,; UserWelcomeView,
                     SettingsOrgUpdateView, SettingsSystemInfo, SettingsView,
                     SetupView, SubscriptionList, UserAddressesAssignmentView,
                     UserAddressesInfoView, UserAddressesView, UserProfileView,
-                    UserRegister, WorkInProgressView, confirm_registration,)
+                    UserRegister, WorkInProgressView, confirm_registration, )
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),

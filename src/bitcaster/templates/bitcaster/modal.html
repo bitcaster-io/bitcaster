@@ -1,7 +1,4 @@
-{% extends "bitcaster/base.html" %}
-{% load i18n crispy_forms_tags bc_assets %}
-
-{#{% block header %}{% endblock header %}#}
+{% extends "bitcaster/base.html" %}{% load i18n crispy_forms_tags bc_assets %}
 {% block footer %}{% endblock footer %}
 {% block sidebar %}{% endblock sidebar %}
 {% block page %}
@@ -10,7 +7,7 @@
             <div class="box box-modal col-6 p-3">
                 {% block modal-header %}
                     <div class="box box-header">
-                        <a href="//bitcaster.io/"><img src="{% asset "logos/bitcaster32.png" %}">
+                        <a href="//bitcaster.io/"><img src="{% asset "bitcaster/images/bitcaster32.png" %}">
                             bitcaster
                         </a>
                     </div>

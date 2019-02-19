@@ -19,4 +19,17 @@ import './images/social_auth_google.png';
 import './images/social_auth_linkedin.png';
 import './images/plugin.png';
 
+import './images/icons/email.png';
+import './images/icons/facebook.png';
+import './images/icons/twilio.png';
+import './images/icons/twitter.png';
+import './images/icons/hangout.png';
+import './images/icons/gmail.png';
+import './images/icons/plivo.png';
+import './images/icons/skype.png';
+import './images/icons/skype.png';
+import './images/icons/slack.png';
+import './images/icons/xmpp.png';
+// import './images/icons/*.*';
+
 window.bitcaster = require('./js/index');

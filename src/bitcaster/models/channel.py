@@ -22,13 +22,13 @@ logger = logging.getLogger(__name__)
 
 class ChannelQuerySet(models.QuerySet):
     def valid(self):
-        for c in self.all():
-            try:
-                assert c.handler
-            except Exception:
-                c.handler = None
-                c.enabled = False
-                c.save()
+        # for c in self.all():
+        #     try:
+        #         assert c.handler
+        #     except Exception:
+        #         c.handler = None
+        #         c.enabled = False
+        #         c.save()
         return self.all()
 
     def organization_configurable(self, organization):
@@ -112,7 +112,9 @@ It can be Global or Application specific.
 
     @property
     def is_configured(self):
-        return self.handler.validate_configuration(self.config, False)
+        if self.handler:
+            return self.handler.validate_configuration(self.config, False)
+        return False
 
     def clean(self):
         if not self.handler and self.enabled:
