@@ -8,13 +8,13 @@ from bitcaster.models import AuditEvent
 from bitcaster.web.forms.subscription import (EventSubscriptionForm,
                                               InviteFormSet,
                                               SubscriptionFormSet,)
-from bitcaster.web.views import MessageUserMixin
+from bitcaster.web.views.base import MessageUserMixin
 from bitcaster.web.views.event import EventFormMixin, EventMixin
 from bitcaster.web.views.organization import OrganizationAuditMixin
 
 
 class EventSubscriptions(EventMixin, EventFormMixin, DetailView):
-    template_name = 'bitcaster/event_subscriptions.html'
+    template_name = 'bitcaster/application/events/subscriptions/list.html'
     title = 'Subscribers'
 
     def get_context_data(self, **kwargs):
@@ -22,7 +22,7 @@ class EventSubscriptions(EventMixin, EventFormMixin, DetailView):
 
 
 class EventSubscriptionsSubscribe(EventMixin, FormView):
-    template_name = 'bitcaster/event_subscriptions_subscribe.html'
+    template_name = 'bitcaster/application/events/subscriptions/subscribe.html'
     title = 'Subscribers'
     form_class = EventSubscriptionForm
 
@@ -49,7 +49,7 @@ class EventSubscriptionsSubscribe(EventMixin, FormView):
 
 
 class EventSubscriptionsInvite(EventMixin, MessageUserMixin, FormView, OrganizationAuditMixin):
-    template_name = 'bitcaster/event_subscriptions_invite.html'
+    template_name = 'bitcaster/application/events/subscriptions/invite.html'
     title = 'Subscribers'
     form_class = InviteFormSet
 

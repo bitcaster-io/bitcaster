@@ -4,21 +4,9 @@ from django.http import (HttpResponse, HttpResponseForbidden,
                          HttpResponseRedirect,)
 from django.template.loader import get_template
 from django.urls import reverse
-from django.views.generic import ListView, TemplateView
+from django.views.generic import TemplateView
 
-from bitcaster.models import Subscription
-
-from .base import SelectedApplicationMixin
-
-__all__ = ('IndexView',
-           'SubscriptionList', 'WorkInProgressView')
-
-
-class SubscriptionList(SelectedApplicationMixin, ListView):
-    model = Subscription
-
-    def get_queryset(self):
-        return Subscription.objects.filter(event__application=self.selected_application)
+__all__ = ('IndexView', 'WorkInProgressView')
 
 
 class Error403(TemplateView):

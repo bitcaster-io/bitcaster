@@ -7,9 +7,11 @@
 .virtualenv_hooks
 /extras
 /node_modules
+/sidebar
 CHANGES
 CODE_OF_CONDUCT.md
 CONTRIBUTING.rst
+dist
 docs
 LICENSE
 manage.py

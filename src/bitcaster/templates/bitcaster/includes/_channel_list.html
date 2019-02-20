@@ -18,7 +18,7 @@
             </style>
             <div class="col-2 handler-logo">
                 <img width="100" class="{% if channel.enabled and channel.deprecated %}blur{% endif %}" height="100"
-                     src="{% plugin_icon_url channel.handler %}">
+                     src="{% url "plugin-icon" channel.handler.fqn %}">
             </div>
             <div class="col-7 handler-name">
                 <strong>{{ channel.name }}</strong>
@@ -30,7 +30,7 @@
                     | <a href="{{ channel.pk }}/toggle/">{% if channel.enabled %}Disable{% else %}<strong>Enable</strong>{% endif %}</a>
                     | <a href="{{ channel.pk }}/delete/">Remove</a>
                     | <a href="{{ channel.pk }}/deprecate/">{% if channel.deprecated %}<strong>Enable</strong>{% else %}Deprecate{% endif %}
-                    | <a rel="modal:open" href="{% plugin_icon_url channel.handler %}">Plugin Info</a>
+                    | <a rel="modal:open" href="{% url "plugin-icon" channel.handler.fqn %}">Plugin Info</a>
                 </div>
                 {% endif %}
             </div>

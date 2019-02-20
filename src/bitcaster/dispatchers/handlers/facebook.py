@@ -12,7 +12,7 @@ from bitcaster.exceptions import PluginSendError, RecipientNotFound
 from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
-logger = getLogger('bitcaster.plugins.facebook')
+logger = getLogger(__name__)
 
 
 class FacebookMessage(MessageType):

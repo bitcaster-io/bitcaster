@@ -9,7 +9,7 @@ from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
 from bitcaster.logging import getLogger
 
-logger = getLogger('bitcaster.plugins.twilio')
+logger = getLogger(__name__)
 
 
 class Message(MessageType):

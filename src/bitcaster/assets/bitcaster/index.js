@@ -12,12 +12,12 @@ import './logos/bitcaster500-transparent.png';
 import './logos/bitcaster500_transparent_BYu_icon.ico';
 
 import './images/favicon.ico';
-import './images/plugin.png';
+// import './images/plugin.png';
 import './images/email-icon.png';
 import './images/social_auth_github.png';
 import './images/social_auth_google.png';
 import './images/social_auth_linkedin.png';
-import './images/plugin.png';
+// import './images/plugin.png';
 
 import './images/icons/email.png';
 import './images/icons/facebook.png';
@@ -26,6 +26,7 @@ import './images/icons/twitter.png';
 import './images/icons/hangout.png';
 import './images/icons/gmail.png';
 import './images/icons/plivo.png';
+import './images/icons/plugin.png';
 import './images/icons/skype.png';
 import './images/icons/skype.png';
 import './images/icons/slack.png';

@@ -1,0 +1,37 @@
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n %}
+{% block content %}
+    <div class="container">
+        <h4>Edit Membership</h4>
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ form.errors }}
+            {{ form.non_field_errors }}
+            <table class="table">
+                <tbody>
+                <tr class="d-flex">
+                    <td>{% trans "User" %}</td>
+                    <td class="col-4">{{ membership.user }}</td>
+                </tr>
+                <tr class="d-flex">
+                    <td>{% trans "Role" %}</td>
+                    <td class="col-4">{{ form.role.errors }}{{ form.role }}</td>
+                </tr>
+                <tr class="d-flex">
+                    <td>{% trans "Invited by" %}</td>
+                    <td class="col-4">{{ membership.invited_by}}</td>
+                </tr>
+                <tr class="d-flex">
+                    <td>{% trans "Invited on" %}</td>
+                    <td class="col-4">{{ membership.date_added}}</td>
+                </tr>
+                <tr class="d-flex">
+                    <td>{% trans "Enrolled on" %}</td>
+                    <td class="col-4">{{ membership.date_enrolled|default_if_none:""}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-danger btn-small pull-left" href=".">{% trans "Save" %}</button>
+
+        </form>
+    </div>
+{% endblock %}

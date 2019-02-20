@@ -35,7 +35,12 @@ LOGGING = {
             # 'level': 'DEBUG',
             'class': 'logging.NullHandler',
             'formatter': 'short'
-        }
+        },
+        'db': {
+            'level': 'ERROR',
+            'class': 'django_db_logging.handlers.AsyncDBHandler',
+        },
+
     },
     'loggers': {
         'django': {
@@ -82,6 +87,21 @@ LOGGING = {
             'level': 'DEBUG',
             'handlers': ['console'],
             'propagate': False,
+        },
+        'django_db_logging': {
+            'handlers': ['console'],  # do not use 'db' here
+            'propagate': False,  # do not propagate
+            'level': 'ERROR'
+        },
+        'bitcaster.dispatcher': {
+            'handlers': ['db'],  # do not use 'db' here
+            'propagate': True,  # do not propagate
+            'level': 'ERROR'
+        },
+        'bitcaster.tasks': {
+            'handlers': ['db'],  # do not use 'db' here
+            'propagate': True,  # do not propagate
+            'level': 'ERROR'
         },
         # 'redis': {
         #     'level': 'ERROR',

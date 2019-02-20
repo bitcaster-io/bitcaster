@@ -1,0 +1,14 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block content %}
+    <h2>Application Keys</h2>
+
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% app-url "app-key-create" %}">{% trans "Add Key" %}</a>
+            </div>
+        </div>
+    </div>
+    {% include "bitcaster/includes/_keys.html" with keys=application.keys  %}
+{% endblock %}

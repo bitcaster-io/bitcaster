@@ -1,4 +1,3 @@
-import inspect
 import re
 from pathlib import Path
 from urllib.parse import parse_qs
@@ -28,15 +27,20 @@ def channel_icon(request, pk):
 @cache_page(60 * 60 * 24, key_prefix=bitcaster.__version__)
 def plugin_icon(request, fqn):
     h = import_by_name(fqn)
-    loc = inspect.getfile(h)
+    # loc = inspect.getfile(h)
     if h.icon and h.icon.startswith('/'):
         return HttpResponseRedirect(static(h.icon))
-    icon = Path(loc).parent / 'icon.png'
+    elif h.icon:
+        icon = Path(settings.STATIC_ROOT) / f'bitcaster/images/icons/{h.icon}.png'
+    else:
+        name = fqn.split('.')[-1]
+        icon = Path(settings.STATIC_ROOT) / f'bitcaster/images/icons/{name.lower()}.png'
     try:
         image = icon.read_bytes()
     except (Exception, FileNotFoundError):
-        return HttpResponseRedirect(static('/bitcaster/images/plugin.png'))
+        return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))
     return HttpResponse(image, content_type='image/png')
+    # return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))
 
 
 def oauth2callback(request):

@@ -28,7 +28,6 @@ from bitcaster.utils.dashboard import check_channels, get_status
 from bitcaster.web.forms import (OrganizationForm, OrganizationInvitationForm,
                                  OrganizationInvitationFormSet, TeamForm,
                                  UserInviteRegistrationForm,)
-from bitcaster.web.forms.user import NewMemberForm
 
 from .base import (ApplicationListMixin, BitcasterBaseCreateView,
                    BitcasterBaseDeleteView, BitcasterBaseDetailView,
@@ -40,17 +39,19 @@ from .channel import (ChannelCreateWizard, ChannelDeleteView,
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['OrganizationCreate', 'OrganizationDashboard', 'OrganizationUpdate',
-           'OrganizationMembershipList', 'OrganizationChannels',
-           'OrganizationTeamList', 'OrganizationTeamCreate',
-           'OrganizationCheckConfigView',
-           'OrganizationChannelRemove', 'OrganizationChannelToggle',
-           'OrganizationChannelUpdate', 'OrganizationChannelDeprecate',
-           'OrganizationTeamUpdate', 'OrganizationTeamMember',
-           'OrganizationMembershipEdit', 'OrganizationMembershipDelete',
-           'OrganizationCreateMember',
-           'OrganizationInvite', 'InviteDelete', 'InviteSend', 'InviteAccept',
-           'OrganizationApplications', 'OrganizationChannelCreate']
+__all__ = [
+    # 'OrganizationCreate',
+    'OrganizationDashboard', 'OrganizationConfiguration',
+    'OrganizationMembershipList', 'OrganizationChannels',
+    'OrganizationTeamList', 'OrganizationTeamCreate',
+    'OrganizationCheckConfigView',
+    'OrganizationChannelRemove', 'OrganizationChannelToggle',
+    'OrganizationChannelUpdate', 'OrganizationChannelDeprecate',
+    'OrganizationTeamUpdate', 'OrganizationTeamMember',
+    # 'OrganizationMembershipEdit', 'OrganizationMembershipDelete',
+    # 'OrganizationCreateMember',
+    'OrganizationInvite', 'InviteDelete', 'InviteSend', 'InviteAccept',
+    'OrganizationApplications', 'OrganizationChannelCreate']
 
 
 class OrganizationAuditMixin:
@@ -75,7 +76,7 @@ class OrganizationViewMixin(OrganizationAuditMixin, ApplicationListMixin):
 
 
 class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
-    template_name = 'bitcaster/organization/organization_dashboard.html'
+    template_name = 'bitcaster/organization/dashboard.html'
 
     def get_context_data(self, **kwargs):
         org = self.selected_organization
@@ -99,6 +100,19 @@ class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
         return super().get_context_data(**kwargs)
 
 
+class OrganizationConfiguration(OrganizationViewMixin, BitcasterBaseUpdateView):
+    form_class = OrganizationForm
+    success_url = '.'
+    template_name = 'bitcaster/organization/configuration.html'
+
+    def form_valid(self, form):
+        slug = form.cleaned_data.get('slug', None)
+        self.object = form.save()
+        url = reverse('org-config', args=[slug or self.object.slug])
+        self.message_user(_('Configuration saved'), messages.SUCCESS)
+        return HttpResponseRedirect(url)
+
+
 class OrganizationCheckConfigView(OrganizationAuditMixin, ApplicationListMixin, RedirectView):
     pattern_name = 'org-dashboard'
 
@@ -109,51 +123,39 @@ class OrganizationCheckConfigView(OrganizationAuditMixin, ApplicationListMixin, 
         return super().get(request, *args, **kwargs)
 
 
-class OrganizationUpdate(OrganizationViewMixin, BitcasterBaseUpdateView):
-    form_class = OrganizationForm
-    success_url = '.'
-
-    def form_valid(self, form):
-        slug = form.cleaned_data.get('slug', None)
-        self.object = form.save()
-        url = reverse('org-config', args=[slug or self.object.slug])
-        self.message_user(_('Configuration saved'), messages.SUCCESS)
-        return HttpResponseRedirect(url)
-
-
-class OrganizationCreate(OrganizationViewMixin, BitcasterBaseCreateView):
-    form_class = OrganizationForm
-    success_url = '.'
-
-    def form_valid(self, form):
-        form.instance.owner = self.request.user
-        self.message_user(_('Organization created'), messages.SUCCESS)
-        return super().form_valid(form)
+#
+# class OrganizationCreate(OrganizationViewMixin, BitcasterBaseCreateView):
+#     form_class = OrganizationForm
+#     success_url = '.'
+#
+#     def form_valid(self, form):
+#         form.instance.owner = self.request.user
+#         self.message_user(_('Organization created'), messages.SUCCESS)
+#         return super().form_valid(form)
 
 
-class OrganizationCreateMember(OrganizationViewMixin, CreateView):
-    template_name = 'bitcaster/organization_new_member.html'
-    model = User
-    form_class = NewMemberForm
+# class OrganizationCreateMember(OrganizationViewMixin, CreateView):
+#     template_name = 'bitcaster/organization/new_member.html'
+#     model = User
+#     form_class = NewMemberForm
+#
+#     def get_success_url(self):
+#         return reverse('org-member-list',
+#                        args=[self.selected_organization.slug])
+#
+#     def form_valid(self, form):
+#         self.object = form.save()
+#         self.selected_organization.memberships.create(user=self.object,
+#                                                       invited_by=self.request.user,
+#
+#                                                       )
+#         return super().form_valid(form)
 
-    def get_success_url(self):
-        return reverse('org-member-list',
-                       args=[self.selected_organization.slug])
-
-    def form_valid(self, form):
-        self.object = form.save()
-        self.selected_organization.memberships.create(user=self.object,
-                                                      invited_by=self.request.user,
-
-                                                      )
-        return super().form_valid(form)
-
-        # return super().form_valid(form)
+# return super().form_valid(form)
 
 
 class OrganizationMembershipList(OrganizationViewMixin, BitcasterBaseListView):
-    # form_class = OrganizationForm
-    # template_name = 'bitcaster/organization/member_list.html'
+    template_name = 'bitcaster/organization/members/list.html'
     success_url = '.'
     model = OrganizationMember
 
@@ -167,43 +169,91 @@ class OrganizationMembershipList(OrganizationViewMixin, BitcasterBaseListView):
         return data
 
 
-class OrganizationMembershipEdit(OrganizationViewMixin, BitcasterBaseUpdateView):
-    # form_class = OrganizationForm
-    fields = ('role',)
-    # template_name = 'bitcaster/organization/member_edit.html'
-    success_url = ''
-    model = OrganizationMember
+# class OrganizationMembershipEdit(OrganizationViewMixin, BitcasterBaseUpdateView):
+#     template_name = 'bitcaster/organization/members/list.html'
+#     fields = ('role',)
+#     success_url = ''
+#     model = OrganizationMember
+#
+#     def get_template_names(self):
+#         return super().get_template_names()
+#
+#     def get_context_data(self, **kwargs):
+#         kwargs['title'] = _('Edit Membership')
+#         kwargs['membership'] = self.object
+#         return super().get_context_data(**kwargs)
+#
+#     def form_valid(self, form):
+#         self.message_user(_('Updated'))
+#         return super(OrganizationMembershipEdit, self).form_valid(form)
+#
+#     def get_success_url(self):
+#         return reverse('org-member-list', args=[self.selected_organization.slug])
 
-    def get_template_names(self):
-        return super().get_template_names()
 
-    def get_context_data(self, **kwargs):
-        kwargs['title'] = _('Edit Membership')
-        kwargs['membership'] = self.object
-        return super().get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        self.message_user(_('Updated'))
-        return super(OrganizationMembershipEdit, self).form_valid(form)
-
-    def get_success_url(self):
-        return reverse('org-member-list', args=[self.selected_organization.slug])
-
-
-class OrganizationMembershipDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
-    def get_success_url(self):
-        return reverse('org-member-list', args=[self.selected_organization.slug])
-
-    def get_queryset(self):
-        return self.selected_organization.memberships.filter(user__isnull=False)
-
-    def delete(self, request, *args, **kwargs):
-        ret = super().delete(request, *args, **kwargs)
-        self.message_user('Membership removed')
-        return ret
+# class OrganizationMembershipDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
+#     def get_success_url(self):
+#         return reverse('org-member-list', args=[self.selected_organization.slug])
+#
+#     def get_queryset(self):
+#         return self.selected_organization.memberships.filter(user__isnull=False)
+#
+#     def delete(self, request, *args, **kwargs):
+#         ret = super().delete(request, *args, **kwargs)
+#         self.message_user('Membership removed')
+#         return ret
 
 
 # Invitation
+
+class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
+    form_class = OrganizationInvitationForm
+    template_name = 'bitcaster/organization/members/invite.html'
+
+    def get_success_url(self):
+        return reverse('org-member-list', args=[self.selected_organization.slug])
+
+    def get_context_data(self, **kwargs):
+        data = super(OrganizationInvite, self).get_context_data(**kwargs)
+        data['invitations'] = data['form']
+        return data
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.instance = self.selected_organization
+        return form
+
+    def get_form_class(self):
+        return OrganizationInvitationFormSet
+
+    def form_invalid(self, form):
+        self.message_user(_('invalid'), messages.WARNING)
+        return super(OrganizationInvite, self).form_invalid(form)
+
+    def form_valid(self, form):
+        sent = False
+        # form.instance = self.selected_organization
+        for inline_form in form.extra_forms:
+            if not inline_form.has_changed():
+                continue
+            recipient = inline_form.cleaned_data.get('email', None)
+            if recipient:
+                if not self.selected_organization.memberships.filter(email=recipient).exists():
+                    inline_form.instance.organization = self.selected_organization
+                    inline_form.instance.invited_by = self.request.user
+                    membership = inline_form.save()
+                    membership.send_email()
+                    self.audit_log(AuditEvent.MEMBER_INVITE,
+                                   role=membership.get_role_display(),
+                                   email=membership.email)
+                    sent = True
+                else:
+                    self.message_user(_('Invitation to {0} already sent').format(recipient),
+                                      messages.WARNING)
+        if sent:
+            self.message_user(_('Invitations sent'), messages.SUCCESS)
+        return super(OrganizationInvite, self).form_valid(form)
+
 
 class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
     model = User
@@ -317,55 +367,6 @@ class InviteDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
     #     return HttpResponseRedirect(success_url)
 
 
-class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
-    form_class = OrganizationInvitationForm
-    template_name = 'bitcaster/organization_invite.html'
-
-    def get_success_url(self):
-        return reverse('org-member-list', args=[self.selected_organization.slug])
-
-    def get_context_data(self, **kwargs):
-        data = super(OrganizationInvite, self).get_context_data(**kwargs)
-        data['invitations'] = data['form']
-        return data
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.instance = self.selected_organization
-        return form
-
-    def get_form_class(self):
-        return OrganizationInvitationFormSet
-
-    def form_invalid(self, form):
-        self.message_user(_('invalid'), messages.WARNING)
-        return super(OrganizationInvite, self).form_invalid(form)
-
-    def form_valid(self, form):
-        sent = False
-        # form.instance = self.selected_organization
-        for inline_form in form.extra_forms:
-            if not inline_form.has_changed():
-                continue
-            recipient = inline_form.cleaned_data.get('email', None)
-            if recipient:
-                if not self.selected_organization.memberships.filter(email=recipient).exists():
-                    inline_form.instance.organization = self.selected_organization
-                    inline_form.instance.invited_by = self.request.user
-                    membership = inline_form.save()
-                    membership.send_email()
-                    self.audit_log(AuditEvent.MEMBER_INVITE,
-                                   role=membership.get_role_display(),
-                                   email=membership.email)
-                    sent = True
-                else:
-                    self.message_user(_('Invitation to {0} already sent').format(recipient),
-                                      messages.WARNING)
-        if sent:
-            self.message_user(_('Invitations sent'), messages.SUCCESS)
-        return super(OrganizationInvite, self).form_valid(form)
-
-
 class OrganizationApplications(OrganizationViewMixin, BitcasterBaseDetailView):
     form_class = OrganizationForm
     template_name = 'bitcaster/organization/organization_applications.html'
@@ -375,7 +376,7 @@ class OrganizationApplications(OrganizationViewMixin, BitcasterBaseDetailView):
 # Channels
 
 class OrganizationChannels(OrganizationAuditMixin, ApplicationListMixin, ListView):
-    template_name = 'bitcaster/organization_channels.html'
+    template_name = 'bitcaster/organization/channels/list.html'
 
     def get_queryset(self):
         return self.selected_organization.channels.valid()
@@ -389,7 +390,7 @@ class OrganizationChannels(OrganizationAuditMixin, ApplicationListMixin, ListVie
 
 
 class OrganizationChannelUpdate(OrganizationViewMixin, ChannelUpdateView):
-    template_name = 'bitcaster/org_channel_configure.html'
+    template_name = 'bitcaster/organization/channels/configure.html'
 
     def get_success_url(self):
         return reverse_lazy('org-channel-list',
@@ -400,7 +401,7 @@ class OrganizationChannelUpdate(OrganizationViewMixin, ChannelUpdateView):
 
 
 class OrganizationChannelRemove(OrganizationViewMixin, ChannelDeleteView):
-    template_name = 'bitcaster/org_channel_remove.html'
+    template_name = 'bitcaster/organization/channels/remove.html'
 
     def get_success_url(self):
         return reverse_lazy('org-channel-list',
@@ -433,8 +434,8 @@ class OrganizationChannelDeprecate(OrganizationViewMixin, ChannelDeprecateView):
 
 
 class OrganizationChannelCreate(OrganizationViewMixin, ChannelCreateWizard):
-    TEMPLATES = {'a': 'bitcaster/org_channel_wizard1.html',
-                 'b': 'bitcaster/org_channel_wizard2.html',
+    TEMPLATES = {'a': 'bitcaster/organization/channels/create_wizard_1.html',
+                 'b': 'bitcaster/organization/channels/create_wizard_2.html',
                  }
 
     def get_success_url(self):

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import smtplib
+from logging import getLogger
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.mail import get_connection, send_mail
@@ -13,7 +14,7 @@ from ..base import (Dispatcher, DispatcherOptions,
                     MessageType, SubscriptionOptions,)
 from ..registry import dispatcher_registry
 
-# logger = getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class EmailMessage(MessageType):

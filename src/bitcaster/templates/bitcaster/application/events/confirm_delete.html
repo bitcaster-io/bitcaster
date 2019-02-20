@@ -1,0 +1,22 @@
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block content %}
+    <h2><a href="../..">{{ event }}</a>: Delete</h2>
+    <div class="container-fluid">
+        <h5 class="text-center alert alert-danger">
+            This action is not recoverable
+        </h5>
+        <div class="card mb-5">
+            <div class="card-block">
+                <p class="card-text p-5">
+                    Event <strong>{{ event }}</strong> will be permanently removed and
+                    all subcriptions using this event will be removed as well.
+                </p>
+            </div>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="button" class="btn btn-secondary" onclick="history.back();" value="Cancel">
+            <input type="submit" class="btn btn-danger" value="Remove">
+        </form>
+    </div>
+{% endblock content %}

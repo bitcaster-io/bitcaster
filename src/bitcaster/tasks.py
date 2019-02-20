@@ -34,8 +34,9 @@ def emit_event(event, context, origin=None, token=None, ignore_disabled=False):
     for channel in Channel.objects.filter(id__in=ids, enabled=True):
         try:
             logger.debug(f'Processing channel {channel}')
-            success, failure = channel.process_event(event, context)
-            total_success += success
+            successes, failures = channel.process_event(event, context)
+            total_success += successes
+            total_failure += failures
             Counter.objects.increment(event)
         except Exception as e:
             logger.exception(e)

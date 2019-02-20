@@ -59,7 +59,7 @@ class LogEntry(models.Model):
     event = models.ForeignKey('bitcaster.Event',
                               related_name='+',
                               on_delete=models.CASCADE)
-    subscription = models.ForeignKey('bitcaster.Application',
+    subscription = models.ForeignKey('bitcaster.Subscription',
                                      null=True,
                                      related_name='+',
                                      on_delete=models.SET_NULL)
@@ -67,6 +67,8 @@ class LogEntry(models.Model):
                                 null=True,
                                 related_name='+',
                                 on_delete=models.SET_NULL)
+    status = models.BooleanField(help_text='True if successed', default=True)
+    info = models.TextField(null=True, blank=True)
 
     class Meta:
         app_label = 'bitcaster'

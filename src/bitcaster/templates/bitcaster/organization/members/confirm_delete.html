@@ -1,0 +1,20 @@
+{% extends "bitcaster/organization/base.html" %}{% load i18n bitcaster %}
+{% block content %}
+    <div class="container">
+        <h4>{% trans "Delete membership" %}</h4>
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                {% blocktrans %}
+                    You are deleting membership. Are you sure ?
+                {% endblocktrans %}
+            </div>
+            <div>
+                <button type="submit" class="btn btn-small btn-danger pull-left" >{% trans "Delete" %}</button>
+                <a class="btn btn-default btn-small pull-left"
+                        href="{% org-url "org-member-list" %}">{% trans "Cancel" %}
+                </a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

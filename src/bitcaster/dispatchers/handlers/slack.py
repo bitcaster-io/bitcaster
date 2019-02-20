@@ -3,15 +3,16 @@ import requests
 from django.conf.urls.static import static
 from django.utils.translation import ugettext as _
 
-from bitcaster.dispatchers import serializers
-from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                        MessageType, SubscriptionOptions,)
-from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError, PluginValidationError
 from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
-logger = getLogger('bitcaster.plugins.slack-webhook')
+from .. import serializers
+from ..base import (Dispatcher, DispatcherOptions,
+                    MessageType, SubscriptionOptions,)
+from ..registry import dispatcher_registry
+
+logger = getLogger(__name__)
 
 
 class SlackWebhookMessage(MessageType):
@@ -40,6 +41,7 @@ class SlackWebhook(Dispatcher):
     options_class = SlackWebhookOptions
     message_class = SlackWebhookMessage
     subscription_class = SlackWebhookSubscriptionOptions
+    icon = 'slack'
     __license__ = 'MIT'
     __author__ = 'unknown'
     __help__ = """To use this plugin you need to enable the `Incoming WebHooks`

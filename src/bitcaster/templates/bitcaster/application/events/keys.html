@@ -1,0 +1,23 @@
+{% extends "bitcaster/application/base.html" %}{% load i18n bitcaster crispy_forms_filters %}
+{% block content %}
+    <h2><a href="../..">{{ event }}</a>: {{ title }}</h2>
+    <div class="breadcrumbs pb-4">
+        <a href="{% app-url "app-event-list" %}">events</a> :
+        <a href="{% app-url "app-event-update" event.pk %}">{{ event }}</a> :
+        <a href="{% app-url "app-event-keys" event.pk %}">keys</a>
+    </div>
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% app-url "app-key-create" %}">{% trans "Create New Key" %}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% include "bitcaster/includes/_keys.html" with keys=event.keys  %}
+
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+{% endblock %}

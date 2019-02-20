@@ -1,0 +1,17 @@
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n %}
+{% block content %}
+    <h2>Create new member</h2>
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-primary" value="Create User">
+        </form>
+    </div>
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $("select").select2();
+    </script>
+{% endblock %}

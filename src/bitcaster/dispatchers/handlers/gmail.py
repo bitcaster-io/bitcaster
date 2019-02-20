@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
+
 from django.conf import settings
 from rest_framework import serializers
 
@@ -8,6 +10,8 @@ from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginValidationError
 
 from .email import Email
+
+logger = getLogger(__name__)
 
 
 class EmailMessage(MessageType):

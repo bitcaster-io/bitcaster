@@ -8,9 +8,6 @@ ARG DEVELOP
 ENV CPLUS_INCLUDE_PATH /usr/include/libxml2/
 ENV C_INCLUDE_PATH /usr/include/libxml2/
 
-#RUN apk add --no-cache --virtual .fetch-deps \
-#        curl
-
 RUN apk add --no-cache --virtual .build-deps \
         gcc \
         musl-dev \
@@ -24,11 +21,11 @@ RUN apk add --no-cache --virtual .build-deps \
         postgresql-dev \
         zeromq-dev
 
-RUN apk add --no-cache --virtual .run-deps \
-        libpq \
-        libxslt \
-        libzmq \
-        jpeg
+#RUN apk add --no-cache --virtual .run-deps \
+#        libpq \
+#        libxslt \
+#        libzmq \
+#        jpeg
 
 RUN mkdir -p /code
 COPY . /code
@@ -41,16 +38,15 @@ RUN set -o pipefail && if [ "${DEVELOP}" = "1" ]; then \
     && curl -L "https://github.com/bitcaster-io/bitcaster/archive/${VERSION}.tar.gz" | tar -xzf - --strip-components=1; \
     fi
 
-RUN pip install pip==18.0 pipenv==2018.11.26
-
-
 RUN set -ex \
     ls -al /code \
+    && pip install pip pipenv \
     && pipenv install --verbose --system --deploy --ignore-pipfile $PIPENV_ARGS \
-    && pip3 install . \
-    && ./plugins/install-plugins.sh /code/plugins/
+    && pip3 install .
 
-FROM base
+FROM python:3.6.8-alpine3.8
+COPY --from=0 /usr/local/lib/python3.6/ /usr/local/lib/python3.6/
+COPY --from=0 /usr/local/bin /usr/local/bin
 
 LABEL org.label.name="Bitcaster" \
       org.label.maintainer="bitcaster@os4d.org" \
@@ -80,13 +76,19 @@ ENV BITCASTER_LOG_LEVEL "ERROR"
 
 EXPOSE 8000
 #  clean all and removes all non needed files
-RUN apk del .build-deps
-RUN rm -rf /var/cache/apk/* \
-    rm -fr /root/.cache/ \
-    rm -fr /code \
-    rm -fr /var/bitcaster/.cache/ \
-    rm -fr /usr/include/ \
-    pip uninstall pipenv
+#RUN apk del .build-deps
+#RUN rm -rf /var/cache/apk/* \
+#    rm -fr /root/.cache/ \
+#    rm -fr /code \
+#    rm -fr /var/bitcaster/.cache/ \
+#    rm -fr /usr/include/ \
+#    pip uninstall pipenv
+
+RUN apk add --no-cache --virtual .run-deps \
+        libpq \
+        libxslt \
+        libzmq \
+        jpeg
 
 RUN find /usr/local/lib/python3.6/ -name *.pyc | xargs rm -f \
     && python -O -m compileall -x _plugin_template.* -fqb /usr/local/lib/python3.6/ \

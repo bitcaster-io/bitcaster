@@ -1,0 +1,33 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row col-12">
+    <h2>{{ title }}</h2>
+            <div class="container-fluid user-profile">
+                <form method="post" enctype="multipart/form-data" action=".">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="avatar">
+                                {% if form.instance.avatar %}
+                                    <img src="{{ form.instance.avatar.url }}"/>
+                                {% endif %}
+                            </div>
+                            {{ form.avatar }}
+                        </div>
+                        <div class="col-8">
+                            {% for field in form %}
+                                {% if field.name != "avatar" %}
+                                    {{ field|as_crispy_field }}
+                                {% endif %}
+                            {% endfor %}
+                            {% csrf_token %}
+                            <input type="submit" value="Save" class="btn btn-primary">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}

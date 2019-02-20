@@ -7,16 +7,16 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 from rest_framework.serializers import Serializer
+from strategy_field.utils import import_by_name
 
+from bitcaster import messages
 from bitcaster.models import Event, Message
-from bitcaster.web.forms.event import EventForm
-from bitcaster.web.forms.message import MessageForm
-from bitcaster.web.views import (BitcasterBaseCreateView,
-                                 BitcasterBaseDeleteView,
-                                 BitcasterBaseDetailView, BitcasterBaseListView,
-                                 BitcasterBaseUpdateView, MessageUserMixin,
-                                 SelectedApplicationMixin, import_by_name,
-                                 messages,)
+from bitcaster.web.forms import EventForm, MessageForm
+
+from .base import (BitcasterBaseCreateView, BitcasterBaseDeleteView,
+                   BitcasterBaseDetailView, BitcasterBaseListView,
+                   BitcasterBaseUpdateView, MessageUserMixin,
+                   SelectedApplicationMixin,)
 
 logger = logging.getLogger(__name__)
 
@@ -54,12 +54,13 @@ class EventFormMixin:
 
 
 class EventList(EventMixin, BitcasterBaseListView):
-    template_name = 'bitcaster/event_list.html'
+    template_name = 'bitcaster/application/events/list.html'
     title = 'Application Events'
 
 
 class EventCreate(EventMixin, EventFormMixin, BitcasterBaseCreateView):
     title = 'Create Event'
+    template_name = 'bitcaster/application/events/form.html'
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_('Create Event'),
@@ -83,6 +84,7 @@ class EventCreate(EventMixin, EventFormMixin, BitcasterBaseCreateView):
 
 class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
     title = 'Edit Event'
+    template_name = 'bitcaster/application/events/form.html'
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_('Save Event'),
@@ -94,17 +96,18 @@ class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
         event = self.object
         for i, channel in enumerate(event.channels.all()):
             Message.objects.update_or_create(event=event,
-                                          channel=channel,
-                                          defaults={
-                                              'enabled': True,
-                                              'name': f'{event} {channel}',
-                                          })
+                                             channel=channel,
+                                             defaults={
+                                                 'enabled': True,
+                                                 'name': f'{event} {channel}',
+                                             })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
         return ret
 
 
 class EventDelete(EventMixin, EventFormMixin, BitcasterBaseDeleteView):
     title = 'Delete Event'
+    template_name = 'bitcaster/application/events/confirm_delete.html'
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_('Save Event'),
@@ -121,7 +124,7 @@ def eventform_factory(event: Event):
 
 
 class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
-    template_name = 'bitcaster/event_test.html'
+    template_name = 'bitcaster/application/events/test.html'
     title = 'Test'
 
     def get_context_data(self, **kwargs):
@@ -192,12 +195,12 @@ class MessageInlineFormSet(forms.BaseInlineFormSet):
 
 
 class EventKeys(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/event_keys.html'
+    template_name = 'bitcaster/application/events/keys.html'
     title = 'Keys'
 
 
 class EventMessages(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/event_messages.html'
+    template_name = 'bitcaster/application/events/messages.html'
     title = 'Messages'
 
     # def get_context_data(self, **kwargs):
@@ -226,11 +229,14 @@ class EventMessages(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
 
         return formset
 
-    # def form_valid(self, form):
-    #     return super().form_valid(form)
+    def form_valid(self, form):
+        self.message_user('Saved')
+        return super().form_valid(form)
+
     #
     # def post(self, request, *args, **kwargs):
     #     return super().post(request, *args, **kwargs)
     #
-    # def form_invalid(self, form):
-    #     return super().form_invalid(form)
+    def form_invalid(self, form):
+        self.message_user('Invalid', messages.ERROR)
+        return super().form_invalid(form)

@@ -9,7 +9,7 @@ from bitcaster.exceptions import PluginSendError, RecipientNotFound
 from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
-logger = getLogger('bitcaster.plugins.skype')
+logger = getLogger(__name__)
 
 
 class Message(MessageType):

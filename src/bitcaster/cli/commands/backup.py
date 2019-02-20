@@ -14,14 +14,35 @@ DATA = ['user',
         'organization',
         'application',
         'channel',
-        'organizationmember', 'address', 'addressassignment',
+        # 'organizationmember',
+        'address', 'addressassignment',
         'event',
         'message',
         'applicationtriggerkey',
+        'subscription',
         ]
 POP_FIELDS = ['version', 'last_modifed_date']
 
 SECTIONS = ['options'] + DATA
+
+
+def get_all_models():
+    from django.apps import apps
+
+    ret = [f'bitcaster.{n}' for n in DATA]
+    for model_name in DATA:
+        model = apps.get_model(f'bitcaster.{model_name}')
+        m2m_attrs = [getattr(model, f.name) for f in model._meta.get_fields() if isinstance(f, ManyToManyField)]
+        for m2m_attr in m2m_attrs:
+            rel = m2m_attr.rel
+            name = f'{rel.model._meta.app_label}.{rel.model._meta.model_name}'
+            if name not in ret:
+                ret.append(name)
+            if not m2m_attr.rel.through._meta.auto_created:
+                name = f'{rel.through._meta.app_label}.{rel.through._meta.model_name}'
+                if name not in ret:
+                    ret.append(name)
+    return ret
 
 
 @click.command()
@@ -31,21 +52,24 @@ SECTIONS = ['options'] + DATA
 def backup(ctx, filename):
     from constance import config, settings as sett
     from django.apps import apps
+
     try:
         data = {'options': [(key, getattr(config, key)) for key, value in
                             sett.CONFIG.items()],
                 }
-        for model_name in DATA:
+        ALL_MODELS = get_all_models()
+
+        for model_name in ALL_MODELS:
             data[model_name] = {'__data__': [], '__m2m__': {}}
             click.echo(f'backup...{model_name}')
-            model = apps.get_model(f'bitcaster.{model_name}')
+            model = apps.get_model(model_name)
             data[model_name]['__data__'] = list(model.objects.all().values())
-            m2ms = [f.name for f in model._meta.get_fields() if isinstance(f, ManyToManyField)]
+            m2ms = [f for f in model._meta.get_fields() if isinstance(f, ManyToManyField)]
             for m2m in m2ms:
-                m2m_attr = getattr(model, m2m)
-                if not m2m_attr.through:
-                    data[model_name]['__m2m__'][m2m] = list(
-                        model.objects.filter(**{f'{m2m}__isnull': False}).values('id', m2m))
+                m2m_attr = getattr(model, m2m.name)
+                if m2m_attr.rel.through._meta.auto_created:
+                    data[model_name]['__m2m__'][m2m.name] = list(
+                        model.objects.filter(**{f'{m2m.name}__isnull': False}).values('id', m2m.name))
             json.dumps(data, cls=Encoder)
 
         output = Path(filename)
@@ -72,14 +96,16 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
     click.echo(f'Using backup {input_file.absolute()}')
     data = json.loads(input_file.read_text(), cls=Decoder)
     if not selection:
-        selection = SECTIONS
+        selection = ['options'] + get_all_models()
     with atomic():
         if 'options' in selection:
+            click.echo(f'restore...options')
             for key, value in data['options']:
                 ctx.invoke(option_set, name=key, value=value)
-        for model_name in DATA:
+        ALL_MODELS = get_all_models()
+        for model_name in ALL_MODELS:
             if model_name in selection:
-                model = apps.get_model(f'bitcaster.{model_name}')
+                model = apps.get_model(model_name)
                 click.echo(f'restore...{model_name}')
                 for record in data[model_name]['__data__']:
                     try:
@@ -96,13 +122,13 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
                         click.echo(record)
                         if not ignore_errors:
                             ctx.abort()
-                # ManyToMany
-                for m2m_field_name, m2m_records in data[model_name]['__m2m__'].items():
-                    m2m_field = model._meta.get_field(m2m_field_name)
-                    m2m_attr = getattr(model, m2m_field_name)
-                    related_model = m2m_field.related_model
-                    for record in m2m_records:
-                        parent = model.objects.get(pk=record['id'])
-                        m2m_attr = getattr(parent, m2m_field_name)
-                        related = related_model.objects.get(pk=record[m2m_field_name])
-                        m2m_attr.add(related)
+                # # ManyToMany
+                # for m2m_field_name, m2m_records in data[model_name]['__m2m__'].items():
+                #     m2m_field = model._meta.get_field(m2m_field_name)
+                #     m2m_attr = getattr(model, m2m_field_name)
+                #     related_model = m2m_field.related_model
+                #     for record in m2m_records:
+                #         parent = model.objects.get(pk=record['id'])
+                #         m2m_attr = getattr(parent, m2m_field_name)
+                #         related = related_model.objects.get(pk=record[m2m_field_name])
+                #         m2m_attr.add(related)

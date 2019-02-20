@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
 
 from constance import config
 from django.conf import settings
@@ -7,7 +8,7 @@ from ..base import DispatcherOptions
 from ..registry import dispatcher_registry
 from .email import Email
 
-# logger = getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class EmailOptions(DispatcherOptions):

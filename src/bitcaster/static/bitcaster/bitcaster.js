@@ -10495,6 +10495,17 @@ module.exports = __webpack_require__.p + "images/favicon.ico";
 
 /***/ }),
 
+/***/ "./bitcaster/images/icons/email.png":
+/*!******************************************!*\
+  !*** ./bitcaster/images/icons/email.png ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "images/icons/email.png";
+
+/***/ }),
+
 /***/ "./bitcaster/images/icons/facebook.png":
 /*!*********************************************!*\
   !*** ./bitcaster/images/icons/facebook.png ***!
@@ -10536,6 +10547,17 @@ module.exports = __webpack_require__.p + "images/icons/hangout.png";
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "images/icons/plivo.png";
+
+/***/ }),
+
+/***/ "./bitcaster/images/icons/plugin.png":
+/*!*******************************************!*\
+  !*** ./bitcaster/images/icons/plugin.png ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "images/icons/plugin.png";
 
 /***/ }),
 
@@ -10591,17 +10613,6 @@ module.exports = __webpack_require__.p + "images/icons/twitter.png";
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "images/icons/xmpp.png";
-
-/***/ }),
-
-/***/ "./bitcaster/images/plugin.png":
-/*!*************************************!*\
-  !*** ./bitcaster/images/plugin.png ***!
-  \*************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "images/plugin.png";
 
 /***/ }),
 
@@ -10665,29 +10676,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _logos_bitcaster500_transparent_BYu_icon_ico__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_logos_bitcaster500_transparent_BYu_icon_ico__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var _images_favicon_ico__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./images/favicon.ico */ "./bitcaster/images/favicon.ico");
 /* harmony import */ var _images_favicon_ico__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_images_favicon_ico__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var _images_plugin_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./images/plugin.png */ "./bitcaster/images/plugin.png");
-/* harmony import */ var _images_plugin_png__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_images_plugin_png__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _images_email_icon_png__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./images/email-icon.png */ "./bitcaster/images/email-icon.png");
-/* harmony import */ var _images_email_icon_png__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_images_email_icon_png__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var _images_social_auth_github_png__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./images/social_auth_github.png */ "./bitcaster/images/social_auth_github.png");
-/* harmony import */ var _images_social_auth_github_png__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_images_social_auth_github_png__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var _images_social_auth_google_png__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./images/social_auth_google.png */ "./bitcaster/images/social_auth_google.png");
-/* harmony import */ var _images_social_auth_google_png__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(_images_social_auth_google_png__WEBPACK_IMPORTED_MODULE_12__);
-/* harmony import */ var _images_social_auth_linkedin_png__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./images/social_auth_linkedin.png */ "./bitcaster/images/social_auth_linkedin.png");
-/* harmony import */ var _images_social_auth_linkedin_png__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(_images_social_auth_linkedin_png__WEBPACK_IMPORTED_MODULE_13__);
-!(function webpackMissingModule() { var e = new Error("Cannot find module './images/icons/email.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-/* harmony import */ var _images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./images/icons/facebook.png */ "./bitcaster/images/icons/facebook.png");
-/* harmony import */ var _images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(_images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_15__);
-/* harmony import */ var _images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./images/icons/twilio.png */ "./bitcaster/images/icons/twilio.png");
-/* harmony import */ var _images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(_images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_16__);
-/* harmony import */ var _images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./images/icons/twitter.png */ "./bitcaster/images/icons/twitter.png");
-/* harmony import */ var _images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(_images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_17__);
-/* harmony import */ var _images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./images/icons/hangout.png */ "./bitcaster/images/icons/hangout.png");
-/* harmony import */ var _images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(_images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_18__);
-/* harmony import */ var _images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./images/icons/gmail.png */ "./bitcaster/images/icons/gmail.png");
-/* harmony import */ var _images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(_images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_19__);
-/* harmony import */ var _images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./images/icons/plivo.png */ "./bitcaster/images/icons/plivo.png");
-/* harmony import */ var _images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(_images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_20__);
+/* harmony import */ var _images_email_icon_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./images/email-icon.png */ "./bitcaster/images/email-icon.png");
+/* harmony import */ var _images_email_icon_png__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_images_email_icon_png__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _images_social_auth_github_png__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./images/social_auth_github.png */ "./bitcaster/images/social_auth_github.png");
+/* harmony import */ var _images_social_auth_github_png__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_images_social_auth_github_png__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _images_social_auth_google_png__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./images/social_auth_google.png */ "./bitcaster/images/social_auth_google.png");
+/* harmony import */ var _images_social_auth_google_png__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_images_social_auth_google_png__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _images_social_auth_linkedin_png__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./images/social_auth_linkedin.png */ "./bitcaster/images/social_auth_linkedin.png");
+/* harmony import */ var _images_social_auth_linkedin_png__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(_images_social_auth_linkedin_png__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var _images_icons_email_png__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./images/icons/email.png */ "./bitcaster/images/icons/email.png");
+/* harmony import */ var _images_icons_email_png__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(_images_icons_email_png__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var _images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./images/icons/facebook.png */ "./bitcaster/images/icons/facebook.png");
+/* harmony import */ var _images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(_images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var _images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./images/icons/twilio.png */ "./bitcaster/images/icons/twilio.png");
+/* harmony import */ var _images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(_images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var _images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./images/icons/twitter.png */ "./bitcaster/images/icons/twitter.png");
+/* harmony import */ var _images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(_images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var _images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./images/icons/hangout.png */ "./bitcaster/images/icons/hangout.png");
+/* harmony import */ var _images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(_images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony import */ var _images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./images/icons/gmail.png */ "./bitcaster/images/icons/gmail.png");
+/* harmony import */ var _images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(_images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_18__);
+/* harmony import */ var _images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./images/icons/plivo.png */ "./bitcaster/images/icons/plivo.png");
+/* harmony import */ var _images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(_images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_19__);
+/* harmony import */ var _images_icons_plugin_png__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./images/icons/plugin.png */ "./bitcaster/images/icons/plugin.png");
+/* harmony import */ var _images_icons_plugin_png__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(_images_icons_plugin_png__WEBPACK_IMPORTED_MODULE_20__);
 /* harmony import */ var _images_icons_skype_png__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./images/icons/skype.png */ "./bitcaster/images/icons/skype.png");
 /* harmony import */ var _images_icons_skype_png__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(_images_icons_skype_png__WEBPACK_IMPORTED_MODULE_21__);
 /* harmony import */ var _images_icons_slack_png__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./images/icons/slack.png */ "./bitcaster/images/icons/slack.png");
@@ -10708,11 +10720,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// import './images/plugin.png';
 
 
 
 
-
+// import './images/plugin.png';
 
 
 

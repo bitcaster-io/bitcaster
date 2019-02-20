@@ -10,9 +10,9 @@ BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 BUILD_OPTIONS?=--squash
 CMD?=bitcaster
 CONTAINER_NAME?=bitcaster-${TARGET}
-ORGANIZATION=bitcaster
-IMAGE_NAME=bitcaster
-DOCKER_IMAGE_NAME=${ORGANIZATION}/${IMAGE_NAME}
+#ORGANIZATION=bitcaster
+#IMAGE_NAME=bitcaster
+DOCKER_IMAGE_NAME=bitcaster/bitcaster
 DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${TARGET}
 DOCKERFILE?=Dockerfile
 RUN_OPTIONS?=
@@ -33,7 +33,7 @@ build-base:
 			${BUILD_OPTIONS} \
 			--build-arg DEVELOP=${DEVELOP} \
 			-t ${DOCKER_IMAGE_NAME}-${VERSION}:base \
-			-f docker/Dockerfile.base .
+			-f docker/${DOCKERFILE} .
 #	docker tag ${DOCKER_IMAGE_NAME}:${TARGET} ${DOCKER_IMAGE_NAME}:dev
 	docker images | grep ${DOCKER_IMAGE_NAME}
 
@@ -63,7 +63,7 @@ build:
 			-e BITCASTER_REDIS_LOCK_URL=${BITCASTER_REDIS_LOCK_URL} \
 			-e BITCASTER_CELERY_BROKER_URL=${BITCASTER_CELERY_BROKER_URL} \
 			-e BITCASTER_DATABASE_URL=${BITCASTER_DATABASE_URL} \
-			-e BITCASTER_DEBUG=true \
+			-e BITCASTER_DEBUG=false \
 			${RUN_OPTIONS} \
 			${DOCKER_IMAGE} \
 			${CMD}
@@ -96,12 +96,15 @@ test:
 				 -e CSRF_COOKIE_SECURE=1 \
 				 -e SECURE_HSTS_PRELOAD=1 \
 				 -e SECURE_SSL_REDIRECT=1" \
-	CMD='sh -c "whoami && touch /var/bitcaster/.touch && bitcaster check --deploy && bitcaster plugin list"' \
+	CMD='sh -c "whoami && touch /var/bitcaster/.touch && bitcaster check --deploy"' \
 	$(MAKE) .run
 
 
 shell:
-	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:latest RUN_OPTIONS=-it CMD='/bin/sh' $(MAKE) .run
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:latest RUN_OPTIONS=-it CMD='/bin/bash' $(MAKE) .run
+
+stack:
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:latest RUN_OPTIONS=-it CMD='stack' $(MAKE) .run
 
 ignore:
 	cd .. && docker build -f docker/Dockerfile.ignore -t build-context .

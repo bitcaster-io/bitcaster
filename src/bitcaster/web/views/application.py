@@ -8,11 +8,11 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView, RedirectView
 from rest_framework.exceptions import PermissionDenied
 
-from bitcaster.models import Application, ApplicationTriggerKey
+from bitcaster.models import Application, ApplicationTriggerKey, Subscription
 from bitcaster.models.configurationissue import check_application
 from bitcaster.security import is_owner
-from bitcaster.web.forms import ApplicationCreateForm, ApplicationForm
-from bitcaster.web.forms.key import ApplicationTriggerKeyForm
+from bitcaster.web.forms import (ApplicationCreateForm, ApplicationForm,
+                                 ApplicationTriggerKeyForm,)
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,
                                       BitcasterBaseDetailView,
@@ -20,27 +20,25 @@ from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseUpdateView,
                                       SelectedApplicationMixin,)
 
-from .channel import (ChannelCreateWizard, ChannelDeleteView,
-                      ChannelDeprecateView,
-                      ChannelToggleView, ChannelUpdateView,)
-
 logger = logging.getLogger(__name__)
 
 __all__ = ['ApplicationCreate',
            'ApplicationDetail',
-           'ApplicationChannels',
+           # 'ApplicationChannels',
            'ApplicationCheckConfigView',
            'ApplicationKeyCreate',
            'ApplicationKeyDelete',
            'ApplicationKeyList',
            'ApplicationKeyUpdate',
            'ApplicationUpdateView',
-           'ApplicationChannelUpdate',
-           'ApplicationChannelToggle',
-           'ApplicationChannelRemove',
-           'ApplicationChannelDeprecate',
-           'ApplicationChannelCreate',
-           'ApplicationDashboard'
+           # 'ApplicationChannelUpdate',
+           # 'ApplicationChannelToggle',
+           # 'ApplicationChannelRemove',
+           # 'ApplicationChannelDeprecate',
+           # 'ApplicationChannelCreate',
+           'ApplicationDashboard',
+           'ApplicationSubscriptionList',
+
            ]
 
 
@@ -57,6 +55,7 @@ class ApplicationViewMixin(SelectedApplicationMixin):
 class ApplicationUpdateView(ApplicationViewMixin, BitcasterBaseUpdateView):
     model = Application
     form_class = ApplicationForm
+    template_name = 'bitcaster/application/form.html'
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = _('Condigure Application')
@@ -68,7 +67,7 @@ class ApplicationUpdateView(ApplicationViewMixin, BitcasterBaseUpdateView):
 
 
 class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):
-    template_name = 'bitcaster/application_dashboard.html'
+    template_name = 'bitcaster/application/dashboard.html'
 
     def get_context_data(self, **kwargs):
         app = self.get_object()
@@ -105,6 +104,7 @@ class ApplicationCheckConfigView(ApplicationViewMixin, RedirectView):
 class ApplicationCreate(BitcasterBaseCreateView):
     model = Application
     form_class = ApplicationCreateForm
+    template_name = 'bitcaster/application/form.html'
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = _('Create New Application')
@@ -133,79 +133,79 @@ class ChannelViewMixin:
                                   self.selected_application.slug])
 
 
-class ApplicationChannels(ApplicationViewMixin,
-                          ChannelViewMixin, ListView):
-    template_name = 'bitcaster/application_channels.html'
-
-    def get_queryset(self):
-        return self.selected_application.channels.all()
-
-    def get_context_data(self, **kwargs):
-        kwargs['channel_context'] = self.selected_application
-        kwargs['title'] = _('Application Channels')
-        kwargs['create_url'] = reverse('app-channel-create',
-                                       args=[self.selected_organization.slug,
-                                             self.selected_application.slug,
-                                             ])
-        return super().get_context_data(**kwargs)
-
-
-class ApplicationChannelUpdate(ApplicationViewMixin, ChannelViewMixin,
-                               ChannelUpdateView):
-    template_name = 'bitcaster/app_channel_configure.html'
-
-    def get_queryset(self):
-        return self.selected_application.channels.filter(system=False,
-                                                         application=self)
-
-    def get_extra_instance_kwargs(self):
-        return {'organization': self.selected_organization,
-                'application': self.selected_application}
-
-
-class ApplicationChannelRemove(ApplicationViewMixin, ChannelDeleteView):
-    template_name = 'bitcaster/app_channel_remove.html'
-
-    def get_queryset(self):
-        return self.selected_application.channels.filter(system=False,
-                                                         application=self)
-
-
-class ApplicationChannelToggle(ApplicationViewMixin, ChannelViewMixin,
-                               ChannelToggleView):
-    pattern_name = 'app-channel-list'
-
-    def get_queryset(self):
-        return self.selected_application.channels.filter(system=False,
-                                                         application=self.selected_application)
-
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy('app-channel-list',
-                            args=[self.selected_organization.slug,
-                                  self.selected_application.slug])
-
-
-class ApplicationChannelDeprecate(ApplicationViewMixin, ChannelViewMixin, ChannelDeprecateView):
-    pattern_name = 'app-channel-list'
-
-
-class ApplicationChannelCreate(ApplicationViewMixin, ChannelCreateWizard):
-    TEMPLATES = {'a': 'bitcaster/app_channel_wizard1.html',
-                 'b': 'bitcaster/app_channel_wizard2.html',
-                 }
-
-    def get_extra_instance_kwargs(self):
-        return {'organization': self.selected_organization,
-                'application': self.selected_application}
-
-    def get_success_url(self):
-        return reverse_lazy('app-channel-list',
-                            args=[self.selected_organization.slug,
-                                  self.selected_application.slug])
+# class ApplicationChannels(ApplicationViewMixin,
+#                           ChannelViewMixin, ListView):
+#     template_name = 'bitcaster/application_channels.html'
+#
+#     def get_queryset(self):
+#         return self.selected_application.channels.all()
+#
+#     def get_context_data(self, **kwargs):
+#         kwargs['channel_context'] = self.selected_application
+#         kwargs['title'] = _('Application Channels')
+#         kwargs['create_url'] = reverse('app-channel-create',
+#                                        args=[self.selected_organization.slug,
+#                                              self.selected_application.slug,
+#                                              ])
+#         return super().get_context_data(**kwargs)
+#
+#
+# class ApplicationChannelUpdate(ApplicationViewMixin, ChannelViewMixin,
+#                                ChannelUpdateView):
+#     template_name = 'bitcaster/app_channel_configure.html'
+#
+#     def get_queryset(self):
+#         return self.selected_application.channels.filter(system=False,
+#                                                          application=self)
+#
+#     def get_extra_instance_kwargs(self):
+#         return {'organization': self.selected_organization,
+#                 'application': self.selected_application}
+#
+#
+# class ApplicationChannelRemove(ApplicationViewMixin, ChannelDeleteView):
+#     template_name = 'bitcaster/app_channel_remove.html'
+#
+#     def get_queryset(self):
+#         return self.selected_application.channels.filter(system=False,
+#                                                          application=self)
+#
+#
+# class ApplicationChannelToggle(ApplicationViewMixin, ChannelViewMixin,
+#                                ChannelToggleView):
+#     pattern_name = 'app-channel-list'
+#
+#     def get_queryset(self):
+#         return self.selected_application.channels.filter(system=False,
+#                                                          application=self.selected_application)
+#
+#     def get_redirect_url(self, *args, **kwargs):
+#         return reverse_lazy('app-channel-list',
+#                             args=[self.selected_organization.slug,
+#                                   self.selected_application.slug])
+#
+#
+# class ApplicationChannelDeprecate(ApplicationViewMixin, ChannelViewMixin, ChannelDeprecateView):
+#     pattern_name = 'app-channel-list'
+#
+#
+# class ApplicationChannelCreate(ApplicationViewMixin, ChannelCreateWizard):
+#     TEMPLATES = {'a': 'bitcaster/app_channel_wizard1.html',
+#                  'b': 'bitcaster/app_channel_wizard2.html',
+#                  }
+#
+#     def get_extra_instance_kwargs(self):
+#         return {'organization': self.selected_organization,
+#                 'application': self.selected_application}
+#
+#     def get_success_url(self):
+#         return reverse_lazy('app-channel-list',
+#                             args=[self.selected_organization.slug,
+#                                   self.selected_application.slug])
 
 
 class ApplicationKeyList(ApplicationViewMixin, BitcasterBaseListView):
-    template_name = 'bitcaster/application_keys.html'
+    template_name = 'bitcaster/application/keys/list.html'
 
     def get_queryset(self):
         return self.selected_application.keys.all()
@@ -218,6 +218,7 @@ class ApplicationKeyList(ApplicationViewMixin, BitcasterBaseListView):
 class ApplicationKeyFormMixin:
     form_class = ApplicationTriggerKeyForm
     model = ApplicationTriggerKey
+    template_name = 'bitcaster/application/keys/form.html'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -246,6 +247,7 @@ class ApplicationKeyUpdate(ApplicationViewMixin, ApplicationKeyFormMixin, Bitcas
 
 class ApplicationKeyDelete(ApplicationViewMixin, BitcasterBaseDeleteView):
     pk_url_kwarg = 'pk'
+    template_name = 'bitcaster/application/keys/confirm_delete.html'
 
     def get_object(self, queryset=None):
         return self.selected_application.keys.get(pk=self.kwargs.get(self.pk_url_kwarg))
@@ -253,3 +255,11 @@ class ApplicationKeyDelete(ApplicationViewMixin, BitcasterBaseDeleteView):
     def get_success_url(self):
         return reverse('app-key-list', args=[self.selected_organization.slug,
                                              self.selected_application.slug])
+
+
+class ApplicationSubscriptionList(SelectedApplicationMixin, ListView):
+    model = Subscription
+    template_name = 'bitcaster/application/subscriptions/list.html'
+
+    def get_queryset(self):
+        return Subscription.objects.filter(event__application=self.selected_application)

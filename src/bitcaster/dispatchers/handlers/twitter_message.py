@@ -12,7 +12,7 @@ from bitcaster.exceptions import PluginSendError, PluginValidationError
 from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
-logger = getLogger('bitcaster.plugins.twitter')
+logger = getLogger(__name__)
 
 
 class TwitterMessageType(MessageType):

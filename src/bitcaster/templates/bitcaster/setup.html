@@ -1,5 +1,6 @@
 {% extends "bitcaster/modal.html" %}{% load crispy_forms_tags crispy_forms_field bc_assets %}
 {% block bodyclass %}setup{% endblock %}
+{% block header %}{% endblock %}
 {% block modal-content %}
     <form method="post">
         {% csrf_token %}

@@ -8,13 +8,13 @@ from django.template import Template
 
 from bitcaster import logging
 from bitcaster.db.fields import DispatcherField, EncryptedJSONField
-from bitcaster.exceptions import PluginValidationError
+from bitcaster.exceptions import MaxChannelError, PluginValidationError
 from bitcaster.state import state
 from bitcaster.template.secure_context import SecureContext
 
 from .application import Application
 from .base import AbstractModel
-from .counters import Counter
+from .counters import Counter, LogEntry
 from .organization import Organization
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,8 @@ It can be Global or Application specific.
     #                         display_attribute='name',
     #                         registry=dispatcher_registry)
     deprecated = models.BooleanField(default=False)
-
+    errors_threshold = models.IntegerField(default=100,
+                                           help_text='Number or errors before channel will be automatically disabled')
     objects = ChannelQuerySet().as_manager()
 
     class Meta:
@@ -160,9 +161,24 @@ It can be Global or Application specific.
                     self.handler.emit(subscription, s, m, conn)
                     Counter.objects.increment(subscription)
                     success += 1
+                    LogEntry.objects.create(event=event,
+                                            subscription=subscription,
+                                            application=self.application)
                 except Exception as e:
                     logger.exception(e)
+                    LogEntry.objects.create(event=event,
+                                            subscription=subscription,
+                                            application=self.application,
+                                            status=False,
+                                            info=str(e))
                     failures += 1
+                if failures > self.errors_threshold:
+                    raise MaxChannelError(self)
+        except MaxChannelError as e:
+            logger.error(e)
+            self.enabled = False
+            self.save()
+            raise
         except ObjectDoesNotExist as e:
             logger.error(e)
             raise ObjectDoesNotExist(f'Unable to find a message for {self}/{event}') from e

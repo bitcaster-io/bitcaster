@@ -1,0 +1,67 @@
+{% extends "bitcaster/application/base.html" %}{% load i18n %}
+{% block content %}
+    <h2>Application Subscriptions</h2>
+{#    <div class="container">#}
+{#        <div class="row col-12">#}
+{#            <div class="pull-right col-12 p-4">#}
+{#                <div lass="tooltip">#}
+{#                    <a class="btn btn-outline-danger btn-small pull-right tooltip"#}
+{#                       href="#">{% trans "Subscribe User" %}#}
+{#                    </a>#}
+{#                </div>#}
+{#                <a class="btn btn-outline-danger btn-small pull-right tooltip mr-3"#}
+{#                   href="#">{% trans "Send Invitation" %}#}
+{#                </a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+    <table class="table table-striped table-hover col-12">
+        <thead>
+        <tr>
+            <th scope="col">Event</th>
+            <th scope="col">Channel</th>
+            <th scope="col">Subscriber</th>
+            <th scope="col">Status</th>
+            <th class="text-center" scope="col">active</th>
+            <th class="text-center" scope="col">locked</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for subscription in object_list %}
+            <tr>
+                <td>
+                    {{ subscription.event }}
+                </td>
+                <td>
+                    {{ subscription.channel }}
+                </td>
+                <td>
+                    {{ subscription.subscriber }}
+                </td>
+                <td>
+                    {{ subscription.get_status_display }}
+                </td>
+                <td class="text-center">
+                    {% if subscription.active %}
+                        <i class="fa fa-check-circle green"></i>
+                    {% else %}
+                        <i class="fa fa-exclamation-circle red"></i>
+                    {% endif %}
+                    {#                        {{ subscription.active }}#}
+                </td>
+                <td class="text-center">
+                    {% if subscription.locked %}
+                        <i class="fa fa-check-circle red"></i>
+                    {% else %}
+{#                        <i class="fa fa-exclamation-circle red"></i>#}
+                    {% endif %}
+                    {#                        {{ subscription.active }}#}
+                </td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+{% endblock content %}

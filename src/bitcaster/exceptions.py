@@ -49,3 +49,11 @@ class OAuthError(Exception):
 
 class NotMemberOfOrganization(AuthFailed):
     pass
+
+
+class MaxChannelError(Exception):
+    def __init__(self, channel):
+        self.channel = channel
+
+    def __str__(self):
+        return f'Channel {self.channel} max allowed errors'
