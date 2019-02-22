@@ -1,7 +1,7 @@
 from functools import lru_cache
 
 NAME = 'bitcaster'
-VERSION = __version__ = '0.5.0a1'
+VERSION = __version__ = '0.6.0a'
 __author__ = 'Stefano Apostolico'
 
 
