@@ -57,7 +57,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         user = subscription.subscriber
         try:
             return subscription.config['recipient']
-        except KeyError:
+        except (KeyError, TypeError):
             return user.assignments.get_address(self)
 
     @abc.abstractmethod

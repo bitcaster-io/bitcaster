@@ -162,13 +162,15 @@ It can be Global or Application specific.
                     Counter.objects.increment(subscription)
                     success += 1
                     LogEntry.objects.create(event=event,
+                                            channel=self,
                                             subscription=subscription,
-                                            application=self.application)
+                                            application=event.application)
                 except Exception as e:
                     logger.exception(e)
                     LogEntry.objects.create(event=event,
                                             subscription=subscription,
-                                            application=self.application,
+                                            application=event.application,
+                                            channel=self,
                                             status=False,
                                             info=str(e))
                     failures += 1

@@ -23,4 +23,6 @@ class OccurenceAdmin(admin.ModelAdmin):
 
 @admin.register(LogEntry, site=site)
 class LogEntryAdmin(admin.ModelAdmin):
-    list_display = ('timestamp', 'application', 'event', 'subscription', 'channel')
+    date_hierarchy = 'timestamp'
+    list_display = ('timestamp', 'application', 'event', 'subscription', 'channel', 'status')
+    list_filter = ('status', 'application', 'channel')
