@@ -19,6 +19,7 @@ def test_audit(django_app, application1, caplog):
     owner = organization.owner
     url = reverse('org-member-invite', args=[organization.slug])
     res = django_app.get(url, user=organization.owner)
+
     res.form['memberships-0-email'] = 'user1@example.com'
     res.form['memberships-0-role'] = '1'  # Owner
     res = res.form.submit().follow()

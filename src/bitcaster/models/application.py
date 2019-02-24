@@ -7,11 +7,12 @@ from django.core import validators
 from django.db import models
 from django.db.models import UUIDField
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
 from bitcaster import logging
-from bitcaster.db.fields import AvatarField, SubscriptionPolicyField
+from bitcaster.db.fields import AvatarField, Role, SubscriptionPolicyField
 from bitcaster.db.validators import RateLimitValidator
 from bitcaster.file_storage import app_media_root
 from bitcaster.models.validators import ListValidator
@@ -57,12 +58,6 @@ class Application(AbstractModel):
                                    )
 
     avatar = AvatarField(upload_to=app_media_root)
-    # avatar = models.ImageField(blank=True, null=True,
-    #                            upload_to=app_media_root,
-    #                            storage=AvatarFileSystemStorage(),
-    #                            height_field='picture_height',
-    #                            width_field='picture_width'
-    #                            )
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
     default_subscription_policy = SubscriptionPolicyField()
@@ -93,6 +88,13 @@ class Application(AbstractModel):
     @property
     def owners(self):
         return self.organization.owners
+
+    @cached_property
+    def admins(self):
+        admins = self.application_teams.filter(role=Role.ADMIN).first()
+        if admins:
+            return [m.user for m in admins.team.members.all()]
+        return []
 
     def membership_for(self, user):
         return self.organization.memberships.filter(user=user).first()

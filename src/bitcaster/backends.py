@@ -15,6 +15,7 @@ PERMISSIONS = {'org:configure',  # configure
                'app:create',  # create applications
                'app:configure',  # configure application (#General, create channels)
                'app:manage',  # manage application (manage events/messages
+               'evt:trigger'
                }
 
 OWNER_PERMISSIONS = PERMISSIONS
@@ -46,22 +47,28 @@ class BitcasterBackend:
     def get_all_permissions(self, user_obj, obj=None):
         perms = []
         roles = []
-        if isinstance(obj, (Event, Application)):
-            if isinstance(obj, Event):
-                obj = obj.application
+        if isinstance(obj, Application):
             org = obj.organization
-            roles = list(obj.application_teams.filter(
-                team__members__user=user_obj,
-                role__in=[Role.ADMIN, Role.OWNER]
-            ).values_list('role', flat=True))
-            if user_obj == org.owner:
+            if org.owner == user_obj or user_obj in org.owners:
                 roles.append(Role.OWNER)
+            if user_obj in obj.admins:
+                roles = [Role.ADMIN]
+
+            [perms.extend(list(PERM_MAP[x])) for x in roles]
+        elif isinstance(obj, Event):
+            org = obj.application.organization
+            if org.owner == user_obj or user_obj in org.owners:
+                roles = [Role.OWNER]
+            if user_obj in obj.application.admins:
+                roles = [Role.ADMIN]
+
+            [perms.extend(list(PERM_MAP[x])) for x in roles]
 
         elif isinstance(obj, Organization):
-            if user_obj == obj.owner:
+            if obj.owner == user_obj or user_obj in obj.owners:
                 roles = [Role.OWNER]
+            [perms.extend(list(PERM_MAP[x])) for x in roles]
 
-        [perms.extend(list(PERM_MAP[x])) for x in roles]
         return set(perms)
 
     def has_perm(self, user_obj, perm, obj=None):
@@ -72,8 +79,6 @@ class BitcasterBackend:
 
         if user_obj.is_superuser:
             return True
-        # TODO: remove me
-        print(111, 'backends.py:76', 111111, user_obj, perm)
         if obj:
             if isinstance(obj, Organization):
                 return obj.owner == user_obj or user_obj in obj.owners

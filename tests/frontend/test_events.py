@@ -73,7 +73,7 @@ def test_create_event(django_app, channel1):
     # res.form[f'form-{idx}-type'] = fqn(serializers.CharField)
 
     res = res.form.submit().follow()
-    res.click('Messages')
+    res.click(href='messages')
     # idx = add_message(res.form, application)
     # res.form[f'b-{idx}-channels'].select_multiple([str(channel1.pk)])
     # res.form[f'b-{idx}-subject'] = 'subject'

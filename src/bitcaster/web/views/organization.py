@@ -5,7 +5,7 @@ from constance import config
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
 from django.db import transaction
@@ -17,6 +17,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import CreateView, ListView, RedirectView, UpdateView
+from rest_framework.exceptions import PermissionDenied
 from strategy_field.utils import fqn
 
 from bitcaster.db.fields import Role
@@ -69,12 +70,12 @@ class OrganizationViewMixin(OrganizationAuditMixin, ApplicationListMixin):
     slug_url_kwarg = 'org'
     template_name_base = 'organization'
 
-    @method_decorator(permission_required('org:configure'))
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
-        # if not is_owner(request.user, self.selected_organization):
-        #     raise PermissionDenied
+        if not request.user.has_perm('org:configure', self.selected_organization):
+            raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
 

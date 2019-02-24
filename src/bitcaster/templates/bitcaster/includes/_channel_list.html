@@ -1,4 +1,4 @@
-{% load crispy_forms_tags i18n bc_channels bc_assets %}
+{% load crispy_forms_tags i18n bc_channels bc_assets bitcaster %}
 {% block content %}
     <h2>Channels</h2>
     <div class="container">
@@ -20,8 +20,15 @@
                 <td>
                     {{ channel.name }}
                 </td>
-                <td style="width:5%">
-                    <i class="{% if channel.enabled %}fas fa-check green{% else %}far fa-circle red{% endif %}"></i>
+                <td style="width:10%">
+                    {% if channel.enabled %}
+                        <i class="fa fa-check-circle green"></i>
+                    {% else %}
+                        <i class="fa fa-exclamation-circle red"></i>
+                    {% endif %}
+                    <span class="pt-5">&nbsp;</span>
+                    <i class="fas {% if channel.deprecated %}fa-unlink red{% else %}fa-link green{% endif %}"></i>
+
                 </td>
                 <td style="width:30%" class="nowrap">
                     <a class="btn btn-light"
@@ -38,6 +45,11 @@
                        data-toggle="tooltip" title="delete"
                        href="{{ channel.pk }}/delete/">
                         <i class="far fa-trash-alt pointer"></i>
+                    </a>
+                    <a class="btn btn-light"
+                       data-toggle="tooltip" title="{% if channel.deprecated %}Activate{% else %}Deprecate{% endif %}"
+                       href="{% org-url "org-channel-deprecate" channel.pk %}">
+                        <i class="fas {% if channel.deprecated %}fa-link green{% else %}fa-unlink red{% endif %}"></i>
                     </a>
 
 

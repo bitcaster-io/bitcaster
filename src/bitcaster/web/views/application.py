@@ -2,8 +2,10 @@
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -46,8 +48,12 @@ class ApplicationViewMixin(SelectedApplicationMixin):
     model = Application
     slug_url_kwarg = 'app'
 
-    @method_decorator(permission_required('app:configure'))
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        if not request.user.has_perm('app:configure', self.selected_application):
+            raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
 

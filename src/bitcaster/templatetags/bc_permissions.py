@@ -30,9 +30,9 @@ def check_permissions(context, target, context_name='permissions'):
     """
     user = context['request'].user
     if isinstance(target, Organization):
-        perms = [perm for perm in PERMISSIONS if perm.startswith('org') and user.has_perm(perm)]
+        perms = [perm for perm in PERMISSIONS if perm.startswith('org') and user.has_perm(perm, target)]
     elif isinstance(target, Application):
-        perms = [perm for perm in PERMISSIONS if perm.startswith('app') and user.has_perm(perm)]
+        perms = [perm for perm in PERMISSIONS if perm.startswith('app') and user.has_perm(perm, target)]
     else:
         perms = []
     # user = context['request'].user

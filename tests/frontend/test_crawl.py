@@ -95,22 +95,21 @@ def test_organization_list_channel(django_app, org_channel):
     _list = django_app.get(reverse('org-channel-list',
                                    args=[org_channel.organization.slug]),
                            user=org_channel.organization.owner)
-
-    res = _list.click('Deprecate').follow()
+    res = _list.click(href='deprecate').follow()
     org_channel.refresh_from_db()
     assert org_channel.deprecated
-    res = res.click('Enable').follow()
+    res = res.click(href='deprecate').follow()
     org_channel.refresh_from_db()
     assert not org_channel.deprecated
 
-    res = _list.click('Disable').follow()
+    res = _list.click(href='toggle').follow()
     org_channel.refresh_from_db()
     assert not org_channel.enabled
-    res = res.click('Enable')
+    res = res.click(href='toggle')
     org_channel.refresh_from_db()
     assert org_channel.enabled
 
-    res = _list.click('Remove')
+    res = _list.click(href='delete')
     res = res.form.submit().follow()
     with pytest.raises(Channel.DoesNotExist):
         assert not org_channel.refresh_from_db()
