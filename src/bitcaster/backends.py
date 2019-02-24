@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 TARGETS = ['system', 'org', 'app']
 
 PERMISSIONS = {'org:configure',  # configure
+               'org:create_channel',
                'app:create',  # create applications
                'app:configure',  # configure application (#General, create channels)
                'app:manage',  # manage application (manage events/messages
@@ -19,7 +20,7 @@ PERMISSIONS = {'org:configure',  # configure
                }
 
 OWNER_PERMISSIONS = PERMISSIONS
-ADMIN_PERMISSIONS = {'app:configure', 'evt:trigger'}
+ADMIN_PERMISSIONS = {'org:configure', 'app:configure', 'evt:trigger'}
 SUBSCRIBER_PERMISSIONS = ()
 PERM_MAP = {Role.ADMIN: ADMIN_PERMISSIONS,
             Role.OWNER: OWNER_PERMISSIONS,
@@ -66,7 +67,9 @@ class BitcasterBackend:
 
         elif isinstance(obj, Organization):
             if obj.owner == user_obj or user_obj in obj.owners:
-                roles = [Role.OWNER]
+                roles += [Role.OWNER]
+            if user_obj in obj.admins:
+                roles += [Role.ADMIN]
             [perms.extend(list(PERM_MAP[x])) for x in roles]
 
         return set(perms)
@@ -81,7 +84,7 @@ class BitcasterBackend:
             return True
         if obj:
             if isinstance(obj, Organization):
-                return obj.owner == user_obj or user_obj in obj.owners
+                return perm in self.get_all_permissions(user_obj, obj)
             elif isinstance(obj, Application):
                 return (obj.organization.owner == user_obj or
                         user_obj in obj.organization.managers or

@@ -116,7 +116,12 @@ class Organization(AbstractModel):
 
     @property
     def admins(self):
-        return self.members.filter(memberships__role=Role.ADMIN)
+        admins = self.memberships.filter(role=Role.ADMIN)
+        if admins:
+            return [m.user for m in admins.all()]
+        return []
+
+        # return self.members.filter(memberships__role=Role.ADMIN)
 
     @property
     def managers(self):
