@@ -37,12 +37,16 @@
                     <td class="col-3">{{ membership.get_role_display }}</td>
                     <td class="col-3">{{ membership.date_enrolled }}</td>
                     <td>
-                        <button onclick="window.location.href = '{% org-url "org-member-delete" membership.pk %}';">
-                            <i class="far fa-trash-alt pointer"></i>
-                        </button>
-                        <button onclick="window.location.href = '{% org-url "org-member-edit" membership.pk %}';">
-                            <i class="far fa-edit pointer"></i>
-                        </button>
+                        <a class="btn btn-light"
+                           data-toggle="tooltip" title="edit"
+                           href="{% org-url "org-member-edit" membership.pk %}">
+                            <i class="far fa-edit"></i>
+                        </a>
+                        <a class="btn btn-light"
+                           data-toggle="tooltip" title="remove"
+                           href="{% org-url "org-member-delete" membership.pk %}">
+                            <i class="far fa-trash-alt"></i>
+                        </a>
                     </td>
                 </tr>
             {% endfor %}
@@ -71,16 +75,17 @@
                         <td class="col-3">{{ membership.date_added }}</td>
                         <td class="text-nowrap col-1">
 
-                        <button onclick="window.location.href = '{% org-url "org-invite-delete" membership.pk %}';">
-                            <i class="far fa-trash-alt pointer"></i>
-                        </button>
-                            | <form method="post" class="d-inline"
-                                                      action="{% url "org-member-send" organization.slug membership.pk %}">
-                            {% csrf_token %}
-                            <button type="submit" title="resend email" class="pointer">
-                                <i class="fa fa-envelope"></i>
+                            <button onclick="window.location.href = '{% org-url "org-invite-delete" membership.pk %}';">
+                                <i class="far fa-trash-alt pointer"></i>
                             </button>
-                        </form>
+                            |
+                            <form method="post" class="d-inline"
+                                  action="{% url "org-member-send" organization.slug membership.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" title="resend email" class="pointer">
+                                    <i class="fa fa-envelope"></i>
+                                </button>
+                            </form>
 
 
                         </td>

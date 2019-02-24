@@ -1,4 +1,4 @@
-{% extends "bitcaster/users/user_base.html" %}
+{% extends "bitcaster/base.html" %}
 {% block page %}
     <div class="container-fluid">
         <div class="row col-10">
@@ -12,9 +12,9 @@
                 {% else %}
                     {{ user.organizations }}
                     <h1>Welcome back.</h1>
-                    {% for membership in user.ownerships.all %}
+                    {% for organization in organizations.all %}
                         <li>
-                            <a href="{% url "org-dashboard" membership.organization.slug %}">{{ membership.organization.name }}</a>
+                            <a href="{% url "org-dashboard" organization.slug %}">{{ organization.name }}</a>
                         </li>
                     {% endfor %}
                 {% endif %}

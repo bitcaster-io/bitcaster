@@ -6,6 +6,8 @@ from django.template.loader import get_template
 from django.urls import reverse
 from django.views.generic import TemplateView
 
+from bitcaster.models import Organization
+
 __all__ = ('IndexView', 'WorkInProgressView')
 
 
@@ -35,7 +37,16 @@ class PreviewView(TemplateView):
 class IndexView(TemplateView):
     template_name = 'bitcaster/index.html'
 
+    def get_context_data(self, **kwargs):
+        if self.request.user.is_superuser:
+            kwargs['organizations'] = Organization.objects.all()
+        else:
+            kwargs['organizations'] = Organization.objects.filter(members=self.request.user)
+        return super().get_context_data(**kwargs)
+
     def get(self, request, *args, **kwargs):
+        # if self.request.user.is_superuser:
+        #     pass
         if request.user.is_authenticated:
             membership = request.user.memberships.first()
             if membership:

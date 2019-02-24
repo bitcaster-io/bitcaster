@@ -4,31 +4,32 @@ from django.conf import settings
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from bitcaster.web.views import (EventKeys, EventSubscriptions,
-                                 EventSubscriptionsInvite,
-                                 EventSubscriptionsSubscribe,)
 from bitcaster.web.views.callbacks import confirm_address
 from bitcaster.web.views.user import UserIndexView
 from bitcaster.web.views.views import PreviewView
 
-from .views import (ApplicationCheckConfigView,  # ApplicationChannelCreate,  # UserHomeView,; UserWelcomeView,; ApplicationChannelDeprecate, ApplicationChannelRemove,; ApplicationChannels, ApplicationChannelToggle,; ApplicationChannelUpdate,; OrganizationCreate,; OrganizationCreateMember,; OrganizationMembershipDelete, OrganizationMembershipEdit,
-                    ApplicationCreate, ApplicationDashboard,
+from .views import \
+    ApplicationCheckConfigView  # ApplicationChannelCreate,  # UserHomeView,; UserWelcomeView,; ApplicationChannelDeprecate, ApplicationChannelRemove,; ApplicationChannels, ApplicationChannelToggle,; ApplicationChannelUpdate,; OrganizationCreate,; OrganizationCreateMember,; OrganizationMembershipDelete, OrganizationMembershipEdit,
+from .views import (ApplicationCreate, ApplicationDashboard,
                     ApplicationKeyCreate, ApplicationKeyDelete,
                     ApplicationKeyList, ApplicationKeyUpdate,
                     ApplicationSubscriptionList, ApplicationUpdateView,
-                    EventCreate, EventDelete, EventList, EventMessages,
-                    EventTest, EventToggle, EventUpdate, IndexView,
-                    InviteAccept, InviteDelete, InviteSend, LoginView,
-                    LogoutView, MessageCreate, MessageDelete, MessageList,
-                    MessageUpdate, OrganizationApplications,
-                    OrganizationChannelCreate, OrganizationChannelDeprecate,
-                    OrganizationChannelRemove, OrganizationChannels,
-                    OrganizationChannelToggle, OrganizationChannelUpdate,
-                    OrganizationCheckConfigView, OrganizationConfiguration,
-                    OrganizationDashboard, OrganizationInvite,
-                    OrganizationMembershipList, OrganizationTeamCreate,
-                    OrganizationTeamList, OrganizationTeamMember,
-                    OrganizationTeamUpdate, PluginInfo,
+                    EventCreate, EventDelete, EventKeys, EventList,
+                    EventMessages, EventSubscriptionCreate,
+                    EventSubscriptionDelete, EventSubscriptionInvite,
+                    EventSubscriptionList, EventSubscriptionToggle, EventTest,
+                    EventToggle, EventUpdate, IndexView, InviteAccept,
+                    InviteDelete, InviteSend, LoginView, LogoutView,
+                    MessageCreate, MessageDelete, MessageList, MessageUpdate,
+                    OrganizationApplications, OrganizationChannelCreate,
+                    OrganizationChannelDeprecate, OrganizationChannelRemove,
+                    OrganizationChannels, OrganizationChannelToggle,
+                    OrganizationChannelUpdate, OrganizationCheckConfigView,
+                    OrganizationConfiguration, OrganizationDashboard,
+                    OrganizationInvite, OrganizationMembershipDelete,
+                    OrganizationMembershipEdit, OrganizationMembershipList,
+                    OrganizationTeamCreate, OrganizationTeamList,
+                    OrganizationTeamMember, OrganizationTeamUpdate, PluginInfo,
                     SettingsChannelCreateWizard, SettingsChannelDeleteView,
                     SettingsChannelDeprecateView, SettingsChannelListView,
                     SettingsChannelToggleView, SettingsChannelUpdateView,
@@ -105,12 +106,18 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/event/<int:pk>/delete/', EventDelete.as_view(), name='app-event-delete'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/messages/', EventMessages.as_view(), name='app-event-messages'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/keys/', EventKeys.as_view(), name='app-event-keys'),
-    path('<slug:org>/a/<slug:app>/event/<int:pk>/subscriptions/', EventSubscriptions.as_view(),
+
+    path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/', EventSubscriptionList.as_view(),
          name='app-event-subscriptions'),
-    path('<slug:org>/a/<slug:app>/event/<int:pk>/subscriptions/subscribe/', EventSubscriptionsSubscribe.as_view(),
-         name='app-event-subscriptions-subscribe'),
-    path('<slug:org>/a/<slug:app>/event/<int:pk>/subscriptions/invite/', EventSubscriptionsInvite.as_view(),
+    path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/<int:subscription>/delete/', EventSubscriptionDelete.as_view(),
+         name='app-event-subscription-delete'),
+    path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/<int:subscription>/toggle/', EventSubscriptionToggle.as_view(),
+         name='app-event-subscription-toggle'),
+    path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/invite/', EventSubscriptionInvite.as_view(),
          name='app-event-subscriptions-invite'),
+
+    path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/subscribe/', EventSubscriptionCreate.as_view(),
+         name='app-event-subscriptions-subscribe'),
 
     # path('<slug:org>/a/<slug:app>/channel/', ApplicationChannels.as_view(), name='app-channel-list'),
     # path('<slug:org>/a/<slug:app>/channel/add/', ApplicationChannelCreate.as_view(), name='app-channel-create'),
@@ -138,8 +145,8 @@ urlpatterns = [
 
     path('<slug:org>/member/', OrganizationMembershipList.as_view(), name='org-member-list'),
     # path('<slug:org>/member/add/', OrganizationCreateMember.as_view(), name='org-member-register'),
-    # path('<slug:org>/member/<int:pk>/edit/', OrganizationMembershipEdit.as_view(), name='org-member-edit'),
-    # path('<slug:org>/member/<int:pk>/delete/', OrganizationMembershipDelete.as_view(), name='org-member-delete'),
+    path('<slug:org>/member/<int:pk>/edit/', OrganizationMembershipEdit.as_view(), name='org-member-edit'),
+    path('<slug:org>/member/<int:pk>/delete/', OrganizationMembershipDelete.as_view(), name='org-member-delete'),
 
     # path('<slug:org>/user/<int:pk>/welcome/', UserWelcomeView.as_view(), name='org-member-welcome'),
     path('<slug:org>/invite/accept/<int:pk>/<str:check>/', InviteAccept.as_view(), name='org-member-accept'),

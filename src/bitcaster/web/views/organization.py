@@ -5,15 +5,17 @@ from constance import config
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import CreateView, ListView, RedirectView, UpdateView
 from strategy_field.utils import fqn
 
@@ -23,7 +25,6 @@ from bitcaster.models import (AuditEvent, Organization, OrganizationMember,
 from bitcaster.models.configurationissue import (check_application,
                                                  check_organization,)
 from bitcaster.otp import totp
-from bitcaster.security import is_owner
 from bitcaster.utils.dashboard import check_channels, get_status
 from bitcaster.web.forms import (OrganizationForm, OrganizationInvitationForm,
                                  OrganizationInvitationFormSet, TeamForm,
@@ -48,7 +49,8 @@ __all__ = [
     'OrganizationChannelRemove', 'OrganizationChannelToggle',
     'OrganizationChannelUpdate', 'OrganizationChannelDeprecate',
     'OrganizationTeamUpdate', 'OrganizationTeamMember',
-    # 'OrganizationMembershipEdit', 'OrganizationMembershipDelete',
+    'OrganizationMembershipEdit',
+    'OrganizationMembershipDelete',
     # 'OrganizationCreateMember',
     'OrganizationInvite', 'InviteDelete', 'InviteSend', 'InviteAccept',
     'OrganizationApplications', 'OrganizationChannelCreate']
@@ -67,11 +69,12 @@ class OrganizationViewMixin(OrganizationAuditMixin, ApplicationListMixin):
     slug_url_kwarg = 'org'
     template_name_base = 'organization'
 
+    @method_decorator(permission_required('org:configure'))
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
-        if not is_owner(request.user, self.selected_organization):
-            raise PermissionDenied
+        # if not is_owner(request.user, self.selected_organization):
+        #     raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -169,39 +172,41 @@ class OrganizationMembershipList(OrganizationViewMixin, BitcasterBaseListView):
         return data
 
 
-# class OrganizationMembershipEdit(OrganizationViewMixin, BitcasterBaseUpdateView):
-#     template_name = 'bitcaster/organization/members/list.html'
-#     fields = ('role',)
-#     success_url = ''
-#     model = OrganizationMember
-#
-#     def get_template_names(self):
-#         return super().get_template_names()
-#
-#     def get_context_data(self, **kwargs):
-#         kwargs['title'] = _('Edit Membership')
-#         kwargs['membership'] = self.object
-#         return super().get_context_data(**kwargs)
-#
-#     def form_valid(self, form):
-#         self.message_user(_('Updated'))
-#         return super(OrganizationMembershipEdit, self).form_valid(form)
-#
-#     def get_success_url(self):
-#         return reverse('org-member-list', args=[self.selected_organization.slug])
+class OrganizationMembershipEdit(OrganizationViewMixin, BitcasterBaseUpdateView):
+    template_name = 'bitcaster/organization/members/edit.html'
+    fields = ('role',)
+    success_url = ''
+    model = OrganizationMember
+
+    def get_template_names(self):
+        return super().get_template_names()
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = _('Edit Membership')
+        kwargs['membership'] = self.object
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        self.message_user(_('Updated'))
+        return super(OrganizationMembershipEdit, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('org-member-list', args=[self.selected_organization.slug])
 
 
-# class OrganizationMembershipDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
-#     def get_success_url(self):
-#         return reverse('org-member-list', args=[self.selected_organization.slug])
-#
-#     def get_queryset(self):
-#         return self.selected_organization.memberships.filter(user__isnull=False)
-#
-#     def delete(self, request, *args, **kwargs):
-#         ret = super().delete(request, *args, **kwargs)
-#         self.message_user('Membership removed')
-#         return ret
+class OrganizationMembershipDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
+    template_name = 'bitcaster/organization/members/confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse('org-member-list', args=[self.selected_organization.slug])
+
+    def get_queryset(self):
+        return self.selected_organization.memberships.filter(user__isnull=False)
+
+    def delete(self, request, *args, **kwargs):
+        ret = super().delete(request, *args, **kwargs)
+        self.message_user('Membership removed')
+        return ret
 
 
 # Invitation
@@ -273,6 +278,10 @@ class InviteAccept(OrganizationAuditMixin, MessageUserMixin, CreateView):
             logout(request)
             # return HttpResponseBadRequest("User already logged")
         return super().dispatch(request, *args, **kwargs)
+
+    @method_decorator(sensitive_post_parameters())
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         with transaction.atomic():

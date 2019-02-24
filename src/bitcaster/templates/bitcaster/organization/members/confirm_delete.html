@@ -1,20 +1,28 @@
 {% extends "bitcaster/organization/base.html" %}{% load i18n bitcaster %}
 {% block content %}
-    <div class="container">
-        <h4>{% trans "Delete membership" %}</h4>
+    <div class="container-fluid">
+        <h5 class="text-center alert alert-danger">
+            This action is not recoverable
+        </h5>
+        <div class="card mb-5">
+            <div class="card-block">
+                <p class="card-text pt-5 pl-5">
+                    Member <strong>{{ object }}</strong> will be permanently removed from this organization.
+                </p>
+                <p class="card-text pb-5 pl-5">
+                    All related subscriptions,user data and addresses will be removed
+                </p>
+            </div>
+        </div>
         <form method="post">
             {% csrf_token %}
-            <div>
-                {% blocktrans %}
-                    You are deleting membership. Are you sure ?
-                {% endblocktrans %}
-            </div>
-            <div>
-                <button type="submit" class="btn btn-small btn-danger pull-left" >{% trans "Delete" %}</button>
-                <a class="btn btn-default btn-small pull-left"
-                        href="{% org-url "org-member-list" %}">{% trans "Cancel" %}
-                </a>
-            </div>
+            <input type="button" class="btn btn-secondary" onclick="history.back();" value="Cancel">
+            <input type="submit" class="btn btn-danger" value="Remove">
+
+            {#                <button type="submit" class="btn btn-small btn-danger pull-left" >{% trans "Delete" %}</button>#}
+            {#                <a class="btn btn-light btn-small pull-left"#}
+            {#                        href="{% org-url "org-member-list" %}">{% trans "Cancel" %}#}
+            {#                </a>#}
         </form>
     </div>
 {% endblock %}

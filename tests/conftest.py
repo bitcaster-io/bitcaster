@@ -76,6 +76,9 @@ def admin(db, initialized):
     return AdminFactory()
 
 
+admin_user = admin
+
+
 @pytest.fixture
 def organization1(user1):
     from bitcaster.utils.tests.factories import OrganizationFactory

@@ -47,6 +47,7 @@ class OrganizationMember(models.Model):
                                          help_text='date when user first login')
 
     event = models.ForeignKey('bitcaster.Event',
+                              related_name='memberships',
                               default=None, blank=True, null=True,
                               on_delete=models.CASCADE)
 
@@ -57,8 +58,8 @@ class OrganizationMember(models.Model):
             ('organization', 'email'),
         )
 
-    # def __str__(self):
-    #     return f"{self.organization} {self.user}/{self.role}"
+    def __str__(self):
+        return self.user and self.user.email or self.email
 
     # @transaction.atomic
     def save(self, *args, **kwargs):

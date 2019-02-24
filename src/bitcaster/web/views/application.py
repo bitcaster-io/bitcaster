@@ -2,15 +2,15 @@
 import logging
 
 from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
 from django.core.cache import cache
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView, RedirectView
-from rest_framework.exceptions import PermissionDenied
 
 from bitcaster.models import Application, ApplicationTriggerKey, Subscription
 from bitcaster.models.configurationissue import check_application
-from bitcaster.security import is_owner
 from bitcaster.web.forms import (ApplicationCreateForm, ApplicationForm,
                                  ApplicationTriggerKeyForm,)
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
@@ -46,9 +46,8 @@ class ApplicationViewMixin(SelectedApplicationMixin):
     model = Application
     slug_url_kwarg = 'app'
 
+    @method_decorator(permission_required('app:configure'))
     def dispatch(self, request, *args, **kwargs):
-        if not is_owner(request.user, self.selected_application):
-            raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -260,6 +259,10 @@ class ApplicationKeyDelete(ApplicationViewMixin, BitcasterBaseDeleteView):
 class ApplicationSubscriptionList(SelectedApplicationMixin, ListView):
     model = Subscription
     template_name = 'bitcaster/application/subscriptions/list.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['pending'] = self.selected_organization.memberships.filter(event__application=self.selected_application)
+        return super().get_context_data(**kwargs)
 
     def get_queryset(self):
         return Subscription.objects.filter(event__application=self.selected_application)

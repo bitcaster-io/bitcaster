@@ -1,4 +1,4 @@
-{% extends "bitcaster/base.html" %}{% load bitcaster %}
+{% extends "bitcaster/base.html" %}{% load bitcaster bc_permissions %}
 {% block bodyclass %}application{% endblock %}
 {% block page %}
     <div class="container-fluid">
@@ -11,7 +11,8 @@
 {#                                <img src="{{ application.avatar.url }}"/>#}
 {#                            {% endif %}#}
 {#                        </div>#}
-                        {% if user.is_authenticated and application %}
+                        {% check_permissions application context_name="auth" %}
+                        {% if auth.configure %}
                             <div class="list-group">
                                 <div class="col-md-2 org-sidebar">
                                     <div>

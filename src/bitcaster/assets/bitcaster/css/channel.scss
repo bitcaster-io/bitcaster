@@ -1,3 +1,33 @@
+#handler-list {
+  img {
+    width: 30px;
+    height: 30px;
+  }
+  .handler{
+    height: 100px;
+    min-width: 120px !important;
+    margin: 5px;
+    &.selected{
+      border:2px solid grey;
+      background-color: rgba(249, 253, 19, 0.14);
+    }
+  }
+  label{
+    padding-top: 10px;
+    font-weight: bold;
+  }
+  .handler-row {
+    border-bottom: 1px grey solid;
+    height: 50px;
+    padding: 2px;
+    vertical-align: middle;
+  }
+  .handler-name{
+    height: 50px;
+    vertical-align: middle;
+  }
+}
+
 .channel-form {
   textarea {
     height: 50px;

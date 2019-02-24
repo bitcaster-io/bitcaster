@@ -4,36 +4,34 @@ from functools import wraps
 
 from django.http import HttpResponseForbidden
 
-from bitcaster.db.fields import Role
-
 logger = logging.getLogger(__name__)
 
 
 # def is_member_of(user, organization):
 #     return organization.members.filter(pk=user.pk).exists()
 
-
-def is_owner(user, target):
-    # FIXME
-    if hasattr(target, 'organization'):
-        org = target.organization
-        return org.owner == user or target.membership_for(user).role == Role.OWNER
-    else:
-        return target.owner == user or target.membership_for(user).role == Role.OWNER
-    # return organization.owners.filter(pk=user.pk).exists()
+#
+# def is_owner(user, target):
+#     # FIXME
+#     if hasattr(target, 'organization'):
+#         org = target.organization
+#         return org.owner == user or target.membership_for(user).role == Role.OWNER
+#     else:
+#         return target.owner == user or target.membership_for(user).role == Role.OWNER
+#     # return organization.owners.filter(pk=user.pk).exists()
 
 
 # def is_admin(user, organization):
 #     return organization.membership_for(user).role == Role.ADMIN
 # return organization.admins.filter(pk=user.pk).exists()
 
-
-def is_manager(user, organization):
-    try:
-        return organization.membership_for(user).role in [Role.ADMIN, Role.OWNER]
-    except AttributeError:
-        return user.is_superuser
-    # return organization.admins.filter(pk=user.pk).exists()
+#
+# def is_manager(user, organization):
+#     try:
+#         return organization.membership_for(user).role in [Role.ADMIN, Role.OWNER]
+#     except AttributeError:
+#         return user.is_superuser
+#     # return organization.admins.filter(pk=user.pk).exists()
 
 
 def authorized_or_403(test_func):

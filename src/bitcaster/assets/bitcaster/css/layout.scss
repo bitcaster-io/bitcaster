@@ -83,6 +83,11 @@ body {
 .page {
 
 }
+.main-content {
+  min-height: 80vh;
+  padding: 0;
+  z-index: 0;
+}
 
 .page-content {
     padding: 10px;

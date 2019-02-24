@@ -9,7 +9,13 @@ from bitcaster.models import Channel
 pytestmark = pytest.mark.django_db
 
 
-def test_initial_setup(django_app, application1):
+def test_superuser_always_can_config(django_app, application1, admin_user):
+    res = django_app.get('/', user=admin_user)
+    res = res.click(application1.organization.name)
+    res = res.click('Configure')
+
+
+def test_initial_setup(django_app, application1, admin_user):
     # 'home is always accessible'
     organization = application1.organization
     owner = organization.owner

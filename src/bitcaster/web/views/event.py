@@ -4,6 +4,7 @@ import logging
 from django import forms
 from django.forms.models import inlineformset_factory
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 from rest_framework.serializers import Serializer
@@ -42,6 +43,18 @@ class EventMixin(SelectedApplicationMixin):
     def get_context_data(self, **kwargs):
         kwargs['title'] = self.title
         return super().get_context_data(**kwargs)
+
+
+class SingleEventMixin(EventMixin):
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(selected_event=self.selected_event,
+                                        event=self.selected_event,
+                                        **kwargs)
+
+    @cached_property
+    def selected_event(self):
+        return Event.objects.get(application=self.selected_application,
+                                 id=self.kwargs['event'])
 
 
 class EventFormMixin:

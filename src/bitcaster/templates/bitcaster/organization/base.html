@@ -4,7 +4,7 @@
     <div class="row d-flex d-md-block flex-nowrap wrapper">
         <div class="float-left pl-0 collapse width show organization-sidebar" id="sidebar">
             {% check_permissions organization as "permissions" %}
-            {% if permissions.owner %}
+            {% if permissions.configure %}
                 <div class="org-logo">
                     {% if organization.avatar %}
                         <img src="{{ organization.avatar.url }}"/>
@@ -15,7 +15,7 @@
                         <div>
                             <ul class="nav nav-stacked">
                                 <li>
-                                    <a href="{% url "org-dashboard" organization.slug %}">{% trans "Overview" %}</a>
+                                    <a href="{% url "org-dashboard" organization.slug %}">{% trans "Dashboard" %}</a>
                                 </li>
                                 <li>
                                     <a href="{% url "org-config" organization.slug %}">{% trans "Configuration" %}</a>

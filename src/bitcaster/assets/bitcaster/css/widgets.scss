@@ -6,3 +6,31 @@
     z-index: 2;
     cursor: pointer;
 }
+
+div.avatar {
+    width: 220px;
+    height: 220px;
+    border: 1px solid grey;
+    border-radius: 25px;
+    overflow: hidden;
+
+    img {
+        width: 230px;
+        height: 230px;
+    }
+}
+
+a.btn{
+//    -webkit-appearance: button;
+//    overflow: visible;
+    margin: 0;
+//    font-family: inherit;
+//    font-size: inherit;
+//    line-height: inherit;
+//    border-radius: 0;
+    box-sizing: border-box;
+    border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
+//    border-style: solid;
+    border-width: 1px;
+    padding: 1px 7px 2px;
+}

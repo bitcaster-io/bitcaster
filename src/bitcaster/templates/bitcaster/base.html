@@ -25,7 +25,7 @@
                 </div>
                 {% block header-content %}
                     {% if user.is_authenticated %}
-                        {% check_permissions organization as "permissions" %}
+                        {% check_permissions organization context_name="org" %}
                         {% block nav-menu %}
                             <span class="top-menu">
                     {% if organization and applications %}
@@ -47,22 +47,6 @@
                                 {% endfor %}
                             </div>
                         </div>
-                        {% elif organizations %}
-                            <div class="dropdown">
-                            <a class="dropdown-toggle2"
-                               href="#" role="button"
-                               id="orgMenuLink" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">
-                              {% if organization %}[{{ organization }}]{% else %}Organizations{% endif %}
-                                <i class="fa fa-angle-down"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="orkMenuLink">
-                                {% for org in organizations %}
-                                    <a class="dropdown-item organization"
-                                       href="{% url "org-dashboard" org.slug %}">{{ org.name }}</a>
-                                {% endfor %}
-                            </div>
-                        </div>
                         {% endif %}{# organization and applications #}
                     {% endif %}
                     </span>
@@ -77,7 +61,7 @@
                             {{ user.display_name }} <img src="{{ user|gravatar:30 }}"/><i class="fa fa-angle-down"></i>
                           </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuLink">
-                                {% if permissions.manager %}
+                                {% if org.configure %}
                                     <a class="dropdown-item" href="{% url "org-dashboard" organization.slug %}">Configure</a>
                                 {% endif %}
                                 <a class="dropdown-item" href="{% url "user-profile" %}">Profile</a>
@@ -179,7 +163,8 @@
             $.get("url", function (data) {
                 $("#myModal").html(data).foundation("open");
             });
-        })
+        });
+        $('[data-toggle="tooltip"]').tooltip();
     </script>
 
 

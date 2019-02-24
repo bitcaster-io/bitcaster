@@ -61,20 +61,12 @@ class Subscription(AbstractModel):
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=SubscriptionStatus.as_choices(),
                                  default=SubscriptionStatus.OWNED)
-    # deactivation_token = models.CharField(max_length=100,
-    #                                       editable=False,
-    #                                       unique=True)
-    # managed = models.BooleanField(default=False,
-    #                               help_text="if managed users cannot unsubscribe. "
-    #                                         "But can still change channel")
-    # locked = models.BooleanField(default=False,
-    #                              help_text='if locked users cannot change subscription')
 
     objects = SubscriptionQuerySet.as_manager()
 
     class Meta:
         app_label = 'bitcaster'
-        unique_together = ('channel', 'subscriber')
+        unique_together = ('channel', 'subscriber', 'event')
         get_latest_by = 'id'
 
     def __str__(self):
@@ -83,8 +75,8 @@ class Subscription(AbstractModel):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # if not self.pk:
         #     self.update_token()
-        self.active = self.status not in [SubscriptionStatus.PROPOSED,
-                                          SubscriptionStatus.REQUESTED]
+        # self.active = self.status not in [SubscriptionStatus.PROPOSED,
+        #                                   SubscriptionStatus.REQUESTED]
         super().save(force_insert, force_update, using, update_fields)
 
     # def update_token(self):

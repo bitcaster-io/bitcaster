@@ -9,30 +9,20 @@ from bitcaster.models import Application, Event, Organization
 
 logger = logging.getLogger(__name__)
 
+TARGETS = ['system', 'org', 'app']
+
 PERMISSIONS = {'org:configure',  # configure
                'app:create',  # create applications
                'app:configure',  # configure application (#General, create channels)
                'app:manage',  # manage application (manage events/messages
                }
+
 OWNER_PERMISSIONS = PERMISSIONS
 ADMIN_PERMISSIONS = {'app:configure', 'evt:trigger'}
 SUBSCRIBER_PERMISSIONS = ()
 PERM_MAP = {Role.ADMIN: ADMIN_PERMISSIONS,
             Role.OWNER: OWNER_PERMISSIONS,
             Role.SUBSCRIBER: SUBSCRIBER_PERMISSIONS}
-
-
-# class RulesManager:
-#     def has_perm(self, user_obj, perm, obj):
-#         pass
-#
-#
-# class OrgRulesManager(RulesManager):
-#     pass
-#
-#
-# class AppRulesManager(RulesManager):
-#     pass
 
 
 class BitcasterBackend:
@@ -77,13 +67,19 @@ class BitcasterBackend:
     def has_perm(self, user_obj, perm, obj=None):
         if not user_obj.is_active:
             return False
+        # if perm not in PERMISSIONS:
+        #     return False
 
+        if user_obj.is_superuser:
+            return True
+        # TODO: remove me
+        print(111, 'backends.py:76', 111111, user_obj, perm)
         if obj:
             if isinstance(obj, Organization):
                 return obj.owner == user_obj or user_obj in obj.owners
             elif isinstance(obj, Application):
                 return (obj.organization.owner == user_obj or
-                        user_obj in obj.organization.owners or
+                        user_obj in obj.organization.managers or
                         user_obj in obj.owners)
             elif isinstance(obj, Event):
                 app = obj.application

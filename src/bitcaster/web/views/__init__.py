@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
-from bitcaster.web.views.subscription import (EventSubscriptions,
-                                              EventSubscriptionsInvite,
-                                              EventSubscriptionsSubscribe,)
+from bitcaster.web.views.subscription import (EventSubscriptionCreate,
+                                              EventSubscriptionDelete,
+                                              EventSubscriptionInvite,
+                                              EventSubscriptionList,
+                                              EventSubscriptionToggle,)
 
 from .application import *
 from .base import *
