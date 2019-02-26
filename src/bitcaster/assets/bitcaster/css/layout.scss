@@ -1,3 +1,5 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+
 @font-face {
     font-family: platformicons;
     src: url(fonts/lato-regular.eot),
@@ -10,15 +12,18 @@
     font-style: normal;
 }
 
+
 #alarmBar {
     top: 0;
     left: 0;
     position: relative;
     width: 100%;
     z-index: 1;
-    .alarm{
+
+    .alarm {
         padding: 10px;
     }
+
     ul {
         margin-block-start: 0;
         padding-inline-start: 0;
@@ -28,14 +33,6 @@
         margin-bottom: 0;
         li {
             list-style-type: none;
-
-            &.alarm {
-                &.alert-error {
-                    color: white;
-                    background-color: #f2271e;
-                    border-color: #eb204d;
-                }
-            }
         }
     }
 }
@@ -49,18 +46,6 @@
                 span {
                     font-size: 20px;
                     line-height: 20px;
-                }
-            }
-        }
-    }
-
-    ul.messagelist {
-        li {
-            &.alert {
-                &.alert-error {
-                    color: #a94442;
-                    background-color: #f2dede;
-                    border-color: #ebccd1;
                 }
             }
         }
@@ -83,10 +68,11 @@ body {
 .page {
 
 }
+
 .main-content {
-  min-height: 80vh;
-  padding: 0;
-  z-index: 0;
+    min-height: 80vh;
+    padding: 0;
+    z-index: 0;
 }
 
 .page-content {

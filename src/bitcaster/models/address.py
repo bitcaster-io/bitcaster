@@ -28,7 +28,7 @@ class Address(models.Model):
         app_label = 'bitcaster'
 
     def __str__(self):
-        return self.label
+        return '{} ({})'.format(self.label, self.address)
 
 
 class AddressAssignment(models.Model):

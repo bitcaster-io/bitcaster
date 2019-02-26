@@ -8,7 +8,7 @@ from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
 from .. import serializers
-from ..base import (Dispatcher, DispatcherOptions,
+from ..base import (CoreDispatcher, DispatcherOptions,
                     MessageType, SubscriptionOptions,)
 from ..registry import dispatcher_registry
 
@@ -37,13 +37,11 @@ class SlackWebhookSubscriptionOptions(SubscriptionOptions):
 
 
 @dispatcher_registry.register
-class SlackWebhook(Dispatcher):
+class SlackWebhook(CoreDispatcher):
     options_class = SlackWebhookOptions
     message_class = SlackWebhookMessage
     subscription_class = SlackWebhookSubscriptionOptions
     icon = 'slack'
-    __license__ = 'MIT'
-    __author__ = 'unknown'
     __help__ = """To use this plugin you need to enable the `Incoming WebHooks`
  application in you Slack console.
 Navigate to https://<YOUR_SPACE>.slack.com/apps/" and enable `Incoming WebHooks`.

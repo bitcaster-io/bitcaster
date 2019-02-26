@@ -36,7 +36,7 @@ from .base import (ApplicationListMixin, BitcasterBaseCreateView,
                    BitcasterBaseListView, BitcasterBaseUpdateView,
                    BitcasterFormView, MessageUserMixin,)
 from .channel import (ChannelCreateWizard, ChannelDeleteView,
-                      ChannelDeprecateView,
+                      ChannelDeprecateView, ChannelTestView,
                       ChannelToggleView, ChannelUpdateView,)
 
 logger = logging.getLogger(__name__)
@@ -52,6 +52,7 @@ __all__ = [
     'OrganizationTeamUpdate', 'OrganizationTeamMember',
     'OrganizationMembershipEdit',
     'OrganizationMembershipDelete',
+    'OrganizationChannelTest',
     # 'OrganizationCreateMember',
     'OrganizationInvite', 'InviteDelete', 'InviteSend', 'InviteAccept',
     'OrganizationApplications', 'OrganizationChannelCreate']
@@ -423,6 +424,17 @@ class OrganizationChannelRemove(OrganizationViewMixin, ChannelDeleteView):
 
 class OrganizationChannelToggle(OrganizationViewMixin, ChannelToggleView):
     pattern_name = 'org-channel-list'
+
+    def get_queryset(self):
+        return self.selected_organization.channels.all()
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse_lazy('org-channel-list',
+                            args=[self.selected_organization.slug])
+
+
+class OrganizationChannelTest(OrganizationViewMixin, ChannelTestView):
+    pattern_name = 'org-channel-test'
 
     def get_queryset(self):
         return self.selected_organization.channels.all()

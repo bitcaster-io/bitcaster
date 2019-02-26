@@ -2,7 +2,7 @@
 import skpy.main
 
 from bitcaster.dispatchers import serializers
-from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
+from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError, RecipientNotFound
@@ -26,13 +26,10 @@ class SkypeSubscription(SubscriptionOptions):
 
 
 @dispatcher_registry.register
-class Skype(Dispatcher):
+class Skype(CoreDispatcher):
     subscription_class = SkypeSubscription
     options_class = SkypeOptions
     message_class = MessageType
-    __license__ = 'MIT'
-    __author__ = 'Bitcaster'
-    __core__ = True
 
     @classproperty
     def name(cls):

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from bitcaster.utils.language import classproperty
 
-from ..base import Dispatcher
+from ..base import CoreDispatcher
 from ..registry import dispatcher_registry
 
 
 @dispatcher_registry.register
-class ConsoleDispatcher(Dispatcher):
-    __core__ = True
+class ConsoleDispatcher(CoreDispatcher):
+    __help__ = 'Simple Dispatcher that emit on standard output'
 
     def emit(self, **kwargs):
         print(**kwargs)

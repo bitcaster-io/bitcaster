@@ -17,12 +17,9 @@ class EmailOptions(DispatcherOptions):
 
 @dispatcher_registry.register
 class SystemEmail(Email):
-    __core__ = True
     options_class = EmailOptions
     icon = 'email'
-
-    # def _configure(self):
-    #     return super()._configure()
+    __help__ = 'Email dispatcher that uses system account to '
 
     @property
     def config(self):
@@ -35,13 +32,3 @@ class SystemEmail(Email):
                     timeout=30,
                     backend=settings.EMAIL_BACKEND,
                     )
-
-    # def _get_connection(self) -> object:
-    #     return get_connection(
-    #         backend=settings.EMAIL_BACKEND,
-    #         host=config.EMAIL_HOST,
-    #         username=config.EMAIL_HOST_USER,
-    #         password=config.EMAIL_HOST_PASSWORD,
-    #         port=config.EMAIL_HOST_PORT,
-    #         use_tls=config.EMAIL_USE_TLS,
-    #         fail_silently=False)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from crispy_forms.helper import FormHelper
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
@@ -98,6 +99,13 @@ class AddressForm(forms.ModelForm):
         model = Address
         fields = ('id', 'user', 'label', 'address')
 
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
+                 label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None, renderer=None):
+        super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
+                         use_required_attribute, renderer)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+
 
 class AddressAssignmentForm(forms.ModelForm):
     class Meta:
@@ -109,10 +117,13 @@ class AddressAssignmentForm(forms.ModelForm):
         super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
                          use_required_attribute)
 
-        choices = self.fields['dispatcher'].choices
-        self.fields['dispatcher'].choices = [c for c in choices[1:] if import_string(c[0]).subscription_class]
+        # choices = self.fields['dispatcher'].choices
+        # self.fields['dispatcher'].choices = [c for c in choices[1:]]
+        # self.fields['dispatcher'].choices = [c for c in choices[1:] if import_string(c[0]).subscription_class]
         request = state.request
         self.fields['address'].queryset = request.user.addresses.all()
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
 
     def clean(self):
         super().clean()

@@ -11,23 +11,16 @@ class PluginManager(models.Manager):
             self.update_or_create(fqn=fqn(handler),
                                   defaults=dict(is_core=is_core,
                                                 handler=fqn(handler),
-                                                description=handler.__help__,
+                                                description=handler.help,
                                                 enabled=True,
-                                                version=handler.__version__)
+                                                version=handler.version)
                                   )
-        for record in self.all():
-            if not registry.is_valid(record.handler):
-                record.delete()
-
-    def register(self, url):
-        pass
-
-    def unregister(self, name):
-        pass
+        if registry:
+            self.exclude(handler__in=registry).update(enabled=False)
 
 
 class Plugin(models.Model):
-    fqn = models.CharField(_('Name'), max_length=255, unique=True)
+    fqn = models.CharField(_('Name'), max_length=2000, unique=True)
     enabled = models.BooleanField(default=True)
     version = models.CharField(max_length=64)
     description = models.TextField()

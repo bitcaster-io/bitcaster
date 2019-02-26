@@ -9,7 +9,7 @@ from pyxmpp2.streamevents import (AuthorizedEvent, ConnectedEvent,
 
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
-from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
+from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
@@ -81,13 +81,10 @@ class FireAndForget(EventHandler):
 
 
 @dispatcher_registry.register
-class Hangout(Dispatcher):
+class Hangout(CoreDispatcher):
     subscription_class = HangoutSubscription
     options_class = HangoutOptions
     message_class = MessageType
-    __license__ = 'MIT'
-    __author__ = 'Bitcaster'
-    __core__ = True
 
     @classproperty
     def name(cls):

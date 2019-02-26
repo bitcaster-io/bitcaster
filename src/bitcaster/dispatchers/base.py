@@ -4,6 +4,7 @@ import abc
 from django.core.exceptions import ValidationError
 from strategy_field.utils import fqn
 
+from bitcaster import get_full_version
 from bitcaster.configurable import ConfigurableMixin, get_full_config
 from bitcaster.exceptions import PluginValidationError
 from bitcaster.logging import getLogger
@@ -37,11 +38,8 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     message_class = MessageType
     icon = None
     __media__ = None
-    __core__ = False
-    __version__ = '1.0'
 
     def __init__(self, owner=None):
-
         super().__init__(owner)
         self.logger = getLogger('bitcaster.plugins.%s' % self.name)
 
@@ -54,6 +52,8 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         pass  # pragma: no-cover
 
     def get_recipient_address(self, subscription):
+        if isinstance(subscription, str):
+            return subscription
         user = subscription.subscriber
         try:
             return subscription.config['recipient']
@@ -101,3 +101,11 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         # assert subscription.event is None
         assert subscription.pk is None
         return self.emit(subscription, subject, message, *args, **kwargs)
+
+
+class CoreDispatcher(Dispatcher):
+    __license__ = 'MIT'
+    __author__ = 'Bitcaster'
+    __core__ = True
+    __version__ = get_full_version(False)
+    __url__ = 'http://bitcaster.io'

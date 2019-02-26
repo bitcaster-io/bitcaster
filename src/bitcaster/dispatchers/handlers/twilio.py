@@ -3,7 +3,7 @@ from rest_framework import serializers
 from twilio.rest import Client
 
 from bitcaster.api.fields import PhoneNumberField
-from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
+from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
@@ -27,8 +27,7 @@ class TwilioOptions(DispatcherOptions):
 
 
 @dispatcher_registry.register
-class Twilio(Dispatcher):
-    __core__ = True
+class Twilio(CoreDispatcher):
     __help__ = """get your token at https://www.twilio.com/console
 get twilio number  at https://www.twilio.com/console/phone-numbers/incoming
 """

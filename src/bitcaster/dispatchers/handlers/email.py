@@ -10,7 +10,7 @@ from bitcaster.api.fields import PasswordField
 from bitcaster.exceptions import PluginValidationError
 from bitcaster.utils import fqn
 
-from ..base import (Dispatcher, DispatcherOptions,
+from ..base import (CoreDispatcher, DispatcherOptions,
                     MessageType, SubscriptionOptions,)
 from ..registry import dispatcher_registry
 
@@ -38,8 +38,7 @@ class EmailOptions(DispatcherOptions):
 
 
 @dispatcher_registry.register
-class Email(Dispatcher):
-    __core__ = True
+class Email(CoreDispatcher):
     icon = '/bitcaster/images/email-icon.png'
     options_class = EmailOptions
     subscription_class = EmailSubscription

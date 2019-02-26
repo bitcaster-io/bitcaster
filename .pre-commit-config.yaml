@@ -6,6 +6,7 @@ repos:
       - id: isort
         args:
           - --check-only
+        exclude: tweepy
         name: isort
         entry: isort
         language: system
@@ -20,7 +21,7 @@ repos:
       - id: end-of-file-fixer
         exclude: .bumpversion.cfg
       - id: flake8
-        exclude: /(_plugin_template|python_twitter|migrations)/
+        exclude: /(_plugin_template|python_twitter|migrations|tweepy)/
         args:
           - src/
       - id: check-merge-conflict

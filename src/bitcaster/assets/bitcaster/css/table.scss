@@ -2,4 +2,17 @@
     td{
         vertical-align: middle;
     }
+
+    .label{
+        padding: 1px 4px;
+        margin-left: 22px;
+        text-align: center;
+        text-transform: uppercase;
+        font-size: 9pt;
+        &.warn{
+            background: $warning-color;
+            border: $warning-border;
+        }
+    }
+
 }

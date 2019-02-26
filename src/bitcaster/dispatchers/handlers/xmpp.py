@@ -3,7 +3,7 @@ from pyxmpp2.simple import send_message
 
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
-from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
+from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
@@ -27,13 +27,10 @@ class XmppSubscription(SubscriptionOptions):
 
 
 @dispatcher_registry.register
-class Xmpp(Dispatcher):
+class Xmpp(CoreDispatcher):
     subscription_class = XmppSubscription
     options_class = XmppOptions
     message_class = MessageType
-    __core__ = True
-    __license__ = 'MIT'
-    __author__ = 'Bitcaster'
 
     @classproperty
     def name(cls):

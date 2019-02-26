@@ -1,90 +1,161 @@
 #handler-list {
-  img {
-    width: 30px;
-    height: 30px;
-  }
-  .handler{
-    height: 100px;
-    min-width: 120px !important;
-    margin: 5px;
-    &.selected{
-      border:2px solid grey;
-      background-color: rgba(249, 253, 19, 0.14);
+    img {
+        width: 30px;
+        height: 30px;
     }
-  }
-  label{
-    padding-top: 10px;
-    font-weight: bold;
-  }
-  .handler-row {
-    border-bottom: 1px grey solid;
-    height: 50px;
-    padding: 2px;
-    vertical-align: middle;
-  }
-  .handler-name{
-    height: 50px;
-    vertical-align: middle;
-  }
+
+    .handler {
+        height: 100px;
+        min-width: 120px !important;
+        margin: 5px;
+
+        &.selected {
+            border: 2px solid grey;
+            background-color: rgba(249, 253, 19, 0.14);
+        }
+    }
+
+    label {
+        padding-top: 10px;
+        font-weight: bold;
+    }
+
+    .handler-row {
+        border-bottom: 1px grey solid;
+        height: 50px;
+        padding: 2px;
+        vertical-align: middle;
+    }
+
+    .handler-name {
+        height: 50px;
+        vertical-align: middle;
+    }
 }
 
 .channel-form {
-  textarea {
-    height: 50px;
-  }
-  div.invalid-feedback {
-    display: block;
-    font-size: 100%;
-  }
-  p.invalid-feedback {
-    display: block;
-    font-size: 80%;
-    font-weight: normal;
-  }
+    textarea {
+        height: 50px;
+    }
+
+    div.invalid-feedback {
+        display: block;
+        font-size: 100%;
+    }
+
+    p.invalid-feedback {
+        display: block;
+        font-size: 80%;
+        font-weight: normal;
+    }
 }
 
 .channel-list {
-  img {
-    width: 50px;
-    height: 50px;
-  }
-  .handler-row {
-    border-bottom: 1px grey solid;
-    height: 90px;
-    padding: 10px;
-    .fa{
-      padding: 10px;
+    img {
+        width: 30px;
+        height: 30px;
     }
-    .fa-ban{
-      color: red;
+
+    .handler-row {
+        border-bottom: 1px grey solid;
+        height: 90px;
+        padding: 10px;
+
+        .fa {
+            padding: 10px;
+        }
+
+        .fa-ban {
+            color: red;
+        }
+
+        .fa-check {
+            color: darkgreen;
+        }
+
+        .handler-name {
+            vertical-align: middle;
+        }
     }
-    .fa-check{
-      color: darkgreen;
-    }
-    .handler-name {
-      vertical-align: middle;
-    }
-  }
 }
 
-.plugin-info {
-  ul {
-    margin: 0;
-    padding: 0;
-    li {
-      display: list-item;
-      list-style: none;
-      padding-bottom: 20px;
-      &.name {
-        font-size: larger;
-        font-weight: bold;
-        padding-top: 10px;
-        padding-bottom: 15px;
-      }
-      .label {
-        font-weight: bold;
-        padding-bottom: 5px;
-      }
+div.channel-info {
+    ul {
+        margin: 0;
+        padding: 0;
+        a.url{
+            font-weight: normal;
+            font-size: 12px;
+
+        }
+        li {
+            display: list-item;
+            list-style: none;
+            padding-bottom: 20px;
+
+            &.name {
+                font-size: larger;
+                font-weight: bold;
+                padding-top: 10px;
+                padding-bottom: 15px;
+            }
+
+            .label {
+                font-weight: bold;
+                padding-bottom: 5px;
+            }
+        }
     }
-  }
+}
+
+div.plugin-info {
+    height: 100px;
+
+    .header {
+    }
+
+    .content {
+
+    }
+
+    .left, .right {
+        display: inline-block;
+        height: 350px;
+        border: 1px solid lightgrey;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding-top: 10px;
+    }
+
+    .right {
+        width: 70%;
+        margin-left: 40px;
+    }
+
+    .left {
+        width: 30%;
+
+        ul {
+            margin: 0;
+            padding: 0;
+
+            li {
+                display: list-item;
+                list-style: none;
+                padding-bottom: 20px;
+
+                &.name {
+                    font-size: larger;
+                    font-weight: bold;
+                    padding-top: 10px;
+                    padding-bottom: 15px;
+                }
+
+                .label {
+                    font-weight: bold;
+                    padding-bottom: 5px;
+                }
+            }
+        }
+    }
 }

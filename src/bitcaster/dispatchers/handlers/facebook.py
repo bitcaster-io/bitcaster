@@ -5,7 +5,7 @@ from fbchat import Client, Message
 
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
-from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
+from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError, RecipientNotFound
@@ -20,6 +20,7 @@ class FacebookMessage(MessageType):
 
 
 class FacebookOptions(DispatcherOptions):
+    account = serializers.CharField(required=False, allow_blank=True)
     key = serializers.CharField()
     password = PasswordField()
 
@@ -33,23 +34,27 @@ class FacebookSubscription(SubscriptionOptions):
 
 
 @dispatcher_registry.register
-class Facebook(Dispatcher):
+class Facebook(CoreDispatcher):
     subscription_class = FacebookSubscription
     options_class = FacebookOptions
     message_class = FacebookMessage
-    __license__ = 'MIT'
-    __author__ = 'Bitcaster'
-    __core__ = True
+    __help__ = """Configure Channel
+
+- goto [https://developers.facebook.com/apps/](https://developers.facebook.com/apps/)
+ and create a new app that represent your Biscaster instance
+- If you see **Become a Facebook developer** message click on `Register Now` and complete registration.
+- Select `Get Started with the Pages API`
+- get `App ID` and `App Secret`
+
+"""
 
     @classproperty
     def name(cls):
         return 'Facebook'
 
-    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
-    #     ser = FacebookSubscription(data=subscription.config)
-    #     if not ser.is_valid():
-    #         raise PluginValidationError(ser.errors)
-    #
+    def validate_subscription(self, subscription, *args, **kwargs) -> None:
+        super().validate_subscription(subscription, *args, **kwargs)
+
     def _get_connection(self) -> Client:
         return Client(self.config['key'].encode('utf8'),
                       self.config['password'].encode('utf8'),
@@ -69,6 +74,9 @@ class Facebook(Dispatcher):
             msg = Message(text=message.encode('utf8'))
             connection.send(msg, friend.uid)
             return 1
+        except RecipientNotFound as e:  # pragma: no cover
+            logger.exception(e)
+            raise PluginSendError(_('User {} is not a friend of this Facebook account').format(e))
         except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e)

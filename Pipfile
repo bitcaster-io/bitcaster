@@ -66,6 +66,7 @@ social-auth-core = "*"
 twilio = "*"
 websocket-client = "*"
 whitenoise = "*"
+markdown = "*"
 
 [dev-packages]
 "flake8" = "*"

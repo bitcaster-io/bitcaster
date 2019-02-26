@@ -3,7 +3,7 @@ import plivo
 
 from bitcaster.api.fields import PhoneNumberField
 from bitcaster.dispatchers import serializers
-from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
+from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
@@ -28,13 +28,10 @@ class PlivoSubscription(SubscriptionOptions):
 
 
 @dispatcher_registry.register
-class Plivo(Dispatcher):
+class Plivo(CoreDispatcher):
     subscription_class = PlivoSubscription
     options_class = PlivoOptions
     message_class = PlivoMessage
-    __license__ = 'MIT'
-    __author__ = 'Bitcaster'
-    __core__ = True
 
     @classproperty
     def name(cls):

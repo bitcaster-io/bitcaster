@@ -4,6 +4,7 @@ import logging
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.utils.translation import gettext_lazy as _
+from strategy_field.utils import fqn
 
 from ..models import (Address, AddressAssignment, ApiAuthToken,
                       ApplicationTriggerKey, User,)
@@ -21,7 +22,13 @@ class AddressAdmin(admin.ModelAdmin):
 
 @admin.register(AddressAssignment, site=site)
 class AddressAssignmentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'address', 'dispatcher')
+    list_display = ('user', 'address', 'handler')
+
+    def handler(self, obj):
+        try:
+            return fqn(obj.dispatcher)
+        except Exception:
+            return ''
 
 
 @admin.register(User, site=site)
@@ -30,7 +37,7 @@ class UserAdmin(_UserAdmin):
     # add_form_template = 'admin/auth/user/add_form.html'
     add_form = UserCreationForm
     # form = UserChangeForm
-    list_display = ('email', 'name', 'is_staff',
+    list_display = ('email', 'name', 'is_staff', 'is_superuser',
                     'language', 'timezone')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups',)
     ordering = ('email',)

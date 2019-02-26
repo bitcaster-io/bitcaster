@@ -44,9 +44,10 @@ def get_full_config(serializer_class: type(Serializer), values: dict = None):
 class ConfigurableMixin:
     options_class = None
     __license__ = 'MIT'
-    __author__ = 'unknown'
+    __author__ = ''
     __help__ = ''
     __url__ = ''
+    __core__ = False
 
     def __init__(self, owner=None):
         self.owner = owner

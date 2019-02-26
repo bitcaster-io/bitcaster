@@ -28,10 +28,24 @@ class GmailOptions(DispatcherOptions):
 
 @dispatcher_registry.register
 class Gmail(Email):
-    __core__ = True
     options_class = GmailOptions
     message_class = EmailMessage
     icon = None
+    __help__ = """Simplified Email dispatcher for GMail accounts.
+If you have *Two-step verification* enabled, you cannot use account credentials
+ but need to create `application password` at
+
+- Click your name or photo near your Gmail inbox's top right corner.
+- Tap or click the Google Account button in the sheet that has appeared.
+- Click the Security button in the left-hand sidebar.
+- Scroll to the Signing in to Google section.
+- Under the Password & sign-in method section, click App passwords.
+- Make sure Mail or Other (custom name) is selected in the Select app drop-down menu.
+ If you selected Mail, choose a computer or device from the Select device menu.
+ If you selected Other (custom name), type the application or add-on and, optionally,
+ device (like "Mozilla Thunderbird on my Linux laptop") over e.g. YouTube on my Xbox.
+- Click Generate.
+"""
 
     def _configure(self):
         if self.options_class:

@@ -1,84 +1,88 @@
-# -*- coding: utf-8 -*-
-from django.core.validators import RegexValidator
-from django.utils.translation import ugettext_lazy as _
-from python_twitter import api
-
-from bitcaster.api.fields import PasswordField
-from bitcaster.dispatchers import serializers
-from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
-                                        MessageType, SubscriptionOptions,)
-from bitcaster.dispatchers.registry import dispatcher_registry
-from bitcaster.exceptions import PluginSendError, PluginValidationError
-from bitcaster.logging import getLogger
-from bitcaster.utils.language import classproperty
-
-logger = getLogger(__name__)
-
-
-class TwitterMessageType(MessageType):
-    pass
-
-
-class TwitterMessageOptions(DispatcherOptions):
-    consumer_key = serializers.CharField()
-    consumer_secret = PasswordField()
-    access_token_key = PasswordField()
-    access_token_secret = PasswordField()
-
-
-validate_username = RegexValidator(r'^@?(\w){1,15}$',
-                                   message=_('Use a valid twitter account'))
-
-
-class TwitterMessageSubscriptionOptions(SubscriptionOptions):
-    recipient = serializers.CharField(validators=[])
-
-
-@dispatcher_registry.register
-class TwitterMessage(Dispatcher):
-    options_class = TwitterMessageOptions
-    message_class = TwitterMessageType
-    subscription_class = TwitterMessageSubscriptionOptions
-    icon = 'twitter'
-    __core__ = True
-    __license__ = 'MIT'
-    __author__ = 'Bitcaster'
-    __help__ = """
-    https://apps.twitter.com
-"""
-
-    @classproperty
-    def name(cls):
-        return 'TwitterMessage'
-
-    def _get_connection(self):
-
-        config = self.owner.config
-        return api.Api(config['consumer_key'],
-                       config['consumer_secret'],
-                       config['access_token_key'],
-                       config['access_token_secret'], )
-
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        ser = self.subscription_class(data=subscription.config)
-        if not ser.is_valid():
-            raise PluginValidationError(ser.errors)
-
-    def emit(self, subscription, subject, message, *args, **kwargs):
-        try:
-            recipient = self.get_recipient_address(subscription)
-            conn = self._get_connection()
-            conn.PostDirectMessage(message, screen_name=recipient)
-            return 1
-        except Exception as e:
-            logger.exception(e)
-            raise PluginSendError(e)
-
-    def test_connection(self, raise_exception=False):
-        conn = self._get_connection()
-        try:
-            conn.GetBlocks()
-            return True
-        except Exception as e:
-            logger.exception(e)
-            return False
+# # -*- coding: utf-8 -*-
+# from unittest.mock import Mock
+#
+# from django.core.validators import RegexValidator
+# from django.utils.translation import ugettext_lazy as _
+# import tweepy
+#
+# from bitcaster.api.fields import PasswordField
+# from bitcaster.dispatchers import serializers
+# from bitcaster.dispatchers.base import (Dispatcher, DispatcherOptions,
+#                                         MessageType, SubscriptionOptions, CoreDispatcher)
+# from bitcaster.dispatchers.registry import dispatcher_registry
+# from bitcaster.exceptions import PluginSendError, PluginValidationError
+# from bitcaster.logging import getLogger
+# from bitcaster.utils.language import classproperty
+#
+# logger = getLogger(__name__)
+#
+#
+# class TwitterMessageType(MessageType):
+#     pass
+#
+#
+# class TwitterMessageOptions(DispatcherOptions):
+#     consumer_key = serializers.CharField()
+#     consumer_secret = PasswordField()
+#     access_token_key = PasswordField()
+#     access_token_secret = PasswordField()
+#
+#
+# validate_username = RegexValidator(r'^@?(\w){1,15}$',
+#                                    message=_('Use a valid twitter account'))
+#
+#
+# class TwitterMessageSubscriptionOptions(SubscriptionOptions):
+#     recipient = serializers.CharField(validators=[])
+#
+# api = Mock()
+#
+# @dispatcher_registry.register
+# class TwitterMessage(CoreDispatcher):
+#     options_class = TwitterMessageOptions
+#     message_class = TwitterMessageType
+#     subscription_class = TwitterMessageSubscriptionOptions
+#     icon = 'twitter'
+#     __help__ = """
+#
+# - Apply [here](https://developer.twitter.com/en/apply-for-access) for a developer acconut
+# - Create a [new app](https://apps.twitter.com/)
+# - Generate your keys and configure the Channel
+#
+# """
+#
+#     @classproperty
+#     def name(cls):
+#         return 'TwitterMessage'
+#
+#     def _get_connection(self):
+#
+#         config = self.owner.config
+#         return api.Api(config['consumer_key'],
+#                        config['consumer_secret'],
+#                        config['access_token_key'],
+#                        config['access_token_secret'], )
+#
+#     def validate_subscription(self, subscription, *args, **kwargs) -> None:
+#         ser = self.subscription_class(data=subscription.config)
+#         if not ser.is_valid():
+#             raise PluginValidationError(ser.errors)
+#
+#     def emit(self, subscription, subject, message, *args, **kwargs):
+#         try:
+#             recipient = self.get_recipient_address(subscription)
+#             conn = self._get_connection()
+#             conn.PostDirectMessage(message, screen_name=recipient)
+#             return 1
+#         except Exception as e:
+#             logger.exception(e)
+#             raise PluginSendError(e)
+#
+#     def test_connection(self, raise_exception=False):
+#         conn = self._get_connection()
+#         try:
+#             conn.GetBlocks()
+#             return True
+#         except Exception as e:
+#             logger.exception(e)
+#             return False

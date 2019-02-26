@@ -5,6 +5,7 @@ from django import forms
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 from formtools.wizard.forms import ManagementForm
@@ -12,7 +13,9 @@ from formtools.wizard.views import SessionWizardView
 from strategy_field.utils import import_by_name
 
 from bitcaster.dispatchers import dispatcher_registry
-from bitcaster.models import Channel
+from bitcaster.exceptions import PluginSendError
+from bitcaster.models import AddressAssignment, Channel
+from bitcaster.templatetags.markdown import markdown
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,
@@ -39,6 +42,7 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
     TEMPLATES = {'a': 'bitcaster/settings/channel_wizard1.html',
                  'b': 'bitcaster/settings/channel_wizard2.html',
                  }
+
     # success_url = reverse_lazy('settings-channels')
 
     def get_form_initial(self, step):
@@ -91,7 +95,8 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
         data.update(self.get_extra_instance_kwargs())
         try:
             Channel.objects.create(**dict(data))
-        except IntegrityError:
+        except IntegrityError as e:
+            logger.exception(e)
             h = self.storage.extra_data['handler']
 
             data = self.get_all_cleaned_data()
@@ -141,7 +146,6 @@ class ChannelListView(BitcasterTemplateView):
 
 
 class ChannelUpdateView(BitcasterBaseUpdateView):
-    # template_name = 'bitcaster/settings/channel_configure.html'
     form_class = ChannelUpdateConfigurationForm
 
     def get_queryset(self):
@@ -182,4 +186,32 @@ class ChannelToggleView(SelectedOrganizationMixin, MessageUserMixin, RedirectVie
         obj.save()
         op = 'enabled' if obj.enabled else 'disabled'
         self.message_user(f'Channel {op}')
+        return super().get(request, *args, **kwargs)
+
+
+class ChannelTestView(SelectedOrganizationMixin, MessageUserMixin, RedirectView):
+
+    def get_queryset(self):
+        raise NotImplementedError
+
+    def get_redirect_url(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_queryset().get(id=kwargs['pk'])
+        try:
+            dispatcher = self.object.handler
+            address = request.user.assignments.get_address(dispatcher)
+            dispatcher.emit(address, '-', 'test channel message')
+
+            msg = _("""Message sent to {}""").format(address)
+            self.message_user(markdown(msg), messages.SUCCESS)
+
+        except AddressAssignment.DoesNotExist:
+            url = reverse('user-address-assignment')
+            msg = _("""You do not have a valid address for this channel.
+Goto [addresses]({0}) to set your choice for **{1}**""").format(url, self.object.name)
+            self.message_user(markdown(msg), messages.ERROR, extra_tags='keep')
+        except PluginSendError as e:
+            self.message_user(_("Unable to send message to '{}': {}").format(address, e), messages.ERROR)
         return super().get(request, *args, **kwargs)
