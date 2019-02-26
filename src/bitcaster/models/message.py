@@ -32,12 +32,13 @@ class Message(AbstractModel):
                                 default='all',
                                 max_length=3)
 
+    enabled = models.BooleanField(default=False)
+
     subject = models.CharField(max_length=100,
                                default='',
                                blank=True, null=False)
-    enabled = models.BooleanField(default=False)
     body = models.TextField()
-    html = models.TextField()
+    html = models.TextField(blank=True, null=True)
 
     class Meta:
         app_label = 'bitcaster'

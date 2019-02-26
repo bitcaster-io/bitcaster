@@ -9,6 +9,7 @@ from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.dispatchers.validators import MaxBodyLengthValidator
 from bitcaster.exceptions import PluginSendError
 from bitcaster.logging import getLogger
+from bitcaster.templatetags.markdown import markdown
 from bitcaster.utils.language import classproperty
 
 logger = getLogger(__name__)
@@ -55,13 +56,13 @@ class Twitter(CoreDispatcher):
 
     def _get_connection(self) -> tweepy.API:
         config = self.owner.config
-        # return api.Api(config['consumer_key'],
-        #                config['consumer_secret'],
-        #                config['access_token_key'],
-        #                config['access_token_secret'], )
         auth = tweepy.OAuthHandler(config['consumer_key'], config['consumer_secret'])
         auth.set_access_token(config['access_token_key'], config['access_token_secret'])
         return tweepy.API(auth)
+
+    def get_usage_message(self, config: DispatcherOptions) -> object:
+        return markdown('Remeber to follow [{0}](https://twitter.com/{0}) '
+                        'to receive messages.'.format(config['account']))
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
         return

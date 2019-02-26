@@ -4,9 +4,9 @@ import logging
 from crispy_forms.helper import FormHelper
 from django import forms
 from django.core.exceptions import ValidationError
+from django.forms import BaseInlineFormSet
 from django.forms.utils import ErrorList
 from django.urls import reverse
-from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from rest_framework.exceptions import ValidationError as DRFValidationError
@@ -110,7 +110,7 @@ class AddressForm(forms.ModelForm):
 class AddressAssignmentForm(forms.ModelForm):
     class Meta:
         model = AddressAssignment
-        fields = ('id', 'user', 'dispatcher', 'address')
+        fields = ('id', 'user', 'channel', 'address')
 
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
                  label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None):
@@ -128,27 +128,49 @@ class AddressAssignmentForm(forms.ModelForm):
     def clean(self):
         super().clean()
         if self.cleaned_data:  # pragma: no branch
-            dispatcher = import_string(self.cleaned_data['dispatcher'])
+            channel = self.cleaned_data['channel']
             address = self.cleaned_data.get('address', None)
             if address and address.address:
                 try:
-                    dispatcher.validate_address(address.address)
+                    channel.validate_address(address.address)
                 except DRFValidationError as e:
                     raise ValidationError({'address': ', '.join(e.detail)})
         return self.cleaned_data
 
 
-AddressFormSet = forms.inlineformset_factory(User,
-                                             Address,
-                                             form=AddressForm,
-                                             min_num=1,
-                                             extra=0)
+AddressFormSetBase = forms.inlineformset_factory(User,
+                                                 Address,
+                                                 form=AddressForm,
+                                                 min_num=1,
+                                                 extra=0)
 
-AddressAssignmentFormSet = forms.inlineformset_factory(User,
-                                                       AddressAssignment,
-                                                       form=AddressAssignmentForm,
-                                                       min_num=1,
-                                                       extra=0)
+AddressAssignmentFormSetBase = forms.inlineformset_factory(User,
+                                                           AddressAssignment,
+                                                           form=AddressAssignmentForm,
+                                                           min_num=1,
+                                                           extra=0)
+
+
+class AddressFormSet(AddressFormSetBase, BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super(AddressFormSet, self).__init__(*args, **kwargs)
+        self.queryset = self.queryset.order_by('label')
+
+    def save(self, commit=True):
+        a = self.save_existing_objects(commit)
+        b = self.save_new_objects(commit)
+        return a + b
+
+
+class AddressAssignmentFormSet(AddressAssignmentFormSetBase, BaseInlineFormSet):
+    def save(self, commit=True):
+        a = self.save_existing_objects(commit)
+        b = self.save_new_objects(commit)
+        return a + b
+
+    def __init__(self, *args, **kwargs):
+        super(AddressAssignmentFormSet, self).__init__(*args, **kwargs)
+        self.queryset = self.queryset.order_by('channel')
 
 
 class UserAddressesView(BitcasterBaseUpdateView):
@@ -207,6 +229,14 @@ class UserAddressesAssignmentView(BitcasterBaseUpdateView):
     def form_valid(self, formset):
         formset.instance = self.request.user
         formset.save()
+        for assignment in formset.new_objects:
+            usage_message = assignment.channel.get_usage_message()
+            if usage_message:
+                self.message_user(usage_message, extra_tags='keep')
+        for assignment, __ in formset.changed_objects:
+            usage_message = assignment.channel.get_usage_message()
+            if usage_message:
+                self.message_user(usage_message, extra_tags='keep')
         self.message_user('Assignments updated', messages.SUCCESS)
         return super().form_valid(formset)
 

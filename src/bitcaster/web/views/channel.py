@@ -17,11 +17,10 @@ from bitcaster.exceptions import PluginSendError
 from bitcaster.models import AddressAssignment, Channel
 from bitcaster.templatetags.markdown import markdown
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
-from bitcaster.web.views.base import (BitcasterBaseCreateView,
-                                      BitcasterBaseDeleteView,
-                                      BitcasterBaseUpdateView,
-                                      BitcasterTemplateView, MessageUserMixin,
-                                      SelectedOrganizationMixin,)
+
+from .base import (BitcasterBaseCreateView, BitcasterBaseDeleteView,
+                   BitcasterBaseUpdateView, BitcasterTemplateView,
+                   MessageUserMixin, SelectedOrganizationMixin,)
 
 logger = logging.getLogger(__name__)
 
@@ -187,6 +186,14 @@ class ChannelToggleView(SelectedOrganizationMixin, MessageUserMixin, RedirectVie
         op = 'enabled' if obj.enabled else 'disabled'
         self.message_user(f'Channel {op}')
         return super().get(request, *args, **kwargs)
+
+
+class ChannelUsageView(BitcasterBaseDeleteView):
+
+    def get_context_data(self, **kwargs):
+        kwargs['handler'] = self.object.handler
+        kwargs['usage'] = self.object.get_usage()
+        return super().get_context_data(**kwargs)
 
 
 class ChannelTestView(SelectedOrganizationMixin, MessageUserMixin, RedirectView):

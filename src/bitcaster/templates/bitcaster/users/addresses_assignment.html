@@ -1,4 +1,5 @@
-{% extends "bitcaster/users/user_base.html" %}{% load crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
+{% extends "bitcaster/users/user_base.html" %}
+{% load bitcaster crispy_forms_utils crispy_forms_tags crispy_forms_field i18n %}
 {% block page %}
     <h2>User Addresses</h2>
 
@@ -15,7 +16,7 @@
             <div class="row col-12">
                 <div class="pull-right col-12 p-4">
                     <a id="add_more" class="btn btn-danger btn-small pull-right"
-                       href="#">{% trans "Add Assignment" %}
+                       href=".">{% trans "Add Assignment" %}
                     </a>
                 </div>
             </div>
@@ -26,9 +27,9 @@
                 <div class="row col-12">
                     {{ form.empty_form.user }}
                     {{ form.empty_form.id }}
-                    <div class="row col-4">{{ form.empty_form.dispatcher|as_crispy_field }}</div>
-                    <div class="row col-7">{{ form.empty_form.address|as_crispy_field }}</div>
-                    <div class="row col-1 align-items-center"><a href="#" class="remove_line">
+                    <div class="row col-4">{{ form.empty_form.channel|as_crispy_field }}</div>
+                    <div class="col-7">{{ form.empty_form.address|as_crispy_field }}</div>
+                    <div class="col-1 mt-2 align-middle align-items-center"><a href="#" class="remove_line">
                         <i class="far fa-trash-alt"></i></a>
                     </div>
                 </div>
@@ -36,7 +37,7 @@
             </div>
         </div>
         <div class="container">
-            <form method="post">
+            <form method="post" id="Form">
                 {{ form.management_form }}
                 {% csrf_token %}
                 <div class="content assignments">
@@ -46,29 +47,31 @@
                                 {{ form.user }}
                                 {{ form.id }}
                                 {{ form.DELETE }}
-                                <span class="row col-4">{{ form.dispatcher|as_crispy_field }}</span>
-                                <span class="row col-7">{{ form.address|as_crispy_field }}</span>
-                                <span class="row col-1 align-items-center">
-                                    <a href="#" class="remove_line">
+                                <span class="row col-4">{{ form.channel|as_crispy_field }}</span>
+                                <span class="col-6">{{ form.address|as_crispy_field }}</span>
+                                <span class="col-2  mt-2 align-middle align-items-center">
+                                    <a href="#" class="btn remove_line mr-2">
                                         <i class="far fa-trash-alt"></i>
                                     </a>
-                                    &nbsp;
-{#                                    <a href="{% url  'user-address-info' form.instance.address.id %}" class="">#}
-{#                                        <i class="fas fa-info-circle"></i>#}
-{#                                    </a>#}
-
+                                    <a class="btn" rel="modal:open"
+                                       href="{% url "org-channel-usage" form.instance.channel.organization.slug form.instance.channel.pk %}">
+                                        <i class="fa fa-info">&nbsp;</i>
+                                    </a>
                                 </span>
                             </div>
-                            <div class="red">{{ form.non_field_errors.as_text }}</div>
+                            <div class="row red">{{ form.non_field_errors.as_text }}</div>
                         </div>
                     {% endfor %}
                 </div>
                 <div class="row col-12 p-4">
-                    <div class="row col-11"></div>
-                    <div class="row col-1">
+                    <div class="row col-9"></div>
+                    <div class="row col-3">
                         <input type="submit" id="btn-submit"
                                value="{% trans "Save" %}"
-                               class="btn btn-primary btn-small">
+                               class="btn btn-primary btn-small mr-3">
+
+                        <input type="button" id="btn-cancel" class="btn btn-secondary"
+                               onclick="location.href='{% url "user-address-assignment" %}'" value="Cancel">
                     </div>
                 </div>
             </form>
@@ -83,7 +86,14 @@
             var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
             var selector = "div.assignments";
             var $submit = $("#btn-submit");
+            var $cancel = $("#btn-cancel");
             $(":input[type=checkbox]").hide();
+
+            $("#Form")
+                .on("input", function (e) {
+                    console.log($(e.target).parents('div.row'));
+                    $(e.target).parents('div.row').css('background-color', '#fffccf');
+                });
 
             $(".remove_line").click(function () {
                 $("#btn-submit").prop("disabled", true);
@@ -101,13 +111,15 @@
                 }, 20);
             });
 
-            $("#add_more").click(function () {
+            $("#add_more").click(function (e) {
+                e.preventDefault();
                 $submit.prop("disabled", true);
                 cloneMore();
             });
             var reNumber = function () {
                 var $rows = $("div.assignments>div.row");
                 $rows.each(function (i, e) {
+                    console.log(i, e);
                     $(e).find(":input").each(function () {
                         var name = $(this).attr("name").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
                         var id = "id_" + name;
@@ -123,8 +135,7 @@
                     });
                 });
                 $TOTAL_FORMS.val($rows.length);
-                $submit.prop("disabled", $rows.length === 0);
-
+                $("#btn-submit").prop("disabled", false);
             };
 
             function cloneMore() {

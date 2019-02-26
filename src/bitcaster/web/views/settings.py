@@ -8,18 +8,19 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
-from bitcaster.models import Channel
+from bitcaster import messages
+from bitcaster.models import Channel, Organization
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 from bitcaster.web.forms.organization import OrganizationSystemForm
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsMainForm,
                                                  SettingsOAuthForm,)
-from bitcaster.web.views import (BitcasterTemplateView, ListView,
-                                 Organization, UpdateView, messages,)
-from bitcaster.web.views.base import SuperuserViewMixin
-from bitcaster.web.views.channel import (ChannelCreateWizard, ChannelDeleteView,
-                                         ChannelDeprecateView,
-                                         ChannelToggleView, ChannelUpdateView,)
+
+from .base import (BitcasterTemplateView, ListView,
+                   SuperuserViewMixin, UpdateView,)
+from .channel import (ChannelCreateWizard, ChannelDeleteView,
+                      ChannelDeprecateView,
+                      ChannelToggleView, ChannelUpdateView,)
 
 logger = logging.getLogger(__name__)
 

@@ -89,6 +89,12 @@ It can be Global or Application specific.
     def __str__(self):
         return self.name
 
+    def validate_address(self, address):
+        try:
+            self.handler.validate_address(address)
+        except Exception:
+            raise PluginValidationError()
+
     def validate_subscription(self, subscription):
         try:
             self.handler.validate_subscription(subscription)
@@ -96,12 +102,13 @@ It can be Global or Application specific.
             raise PluginValidationError()
 
     def validate_message(self, message, **kwargs):
-        """
-
-        :param message: Message instance
-        :return:
-        """
         self.handler.validate_message(message, **kwargs)
+
+    def get_usage_message(self):
+        return self.handler.get_usage_message(self.config)
+
+    def get_usage(self):
+        return self.handler.get_usage(self.config)
 
     def is_configurable_by(self, user):
         if user.is_superuser:

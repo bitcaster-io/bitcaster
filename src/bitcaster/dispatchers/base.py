@@ -51,6 +51,18 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     def _get_connection(self) -> object:
         pass  # pragma: no-cover
 
+    def get_usage_message(self, config: DispatcherOptions) -> object:
+        """ return a message to the User to extra informations to complete the subscription.
+        ie. follow Twitter
+        """
+        return None
+
+    def get_usage(self, config: DispatcherOptions) -> object:
+        """ return a message to the User to extra informations to complete the subscription.
+        ie. follow Twitter
+        """
+        return self.get_usage_message(config)
+
     def get_recipient_address(self, subscription):
         if isinstance(subscription, str):
             return subscription

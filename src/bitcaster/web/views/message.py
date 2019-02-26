@@ -7,8 +7,9 @@ from django.views.generic import ListView
 
 from bitcaster.models import Message
 from bitcaster.web.forms import MessageForm
-from bitcaster.web.views import (CreateView, DeleteView, MessageUserMixin,
-                                 SelectedApplicationMixin, UpdateView,)
+
+from .base import (CreateView, DeleteView, MessageUserMixin,
+                   SelectedApplicationMixin, UpdateView,)
 
 logger = logging.getLogger(__name__)
 

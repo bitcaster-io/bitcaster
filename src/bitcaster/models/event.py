@@ -47,11 +47,11 @@ class Event(AbstractModel):
     def __str__(self):
         return f'{self.application.name}:{self.name}'
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        super().save(force_insert, force_update, using, update_fields)
-
-    def clean(self):
-        super().clean()
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     super().save(force_insert, force_update, using, update_fields)
+    #
+    # def clean(self):
+    #     super().clean()
 
     @cached_property
     def valid_channels(self):

@@ -27,8 +27,8 @@
                     {{ form.empty_form.user }}
                     {{ form.empty_form.id }}
                     <div class="row col-4">{{ form.empty_form.label|as_crispy_field }}</div>
-                    <div class="row col-7">{{ form.empty_form.address|as_crispy_field }}</div>
-                    <div class="row col-1 align-items-center"><a href="#" class="remove_line">
+                    <div class="col-6">{{ form.empty_form.address|as_crispy_field }}</div>
+                    <div class="col-2 mt-2 align-middle align-items-center"><a href="#" class="remove_line">
                         <i class="far fa-trash-alt"></i></a>
                     </div>
                 </div>
@@ -47,8 +47,8 @@
                                 {{ form.id }}
                                 {{ form.DELETE }}
                                 <span class="row col-4">{{ form.label|as_crispy_field }}</span>
-                                <span class="row col-7">{{ form.address|as_crispy_field }}</span>
-                                <span class="row col-1 align-items-center">
+                                <span class="col-6">{{ form.address|as_crispy_field }}</span>
+                                <span class="col-2 align-items-center">
                                     <a href="#" class="remove_line">
                                         <i class="far fa-trash-alt"></i>
                                     </a>
@@ -63,11 +63,14 @@
                     {% endfor %}
                 </div>
                 <div class="row col-12 p-4">
-                    <div class="row col-11"></div>
-                    <div class="row col-1">
+                    <div class="row col-9"></div>
+                    <div class="row col-3">
                         <input type="submit" id="btn-submit"
                                value="{% trans "Save" %}"
-                               class="btn btn-primary btn-small">
+                               class="btn btn-primary btn-small mr-3">
+                        <input type="button" id="btn-cancel" class="btn btn-secondary"
+                               onclick="location.href='{% url "user-addresses" %}'"
+                               value="Cancel">
                     </div>
                 </div>
             </form>
@@ -83,6 +86,8 @@
             var selector = "div.invitations";
             {#var $rows = $("div.invitations>div.row");#}
             var $submit = $("#btn-submit");
+            var $cancel = $("#btn-cancel");
+
             $(":input[type=checkbox]").hide();
             $(".remove_line").click(function () {
                 $submit.prop("disabled", true);
@@ -98,7 +103,8 @@
                     reNumber();
                 }, 20);
             });
-            $("#add_more").click(function () {
+            $("#add_more").click(function (e) {
+                e.preventDefault();
                 $submit.prop("disabled", true);
                 cloneMore();
             });
@@ -120,7 +126,7 @@
                     });
                 });
                 $TOTAL_FORMS.val($rows.length);
-                $submit.prop("disabled", $rows.length === 0);
+                $("#btn-submit").prop("disabled", false);
             };
 
             function cloneMore() {

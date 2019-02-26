@@ -5,7 +5,9 @@ ul.messagelist {
             background-color: #f2271e;
             border-color: #eb204d;
         }
-
+        &.note{
+            max-width: 800px;
+        }
         &.info {
             color: #0c5460;
             background-color: #d1ecf1;

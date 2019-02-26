@@ -14,7 +14,6 @@ DATA = ['user',
         'organization',
         'application',
         'channel',
-        # 'organizationmember',
         'address', 'addressassignment',
         'event',
         'message',
@@ -123,12 +122,12 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
                         if not ignore_errors:
                             ctx.abort()
                 # # ManyToMany
-                # for m2m_field_name, m2m_records in data[model_name]['__m2m__'].items():
-                #     m2m_field = model._meta.get_field(m2m_field_name)
-                #     m2m_attr = getattr(model, m2m_field_name)
-                #     related_model = m2m_field.related_model
-                #     for record in m2m_records:
-                #         parent = model.objects.get(pk=record['id'])
-                #         m2m_attr = getattr(parent, m2m_field_name)
-                #         related = related_model.objects.get(pk=record[m2m_field_name])
-                #         m2m_attr.add(related)
+                for m2m_field_name, m2m_records in data[model_name]['__m2m__'].items():
+                    m2m_field = model._meta.get_field(m2m_field_name)
+                    m2m_attr = getattr(model, m2m_field_name)
+                    related_model = m2m_field.related_model
+                    for record in m2m_records:
+                        parent = model.objects.get(pk=record['id'])
+                        m2m_attr = getattr(parent, m2m_field_name)
+                        related = related_model.objects.get(pk=record[m2m_field_name])
+                        m2m_attr.add(related)

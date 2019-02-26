@@ -4,7 +4,7 @@ import logging
 from django.conf import settings
 from django.db import models
 
-from bitcaster.db.fields import DispatcherField
+from .channel import Channel
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ class AssignmentQuerySet(models.QuerySet):
     def get_address(self, klass):
         # if isinstance(klass, Dispatcher):
         #     klass = fqn(klass)
-        return super().get(dispatcher=klass).address.address
+        return super().get(channel__dispatcher=klass).address.address
 
 
 class Address(models.Model):
@@ -37,12 +37,15 @@ class AddressAssignment(models.Model):
                              on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.CASCADE,
                                 related_name='used_by')
-    dispatcher = DispatcherField()
+    channel = models.ForeignKey(Channel,
+                                null=True,
+                                on_delete=models.CASCADE,
+                                related_name='+')
 
     objects = AssignmentQuerySet.as_manager()
 
     class Meta:
-        unique_together = ('dispatcher', 'address'),
+        unique_together = ('channel', 'address'),
         app_label = 'bitcaster'
 
     # def __str__(self):

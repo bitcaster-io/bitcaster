@@ -107,12 +107,13 @@ class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
         self.message_user(_('Event saved'), messages.SUCCESS)
         ret = super().form_valid(form)
         event = self.object
-        for i, channel in enumerate(event.channels.all()):
+        for channel in event.channels.all():
             Message.objects.update_or_create(event=event,
                                              channel=channel,
+                                             application=event.application,
                                              defaults={
                                                  'enabled': True,
-                                                 'name': f'{event} {channel}',
+                                                 'name': f'{event.name} {channel.name}',
                                              })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
         return ret

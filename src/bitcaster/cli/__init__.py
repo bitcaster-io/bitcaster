@@ -87,6 +87,7 @@ cli.add_command(import_by_name('bitcaster.cli.commands.upgrade.upgrade'))
 cli.add_command(import_by_name('bitcaster.cli.commands.createuser.createuser'))
 cli.add_command(import_by_name('bitcaster.cli.commands.backup.backup'))
 cli.add_command(import_by_name('bitcaster.cli.commands.backup.restore'))
+cli.add_command(import_by_name('bitcaster.cli.commands.reindex.reindex'))
 
 
 def main():  # pragma: no cover

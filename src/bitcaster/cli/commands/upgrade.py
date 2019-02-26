@@ -12,13 +12,13 @@ from bitcaster.cli import global_options
               help='Do not prompt for parameters')
 @click.option('--migrate/--no-migrate', default=True, is_flag=True,
               help='Run database migrations')
-@click.option('--static/--no-static', default=True, is_flag=True,
+@click.option('--static/--no-static', default=False, is_flag=True,
               help='Collect static assets')
+@click.option('--reindex/--no-reindex', default=False, is_flag=True,
+              help='Run Database full reindex')
 @click.pass_context
-def upgrade(ctx, prompt, migrate, static, verbose, **kwargs):
+def upgrade(ctx, prompt, migrate, static, verbose, reindex, **kwargs):
     try:
-        from django.conf import settings
-        from django.db.transaction import get_connection
         from django.core.management import execute_from_command_line
         from bitcaster.config.environ import env
 
@@ -42,14 +42,18 @@ def upgrade(ctx, prompt, migrate, static, verbose, **kwargs):
                     if verbose > 0:
                         click.echo(f"Create {_dir} '{target}'")
                     target.mkdir(parents=True)
-        # if static:
-        #     execute_from_command_line(argv=['manage', 'collectstatic'] + extra)
+        if static:
+            execute_from_command_line(argv=['manage', 'collectstatic'] + extra)
         if migrate:
             execute_from_command_line(argv=['manage', 'migrate'] + extra)
-        conn = get_connection()
-        cursor = conn.cursor()
-        update_status = f'REINDEX DATABASE {settings.DATABASES["default"]["NAME"]};'
-        cursor.execute(update_status)
+        if reindex:
+            from .reindex import reindex
+            ctx.invoke(reindex)
+
+        # conn = get_connection()
+        # cursor = conn.cursor()
+        # update_status = f'REINDEX DATABASE {settings.DATABASES["default"]["NAME"]};'
+        # cursor.execute(update_status)
 
     except Exception as e:
         click.echo(str(e))

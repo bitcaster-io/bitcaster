@@ -38,14 +38,27 @@
 }
 
 #messageBar {
-    ul {
-        li.alert-dismissible {
-            button.close {
-                padding-top: 0.50rem;
+    display: block;
+    position: absolute;
+    float: left;
+    z-index: 1000;
+    max-width: 800px;
+    min-height: 40px;
+    margin-right: 30px;
+    margin-top: 13px;
+    right: 1px;
 
-                span {
-                    font-size: 20px;
-                    line-height: 20px;
+    ul.messagelist {
+        li {
+            list-style-type: none;
+            &.alert-dismissible {
+                button.close {
+                    padding-top: 0.50rem;
+
+                    span {
+                        font-size: 20px;
+                        line-height: 20px;
+                    }
                 }
             }
         }
@@ -154,22 +167,4 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 
 .italic {
     font-style: italic;
-}
-
-#messageBar {
-    display: block;
-    position: absolute;
-    float: left;
-    z-index: 1000;
-    max-width: 400px;
-    min-height: 40px;
-    margin-right: 30px;
-    margin-top: 13px;
-    right: 1px;
-
-    ul {
-        li {
-            list-style-type: none;
-        }
-    }
 }
