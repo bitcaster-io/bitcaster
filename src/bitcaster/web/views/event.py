@@ -47,8 +47,8 @@ class EventMixin(SelectedApplicationMixin):
 
 class SingleEventMixin(EventMixin):
     def get_context_data(self, **kwargs):
+        kwargs['event'] = self.selected_event
         return super().get_context_data(selected_event=self.selected_event,
-                                        event=self.selected_event,
                                         **kwargs)
 
     @cached_property

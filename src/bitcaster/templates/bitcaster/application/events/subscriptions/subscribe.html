@@ -19,13 +19,15 @@
         </div>
     </div>
     <div id="empty-form" class="d-none">
-        <div class="row">
-            {{ form.empty_form.event }}
-            <div class="row col-sm">{{ form.empty_form.subscriber|as_crispy_field }}</div>
-            <div class="row col-sm">{{ form.empty_form.channel|as_crispy_field }}</div>
-{#            <div class="row col-sm">{{ form.empty_form.locked|as_crispy_field }}</div>#}
-            <div class="row col-sm align-items-center"><a href="#" class="remove_line">
-                <i class="far fa-trash-alt"></i></a>
+        <div class="row col-12">
+            <div class="row col-12">
+                {{ form.empty_form.event }}
+                <div class="row col-sm">{{ form.empty_form.subscriber|as_crispy_field }}</div>
+                <div class="row col-sm">{{ form.empty_form.channel|as_crispy_field }}</div>
+                {#            <div class="row col-sm">{{ form.empty_form.locked|as_crispy_field }}</div>#}
+                <div class="row col-sm align-items-center"><a href="#" class="remove_line">
+                    <i class="far fa-trash-alt"></i></a>
+                </div>
             </div>
         </div>
     </div>
@@ -35,16 +37,19 @@
             {% csrf_token %}
             <div class="content invitations">
                 {% for invite in form.forms %}
-                    <div class="row">
-                        {{ invite.event }}
-                        <div class="row col-sm">{{ invite.subscriber|as_crispy_field }}</div>
-                        <div class="row col-sm">{{ invite.channel|as_crispy_field }}</div>
-{#                        <div class="row col-sm">{{ invite.locked|as_crispy_field }}</div>#}
-                        <div class="row col-sm align-items-center">
-                            <a href="#" class="remove_line">
-                                <i class="far fa-trash-alt"></i>
-                            </a>
+                    <div class="row col-12">
+                        <div class="row col-12">
+                            {{ invite.event }}
+                            <div class="row col-sm">{{ invite.subscriber|as_crispy_field }}</div>
+                            <div class="row col-sm">{{ invite.channel|as_crispy_field }}</div>
+                            {#                        <div class="row col-sm">{{ invite.locked|as_crispy_field }}</div>#}
+                            <div class="row col-sm align-items-center">
+                                <a href="#" class="remove_line">
+                                    <i class="far fa-trash-alt"></i>
+                                </a>
+                            </div>
                         </div>
+                        <div class="row red">{{ invite.non_field_errors }}</div>
                     </div>
                 {% endfor %}
             </div>
@@ -56,16 +61,15 @@
 {% endblock %}
 {% block js %}
     {{ block.super }}
-        <script>
-        (function() {
+    <script>
+        (function () {
             var formsetName = "subscriptions";
             var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
             var selector = "div.invitations";
-            var $rows = $("div.invitations>div.row");
 
             $(".remove_line").click(function () {
                 $("#btn-submit").prop("disabled", true);
-                var $target = $(this).parent().parent();
+                var $target = $(this).parent().parent().parent();
                 $target.remove();
                 setTimeout(function () {
                     reNumber();
@@ -90,7 +94,7 @@
                     ///*
                     $(e).find("div").each(function () {
                         var _id = $(this).attr("id");
-                        if ( _id ){
+                        if (_id) {
                             var newId = $(this).attr("id").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
                             $(this).attr("id", newId);
                         }

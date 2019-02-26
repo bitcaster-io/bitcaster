@@ -17,6 +17,8 @@ from bitcaster.cli import global_options
 @click.pass_context
 def upgrade(ctx, prompt, migrate, static, verbose, **kwargs):
     try:
+        from django.conf import settings
+        from django.db.transaction import get_connection
         from django.core.management import execute_from_command_line
         from bitcaster.config.environ import env
 
@@ -40,10 +42,14 @@ def upgrade(ctx, prompt, migrate, static, verbose, **kwargs):
                     if verbose > 0:
                         click.echo(f"Create {_dir} '{target}'")
                     target.mkdir(parents=True)
-        if static:
-            execute_from_command_line(argv=['manage', 'collectstatic'] + extra)
+        # if static:
+        #     execute_from_command_line(argv=['manage', 'collectstatic'] + extra)
         if migrate:
             execute_from_command_line(argv=['manage', 'migrate'] + extra)
+        conn = get_connection()
+        cursor = conn.cursor()
+        update_status = f'REINDEX DATABASE {settings.DATABASES["default"]["NAME"]};'
+        cursor.execute(update_status)
 
     except Exception as e:
         click.echo(str(e))

@@ -53,24 +53,30 @@ class EventSubscriptionCreate(SingleEventMixin, FormView):
     form_class = EventSubscriptionForm
 
     def get_object(self):
-        return self.get_queryset().get(pk=self.kwargs['pk'])
+        return self.selected_event
+
+    def get_success_url(self):
+        return reverse('app-event-subscriptions',
+                       args=[self.selected_organization.slug,
+                             self.selected_application.slug,
+                             self.selected_event.pk])
 
     def get_form_class(self):
         return SubscriptionFormSet
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['event'] = self.get_object()
+        kwargs['event'] = self.selected_event
         kwargs['requestor'] = self.request.user
         return kwargs
 
     def form_valid(self, formset):
-        formset.instance = self.get_object()
+        formset.instance = self.selected_event
         formset.save()
         return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
-        kwargs['event'] = self.get_object()
+        kwargs['event'] = self.selected_event
         return super().get_context_data(**kwargs)
 
 
