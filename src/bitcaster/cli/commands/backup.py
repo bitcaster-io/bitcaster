@@ -7,7 +7,6 @@ from django.db.transaction import atomic
 from django_regex.utils import RegexList
 
 from bitcaster.cli import need_setup
-from bitcaster.cli.commands.option import option_set
 from bitcaster.utils.json import Decoder, Encoder
 
 DATA = ['user',
@@ -96,6 +95,8 @@ def backup(ctx, filename):
 def restore(ctx, filename, overwrite, ignore_errors, selection):
     from django.apps import apps
     from django.db.models.signals import post_save
+    import constance.settings
+    from constance import config
 
     input_file = Path(filename)
     click.echo(f'Using backup {input_file.absolute()}')
@@ -111,7 +112,13 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
         if 'options' in selection:
             click.echo(f'restore...options')
             for key, value in data['options']:
-                ctx.invoke(option_set, name=key, value=value)
+                _type = constance.settings.CONFIG[key][2]
+                if _type is bool:
+                    value = str(value).lower() in ['1', 'true', 't']
+                else:
+                    value = _type(value)
+                setattr(config, key, value)
+
         ALL_MODELS = get_all_models()
         for model_name in ALL_MODELS:
             if model_name in selection:
