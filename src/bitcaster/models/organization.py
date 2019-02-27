@@ -14,6 +14,7 @@ from bitcaster.db.manager import DeleteableModelManagerMixin
 from bitcaster.db.validators import (RESERVED_NAMES, RateLimitValidator,
                                      check_reserved,)
 from bitcaster.file_storage import org_media_root
+from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.models.validators import ListValidator, NameValidator
 # from bitcaster.utils import locks
 from bitcaster.utils.slug import slugify_instance
@@ -30,10 +31,12 @@ class OrganizationManager(DeleteableModelManagerMixin, models.Manager):
     pass
 
 
-class Organization(AbstractModel):
+class Organization(AbstractModel, ReverseWrapperMixin):
     """
     An organization represents a group of individuals which maintain ownership of applications.
     """
+    reverse_args = ['organization.slug']
+
     name = models.CharField(_('Name'), max_length=64,
                             validators=[
                                 ListValidator(RESERVED_ORGANIZATION_NAME),
@@ -64,6 +67,12 @@ class Organization(AbstractModel):
 
     class Meta:
         app_label = 'bitcaster'
+
+    class Reverse:
+        args = ['slug']
+        pattern = 'org-{op}'
+        links = ['list', ]
+        actions = ['applications', ]
 
     def __str__(self):
         return self.name

@@ -18,8 +18,8 @@ class AuthWrapper:
     def __getitem__(self, name):
         return bool(name in self.perms)
 
-    def __contains__(self, perm_name):
-        return perm_name in self.perms
+    # def __contains__(self, perm_name):
+    #     return perm_name in self.perms
 
 
 @register.simple_tag(takes_context=True, name='check_permissions')

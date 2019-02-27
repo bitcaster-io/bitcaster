@@ -23,22 +23,22 @@
             <tbody>
             {% for app in organization.applications.all %}
                 <tr scope="row">
-                    <td lass="col-sm"><a href="{{ app.get_absolute_url }}">{{ app.name }}</a></td>
+                    <td lass="col-sm"><a href="{{ app.urls.edit }}">{{ app.name }}</a></td>
                     <td lass="col-sm">{{ app.timezone }}</td>
                     <td lass="col-sm">
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="dashboard "
-                           href="{% org-url 'app-dashboard' app.slug %}">
+                           href="{{ app.urls.dashboard }}">
                             <i class="fas fa-tachometer-alt"></i>
                         </a>
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="edit"
-                           href="{{ app.get_absolute_url }}">
+                           href="{{ app.urls.edit }}">
                             <i class="far fa-edit"></i>
                         </a>
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="remove"
-                           href="{% org-url "app-delete" app.slug %}">
+                           href="{{ app.urls.delete }}">
                             <i class="far fa-trash-alt"></i>
                         </a>
                     </td>

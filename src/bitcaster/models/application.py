@@ -6,7 +6,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.core import validators
 from django.db import models
 from django.db.models import UUIDField
-from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
@@ -15,12 +14,12 @@ from bitcaster import logging
 from bitcaster.db.fields import AvatarField, Role, SubscriptionPolicyField
 from bitcaster.db.validators import RateLimitValidator
 from bitcaster.file_storage import app_media_root
-from bitcaster.models.validators import ListValidator
-# from bitcaster.utils import locks
 from bitcaster.utils.slug import slugify_instance
 
 from .base import AbstractModel
+from .mixins import ReverseWrapperMixin
 from .organization import RESERVED_NAMES, Organization
+from .validators import ListValidator
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,7 @@ RESERVED_APPLICATION_NAME = frozenset(RESERVED_NAMES)
 RESERVED_APPLICATION_SLUGS = frozenset(RESERVED_NAMES)
 
 
-class Application(AbstractModel):
+class Application(AbstractModel, ReverseWrapperMixin):
     """Application """
     uuid = UUIDField(default=uuid4, editable=False, blank=False, null=False)
     organization = models.ForeignKey(Organization,
@@ -71,14 +70,17 @@ class Application(AbstractModel):
         app_label = 'bitcaster'
         ordering = ('name', 'id')
 
+    class Reverse:
+        args = ['organization.slug', 'slug']
+        pattern = 'app-{op}'
+        actions = ['edit', 'delete', 'dashboard']
+        links = ['create', 'list']
+
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('app-edit', args=(self.organization.slug, self.slug))
-
-    def reverse(self, target):
-        return reverse(f'app-{target}', args=(self.organization, self.slug))
+        return str(self.reverse.edit)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.slug:
@@ -102,5 +104,5 @@ class Application(AbstractModel):
             return [m.user for m in admins.team.members.all()]
         return []
 
-    def membership_for(self, user):
-        return self.organization.memberships.filter(user=user).first()
+    # def membership_for(self, user):
+    #     return self.organization.memberships.filter(user=user).first()

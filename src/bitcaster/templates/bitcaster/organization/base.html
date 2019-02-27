@@ -30,7 +30,7 @@
                                     <a href="{% url "org-team-list" organization.slug %}">{% trans "Teams" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url "org-applications" organization.slug %}">{% trans "Applications" %}</a>
+                                    <a href="{{ organization.urls.applications }}">{% trans "Applications" %}</a>
                                 </li>
                             </ul>
                         </div>
