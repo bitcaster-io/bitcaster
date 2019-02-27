@@ -57,7 +57,8 @@ def user1(db, initialized):
 @pytest.fixture
 def user2(db):
     from bitcaster.utils.tests.factories import UserFactory
-    addresses = {}
+    from bitcaster.dispatchers import Email
+    addresses = {fqn(Email): faker.email()}
     return UserFactory(addresses=addresses)
 
 
@@ -124,21 +125,6 @@ def channel2(application2):
 
 
 @pytest.fixture
-def subscriber1(user1, application1):
-    from bitcaster.utils.tests.factories import UserFactory
-    from bitcaster.utils.tests.factories import ChannelFactory
-    from bitcaster.dispatchers import Email
-    for addr in user1.addresses.all():
-        user1.assignments.create(address=addr,
-                            channel=ChannelFactory(application=application1,
-                                                   handler=addr.label
-                                                   ))
-
-    addresses = {fqn(Email): faker.email()}
-    return UserFactory(addresses=addresses)
-
-
-@pytest.fixture
 def event1(channel1):
     from bitcaster.utils.tests.factories import EventFactory
     evt = EventFactory(application=channel1.application, enabled=True)
@@ -165,19 +151,34 @@ def message2(event2):
 
 
 @pytest.fixture
-def subscription1(application1, message1):
-    from bitcaster.utils.tests.factories import SubscriptionFactory, UserFactory
-    from bitcaster.dispatchers import Email
-
-    return SubscriptionFactory(subscriber=UserFactory(addresses={fqn(Email): faker.email()}),
-                               event=message1.event,
-                               channel=message1.channel)
+def subscriber1(user1, message1):
+    for addr in user1.addresses.all():
+        user1.assignments.create(address=addr, channel=message1.channel)
+    return user1
 
 
 @pytest.fixture
-def subscription2(user2, channel2, message2):
+def subscriber2(user2, message2):
+    for addr in user2.addresses.all():
+        user2.assignments.create(address=addr, channel=message2.channel)
+
+    return user2
+
+
+@pytest.fixture
+def subscription1(application1, subscriber1):
     from bitcaster.utils.tests.factories import SubscriptionFactory
-    return SubscriptionFactory(subscriber=user2)
+    return SubscriptionFactory(subscriber=subscriber1,
+                               event=subscriber1.assignments.first().channel.event_set.first(),
+                               channel=subscriber1.assignments.first().channel)
+
+
+@pytest.fixture
+def subscription2(application1, subscriber2):
+    from bitcaster.utils.tests.factories import SubscriptionFactory
+    return SubscriptionFactory(subscriber=subscriber2,
+                               event=subscriber2.assignments.first().channel.event_set.first(),
+                               channel=subscriber2.assignments.first().channel)
 
 
 @pytest.fixture

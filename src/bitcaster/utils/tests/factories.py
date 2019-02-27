@@ -135,6 +135,7 @@ class UserFactory(factory.DjangoModelFactory):
             for handler, address in addresses.items():
                 user.addresses.create(label=handler,
                                       address=address)
+
         return user
 
 
