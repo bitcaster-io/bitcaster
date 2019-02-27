@@ -132,11 +132,9 @@ class UserFactory(factory.DjangoModelFactory):
         if permissions:
             user_grant_permissions(user, permissions).start()
         if addresses:
-            for dispatcher, address in addresses.items():
-                addr = user.addresses.create(label=str(address),
-                                             address=address)
-                user.assignments.create(address=addr,
-                                        dispatcher=dispatcher)
+            for handler, address in addresses.items():
+                user.addresses.create(label=handler,
+                                      address=address)
         return user
 
 

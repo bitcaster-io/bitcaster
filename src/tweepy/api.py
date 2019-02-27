@@ -4,16 +4,15 @@
 
 from __future__ import print_function
 
-import os
+import json
 import mimetypes
+import os
 
 import six
-
 from tweepy.binder import bind_api
 from tweepy.error import TweepError
 from tweepy.parsers import ModelParser, Parser
 from tweepy.utils import list_to_csv
-import json
 
 
 class API(object):

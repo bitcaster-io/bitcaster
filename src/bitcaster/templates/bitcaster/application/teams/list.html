@@ -1,0 +1,79 @@
+{% extends "bitcaster/application/base.html" %}{% load i18n bitcaster %}
+{% block content %}
+    <h2>Application Events</h2>
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% app-url "app-event-create" %}">{% trans "Add Event" %}</a>
+            </div>
+        </div>
+    </div>
+    <table class="table table-striped table-hover col-12">
+        <thead>
+        <tr>
+            <th cope="col">Name</th>
+            <th cope="col">Enabled</th>
+            <th cope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for event in object_list %}
+            <tr>
+                <td>{{ event.name }}</td>
+                <td style="width:5%">
+                    {% if event.enabled %}
+                        <i class="fa fa-check-circle green"></i>
+                    {% else %}
+                        <i class="fa fa-exclamation-circle red"></i>
+                    {% endif %}
+                </td>
+                <td style="width:30%" class="nowrap">
+                    <a class="btn btn-light {% if not event.enabled_channels.exists %}red{% endif %}"
+                       data-toggle="tooltip" title="configure"
+                       href="{{ event.pk }}/edit/">
+                        <i class="fas fa-wrench pointer"></i>
+                    </a>
+                    <a class="btn btn-light {% if not event.valid_channels.exists %}red{% endif %}"
+                       data-toggle="tooltip" title="messages"
+                       href="{{ event.pk }}/messages/">
+                        <i class="far fa-comment pointer"></i>
+                    </a>
+                    <a class="btn btn-light"
+                       data-toggle="tooltip" title="{% if event.enabled %}Disable{% else %}Enable{% endif %}"
+                       href="{{ event.pk }}/toggle/">
+                        <i class="fas {% if event.enabled %}fa-toggle-off red{% else %}fa-toggle-on green{% endif %}"></i>
+                    </a>
+                    <a class="btn btn-light"
+                       data-toggle="tooltip" title="delete"
+                       href="{{ event.pk }}/delete/">
+                        <i class="far fa-trash-alt"></i>
+                    </a>
+
+                    <a class="btn btn-light"
+                       data-toggle="tooltip" title="test"
+                       href="{{ event.pk }}/test/">
+                        <i class="fas fa-terminal"></i>
+                    </a>
+
+
+                    <a class="btn btn-light"
+                       data-toggle="tooltip" title="subscriptions"
+                       href="{{ event.pk }}/subscriptions/">
+                        <i class="fas fa-user"></i>
+                    </a>
+
+                    <a class="btn btn-light"
+                       data-toggle="tooltip" title="keys"
+                       href="{{ event.pk }}/keys/">
+                        <i class="fas fa-key"></i>
+                    </a>
+
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+{% endblock content %}

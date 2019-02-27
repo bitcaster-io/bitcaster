@@ -20,7 +20,7 @@ from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 
 from .base import (BitcasterBaseCreateView, BitcasterBaseDeleteView,
                    BitcasterBaseUpdateView, BitcasterTemplateView,
-                   MessageUserMixin, SelectedOrganizationMixin,)
+                   MessageUserMixin,)
 
 logger = logging.getLogger(__name__)
 
@@ -128,9 +128,10 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
 
 class ChannelCreateView(BitcasterBaseCreateView):
     model = Channel
-
-    def get_queryset(self):
-        return self.selected_organization.channels.all()
+    #
+    # def get_queryset(self):
+    #     return self.selected_organization.channels.all()
+    #
 
 
 class ChannelListView(BitcasterTemplateView):
@@ -147,8 +148,8 @@ class ChannelListView(BitcasterTemplateView):
 class ChannelUpdateView(BitcasterBaseUpdateView):
     form_class = ChannelUpdateConfigurationForm
 
-    def get_queryset(self):
-        return self.selected_organization.channels
+    # def get_queryset(self):
+    #     return self.selected_organization.channels
 
 
 class ChannelDeleteView(BitcasterBaseDeleteView):
@@ -156,7 +157,7 @@ class ChannelDeleteView(BitcasterBaseDeleteView):
         raise NotImplementedError
 
 
-class ChannelDeprecateView(SelectedOrganizationMixin, MessageUserMixin, RedirectView):
+class ChannelDeprecateView(MessageUserMixin, RedirectView):
     # url = reverse_lazy("settings-channels")
 
     def get_queryset(self):
@@ -171,7 +172,7 @@ class ChannelDeprecateView(SelectedOrganizationMixin, MessageUserMixin, Redirect
         return super().get(request, *args, **kwargs)
 
 
-class ChannelToggleView(SelectedOrganizationMixin, MessageUserMixin, RedirectView):
+class ChannelToggleView(MessageUserMixin, RedirectView):
 
     def get_queryset(self):
         raise NotImplementedError
@@ -196,7 +197,7 @@ class ChannelUsageView(BitcasterBaseDeleteView):
         return super().get_context_data(**kwargs)
 
 
-class ChannelTestView(SelectedOrganizationMixin, MessageUserMixin, RedirectView):
+class ChannelTestView(MessageUserMixin, RedirectView):
 
     def get_queryset(self):
         raise NotImplementedError

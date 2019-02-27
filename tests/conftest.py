@@ -124,6 +124,21 @@ def channel2(application2):
 
 
 @pytest.fixture
+def subscriber1(user1, application1):
+    from bitcaster.utils.tests.factories import UserFactory
+    from bitcaster.utils.tests.factories import ChannelFactory
+    from bitcaster.dispatchers import Email
+    for addr in user1.addresses.all():
+        user1.assignments.create(address=addr,
+                            channel=ChannelFactory(application=application1,
+                                                   handler=addr.label
+                                                   ))
+
+    addresses = {fqn(Email): faker.email()}
+    return UserFactory(addresses=addresses)
+
+
+@pytest.fixture
 def event1(channel1):
     from bitcaster.utils.tests.factories import EventFactory
     evt = EventFactory(application=channel1.application, enabled=True)

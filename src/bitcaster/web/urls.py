@@ -8,14 +8,13 @@ from bitcaster.web.views.callbacks import confirm_address
 from bitcaster.web.views.user import UserIndexView
 from bitcaster.web.views.views import PreviewView
 
-from .views import \
-    ApplicationCheckConfigView  # ApplicationChannelCreate,  # UserHomeView,; UserWelcomeView,; ApplicationChannelDeprecate, ApplicationChannelRemove,; ApplicationChannels, ApplicationChannelToggle,; ApplicationChannelUpdate,; OrganizationCreate,; OrganizationCreateMember,; OrganizationMembershipDelete, OrganizationMembershipEdit,
-from .views import (ApplicationCreate, ApplicationDashboard,
+from .views import (ApplicationCheckConfigView, ApplicationCreate,
+                    ApplicationDashboard, ApplicationDeleteView,
                     ApplicationKeyCreate, ApplicationKeyDelete,
                     ApplicationKeyList, ApplicationKeyUpdate,
-                    ApplicationSubscriptionList, ApplicationUpdateView,
-                    EventCreate, EventDelete, EventKeys, EventList,
-                    EventMessages, EventSubscriptionCreate,
+                    ApplicationSubscriptionList, ApplicationTeamList,
+                    ApplicationUpdateView, EventCreate, EventDelete, EventKeys,
+                    EventList, EventMessages, EventSubscriptionCreate,
                     EventSubscriptionDelete, EventSubscriptionInvite,
                     EventSubscriptionList, EventSubscriptionToggle, EventTest,
                     EventToggle, EventUpdate, IndexView, InviteAccept,
@@ -29,12 +28,10 @@ from .views import (ApplicationCreate, ApplicationDashboard,
                     OrganizationConfiguration, OrganizationDashboard,
                     OrganizationInvite, OrganizationMembershipDelete,
                     OrganizationMembershipEdit, OrganizationMembershipList,
-                    OrganizationTeamCreate, OrganizationTeamList,
-                    OrganizationTeamMember, OrganizationTeamUpdate, PluginInfo,
-                    SettingsChannelCreateWizard, SettingsChannelDeleteView,
-                    SettingsChannelDeprecateView, SettingsChannelListView,
-                    SettingsChannelToggleView, SettingsChannelUpdateView,
-                    SettingsEmailView, SettingsOAuthView, SettingsOrgListView,
+                    OrganizationTeamCreate, OrganizationTeamDelete,
+                    OrganizationTeamList, OrganizationTeamMember,
+                    OrganizationTeamUpdate, PluginInfo, SettingsEmailView,
+                    SettingsOAuthView, SettingsOrgListView,
                     SettingsOrgUpdateView, SettingsSystemInfo, SettingsView,
                     SetupView, UserAddressesAssignmentView,
                     UserAddressesInfoView, UserAddressesView, UserProfileView,
@@ -57,13 +54,13 @@ urlpatterns = [
     path('settings/organizations/', SettingsOrgListView.as_view(), name='settings-org-list'),
     path('settings/organizations/<int:pk>/edit/', SettingsOrgUpdateView.as_view(),
          name='settings-org-update'),
-    path('settings/channel/', SettingsChannelListView.as_view(), name='settings-channels'),
-    path('settings/channel/add/', SettingsChannelCreateWizard.as_view(), name='system-channel-create'),
-    path('settings/channel/<int:pk>/edit/', SettingsChannelUpdateView.as_view(), name='system-channel-update'),
-    path('settings/channel/<int:pk>/delete/', SettingsChannelDeleteView.as_view(), name='system-channel-delete'),
-    path('settings/channel/<int:pk>/toggle/', SettingsChannelToggleView.as_view(), name='system-channel-toggle'),
-    path('settings/channel/<int:pk>/deprecate/', SettingsChannelDeprecateView.as_view(),
-         name='system-channel-deprecate'),
+    # path('settings/channel/', SettingsChannelListView.as_view(), name='settings-channels'),
+    # path('settings/channel/add/', SettingsChannelCreateWizard.as_view(), name='system-channel-create'),
+    # path('settings/channel/<int:pk>/edit/', SettingsChannelUpdateView.as_view(), name='system-channel-update'),
+    # path('settings/channel/<int:pk>/delete/', SettingsChannelDeleteView.as_view(), name='system-channel-delete'),
+    # path('settings/channel/<int:pk>/toggle/', SettingsChannelToggleView.as_view(), name='system-channel-toggle'),
+    # path('settings/channel/<int:pk>/deprecate/', SettingsChannelDeprecateView.as_view(),
+    #      name='system-channel-deprecate'),
 
     path('plugins/info/<str:fqn>/', PluginInfo.as_view(), name='plugin-info'),
 
@@ -92,7 +89,8 @@ urlpatterns = [
 
     path('<slug:org>/a/<slug:app>/', ApplicationDashboard.as_view(), name='app-dashboard'),
     path('<slug:org>/a/<slug:app>/check/', ApplicationCheckConfigView.as_view(), name='app-check'),
-    path('<slug:org>/a/<slug:app>/edit/', ApplicationUpdateView.as_view(), name='app-update'),
+    path('<slug:org>/a/<slug:app>/edit/', ApplicationUpdateView.as_view(), name='app-edit'),
+    path('<slug:org>/a/<slug:app>/delete/', ApplicationDeleteView.as_view(), name='app-delete'),
     path('<slug:org>/a/<slug:app>/subscriptions/', ApplicationSubscriptionList.as_view(), name='app-subscriptions'),
 
     path('<slug:org>/a/<slug:app>/key/', ApplicationKeyList.as_view(), name='app-key-list'),
@@ -132,6 +130,8 @@ urlpatterns = [
     # path('<slug:org>/a/<slug:app>/channel/<int:pk>/deprecate/', ApplicationChannelDeprecate.as_view(),
     #      name='app-channel-deprecate'),
 
+    path('o/<slug:org>/a/<slug:app>/team/', ApplicationTeamList.as_view(), name='app-team-list'),
+
     path('o/<slug:org>/a/<slug:app>/message/', MessageList.as_view(), name='app-message-list'),
     path('o/<slug:org>/a/<slug:app>/message/add/', MessageCreate.as_view(), name='app-message-create'),
     path('o/<slug:org>/a/<slug:app>/message/<int:pk>/edit/', MessageUpdate.as_view(), name='app-message-update'),
@@ -158,7 +158,8 @@ urlpatterns = [
 
     path('<slug:org>/team/', OrganizationTeamList.as_view(), name='org-team-list'),
     path('<slug:org>/team/add/', OrganizationTeamCreate.as_view(), name='org-team-create'),
-    path('<slug:org>/team/<slug:slug>/', OrganizationTeamUpdate.as_view(), name='org-team-update'),
+    path('<slug:org>/team/<slug:slug>/edit/', OrganizationTeamUpdate.as_view(), name='org-team-edit'),
+    path('<slug:org>/team/<slug:slug>/delete/', OrganizationTeamDelete.as_view(), name='org-team-delete'),
     path('<slug:org>/team/<slug:slug>/members/', OrganizationTeamMember.as_view(), name='org-team-member'),
 
     path('<slug:org>/channel/', OrganizationChannels.as_view(), name='org-channel-list'),

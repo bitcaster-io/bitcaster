@@ -30,7 +30,7 @@ class EventForm(forms.ModelForm):
 
     class Meta:
         model = Event
-        fields = ('name', 'description', 'channels',)
+        fields = ('name', 'description', 'channels', 'subscription_policy')
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)

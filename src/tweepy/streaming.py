@@ -8,21 +8,19 @@ from __future__ import absolute_import, print_function
 
 import logging
 import re
-import requests
+import ssl
 import sys
-from requests.exceptions import Timeout
 from threading import Thread
 from time import sleep
 
+import requests
 import six
-
-import ssl
-
-from tweepy.models import Status
+from requests.exceptions import Timeout
 from tweepy.api import API
 from tweepy.error import TweepError
-
+from tweepy.models import Status
 from tweepy.utils import import_simplejson
+
 json = import_simplejson()
 
 STREAM_VERSION = '1.1'

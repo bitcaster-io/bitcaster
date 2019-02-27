@@ -4,12 +4,12 @@
 
 from __future__ import print_function
 
-import time
 import datetime
 import hashlib
-import threading
-import os
 import logging
+import os
+import threading
+import time
 
 try:
     import cPickle as pickle

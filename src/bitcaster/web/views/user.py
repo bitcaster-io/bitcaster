@@ -17,9 +17,10 @@ from bitcaster.state import state
 from bitcaster.system import system
 from bitcaster.utils.email_verification import set_new_email_request
 from bitcaster.web.forms.user import send_address_verification_email
+from bitcaster.web.views.organization.mixins import ApplicationListMixin
 
 from ..forms import UserProfileForm
-from .base import (ApplicationListMixin, BitcasterBaseDetailView,
+from .base import (BitcasterBaseDetailView,
                    BitcasterBaseUpdateView, MessageUserMixin,)
 
 logger = logging.getLogger(__name__)
@@ -128,9 +129,9 @@ class AddressAssignmentForm(forms.ModelForm):
     def clean(self):
         super().clean()
         if self.cleaned_data:  # pragma: no branch
-            channel = self.cleaned_data['channel']
+            channel = self.cleaned_data.get('channel', None)
             address = self.cleaned_data.get('address', None)
-            if address and address.address:
+            if channel and address and address.address:
                 try:
                     channel.validate_address(address.address)
                 except DRFValidationError as e:

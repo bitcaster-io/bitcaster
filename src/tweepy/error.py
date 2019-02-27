@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import six
 
+
 class TweepError(Exception):
     """Tweepy exception"""
 

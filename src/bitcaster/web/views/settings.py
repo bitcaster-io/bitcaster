@@ -4,36 +4,27 @@ import logging
 from constance import config
 from django.conf import settings
 from django.core.mail import get_connection, send_mail
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
 from bitcaster import messages
 from bitcaster.models import Channel, Organization
-from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 from bitcaster.web.forms.organization import OrganizationSystemForm
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsMainForm,
                                                  SettingsOAuthForm,)
 
-from .base import (BitcasterTemplateView, ListView,
-                   SuperuserViewMixin, UpdateView,)
-from .channel import (ChannelCreateWizard, ChannelDeleteView,
-                      ChannelDeprecateView,
-                      ChannelToggleView, ChannelUpdateView,)
+from .base import BitcasterTemplateView, ListView, UpdateView
+from .mixins import SuperuserViewMixin
 
 logger = logging.getLogger(__name__)
 
 __all__ = ['SettingsView', 'SettingsOAuthView',
            'SettingsEmailView', 'SettingsChannelListView',
-           'SettingsChannelUpdateView',
-           'SettingsChannelDeleteView',
-           'SettingsChannelDeprecateView',
-           'SettingsChannelToggleView',
            'SettingsOrgUpdateView',
            'SettingsOrgListView',
            'SettingsSystemInfo',
-           'SettingsChannelCreateWizard',
            ]
 
 
@@ -171,13 +162,6 @@ class SettingsOrgListView(SuperuserViewMixin, ListView):
     model = Organization
 
 
-class SettingsChannelCreateWizard(ChannelCreateWizard):
-    success_url = reverse_lazy('settings-channels')
-
-    def get_extra_instance_kwargs(self):
-        return {'system': True}
-
-
 class SettingsChannelListView(SuperuserViewMixin, ListView):
     template_name = 'bitcaster/settings/channel_list.html'
 
@@ -185,43 +169,6 @@ class SettingsChannelListView(SuperuserViewMixin, ListView):
         kwargs['title'] = _('System channels')
         kwargs['create_url'] = reverse('system-channel-create')
         return super().get_context_data(**kwargs)
-
-    def get_queryset(self):
-        return Channel.objects.filter(system=True)
-
-
-class SettingsChannelUpdateView(SuperuserViewMixin, ChannelUpdateView):
-    template_name = 'bitcaster/settings/channel_configure.html'
-    form_class = ChannelUpdateConfigurationForm
-    success_url = reverse_lazy('settings-channels')
-
-    def get_queryset(self):
-        return Channel.objects.filter(system=True)
-
-
-class SettingsChannelDeleteView(SuperuserViewMixin, ChannelDeleteView):
-    template_name = 'bitcaster/settings/channel_remove.html'
-    success_url = reverse_lazy('settings-channels')
-
-    def get_queryset(self):
-        return Channel.objects.filter(system=True)
-
-
-class SettingsChannelDeprecateView(SuperuserViewMixin, ChannelDeprecateView):
-    pattern_name = 'settings-channels'
-
-    def get_queryset(self):
-        return Channel.objects.filter(system=True)
-
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy('settings-channels')
-
-
-class SettingsChannelToggleView(SuperuserViewMixin, ChannelToggleView):
-    pattern_name = 'settings-channels'
-
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy('settings-channels')
 
     def get_queryset(self):
         return Channel.objects.filter(system=True)

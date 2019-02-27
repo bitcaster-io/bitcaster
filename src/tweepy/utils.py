@@ -5,10 +5,9 @@
 from __future__ import print_function
 
 from datetime import datetime
+from email.utils import parsedate
 
 import six
-
-from email.utils import parsedate
 
 
 def parse_datetime(string):

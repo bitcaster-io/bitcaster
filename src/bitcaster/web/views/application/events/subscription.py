@@ -10,10 +10,11 @@ from bitcaster.models import AuditEvent
 from bitcaster.web.forms.subscription import (EventSubscriptionForm,
                                               InviteFormSet,
                                               SubscriptionFormSet,)
+from bitcaster.web.views.application.mixins import ApplicationAuditMixin
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView, MessageUserMixin,)
-from bitcaster.web.views.event import SingleEventMixin
-from bitcaster.web.views.organization import OrganizationAuditMixin
+
+from .mixins import SingleEventMixin
 
 
 class EventSubscriptionList(SingleEventMixin, BitcasterBaseListView):
@@ -80,7 +81,7 @@ class EventSubscriptionCreate(SingleEventMixin, FormView):
         return super().get_context_data(**kwargs)
 
 
-class EventSubscriptionInvite(SingleEventMixin, MessageUserMixin, FormView, OrganizationAuditMixin):
+class EventSubscriptionInvite(SingleEventMixin, MessageUserMixin, FormView, ApplicationAuditMixin):
     template_name = 'bitcaster/application/events/subscriptions/invite.html'
     title = 'Subscribers'
     form_class = InviteFormSet

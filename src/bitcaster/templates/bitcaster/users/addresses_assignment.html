@@ -53,10 +53,12 @@
                                     <a href="#" class="btn remove_line mr-2">
                                         <i class="far fa-trash-alt"></i>
                                     </a>
+                                    {% if form.instance.channel %}
                                     <a class="btn" rel="modal:open"
                                        href="{% url "org-channel-usage" form.instance.channel.organization.slug form.instance.channel.pk %}">
                                         <i class="fa fa-info">&nbsp;</i>
                                     </a>
+                                    {% endif %}
                                 </span>
                             </div>
                             <div class="row red">{{ form.non_field_errors.as_text }}</div>

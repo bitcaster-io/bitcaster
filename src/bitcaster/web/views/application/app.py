@@ -1,0 +1,114 @@
+# -*- coding: utf-8 -*-
+import logging
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import RedirectView
+
+from bitcaster.models import Application
+from bitcaster.models.configurationissue import check_application
+from bitcaster.web.forms import ApplicationCreateForm, ApplicationForm
+
+from ..base import (BitcasterBaseCreateView, BitcasterBaseDeleteView,
+                    BitcasterBaseDetailView, BitcasterBaseUpdateView,)
+from .mixins import ApplicationAuditMixin, SelectedApplicationMixin
+
+logger = logging.getLogger(__name__)
+
+
+class ApplicationViewMixin(SelectedApplicationMixin):
+    model = Application
+    slug_url_kwarg = 'app'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        if not request.user.has_perm('app:configure', self.selected_application):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+
+class ApplicationUpdateView(ApplicationViewMixin, BitcasterBaseUpdateView):
+    model = Application
+    form_class = ApplicationForm
+    template_name = 'bitcaster/application/form.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = _('Condigure Application')
+        return super().get_context_data(**kwargs)
+
+    def get_success_url(self):
+        return reverse('app-dashboard', args=[self.selected_organization.slug,
+                                              self.object.slug])
+
+
+class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):
+    template_name = 'bitcaster/application/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        app = self.get_object()
+        cache_key = f'org:app:dashboard:{app.pk}'
+        org_data = cache.get(cache_key, version=app.version)
+        if not org_data:
+            org_data = {
+                # "active_users": org.members.count(),
+                # "pending_users": org.invitations.count(),
+                'enabled_channels': app.channels.filter(enabled=True).count(),
+                'disabled_channels': app.channels.filter(enabled=False).count(),
+                'enabled_events': app.events.filter(enabled=True).count(),
+                'disabled_events': app.events.filter(enabled=False).count(),
+                'enabled_keys': app.keys.filter(enabled=True).count(),
+                'disabled_keys': app.keys.filter(enabled=False).count(),
+                'access_all_events_keys': app.keys.filter(all_events=True).count(),
+            }
+            org_data['box_channels'] = app.issues.get_tag_for('channels')
+            org_data['box_events'] = app.issues.get_tag_for('events')
+            org_data['box_keys'] = app.issues.get_tag_for('keys')
+            # cache.set(cache_key, org_data)
+        kwargs['data'] = org_data
+        return super().get_context_data(**kwargs)
+
+
+class ApplicationDeleteView(ApplicationViewMixin, BitcasterBaseDeleteView):
+
+    def get_success_url(self):
+        return reverse('org-applications', args=[self.selected_organization.slug])
+
+
+class ApplicationCheckConfigView(ApplicationViewMixin, RedirectView):
+    pattern_name = 'app-dashboard'
+
+    def get(self, request, *args, **kwargs):
+        check_application(self.selected_application)
+        return super().get(request, *args, **kwargs)
+
+
+class ApplicationCreate(ApplicationAuditMixin, BitcasterBaseCreateView):
+    model = Application
+    form_class = ApplicationCreateForm
+    template_name = 'bitcaster/application/form.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = _('Create New Application')
+        return super().get_context_data(**kwargs)
+
+    def get_success_url(self):
+        return reverse('app-dashboard', args=[self.selected_organization.slug,
+                                              self.object.slug])
+
+    def form_valid(self, form):
+        form.instance.organization = self.selected_organization
+        form.instance.owner = self.request.user
+        self.message_user(_('Application created'), messages.SUCCESS)
+        return super().form_valid(form)
+
+
+class ApplicationDetail(ApplicationViewMixin, BitcasterBaseDetailView):
+    pass

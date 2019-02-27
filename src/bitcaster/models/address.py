@@ -13,7 +13,7 @@ class AssignmentQuerySet(models.QuerySet):
     def get_address(self, klass):
         # if isinstance(klass, Dispatcher):
         #     klass = fqn(klass)
-        return super().get(channel__dispatcher=klass).address.address
+        return super().get(channel__handler=klass).address.address
 
 
 class Address(models.Model):
@@ -38,7 +38,6 @@ class AddressAssignment(models.Model):
     address = models.ForeignKey(Address, on_delete=models.CASCADE,
                                 related_name='used_by')
     channel = models.ForeignKey(Channel,
-                                null=True,
                                 on_delete=models.CASCADE,
                                 related_name='+')
 

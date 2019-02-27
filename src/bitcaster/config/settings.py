@@ -136,9 +136,10 @@ LANGUAGE_COOKIE_NAME = 'bitcaster-language'
 LANGUAGES = (
     ('en', _('English')),
     ('fr', _('French')),
+    ('it', _('Italian')),
 )
 LOCALE_PATHS = (
-    str(PACKAGE_DIR / 'locale'),
+    str(PACKAGE_DIR / 'LOCALE'),
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#site-id

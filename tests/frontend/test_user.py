@@ -5,9 +5,6 @@ from unittest.mock import Mock
 import pytest
 from constance.test import override_config
 from django.urls import reverse
-from strategy_field.utils import fqn
-
-from bitcaster.dispatchers import Email
 
 logger = logging.getLogger(__name__)
 
@@ -80,16 +77,15 @@ def test_user_addresses(django_app, admin):
 
 def test_user_assign_address(django_app, admin):
     # UserAddressesAssignmentView
-    from bitcaster.utils.tests.factories import AddressFactory
+    from bitcaster.utils.tests.factories import AddressFactory, ChannelFactory
     address1 = AddressFactory(user=admin, address='+3912345678')
     address2 = AddressFactory(user=admin, address='email@example.org')
+    channel1 = ChannelFactory()
     url = reverse('user-address-assignment')
     res = django_app.get(url, user=admin)
-
     res = res.form.submit()
     assert res.status_code == 200
-
-    res.form['assignments-0-dispatcher'] = fqn(Email)
+    res.form['assignments-0-channel'] = channel1.pk
     res.form['assignments-0-address'] = address1.pk
     res = res.form.submit()
     assert res.status_code == 200

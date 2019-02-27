@@ -4,6 +4,7 @@ from pathlib import Path
 import click
 from django.db.models import ManyToManyField
 from django.db.transaction import atomic
+from django_regex.utils import RegexList
 
 from bitcaster.cli import need_setup
 from bitcaster.cli.commands.option import option_set
@@ -20,6 +21,8 @@ DATA = ['user',
         'applicationtriggerkey',
         'subscription',
         ]
+IGNORE = RegexList([r'auth\.permission', r'auth\.group'])
+
 POP_FIELDS = ['version', 'last_modifed_date']
 
 SECTIONS = ['options'] + DATA
@@ -35,6 +38,8 @@ def get_all_models():
         for m2m_attr in m2m_attrs:
             rel = m2m_attr.rel
             name = f'{rel.model._meta.app_label}.{rel.model._meta.model_name}'
+            if name in IGNORE:
+                continue
             if name not in ret:
                 ret.append(name)
             if not m2m_attr.rel.through._meta.auto_created:
@@ -90,6 +95,7 @@ def backup(ctx, filename):
 @need_setup
 def restore(ctx, filename, overwrite, ignore_errors, selection):
     from django.apps import apps
+    from django.db.models.signals import post_save
 
     input_file = Path(filename)
     click.echo(f'Using backup {input_file.absolute()}')
@@ -97,6 +103,11 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
     if not selection:
         selection = ['options'] + get_all_models()
     with atomic():
+        post_save.disconnect(dispatch_uid='channel-check-config')
+        post_save.disconnect(dispatch_uid='event-check-config')
+        post_save.disconnect(dispatch_uid='message-check-config')
+        post_save.disconnect(dispatch_uid='app-check-config')
+
         if 'options' in selection:
             click.echo(f'restore...options')
             for key, value in data['options']:

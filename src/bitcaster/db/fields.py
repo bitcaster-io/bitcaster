@@ -185,14 +185,18 @@ class SubscriptionPolicy(EnumField):
     REQUIRE_CONFIRMATION = 2
     INVITATION = 3
     MANAGED = 4
+    MEMBERS = 5
 
     @classmethod
     def as_choices(cls):
-        return sorted([(int(cls.FREE), _('Free. (Everybody can automatically subscribe)')),
-                       (int(cls.INVITATION), _('Invitation. (Require invitation. Event will not be visible)')),
-                       (int(cls.REQUIRE_CONFIRMATION), _('Require Confirmation. (User can ask to subscribe)')),
-                       (int(cls.MANAGED), _('Managed. (User cannot subscribe/unsubscribe but can change channel)')),
-                       ])
+        return tuple(sorted([(int(cls.FREE), _('Free. (Everybody can automatically subscribe)')),
+                             (int(cls.INVITATION), _('Invitation. (Require invitation. Event will not be visible)')),
+                             (int(cls.MEMBERS), _('Members only. (Only members of Application Teams can subscribe)')),
+                             #  (int(cls.REQUIRE_CONFIRMATION),
+                             #  _('Require Confirmation. (User can ask to subscribe)')),
+                             #  (int(cls.MANAGED),
+                             #  _('Managed. (User cannot subscribe/unsubscribe but can change channel)')),
+                             ]))
 
 
 class SubscriptionPolicyField(models.IntegerField):

@@ -74,6 +74,12 @@ class Application(AbstractModel):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('app-edit', args=(self.organization.slug, self.slug))
+
+    def reverse(self, target):
+        return reverse(f'app-{target}', args=(self.organization, self.slug))
+
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.slug:
             slugify_instance(self, self.name,
@@ -98,6 +104,3 @@ class Application(AbstractModel):
 
     def membership_for(self, user):
         return self.organization.memberships.filter(user=user).first()
-
-    def get_absolute_url(self):
-        return reverse('app-dashboard', args=[self.organization.slug, self.slug])

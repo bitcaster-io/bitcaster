@@ -6,10 +6,10 @@ from bitcaster.models.configurationissue import (check_application,
                                                  check_organization,)
 
 
-@receiver([post_save, post_delete], sender=Channel)
-@receiver([post_save, post_delete], sender=Event)
-@receiver([post_save, post_delete], sender=Message)
-@receiver([post_save, post_delete], sender=ApplicationTriggerKey)
+@receiver([post_save, post_delete], sender=Channel, dispatch_uid='channel-check-config')
+@receiver([post_save, post_delete], sender=Event, dispatch_uid='event-check-config')
+@receiver([post_save, post_delete], sender=Message, dispatch_uid='message-check-config')
+@receiver([post_save, post_delete], sender=ApplicationTriggerKey, dispatch_uid='app-check-config')
 def check_config(sender, instance, **kwargs):
     if getattr(instance, 'application', None):
         check_application(instance.application)
