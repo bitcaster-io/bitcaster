@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from twilio.rest import Client
 
@@ -28,9 +29,15 @@ class TwilioOptions(DispatcherOptions):
 
 @dispatcher_registry.register
 class Twilio(CoreDispatcher):
-    __help__ = """get your token at https://www.twilio.com/console
-get twilio number  at https://www.twilio.com/console/phone-numbers/incoming
-"""
+    __help__ = _("""
+
+You need a valid [Twilio](https://www.twilio.com/) account to use this service.
+
+- Get your token at https://www.twilio.com/console
+- Get twilio number  at https://www.twilio.com/console/phone-numbers/incoming
+
+""")
+
     name = 'Twilio'
     subscription_class = TwilioSubscription
     options_class = TwilioOptions
@@ -58,6 +65,7 @@ get twilio number  at https://www.twilio.com/console/phone-numbers/incoming
             )
             return 1
         except Exception as e:  # pragma: no cover
+            logger.exception(e)
             raise PluginSendError(e)
 
     def test_connection(self, raise_exception=False):

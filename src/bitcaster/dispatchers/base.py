@@ -94,6 +94,8 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         return cls.subscription_class().fields['recipient'].run_validators(address)
 
     def validate_subscription(self, subscription, *args, **kwargs) -> None:
+        if isinstance(subscription, str):
+            return True
         cfg = get_full_config(self.subscription_class, subscription.config)
         cfg['recipient'] = self.get_recipient_address(subscription)
         try:
@@ -101,13 +103,13 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         except (serializers.ValidationError, ValidationError) as e:
             raise PluginValidationError(str(e)) from e
 
-    @abc.abstractmethod
     def test_connection(self, raise_exception=False):
-        pass
-
-    #
-    # def log(self, message, level=INFO):
-    #     self.logger.log(level, message)
+        try:
+            self._get_connection()
+            return True
+        except Exception as e:
+            logger.exception(e)
+            return False
 
     def test_message(self, subscription, subject, message, *args, **kwargs):
         # assert subscription.event is None

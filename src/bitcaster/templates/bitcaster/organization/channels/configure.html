@@ -4,16 +4,18 @@
     <div class="container-fluid">
         <div class="row col-12">
             <div class="col-10">
-                <form method="post"  class="channel-form">
+                <form method="post" class="channel-form">
                     {% csrf_token %}
                     {{ form|crispy }}
-                    {% render_serializer form.serializer "rest_framework/inline2" %}
+                    <div class="plugin-config-form">
+                        {% render_serializer form.serializer "rest_framework/inline2" %}
+                    </div>
                     <input type="submit" class="btn btn-primary" value="Save">
                     <input type="button" class="btn btn-secondary" onclick="history.back();" value="Cancel">
                 </form>
             </div>
             <div class="col-2 channel-info">
-                {% include "bitcaster/organization/channels/_info.html" with handler=channel.handler  %}
+                {% include "bitcaster/organization/channels/_info.html" with handler=channel.handler %}
             </div>
         </div>
     </div>

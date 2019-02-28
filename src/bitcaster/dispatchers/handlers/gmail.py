@@ -2,6 +2,7 @@
 from logging import getLogger
 
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from bitcaster.api.fields import PasswordField
@@ -31,21 +32,17 @@ class Gmail(Email):
     options_class = GmailOptions
     message_class = EmailMessage
     icon = None
-    __help__ = """Simplified Email dispatcher for GMail accounts.
-If you have *Two-step verification* enabled, you cannot use account credentials
- but need to create `application password` at
+    __help__ = _("""Simplified Email dispatcher for GMail accounts.
 
-- Click your name or photo near your Gmail inbox's top right corner.
-- Tap or click the Google Account button in the sheet that has appeared.
-- Click the Security button in the left-hand sidebar.
-- Scroll to the Signing in to Google section.
+**Generate Application password**
+
+- Navigate to your [Google Account](https://myaccount.google.com/security).
 - Under the Password & sign-in method section, click App passwords.
-- Make sure Mail or Other (custom name) is selected in the Select app drop-down menu.
- If you selected Mail, choose a computer or device from the Select device menu.
- If you selected Other (custom name), type the application or add-on and, optionally,
- device (like "Mozilla Thunderbird on my Linux laptop") over e.g. YouTube on my Xbox.
+- If requested login again using your usual password.
+- Make sure Other (custom name) is selected in the Select app drop-down menu.
+ Type the application name (ie. Bitcaster)
 - Click Generate.
-"""
+""")
 
     def _configure(self):
         if self.options_class:

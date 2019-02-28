@@ -222,4 +222,6 @@ Goto [addresses]({0}) to set your choice for **{1}**""").format(url, self.object
             self.message_user(markdown(msg), messages.ERROR, extra_tags='keep')
         except PluginSendError as e:
             self.message_user(_("Unable to send message to '{}': {}").format(address, e), messages.ERROR)
+        except Exception as e:
+            self.message_user(_("Unable to send message to '{}': {}").format(address, e), messages.ERROR)
         return super().get(request, *args, **kwargs)

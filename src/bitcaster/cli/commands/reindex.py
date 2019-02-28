@@ -14,6 +14,8 @@ def reindex(ctx, **kwargs):
         cursor = conn.cursor()
         update_status = f'REINDEX DATABASE {settings.DATABASES["default"]["NAME"]};'
         cursor.execute(update_status)
+        update_status = f'REINDEX SYSTEM {settings.DATABASES["default"]["NAME"]};'
+        cursor.execute(update_status)
 
     except Exception as e:
         click.echo(str(e))

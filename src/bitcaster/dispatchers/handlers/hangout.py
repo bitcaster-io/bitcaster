@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import gettext_lazy as _
 from pyxmpp2.client import Client
 from pyxmpp2.jid import JID
 from pyxmpp2.mainloop.interfaces import QUIT, EventHandler, event_handler
@@ -24,7 +25,8 @@ class HangoutMessage(MessageType):
 
 
 class HangoutOptions(DispatcherOptions):
-    username = serializers.CharField()
+    username = serializers.RegexField(r'.*@gmail\.com',
+                                      error_messages={'invalid': 'use a @gmail.com address'})
     password = PasswordField()
 
 
@@ -85,6 +87,16 @@ class Hangout(CoreDispatcher):
     subscription_class = HangoutSubscription
     options_class = HangoutOptions
     message_class = MessageType
+    __help__ = _("""
+#### Generate Application password
+
+- Navigate to your [Google Account](https://myaccount.google.com/security).
+- Under the Password & sign-in method section, click App passwords.
+- If requested login again using your usual password.
+- Make sure Other (custom name) is selected in the Select app drop-down menu.
+ Type the application name (ie. Bitcaster)
+- Click Generate.
+""")
 
     @classproperty
     def name(cls):

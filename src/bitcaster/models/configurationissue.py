@@ -79,46 +79,46 @@ def as_link(obj):
 
 def check_system():
     ret = []
-    for org in Organization.objects.all():
-        ret.extend(check_organization(org))
+    # for org in Organization.objects.all():
+    #     ret.extend(check_organization(org))
     return ret
 
 
 def check_organization(org):
-    org.issues.all().delete()
-    if org.channels.count() == 0:
-        org.issues.error('No Channel configured for this Organization', Channel)
-    elif org.channels.filter(enabled=True).count() == 0:
-        org.issues.error('No Channel enabled for this Organization', Channel)
-
-    if org.applications.filter().count() == 0:
-        org.issues.warning('No Applications configured for this Organization', Application)
-    elif org.applications.filter(enabled=True).count() == 0:
-        org.issues.warning('No Applications enabled for this Organization', Application)
+    # org.issues.all().delete()
+    # if org.channels.count() == 0:
+    #     org.issues.error('No Channel configured for this Organization', Channel)
+    # elif org.channels.filter(enabled=True).count() == 0:
+    #     org.issues.error('No Channel enabled for this Organization', Channel)
+    #
+    # if org.applications.filter().count() == 0:
+    #     org.issues.warning('No Applications configured for this Organization', Application)
+    # elif org.applications.filter(enabled=True).count() == 0:
+    #     org.issues.warning('No Applications enabled for this Organization', Application)
 
     return org.issues.all()
 
 
 def check_application(app):
-    app.issues.all().delete()
-    if app.events.count() == 0:
-        app.issues.warning('No Events configured for this Application', Event)
-    elif app.events.filter(enabled=True).count() == 0:
-        app.issues.error('No Events enabled for Application %s' % as_link(app), Event)
-
-    for event in app.events.all():
-        if not event.messages.filter(enabled=True).exists():
-            app.issues.error(f"Event '%s' does not have enabled messages" % as_link(event),
-                             Event)
-        if not event.keys.filter(enabled=True).exists():
-            app.issues.error(f"Event '{event}' does not have enabled keys",
-                             ApplicationTriggerKey)
-
-    if not app.keys.exists():
-        app.issues.warning('No Keys configured for this Application', ApplicationTriggerKey)
-    elif not app.keys.filter(enabled=True).exists():
-        app.issues.warning('No Keys enabled for this Application', ApplicationTriggerKey)
-
-    if app.issues.exists():
-        app.save()
+    # app.issues.all().delete()
+    # if app.events.count() == 0:
+    #     app.issues.warning('No Events configured for this Application', Event)
+    # elif app.events.filter(enabled=True).count() == 0:
+    #     app.issues.error('No Events enabled for Application %s' % as_link(app), Event)
+    #
+    # for event in app.events.all():
+    #     if not event.messages.filter(enabled=True).exists():
+    #         app.issues.error(f"Event '%s' does not have enabled messages" % as_link(event),
+    #                          Event)
+    #     if not event.keys.filter(enabled=True).exists():
+    #         app.issues.error(f"Event '{event}' does not have enabled keys",
+    #                          ApplicationTriggerKey)
+    #
+    # if not app.keys.exists():
+    #     app.issues.warning('No Keys configured for this Application', ApplicationTriggerKey)
+    # elif not app.keys.filter(enabled=True).exists():
+    #     app.issues.warning('No Keys enabled for this Application', ApplicationTriggerKey)
+    #
+    # if app.issues.exists():
+    #     app.save()
     return app.issues.all()
