@@ -5,7 +5,6 @@ from django.contrib import admin
 
 from bitcaster.models import Message
 
-from .forms import MessageForm
 from .site import site
 
 logger = logging.getLogger(__name__)
@@ -13,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 @admin.register(Message, site=site)
 class MessageAdmin(admin.ModelAdmin):
-    form = MessageForm
+    # form = MessageForm
     list_display = ('name', 'event', 'channel', 'language')
     list_filter = ('event__application', 'language')
     search_fields = ('name',)

@@ -19,8 +19,8 @@ from bitcaster.templatetags.markdown import markdown
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 
 from .base import (BitcasterBaseCreateView, BitcasterBaseDeleteView,
-                   BitcasterBaseUpdateView, BitcasterTemplateView,
-                   MessageUserMixin,)
+                   BitcasterBaseDetailView, BitcasterBaseUpdateView,
+                   BitcasterTemplateView, MessageUserMixin,)
 
 logger = logging.getLogger(__name__)
 
@@ -189,7 +189,7 @@ class ChannelToggleView(MessageUserMixin, RedirectView):
         return super().get(request, *args, **kwargs)
 
 
-class ChannelUsageView(BitcasterBaseDeleteView):
+class ChannelUsageView(BitcasterBaseDetailView):
 
     def get_context_data(self, **kwargs):
         kwargs['handler'] = self.object.handler

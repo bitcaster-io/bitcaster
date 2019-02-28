@@ -58,8 +58,8 @@ class OrganizationMember(models.Model):
             ('organization', 'email'),
         )
 
-    # def __str__(self):
-    #     return self.user and self.user.email or self.email
+    def __str__(self):
+        return self.user and self.user.email or self.email
 
     # @transaction.atomic
     def save(self, *args, **kwargs):

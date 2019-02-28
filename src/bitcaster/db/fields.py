@@ -15,11 +15,11 @@ from fernet_fields import hkdf
 from jsoneditor.forms import JSONEditor
 from strategy_field.fields import StrategyField
 
+from bitcaster.agents.registry import agent_registry
 from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.exceptions import HandlerNotFound
 from bitcaster.file_storage import AvatarFileSystemStorage
 from bitcaster.forms import DispatcherFormField
-from bitcaster.monitor.registry import monitor_registry
 
 logger = logging.getLogger(__name__)
 
@@ -248,13 +248,13 @@ class DispatcherField(StrategyField):
         return super().formfield(form_class, choices_form_class, **kwargs)
 
 
-class MonitorField(StrategyField):
+class AgentField(StrategyField):
 
     def __init__(self, **kwargs):
-        kwargs.setdefault('verbose_name', 'Dispatcher')
+        kwargs.setdefault('verbose_name', 'Agent')
         kwargs.setdefault('display_attribute', 'name')
         kwargs.setdefault('import_error', handler_not_found)
-        kwargs.setdefault('registry', monitor_registry)
+        kwargs.setdefault('registry', agent_registry)
         super().__init__(**kwargs)
 
     def __eq__(self, other):

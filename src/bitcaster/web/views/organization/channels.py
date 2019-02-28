@@ -29,7 +29,7 @@ class OrganizationChannelUpdate(OrganizationViewMixin, ChannelUpdateView):
     template_name = 'bitcaster/organization/channels/configure.html'
 
     def get_success_url(self):
-        return reverse_lazy('org-channel-list',
+        return reverse_lazy('org-channels',
                             args=[self.selected_organization.slug])
 
     def get_queryset(self):
@@ -37,24 +37,20 @@ class OrganizationChannelUpdate(OrganizationViewMixin, ChannelUpdateView):
 
 
 class OrganizationChannelRemove(OrganizationViewMixin, ChannelDeleteView):
-    template_name = 'bitcaster/organization/channels/remove.html'
 
     def get_success_url(self):
-        return reverse_lazy('org-channel-list',
-                            args=[self.selected_organization.slug])
+        return reverse_lazy('org-channels', args=[self.selected_organization.slug])
 
     def get_queryset(self):
         return self.selected_organization.channels.all()
 
 
 class OrganizationChannelToggle(OrganizationViewMixin, ChannelToggleView):
-    pattern_name = 'org-channel-list'
-
     def get_queryset(self):
         return self.selected_organization.channels.all()
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy('org-channel-list',
+        return reverse_lazy('org-channels',
                             args=[self.selected_organization.slug])
 
 
@@ -73,18 +69,17 @@ class OrganizationChannelTest(OrganizationViewMixin, ChannelTestView):
         return self.selected_organization.channels.all()
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy('org-channel-list',
+        return reverse_lazy('org-channels',
                             args=[self.selected_organization.slug])
 
 
 class OrganizationChannelDeprecate(OrganizationViewMixin, ChannelDeprecateView):
-    pattern_name = 'org-channel-list'
 
     def get_queryset(self):
         return self.selected_organization.channels.all()
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy('org-channel-list',
+        return reverse_lazy('org-channels',
                             args=[self.selected_organization.slug])
 
 
@@ -94,7 +89,7 @@ class OrganizationChannelCreate(OrganizationViewMixin, ChannelCreateWizard):
                  }
 
     def get_success_url(self):
-        return reverse_lazy('org-channel-list', args=[self.selected_organization.slug])
+        return reverse_lazy('org-channels', args=[self.selected_organization.slug])
 
     def get_extra_instance_kwargs(self):
         return {'organization': self.selected_organization}

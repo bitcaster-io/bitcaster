@@ -5,4 +5,4 @@ from bitcaster.logging import getLogger
 
 logger = getLogger(__name__)
 
-monitor_registry = Registry('bitcaster.monitor.base.Agent')
+agent_registry = Registry('bitcaster.agents.base.Agent')

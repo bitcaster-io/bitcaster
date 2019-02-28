@@ -9,6 +9,7 @@ from django.template import Template
 from bitcaster import logging
 from bitcaster.db.fields import DispatcherField, EncryptedJSONField
 from bitcaster.exceptions import MaxChannelError, PluginValidationError
+from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.state import state
 from bitcaster.template.secure_context import SecureContext
 
@@ -52,7 +53,7 @@ class ChannelQuerySet(models.QuerySet):
                            )
 
 
-class Channel(AbstractModel):
+class Channel(ReverseWrapperMixin, AbstractModel):
     """ A Channel represent a configured dispatcher.
 It can be Global or Application specific.
     """
@@ -70,10 +71,6 @@ It can be Global or Application specific.
     enabled = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
     handler = DispatcherField(null=True)
-    # handler = StrategyField(verbose_name='Dispatcher',
-    #                         import_error=handler_not_found,
-    #                         display_attribute='name',
-    #                         registry=dispatcher_registry)
     deprecated = models.BooleanField(default=False)
     errors_threshold = models.IntegerField(default=100,
                                            help_text='Number or errors before channel will be automatically disabled')
@@ -82,6 +79,10 @@ It can be Global or Application specific.
     class Meta:
         app_label = 'bitcaster'
         ordering = ('organization', 'application', 'name')
+
+    class Reverse:
+        pattern = 'org-channel-{op}'
+        args = ['organization.slug', 'id']
 
     def __repr__(self):
         return f'<Channel #{self.id} {self.name}>'

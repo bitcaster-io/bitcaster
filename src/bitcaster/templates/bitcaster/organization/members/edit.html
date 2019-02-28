@@ -34,7 +34,7 @@
             <button type="submit" class="btn btn-danger btn-small pull-left" href=".">{% trans "Save" %}</button>
             <button type="button"
                     class="btn btn-light btn-small pull-left"
-                    onclick="window.location.href = '{% org-url "org-member-list" %}';">
+                    onclick="window.location.href = '{{ organization.urls.members }}';">
                 Cancel
             </button>
 

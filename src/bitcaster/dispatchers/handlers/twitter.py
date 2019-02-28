@@ -6,9 +6,9 @@ from bitcaster.dispatchers import serializers
 from bitcaster.dispatchers.base import (CoreDispatcher,
                                         DispatcherOptions, MessageType,)
 from bitcaster.dispatchers.registry import dispatcher_registry
-from bitcaster.dispatchers.validators import MaxBodyLengthValidator
 from bitcaster.exceptions import PluginSendError
 from bitcaster.logging import getLogger
+from bitcaster.plugins.validators import MaxBodyLengthValidator
 from bitcaster.templatetags.markdown import markdown
 from bitcaster.utils.language import classproperty
 

@@ -6,6 +6,7 @@ from .event import (EventCreateSelectChannel, EventCreateSetupMessage,
 from .formsets import OrganizationInvitationForm, OrganizationInvitationFormSet
 from .key import ApplicationTriggerKeyForm
 from .message import MessageForm
+from .monitor import MonitorCreate1, MonitorForm, MonitorUpdateConfigurationForm
 from .organization import OrganizationForm
 from .subscription import SubscriptionForm
 from .system_settings import (SettingsChannelsForm, SettingsEmailForm,

@@ -3,7 +3,6 @@ import logging
 
 import pytest
 from django.core import mail
-from django.urls import reverse
 from requests_html import HTML
 
 from bitcaster.models import AuditEvent, AuditLogEntry
@@ -18,7 +17,8 @@ def test_audit(django_app, application1, caplog):
 
     organization = application1.organization
     owner = organization.owner
-    url = reverse('org-member-invite', args=[organization.slug])
+    # url = reverse('org-member-invite', args=[organization.slug])
+    url = organization.urls.invite
     res = django_app.get(url, user=organization.owner)
 
     res.form['memberships-0-email'] = EMAIL

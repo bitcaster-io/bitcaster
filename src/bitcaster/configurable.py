@@ -53,6 +53,10 @@ class ConfigurableMixin:
         self.owner = owner
         self._config = None
 
+    def get_options_form(self, **kwargs):
+        kwargs.setdefault('data', self.owner.config)
+        return self.options_class(**kwargs)
+
     @classproperty
     def name(cls):
         return cls.__name__

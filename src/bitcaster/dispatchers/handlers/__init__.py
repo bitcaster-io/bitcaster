@@ -9,5 +9,4 @@ from .slack import SlackWebhook  # noqa
 from .system_email import SystemEmail  # noqa
 from .twilio import Twilio  # noqa
 from .twitter import Twitter  # noqa
-# from .twitter_message import TwitterMessage  # noqa
 from .xmpp import Xmpp  # noqa

@@ -9,6 +9,7 @@ class Config(AppConfig):
         from . import celery  # noqa
         from django.conf import settings  # noqa
         from .dispatchers.registry import dispatcher_registry  # noqa
+        from .agents.registry import agent_registry  # noqa
         from . import tasks  # noqa
         from . import checks  # noqa
         from . import handlers  # noqa

@@ -62,8 +62,7 @@ def test_create_event(django_app, channel1):
     application = channel1.application
     organization = application.organization
     owner = organization.owner
-    url = reverse('app-event-list', args=[organization.slug,
-                                          application.slug])
+    url = reverse('app-events', args=[organization.slug, application.slug])
     res = django_app.get(url, user=owner.email)
     res = res.click('Add Event')
     res.form['name'] = 'Event1'
@@ -97,9 +96,7 @@ def test_update_event(django_app, message1):
     application = event.application
     organization = application.organization
     owner = organization.owner
-    url = reverse('app-event-update', args=[organization.slug,
-                                            application.slug,
-                                            event.pk])
+    url = event.urls.edit
     res = django_app.get(url, user=owner.email)
     res.form['name'] = 'Event-updated'
     res.form['channels'] = [application.channels.first().pk]

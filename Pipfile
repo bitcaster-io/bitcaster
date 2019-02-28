@@ -67,6 +67,7 @@ twilio = "*"
 websocket-client = "*"
 whitenoise = "*"
 markdown = "*"
+django-mailbox = "*"
 
 [dev-packages]
 "flake8" = "*"

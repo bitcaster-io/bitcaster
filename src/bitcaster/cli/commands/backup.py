@@ -10,13 +10,15 @@ from bitcaster.cli import need_setup
 from bitcaster.utils.json import Decoder, Encoder
 
 DATA = ['user',
-        'monitormetadata', 'dispatchermetadata',
+        # 'agentmetadata', 'dispatchermetadata',
         'organization',
         'application',
         'channel',
-        'address', 'addressassignment',
         'event',
         'message',
+        'monitor',
+        'address',
+        'addressassignment',
         'applicationtriggerkey',
         'subscription',
         ]
@@ -32,7 +34,11 @@ def get_all_models():
 
     ret = [f'bitcaster.{n}' for n in DATA]
     for model_name in DATA:
-        model = apps.get_model(f'bitcaster.{model_name}')
+        try:
+            model = apps.get_model(f'bitcaster.{model_name}')
+        except LookupError:
+            continue
+
         m2m_attrs = [getattr(model, f.name) for f in model._meta.get_fields() if isinstance(f, ManyToManyField)]
         for m2m_attr in m2m_attrs:
             rel = m2m_attr.rel
@@ -107,7 +113,7 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
         post_save.disconnect(dispatch_uid='channel-check-config')
         post_save.disconnect(dispatch_uid='event-check-config')
         post_save.disconnect(dispatch_uid='message-check-config')
-        post_save.disconnect(dispatch_uid='app-check-config')
+        post_save.disconnect(dispatch_uid='key-check-config')
 
         if 'options' in selection:
             click.echo(f'restore...options')
@@ -123,8 +129,13 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
         for model_name in ALL_MODELS:
             if model_name in selection:
                 model = apps.get_model(model_name)
+                try:
+                    model_data = data[model_name]
+                except KeyError:
+                    click.echo(f'skipping...{model_name} no data exists', color='red')
+                    continue
                 click.echo(f'restore...{model_name}')
-                for record in data[model_name]['__data__']:
+                for record in model_data['__data__']:
                     try:
                         pk = record.pop('id')
                         for field_name in POP_FIELDS:
@@ -142,10 +153,17 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
                 # # ManyToMany
                 for m2m_field_name, m2m_records in data[model_name]['__m2m__'].items():
                     m2m_field = model._meta.get_field(m2m_field_name)
-                    m2m_attr = getattr(model, m2m_field_name)
                     related_model = m2m_field.related_model
                     for record in m2m_records:
                         parent = model.objects.get(pk=record['id'])
                         m2m_attr = getattr(parent, m2m_field_name)
                         related = related_model.objects.get(pk=record[m2m_field_name])
                         m2m_attr.add(related)
+
+        from bitcaster.models import AgentMetaData
+        from bitcaster.models import DispatcherMetaData
+        from bitcaster.models.configurationissue import check_system
+
+        AgentMetaData.objects.inspect()
+        DispatcherMetaData.objects.inspect()
+        check_system()

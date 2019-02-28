@@ -10,7 +10,7 @@ from django.core.checks import Error, register
 from django.db import OperationalError, ProgrammingError, connection
 
 from bitcaster.config.environ import env
-from bitcaster.models import DispatcherMetaData, MonitorMetaData
+from bitcaster.models import AgentMetaData, DispatcherMetaData
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def check_dispatchers(*args, **kwargs):
     try:
         DispatcherMetaData.objects.inspect()
-        MonitorMetaData.objects.inspect()
+        AgentMetaData.objects.inspect()
     except ProgrammingError:  # this happens in ./manage.py migrate
         pass
     return []

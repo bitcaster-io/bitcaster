@@ -13,6 +13,7 @@ TARGETS = ['system', 'org', 'app']
 
 PERMISSIONS = {'org:configure',  # configure
                'org:create_channel',
+               'app:create_monitor',
                'app:create',  # create applications
                'app:configure',  # configure application (#General, create channels)
                'app:manage',  # manage application (manage events/messages

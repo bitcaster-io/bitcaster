@@ -1,12 +1,12 @@
 {% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block pageId %}event{% endblock %}
 {% block content %}
-    <h2><a href="{% app-url "app-event-update" event.pk %}">{{ event }}</a>: Invite Users</h2>
+    <h2><a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a>: Invite Users</h2>
     <div>
-        <a href="{% app-url "app-event-list" %}">events</a> :
-        <a href="{% app-url "app-event-update" event.pk %}">{{ event }}</a> :
+        <a href="{{ application.urls.events }}">events</a> :
+        <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a> :
         <a href="{% app-url "app-event-subscriptions" event.pk %}">subscriptions</a> :
-        <a href="{% app-url "app-event-subscriptions-subscribe" event.pk %}">invite users</a>
+        <a href="{% app-url "app-event-subscribe" event.pk %}">invite users</a>
     </div>
 
     <div class="container">

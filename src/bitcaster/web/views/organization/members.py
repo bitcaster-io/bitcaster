@@ -46,14 +46,13 @@ class OrganizationMembershipEdit(OrganizationViewMixin, BitcasterBaseUpdateView)
         return super(OrganizationMembershipEdit, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('org-member-list', args=[self.selected_organization.slug])
+        return reverse('org-members', args=[self.selected_organization.slug])
 
 
 class OrganizationMembershipDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
-    template_name = 'bitcaster/organization/members/confirm_delete.html'
 
     def get_success_url(self):
-        return reverse('org-member-list', args=[self.selected_organization.slug])
+        return reverse('org-members', args=[self.selected_organization.slug])
 
     def get_queryset(self):
         return self.selected_organization.memberships.filter(user__isnull=False)

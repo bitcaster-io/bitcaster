@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _, ngettext_lazy
 
@@ -46,3 +48,16 @@ class MaxLengthValidator(BaseValidator):
 class MaxBodyLengthValidator(MaxLengthValidator):
     def __init__(self, limit_value, message=None):
         super().__init__('body', limit_value, message)
+
+
+class RegexFieldValidator:
+
+    def clean(self, x):
+        return x
+
+    def __call__(self, value):
+        try:
+            re.compile(value)
+            return True
+        except Exception:
+            raise ValidationError('Invalid regex')

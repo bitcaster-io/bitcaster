@@ -32,10 +32,10 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a class="btn btn-light" href='{% app-url "app-key-update" key.pk %}'>
+                    <a class="btn btn-light" href='{{ key.urls.edit }}'>
                         <i class="far fa-edit pointer"></i>
                     </a>
-                    <a class="btn btn-light" href='{% app-url "app-key-delete" key.pk %}'>
+                    <a class="btn btn-light" href='{{ key.urls.delete }}'>
                         <i class="far fa-trash-alt pointer"></i>
                     </a>
                     {#                        <button onclick="window.location.href = '{% app-url "app-key-update" key.pk %}';">#}

@@ -18,7 +18,7 @@ class EventMixin(SelectedApplicationMixin):
                                  self.object.pk]
                            )
         else:
-            return reverse('app-event-list',
+            return reverse('app-events',
                            args=[self.selected_organization.slug,
                                  self.selected_application.slug])
 
@@ -55,7 +55,7 @@ class MessageMixin(SelectedApplicationMixin, MessageUserMixin):
     model = Message
 
     def get_success_url(self):
-        return reverse('app-message-list',
+        return reverse('app-messages',
                        args=[self.selected_organization.slug,
                              self.selected_application.slug])
 

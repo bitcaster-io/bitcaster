@@ -75,7 +75,6 @@ class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
 
 class EventDelete(EventMixin, EventFormMixin, BitcasterBaseDeleteView):
     title = 'Delete Event'
-    template_name = 'bitcaster/application/events/confirm_delete.html'
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_('Save Event'),

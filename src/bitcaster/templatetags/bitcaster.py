@@ -23,6 +23,11 @@ def jsonify(value):
     return json.dumps(value)
 
 
+@register.filter()
+def verbose_name(instance):
+    return instance._meta.verbose_name.title()
+
+
 @register.simple_tag(takes_context=True)
 def oauth_button(context, channel: Channel):
     label = channel.handler.render_button() or f'Authorise with {channel.handler.name}'

@@ -1,4 +1,4 @@
-{% extends "bitcaster/application/base.html" %}{% load bc_permissions i18n %}
+{% extends "bitcaster/application/base.html" %}{% load bc_permissions bitcaster i18n %}
 {% block bodyclass %}organization{% endblock %}
 {% block sidebar %}
     <div class="row d-flex d-md-block flex-nowrap wrapper">
@@ -15,19 +15,19 @@
                         <div>
                             <ul class="nav nav-stacked">
                                 <li>
-                                    <a href="{% url "org-dashboard" organization.slug %}">{% trans "Dashboard" %}</a>
+                                    <a href="{{ organization.urls.dashboard }}">{% trans "Dashboard" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url "org-config" organization.slug %}">{% trans "Configuration" %}</a>
+                                    <a href="{{ organization.urls.config }}">{% trans "Configuration" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url "org-channel-list" organization.slug %}">{% trans "Channels" %}</a>
+                                    <a href="{{ organization.urls.channels }}">{% trans "Channels" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url "org-member-list" organization.slug %}">{% trans "Members" %}</a>
+                                    <a href="{{ organization.urls.members }}">{% trans "Members" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url "org-team-list" organization.slug %}">{% trans "Teams" %}</a>
+                                    <a href="{{ organization.urls.teams }}">{% trans "Teams" %}</a>
                                 </li>
                                 <li>
                                     <a href="{{ organization.urls.applications }}">{% trans "Applications" %}</a>

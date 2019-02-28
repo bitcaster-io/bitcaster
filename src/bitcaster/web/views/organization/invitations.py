@@ -37,7 +37,7 @@ class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
     template_name = 'bitcaster/organization/members/invite.html'
 
     def get_success_url(self):
-        return reverse('org-member-list', args=[self.selected_organization.slug])
+        return reverse('org-members', args=[self.selected_organization.slug])
 
     def get_context_data(self, **kwargs):
         data = super(OrganizationInvite, self).get_context_data(**kwargs)
@@ -162,7 +162,7 @@ class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
     fields = ()
 
     def get_success_url(self):
-        return reverse('org-member-list', args=[self.selected_organization.slug])
+        return reverse('org-members', args=[self.selected_organization.slug])
 
     def get_queryset(self):
         return self.selected_organization.memberships.all()
@@ -181,7 +181,7 @@ class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
 class InviteDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
 
     def get_success_url(self):
-        return reverse('org-member-list', args=[self.selected_organization.slug])
+        return reverse('org-members', args=[self.selected_organization.slug])
 
     def get_queryset(self):
         return self.selected_organization.memberships.filter(user__isnull=True)

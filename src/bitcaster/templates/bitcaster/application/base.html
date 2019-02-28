@@ -1,4 +1,4 @@
-{% extends "bitcaster/base.html" %}{% load bitcaster bc_permissions %}
+{% extends "bitcaster/base.html" %}{% load bitcaster bc_permissions i18n %}
 {% block bodyclass %}application{% endblock %}
 {% block page %}
     <div class="container-fluid">
@@ -17,14 +17,17 @@
                                 <div class="col-md-2 org-sidebar">
                                     <div>
                                         <ul class="nav nav-stacked">
-                                            <li><a href="{% app-url 'app-dashboard' %}">Dashboard</a></li>
-                                            <li><a href="{% app-url 'app-edit' %}">Configuration</a></li>
-                                            <li><a href="{% app-url 'app-key-list' %}">Keys</a></li>
+                                            <li><a href="{% app-url 'app-dashboard' %}">{% trans "Dashboard" %}</a></li>
+                                            <li><a href="{% app-url 'app-edit' %}">{% trans "Configuration" %}</a></li>
+                                            <li><a href="{% app-url 'app-keys' %}">{% trans "Keys" %}</a></li>
 {#                                            <li><a href="{% app-url 'app-channel-list' %}">Channels</a></li>#}
-                                            <li><a href="{% app-url 'app-event-list' %}">Events</a></li>
+                                            <li><a href="{% app-url 'app-events' %}">{% trans "Events" %}</a></li>
                                             {#                                            <li><a href="{% app-url 'app-message-list' %}">Messages</a></li>#}
-                                            <li><a href="{% app-url 'app-subscriptions' %}">Subscriptions</a></li>
-                                            <li><a href="{% app-url 'app-team-list' %}">Teams</a></li>
+                                <li>
+                                    <a href="{{ application.urls.monitors }}">{% trans "Monitors" %}</a>
+                                </li>
+                                            <li><a href="{% app-url 'app-subscriptions' %}">{% trans "Subscriptions" %}</a></li>
+                                            <li><a href="{% app-url 'app-teams' %}">{% trans "Teams" %}</a></li>
                                         </ul>
                                     </div>
                                 </div>

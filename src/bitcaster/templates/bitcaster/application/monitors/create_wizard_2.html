@@ -1,0 +1,19 @@
+{% extends "bitcaster/application/monitors/create_wizard_base.html" %}{% load i18n crispy_forms_tags crispy_forms_filters bitcaster %}
+{% block wizard-content %}
+    <div class="container-fluid">
+        <div class="row col-12">
+            <div class="col-10">
+                <div class="channel-form">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="plugin-config-form">
+                        {% render_serializer form.serializer "rest_framework/inline2" %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-2 channel-info">
+                {% include "bitcaster/application/monitors/_info.html" with handler=handler %}
+            </div>
+        </div>
+    </div>
+{% endblock wizard-content %}

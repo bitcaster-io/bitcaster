@@ -77,6 +77,13 @@ def as_link(obj):
     return str(obj)
 
 
+def check_system():
+    ret = []
+    for org in Organization.objects.all():
+        ret.extend(check_organization(org))
+    return ret
+
+
 def check_organization(org):
     org.issues.all().delete()
     if org.channels.count() == 0:

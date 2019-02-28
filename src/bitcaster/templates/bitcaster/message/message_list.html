@@ -24,8 +24,8 @@
                 <div class="col-4  handler-name">
                     <strong>{{ message.name }}</strong>
                     <div class="pt-3">
-                        <a href="{% app-url "app-message-update" message.pk %}">Edit</a>
-                        | <a href="{% app-url "app-message-delete" message.pk %}">Remove</a>
+                        <a href="{{ message.urls.edit }}">Edit</a>
+                        | <a href="{{ message.urls.delete }}">Remove</a>
                     </div>
                 </div>
                 <div class="col-2 handler-name">

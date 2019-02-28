@@ -7,8 +7,9 @@ from .configurationissue import ConfigurationIssueAdmin
 from .counters import CounterAdmin, LogEntryAdmin, OccurenceAdmin
 from .event import EventAdmin
 from .message import MessageAdmin
+from .monitor import MonitorAdmin
 from .organization import OrganizationAdmin
-from .plugins import DispatcherMetaDataAdmin, MonitorMetaDataAdmin
+from .plugins import AgentMetaDataAdmin, DispatcherMetaDataAdmin
 from .registry import RegistryAdmin
 from .security import ApiAuthTokenAdmin, ApplicationTriggerKey, UserAdmin
 from .subscription import SubscriptionAdmin

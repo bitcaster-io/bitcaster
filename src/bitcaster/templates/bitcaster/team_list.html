@@ -23,7 +23,7 @@
         <tbody>
         {% for team in object_list %}
             <tr class="d-flex">
-                <td class="col-sm"><a href="{% org-url "org-team-update" team.slug %}">{{ team.name }}</a></td>
+                <td class="col-sm"><a href="{{ team.urls.edit }}">{{ team.name }}</a></td>
                 <td class="col-sm">{{ team.manager.email }}</td>
                 <td class="col-sm">{{ team.members.count }}</td>
                 <td class="col-sm">{{ team.date_added }}</td>

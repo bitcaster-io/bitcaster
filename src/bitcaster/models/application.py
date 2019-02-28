@@ -80,7 +80,7 @@ class Application(AbstractModel, ReverseWrapperMixin):
         return self.name
 
     def get_absolute_url(self):
-        return str(self.reverse.edit)
+        return str(self.urls.edit)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.slug:

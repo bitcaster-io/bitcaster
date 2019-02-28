@@ -1,17 +1,16 @@
 {% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block content %}
-    <h2>Organization Users</h2>
+    <h2>{% trans "Teams" %}</h2>
 
     <div class="container">
         <div class="row col-12">
             <div class="pull-right col-12 p-4">
                 <a class="btn btn-danger btn-small pull-right"
-                   href="{% url "org-team-create" organization.slug %}">{% trans "Create new team members" %}</a>
+                   href="{% url "org-team-create" organization.slug %}">{% trans "Create new team" %}</a>
             </div>
         </div>
     </div>
     <div class="container">
-        <h4>Teams</h4>
         <table class="table">
             <thead>
             <tr scope="row" lass="row col-12">

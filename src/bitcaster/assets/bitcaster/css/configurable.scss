@@ -1,0 +1,26 @@
+.plugin-config-form {
+    .form-group {
+        .errors {
+            color: red;
+        }
+
+        .label {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+
+        }
+
+        &.has-error {
+            .form-control {
+                border: 1px solid red;
+            }
+
+            .help-block {
+                color: red;
+                padding-top: 2px;
+
+            }
+        }
+    }
+
+}

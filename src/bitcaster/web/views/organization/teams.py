@@ -37,7 +37,7 @@ class OrganizationTeamCreate(OrganizationTeamMixin, BitcasterBaseCreateView):
     form_class = TeamForm
 
     def get_success_url(self):
-        return reverse('org-team-list', args=[self.selected_organization.slug])
+        return reverse('org-teams', args=[self.selected_organization.slug])
 
     def get_initial(self):
         return {'manager': self.request.user}
@@ -68,7 +68,7 @@ class OrganizationTeamUpdate(OrganizationTeamMixin, BitcasterBaseUpdateView):
         return kwargs
 
     def get_success_url(self):
-        return reverse('org-team-list', args=[self.selected_organization.slug])
+        return reverse('org-teams', args=[self.selected_organization.slug])
 
     def form_valid(self, form):
         with transaction.atomic():
@@ -81,7 +81,7 @@ class OrganizationTeamMember(OrganizationTeamMixin, BitcasterBaseUpdateView):
     slug_url_kwarg = 'slug'
 
     def get_success_url(self):
-        return reverse('org-team-list', args=[self.selected_organization.slug])
+        return reverse('org-teams', args=[self.selected_organization.slug])
 
     def get_initial(self):
         return super().get_initial()

@@ -44,6 +44,10 @@ class Message(AbstractModel):
         app_label = 'bitcaster'
         unique_together = ('event', 'channel', 'language')
 
+    class Reverse:
+        pattern = 'app-key-{op}'
+        args = ['application.organization.slug', 'application.slug', 'id']
+
     def __str__(self):
         return self.name
 

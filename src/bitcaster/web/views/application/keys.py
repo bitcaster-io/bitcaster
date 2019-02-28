@@ -37,8 +37,8 @@ class ApplicationKeyFormMixin:
         return kwargs
 
     def get_success_url(self):
-        return reverse('app-key-list', args=[self.selected_organization.slug,
-                                             self.selected_application.slug])
+        return reverse('app-keys', args=[self.selected_organization.slug,
+                                         self.selected_application.slug])
 
 
 class ApplicationKeyCreate(ApplicationKeyFormMixin, ApplicationViewMixin,
@@ -58,11 +58,10 @@ class ApplicationKeyUpdate(ApplicationViewMixin, ApplicationKeyFormMixin, Bitcas
 
 class ApplicationKeyDelete(ApplicationViewMixin, BitcasterBaseDeleteView):
     pk_url_kwarg = 'pk'
-    template_name = 'bitcaster/application/keys/confirm_delete.html'
 
     def get_object(self, queryset=None):
         return self.selected_application.keys.get(pk=self.kwargs.get(self.pk_url_kwarg))
 
     def get_success_url(self):
-        return reverse('app-key-list', args=[self.selected_organization.slug,
-                                             self.selected_application.slug])
+        return reverse('app-keys', args=[self.selected_organization.slug,
+                                         self.selected_application.slug])

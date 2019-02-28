@@ -2,8 +2,8 @@
 {% block content %}
     <h2><a href="../..">{{ event }}</a>: {{ title }}</h2>
     <div class="breadcrumbs pb-4">
-        <a href="{% app-url "app-event-list" %}">events</a> :
-        <a href="{% app-url "app-event-update" event.pk %}">{{ event }}</a> :
+        <a href="{% app-url "app-events" %}">events</a> :
+        <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a> :
         <a href="{% app-url "app-event-keys" event.pk %}">keys</a>
     </div>
     <div class="container">

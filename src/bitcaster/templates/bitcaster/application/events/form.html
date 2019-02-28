@@ -3,9 +3,9 @@
 {% block content %}
     <h2>{{ title }}</h2>
     <div class="breadcrumbs pb-4">
-        <a href="{% app-url "app-event-list" %}">events</a> :
+        <a href="{{ application.urls.events }}">events</a> :
         {% if event %}
-            <a href="{% app-url "app-event-update" event.pk %}">{{ event }}</a>
+            <a href="{{ event.urls.edit }}">{{ event }}</a>
         {% endif %}
     </div>
     <div class="container-fluid">

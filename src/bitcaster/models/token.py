@@ -6,6 +6,7 @@ from bitcaster.logging import getLogger
 from bitcaster.models import Event
 from bitcaster.models.application import Application
 from bitcaster.models.base import AbstractModel
+from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.models.user import User
 from bitcaster.utils.tokens import generate_api_token
 
@@ -18,7 +19,7 @@ DEFAULT_EXPIRATION = datetime.timedelta(days=30)
 #     return timezone.now() + DEFAULT_EXPIRATION
 #
 
-class ApplicationTriggerKey(AbstractModel):
+class ApplicationTriggerKey(ReverseWrapperMixin, AbstractModel):
     application = models.ForeignKey(Application,
                                     on_delete=models.CASCADE,
                                     related_name='keys')
@@ -34,6 +35,10 @@ class ApplicationTriggerKey(AbstractModel):
         app_label = 'bitcaster'
         verbose_name = 'Key'
         verbose_name_plural = 'Keys'
+
+    class Reverse:
+        pattern = 'app-key-{op}'
+        args = ['application.organization.slug', 'application.slug', 'id']
 
 
 class ApiAuthToken(AbstractModel):

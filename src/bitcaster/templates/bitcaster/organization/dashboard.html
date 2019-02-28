@@ -11,13 +11,13 @@
         {% endif %}
         <div class="col-2">
             <a class="btn btn-dark btn-small pull-right"
-               href="{% url "org-check" organization.slug %}">{% trans "Validate Configuration" %}</a>
+               href="{{ organization.urls.check }}">{% trans "Validate Configuration" %}</a>
         </div>
     </div>
     <div class="row col-12 p-3 m-1">
         <div class="card mr-3" style="width:30%">
             <div class="card-header bg-{{ data.box_members }}">Members
-                <a href="{% url "org-member-list" organization.slug %}" class="pull-right"><i class="fa fa-wrench"></i></a>
+                <a href="{{ organization.urls.members }}" class="pull-right"><i class="fa fa-wrench"></i></a>
             </div>
             <div class="card-body ">
                 {% metric "Active Users" data.active_users %}
@@ -26,7 +26,7 @@
         </div>
         <div class="card mr-3" style="width:30%">
             <div class="card-header bg-{{ data.box_channels }}">Channels
-                <a href="{% url "org-channel-list" organization.slug %}" class="pull-right"><i class="fa fa-wrench"></i></a>
+                <a href="{{ organization.urls.channels  }}" class="pull-right"><i class="fa fa-wrench"></i></a>
             </div>
             <div class="card-body ">
                 {% metric "Enabled Channels" data.enabled_channels %}
@@ -36,7 +36,7 @@
         </div>
         <div class="card mr-3" style="width:30%">
             <div class="card-header bg-{{ data.box_apps }}">Applications
-                <a href="{% url "org-applications" organization.slug %}" class="pull-right"><i class="fa fa-wrench"></i></a>
+                <a href="{{ organization.urls.applications }}" class="pull-right"><i class="fa fa-wrench"></i></a>
             </div>
             <div class="card-body">
                 {% metric "Total" data.applications %}

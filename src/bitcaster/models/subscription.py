@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
 from bitcaster.db.fields import EncryptedJSONField, EnumField
+from bitcaster.models.mixins import ReverseWrapperMixin
 
 from .base import AbstractModel
 from .channel import Channel
@@ -45,7 +46,7 @@ class SubscriptionStatus(EnumField):
                        ])
 
 
-class Subscription(AbstractModel):
+class Subscription(ReverseWrapperMixin, AbstractModel):
     """ """
     subscriber = models.ForeignKey(User, models.CASCADE,
                                    # blank=True, null=True,
@@ -68,6 +69,10 @@ class Subscription(AbstractModel):
         app_label = 'bitcaster'
         unique_together = ('channel', 'subscriber', 'event')
         get_latest_by = 'id'
+
+    class Reverse:
+        pattern = 'app-event-subscription-{op}'
+        args = ['application.organization.slug', 'application.slug', 'event.id', 'id']
 
     def __str__(self):
         return 'Subscription {0.subscriber} on {0.event} via {0.channel}'.format(self)

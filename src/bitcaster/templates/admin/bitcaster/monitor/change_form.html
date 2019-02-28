@@ -1,0 +1,7 @@
+{% extends "admin_extra_urls/change_form.html" %}{% load i18n admin_urls static bitcaster %}
+
+{% block content %}
+    {{ block.super }}
+{% endblock %}
+
+{% block submit_buttons_bottom %}{% channel_submit_row %}{% endblock %}

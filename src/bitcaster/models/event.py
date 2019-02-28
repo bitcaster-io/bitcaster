@@ -10,6 +10,7 @@ from django.utils.functional import cached_property
 from bitcaster import logging
 from bitcaster.db.fields import SubscriptionPolicyField
 from bitcaster.db.validators import RateLimitValidator
+from bitcaster.models.mixins import ReverseWrapperMixin
 
 from .application import Application
 from .base import AbstractModel
@@ -17,7 +18,7 @@ from .base import AbstractModel
 logger = logging.getLogger(__name__)
 
 
-class Event(AbstractModel):
+class Event(ReverseWrapperMixin, AbstractModel):
     """Event is something that can happen into an Application."""
     uuid = UUIDField(default=uuid4, editable=False)
     application = models.ForeignKey(Application,
@@ -43,6 +44,10 @@ class Event(AbstractModel):
         app_label = 'bitcaster'
         unique_together = ('application', 'name')
         ordering = ('name', 'id')
+
+    class Reverse:
+        pattern = 'app-event-{op}'
+        args = ['application.organization.slug', 'application.slug', 'id']
 
     def __str__(self):
         return f'{self.application.name}:{self.name}'

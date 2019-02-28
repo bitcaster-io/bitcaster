@@ -3,7 +3,6 @@ import logging
 
 from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
                                   ListView, TemplateView, UpdateView,)
-from django.views.generic.base import TemplateResponseMixin
 from strategy_field.utils import import_by_name
 
 from .mixins import BitcasterBaseViewMixin, MessageUserMixin
@@ -19,11 +18,11 @@ class BitcasterFormView(MessageUserMixin, FormView):
     pass
 
 
-class BitcasterSingleObjectTemplateResponseMixin(TemplateResponseMixin):
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(opts=self.model._meta, **kwargs)
-    # template_name_base = None
+# class BitcasterSingleObjectTemplateResponseMixin(TemplateResponseMixin):
+#
+#     def get_context_data(self, **kwargs):
+#         return super().get_context_data(opts=self.model._meta, **kwargs)
+#     template_name_base = None
     #
     # def get_template_names(self):
     #     try:
@@ -96,19 +95,19 @@ class BitcasterBaseListView(BitcasterBaseViewMixin, ListView):
     #     return names
 
 
-class BitcasterBaseCreateView(BitcasterBaseViewMixin, BitcasterSingleObjectTemplateResponseMixin, CreateView):
+class BitcasterBaseCreateView(BitcasterBaseViewMixin, CreateView):
     template_name_suffix = '_edit'
 
 
-class BitcasterBaseUpdateView(BitcasterBaseViewMixin, BitcasterSingleObjectTemplateResponseMixin, UpdateView):
+class BitcasterBaseUpdateView(BitcasterBaseViewMixin, UpdateView):
     template_name_suffix = '_edit'
 
 
-class BitcasterBaseDeleteView(BitcasterBaseViewMixin, BitcasterSingleObjectTemplateResponseMixin, DeleteView):
-    template_name = 'bitcaster/base_confirm_delete.html'
+class BitcasterBaseDeleteView(BitcasterBaseViewMixin, DeleteView):
+    template_name = 'bitcaster/generic/confirm_delete.html'
 
 
-class BitcasterBaseDetailView(BitcasterBaseViewMixin, BitcasterSingleObjectTemplateResponseMixin, DetailView):
+class BitcasterBaseDetailView(BitcasterBaseViewMixin, DetailView):
     pass
 
 

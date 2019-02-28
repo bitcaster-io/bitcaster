@@ -4,26 +4,24 @@ import logging
 from constance import config
 from django.conf import settings
 from django.core.mail import get_connection, send_mail
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
 from bitcaster import messages
-from bitcaster.models import Channel, Organization
-from bitcaster.web.forms.organization import OrganizationSystemForm
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsMainForm,
                                                  SettingsOAuthForm,)
 
-from .base import BitcasterTemplateView, ListView, UpdateView
+from .base import BitcasterTemplateView
 from .mixins import SuperuserViewMixin
 
 logger = logging.getLogger(__name__)
 
 __all__ = ['SettingsView', 'SettingsOAuthView',
-           'SettingsEmailView', 'SettingsChannelListView',
-           'SettingsOrgUpdateView',
-           'SettingsOrgListView',
+           'SettingsEmailView',
+           # 'SettingsChannelListView',
+           # 'SettingsOrgUpdateView',
+           # 'SettingsOrgListView',
            'SettingsSystemInfo',
            ]
 
@@ -111,13 +109,13 @@ class SettingsOAuthView(SettingsBaseView):
     title = 'Oauth'
 
 
-class SettingsOrgUpdateView(SuperuserViewMixin, UpdateView):
-    template_name = 'bitcaster/settings/org_update.html'
-    form_class = OrganizationSystemForm
-    model = Organization
-
-    def get_success_url(self):
-        return reverse('settings-org-list')
+# class SettingsOrgUpdateView(SuperuserViewMixin, UpdateView):
+#     template_name = 'bitcaster/settings/org_update.html'
+#     form_class = OrganizationSystemForm
+#     model = Organization
+#
+#     def get_success_url(self):
+#         return reverse('settings-org-list')
 
 
 class SettingsSystemInfo(SuperuserViewMixin,
@@ -156,19 +154,18 @@ class SettingsSystemInfo(SuperuserViewMixin,
             sysinfo=get_sysinfo(self.request),
             **kwargs)
 
+# class SettingsOrgListView(SuperuserViewMixin, ListView):
+#     template_name = 'bitcaster/settings/org_list.html'
+#     model = Organization
 
-class SettingsOrgListView(SuperuserViewMixin, ListView):
-    template_name = 'bitcaster/settings/org_list.html'
-    model = Organization
 
-
-class SettingsChannelListView(SuperuserViewMixin, ListView):
-    template_name = 'bitcaster/settings/channel_list.html'
-
-    def get_context_data(self, **kwargs):
-        kwargs['title'] = _('System channels')
-        kwargs['create_url'] = reverse('system-channel-create')
-        return super().get_context_data(**kwargs)
-
-    def get_queryset(self):
-        return Channel.objects.filter(system=True)
+# class SettingsChannelListView(SuperuserViewMixin, ListView):
+#     template_name = 'bitcaster/settings/channel_list.html'
+#
+#     def get_context_data(self, **kwargs):
+#         kwargs['title'] = _('System channels')
+#         kwargs['create_url'] = reverse('system-channel-create')
+#         return super().get_context_data(**kwargs)
+#
+#     def get_queryset(self):
+#         return Channel.objects.filter(system=True)

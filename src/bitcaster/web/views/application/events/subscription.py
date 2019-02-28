@@ -27,7 +27,6 @@ class EventSubscriptionList(SingleEventMixin, BitcasterBaseListView):
 
 
 class EventSubscriptionDelete(SingleEventMixin, BitcasterBaseDeleteView):
-    template_name = 'bitcaster/application/events/subscriptions/confirm_delete.html'
 
     def get_queryset(self):
         return self.selected_application.subscriptions.all()
