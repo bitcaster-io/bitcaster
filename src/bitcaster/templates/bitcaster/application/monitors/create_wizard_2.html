@@ -4,7 +4,6 @@
         <div class="row col-12">
             <div class="col-10">
                 <div class="channel-form">
-                    {% csrf_token %}
                     {{ form|crispy }}
                     <div class="plugin-config-form">
                         {% render_serializer form.serializer "rest_framework/inline2" %}

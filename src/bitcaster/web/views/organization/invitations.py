@@ -20,24 +20,30 @@ from bitcaster.db.fields import Role
 from bitcaster.models import (AuditEvent, Organization,
                               OrganizationMember, User, audit_log,)
 from bitcaster.otp import totp
-from bitcaster.web.forms import (OrganizationInvitationForm,
-                                 OrganizationInvitationFormSet,
+from bitcaster.web.forms import (OrganizationInvitationFormSet,
                                  UserInviteRegistrationForm,)
-from bitcaster.web.views.base import (BitcasterBaseDeleteView,
-                                      BitcasterBaseUpdateView,
-                                      BitcasterFormView,)
+from bitcaster.web.views.base import (BitcasterBaseCreateView,
+                                      BitcasterBaseDeleteView,
+                                      BitcasterBaseUpdateView,)
 from bitcaster.web.views.mixins import MessageUserMixin
 from bitcaster.web.views.organization.mixins import OrganizationViewMixin
 
 logger = logging.getLogger(__name__)
 
 
-class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
-    form_class = OrganizationInvitationForm
-    template_name = 'bitcaster/organization/members/invite.html'
+class InviteMixin(OrganizationViewMixin):
+    model = OrganizationMember
 
     def get_success_url(self):
-        return reverse('org-members', args=[self.selected_organization.slug])
+        return self.selected_organization.urls.members
+
+    def get_queryset(self):
+        return self.selected_organization.memberships.exclude(user=self.selected_organization.owner)
+
+
+class OrganizationInvite(InviteMixin, BitcasterBaseCreateView):
+    form_class = OrganizationInvitationFormSet
+    template_name = 'bitcaster/organization/members/invite.html'
 
     def get_context_data(self, **kwargs):
         data = super(OrganizationInvite, self).get_context_data(**kwargs)
@@ -49,8 +55,8 @@ class OrganizationInvite(OrganizationViewMixin, BitcasterFormView):
         form.instance = self.selected_organization
         return form
 
-    def get_form_class(self):
-        return OrganizationInvitationFormSet
+    # def get_form_class(self):
+    #     return OrganizationInvitationFormSet
 
     def form_invalid(self, form):
         self.message_user(_('invalid'), messages.WARNING)
@@ -178,21 +184,6 @@ class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
         return super().form_valid(form)
 
 
-class InviteDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
-
-    def get_success_url(self):
-        return reverse('org-members', args=[self.selected_organization.slug])
-
-    def get_queryset(self):
-        return self.selected_organization.memberships.filter(user__isnull=True)
-
-    def delete(self, request, *args, **kwargs):
-        ret = super().delete(request, *args, **kwargs)
-        self.message_user('Invite canceled')
-        return ret
-
-    # def delete(self, request, *args, **kwargs):
-    #     self.object = self.get_object()
-    #     success_url = self.get_success_url()
-    #     self.object.delete()
-    #     return HttpResponseRedirect(success_url)
+class InviteDelete(InviteMixin, BitcasterBaseDeleteView):
+    title = _('Cancel invitation')
+    message = _('Invitation to <strong>%(object)s</strong> will be canceled')

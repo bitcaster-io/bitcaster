@@ -11,10 +11,6 @@ from bitcaster.web.views.mixins import SecuredViewMixin
 class SelectedOrganizationMixin(SecuredViewMixin):
 
     def get_context_data(self, **kwargs):
-        kwargs['organizations'] = Organization.objects.filter(members=self.request.user)
-        if self.selected_organization:
-            kwargs['organizations'] = kwargs['organizations'].exclude(id=self.selected_organization.id)
-
         kwargs['organization'] = self.selected_organization
         return super().get_context_data(**kwargs)
 
@@ -28,9 +24,6 @@ class SelectedOrganizationMixin(SecuredViewMixin):
         except Organization.DoesNotExist:
             raise Http404
         return organization
-
-
-class OrganizationAuditMixin(SelectedOrganizationMixin):
 
     def audit_log(self, event, **kwargs):
         audit_log(self.request, event,
@@ -55,10 +48,10 @@ class ApplicationListMixin(SelectedOrganizationMixin):
         return ret
 
 
-class OrganizationViewMixin(OrganizationAuditMixin, ApplicationListMixin):
+class OrganizationViewMixin(ApplicationListMixin):
     model = Organization
     slug_url_kwarg = 'org'
-    template_name_base = 'organization'
+    title = '{org}'
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):

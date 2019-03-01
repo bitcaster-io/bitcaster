@@ -12,16 +12,17 @@ class ReverseWrapper:
         self.__cache = {}
 
     def __getattr__(self, item):
+        name = item.replace('_', '-')
         if item not in self.__cache:
-            url = self.__options.pattern.format(op=item)
+            url = self.__options.pattern.format(op=name)
             args = self.__options.args
             try:
                 values = [get_attr(self.__instance, attr) for attr in args]
-                self.__cache[item] = reverse(url, args=values)
+                self.__cache[name] = reverse(url, args=values)
             except NoReverseMatch:
-                self.__cache[item] = reverse(url)
+                self.__cache[name] = reverse(url)
 
-        return self.__cache[item]
+        return self.__cache[name]
 
     def __repr__(self):
         return repr(self.__options)

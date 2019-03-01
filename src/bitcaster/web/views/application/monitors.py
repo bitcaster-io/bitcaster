@@ -1,7 +1,8 @@
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView, RedirectView
+from django.views.generic import RedirectView
+from django.views.generic.detail import SingleObjectMixin
 from formtools.wizard.forms import ManagementForm
 from formtools.wizard.views import SessionWizardView
 from strategy_field.utils import import_by_name
@@ -12,74 +13,60 @@ from bitcaster.models import Monitor
 from bitcaster.web.forms import MonitorCreate1, MonitorUpdateConfigurationForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseDetailView,
+                                      BitcasterBaseListView,
+                                      BitcasterBaseToggleView,
                                       BitcasterBaseUpdateView,)
 from bitcaster.web.views.mixins import MessageUserMixin
 
-from .mixins import ApplicationListMixin, SelectedApplicationMixin
+from .mixins import SelectedApplicationMixin
 
 
-class ApplicationMonitorList(SelectedApplicationMixin, ApplicationListMixin, ListView):
-    template_name = 'bitcaster/application/monitors/list.html'
+class MonitorMixin(SelectedApplicationMixin):
+    model = Monitor
 
     def get_queryset(self):
         return self.selected_application.monitors.valid()
 
-    def get_context_data(self, **kwargs):
-        kwargs['channel_context'] = self.selected_application
-        kwargs['title'] = _('Application Monitors')
-        return super().get_context_data(**kwargs)
+    def get_success_url(self):
+        return self.selected_application.urls.monitors
+
+    def get_redirect_url(self, *args, **kwargs):
+        return self.selected_application.urls.monitors
 
 
-class ApplicationMonitorUsage(SelectedApplicationMixin, BitcasterBaseDetailView):
+class ApplicationMonitorList(MonitorMixin, BitcasterBaseListView):
+    template_name = 'bitcaster/application/monitors/list.html'
+    title = _('Monitors')
+
+
+class ApplicationMonitorUsage(MonitorMixin, BitcasterBaseDetailView):
     pass
 
 
-class ApplicationMonitorUpdate(SelectedApplicationMixin, BitcasterBaseUpdateView):
+class ApplicationMonitorUpdate(MonitorMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/monitors/configure.html'
-    model = Monitor
     form_class = MonitorUpdateConfigurationForm
+    title = _('Edit Monitor')
 
-    def get_success_url(self):
-        return self.object.application.urls.monitors
-
-    def get_queryset(self):
-        return self.selected_application.monitors.all()
-
-
-class ApplicationMonitorRemove(SelectedApplicationMixin, BitcasterBaseDeleteView):
-
-    def get_success_url(self):
-        return self.object.application.urls.monitors
-
-    def get_queryset(self):
-        return self.selected_application.monitors.all()
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'application': self.selected_application})
+        return kwargs
 
 
-class ApplicationMonitorToggle(SelectedApplicationMixin, MessageUserMixin, RedirectView):
-    def get_queryset(self):
-        return self.selected_application.monitors.all()
+class ApplicationMonitorRemove(MonitorMixin, BitcasterBaseDeleteView):
+    pass
 
+
+class ApplicationMonitorToggle(MonitorMixin, BitcasterBaseToggleView):
     def get_redirect_url(self, *args, **kwargs):
-        return self.selected_application.urls.monitors
+        return self.get_success_url()
+
+
+class ApplicationMonitorTest(MonitorMixin, SingleObjectMixin, MessageUserMixin, RedirectView):
 
     def get(self, request, *args, **kwargs):
-        obj = self.get_queryset().get(id=kwargs['pk'])
-        obj.enabled = not obj.enabled
-        obj.save()
-        op = 'enabled' if obj.enabled else 'disabled'
-        self.message_user(f'Channel {op}')
-        return super().get(request, *args, **kwargs)
-
-
-class ApplicationMonitorTest(SelectedApplicationMixin, MessageUserMixin, RedirectView):
-    def get_queryset(self):
-        return self.selected_application.monitors.all()
-
-    def get_redirect_url(self, *args, **kwargs):
-        return self.selected_application.urls.monitors
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_queryset().get(id=kwargs['pk'])
+        self.object = self.get_object()
         try:
             self.object.handler.test()
         except Exception as e:
@@ -87,23 +74,15 @@ class ApplicationMonitorTest(SelectedApplicationMixin, MessageUserMixin, Redirec
         return super().get(request, *args, **kwargs)
 
 
-class ApplicationMonitorCreate(SelectedApplicationMixin, MessageUserMixin, SessionWizardView):
+class ApplicationMonitorCreate(MonitorMixin, MessageUserMixin, SessionWizardView):
     TEMPLATES = {'a': 'bitcaster/application/monitors/create_wizard_1.html',
                  'b': 'bitcaster/application/monitors/create_wizard_2.html',
                  }
-
-    def get_success_url(self):
-        return self.object.application.urls.monitors
-
-    def get_extra_instance_kwargs(self):
-        return {'application': self.selected_application}
 
     form_list = [('a', MonitorCreate1),
                  ('b', MonitorUpdateConfigurationForm),
                  # todo: add summary screen
                  ]
-
-    # success_url = reverse_lazy('settings-channels')
 
     def get_form_initial(self, step):
         handler = self.storage.extra_data.get('handler', None)
@@ -119,21 +98,19 @@ class ApplicationMonitorCreate(SelectedApplicationMixin, MessageUserMixin, Sessi
         return ret
 
     def get_form_kwargs(self, step=None):
-        kwargs = {}
+        kwargs = {'application': self.selected_application}
         if step == 'b':
-            kwargs = {'serializer': None}
             data = self.storage.get_step_data('a')
             if data:
                 handler_fqn = data.get('a-handler')
                 handler = import_by_name(handler_fqn)
-                kwargs = {'serializer': handler.options_class}
-
+                kwargs['handler'] = handler
         return kwargs
 
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
-        handler_fqn = self.get_all_cleaned_data().get('handler', None)
         if self.steps.current == 'a':
+            handler_fqn = self.get_all_cleaned_data().get('handler', None)
             context.update({'registry': agent_registry,
                             'selection': handler_fqn
                             })
@@ -145,36 +122,31 @@ class ApplicationMonitorCreate(SelectedApplicationMixin, MessageUserMixin, Sessi
         return [self.TEMPLATES[self.steps.current]]
 
     def done(self, form_list, **kwargs):
-        data = self.get_all_cleaned_data()
-        data.update(self.get_extra_instance_kwargs())
-        try:
-            self.object = Monitor.objects.create(**dict(data))
-        except IntegrityError:
-            h = self.storage.extra_data['handler']
+        form1, form2 = list(form_list)
+        if form1.is_valid():
+            try:
+                data = self.get_all_cleaned_data()
+                data.update({'application': self.selected_application,
+                             'config': form2.serializer.data})
+                self.object = self.selected_application.monitors.create(**dict(data))
+            except IntegrityError as e:
+                self.message_user(e, messages.ERROR, extra_tags='keep')
 
-            data = self.get_all_cleaned_data()
+                # this is real ugly. there is a bug somewhere that
+                # prevents a simple `self.storage.current_step = 'b'`
+                # to work properly. So we totally fake 'steps' entry
+                self.storage.current_step = 'b'
+                context = self.get_context_data(form=form1, **kwargs)
+                context['wizard'] = {
+                    'form': form1,
+                    'steps': {'prev': 'a', 'current': 'b',
+                              'step1': '2', 'count': '2'},
+                    'management_form': ManagementForm(prefix=self.prefix,
+                                                      initial={
+                                                          'current_step': 'b',
+                                                      }),
+                }
+                return self.render_to_response(context)
 
-            form = MonitorUpdateConfigurationForm(data=data,
-                                                  serializer=h.options_class)
-
-            self.message_user(_('Error creating channel. '
-                                'Channel with this name already exists.'),
-                              messages.ERROR)
-
-            # this is real ugly. there is a bug somewhere that
-            # prevents a simple `self.storage.current_step = 'b'`
-            # to work properly. So we totally fake 'steps' entry
-            self.storage.current_step = 'b'
-            context = self.get_context_data(form=form, **kwargs)
-            context['wizard'] = {
-                'form': form,
-                'steps': {'prev': 'a', 'current': 'b',
-                          'step1': '2', 'count': '2'},
-                'management_form': ManagementForm(prefix=self.prefix, initial={
-                    'current_step': 'b',
-                }),
-            }
-            return self.render_to_response(context)
-
-        self.message_user(_('Channel created'))
+        self.message_user(_('Monitor created'))
         return HttpResponseRedirect(self.get_success_url())

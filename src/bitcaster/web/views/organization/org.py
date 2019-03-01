@@ -14,13 +14,14 @@ from bitcaster.utils.dashboard import check_channels, get_status
 from bitcaster.web.forms import OrganizationForm
 
 from ..base import BitcasterBaseDetailView, BitcasterBaseUpdateView
-from .mixins import OrganizationAuditMixin, OrganizationViewMixin
+from .mixins import OrganizationViewMixin
 
 logger = logging.getLogger(__name__)
 
 
 class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/organization/dashboard.html'
+    title = _('{org} Dashboard')
 
     def get_context_data(self, **kwargs):
         org = self.selected_organization
@@ -39,6 +40,7 @@ class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
             org_data['box_channels'] = check_channels(org_data)
             org_data['box_apps'] = get_status(org_data['applications'], 1, 9999, 9999)
             cache.set(cache_key, org_data)
+
         kwargs['data'] = org_data
         kwargs['options'] = dict(org.options.values_list('key', 'value'))
         return super().get_context_data(**kwargs)
@@ -48,6 +50,7 @@ class OrganizationConfiguration(OrganizationViewMixin, BitcasterBaseUpdateView):
     form_class = OrganizationForm
     success_url = '.'
     template_name = 'bitcaster/organization/configuration.html'
+    title = _('{org} Configuration')
 
     def form_valid(self, form):
         slug = form.cleaned_data.get('slug', None)
@@ -57,7 +60,7 @@ class OrganizationConfiguration(OrganizationViewMixin, BitcasterBaseUpdateView):
         return HttpResponseRedirect(url)
 
 
-class OrganizationCheckConfigView(OrganizationAuditMixin, RedirectView):
+class OrganizationCheckConfigView(OrganizationViewMixin, RedirectView):
     pattern_name = 'org-dashboard'
 
     def get(self, request, *args, **kwargs):
@@ -71,3 +74,4 @@ class OrganizationApplications(OrganizationViewMixin, BitcasterBaseDetailView):
     form_class = OrganizationForm
     template_name = 'bitcaster/organization/organization_applications.html'
     success_url = '.'
+    title = _('Applications')

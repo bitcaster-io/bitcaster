@@ -1,14 +1,14 @@
 `{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n %}
 {% load crispy_forms_tags i18n bc_assets bitcaster bc_permissions %}
 {% block content %}
-    <h2>Channels</h2>
+    <h2>{{ title }}</h2>
     {% check_permissions organization %}
     {% if permissions.create_channel %}
         <div class="container">
             <div class="row col-12">
                 <div class="pull-right col-12 p-4">
                     <a class="btn btn-danger btn-small pull-right"
-                       href="{{ create_url }}">{% trans "Create channel" %}</a>
+                       href="{{ organization.urls.channel_create }}">{% trans "Create channel" %}</a>
                 </div>
             </div>
         </div>

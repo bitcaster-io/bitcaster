@@ -19,7 +19,7 @@ def test_initial_setup(django_app, application1, admin_user):
     # 'home is always accessible'
     organization = application1.organization
     owner = organization.owner
-    url = reverse('org-dashboard', args=[organization.slug])
+    url = organization.urls.dashboard
     res = django_app.get(url, user=owner.email)
     # res = res.click("Login")
     # res.form["username"] = owner.email

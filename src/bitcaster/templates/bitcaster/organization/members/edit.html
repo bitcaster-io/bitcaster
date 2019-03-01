@@ -1,4 +1,4 @@
-{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_filters i18n bitcaster %}
 {% block content %}
     <div class="container">
         <h4>Edit Membership</h4>
@@ -15,7 +15,7 @@
                 </tr>
                 <tr lass="d-flex">
                     <td>{% trans "Role" %}</td>
-                    <td class="col-4">{{ form.role.errors }}{{ form.role }}</td>
+                    <td class="col-4">{{ form.role.errors }}{{ form.role|as_crispy_field }}</td>
                 </tr>
                 <tr lass="d-flex">
                     <td>{% trans "Invited by" %}</td>

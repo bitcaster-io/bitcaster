@@ -50,9 +50,6 @@ class MonitorQuerySet(models.QuerySet):
 
 
 class Monitor(ReverseWrapperMixin, AbstractModel):
-    """ A Channel represent a configured dispatcher.
-It can be Global or Application specific.
-    """
     name = models.CharField(max_length=255)
     organization = models.ForeignKey(Organization,
                                      null=True,
@@ -76,8 +73,7 @@ It can be Global or Application specific.
     class Meta:
         app_label = 'bitcaster'
         ordering = ('name',)
-        unique_together = (('organization', 'name'),
-                           ('organization', 'application', 'name'))
+        unique_together = (('organization', 'application', 'name'),)
 
     class Reverse:
         pattern = 'app-monitor-{op}'

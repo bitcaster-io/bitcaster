@@ -4,6 +4,7 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.functional import cached_property
+from django.utils.translation import gettext as _
 
 from bitcaster.models import Monitor
 
@@ -30,6 +31,10 @@ class MonitorForm(forms.ModelForm):
 class MonitorCreate1(forms.ModelForm):
     handler = forms.CharField(widget=forms.HiddenInput)
 
+    def __init__(self, *args, **kwargs):
+        self.application = kwargs.pop('application', None)
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model = Monitor
         fields = ('handler',)
@@ -43,35 +48,43 @@ class MonitorUpdateConfigurationForm(forms.ModelForm):
         fields = ('name', 'description', 'config')
 
     def __init__(self, *args, **kwargs):
-        # self.serializer_class = kwargs.pop('serializer', None)
+        self.application = kwargs.pop('application', None)
+        self.handler = kwargs.pop('handler', None)
         super().__init__(*args, **kwargs)
-        # this form is only for updates: instance must exists
-        # if self.instance and self.instance.handler:
-        #     self.serializer_class = self.instance.handler.options_class
 
     @cached_property
     def serializer(self):
-        args = {}
+        args = {'application': self.application}
         if self.data:
-            args = {'data': self.data}
+            args['data'] = self.data
         elif self.instance:
-            args = {'data': self.instance.config}
+            args['data'] = self.instance.config
 
-        # ser = self.serializer_class(**args)
-        # ser = self.instance.handler.options_class(**args)
-        ser = self.instance.handler.get_options_form(**args)
-
-        # ser.fields['event'].choices = self.instance.application.events.values_list('id', 'name')
-
-        ser.is_valid()
+        self.instance.application = self.application
+        if self.instance and self.instance.handler:
+            ser = self.instance.handler.get_options_form(**args)
+        else:
+            ser = self.handler(self.instance).get_options_form(**args)
+        if args['data']:
+            ser.is_valid()
         return ser
 
-    def clean_config(self):
-        self.cleaned_data['config'] = self.serializer.data
-        return self.serializer.data
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if not self.instance or not self.instance.pk:
+            if self.application.monitors.filter(name=name).exists():
+                raise ValidationError(_('Monitor with this name already exists'))
+        return name
 
-    def is_valid(self):
-        valid = super().is_valid()
-        # if self.serializer_class:
-        valid = valid and self.serializer.is_valid()
-        return valid
+    def clean_config(self):
+        if self.data:
+            self.cleaned_data['config'] = self.serializer.data
+            return self.serializer.data
+
+    # def is_valid(self):
+    #     valid = self.serializer.is_valid()
+    #     valid = valid and super().is_valid()
+    #     # if self.data:
+    #     if self._errors:
+    #         self._errors.update(self.serializer.errors)
+    #     return valid

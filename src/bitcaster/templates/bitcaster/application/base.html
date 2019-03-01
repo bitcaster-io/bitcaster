@@ -6,11 +6,6 @@
             {% block sidebar %}
                 <div class="row d-flex d-md-block flex-nowrap wrapper">
                     <div id="sidebar" class="float-left pl-0 collapse width show application-sidebar">
-{#                        <div class="org-logo">#}
-{#                            {% if application.avatar %}#}
-{#                                <img src="{{ application.avatar.url }}"/>#}
-{#                            {% endif %}#}
-{#                        </div>#}
                         {% check_permissions application context_name="auth" %}
                         {% if auth.configure %}
                             <div class="list-group">

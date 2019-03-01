@@ -54,7 +54,8 @@ class ConfigurableMixin:
         self._config = None
 
     def get_options_form(self, **kwargs):
-        kwargs.setdefault('data', self.owner.config)
+        if self.owner:
+            kwargs.setdefault('data', self.owner.config)
         return self.options_class(**kwargs)
 
     @classproperty

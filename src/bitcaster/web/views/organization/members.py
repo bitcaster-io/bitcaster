@@ -1,6 +1,6 @@
 import logging
 
-from django.urls import reverse
+from crispy_forms.helper import FormHelper
 from django.utils.translation import ugettext as _
 
 from bitcaster.models import OrganizationMember
@@ -12,52 +12,46 @@ from bitcaster.web.views.organization.mixins import OrganizationViewMixin
 logger = logging.getLogger(__name__)
 
 
-class OrganizationMembershipList(OrganizationViewMixin, BitcasterBaseListView):
-    template_name = 'bitcaster/organization/members/list.html'
-    success_url = '.'
+class MemberMixin(OrganizationViewMixin):
     model = OrganizationMember
+
+    def get_success_url(self):
+        return self.selected_organization.urls.members
+
+    def get_queryset(self):
+        return self.selected_organization.memberships.exclude(user=self.selected_organization.owner)
+
+
+class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
+    template_name = 'bitcaster/organization/members/list.html'
+    title = _('Users')
 
     def get_context_data(self, **kwargs):
         data = super(OrganizationMembershipList, self).get_context_data(**kwargs)
-        # data['memberships'] = OrganizationMember.objects.filter(user__isnull=False)
-        # data['invitations'] = OrganizationMember.objects.filter(user__isnull=True)
-        base = self.selected_organization.memberships.exclude(user=self.selected_organization.owner)
+        base = self.get_queryset()
         data['memberships'] = base.filter(user__isnull=False)
         data['invitations'] = base.filter(user__isnull=True)
         return data
 
 
-class OrganizationMembershipEdit(OrganizationViewMixin, BitcasterBaseUpdateView):
+class OrganizationMembershipEdit(MemberMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/organization/members/edit.html'
     fields = ('role',)
-    success_url = ''
-    model = OrganizationMember
+    title = _('Edit User')
+    context_object_name = 'membership'
 
-    def get_template_names(self):
-        return super().get_template_names()
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.helper = FormHelper(form)
+        form.helper.form_show_labels = False
+        return form
 
-    def get_context_data(self, **kwargs):
-        kwargs['title'] = _('Edit Membership')
-        kwargs['membership'] = self.object
-        return super().get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        self.message_user(_('Updated'))
-        return super(OrganizationMembershipEdit, self).form_valid(form)
-
-    def get_success_url(self):
-        return reverse('org-members', args=[self.selected_organization.slug])
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        return self.selected_organization.memberships.get(pk=pk)
 
 
-class OrganizationMembershipDelete(OrganizationViewMixin, BitcasterBaseDeleteView):
-
-    def get_success_url(self):
-        return reverse('org-members', args=[self.selected_organization.slug])
-
-    def get_queryset(self):
-        return self.selected_organization.memberships.filter(user__isnull=False)
-
-    def delete(self, request, *args, **kwargs):
-        ret = super().delete(request, *args, **kwargs)
-        self.message_user('Membership removed')
-        return ret
+class OrganizationMembershipDelete(MemberMixin, BitcasterBaseDeleteView):
+    user_message = _('Invite canceled')
+    title = _('Remove User')
+    message = _('User <strong>%(object)s</strong> will be removed from %(organization)s')

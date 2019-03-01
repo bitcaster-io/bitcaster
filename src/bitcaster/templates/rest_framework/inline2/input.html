@@ -3,6 +3,7 @@
     <div class="label {% if style.hide_label %}sr-only{% endif %}">{{ field.label }}</div>
     <div class="field">
         <input name="{{ field.name }}" {% if style.input_type != "file" %}class="form-control"{% endif %}
+               autocomplete="off"
                type="{{ style.input_type }}" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %}
                {% if field.value %}value="{{ field.value }}"{% endif %}
                {% if style.autofocus and style.input_type != "hidden" %}autofocus{% endif %}>

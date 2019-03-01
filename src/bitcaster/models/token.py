@@ -40,6 +40,9 @@ class ApplicationTriggerKey(ReverseWrapperMixin, AbstractModel):
         pattern = 'app-key-{op}'
         args = ['application.organization.slug', 'application.slug', 'id']
 
+    def __str__(self):
+        return self.name
+
 
 class ApiAuthToken(AbstractModel):
     # users can generate tokens without being application-bound

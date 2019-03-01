@@ -1,45 +1,52 @@
-{% extends "bitcaster/application/base.html" %}{% load bc_permissions bitcaster i18n %}
+{% extends "bitcaster/base.html" %}{% load bc_permissions bitcaster i18n %}
 {% block bodyclass %}organization{% endblock %}
-{% block sidebar %}
-    <div class="row d-flex d-md-block flex-nowrap wrapper">
-        <div class="float-left pl-0 collapse width show organization-sidebar" id="sidebar">
-            {% check_permissions organization as "permissions" %}
-            {% if permissions.configure %}
-                <div class="org-logo">
-                    {% if organization.avatar %}
-                        <img src="{{ organization.avatar.url }}"/>
-                    {% endif %}
-                </div>
-                <div class="list-group">
-                    <div class="col-md-2 org-sidebar">
-                        <div>
-                            <ul class="nav nav-stacked">
-                                <li>
-                                    <a href="{{ organization.urls.dashboard }}">{% trans "Dashboard" %}</a>
-                                </li>
-                                <li>
-                                    <a href="{{ organization.urls.config }}">{% trans "Configuration" %}</a>
-                                </li>
-                                <li>
-                                    <a href="{{ organization.urls.channels }}">{% trans "Channels" %}</a>
-                                </li>
-                                <li>
-                                    <a href="{{ organization.urls.members }}">{% trans "Members" %}</a>
-                                </li>
-                                <li>
-                                    <a href="{{ organization.urls.teams }}">{% trans "Teams" %}</a>
-                                </li>
-                                <li>
-                                    <a href="{{ organization.urls.applications }}">{% trans "Applications" %}</a>
-                                </li>
-                            </ul>
-                        </div>
+{% block page %}
+    <div class="container-fluid">
+        <div class=" main-content">
+            {% block sidebar %}
+                <div class="row d-flex d-md-block flex-nowrap wrapper">
+                    <div class="float-left pl-0 collapse width show organization-sidebar" id="sidebar">
+                        {% check_permissions organization as "permissions" %}
+                        {% if permissions.configure %}
+                            <div class="org-logo">
+                                {% if organization.avatar %}
+                                    <img src="{{ organization.avatar.url }}"/>
+                                {% endif %}
+                            </div>
+                            <div class="list-group">
+                                <div class="col-md-2 org-sidebar">
+                                    <div>
+                                        <ul class="nav nav-stacked">
+                                            <li>
+                                                <a href="{{ organization.urls.dashboard }}">{% trans "Dashboard" %}</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ organization.urls.config }}">{% trans "Configuration" %}</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ organization.urls.channels }}">{% trans "Channels" %}</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ organization.urls.members }}">{% trans "Members" %}</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ organization.urls.teams }}">{% trans "Teams" %}</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ organization.urls.applications }}">{% trans "Applications" %}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-            {% endif %}
+            {% endblock sidebar %}
+            <div class="page-content">
+                {% block content %}
+                {% endblock content %}
+            </div>
         </div>
     </div>
-{% endblock %}
-{% block content %}
-
-{% endblock content %}
+{% endblock page %}

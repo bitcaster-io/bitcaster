@@ -44,7 +44,9 @@ class EmailMessage:
 
 
 class EmailAbstractOptions(AgentOptions):
-    username = serializers.CharField(allow_blank=True, required=False)
+    username = serializers.CharField(allow_blank=True,
+
+                                     required=False)
     password = PasswordField(allow_blank=True, required=False)
     folder = serializers.CharField(initial='inbox')
     body_regex = RegexField(allow_blank=True, required=False,

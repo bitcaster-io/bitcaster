@@ -1,6 +1,6 @@
 {% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster i18n %}
 {% block content %}
-    <h2><a href="{{ object.urls.edit }}">{{ object }}</a></h2>
+    <h2>{{ title }}</h2>
     <div class="container-fluid">
         <h5 class="text-center alert alert-danger">
             This action is not recoverable
@@ -8,7 +8,7 @@
         <div class="card mb-5">
             <div class="card-block">
                 <p class="card-text p-5">
-                    {{ object|verbose_name }} <strong>{{ object }}</strong> will be permanently removed.
+                    {{ message }}
                 </p>
                 <p class="card-text p-5">
                     {{ extras }}

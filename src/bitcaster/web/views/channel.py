@@ -19,8 +19,8 @@ from bitcaster.templatetags.markdown import markdown
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 
 from .base import (BitcasterBaseCreateView, BitcasterBaseDeleteView,
-                   BitcasterBaseDetailView, BitcasterBaseUpdateView,
-                   BitcasterTemplateView, MessageUserMixin,)
+                   BitcasterBaseDetailView, BitcasterBaseListView,
+                   BitcasterBaseUpdateView, MessageUserMixin,)
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +134,7 @@ class ChannelCreateView(BitcasterBaseCreateView):
     #
 
 
-class ChannelListView(BitcasterTemplateView):
+class ChannelListView(BitcasterBaseListView):
     pass
     # def get_queryset(self):
     #     raise NotImplementedError

@@ -27,7 +27,7 @@ class SkypeSubscription(SubscriptionOptions):
 
 
 @dispatcher_registry.register
-class Skype(CoreDispatcher):
+class Skype4b(CoreDispatcher):
     subscription_class = SkypeSubscription
     options_class = SkypeOptions
     message_class = MessageType
@@ -36,7 +36,7 @@ class Skype(CoreDispatcher):
 
     @classproperty
     def name(cls):
-        return 'Skype'
+        return 'Skype for Business'
 
     # def validate_subscription(self, subscription, *args, **kwargs) -> None:
     #     ser = SkypeSubscription(data=subscription.config)

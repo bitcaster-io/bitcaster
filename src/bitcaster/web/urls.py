@@ -123,7 +123,7 @@ urlpatterns = [
          name='app-event-subscribe'),
 
     path('<slug:org>/a/<slug:app>/monitors/', ApplicationMonitorList.as_view(), name='app-monitors'),
-    path('<slug:org>/a/<slug:app>/monitor/add/', ApplicationMonitorCreate.as_view(), name='app-monitor_create'),
+    path('<slug:org>/a/<slug:app>/monitor/add/', ApplicationMonitorCreate.as_view(), name='app-monitor-create'),
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/usage/', ApplicationMonitorUsage.as_view(), name='app-monitor-usage'),
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/edit/', ApplicationMonitorUpdate.as_view(), name='app-monitor-edit'),
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/delete/', ApplicationMonitorRemove.as_view(), name='app-monitor-delete'),

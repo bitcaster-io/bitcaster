@@ -4,7 +4,7 @@
     <div class="row">
         {% for handler in registry %}
             <div id="id_{{ handler.fqn|slugify }}" class="col-2 inline text-center align-content-center handler box p-2">
-                <a href="#" class="handler-selector" data-value="{{ handler.fqn }}">
+                <a href="" class="handler-selector" data-value="{{ handler.fqn }}">
                     <div>
 {#                        <img width="100" height="100" src="{% url "plugin-icon" handler.fqn %}">#}
                         <div>
@@ -25,7 +25,8 @@
 {% block js %}
     {{ block.super }}
     <script>
-        $(".handler-selector").on("click", function () {
+        $(".handler-selector").on("click", function (e) {
+            e.preventDefault();
             $("#id_a-handler").val($(this).data("value"));
             $("#form").submit();
         });
