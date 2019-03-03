@@ -9,6 +9,7 @@ from rest_framework.test import APIClient
 
 import bitcaster
 from bitcaster import models
+from bitcaster.agents import EmailAgent
 from bitcaster.db.fields import Role
 from bitcaster.dispatchers import Email
 from bitcaster.models.token import generate_api_token
@@ -255,15 +256,43 @@ class ApiTokenFactory(factory.DjangoModelFactory):
         django_get_or_create = ('token',)
 
 
+class MonitorFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Monitor
+        django_get_or_create = ('name',)
+
+    name = factory.Sequence(lambda n: 'Channel %03d' % n)
+    application = factory.SubFactory(ApplicationFactory)
+    handler = factory.LazyAttribute(lambda a: fqn(EmailAgent))
+    enabled = True
+
+    @classmethod
+    def _get_or_create(cls, model_class, *args, **kwargs):
+        if 'config' not in kwargs:
+            kwargs['config'] = {'event': EventFactory(application=kwargs['application']),
+                                'username': 'user',
+                                'password': '111',
+                                'folder': 'linkedin.com',
+                                'body_regex': '',
+                                'subject_regex': 'gerardo',
+                                'sender_regex': '',
+                                'to_regex': ''
+                                }
+        channel = super()._get_or_create(model_class, *args, **kwargs)
+        return channel
+
+
 class ChannelFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Channel
         django_get_or_create = ('name',)
 
     name = factory.Sequence(lambda n: 'Channel %03d' % n)
-    application = factory.SubFactory(ApplicationFactory)
+    organization = factory.SubFactory(OrganizationFactory)
+    # application = factory.SubFactory(ApplicationFactory)
     handler = factory.LazyAttribute(lambda a: fqn(Email))
     enabled = True
+    deprecated = False
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
@@ -273,6 +302,7 @@ class ChannelFactory(factory.DjangoModelFactory):
                                 'port': 9000,
                                 'sender': 'sender@sender.org'}
         channel = super()._get_or_create(model_class, *args, **kwargs)
+
         return channel
 
 

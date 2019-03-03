@@ -59,10 +59,11 @@ Navigate to https://<YOUR_SPACE>.slack.com/apps/" and enable `Incoming WebHooks`
         s.headers = {'user-agent': 'bitcaster'}
         return s
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
+    def validate_subscription(self, subscription, *args, **kwargs) -> bool:
         ser = self.subscription_class(data=subscription.config)
         if not ser.is_valid():
             raise PluginValidationError(ser.errors)
+        return True
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:

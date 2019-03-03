@@ -52,9 +52,6 @@ class Facebook(CoreDispatcher):
     def name(cls):
         return 'Facebook'
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        super().validate_subscription(subscription, *args, **kwargs)
-
     def _get_connection(self) -> Client:
         return Client(self.config['key'].encode('utf8'),
                       self.config['password'].encode('utf8'),

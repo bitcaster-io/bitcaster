@@ -58,6 +58,11 @@ class ConfigurableMixin:
             kwargs.setdefault('data', self.owner.config)
         return self.options_class(**kwargs)
 
+    @classmethod
+    def get_full_config(cls, custom=None):
+        updates = custom or {}
+        return {**get_config_defaults(cls.options_class), **updates}
+
     @classproperty
     def name(cls):
         return cls.__name__
@@ -85,10 +90,6 @@ class ConfigurableMixin:
     @classproperty
     def license(cls):
         return cls.__license__
-
-    def get_full_config(self, custom):
-        updates = custom or {}
-        return {**get_config_defaults(self.options_class), **updates}
 
     # @classmethod
     # def defaults(cls):

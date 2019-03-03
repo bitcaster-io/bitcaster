@@ -2,7 +2,6 @@
 import logging
 
 from django import forms
-from django.core.exceptions import ValidationError
 from django.utils.functional import cached_property
 
 from bitcaster.models import Channel
@@ -16,15 +15,6 @@ class ChannelForm(forms.ModelForm):
         exclude = []
         fields = ('name', 'application', 'handler', 'config', 'description',
                   'enabled', 'deprecated')
-
-    def clean_enabled(self):
-        value = self.cleaned_data['enabled']
-        if value:
-            if not self.instance:
-                raise ValidationError('Channel must be configured')
-            elif not self.instance.is_configured:
-                raise ValidationError('Configure channel before enable it')
-        return value
 
 
 class ChannelUpdateConfigurationForm(forms.ModelForm):
@@ -46,7 +36,7 @@ class ChannelUpdateConfigurationForm(forms.ModelForm):
         args = {}
         if self.data:
             args = {'data': self.data}
-        elif self.instance:
+        else: # self.instance:
             args = {'data': self.instance.config}
 
         ser = self.serializer_class(**args)

@@ -32,25 +32,25 @@ class ChannelQuerySet(models.QuerySet):
         #         c.save()
         return self.all()
 
-    def organization_configurable(self, organization):
-        return self.filter(organization=organization,
-                           application=None,
-                           system=False)
-
-    def application_configurable(self, application):
-        return self.filter(application=application, system=False)
-
-    def system_configurable(self):
-        return self.filter(system=True)
-
+    # def organization_configurable(self, organization):
+    #     return self.filter(organization=organization,
+    #                        application=None,
+    #                        system=False)
+    #
+    # def application_configurable(self, application):
+    #     return self.filter(application=application, system=False)
+    #
+    # def system_configurable(self):
+    #     return self.filter(system=True)
+    #
     def selectable(self, application):
         return self.filter(Q(organization=application.organization) |
                            Q(system=True) |
                            Q(application=application))
 
-    def enabled(self, application):
-        return self.filter(application=application,
-                           )
+    # def enabled(self, application):
+    #     return self.filter(application=application,
+    #                        )
 
 
 class Channel(ReverseWrapperMixin, AbstractModel):
@@ -92,13 +92,13 @@ It can be Global or Application specific.
 
     def validate_address(self, address):
         try:
-            self.handler.validate_address(address)
+            return self.handler.validate_address(address)
         except Exception:
             raise PluginValidationError()
 
     def validate_subscription(self, subscription):
         try:
-            self.handler.validate_subscription(subscription)
+            return self.handler.validate_subscription(subscription)
         except Exception:
             raise PluginValidationError()
 
@@ -111,14 +111,14 @@ It can be Global or Application specific.
     def get_usage(self):
         return self.handler.get_usage(self.config)
 
-    def is_configurable_by(self, user):
-        if user.is_superuser:
-            return True
-        if self.system:
-            return user.is_superuser
-        if not self.application:
-            return
-
+    # def is_configurable_by(self, user):
+    #     if user.is_superuser:
+    #         return True
+    #     if self.system:
+    #         return user.is_superuser
+    #     if not self.application:
+    #         return
+    #
     @property
     def is_configured(self):
         if self.handler:
@@ -128,13 +128,15 @@ It can be Global or Application specific.
     def clean(self):
         if not self.handler and self.enabled:
             raise ValidationError('Cannot enable Channel without handler')
-        super().clean()
+        if self.enabled:
+            if not self.config:
+                raise ValidationError('Channel must be configured')
+            elif not self.is_configured:
+                raise ValidationError('Configure channel before enable it')
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if self.system and (self.organization or self.application):
-            raise Exception('System channels cannot belong Organization or Application')
-        if self.application:
-            self.organization = self.application.organization
+        # if self.application:
+        #     self.organization = self.application.organization
         if self.handler:
             self.config = self.handler.get_full_config(self.config)
         super().save(force_insert, force_update, using, update_fields)

@@ -29,6 +29,7 @@ Messages content is customised at user/receiver level using a flexible template 
 Your user will be empowered with an easy to use console to choose how to receive the messages configured in Bitcaster.
 
 Bitcaster comes loaded with all of the following channel plugins:
+
 * Facebook
 * Gmail
 * Hangout
@@ -36,6 +37,14 @@ Bitcaster comes loaded with all of the following channel plugins:
 * slack
 * twitter
 * SMS (Plivo, Twilio)
+* Zulip
+
+### Planned / Ongoing
+
+* Telegram
+* WhatsApp
+* WebSMS
+
 
 In addition a plugin SDK will allow you to create your own plugins in order to extend the reach of your signals to any possible conceivable target. 
 

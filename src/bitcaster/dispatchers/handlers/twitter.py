@@ -64,12 +64,9 @@ class Twitter(CoreDispatcher):
         return markdown('Remeber to follow [{0}](https://twitter.com/{0}) '
                         'to receive messages.'.format(config['account']))
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
-        return
-
     @classmethod
     def validate_address(cls, address, *args, **kwargs) -> bool:
-        pass
+        return True
 
     def get_recipient_address(self, subscription):
         addr = super().get_recipient_address(subscription)

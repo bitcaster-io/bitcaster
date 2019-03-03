@@ -2,6 +2,7 @@
 import abc
 
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from strategy_field.utils import fqn
 
 from bitcaster import get_full_version
@@ -25,11 +26,13 @@ class MessageType:
 
 
 class SubscriptionOptions(serializers.Serializer):
-    pass
+    recipient = serializers.CharField()
 
 
 class DispatcherOptions(serializers.Serializer):
-    pass
+
+    def get_initials(self):
+        return {}
 
 
 class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
@@ -38,6 +41,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     message_class = MessageType
     icon = None
     __media__ = None
+    __help__ = _('')
 
     def __init__(self, owner=None):
         super().__init__(owner)
@@ -55,7 +59,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         """ return a message to the User to extra informations to complete the subscription.
         ie. follow Twitter
         """
-        return None
+        return ''
 
     def get_usage(self, config: DispatcherOptions) -> object:
         """ return a message to the User to extra informations to complete the subscription.
@@ -91,9 +95,10 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
 
     @classmethod
     def validate_address(cls, address, *args, **kwargs) -> bool:
-        return cls.subscription_class().fields['recipient'].run_validators(address)
+        cls.subscription_class().fields['recipient'].run_validators(address)
+        return True
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
+    def validate_subscription(self, subscription, *args, **kwargs) -> bool:
         if isinstance(subscription, str):
             return True
         cfg = get_full_config(self.subscription_class, subscription.config)

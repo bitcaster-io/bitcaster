@@ -6,11 +6,13 @@
                 <div class="channel-form">
                     {% csrf_token %}
                     {{ form|crispy }}
-                    {% render_serializer form.serializer "rest_framework/inline2" %}
+                    <div class="plugin-config-form">
+                        {% render_serializer form.serializer "rest_framework/inline2" %}
+                    </div>
                 </div>
             </div>
             <div class="col-2 channel-info">
-                {% include "bitcaster/organization/channels/_info.html" with handler=handler  %}
+                {% include "bitcaster/organization/channels/_info.html" with handler=handler %}
             </div>
         </div>
     </div>

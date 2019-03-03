@@ -115,7 +115,9 @@ def application2(organization2):
 @pytest.fixture
 def channel1(application1):
     from bitcaster.utils.tests.factories import ChannelFactory
-    return ChannelFactory(application=application1)
+    return ChannelFactory(application=application1,
+                          organization=application1.organization
+                          )
 
 
 @pytest.fixture

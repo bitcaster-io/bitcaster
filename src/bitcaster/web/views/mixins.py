@@ -40,6 +40,12 @@ class MessageUserMixin:
                              extra_tags=extra_tags,
                              fail_silently=fail_silently)
 
+    def error_user(self, message, level=messages.ERROR, extra_tags='keep',
+                   fail_silently=False):
+        messages.add_message(self.request, level, mark_safe(message),
+                             extra_tags=extra_tags,
+                             fail_silently=fail_silently)
+
 
 class BitcasterBaseViewMixin(MessageUserMixin):
     pass

@@ -3,12 +3,10 @@ import logging
 
 from django import forms
 from django.contrib import messages
-from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
-from formtools.wizard.forms import ManagementForm
 from formtools.wizard.views import SessionWizardView
 from strategy_field.utils import import_by_name
 
@@ -47,7 +45,9 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
     def get_form_initial(self, step):
         handler = self.storage.extra_data.get('handler', None)
         if step == 'b' and handler:
-            return {'name': '%sChannel' % handler.name}
+            defaults = {'name': 'Channel%s (%s)' % (Channel.objects.count(), handler.name)}
+            defaults.update(handler.get_full_config())
+            return defaults
         return super().get_form_initial(step)
 
     def process_step(self, form):
@@ -83,45 +83,18 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
     def get_template_names(self):
         return [self.TEMPLATES[self.steps.current]]
 
-    def get_extra_instance_kwargs(self):
-        return {}
+    def get_extra_instance_kwargs(self, **kwargs):
+        values = {}
+        values.update(kwargs)
+        return values
 
-    def get_success_url(self):
-        return self.success_url
-
+    # def get_success_url(self):
+    #     return self.success_url
+    #
     def done(self, form_list, **kwargs):
         data = self.get_all_cleaned_data()
         data.update(self.get_extra_instance_kwargs())
-        try:
-            Channel.objects.create(**dict(data))
-        except IntegrityError as e:
-            logger.exception(e)
-            h = self.storage.extra_data['handler']
-
-            data = self.get_all_cleaned_data()
-
-            form = ChannelUpdateConfigurationForm(data=data,
-                                                  serializer=h.options_class)
-
-            self.message_user(_('Error creating channel. '
-                                'Channel with this name already exists.'),
-                              messages.ERROR)
-
-            # this is real ugly. there is a bug somewhere that
-            # prevents a simple `self.storage.current_step = 'b'`
-            # to work properly. So we totally fake 'steps' entry
-            self.storage.current_step = 'b'
-            context = self.get_context_data(form=form, **kwargs)
-            context['wizard'] = {
-                'form': form,
-                'steps': {'prev': 'a', 'current': 'b',
-                          'step1': '2', 'count': '2'},
-                'management_form': ManagementForm(prefix=self.prefix, initial={
-                    'current_step': 'b',
-                }),
-            }
-            return self.render_to_response(context)
-
+        self.object = Channel.objects.create(**dict(data))
         self.message_user(_('Channel created'))
         return HttpResponseRedirect(self.get_success_url())
 
@@ -183,6 +156,7 @@ class ChannelToggleView(MessageUserMixin, RedirectView):
     def get(self, request, *args, **kwargs):
         obj = self.get_queryset().get(id=kwargs['pk'])
         obj.enabled = not obj.enabled
+        obj.clean()
         obj.save()
         op = 'enabled' if obj.enabled else 'disabled'
         self.message_user(f'Channel {op}')
@@ -220,7 +194,7 @@ class ChannelTestView(MessageUserMixin, RedirectView):
             msg = _("""You do not have a valid address for this channel.
 Goto [addresses]({0}) to set your choice for **{1}**""").format(url, self.object.name)
             self.message_user(markdown(msg), messages.ERROR, extra_tags='keep')
-        except PluginSendError as e:
+        except PluginSendError as e:  # pragma: no cover
             self.message_user(_("Unable to send message to '{}': {}").format(address, e), messages.ERROR)
         except Exception as e:
             self.message_user(_("Unable to send message to '{}': {}").format(address, e), messages.ERROR)

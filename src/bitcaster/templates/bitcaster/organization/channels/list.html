@@ -40,30 +40,30 @@
                 <td style="width:30%" class="nowrap">
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="configure"
-                       href="{{ channel.pk }}/edit/">
+                       href="{{ channel.urls.edit }}">
                         <i class="fas fa-wrench pointer"></i>
                     </a>
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="delete"
-                       href="{{ channel.pk }}/delete/">
+                       href="{{ channel.urls.delete }}">
                         <i class="far fa-trash-alt pointer"></i>
                     </a>
                     {% if channel.handler %}
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="{% if channel.enabled %}Disable{% else %}Enable{% endif %}"
-                           href="{{ channel.pk }}/toggle/">
+                           href="{{ channel.urls.toggle }}">
                             <i class="fas {% if channel.enabled %}fa-toggle-off red{% else %}fa-toggle-on green{% endif %}"></i>
                         </a>
                         <a class="btn btn-light"
                            data-toggle="tooltip"
                            title="{% if channel.deprecated %}Activate{% else %}Deprecate{% endif %}"
-                           href="{% org-url "org-channel-deprecate" channel.pk %}">
+                           href="{{ channel.urls.deprecate }}">
                             <i class="fas {% if channel.deprecated %}fa-link green{% else %}fa-unlink red{% endif %}"></i>
                         </a>
 
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="test channel"
-                           href="{% org-url "org-channel-test" channel.pk %}">
+                           href="{{ channel.urls.test }}">
                             <i class="fas fa-broadcast-tower"></i>
                         </a>
                         <a rel="modal:open" class="btn btn-light"

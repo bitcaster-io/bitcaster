@@ -44,7 +44,7 @@ class Email(CoreDispatcher):
     subscription_class = EmailSubscription
     message_class = EmailMessage
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> None:
+    def validate_subscription(self, subscription, *args, **kwargs) -> bool:
         email = self.get_recipient_address(subscription)
         cfg = {'recipient': self.owner.config.get('recipient', email)}
         try:

@@ -38,7 +38,7 @@ class OrganizationChannelToggle(ChannelMixin, ChannelToggleView):
     pass
 
 
-class OrganizationChannelUsage(OrganizationViewMixin, ChannelUsageView):
+class OrganizationChannelUsage(ChannelMixin, ChannelUsageView):
     template_name = 'bitcaster/organization/channels/usage.html'
 
 
@@ -56,4 +56,4 @@ class OrganizationChannelCreate(ChannelMixin, ChannelCreateWizard):
                  }
 
     def get_extra_instance_kwargs(self):
-        return {'organization': self.selected_organization}
+        return super().get_extra_instance_kwargs(organization=self.selected_organization)

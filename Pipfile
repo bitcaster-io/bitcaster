@@ -67,6 +67,8 @@ websocket-client = "*"
 whitenoise = "*"
 markdown = "*"
 dnspython = "*"
+zulip = "*"
+#python-telegram-bot="*"
 
 [dev-packages]
 "flake8" = "*"
