@@ -11,19 +11,27 @@ repos:
         entry: isort
         language: system
         types: [python]
+        stages: [commit]
 
   - repo: git://github.com/pre-commit/pre-commit-hooks
     rev: v2.1.0
     hooks:
       - id: double-quote-string-fixer
+        stages: [commit]
+
       - id: debug-statements
         exclude: (_plugin_template|python_twitter)
+        stages: [commit]
+
       - id: end-of-file-fixer
         exclude: .bumpversion.cfg
+        stages: [commit]
+
       - id: flake8
         exclude: /(_plugin_template|python_twitter|migrations|tweepy)/
         args:
           - src/
+        stages: [commit]
       - id: check-merge-conflict
       - id: check-case-conflict
 
