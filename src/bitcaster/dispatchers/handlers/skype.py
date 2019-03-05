@@ -2,6 +2,7 @@
 import skpy.main
 from django.utils.translation import gettext_lazy as _
 
+from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
 from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
@@ -19,7 +20,7 @@ class Message(MessageType):
 
 class SkypeOptions(DispatcherOptions):
     username = serializers.CharField()
-    password = serializers.CharField()
+    password = PasswordField()
 
 
 class SkypeSubscription(SubscriptionOptions):
