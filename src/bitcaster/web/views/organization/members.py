@@ -7,12 +7,13 @@ from bitcaster.models import OrganizationMember
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
                                       BitcasterBaseUpdateView,)
-from bitcaster.web.views.organization.mixins import OrganizationViewMixin
+
+from .org import OrganizationBaseView
 
 logger = logging.getLogger(__name__)
 
 
-class MemberMixin(OrganizationViewMixin):
+class MemberMixin(OrganizationBaseView):
     model = OrganizationMember
 
     def get_success_url(self):
@@ -24,7 +25,7 @@ class MemberMixin(OrganizationViewMixin):
 
 class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
     template_name = 'bitcaster/organization/members/list.html'
-    title = _('Users')
+    # title = _('Users')
 
     def get_context_data(self, **kwargs):
         data = super(OrganizationMembershipList, self).get_context_data(**kwargs)
@@ -37,7 +38,7 @@ class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
 class OrganizationMembershipEdit(MemberMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/organization/members/edit.html'
     fields = ('role',)
-    title = _('Edit User')
+    # title = _('Edit User')
     context_object_name = 'membership'
 
     def get_form(self, form_class=None):
@@ -53,5 +54,5 @@ class OrganizationMembershipEdit(MemberMixin, BitcasterBaseUpdateView):
 
 class OrganizationMembershipDelete(MemberMixin, BitcasterBaseDeleteView):
     user_message = _('Invite canceled')
-    title = _('Remove User')
+    # title = _('Remove User')
     message = _('User <strong>%(object)s</strong> will be removed from %(organization)s')

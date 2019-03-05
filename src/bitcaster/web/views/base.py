@@ -10,7 +10,8 @@ from strategy_field.utils import import_by_name
 
 from bitcaster.templatetags.bitcaster import verbose_name
 
-from .mixins import BitcasterBaseViewMixin, MessageUserMixin
+from .mixins import (BitcasterBaseViewMixin,
+                     BitcasterSingleObjectMixin, MessageUserMixin,)
 
 logger = logging.getLogger(__name__)
 
@@ -19,24 +20,9 @@ class BitcasterTemplateView(MessageUserMixin, TemplateView):
     pass
 
 
-class BitcasterSingleObjectMixin:
-    def get_context_data(self, **kwargs):
-        kwargs = super().get_context_data(**kwargs)
-        vars = dict(kwargs)
-        vars.update(verbose_name=verbose_name(self.object), object=self.object)
-        kwargs['title'] = mark_safe(self.title % vars)
-        return kwargs
-
-
 class BitcasterBaseListView(BitcasterBaseViewMixin, ListView):
     template_name_base = None
-
-    def get_context_data(self, **kwargs):
-        kwargs = super().get_context_data(**kwargs)
-        vars = dict(kwargs)
-        vars.update(verbose_name=verbose_name(self.model))
-        kwargs['title'] = mark_safe(self.title % vars)
-        return kwargs
+    title = _('%(verbose_name_plural)s')
 
 
 class BitcasterBaseCreateView(BitcasterBaseViewMixin, CreateView):

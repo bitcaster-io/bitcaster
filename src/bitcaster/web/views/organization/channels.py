@@ -1,14 +1,14 @@
-from django.utils.translation import gettext_lazy as _
-
+from bitcaster.models import Channel
 from bitcaster.web.views.channel import (ChannelCreateWizard, ChannelDeleteView,
                                          ChannelDeprecateView, ChannelListView,
                                          ChannelTestView, ChannelToggleView,
                                          ChannelUpdateView, ChannelUsageView,)
 
-from .mixins import OrganizationViewMixin
+from .org import OrganizationBaseView
 
 
-class ChannelMixin(OrganizationViewMixin):
+class ChannelMixin(OrganizationBaseView):
+    model = Channel
 
     def get_queryset(self):
         return self.selected_organization.channels.valid()
@@ -20,18 +20,19 @@ class ChannelMixin(OrganizationViewMixin):
         return self.selected_organization.urls.channels
 
 
-class OrganizationChannels(ChannelMixin, OrganizationViewMixin, ChannelListView):
+class OrganizationChannels(ChannelMixin, ChannelListView):
     template_name = 'bitcaster/organization/channels/list.html'
-    title = _('Channels')
+    # title = _('Channels')
 
 
 class OrganizationChannelUpdate(ChannelMixin, ChannelUpdateView):
     template_name = 'bitcaster/organization/channels/configure.html'
-    title = _('Edit Channel')
+    # title = _('Edit Channel')
 
 
 class OrganizationChannelRemove(ChannelMixin, ChannelDeleteView):
     pass
+    # title = _('Remove Channel')
 
 
 class OrganizationChannelToggle(ChannelMixin, ChannelToggleView):

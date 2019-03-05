@@ -108,6 +108,7 @@ class ChannelCreateView(BitcasterBaseCreateView):
 
 
 class ChannelListView(BitcasterBaseListView):
+
     pass
     # def get_queryset(self):
     #     raise NotImplementedError

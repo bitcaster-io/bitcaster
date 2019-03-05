@@ -18,7 +18,7 @@ from .mixins import SingleEventMixin
 
 class EventSubscriptionList(SingleEventMixin, BitcasterBaseListView):
     template_name = 'bitcaster/application/events/subscriptions/list.html'
-    title = 'Subscribers'
+    # title = 'Subscribers'
 
     def get_context_data(self, **kwargs):
         kwargs['pending'] = self.selected_organization.memberships.filter(event=self.selected_event)
@@ -48,7 +48,7 @@ class EventSubscriptionToggle(SingleEventMixin, MessageUserMixin, RedirectView):
 
 class EventSubscriptionCreate(SingleEventMixin, FormView):
     template_name = 'bitcaster/application/events/subscriptions/subscribe.html'
-    title = 'Subscribers'
+    # title = 'Subscribers'
     form_class = EventSubscriptionForm
 
     def get_object(self):
@@ -81,7 +81,7 @@ class EventSubscriptionCreate(SingleEventMixin, FormView):
 
 class EventSubscriptionInvite(SingleEventMixin, MessageUserMixin, FormView):
     template_name = 'bitcaster/application/events/subscriptions/invite.html'
-    title = 'Subscribers'
+    # title = 'Subscribers'
     form_class = InviteFormSet
 
     def get_object(self):

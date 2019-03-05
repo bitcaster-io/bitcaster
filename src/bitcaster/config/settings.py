@@ -315,7 +315,8 @@ CACHES = {
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
-    'bitcaster.backends.BitcasterBackend',
+    'bitcaster.backends.BitcasterBackend',  # only for permissions
+    'bitcaster.backends.BitcasterLDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 # Some really nice defaults
@@ -427,6 +428,12 @@ CONSTANCE_CONFIG = OrderedDict({
     'EMAIL_HOST_PASSWORD': ('', '', str),
     'EMAIL_SENDER': ('noreply@bitcaster.io', '', str),
     'EMAIL_SUBJECT_PREFIX': ('[bitcaster] ', '', str),
+
+    'AUTH_LDAP_SERVER_URI': ('', 'LDAP server address', str),
+    'AUTH_LDAP_BIND_PASSWORD': ('', '', str),
+    'AUTH_LDAP_USER_SEARCH': ('ou=users,dc=example,dc=com', '', str),
+    'AUTH_LDAP_USER_DN_TEMPLATE': ('', 'ie. "uid=%(user)s,ou=users,dc=example,dc=com"', str),
+    'AUTH_LDAP_START_TLS': (False, 'ie. "uid=%(user)s,ou=users,dc=example,dc=com"', bool),
 
     'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY': ('', '', str),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET': ('', '', str),

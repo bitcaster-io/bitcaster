@@ -38,7 +38,7 @@ from .views import (ApplicationCheckConfigView, ApplicationCreate,  #
                     SettingsOAuthView, SettingsSystemInfo, SettingsView,
                     SetupView, UserAddressesAssignmentView,
                     UserAddressesInfoView, UserAddressesView, UserProfileView,
-                    UserRegister, WorkInProgressView, confirm_registration,)
+                    WorkInProgressView, confirm_registration,)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
@@ -54,22 +54,11 @@ urlpatterns = [
     path('settings/email/', SettingsEmailView.as_view(), name='settings-email'),
     path('settings/oauth/', SettingsOAuthView.as_view(), name='settings-oauth'),
     path('settings/sysinfo/', SettingsSystemInfo.as_view(), name='settings-sysinfo'),
-    # path('settings/organizations/', SettingsOrgListView.as_view(), name='settings-org-list'),
-    # path('settings/organizations/<int:pk>/edit/', SettingsOrgUpdateView.as_view(),
-    #      name='settings-org-update'),
-    # path('settings/channel/', SettingsChannelListView.as_view(), name='settings-channels'),
-    # path('settings/channel/add/', SettingsChannelCreateWizard.as_view(), name='system-channel-create'),
-    # path('settings/channel/<int:pk>/edit/', SettingsChannelUpdateView.as_view(), name='system-channel-update'),
-    # path('settings/channel/<int:pk>/delete/', SettingsChannelDeleteView.as_view(), name='system-channel-delete'),
-    # path('settings/channel/<int:pk>/toggle/', SettingsChannelToggleView.as_view(), name='system-channel-toggle'),
-    # path('settings/channel/<int:pk>/deprecate/', SettingsChannelDeprecateView.as_view(),
-    #      name='system-channel-deprecate'),
 
     path('plugins/info/<str:fqn>/', PluginInfo.as_view(), name='plugin-info'),
 
     # Social
     path('', include('social_django.urls', namespace='social')),
-    path('user/register/', UserRegister.as_view(), name='user-register'),
     path('user/register/register-wait-email/<int:pk>/',
          TemplateView.as_view(template_name='bitcaster/registration/register_wait_email.html'),
          name='register-wait-email'),
@@ -129,17 +118,6 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/delete/', ApplicationMonitorRemove.as_view(), name='app-monitor-delete'),
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/toggle/', ApplicationMonitorToggle.as_view(), name='app-monitor-toggle'),
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/test/', ApplicationMonitorTest.as_view(), name='app-monitor-test'),
-
-    # path('<slug:org>/a/<slug:app>/channel/', ApplicationChannels.as_view(), name='app-channel-list'),
-    # path('<slug:org>/a/<slug:app>/channel/add/', ApplicationChannelCreate.as_view(), name='app-channel-create'),
-    # path('<slug:org>/a/<slug:app>/channel/<int:pk>/edit/', ApplicationChannelUpdate.as_view(),
-    #      name='app-channel-update'),
-    # path('<slug:org>/a/<slug:app>/channel/<int:pk>/delete/', ApplicationChannelRemove.as_view(),
-    #      name='app-channel-delete'),
-    # path('<slug:org>/a/<slug:app>/channel/<int:pk>/toggle/', ApplicationChannelToggle.as_view(),
-    #      name='app-channel-toggle'),
-    # path('<slug:org>/a/<slug:app>/channel/<int:pk>/deprecate/', ApplicationChannelDeprecate.as_view(),
-    #      name='app-channel-deprecate'),
 
     path('o/<slug:org>/a/<slug:app>/team/', ApplicationTeamList.as_view(), name='app-teams'),
 

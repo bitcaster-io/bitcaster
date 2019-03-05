@@ -3,6 +3,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
+from django_auth_ldap.backend import LDAPBackend
 
 from bitcaster.db.fields import Role
 from bitcaster.models import Application, Event, Organization
@@ -28,21 +29,18 @@ PERM_MAP = {Role.ADMIN: ADMIN_PERMISSIONS,
             Role.SUBSCRIBER: SUBSCRIBER_PERMISSIONS}
 
 
-class BitcasterBackend:
+class BitcasterLDAPBackend(LDAPBackend):
 
-    # def __init__(self) -> None:
-    #     super().__init__()
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        return None
+        # return super().authenticate(request, username, password, **kwargs)
+
+
+class BitcasterBackend:
 
     def authenticate(self, request, username=None, password=None, **kwargs):
         return None
 
-    # @cached_property
-    # def app_manager(self):
-    #     return AppRulesManager()
-    #
-    # @cached_property
-    # def org_manager(self):
-    #     return OrgRulesManager()
     def get_user(self, *args):
         return None
 

@@ -13,7 +13,7 @@ from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsOAuthForm,)
 
 from .base import BitcasterTemplateView
-from .mixins import SuperuserViewMixin
+from .mixins import SuperuserViewMixin, TitleMixin
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +26,9 @@ __all__ = ['SettingsView', 'SettingsOAuthView',
            ]
 
 
-class SettingsBaseView(SuperuserViewMixin,
+class SettingsBaseView(SuperuserViewMixin, TitleMixin,
                        BitcasterTemplateView, FormView):
     success_url = '.'
-    title = ''
     bit = None
 
     def get_template_names(self):
@@ -38,7 +37,6 @@ class SettingsBaseView(SuperuserViewMixin,
 
     def get_context_data(self, **kwargs):
         kwargs = super(SettingsBaseView, self).get_context_data(**kwargs)
-        kwargs['title'] = self.title
         kwargs['settings'] = settings
         return kwargs
 
@@ -60,13 +58,13 @@ class SettingsBaseView(SuperuserViewMixin,
 
 class SettingsView(SettingsBaseView):
     form_class = SettingsMainForm
-    title = 'General'
+    title = _('General')
     bit = 1
 
 
 class SettingsEmailView(SettingsBaseView):
     form_class = SettingsEmailForm
-    title = 'Email'
+    title = _('Email')
     bit = 2
 
     def test(self, **kwargs):
@@ -106,7 +104,7 @@ class SettingsEmailView(SettingsBaseView):
 
 class SettingsOAuthView(SettingsBaseView):
     form_class = SettingsOAuthForm
-    title = 'Oauth'
+    title = _('Oauth')
 
 
 # class SettingsOrgUpdateView(SuperuserViewMixin, UpdateView):
@@ -121,6 +119,7 @@ class SettingsOAuthView(SettingsBaseView):
 class SettingsSystemInfo(SuperuserViewMixin,
                          BitcasterTemplateView):
     template_name = 'bitcaster/settings/sysinfo.html'
+    title = _('Environment')
 
     def _filter(self, target):
         reserved = ('PASSWORD', 'SECRET', 'KEY', 'AUTHENTICATION_BACKENDS')

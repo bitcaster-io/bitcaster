@@ -38,7 +38,7 @@ class MessageList(SelectedApplicationMixin, ListView):
 
 
 class MessageUpdate(MessageMixin, MessageFormMixin, BitcasterBaseUpdateView):
-    title = 'Edit Message'
+    # title = 'Edit Message'
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_('Save Message'),
@@ -46,7 +46,7 @@ class MessageUpdate(MessageMixin, MessageFormMixin, BitcasterBaseUpdateView):
 
 
 class MessageCreate(MessageMixin, MessageFormMixin, BitcasterBaseCreateView):
-    title = 'Create Message'
+    # title = 'Create Message'
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_('Create Message'),
@@ -59,7 +59,7 @@ class MessageDelete(MessageMixin, BitcasterBaseDeleteView):
 
 class EventMessages(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/events/messages.html'
-    title = 'Messages'
+    # title = 'Messages'
 
     # def get_context_data(self, **kwargs):
     #     return super().get_context_data(**kwargs)

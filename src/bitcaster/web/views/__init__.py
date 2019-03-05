@@ -17,7 +17,6 @@ from .channel import ChannelCreateWizard, ChannelListView
 from .handlers import handler404, handler500
 from .login_logout import LoginView, LogoutView
 from .organization import *
-from .register import *
 from .settings import *
 from .system_setup import *
 from .user import *

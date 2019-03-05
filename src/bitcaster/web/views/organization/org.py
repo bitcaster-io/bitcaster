@@ -2,26 +2,44 @@
 import logging
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView
 
+from bitcaster.models import Application, Organization
 from bitcaster.models.configurationissue import (check_application,
                                                  check_organization,)
 from bitcaster.utils.dashboard import check_channels, get_status
 from bitcaster.web.forms import OrganizationForm
+from bitcaster.web.views.mixins import TitleMixin
+from bitcaster.web.views.organization.mixins import ApplicationListMixin
 
-from ..base import BitcasterBaseDetailView, BitcasterBaseUpdateView
-from .mixins import OrganizationViewMixin
+from ..base import (BitcasterBaseDetailView, BitcasterBaseListView,
+                    BitcasterBaseUpdateView,)
 
 logger = logging.getLogger(__name__)
 
 
-class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
+class OrganizationBaseView(TitleMixin, ApplicationListMixin):
+    model = Organization
+    slug_url_kwarg = 'org'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        if not request.user.has_perm('org:configure', self.selected_organization):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+
+class OrganizationDashboard(OrganizationBaseView, BitcasterBaseDetailView):
     template_name = 'bitcaster/organization/dashboard.html'
-    title = _('{org} Dashboard')
 
     def get_context_data(self, **kwargs):
         org = self.selected_organization
@@ -46,11 +64,12 @@ class OrganizationDashboard(OrganizationViewMixin, BitcasterBaseDetailView):
         return super().get_context_data(**kwargs)
 
 
-class OrganizationConfiguration(OrganizationViewMixin, BitcasterBaseUpdateView):
+class OrganizationConfiguration(OrganizationBaseView, BitcasterBaseUpdateView):
     form_class = OrganizationForm
     success_url = '.'
     template_name = 'bitcaster/organization/configuration.html'
-    title = _('{org} Configuration')
+
+    # title = _('Configuration')
 
     def form_valid(self, form):
         slug = form.cleaned_data.get('slug', None)
@@ -60,7 +79,7 @@ class OrganizationConfiguration(OrganizationViewMixin, BitcasterBaseUpdateView):
         return HttpResponseRedirect(url)
 
 
-class OrganizationCheckConfigView(OrganizationViewMixin, RedirectView):
+class OrganizationCheckConfigView(OrganizationBaseView, RedirectView):
     pattern_name = 'org-dashboard'
 
     def get(self, request, *args, **kwargs):
@@ -70,8 +89,7 @@ class OrganizationCheckConfigView(OrganizationViewMixin, RedirectView):
         return super().get(request, *args, **kwargs)
 
 
-class OrganizationApplications(OrganizationViewMixin, BitcasterBaseDetailView):
-    form_class = OrganizationForm
+class OrganizationApplications(OrganizationBaseView, BitcasterBaseListView):
     template_name = 'bitcaster/organization/organization_applications.html'
     success_url = '.'
-    title = _('Applications')
+    model = Application

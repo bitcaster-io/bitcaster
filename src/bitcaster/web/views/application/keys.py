@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django.utils.translation import gettext_lazy as _
-
 from bitcaster.models import ApplicationTriggerKey
 from bitcaster.web.forms import ApplicationTriggerKeyForm
 from bitcaster.web.views.application.app import ApplicationViewMixin
@@ -32,7 +30,7 @@ class KeyMixin(ApplicationViewMixin):
 
 class ApplicationKeyList(KeyMixin, BitcasterBaseListView):
     template_name = 'bitcaster/application/keys/list.html'
-    title = _('Application Keys')
+    # title = _('Application Keys')
 
 
 class ApplicationKeyCreate(KeyMixin, BitcasterBaseCreateView):

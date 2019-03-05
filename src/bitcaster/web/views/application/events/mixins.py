@@ -25,10 +25,6 @@ class EventMixin(SelectedApplicationMixin):
     def get_queryset(self):
         return self.selected_application.events.all()
 
-    def get_context_data(self, **kwargs):
-        kwargs['title'] = self.title
-        return super().get_context_data(**kwargs)
-
 
 class EventFormMixin:
     form_class = EventForm
@@ -70,7 +66,3 @@ class MessageFormMixin:
         kwargs = super().get_form_kwargs()
         kwargs.update({'application': self.selected_application})
         return kwargs
-
-    def get_context_data(self, **kwargs):
-        kwargs['title'] = self.title
-        return super().get_context_data(**kwargs)

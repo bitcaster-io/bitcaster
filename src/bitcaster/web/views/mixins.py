@@ -8,6 +8,7 @@ from django.views.generic.base import TemplateResponseMixin
 
 from bitcaster import messages
 from bitcaster.security import authorized_or_403
+from bitcaster.templatetags.bitcaster import verbose_name, verbose_name_plural
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,30 @@ class SecuredViewMixin:
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+
+class TitleMixin:
+    title = 'xx'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        vars = dict(kwargs)
+        if hasattr(self, 'model'):
+            vars.update(verbose_name=verbose_name(self.model),
+                        verbose_name_plural=verbose_name_plural(self.model))
+        if 'object' in ctx:
+            ctx['title'] = mark_safe(self.title % vars)
+        else:
+            ctx['title'] = mark_safe(self.title % vars)
+        return ctx
+
+
+class BitcasterSingleObjectMixin:
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        vars = dict(kwargs)
+        vars.update(verbose_name=verbose_name(self.object), object=self.object)
+        return kwargs
 
 
 @method_decorator(authorized_or_403(lambda u: u.is_superuser), name='dispatch')
@@ -47,7 +72,7 @@ class MessageUserMixin:
                              fail_silently=fail_silently)
 
 
-class BitcasterBaseViewMixin(MessageUserMixin):
+class BitcasterBaseViewMixin(TitleMixin, MessageUserMixin):
     pass
 
 
@@ -55,50 +80,3 @@ class BitcasterSingleObjectTemplateResponseMixin(TemplateResponseMixin):
     def get_context_data(self, **kwargs):
         kwargs['opts'] = self.model._meta
         return super().get_context_data(**kwargs)
-
-    # template_name_base = None
-    # def get_template_names(self):
-    #     try:
-    #         if self.template_name is None:
-    #             raise ImproperlyConfigured(
-    #                 'TemplateResponseMixin requires either a definition of '
-    #                 "'template_name' or an implementation of 'get_template_names()'")
-    #         names = [self.template_name]
-    #     except ImproperlyConfigured:
-    #         names = []
-    #
-    #         # If self.template_name_field is set, grab the value of the field
-    #         # of that name from the object; this is the most specific template
-    #         # name, if given.
-    #         if self.object and self.template_name_field:
-    #             name = getattr(self.object, self.template_name_field, None)
-    #             if name:
-    #                 names.insert(0, name)
-    #
-    #         if self.template_name_base:
-    #             base = 'bitcaster/%s' % self.template_name_base
-    #         else:
-    #             base = 'bitcaster'
-    #
-    #         # The least-specific option is the default <app>/<model>_detail.html;
-    #         # only use this if the object in question is a model.
-    #         if isinstance(self.object, models.Model):
-    #             object_meta = self.object._meta
-    #             names.append('%s/%s%s.html' % (
-    #                 base,
-    #                 object_meta.model_name,
-    #                 self.template_name_suffix
-    #             ))
-    #         elif getattr(self, 'model', None) is not None and issubclass(self.model, models.Model):
-    #             names.append('%s/%s%s.html' % (
-    #                 base,
-    #                 self.model._meta.model_name,
-    #                 self.template_name_suffix
-    #             ))
-    #
-    #         # If we still haven't managed to find any template names, we should
-    #         # re-raise the ImproperlyConfigured to alert the user.
-    #         if not names:
-    #             raise
-    #
-    #     return names

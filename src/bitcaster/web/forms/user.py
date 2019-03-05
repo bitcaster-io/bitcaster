@@ -1,57 +1,27 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from crispy_forms.helper import FormHelper
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (AuthenticationForm as _AuthenticationForm,
-                                       UserChangeForm as _UserChangeForm,
                                        UserCreationForm as _UserCreationForm,)
-from django.forms import PasswordInput
+from django.core.exceptions import ValidationError
+from django.forms import BaseInlineFormSet, PasswordInput
 from django.forms.utils import ErrorList
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from snowpenguin.django.recaptcha2.fields import ReCaptchaField
-from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
+from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from bitcaster.db.fields import Role
 from bitcaster.mail import send_mail_by_template
-from bitcaster.models import Organization, User
+from bitcaster.models import Address, AddressAssignment, User
 from bitcaster.otp import totp
+from bitcaster.state import state
 from bitcaster.utils.email_verification import get_new_email_request
 from bitcaster.utils.http import absolute_uri
 
 logger = logging.getLogger(__name__)
-
-
-class UserRegistrationForm(forms.Form):
-    name = forms.CharField(widget=forms.TextInput(attrs={'autocomplete': 'name'}))
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'autocomplete': 'email'}))
-    password = forms.CharField(widget=PasswordInput(attrs={'autocomplete': 'new-password'}))
-    organization = forms.CharField(help_text=_("If you're signing up for a personal account, "
-                                               'try using your own name.'))
-    admin_email = forms.EmailField(required=False,
-                                   widget=forms.EmailInput(attrs={'autocomplete': 'email'}),
-                                   help_text=_('If provided, we will send all admin-related notifications '
-                                               'to this address.'))
-    terms = forms.BooleanField(label=_('I agree to the Terms of Service the Privacy Policy'))
-
-    captcha = ReCaptchaField(widget=ReCaptchaWidget())
-
-    def clean_email(self):
-        value = (self.cleaned_data.get('email') or '').strip()
-        if not value:
-            return
-        if User.objects.filter(email__iexact=value).exists():
-            raise forms.ValidationError(_('An account is already registered with that email address.'))
-        return value.lower()
-
-    def clean_organization(self):
-        value = (self.cleaned_data.get('organization') or '').strip()
-        if not value:
-            return
-        if Organization.objects.filter(name__iexact=value).exists():
-            raise forms.ValidationError(_('This Organization name is already used.'))
-        return value.lower()
 
 
 class AuthenticationForm(_AuthenticationForm):
@@ -59,14 +29,14 @@ class AuthenticationForm(_AuthenticationForm):
     password = forms.CharField(widget=PasswordInput(attrs={'autocomplete': 'current-password'}))
 
 
-class UserChangeForm(_UserChangeForm):
-    last_password_change = forms.DateTimeField(disabled=True, required=False)
-    date_joined = forms.DateTimeField(disabled=True, required=False)
-    last_login = forms.DateTimeField(disabled=True, required=False)
-
-    class Meta:
-        model = User
-        exclude = ('user_permissions', 'groups')
+# class UserChangeForm(_UserChangeForm):
+#     last_password_change = forms.DateTimeField(disabled=True, required=False)
+#     date_joined = forms.DateTimeField(disabled=True, required=False)
+#     last_login = forms.DateTimeField(disabled=True, required=False)
+#
+#     class Meta:
+#         model = User
+#         exclude = ('user_permissions', 'groups')
 
 
 class UserInviteRegistrationForm(forms.ModelForm):
@@ -246,3 +216,81 @@ class NewMemberForm(_UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ('id', 'user', 'label', 'address')
+
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
+                 label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None, renderer=None):
+        super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
+                         use_required_attribute, renderer)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+
+
+class AddressAssignmentForm(forms.ModelForm):
+    class Meta:
+        model = AddressAssignment
+        fields = ('id', 'user', 'channel', 'address')
+
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
+                 label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None):
+        super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
+                         use_required_attribute)
+
+        # choices = self.fields['dispatcher'].choices
+        # self.fields['dispatcher'].choices = [c for c in choices[1:]]
+        # self.fields['dispatcher'].choices = [c for c in choices[1:] if import_string(c[0]).subscription_class]
+        request = state.request
+        self.fields['address'].queryset = request.user.addresses.all()
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+
+    def clean(self):
+        super().clean()
+        if self.cleaned_data:  # pragma: no branch
+            channel = self.cleaned_data.get('channel', None)
+            address = self.cleaned_data.get('address', None)
+            if channel and address and address.address:
+                try:
+                    channel.validate_address(address.address)
+                except DRFValidationError as e:
+                    raise ValidationError({'address': ', '.join(e.detail)})
+        return self.cleaned_data
+
+
+AddressFormSetBase = forms.inlineformset_factory(User,
+                                                 Address,
+                                                 form=AddressForm,
+                                                 min_num=1,
+                                                 extra=0)
+AddressAssignmentFormSetBase = forms.inlineformset_factory(User,
+                                                           AddressAssignment,
+                                                           form=AddressAssignmentForm,
+                                                           min_num=1,
+                                                           extra=0)
+
+
+class AddressFormSet(AddressFormSetBase, BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super(AddressFormSet, self).__init__(*args, **kwargs)
+        self.queryset = self.queryset.order_by('label')
+
+    def save(self, commit=True):
+        a = self.save_existing_objects(commit)
+        b = self.save_new_objects(commit)
+        return a + b
+
+
+class AddressAssignmentFormSet(AddressAssignmentFormSetBase, BaseInlineFormSet):
+    def save(self, commit=True):
+        a = self.save_existing_objects(commit)
+        b = self.save_new_objects(commit)
+        return a + b
+
+    def __init__(self, *args, **kwargs):
+        super(AddressAssignmentFormSet, self).__init__(*args, **kwargs)
+        self.queryset = self.queryset.order_by('channel')

@@ -22,11 +22,11 @@ logger = logging.getLogger(__name__)
 
 class EventList(EventMixin, BitcasterBaseListView):
     template_name = 'bitcaster/application/events/list.html'
-    title = 'Application Events'
+    # title = 'Application Events'
 
 
 class EventCreate(EventMixin, EventFormMixin, BitcasterBaseCreateView):
-    title = 'Create Event'
+    # title = 'Create Event'
     template_name = 'bitcaster/application/events/form.html'
 
     def get_context_data(self, **kwargs):
@@ -50,7 +50,7 @@ class EventCreate(EventMixin, EventFormMixin, BitcasterBaseCreateView):
 
 
 class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
-    title = 'Edit Event'
+    # title = 'Edit Event'
     template_name = 'bitcaster/application/events/form.html'
 
     def get_context_data(self, **kwargs):
@@ -74,7 +74,7 @@ class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
 
 
 class EventDelete(EventMixin, EventFormMixin, BitcasterBaseDeleteView):
-    title = 'Delete Event'
+    # title = 'Delete Event'
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_('Save Event'),
@@ -92,7 +92,7 @@ def eventform_factory(event: Event):
 
 class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/application/events/test.html'
-    title = 'Test'
+    # title = 'Test'
 
     def get_context_data(self, **kwargs):
         event = self.get_object()
@@ -152,4 +152,4 @@ class EventToggle(EventMixin, EventFormMixin, MessageUserMixin, RedirectView):
 
 class EventKeys(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/events/keys.html'
-    title = 'Keys'
+    # title = 'Keys'

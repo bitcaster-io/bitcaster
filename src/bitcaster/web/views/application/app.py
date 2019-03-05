@@ -40,10 +40,6 @@ class ApplicationUpdateView(ApplicationViewMixin, BitcasterBaseUpdateView):
     form_class = ApplicationForm
     template_name = 'bitcaster/application/form.html'
 
-    def get_context_data(self, **kwargs):
-        kwargs['title'] = _('Condigure Application')
-        return super().get_context_data(**kwargs)
-
     def get_success_url(self):
         return reverse('app-dashboard', args=[self.selected_organization.slug,
                                               self.object.slug])
@@ -94,10 +90,6 @@ class ApplicationCreate(SelectedApplicationMixin, BitcasterBaseCreateView):
     model = Application
     form_class = ApplicationCreateForm
     template_name = 'bitcaster/application/form.html'
-
-    def get_context_data(self, **kwargs):
-        kwargs['title'] = _('Create New Application')
-        return super().get_context_data(**kwargs)
 
     def get_success_url(self):
         return reverse('app-dashboard', args=[self.selected_organization.slug,

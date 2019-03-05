@@ -1,7 +1,4 @@
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpResponseRedirect
-from django.utils.decorators import method_decorator
+from django.http import Http404
 from django.utils.functional import cached_property
 
 from bitcaster.models import Organization, audit_log
@@ -46,17 +43,3 @@ class ApplicationListMixin(SelectedOrganizationMixin):
         else:
             ret['applications'] = None
         return ret
-
-
-class OrganizationViewMixin(ApplicationListMixin):
-    model = Organization
-    slug_url_kwarg = 'org'
-    title = '{org}'
-
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect('/')
-        if not request.user.has_perm('org:configure', self.selected_organization):
-            raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)

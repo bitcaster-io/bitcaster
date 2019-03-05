@@ -2,7 +2,6 @@ import logging
 
 from django.db import transaction
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext_lazy as _
 
 from bitcaster.models import Team
 from bitcaster.web.forms import TeamForm
@@ -10,15 +9,16 @@ from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
                                       BitcasterBaseUpdateView,)
-from bitcaster.web.views.organization.mixins import OrganizationViewMixin
+
+from .org import OrganizationBaseView
 
 logger = logging.getLogger(__name__)
 
 
-class TeamMixin(OrganizationViewMixin):
+class TeamMixin(OrganizationBaseView):
     model = Team
     slug_url_kwarg = 'slug'
-    title = _('Teams')
+    # title = _('Teams')
 
     def get_queryset(self):
         return self.selected_organization.teams.all()
@@ -46,13 +46,14 @@ class OrganizationTeamCreate(TeamMixin, BitcasterBaseCreateView):
 
 
 class OrganizationTeamDelete(TeamMixin, BitcasterBaseDeleteView):
-    title = _('Remove Team')
+    pass
+    # title = _('Remove Team')
 
 
 class OrganizationTeamUpdate(TeamMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/organization/teams/form.html'
     form_class = TeamForm
-    title = _('Edit Team')
+    # title = _('Edit Team')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

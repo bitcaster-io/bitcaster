@@ -26,12 +26,13 @@ from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,
                                       BitcasterBaseUpdateView,)
 from bitcaster.web.views.mixins import MessageUserMixin
-from bitcaster.web.views.organization.mixins import OrganizationViewMixin
+
+from .org import OrganizationBaseView
 
 logger = logging.getLogger(__name__)
 
 
-class InviteMixin(OrganizationViewMixin):
+class InviteMixin(OrganizationBaseView):
     model = OrganizationMember
 
     def get_success_url(self):
@@ -164,7 +165,7 @@ class InviteAccept(MessageUserMixin, CreateView):
         return HttpResponseRedirect('/')
 
 
-class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
+class InviteSend(OrganizationBaseView, BitcasterBaseUpdateView):
     fields = ()
 
     def get_success_url(self):
@@ -185,5 +186,5 @@ class InviteSend(OrganizationViewMixin, BitcasterBaseUpdateView):
 
 
 class InviteDelete(InviteMixin, BitcasterBaseDeleteView):
-    title = _('Cancel invitation')
+    # title = _('Cancel invitation')
     message = _('Invitation to <strong>%(object)s</strong> will be canceled')

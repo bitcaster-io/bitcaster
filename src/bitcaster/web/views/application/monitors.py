@@ -36,7 +36,7 @@ class MonitorMixin(SelectedApplicationMixin):
 
 class ApplicationMonitorList(MonitorMixin, BitcasterBaseListView):
     template_name = 'bitcaster/application/monitors/list.html'
-    title = _('Monitors')
+    # title = _('Monitors')
 
 
 class ApplicationMonitorUsage(MonitorMixin, BitcasterBaseDetailView):
@@ -46,7 +46,7 @@ class ApplicationMonitorUsage(MonitorMixin, BitcasterBaseDetailView):
 class ApplicationMonitorUpdate(MonitorMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/monitors/configure.html'
     form_class = MonitorUpdateConfigurationForm
-    title = _('Edit Monitor')
+    # title = _('Edit Monitor')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

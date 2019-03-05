@@ -1,22 +1,18 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from crispy_forms.helper import FormHelper
-from django import forms
-from django.core.exceptions import ValidationError
-from django.forms import BaseInlineFormSet
-from django.forms.utils import ErrorList
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
-from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from bitcaster import messages
 from bitcaster.models import Address, AddressAssignment, User
-from bitcaster.state import state
 from bitcaster.system import system
 from bitcaster.utils.email_verification import set_new_email_request
-from bitcaster.web.forms.user import send_address_verification_email
+from bitcaster.web.forms.user import (AddressAssignmentForm,
+                                      AddressAssignmentFormSet, AddressForm,
+                                      AddressFormSet,
+                                      send_address_verification_email,)
 from bitcaster.web.views.organization.mixins import ApplicationListMixin
 
 from ..forms import UserProfileForm
@@ -70,114 +66,11 @@ class UserIndexView(ApplicationListMixin, MessageUserMixin, TemplateView):
         return ret
 
 
-#
-# class UserHomeView(SelectedApplicationMixin, BitcasterBaseDetailView):
-#     template_name = 'bitcaster/users/user-home.html'
-#     model = User
-#
-#     def get_context_data(self, **kwargs):
-#         kwargs['application'] = self.selected_application
-#         allowed_applications = []
-#         for m in self.request.user.memberships.all():
-#             for application in m.organization.applications.all():
-#                 allowed_applications.append(
-#                     (m.organization, application)
-#                 )
-#         kwargs['applications'] = allowed_applications
-#         # kwargs['organizations'] = self.request.user.memberships.exclude(id=self.selected_organization.id)
-#         return super().get_context_data(**kwargs)
-#
-#     def get_object(self, queryset=None):
-#         return self.request.user
-
-#
-# class UserWelcomeView(BitcasterTemplateView):
-#     template_name = 'bitcaster/users/user-welcome.html'
-#
-
-class AddressForm(forms.ModelForm):
-    class Meta:
-        model = Address
-        fields = ('id', 'user', 'label', 'address')
-
-    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
-                 label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None, renderer=None):
-        super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
-                         use_required_attribute, renderer)
-        self.helper = FormHelper()
-        self.helper.form_show_labels = False
-
-
-class AddressAssignmentForm(forms.ModelForm):
-    class Meta:
-        model = AddressAssignment
-        fields = ('id', 'user', 'channel', 'address')
-
-    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
-                 label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None):
-        super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
-                         use_required_attribute)
-
-        # choices = self.fields['dispatcher'].choices
-        # self.fields['dispatcher'].choices = [c for c in choices[1:]]
-        # self.fields['dispatcher'].choices = [c for c in choices[1:] if import_string(c[0]).subscription_class]
-        request = state.request
-        self.fields['address'].queryset = request.user.addresses.all()
-        self.helper = FormHelper()
-        self.helper.form_show_labels = False
-
-    def clean(self):
-        super().clean()
-        if self.cleaned_data:  # pragma: no branch
-            channel = self.cleaned_data.get('channel', None)
-            address = self.cleaned_data.get('address', None)
-            if channel and address and address.address:
-                try:
-                    channel.validate_address(address.address)
-                except DRFValidationError as e:
-                    raise ValidationError({'address': ', '.join(e.detail)})
-        return self.cleaned_data
-
-
-AddressFormSetBase = forms.inlineformset_factory(User,
-                                                 Address,
-                                                 form=AddressForm,
-                                                 min_num=1,
-                                                 extra=0)
-
-AddressAssignmentFormSetBase = forms.inlineformset_factory(User,
-                                                           AddressAssignment,
-                                                           form=AddressAssignmentForm,
-                                                           min_num=1,
-                                                           extra=0)
-
-
-class AddressFormSet(AddressFormSetBase, BaseInlineFormSet):
-    def __init__(self, *args, **kwargs):
-        super(AddressFormSet, self).__init__(*args, **kwargs)
-        self.queryset = self.queryset.order_by('label')
-
-    def save(self, commit=True):
-        a = self.save_existing_objects(commit)
-        b = self.save_new_objects(commit)
-        return a + b
-
-
-class AddressAssignmentFormSet(AddressAssignmentFormSetBase, BaseInlineFormSet):
-    def save(self, commit=True):
-        a = self.save_existing_objects(commit)
-        b = self.save_new_objects(commit)
-        return a + b
-
-    def __init__(self, *args, **kwargs):
-        super(AddressAssignmentFormSet, self).__init__(*args, **kwargs)
-        self.queryset = self.queryset.order_by('channel')
-
-
 class UserAddressesView(BitcasterBaseUpdateView):
     template_name = 'bitcaster/users/addresses.html'
     model = Address
     form_class = AddressForm
+    title = _('Addresses')
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -209,6 +102,7 @@ class UserAddressesAssignmentView(BitcasterBaseUpdateView):
     template_name = 'bitcaster/users/addresses_assignment.html'
     model = AddressAssignment
     form_class = AddressAssignmentForm
+    title = _('Address Usage')
 
     def get_object(self, queryset=None):
         return self.request.user
