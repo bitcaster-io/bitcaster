@@ -35,8 +35,8 @@ from .views import (ApplicationCheckConfigView, ApplicationCreate,  #
                     OrganizationTeamCreate, OrganizationTeamDelete,
                     OrganizationTeamList, OrganizationTeamMember,
                     OrganizationTeamUpdate, PluginInfo, SettingsEmailView,
-                    SettingsOAuthView, SettingsSystemInfo, SettingsView,
-                    SetupView, UserAddressesAssignmentView,
+                    SettingsLdapView, SettingsOAuthView, SettingsSystemInfo,
+                    SettingsView, SetupView, UserAddressesAssignmentView,
                     UserAddressesInfoView, UserAddressesView, UserProfileView,
                     WorkInProgressView, confirm_registration,)
 
@@ -54,6 +54,7 @@ urlpatterns = [
     path('settings/email/', SettingsEmailView.as_view(), name='settings-email'),
     path('settings/oauth/', SettingsOAuthView.as_view(), name='settings-oauth'),
     path('settings/sysinfo/', SettingsSystemInfo.as_view(), name='settings-sysinfo'),
+    path('settings/ldap/', SettingsLdapView.as_view(), name='settings-ldap'),
 
     path('plugins/info/<str:fqn>/', PluginInfo.as_view(), name='plugin-info'),
 

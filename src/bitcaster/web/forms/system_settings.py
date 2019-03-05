@@ -33,6 +33,21 @@ HELP = '''
 # )
 
 
+class SettingsLdapForm(SettingsForm):
+    AUTH_LDAP_ENABLE = forms.BooleanField(label='Enable', required=False)
+    AUTH_LDAP_SERVER_URI = forms.CharField(label='Server address', required=False)
+    AUTH_LDAP_BIND_DN = forms.CharField(label='Bind DN', required=False)
+    AUTH_LDAP_BIND_PASSWORD = forms.CharField(label='Bind Password', required=False)
+    AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = forms.CharField(label='Bind as authenticating user',
+                                                            required=False)
+    AUTH_LDAP_START_TLS = forms.BooleanField(label='Use Tls', required=False)
+    AUTH_LDAP_USER_DN_TEMPLATE = forms.CharField(label='User DN template', required=False)
+    AUTH_LDAP_ALWAYS_UPDATE_USER = forms.BooleanField(label='Always update user', required=False)
+    AUTH_LDAP_AUTHORIZE_ALL_USERS = forms.BooleanField(label='Authorize all users', required=False)
+    AUTH_LDAP_USER_SEARCH = forms.BooleanField(label='User search',
+                                               required=False)
+
+
 class SettingsOAuthForm(SettingsForm):
     SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = forms.CharField(label='Key', required=False)
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = forms.CharField(label='Secret', required=False)
