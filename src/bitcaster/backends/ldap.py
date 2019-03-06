@@ -9,16 +9,18 @@ logger = logging.getLogger(__name__)
 
 
 class LDAPSettings(_LDAPSettings):
-    def __init__(self, prefix='AUTH_LDAP_', defaults=None):
+    def __init__(self, prefix='AUTH_LDAP_', defaults={'USER_ATTR_MAP': {'email': 'cn'},
+                                                      }):
         self._prefix = prefix
 
         defaults = dict(self.defaults, **defaults)
 
         for name, default in defaults.items():
-            if name in django.conf.settings.CONSTANCE_CONFIG:
-                value = getattr(config, name)
+            fullname = prefix + name
+            if fullname in django.conf.settings.CONSTANCE_CONFIG:
+                value = getattr(config, fullname)
             else:
-                value = getattr(django.conf.settings, prefix + name, default)
+                value = getattr(django.conf.settings, fullname, default)
             setattr(self, name, value)
 
 
