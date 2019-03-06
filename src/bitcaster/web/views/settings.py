@@ -42,7 +42,7 @@ class SettingsBaseView(SuperuserViewMixin, TitleMixin,
     def get_form(self, form_class=None):
         form_class = self.get_form_class()
         kwargs = self.get_form_kwargs()
-        kwargs['initial'] = dict({(f, getattr(config, f, ''))
+        kwargs['initial'] = dict({(f, str(getattr(config, f, '')))
                                   for f in form_class.declared_fields.keys()})
         return form_class(**kwargs)
 

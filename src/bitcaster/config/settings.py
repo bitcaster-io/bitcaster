@@ -382,6 +382,11 @@ CELERY_RESULT_SERIALIZER = 'json'
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_ADDITIONAL_FIELDS = {
+    'fields_mapping': ['bitcaster.utils.constance.FieldMappingField', {}],
+    'ldap_dn': ['bitcaster.utils.constance.LdapDNField', {
+        'required': False,
+    }],
+
     'yes_no_null_select': ['django.forms.fields.ChoiceField', {
         'widget': 'django.forms.Select',
         'choices': ((None, '-----'), ('yes', 'Yes'), ('no', 'No'))
@@ -431,16 +436,18 @@ CONSTANCE_CONFIG = OrderedDict({
 
     'AUTH_LDAP_ENABLE': (False, 'Enable LDAP Authentication', bool),
     'AUTH_LDAP_SERVER_URI': ('', 'LDAP server address', str),
-    'AUTH_LDAP_BIND_DN': ('', '', str),
+    'AUTH_LDAP_BIND_DN': ('', '', 'ldap_dn'),
     'AUTH_LDAP_BIND_PASSWORD': ('', '', str),
     'AUTH_LDAP_BIND_AS_AUTHENTICATING_USER': (False, '', bool),
-    'AUTH_LDAP_START_TLS': (False, 'ie. "uid=%(user)s,ou=users,dc=example,dc=com"', bool),
+    'AUTH_LDAP_START_TLS': (False, '', bool),
+    'AUTH_LDAP_USER_ATTR_MAP': ('email:mail,name:cn', '', 'fields_mapping'),
+    'AUTH_LDAP_USER_QUERY_FIELD': ('email', '', str),
 
-    'AUTH_LDAP_USER_DN_TEMPLATE': ('', 'ie. "uid=%(user)s,ou=users,dc=example,dc=com"', str),
+    'AUTH_LDAP_USER_DN_TEMPLATE': ('', 'ie. "uid=%(user)s,ou=users,dc=example,dc=com"', 'ldap_dn'),
     'AUTH_LDAP_ALWAYS_UPDATE_USER': (True, '', bool),
-    'AUTH_LDAP_AUTHORIZE_ALL_USERS': (False, '', bool),
-    'AUTH_LDAP_CACHE_TIMEOUT': (0, '', int),
-    'AUTH_LDAP_USER_SEARCH': ('ou=users,dc=example,dc=com', '', str),
+    # 'AUTH_LDAP_AUTHORIZE_ALL_USERS': (False, '', bool),
+    # 'AUTH_LDAP_CACHE_TIMEOUT': (0, '', int),
+    # 'AUTH_LDAP_USER_SEARCH': ('ou=users,dc=example,dc=com', '', str),
     # 'AUTH_LDAP_CONNECTION_OPTIONS': {},
     # 'AUTH_LDAP_DENY_GROUP': None,
     # 'AUTH_LDAP_FIND_GROUP_PERMS': (False, '', bool),

@@ -55,6 +55,8 @@ class UserManager(_UserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    USERNAME_FIELD = 'email'
+
     title = models.CharField(max_length=5, blank=True, null=True)
     name = models.CharField(_('full name'), max_length=250, blank=True)
     friendly_name = models.CharField(_('display name'), max_length=250, blank=True,
@@ -118,8 +120,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     timezone = TimeZoneField()
     language = LanguageField(default='en')
     country = CountryField()
-
-    USERNAME_FIELD = 'email'
 
     objects = UserManager()
 

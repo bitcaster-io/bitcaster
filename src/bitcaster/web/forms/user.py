@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 
 
 class AuthenticationForm(_AuthenticationForm):
-    username = forms.EmailField(widget=forms.EmailInput(attrs={'autocomplete': 'email'}))
+    # username = forms.EmailField(widget=forms.EmailInput(attrs={'autocomplete': 'email'}))
+    username = forms.CharField()
     password = forms.CharField(widget=PasswordInput(attrs={'autocomplete': 'current-password'}))
 
 
