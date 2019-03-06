@@ -9,10 +9,28 @@ from django.core.cache import caches
 from django.core.checks import Error, register
 from django.db import OperationalError, ProgrammingError, connection
 
+from bitcaster.config import settings
 from bitcaster.config.environ import env
 from bitcaster.models import AgentMetaData, DispatcherMetaData
 
 logger = logging.getLogger(__name__)
+
+
+@register()
+def check_settings(*args, **kwargs):
+    errors = []
+    for i, dir in enumerate(['MEDIA_ROOT', 'STATIC_ROOT']):
+        value = getattr(settings, dir)
+        if not value or not Path(value).is_dir():
+            errors.append(
+                Error(
+                    "%s '%s' does not exists" % (dir, settings.STATIC_ROOT),
+                    hint='check your BITCASTER_%s environment variable' % dir,
+                    obj=None,
+                    id='bitcaster.C00%s' % i
+                )
+            )
+    return errors
 
 
 @register()

@@ -15,8 +15,8 @@ class PluginManager(models.Manager):
                                                 enabled=True,
                                                 version=handler.version)
                                   )
-        if registry:
-            self.exclude(handler__in=registry).update(enabled=False)
+        # if registry:
+        self.exclude(handler__in=registry).update(enabled=False)
 
 
 class Plugin(models.Model):
@@ -32,5 +32,5 @@ class Plugin(models.Model):
         app_label = 'bitcaster'
         abstract = True
 
-    def __str__(self):
-        return self.fqn
+    # def __str__(self):
+    #     return self.fqn

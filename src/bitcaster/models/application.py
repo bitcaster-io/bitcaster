@@ -79,9 +79,6 @@ class Application(AbstractModel, ReverseWrapperMixin):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return str(self.urls.edit)
-
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.slug:
             slugify_instance(self, self.name,

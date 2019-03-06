@@ -4,7 +4,6 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
-from django.views.generic.base import TemplateResponseMixin
 
 from bitcaster import messages
 from bitcaster.security import authorized_or_403
@@ -48,8 +47,9 @@ class BitcasterSingleObjectMixin:
 
 @method_decorator(authorized_or_403(lambda u: u.is_superuser), name='dispatch')
 class SuperuserViewMixin(SecuredViewMixin):
-    def check_perms(self, request, obj=None, raise_exception=False):
-        return request.user.has_perm(obj)
+    pass
+    # def check_perms(self, request, obj=None, raise_exception=False):
+    #     return request.user.has_perm(obj)
 
 
 class MessageUserMixin:
@@ -76,7 +76,8 @@ class BitcasterBaseViewMixin(TitleMixin, MessageUserMixin):
     pass
 
 
-class BitcasterSingleObjectTemplateResponseMixin(TemplateResponseMixin):
-    def get_context_data(self, **kwargs):
-        kwargs['opts'] = self.model._meta
-        return super().get_context_data(**kwargs)
+# class BitcasterSingleObjectTemplateResponseMixin(TemplateResponseMixin):
+#     pass
+    # def get_context_data(self, **kwargs):
+    #     kwargs['opts'] = self.model._meta
+    #     return super().get_context_data(**kwargs)

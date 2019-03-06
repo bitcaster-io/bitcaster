@@ -7,7 +7,6 @@ from django.core.mail import get_connection, send_mail
 from rest_framework import serializers
 
 from bitcaster.api.fields import PasswordField
-from bitcaster.exceptions import PluginValidationError
 from bitcaster.utils import fqn
 
 from ..base import (CoreDispatcher, DispatcherOptions,
@@ -44,13 +43,13 @@ class Email(CoreDispatcher):
     subscription_class = EmailSubscription
     message_class = EmailMessage
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> bool:
-        email = self.get_recipient_address(subscription)
-        cfg = {'recipient': self.owner.config.get('recipient', email)}
-        try:
-            return self.subscription_class(data=cfg).is_valid(True)
-        except (serializers.ValidationError, ValidationError) as e:
-            raise PluginValidationError(str(e)) from e
+    # def validate_subscription(self, subscription, *args, **kwargs) -> bool:
+    #     email = self.get_recipient_address(subscription)
+    #     cfg = {'recipient': self.owner.config.get('recipient', email)}
+    #     try:
+    #         return self.subscription_class(data=cfg).is_valid(True)
+    #     except (serializers.ValidationError, ValidationError) as e:
+    #         raise PluginValidationError(str(e)) from e
 
     def _get_connection(self) -> object:
         config = self.config
@@ -66,7 +65,7 @@ class Email(CoreDispatcher):
     def get_recipient_address(self, subscription):
         try:
             return super().get_recipient_address(subscription)
-        except (ObjectDoesNotExist, TypeError):
+        except (ObjectDoesNotExist, TypeError):  # pragma: no cover
             return subscription.subscriber.email
 
     def emit(self, subscription, subject, message, connection=None, *args, **kwargs):
@@ -80,7 +79,7 @@ class Email(CoreDispatcher):
                             recipient_list=[email])
             self.logger.debug(f'{fqn(self)} email sent to {email}')
             return ret
-        except smtplib.SMTPException as e:
+        except smtplib.SMTPException as e:  # pragma: no cover
             raise ValidationError(str(e)) from e
         except ValidationError as e:
             self.logger.exception(e)

@@ -37,14 +37,19 @@ from .views import (ApplicationCheckConfigView, ApplicationCreate,  #
                     OrganizationTeamUpdate, PluginInfo, SettingsEmailView,
                     SettingsOAuthView, SettingsSystemInfo, SettingsView,
                     SetupView, UserAddressesAssignmentView,
-                    UserAddressesInfoView, UserAddressesView, UserProfileView,
-                    WorkInProgressView, confirm_registration,)
+                    UserAddressesInfoView, UserAddressesView,
+                    UserProfileView, WorkInProgressView, channel_icon,
+                    confirm_registration, plugin_icon,)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
     path(settings.SETUP_URL[1:], SetupView.as_view(), name='setup'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+
+    path('plugins/icons/channel/<int:pk>/', channel_icon, name='channel-icon'),
+    path('plugins/icons/<str:fqn>/', plugin_icon, name='plugin-icon'),
+
     # General
     path('terms/', TemplateView.as_view(template_name='bitcaster/legal/terms.html'), name='legal-terms'),
     path('privacy/', TemplateView.as_view(template_name='bitcaster/legal/privacy.html'), name='legal-privacy'),

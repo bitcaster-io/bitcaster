@@ -15,6 +15,7 @@ from .base import PluginInfo
 from .callbacks import confirm_registration
 from .channel import ChannelCreateWizard, ChannelListView
 from .handlers import handler404, handler500
+from .icons import channel_icon, plugin_icon
 from .login_logout import LoginView, LogoutView
 from .organization import *
 from .settings import *

@@ -1,46 +1,15 @@
 import re
-from pathlib import Path
 from urllib.parse import parse_qs
 
 from django.conf import settings
 from django.conf.urls import include
 from django.contrib.admin import site
-from django.http import HttpResponse, HttpResponseRedirect
-from django.templatetags.static import static
 from django.urls import path, re_path
-from django.views.decorators.cache import cache_page
 from django.views.static import serve
 from django_sysinfo.views import admin_sysinfo, http_basic_login, sysinfo
-from strategy_field.utils import import_by_name
 
 import bitcaster.api.urls
 import bitcaster.web.urls
-from bitcaster.models import Channel
-
-
-@cache_page(60 * 60 * 24)
-def channel_icon(request, pk):
-    ch = Channel.objects.get(pk=pk)
-    return plugin_icon(request, ch.handler.fqn)
-
-
-@cache_page(60 * 60 * 24, key_prefix=bitcaster.__version__)
-def plugin_icon(request, fqn):
-    h = import_by_name(fqn)
-    # loc = inspect.getfile(h)
-    if h.icon and h.icon.startswith('/'):
-        return HttpResponseRedirect(static(h.icon))
-    elif h.icon:
-        icon = Path(settings.STATIC_ROOT) / f'bitcaster/images/icons/{h.icon}.png'
-    else:
-        name = fqn.split('.')[-1]
-        icon = Path(settings.STATIC_ROOT) / f'bitcaster/images/icons/{name.lower()}.png'
-    try:
-        image = icon.read_bytes()
-    except (Exception, FileNotFoundError):
-        return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))
-    return HttpResponse(image, content_type='image/png')
-    # return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))
 
 
 def oauth2callback(request):
@@ -58,9 +27,7 @@ urlpatterns = [path('api/', include(bitcaster.api.urls), name='api'),
                path('favicon.ico', serve, kwargs={'document_root': settings.STATIC_ROOT,
                                                   'path': 'favicon.ico'}),
                path('admin/', site.urls),
-
-               path('plugins/icons/channel/<int:pk>/', channel_icon, name='channel-icon'),
-               path('plugins/icons/<str:fqn>/', plugin_icon, name='plugin-icon')]
+               ]
 
 handler404 = 'bitcaster.web.views.handler404'
 handler500 = 'bitcaster.web.views.handler500'

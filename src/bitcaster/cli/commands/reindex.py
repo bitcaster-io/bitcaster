@@ -19,4 +19,4 @@ def reindex(ctx, **kwargs):
 
     except Exception as e:
         click.echo(str(e))
-        ctx.abort()
+        ctx.exit(1)

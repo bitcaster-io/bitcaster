@@ -11,6 +11,7 @@ omit =
         */bitcaster/dispatchers/console.py
         */management/commands/*
         */bitcaster/admin/*
+        */bitcaster/cli/commands/reindex.py
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -30,6 +31,8 @@ exclude_lines =
     if __name__ == .__main__.:
     except ValidationError
     except Exception
+    if settings.DEBUG:
+
 
 ignore_errors = True
 

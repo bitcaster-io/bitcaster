@@ -10,10 +10,10 @@ class SelectedApplicationMixin(ApplicationListMixin):
         kwargs['application'] = self.selected_application
         return super().get_context_data(**kwargs)
 
-    def audit_log(self, event, **kwargs):
-        super().audit_log(self.request, event,
-                          organization=self.selected_organization,
-                          **kwargs)
+    # def audit_log(self, event, **kwargs):
+    #     super().audit_log(self.request, event,
+    #                       organization=self.selected_organization,
+    #                       **kwargs)
 
     @cached_property
     def selected_application(self):
@@ -22,7 +22,7 @@ class SelectedApplicationMixin(ApplicationListMixin):
             try:
                 app = self.selected_organization.applications.get(slug=slug)
                 self.check_perms(self.request, app, True)
-            except Application.DoesNotExist:
+            except Application.DoesNotExist:  # pragma: no cover
                 raise Http404
             return app
         return None

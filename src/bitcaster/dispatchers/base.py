@@ -30,9 +30,7 @@ class SubscriptionOptions(serializers.Serializer):
 
 
 class DispatcherOptions(serializers.Serializer):
-
-    def get_initials(self):
-        return {}
+    pass
 
 
 class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
@@ -108,13 +106,16 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         except (serializers.ValidationError, ValidationError) as e:
             raise PluginValidationError(str(e)) from e
 
+    @abc.abstractmethod
     def test_connection(self, raise_exception=False):
-        try:
-            self._get_connection()
-            return True
-        except Exception as e:
-            logger.exception(e)
-            return False
+        pass  # pragma: no-cover
+
+        # try:
+        #     self._get_connection()
+        #     return True
+        # except Exception as e:
+        #     logger.exception(e)
+        #     return False
 
     def test_message(self, subscription, subject, message, *args, **kwargs):
         # assert subscription.event is None

@@ -46,7 +46,7 @@ def get_all_models():
                 ret.append(name)
             if not m2m_attr.rel.through._meta.auto_created:
                 name = f'{rel.through._meta.app_label}.{rel.through._meta.model_name}'
-                if name not in ret:
+                if name not in ret:  # pragma: no cover
                     ret.append(name)
     return ret
 
