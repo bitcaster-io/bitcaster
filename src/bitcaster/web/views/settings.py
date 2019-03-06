@@ -9,6 +9,7 @@ from django.views.generic import FormView
 
 from bitcaster import messages
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
+                                                 SettingsLdapForm,
                                                  SettingsMainForm,
                                                  SettingsOAuthForm,)
 
@@ -19,9 +20,7 @@ logger = logging.getLogger(__name__)
 
 __all__ = ['SettingsView', 'SettingsOAuthView',
            'SettingsEmailView',
-           # 'SettingsChannelListView',
-           # 'SettingsOrgUpdateView',
-           # 'SettingsOrgListView',
+           'SettingsLdapView',
            'SettingsSystemInfo',
            ]
 
@@ -43,7 +42,7 @@ class SettingsBaseView(SuperuserViewMixin, TitleMixin,
     def get_form(self, form_class=None):
         form_class = self.get_form_class()
         kwargs = self.get_form_kwargs()
-        kwargs['initial'] = dict({(f, getattr(config, f, ''))
+        kwargs['initial'] = dict({(f, str(getattr(config, f, '')))
                                   for f in form_class.declared_fields.keys()})
         return form_class(**kwargs)
 
@@ -105,6 +104,11 @@ class SettingsEmailView(SettingsBaseView):
 class SettingsOAuthView(SettingsBaseView):
     form_class = SettingsOAuthForm
     title = _('Oauth')
+
+
+class SettingsLdapView(SettingsBaseView):
+    form_class = SettingsLdapForm
+    title = _('Ldap')
 
 
 # class SettingsOrgUpdateView(SuperuserViewMixin, UpdateView):

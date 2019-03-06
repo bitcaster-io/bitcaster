@@ -1,8 +1,13 @@
+import ast
+
 from constance import config
 from django.contrib.auth.models import Group
-from django.forms import ChoiceField, HiddenInput, Select, Textarea, TextInput
+from django.core.exceptions import ValidationError
+from django.forms import (CharField, ChoiceField, HiddenInput,
+                          Select, Textarea, TextInput,)
 from django.template import Context, Template
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
 
 
 class GroupChoiceField(ChoiceField):
@@ -15,6 +20,51 @@ class GroupChoiceField(ChoiceField):
 
 class GroupChoice(Select):
     pass
+
+
+class LdapDNField(CharField):
+    def clean(self, value):
+        if value in self.empty_values and self.required:
+            raise ValidationError(self.error_messages['required'], code='required')
+        elif value not in self.empty_values:
+            try:
+                entries = value.split(',')
+                for entry in entries:
+                    k, v = entry.split('=')
+                    if not (k and v):
+                        raise ValidationError(_('%s cannot be empty') % k)
+            except ValueError:
+                raise ValidationError(_('Invalid value %s. Use key=value,key1=value1... synthax') % value)
+            if r'%(user)s' not in value:
+                raise ValidationError(_("DN Template must contains '%(user)s' mapping"))
+        return value
+
+
+class FieldMappingField(CharField):
+
+    def clean(self, value):
+        return self.to_python(value)
+
+    def prepare_value(self, value):
+        if not isinstance(value, dict):
+            try:
+                value = ast.literal_eval(value)
+            except SyntaxError:
+                value = self.to_python(value)
+        return ','.join(['%s:%s' % (k, v) for k, v in value.items()])
+
+    def to_python(self, value):
+        ret = {}
+        try:
+            entries = value.split(',')
+            for entry in entries:
+                k, v = entry.split(':')
+                if not (k and v):
+                    raise ValidationError(_('%s cannot be empty') % k)
+                ret[k] = v
+        except ValueError:
+            raise ValidationError(_('Invalid value %s. Ie. email:mail,.. synthax') % value)
+        return ret
 
 
 # class LabelInput(HiddenInput):

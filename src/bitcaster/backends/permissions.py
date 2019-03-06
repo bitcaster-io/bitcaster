@@ -3,7 +3,6 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django_auth_ldap.backend import LDAPBackend
 
 from bitcaster.db.fields import Role
 from bitcaster.models import Application, Event, Organization
@@ -27,13 +26,6 @@ SUBSCRIBER_PERMISSIONS = ()
 PERM_MAP = {Role.ADMIN: ADMIN_PERMISSIONS,
             Role.OWNER: OWNER_PERMISSIONS,
             Role.SUBSCRIBER: SUBSCRIBER_PERMISSIONS}
-
-
-class BitcasterLDAPBackend(LDAPBackend):
-
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        return None
-        # return super().authenticate(request, username, password, **kwargs)
 
 
 class BitcasterBackend:

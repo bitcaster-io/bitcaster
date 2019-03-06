@@ -9,6 +9,7 @@ from rest_framework.reverse import reverse
 
 from bitcaster.forms import PasswordEyeInput
 from bitcaster.state import state
+from bitcaster.utils.constance import FieldMappingField, LdapDNField
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,26 @@ HELP = '''
 # reverse_lazy("social:complete", args=['google-oauth2'])
 # "http://localhost:8000/complete/google-oauth2/"
 # )
+
+
+class SettingsLdapForm(SettingsForm):
+    AUTH_LDAP_ENABLE = forms.BooleanField(label='Enable', required=False)
+    AUTH_LDAP_SERVER_URI = forms.CharField(label='Server address', required=False)
+    AUTH_LDAP_BIND_DN = forms.CharField(label='Bind DN', required=False)
+    AUTH_LDAP_BIND_PASSWORD = forms.CharField(label='Bind Password', required=False)
+    AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = forms.BooleanField(label='Bind as authenticating user',
+                                                               required=False)
+
+    AUTH_LDAP_START_TLS = forms.BooleanField(label='Use Tls', required=False)
+    AUTH_LDAP_USER_ATTR_MAP = FieldMappingField(label='Field mapping', required=False)
+    AUTH_LDAP_USER_DN_TEMPLATE = LdapDNField(label='User DN template', required=False)
+    AUTH_LDAP_USER_QUERY_FIELD = forms.CharField(
+        label="User field used for matching. Must be present in 'Field mapping'", required=False)
+
+    AUTH_LDAP_ALWAYS_UPDATE_USER = forms.BooleanField(label='Always update user', required=False)
+    # AUTH_LDAP_AUTHORIZE_ALL_USERS = forms.BooleanField(label='Authorize all users', required=False)
+    # AUTH_LDAP_USER_SEARCH = forms.BooleanField(label='User search',
+    #                                            required=False)
 
 
 class SettingsOAuthForm(SettingsForm):

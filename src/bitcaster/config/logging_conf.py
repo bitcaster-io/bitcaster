@@ -88,6 +88,21 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
+        'django_auth_ldap': {
+            'handlers': ['console'],  # do not use 'db' here
+            'propagate': False,  # do not propagate
+            'level': 'DEBUG'
+        },
+        'ldap': {
+            'handlers': ['console'],  # do not use 'db' here
+            'propagate': False,  # do not propagate
+            'level': 'DEBUG'
+        },
+        'bitcaster.backends.ldap': {
+            'handlers': ['console'],  # do not use 'db' here
+            'propagate': False,  # do not propagate
+            'level': 'DEBUG'
+        },
         'django_db_logging': {
             'handlers': ['console'],  # do not use 'db' here
             'propagate': False,  # do not propagate
