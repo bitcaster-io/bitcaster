@@ -17,8 +17,7 @@ def test_cli_backup_restore(subscription1):
                                obj={'env': env})
         assert result.exit_code == 0, result.output
 
-        result = runner.invoke(restore, ['--filename', 'test_backup.json'],
-                               obj={'env': env})
+        result = runner.invoke(restore, ['--filename', 'test_backup.json'], obj={'env': env})
         assert result.exit_code == 0, result.output
 
         result = runner.invoke(restore, ['--filename', 'test_backup.json',

@@ -101,73 +101,76 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
     import constance.settings
     from constance import config
 
-    try:
-        input_file = Path(filename)
-        click.echo(f'Using backup {input_file.absolute()}')
-        data = json.loads(input_file.read_text(), cls=Decoder)
-        if not selection:
-            selection = ['options'] + get_all_models()
-        else:
-            selection = ['bitcaster.%s' % name for name in selection]
+    # try:
+    input_file = Path(filename)
+    click.echo(f'Using backup {input_file.absolute()}')
+    data = json.loads(input_file.read_text(), cls=Decoder)
+    if not selection:
+        selection = ['options'] + get_all_models()
+    else:
+        selection = ['bitcaster.%s' % name for name in selection]
 
-        with atomic():
-            post_save.disconnect(dispatch_uid='channel-check-config')
-            post_save.disconnect(dispatch_uid='event-check-config')
-            post_save.disconnect(dispatch_uid='message-check-config')
-            post_save.disconnect(dispatch_uid='key-check-config')
+    with atomic():
+        post_save.disconnect(dispatch_uid='channel-check-config')
+        post_save.disconnect(dispatch_uid='event-check-config')
+        post_save.disconnect(dispatch_uid='message-check-config')
+        post_save.disconnect(dispatch_uid='key-check-config')
 
-            if 'options' in selection:
-                click.echo(f'restore...options')
-                for key, value in data['options']:
-                    _type = constance.settings.CONFIG[key][2]
-                    if _type is bool:
-                        value = str(value).lower() in ['1', 'true', 't']
-                    else:
-                        value = _type(value)
-                    setattr(config, key, value)
+        if 'options' in selection:
+            click.echo(f'restore...options')
+            for key, value in data['options']:
+                _type = constance.settings.CONFIG[key][2]
+                if _type is bool:
+                    value = str(value).lower() in ['1', 'true', 't']
+                elif isinstance(_type, str):
+                    value = str(value)
+                else:
+                    value = _type(value)
+                setattr(config, key, value)
 
-            ALL_MODELS = get_all_models()
-            for model_name in ALL_MODELS:
-                if model_name in selection:
-                    model = apps.get_model(model_name)
+        ALL_MODELS = get_all_models()
+        for model_name in ALL_MODELS:
+            if model_name in selection:
+                model = apps.get_model(model_name)
+                try:
+                    model_data = data[model_name]
+                except KeyError:
+                    click.echo(f'skipping...{model_name} no data exists', color='red')
+                    continue
+                click.echo(f'restore...{model_name}')
+                for record in model_data['__data__']:
                     try:
-                        model_data = data[model_name]
-                    except KeyError:
-                        click.echo(f'skipping...{model_name} no data exists', color='red')
-                        continue
-                    click.echo(f'restore...{model_name}')
-                    for record in model_data['__data__']:
-                        try:
-                            pk = record.pop('id')
-                            for field_name in POP_FIELDS:
-                                record.pop(field_name, None)
-                            if overwrite:
-                                model.objects.update_or_create(id=pk, defaults=record)
-                            else:
-                                model.objects.get_or_create(id=pk, defaults=record)
-                        except Exception as e:
-                            click.echo(str(e))
-                            click.echo(model_name)
-                            click.echo(record)
-                            if not ignore_errors:
-                                ctx.abort()
-                    # # ManyToMany
-                    for m2m_field_name, m2m_records in data[model_name]['__m2m__'].items():
-                        m2m_field = model._meta.get_field(m2m_field_name)
-                        related_model = m2m_field.related_model
-                        for record in m2m_records:
-                            parent = model.objects.get(pk=record['id'])
-                            m2m_attr = getattr(parent, m2m_field_name)
-                            related = related_model.objects.get(pk=record[m2m_field_name])
-                            m2m_attr.add(related)
+                        pk = record.pop('id')
+                        for field_name in POP_FIELDS:
+                            record.pop(field_name, None)
+                        if overwrite:
+                            model.objects.update_or_create(id=pk, defaults=record)
+                        else:
+                            model.objects.get_or_create(id=pk, defaults=record)
+                    except Exception as e:
+                        click.echo(str(e))
+                        click.echo(model_name)
+                        click.echo(record)
+                        if not ignore_errors:
+                            ctx.abort()
+                # # ManyToMany
+                for m2m_field_name, m2m_records in data[model_name]['__m2m__'].items():
+                    m2m_field = model._meta.get_field(m2m_field_name)
+                    related_model = m2m_field.related_model
+                    for record in m2m_records:
+                        parent = model.objects.get(pk=record['id'])
+                        m2m_attr = getattr(parent, m2m_field_name)
+                        related = related_model.objects.get(pk=record[m2m_field_name])
+                        m2m_attr.add(related)
 
-            from bitcaster.models import AgentMetaData
-            from bitcaster.models import DispatcherMetaData
-            from bitcaster.models.configurationissue import check_system
+        from bitcaster.models import AgentMetaData
+        from bitcaster.models import DispatcherMetaData
+        from bitcaster.models.configurationissue import check_system
 
-            AgentMetaData.objects.inspect()
-            DispatcherMetaData.objects.inspect()
-            check_system()
-    except Exception as e:
-        click.echo(e, color='red')
-        ctx.exit(1)
+        AgentMetaData.objects.inspect()
+        DispatcherMetaData.objects.inspect()
+        check_system()
+    # except Exception as e:
+    #     raise
+    #     click.echo(e, color='red')
+    #     ctx.exit(1)
