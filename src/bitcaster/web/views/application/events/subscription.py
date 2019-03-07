@@ -1,23 +1,24 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import FormView, RedirectView
+from django.views.generic import FormView
 
 from bitcaster import messages
 from bitcaster.db.fields import Role
-from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.models import AuditEvent
 from bitcaster.web.forms.subscription import (EventSubscriptionForm,
                                               InviteFormSet,
                                               SubscriptionFormSet,)
-from bitcaster.web.views.base import (BitcasterBaseDeleteView,
-                                      BitcasterBaseListView, MessageUserMixin,)
+from bitcaster.web.views.base import (
+    BitcasterBaseDeleteView, BitcasterBaseListView, BitcasterBaseToggleView,
+    MessageUserMixin,)
 
 from .mixins import SingleEventMixin
 
 
 class EventSubscriptionList(SingleEventMixin, BitcasterBaseListView):
     template_name = 'bitcaster/application/events/subscriptions/list.html'
+
     # title = 'Subscribers'
 
     def get_context_data(self, **kwargs):
@@ -31,19 +32,9 @@ class EventSubscriptionDelete(SingleEventMixin, BitcasterBaseDeleteView):
         return self.selected_application.subscriptions.all()
 
 
-class EventSubscriptionToggle(SingleEventMixin, MessageUserMixin, RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse('app-event-subscriptions',
-                       args=[self.selected_organization.slug,
-                             self.selected_application.slug,
-                             self.selected_event.pk])
-
-    def get(self, request, *args, **kwargs):
-        obj = self.selected_event.subscriptions.get(id=kwargs['subscription'])
-        obj.active = not obj.active
-        obj.save()
-        self.message_user(f'Subscription {obj} updated')
-        return RedirectToRefererResponse(request)
+class EventSubscriptionToggle(SingleEventMixin, BitcasterBaseToggleView):
+    def get_object(self, queryset=None):
+        return self.selected_event.subscriptions.get(id=self.kwargs['subscription'])
 
 
 class EventSubscriptionCreate(SingleEventMixin, FormView):

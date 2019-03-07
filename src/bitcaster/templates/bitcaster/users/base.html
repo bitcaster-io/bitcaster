@@ -1,0 +1,140 @@
+{% load bc_assets bc_permissions bitcaster static gravatar cache %}<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Bitcaster</title>
+    <link rel="stylesheet" href="{% asset "bitcaster/public.css" %}">
+
+</head>
+
+<body>
+
+<div class="wrapper">
+    <!-- Sidebar  -->
+    <nav id="sidebar" class="{{ sidebar }}">
+        <div class="sidebar-header">
+            <h3>
+                <img src="{% asset "bitcaster/images/bitcaster64.png" %}">Bitcaster
+                <button type="button" class="btn white toggle" href="#"><i class="fas fa-align-justify"></i></button>
+            </h3>
+            <strong>
+                <button type="button" class="btn white toggle" href="#">
+                    <img src="{% asset "bitcaster/images/bitcaster64.png" %}">
+                </button>
+            </strong>
+        </div>
+
+        <ul class="list-unstyled components">
+            <li>
+                <a href="{% url "index" %}">
+                    <i class="fas fa-home"></i>
+                    Home
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'user-addresses' %}">
+                    <i class="fas fa-mail-bulk"></i>
+                    Addresses
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'user-profile' %}">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-bookmark"></i>
+                    Subcriptions
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-rss"></i>
+                    Events
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+        {% if user.is_superuser %}
+            <ul class="list-unstyled components">
+                <li>
+                    <a style="bottom:0;" href="{% url 'settings' %}">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
+
+
+    </nav>
+
+    <!-- Page Content  -->
+    <div id="content">
+        {% block toggler %}
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    {% block user-links %}
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="nav navbar-nav ml-auto">
+                                <li class="nav-item">
+                                    {{ user }}
+                                </li>
+                            </ul>
+                            <img class="gravatar" src="{{ user|gravatar:30 }}"/>
+                        </div>
+                    {% endblock user-links %}
+                </div>
+            </nav>
+
+            {% block messages %}
+                <div id="messageBar">{% if messages %}
+                    <ul class="messagelist">{% for message in messages %}
+                        <li class="alert {% if message.tags %} {{ message.tags }}{% endif %} fade show alert-dismissible ">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <span>{{ message }}</span>
+                        </li>
+                    {% endfor %}</ul>
+                {% endif %}</div>
+            {% endblock messages %}
+        {% endblock toggler %}
+        {% block page %}
+
+        {% endblock page %}
+    </div>
+</div>
+<script src="{% static "bitcaster/jquery.js" %}"></script>
+<script src="{% static "bitcaster/js-cookie.js" %}"></script>
+<script src="{% static "bitcaster/vendor.js" %}"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('button.btn.toggle').on('click', function () {
+            $('#sidebar').toggleClass('active');
+            Cookies.set('sidebar',
+                $('#sidebar').hasClass('active') ? "active" : "",
+                {path: '/'}
+            );
+        });
+    });
+
+</script>
+{% block js %}
+{% endblock js %}
+
+</body>
+
+</html>

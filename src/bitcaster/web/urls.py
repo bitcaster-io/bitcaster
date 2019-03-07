@@ -5,8 +5,6 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from bitcaster.web.views.callbacks import confirm_address
-from bitcaster.web.views.user import UserIndexView
-from bitcaster.web.views.views import PreviewView
 
 from .views import (ApplicationCheckConfigView, ApplicationCreate,  # 
                     ApplicationDashboard, ApplicationDeleteView,
@@ -38,7 +36,9 @@ from .views import (ApplicationCheckConfigView, ApplicationCreate,  #
                     SettingsLdapView, SettingsOAuthView, SettingsSystemInfo,
                     SettingsView, SetupView, UserAddressesAssignmentView,
                     UserAddressesInfoView, UserAddressesView,
-                    UserProfileView, WorkInProgressView, channel_icon,
+                    UserProfileView, UserSubscriptionEdit,
+                    UserSubscriptionListView, UserSubscriptionRemove,
+                    UserSubscriptionToggle, WorkInProgressView, channel_icon,
                     confirm_registration, plugin_icon,)
 
 urlpatterns = [
@@ -70,6 +70,7 @@ urlpatterns = [
          name='register-wait-email'),
     path('user/register/confirm-registratiom/<int:pk>/<str:check>/', confirm_registration, name='confirm-registratiom'),
     path('user/register/confirm-address/<int:pk>/<str:address>/<str:check>/', confirm_address, name='confirm-address'),
+
     path('user/profile/', UserProfileView.as_view(), name='user-profile'),
     path('user/addresses/', UserAddressesView.as_view(), name='user-addresses'),
     path('user/addresses/<int:pk>/info', UserAddressesInfoView.as_view(), name='user-address-info'),
@@ -115,7 +116,7 @@ urlpatterns = [
          name='app-event-subscriptions-invite'),
 
     path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/subscribe/', EventSubscriptionCreate.as_view(),
-         name='app-event-subscribe'),
+         name='app-event-subscriptions-subscribe'),
 
     path('<slug:org>/a/<slug:app>/monitors/', ApplicationMonitorList.as_view(), name='app-monitors'),
     path('<slug:org>/a/<slug:app>/monitor/add/', ApplicationMonitorCreate.as_view(), name='app-monitor-create'),
@@ -135,7 +136,12 @@ urlpatterns = [
     # Organization
     # path('org/add/', OrganizationCreate.as_view(), name='org-create'),
 
-    path('<slug:org>/', UserIndexView.as_view(), name='me'),
+    path('<slug:org>/', UserSubscriptionListView.as_view(), name='me'),
+    path('subscriptions/<int:pk>/toggle/', UserSubscriptionToggle.as_view(), name='user-subscription-toggle'),
+    path('subscriptions/<int:pk>/delete/', UserSubscriptionRemove.as_view(), name='user-subscription-delete'),
+    path('subscriptions/<int:pk>/edit/', UserSubscriptionEdit.as_view(), name='user-subscription-edit'),
+
+
     path('<slug:org>/check/', OrganizationCheckConfigView.as_view(), name='org-check'),
     path('<slug:org>/dashboard', OrganizationDashboard.as_view(), name='org-dashboard'),
     path('<slug:org>/config/', OrganizationConfiguration.as_view(), name='org-config'),
@@ -169,6 +175,6 @@ urlpatterns = [
 
     path('wip/', WorkInProgressView.as_view(), name='wip'),
 
-    path('tpl/<str:path>', PreviewView.as_view(), name='wip'),
+    # path('tpl/<str:path>', PreviewView.as_view(), name='wip'),
 
 ]

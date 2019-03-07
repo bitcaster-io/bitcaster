@@ -66,16 +66,33 @@ module.exports = [
             library: "pwds",
             sourceMapFilename: "[name].js.map",
         },
-        // devtool: IS_PRODUCTION ? "#source-map" : "#cheap-source-map",
-        // devtool: "#cheap-source-map",
-    }, {
-        context: rel("."),
+    },
+    {
+        entry: "jquery",
+        output: {
+            path: outputDir,
+            filename: "jquery.js",
+            libraryTarget: "window",
+            library: "$",
+            sourceMapFilename: "jquery.js.map",
+        },
+    },
+    {
+        entry: "js-cookie",
+        output: {
+            path: outputDir,
+            filename: "js-cookie.js",
+            libraryTarget: "window",
+            library: "Cookies"
+        },
+    },
+    {
         entry: {
-            // app: [rel("bitcaster/index")],
             bitcaster: [rel("bitcaster/index")],
             vendor: [rel("bitcaster/vendor")],
-            // pwstrength: [rel("bitcaster/js/pwstrength.js")]
+            public: [rel("bitcaster/public")],
         }, // -entry
+        context: rel("."),
         module: {
             noParse: [
                 /pwstrength/
@@ -147,11 +164,11 @@ module.exports = [
             new webpack.LoaderOptionsPlugin({
                 minimize: true
             }),
-            new webpack.ProvidePlugin({
-                $: "jquery",
-                jQuery: "jquery",
-                Popper: "popper.js"
-            }),
+            // new webpack.ProvidePlugin({
+            //     $: "jQuery",
+            //     jQuery: "jQuery",
+            //     Cookies: 'js-cookie/src/js.cookie.js'
+            // }),
             new webpack.DefinePlugin({
                 VERSION: JSON.stringify(require("./package.json").version)
             })

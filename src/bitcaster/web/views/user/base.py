@@ -3,21 +3,21 @@ import logging
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import TemplateView
+from django.views.generic import FormView
 
 from bitcaster import messages
 from bitcaster.models import Address, AddressAssignment, User
 from bitcaster.system import system
 from bitcaster.utils.email_verification import set_new_email_request
+from bitcaster.web.forms import UserProfileForm
 from bitcaster.web.forms.user import (AddressAssignmentForm,
                                       AddressAssignmentFormSet, AddressForm,
-                                      AddressFormSet,
+                                      AddressFormSet, UserSubscriptionForm,
                                       send_address_verification_email,)
+from bitcaster.web.views.base import (
+    BitcasterBaseDetailView, BitcasterBaseUpdateView, MessageUserMixin,)
 from bitcaster.web.views.organization.mixins import ApplicationListMixin
-
-from ..forms import UserProfileForm
-from .base import (BitcasterBaseDetailView,
-                   BitcasterBaseUpdateView, MessageUserMixin,)
+from bitcaster.web.views.user.mixins import SidebarMixin
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +25,9 @@ __all__ = ('UserProfileView', 'UserAddressesView',
            'UserAddressesInfoView', 'UserAddressesAssignmentView')
 
 
-class UserIndexView(ApplicationListMixin, MessageUserMixin, TemplateView):
+class UserIndexView2(ApplicationListMixin, MessageUserMixin, FormView):
     template_name = 'bitcaster/users/user-home.html'
+    form_class = UserSubscriptionForm
 
     def get(self, request, *args, **kwargs):
         configured = self.selected_organization.configured
@@ -42,31 +43,32 @@ class UserIndexView(ApplicationListMixin, MessageUserMixin, TemplateView):
 
         return super().get(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        subscriptions = {}
-        menu = {}
+    # def get_context_data(self, **kwargs):
+    #     return super().get_context_data(**kwargs)
+        # subscriptions = {}
+        # menu = {}
+        #
+        # ret = super().get_context_data(**kwargs)
+        # applications = ret['applications']
+        # for subscription in self.request.user.subscriptions.all():
+        #     subscriptions[f'{subscription.event_id}-{subscription.channel_id}'] = subscription
+        #
+        # for application in applications:
+        #     menu[application] = {}
+        #     for event in application.events.all():
+        #         menu[application][event] = {}
+        #         for channel in event.channels.all():
+        #             menu[application][event][channel] = subscriptions.get(f'{event.id}-{channel.id}')
+        #         ret['menu'] = menu
+        #
+        # membership = self.request.user.memberships.first()
+        # if membership:
+        #     ret['setup_url'] = reverse('org-dashboard', args=[membership.organization.slug])
 
-        ret = super().get_context_data(**kwargs)
-        applications = ret['applications']
-        for subscription in self.request.user.subscriptions.all():
-            subscriptions[f'{subscription.event_id}-{subscription.channel_id}'] = subscription
-
-        for application in applications:
-            menu[application] = {}
-            for event in application.events.all():
-                menu[application][event] = {}
-                for channel in event.channels.all():
-                    menu[application][event][channel] = subscriptions.get(f'{event.id}-{channel.id}')
-                ret['menu'] = menu
-
-        membership = self.request.user.memberships.first()
-        if membership:
-            ret['setup_url'] = reverse('org-dashboard', args=[membership.organization.slug])
-
-        return ret
+        # return ret
 
 
-class UserAddressesView(BitcasterBaseUpdateView):
+class UserAddressesView(SidebarMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/users/addresses.html'
     model = Address
     form_class = AddressForm
@@ -93,12 +95,12 @@ class UserAddressesView(BitcasterBaseUpdateView):
         return super().form_valid(formset)
 
 
-class UserAddressesInfoView(BitcasterBaseDetailView):
+class UserAddressesInfoView(SidebarMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/users/address_info.html'
     model = Address
 
 
-class UserAddressesAssignmentView(BitcasterBaseUpdateView):
+class UserAddressesAssignmentView(SidebarMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/users/addresses_assignment.html'
     model = AddressAssignment
     form_class = AddressAssignmentForm
@@ -136,7 +138,7 @@ class UserAddressesAssignmentView(BitcasterBaseUpdateView):
         return super().form_valid(formset)
 
 
-class UserProfileView(BitcasterBaseUpdateView):
+class UserProfileView(SidebarMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/users/profile.html'
     model = User
     form_class = UserProfileForm

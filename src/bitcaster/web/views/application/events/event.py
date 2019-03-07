@@ -9,11 +9,9 @@ from strategy_field.utils import import_by_name
 
 from bitcaster import messages
 from bitcaster.models import Event, Message
-from bitcaster.web.views.base import (BitcasterBaseCreateView,
-                                      BitcasterBaseDeleteView,
-                                      BitcasterBaseDetailView,
-                                      BitcasterBaseListView,
-                                      BitcasterBaseUpdateView, MessageUserMixin,)
+from bitcaster.web.views.base import (
+    BitcasterBaseCreateView, BitcasterBaseDeleteView, BitcasterBaseDetailView,
+    BitcasterBaseListView, BitcasterBaseUpdateView, MessageUserMixin,)
 
 from .mixins import EventFormMixin, EventMixin
 

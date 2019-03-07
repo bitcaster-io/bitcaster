@@ -1,6 +1,19 @@
-{% extends "bitcaster/users/base.html" %}{% load i18n crispy_forms_tags %}
+{% extends "bitcaster/users/user_base.html" %}{% load i18n crispy_forms_tags %}
 {% block page %}
-        <table class="table table-striped table-hover col-12">
+
+
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a id="add_more" class="btn btn-danger btn-small pull-right"
+                   href="#">{% trans "Add Subscription" %}
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <table class="table table-striped table-hover col-12">
         <thead>
         <tr>
             <th>Application</th>
@@ -33,9 +46,4 @@
         {% endfor %}
         </tbody>
     </table>
-
-{% endblock page %}
-{#{% block toggler %}#}
-{#{% endblock toggler %}#}
-{#{% block user-links %}#}
-{#{% endblock user-links %}#}
+{% endblock %}

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
@@ -19,7 +20,7 @@ class SubscriptionQuerySet(models.QuerySet):
     #     return self.filter(active=True, channel__enabled=True, *args, **kwargs)
 
     def valid(self, *args, **kwargs):
-        return self.filter(active=True, channel__enabled=True, *args, **kwargs)
+        return self.filter(enabled=True, channel__enabled=True, *args, **kwargs)
 
 
 class SubscriptionStatus(EnumField):
@@ -58,7 +59,7 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     event = models.ForeignKey(Event, on_delete=models.CASCADE,
                               related_name='subscriptions')
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
-    active = models.BooleanField(default=True)
+    enabled = models.BooleanField(default=True)
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=SubscriptionStatus.as_choices(),
                                  default=SubscriptionStatus.OWNED)
@@ -72,18 +73,17 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
 
     class Reverse:
         pattern = 'app-event-subscription-{op}'
-        args = ['application.organization.slug', 'application.slug', 'event.id', 'id']
+        args = ['event.application.organization.slug', 'event.application.slug', 'event.id', 'id']
 
     def __str__(self):
         return 'Subscription {0.subscriber} on {0.event} via {0.channel}'.format(self)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        # if not self.pk:
-        #     self.update_token()
-        # self.active = self.status not in [SubscriptionStatus.PROPOSED,
-        #                                   SubscriptionStatus.REQUESTED]
         super().save(force_insert, force_update, using, update_fields)
 
+    @cached_property
+    def recipient(self):
+        return self.channel.handler.get_recipient_address(self)
     # def update_token(self):
     #     self.deactivation_token = generate_subscription_token(self)
     #

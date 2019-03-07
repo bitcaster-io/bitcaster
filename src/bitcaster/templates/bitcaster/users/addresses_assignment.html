@@ -1,4 +1,4 @@
-{% extends "bitcaster/users/user_base.html" %}
+{% extends "bitcaster/users/base.html" %}
 {% load bitcaster crispy_forms_utils crispy_forms_tags crispy_forms_field i18n %}
 {% block page %}
     <h2>{{ title }}</h2>
@@ -30,7 +30,7 @@
                     <div class="row col-4">{{ form.empty_form.channel|as_crispy_field }}</div>
                     <div class="col-7">{{ form.empty_form.address|as_crispy_field }}</div>
                     <div class="col-1 mt-2 align-middle align-items-center"><a href="#" class="remove_line">
-                        <i class="far fa-trash-alt"></i></a>
+                        <i class="fas fa-trash-alt"></i></a>
                     </div>
                 </div>
                 <div class="red">{{ form.empty_form.non_field_errors.as_text }}</div>
@@ -44,20 +44,20 @@
                     {% for form in form.forms %}
                         <div class="row col-12">
                             <div class="row col-12">
-                                {{ form.user }}
+                                <div class="hidden">{{ form.user }}
                                 {{ form.id }}
-                                {{ form.DELETE }}
+                                {{ form.DELETE }}</div>
                                 <span class="row col-4">{{ form.channel|as_crispy_field }}</span>
                                 <span class="col-6">{{ form.address|as_crispy_field }}</span>
                                 <span class="col-2  mt-2 align-middle align-items-center">
                                     <a href="#" class="btn remove_line mr-2">
-                                        <i class="far fa-trash-alt"></i>
+                                        <i class="fas fa-trash-alt"></i>
                                     </a>
                                     {% if form.instance.channel %}
-                                    <a class="btn" rel="modal:open"
-                                       href="{% url "org-channel-usage" form.instance.channel.organization.slug form.instance.channel.pk %}">
-                                        <i class="fa fa-info">&nbsp;</i>
-                                    </a>
+{#                                    <a class="btn" rel="modal:open"#}
+{#                                       href="{% url "org-channel-usage" form.instance.channel.organization.slug form.instance.channel.pk %}">#}
+{#                                        <i class="fa fa-info">&nbsp;</i>#}
+{#                                    </a>#}
                                     {% endif %}
                                 </span>
                             </div>

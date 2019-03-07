@@ -130,6 +130,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         permissions = (('activate_user', 'Can activate user'),
                        )
 
+    def __str__(self):
+        return self.display_name
+
     @property
     def display_name(self):
         return self.friendly_name or self.email

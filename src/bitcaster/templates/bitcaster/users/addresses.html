@@ -1,4 +1,4 @@
-{% extends "bitcaster/users/user_base.html" %}{% load crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
+{% extends "bitcaster/users/base.html" %}{% load crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
 {% block page %}
     <h2>{{ title }}</h2>
 
@@ -28,8 +28,9 @@
                     {{ form.empty_form.id }}
                     <div class="row col-4">{{ form.empty_form.label|as_crispy_field }}</div>
                     <div class="col-6">{{ form.empty_form.address|as_crispy_field }}</div>
-                    <div class="col-2 mt-2 align-middle align-items-center"><a href="#" class="remove_line">
-                        <i class="far fa-trash-alt"></i></a>
+                    <div class="col-2 mt-2 align-middle align-items-center">
+                        <a href="#" class="remove_line">
+                        <i class="fas fa-trash-alt"></i></a>
                     </div>
                 </div>
                 <div class="red">{{ form.empty_form.non_field_errors.as_text }}</div>
@@ -43,14 +44,14 @@
                     {% for form in form.forms %}
                         <div class="row col-12">
                             <div class="row col-12">
-                                {{ form.user }}
+                                <div class="hidden"> {{ form.user }}
                                 {{ form.id }}
-                                {{ form.DELETE }}
+                                {{ form.DELETE }}</div>
                                 <span class="row col-4">{{ form.label|as_crispy_field }}</span>
                                 <span class="col-6">{{ form.address|as_crispy_field }}</span>
                                 <span class="col-2 align-items-center">
                                     <a href="#" class="remove_line">
-                                        <i class="far fa-trash-alt"></i>
+                                        <i class="fas fa-trash-alt"></i>
                                     </a>
                                     &nbsp;
 {#                                    <a href="{% url  'user-address-info' form.instance.id %}" class="">#}
@@ -80,7 +81,7 @@
 {% block js %}
     {{ block.super }}
     <script>
-        (function () {
+        (function ($) {
             var formsetName = "addresses";
             var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
             var selector = "div.invitations";

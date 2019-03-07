@@ -17,17 +17,17 @@ logger = logging.getLogger(__name__)
 @admin.register(Subscription, site=site)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('application',
-                    'event', 'subscriber', 'trigger_by', 'channel', 'active')
-    list_editable = ('active',)
+                    'event', 'subscriber', 'trigger_by', 'channel', 'enabled')
+    list_editable = ('enabled',)
     list_filter = ('event__application',
                    ('channel', RelatedFieldComboFilter),
                    ForeignKeyFieldFilter.factory('subscriber|name|icontains'),
-                   'active')
+                   'enabled')
     search_fields = ('subscriber__username', 'subscriber__last_name')
     form = SubscriptionForm
     actions = ('activate',
                'validate_subscription',
-               deactivator_factory('active'))
+               deactivator_factory('enabled'))
 
     def get_exclude(self, request, obj=None):
         if not obj:

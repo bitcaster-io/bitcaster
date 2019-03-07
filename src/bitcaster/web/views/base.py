@@ -8,6 +8,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 from django.views.generic.detail import SingleObjectMixin
 from strategy_field.utils import import_by_name
 
+from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.templatetags.bitcaster import verbose_name
 
 from .mixins import (BitcasterBaseViewMixin,
@@ -66,8 +67,8 @@ class BitcasterBaseToggleView(MessageUserMixin, SingleObjectMixin, RedirectView)
         obj.enabled = not obj.enabled
         obj.save()
         op = _('enabled') if obj.enabled else _('disabled')
-        self.message_user(f'{obj._meta.verbose_name} {op}')
-        return super().get(request, *args, **kwargs)
+        self.message_user(f'{obj._meta.verbose_name} #{obj.pk} {op}')
+        return RedirectToRefererResponse(request)
 
 
 class PluginInfo(BitcasterTemplateView):
