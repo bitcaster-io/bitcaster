@@ -5,7 +5,8 @@ from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseToggleView,
                                       BitcasterBaseUpdateView,)
 from bitcaster.web.views.organization.mixins import ApplicationListMixin
-from bitcaster.web.views.user.mixins import SidebarMixin
+
+from ..mixins import SidebarMixin
 
 
 class UserSubscriptionMixin:

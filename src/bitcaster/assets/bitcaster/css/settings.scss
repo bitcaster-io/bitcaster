@@ -1,10 +1,18 @@
-#settings {
+//#settings {
+//    #sidebar {
+//        ul {
+//            li {
+//                white-space: nowrap;
+//                padding: 5px;
+//            }
+//        }
+//    }
+//}
+body.settings {
+
     #sidebar {
-        ul {
-            li {
-                white-space: nowrap;
-                padding: 5px;
-            }
+        h3, i {
+            color: black !important;
         }
     }
 }

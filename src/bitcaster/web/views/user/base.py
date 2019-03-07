@@ -16,7 +16,8 @@ from bitcaster.web.forms.user import (AddressAssignmentForm,
 from bitcaster.web.views.base import (BitcasterBaseDetailView,
                                       BitcasterBaseUpdateView,)
 from bitcaster.web.views.mixins import TitleMixin
-from bitcaster.web.views.user.mixins import SidebarMixin
+
+from ..mixins import SidebarMixin
 
 logger = logging.getLogger(__name__)
 

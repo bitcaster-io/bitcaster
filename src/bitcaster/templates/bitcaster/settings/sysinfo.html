@@ -1,10 +1,12 @@
 {% extends "bitcaster/settings/base.html" %}{% load i18n bitcaster %}
-{% block content %}
+{% block page %}
     <style>
         pre {
             margin: 0;
             padding: 5px;
+            max-width: 1061px;
         }
+
 
         dt {
             margin-top: 5px;
@@ -19,11 +21,14 @@
 
         }
     </style>
-    <input type="text" class="pull-right col-4" id="filter">
-    <span class="pull-right">Filter:&nbsp;</span>
-    <h2>Configuration</h2>
-    <div class="container-fluid channel-list">
-        <dl>
+    <div class="container-fluid pb-3">
+        <div class="col-12 push-lg-7">
+            <input type="text" class="pull-right col-4" id="filter">
+            <span class="pull-right">Filter:&nbsp;</span>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <dl class="col-12">
             {% for a,b in config %}
                 <dt>{{ a }}</dt>
                 <dd>
@@ -32,18 +37,18 @@
             {% endfor %}
         </dl>
     </div>
-    <h2>Settings</h2>
-    <div class="container-fluid channel-list">
-        <dl>
-            {% for a,b in settings %}
-                <dt>{{ a }}
-                <dd>
-                    <pre class="val">{{ b }}</pre>
-                </dd>
-            {% endfor %}
-        </dl>
-    </div>
-{% endblock content %}
+        <h2>Settings</h2>
+        <div class="container-fluid">
+            <dl class="col-12">
+                {% for a,b in settings %}
+                    <dt>{{ a }}
+                    <dd>
+                        <pre class="val">{{ b }}</pre>
+                    </dd>
+                {% endfor %}
+            </dl>
+        </div>
+{% endblock page %}
 {% block js %}
     {{ block.super }}
     <script>

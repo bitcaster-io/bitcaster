@@ -14,7 +14,7 @@ from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsOAuthForm,)
 
 from .base import BitcasterTemplateView
-from .mixins import SuperuserViewMixin, TitleMixin
+from .mixins import SidebarMixin, SuperuserViewMixin, TitleMixin
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ __all__ = ['SettingsView', 'SettingsOAuthView',
            ]
 
 
-class SettingsBaseView(SuperuserViewMixin, TitleMixin,
+class SettingsBaseView(SuperuserViewMixin, SidebarMixin, TitleMixin,
                        BitcasterTemplateView, FormView):
     success_url = '.'
     bit = None
@@ -120,7 +120,7 @@ class SettingsLdapView(SettingsBaseView):
 #         return reverse('settings-org-list')
 
 
-class SettingsSystemInfo(SuperuserViewMixin,
+class SettingsSystemInfo(SuperuserViewMixin, SidebarMixin, TitleMixin,
                          BitcasterTemplateView):
     template_name = 'bitcaster/settings/sysinfo.html'
     title = _('Environment')

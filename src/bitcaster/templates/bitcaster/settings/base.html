@@ -1,59 +1,53 @@
-{% extends "bitcaster/base.html" %}{% load crispy_forms_tags %}
+{% extends "bitcaster/base2.html" %}{% load crispy_forms_tags i18n %}
 {% block bodyclass %}settings{% endblock %}
 {% block pageId %}settings{% endblock %}
 {% block header_class %}settings{% endblock %}
 {% block nav-menu %}<span class="top-menu">System Configuration</span>{% endblock nav-menu %}
-{#{% block user-menu %}#}
-{#    <span class="pull-right user-menu ">#}
-{#        <a class="pull-right" href="{% url "admin:index" %}">admin</a>#}
-{#    </span>#}
-{#{% endblock user-menu %}#}
+{% block left-menu %}
+    <ul class="list-unstyled components">
+        <li>
+            <a href="{% url "settings" %}">
+                <i class="fas fa-wrench"></i>
+                General
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'settings-email' %}">
+                <i class="fas fa-envelope"></i>
+                {% trans 'Email' %}</a>
+        </li>
+        <li>
+            <a href="{% url 'settings-oauth' %}">
+                <i class="fas fa-lock"></i>
+                {% trans 'OAuth' %}</a>
+        </li>
+        <li>
+            <a href="{% url 'settings-ldap' %}">
+                <i class="fas fa-laptop-code"></i>
+                {% trans 'LDAP' %}</a>
+        </li>
+        <li>
+            <a href="{% url 'settings-sysinfo' %}">
+                <i class="fas fa-list-ul"></i>
+                {% trans 'Environment' %}</a>
+        </li>
+    </ul>
+    <ul class="list-unstyled components">
+        <li>
+            <a href="{% url 'index' %}">
+                <i class="fas fa-home"></i>
+                {% trans 'Home' %}</a>
+        </li>
+    </ul>
+{% endblock left-menu %}
 {% block page %}
-    <div class="container-fluid">
-        <div class=" main-content">
-            {% block sidebar %}
-                <div class="row d-flex d-md-block flex-nowrap wrapper">
-                    <div class="float-left pl-0 collapse width show settings-sidebar" id="sidebar">
-                        <div class="list-group">
-                            <div class="col-md-2 org-sidebar">
-                                <div>
-                                    <ul class="nav nav-stacked">
-                                        <li>
-                                            <a href="{% url 'settings' %}">General</a>
-                                        </li>
-                                        <li>
-                                            <a href="{% url 'settings-email' %}">Email</a>
-                                        </li>
-                                        <li>
-                                            <a href="{% url 'settings-oauth' %}">OAuth</a>
-                                        </li>
-                                        <li>
-                                            <a href="{% url 'settings-ldap' %}">LDAP</a>
-                                        </li>
-                                        <li>
-                                            <a href="{% url 'settings-sysinfo' %}">Environment</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endblock sidebar %}
-            <div class="page-content">
-                {% block content %}
-                    <form method="post">
-                        {% csrf_token %}
-                        <h2>{{ title }}</h2>
-                        {{ form|crispy }}
-                        {% block buttons %}
-                            <input type="submit" name="save" class="btn btn-primary" value="Save">
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        {% block buttons %}
+            <input type="submit" name="save" class="btn btn-primary" value="Save">
 
-                        {% endblock buttons %}
-                    </form>
+        {% endblock buttons %}
+    </form>
 
-                {% endblock content %}
-            </div>
-        </div>
-    </div>
 {% endblock page %}
