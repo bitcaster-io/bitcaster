@@ -42,8 +42,13 @@ class SettingsBaseView(SuperuserViewMixin, SidebarMixin, TitleMixin,
     def get_form(self, form_class=None):
         form_class = self.get_form_class()
         kwargs = self.get_form_kwargs()
-        kwargs['initial'] = dict({(f, str(getattr(config, f, '')))
-                                  for f in form_class.declared_fields.keys()})
+        for f in form_class.declared_fields.keys():
+            value = getattr(config, f, '')
+            if isinstance(value, dict):
+                value = str(value)
+            kwargs['initial'][f] = value
+        # kwargs['initial'] = dict({(f, getattr(config, f, ''))
+        #                           for f in form_class.declared_fields.keys()})
         return form_class(**kwargs)
 
     def form_valid(self, form):
@@ -63,7 +68,7 @@ class SettingsView(SettingsBaseView):
 
 class SettingsEmailView(SettingsBaseView):
     form_class = SettingsEmailForm
-    title = _('Email')
+    title = _('Mail Server')
     bit = 2
 
     def test(self, **kwargs):

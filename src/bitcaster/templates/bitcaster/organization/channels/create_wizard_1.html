@@ -6,13 +6,13 @@
             <div id="id_{{ handler.fqn|slugify }}" class="col-2 inline text-center align-content-center handler box p-2">
                 <a href="#" class="handler-selector" data-value="{{ handler.fqn }}">
                     <div>
-                        <img width="100" height="100" src="{% url "plugin-icon" handler.fqn %}">
+                        <img src="{% url "plugin-icon" handler.fqn %}">
                         <div>
                             <label>{{ handler.name }}</label>
                         </div>
-                        <div class="pull-right">
-                            <a  rel="modal:open" href="{% url "plugin-info" handler.fqn %}">
-                            <i class="fa fa-info"></i></a>
+                        <div class="plugin-info">
+                            <a rel="modal:open" href="{% url "plugin-info" handler.fqn %}">
+                            <i class="fa fa-info "></i></a>
                         </div>
                     </div>
                 </a>

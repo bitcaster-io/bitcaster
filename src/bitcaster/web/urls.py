@@ -140,7 +140,7 @@ urlpatterns = [
     # Organization
     # path('org/add/', OrganizationCreate.as_view(), name='org-create'),
 
-    path('<slug:org>/', UserSubscriptionListView.as_view(), name='me'),
+    path('<slug:org>/', OrganizationDashboard.as_view(), name='org-home'),
     path('subscriptions/<int:pk>/toggle/', UserSubscriptionToggle.as_view(), name='user-subscription-toggle'),
     path('subscriptions/<int:pk>/delete/', UserSubscriptionRemove.as_view(), name='user-subscription-delete'),
     path('subscriptions/<int:pk>/edit/', UserSubscriptionEdit.as_view(), name='user-subscription-edit'),

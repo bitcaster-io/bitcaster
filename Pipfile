@@ -71,6 +71,7 @@ zulip = "*"
 #python-telegram-bot="*"
 django-auth-ldap = "*"
 yampy = "*"
+viberbot = "*"
 
 [dev-packages]
 bumpversion = "*"

@@ -76,7 +76,7 @@ ifdef BROWSE
 endif
 
 i18n:
+	tx push -s -t
 	tx pull -a
 	django-admin makemessages --settings=bitcaster.config.settings
 	cd src && django-admin compilemessages --settings=bitcaster.config.settings --pythonpath=../src
-	tx push -s -t 

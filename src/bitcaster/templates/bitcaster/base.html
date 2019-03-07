@@ -148,6 +148,8 @@
 
 </div>
 {% block js %}
+    <script src="{% static "bitcaster/jquery.js" %}"></script>
+    <script src="{% static "bitcaster/js-cookie.js" %}"></script>
     <script src="{% static "bitcaster/vendor.js" %}"></script>
 {#    <script src="{% static "bitcaster/bitcaster.js" %}"></script>#}
     {% if messages %}
@@ -158,9 +160,9 @@
         </script>
     {% endif %}
 
-    <script>
-        $('[data-toggle="tooltip"]').tooltip();
-    </script>
+{#    <script>#}
+{#        $('[data-toggle="tooltip"]').tooltip();#}
+{#    </script>#}
 
 
 {% endblock %}

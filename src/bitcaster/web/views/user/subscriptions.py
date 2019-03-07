@@ -1,3 +1,5 @@
+from django.utils.translation import gettext as _
+
 from bitcaster.models import Subscription
 from bitcaster.web.forms.user import UserSubscriptionForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
@@ -11,6 +13,7 @@ from ..mixins import SidebarMixin
 
 class UserSubscriptionMixin:
     model = Subscription
+    title = _('Subscriptions')
 
     def get_queryset(self):
         return self.request.user.subscriptions.all()

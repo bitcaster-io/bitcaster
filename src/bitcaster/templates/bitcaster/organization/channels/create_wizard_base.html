@@ -7,7 +7,6 @@
 {% block content %}
     <h2>Create new organization channel</h2>
     <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
-    <h2>{{ title }}</h2>
     <form action="" method="post" id="form">{% csrf_token %}
         {{ wizard.management_form }}
         <div class="container-fluid" id="handler-list">
