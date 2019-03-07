@@ -117,9 +117,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                                )
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
-    timezone = TimeZoneField()
-    language = LanguageField(default='en')
-    country = CountryField()
+    timezone = TimeZoneField(verbose_name=_('Timezone'))
+    language = LanguageField(verbose_name=_('Lingua'), default='en')
+    country = CountryField(verbose_name=_('Country'))
 
     objects = UserManager()
 

@@ -64,7 +64,7 @@ def send_address_verification_email(user):
 
 
 class UserProfileForm(forms.ModelForm):
-    friendly_name = forms.CharField(required=False)
+    friendly_name = forms.CharField(label=_('Friendly Name'), required=False)
     email = forms.EmailField()
 
     class Meta:
@@ -84,52 +84,6 @@ class UserProfileForm(forms.ModelForm):
             if self.new_email_pending:
                 self.fields['email'].disabled = True
                 self.fields['email'].help_text = f'new email verification pending ({self.new_email_pending})'
-
-    # def get_new_email_key(self):
-    #     return f'new-email-{self.instance.pk}'
-
-    # def save(self, commit=True):
-    # email_changed = self.fields['email'].has_changed(self.initial.get('email'),
-    #                                               self.data.get('email'))
-    #
-    # if email_changed:
-    #     cache.set(self.get_new_email_key(), self.data['email'])
-    #     send_address_verification_email(self.instance)
-    #     self.instance.email = self.initial['email']
-    # super().save(commit)
-    # return self.instance
-    # def clean_picture(self):
-    #     picture = self.cleaned_data['picture']
-    #     if picture:
-    #     try:
-    #         w, h = get_image_dimensions(picture)
-    #
-    #         # validate dimensions
-    #         max_width = max_height = 100
-    #         if w > max_width or h > max_height:
-    #             raise forms.ValidationError(
-    #                 u'Please use an image that is '
-    #                 '%s x %s pixels or smaller.' % (max_width, max_height))
-    #
-    #         # validate content type
-    #         main, sub = picture.content_type.split('/')
-    #         if not (main == 'image' and sub in ['jpeg', 'pjpeg', 'gif', 'png']):
-    #             raise forms.ValidationError(u'Please use a JPEG, '
-    #                                         'GIF or PNG image.')
-    #
-    #         # validate file size
-    #         if len(picture) > (20 * 1024):
-    #             raise forms.ValidationError(
-    #                 u'Avatar file size may not exceed 20k.')
-    #
-    #     except AttributeError:
-    #         """
-    #         Handles case when we are updating the user profile
-    #         and do not supply a new avatar
-    #         """
-    #         pass
-    #
-    #     return picture
 
 
 class UserCreationForm(_UserCreationForm):

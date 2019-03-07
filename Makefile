@@ -74,3 +74,9 @@ docs: .mkbuilddir
 ifdef BROWSE
 	firefox ${BUILDDIR}/docs/index.html
 endif
+
+i18n:
+	tx pull -a
+	django-admin makemessages --settings=bitcaster.config.settings
+	cd src && django-admin compilemessages --settings=bitcaster.config.settings --pythonpath=../src
+	tx push -s -t 

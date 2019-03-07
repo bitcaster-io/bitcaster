@@ -73,7 +73,7 @@ class Facebook(CoreDispatcher):
             return 1
         except RecipientNotFound as e:  # pragma: no cover
             logger.exception(e)
-            raise PluginSendError(_('User {} is not a friend of this Facebook account').format(e))
+            raise PluginSendError(_('User %(user)s is not a friend of this Facebook account').format(user=e))
         except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e)
