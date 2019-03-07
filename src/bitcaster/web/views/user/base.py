@@ -8,16 +8,13 @@ from django.views.generic import TemplateView
 from bitcaster import messages
 from bitcaster.models import Address, AddressAssignment, User
 from bitcaster.utils.email_verification import set_new_email_request
-from bitcaster.web.forms import UserProfileForm
-from bitcaster.web.forms.user import (AddressAssignmentForm,
-                                      AddressAssignmentFormSet, AddressForm,
-                                      AddressFormSet,
-                                      send_address_verification_email,)
-from bitcaster.web.views.base import (BitcasterBaseDetailView,
-                                      BitcasterBaseUpdateView,)
-from bitcaster.web.views.mixins import TitleMixin
+from bitcaster.web.forms import (AddressAssignmentForm,
+                                 AddressAssignmentFormSet, AddressForm,
+                                 AddressFormSet, UserProfileForm,
+                                 send_address_verification_email,)
 
-from ..mixins import SidebarMixin
+from ..base import BitcasterBaseDetailView, BitcasterBaseUpdateView
+from ..mixins import SidebarMixin, TitleMixin
 
 logger = logging.getLogger(__name__)
 
@@ -33,49 +30,6 @@ class UserHome(SidebarMixin, TitleMixin, TemplateView):
 class UserEventListView(SidebarMixin, TitleMixin, TemplateView):
     template_name = 'bitcaster/users/events.html'
     title = _('Events')
-
-
-# class UserIndexView2(ApplicationListMixin, MessageUserMixin, FormView):
-#     template_name = 'bitcaster/users/user-home.html'
-#     form_class = UserSubscriptionForm
-#
-#     def get(self, request, *args, **kwargs):
-#         configured = self.selected_organization.configured
-#
-#         if not configured and request.user.has_perm('org:configure', self.selected_organization):
-#             self.alarm(_('Configuration of this organization is not complete. '
-#                          '<a href="%s">Configure</a>') % reverse('org-dashboard',
-#                                                                  args=[self.selected_organization.slug]))
-#
-#         if not system.configured and request.user.is_superuser:
-#             self.alarm(_('System configuration is not complete. '
-#                          '<a href="%s">Configure</a>') % reverse('settings'))
-#
-#         return super().get(request, *args, **kwargs)
-#
-#     # def get_context_data(self, **kwargs):
-#     #     return super().get_context_data(**kwargs)
-#     # subscriptions = {}
-#     # menu = {}
-#     #
-#     # ret = super().get_context_data(**kwargs)
-#     # applications = ret['applications']
-#     # for subscription in self.request.user.subscriptions.all():
-#     #     subscriptions[f'{subscription.event_id}-{subscription.channel_id}'] = subscription
-#     #
-#     # for application in applications:
-#     #     menu[application] = {}
-#     #     for event in application.events.all():
-#     #         menu[application][event] = {}
-#     #         for channel in event.channels.all():
-#     #             menu[application][event][channel] = subscriptions.get(f'{event.id}-{channel.id}')
-#     #         ret['menu'] = menu
-#     #
-#     # membership = self.request.user.memberships.first()
-#     # if membership:
-#     #     ret['setup_url'] = reverse('org-dashboard', args=[membership.organization.slug])
-#
-#     # return ret
 
 
 class UserAddressesView(SidebarMixin, BitcasterBaseUpdateView):

@@ -70,6 +70,7 @@ dnspython = "*"
 zulip = "*"
 #python-telegram-bot="*"
 django-auth-ldap = "*"
+yampy = "*"
 
 [dev-packages]
 bumpversion = "*"
@@ -96,6 +97,7 @@ responses = "*"
 selenium = "*"
 tox = "*"
 vcrpy = "*"
+transifex-client = "*"
 
 [requires]
 python_version = "3.6"

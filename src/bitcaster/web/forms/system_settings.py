@@ -111,6 +111,7 @@ class SettingsChannelsForm(Form):
 
 class SettingsMainForm(Form):
     SITE_URL = forms.URLField()
+    ALLOW_CHANGE_PRIMARY_ADDRESS = forms.BooleanField(required=False)
     # RECAPTCHA_PUBLIC_KEY = forms.CharField(required=False)
     # RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
 

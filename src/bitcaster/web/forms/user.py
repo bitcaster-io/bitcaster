@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from constance import config
 from crispy_forms.helper import FormHelper
 from django import forms
 from django.contrib.auth import password_validation
@@ -76,9 +77,13 @@ class UserProfileForm(forms.ModelForm):
         super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
                          use_required_attribute)
         self.new_email_pending = get_new_email_request(instance)
-        if self.new_email_pending:
+        if not config.ALLOW_CHANGE_PRIMARY_ADDRESS:
             self.fields['email'].disabled = True
-            self.fields['email'].help_text = f'new email verification pending ({self.new_email_pending})'
+            self.fields['email'].required = False
+        else:
+            if self.new_email_pending:
+                self.fields['email'].disabled = True
+                self.fields['email'].help_text = f'new email verification pending ({self.new_email_pending})'
 
     # def get_new_email_key(self):
     #     return f'new-email-{self.instance.pk}'
