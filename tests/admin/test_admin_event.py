@@ -28,7 +28,7 @@ def test_event_trigger(django_app, admin, subscription1, settings):
     settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
     event = subscription1.event
     assert event.enabled
-    assert subscription1.active
+    assert subscription1.enabled
     assert subscription1.channel.enabled
     assert subscription1.channel.handler
     url = reverse('admin:bitcaster_event_trigger', [event.pk])

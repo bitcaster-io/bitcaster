@@ -31,7 +31,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
     def get_exclude(self, request, obj=None):
         if not obj:
-            return ['config', 'active']
+            return ['config', 'enabled']
         # elif hasattr(obj.handler, 'oauth_request'):
         #     return ['config']
 
@@ -42,9 +42,9 @@ class SubscriptionAdmin(admin.ModelAdmin):
         for subscription in queryset.all():
             try:
                 subscription.channel.validate_subscription(subscription)
-                subscription.active = True
+                subscription.enabled = True
             except PluginValidationError as e:
-                subscription.active = False
+                subscription.enabled = False
                 self.message_user(request, f'{subscription}: Invalid configuration {e}',
                                   messages.ERROR)
             subscription.save()

@@ -88,7 +88,7 @@ def test_channel_send_sample_message(django_app, admin, channel1):
     res = django_app.get(url, user=admin.email)
     res.form['recipient'] = 'sample@mailnator.com'
     res = res.form.submit()
-    assert res.status_code == 302
+    assert res.status_code == 302, f"Submit failed with: {repr(res.context['form'].errors)}"
 
 
 def test_channel_test1(django_app, admin, channel1, monkeypatch):
@@ -97,7 +97,7 @@ def test_channel_test1(django_app, admin, channel1, monkeypatch):
     url = reverse('admin:bitcaster_channel_test', args=[channel1.pk])
 
     res = django_app.get(url, user=admin.email)
-    assert res.status_code == 302
+    assert res.status_code == 302, f"Submit failed with: {repr(res.context['form'].errors)}"
 
 
 def test_channel_list(django_app, admin, channel1):

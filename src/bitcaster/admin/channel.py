@@ -144,7 +144,7 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
                     s = Subscription(subscriber=request.user,
                                      event=Event(),
                                      channel=channel,
-                                     active=True,
+                                     enabled=True,
                                      config=serializer.data)
                     channel.handler.test_message(s,
                                                  '',

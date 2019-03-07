@@ -58,7 +58,7 @@ class Skype(CoreDispatcher):
             return 1
         except skpy.core.SkypeApiException as e:
             if e.args[1].status_code == 404:
-                subscription.active = False
+                subscription.enabled = False
                 subscription.save()
                 raise RecipientNotFound(e) from e
             logger.error(e)
