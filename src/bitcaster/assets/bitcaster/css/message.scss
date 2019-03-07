@@ -1,9 +1,15 @@
 #messageBar {
     float: right;
+    position: absolute;
+    z-index: 999;
+    right: 17px;
+    top: 85px;
+
     ul.messagelist {
-        li{
+        li {
             list-style: none;
         }
+
         .alert {
             &.error {
                 color: white;

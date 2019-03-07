@@ -5,6 +5,7 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from bitcaster.web.views.callbacks import confirm_address
+from bitcaster.web.views.user.base import UserEventListView, UserHome
 
 from .views import (ApplicationCheckConfigView, ApplicationCreate,  # 
                     ApplicationDashboard, ApplicationDeleteView,
@@ -71,6 +72,9 @@ urlpatterns = [
     path('user/register/confirm-registratiom/<int:pk>/<str:check>/', confirm_registration, name='confirm-registratiom'),
     path('user/register/confirm-address/<int:pk>/<str:address>/<str:check>/', confirm_address, name='confirm-address'),
 
+    path('me/', UserHome.as_view(), name='me'),
+    path('user/events/', UserEventListView.as_view(), name='user-events'),
+    path('user/subscriptions/', UserSubscriptionListView.as_view(), name='user-subscriptions'),
     path('user/profile/', UserProfileView.as_view(), name='user-profile'),
     path('user/addresses/', UserAddressesView.as_view(), name='user-addresses'),
     path('user/addresses/<int:pk>/info', UserAddressesInfoView.as_view(), name='user-address-info'),

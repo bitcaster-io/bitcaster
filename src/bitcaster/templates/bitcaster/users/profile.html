@@ -2,7 +2,6 @@
 {% block page %}
     <div class="container-fluid">
         <div class="row col-12">
-            <h3>Profile</h3>
             <div class="container-fluid user-profile">
                 <form method="post" enctype="multipart/form-data" action=".">
                     <div class="row">
@@ -15,11 +14,11 @@
 
                             </div>
 {#                            {{ form.avatar }}#}
-                        <div class="text-center p-4">
-                        <a href="{% url "user-addresses" %}"
-                                style="width: 100%"
-                                class="btn btn-primary">Addresses</a>
-                        </div>
+{#                        <div class="text-center p-4">#}
+{#                        <a href="{% url "user-addresses" %}"#}
+{#                                style="width: 100%"#}
+{#                                class="btn btn-primary">Addresses</a>#}
+{#                        </div>#}
                         </div>
                         <div class="col-8">
                             {% for field in form %}

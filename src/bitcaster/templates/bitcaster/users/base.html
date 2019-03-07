@@ -1,4 +1,4 @@
-{% load bc_assets bc_permissions bitcaster static gravatar cache %}<!DOCTYPE html>
+{% load bc_assets bc_permissions bitcaster i18n static gravatar cache %}<!DOCTYPE html>
 <html>
 
 <head>
@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Bitcaster</title>
+    <title>Bitcaster: {{ title }}</title>
     <link rel="stylesheet" href="{% asset "bitcaster/public.css" %}">
 
 </head>
@@ -30,7 +30,7 @@
 
         <ul class="list-unstyled components">
             <li>
-                <a href="{% url "index" %}">
+                <a href="{% url "me" %}">
                     <i class="fas fa-home"></i>
                     Home
                 </a>
@@ -38,31 +38,31 @@
             <li>
                 <a href="{% url 'user-addresses' %}">
                     <i class="fas fa-mail-bulk"></i>
-                    Addresses
+                    {% trans "Addresses" %}
                 </a>
             </li>
             <li>
                 <a href="{% url 'user-profile' %}">
                     <i class="fas fa-user"></i>
-                    Profile
+                    {% trans "Profile" %}
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="{% url 'user-subscriptions' %}">
                     <i class="fas fa-bookmark"></i>
-                    Subcriptions
+                    {% trans "Subcriptions" %}
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="{% url 'user-events' %}">
                     <i class="fas fa-rss"></i>
-                    Events
+                    {% trans "Events" %}
                 </a>
             </li>
             <li>
                 <a href="{% url 'logout' %}">
                     <i class="fas fa-sign-out-alt"></i>
-                    Logout
+                    {% trans "Logout" %}
                 </a>
             </li>
         </ul>
@@ -71,7 +71,7 @@
                 <li>
                     <a style="bottom:0;" href="{% url 'settings' %}">
                         <i class="fas fa-cog"></i>
-                        Settings
+                        {% trans "Settings" %}
                     </a>
                 </li>
             </ul>
@@ -84,6 +84,9 @@
     <div id="content">
         {% block toggler %}
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <h3>{{ title }}</h3>
+                </div>
                 <div class="container-fluid">
                     {% block user-links %}
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
