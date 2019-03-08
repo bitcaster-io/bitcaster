@@ -78,13 +78,17 @@ class MessageUserMixin:
                              extra_tags=extra_tags,
                              fail_silently=fail_silently)
 
+    def warn_user(self, message, level=messages.ERROR, extra_tags=None, fail_silently=False):
+        messages.add_message(self.request, level, mark_safe(message),
+                             extra_tags=extra_tags,
+                             fail_silently=fail_silently)
+
 
 class BitcasterBaseViewMixin(TitleMixin, MessageUserMixin):
     pass
 
-
 # class BitcasterSingleObjectTemplateResponseMixin(TemplateResponseMixin):
 #     pass
-    # def get_context_data(self, **kwargs):
-    #     kwargs['opts'] = self.model._meta
-    #     return super().get_context_data(**kwargs)
+# def get_context_data(self, **kwargs):
+#     kwargs['opts'] = self.model._meta
+#     return super().get_context_data(**kwargs)

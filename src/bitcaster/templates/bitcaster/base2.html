@@ -29,54 +29,62 @@
             </strong>
         </div>
         {% block left-menu %}
-        <ul class="list-unstyled components">
-            <li>
-                <a href="{% url "me" %}">
-                    <i class="fas fa-home"></i>
-                    Home
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'user-addresses' %}">
-                    <i class="fas fa-mail-bulk"></i>
-                    {% trans "Addresses" %}
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'user-profile' %}">
-                    <i class="fas fa-user"></i>
-                    {% trans "Profile" %}
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'user-subscriptions' %}">
-                    <i class="fas fa-bookmark"></i>
-                    {% trans "Subcriptions" %}
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'user-events' %}">
-                    <i class="fas fa-rss"></i>
-                    {% trans "Events" %}
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'logout' %}">
-                    <i class="fas fa-sign-out-alt"></i>
-                    {% trans "Logout" %}
-                </a>
-            </li>
-        </ul>
-        {% if user.is_superuser %}
             <ul class="list-unstyled components">
                 <li>
-                    <a style="bottom:0;" href="{% url 'settings' %}">
-                        <i class="fas fa-cog"></i>
-                        {% trans "Settings" %}
+                    <a href="{% url "me" %}">
+                        <i class="fas fa-home"></i>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'user-addresses' %}">
+                        <i class="fas fa-mail-bulk"></i>
+                        {% trans "Addresses" %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'user-profile' %}">
+                        <i class="fas fa-user"></i>
+                        {% trans "Profile" %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'user-subscriptions' %}">
+                        <i class="fas fa-bookmark"></i>
+                        {% trans "Subcriptions" %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'user-events' %}">
+                        <i class="fas fa-rss"></i>
+                        {% trans "Events" %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        {% trans "Logout" %}
                     </a>
                 </li>
             </ul>
-        {% endif %}
+            <ul class="list-unstyled components">
+                {% if is_manager %}
+                    <li>
+                        <a style="bottom:0;" href="{% url 'settings' %}">
+                            <i class="fas fa-cog"></i>
+                            {% trans "Settings" %}
+                        </a>
+                    </li>
+                {% endif %}
+                {% if user.is_superuser %}
+                    <li>
+                        <a style="bottom:0;" href="{% url 'settings' %}">
+                            <i class="fas fa-cog"></i>
+                            {% trans "Settings" %}
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
         {% endblock left-menu %}
 
     </nav>
@@ -120,32 +128,32 @@
         {% endblock page %}
     </div>
 </div>
-        {% block footer %}
-            {% cache 500 footer bitcaster_version %}
-                <footer>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm justify-content-start">
+{% block footer %}
+    {% cache 500 footer bitcaster_version %}
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm justify-content-start">
                             <span class="pull-left">bitcaster
                             <span>{{ bitcaster_version }} </span>
                             <span class="git-status d-inline d-sm-none d-md-inline">{{ git_status }}</span>
                             </span>
-                            </div>
-                            <div class="col-sm justify-content-center">
-                                <a href="//bitcaster.io/"><img src="{% asset "bitcaster/images/bitcaster32.png" %}"></a>
-                            </div>
-                            <div class="col-sm justify-content-end">
-                                {% if user.is_authenticated %}
-                                    <span class="pull-right">
+                    </div>
+                    <div class="col-sm justify-content-center">
+                        <a href="//bitcaster.io/"><img src="{% asset "bitcaster/images/bitcaster32.png" %}"></a>
+                    </div>
+                    <div class="col-sm justify-content-end">
+                        {% if user.is_authenticated %}
+                            <span class="pull-right">
                                     <a class="d-none d-md-block" href="/api/">API</a>
                                 </span>
-                                {% endif %}
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
-                </footer>
-            {% endcache %}
-        {% endblock footer %}
+                </div>
+            </div>
+        </footer>
+    {% endcache %}
+{% endblock footer %}
 
 <script src="{% static "bitcaster/jquery.js" %}"></script>
 <script src="{% static "bitcaster/js-cookie.js" %}"></script>

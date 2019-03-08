@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
 
@@ -47,6 +48,8 @@ class Message(AbstractModel):
     class Reverse:
         pattern = 'app-key-{op}'
         args = ['application.organization.slug', 'application.slug', 'id']
+        verbose_name = _('Message')
+        verbose_name_plural = _('Messages')
 
     def __str__(self):
         return self.name

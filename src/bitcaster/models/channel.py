@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.db.models import Q
 from django.template import Template
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
 from bitcaster.db.fields import DispatcherField, EncryptedJSONField
@@ -79,6 +80,8 @@ It can be Global or Application specific.
     class Meta:
         app_label = 'bitcaster'
         ordering = ('organization', 'application', 'name')
+        verbose_name = _('Channel')
+        verbose_name_plural = _('Channels')
 
     class Reverse:
         pattern = 'org-channel-{op}'

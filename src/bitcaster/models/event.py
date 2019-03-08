@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-
 from uuid import uuid4
 
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 from django.db.models import UUIDField
 from django.utils.functional import cached_property
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
 from bitcaster.db.fields import SubscriptionPolicyField
@@ -44,6 +44,8 @@ class Event(ReverseWrapperMixin, AbstractModel):
         app_label = 'bitcaster'
         unique_together = ('application', 'name')
         ordering = ('name', 'id')
+        verbose_name = _('Event')
+        verbose_name_plural = _('Events')
 
     class Reverse:
         pattern = 'app-event-{op}'

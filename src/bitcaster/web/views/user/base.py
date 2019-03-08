@@ -87,6 +87,10 @@ class UserAddressesAssignmentView(SidebarMixin, BitcasterBaseUpdateView):
         kwargs['instance'] = self.request.user
         return kwargs
 
+    def form_invalid(self, form):
+        self.error_user('Please correct errors below')
+        return super().form_invalid(form)
+
     def form_valid(self, formset):
         formset.instance = self.request.user
         formset.save()
@@ -98,7 +102,6 @@ class UserAddressesAssignmentView(SidebarMixin, BitcasterBaseUpdateView):
             usage_message = assignment.channel.get_usage_message()
             if usage_message:
                 self.message_user(usage_message, extra_tags='keep')
-        self.message_user('Assignments updated', messages.SUCCESS)
         return super().form_valid(formset)
 
 

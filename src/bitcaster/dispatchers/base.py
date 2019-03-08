@@ -2,7 +2,6 @@
 import abc
 
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from strategy_field.utils import fqn
 
 from bitcaster import get_full_version
@@ -39,7 +38,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     message_class = MessageType
     icon = None
     __media__ = None
-    __help__ = _('')
+    __help__ = ''
 
     def __init__(self, owner=None):
         super().__init__(owner)

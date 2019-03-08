@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import skpy.main
-from django.utils.translation import gettext_lazy as _
 
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
@@ -32,8 +31,7 @@ class Skype(CoreDispatcher):
     subscription_class = SkypeSubscription
     options_class = SkypeOptions
     message_class = MessageType
-    __help__ = _("""
-    """)
+    __help__ = ''
 
     @classproperty
     def name(cls):

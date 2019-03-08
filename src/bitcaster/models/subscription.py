@@ -70,6 +70,8 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
         app_label = 'bitcaster'
         unique_together = ('channel', 'subscriber', 'event')
         get_latest_by = 'id'
+        verbose_name = _('Subscription')
+        verbose_name_plural = _('Subscriptions')
 
     class Reverse:
         pattern = 'app-event-subscription-{op}'

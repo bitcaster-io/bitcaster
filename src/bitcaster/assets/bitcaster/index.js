@@ -30,7 +30,6 @@ import './images/icons/slack.png';
 import './images/icons/telegram.png';
 import './images/icons/twilio.png';
 import './images/icons/twitter.png';
-import './images/icons/viber.png';
 import './images/icons/xmpp.png';
 import './images/icons/yammer.png';
 import './images/icons/zulip.png';

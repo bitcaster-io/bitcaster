@@ -20,17 +20,71 @@ div.avatar {
     }
 }
 
-a.btn{
-//    -webkit-appearance: button;
-//    overflow: visible;
-    margin: 0;
-//    font-family: inherit;
-//    font-size: inherit;
-//    line-height: inherit;
-//    border-radius: 0;
-    box-sizing: border-box;
-    border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
-//    border-style: solid;
-    border-width: 1px;
-    padding: 1px 7px 2px;
+//a.btn {
+//    //    -webkit-appearance: button;
+//    //    overflow: visible;
+//    margin: 0;
+//    //    font-family: inherit;
+//    //    font-size: inherit;
+//    //    line-height: inherit;
+//    //    border-radius: 0;
+//    box-sizing: border-box;
+//    border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
+//    //    border-style: solid;
+//    border-width: 1px;
+//    padding: 1px 7px 2px;
+//}
+.fieldset {
+    display: block;
+    .row {
+        line-height: 42px;
+        margin-bottom: 0;
+        height: 52px;
+        display: inline-table;
+
+        &.error {
+            padding-left: 50px;
+            padding-top: 0;
+            color: red;
+            line-height: 40px;
+        }
+
+        &.line-fields {
+            .col {
+                height: 42px;
+            }
+
+            &.has-error {
+                height: 80px;
+
+                input,select {
+                    border: 1px solid $error-color;
+                }
+            }
+        }
+    }
+
+    .form-group {
+        margin-bottom: 0;
+        line-height: 40px;
+    }
+}
+
+.form-group {
+    .label {
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+
+    &.has-error {
+        border: 1px solid $error-color;
+
+        .errors {
+            color: $error-color;
+        }
+
+        input {
+            border: 1px solid $error-color;
+        }
+    }
 }

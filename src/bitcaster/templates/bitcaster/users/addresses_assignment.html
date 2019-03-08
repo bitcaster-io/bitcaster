@@ -1,4 +1,4 @@
-{% extends "bitcaster/users/base.html" %}
+{% extends "bitcaster/base2.html" %}
 {% load bitcaster crispy_forms_utils crispy_forms_tags crispy_forms_field i18n %}
 {% block page %}
     <ul class="nav nav-tabs">
@@ -13,7 +13,7 @@
         <div class="row">
             <div class="row col-12 p-3">
                 <div class="pull-left col-8">
-                    <a id="add_more" class="btn btn-danger btn-small pull-right"
+                    <a id="add_more" class="btn btn-danger btn-small pull-left"
                        href=".">{% trans "Add Assignment" %}
                     </a>
                 </div>
@@ -31,12 +31,12 @@
         </div>
 
         <div id="empty-form" class="d-none">
-            <div class="row col-12">
-                <div class="row col-12">
+            <div class="row col-12 m-0 p-0">
+                <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex">
                     <div class="hidden">{{ form.empty_form.user }}</div>
-                    <div class="row col-4">{{ form.empty_form.channel|as_crispy_field }}</div>
-                    <div class="col-6">{{ form.empty_form.address|as_crispy_field }}</div>
-                    <div class="col-2 mt-2 align-middle align-items-center">
+                    <div class="col col-4">{{ form.empty_form.channel|as_crispy_field }}</div>
+                    <div class="col col-6">{{ form.empty_form.address|as_crispy_field }}</div>
+                    <div class="col col-2 align-middle align-items-center">
                         <a href="#" class="btn remove_line mr-2">
                             <i class="fas fa-trash-alt"></i>
                         </a>
@@ -49,14 +49,14 @@
             <form method="post" id="Form">
                 {{ form.management_form }}
                 {% csrf_token %}
-                <div class="content assignments">
+                <div class="content assignments fieldset">
                     {% for form in form.forms %}
-                        <div class="row col-12">
-                            <div class="row col-12">
+                        <div class="row col-12 m-0 p-0">
+                            <div class="row m-0 p-2 col-12 line-fields {% if form.errors %}has-error{% endif %}">
                                 <div class="hidden">{{ form.user }}{{ form.id }}{{ form.DELETE }}</div>
-                                <span class="row col-4">{{ form.channel|as_crispy_field }}</span>
-                                <span class="col-6">{{ form.address|as_crispy_field }}</span>
-                                <span class="col-2  mt-2 align-middle align-items-center">
+                                <span class="col col-4">{{ form.channel|as_crispy_field }}</span>
+                                <span class="col col-6">{{ form.address|as_crispy_field }}</span>
+                                <span class="col col-2 align-middle align-items-center">
                                     <a href="#" class="btn remove_line mr-2">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
@@ -67,11 +67,16 @@
                                         {#                                    </a>#}
                                     {% endif %}
                                 </span>
+                                {% if form.non_field_errors %}
+                                    <div class="row error">
+                                    {{form.non_field_errors.as_text}}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     {% endfor %}
                 </div>
-                <div class="row col-12 p-4">
+                <div class="row col-12 p-4 commands hidden container">
                     <div class="row col-9"></div>
                     <div class="row col-3">
                         <input type="submit"
@@ -96,8 +101,7 @@
             var selector2 = "div.assignments>.row:first";
             var $submit = $("#btn-submit");
             var $commands = $(".commands");
-            {#var $cancel = $("#btn-cancel");#}
-            $(":input[type=checkbox]").hide();
+            {% if form.errors %}$(".commands").show();{% endif %}
             $('#btn-save').on('click', function () {
                 $("#Form").submit();
             });
@@ -121,7 +125,7 @@
                 setTimeout(function () {
                     reNumber();
                 }, 20);
-            });
+            }); // */
 
             $("#add_more").click(function (e) {
                 e.preventDefault();
@@ -131,7 +135,8 @@
             });
             var reNumber = function () {
                 var $rows = $("div.assignments>div.row");
-                $rows.each(function (i, e) {
+
+                $($rows.get().reverse()).each(function (i, e) {
                     console.log(i, e);
                     $(e).find(":input").each(function () {
                         var name = $(this).attr("name").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
@@ -148,18 +153,23 @@
                     });
                 });
                 $TOTAL_FORMS.val($rows.length);
+                $commands.show();
                 $("#btn-submit").prop("disabled", false);
+            };
+            var setNumber = function (el) {
+                console.log(el)
             };
 
             function cloneMore() {
                 var $newElement = $("#empty-form>div.row").clone(true);
                 $newElement.removeClass("d-none");
-                $(selector).append($newElement);
-                {#$(selector2).before($newElement);#}
+                //$(selector).append($newElement);
+                $(selector2).before($newElement);
+                {#setNumber($newElement);#}
                 setTimeout(function () {
                     reNumber();
                 }, 20);
-            };
+            }
         })($);
     </script>
 

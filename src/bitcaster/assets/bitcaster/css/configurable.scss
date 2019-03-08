@@ -7,21 +7,4 @@
         }
     }
 
-    .form-group {
-        .label {
-            display: inline-block;
-            margin-bottom: 0.5rem;
-
-        }
-
-        &.has-error {
-            .errors {
-                color: red;
-            }
-
-            input {
-                border: 1px solid red;
-            }
-        }
-    }
 }
