@@ -102,12 +102,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(
         _('date joined'), default=timezone.now)
 
-    storage = EncryptedJSONField(
-        _('storage'),
-        blank=True, null=True,
-        help_text=_('Where store handler related user data')
-
-    )
+    storage = EncryptedJSONField(_('storage'), blank=True, null=True)
     avatar = models.ImageField(blank=True, null=True,
                                # upload_to="pictures",
                                upload_to=profile_media_root,
@@ -118,7 +113,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
     timezone = TimeZoneField(verbose_name=_('Timezone'))
-    language = LanguageField(verbose_name=_('Lingua'), default='en')
+    language = LanguageField(verbose_name=_('Language'), default='en')
     country = CountryField(verbose_name=_('Country'))
 
     objects = UserManager()

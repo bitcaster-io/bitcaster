@@ -35,12 +35,20 @@ class ChannelUpdateConfigurationForm(forms.ModelForm):
     def serializer(self):
         args = {}
         if self.data:
+            print(111.1, 'channel.py:44', self.data)
             args = {'data': self.data}
-        else: # self.instance:
-            args = {'data': self.instance.config}
-
-        ser = self.serializer_class(**args)
-        ser.is_valid()
+            ser = self.serializer_class(**args)
+            ser.is_valid()
+        elif self.instance.pk:
+            print(111.2, 'channel.py:44', self.instance)
+            # get_full_config is required for updates
+            args = {'instance': self.instance.handler.get_full_config(self.instance.config)}
+            ser = self.serializer_class(**args)
+        else:
+            print(111.3, 'channel.py:44', self.initial)
+            args = {'initial': self.initial}
+            ser = self.serializer_class(**args)
+        #
         return ser
 
     def clean_config(self):

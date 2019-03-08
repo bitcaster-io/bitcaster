@@ -76,7 +76,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def emit(self, subscription: object, subject: str, message: str,
-             connection=None, *args, **kwargs) -> int:
+             connection=None, silent=True, *args, **kwargs) -> int:
         """
 
         :param subscription: bitcaster.models.Subscription

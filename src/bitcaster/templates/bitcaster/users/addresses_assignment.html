@@ -11,24 +11,35 @@
     </ul>
     <div class="tab-content">
         <div class="row">
-            <div class="row col-12">
-                <div class="pull-right col-12 p-4">
+            <div class="row col-12 p-3">
+                <div class="pull-left col-8">
                     <a id="add_more" class="btn btn-danger btn-small pull-right"
                        href=".">{% trans "Add Assignment" %}
                     </a>
                 </div>
+                <div class="pull-right col-4 hidden commands">
+                    <button type="button" id="btn-save"
+                            class="btn btn-primary btn-small mr-3">{% trans "Save" %}</button>
+
+                    <button type="button" id="btn-cancel" class="btn btn-secondary"
+                            onclick="location.href='{% url "user-address-assignment" %}'">
+                        {% trans "Cancel" %}
+                    </button>
+                </div>
+
             </div>
         </div>
 
         <div id="empty-form" class="d-none">
             <div class="row col-12">
                 <div class="row col-12">
-                    {{ form.empty_form.user }}
-                    {{ form.empty_form.id }}
+                    <div class="hidden">{{ form.empty_form.user }}</div>
                     <div class="row col-4">{{ form.empty_form.channel|as_crispy_field }}</div>
-                    <div class="col-7">{{ form.empty_form.address|as_crispy_field }}</div>
-                    <div class="col-1 mt-2 align-middle align-items-center"><a href="#" class="remove_line">
-                        <i class="fas fa-trash-alt"></i></a>
+                    <div class="col-6">{{ form.empty_form.address|as_crispy_field }}</div>
+                    <div class="col-2 mt-2 align-middle align-items-center">
+                        <a href="#" class="btn remove_line mr-2">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="red">{{ form.empty_form.non_field_errors.as_text }}</div>
@@ -42,9 +53,7 @@
                     {% for form in form.forms %}
                         <div class="row col-12">
                             <div class="row col-12">
-                                <div class="hidden">{{ form.user }}
-                                {{ form.id }}
-                                {{ form.DELETE }}</div>
+                                <div class="hidden">{{ form.user }}{{ form.id }}{{ form.DELETE }}</div>
                                 <span class="row col-4">{{ form.channel|as_crispy_field }}</span>
                                 <span class="col-6">{{ form.address|as_crispy_field }}</span>
                                 <span class="col-2  mt-2 align-middle align-items-center">
@@ -52,25 +61,24 @@
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
                                     {% if form.instance.channel %}
-{#                                    <a class="btn" rel="modal:open"#}
-{#                                       href="{% url "org-channel-usage" form.instance.channel.organization.slug form.instance.channel.pk %}">#}
-{#                                        <i class="fa fa-info">&nbsp;</i>#}
-{#                                    </a>#}
+                                        {#                                    <a class="btn" rel="modal:open"#}
+                                        {#                                       href="{% url "org-channel-usage" form.instance.channel.organization.slug form.instance.channel.pk %}">#}
+                                        {#                                        <i class="fa fa-info">&nbsp;</i>#}
+                                        {#                                    </a>#}
                                     {% endif %}
                                 </span>
                             </div>
-                            <div class="row red">{{ form.non_field_errors.as_text }}</div>
                         </div>
                     {% endfor %}
                 </div>
                 <div class="row col-12 p-4">
                     <div class="row col-9"></div>
                     <div class="row col-3">
-                        <input type="submit" id="btn-submit"
+                        <input type="submit"
                                value="{% trans "Save" %}"
                                class="btn btn-primary btn-small mr-3">
 
-                        <input type="button" id="btn-cancel" class="btn btn-secondary"
+                        <input type="button" class="btn btn-secondary"
                                onclick="location.href='{% url "user-address-assignment" %}'" value="Cancel">
                     </div>
                 </div>
@@ -85,10 +93,14 @@
             var formsetName = "assignments";
             var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
             var selector = "div.assignments";
+            var selector2 = "div.assignments>.row:first";
             var $submit = $("#btn-submit");
-            var $cancel = $("#btn-cancel");
+            var $commands = $(".commands");
+            {#var $cancel = $("#btn-cancel");#}
             $(":input[type=checkbox]").hide();
-
+            $('#btn-save').on('click', function () {
+                $("#Form").submit();
+            });
             $("#Form")
                 .on("input", function (e) {
                     console.log($(e.target).parents('div.row'));
@@ -114,6 +126,7 @@
             $("#add_more").click(function (e) {
                 e.preventDefault();
                 $submit.prop("disabled", true);
+                $commands.show();
                 cloneMore();
             });
             var reNumber = function () {
@@ -142,6 +155,7 @@
                 var $newElement = $("#empty-form>div.row").clone(true);
                 $newElement.removeClass("d-none");
                 $(selector).append($newElement);
+                {#$(selector2).before($newElement);#}
                 setTimeout(function () {
                     reNumber();
                 }, 20);
