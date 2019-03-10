@@ -30,31 +30,31 @@
 
         <ul class="list-unstyled components">
             <li>
-                <a href="{% url "me" %}">
+                <a href="{% url "me" organization.slug %}">
                     <i class="fas fa-home"></i>
                     Home
                 </a>
             </li>
             <li>
-                <a href="{% url 'user-addresses' %}">
+                <a href="{% url 'user-address' organization.slug %}">
                     <i class="fas fa-mail-bulk"></i>
                     {% trans "Addresses" %}
                 </a>
             </li>
             <li>
-                <a href="{% url 'user-profile' %}">
+                <a href="{% url 'user-profile' organization.slug %}">
                     <i class="fas fa-user"></i>
                     {% trans "Profile" %}
                 </a>
             </li>
             <li>
-                <a href="{% url 'user-subscriptions' %}">
+                <a href="{% url 'user-subscriptions' organization.slug %}">
                     <i class="fas fa-bookmark"></i>
                     {% trans "Subcriptions" %}
                 </a>
             </li>
             <li>
-                <a href="{% url 'user-events' %}">
+                <a href="{% url 'user-events' organization.slug %}">
                     <i class="fas fa-rss"></i>
                     {% trans "Events" %}
                 </a>

@@ -33,6 +33,13 @@ def verbose_name_plural(instance):
     return instance._meta.verbose_name_plural.title()
 
 
+@register.filter()
+def order_formset(formset):
+    ordered = [f for f in formset if not f.instance.pk] + [f for f in formset if f.instance.pk]
+    for f in ordered:
+        yield f
+
+
 @register.simple_tag(takes_context=True)
 def oauth_button(context, channel: Channel):
     label = channel.handler.render_button() or f'Authorise with {channel.handler.name}'

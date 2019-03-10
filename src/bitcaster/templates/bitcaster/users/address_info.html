@@ -4,10 +4,10 @@
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link" href="{% url "user-addresses" %}">Address</a>
+            <a class="nav-link" href="{% url "user-address" organization.slug %}">Address</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url "user-address-assignment" %}">Assignments</a>
+            <a class="nav-link" href="{% url "user-address-assignment" organization.slug %}">Assignments</a>
         </li>
         <li class="nav-item">
             <a class="nav-link active" href="#">{{ address }}</a>

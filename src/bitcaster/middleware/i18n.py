@@ -2,6 +2,7 @@
 from django.utils import translation
 
 from bitcaster.config import settings
+from bitcaster.utils.language import get_attr
 
 
 class UserLanguageMiddleware:
@@ -14,6 +15,6 @@ class UserLanguageMiddleware:
 
         response = self.get_response(request)
 
-        if request.user and request.user.is_authenticated:
+        if get_attr(request, 'user.language') and request.user.is_authenticated:
             response.set_cookie(settings.LANGUAGE_COOKIE_NAME, request.user.language)
         return response

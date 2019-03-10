@@ -1,142 +1,85 @@
-{% extends "bitcaster/users/base.html" %}{% load crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
+{% extends "bitcaster/base2.html" %}{% load bitcaster crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
 {% block page %}
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link active" href="{% url "user-addresses" %}">{% trans "Addresses" %}</a>
+            <a class="nav-link active" href="{% url "user-address" organization.slug %}">{% trans "Addresses" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url "user-address-assignment" %}">{% trans "Assignments" %}</a>
+            <a class="nav-link"
+               href="{% url "user-address-assignment" organization.slug %}">{% trans "Assignments" %}</a>
         </li>
     </ul>
+    <style>
+    .invalid-feedback{
+        position: relative;
+        top: -10px;
+    }
+    </style>
     <div class="tab-content">
         <div class="row">
-            <div class="row col-12">
-                <div class="pull-right col-12 p-4">
-                    <a id="add_more" class="btn btn-danger btn-small pull-right m-2"
-                       href="#">{% trans "Add Address" %}
+            <div class="row col-12 p-3">
+                <div class="pull-left col-8">
+                    <a id="add_more" class="btn btn-danger btn-small pull-left m-2"
+                       href=".">{% trans "Add Address" %}
                     </a>
                 </div>
+                {% include "bitcaster/users/_commands.html" with handler=handler %}
             </div>
         </div>
 
         <div id="empty-form" class="d-none">
-            <div class="row col-12">
-                <div class="row col-12">
-                    {{ form.empty_form.user }}
-                    {{ form.empty_form.id }}
-                    <div class="row col-4">{{ form.empty_form.label|as_crispy_field }}</div>
-                    <div class="col-6">{{ form.empty_form.address|as_crispy_field }}</div>
-                    <div class="col-2 mt-2 align-middle align-items-center">
-                        <a href="#" class="remove_line">
-                        <i class="fas fa-trash-alt"></i></a>
+            <div class="row col-12 m-0 p-0">
+                <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex" {% if form.errors %}has-error{% endif %}>
+                    <div class="hidden order" data-order="__prefix__">
+                        {{ form.empty_form.user }}{{ form.empty_form.DELETE }}</div>
+                    <div class="col col-3">{{ form.empty_form.label|as_crispy_field }}</div>
+                    <div class="col col-5">{{ form.empty_form.address|as_crispy_field }}</div>
+                    <div class="col col-2 align-middle align-items-center">
+                        <a href="." class="remove_line">
+                            <i class="fas fa-trash-alt"></i></a>
                     </div>
                 </div>
-                <div class="red">{{ form.empty_form.non_field_errors.as_text }}</div>
+                {% if form.non_field_errors %}
+                    <div class="row error">
+                        {{ form.non_field_errors.as_text }}
+                    </div>
+                {% endif %}
             </div>
         </div>
         <div class="container">
-            <form method="post">
+            <form method="post" id="Form">
                 {{ form.management_form }}
                 {% csrf_token %}
-                <div class="content invitations">
-                    {% for form in form.forms %}
-                        <div class="row col-12">
-                            <div class="row col-12">
-                                <div class="hidden"> {{ form.user }}
-                                {{ form.id }}
-                                {{ form.DELETE }}</div>
-                                <span class="row col-4">{{ form.label|as_crispy_field }}</span>
-                                <span class="col-6">{{ form.address|as_crispy_field }}</span>
-                                <span class="col-2 align-items-center">
-                                    <a href="#" class="remove_line">
+                <div class="content invitations fieldset">
+                    {% for form in form.forms|order_formset  %}
+                        <div class="row col-12 m-0 p-0">
+                            <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex">
+                                <div class="hidden order" data-order="{{ forloop.counter }}">
+                                    {{ form.user }}
+                                    {{ form.id }}
+                                    {{ form.DELETE }}</div>
+                                <div class="col col-3">{{ form.label|as_crispy_field }}</div>
+                                <div class="col-5">{{ form.address|as_crispy_field }}</div>
+                                <div class="col col-2 align-middle align-items-center">
+                                    <a href="." class="remove_line">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
-                                    &nbsp;
-{#                                    <a href="{% url  'user-address-info' form.instance.id %}" class="">#}
-{#                                        <i class="fas fa-info-circle"></i>#}
-{#                                    </a>#}
-                                </span>
+                                </div>
                             </div>
-                            <div class="red">{{ form.non_field_errors.as_text }}</div>
+                            {% if form.non_field_errors %}
+                                <div class="row error">
+                                    {{ form.non_field_errors.as_text }}
+                                </div>
+                            {% endif %}
+
                         </div>
                     {% endfor %}
                 </div>
-                <div class="row col-12 p-4">
-                    <div class="row col-9"></div>
-                    <div class="row col-3">
-                        <input type="submit" id="btn-submit"
-                               value="{% trans "Save" %}"
-                               class="btn btn-primary btn-small mr-3">
-                        <input type="button" id="btn-cancel" class="btn btn-secondary"
-                               onclick="location.href='{% url "user-addresses" %}'"
-                               value="Cancel">
-                    </div>
-                </div>
             </form>
+            {% include "bitcaster/users/_commands.html" %}
         </div>
     </div> <!-- tab-content -->
 {% endblock %}
 {% block js %}
-    {{ block.super }}
-    <script>
-        (function ($) {
-            var formsetName = "addresses";
-            var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
-            var selector = "div.invitations";
-            {#var $rows = $("div.invitations>div.row");#}
-            var $submit = $("#btn-submit");
-            var $cancel = $("#btn-cancel");
-
-            $(":input[type=checkbox]").hide();
-            $(".remove_line").click(function () {
-                $submit.prop("disabled", true);
-                var $target = $(this).parent().parent().parent();
-                var $deletion = $target.find(":input[type=checkbox]");
-                if ($deletion) {
-                    $deletion.prop('checked', true);
-                    $target.hide();
-                } else {
-                    $target.remove();
-                }
-                setTimeout(function () {
-                    reNumber();
-                }, 20);
-            });
-            $("#add_more").click(function (e) {
-                e.preventDefault();
-                $submit.prop("disabled", true);
-                cloneMore();
-            });
-            var reNumber = function () {
-                var $rows = $("div.invitations>div.row");
-                $rows.each(function (i, e) {
-                    $(e).find(":input").each(function () {
-                        var name = $(this).attr("name").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
-                        var id = "id_" + name;
-                        $(this).attr({"name": name, "id": id});
-                    });
-                    $(e).find("label").each(function () {
-                        var newFor = $(this).attr("for").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
-                        $(this).attr("for", newFor);
-                    });
-                    $(e).find("div.form-group").each(function () {
-                        var newId = $(this).attr("id").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
-                        $(this).attr("id", newId);
-                    });
-                });
-                $TOTAL_FORMS.val($rows.length);
-                $("#btn-submit").prop("disabled", false);
-            };
-
-            function cloneMore() {
-                var $newElement = $("#empty-form>div.row").clone(true);
-                $newElement.removeClass("d-none");
-                $(selector).append($newElement);
-                setTimeout(function () {
-                    reNumber();
-                }, 20);
-            };
-        })($);
-    </script>
-
-{% endblock %}
+    {% include "bitcaster/users/_formset.html" with formsetName="addresses" %}
+{% endblock js %}

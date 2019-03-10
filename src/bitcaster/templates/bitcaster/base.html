@@ -64,8 +64,8 @@
                                 {% if org.configure %}
                                     <a class="dropdown-item" href="{% url "org-dashboard" organization.slug %}">Configure</a>
                                 {% endif %}
-                                <a class="dropdown-item" href="{% url "user-profile" %}">Profile</a>
-                                <a class="dropdown-item" href="{% url "user-addresses" %}">Addresses</a>
+                                <a class="dropdown-item" href="{% url "user-profile" organization.slug %}">Profile</a>
+                                <a class="dropdown-item" href="{% url "user-address" organization.slug %}">Addresses</a>
                                 {% if user.is_superuser %}
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{% url "admin:index" %}">Admin</a>

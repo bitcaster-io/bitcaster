@@ -1,0 +1,10 @@
+{% load i18n %}<div class="pull-right col-4 hidden commands">
+    <button type="button" id="btn-save"
+            class="btn btn-primary btn-small mr-3">{% trans "Save" %}</button>
+
+    <button type="button" id="btn-cancel" class="btn btn-secondary"
+            onclick="location.href=location.href;">
+        {% trans "Cancel" %}
+    </button>
+</div>
+{#                {% include "bitcaster/organization/channels/_info.html" with handler=handler %}#}

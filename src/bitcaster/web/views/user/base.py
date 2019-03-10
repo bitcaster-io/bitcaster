@@ -12,6 +12,7 @@ from bitcaster.web.forms import (AddressAssignmentForm,
                                  AddressAssignmentFormSet, AddressForm,
                                  AddressFormSet, UserProfileForm,
                                  send_address_verification_email,)
+from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
 
 from ..base import BitcasterBaseDetailView, BitcasterBaseUpdateView
 from ..mixins import SidebarMixin, TitleMixin
@@ -22,17 +23,21 @@ __all__ = ('UserProfileView', 'UserAddressesView',
            'UserAddressesInfoView', 'UserAddressesAssignmentView')
 
 
-class UserHome(SidebarMixin, TitleMixin, TemplateView):
+class UserMixin(SelectedOrganizationMixin, SidebarMixin, TitleMixin):
+    pass
+
+
+class UserHome(UserMixin, TemplateView):
     template_name = 'bitcaster/users/user-home.html'
     title = _('Home')
 
 
-class UserEventListView(SidebarMixin, TitleMixin, TemplateView):
+class UserEventListView(UserMixin, TemplateView):
     template_name = 'bitcaster/users/events.html'
     title = _('Events')
 
 
-class UserAddressesView(SidebarMixin, BitcasterBaseUpdateView):
+class UserAddressesView(UserMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/users/addresses.html'
     model = Address
     form_class = AddressForm
@@ -42,7 +47,7 @@ class UserAddressesView(SidebarMixin, BitcasterBaseUpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse('user-addresses')
+        return reverse('user-address', args=[self.selected_organization.slug])
 
     def get_form_class(self):
         return AddressFormSet
@@ -55,16 +60,15 @@ class UserAddressesView(SidebarMixin, BitcasterBaseUpdateView):
     def form_valid(self, formset):
         formset.instance = self.request.user
         formset.save()
-        self.message_user('Addresses updated', messages.SUCCESS)
         return super().form_valid(formset)
 
 
-class UserAddressesInfoView(SidebarMixin, BitcasterBaseDetailView):
+class UserAddressesInfoView(UserMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/users/address_info.html'
     model = Address
 
 
-class UserAddressesAssignmentView(SidebarMixin, BitcasterBaseUpdateView):
+class UserAddressesAssignmentView(UserMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/users/addresses_assignment.html'
     model = AddressAssignment
     form_class = AddressAssignmentForm
@@ -74,7 +78,7 @@ class UserAddressesAssignmentView(SidebarMixin, BitcasterBaseUpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse('user-address-assignment')
+        return reverse('user-address-assignment', args=[self.selected_organization.slug])
 
     def get_form_class(self):
         return AddressAssignmentFormSet
@@ -105,7 +109,7 @@ class UserAddressesAssignmentView(SidebarMixin, BitcasterBaseUpdateView):
         return super().form_valid(formset)
 
 
-class UserProfileView(SidebarMixin, BitcasterBaseUpdateView):
+class UserProfileView(UserMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/users/profile.html'
     model = User
     form_class = UserProfileForm
@@ -121,32 +125,6 @@ class UserProfileView(SidebarMixin, BitcasterBaseUpdateView):
         if ret['form'].new_email_pending:
             ret['newemail'] = ret['form'].new_email_pending
         return ret
-
-    # def get_initial(self):
-    #     initial = super().get_initial()
-    #     user = self.get_object()
-    # if not user.language:
-    #     initial['language'] = self.request.LANGUAGE_CODE
-    #
-    # if not user.country or user.timezone:
-    #     remote_ip = get_client_ip(self.request)
-    #     if remote_ip:
-    #         from geolite2 import geolite2
-    #         reader = geolite2.reader()
-    #         match = reader.get(remote_ip)
-    #         if match:
-    #             if not user.country:
-    #                 try:
-    #                     initial['country'] = match['country']['iso_code']
-    #                 except KeyError:
-    #                     initial['country'] = None
-    #
-    #             if not user.timezone:
-    #                 try:
-    #                     initial['timezone'] = match['location']['time_zone']
-    #                 except KeyError:
-    #                     initial['timezone'] = None
-    # return initial
 
     def form_valid(self, form):
         email_changed = form.fields['email'].has_changed(form.initial.get('email'),

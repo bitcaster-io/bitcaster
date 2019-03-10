@@ -24,7 +24,7 @@ def check_settings(*args, **kwargs):
         if not value or not Path(value).is_dir():
             errors.append(
                 Error(
-                    "%s '%s' does not exists" % (dir, settings.STATIC_ROOT),
+                    "%s '%s' does not exists" % (dir, getattr(settings, dir)),
                     hint='check your BITCASTER_%s environment variable' % dir,
                     obj=None,
                     id='bitcaster.C00%s' % i

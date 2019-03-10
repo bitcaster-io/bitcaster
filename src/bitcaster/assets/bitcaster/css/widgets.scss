@@ -39,7 +39,7 @@ div.avatar {
     .row {
         line-height: 42px;
         margin-bottom: 0;
-        height: 52px;
+        height: 60px;
         display: inline-table;
 
         &.error {
@@ -55,7 +55,10 @@ div.avatar {
             }
 
             &.has-error {
-                height: 80px;
+                //height: 80px;
+                .non-field-errors{
+                    padding-left: 50px;
+                }
 
                 input,select {
                     border: 1px solid $error-color;

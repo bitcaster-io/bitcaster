@@ -191,7 +191,7 @@ class ChannelTestView(MessageUserMixin, RedirectView):
             self.message_user(markdown(msg), messages.SUCCESS)
 
         except AddressAssignment.DoesNotExist:
-            url = reverse('user-address-assignment')
+            url = reverse('user-address-assignment', args=[self.selected_organization.slug])
             msg = _("""You do not have a valid address for this channel.
 Goto [addresses]({0}) to set your choice for **{1}**""").format(url, self.object.name)
             self.message_user(markdown(msg), messages.ERROR, extra_tags='keep')

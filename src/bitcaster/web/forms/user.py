@@ -8,7 +8,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (
     AuthenticationForm as _AuthenticationForm,
     UserCreationForm as _UserCreationForm,)
-from django.core.exceptions import ValidationError
+from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.forms import BaseInlineFormSet, PasswordInput
 from django.forms.utils import ErrorList
 from django.urls import reverse
@@ -193,11 +193,23 @@ class AddressForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_show_labels = False
 
+    # def has_changed(self):
+    #     return super().has_changed()
+    #
+    # @cached_property
+    # def changed_data(self):
+    #     return super().changed_data
+
 
 class AddressAssignmentForm(forms.ModelForm):
     class Meta:
         model = AddressAssignment
         fields = ('id', 'user', 'channel', 'address')
+        error_messages = {
+            NON_FIELD_ERRORS: {
+                'unique_together': _('Address assignment for this Channel already exists.'),
+            }
+        }
 
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
                  label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None):
@@ -254,9 +266,12 @@ class AddressAssignmentFormSet(AddressAssignmentFormSetBase, BaseInlineFormSet):
         b = self.save_new_objects(commit)
         return a + b
 
-    def __init__(self, *args, **kwargs):
-        super(AddressAssignmentFormSet, self).__init__(*args, **kwargs)
-        self.queryset = self.queryset.order_by('channel')
+    def get_queryset(self):
+        return super().get_queryset().order_by('channel')
+
+    # def __init__(self, *args, **kwargs):
+    #     super(AddressAssignmentFormSet, self).__init__(*args, **kwargs)
+    #     self.queryset = self.queryset
 
 
 class UserSubscriptionForm(forms.ModelForm):

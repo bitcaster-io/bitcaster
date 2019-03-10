@@ -9,7 +9,7 @@
                             <div class="avatar">
                                 <img src="{{ user|gravatar:200 }}">
                             </div>
-                            <div class="small" style="max-width: 230px;text-align: center"> To change your picture, go to
+                            <div class="small" style="max-width: 230px;text-align: center"> {% trans "To change your picture, go to" %}
                                 <a href="https://en.gravatar.com/">https://gravatar.com</a>
                             </div>
                         </div>
@@ -20,7 +20,7 @@
                                 {% endif %}
                             {% endfor %}
                             {% csrf_token %}
-                            <input type="submit" value="Save" class="btn btn-primary">
+                            <input type="submit" value="{% trans "Save" %}" class="btn btn-primary">
                         </div>
                     </div>
                 </form>

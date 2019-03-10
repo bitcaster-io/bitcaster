@@ -236,6 +236,7 @@ class TriggerKeyAuthentication(TokenAuthenticationBase):
         try:
             key = ApplicationTriggerKey.objects.get(token=key, enabled=True)
             request.key = key
+            request.application = key.application
         except ApplicationTriggerKey.DoesNotExist:
             raise exceptions.AuthenticationFailed(_('Invalid token.'))
 

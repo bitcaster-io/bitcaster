@@ -48,7 +48,7 @@ class IndexView(TemplateView):
         if request.user.is_authenticated:
             membership = request.user.memberships.first()
             if membership:
-                return HttpResponseRedirect(reverse('me'))
+                return HttpResponseRedirect(reverse('me', args=[membership.organization.slug]))
             elif self.request.user.is_superuser:
                 pass
             # if request.user.memberships.filter(role=Role.OWNER):
