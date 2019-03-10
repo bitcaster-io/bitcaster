@@ -1,19 +1,33 @@
 {% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags crispy_forms_filters i18n %}
-{% block content %}
-    <h2>{{ organization }}: Send invitations</h2>
-    <div class="container">
-        <div class="row col-12">
-            <div class="pull-right col-12 p-4">
-                <a id="add_more" class="btn btn-danger btn-small pull-right"
-                   href="#">{% trans "Add more" %}</a>
+{% block page %}
+
+    <div class="row">
+        <div class="row col-12 p-3">
+            <div class="pull-left col-8">
+                <a id="add_more" class="btn btn-danger btn-small pull-left m-2"
+                   href=".">{% trans "Add more" %}
+                </a>
             </div>
         </div>
     </div>
+    <div class="commands">
+        <input type="submit" id="btn-submit" value="{% trans "Send" %}"
+               class="btn btn-primary btn-small pull-right">
+    </div>
+
+    {#    <div class="container">#}
+    {#        <div class="row col-12">#}
+    {#            <div class="pull-right col-12 p-4">#}
+    {#                <a id="add_more" class="btn btn-danger btn-small pull-right"#}
+    {#                   href="#">{% trans "Add more" %}</a>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
     <div id="empty-form" class="d-none">
-        <div class="row">
-            <div class="row col-sm">{{ invitations.empty_form.email|as_crispy_field }}</div>
-            <div class="row col-sm">{{ invitations.empty_form.role|as_crispy_field }}</div>
-            <div class="row col-sm align-items-center"><a href="#" class="remove_line">
+        <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex">
+            <div class="col col-sm">{{ invitations.empty_form.email|as_crispy_field }}</div>
+            <div class="col col-sm">{{ invitations.empty_form.role|as_crispy_field }}</div>
+            <div class="col col-sm align-items-center"><a href="#" class="remove_line">
                 <i class="fa fa-remove"></i></a>
             </div>
         </div>
@@ -23,12 +37,13 @@
         <form method="post">
             {{ invitations.management_form }}
             {% csrf_token %}
-            <div class="content invitations">
+            <div class="content invitations fieldset">
                 {% for invite in invitations.forms %}
-                    <div class="row">
-                        <div class="row col-sm">{{ invite.email|as_crispy_field }}</div>
-                        <div class="row col-sm">{{ invite.role|as_crispy_field }}</div>
-                        <div class="row col-sm align-items-center">
+                    <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex"
+                         {% if form.errors %}has-error{% endif %}>
+                        <div class="col col-sm">{{ invite.email|as_crispy_field }}</div>
+                        <div class="col col-sm">{{ invite.role|as_crispy_field }}</div>
+                        <div class="col col-sm align-items-center">
                             <a href="#" class="remove_line">
                                 <i class="fa fa-remove"></i>
                             </a>
@@ -36,18 +51,23 @@
                     </div>
                 {% endfor %}
             </div>
-            <input type="submit" id="btn-submit"
-                   value="{% trans "Send" %}"
-                   class="btn btn-primary btn-small pull-right">
         </form>
+    </div>
+    <div class="commands">
+        <input type="submit" id="btn-submit" value="{% trans "Send" %}"
+               class="btn btn-primary btn-small pull-right">
     </div>
 
 {% endblock %}
 {% block js %}
+    {% include "bitcaster/_formset.html" with formsetName="memberships" %}
+{% endblock js %}
+
+{% block js2 %}
     {{ block.super }}
 
     <script>
-        (function() {
+        (function () {
             var formsetName = "memberships";
             var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
             var selector = "div.invitations";

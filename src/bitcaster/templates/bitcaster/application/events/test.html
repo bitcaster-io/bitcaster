@@ -1,6 +1,6 @@
 {% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block pageId %}event{% endblock %}
-{% block content %}
+{% block page %}
     <style>
         pre {
             padding: 8px;
@@ -23,7 +23,6 @@
         }
 
     </style>
-    <h2><a href="../..">{{ event }}</a>: Test</h2>
     <div class="breadcrumbs pb-4">
         <a href="{{ app.url.events }}">events</a> :
         <a href="{{ event.urls.edit }}">{{ event }}</a> :
@@ -103,6 +102,11 @@ wget -O- "{{ api_url }}" \
 
         </div>
     </div>
+
+            <input type="button" class="btn btn-secondary"
+               onclick="history.back();"
+               value="{% trans "Cancel" %}">
+
 {% endblock %}
 {% block js %}
     {{ block.super }}

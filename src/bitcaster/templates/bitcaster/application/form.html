@@ -1,8 +1,7 @@
-{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags %}
-{% block content %}
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n %}
+{% block page %}
     <div class="container-fluid">
         <div class="row col-12">
-    <h2>{{ title }}</h2>
             <div class="container-fluid user-profile">
                 <form method="post" enctype="multipart/form-data" action=".">
                     <div class="row">
@@ -21,7 +20,7 @@
                                 {% endif %}
                             {% endfor %}
                             {% csrf_token %}
-                            <input type="submit" value="Save" class="btn btn-primary">
+                            <input type="submit" value="{% trans "Save" %}" class="btn btn-primary">
                         </div>
                     </div>
                 </form>
@@ -30,4 +29,4 @@
     </div>
 
 
-{% endblock content %}
+{% endblock page %}

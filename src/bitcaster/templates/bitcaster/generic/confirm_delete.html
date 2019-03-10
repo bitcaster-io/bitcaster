@@ -1,6 +1,5 @@
 {% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster i18n %}
-{% block content %}
-    <h2>{{ title }}</h2>
+{% block page %}
     <div class="container-fluid">
         <h5 class="text-center alert alert-danger">
             This action is not recoverable
@@ -21,4 +20,4 @@
             <input type="submit" class="btn btn-danger" value="{% trans "Remove" %}">
         </form>
     </div>
-{% endblock content %}
+{% endblock page %}

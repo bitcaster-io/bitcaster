@@ -4,8 +4,7 @@
     {{ wizard.form.media }}
 {% endblock %}
 
-{% block content %}
-    <h2>Create new organization channel</h2>
+{% block page %}
     <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
     <form action="" method="post" id="form">{% csrf_token %}
         {{ wizard.management_form }}

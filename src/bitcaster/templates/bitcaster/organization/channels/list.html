@@ -1,7 +1,6 @@
 {% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n %}
 {% load crispy_forms_tags i18n bc_assets bitcaster bc_permissions %}
-{% block content %}
-    <h2>{{ title }}</h2>
+{% block page %}
     {% check_permissions organization %}
     {% if permissions.create_channel %}
         <div class="container">
@@ -78,4 +77,4 @@
 
     </table>
 
-{% endblock content %}
+{% endblock page %}

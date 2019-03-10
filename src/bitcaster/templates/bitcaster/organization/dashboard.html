@@ -1,7 +1,6 @@
 {% extends "bitcaster/organization/base.html" %}{% load bc_permissions bc_dashboard i18n %}
 
-{% block content %}
-    <h2>{{ organization }}</h2>
+{% block page %}
     <div class="row col-12 p-3 m-1">
         {% if organization.issues %}
             <ul class="col-10 issuelist">{% for issue in organization.issues.all %}
@@ -43,4 +42,4 @@
             </div>
         </div>
     </div>
-{% endblock content %}
+{% endblock page %}

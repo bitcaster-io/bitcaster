@@ -22,14 +22,7 @@
 
             </div>
         </div>
-    <style>
-    .invalid-feedback{
-        position: relative;
-        top: -15px;
-        height: 10px !important;
-        line-height: 40px !important;
-    }
-    </style>
+
         <div id="empty-form" class="d-none">
             <div class="row col-12 m-0 p-0">
                 <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex">
@@ -75,5 +68,5 @@
     </div>
 {% endblock %}
 {% block js %}
-    {% include "bitcaster/users/_formset.html" with formsetName="assignments" %}
+    {% include "bitcaster/_formset.html" with formsetName="assignments" %}
 {% endblock js %}

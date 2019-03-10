@@ -1,40 +1,35 @@
-{% extends "bitcaster/base.html" %}{% load bitcaster bc_permissions i18n %}
+{% extends "bitcaster/base2.html" %}{% load bitcaster bc_permissions i18n %}
 {% block bodyclass %}application{% endblock %}
-{% block page %}
-    <div class="container-fluid">
-        <div class=" main-content">
-            {% block sidebar %}
-                <div class="row d-flex d-md-block flex-nowrap wrapper">
-                    <div id="sidebar" class="float-left pl-0 collapse width show application-sidebar">
-                        {% check_permissions application context_name="auth" %}
-                        {% if auth.configure %}
-                            <div class="list-group">
-                                <div class="col-md-2 org-sidebar">
-                                    <div>
-                                        <ul class="nav nav-stacked">
-                                            <li><a href="{% app-url 'app-dashboard' %}">{% trans "Dashboard" %}</a></li>
-                                            <li><a href="{% app-url 'app-edit' %}">{% trans "Configuration" %}</a></li>
-                                            <li><a href="{% app-url 'app-keys' %}">{% trans "Keys" %}</a></li>
-{#                                            <li><a href="{% app-url 'app-channel-list' %}">Channels</a></li>#}
-                                            <li><a href="{% app-url 'app-events' %}">{% trans "Events" %}</a></li>
-                                            {#                                            <li><a href="{% app-url 'app-message-list' %}">Messages</a></li>#}
-                                <li>
-                                    <a href="{{ application.urls.monitors }}">{% trans "Monitors" %}</a>
-                                </li>
-                                            <li><a href="{% app-url 'app-subscriptions' %}">{% trans "Subscriptions" %}</a></li>
-                                            <li><a href="{% app-url 'app-teams' %}">{% trans "Teams" %}</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endblock sidebar %}
-            <div class="page-content">
-                {% block content %}
-                {% endblock content %}
-            </div>
-        </div>
-    </div>
-{% endblock page %}
+
+{% block left-menu %}
+    <div>{{ application }}</div>
+    <ul class="list-unstyled components">
+        <li><a href="{% app-url 'app-dashboard' %}">
+            <i class="fas fa-home"></i>{% trans "Dashboard" %}</a></li>
+        <li><a href="{% app-url 'app-edit' %}">
+            <i class="fas fa-tools"></i>{% trans "Configuration" %}</a></li>
+        <li><a href="{% app-url 'app-keys' %}">
+            <i class="fas fa-key"></i>{% trans "Keys" %}</a></li>
+        <li><a href="{% app-url 'app-events' %}">
+            <i class="fas fa-rss"></i>{% trans "Events" %}</a></li>
+        <li>
+            <a href="{{ application.urls.monitors }}">
+                <i class="fas fa-check-double"></i>{% trans "Monitors" %}</a>
+        </li>
+        <li><a href="{% app-url 'app-subscriptions' %}">
+            <i class="fas fa-bookmark"></i>{% trans "Subscriptions" %}</a></li>
+        <li><a href="{% app-url 'app-teams' %}">
+            <i class="fas fa-home"></i>{% trans "Teams" %}</a></li>
+    </ul>
+        <ul class="list-unstyled components sidebar-footer">
+        <li>
+            <a style="bottom:0;" href="{{ organization.urls.dashboard }}">
+                <i class="fas fa-home"></i>{{ organization }}</a>
+        </li>
+        <li>
+            <a style="bottom:0;" href="{% org-url "me" %}">
+                <i class="fas fa-home"></i>{% trans "Home" %}</a>
+        </li>
+    </ul>
+
+{% endblock %}

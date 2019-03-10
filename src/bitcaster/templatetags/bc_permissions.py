@@ -22,12 +22,52 @@ class AuthWrapper:
     #     return perm_name in self.perms
 
 
-@register.simple_tag(takes_context=True, name='check_permissions')
-def check_permissions(context, target, context_name='permissions'):
+class CheckPermissions(template.Node):
+    def __init__(self, target, var_name):
+        self.target = target
+        self.var_name = var_name or 'permissions'
+
+    def render(self, context):
+        user = context['request'].user
+        target = context[self.target]
+        if isinstance(target, Organization):
+            perms = [perm for perm in PERMISSIONS if perm.startswith('org') and user.has_perm(perm, target)]
+        elif isinstance(target, Application):
+            perms = [perm for perm in PERMISSIONS if perm.startswith('app') and user.has_perm(perm, target)]
+        else:
+            perms = []
+        context[self.var_name] = AuthWrapper(perms)
+        return ''
+
+
+@register.tag(name='check_permissions')
+def do_current_time(parser, token):
+    # This version uses a regular expression to parse tag contents.
+    try:
+        # Splitting by None == splitting by spaces.
+        tag, *args = token.contents.split(None)
+    except ValueError:
+        raise template.TemplateSyntaxError('%r tag requires arguments'
+                                           % token.contents.split()[0])
+
+    target = args[0]
+    var_name = None
+    if len(args) > 1:
+        if args[1] != 'as':
+            raise template.TemplateSyntaxError('%r tag had invalid arguments' % str(args))
+        var_name = args[2]
+
+    return CheckPermissions(target, var_name)
+
+
+@register.simple_tag(takes_context=True, name='check_permissions2')
+def check_permissions2(context, target, context_name='permissions', *args, **kwargs):
     """
         {% check_permissions org %}
         {% check_permissions org as perms %}
     """
+    # TODO: remove me
+    print(111, 'bc_permissions.py:32', 111111, args, kwargs)
     user = context['request'].user
     if isinstance(target, Organization):
         perms = [perm for perm in PERMISSIONS if perm.startswith('org') and user.has_perm(perm, target)]
@@ -45,6 +85,16 @@ def check_permissions(context, target, context_name='permissions'):
     #                           }
     context[context_name] = AuthWrapper(perms)
     return ''
+
+
+@register.filter
+def is_admin(user, organization):
+    return user.has_perm('')
+
+
+@register.filter
+def can_configure(user, target):
+    return user.has_perm('configure', target)
 
 #
 # @register.assignment_tag(takes_context=True)

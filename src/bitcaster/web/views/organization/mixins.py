@@ -2,10 +2,10 @@ from django.http import Http404
 from django.utils.functional import cached_property
 
 from bitcaster.models import Organization, audit_log
-from bitcaster.web.views.mixins import SecuredViewMixin
+from bitcaster.web.views.mixins import SecuredViewMixin, SidebarMixin
 
 
-class SelectedOrganizationMixin(SecuredViewMixin):
+class SelectedOrganizationMixin(SidebarMixin, SecuredViewMixin):
 
     def get_context_data(self, **kwargs):
         kwargs['organization'] = self.selected_organization

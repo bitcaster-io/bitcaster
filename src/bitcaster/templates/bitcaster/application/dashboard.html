@@ -1,7 +1,6 @@
 {% extends "bitcaster/application/base.html" %}{% load bc_permissions bc_dashboard bitcaster i18n %}
 
-{% block content %}
-    <h2>{{ application }}</h2>
+{% block page %}
     <div class="row col-12 p-3 m-1">
         {% if application.issues %}
             <ul class="col-10 issuelist">{% for issue in application.issues.all %}
@@ -47,4 +46,4 @@
             </div>
         </div>
     </div>
-{% endblock content %}
+{% endblock page %}

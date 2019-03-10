@@ -1,7 +1,6 @@
 {% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block pageId %}event{% endblock %}
-{% block content %}
-    <h2><a href="../..">{{ event }}</a>: Subscriptions</h2>
+{% block page %}
     <div class="breadcrumbs">
         <a href="{% app-url "app-events" %}">events</a> :
         <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a> :
@@ -27,7 +26,6 @@
         <tr>
             <th>User</th>
             <th>Channel</th>
-            <th class="text-center">Active</th>
             <th>Status</th>
         </tr>
         </thead>
@@ -38,21 +36,14 @@
                 <td style="width:5%">
                     {{ subscription.channel }}
                 </td>
-                <td style="width:5%" class="text-center">
-                    {% if subscription.active %}
-                        <i class="fa fa-check-circle green"></i>
-                    {% else %}
-                        <i class="fa fa-exclamation-circle red"></i>
-                    {% endif %}
-                </td>
                 <td style="width:10%">
                     {{ subscription.get_status_display }}
                 </td>
                 <td style="width:10%" class="nowrap">
                     <a class="btn btn-light"
-                       data-toggle="tooltip" title="{% if subscription.active %}Disable{% else %}Enable{% endif %}"
+                       data-toggle="tooltip" title="{% if subscription.enabled %}Disable{% else %}Enable{% endif %}"
                        href="{{ subscription.pk }}/toggle/">
-                        <i class="fas {% if subscription.active %}fa-toggle-off red{% else %}fa-toggle-on green{% endif %}"></i>
+                        <i class="fas {% if subscription.enabled %}fa-toggle-off green{% else %}fa-toggle-on red{% endif %}"></i>
                     </a>
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="delete"

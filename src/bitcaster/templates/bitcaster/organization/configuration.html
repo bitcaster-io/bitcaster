@@ -1,8 +1,7 @@
 {% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags %}
-{% block content %}
+{% block page %}
     <div class="container-fluid">
         <div class="row col-12">
-    <h2>{{ title }}</h2>
             <div class="container-fluid user-profile">
                 <form method="post" enctype="multipart/form-data">
                     <div class="row">
@@ -30,4 +29,4 @@
     </div>
 
 
-{% endblock content %}
+{% endblock page %}

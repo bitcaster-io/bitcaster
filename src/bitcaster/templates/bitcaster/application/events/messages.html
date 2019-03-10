@@ -1,6 +1,5 @@
 {% extends "bitcaster/application/base.html" %}{% load i18n bitcaster crispy_forms_filters %}
-{% block content %}
-    <h2><a href="../..">{{ event }}</a>: {{ title }}</h2>
+{% block page %}
     <div class="breadcrumbs pb-4">
         <a href="{% app-url "app-events" %}">events</a> :
         <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a> :
@@ -44,7 +43,14 @@
                 </div>
             </div>
         {% endfor %}
-        <input type="submit" class="btn btn-primary" value="Save">
+        <input type="button" class="btn btn-secondary"
+               onclick="history.back();"
+               value="{% trans "Cancel" %}">
+
+        <input id="btn-submit"
+               name="save_and_exit"
+               value="{% trans "Save" %}"
+               type="submit" class="btn btn-primary">
     </form>
 {% endblock %}
 {% block js %}

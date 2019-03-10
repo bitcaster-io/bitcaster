@@ -1,6 +1,5 @@
 {% extends "bitcaster/application/base.html" %}{% load i18n bitcaster %}
-{% block content %}
-    <h2>Application Events</h2>
+{% block page %}
     <div class="container">
         <div class="row col-12">
             <div class="pull-right col-12 p-4">
@@ -13,7 +12,6 @@
         <thead>
         <tr>
             <th cope="col">Name</th>
-            <th cope="col">Enabled</th>
             <th cope="col"></th>
         </tr>
         </thead>
@@ -21,14 +19,7 @@
         {% for event in object_list %}
             <tr>
                 <td>{{ event.name }}</td>
-                <td style="width:5%">
-                    {% if event.enabled %}
-                        <i class="fa fa-check-circle green"></i>
-                    {% else %}
-                        <i class="fa fa-exclamation-circle red"></i>
-                    {% endif %}
-                </td>
-                <td style="width:30%" class="nowrap">
+                <td style="width:40%" class="nowrap">
                     <a class="btn btn-light {% if not event.enabled_channels.exists %}red{% endif %}"
                        data-toggle="tooltip" title="configure"
                        href="{{ event.pk }}/edit/">
@@ -42,7 +33,7 @@
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="{% if event.enabled %}Disable{% else %}Enable{% endif %}"
                        href="{{ event.pk }}/toggle/">
-                        <i class="fas {% if event.enabled %}fa-toggle-off red{% else %}fa-toggle-on green{% endif %}"></i>
+                        <i class="fas {% if event.enabled %}fa-toggle-off green{% else %}fa-toggle-on red{% endif %}"></i>
                     </a>
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="delete"
@@ -76,4 +67,4 @@
 
     </table>
 
-{% endblock content %}
+{% endblock page %}
