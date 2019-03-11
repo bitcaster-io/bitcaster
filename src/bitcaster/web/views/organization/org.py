@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView
 
-from bitcaster.models import Application, Organization
+from bitcaster.models import Organization
 from bitcaster.models.configurationissue import (check_application,
                                                  check_organization,)
 from bitcaster.utils.dashboard import check_channels, get_status
@@ -19,8 +19,7 @@ from bitcaster.web.forms import OrganizationForm
 from bitcaster.web.views.mixins import TitleMixin
 from bitcaster.web.views.organization.mixins import ApplicationListMixin
 
-from ..base import (BitcasterBaseDetailView, BitcasterBaseListView,
-                    BitcasterBaseUpdateView,)
+from ..base import BitcasterBaseDetailView, BitcasterBaseUpdateView
 
 logger = logging.getLogger(__name__)
 
@@ -34,12 +33,16 @@ class OrganizationBaseView(TitleMixin, ApplicationListMixin):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         if not request.user.has_perm('org:configure', self.selected_organization):
-            raise PermissionDenied
+            raise PermissionDenied("'org:configure'permission needed")
         return super().dispatch(request, *args, **kwargs)
 
 
 class OrganizationDashboard(OrganizationBaseView, BitcasterBaseDetailView):
     template_name = 'bitcaster/organization/dashboard.html'
+
+    @property
+    def title(self):
+        return self.selected_organization.name
 
     def get_context_data(self, **kwargs):
         org = self.selected_organization
@@ -67,9 +70,7 @@ class OrganizationDashboard(OrganizationBaseView, BitcasterBaseDetailView):
 class OrganizationConfiguration(OrganizationBaseView, BitcasterBaseUpdateView):
     form_class = OrganizationForm
     success_url = '.'
-    template_name = 'bitcaster/organization/configuration.html'
-
-    # title = _('Configuration')
+    template_name = 'bitcaster/organization/form.html'
 
     def form_valid(self, form):
         slug = form.cleaned_data.get('slug', None)
@@ -87,9 +88,3 @@ class OrganizationCheckConfigView(OrganizationBaseView, RedirectView):
         for app in self.selected_organization.applications.all():
             check_application(app)
         return super().get(request, *args, **kwargs)
-
-
-class OrganizationApplications(OrganizationBaseView, BitcasterBaseListView):
-    template_name = 'bitcaster/organization/organization_applications.html'
-    success_url = '.'
-    model = Application

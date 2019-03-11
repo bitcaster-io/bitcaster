@@ -44,7 +44,7 @@ class ApplicationMonitorUsage(MonitorMixin, BitcasterBaseDetailView):
 
 
 class ApplicationMonitorUpdate(MonitorMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/application/monitors/configure.html'
+    template_name = 'bitcaster/application/monitors/form.html'
     form_class = MonitorUpdateConfigurationForm
     # title = _('Edit Monitor')
 

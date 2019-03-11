@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 def make_message(template_name, context):
-    _html = f'bitcaster/emails/{template_name}.html'
-    _text = f'bitcaster/emails/{template_name}.txt'
+    _html = f'bitcaster/_emails/{template_name}.html'
+    _text = f'bitcaster/_emails/{template_name}.txt'
     return (get_template(_html).render(context),
             get_template(_text).render(context))
 

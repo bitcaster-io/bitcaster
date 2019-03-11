@@ -1,11 +1,11 @@
-{% extends "bitcaster/base2.html" %}{% load bitcaster bc_permissions i18n %}
+{% extends "bitcaster/base.html" %}{% load bitcaster bc_permissions i18n %}
 {% block bodyclass %}application{% endblock %}
 
 {% block left-menu %}
-    <div>{{ application }}</div>
+    <div class="text-center">{{ application }}</div>
     <ul class="list-unstyled components">
         <li><a href="{% app-url 'app-dashboard' %}">
-            <i class="fas fa-home"></i>{% trans "Dashboard" %}</a></li>
+            <i class="fas fa-chart-bar"></i>{% trans "Dashboard" %}</a></li>
         <li><a href="{% app-url 'app-edit' %}">
             <i class="fas fa-tools"></i>{% trans "Configuration" %}</a></li>
         <li><a href="{% app-url 'app-keys' %}">
@@ -16,15 +16,17 @@
             <a href="{{ application.urls.monitors }}">
                 <i class="fas fa-check-double"></i>{% trans "Monitors" %}</a>
         </li>
+
         <li><a href="{% app-url 'app-subscriptions' %}">
             <i class="fas fa-bookmark"></i>{% trans "Subscriptions" %}</a></li>
-        <li><a href="{% app-url 'app-teams' %}">
-            <i class="fas fa-home"></i>{% trans "Teams" %}</a></li>
+
+        <li><a href="{% app-url 'app-roles' %}">
+            <i class="fab fa-buromobelexperte"></i>{% trans "Roles" %}</a></li>
     </ul>
         <ul class="list-unstyled components sidebar-footer">
         <li>
             <a style="bottom:0;" href="{{ organization.urls.dashboard }}">
-                <i class="fas fa-home"></i>{{ organization }}</a>
+                <i class="fas fa-sitemap"></i>{{ organization }}</a>
         </li>
         <li>
             <a style="bottom:0;" href="{% org-url "me" %}">

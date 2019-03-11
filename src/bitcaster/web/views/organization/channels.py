@@ -1,3 +1,5 @@
+from django.utils.translation import gettext_lazy as _
+
 from bitcaster.models import Channel
 from bitcaster.web.views.channel import (ChannelCreateWizard, ChannelDeleteView,
                                          ChannelDeprecateView, ChannelListView,
@@ -21,12 +23,12 @@ class ChannelMixin(OrganizationBaseView):
 
 
 class OrganizationChannels(ChannelMixin, ChannelListView):
-    template_name = 'bitcaster/organization/channels/list.html'
+    template_name = 'bitcaster/organization/channel/list.html'
     # title = _('Channels')
 
 
 class OrganizationChannelUpdate(ChannelMixin, ChannelUpdateView):
-    template_name = 'bitcaster/organization/channels/configure.html'
+    template_name = 'bitcaster/organization/channel/form.html'
     # title = _('Edit Channel')
 
 
@@ -40,7 +42,7 @@ class OrganizationChannelToggle(ChannelMixin, ChannelToggleView):
 
 
 class OrganizationChannelUsage(ChannelMixin, ChannelUsageView):
-    template_name = 'bitcaster/organization/channels/usage.html'
+    template_name = 'bitcaster/organization/channel/usage.html'
 
 
 class OrganizationChannelTest(ChannelMixin, ChannelTestView):
@@ -52,9 +54,10 @@ class OrganizationChannelDeprecate(ChannelMixin, ChannelDeprecateView):
 
 
 class OrganizationChannelCreate(ChannelMixin, ChannelCreateWizard):
-    TEMPLATES = {'a': 'bitcaster/organization/channels/create_wizard_1.html',
-                 'b': 'bitcaster/organization/channels/create_wizard_2.html',
+    TEMPLATES = {'a': 'bitcaster/organization/channel/create_wizard_1.html',
+                 'b': 'bitcaster/organization/channel/create_wizard_2.html',
                  }
+    title = _('Create Channel')
 
     def get_extra_instance_kwargs(self):
         return super().get_extra_instance_kwargs(organization=self.selected_organization)

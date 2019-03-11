@@ -91,7 +91,7 @@ class OrganizationInvite(InviteMixin, BitcasterBaseCreateView):
 class InviteAccept(MessageUserMixin, CreateView):
     model = User
     form_class = UserInviteRegistrationForm
-    template_name = 'bitcaster/users/user_welcome.html'
+    template_name = 'bitcaster/registration/user_welcome.html'
 
     @cached_property
     def selected_organization(self):  # returns selected office and caches the office
@@ -186,5 +186,6 @@ class InviteSend(OrganizationBaseView, BitcasterBaseUpdateView):
 
 
 class InviteDelete(InviteMixin, BitcasterBaseDeleteView):
-    # title = _('Cancel invitation')
+    title = _('Cancel invitation')
     message = _('Invitation to <strong>%(object)s</strong> will be canceled')
+    user_message = _('Invitation Canceled')

@@ -47,23 +47,10 @@ class Team(AbstractModel):
     def get_absolute_url(self):
         return reverse('org-team-edit', args=(self.organization.slug, self.slug))
 
-# class TeamMembership(AbstractModel):
-#     team = models.ForeignKey(Team, on_delete=models.CASCADE,
-#                              related_name='memberships')
-#     member = models.ForeignKey(OrganizationMember, on_delete=models.CASCADE)
-#
-#     @cached_property
-#     def user(self):
-#         return self.member.user
 
-
-class ApplicationTeamManager(models.Manager):
-    pass
-
-
-class ApplicationTeam(AbstractModel):
+class ApplicationRole(AbstractModel):
     application = models.ForeignKey('bitcaster.Application',
-                                    related_name='application_teams',
+                                    related_name='application_roles',
                                     on_delete=models.CASCADE)
     team = models.ForeignKey('bitcaster.Team',
                              on_delete=models.CASCADE)
@@ -71,8 +58,8 @@ class ApplicationTeam(AbstractModel):
 
     class Meta:
         unique_together = (('application', 'team', 'role'),)
-
-    objects = ApplicationTeamManager()
+        verbose_name = _('Role')
+        verbose_name_plural = _('Roles')
 
     def __str__(self):
         return f'{self.application} {self.get_role_display()}'

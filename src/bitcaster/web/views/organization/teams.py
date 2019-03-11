@@ -28,11 +28,11 @@ class TeamMixin(OrganizationBaseView):
 
 
 class OrganizationTeamList(TeamMixin, BitcasterBaseListView):
-    template_name = 'bitcaster/organization/teams/list.html'
+    template_name = 'bitcaster/organization/team/list.html'
 
 
 class OrganizationTeamCreate(TeamMixin, BitcasterBaseCreateView):
-    template_name = 'bitcaster/organization/teams/form.html'
+    template_name = 'bitcaster/organization/team/form.html'
     form_class = TeamForm
 
     def get_initial(self):
@@ -51,7 +51,7 @@ class OrganizationTeamDelete(TeamMixin, BitcasterBaseDeleteView):
 
 
 class OrganizationTeamUpdate(TeamMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/organization/teams/form.html'
+    template_name = 'bitcaster/organization/team/form.html'
     form_class = TeamForm
     # title = _('Edit Team')
 

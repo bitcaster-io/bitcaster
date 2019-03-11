@@ -20,7 +20,7 @@ class UserSubscriptionMixin:
 
 
 class UserSubscriptionListView(ApplicationListMixin, SidebarMixin, UserSubscriptionMixin, BitcasterBaseListView):
-    template_name = 'bitcaster/users/subscriptions.html'
+    template_name = 'bitcaster/user/subscriptions.html'
     form_class = UserSubscriptionForm
 
 

@@ -1,170 +1,183 @@
-{% load bc_assets bc_permissions bitcaster static gravatar cache %}<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-    {% block css %}
-        <link rel="stylesheet" href="{% asset "bitcaster/bitcaster.css" %}">
-    {% endblock %}
-    {% block head-js %}{% endblock %}
+{% load bc_assets bc_permissions bitcaster i18n static gravatar cache %}<!DOCTYPE html>
+<html>
 
-    {% block extrahead %}{% endblock %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
     <title>Bitcaster: {{ title }}</title>
+    <link rel="stylesheet" href="{% asset "bitcaster/bitcaster.css" %}">
+    <link rel="stylesheet" href="{% asset "bitcaster/public.css" %}">
+
 </head>
+
 <body class="{% block bodyclass %}{% endblock %}">
 {% block body %}
-    <div class="app">
-    <!-- Content here -->
-    {% block container %}
-        {% block header %}
-            <header class="{% block header_class %}{% endblock %}">
-                <div class="logo text-center">
-                    <a href="{% url "index" %}">-</a>
-                </div>
-                {% block header-content %}
-                    {% if user.is_authenticated %}
-                        {% check_permissions organization context_name="org" %}
-                        {% block nav-menu %}
-                            <span class="top-menu">
-                    {% if organization and applications %}
-                        {% if applications %}
-                            <div class="dropdown">
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar" class="{{ sidebar }}">
+            <div class="sidebar-header">
+                <h3>
+                    <img src="{% asset "bitcaster/images/bitcaster64.png" %}">Bitcaster
+                    <button type="button" class="btn white toggle" href="#"><i class="fas fa-align-justify"></i>
+                    </button>
+                </h3>
+                <strong>
+                    <button type="button" class="btn white toggle" href="#">
+                        <img src="{% asset "bitcaster/images/bitcaster64.png" %}">
+                    </button>
+                </strong>
+            </div>
+            {% block left-menu %}{% endblock left-menu %}
 
-                            <a href="{% url "org-dashboard" organization.slug %}">[{{ organization.name }}]</a>/
-                            <a class="dropdown-toggle2"
-                               href="#" role="button"
-                               id="appMenuLink" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">
-                                {% if application %}{{ application }}{% else %}<span class="italic">~</span>{% endif %}
-                                <i class="fa fa-angle-down"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="appMenuLink">
-                                {% for app in applications %}
-                                    <a class="dropdown-item application"
-                                       href="{% org-url "app-dashboard" app.slug %}">{{ organization.name }}/{{ app.name }}</a>
-                                {% endfor %}
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+            {% block toggler %}
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <div class="container-fluid">
+                        <h3>{{ title }}</h3>
+                    </div>
+                    <div class="container-fluid">
+                        {% block user-links %}
+                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                <ul class="nav navbar-nav ml-auto">
+                                    <li class="nav-item">
+                                        {% if organization %}{{ organization }} /{% endif %} {{ user }}
+                                    </li>
+                                </ul>
+                                <img class="gravatar" src="{{ user|gravatar:30 }}"/>
                             </div>
-                        </div>
-                        {% endif %}{# organization and applications #}
-                    {% endif %}
-                    </span>
-                        {% endblock nav-menu %}
-                        {% block user-menu %}
-                            <span class="pull-right user-menu ">
-                        <div class="dropdown">
-                            <a class="dropdown-toggle2"
-                               href="#" role="button"
-                               id="userMenuLink" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">
-                            {{ user.display_name }} <img src="{{ user|gravatar:30 }}"/><i class="fa fa-angle-down"></i>
-                          </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuLink">
-                                {% if org.configure %}
-                                    <a class="dropdown-item" href="{% url "org-dashboard" organization.slug %}">Configure</a>
-                                {% endif %}
-                                <a class="dropdown-item" href="{% url "user-profile" organization.slug %}">Profile</a>
-                                <a class="dropdown-item" href="{% url "user-address" organization.slug %}">Addresses</a>
-                                {% if user.is_superuser %}
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url "admin:index" %}">Admin</a>
-                                    <a class="dropdown-item" href="{% url "settings" %}">Settings</a>
-                                {% endif %}
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-                            </div>
-                        </div>
-                    </span>
-                        {% endblock user-menu %}
-                    {% endif %}{#  user.is_authenticated #}
-                {% endblock header-content %}
-            </header>
-        {% endblock header %}
+                        {% endblock user-links %}
+                    </div>
+                </nav>
 
-        {% block messages %}
-            <div id="messageBar">{% if messages %}
-                <ul class="messagelist">{% for message in messages %}
-                    <li class="alert {% if message.tags %} {{ message.tags }}{% endif %} fade show alert-dismissible ">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <span>{{ message }}</span>
-                    </li>
-                {% endfor %}</ul>
-            {% endif %}</div>
-        {% endblock messages %}
-        <div class="container-fluid main-content" id="{% block pageId %}page{% endblock %}">
-
-            {% block alarms %}
-
-                {% if alarms %}
-                    <div id="alarmBar">
-                        <ul class="messagelist">{% for alarm in alarms %}
-                            <li class="alarm {% if alarm.tags %} alert-{{ alarm.tags }}{% endif %} show ">
-                                <span>{{ alarm|capfirst }}</span>
+                {% block messages %}
+                    <div id="messageBar">{% if messages %}
+                        <ul class="messagelist">{% for message in messages %}
+                            <li class="alert {% if message.tags %} {{ message.tags }}{% endif %} fade show alert-dismissible ">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <span>{{ message }}</span>
                             </li>
                         {% endfor %}</ul>
-                    </div>
-                {% endif %}
-            {% endblock alarms %}
-
-
+                    {% endif %}</div>
+                {% endblock messages %}
+            {% endblock toggler %}
             {% block page %}
+
             {% endblock page %}
         </div>
-
-
-        {% block footer %}
-            {% cache 500 footer bitcaster_version %}
-                <footer>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm justify-content-start">
-                            <span class="pull-left">bitcaster
+    </div>
+    {% block footer %}
+        {% cache 500 footer bitcaster_version %}
+            <footer>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm justify-content-start">
+                            <span class="pull-left">
                             <span>{{ bitcaster_version }} </span>
                             <span class="git-status d-inline d-sm-none d-md-inline">{{ git_status }}</span>
                             </span>
-                            </div>
-                            <div class="col-sm justify-content-center">
-                                <a href="//bitcaster.io/"><img src="{% asset "bitcaster/images/bitcaster32.png" %}"></a>
-                            </div>
-                            <div class="col-sm justify-content-end">
-                                {% if user.is_authenticated %}
-                                    <span class="pull-right">
+                        </div>
+                        <div class="col-sm justify-content-center">
+                            <a href="//bitcaster.io/"><img src="{% asset "bitcaster/images/bitcaster32.png" %}"></a>
+                        </div>
+                        <div class="col-sm justify-content-end">
+                            {% if user.is_authenticated %}
+                                <span class="pull-right">
                                     <a class="d-none d-md-block" href="/api/">API</a>
                                 </span>
-                                {% endif %}
-                            </div>
+                            {% endif %}
                         </div>
                     </div>
-                </footer>
-            {% endcache %}
-        {% endblock footer %}
-    {% endblock container %}
+                </div>
+            </footer>
+        {% endcache %}
+    {% endblock footer %}
 {% endblock body %}
 
-<div id="myModal" class="reveal" data-reveal></div>
 
-</div>
+<script src="{% static "bitcaster/jquery.js" %}"></script>
+<script src="{% static "bitcaster/js-cookie.js" %}"></script>
+<script src="{% static "bitcaster/vendor.js" %}"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('button.btn.toggle').on('click', function () {
+            $('#sidebar').toggleClass('active');
+            Cookies.set('sidebar',
+                $('#sidebar').hasClass('active') ? "active" : "",
+                {path: '/'}
+            );
+        });
+    });
+</script>
 {% block js %}
-    <script src="{% static "bitcaster/jquery.js" %}"></script>
-    <script src="{% static "bitcaster/js-cookie.js" %}"></script>
-    <script src="{% static "bitcaster/vendor.js" %}"></script>
-{#    <script src="{% static "bitcaster/bitcaster.js" %}"></script>#}
-    {% if messages %}
-        <script>
-            setTimeout(function () {
-                $('.alert').not('.keep').alert('close');
-            }, 5000);
-        </script>
-    {% endif %}
+{% endblock js %}
 
-{#    <script>#}
-{#        $('[data-toggle="tooltip"]').tooltip();#}
-{#    </script>#}
+<div id="myModal" tabindex="-1" role="dialog">
+    <div class="blocker">
+        <div class="window">
 
+        </div>
+    </div>
+</div>
+{% block js-modal %}
+    <style>
+        #myModal {
+            display: none;
+            position: absolute;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
 
+        #myModal .blocker {
+            background: rgba(175, 175, 175, 0.8);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #myModal .blocker .modal-body {
+            background-color: white;
+            width: 100%;
+        }
+
+    </style>
+    <script>
+        var closeModal = function(){
+            $("body").css("overflow", "");
+                    $('#myModal').hide()
+
+        };
+        $('#myModal .blocker .window').on('click', function (e) {
+            if(e.target !== this) return;
+            closeModal();
+        });
+        $('[rel="modal:open"]').on('click', function (e) {
+            e.preventDefault();
+            var url = $(this).data("remote");
+
+            $("body").css("overflow", "hidden");
+            $('#myModal .blocker .window').load(url, function (e) {
+                $('#myModal').show();
+                $('button[rel="modal:close"]').on('click', function (e) {
+                    e.preventDefault();
+                    closeModal();
+                });
+
+            });
+        });
+    </script>
 {% endblock %}
 </body>
 </html>

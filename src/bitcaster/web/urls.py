@@ -7,22 +7,23 @@ from django.views.generic import TemplateView
 from bitcaster.web.views.callbacks import confirm_address
 from bitcaster.web.views.user.base import UserEventListView, UserHome
 
-from .views import (ApplicationCheckConfigView, ApplicationCreate,  # 
+from .views import (ApplicationCheckConfigView, ApplicationCreate,
                     ApplicationDashboard, ApplicationDeleteView,
                     ApplicationKeyCreate, ApplicationKeyDelete,
                     ApplicationKeyList, ApplicationKeyUpdate,
                     ApplicationMonitorCreate, ApplicationMonitorList,
                     ApplicationMonitorRemove, ApplicationMonitorTest,
                     ApplicationMonitorToggle, ApplicationMonitorUpdate,
-                    ApplicationMonitorUsage, ApplicationSubscriptionList,
-                    ApplicationTeamList, ApplicationUpdateView, EventCreate,
-                    EventDelete, EventKeys, EventList, EventMessages,
-                    EventSubscriptionCreate, EventSubscriptionDelete,
-                    EventSubscriptionInvite, EventSubscriptionList,
-                    EventSubscriptionToggle, EventTest, EventToggle,
-                    EventUpdate, IndexView, InviteAccept, InviteDelete,
-                    InviteSend, LoginView, LogoutView, MessageCreate,
-                    MessageDelete, MessageList, MessageUpdate,
+                    ApplicationMonitorUsage, ApplicationRoleCreate,
+                    ApplicationRoleList, ApplicationRoleUpdate,
+                    ApplicationSubscriptionList, ApplicationUpdateView,
+                    EventCreate, EventDelete, EventKeys, EventList,
+                    EventMessages, EventSubscriptionCreate,
+                    EventSubscriptionDelete, EventSubscriptionInvite,
+                    EventSubscriptionList, EventSubscriptionToggle, EventTest,
+                    EventToggle, EventUpdate, IndexView, InviteAccept,
+                    InviteDelete, InviteSend, LoginView, LogoutView,
+                    MessageCreate, MessageDelete, MessageList, MessageUpdate,
                     OrganizationApplications, OrganizationChannelCreate,
                     OrganizationChannelDeprecate, OrganizationChannelRemove,
                     OrganizationChannels, OrganizationChannelTest,
@@ -36,11 +37,11 @@ from .views import (ApplicationCheckConfigView, ApplicationCreate,  #
                     OrganizationTeamUpdate, PluginInfo, SettingsEmailView,
                     SettingsLdapView, SettingsOAuthView, SettingsSystemInfo,
                     SettingsView, SetupView, UserAddressesAssignmentView,
-                    UserAddressesInfoView, UserAddressesView,
-                    UserProfileView, UserSubscriptionEdit,
-                    UserSubscriptionListView, UserSubscriptionRemove,
-                    UserSubscriptionToggle, WorkInProgressView, channel_icon,
-                    confirm_registration, plugin_icon,)
+                    UserAddressesInfoView, UserAddressesView, UserProfileView,
+                    UserSubscriptionEdit, UserSubscriptionListView,
+                    UserSubscriptionRemove, UserSubscriptionToggle,
+                    WorkInProgressView, channel_icon, confirm_registration,
+                    plugin_icon,)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
@@ -113,9 +114,11 @@ urlpatterns = [
 
     path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/', EventSubscriptionList.as_view(),
          name='app-event-subscriptions'),
-    path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/<int:subscription>/delete/', EventSubscriptionDelete.as_view(),
+    path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/<int:subscription>/delete/',
+         EventSubscriptionDelete.as_view(),
          name='app-event-subscription-delete'),
-    path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/<int:subscription>/toggle/', EventSubscriptionToggle.as_view(),
+    path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/<int:subscription>/toggle/',
+         EventSubscriptionToggle.as_view(),
          name='app-event-subscription-toggle'),
     path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/invite/', EventSubscriptionInvite.as_view(),
          name='app-event-subscriptions-invite'),
@@ -125,13 +128,18 @@ urlpatterns = [
 
     path('<slug:org>/a/<slug:app>/monitors/', ApplicationMonitorList.as_view(), name='app-monitors'),
     path('<slug:org>/a/<slug:app>/monitor/add/', ApplicationMonitorCreate.as_view(), name='app-monitor-create'),
-    path('<slug:org>/a/<slug:app>/monitor/<int:pk>/usage/', ApplicationMonitorUsage.as_view(), name='app-monitor-usage'),
+    path('<slug:org>/a/<slug:app>/monitor/<int:pk>/usage/', ApplicationMonitorUsage.as_view(),
+         name='app-monitor-usage'),
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/edit/', ApplicationMonitorUpdate.as_view(), name='app-monitor-edit'),
-    path('<slug:org>/a/<slug:app>/monitor/<int:pk>/delete/', ApplicationMonitorRemove.as_view(), name='app-monitor-delete'),
-    path('<slug:org>/a/<slug:app>/monitor/<int:pk>/toggle/', ApplicationMonitorToggle.as_view(), name='app-monitor-toggle'),
+    path('<slug:org>/a/<slug:app>/monitor/<int:pk>/delete/', ApplicationMonitorRemove.as_view(),
+         name='app-monitor-delete'),
+    path('<slug:org>/a/<slug:app>/monitor/<int:pk>/toggle/', ApplicationMonitorToggle.as_view(),
+         name='app-monitor-toggle'),
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/test/', ApplicationMonitorTest.as_view(), name='app-monitor-test'),
 
-    path('o/<slug:org>/a/<slug:app>/team/', ApplicationTeamList.as_view(), name='app-teams'),
+    path('o/<slug:org>/a/<slug:app>/role/', ApplicationRoleList.as_view(), name='app-roles'),
+    path('o/<slug:org>/a/<slug:app>/role/add/', ApplicationRoleCreate.as_view(), name='app-role-create'),
+    path('o/<slug:org>/a/<slug:app>/role/<int:pk>/edit/', ApplicationRoleUpdate.as_view(), name='app-role-edit'),
 
     path('o/<slug:org>/a/<slug:app>/message/', MessageList.as_view(), name='app-messages'),
     path('o/<slug:org>/a/<slug:app>/message/add/', MessageCreate.as_view(), name='app-message-create'),
@@ -145,7 +153,6 @@ urlpatterns = [
     path('subscriptions/<int:pk>/toggle/', UserSubscriptionToggle.as_view(), name='user-subscription-toggle'),
     path('subscriptions/<int:pk>/delete/', UserSubscriptionRemove.as_view(), name='user-subscription-delete'),
     path('subscriptions/<int:pk>/edit/', UserSubscriptionEdit.as_view(), name='user-subscription-edit'),
-
 
     path('<slug:org>/check/', OrganizationCheckConfigView.as_view(), name='org-check'),
     path('<slug:org>/dashboard', OrganizationDashboard.as_view(), name='org-dashboard'),

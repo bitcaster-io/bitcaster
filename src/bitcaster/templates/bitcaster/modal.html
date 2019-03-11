@@ -1,23 +1,10 @@
-{% extends "bitcaster/base.html" %}{% load i18n crispy_forms_tags bc_assets %}
-
-{% block footer %}{% endblock footer %}
-{% block sidebar %}{% endblock sidebar %}
-{% block page %}
-    <div class="container">
-        <div class="row col-12 justify-content-center align-items-center">
-            <div class="box box-modal col-6 p-3">
-                {% block modal-header %}
-                    <div class="box box-header">
-                        <a href="//bitcaster.io/"><img src="{% asset "bitcaster/images/bitcaster32.png" %}">
-                            bitcaster
-                        </a>
-                    </div>
-                {% endblock modal-header %}
-                <div class="container-fluid p-3">
-                    {% block modal-content %}
-                    {% endblock %}
-                </div>
-            </div>
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-body channel-info">
+            {% block modal-body %}{% endblock %}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" rel="modal:close">Close</button>
         </div>
     </div>
-{% endblock %}
+</div>

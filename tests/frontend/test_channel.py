@@ -1,5 +1,4 @@
 import pytest
-from django.urls import reverse
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import Gmail
@@ -88,9 +87,9 @@ def test_usage(django_app, channel1):
     assert res.status_code == 200
 
 
-def test_info(django_app, channel1):
-    organization = channel1.organization
-    url = reverse('plugin-info', args=[fqn(channel1.handler)])
-    list_page = django_app.get(organization.urls.channels, user=organization.owner)
-    res = list_page.click(href=url)
-    assert res.status_code == 200
+# def test_info(django_app, channel1):
+#     organization = channel1.organization
+#     url = reverse('plugin-info', args=[fqn(channel1.handler)])
+#     list_page = django_app.get(organization.urls.channels, user=organization.owner)
+#     res = list_page.click(href=url)
+#     assert res.status_code == 200

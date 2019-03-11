@@ -1,0 +1,60 @@
+{% extends "bitcaster/base.html" %}{% load i18n crispy_forms_tags %}
+{% block page %}
+
+{% endblock page %}
+{% block left-menu %}
+    <ul class="list-unstyled components">
+        <li>
+            <a href="{% url 'me' organization.slug %}">
+                <i class="fas fa-home"></i>
+                Home
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'user-address' organization.slug %}">
+                <i class="fas fa-mail-bulk"></i>
+                {% trans "Addresses" %}
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'user-profile' organization.slug %}">
+                <i class="fas fa-user"></i>
+                {% trans "Profile" %}
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'user-subscriptions' organization.slug %}">
+                <i class="fas fa-bookmark"></i>
+                {% trans "Subscriptions" %}
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'user-events' organization.slug %}">
+                <i class="fas fa-rss"></i>
+                {% trans "Events" %}
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt"></i>
+                {% trans "Logout" %}
+            </a>
+        </li>
+    </ul>
+    <ul class="list-unstyled components sidebar-footer">
+        {% if perms.configure %}
+            <li>
+                <a style="bottom:0;" href="{{ organization.urls.dashboard }}">
+                    <i class="fas fa-tools"></i>{% trans "Admin" %}</a>
+            </li>
+        {% endif %}
+        {% if user.is_superuser %}
+            <li>
+                <a style="bottom:0;" href="{% url 'settings' %}">
+                    <i class="fas fa-cog"></i>
+                    {% trans "Settings" %}
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+{% endblock left-menu %}

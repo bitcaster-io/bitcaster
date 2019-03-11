@@ -1,0 +1,9 @@
+{% extends "bitcaster/_emails/confirm_base.html" %}
+
+{% load i18n %}
+
+{% block headline %}You have beed invited to {{ membership.organization }}!
+<div>Please accept your invitation by clicking the button below</div>
+{% endblock %}
+{% block button_label %}Accept{% endblock %}
+{% block footline %}(This link will expire in 2 days.){% endblock %}

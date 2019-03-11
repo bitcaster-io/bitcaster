@@ -21,15 +21,8 @@ def test_initial_setup(django_app, application1, admin_user):
     owner = organization.owner
     url = organization.urls.dashboard
     res = django_app.get(url, user=owner.email)
-    # res = res.click("Login")
-    # res.form["username"] = owner.email
-    # res.form["password"] = owner._password
-    # res = res.form.submit().follow()
-    #
-    # res = res.click(organization.name)
 
-    res = res.click('^Configuration$')
-    res.form['slug'] = 'org_slug'
+    res = res.click(r'\>Configuration$')
     res.form['admin_email'] = 'billing@noreply.org'
     res = res.form.submit().follow()
     # channels

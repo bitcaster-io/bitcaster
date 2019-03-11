@@ -53,7 +53,7 @@ class Application(AbstractModel, ReverseWrapperMixin):
     ), default=0, null=True)
     teams = models.ManyToManyField('bitcaster.Team',
                                    # related_name='teams',
-                                   through='bitcaster.ApplicationTeam'
+                                   through='bitcaster.ApplicationRole'
                                    )
 
     avatar = AvatarField(upload_to=app_media_root)

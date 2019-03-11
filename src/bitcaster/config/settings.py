@@ -619,7 +619,7 @@ if DEBUG:
         if request.user.is_authenticated:
             if request.path in ignored:
                 return False
-        return True
+        return False
 
     INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar']
     MIDDLEWARE = MIDDLEWARE + ['debug_toolbar.middleware.DebugToolbarMiddleware', ]

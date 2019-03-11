@@ -1,22 +1,20 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 
 from bitcaster.models import Application
 from bitcaster.models.configurationissue import check_application
-from bitcaster.web.forms import ApplicationCreateForm, ApplicationForm
+from bitcaster.web.forms import ApplicationForm
 
-from ..base import (BitcasterBaseCreateView, BitcasterBaseDeleteView,
-                    BitcasterBaseDetailView, BitcasterBaseUpdateView,)
+from ..base import (BitcasterBaseDeleteView, BitcasterBaseDetailView,
+                    BitcasterBaseUpdateView,)
 from .mixins import SelectedApplicationMixin
 
 logger = logging.getLogger(__name__)
@@ -41,12 +39,15 @@ class ApplicationUpdateView(ApplicationViewMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/form.html'
 
     def get_success_url(self):
-        return reverse('app-dashboard', args=[self.selected_organization.slug,
-                                              self.object.slug])
+        return self.selected_application.urls.edit
 
 
 class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/application/dashboard.html'
+
+    @property
+    def title(self):
+        return self.object.name
 
     def get_context_data(self, **kwargs):
         app = self.get_object()
@@ -84,22 +85,6 @@ class ApplicationCheckConfigView(ApplicationViewMixin, RedirectView):
     def get(self, request, *args, **kwargs):
         check_application(self.selected_application)
         return super().get(request, *args, **kwargs)
-
-
-class ApplicationCreate(SelectedApplicationMixin, BitcasterBaseCreateView):
-    model = Application
-    form_class = ApplicationCreateForm
-    template_name = 'bitcaster/application/form.html'
-
-    def get_success_url(self):
-        return reverse('app-dashboard', args=[self.selected_organization.slug,
-                                              self.object.slug])
-
-    def form_valid(self, form):
-        form.instance.organization = self.selected_organization
-        form.instance.owner = self.request.user
-        self.message_user(_('Application created'), messages.SUCCESS)
-        return super().form_valid(form)
 
 
 class ApplicationDetail(ApplicationViewMixin, BitcasterBaseDetailView):

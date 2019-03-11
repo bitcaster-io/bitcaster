@@ -10,19 +10,15 @@
             </div>
         </div>
     </div>
-    <div class="commands">
-        <input type="submit" id="btn-submit" value="{% trans "Send" %}"
-               class="btn btn-primary btn-small pull-right">
-    </div>
+    <div class="pull-right col-4 hidden commands">
+        <button type="button" id="btn-save"
+                class="btn btn-primary btn-small mr-3">{% trans "Send" %}</button>
 
-    {#    <div class="container">#}
-    {#        <div class="row col-12">#}
-    {#            <div class="pull-right col-12 p-4">#}
-    {#                <a id="add_more" class="btn btn-danger btn-small pull-right"#}
-    {#                   href="#">{% trans "Add more" %}</a>#}
-    {#            </div>#}
-    {#        </div>#}
-    {#    </div>#}
+        <button type="button" id="btn-cancel" class="btn btn-secondary"
+                onclick="location.href=location.href;">
+            {% trans "Cancel" %}
+        </button>
+    </div>
     <div id="empty-form" class="d-none">
         <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex">
             <div class="col col-sm">{{ invitations.empty_form.email|as_crispy_field }}</div>
@@ -34,7 +30,7 @@
     </div>
 
     <div class="container pl-3 m-3">
-        <form method="post">
+        <form method="post" id="Form">
             {{ invitations.management_form }}
             {% csrf_token %}
             <div class="content invitations fieldset">
@@ -53,68 +49,17 @@
             </div>
         </form>
     </div>
-    <div class="commands">
-        <input type="submit" id="btn-submit" value="{% trans "Send" %}"
-               class="btn btn-primary btn-small pull-right">
+    <div class="pull-right col-4 hidden commands">
+        <button type="button" id="btn-save"
+                class="btn btn-primary btn-small mr-3">{% trans "Send" %}</button>
+
+        <button type="button" id="btn-cancel" class="btn btn-secondary"
+                onclick="location.href=location.href;">
+            {% trans "Cancel" %}
+        </button>
     </div>
 
 {% endblock %}
 {% block js %}
-    {% include "bitcaster/_formset.html" with formsetName="memberships" %}
+    {% include "bitcaster/_includes/formset/js_code.html" with formsetName="memberships" %}
 {% endblock js %}
-
-{% block js2 %}
-    {{ block.super }}
-
-    <script>
-        (function () {
-            var formsetName = "memberships";
-            var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
-            var selector = "div.invitations";
-            var $rows = $("div.invitations>div.row");
-
-            $(".remove_line").click(function () {
-                $("#btn-submit").prop("disabled", true);
-                var $target = $(this).parent().parent();
-                $target.remove();
-                setTimeout(function () {
-                    reNumber();
-                }, 20);
-            });
-            $("#add_more").click(function () {
-                $("#btn-submit").prop("disabled", true);
-                cloneMore();
-            });
-            var reNumber = function () {
-                var $rows = $("div.invitations>div.row");
-                $rows.each(function (i, e) {
-                    $(e).find(":input").each(function () {
-                        var name = $(this).attr("name").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
-                        var id = "id_" + name;
-                        $(this).attr({"name": name, "id": id})
-                    });
-                    $(e).find("label").each(function () {
-                        var newFor = $(this).attr("for").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
-                        $(this).attr("for", newFor);
-                    });
-                    $(e).find("div.form-group").each(function () {
-                        var newId = $(this).attr("id").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
-                        $(this).attr("id", newId);
-                    });
-                });
-                $TOTAL_FORMS.val($rows.length);
-                $("#btn-submit").prop("disabled", parseInt($TOTAL_FORMS.val()) < 1);
-
-            };
-
-            function cloneMore() {
-                var $newElement = $("#empty-form>div.row").clone(true);
-                $newElement.removeClass("d-none");
-                $(selector).append($newElement);
-                setTimeout(function () {
-                    reNumber();
-                }, 20);
-            };
-        })($)
-    </script>
-{% endblock %}

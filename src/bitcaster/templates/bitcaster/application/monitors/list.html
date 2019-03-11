@@ -1,6 +1,5 @@
 {% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
-{% block content %}
-    <h2>{% trans "Monitors" %}</h2>
+{% block page %}
     {% check_permissions application %}
     {% if permissions.create_monitor %}
         <div class="container">
@@ -26,13 +25,6 @@
                 <td>
                     {{ monitor.name }}
                 </td>
-                <td style="width:10%">
-                    {% if monitor.enabled %}
-                        <i class="fa fa-check-circle green"></i>
-                    {% else %}
-                        <i class="fas fa-times-circle red"></i>
-                    {% endif %}
-                </td>
                 <td style="width:30%" class="nowrap">
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="configure"
@@ -46,9 +38,9 @@
                     </a>
                     {% if monitor.handler %}
                         <a class="btn btn-light"
-                           data-toggle="tooltip" title="{% if channel.enabled %}Disable{% else %}Enable{% endif %}"
+                           data-toggle="tooltip" title="{% if monitor.enabled %}Disable{% else %}Enable{% endif %}"
                            href="{{ monitor.urls.toggle}}">
-                            <i class="fas {% if channel.enabled %}fa-toggle-off red{% else %}fa-toggle-on green{% endif %}"></i>
+                            <i class="fas {% if monitor.enabled %}fa-toggle-on green{% else %}fa-toggle-off red{% endif %}"></i>
                         </a>
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="test monitor"
@@ -63,4 +55,4 @@
 
     </table>
 
-{% endblock content %}
+{% endblock %}

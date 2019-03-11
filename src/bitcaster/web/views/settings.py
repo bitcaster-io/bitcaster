@@ -25,19 +25,17 @@ __all__ = ['SettingsView', 'SettingsOAuthView',
            ]
 
 
-class SettingsBaseView(SuperuserViewMixin, SidebarMixin, TitleMixin,
-                       BitcasterTemplateView, FormView):
-    success_url = '.'
-    bit = None
+class SettingsTemplateMixin(SuperuserViewMixin, SidebarMixin, TitleMixin,
+                            BitcasterTemplateView):
 
     def get_template_names(self):
-        return [f'bitcaster/settings/{self.title.lower()}.html',
-                'bitcaster/settings/base.html']
+        return [f'bitcaster/settings/{self.template_name}.html',
+                'bitcaster/settings/form.html']
 
-    def get_context_data(self, **kwargs):
-        kwargs = super(SettingsBaseView, self).get_context_data(**kwargs)
-        kwargs['settings'] = settings
-        return kwargs
+
+class SettingsBaseView(SettingsTemplateMixin, FormView):
+    success_url = '.'
+    bit = None
 
     def get_form(self, form_class=None):
         form_class = self.get_form_class()
@@ -47,8 +45,6 @@ class SettingsBaseView(SuperuserViewMixin, SidebarMixin, TitleMixin,
             if isinstance(value, dict):
                 value = str(value)
             kwargs['initial'][f] = value
-        # kwargs['initial'] = dict({(f, getattr(config, f, ''))
-        #                           for f in form_class.declared_fields.keys()})
         return form_class(**kwargs)
 
     def form_valid(self, form):
@@ -70,6 +66,7 @@ class SettingsEmailView(SettingsBaseView):
     form_class = SettingsEmailForm
     title = _('Mail Server')
     bit = 2
+    template_name = 'email'
 
     def test(self, **kwargs):
         conn = get_connection(
@@ -109,6 +106,7 @@ class SettingsEmailView(SettingsBaseView):
 class SettingsOAuthView(SettingsBaseView):
     form_class = SettingsOAuthForm
     title = _('Oauth')
+    template_name = 'oauth'
 
 
 class SettingsLdapView(SettingsBaseView):
@@ -116,18 +114,8 @@ class SettingsLdapView(SettingsBaseView):
     title = _('Ldap')
 
 
-# class SettingsOrgUpdateView(SuperuserViewMixin, UpdateView):
-#     template_name = 'bitcaster/settings/org_update.html'
-#     form_class = OrganizationSystemForm
-#     model = Organization
-#
-#     def get_success_url(self):
-#         return reverse('settings-org-list')
-
-
-class SettingsSystemInfo(SuperuserViewMixin, SidebarMixin, TitleMixin,
-                         BitcasterTemplateView):
-    template_name = 'bitcaster/settings/sysinfo.html'
+class SettingsSystemInfo(SettingsTemplateMixin, ):
+    template_name = 'environment'
     title = _('Environment')
 
     def _filter(self, target):
@@ -161,19 +149,3 @@ class SettingsSystemInfo(SuperuserViewMixin, SidebarMixin, TitleMixin,
             settings=self._filter(settings),
             sysinfo=get_sysinfo(self.request),
             **kwargs)
-
-# class SettingsOrgListView(SuperuserViewMixin, ListView):
-#     template_name = 'bitcaster/settings/org_list.html'
-#     model = Organization
-
-
-# class SettingsChannelListView(SuperuserViewMixin, ListView):
-#     template_name = 'bitcaster/settings/channel_list.html'
-#
-#     def get_context_data(self, **kwargs):
-#         kwargs['title'] = _('System channels')
-#         kwargs['create_url'] = reverse('system-channel-create')
-#         return super().get_context_data(**kwargs)
-#
-#     def get_queryset(self):
-#         return Channel.objects.filter(system=True)

@@ -1,0 +1,85 @@
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block page %}
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% url "org-team-create" organization.slug %}">{% trans "Create new team" %}</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr scope="row" lass="row col-12">
+                <th scope="col" lass="col-4">{% trans "Name" %}</th>
+                <th scope="col" lass="col-6">{% trans "Description" %}</th>
+                <th scope="col" lass="col-2"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for team in organization.teams.all %}
+                <tr scope="row" lass="row col-12">
+                    <td lass="col-4">{{ team.name }}</td>
+                    <td lass="col-6">{{ team.description }}</td>
+                    <td lass="col-2">
+                        <a class="btn btn-light"
+                           data-toggle="tooltip" title="edit"
+                           href="{{ team.get_absolute_url }}">
+                            <i class="far fa-edit"></i>
+                        </a>
+                        <a class="btn btn-light"
+                           data-toggle="tooltip" title="remove"
+                           href="{% org-url "org-team-delete" team.slug %}">
+                            <i class="far fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="container">
+        {% if invitations %}
+            <h4>Pending invitations</h4>
+            <table class="table">
+                <thead>
+                <tr class="d-flex">
+                    <th scope="col" class="col-4">User</th>
+                    <th scope="col" class="col-3">Role</th>
+                    <th scope="col" class="col-3">Date</th>
+                    <th scope="col" class="col-1"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for membership in invitations.all %}
+                    <tr class="d-flex">
+                        <td class="col-4">
+                            {{ membership.email }}
+                        </td>
+                        <td class="col-3">{{ membership.get_role_display }}</td>
+                        <td class="col-3">{{ membership.date_added }}</td>
+                        <td class="text-nowrap col-1">
+
+                            <button onclick="window.location.href = '{% org-url "org-invite-delete" membership.pk %}';">
+                                <i class="far fa-trash-alt pointer"></i>
+                            </button>
+                            |
+                            <form method="post" class="d-inline"
+                                  action="{% url "org-member-send" organization.slug membership.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" title="resend email" class="pointer">
+                                    <i class="fa fa-envelope"></i>
+                                </button>
+                            </form>
+
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+{% endblock %}

@@ -1,13 +1,11 @@
 {% extends "bitcaster/application/base.html" %}{% load i18n bitcaster %}
-{% block content %}
-    <h2>Application Subscriptions</h2>
+{% block page %}
     <table class="table table-striped table-hover col-12">
         <thead>
         <tr>
             <th scope="col">Event</th>
             <th scope="col">Channel</th>
             <th scope="col">Subscriber</th>
-            <th scope="col">Status</th>
             <th class="text-center" scope="col">active</th>
             <th class="text-center" scope="col"></th>
         </tr>
@@ -28,18 +26,10 @@
                     {{ subscription.get_status_display }}
                 </td>
                 <td class="text-center">
-                    {% if subscription.active %}
-                        <i class="fa fa-check-circle green"></i>
-                    {% else %}
-                        <i class="fas fa-times-circle red"></i>
-                    {% endif %}
-                    {#                        {{ subscription.active }}#}
-                </td>
-                <td class="text-center">
                     <a class="btn btn-light"
-                       data-toggle="tooltip" title="{% if subscription.active %}Disable{% else %}Enable{% endif %}"
+                       data-toggle="tooltip" title="{% if subscription.enabled %}Disable{% else %}Enable{% endif %}"
                        href="{% app-url 'app-event-subscription-toggle' subscription.event.id subscription.id %}">
-                        <i class="fas {% if subscription.active %}fa-toggle-off red{% else %}fa-toggle-on green{% endif %}"></i>
+                        <i class="fas {% if subscription.enabled %}fa-toggle-on green{% else %}fa-toggle-off red{% endif %}"></i>
                     </a>
 
                 </td>
@@ -73,4 +63,4 @@
         </tbody>
     </table>
     {% endif %}
-{% endblock content %}
+{% endblock page %}

@@ -14,15 +14,15 @@
             background-color: rgba(249, 253, 19, 0.14);
         }
 
-        .plugin-info {
-            bottom: 5px;
-            height: 18px;
-            width: 18px;
-            float: right;
-            z-index: 10;
-            position: absolute;
-            right: 0px;
-        }
+        //.plugin-info {
+        //    bottom: 5px;
+        //    height: 18px;
+        //    width: 18px;
+        //    float: right;
+        //    z-index: 10;
+        //    position: absolute;
+        //    right: 0px;
+        //}
 
         label {
             padding-top: 20px;
@@ -90,6 +90,9 @@
 }
 
 div.channel-info {
+    &.modal{
+
+    }
     ul {
         margin: 0;
         padding: 0;
@@ -97,7 +100,6 @@ div.channel-info {
         a.url {
             font-weight: normal;
             font-size: 12px;
-
         }
 
         li {
@@ -115,58 +117,6 @@ div.channel-info {
             .label {
                 font-weight: bold;
                 padding-bottom: 5px;
-            }
-        }
-    }
-}
-
-div.plugin-info {
-    height: 100px;
-
-    .header {
-    }
-
-    .content {
-
-    }
-
-    .left, .right {
-        display: inline-block;
-        height: 350px;
-        border: 1px solid lightgrey;
-        overflow-x: hidden;
-        overflow-y: auto;
-        padding-top: 10px;
-    }
-
-    .right {
-        width: 70%;
-        margin-left: 40px;
-    }
-
-    .left {
-        width: 30%;
-
-        ul {
-            margin: 0;
-            padding: 0;
-
-            li {
-                display: list-item;
-                list-style: none;
-                padding-bottom: 20px;
-
-                &.name {
-                    font-size: larger;
-                    font-weight: bold;
-                    padding-top: 10px;
-                    padding-bottom: 15px;
-                }
-
-                .label {
-                    font-weight: bold;
-                    padding-bottom: 5px;
-                }
             }
         }
     }

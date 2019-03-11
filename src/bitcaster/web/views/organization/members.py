@@ -25,6 +25,7 @@ class MemberMixin(OrganizationBaseView):
 
 class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
     template_name = 'bitcaster/organization/members/list.html'
+
     # title = _('Users')
 
     def get_context_data(self, **kwargs):
@@ -36,9 +37,9 @@ class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
 
 
 class OrganizationMembershipEdit(MemberMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/organization/members/edit.html'
+    template_name = 'bitcaster/organization/members/form.html'
     fields = ('role',)
-    # title = _('Edit User')
+    # title = _('Edit Membership')
     context_object_name = 'membership'
 
     def get_form(self, form_class=None):
@@ -53,6 +54,5 @@ class OrganizationMembershipEdit(MemberMixin, BitcasterBaseUpdateView):
 
 
 class OrganizationMembershipDelete(MemberMixin, BitcasterBaseDeleteView):
-    user_message = _('Invite canceled')
-    # title = _('Remove User')
     message = _('User <strong>%(object)s</strong> will be removed from %(organization)s')
+    user_message = _('User removed')

@@ -16,7 +16,7 @@ from bitcaster.models import AddressAssignment, Channel
 from bitcaster.templatetags.markdown import markdown
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 
-from .base import (BitcasterBaseCreateView, BitcasterBaseDeleteView,
+from .base import (BitcasterBaseDeleteView,
                    BitcasterBaseDetailView, BitcasterBaseListView,
                    BitcasterBaseUpdateView, MessageUserMixin,)
 
@@ -39,7 +39,7 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
     TEMPLATES = {'a': 'bitcaster/settings/channel_wizard1.html',
                  'b': 'bitcaster/settings/channel_wizard2.html',
                  }
-
+    # title = _('Create Channel')
     # success_url = reverse_lazy('settings-channels')
 
     def get_form_initial(self, step):
@@ -99,8 +99,8 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ChannelCreateView(BitcasterBaseCreateView):
-    model = Channel
+# class ChannelCreateView(BitcasterBaseCreateView):
+#     model = Channel
     #
     # def get_queryset(self):
     #     return self.selected_organization.channels.all()

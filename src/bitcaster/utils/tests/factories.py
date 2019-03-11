@@ -220,7 +220,7 @@ class TeamFactory(factory.DjangoModelFactory):
 
 class ApplicationTeamFactory(factory.DjangoModelFactory):
     class Meta:
-        model = bitcaster.models.ApplicationTeam
+        model = bitcaster.models.ApplicationRole
         django_get_or_create = ('name',)
 
     application = factory.SubFactory(ApplicationFactory)

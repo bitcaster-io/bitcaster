@@ -6,7 +6,7 @@ from bitcaster.backends import (ADMIN_PERMISSIONS, OWNER_PERMISSIONS,
                                 BitcasterBackend,)
 from bitcaster.db.fields import Role
 from bitcaster.dispatchers import Email
-from bitcaster.models import ApplicationTeam, OrganizationMember
+from bitcaster.models import ApplicationRole, OrganizationMember
 from bitcaster.utils.tests.factories import TeamFactory, UserFactory, faker
 
 pytestmark = pytest.mark.django_db
@@ -22,7 +22,7 @@ def subscriber11(message1):
 
     team = TeamFactory(organization=org, name='Subscribers')
     membership = OrganizationMember.objects.create(organization=org, user=user)
-    ApplicationTeam.objects.create(application=application,
+    ApplicationRole.objects.create(application=application,
                                    team=team,
                                    role=Role.SUBSCRIBER)
     team.members.add(membership)
@@ -64,7 +64,7 @@ def admin1(application1):
     user = UserFactory()
     team = TeamFactory(organization=org)
     membership, __ = OrganizationMember.objects.get_or_create(organization=org, user=user)
-    ApplicationTeam.objects.get_or_create(application=application1,
+    ApplicationRole.objects.get_or_create(application=application1,
                                           team=team,
                                           role=Role.ADMIN)
     team.members.add(membership)
@@ -77,7 +77,7 @@ def admin2(application2):
     user = UserFactory()
     team = TeamFactory(organization=org)
     OrganizationMember.objects.get_or_create(organization=org, user=user)
-    ApplicationTeam.objects.get_or_create(application=application2,
+    ApplicationRole.objects.get_or_create(application=application2,
                                           team=team,
                                           role=Role.ADMIN)
     return user

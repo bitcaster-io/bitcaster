@@ -46,9 +46,8 @@ class BitcasterBaseDeleteView(BitcasterBaseViewMixin, BitcasterSingleObjectMixin
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
-        vars = dict(verbose_name=verbose_name(self.object),
-                    object=self.object)
-        kwargs['message'] = mark_safe(self.message % vars)
+        kwargs['verbose_name'] = verbose_name(self.object)
+        kwargs['message'] = mark_safe(self.message % kwargs)
         return kwargs
 
     def delete(self, request, *args, **kwargs):

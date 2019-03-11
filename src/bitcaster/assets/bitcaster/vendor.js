@@ -1,6 +1,4 @@
 import 'bootstrap';
-import 'jquery-modal/jquery.modal.js';
-import 'jquery-modal/jquery.modal.css';
 
 window.select2 = require('select2');
 window.jQuery = window.$ = require('jquery');

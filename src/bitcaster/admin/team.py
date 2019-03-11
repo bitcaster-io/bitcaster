@@ -3,7 +3,7 @@ import logging
 
 from django.contrib import admin
 
-from bitcaster.models import ApplicationTeam, Team
+from bitcaster.models import ApplicationRole, Team
 
 from .site import site
 
@@ -15,6 +15,6 @@ class TeamAdmin(admin.ModelAdmin):
     list_display = ('organization', 'name', 'status')
 
 
-@admin.register(ApplicationTeam, site=site)
+@admin.register(ApplicationRole, site=site)
 class ApplicationTeamAdmin(admin.ModelAdmin):
     list_display = ('application', 'team', 'role')

@@ -1,6 +1,7 @@
-{% extends "bitcaster/base2.html" %}{% load bc_permissions bitcaster i18n %}
+{% extends "bitcaster/base.html" %}{% load bc_permissions bitcaster i18n %}
 {% block bodyclass %}organization{% endblock %}
 {% block left-menu %}
+    <div class="text-center">{{ organization }}</div>
     <ul class="list-unstyled components">
         <li>
             <a href="{{ organization.urls.dashboard }}">

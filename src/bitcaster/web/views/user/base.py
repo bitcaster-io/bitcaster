@@ -28,17 +28,17 @@ class UserMixin(SelectedOrganizationMixin, SidebarMixin, TitleMixin):
 
 
 class UserHome(UserMixin, TemplateView):
-    template_name = 'bitcaster/users/user-home.html'
+    template_name = 'bitcaster/user/home.html'
     title = _('Home')
 
 
 class UserEventListView(UserMixin, TemplateView):
-    template_name = 'bitcaster/users/events.html'
+    template_name = 'bitcaster/user/events.html'
     title = _('Events')
 
 
 class UserAddressesView(UserMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/users/addresses.html'
+    template_name = 'bitcaster/user/addresses.html'
     model = Address
     form_class = AddressForm
     title = _('Addresses')
@@ -64,12 +64,12 @@ class UserAddressesView(UserMixin, BitcasterBaseUpdateView):
 
 
 class UserAddressesInfoView(UserMixin, BitcasterBaseDetailView):
-    template_name = 'bitcaster/users/address_info.html'
+    template_name = 'bitcaster/user/address_info.html'
     model = Address
 
 
 class UserAddressesAssignmentView(UserMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/users/addresses_assignment.html'
+    template_name = 'bitcaster/user/addresses_assignment.html'
     model = AddressAssignment
     form_class = AddressAssignmentForm
     title = _('Address Usage')
@@ -110,7 +110,7 @@ class UserAddressesAssignmentView(UserMixin, BitcasterBaseUpdateView):
 
 
 class UserProfileView(UserMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/users/profile.html'
+    template_name = 'bitcaster/user/profile.html'
     model = User
     form_class = UserProfileForm
     success_url = '.'
