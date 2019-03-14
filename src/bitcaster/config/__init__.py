@@ -19,6 +19,6 @@ DEFAULTS = dict(
     SECRET_KEY=(str, ''),
     SENTRY_DSN=(str, ''),
     SENTRY_ENABLED=(bool, False),
-    STATIC_ROOT=(str, str(Path('~/.bitcaster/static').expanduser())),
+    STATIC_ROOT=(str, str(Path(__file__).parent.parent / 'static')),
     URL_PREFIX=(str, ''),
 )

@@ -222,7 +222,7 @@ USE_X_FORWARDED_HOST = True
 
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = env.str('STATIC_ROOT', '')
+STATIC_ROOT = env.str('STATIC_ROOT')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = f'/{URL_PREFIX}static/'
