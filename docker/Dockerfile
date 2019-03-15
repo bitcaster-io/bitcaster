@@ -89,10 +89,10 @@ RUN apk add --no-cache --virtual .run-deps \
         libxslt \
         libzmq \
         jpeg
-
-RUN find /usr/local/lib/python3.6/ -name *.pyc | xargs rm -f \
-    && python -O -m compileall -x _plugin_template.* -fqb /usr/local/lib/python3.6/ \
-    && find /usr/local/lib/python3.6/ -name *.py | xargs rm -f
+#
+#RUN find /usr/local/lib/python3.6/ -name *.pyc | xargs rm -f \
+#    && python -O -m compileall -x _plugin_template.* -fqb /usr/local/lib/python3.6/ \
+#    && find /usr/local/lib/python3.6/ -name *.py | xargs rm -f
 
 # end clean
 

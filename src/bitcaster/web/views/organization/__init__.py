@@ -9,6 +9,7 @@ from .members import (OrganizationMembershipDelete,
                       OrganizationMembershipEdit, OrganizationMembershipList,)
 from .org import (OrganizationCheckConfigView,
                   OrganizationConfiguration, OrganizationDashboard,)
-from .teams import (OrganizationTeamCreate, OrganizationTeamDelete,
-                    OrganizationTeamList, OrganizationTeamMember,
-                    OrganizationTeamUpdate,)
+
+# from .teams import (OrganizationTeamCreate, OrganizationTeamDelete,
+#                     OrganizationTeamList, OrganizationTeamMember,
+#                     OrganizationTeamUpdate,)

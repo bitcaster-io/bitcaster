@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class TeamForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        self.organization = kwargs.pop('organization')
+        self.application = kwargs.pop('application')
         super().__init__(*args, **kwargs)
         self.helper = helper.FormHelper(self)
         self.helper.layout = helper.Layout(*self.Meta.fields,

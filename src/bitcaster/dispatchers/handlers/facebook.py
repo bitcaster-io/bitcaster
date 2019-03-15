@@ -38,7 +38,7 @@ class Facebook(CoreDispatcher):
     subscription_class = FacebookSubscription
     options_class = FacebookOptions
     message_class = FacebookMessage
-    __help__ = """Configure Channel
+    __help__ = _("""Configure Channel
 
 - goto [https://developers.facebook.com/apps/](https://developers.facebook.com/apps/)
  and create a new app that represent your Biscaster instance
@@ -46,7 +46,7 @@ class Facebook(CoreDispatcher):
 - Select `Get Started with the Pages API`
 - get `App ID` and `App Secret`
 
-"""
+""")
 
     @classproperty
     def name(cls):

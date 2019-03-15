@@ -8,8 +8,14 @@ class ApplicationSubscriptionList(SelectedApplicationMixin, BitcasterBaseListVie
     template_name = 'bitcaster/application/subscriptions/list.html'
 
     def get_context_data(self, **kwargs):
-        kwargs['pending'] = self.selected_organization.memberships.filter(event__application=self.selected_application)
+        kwargs['pending'] = self.selected_application.invitations.filter()
         return super().get_context_data(**kwargs)
+    # def get_context_data(self, **kwargs):
+    #     data = super(OrganizationMembershipList, self).get_context_data(**kwargs)
+    #     base = self.get_queryset()
+    #     data['memberships'] = base.filter(user__isnull=False)
+    #     data['invitations'] = base.filter(user__isnull=True)
+    #     return data
 
     def get_queryset(self):
         # return self.selected_application.events.order_by('')

@@ -7,41 +7,33 @@ from django.views.generic import TemplateView
 from bitcaster.web.views.callbacks import confirm_address
 from bitcaster.web.views.user.base import UserEventListView, UserHome
 
-from .views import (ApplicationCheckConfigView, ApplicationCreate,
-                    ApplicationDashboard, ApplicationDeleteView,
-                    ApplicationKeyCreate, ApplicationKeyDelete,
-                    ApplicationKeyList, ApplicationKeyUpdate,
-                    ApplicationMonitorCreate, ApplicationMonitorList,
-                    ApplicationMonitorRemove, ApplicationMonitorTest,
-                    ApplicationMonitorToggle, ApplicationMonitorUpdate,
-                    ApplicationMonitorUsage, ApplicationRoleCreate,
-                    ApplicationRoleList, ApplicationRoleUpdate,
-                    ApplicationSubscriptionList, ApplicationUpdateView,
-                    EventCreate, EventDelete, EventKeys, EventList,
-                    EventMessages, EventSubscriptionCreate,
-                    EventSubscriptionDelete, EventSubscriptionInvite,
-                    EventSubscriptionList, EventSubscriptionToggle, EventTest,
-                    EventToggle, EventUpdate, IndexView, InviteAccept,
-                    InviteDelete, InviteSend, LoginView, LogoutView,
-                    MessageCreate, MessageDelete, MessageList, MessageUpdate,
-                    OrganizationApplications, OrganizationChannelCreate,
-                    OrganizationChannelDeprecate, OrganizationChannelRemove,
-                    OrganizationChannels, OrganizationChannelTest,
-                    OrganizationChannelToggle, OrganizationChannelUpdate,
-                    OrganizationChannelUsage, OrganizationCheckConfigView,
-                    OrganizationConfiguration, OrganizationDashboard,
-                    OrganizationInvite, OrganizationMembershipDelete,
-                    OrganizationMembershipEdit, OrganizationMembershipList,
-                    OrganizationTeamCreate, OrganizationTeamDelete,
-                    OrganizationTeamList, OrganizationTeamMember,
-                    OrganizationTeamUpdate, PluginInfo, SettingsEmailView,
-                    SettingsLdapView, SettingsOAuthView, SettingsSystemInfo,
-                    SettingsView, SetupView, UserAddressesAssignmentView,
-                    UserAddressesInfoView, UserAddressesView, UserProfileView,
-                    UserSubscriptionEdit, UserSubscriptionListView,
-                    UserSubscriptionRemove, UserSubscriptionToggle,
-                    WorkInProgressView, channel_icon, confirm_registration,
-                    plugin_icon,)
+from .views import (  # OrganizationTeamCreate, OrganizationTeamDelete,; OrganizationTeamList, OrganizationTeamMember,OrganizationTeamUpdate,
+    ApplicationCheckConfigView, ApplicationCreate, ApplicationDashboard,
+    ApplicationDeleteView, ApplicationInvite, ApplicationKeyCreate,
+    ApplicationKeyDelete, ApplicationKeyList, ApplicationKeyUpdate,
+    ApplicationMonitorCreate, ApplicationMonitorList, ApplicationMonitorRemove,
+    ApplicationMonitorTest, ApplicationMonitorToggle, ApplicationMonitorUpdate,
+    ApplicationMonitorUsage, ApplicationRoleCreate, ApplicationRoleList,
+    ApplicationRoleUpdate, ApplicationSubscriptionList, ApplicationTeamCreate,
+    ApplicationTeamDelete, ApplicationTeamList, ApplicationTeamMember,
+    ApplicationTeamUpdate, ApplicationUpdateView, EventCreate, EventDelete,
+    EventKeys, EventList, EventMessages, EventSubscriptionCreate,
+    EventSubscriptionDelete, EventSubscriptionInvite, EventSubscriptionList,
+    EventSubscriptionToggle, EventTest, EventToggle, EventUpdate, IndexView,
+    InviteAccept, InviteDelete, InviteSend, LoginView, LogoutView,
+    MessageCreate, MessageDelete, MessageList, MessageUpdate,
+    OrganizationApplications, OrganizationChannelCreate,
+    OrganizationChannelDeprecate, OrganizationChannelRemove,
+    OrganizationChannels, OrganizationChannelTest, OrganizationChannelToggle,
+    OrganizationChannelUpdate, OrganizationChannelUsage,
+    OrganizationCheckConfigView, OrganizationConfiguration,
+    OrganizationDashboard, OrganizationInvite, OrganizationMembershipDelete,
+    OrganizationMembershipEdit, OrganizationMembershipList, PluginInfo,
+    SettingsEmailView, SettingsLdapView, SettingsOAuthView, SettingsSystemInfo,
+    SettingsView, SetupView, UserAddressesAssignmentView, UserAddressesInfoView,
+    UserAddressesView, UserProfileView, UserSubscriptionEdit,
+    UserSubscriptionListView, UserSubscriptionRemove, UserSubscriptionToggle,
+    WorkInProgressView, channel_icon, confirm_registration, plugin_icon,)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
@@ -96,13 +88,27 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/check/', ApplicationCheckConfigView.as_view(), name='app-check'),
     path('<slug:org>/a/<slug:app>/edit/', ApplicationUpdateView.as_view(), name='app-edit'),
     path('<slug:org>/a/<slug:app>/delete/', ApplicationDeleteView.as_view(), name='app-delete'),
+
+    # Applications / Subscriptions
     path('<slug:org>/a/<slug:app>/subscriptions/', ApplicationSubscriptionList.as_view(), name='app-subscriptions'),
 
+    # Applications / Invitations
+    path('<slug:org>/a/<slug:app>/invite/', ApplicationInvite.as_view(), name='app-invite'),
+
+    # Applications / Teams
+    path('<slug:org>/a/<slug:app>/team/', ApplicationTeamList.as_view(), name='app-teams'),
+    path('<slug:org>/a/<slug:app>/team/add/', ApplicationTeamCreate.as_view(), name='app-team-create'),
+    path('<slug:org>/a/<slug:app>/team/<slug:slug>/edit/', ApplicationTeamUpdate.as_view(), name='app-team-edit'),
+    path('<slug:org>/a/<slug:app>/team/<slug:slug>/delete/', ApplicationTeamDelete.as_view(), name='app-team-delete'),
+    path('<slug:org>/a/<slug:app>/team/<slug:slug>/members/', ApplicationTeamMember.as_view(), name='app-team-member'),
+
+    # Applications / Keys
     path('<slug:org>/a/<slug:app>/key/', ApplicationKeyList.as_view(), name='app-keys'),
     path('<slug:org>/a/<slug:app>/key/add/', ApplicationKeyCreate.as_view(), name='app-key-create'),
     path('<slug:org>/a/<slug:app>/key/<int:pk>/edit/', ApplicationKeyUpdate.as_view(), name='app-key-edit'),
     path('<slug:org>/a/<slug:app>/key/<int:pk>/delete/', ApplicationKeyDelete.as_view(), name='app-key-delete'),
 
+    # Applications / Events
     path('<slug:org>/a/<slug:app>/event/', EventList.as_view(), name='app-events'),
     path('<slug:org>/a/<slug:app>/event/add/', EventCreate.as_view(), name='app-event-create'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/edit/', EventUpdate.as_view(), name='app-event-edit'),
@@ -126,6 +132,13 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/subscribe/', EventSubscriptionCreate.as_view(),
          name='app-event-subscriptions-subscribe'),
 
+    # Applications / Messages
+    path('o/<slug:org>/a/<slug:app>/message/', MessageList.as_view(), name='app-messages'),
+    path('o/<slug:org>/a/<slug:app>/message/add/', MessageCreate.as_view(), name='app-message-create'),
+    path('o/<slug:org>/a/<slug:app>/message/<int:pk>/edit/', MessageUpdate.as_view(), name='app-message-edit'),
+    path('o/<slug:org>/a/<slug:app>/message/<int:pk>/delete/', MessageDelete.as_view(), name='app-message-delete'),
+
+    # Applications / Monitors
     path('<slug:org>/a/<slug:app>/monitors/', ApplicationMonitorList.as_view(), name='app-monitors'),
     path('<slug:org>/a/<slug:app>/monitor/add/', ApplicationMonitorCreate.as_view(), name='app-monitor-create'),
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/usage/', ApplicationMonitorUsage.as_view(),
@@ -137,16 +150,13 @@ urlpatterns = [
          name='app-monitor-toggle'),
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/test/', ApplicationMonitorTest.as_view(), name='app-monitor-test'),
 
+    # Applications / Roles
     path('o/<slug:org>/a/<slug:app>/role/', ApplicationRoleList.as_view(), name='app-roles'),
     path('o/<slug:org>/a/<slug:app>/role/add/', ApplicationRoleCreate.as_view(), name='app-role-create'),
     path('o/<slug:org>/a/<slug:app>/role/<int:pk>/edit/', ApplicationRoleUpdate.as_view(), name='app-role-edit'),
 
-    path('o/<slug:org>/a/<slug:app>/message/', MessageList.as_view(), name='app-messages'),
-    path('o/<slug:org>/a/<slug:app>/message/add/', MessageCreate.as_view(), name='app-message-create'),
-    path('o/<slug:org>/a/<slug:app>/message/<int:pk>/edit/', MessageUpdate.as_view(), name='app-message-edit'),
-    path('o/<slug:org>/a/<slug:app>/message/<int:pk>/delete/', MessageDelete.as_view(), name='app-message-delete'),
-
-    # Organization
+    ############
+    ## Organization
     # path('org/add/', OrganizationCreate.as_view(), name='org-create'),
 
     path('<slug:org>/', OrganizationDashboard.as_view(), name='org-home'),
@@ -167,11 +177,11 @@ urlpatterns = [
     path('<slug:org>/invite/send/<int:pk>/', InviteSend.as_view(), name='org-member-send'),
     path('<slug:org>/invite/', OrganizationInvite.as_view(), name='org-invite'),
 
-    path('<slug:org>/team/', OrganizationTeamList.as_view(), name='org-teams'),
-    path('<slug:org>/team/add/', OrganizationTeamCreate.as_view(), name='org-team-create'),
-    path('<slug:org>/team/<slug:slug>/edit/', OrganizationTeamUpdate.as_view(), name='org-team-edit'),
-    path('<slug:org>/team/<slug:slug>/delete/', OrganizationTeamDelete.as_view(), name='org-team-delete'),
-    path('<slug:org>/team/<slug:slug>/members/', OrganizationTeamMember.as_view(), name='org-team-member'),
+    # path('<slug:org>/team/', OrganizationTeamList.as_view(), name='org-teams'),
+    # path('<slug:org>/team/add/', OrganizationTeamCreate.as_view(), name='org-team-create'),
+    # path('<slug:org>/team/<slug:slug>/edit/', OrganizationTeamUpdate.as_view(), name='org-team-edit'),
+    # path('<slug:org>/team/<slug:slug>/delete/', OrganizationTeamDelete.as_view(), name='org-team-delete'),
+    # path('<slug:org>/team/<slug:slug>/members/', OrganizationTeamMember.as_view(), name='org-team-member'),
 
     path('<slug:org>/channel/', OrganizationChannels.as_view(), name='org-channels'),
     path('<slug:org>/channel/add/', OrganizationChannelCreate.as_view(), name='org-channel-create'),

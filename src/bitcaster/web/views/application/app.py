@@ -33,6 +33,10 @@ class ApplicationViewMixin(SelectedApplicationMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
+class ApplicationBaseView(ApplicationViewMixin):
+    pass
+
+
 class ApplicationUpdateView(ApplicationViewMixin, BitcasterBaseUpdateView):
     model = Application
     form_class = ApplicationForm

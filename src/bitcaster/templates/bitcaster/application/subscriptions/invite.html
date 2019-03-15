@@ -1,4 +1,4 @@
-{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags crispy_forms_filters i18n %}
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags crispy_forms_filters i18n %}
 {% block page %}
 
     <div class="row">
@@ -7,7 +7,11 @@
                 <a id="add_more" class="btn btn-danger btn-small pull-left m-2"
                    href=".">{% trans "Add more" %}
                 </a>
+                <a id="add_more" class="btn btn-dark btn-small pull-left m-2"
+                   href="{{ application.urls.subscriptions }}">{% trans "Back" %}
+                </a>
             </div>
+
         </div>
     </div>
     <div class="pull-right col-4 hidden commands">
@@ -21,8 +25,8 @@
     </div>
     <div id="empty-form" class="d-none">
         <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex">
-            <div class="hidden">{{ invitations.empty_form.id}}</div>
-            <div class="col col-sm">{{ invitations.empty_form.email|as_crispy_field }}</div>
+            <div class="hidden">{{ invitations.empty_form.id }}</div>
+            <div class="col col-sm">{{ invitations.empty_form.target|as_crispy_field }}</div>
             <div class="col col-sm">{{ invitations.empty_form.role|as_crispy_field }}</div>
             <div class="col col-sm align-items-center"><a href="#" class="remove_line">
                 <i class="fa fa-remove"></i></a>
@@ -38,8 +42,8 @@
                 {% for invite in invitations.forms %}
                     <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex"
                          {% if form.errors %}has-error{% endif %}>
-                        <div class="hidden">{{ invite.id}}</div>
-                        <div class="col col-sm">{{ invite.email|as_crispy_field }}</div>
+                        <div class="hidden">{{ invite.id }}</div>
+                        <div class="col col-sm">{{ invite.target|as_crispy_field }}</div>
                         <div class="col col-sm">{{ invite.role|as_crispy_field }}</div>
                         <div class="col col-sm align-items-center">
                             <a href="#" class="remove_line">
@@ -47,6 +51,11 @@
                             </a>
                         </div>
                     </div>
+                    {% if invite.non_field_errors %}
+                        <div class="row error">
+                            {{ invite.non_field_errors.as_text }}
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         </form>

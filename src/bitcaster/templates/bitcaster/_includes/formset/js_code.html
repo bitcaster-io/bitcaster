@@ -34,15 +34,17 @@
         var setNumber = function (e) {
             var $rows = $("div.fieldset>div.row");
             $TOTAL_FORMS.val($rows.length);
+            var ID=$rows.length - 1;
             $(e).find(":input").each(function () {
-                var name = $(this).attr("name").replace(/__prefix__/, $rows.length - 1);
+                var name = $(this).attr("name").replace(/__prefix__/, ID);
                 var id = "id_" + name;
                 $(this).attr({"name": name, "id": id});
             });
             $(e).find("div.form-group").each(function () {
-                var newId = $(this).attr("id").replace(/__prefix__/, $rows.length - 1);
+                var newId = $(this).attr("id").replace(/__prefix__/, ID);
                 $(this).attr("id", newId);
             });
+
         };
 
         function cloneMore() {

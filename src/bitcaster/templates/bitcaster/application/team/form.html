@@ -1,0 +1,9 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block page %}
+    <div class="container">
+        <div class="col-12">
+            {% csrf_token %}
+            {% crispy form %}
+        </div>
+    </div>
+{% endblock %}

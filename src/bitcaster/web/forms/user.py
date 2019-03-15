@@ -65,11 +65,12 @@ def send_address_verification_email(user):
 
 class UserProfileForm(forms.ModelForm):
     friendly_name = forms.CharField(label=_('Friendly Name'), required=False)
+    full_name = forms.CharField(label=_('Full Name'), required=False)
     email = forms.EmailField()
 
     class Meta:
         model = User
-        fields = ('friendly_name', 'avatar', 'email',
+        fields = ('friendly_name', 'full_name', 'avatar', 'email',
                   'timezone', 'language', 'country')
 
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,

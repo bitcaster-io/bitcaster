@@ -8,7 +8,6 @@ from bitcaster.models import OrganizationMember
 from bitcaster.utils.slug import slugify_instance
 
 from .base import AbstractModel
-from .organization import Organization
 from .user import User
 
 
@@ -16,10 +15,11 @@ class Team(AbstractModel):
     """
     A team represents a group of individuals belongs same organization
     """
-    organization = models.ForeignKey(Organization,
-                                     related_name='teams',
-                                     on_delete=models.CASCADE)
-    members = models.ManyToManyField(OrganizationMember, related_name='teams')
+    application = models.ForeignKey('bitcaster.Application',
+                                    related_name='teams',
+                                    on_delete=models.CASCADE)
+    members = models.ManyToManyField(OrganizationMember)
+    # members = models.ManyToManyField(User, related_name='teams')
     manager = models.ForeignKey(User,
                                 related_name='+',
                                 on_delete=models.CASCADE)
@@ -39,13 +39,13 @@ class Team(AbstractModel):
         if not self.slug:
             # lock = locks.get('slug:team', 5)
             # with TimedRetryPolicy(10, lock.acquire):
-            slugify_instance(self, self.name, organization=self.organization)
+            slugify_instance(self, self.name, application=self.application)
             super(Team, self).save(*args, **kwargs)
         else:
             super(Team, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('org-team-edit', args=(self.organization.slug, self.slug))
+        return reverse('app-team-edit', args=(self.application.slug, self.slug))
 
 
 class ApplicationRole(AbstractModel):

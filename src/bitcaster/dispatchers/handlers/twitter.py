@@ -16,7 +16,8 @@ logger = getLogger(__name__)
 
 
 class TwitterMessage(MessageType):
-    validators = [MaxBodyLengthValidator(140, 'Twitter message can be max %(limit_value)s chars')]
+    validators = [
+        MaxBodyLengthValidator(140, 'Twitter message can be max %(limit_value)s chars. (it has %(cleaned)d).')]
 
 
 class TwitterOptions(DispatcherOptions):

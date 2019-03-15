@@ -51,10 +51,10 @@ class Application(AbstractModel, ReverseWrapperMixin):
     flags = BitField(flags=(
         # ('has_releases', 'This Project has sent release data'),
     ), default=0, null=True)
-    teams = models.ManyToManyField('bitcaster.Team',
-                                   # related_name='teams',
-                                   through='bitcaster.ApplicationRole'
-                                   )
+    # teams = models.ManyToManyField('bitcaster.Team',
+    #                                # related_name='teams',
+    #                                through='bitcaster.ApplicationRole'
+    #                                )
 
     avatar = AvatarField(upload_to=app_media_root)
     picture_height = models.IntegerField(editable=False, null=True)

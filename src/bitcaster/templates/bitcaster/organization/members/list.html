@@ -1,15 +1,14 @@
 {% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block page %}
     <div class="container">
-        <div class="row col-12">
-            <div class="pull-right col-12 p-4">
-                <a class="btn btn-danger btn-small pull-right"
-                   href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>
-            </div>
-        </div>
+{#        <div class="row col-12">#}
+{#            <div class="pull-right col-12 p-4">#}
+{#                <a class="btn btn-danger btn-small pull-right"#}
+{#                   href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>#}
+{#            </div>#}
+{#        </div>#}
     </div>
     <div class="container">
-        <h4>Members</h4>
         <table class="table">
             <thead>
             <tr class="d-flex">

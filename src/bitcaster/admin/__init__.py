@@ -6,6 +6,7 @@ from .channel import ChannelAdmin
 from .configurationissue import ConfigurationIssueAdmin
 from .counters import CounterAdmin, LogEntryAdmin, OccurenceAdmin
 from .event import EventAdmin
+from .invitation import InvitationAdmin
 from .message import MessageAdmin
 from .monitor import MonitorAdmin
 from .organization import OrganizationAdmin

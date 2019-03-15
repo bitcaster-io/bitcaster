@@ -41,6 +41,9 @@ class Wrapper:
 
         return Wrapper(original)
 
+    def __call__(self, *args, **kwargs):
+        return self.__wrapped
+
     def __repr__(self):
         return repr(self.__wrapped)
 

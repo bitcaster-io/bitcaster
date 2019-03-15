@@ -1,10 +1,10 @@
-{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block page %}
     <div class="container">
         <div class="row col-12">
             <div class="pull-right col-12 p-4">
                 <a class="btn btn-danger btn-small pull-right"
-                   href="{% url "org-team-create" organization.slug %}">{% trans "Create new team" %}</a>
+                   href="{% app-url "app-team-create"  %}">{% trans "Create new team" %}</a>
             </div>
         </div>
     </div>
@@ -18,19 +18,19 @@
             </tr>
             </thead>
             <tbody>
-            {% for team in organization.teams.all %}
+            {% for team in application.teams.all %}
                 <tr scope="row" lass="row col-12">
                     <td lass="col-4">{{ team.name }}</td>
                     <td lass="col-6">{{ team.description }}</td>
                     <td lass="col-2">
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="edit"
-                           href="{{ team.get_absolute_url }}">
+                           href="{% app-url "app-team-edit" team.slug %}">
                             <i class="far fa-edit"></i>
                         </a>
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="remove"
-                           href="{% org-url "org-team-delete" team.slug %}">
+                           href="{% app-url "app-team-delete" team.slug %}">
                             <i class="far fa-trash-alt"></i>
                         </a>
                     </td>
