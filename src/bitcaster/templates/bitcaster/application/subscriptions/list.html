@@ -34,8 +34,8 @@
                 <td>
                     {{ subscription.get_status_display }}
                 </td>
-                <td class="text-center">
-                    <a class="btn btn-light"
+                <td class="text-right">
+                    <a class="btn btn-outline-light"
                        data-toggle="tooltip" title="{% if subscription.enabled %}Disable{% else %}Enable{% endif %}"
                        href="{% app-url 'app-event-subscription-toggle' subscription.event.id subscription.id %}">
                         <i class="fas {% if subscription.enabled %}fa-toggle-on green{% else %}fa-toggle-off red{% endif %}"></i>
@@ -56,6 +56,7 @@
                 <th scope="col">{% trans "Addredd" %}</th>
                 <th scope="col">{% trans "Created" %}</th>
                 <th scope="col">{% trans "Sent" %}</th>
+                <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
@@ -69,6 +70,19 @@
                     </td>
                     <td>
                         {{ invitation.date_sent|default_if_none:"" }}
+                    </td>
+                    <td class="text-right">
+                        <a class="btn btn-outline-light" href='{% app-url "app-invitation-delete" invitation.pk %}' ;">
+                        <i class="far fa-trash-alt pointer"></i>
+                        </a>
+                            <form method="post" class="d-inline"
+                                  action="{% app-url "app-invitation-send" invitation.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" title="resend email" class="btn btn-outline-light">
+                                    <i class="fa fa-envelope"></i>
+                                </button>
+                            </form>
+
                     </td>
                 </tr>
 

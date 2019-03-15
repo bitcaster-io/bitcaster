@@ -1,11 +1,14 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from bitcaster.mail import send_mail_by_template
+from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.otp import totp
+from bitcaster.state import state
 from bitcaster.utils.http import absolute_uri
 
 from .application import Application
@@ -14,7 +17,7 @@ from .organization import Organization
 from .team import ApplicationRole, Team
 
 
-class Invitation(models.Model):
+class Invitation(ReverseWrapperMixin, models.Model):
     class STATE:
         QUEUED = _('Queued')
         SENT = _('Sent')
@@ -26,6 +29,7 @@ class Invitation(models.Model):
     invited_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                    null=True, blank=True,
                                    on_delete=models.CASCADE,
+                                   default=lambda: state.request.user,
                                    related_name='invitations')
     organization = models.ForeignKey(Organization,
                                      blank=True, null=True,
@@ -61,6 +65,14 @@ class Invitation(models.Model):
         unique_together = (('target', 'application'),
                            ('target', 'organization'),)
 
+    class Reverse:
+        args = ['pk']
+        pattern = 'invitation-{op}'
+        urls = {}
+
+    def __str__(self):
+        return self.target
+
     def send_email(self):
         code = totp.now()
         url = reverse('org-member-accept', args=[self.organization.slug, self.pk, code])
@@ -72,3 +84,25 @@ class Invitation(models.Model):
 
     def send_sms(self):
         raise NotImplementedError
+
+    def clean(self):
+        if self.event:
+            self.application = self.event.application
+            self.organization = self.event.application.organization
+        elif self.team:
+            self.application = self.team.application
+            self.organization = self.team.application.organization
+        elif self.role:
+            self.application = self.team.application
+            self.team = self.role.team
+            self.organization = self.team.application.organization
+        elif self.application:
+            self.organization = self.application.organization
+        elif self.organization:
+            pass
+        else:
+            raise ValidationError('---')
+    # def save(self, force_insert=False, force_update=False, using=None,
+    #          update_fields=None):
+
+    # return super().save(commit)

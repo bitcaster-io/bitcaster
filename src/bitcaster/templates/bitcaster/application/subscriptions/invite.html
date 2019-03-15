@@ -24,38 +24,51 @@
         </button>
     </div>
     <div id="empty-form" class="d-none">
-        <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex">
-            <div class="hidden">{{ invitations.empty_form.id }}</div>
-            <div class="col col-sm">{{ invitations.empty_form.target|as_crispy_field }}</div>
-            <div class="col col-sm">{{ invitations.empty_form.role|as_crispy_field }}</div>
-            <div class="col col-sm align-items-center"><a href="#" class="remove_line">
-                <i class="fa fa-remove"></i></a>
+        <div class="row col-12 m-0 p-0">
+            <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex"
+                 {% if form.errors %}has-error{% endif %}>
+                <div class="hidden order" data-order="__prefix__">
+                    {{ invitations.empty_form.id }}{{ invitations.empty_form.DELETE }}</div>
+                <div class="col col-3">{{ invitations.empty_form.target|as_crispy_field }}</div>
+                <div class="col col-2 align-middle align-items-center">
+                    <a href="." class="remove_line">
+                        <i class="fas fa-trash-alt"></i></a>
+                </div>
             </div>
+            {% if form.non_field_errors %}
+                <div class="row error">
+                    {{ form.non_field_errors.as_text }}
+                </div>
+            {% endif %}
         </div>
     </div>
+
 
     <div class="container pl-3 m-3">
         <form method="post" id="Form">
             {{ invitations.management_form }}
             {% csrf_token %}
             <div class="content invitations fieldset">
-                {% for invite in invitations.forms %}
-                    <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex"
-                         {% if form.errors %}has-error{% endif %}>
-                        <div class="hidden">{{ invite.id }}</div>
-                        <div class="col col-sm">{{ invite.target|as_crispy_field }}</div>
-                        <div class="col col-sm">{{ invite.role|as_crispy_field }}</div>
-                        <div class="col col-sm align-items-center">
-                            <a href="#" class="remove_line">
-                                <i class="fa fa-remove"></i>
-                            </a>
+                {% for form in invitations.forms %}
+                    <div class="row col-12 m-0 p-0">
+                        <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex">
+                            <div class="hidden order" data-order="{{ forloop.counter }}">
+                                {{ form.id }}
+                                {{ form.DELETE }}</div>
+                            <div class="col col-3">{{ form.target|as_crispy_field }}</div>
+                            <div class="col col-2 align-middle align-items-center">
+                                <a href="." class="remove_line">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
                         </div>
+                        {% if form.non_field_errors %}
+                            <div class="row error">
+                                {{ form.non_field_errors.as_text }}
+                            </div>
+                        {% endif %}
+
                     </div>
-                    {% if invite.non_field_errors %}
-                        <div class="row error">
-                            {{ invite.non_field_errors.as_text }}
-                        </div>
-                    {% endif %}
                 {% endfor %}
             </div>
         </form>
@@ -72,5 +85,5 @@
 
 {% endblock %}
 {% block js %}
-    {% include "bitcaster/_includes/formset/js_code.html" with formsetName="memberships" %}
+    {% include "bitcaster/_includes/formset/js_code.html" with formsetName="invitations" %}
 {% endblock js %}

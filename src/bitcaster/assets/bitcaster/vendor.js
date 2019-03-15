@@ -1,4 +1,4 @@
-import 'bootstrap';
+// import 'bootstrap';
 
 window.select2 = require('select2');
 window.jQuery = window.$ = require('jquery');

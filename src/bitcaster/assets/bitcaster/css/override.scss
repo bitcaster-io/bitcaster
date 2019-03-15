@@ -1,33 +1,40 @@
 // override bootstrap4 colors/values
+.btn-outline-light {
+    border: 1px solid grey;
+    &:hover{
+        background-color: darkgrey;
+        border: 1px solid black;
+    }
+}
 
 .bg-success {
-  background-color: $success-color;
+    background-color: $success-color;
 }
 
 .bg-info {
-  background-color: #17a2b8 !important;
+    background-color: #17a2b8 !important;
 }
 
 .bg-warning {
-  background-color: $warning-color;
+    background-color: $warning-color;
 }
 
 .bg-danger, .bg-error {
-  background-color: $error-color;
+    background-color: $error-color;
 }
 
 .bg-primary {
-  background-color: #007bff !important;
+    background-color: #007bff !important;
 }
 
 .bg-secondary {
-  background-color: #6c757d !important;
+    background-color: #6c757d !important;
 }
 
 .bg-dark {
-  background-color: #343a40 !important;
+    background-color: #343a40 !important;
 }
 
 .bg-light {
-  background-color: #f8f9fa !important;
+    background-color: #f8f9fa !important;
 }

@@ -2,50 +2,47 @@ import logging
 
 from django.utils.translation import ugettext as _
 
-from bitcaster import messages
 from bitcaster.models.invitation import Invitation
 from bitcaster.web.forms.invitations import ApplicationInvitationFormSet
-from bitcaster.web.views.base import (BitcasterBaseCreateView,
-                                      BitcasterBaseDeleteView,)
+from bitcaster.web.views.invitations import (InvitationCreate,
+                                             InvitationDelete, InvitationSend,)
 
 from .app import ApplicationBaseView
 
 logger = logging.getLogger(__name__)
 
 
-class InviteMixin(ApplicationBaseView):
+class ApplicationInvitationMixin(ApplicationBaseView):
     model = Invitation
 
     def get_success_url(self):
         return self.selected_application.urls.subscriptions
 
     def get_queryset(self):
-        return self.selected_organization.memberships.exclude(user=self.selected_organization.owner)
+        return self.selected_application.invitations
 
 
-class ApplicationInvite(InviteMixin, BitcasterBaseCreateView):
+class ApplicationInvite(ApplicationInvitationMixin, InvitationCreate):
     form_class = ApplicationInvitationFormSet
     template_name = 'bitcaster/application/subscriptions/invite.html'
     title = _('Invite people')
 
-    def get_context_data(self, **kwargs):
-        data = super(ApplicationInvite, self).get_context_data(**kwargs)
-        data['invitations'] = data['form']
-        return data
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.instance = self.selected_application
-        return form
-
-    def form_invalid(self, form):
-        self.message_user(_('invalid'), messages.WARNING)
-        return super(ApplicationInvite, self).form_invalid(form)
-
-    def form_valid(self, form):
-        form.instance = self.selected_application
-        form.save()
-        return super(ApplicationInvite, self).form_valid(form)
+    def get_parent_instance(self):
+        return self.selected_application
+    #
+    # def get_form(self, form_class=None):
+    #     form = super().get_form(form_class)
+    #     form.instance = self.get_parent_instance()
+    #     return form
+    #
+    # def form_invalid(self, form):
+    #     self.message_user(_('invalid'), messages.WARNING)
+    #     return super(ApplicationInvite, self).form_invalid(form)
+    #
+    # def form_valid(self, form):
+    #     form.instance = self.selected_application
+    #     form.save()
+    #     return super(ApplicationInvite, self).form_valid(form)
 
 
 # class InviteAccept(MessageUserMixin, CreateView):
@@ -145,7 +142,12 @@ class ApplicationInvite(InviteMixin, BitcasterBaseCreateView):
 #         return super().form_valid(form)
 
 
-class InviteDelete(InviteMixin, BitcasterBaseDeleteView):
-    title = _('Cancel invitation')
-    message = _('Invitation to <strong>%(object)s</strong> will be canceled')
-    user_message = _('Invitation Canceled')
+class ApplicationInvitationDelete(ApplicationInvitationMixin, InvitationDelete):
+    pass
+    # title = _('Cancel invitation')
+    # message = _('Invitation to <strong>%(object)s</strong> will be canceled')
+    # user_message = _('Invitation Canceled')
+
+
+class ApplicationInvitationSend(ApplicationInvitationMixin, InvitationSend):
+    pass

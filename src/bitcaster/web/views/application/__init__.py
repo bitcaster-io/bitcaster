@@ -1,6 +1,7 @@
 from .app import (ApplicationCheckConfigView, ApplicationDashboard,
                   ApplicationDeleteView, ApplicationUpdateView,)
-from .invitations import ApplicationInvite
+from .invitations import (ApplicationInvitationDelete,
+                          ApplicationInvitationSend, ApplicationInvite,)
 from .keys import (ApplicationKeyCreate, ApplicationKeyDelete,
                    ApplicationKeyList, ApplicationKeyUpdate,)
 from .monitors import (ApplicationMonitorCreate, ApplicationMonitorList,

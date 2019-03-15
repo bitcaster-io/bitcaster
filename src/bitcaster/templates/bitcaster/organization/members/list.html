@@ -1,12 +1,12 @@
 {% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block page %}
     <div class="container">
-{#        <div class="row col-12">#}
-{#            <div class="pull-right col-12 p-4">#}
-{#                <a class="btn btn-danger btn-small pull-right"#}
-{#                   href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>#}
-{#            </div>#}
-{#        </div>#}
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>
+            </div>
+        </div>
     </div>
     <div class="container">
         <table class="table">
@@ -21,7 +21,8 @@
             <tbody>
             <tr class="d-flex">
                 <td class="col-4">
-                    {{ organization.owner }}{% if organization.owner == user %}<span class="label warn">you</span>{% endif %}
+                    {{ organization.owner }}{% if organization.owner == user %}
+                        <span class="label warn">you</span>{% endif %}
                 </td>
                 <td class="col-3">Owner</td>
                 <td class="col-3"></td>
@@ -34,12 +35,12 @@
                     <td class="col-3">{{ membership.get_role_display }}</td>
                     <td class="col-3">{{ membership.date_enrolled }}</td>
                     <td>
-                        <a class="btn btn-light"
+                        <a class="btn btn-outline-light"
                            data-toggle="tooltip" title="edit"
                            href="{% org-url "org-member-edit" membership.pk %}">
                             <i class="far fa-edit"></i>
                         </a>
-                        <a class="btn btn-light"
+                        <a class="btn btn-outline-light"
                            data-toggle="tooltip" title="remove"
                            href="{% org-url "org-member-delete" membership.pk %}">
                             <i class="far fa-trash-alt"></i>
@@ -57,29 +58,27 @@
                 <thead>
                 <tr class="d-flex">
                     <th scope="col" class="col-4">User</th>
-                    <th scope="col" class="col-3">Role</th>
-                    <th scope="col" class="col-3">Date</th>
+                    <th scope="col" class="col-3">Invited By</th>
+                    <th scope="col" class="col-3">On</th>
                     <th scope="col" class="col-1"></th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for membership in invitations.all %}
+                {% for invitation in invitations.all %}
                     <tr class="d-flex">
                         <td class="col-4">
-                            {{ membership.email }}
+                            {{ invitation.target }}
                         </td>
-                        <td class="col-3">{{ membership.get_role_display }}</td>
-                        <td class="col-3">{{ membership.date_added }}</td>
+                        <td class="col-3">{{ invitation.invited_by }}</td>
+                        <td class="col-3">{{ invitation.date_created }}</td>
                         <td class="text-nowrap col-1">
-
-                            <button onclick="window.location.href = '{% org-url "org-invite-delete" membership.pk %}';">
-                                <i class="far fa-trash-alt pointer"></i>
-                            </button>
-                            |
+                            <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'">
+                            <i class="far fa-trash-alt"></i>
+                            </a>
                             <form method="post" class="d-inline"
-                                  action="{% url "org-member-send" organization.slug membership.pk %}">
+                                  action="{% org-url "org-invitation-send" invitation.pk %}">
                                 {% csrf_token %}
-                                <button type="submit" title="resend email" class="pointer">
+                                <button type="submit" title="resend email" class="btn btn-outline-light">
                                     <i class="fa fa-envelope"></i>
                                 </button>
                             </form>

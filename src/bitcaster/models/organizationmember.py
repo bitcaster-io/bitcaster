@@ -35,4 +35,4 @@ class OrganizationMember(models.Model):
         )
 
     def __str__(self):
-        return self.user.email
+        return str(self.user)

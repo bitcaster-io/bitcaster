@@ -5,6 +5,8 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from bitcaster.web.views.callbacks import confirm_address
+from bitcaster.web.views.invitations import (InvitationAccept,
+                                             InvitationDelete, InvitationSend,)
 from bitcaster.web.views.user.base import UserEventListView, UserHome
 
 from .views import (  # OrganizationTeamCreate, OrganizationTeamDelete,; OrganizationTeamList, OrganizationTeamMember,OrganizationTeamUpdate,
@@ -20,7 +22,7 @@ from .views import (  # OrganizationTeamCreate, OrganizationTeamDelete,; Organiz
     EventKeys, EventList, EventMessages, EventSubscriptionCreate,
     EventSubscriptionDelete, EventSubscriptionInvite, EventSubscriptionList,
     EventSubscriptionToggle, EventTest, EventToggle, EventUpdate, IndexView,
-    InviteAccept, InviteDelete, InviteSend, LoginView, LogoutView,
+    InviteAccept, OrgInviteDelete, OrgInviteSend, LoginView, LogoutView,
     MessageCreate, MessageDelete, MessageList, MessageUpdate,
     OrganizationApplications, OrganizationChannelCreate,
     OrganizationChannelDeprecate, OrganizationChannelRemove,
@@ -33,7 +35,8 @@ from .views import (  # OrganizationTeamCreate, OrganizationTeamDelete,; Organiz
     SettingsView, SetupView, UserAddressesAssignmentView, UserAddressesInfoView,
     UserAddressesView, UserProfileView, UserSubscriptionEdit,
     UserSubscriptionListView, UserSubscriptionRemove, UserSubscriptionToggle,
-    WorkInProgressView, channel_icon, confirm_registration, plugin_icon,)
+    WorkInProgressView, channel_icon, confirm_registration, plugin_icon, ApplicationInvitationDelete,
+    ApplicationInvitationSend)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
@@ -74,9 +77,9 @@ urlpatterns = [
     path('<slug:org>/me/addresses/<int:pk>/info', UserAddressesInfoView.as_view(), name='user-address-info'),
     path('<slug:org>/me/assignment/', UserAddressesAssignmentView.as_view(), name='user-address-assignment'),
 
-    path('new-user/', TemplateView.as_view(template_name='bitcaster/users/user_new.html')),
-    path('new-association/', TemplateView.as_view(template_name='bitcaster/users/user_associated.html')),
-    path('login-error/', TemplateView.as_view(template_name='bitcaster/users/login_error.html')),
+    # path('new-user/', TemplateView.as_view(template_name='bitcaster/users/user_new.html')),
+    # path('new-association/', TemplateView.as_view(template_name='bitcaster/users/user_associated.html')),
+    # path('login-error/', TemplateView.as_view(template_name='bitcaster/users/login_error.html')),
 
     # path('user/<slug:org>/', UserHomeView.as_view(), name='user-org'),
     # path('user/<slug:org>/<slug:app>/', UserHomeView.as_view(), name='user-app'),
@@ -94,6 +97,9 @@ urlpatterns = [
 
     # Applications / Invitations
     path('<slug:org>/a/<slug:app>/invite/', ApplicationInvite.as_view(), name='app-invite'),
+    path('<slug:org>/a/<slug:app>/i/<int:pk>/delete/', ApplicationInvitationDelete.as_view(), name='app-invitation-delete'),
+    # path('<slug:org>/a/<slug:app>/i/<int:pk>/accept/', ApplicationInvitationAccept.as_view(), name='invitation-accept'),
+    path('<slug:org>/a/<slug:app>/i/<int:pk>/send/', ApplicationInvitationSend.as_view(), name='app-invitation-send'),
 
     # Applications / Teams
     path('<slug:org>/a/<slug:app>/team/', ApplicationTeamList.as_view(), name='app-teams'),
@@ -172,9 +178,10 @@ urlpatterns = [
     # path('<slug:org>/member/add/', OrganizationCreateMember.as_view(), name='org-member-register'),
     path('<slug:org>/member/<int:pk>/edit/', OrganizationMembershipEdit.as_view(), name='org-member-edit'),
     path('<slug:org>/member/<int:pk>/delete/', OrganizationMembershipDelete.as_view(), name='org-member-delete'),
+
     path('<slug:org>/invite/accept/<int:pk>/<str:check>/', InviteAccept.as_view(), name='org-member-accept'),
-    path('<slug:org>/invite/delete/<int:pk>/', InviteDelete.as_view(), name='org-invite-delete'),
-    path('<slug:org>/invite/send/<int:pk>/', InviteSend.as_view(), name='org-member-send'),
+    path('<slug:org>/invite/delete/<int:pk>/', OrgInviteDelete.as_view(), name='org-invitation-delete'),
+    path('<slug:org>/invite/send/<int:pk>/', OrgInviteSend.as_view(), name='org-invitation-send'),
     path('<slug:org>/invite/', OrganizationInvite.as_view(), name='org-invite'),
 
     # path('<slug:org>/team/', OrganizationTeamList.as_view(), name='org-teams'),
