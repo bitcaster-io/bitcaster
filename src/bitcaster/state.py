@@ -11,4 +11,8 @@ class State(local):
         self.request = None
 
 
+def get_current_user():
+    return state.request.user
+
+
 state = State()

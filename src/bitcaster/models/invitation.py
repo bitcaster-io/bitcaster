@@ -8,7 +8,7 @@ from django.utils.translation import gettext as _
 from bitcaster.mail import send_mail_by_template
 from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.otp import totp
-from bitcaster.state import state
+from bitcaster.state import get_current_user
 from bitcaster.utils.http import absolute_uri
 
 from .application import Application
@@ -29,7 +29,7 @@ class Invitation(ReverseWrapperMixin, models.Model):
     invited_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                    null=True, blank=True,
                                    on_delete=models.CASCADE,
-                                   default=lambda: state.request.user,
+                                   default=get_current_user,
                                    related_name='invitations')
     organization = models.ForeignKey(Organization,
                                      blank=True, null=True,

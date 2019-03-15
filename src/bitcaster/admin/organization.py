@@ -30,5 +30,5 @@ class StatusFilter(NullFieldListFilter):
 
 @admin.register(OrganizationMember, site=site)
 class OrganizationMemberAdmin(admin.ModelAdmin):
-    list_display = ('organization', 'user', 'date_added', 'role', )
+    list_display = ('organization', 'user', 'date_enrolled', 'role', )
     list_filter = ('organization', 'role', ('user', StatusFilter))

@@ -197,7 +197,7 @@ class TeamFactory(factory.DjangoModelFactory):
         model = bitcaster.models.Team
         django_get_or_create = ('name',)
 
-    organization = factory.SubFactory(OrganizationFactory)
+    application = factory.SubFactory(ApplicationFactory)
     manager = factory.SubFactory(UserFactory)
     name = factory.Faker('name')
     # members = []

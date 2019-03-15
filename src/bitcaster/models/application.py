@@ -96,7 +96,7 @@ class Application(AbstractModel, ReverseWrapperMixin):
 
     @cached_property
     def admins(self):
-        admins = self.application_teams.filter(role=Role.ADMIN).first()
+        admins = self.application_roles.filter(role=Role.ADMIN).first()
         if admins:
             return [m.user for m in admins.team.members.all()]
         return []

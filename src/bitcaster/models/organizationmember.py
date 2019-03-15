@@ -26,7 +26,7 @@ class OrganizationMember(models.Model):
                              on_delete=models.CASCADE,
                              related_name='memberships')
     role = RoleField()
-    date_added = models.DateTimeField(default=timezone.now, help_text='enrollemnt date')
+    date_enrolled = models.DateTimeField(default=timezone.now, help_text='enrollemnt date')
 
     class Meta:
         app_label = 'bitcaster'
