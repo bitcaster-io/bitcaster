@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # Admin
     'django.contrib.admin',
 
+    'bitcaster.web',
     'bitcaster.apps.Config',
 ]
 

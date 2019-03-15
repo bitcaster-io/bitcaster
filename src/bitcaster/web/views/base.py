@@ -9,7 +9,7 @@ from django.views.generic.detail import SingleObjectMixin
 from strategy_field.utils import import_by_name
 
 from bitcaster.middleware.exception import RedirectToRefererResponse
-from bitcaster.templatetags.bitcaster import verbose_name
+from bitcaster.web.templatetags.bitcaster import verbose_name
 
 from .mixins import (BitcasterBaseViewMixin,
                      BitcasterSingleObjectMixin, MessageUserMixin,)

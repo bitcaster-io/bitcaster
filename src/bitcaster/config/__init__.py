@@ -19,6 +19,6 @@ DEFAULTS = dict(
     SECRET_KEY=(str, ''),
     SENTRY_DSN=(str, ''),
     SENTRY_ENABLED=(bool, False),
-    STATIC_ROOT=(str, str(Path(__file__).parent.parent / 'static')),
+    STATIC_ROOT=(str, str(Path(__file__).parent.parent / 'web' / 'static')),
     URL_PREFIX=(str, ''),
 )

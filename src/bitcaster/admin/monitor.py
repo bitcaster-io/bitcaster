@@ -13,8 +13,8 @@ from strategy_field.utils import fqn
 from bitcaster.exceptions import PluginValidationError
 from bitcaster.logging import getLogger
 from bitcaster.models import Monitor
-from bitcaster.templatetags.bitcaster import render_serializer
 from bitcaster.utils.django import deactivator_factory
+from bitcaster.web.templatetags.bitcaster import render_serializer
 
 from .site import site
 

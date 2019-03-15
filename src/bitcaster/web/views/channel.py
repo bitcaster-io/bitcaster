@@ -13,8 +13,8 @@ from strategy_field.utils import import_by_name
 from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
 from bitcaster.models import AddressAssignment, Channel
-from bitcaster.templatetags.markdown import markdown
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
+from bitcaster.web.templatetags.markdown import markdown
 
 from .base import (BitcasterBaseDeleteView,
                    BitcasterBaseDetailView, BitcasterBaseListView,

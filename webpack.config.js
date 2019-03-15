@@ -5,8 +5,8 @@ const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 
-const rel = path.resolve.bind(null, __dirname + "/src/bitcaster/assets/");
-const outputDir = path.resolve.bind(null, __dirname + "/src/bitcaster/static/bitcaster/")();
+const rel = path.resolve.bind(null, __dirname + "/src/bitcaster/web/assets/");
+const outputDir = path.resolve.bind(null, __dirname + "/src/bitcaster/web/static/bitcaster/")();
 const VERSION = require("./package.json").version;
 
 let IS_PRODUCTION = false;

@@ -9,8 +9,8 @@ from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
 from bitcaster.logging import getLogger
 from bitcaster.plugins.validators import MaxBodyLengthValidator
-from bitcaster.templatetags.markdown import markdown
 from bitcaster.utils.language import classproperty
+from bitcaster.web.templatetags.markdown import markdown
 
 logger = getLogger(__name__)
 

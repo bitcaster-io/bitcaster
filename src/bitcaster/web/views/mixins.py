@@ -7,7 +7,8 @@ from django.utils.safestring import mark_safe
 
 from bitcaster import messages
 from bitcaster.security import authorized_or_403
-from bitcaster.templatetags.bitcaster import verbose_name, verbose_name_plural
+from bitcaster.web.templatetags.bitcaster import (verbose_name,
+                                                  verbose_name_plural,)
 
 logger = logging.getLogger(__name__)
 
