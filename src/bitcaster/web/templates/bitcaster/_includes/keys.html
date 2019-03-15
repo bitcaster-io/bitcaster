@@ -1,0 +1,52 @@
+{% load i18n bitcaster %}
+<div class="container application-keys">
+    <table class="table">
+        <thead>
+        <tr class="d-flex">
+            <th scope="col" class="col-8">name</th>
+            <th scope="col" class="col-1">enabled</th>
+            <th scope="col" class="col-1">unlimited</th>
+            <th scope="col" class="col-1"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key in keys.all %}
+            <tr class="d-flex">
+                <td class="col-8">{{ key.name }}
+                    <div class="code ">{{ key.token }}</div>
+                </td>
+
+                <td class="col-1 text-center vertical-align-center">
+                    {% if key.enabled %}
+                        <i class="fa fa-check-circle green"></i>
+                    {% else %}
+                        <i class="fas fa-times-circle red"></i>
+                    {% endif %}
+
+                </td>
+                <td class="col-1 text-center vertical-align-center">
+                    {% if key.all_events %}
+                        <i class="fa fa-check-circle green"></i>
+                    {% else %}
+                        <i class="fas fa-times-circle red"></i>
+                    {% endif %}
+                </td>
+                <td>
+                    <a class="btn btn-light" href='{{ key.urls.edit }}'>
+                        <i class="far fa-edit pointer"></i>
+                    </a>
+                    <a class="btn btn-light" href='{{ key.urls.delete }}'>
+                        <i class="far fa-trash-alt pointer"></i>
+                    </a>
+                    {#                        <button onclick="window.location.href = '{% app-url "app-key-update" key.pk %}';">#}
+                    {#                            <i class="far fa-edit pointer"></i>#}
+                    {#                        </button>#}
+                    {#                        <button onclick="window.location.href = '{% app-url "app-key-delete" key.pk %}';">#}
+                    {#                            <i class="far fa-trash-alt pointer"></i>#}
+                    {#                        </button>#}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

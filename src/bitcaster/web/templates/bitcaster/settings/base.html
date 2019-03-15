@@ -1,0 +1,44 @@
+{% extends "bitcaster/base.html" %}{% load crispy_forms_tags i18n %}
+{% block bodyclass %}settings{% endblock %}
+{% block pageId %}settings{% endblock %}
+{% block header_class %}settings{% endblock %}
+{% block nav-menu %}<span class="top-menu">System Configuration</span>{% endblock nav-menu %}
+{% block left-menu %}
+    <ul class="list-unstyled components">
+        <li>
+            <a href="{% url "settings" %}">
+                <i class="fas fa-wrench"></i>
+                {% trans 'General' %}
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'settings-email' %}">
+                <i class="fas fa-envelope"></i>
+                {% trans 'Mail Server' %}</a>
+        </li>
+        <li>
+            <a href="{% url 'settings-oauth' %}">
+                <i class="fas fa-lock"></i>
+                {% trans 'OAuth 2.0' %}</a>
+        </li>
+        <li>
+            <a href="{% url 'settings-ldap' %}">
+                <i class="fas fa-laptop-code"></i>
+                {% trans 'LDAP' %}</a>
+        </li>
+        <li>
+            <a href="{% url 'settings-sysinfo' %}">
+                <i class="fas fa-list-ul"></i>
+                {% trans 'Environment' %}</a>
+        </li>
+    </ul>
+    <ul class="list-unstyled components">
+        <li>
+            <a href="{% url 'index' %}">
+                <i class="fas fa-home"></i>
+                {% trans 'Home' %}</a>
+        </li>
+    </ul>
+{% endblock left-menu %}
+{% block page %}
+{% endblock page %}

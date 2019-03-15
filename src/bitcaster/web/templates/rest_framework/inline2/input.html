@@ -1,0 +1,21 @@
+{#{% extends "rest_framework/inline/input.html" %}#}
+<div class="form-group {% if field.errors %}has-error{% endif %}">
+    <div class="label {% if style.hide_label %}sr-only{% endif %}">{{ field.label }}</div>
+    <div class="field">
+        <input name="{{ field.name }}" {% if style.input_type != "file" %}class="form-control"{% endif %}
+               autocomplete="off"
+               type="{{ style.input_type }}" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %}
+               {% if field.value %}value="{{ field.value }}"{% endif %}
+               {% if style.autofocus and style.input_type != "hidden" %}autofocus{% endif %}>
+        <div class="errors">
+            {% if field.errors %}
+                {% for error in field.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% if field.help_text %}
+            <div class="help-block">{{ field.help_text|safe }}</div>
+        {% endif %}
+    </div>
+</div>

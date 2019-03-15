@@ -1,0 +1,120 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block pageId %}event{% endblock %}
+{% block content %}
+    <h2><a href="{{ event.urls.edit }}">{{ event }}</a>: Subscribe Users</h2>
+    <div>
+        <a href="{{ application.urls.events }}">events</a> :
+        <a href="{{ event.urls.edit }}">{{ event }}</a> :
+        <a href="{{ event.urls.subscriptions }}">subscriptions</a> :
+        <a href="{{ event.urls.subscriptions_subscribe }}">subscribe users</a>
+    </div>
+
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a id="add_more" class="btn btn-danger btn-small pull-right"
+                   href="#">{% trans "Add Subscription" %}
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="empty-form" class="d-none">
+        <div class="row col-12">
+            <div class="row col-12">
+                {{ form.empty_form.event }}
+                <div class="row col-sm">{{ form.empty_form.subscriber|as_crispy_field }}</div>
+                <div class="row col-sm">{{ form.empty_form.channel|as_crispy_field }}</div>
+                {#            <div class="row col-sm">{{ form.empty_form.locked|as_crispy_field }}</div>#}
+                <div class="row col-sm align-items-center"><a href="#" class="remove_line">
+                    <i class="far fa-trash-alt"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <form method="post">
+            {{ form.management_form }}
+            {% csrf_token %}
+            <div class="content invitations">
+                {% for invite in form.forms %}
+                    <div class="row col-12">
+                        <div class="row col-12">
+                            {{ invite.event }}
+                            <div class="row col-sm">{{ invite.subscriber|as_crispy_field }}</div>
+                            <div class="row col-sm">{{ invite.channel|as_crispy_field }}</div>
+                            {#                        <div class="row col-sm">{{ invite.locked|as_crispy_field }}</div>#}
+                            <div class="row col-sm align-items-center">
+                                <a href="#" class="remove_line">
+                                    <i class="far fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row red">{{ invite.non_field_errors }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+            <input type="submit" id="btn-submit"
+                   value="{% trans "Save" %}"
+                   class="btn btn-primary btn-small pull-right">
+        </form>
+    </div>
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        (function () {
+            var formsetName = "subscriptions";
+            var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
+            var selector = "div.invitations";
+
+            $(".remove_line").click(function () {
+                $("#btn-submit").prop("disabled", true);
+                var $target = $(this).parent().parent().parent();
+                $target.remove();
+                setTimeout(function () {
+                    reNumber();
+                }, 20);
+            });
+            $("#add_more").click(function () {
+                $("#btn-submit").prop("disabled", true);
+                cloneMore();
+            });
+            var reNumber = function () {
+                var $rows = $("div.invitations>div.row");
+                $rows.each(function (i, e) {
+                    $(e).find(":input").each(function () {
+                        var name = $(this).attr("name").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
+                        var id = "id_" + name;
+                        $(this).attr({"name": name, "id": id})
+                    });
+                    $(e).find("label").each(function () {
+                        var newFor = $(this).attr("for").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
+                        $(this).attr("for", newFor);
+                    });
+                    ///*
+                    $(e).find("div").each(function () {
+                        var _id = $(this).attr("id");
+                        if (_id) {
+                            var newId = $(this).attr("id").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
+                            $(this).attr("id", newId);
+                        }
+                    });
+                    //*/
+                });
+                $TOTAL_FORMS.val(parseInt($rows.length));
+                $("#btn-submit").prop("disabled", parseInt($TOTAL_FORMS.val()) < 1);
+
+            };
+
+            function cloneMore() {
+                var $newElement = $("#empty-form>div.row").clone(true);
+                $newElement.removeClass("d-none");
+                $(selector).append($newElement);
+                setTimeout(function () {
+                    reNumber();
+                }, 20);
+            };
+        })($)
+    </script>
+
+{% endblock %}

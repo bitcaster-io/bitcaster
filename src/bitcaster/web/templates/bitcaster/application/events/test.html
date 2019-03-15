@@ -1,0 +1,164 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block pageId %}event{% endblock %}
+{% block page %}
+    <style>
+        pre {
+            padding: 8px;
+            width: 90%;
+            font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, sans-serif;
+            font-size: 15px;
+            color: #e8e8e8;
+            background-color: black;
+        }
+
+        #_hiddenCopyText_ {
+            width: 0;
+            height: 0;
+            position: fixed;
+            left: -9999px;
+            right: 0;
+            z-index: -1000;
+            resize: none;
+            border: 0 transparent;
+        }
+
+    </style>
+    <div class="breadcrumbs pb-4">
+        <a href="{{ app.url.events }}">events</a> :
+        <a href="{{ event.urls.edit }}">{{ event }}</a> :
+        <a href="{{ events.urls.test }}">test</a>
+    </div>
+
+    <div class="container-fluid border p-3">
+        <form id="ser">
+            {% render_serializer serializer "rest_framework/inline2" %}
+        </form>
+    </div>
+    <textarea id="_hiddenCopyText_"></textarea>
+
+    <div class="p-2 m-3">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-curl" role="tab" aria-controls="home"
+                   aria-selected="true">cUrl</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-httpie" role="tab"
+                   aria-controls="profile"
+                   aria-selected="false">Httpie</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-wget" role="tab"
+                   aria-controls="profile"
+                   aria-selected="false">wget</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-web" role="tab"
+                   aria-controls="profile"
+                   aria-selected="false">web</a>
+            </li>
+        </ul>
+
+        <div class="tab-content p-2" id="myTabContent">
+            <div class="tab-pane show active" id="tab-curl" role="tabpanel" aria-labelledby="home-tab">
+                <div class="pb-2">
+                    <button data-target="#curl" class="fa fa-copy"></button>
+                    copy multiline: <input type="checkbox" id="multiline">
+                </div>
+                <pre id="curl">
+curl -H "Content-Type: application/json" \
+     -H "Authorization:Key {{ key.token }}" \
+     -X POST \<span id="params1"></span>
+     {{ api_url }}
+</pre>
+            </div>
+
+            <div class="tab-pane" id="tab-httpie" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="pb-2">
+                    <button data-target="#httpie" class="fa fa-copy"></button>
+                </div>
+                <pre id="httpie">
+http POST {{ api_url }} \
+     Authorization:"Key {{ key.token }}" <span id="params2"></span>
+</pre>
+
+            </div>
+
+            <div class="tab-pane" id="tab-wget" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="pb-2">
+                    <button data-target="#wget" class="fa fa-copy"></button>
+                </div>
+                <pre id="wget">
+wget -O- "{{ api_url }}" \
+     --header=Content-Type:application/json \
+     --header="Authorization:Key {{ key.token }}" <span id="params3"></span>
+            </pre>
+            </div>
+
+            <div class="tab-pane" id="tab-web" role="tabpanel" aria-labelledby="profile-tab">
+                <button id="trigger" class="btn btn-primary">Trigger</button>
+<pre id="web"></pre>
+            </div>
+
+        </div>
+    </div>
+
+            <input type="button" class="btn btn-secondary"
+               onclick="history.back();"
+               value="{% trans "Cancel" %}">
+
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $("#ser input").change(function () {
+            var args = "";
+            var j = {};
+            $("#ser input").each(function () {
+                if ($(this).val() !== "") {
+                    args += "\n     " + $(this).attr("name") + "=" + $(this).val() + " \\";
+                    j[$(this).attr("name")] = $(this).val();
+                }
+            });
+            $("#params1").text("\\\n     -d '" + JSON.stringify(j) + "'");
+            $("#params2").text(args);
+            $("#params3").text("\\\n     --post-data='" + JSON.stringify(j) + "'");
+        });
+    </script>
+    <script>
+        $("#trigger").click(function () {
+            var xhttp = new XMLHttpRequest();
+            $monitor = $('#web');
+            xhttp.onprogress = function () {
+                $monitor.append("LOADING\n"); // readyState will be 3
+            };
+            /*
+            xhttp.onload = function () {
+                $monitor.append("SUCCESS\n"); // readyState will be 4
+            };
+            */
+            xhttp.open("POST", "{{ api_url }}", false);
+            $monitor.append("OPEN CONNECTION: {{ api_url }}\n");
+             xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.setRequestHeader("Authorization", "Key {{ key.token }}");
+            $monitor.append("SENDING REQUEST\n");
+            xhttp.send();
+            if ( xhttp.status !== 201){
+                $monitor.append("ERROR ", xhttp.status, "\n");
+            }else {
+                $monitor.append("SUCCESS ", "\n");
+            }
+            $monitor.append(xhttp.responseText, "\n");
+        });
+
+        $("button.fa-copy").click(function () {
+            var $target = $($(this).data("target"));
+            var command = $target.text();
+            if (!document.getElementById("multiline").checked) {
+                command = command.replace(/[\n\\]/g, "").replace(/ {2,}/g, " ");
+            }
+            $("#_hiddenCopyText_").val(command).select();
+            var succeed = document.execCommand("Copy");
+        });
+    </script>
+{% endblock %}

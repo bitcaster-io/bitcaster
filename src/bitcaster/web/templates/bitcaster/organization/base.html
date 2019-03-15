@@ -1,0 +1,35 @@
+{% extends "bitcaster/base.html" %}{% load bc_permissions bitcaster i18n %}
+{% block bodyclass %}organization{% endblock %}
+{% block left-menu %}
+    <div class="text-center">{{ organization }}</div>
+    <ul class="list-unstyled components">
+        <li>
+            <a href="{{ organization.urls.dashboard }}">
+                <i class="fas fa-tachometer-alt"></i>{% trans "Dashboard" %}</a>
+        </li>
+        <li>
+            <a href="{{ organization.urls.config }}">
+                <i class="fas fa-cogs"></i>{% trans "Configuration" %}</a>
+        </li>
+        <li>
+            <a href="{{ organization.urls.channels }}">
+                <i class="fas fa-broadcast-tower"></i>{% trans "Channels" %}</a>
+        </li>
+        <li>
+            <a href="{{ organization.urls.members }}">
+                <i class="fas fa-users"></i>{% trans "Members" %}</a>
+        </li>
+        <li>
+            <a href="{{ organization.urls.applications }}">
+                <i class="fas fa-server"></i>{% trans "Applications" %}</a>
+        </li>
+    </ul>
+    <ul class="list-unstyled components sidebar-footer">
+        <li>
+            <a style="bottom:0;" href="/">
+                <i class="fas fa-home"></i>{% trans "Home" %}</a>
+        </li>
+    </ul>
+{% endblock left-menu %}
+{% block content %}
+{% endblock content %}

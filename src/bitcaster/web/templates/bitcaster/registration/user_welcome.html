@@ -1,0 +1,32 @@
+{% extends "bitcaster/base.html" %}{% load crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
+{% block page %}
+
+    <div class="container">
+        <div class="row col-12 justify-content-center align-items-center">
+            <div class="box box-modal login-form col-6 p-3">
+                {% if membership %}
+                    {% if membership.user %}
+                        <div>Registration token already used</div>
+                    {% else %}
+                        <div class="container-fluid p-3">
+                            <form method="post">
+                                {% csrf_token %}
+                                {{ form.errors|as_crispy_errors }}
+                                {#                            <input type="hidden" name="next" value="/">#}
+                                {{ form|crispy }}
+                                <input type="submit" value="Register"
+                                       class="btn btn-primary"/>
+                            </form>
+                        </div>
+                        {% include "bitcaster/includes/_oauth.html" %}
+                    {% endif %}
+                {% else %}
+                    <div class="text-center align-middle h1">
+                    <i class="fa fa-ban red mr-5 fa-large"></i>
+                        <span class="mb-5">Invitation not found</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

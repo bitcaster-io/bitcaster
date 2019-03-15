@@ -1,0 +1,135 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block pageId %}event{% endblock %}
+{% block page %}
+    <div class="breadcrumbs pb-4">
+        <a href="{{ application.urls.events }}">events</a> :
+        {% if event %}
+            <a href="{{ event.urls.edit }}">{{ event }}</a>
+        {% endif %}
+    </div>
+    <div class="container-fluid">
+{#        <div id="empty-form" class="d-none">#}
+{#            <div class="row">#}
+{#                <div class="row col-sm">{{ form.arguments.empty_form.name|as_crispy_field }}</div>#}
+{#                <div class="row col-sm">{{ form.arguments.empty_form.type|as_crispy_field }}</div>#}
+{#                <div class="row col-sm align-items-center"><a href="#" class="remove_line">#}
+{#                    <i class="fa fa-remove"></i></a>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+
+        <form method="post" class="d-none" id="form-event">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="pt-5">
+                <input
+                    name="save_edit_messages"
+                    value="{% trans "Save and edit messages" %}"
+                    type="submit" class="pull-right btn btn-default btn-primary">
+                <input type="button" class="btn btn-secondary"
+                       onclick="history.back();"
+                       value="{% trans "Cancel" %}">
+
+                <input id="btn-submit"
+                       name="save_and_exit"
+                       value="{% trans "Save" %}"
+                       type="submit" class="btn btn-outline-primary">
+            </div>
+            {#  Arguments #}
+{#            <a name="arguments"></a>#}
+{#            <div class="container">#}
+{#                <div class="row col-12">#}
+{#                    <div class="pull-right col-12 p-4">#}
+{#                        <a id="add_more" class="btn btn-danger btn-small pull-right"#}
+{#                           href="#arguments">{% trans "Add Argument" %}</a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            {{ form.arguments.management_form }}#}
+{#            <div class="content arguments p-4">#}
+{#                {% for argument in form.arguments.forms %}#}
+{#                    <div class="row">#}
+{#                        <div class="row col-sm">{{ argument.name|as_crispy_field }}</div>#}
+{#                        <div class="row col-sm">{{ argument.type|as_crispy_field }}</div>#}
+{#                        <div class="row col-sm align-items-center">#}
+{#                            <a href="#" class="remove_line">#}
+{#                                <i class="fa fa-remove">-----</i>#}
+{#                            </a>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#            </div>#}
+            {# End of Arguments #}
+        </form>
+    </div>
+
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        (function () {
+            $("#form-event").removeClass("d-none").show();
+            $("#id_name").focus();
+
+            function formatData(data) {
+                return $(
+                    "<span><img width=20 height=20 src='/plugins/icons/channel/" + data.id + "/'/> " + data.text + "</span>"
+                );
+            }
+
+            $("#id_channels").select2({
+                    templateResult: formatData,
+                    templateSelection: formatData
+                }
+            );
+            var formsetName = "form";
+            var $TOTAL_FORMS = $("#id_" + formsetName + "-TOTAL_FORMS");
+            var selector = "div.arguments";
+            var $rows = $("div.arguments>div.row");
+
+            $(".remove_line").click(function () {
+                $("button[type='submit']").prop("disabled", true);
+                var $target = $(this).parent().parent();
+                $target.remove();
+                setTimeout(function () {
+                    reNumber();
+                }, 20);
+            });
+            $("#add_more").click(function () {
+                $("button[type='submit']").prop("disabled", true);
+                cloneMore();
+            });
+            var reNumber = function () {
+                var $rows = $("div.arguments>div.row");
+                $rows.each(function (i, e) {
+                    $(e).find(":input").each(function () {
+                        var name = $(this).attr("name").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
+                        var id = "id_" + name;
+                        $(this).attr({"name": name, "id": id});
+                    });
+                    $(e).find("label").each(function () {
+                        var newFor = $(this).attr("for").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
+                        $(this).attr("for", newFor);
+                    });
+                    $(e).find("div.form-group").each(function () {
+                        var newId = $(this).attr("id").replace(/\-(\d{1,}|__prefix__)\-/, "-" + i + "-");
+                        $(this).attr("id", newId);
+                    });
+                });
+                $TOTAL_FORMS.val($rows.length);
+                $("button[type='submit']").prop("disabled", parseInt($TOTAL_FORMS.val()) < 1);
+
+            };
+
+            function cloneMore() {
+                var $newElement = $("#empty-form>div.row").clone(true);
+                $newElement.removeClass("d-none");
+                $(selector).append($newElement);
+                setTimeout(function () {
+                    reNumber();
+                }, 20);
+            };
+        })($);
+
+    </script>
+{% endblock %}
