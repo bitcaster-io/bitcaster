@@ -3,7 +3,7 @@ import sys
 import time
 
 import click
-from django.core.checks import Warning
+# from django.core.checks import Warning
 from django.db import OperationalError
 
 from bitcaster.cli import global_options
@@ -12,16 +12,16 @@ from bitcaster.exceptions import ImproperlyConfigured
 
 
 def check_configuration(*args, **kwargs):
-    from bitcaster.models import Organization
-    from bitcaster.models.configurationissue import check_organization, check_application
+    # from bitcaster.models import Organization
+    # from bitcaster.models.configurationissue import check_organization, check_application
     errors = []
-    for org in Organization.objects.all():
-        issues = check_organization(org)
-        errors += [Warning(i.message, id=i.pk, obj=org) for i in issues]
-
-        for app in org.applications.all():
-            issues = check_application(app)
-            errors += [Warning(i.message, id=i.pk, obj=app) for i in issues]
+    # for org in Organization.objects.all():
+    #     issues = check_organization(org)
+    #     errors += [Warning(i.message, id=i.pk, obj=org) for i in issues]
+    #
+    #     for app in org.applications.all():
+    #         issues = check_application(app)
+    #         errors += [Warning(i.message, id=i.pk, obj=app) for i in issues]
     return errors
 
 

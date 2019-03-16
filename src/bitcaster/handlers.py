@@ -3,8 +3,8 @@
 #
 # from bitcaster.models import (ApplicationTriggerKey, Channel,
 #                               Event, Message, Monitor,)
-from bitcaster.models.configurationissue import (check_application,
-                                                 check_organization,)
+# from bitcaster.models.configurationissue import (check_application,
+#                                                  check_organization,)
 
 
 # @receiver([post_save, post_delete], sender=Channel, dispatch_uid='channel-check-config')
@@ -12,12 +12,12 @@ from bitcaster.models.configurationissue import (check_application,
 # @receiver([post_save, post_delete], sender=Message, dispatch_uid='message-check-config')
 # @receiver([post_save, post_delete], sender=ApplicationTriggerKey, dispatch_uid='key-check-config')
 # @receiver([post_save, post_delete], sender=Monitor, dispatch_uid='monitor-check-config')
-def check_config(sender, instance, **kwargs):
-    if getattr(instance, 'application', None):
-        check_application(instance.application)
-    elif getattr(instance, 'organization', None):
-        check_organization(instance.organization)
-
+# def check_config(sender, instance, **kwargs):
+#     if getattr(instance, 'application', None):
+#         check_application(instance.application)
+#     elif getattr(instance, 'organization', None):
+#         check_organization(instance.organization)
+#
 #
 # @receiver([post_save, post_delete], sender=Organization)
 # def check_config(sender, instance, **kwargs):

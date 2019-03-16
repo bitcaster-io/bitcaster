@@ -17,4 +17,4 @@ class TeamAdmin(admin.ModelAdmin):
 
 @admin.register(ApplicationRole, site=site)
 class ApplicationTeamAdmin(admin.ModelAdmin):
-    list_display = ('application', 'team', 'role')
+    list_display = ('team', 'role')

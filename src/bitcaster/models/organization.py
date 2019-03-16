@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.db import models
-from django.db.models import Q
 from django.utils import timezone
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster import logging
 from bitcaster.db.fields import (AvatarField, DeletionStatusField,
                                  Role, RoleField,)
 from bitcaster.db.manager import DeleteableModelManagerMixin
-from bitcaster.db.validators import (RESERVED_NAMES, RateLimitValidator,
-                                     check_reserved,)
+from bitcaster.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.file_storage import org_media_root
 from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.models.validators import ListValidator, NameValidator
@@ -74,16 +71,16 @@ class Organization(AbstractModel, ReverseWrapperMixin):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return self.urls.dashboard
+    # def get_absolute_url(self):
+    #     return self.urls.dashboard
 
-    @property
-    def invitations(self):
-        return self.memberships.filter(user__isnull=True)
-
-    def clean_slug(self, value):
-        if not self.is_core:
-            check_reserved(value)
+    # @property
+    # def invitations(self):
+    #     return self.memberships.filter(user__isnull=True)
+    #
+    # def clean_slug(self, value):
+    #     if not self.is_core:
+    #         check_reserved(value)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -98,12 +95,12 @@ class Organization(AbstractModel, ReverseWrapperMixin):
             raise Exception('You cannot delete the the default organization.')
         return super(Organization, self).delete()
 
-    def has_access(self, user, access=None):
-        queryset = self.members.filter(user=user)
-        if access is not None:
-            queryset = queryset.filter(type__lte=access)
-
-        return queryset.exists()
+    # def has_access(self, user, access=None):
+    #     queryset = self.members.filter(user=user)
+    #     if access is not None:
+    #         queryset = queryset.filter(type__lte=access)
+    #
+    #     return queryset.exists()
 
     def add_member(self, user, role=Role.SUBSCRIBER, **kwargs):
         from bitcaster.models import OrganizationMember
@@ -113,31 +110,31 @@ class Organization(AbstractModel, ReverseWrapperMixin):
                                                         **kwargs
                                                         )[0]
 
-    def membership_for(self, user):
-        return self.memberships.filter(user=user).first()
-
-    @property
-    def owners(self):
-        return self.members.filter(memberships__role=Role.OWNER)
-
-    @property
-    def admins(self):
-        admins = self.memberships.filter(role=Role.ADMIN)
-        if admins:
-            return [m.user for m in admins.all()]
-        return []
+    # def membership_for(self, user):
+    #     return self.memberships.filter(user=user).first()
+    #
+    # @property
+    # def owners(self):
+    #     return self.members.filter(memberships__role=Role.OWNER)
+    #
+    # @property
+    # def admins(self):
+    #     admins = self.memberships.filter(role=Role.ADMIN)
+    #     if admins:
+    #         return [m.user for m in admins.all()]
+    #     return []
 
         # return self.members.filter(memberships__role=Role.ADMIN)
 
-    @property
-    def managers(self):
-        return self.members.filter(memberships__role__in=[Role.OWNER, Role.ADMIN])
-
-    @property
-    def channels(self):
-        from .channel import Channel
-        return Channel.objects.filter(Q(organization=self) | Q(system=True))
-
-    @cached_property
-    def configured(self):
-        return self.channels.filter(enabled=True)
+    # @property
+    # def managers(self):
+    #     return self.members.filter(memberships__role__in=[Role.OWNER, Role.ADMIN])
+    #
+    # @property
+    # def channels(self):
+    #     from .channel import Channel
+    #     return Channel.objects.filter(Q(organization=self) | Q(system=True))
+    #
+    # @cached_property
+    # def configured(self):
+    #     return self.channels.filter(enabled=True)

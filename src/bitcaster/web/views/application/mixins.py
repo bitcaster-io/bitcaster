@@ -10,11 +10,6 @@ class SelectedApplicationMixin(ApplicationListMixin):
         kwargs['application'] = self.selected_application
         return super().get_context_data(**kwargs)
 
-    # def audit_log(self, event, **kwargs):
-    #     super().audit_log(self.request, event,
-    #                       organization=self.selected_organization,
-    #                       **kwargs)
-
     @cached_property
     def selected_application(self):
         if self.selected_organization and 'app' in self.kwargs:

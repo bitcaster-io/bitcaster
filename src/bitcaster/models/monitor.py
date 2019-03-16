@@ -2,7 +2,6 @@
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
 from django.utils.functional import cached_property
 from strategy_field.utils import fqn
 
@@ -19,34 +18,16 @@ logger = logging.getLogger(__name__)
 
 class MonitorQuerySet(models.QuerySet):
     def valid(self):
-        # for c in self.all():
-        #     try:
-        #         assert c.handler
-        #     except Exception:
-        #         c.handler = None
-        #         c.enabled = False
-        #         c.save()
         return self.all()
 
-    def organization_configurable(self, organization):
-        return self.filter(organization=organization,
-                           application=None,
-                           system=False)
-
-    def application_configurable(self, application):
-        return self.filter(application=application, system=False)
-
-    def system_configurable(self):
-        return self.filter(system=True)
-
-    def selectable(self, application):
-        return self.filter(Q(organization=application.organization) |
-                           Q(system=True) |
-                           Q(application=application))
-
-    def enabled(self, application):
-        return self.filter(application=application,
-                           )
+    # def selectable(self, application):
+    #     return self.filter(Q(organization=application.organization) |
+    #                        Q(system=True) |
+    #                        Q(application=application))
+    #
+    # def enabled(self, application):
+    #     return self.filter(application=application,
+    #                        )
 
 
 class Monitor(ReverseWrapperMixin, AbstractModel):

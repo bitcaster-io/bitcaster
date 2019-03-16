@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from bitcaster.mail import send_mail_by_template
-from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.otp import totp
 from bitcaster.state import get_current_user
 from bitcaster.utils.http import absolute_uri
@@ -17,7 +16,7 @@ from .organization import Organization
 from .team import ApplicationRole, Team
 
 
-class Invitation(ReverseWrapperMixin, models.Model):
+class Invitation(models.Model):
     class STATE:
         QUEUED = _('Queued')
         SENT = _('Sent')
@@ -65,43 +64,39 @@ class Invitation(ReverseWrapperMixin, models.Model):
         unique_together = (('target', 'application'),
                            ('target', 'organization'),)
 
-    class Reverse:
-        args = ['pk']
-        pattern = 'invitation-{op}'
-        urls = {}
-
     def __str__(self):
         return self.target
 
     def send_email(self):
         code = totp.now()
         url = reverse('org-member-accept', args=[self.organization.slug, self.pk, code])
-        send_mail_by_template('[Bitcaster] invitation',
-                              'user_invite', {'membership': self,
-                                              'url': absolute_uri(url)},
-                              [self.target],
-                              async=True)
+        return send_mail_by_template('[Bitcaster] invitation',
+                                     'user_invite', {'membership': self,
+                                                     'url': absolute_uri(url)},
+                                     [self.target],
+                                     async=True)
 
     def send_sms(self):
         raise NotImplementedError
 
-    def clean(self):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.event:
             self.application = self.event.application
             self.organization = self.event.application.organization
         elif self.team:
             self.application = self.team.application
-            self.organization = self.team.application.organization
+            self.organization = self.application.organization
         elif self.role:
-            self.application = self.team.application
             self.team = self.role.team
-            self.organization = self.team.application.organization
+            self.application = self.role.team.application
+            self.organization = self.role.team.application.organization
         elif self.application:
             self.organization = self.application.organization
         elif self.organization:
             pass
         else:
-            raise ValidationError('---')
+            raise ValidationError('Cannoo save an Invitation withoune one of event,team,role,application,organization')
+        super().save(force_insert, force_update, using, update_fields)
     # def save(self, force_insert=False, force_update=False, using=None,
     #          update_fields=None):
 

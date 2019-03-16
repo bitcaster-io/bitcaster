@@ -12,8 +12,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView
 
 from bitcaster.models import Organization
-from bitcaster.models.configurationissue import (check_application,
-                                                 check_organization,)
+# from bitcaster.models.configurationissue import (check_application,
+#                                                  check_organization,)
 from bitcaster.utils.dashboard import check_channels, get_status
 from bitcaster.web.forms import OrganizationForm
 from bitcaster.web.views.mixins import TitleMixin
@@ -84,7 +84,7 @@ class OrganizationCheckConfigView(OrganizationBaseView, RedirectView):
     pattern_name = 'org-dashboard'
 
     def get(self, request, *args, **kwargs):
-        check_organization(self.selected_organization)
-        for app in self.selected_organization.applications.all():
-            check_application(app)
+        # check_organization(self.selected_organization)
+        # for app in self.selected_organization.applications.all():
+        #     check_application(app)
         return super().get(request, *args, **kwargs)

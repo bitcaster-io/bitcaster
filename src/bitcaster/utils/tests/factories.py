@@ -4,6 +4,7 @@ from random import choice
 
 import factory
 from django.contrib.auth.models import Group, Permission
+from factory.base import FactoryMetaClass
 from faker import Faker
 from rest_framework.test import APIClient
 
@@ -12,6 +13,7 @@ from bitcaster import models
 from bitcaster.agents import EmailAgent
 from bitcaster.db.fields import Role
 from bitcaster.dispatchers import Email
+from bitcaster.models.invitation import Invitation
 from bitcaster.models.token import generate_api_token
 from bitcaster.utils import fqn
 
@@ -106,12 +108,26 @@ def api_client_factory(app):
     return client
 
 
-class GroupFactory(factory.DjangoModelFactory):
+factories_registry = {}
+
+
+class AutoRegisterFactoryMetaClass(FactoryMetaClass):
+    def __new__(mcs, class_name, bases, attrs):
+        new_class = super().__new__(mcs, class_name, bases, attrs)
+        factories_registry[new_class._meta.model] = new_class
+        return new_class
+
+
+class AutoRegisterModelFactory(factory.DjangoModelFactory, metaclass=AutoRegisterFactoryMetaClass):
+    pass
+
+
+class GroupFactory(AutoRegisterModelFactory):
     class Meta:
         model = Group
 
 
-class UserFactory(factory.DjangoModelFactory):
+class UserFactory(AutoRegisterModelFactory):
     class Meta:
         model = bitcaster.models.user.User
         django_get_or_create = ('email',)
@@ -169,7 +185,7 @@ class AdminFactory(UserFactory):
         ApiTokenFactory(user=self)
 
 
-class OrganizationFactory(factory.DjangoModelFactory):
+class OrganizationFactory(AutoRegisterModelFactory):
     name = factory.Sequence(lambda n: 'Organization %03d' % n)
     owner = factory.SubFactory(UserFactory)
 
@@ -183,7 +199,7 @@ class OrganizationFactory(factory.DjangoModelFactory):
         instance.add_member(instance.owner, role=Role.OWNER)
 
 
-class ApplicationFactory(factory.DjangoModelFactory):
+class ApplicationFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.Application
         django_get_or_create = ('name',)
@@ -192,7 +208,7 @@ class ApplicationFactory(factory.DjangoModelFactory):
     organization = factory.SubFactory(OrganizationFactory)
 
 
-class TeamFactory(factory.DjangoModelFactory):
+class TeamFactory(AutoRegisterModelFactory):
     class Meta:
         model = bitcaster.models.Team
         django_get_or_create = ('name',)
@@ -218,17 +234,34 @@ class TeamFactory(factory.DjangoModelFactory):
     #         TeamMembership.objects.create(team=instance, member=member)
 
 
-class ApplicationTeamFactory(factory.DjangoModelFactory):
+class ApplicationRoleFactory(AutoRegisterModelFactory):
     class Meta:
         model = bitcaster.models.ApplicationRole
-        django_get_or_create = ('name',)
+        django_get_or_create = ('team',)
 
-    application = factory.SubFactory(ApplicationFactory)
     team = factory.SubFactory(TeamFactory)
     role = Role.SUBSCRIBER
 
 
-class ApplicationTriggerKeyFactory(factory.DjangoModelFactory):
+class InvitationFactory(AutoRegisterModelFactory):
+    class Meta:
+        model = Invitation
+
+    organization = factory.SubFactory(OrganizationFactory)
+
+
+#
+# class ApplicationTeamFactory(AutoRegisterModelFactory):
+#     class Meta:
+#         model = bitcaster.models.Team
+#         django_get_or_create = ('name',)
+#
+#     application = factory.SubFactory(ApplicationFactory)
+#     team = factory.SubFactory(TeamFactory)
+#     role = Role.SUBSCRIBER
+
+
+class ApplicationTriggerKeyFactory(AutoRegisterModelFactory):
     application = factory.SubFactory(ApplicationFactory)
     token = factory.LazyAttribute(lambda s: generate_api_token())
 
@@ -246,7 +279,7 @@ class ApplicationTriggerKeyFactory(factory.DjangoModelFactory):
         return key
 
 
-class ApiTokenFactory(factory.DjangoModelFactory):
+class ApiTokenFactory(AutoRegisterModelFactory):
     application = factory.SubFactory(ApplicationFactory)
     user = factory.SubFactory(UserFactory)
     token = factory.LazyAttribute(lambda s: generate_api_token())
@@ -256,12 +289,12 @@ class ApiTokenFactory(factory.DjangoModelFactory):
         django_get_or_create = ('token',)
 
 
-class MonitorFactory(factory.DjangoModelFactory):
+class MonitorFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.Monitor
         django_get_or_create = ('name',)
 
-    name = factory.Sequence(lambda n: 'Channel %03d' % n)
+    name = factory.Sequence(lambda n: 'Monitor %03d' % n)
     application = factory.SubFactory(ApplicationFactory)
     handler = factory.LazyAttribute(lambda a: fqn(EmailAgent))
     enabled = True
@@ -269,9 +302,11 @@ class MonitorFactory(factory.DjangoModelFactory):
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
         if 'config' not in kwargs:
-            kwargs['config'] = {'event': EventFactory(application=kwargs['application']),
+            kwargs['config'] = {'event': EventFactory(application=kwargs['application']).pk,
                                 'username': 'user',
                                 'password': '111',
+                                'server': 'mail.example.com',
+                                'port': '123',
                                 'folder': 'linkedin.com',
                                 'body_regex': '',
                                 'subject_regex': 'gerardo',
@@ -282,7 +317,7 @@ class MonitorFactory(factory.DjangoModelFactory):
         return channel
 
 
-class ChannelFactory(factory.DjangoModelFactory):
+class ChannelFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.Channel
         django_get_or_create = ('name',)
@@ -306,7 +341,7 @@ class ChannelFactory(factory.DjangoModelFactory):
         return channel
 
 
-class EventFactory(factory.DjangoModelFactory):
+class EventFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.Event
         django_get_or_create = ('application', 'name')
@@ -315,7 +350,7 @@ class EventFactory(factory.DjangoModelFactory):
     application = factory.SubFactory(ApplicationFactory)
 
 
-class MessageFactory(factory.DjangoModelFactory):
+class MessageFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.Message
         django_get_or_create = ('event', 'name',)
@@ -335,7 +370,7 @@ class MessageFactory(factory.DjangoModelFactory):
         return message
 
 
-class SubscriptionFactory(factory.DjangoModelFactory):
+class SubscriptionFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.Subscription
         django_get_or_create = ('subscriber', 'event', 'channel')
@@ -347,7 +382,7 @@ class SubscriptionFactory(factory.DjangoModelFactory):
     config = {}
 
 
-class AddressFactory(factory.DjangoModelFactory):
+class AddressFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.Address
         django_get_or_create = ('user', 'label')

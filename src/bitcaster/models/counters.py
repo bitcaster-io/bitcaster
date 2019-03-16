@@ -6,14 +6,16 @@ from strategy_field.utils import fqn
 from bitcaster.models.user import User
 
 
+def get_id(event):
+    return '{0}-{1.pk}'.format(fqn(event), event)
+
+
 class CounterManager(models.Manager):
     def initialize(self, target):
-        t = '{0}-{1.pk}'.format(fqn(target), target)
-        self.get_or_create(target=t)
+        self.get_or_create(target=get_id(target))
 
     def increment(self, target):
-        t = '{0}-{1.pk}'.format(fqn(target), target)
-        self.filter(target=t).update(total=F('total') + 1)
+        self.filter(target=get_id(target)).update(total=F('total') + 1)
 
 
 class Counter(models.Model):

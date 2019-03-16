@@ -68,12 +68,12 @@ class Event(ReverseWrapperMixin, AbstractModel):
     def enabled_channels(self):
         return self.channels.filter(enabled=True)
 
-    def check_enabled(self):
-        original = self.enabled
-        if original:
-            self.enabled = self.valid_channels.exists()
-            if self.enabled != original:
-                self.save()
+    # def check_enabled(self):
+    #     original = self.enabled
+    #     if original:
+    #         self.enabled = self.valid_channels.exists()
+    #         if self.enabled != original:
+    #             self.save()
 
     # def get_message(self, channel):
     #     return self.messages.get(channels=channel)

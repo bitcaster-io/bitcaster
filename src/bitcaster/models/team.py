@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
@@ -44,25 +43,22 @@ class Team(AbstractModel):
         else:
             super(Team, self).save(*args, **kwargs)
 
-    def get_absolute_url(self):
-        return reverse('app-team-edit', args=(self.application.slug, self.slug))
-
 
 class ApplicationRole(AbstractModel):
-    application = models.ForeignKey('bitcaster.Application',
-                                    related_name='application_roles',
-                                    on_delete=models.CASCADE)
-    team = models.ForeignKey('bitcaster.Team',
+    # application = models.ForeignKey('bitcaster.Application',
+    #                                 related_name='application_roles',
+    #                                 on_delete=models.CASCADE)
+    team = models.ForeignKey(Team,
                              on_delete=models.CASCADE)
     role = RoleField(default=Role.SUBSCRIBER)
 
     class Meta:
-        unique_together = (('application', 'team', 'role'),)
+        unique_together = (('team', 'role'),)
         verbose_name = _('Role')
         verbose_name_plural = _('Roles')
 
     def __str__(self):
-        return f'{self.application} {self.get_role_display()}'
+        return f'{self.team} {self.get_role_display()}'
 
     @property
     def members(self):

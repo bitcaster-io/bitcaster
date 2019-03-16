@@ -12,7 +12,8 @@ class State(local):
 
 
 def get_current_user():
-    return state.request.user
+    if state.request and state.request.user.is_authenticated:
+        return state.request.user
 
 
 state = State()

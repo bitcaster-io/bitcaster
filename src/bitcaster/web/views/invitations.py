@@ -17,8 +17,7 @@ from strategy_field.utils import fqn
 
 from bitcaster import messages
 from bitcaster.db.fields import Role
-from bitcaster.models import (AuditEvent, Organization,
-                              OrganizationMember, User, audit_log,)
+from bitcaster.models import Organization, OrganizationMember, User
 from bitcaster.models.invitation import Invitation
 from bitcaster.otp import totp
 from bitcaster.web.forms import UserInviteRegistrationForm
@@ -69,10 +68,6 @@ class InvitationAccept(MessageUserMixin, CreateView):
             self.membership.save()
             login(self.request, user, backend=fqn(ModelBackend))
             assert self.request.user == user
-            audit_log(self.request, AuditEvent.MEMBER_ACCEPT,
-                      organization=self.selected_organization,
-                      role=self.membership.get_role_display(),
-                      invited_by=self.membership.invited_by.email)
 
         if self.membership.role in [Role.OWNER, Role.ADMIN]:
             url = reverse('org-dashboard', args=[self.selected_organization.slug])

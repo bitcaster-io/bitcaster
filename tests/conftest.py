@@ -185,6 +185,18 @@ def subscription2(application1, subscriber2):
 
 
 @pytest.fixture
+def role1(team1):
+    from bitcaster.utils.tests.factories import ApplicationRoleFactory
+    return ApplicationRoleFactory(team=team1)
+
+
+@pytest.fixture
+def team1(application1):
+    from bitcaster.utils.tests.factories import TeamFactory
+    return TeamFactory(application=application1)
+
+
+@pytest.fixture
 def token1(db):
     from bitcaster.utils.tests.factories import ApiTokenFactory
     return ApiTokenFactory()
@@ -201,6 +213,12 @@ def org_channel(db, organization1):
     from bitcaster.utils.tests.factories import ChannelFactory
     return ChannelFactory(organization=organization1,
                           application=None, system=False)
+
+
+@pytest.fixture
+def monitor1(application1):
+    from bitcaster.utils.tests.factories import MonitorFactory
+    return MonitorFactory(application=application1)
 
 
 @pytest.fixture()

@@ -1,6 +1,8 @@
 [run]
 branch = True
-source = bitcaster
+#source = bitcaster
+include =
+        src/bitcaster/modeles
 # partial_branches =
 # fail_under = 90
 omit =
@@ -35,6 +37,8 @@ exclude_lines =
 
 
 ignore_errors = True
+include =
+        src/bitcaster/models/*
 
 [html]
 directory = ~build/coverage

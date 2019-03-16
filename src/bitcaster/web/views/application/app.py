@@ -10,7 +10,6 @@ from django.utils.decorators import method_decorator
 from django.views.generic import RedirectView
 
 from bitcaster.models import Application
-from bitcaster.models.configurationissue import check_application
 from bitcaster.web.forms import ApplicationForm
 
 from ..base import (BitcasterBaseDeleteView, BitcasterBaseDetailView,
@@ -87,7 +86,6 @@ class ApplicationCheckConfigView(ApplicationViewMixin, RedirectView):
     pattern_name = 'app-dashboard'
 
     def get(self, request, *args, **kwargs):
-        check_application(self.selected_application)
         return super().get(request, *args, **kwargs)
 
 

@@ -1,9 +1,9 @@
-from django.db import models
-
-from bitcaster.db.fields import EncryptedJSONField
-
-from .base import sane_repr
-from .organization import Organization
+# from django.db import models
+#
+# from bitcaster.db.fields import EncryptedJSONField
+#
+# from .base import sane_repr
+# from .organization import Organization
 
 # class OptionManager(models.Manager):
 #     model_field = ''
@@ -97,49 +97,49 @@ from .organization import Organization
 #         super(OptionManager, self).contribute_to_class(model, name)
 #         task_postrun.connect(self.clear_local_cache)
 #         request_finished.connect(self.clear_local_cache)
-
-
-class OptionManager(models.Manager):
-
-    def get_value(self, key, *args, **kwargs):
-        try:
-            return super().get(key=key).value
-        except self.model.DoesNotExist:
-            return None
-
-
-class Option(models.Model):
-    __core__ = True
-
-    key = models.CharField(max_length=64)
-    value = EncryptedJSONField()
-
-    objects = OptionManager()
-
-    class Meta:
-        abstract = True
-        app_label = 'bitcaster'
-
-
-class SystemOption(Option):
-    pass
-
-
-class OrganizationOption(Option):
-    """
-    Organization options apply only to an instance of a organization.
-
-    Options which are specific to a plugin should namespace
-    their key. e.g. key='myplugin:optname'
-
-    key: onboarding:complete
-    value: { updated: datetime }
-    """
-    organization = models.ForeignKey(Organization,
-                                     on_delete=models.CASCADE,
-                                     related_name='options')
-
-    class Meta:
-        unique_together = (('organization', 'key',),)
-
-    __repr__ = sane_repr('organization_id', 'key', 'value')
+#
+#
+# class OptionManager(models.Manager):
+#
+#     def get_value(self, key, *args, **kwargs):
+#         try:
+#             return super().get(key=key).value
+#         except self.model.DoesNotExist:
+#             return None
+#
+#
+# class Option(models.Model):
+#     __core__ = True
+#
+#     key = models.CharField(max_length=64)
+#     value = EncryptedJSONField()
+#
+#     objects = OptionManager()
+#
+#     class Meta:
+#         abstract = True
+#         app_label = 'bitcaster'
+#
+#
+# class SystemOption(Option):
+#     pass
+#
+#
+# class OrganizationOption(Option):
+#     """
+#     Organization options apply only to an instance of a organization.
+#
+#     Options which are specific to a plugin should namespace
+#     their key. e.g. key='myplugin:optname'
+#
+#     key: onboarding:complete
+#     value: { updated: datetime }
+#     """
+#     organization = models.ForeignKey(Organization,
+#                                      on_delete=models.CASCADE,
+#                                      related_name='options')
+#
+#     class Meta:
+#         unique_together = (('organization', 'key',),)
+#
+#     __repr__ = sane_repr('organization_id', 'key', 'value')

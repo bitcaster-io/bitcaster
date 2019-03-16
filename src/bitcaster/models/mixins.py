@@ -29,15 +29,14 @@ class ReverseWrapper:
 
 
 class Reverse:
-    args = ['organization.slug']
-    pattern = 'org-{op}'
+    args = None
+    pattern = None
     urls = {}
 
     def __init__(self, parent):
         if parent:
             for a in ['args', 'pattern']:
-                if hasattr(parent, a):
-                    setattr(self, a, getattr(parent, a))
+                setattr(self, a, getattr(parent, a))
 
     def __repr__(self):
         return '{} {}'.format(self.pattern, repr(self.args))

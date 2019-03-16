@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 from uuid import uuid4
 
-from bitfield import BitField
-from django.contrib.postgres.fields import ArrayField
+# from bitfield import BitField
+# from django.contrib.postgres.fields import ArrayField
 from django.core import validators
 from django.db import models
 from django.db.models import UUIDField
-from django.utils.functional import cached_property
+# from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
 from bitcaster import logging
-from bitcaster.db.fields import AvatarField, Role, SubscriptionPolicyField
+from bitcaster.db.fields import AvatarField, SubscriptionPolicyField
 from bitcaster.db.validators import RateLimitValidator
 from bitcaster.file_storage import app_media_root
 from bitcaster.utils.slug import slugify_instance
@@ -36,6 +36,7 @@ class Application(AbstractModel, ReverseWrapperMixin):
                                      on_delete=models.CASCADE)
     name = models.CharField(_('Name'),
                             max_length=300,
+                            null=False,
                             validators=[
                                 ListValidator(RESERVED_APPLICATION_NAME),
                                 validators.RegexValidator(r'^[\w -]+$',
@@ -44,17 +45,6 @@ class Application(AbstractModel, ReverseWrapperMixin):
                             unique=True)
     slug = models.SlugField(blank=True)
     timezone = TimeZoneField(default='UTC')
-    allowed_origins = ArrayField(models.CharField(max_length=50),
-                                 blank=True,
-                                 null=True)
-    first_event = models.DateTimeField(null=True, editable=False)
-    flags = BitField(flags=(
-        # ('has_releases', 'This Project has sent release data'),
-    ), default=0, null=True)
-    # teams = models.ManyToManyField('bitcaster.Team',
-    #                                # related_name='teams',
-    #                                through='bitcaster.ApplicationRole'
-    #                                )
 
     avatar = AvatarField(upload_to=app_media_root)
     picture_height = models.IntegerField(editable=False, null=True)
@@ -90,16 +80,13 @@ class Application(AbstractModel, ReverseWrapperMixin):
         from .channel import Channel
         return Channel.objects.selectable(self)
 
-    @property
-    def owners(self):
-        return self.organization.owners
-
-    @cached_property
-    def admins(self):
-        admins = self.application_roles.filter(role=Role.ADMIN).first()
-        if admins:
-            return [m.user for m in admins.team.members.all()]
-        return []
-
-    # def membership_for(self, user):
-    #     return self.organization.memberships.filter(user=user).first()
+    # @property
+    # def owners(self):
+    #     return self.organization.owners
+    #
+    # @cached_property
+    # def admins(self):
+    #     admins = self.application_roles.filter(role=Role.ADMIN).first()
+    #     if admins:
+    #         return [m.user for m in admins.team.members.all()]
+    #     return []

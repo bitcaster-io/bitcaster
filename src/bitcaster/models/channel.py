@@ -157,7 +157,7 @@ It can be Global or Application specific.
             conn = self.handler._get_connection()
             success, failures = 0, 0
             for subscription in event.subscriptions.valid(channel=self):
-                state.data['subscription'] = subscription
+                # state.data['subscription'] = subscription
                 logger.debug(f'Processing {subscription}')
                 try:
                     ctx = dict(context or {})
@@ -187,7 +187,7 @@ It can be Global or Application specific.
                                             status=False,
                                             info=str(e))
                     failures += 1
-                if failures > self.errors_threshold:
+                if failures >= self.errors_threshold:
                     raise MaxChannelError(self)
         except MaxChannelError as e:
             logger.error(e)

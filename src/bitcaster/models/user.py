@@ -12,7 +12,7 @@ from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
 
 from bitcaster import logging
-from bitcaster.db.fields import EncryptedJSONField, LanguageField, Role
+from bitcaster.db.fields import EncryptedJSONField, LanguageField
 from bitcaster.file_storage import MediaFileSystemStorage, profile_media_root
 from bitcaster.mail import send_mail_async
 from bitcaster.utils.http import absolute_uri
@@ -43,13 +43,8 @@ class UserManager(_UserManager):
         return self._create_user(email, password, **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
+        extra_fields['is_staff'] = True
+        extra_fields['is_superuser'] = True
 
         return self._create_user(email, password, **extra_fields)
 
@@ -132,9 +127,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     def display_name(self):
         return self.friendly_name or self.email
 
-    @property
-    def ownerships(self):
-        return self.memberships.filter(role=Role.OWNER)
+    # @property
+    # def ownerships(self):
+    #     return self.memberships.filter(role=Role.OWNER)
 
     def set_password(self, raw_password):
         super(User, self).set_password(raw_password)
@@ -159,8 +154,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         }
         subject = '[Bitcaster] Confirm Email'
 
-        message = get_template('bitcaster/emails/confirm_email.txt').render(ctx)
-        html_message = get_template('bitcaster/emails/confirm_email.html').render(ctx)
+        message = get_template('bitcaster/_emails/confirm_email.txt').render(ctx)
+        html_message = get_template('bitcaster/_emails/confirm_email.html').render(ctx)
 
         ret = send_mail_async(subject=subject,
                               message=message,

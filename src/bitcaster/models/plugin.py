@@ -17,6 +17,7 @@ class PluginManager(models.Manager):
                                   )
         # if registry:
         self.exclude(handler__in=registry).update(enabled=False)
+        return self.all()
 
 
 class Plugin(models.Model):

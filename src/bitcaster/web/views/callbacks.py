@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 #             membership = OrganizationMember.objects.get(pk=pk)
 #             render(request, 'bitcaster/user_invite_register.html', )
 
-
 @require_http_methods(['GET', 'POST'])
 def confirm_registration(request, pk, check):
     user = User.objects.get(pk=pk)

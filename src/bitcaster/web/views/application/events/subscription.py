@@ -5,7 +5,6 @@ from django.views.generic import FormView
 
 from bitcaster import messages
 from bitcaster.db.fields import Role
-from bitcaster.models import AuditEvent
 from bitcaster.web.forms.subscription import (EventSubscriptionForm,
                                               InviteFormSet,
                                               SubscriptionFormSet,)
@@ -97,9 +96,6 @@ class EventSubscriptionInvite(SingleEventMixin, MessageUserMixin, FormView):
                 form.instance.invited_by = self.request.user
                 membership = form.save()
                 membership.send_email()
-                self.audit_log(AuditEvent.MEMBER_INVITE,
-                               role=membership.get_role_display(),
-                               email=membership.email)
 
         return HttpResponseRedirect(self.get_success_url())
 

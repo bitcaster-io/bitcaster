@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.utils.functional import cached_property
 
-from bitcaster.models import Organization, audit_log
+from bitcaster.models import Organization
 from bitcaster.web.views.mixins import SecuredViewMixin, SidebarMixin
 
 
@@ -21,11 +21,6 @@ class SelectedOrganizationMixin(SidebarMixin, SecuredViewMixin):
         except Organization.DoesNotExist:
             raise Http404
         return organization
-
-    def audit_log(self, event, **kwargs):
-        audit_log(self.request, event,
-                  organization=self.selected_organization,
-                  **kwargs)
 
 
 class OrganizationListMixin(SecuredViewMixin):

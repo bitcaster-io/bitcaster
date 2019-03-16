@@ -14,7 +14,7 @@ from strategy_field.utils import fqn
 
 from bitcaster.db.fields import Role
 from bitcaster.models import Organization, User
-from bitcaster.models.configurationissue import check_organization
+# from bitcaster.models.configurationissue import check_organization
 from bitcaster.models.organization import RESERVED_ORGANIZATION_NAME
 from bitcaster.models.validators import ListValidator, NameValidator
 
@@ -75,7 +75,7 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
             org.add_member(user, role=Role.OWNER, date_enrolled=timezone.now())
             # org.teams.create(name='Owners', manager=user)
 
-            check_organization(org)
+            # check_organization(org)
             config.SYSTEM_CONFIGURED = 0
             config.INITIALIZED = 1
             login(self.request, user, fqn(ModelBackend))
