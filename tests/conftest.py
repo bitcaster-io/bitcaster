@@ -222,7 +222,7 @@ def monitor1(application1):
 
 
 @pytest.fixture()
-def rf():
+def rf2():
     from django.test.client import RequestFactory
     from django.contrib.auth.models import AnonymousUser
 

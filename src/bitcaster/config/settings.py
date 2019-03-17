@@ -73,7 +73,6 @@ MIDDLEWARE = [
     'bitcaster.middleware.message.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'bitcaster.middleware.logger.LoggerMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 

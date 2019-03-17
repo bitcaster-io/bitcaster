@@ -48,7 +48,11 @@ class OAuthError(Exception):
 
 
 class NotMemberOfOrganization(AuthFailed):
-    pass
+    def __init__(self, backend):
+        self.backend = backend
+
+    def __str__(self):
+        return 'User doesn\'t belong to the organization'
 
 
 class MaxChannelError(Exception):

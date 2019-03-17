@@ -37,10 +37,10 @@ class MessageMiddleware(MiddlewareMixin):
         # messages storage, so make no assumption that it will be there.
         if hasattr(request, '_messages'):
             unstored_messages = request._messages.update(response)
-            if unstored_messages and settings.DEBUG:
+            if unstored_messages and settings.DEBUG:  # pragma: no-cover
                 raise ValueError('Not all temporary messages could be stored.')
         if hasattr(request, '_alarms'):
             unstored_alarms = request._alarms.update(response)
-            if unstored_alarms and settings.DEBUG:
+            if unstored_alarms and settings.DEBUG:  # pragma: no-cover
                 raise ValueError('Not all temporary alarms could be stored.')
         return response
