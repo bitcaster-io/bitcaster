@@ -1,7 +1,7 @@
+import logging
+
 from django.db.models import Q
 from rest_framework.filters import BaseFilterBackend
-
-from bitcaster import logging
 
 logger = logging.getLogger(__name__)
 

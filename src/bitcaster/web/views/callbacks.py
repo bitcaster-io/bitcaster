@@ -9,7 +9,7 @@ from django.views.decorators.http import require_http_methods
 
 from bitcaster.models import User
 from bitcaster.otp import totp
-from bitcaster.utils.email_verification import clear_new_email_request
+from bitcaster.utils.email_verification import clear_new_email_address_request
 
 logger = logging.getLogger(__name__)
 
@@ -48,5 +48,5 @@ def confirm_address(request, pk, address, check):
         user = User.objects.get(pk=pk)
         user.email = address
         user.save()
-        clear_new_email_request(user)
+        clear_new_email_address_request(user)
     return HttpResponseRedirect(reverse('user-profile'))

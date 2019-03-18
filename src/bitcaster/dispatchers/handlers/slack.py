@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
+
 import requests
 from django.conf.urls.static import static
 from django.utils.translation import ugettext as _
 
 from bitcaster.exceptions import PluginSendError, PluginValidationError
-from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
 from .. import serializers

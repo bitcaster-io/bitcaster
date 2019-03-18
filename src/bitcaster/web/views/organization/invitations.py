@@ -16,9 +16,8 @@ from django.views.generic import CreateView
 from strategy_field.utils import fqn
 
 from bitcaster import messages
-from bitcaster.db.fields import Role
-from bitcaster.models import Organization, OrganizationMember, User
-from bitcaster.models.invitation import Invitation
+from bitcaster.framework.db.fields import Role
+from bitcaster.models import Invitation, Organization, OrganizationMember, User
 from bitcaster.otp import totp
 from bitcaster.web.forms import (OrganizationInvitationFormSet,
                                  UserInviteRegistrationForm,)

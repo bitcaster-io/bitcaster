@@ -1,8 +1,9 @@
+import logging
+
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import empty
 from rest_framework.serializers import Serializer
 
-from bitcaster import logging
 from bitcaster.exceptions import PluginValidationError
 from bitcaster.utils.language import classproperty
 from bitcaster.utils.reflect import package_name

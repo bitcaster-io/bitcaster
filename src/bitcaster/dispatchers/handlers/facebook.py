@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
+
 from django.core.validators import RegexValidator
 from django.utils.translation import ugettext_lazy as _
 from fbchat import Client, Message
@@ -9,7 +11,6 @@ from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError, RecipientNotFound
-from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
 logger = getLogger(__name__)

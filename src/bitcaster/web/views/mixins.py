@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 
 from bitcaster import messages
-from bitcaster.security import authorized_or_403
+from bitcaster.web.decorators import authorized_or_403
 from bitcaster.web.templatetags.bitcaster import (verbose_name,
                                                   verbose_name_plural,)
 

@@ -5,6 +5,7 @@ from .base import AbstractModel
 from .channel import Channel
 from .counters import Counter, Occurence
 from .event import Event
+from .invitation import Invitation
 from .message import Message
 from .metadata import AgentMetaData, DispatcherMetaData
 from .monitor import Monitor

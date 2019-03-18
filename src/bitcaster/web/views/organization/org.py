@@ -63,7 +63,7 @@ class OrganizationDashboard(OrganizationBaseView, BitcasterBaseDetailView):
             cache.set(cache_key, org_data)
 
         kwargs['data'] = org_data
-        kwargs['options'] = dict(org.options.values_list('key', 'value'))
+        # kwargs['options'] = dict(org.options.values_list('key', 'value'))
         return super().get_context_data(**kwargs)
 
 

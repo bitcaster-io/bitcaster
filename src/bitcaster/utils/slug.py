@@ -8,14 +8,12 @@ from django.utils.text import slugify
 logger = logging.getLogger(__name__)
 
 
-def slugify_instance(inst, label, reserved=(), max_length=30,
-                     field_name='slug', *args, **kwargs):
-    base_value = str(slugify(label)[:max_length])
+# credits: adapetd from Sentry `slugify_instance`
 
-    if base_value is not None:
-        base_value = base_value.strip()
-        if base_value in reserved:
-            base_value = None
+def slugify_instance(inst, label, reserved=(), max_length=30, *args, **kwargs):
+    base_value = str(slugify(label)[:max_length]).strip()
+    if base_value in reserved:
+        base_value = None
 
     if not base_value:
         base_value = uuid4().hex[:12]
@@ -26,13 +24,17 @@ def slugify_instance(inst, label, reserved=(), max_length=30,
     if args or kwargs:
         base_qs = base_qs.filter(*args, **kwargs)
 
-    setattr(inst, field_name, base_value)
+    inst.slug = base_value
 
     # We don't need to further mutate if we're unique at this point
-    if not base_qs.filter(**{
-        '{}__iexact'.format(field_name): base_value,
-    }).exists():
+    if not base_qs.filter(slug__iexact=base_value).exists():
         return
+
+    # first we try with pk
+    if inst.id:
+        inst.slug = '%s%s' % (base_value, inst.id)
+        if not base_qs.filter(slug__iexact=inst.slug).exists():
+            return
 
     # We want to sanely generate the shortest unique slug possible, so
     # we try different length endings until we get one that works, or bail.
@@ -48,10 +50,8 @@ def slugify_instance(inst, label, reserved=(), max_length=30,
         for i in range(attempts):
             end = get_random_string(size, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456790')
             value = base_value[:max_length - size - 1] + '-' + end
-            setattr(inst, field_name, value)
-            if not base_qs.filter(**{
-                '{}__iexact'.format(field_name): value,
-            }).exists():
+            inst.slug = value
+            if not base_qs.filter(slug__iexact=value).exists():
                 return
 
     # If at this point, we've exhausted all possibilities, we'll just end up hitting

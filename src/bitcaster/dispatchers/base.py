@@ -1,5 +1,6 @@
 # from rest_framework import serializers
 import abc
+from logging import getLogger
 
 from django.core.exceptions import ValidationError
 from strategy_field.utils import fqn
@@ -7,7 +8,6 @@ from strategy_field.utils import fqn
 from bitcaster import get_full_version
 from bitcaster.configurable import ConfigurableMixin, get_full_config
 from bitcaster.exceptions import PluginValidationError
-from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
 from . import serializers

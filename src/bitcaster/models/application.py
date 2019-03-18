@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from uuid import uuid4
 
 # from bitfield import BitField
@@ -7,18 +8,20 @@ from django.core import validators
 from django.db import models
 from django.db.models import UUIDField
 # from django.utils.functional import cached_property
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
-from bitcaster import logging
-from bitcaster.db.fields import AvatarField, SubscriptionPolicyField
-from bitcaster.db.validators import RateLimitValidator
 from bitcaster.file_storage import app_media_root
+from bitcaster.framework.db.fields import (AvatarField, Role,
+                                           SubscriptionPolicyField,)
+from bitcaster.framework.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.utils.slug import slugify_instance
 
 from .base import AbstractModel
 from .mixins import ReverseWrapperMixin
-from .organization import RESERVED_NAMES, Organization
+from .organization import Organization
+# from bitcaster.models import ApplicationRole
 from .validators import ListValidator
 
 logger = logging.getLogger(__name__)
@@ -80,13 +83,15 @@ class Application(AbstractModel, ReverseWrapperMixin):
         from .channel import Channel
         return Channel.objects.selectable(self)
 
-    # @property
-    # def owners(self):
-    #     return self.organization.owners
-    #
-    # @cached_property
-    # def admins(self):
-    #     admins = self.application_roles.filter(role=Role.ADMIN).first()
-    #     if admins:
-    #         return [m.user for m in admins.team.members.all()]
-    #     return []
+    @property
+    def owners(self):
+        return self.organization.owners
+
+    @cached_property
+    def admins(self):
+        from bitcaster.models import ApplicationRole
+        admins = ApplicationRole.objects.filter(role=Role.ADMIN).first()
+        if admins:
+            return [m.user for m in
+                    self.teams.filter(roles=Role.ADMIN)]
+        return []

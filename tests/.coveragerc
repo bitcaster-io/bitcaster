@@ -38,9 +38,14 @@ exclude_lines =
 
 ignore_errors = True
 omit =
-    src/bitcaster/admin/*
+    src/bitcaster/utils/tests/*
+    src/bitcaster/cli/*
+
 include =
     src/bitcaster/middleware/*
+    src/bitcaster/models/*
+    src/bitcaster/utils/*
+    src/bitcaster/web/templatetags/*
 
 [html]
 directory = ~build/coverage

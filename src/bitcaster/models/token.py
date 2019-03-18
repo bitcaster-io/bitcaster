@@ -1,8 +1,8 @@
 import datetime
+from logging import getLogger
 
 from django.db import models
 
-from bitcaster.logging import getLogger
 from bitcaster.models import Event
 from bitcaster.models.application import Application
 from bitcaster.models.base import AbstractModel

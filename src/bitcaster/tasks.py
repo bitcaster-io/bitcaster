@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
+
 from constance import config
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.db.models import Count
 
 from bitcaster.celery import app
 from bitcaster.exceptions import LogicError
-from bitcaster.logging import getLogger
 
 logger = getLogger(__name__)
 

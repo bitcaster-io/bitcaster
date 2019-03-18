@@ -6,13 +6,13 @@ def _get_new_email_key(user):
     return f'new-email-{user.pk}'
 
 
-def get_new_email_request(user):
+def check_new_email_address_request(user):
     return cache.get(_get_new_email_key(user))
 
 
-def set_new_email_request(user, email):
+def set_request_new_email_address(user, email):
     cache.set(_get_new_email_key(user), email)
 
 
-def clear_new_email_request(user):
+def clear_new_email_address_request(user):
     cache.delete(_get_new_email_key(user))

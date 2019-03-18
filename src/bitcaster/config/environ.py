@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
 from pathlib import Path
 
 from environ import ImproperlyConfigured, environ, os, re
 
-from bitcaster import logging
 from bitcaster.config import DEFAULT_CONFIG, DEFAULTS
 
 logger = logging.getLogger(__name__)

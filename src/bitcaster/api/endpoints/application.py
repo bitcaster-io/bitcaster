@@ -1,4 +1,5 @@
-from bitcaster import logging
+import logging
+
 from bitcaster.models import Application
 
 from ..filters import IsOwnerFilter

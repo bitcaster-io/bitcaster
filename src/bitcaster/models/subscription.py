@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from bitcaster import logging
-from bitcaster.db.fields import EncryptedJSONField, EnumField
-from bitcaster.models.mixins import ReverseWrapperMixin
+from bitcaster.framework.db.fields import EncryptedJSONField, EnumField
 
 from .base import AbstractModel
 from .channel import Channel
 from .event import Event
+from .mixins import ReverseWrapperMixin
 from .user import User
 
 logger = logging.getLogger(__name__)

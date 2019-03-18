@@ -4,22 +4,31 @@ import json
 from uuid import UUID
 
 import pytz
-from strategy_field.utils import fqn
+from django.utils.functional import SimpleLazyObject
+from django.utils.module_loading import import_string
+
+from bitcaster.utils.reflect import fqn
 
 
 class Encoder(json.JSONEncoder):
+
+    def encode(self, o):
+        if isinstance(o, SimpleLazyObject):
+            o = str(o)
+        return super().encode(o)
+
     def default(self, obj):
-        if isinstance(obj, list):
-            return tuple(obj)
         if isinstance(obj, UUID):
-            return obj.hex
+            return {'__type__': fqn(UUID),
+                    'value': obj.hex
+                    }
         elif isinstance(obj, datetime.tzinfo):
-            return {'__type__': 'tzinfo',
+            return {'__type__': fqn(pytz.timezone),
                     'value': getattr(obj, 'zone')
                     }
         elif isinstance(obj, datetime.datetime):
             return {
-                '__type__': 'datetime',
+                '__type__': fqn(datetime.datetime),
                 'year': obj.year,
                 'month': obj.month,
                 'day': obj.day,
@@ -29,6 +38,10 @@ class Encoder(json.JSONEncoder):
                 'microsecond': obj.microsecond,
                 'tzinfo': str(obj.tzinfo)
             }
+        elif callable(obj):
+            return {'__type__': 'callable',
+                    'value': fqn(obj)
+                    }
         elif fqn(obj) == 'django.utils.functional.__proxy__':
             return str(obj)
         return json.JSONEncoder.default(self, obj)
@@ -44,20 +57,29 @@ class Decoder(json.JSONDecoder):
                          strict=strict, object_pairs_hook=object_pairs_hook)
 
     def dict_to_object(self, d):
-        if '__type__' not in d:
-            return d
-        elif d['__type__'] == 'tzinfo':
-            return d['value']
-        elif d['__type__'] == 'datetime':
-            type = d.pop('__type__')
-            try:
-                d['tzinfo'] = pytz.timezone(d['tzinfo'])
-
-                dateobj = datetime.datetime(**d)
-                return dateobj
-            except Exception:
-                d['__type__'] = type
+        try:
+            if '__type__' not in d:
                 return d
+            if d['__type__'] == 'callable':
+                return import_string(d['value'])
+            if d['__type__'] == fqn(datetime.datetime):
+                type = d.pop('__type__')
+                try:
+                    if d['tzinfo'] != 'None':
+                        d['tzinfo'] = pytz.timezone(d['tzinfo'])
+                    else:
+                        d.pop('tzinfo')
+
+                    dateobj = datetime.datetime(**d)
+                    return dateobj
+                except Exception:
+                    d['__type__'] = type
+                    return d
+            else:
+                clazz = import_string(d['__type__'])
+                return clazz(d['value'])
+        except Exception as e:
+            raise ValueError('Unable to decode %s: %s' % (repr(d), e)) from e
 
 
 loads = json.loads

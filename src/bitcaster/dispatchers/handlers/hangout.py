@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
+
 from django.utils.translation import gettext_lazy as _
 from pyxmpp2.client import Client
 from pyxmpp2.jid import JID
@@ -14,7 +16,6 @@ from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
-from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
 logger = getLogger(__name__)

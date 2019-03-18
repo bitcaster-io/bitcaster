@@ -1,10 +1,11 @@
+from logging import getLogger
+
 from admin_extra_urls.extras import ExtraUrlMixin, link
 from django.contrib import admin
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 
-from bitcaster.logging import getLogger
 from bitcaster.models import AgentMetaData, DispatcherMetaData
 
 from .site import site

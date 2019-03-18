@@ -1,7 +1,7 @@
 from django import template
 
-from bitcaster.backends import PERMISSIONS
 from bitcaster.models import Application, Organization
+from bitcaster.security import PERMISSIONS
 
 register = template.Library()
 
@@ -41,7 +41,7 @@ class CheckPermissions(template.Node):
 
 
 @register.tag(name='check_permissions')
-def do_current_time(parser, token):
+def check_permissions(parser, token):
     # This version uses a regular expression to parse tag contents.
     try:
         # Splitting by None == splitting by spaces.
@@ -58,33 +58,6 @@ def do_current_time(parser, token):
         var_name = args[2]
 
     return CheckPermissions(target, var_name)
-
-
-@register.simple_tag(takes_context=True, name='check_permissions2')
-def check_permissions2(context, target, context_name='permissions', *args, **kwargs):
-    """
-        {% check_permissions org %}
-        {% check_permissions org as perms %}
-    """
-    # TODO: remove me
-    print(111, 'bc_permissions.py:32', 111111, args, kwargs)
-    user = context['request'].user
-    if isinstance(target, Organization):
-        perms = [perm for perm in PERMISSIONS if perm.startswith('org') and user.has_perm(perm, target)]
-    elif isinstance(target, Application):
-        perms = [perm for perm in PERMISSIONS if perm.startswith('app') and user.has_perm(perm, target)]
-    else:
-        perms = []
-    # user = context['request'].user
-    #  membership = organization.membership_for(user=user)
-    #  owner = (organization.owner == user) or (membership and membership.role == Role.OWNER)
-    #  context[context_name] = {'owner': owner,
-    #                           'admin': membership and membership.role == Role.ADMIN,
-    #                           'manager': owner or (membership and membership.role in [Role.OWNER,
-    #                                                                                   Role.ADMIN]),
-    #                           }
-    context[context_name] = AuthWrapper(perms)
-    return ''
 
 
 @register.filter

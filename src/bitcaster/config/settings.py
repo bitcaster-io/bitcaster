@@ -187,8 +187,8 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
-                'bitcaster.context_processors.messages',
-                'bitcaster.context_processors.bitcaster',
+                'bitcaster.web.context_processors.messages',
+                'bitcaster.web.context_processors.bitcaster',
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
                 # Your stuff: custom template context processors go here

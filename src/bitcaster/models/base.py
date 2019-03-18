@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from concurrency.fields import IntegerVersionField
 from django.db import models
-
-from bitcaster import logging
 
 logger = logging.getLogger(__name__)
 

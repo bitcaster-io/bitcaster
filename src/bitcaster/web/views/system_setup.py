@@ -12,7 +12,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin, ProcessFormView
 from strategy_field.utils import fqn
 
-from bitcaster.db.fields import Role
+from bitcaster.framework.db.fields import Role
 from bitcaster.models import Organization, User
 # from bitcaster.models.configurationissue import check_organization
 from bitcaster.models.organization import RESERVED_ORGANIZATION_NAME

@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.functional import cached_property
 from strategy_field.utils import fqn
 
-from bitcaster import logging
-from bitcaster.db.fields import AgentField, EncryptedJSONField
-from bitcaster.models.mixins import ReverseWrapperMixin
+from bitcaster.framework.db.fields import AgentField, EncryptedJSONField
 
 from .application import Application
 from .base import AbstractModel
+from .mixins import ReverseWrapperMixin
 from .organization import Organization
 
 logger = logging.getLogger(__name__)

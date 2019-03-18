@@ -4,29 +4,14 @@ import logging
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 
-from bitcaster.db.fields import Role
+from bitcaster.framework.db.fields import Role
 from bitcaster.models import Application, Event, Organization
+from bitcaster.security import PERM_MAP
 
 logger = logging.getLogger(__name__)
 
-TARGETS = ['system', 'org', 'app']
 
-PERMISSIONS = {'org:configure',  # configure
-               'org:create_channel',
-               'app:create_monitor',
-               'app:create',  # create applications
-               'app:configure',  # configure application (#General, create channels)
-               'app:manage',  # manage application (manage events/messages
-               'evt:trigger'
-               }
-
-OWNER_PERMISSIONS = PERMISSIONS
-ADMIN_PERMISSIONS = {'org:configure', 'app:configure', 'evt:trigger'}
-SUBSCRIBER_PERMISSIONS = ()
-PERM_MAP = {Role.ADMIN: ADMIN_PERMISSIONS,
-            Role.OWNER: OWNER_PERMISSIONS,
-            Role.SUBSCRIBER: SUBSCRIBER_PERMISSIONS}
-
+# TARGETS = ['system', 'org', 'app']
 
 class BitcasterBackend:
 

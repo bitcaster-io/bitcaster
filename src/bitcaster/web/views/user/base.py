@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 
 from bitcaster import messages
 from bitcaster.models import Address, AddressAssignment, User
-from bitcaster.utils.email_verification import set_new_email_request
+from bitcaster.utils.email_verification import set_request_new_email_address
 from bitcaster.web.forms import (AddressAssignmentForm,
                                  AddressAssignmentFormSet, AddressForm,
                                  AddressFormSet, UserProfileForm,
@@ -131,7 +131,7 @@ class UserProfileView(UserMixin, BitcasterBaseUpdateView):
                                                          form.data.get('email'))
 
         if email_changed:
-            set_new_email_request(form.instance, form.data['email'])
+            set_request_new_email_address(form.instance, form.data['email'])
             send_address_verification_email(form.instance)
             form.instance.email = form.initial['email']
             self.message_user(_('Check your inbox to validate your new email address'), messages.SUCCESS)

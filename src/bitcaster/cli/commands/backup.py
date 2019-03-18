@@ -42,8 +42,8 @@ def get_all_models():
             name = f'{rel.model._meta.app_label}.{rel.model._meta.model_name}'
             if name in IGNORE:
                 continue
-            if name not in ret:
-                ret.append(name)
+            # if name not in ret:
+            #     ret.append(name)
             if not m2m_attr.rel.through._meta.auto_created:
                 name = f'{rel.through._meta.app_label}.{rel.through._meta.model_name}'
                 if name not in ret:  # pragma: no cover
@@ -148,7 +148,8 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
                         else:
                             model.objects.get_or_create(id=pk, defaults=record)
                     except Exception as e:
-                        click.echo(str(e))
+                        click.echo(click.style(str(e), fg='red'))
+
                         click.echo(model_name)
                         click.echo(record)
                         if not ignore_errors:
@@ -165,11 +166,9 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
 
         from bitcaster.models import AgentMetaData
         from bitcaster.models import DispatcherMetaData
-        from bitcaster.models.configurationissue import check_system
 
         AgentMetaData.objects.inspect()
         DispatcherMetaData.objects.inspect()
-        check_system()
     # except Exception as e:
     #     raise
     #     click.echo(e, color='red')

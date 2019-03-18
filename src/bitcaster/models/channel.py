@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import logging
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -7,9 +8,8 @@ from django.db.models import Q
 from django.template import Template
 from django.utils.translation import gettext_lazy as _
 
-from bitcaster import logging
-from bitcaster.db.fields import DispatcherField, EncryptedJSONField
 from bitcaster.exceptions import MaxChannelError, PluginValidationError
+from bitcaster.framework.db.fields import DispatcherField, EncryptedJSONField
 from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.state import state
 from bitcaster.template.secure_context import SecureContext
@@ -62,6 +62,7 @@ It can be Global or Application specific.
     organization = models.ForeignKey(Organization,
                                      null=True,
                                      blank=True,
+                                     related_name='channels',
                                      on_delete=models.CASCADE)
     application = models.ForeignKey(Application,
                                     null=True,

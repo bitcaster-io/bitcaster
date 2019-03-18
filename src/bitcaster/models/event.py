@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from uuid import uuid4
 
 from django.contrib.postgres.fields import ArrayField, JSONField
@@ -7,13 +8,12 @@ from django.db.models import UUIDField
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from bitcaster import logging
-from bitcaster.db.fields import SubscriptionPolicyField
-from bitcaster.db.validators import RateLimitValidator
-from bitcaster.models.mixins import ReverseWrapperMixin
+from bitcaster.framework.db.fields import SubscriptionPolicyField
+from bitcaster.framework.db.validators import RateLimitValidator
 
 from .application import Application
 from .base import AbstractModel
+from .mixins import ReverseWrapperMixin
 
 logger = logging.getLogger(__name__)
 

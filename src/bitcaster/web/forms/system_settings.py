@@ -7,7 +7,7 @@ from django import forms
 from django.forms import Form
 from rest_framework.reverse import reverse
 
-from bitcaster.forms import PasswordEyeInput
+from bitcaster.framework.forms.widgets import PasswordEyeInput
 from bitcaster.state import state
 from bitcaster.utils.constance import FieldMappingField, LdapDNField
 

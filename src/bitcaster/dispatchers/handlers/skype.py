@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
+
 import skpy.main
 
 from bitcaster.api.fields import PasswordField
@@ -7,7 +9,6 @@ from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError, RecipientNotFound
-from bitcaster.logging import getLogger
 from bitcaster.utils.language import classproperty
 
 logger = getLogger(__name__)

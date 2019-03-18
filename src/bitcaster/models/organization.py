@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from bitcaster import logging
-from bitcaster.db.fields import (AvatarField, DeletionStatusField,
-                                 Role, RoleField,)
-from bitcaster.db.manager import DeleteableModelManagerMixin
-from bitcaster.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.file_storage import org_media_root
+from bitcaster.framework.db.fields import (AvatarField, DeletionStatusField,
+                                           Role, RoleField,)
+from bitcaster.framework.db.manager import DeleteableModelManagerMixin
+from bitcaster.framework.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.models.validators import ListValidator, NameValidator
 # from bitcaster.utils import locks
@@ -104,32 +105,31 @@ class Organization(AbstractModel, ReverseWrapperMixin):
 
     def add_member(self, user, role=Role.SUBSCRIBER, **kwargs):
         from bitcaster.models import OrganizationMember
-        return OrganizationMember.objects.get_or_create(organization=self,
-                                                        user=user,
-                                                        role=int(role),
-                                                        **kwargs
-                                                        )[0]
+        return OrganizationMember.objects.update_or_create(organization=self,
+                                                           user=user,
+                                                           defaults={'role': int(role)},
+                                                           **kwargs
+                                                           )[0]
 
     # def membership_for(self, user):
     #     return self.memberships.filter(user=user).first()
     #
-    # @property
-    # def owners(self):
-    #     return self.members.filter(memberships__role=Role.OWNER)
-    #
-    # @property
-    # def admins(self):
-    #     admins = self.memberships.filter(role=Role.ADMIN)
-    #     if admins:
-    #         return [m.user for m in admins.all()]
-    #     return []
+    @property
+    def owners(self):
+        return self.members.filter(memberships__role=Role.OWNER)
 
-        # return self.members.filter(memberships__role=Role.ADMIN)
+    @property
+    def admins(self):
+        admins = self.memberships.filter(role=Role.ADMIN)
+        if admins:
+            return [m.user for m in admins.all()]
+        return []
 
-    # @property
-    # def managers(self):
-    #     return self.members.filter(memberships__role__in=[Role.OWNER, Role.ADMIN])
-    #
+    @property
+    def managers(self):
+        admins = self.memberships.filter(role__in=[Role.ADMIN, Role.OWNER])
+        return [m.user for m in admins.all()]
+
     # @property
     # def channels(self):
     #     from .channel import Channel

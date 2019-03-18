@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
+
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from twilio.rest import Client
@@ -8,7 +10,6 @@ from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
-from bitcaster.logging import getLogger
 
 logger = getLogger(__name__)
 

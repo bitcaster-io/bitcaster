@@ -3,8 +3,6 @@ import logging
 
 from django.template import Context
 
-from bitcaster.logging import secLog
-
 logger = logging.getLogger(__name__)
 
 
@@ -28,13 +26,13 @@ class Wrapper:
             return Wrapper('*******')
 
         if item in ['key', 'token', 'password', 'handler', 'owner']:
-            secLog.error(f'Access forbidden attribute `{item}`',
+            logger.error(f'Access forbidden attribute `{item}`',
                          extra={'attribute': item,
                                 'object': self.__wrapped})
             return '******'
         original = getattr(self.__wrapped, item)
         if callable(original):
-            secLog.error(f'Access forbidden attribute `{item}`',
+            logger.error(f'Access forbidden attribute `{item}`',
                          extra={'attribute': item,
                                 'object': self.__wrapped})
             return Wrapper(Stop())

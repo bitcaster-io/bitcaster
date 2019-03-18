@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from admin_extra_urls.extras import ExtraUrlMixin, action
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
@@ -11,7 +13,6 @@ from rest_framework.reverse import reverse
 from strategy_field.utils import fqn
 
 from bitcaster.exceptions import PluginValidationError
-from bitcaster.logging import getLogger
 from bitcaster.models import Monitor
 from bitcaster.utils.django import deactivator_factory
 from bitcaster.web.templatetags.bitcaster import render_serializer

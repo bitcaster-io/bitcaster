@@ -11,9 +11,8 @@ from rest_framework.test import APIClient
 import bitcaster
 from bitcaster import models
 from bitcaster.agents import EmailAgent
-from bitcaster.db.fields import Role
 from bitcaster.dispatchers import Email
-from bitcaster.models.invitation import Invitation
+from bitcaster.framework.db.fields import Role
 from bitcaster.models.token import generate_api_token
 from bitcaster.utils import fqn
 
@@ -245,7 +244,7 @@ class ApplicationRoleFactory(AutoRegisterModelFactory):
 
 class InvitationFactory(AutoRegisterModelFactory):
     class Meta:
-        model = Invitation
+        model = bitcaster.models.Invitation
 
     organization = factory.SubFactory(OrganizationFactory)
 

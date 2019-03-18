@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from bitcaster.db.fields import RoleField
+from bitcaster.framework.db.fields import RoleField
 
 from .organization import Organization
 

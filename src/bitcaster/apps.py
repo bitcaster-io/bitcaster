@@ -12,4 +12,3 @@ class Config(AppConfig):
         from .agents.registry import agent_registry  # noqa
         from . import tasks  # noqa
         from . import checks  # noqa
-        from . import handlers  # noqa

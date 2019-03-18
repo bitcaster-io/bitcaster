@@ -2,11 +2,11 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from bitcaster.db.fields import DeletionStatusField, Role, RoleField
-from bitcaster.models import OrganizationMember
+from bitcaster.framework.db.fields import DeletionStatusField, Role, RoleField
 from bitcaster.utils.slug import slugify_instance
 
 from .base import AbstractModel
+from .organizationmember import OrganizationMember
 from .user import User
 
 
@@ -49,6 +49,7 @@ class ApplicationRole(AbstractModel):
     #                                 related_name='application_roles',
     #                                 on_delete=models.CASCADE)
     team = models.ForeignKey(Team,
+                             related_name='roles',
                              on_delete=models.CASCADE)
     role = RoleField(default=Role.SUBSCRIBER)
 

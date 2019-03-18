@@ -43,17 +43,23 @@ class LdapDNField(CharField):
 class FieldMappingField(CharField):
 
     def clean(self, value):
+        if value in self.empty_values and self.required:
+            raise ValidationError(self.error_messages['required'], code='required')
         return self.to_python(value)
 
     def prepare_value(self, value):
         if not isinstance(value, dict):
             try:
                 value = ast.literal_eval(value)
-            except SyntaxError:
+            except (SyntaxError, ValueError):
                 value = self.to_python(value)
+        if not isinstance(value, dict):
+            raise ValidationError(_('Invalid value %s. Ie. email:mail,.. synthax') % value)
         return ','.join(['%s:%s' % (k, v) for k, v in value.items()])
 
     def to_python(self, value):
+        if not value:
+            return value
         ret = {}
         try:
             entries = value.split(',')
@@ -62,7 +68,7 @@ class FieldMappingField(CharField):
                 if not (k and v):
                     raise ValidationError(_('%s cannot be empty') % k)
                 ret[k] = v
-        except ValueError:
+        except (ValueError, AttributeError, TypeError):
             raise ValidationError(_('Invalid value %s. Ie. email:mail,.. synthax') % value)
         return ret
 

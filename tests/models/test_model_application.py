@@ -24,3 +24,13 @@ def test_application_create_slug(organization1):
     app = Application(organization=organization1, slug='abc')
     app.save()
     assert app.slug == 'abc'
+
+
+@pytest.mark.django_db
+def test_application_admins(application1):
+    assert list(application1.admins) == []
+
+
+@pytest.mark.django_db
+def test_application_owners(application1):
+    assert application1.owners

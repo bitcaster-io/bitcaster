@@ -1,47 +1,29 @@
 # -*- coding: utf-8 -*-
 import logging
-from functools import wraps
 
-from django.http import HttpResponseForbidden
+from bitcaster.framework.db.fields import Role
 
 logger = logging.getLogger(__name__)
 
+OPS = {'add', 'manage', 'delete'}
+TARGETS = {'channel', 'monitor', 'subscription', 'event', 'application', 'organization'}
+ROLES = {'owner', 'admin', 'subscriber'}
 
-# def is_member_of(user, organization):
-#     return organization.members.filter(pk=user.pk).exists()
+PERMISSIONS = set()
+for op in OPS:
+    for target in TARGETS:
+        PERMISSIONS.add('%s_%s' % (op, target))
 
-#
-# def is_owner(user, target):
-#     # FIXME
-#     if hasattr(target, 'organization'):
-#         org = target.organization
-#         return org.owner == user or target.membership_for(user).role == Role.OWNER
-#     else:
-#         return target.owner == user or target.membership_for(user).role == Role.OWNER
-#     # return organization.owners.filter(pk=user.pk).exists()
+PERMISSIONS.add('admin')
 
+# PERM_MAP = {}
+# for role in ROLES:
+#     PERM_MAP[role] = PERMISSIONS
 
-# def is_admin(user, organization):
-#     return organization.membership_for(user).role == Role.ADMIN
-# return organization.admins.filter(pk=user.pk).exists()
+OWNER_PERMISSIONS = PERMISSIONS
+ADMIN_PERMISSIONS = PERMISSIONS
+SUBSCRIBER_PERMISSIONS = PERMISSIONS
 
-#
-# def is_manager(user, organization):
-#     try:
-#         return organization.membership_for(user).role in [Role.ADMIN, Role.OWNER]
-#     except AttributeError:
-#         return user.is_superuser
-#     # return organization.admins.filter(pk=user.pk).exists()
-
-
-def authorized_or_403(test_func):
-    def decorator(view_func):
-        @wraps(view_func)
-        def _wrapped_view(request, *args, **kwargs):
-            if test_func(request.user):
-                return view_func(request, *args, **kwargs)
-            return HttpResponseForbidden()
-
-        return _wrapped_view
-
-    return decorator
+PERM_MAP = {Role.ADMIN: ADMIN_PERMISSIONS,
+            Role.OWNER: OWNER_PERMISSIONS,
+            Role.SUBSCRIBER: SUBSCRIBER_PERMISSIONS}

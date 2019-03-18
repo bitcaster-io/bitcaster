@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from bitcaster.db.fields import AgentField, DispatcherField
+from bitcaster.framework.db.fields import AgentField, DispatcherField
 
 from .plugin import Plugin
 

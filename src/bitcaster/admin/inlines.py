@@ -1,6 +1,7 @@
+import logging
+
 from django.contrib import admin
 
-from bitcaster import logging
 from bitcaster.models import (ApiAuthToken, Application, ApplicationTriggerKey,
                               Channel, Event, OrganizationMember,)
 from bitcaster.models.message import Message

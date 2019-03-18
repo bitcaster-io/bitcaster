@@ -1,11 +1,5 @@
-from django.forms.widgets import Input
 from strategy_field.forms import StrategyFormField
 from strategy_field.utils import fqn
-
-
-class PasswordEyeInput(Input):
-    input_type = 'password'
-    template_name = 'django/forms/widgets/password-eye.html'
 
 
 class DispatcherFormField(StrategyFormField):

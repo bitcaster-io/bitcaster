@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from django.utils import timezone
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from bitcaster import logging
 from bitcaster.api.filters import ApplicationFilterBackend
 from bitcaster.models import Event
 from bitcaster.tasks import trigger_event

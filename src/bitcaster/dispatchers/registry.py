@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from strategy_field.registry import Registry as Registry
+from logging import getLogger
 
-from bitcaster.logging import getLogger
+from strategy_field.registry import Registry as Registry
 
 logger = getLogger(__name__)
 

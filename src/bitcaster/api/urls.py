@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from django.conf.urls import include, url
 from rest_framework_nested.routers import DefaultRouter, NestedSimpleRouter
 
-from bitcaster import logging
 from bitcaster.api.endpoints import ApplicationViewSet, EventViewSet
 
 # from bitcaster.api.endpoints import (ApplicationViewSet, ChannelViewSet,

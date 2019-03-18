@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from rest_framework import serializers
 from rest_framework.fields import JSONField
 
-from bitcaster import logging
 from bitcaster.models import Application, Event, User
 
 logger = logging.getLogger(__name__)

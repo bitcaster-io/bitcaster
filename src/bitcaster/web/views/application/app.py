@@ -68,9 +68,9 @@ class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):
                         'disabled_keys': app.keys.filter(enabled=False).count(),
                         'access_all_events_keys': app.keys.filter(all_events=True).count(),
                         }
-            org_data['box_channels'] = app.issues.get_tag_for('channels')
-            org_data['box_events'] = app.issues.get_tag_for('events')
-            org_data['box_keys'] = app.issues.get_tag_for('keys')
+            # org_data['box_channels'] = app.issues.get_tag_for('channels')
+            # org_data['box_events'] = app.issues.get_tag_for('events')
+            # org_data['box_keys'] = app.issues.get_tag_for('keys')
             cache.set(cache_key, org_data)
         kwargs['data'] = org_data
         return super().get_context_data(**kwargs)

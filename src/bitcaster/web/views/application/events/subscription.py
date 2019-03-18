@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
 from bitcaster import messages
-from bitcaster.db.fields import Role
+from bitcaster.framework.db.fields import Role
 from bitcaster.web.forms.subscription import (EventSubscriptionForm,
                                               InviteFormSet,
                                               SubscriptionFormSet,)

@@ -4,9 +4,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def get_status(value=None, ok_limit=0, warn_limit=1, error_limit=10, call=None):
-    if call:
-        value = call()
+def get_status(value=None, ok_limit=0, warn_limit=1, error_limit=10):
+    if callable(value):
+        value = value()
     if value == ok_limit:
         return 'success'
     elif value >= error_limit:
@@ -20,7 +20,7 @@ def get_status(value=None, ok_limit=0, warn_limit=1, error_limit=10, call=None):
 def check_enabled_disabled(org_data, entry):
     if org_data[f'enabled_{entry}'] == 0:
         v = 11
-    elif org_data[f'disabled_{entry}'] > 1:
+    elif org_data[f'disabled_{entry}'] > 0:
         v = 2
     else:
         v = 0

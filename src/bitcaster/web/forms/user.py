@@ -17,12 +17,12 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from bitcaster.agents import serializers
 from bitcaster.configurable import get_full_config
-from bitcaster.db.fields import Role
+from bitcaster.framework.db.fields import Role
 from bitcaster.mail import send_mail_by_template
 from bitcaster.models import Address, AddressAssignment, Subscription, User
 from bitcaster.otp import totp
 from bitcaster.state import state
-from bitcaster.utils.email_verification import get_new_email_request
+from bitcaster.utils.email_verification import check_new_email_address_request
 from bitcaster.utils.http import absolute_uri
 
 logger = logging.getLogger(__name__)
@@ -77,7 +77,7 @@ class UserProfileForm(forms.ModelForm):
                  label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None):
         super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
                          use_required_attribute)
-        self.new_email_pending = get_new_email_request(instance)
+        self.new_email_pending = check_new_email_address_request(instance)
         if not config.ALLOW_CHANGE_PRIMARY_ADDRESS:
             self.fields['email'].disabled = True
             self.fields['email'].required = False
