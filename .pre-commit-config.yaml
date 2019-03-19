@@ -23,6 +23,13 @@ repos:
         types: [python]
         stages: [commit]
 
+  - repo: git://github.com/Yelp/detect-secrets
+    rev: 0.9.1
+    hooks:
+    -   id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: (tests/.*|.*/tenant.sql|Pipfile.lock)
+        stages: [push]
 
   - repo: git://github.com/pre-commit/pre-commit-hooks
     rev: v2.1.0
@@ -50,7 +57,7 @@ repos:
       - id: check-version-release-match
         args:
           - --pythonpath=src
-          - --package=etools_datamart
+          - --package=bitcater66
         stages: [push]
 
       - id: check-untracked

@@ -110,10 +110,10 @@ It can be Global or Application specific.
         self.handler.validate_message(message, **kwargs)
 
     def get_usage_message(self):
-        return self.handler.get_usage_message(self.config)
+        return self.handler.get_usage_message()
 
     def get_usage(self):
-        return self.handler.get_usage(self.config)
+        return self.handler.get_usage()
 
     # def is_configurable_by(self, user):
     #     if user.is_superuser:

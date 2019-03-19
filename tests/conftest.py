@@ -253,3 +253,11 @@ def add_extra_form_to_formset_with_data(form, prefix, field_names_and_values):
 
 # Form.add_extra_form_to_formset_with_data = add_extra_form_to_formset_with_data
 Form.add_formset_field = add_extra_form_to_formset_with_data
+
+
+# @pytest.fixture(autouse=True)
+# def skip_if_markers_logic(request):
+#     if request.node.get_marker('skipif_missing'):
+#         arg = request.node.get_marker('skipif_missing').args[0]
+#         if not arg in os.environ:
+#             pytest.skip('{} not fount in environment'.format(arg))

@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 from bitcaster import get_full_version
 from bitcaster.configurable import ConfigurableMixin, get_full_config
 from bitcaster.exceptions import PluginValidationError
+from bitcaster.utils import fqn
+from bitcaster.utils.language import classproperty
 
 from . import serializers
 
@@ -42,9 +44,9 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         super().__init__(owner)
         self.logger = getLogger('bitcaster.plugins.%s' % self.name)
 
-    # @classproperty
-    # def fqn(cls):
-    #     return fqn(cls)
+    @classproperty
+    def fqn(cls):
+        return fqn(cls)
 
     @abc.abstractmethod
     def _get_connection(self) -> object:
