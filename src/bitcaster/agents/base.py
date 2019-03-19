@@ -2,12 +2,11 @@ import abc
 import logging
 
 from rest_framework.fields import empty
-from strategy_field.utils import fqn, get_attr
+from strategy_field.utils import get_attr
 
 from bitcaster import get_full_version
 from bitcaster.api.fields import EventField
 from bitcaster.configurable import ConfigurableMixin, get_full_config
-from bitcaster.utils.language import classproperty
 
 from . import serializers
 
@@ -29,20 +28,20 @@ class Agent(ConfigurableMixin, metaclass=abc.ABCMeta):
 
     def get_options_form(self, **kwargs):
         application = kwargs.pop('application', get_attr(self, 'owner.application'))
-        if not kwargs['data']:
+        if not kwargs.get('data', None):
             kwargs['data'] = empty
         form = super().get_options_form(**kwargs)
-        if application:
-            form.fields['event'].choices = application.events.values_list('id', 'name')
+        # if application:
+        form.fields['event'].choices = application.events.values_list('id', 'name')
         return form
 
     def validate_configuration(self, config, raise_exception=True, *args, **kwargs) -> None:
         cfg = get_full_config(self.options_class, config)
         return self.get_options_form(data=cfg).is_valid(raise_exception)
 
-    @classproperty
-    def fqn(cls):
-        return fqn(cls)
+    # @classproperty
+    # def fqn(cls):
+    #     return fqn(cls)
 
     def poll(self):
         pass

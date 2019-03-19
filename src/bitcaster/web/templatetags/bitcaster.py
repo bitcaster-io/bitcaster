@@ -3,10 +3,8 @@ import json
 
 from django.template import Context, Library
 from django.urls import reverse
-from django.utils.safestring import mark_safe
 
 from bitcaster.api.renderers import BitcasterHTMLFormRenderer
-from bitcaster.models import Channel
 
 register = Library()
 
@@ -35,16 +33,17 @@ def verbose_name_plural(instance):
 
 @register.filter()
 def order_formset(formset):
+    # order Formset put not saved instance first
     ordered = [f for f in formset if not f.instance.pk] + [f for f in formset if f.instance.pk]
     for f in ordered:
         yield f
 
 
-@register.simple_tag(takes_context=True)
-def oauth_button(context, channel: Channel):
-    label = channel.handler.render_button() or f'Authorise with {channel.handler.name}'
-    url = reverse('admin:bitcaster_channel_oauth_request', args=[channel.pk])
-    return mark_safe(f'<a href="{url}">{label}</a>')
+# @register.simple_tag(takes_context=True)
+# def oauth_button(context, channel: Channel):
+#     label = channel.handler.render_button() or f'Authorise with {channel.handler.name}'
+#     url = reverse('admin:bitcaster_channel_oauth_request', args=[channel.pk])
+#     return mark_safe(f'<a href="{url}">{label}</a>')
 
 
 @register.simple_tag
@@ -68,9 +67,9 @@ def org_reverse(context, url_name, *args, **kwargs):
 
 @register.simple_tag(name='app-url', takes_context=True)
 def app_reverse(context, url_name, *args, **kwargs):
-    org = context['organization']
+    # org = context['organization']
     app = context['application']
-    return reverse(url_name, args=(org.slug,
+    return reverse(url_name, args=(app.organization.slug,
                                    app.slug) + args, **kwargs)
 
 
@@ -106,13 +105,12 @@ def channel_submit_row(context):
     })
     return ctx
 
-
-@register.filter()
-def display_queryset(qs, fields):
-    fields = fields.split(',')
-    return mark_safe(', '.join(qs.values_list(*fields, flat=True)))
-
-
-@register.filter()
-def describe_channels(channels):
-    return mark_safe(', '.join([f'<span class=enabled{c.enabled}>{c.name}</span>' for c in channels.all()]))
+# @register.filter()
+# def display_queryset(qs, fields):
+#     fields = fields.split(',')
+#     return mark_safe(', '.join(qs.values_list(*fields, flat=True)))
+#
+#
+# @register.filter()
+# def describe_channels(channels):
+#     return mark_safe(', '.join([f'<span class=enabled{c.enabled}>{c.name}</span>' for c in channels.all()]))

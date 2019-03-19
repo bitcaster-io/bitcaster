@@ -27,7 +27,7 @@ class EmailSubscription(SubscriptionOptions):
 
 class EmailOptions(DispatcherOptions):
     server = serializers.CharField()
-    port = serializers.IntegerField()
+    port = serializers.IntegerField(default=25)
     username = serializers.CharField(allow_blank=True, required=False)
     password = PasswordField(allow_blank=True, required=False)
     tls = serializers.BooleanField(default=False)

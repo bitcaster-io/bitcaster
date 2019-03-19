@@ -18,9 +18,6 @@ class AuthWrapper:
     def __getitem__(self, name):
         return bool(name in self.perms)
 
-    # def __contains__(self, perm_name):
-    #     return perm_name in self.perms
-
 
 class CheckPermissions(template.Node):
     def __init__(self, target, var_name):
@@ -46,11 +43,11 @@ def check_permissions(parser, token):
     try:
         # Splitting by None == splitting by spaces.
         tag, *args = token.contents.split(None)
-    except ValueError:
+        target = args[0]
+    except IndexError:
         raise template.TemplateSyntaxError('%r tag requires arguments'
                                            % token.contents.split()[0])
 
-    target = args[0]
     var_name = None
     if len(args) > 1:
         if args[1] != 'as':
@@ -59,17 +56,16 @@ def check_permissions(parser, token):
 
     return CheckPermissions(target, var_name)
 
-
-@register.filter
-def is_admin(user, organization):
-    return user.has_perm('')
-
-
-@register.filter
-def can_configure(user, target):
-    return user.has_perm('configure', target)
-
+# @register.filter
+# def is_admin(user, organization):
+#     return user.has_perm('')
 #
+#
+# @register.filter
+# def can_configure(user, target):
+#     return user.has_perm('configure', target)
+#
+# #
 # @register.assignment_tag(takes_context=True)
 # def get_user_perm(context, perm):
 #     try:

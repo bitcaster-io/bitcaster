@@ -37,20 +37,6 @@ def asset(path):
 
 @register.simple_tag
 def aasset(path):
-    """
-    Join the given path with the STATIC_URL setting.
-
-    Usage::
-
-        {% static path [as varname] %}
-
-    Examples::
-
-        {% static "myapp/css/base.css" %}
-        {% static variable_with_path %}
-        {% static "myapp/css/base.css" as admin_base_css %}
-        {% static variable_with_path as varname %}
-    """
     commit = bitcaster.get_full_version()
     return '%s?%s' % (absolute_uri(_static(path)), commit)
 

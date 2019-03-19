@@ -3,12 +3,10 @@ import abc
 from logging import getLogger
 
 from django.core.exceptions import ValidationError
-from strategy_field.utils import fqn
 
 from bitcaster import get_full_version
 from bitcaster.configurable import ConfigurableMixin, get_full_config
 from bitcaster.exceptions import PluginValidationError
-from bitcaster.utils.language import classproperty
 
 from . import serializers
 
@@ -44,25 +42,25 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         super().__init__(owner)
         self.logger = getLogger('bitcaster.plugins.%s' % self.name)
 
-    @classproperty
-    def fqn(cls):
-        return fqn(cls)
+    # @classproperty
+    # def fqn(cls):
+    #     return fqn(cls)
 
     @abc.abstractmethod
     def _get_connection(self) -> object:
         pass  # pragma: no-cover
 
-    def get_usage_message(self, config: DispatcherOptions) -> object:
+    def get_usage_message(self) -> object:
         """ return a message to the User to extra informations to complete the subscription.
         ie. follow Twitter
         """
-        return ''
+        return ' '
 
-    def get_usage(self, config: DispatcherOptions) -> object:
+    def get_usage(self) -> object:
         """ return a message to the User to extra informations to complete the subscription.
         ie. follow Twitter
         """
-        return self.get_usage_message(config)
+        return self.get_usage_message()
 
     def get_recipient_address(self, subscription):
         if isinstance(subscription, str):
@@ -89,6 +87,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     def validate_message(self, message, **kwargs):
         for validator in self.message_class.validators:
             validator(message, **kwargs)
+        return True
 
     @classmethod
     def validate_address(cls, address, *args, **kwargs) -> bool:
@@ -102,24 +101,12 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         cfg['recipient'] = self.get_recipient_address(subscription)
         try:
             return self.subscription_class(data=cfg).is_valid(True)
-        except (serializers.ValidationError, ValidationError) as e:
+        except (serializers.ValidationError, ValidationError) as e:  # pragma: no cover
             raise PluginValidationError(str(e)) from e
 
     @abc.abstractmethod
     def test_connection(self, raise_exception=False):
-        pass  # pragma: no-cover
-
-        # try:
-        #     self._get_connection()
-        #     return True
-        # except Exception as e:
-        #     logger.exception(e)
-        #     return False
-
-    def test_message(self, subscription, subject, message, *args, **kwargs):
-        # assert subscription.event is None
-        assert subscription.pk is None
-        return self.emit(subscription, subject, message, *args, **kwargs)
+        pass
 
 
 class CoreDispatcher(Dispatcher):

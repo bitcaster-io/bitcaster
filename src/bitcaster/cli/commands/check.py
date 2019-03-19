@@ -95,7 +95,7 @@ def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
     os.environ['BITCASTER_CONF'] = ctx.obj['config']
 
     from bitcaster.config.environ import env
-    env.load_config()
+    # env.load_config()
 
     if deploy:
         wait_services = True

@@ -16,8 +16,7 @@ from rest_framework.reverse import reverse
 from strategy_field.utils import fqn
 
 from bitcaster.exceptions import PluginValidationError
-from bitcaster.models import Channel, Event
-from bitcaster.models.subscription import Subscription
+from bitcaster.models import Channel
 from bitcaster.utils.django import deactivator_factory
 
 from .forms import ChannelForm
@@ -120,43 +119,43 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
         except Exception as e:  # pragma: no-cover
             self.message_user(request, str(e), level=messages.ERROR)
 
-    @action()
-    def send_sample_message(self, request, pk):
-        channel = self.get_object(request, pk)
-        opts = channel._meta
-        ctx = {'opts': opts,
-               'app_label': opts.app_label,
-               'original': channel,
-               'change': True,
-               'is_popup': False,
-               'save_as': False,
-               'has_delete_permission': False,
-               'has_add_permission': False,
-               'has_change_permission': False}
-        if request.method == 'GET':
-            serializer = channel.handler.subscription_class()
-            ctx['serializer'] = serializer
-            return render(request, 'admin/bitcaster/channel/test.html', ctx)
-        else:  # if request.method == 'POST':
-            serializer = channel.handler.subscription_class(data=request.POST)
-            ctx['serializer'] = serializer
-            try:
-                if serializer.is_valid():
-                    s = Subscription(subscriber=request.user,
-                                     event=Event(),
-                                     channel=channel,
-                                     enabled=True,
-                                     config=serializer.data)
-                    channel.handler.test_message(s,
-                                                 '',
-                                                 request.POST['message'])
-                    self.message_user(request, _('Message successully sent'), messages.SUCCESS)
-                    return HttpResponseRedirect(reverse('admin:bitcaster_channel_send_sample_message',
-                                                        args=[channel.pk]))
-
-            except Exception as e:  # pragma: no-cover
-                self.message_user(request, str(e), messages.ERROR)
-            return render(request, 'admin/bitcaster/channel/test.html', ctx)
+    # @action()
+    # def send_sample_message(self, request, pk):
+    #     channel = self.get_object(request, pk)
+    #     opts = channel._meta
+    #     ctx = {'opts': opts,
+    #            'app_label': opts.app_label,
+    #            'original': channel,
+    #            'change': True,
+    #            'is_popup': False,
+    #            'save_as': False,
+    #            'has_delete_permission': False,
+    #            'has_add_permission': False,
+    #            'has_change_permission': False}
+    #     if request.method == 'GET':
+    #         serializer = channel.handler.subscription_class()
+    #         ctx['serializer'] = serializer
+    #         return render(request, 'admin/bitcaster/channel/test.html', ctx)
+    #     else:  # if request.method == 'POST':
+    #         serializer = channel.handler.subscription_class(data=request.POST)
+    #         ctx['serializer'] = serializer
+    #         try:
+    #             if serializer.is_valid():
+    #                 s = Subscription(subscriber=request.user,
+    #                                  event=Event(),
+    #                                  channel=channel,
+    #                                  enabled=True,
+    #                                  config=serializer.data)
+    #                 channel.handler.test_message(s,
+    #                                              '',
+    #                                              request.POST['message'])
+    #                 self.message_user(request, _('Message successully sent'), messages.SUCCESS)
+    #                 return HttpResponseRedirect(reverse('admin:bitcaster_channel_send_sample_message',
+    #                                                     args=[channel.pk]))
+    #
+    #         except Exception as e:  # pragma: no-cover
+    #             self.message_user(request, str(e), messages.ERROR)
+    #         return render(request, 'admin/bitcaster/channel/test.html', ctx)
 
     @action(visible=False)
     def oauth_request(self, request, object_id):

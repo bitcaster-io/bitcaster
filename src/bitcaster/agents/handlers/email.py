@@ -33,7 +33,7 @@ class EmailMessage:
         return self.email_message.get('to')
 
     @property
-    def text(self):
+    def text(self):  # pragma: no cover
         body = ''
         for part in self.email_message.walk():
             if part.get_content_type() == 'text/plain':
@@ -63,10 +63,10 @@ class EmailOptions(EmailAbstractOptions):
 
 
 @agent_registry.register
-class EmailAgent(Agent):
+class EmailAgent(Agent):  # pragma: no cover
     options_class = EmailOptions
 
-    def _get_connection(self) -> object:
+    def _get_connection(self) -> object:  # pragma: no cover
         config = self.config
         if config['tls']:
             imap = imaplib.IMAP4_SSL(host=config['server'],
@@ -77,8 +77,8 @@ class EmailAgent(Agent):
         imap.login(config['username'], config['password'])
         return imap
 
-    def get_usage(self, config):
-        return ''
+    def get_usage(self):
+        return 'Simply set credentials and folder to check'
 
     @cached_property
     def event(self):
@@ -94,7 +94,7 @@ class EmailAgent(Agent):
         logger.info(f'Monitor {self.name} trigger event {self.event}')
         pass
 
-    def poll(self):
+    def poll(self):  # pragma: no cover
         self.subject_regex = re.compile(self.config['subject_regex'])
         self.sender_regex = re.compile(self.config['sender_regex'])
         self.body_regex = re.compile(self.config['body_regex'])
@@ -109,7 +109,7 @@ class EmailAgent(Agent):
             if self.filter(message):
                 self.trigger(message)
 
-    def test_connection(self, raise_exception=False):
+    def test_connection(self, raise_exception=False):  # pragma: no cover
         try:
             self._get_connection()
             return True

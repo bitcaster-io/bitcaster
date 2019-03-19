@@ -71,12 +71,12 @@ def cli(ctx, config, verbose, **kwargs):
     os.environ['BITCASTER_CONF'] = filepath
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings')
     from bitcaster.config.environ import env
-    if verbose > 0:
-        if config.exists():
-            click.echo(f'Using configuration from {filepath}')
-        else:
-            click.echo(f"Configuration file '{filepath}' does not exists.")
-        env.load_config(str(config), False)
+    # if verbose > 0:
+    #     if config.exists():
+    #         click.echo(f'Using configuration from {filepath}')
+    #     else:
+    #         click.echo(f"Configuration file '{filepath}' does not exists.")
+    #     env.load_config(str(config), False)
 
     ctx.obj = {'env': env,
                'config': filepath}

@@ -23,6 +23,7 @@ exclude_lines =
     pragma: no-cover
     # Don't complain about missing debug-only code:
     def __repr__
+    pass
     if self\.debug
     # Don't complain if tests don't hit defensive assertion code:
     raise AssertionError
@@ -40,8 +41,14 @@ ignore_errors = True
 omit =
     src/bitcaster/utils/tests/*
     src/bitcaster/cli/*
+    src/bitcaster/config/settings.py
+    src/bitcaster/config/urls.py
 
 include =
+    src/bitcaster/agents/*
+    src/bitcaster/config/*
+    src/bitcaster/dispatchers/*
+    src/bitcaster/framework/*
     src/bitcaster/middleware/*
     src/bitcaster/models/*
     src/bitcaster/utils/*
