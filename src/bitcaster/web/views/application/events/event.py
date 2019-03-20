@@ -90,7 +90,7 @@ def eventform_factory(event: Event):
 
 class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
     template_name = 'bitcaster/application/events/test.html'
-    # title = 'Test'
+    title = 'Test Event'
 
     def get_context_data(self, **kwargs):
         event = self.get_object()

@@ -34,6 +34,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'jsoneditor',
     'corsheaders',
+    'crashlog',
+    'dal',
+    'dal_select2',
     'django_sysinfo',
     'admin_extra_urls',
     'rest_framework',
@@ -120,8 +123,30 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': env.db('DATABASE_URL',
                       default='psql://postgres:@127.0.0.1:5432/bitcaster'),
+    'crashlog': env.db('DATABASE_URL',
+                       default='psql://postgres:@127.0.0.1:5432/bitcaster'),
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = True
+
+
+class DBRouter:
+    def db_for_read(self, model, **hints):
+        if model._meta.app_label == 'crashlog':
+            return 'crashlog'
+        return None
+
+    def db_for_write(self, model, **hints):
+        if model._meta.app_label == 'crashlog':
+            return 'crashlog'
+        return None
+
+    def allow_relation(self, obj1, obj2, **hints):
+        if obj1._meta.app_label == 'crashlog' or obj2._meta.app_label == 'crashlog':
+            return True
+        return None
+
+
+DATABASE_ROUTERS = [DBRouter()]
 
 # GENERAL CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -613,32 +638,34 @@ OTP_KEY = 'A' * 32
 CONFIRM_EMAIL_EXPIRE = 60 * 60 * 24  # 1 day
 
 if DEBUG:
-    ignored = RegexList((SETUP_URL, '/tpl/.*'))
+    ignored = RegexList((SETUP_URL, '/tpl/.*', '/api/.*', '/dal/.*'))
 
     def show_ddt(request):
         if request.user.is_authenticated:
             if request.path in ignored:
                 return False
-        return True
+        return 'HTTP_X_DDT' in request.META
 
     INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar']
     MIDDLEWARE = MIDDLEWARE + ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
     DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': show_ddt,
                             'JQUERY_URL': '',
                             }
-    DEBUG_TOOLBAR_PANELS = ['debug_toolbar.panels.versions.VersionsPanel',
-                            # 'debug_toolbar.panels.timer.TimerPanel',
-                            # 'debug_toolbar.panels.settings.SettingsPanel',
-                            'debug_toolbar.panels.headers.HeadersPanel',
-                            'debug_toolbar.panels.request.RequestPanel',
-                            # 'debug_toolbar.panels.sql.SQLPanel',
-                            # 'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-                            'debug_toolbar.panels.templates.TemplatesPanel',
-                            # 'debug_toolbar.panels.cache.CachePanel',
-                            # 'debug_toolbar.panels.signals.SignalsPanel',
-                            # 'debug_toolbar.panels.logging.LoggingPanel',
-                            # 'debug_toolbar.panels.redirects.RedirectsPanel',
-                            ]
+    DEBUG_TOOLBAR_PANELS = [
+        'bitcaster.utils.ddt.UserInfoPanel',
+        # 'debug_toolbar.panels.versions.VersionsPanel',
+        # 'debug_toolbar.panels.timer.TimerPanel',
+        # 'debug_toolbar.panels.settings.SettingsPanel',
+        # 'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        # 'debug_toolbar.panels.sql.SQLPanel',
+        # 'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        # 'debug_toolbar.panels.cache.CachePanel',
+        # 'debug_toolbar.panels.signals.SignalsPanel',
+        # 'debug_toolbar.panels.logging.LoggingPanel',
+        # 'debug_toolbar.panels.redirects.RedirectsPanel',
+    ]
     INTERNAL_IPS = ['127.0.0.1', 'localhost', '0.0.0.0', '*']
 
 CORS_ORIGIN_ALLOW_ALL = True

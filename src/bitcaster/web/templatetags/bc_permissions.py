@@ -10,7 +10,7 @@ class AuthWrapper:
     __name__ = 'AuthWrapper'
 
     def __init__(self, perms):
-        self.perms = [perm.split(':')[1] for perm in perms]
+        self.perms = perms
 
     def __repr__(self):
         return repr(self.perms)
@@ -28,9 +28,9 @@ class CheckPermissions(template.Node):
         user = context['request'].user
         target = context[self.target]
         if isinstance(target, Organization):
-            perms = [perm for perm in PERMISSIONS if perm.startswith('org') and user.has_perm(perm, target)]
+            perms = [perm for perm in PERMISSIONS if user.has_perm(perm, target)]
         elif isinstance(target, Application):
-            perms = [perm for perm in PERMISSIONS if perm.startswith('app') and user.has_perm(perm, target)]
+            perms = [perm for perm in PERMISSIONS if user.has_perm(perm, target)]
         else:
             perms = []
         context[self.var_name] = AuthWrapper(perms)
@@ -39,15 +39,12 @@ class CheckPermissions(template.Node):
 
 @register.tag(name='check_permissions')
 def check_permissions(parser, token):
-    # This version uses a regular expression to parse tag contents.
     try:
-        # Splitting by None == splitting by spaces.
         tag, *args = token.contents.split(None)
         target = args[0]
     except IndexError:
         raise template.TemplateSyntaxError('%r tag requires arguments'
                                            % token.contents.split()[0])
-
     var_name = None
     if len(args) > 1:
         if args[1] != 'as':

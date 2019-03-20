@@ -56,7 +56,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         """ return a message to the User to extra informations to complete the subscription.
         ie. follow Twitter
         """
-        return ' '
+        return ''
 
     def get_usage(self) -> object:
         """ return a message to the User to extra informations to complete the subscription.

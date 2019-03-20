@@ -89,9 +89,7 @@ class Application(AbstractModel, ReverseWrapperMixin):
 
     @cached_property
     def admins(self):
-        from bitcaster.models import ApplicationRole
-        admins = ApplicationRole.objects.filter(role=Role.ADMIN).first()
-        if admins:
-            return [m.user for m in
-                    self.teams.filter(roles=Role.ADMIN)]
-        return []
+        admins = []
+        for t in self.teams.filter(roles=Role.ADMIN):
+            admins.extend([m.user for m in t.members])
+        return admins

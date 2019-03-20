@@ -19,7 +19,7 @@
         {% for event in object_list %}
             <tr>
                 <td>{{ event.name }}</td>
-                <td style="width:40%" class="nowrap">
+                <td style="width:40%" class="nowrap formset-commands">
                     <a class="btn btn-light {% if not event.enabled_channels.exists %}red{% endif %}"
                        data-toggle="tooltip" title="configure"
                        href="{{ event.pk }}/edit/">

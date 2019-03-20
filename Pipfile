@@ -72,6 +72,9 @@ zulip = "*"
 django-auth-ldap = "*"
 yampy = "*"
 viberbot = "*"
+django-crashlog = "*"
+django-filters = "*"
+django-autocomplete-light= "*"
 
 [dev-packages]
 bumpversion = "*"

@@ -17,7 +17,7 @@
                 <td style="width:5%">{{ subscription.event }}</td>
                 <td style="width:5%">{{ subscription.channel }}</td>
                 <td style="width:5%">{{ subscription.recipient }}</td>
-                <td style="width:10%" class="nowrap">
+                <td style="width:10%" class="nowrap formset-commands">
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="{% if subscription.enabled %}Disable{% else %}Enable{% endif %}"
                        href="{% url 'user-subscription-toggle' subscription.pk %}">

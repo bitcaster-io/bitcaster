@@ -2,6 +2,7 @@ from django.http import Http404
 from django.utils.functional import cached_property
 
 from bitcaster.models import Application
+from bitcaster.state import state
 from bitcaster.web.views.organization.mixins import ApplicationListMixin
 
 
@@ -16,6 +17,7 @@ class SelectedApplicationMixin(ApplicationListMixin):
             slug = self.kwargs['app']
             try:
                 app = self.selected_organization.applications.get(slug=slug)
+                state.debug['application'] = app
                 self.check_perms(self.request, app, True)
             except Application.DoesNotExist:  # pragma: no cover
                 raise Http404

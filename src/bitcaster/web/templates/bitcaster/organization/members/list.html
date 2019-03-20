@@ -13,9 +13,9 @@
             <thead>
             <tr class="d-flex">
                 <th scope="col" class="col-4">User</th>
-                <th scope="col" class="col-3">Role</th>
-                <th scope="col" class="col-3">Enrollment Date</th>
-                <th scope="col" class="col-1"></th>
+                <th scope="col" class="col-2">Role</th>
+                <th scope="col" class="col-2">Enrollment Date</th>
+                <th scope="col" class="col-2">&nbsp;</th>
             </tr>
             </thead>
             <tbody>
@@ -24,17 +24,18 @@
                     {{ organization.owner }}{% if organization.owner == user %}
                         <span class="label warn">you</span>{% endif %}
                 </td>
-                <td class="col-3">Owner</td>
-                <td class="col-3"></td>
+                <td class="col-2">Owner</td>
+                <td class="col-2">&nbsp;</td>
+                <td class="col-2">&nbsp;</td>
             </tr>
             {% for membership in memberships.all %}
                 <tr class="d-flex">
                     <td class="col-4">
                         {{ membership.user }}{% if membership.user == user %}<span class="you">you</span>{% endif %}
                     </td>
-                    <td class="col-3">{{ membership.get_role_display }}</td>
-                    <td class="col-3">{{ membership.date_enrolled }}</td>
-                    <td>
+                    <td class="col-2">{{ membership.get_role_display }}</td>
+                    <td class="col-2">{{ membership.date_enrolled|date:"Y, M d" }}</td>
+                    <td class="col-2 formset-commands">
                         <a class="btn btn-outline-light"
                            data-toggle="tooltip" title="edit"
                            href="{% org-url "org-member-edit" membership.pk %}">
@@ -71,7 +72,7 @@
                         </td>
                         <td class="col-3">{{ invitation.invited_by }}</td>
                         <td class="col-3">{{ invitation.date_created }}</td>
-                        <td class="text-nowrap col-1">
+                        <td class="text-nowrap col-1 formset-commands">
                             <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'">
                             <i class="far fa-trash-alt"></i>
                             </a>

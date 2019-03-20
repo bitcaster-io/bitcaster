@@ -44,7 +44,7 @@ class AddressAssignment(models.Model):
     objects = AssignmentQuerySet.as_manager()
 
     class Meta:
-        unique_together = ('user', 'channel'),
+        unique_together = ('user', 'channel', ),
         app_label = 'bitcaster'
 
     def __str__(self):

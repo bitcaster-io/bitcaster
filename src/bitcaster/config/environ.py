@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
+import os
+from pathlib import Path
 
 from environ import ImproperlyConfigured, environ, re
 
@@ -76,44 +78,30 @@ class Env(environ.Env):
         logger.debug(f"get '{var}' returns '{value}'")
         return value
 
-    # def load_config(self, env_file: str = None, check_exists: bool = False):
-    #     """Read a .env file into os.environ.
-    #
-    #     If not given a path to a dotenv path, does filthy magic stack backtracking
-    #     to find manage.py and then find the dotenv.
-    #
-    #     http://www.wellfireinteractive.com/blog/easier-12-factor-django/
-    #
-    #     https://gist.github.com/bennylope/2999704
-    #     """
-    #     if env_file is None:
-    #         env_file = os.environ.get('BITCASTER_CONF', DEFAULT_CONFIG)
-    #     logger.debug(f'Read environment variables from: {env_file}')
-    #     if not os.path.exists(env_file):
-    #         if check_exists:
-    #             raise ImproperlyConfigured(f"Configuration file '{env_file}' does not exists or cannot be read")
-    #
-    #         return
-    #     # set defaults
-    #     for key, value in DEFAULTS.items():
-    #         self.ENVIRON.setdefault(f'{self.prefix}{key}', str(value[1]))
-    #
-    #     try:
-    #         content = Path(env_file).read_text()
-    #     except IOError:
-    #         raise ImproperlyConfigured(f'{env_file} not found')
-    #
-    #     for line in content.splitlines():
-    #         m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
-    #         if m1:
-    #             key, val = m1.group(1), m1.group(2)
-    #             m2 = re.match(r"\A'(.*)'\Z", val)
-    #             if m2:
-    #                 val = m2.group(1)
-    #             m3 = re.match(r'\A"(.*)"\Z', val)
-    #             if m3:
-    #                 val = re.sub(r'\\(.)', r'\1', m3.group(1))
-    #             self.ENVIRON[f'{self.prefix}{key}'] = str(val)
+    def load_config(self, env_file: str = None):  # pragma: no cover
+        # only used by test
+        if not os.path.exists(env_file):
+            raise ImproperlyConfigured(f"Configuration file '{env_file}' does not exists or cannot be read")
+        # set defaults
+        for key, value in DEFAULTS.items():
+            self.ENVIRON.setdefault(f'{self.prefix}{key}', str(value[1]))
+
+        try:
+            content = Path(env_file).read_text()
+        except IOError:  # pragma: no cover
+            raise ImproperlyConfigured(f'{env_file} not found')
+
+        for line in content.splitlines():
+            m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
+            if m1:
+                key, val = m1.group(1), m1.group(2)
+                m2 = re.match(r"\A'(.*)'\Z", val)
+                if m2:
+                    val = m2.group(1)
+                m3 = re.match(r'\A"(.*)"\Z', val)
+                if m3:
+                    val = re.sub(r'\\(.)', r'\1', m3.group(1))
+                self.ENVIRON[f'{key}'] = str(val)
 
     # def write_env(self, env_file=None, **overrides):
     #     with open(env_file, 'w') as f:

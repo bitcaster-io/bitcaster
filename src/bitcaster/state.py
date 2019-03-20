@@ -5,6 +5,7 @@ from threading import local
 class State(local):
     request = None
     data = {}
+    debug = {}
 
     def clear(self):
         self.data = {}

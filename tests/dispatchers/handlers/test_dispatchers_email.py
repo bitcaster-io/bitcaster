@@ -10,7 +10,7 @@ from bitcaster.utils.tests.factories import ChannelFactory, SubscriptionFactory
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.usefixtures('dispatcher', 'subscription')
+@pytest.mark.skipif_missing('TEST_EMAIL_USER', 'TEST_EMAIL_PASSWORD', 'TEST_EMAIL_RECIPIENT')
 class TestDispatcherEmail(DispatcherBaseTest):
     TARGET = Email
     CONFIG = {'server': 'server',
@@ -25,6 +25,7 @@ class TestDispatcherEmail(DispatcherBaseTest):
     @pytest.fixture()
     def subscription(self, dispatcher):
         return SubscriptionFactory(channel=ChannelFactory(handler=dispatcher),
+                                   address='tst@a.com',
                                    trigger_by=dispatcher.owner.application.organization.owner,
                                    subscriber=dispatcher.owner.application.organization.owner)
 

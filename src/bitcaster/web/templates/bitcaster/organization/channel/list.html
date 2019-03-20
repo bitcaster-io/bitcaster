@@ -2,7 +2,7 @@
 {% load crispy_forms_tags i18n bc_assets bitcaster bc_permissions %}
 {% block page %}
     {% check_permissions organization %}
-    {% if permissions.create_channel %}
+    {% if permissions.add_channel %}
         <div class="container">
             <div class="row col-12">
                 <div class="pull-right col-12 p-4">
@@ -28,7 +28,7 @@
                 </td>
                 <td style="width:10%">
                 </td>
-                <td style="width:30%" class="nowrap">
+                <td style="width:30%" class="nowrap formset-commands">
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="configure"
                        href="{{ channel.urls.edit }}">

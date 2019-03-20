@@ -26,7 +26,8 @@
         <div id="empty-form" class="d-none">
             <div class="row col-12 m-0 p-0">
                 <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex">
-                    <div class="hidden">{{ form.empty_form.id}}{{ form.empty_form.user }}{{ form.empty_form.DELETE }}</div>
+                    <div class="hidden">
+                        {{ form.empty_form.id }}{{ form.empty_form.user }}{{ form.empty_form.DELETE }}</div>
                     <div class="col col-3">{{ form.empty_form.channel|as_crispy_field }}</div>
                     <div class="col col-5">{{ form.empty_form.address|as_crispy_field }}</div>
                     <div class="col col-2 align-middle align-items-center">
@@ -45,27 +46,40 @@
                 <div class="content assignments fieldset">
                     {% for form in form.forms|order_formset %}
                         <div class="row col-12 m-0 p-0">
-                            <div style="display: inline-flex" class="row m-0 p-2 col-12 line-fields {% if form.errors %}has-error{% endif %}">
+                            <div style="display: inline-flex"
+                                 class="row m-0 p-2 col-12 line-fields {% if form.errors %}has-error{% endif %}">
                                 <div class="hidden">{{ form.user }}{{ form.id }}{{ form.DELETE }}</div>
                                 <div class="col col-3">{{ form.channel|as_crispy_field }}</div>
                                 <div class="col col-5">{{ form.address|as_crispy_field }}</div>
-                                <div class="col col-2 align-middle align-items-center">
-                                    <a href="#" class="btn remove_line mr-2">
+                                <div class="col col-2 align-middle align-items-center formset-commands">
+                                    <a href="#" class="btn remove_line mr-2 btn-outline-light align-top">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
+
+                                    <a rel="modal:open"
+                                       class="btn btn-outline-light align-top"
+                                       title="info"
+                                       data-remote="{% url "user-address-info" organization.slug form.instance.id %}"
+                                       href="."><i class="fa fa-info"></i></a>
                                 </div>
                                 {% if form.non_field_errors %}
-                                <div class="row non-field-errors invalid-feedback">{{ form.non_field_errors.as_text }}</div>
+                                    <div
+                                        class="row non-field-errors invalid-feedback">{{ form.non_field_errors.as_text }}</div>
                                 {% endif %}
                             </div>
                         </div>
                     {% endfor %}
                 </div>
-{% include "bitcaster/_includes/formset/commands.html" %}
+                {% include "bitcaster/_includes/formset/commands.html" %}
             </form>
         </div>
     </div>
 {% endblock %}
 {% block js %}
     {% include "bitcaster/_includes/formset/js_code.html" with formsetName="assignments" %}
+    <script>
+        $('a.btn.info').on('click', function (e) {
+
+        });
+    </script>
 {% endblock js %}

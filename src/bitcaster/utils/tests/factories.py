@@ -380,14 +380,16 @@ class SubscriptionFactory(AutoRegisterModelFactory):
     event = factory.SubFactory(EventFactory)
     config = {}
 
-    @factory.post_generation
-    def tokens(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-        AddressAssignmentFactory(channel=self.channel,
-                                 user=self.subscriber,
-                                 address=AddressFactory(user=self.subscriber))
+    @classmethod
+    def _get_or_create(cls, model_class, *args, **kwargs):
+        address = kwargs.pop('address', 'a@b.com')
+        sub = super()._get_or_create(model_class, *args, **kwargs)
+        AddressAssignmentFactory(channel=sub.channel,
+                                 user=sub.subscriber,
+                                 address=AddressFactory(user=sub.subscriber,
+                                                        address=address))
+
+        return sub
 
 
 class AddressFactory(AutoRegisterModelFactory):
@@ -403,7 +405,7 @@ class AddressFactory(AutoRegisterModelFactory):
 class AddressAssignmentFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.AddressAssignment
-        django_get_or_create = ('user', 'address', 'channel')
+        django_get_or_create = ('user', 'channel')
 
     user = factory.SubFactory(UserFactory)
     address = factory.SubFactory(AddressFactory)

@@ -14,15 +14,17 @@
 
         </div>
     </div>
-    <div class="pull-right col-4 hidden commands">
-        <button type="button" id="btn-save"
-                class="btn btn-primary btn-small mr-3">{% trans "Send" %}</button>
+{#    <div class="pull-right col-4 hidden commands">#}
+{#        <button type="button" id="btn-save"#}
+{#                class="btn btn-primary btn-small mr-3">{% trans "Send" %}</button>#}
+{##}
+{#        <button type="button" id="btn-cancel" class="btn btn-secondary"#}
+{#                onclick="location.href=location.href;">#}
+{#            {% trans "Cancel" %}#}
+{#        </button>#}
+{#    </div>#}
+    {% include "bitcaster/_includes/formset/commands.html" %}
 
-        <button type="button" id="btn-cancel" class="btn btn-secondary"
-                onclick="location.href=location.href;">
-            {% trans "Cancel" %}
-        </button>
-    </div>
     <div id="empty-form" class="d-none">
         <div class="row col-12 m-0 p-0">
             <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex"
@@ -30,8 +32,8 @@
                 <div class="hidden order" data-order="__prefix__">
                     {{ invitations.empty_form.id }}{{ invitations.empty_form.DELETE }}</div>
                 <div class="col col-3">{{ invitations.empty_form.target|as_crispy_field }}</div>
-                <div class="col col-2 align-middle align-items-center">
-                    <a href="." class="remove_line">
+                <div class="col col-2 align-middle align-items-center formset-commands">
+                    <a href="." class="btn remove_line">
                         <i class="fas fa-trash-alt"></i></a>
                 </div>
             </div>
@@ -44,7 +46,7 @@
     </div>
 
 
-    <div class="container pl-3 m-3">
+    <div class="container pl-3 m-3" style="display: block; min-height: 30px">
         <form method="post" id="Form">
             {{ invitations.management_form }}
             {% csrf_token %}
@@ -56,8 +58,8 @@
                                 {{ form.id }}
                                 {{ form.DELETE }}</div>
                             <div class="col col-3">{{ form.target|as_crispy_field }}</div>
-                            <div class="col col-2 align-middle align-items-center">
-                                <a href="." class="remove_line">
+                            <div class="col col-2 align-middle align-items-center formset-commands">
+                                <a href="." class="btn remove_line">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
                             </div>
@@ -73,15 +75,18 @@
             </div>
         </form>
     </div>
-    <div class="pull-right col-4 hidden commands">
-        <button type="button" id="btn-save"
-                class="btn btn-primary btn-small mr-3">{% trans "Send" %}</button>
 
-        <button type="button" id="btn-cancel" class="btn btn-secondary"
-                onclick="location.href=location.href;">
-            {% trans "Cancel" %}
-        </button>
-    </div>
+    {% include "bitcaster/_includes/formset/commands.html" %}
+
+{#    <div class="pull-right col-4 hidden commands comm">#}
+{#        <button type="button" id="btn-save"#}
+{#                class="btn btn-primary btn-small mr-3">{% trans "Send" %}</button>#}
+{##}
+{#        <button type="button" id="btn-cancel" class="btn btn-secondary"#}
+{#                onclick="location.href=location.href;">#}
+{#            {% trans "Cancel" %}#}
+{#        </button>#}
+{#    </div>#}
 
 {% endblock %}
 {% block js %}

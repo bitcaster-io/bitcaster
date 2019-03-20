@@ -1,11 +1,17 @@
 // override bootstrap4 colors/values
-.btn-outline-light {
-    border: 1px solid grey;
-    &:hover{
-        background-color: darkgrey;
-        border: 1px solid black;
+.formset-commands {
+    a.btn, button {
+        min-width: 40px;
+        border: 1px solid rgb(206, 212, 218);
+        vertical-align: top !important;
+
+        &:hover {
+            background-color: darkgrey;
+            border: 1px solid #949494;
+        }
     }
 }
+
 
 .bg-success {
     background-color: $success-color;
@@ -37,4 +43,21 @@
 
 .bg-light {
     background-color: #f8f9fa !important;
+}
+
+// select2
+.select2 {
+    .selection {
+        width: 100%;
+        height: 50px;
+
+        .select2-selection {
+            height: 40px;
+        }
+
+        li.select2-selection__choice {
+            margin: 0;
+            margin-right: 5px;
+        }
+    }
 }
