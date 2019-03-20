@@ -55,12 +55,13 @@
                                     <a href="#" class="btn remove_line mr-2 btn-outline-light align-top">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
-
+{% if form.instance.id %}
                                     <a rel="modal:open"
                                        class="btn btn-outline-light align-top"
                                        title="info"
                                        data-remote="{% url "user-address-info" organization.slug form.instance.id %}"
                                        href="."><i class="fa fa-info"></i></a>
+{% endif %}
                                 </div>
                                 {% if form.non_field_errors %}
                                     <div

@@ -43,14 +43,6 @@ class Email(CoreDispatcher):
     subscription_class = EmailSubscription
     message_class = EmailMessage
 
-    # def validate_subscription(self, subscription, *args, **kwargs) -> bool:
-    #     email = self.get_recipient_address(subscription)
-    #     cfg = {'recipient': self.owner.config.get('recipient', email)}
-    #     try:
-    #         return self.subscription_class(data=cfg).is_valid(True)
-    #     except (serializers.ValidationError, ValidationError) as e:
-    #         raise PluginValidationError(str(e)) from e
-
     def _get_connection(self) -> object:
         config = self.config
         return get_connection(

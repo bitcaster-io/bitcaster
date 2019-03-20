@@ -90,6 +90,6 @@ class Application(AbstractModel, ReverseWrapperMixin):
     @cached_property
     def admins(self):
         admins = []
-        for t in self.teams.filter(roles=Role.ADMIN):
-            admins.extend([m.user for m in t.members])
+        for t in self.teams.filter(roles__role=Role.ADMIN):
+            admins.extend([m.user for m in t.members.all()])
         return admins

@@ -55,8 +55,7 @@ class Facebook(CoreDispatcher):
 
     def get_usage_message(self, **kwargs) -> object:
         return _('To receive messages thru Facebook chat, '
-                 'you must add {config[account]} to your Facebook friends list.').format(self=self,
-                                                                                         config=self.config,
+                 'you must add {config[account]} to your Facebook friends list.').format(config=self.config,
                                                                                          **kwargs)
 
     def _get_connection(self) -> Client:

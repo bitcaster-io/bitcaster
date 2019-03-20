@@ -35,31 +35,17 @@ class HangoutSubscription(SubscriptionOptions):
     recipient = serializers.CharField()
 
 
-class FireAndForget(EventHandler):  #
-    """A minimal XMPP client that just connects to a server
-    and runs single function.
-
-    :Ivariables:
-        - `action`: the function to run after the stream is authorized
-        - `client`: a `Client` instance to do the rest of the job
-    :Types:
-        - `action`: a callable accepting a single 'client' argument
-        - `client`: `pyxmpp2.client.Client`
-    """
-
+class FireAndForget(EventHandler):
     def __init__(self, local_jid, action, settings):
         self.action = action
         self.client = Client(local_jid, [self], settings)
         self.connected = False
 
     def run(self):
-        """Request client connection and start the main loop."""
         self.client.connect()
         self.client.run()
 
-    def disconnect(self):
-        """Request disconnection and let the main loop run for a 2 more
-        seconds for graceful disconnection."""
+    def disconnect(self):  # pragma: no cover
         self.client.disconnect()
         self.client.run(timeout=2)
 
@@ -69,16 +55,11 @@ class FireAndForget(EventHandler):  #
 
     @event_handler(AuthorizedEvent)
     def handle_authorized(self, event):
-        """Send the initial presence after log-in."""
-        # pylint: disable=W0613
-        if self.action:
-            self.action(self.client)
-            self.client.disconnect()
+        self.action(self.client)
+        self.client.disconnect()
 
     @event_handler(DisconnectedEvent)
     def handle_disconnected(self, event):
-        """Quit the main loop upon disconnection."""
-        # pylint: disable=W0613,R0201
         self.connected = False
         return QUIT
 

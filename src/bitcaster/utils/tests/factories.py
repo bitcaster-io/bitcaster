@@ -207,6 +207,15 @@ class ApplicationFactory(AutoRegisterModelFactory):
     organization = factory.SubFactory(OrganizationFactory)
 
 
+class OrganizationMemberFactory(AutoRegisterModelFactory):
+    organization = factory.SubFactory(OrganizationFactory)
+    user = factory.SubFactory(UserFactory)
+
+    class Meta:
+        model = bitcaster.models.OrganizationMember
+        django_get_or_create = ('organization', 'user')
+
+
 class TeamFactory(AutoRegisterModelFactory):
     class Meta:
         model = bitcaster.models.Team
@@ -215,22 +224,14 @@ class TeamFactory(AutoRegisterModelFactory):
     application = factory.SubFactory(ApplicationFactory)
     manager = factory.SubFactory(UserFactory)
     name = factory.Faker('name')
-    # members = []
 
-    # @classmethod
-    # def _get_or_create(cls, model_class, *args, **kwargs):
-    #     cls.members = kwargs.pop('members')
-    #     return super()._get_or_create(model_class, *args, **kwargs)
-    #
-    # @classmethod
-    # def _after_postgeneration(cls, instance, create, results=None):
-    #     super()._after_postgeneration(instance, create, results)
-    #     for member in cls.members:
-    #         # m, __ = OrganizationMember.objects.get_or_create(
-    #         #     organization=instance.organization,
-    #         #     user=member
-    #         # )
-    #         TeamMembership.objects.create(team=instance, member=member)
+    @factory.post_generation
+    def tokens(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+        m = OrganizationMemberFactory(organization=self.application.organization)
+        self.members.add(m)
 
 
 class ApplicationRoleFactory(AutoRegisterModelFactory):
