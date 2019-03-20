@@ -40,8 +40,11 @@ exclude_lines =
 ignore_errors = True
 omit =
     src/bitcaster/utils/tests/*
+    src/bitcaster/utils/ddt.py
+    src/bitcaster/utils/ddt.py
     src/bitcaster/cli/*
     src/bitcaster/config/settings.py
+    src/bitcaster/config/logging_conf.py
     src/bitcaster/config/urls.py
 
 include =
@@ -53,6 +56,7 @@ include =
     src/bitcaster/models/*
     src/bitcaster/utils/*
     src/bitcaster/web/templatetags/*
+    src/bitcaster/web/views/user/*
 
 [html]
 directory = ~build/coverage

@@ -6,7 +6,7 @@ from bitcaster.backends import BitcasterBackend
 from bitcaster.dispatchers import Email
 from bitcaster.framework.db.fields import Role
 from bitcaster.models import ApplicationRole, OrganizationMember
-from bitcaster.security import OWNER_PERMISSIONS
+from bitcaster.security import OWNER_PERMISSIONS, PERMISSIONS
 from bitcaster.utils.tests.factories import TeamFactory, UserFactory, faker
 
 pytestmark = pytest.mark.django_db
@@ -91,30 +91,5 @@ def test_get_all_permisssions(event1, event2, admin, user3, admin1, subscriber11
     assert backend.get_all_permissions(owner1, event1) == OWNER_PERMISSIONS
 
     assert backend.get_all_permissions(admin1, org1) == set()
-    assert backend.get_all_permissions(admin1, app1) == set()
-    assert backend.get_all_permissions(admin1, event1) == set()
-
-    # assert backend.get_all_permissions(subscriber11, org1) == set()
-    # assert backend.get_all_permissions(subscriber11, app1) == set()
-    # assert backend.get_all_permissions(subscriber11, event1) == set()
-
-    # @pytest.mark.django_db
-    # def test_backend2(event1, event2, admin, user3, admin1, admin2):
-    #     backend = BitcasterBackend()
-    #
-    #     app1 = event1.application
-    #     app2 = event2.application
-    #
-    #     org1 = app1.organization
-    #     org2 = app2.organization
-    #
-    #     owner1 = org1.owner
-    #     owner2 = org2.owner
-    #
-    #     assert backend.has_perm(owner1, 'evt:trigger', event1)
-    #     assert backend.has_perm(admin1, 'evt:trigger', event1)
-    #     assert not backend.has_perm(owner2, 'evt:trigger', event1)
-    #     assert not backend.has_perm(admin2, 'evt:trigger', event1)
-    #
-    #     assert backend.has_perm(owner2, 'evt:trigger', event2)
-    #     # assert backend.has_perm(admin2, 'evt:trigger', event2)
+    assert backend.get_all_permissions(admin1, app1) == PERMISSIONS
+    assert backend.get_all_permissions(admin1, event1) == PERMISSIONS

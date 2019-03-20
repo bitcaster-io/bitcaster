@@ -9,25 +9,24 @@ from ..registry import dispatcher_registry
 class ConsoleDispatcher(CoreDispatcher):
     __help__ = 'Simple Dispatcher that emit on standard output'
 
-    def emit(self, **kwargs):
+    def emit(self, subscription: object, subject: str, message: str,
+             connection=None, silent=True, *args, **kwargs) -> int:
         print(**kwargs)
-
-    def validate_user(self, user, *args, **kwargs) -> None:
-        pass
-
-    def test_connection(self, raise_exception=False):
-        pass
+        return 1
 
     @classproperty
     def name(self):
         return 'Console'
 
     def _get_connection(self) -> object:
-        pass
+        return 'Ok'
 
     @classmethod
     def validate_address(cls, address, *args, **kwargs):
         return True
 
     def validate_subscription(self, subscription, *args, **kwargs):
-        return subscription.config == {}
+        return True
+
+    def test_connection(self, raise_exception=False):
+        return True

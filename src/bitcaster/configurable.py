@@ -92,10 +92,10 @@ class ConfigurableMixin:
     def license(cls):
         return cls.__license__
 
-    # @classmethod
+    @classmethod
     def validate_configuration(self, config, raise_exception=True, *args, **kwargs) -> None:
         cfg = get_full_config(self.options_class, config)
-        opts = self.get_options_form(data=cfg)
+        opts = self.options_class(data=cfg)
         return opts.is_valid(raise_exception)
 
     @property

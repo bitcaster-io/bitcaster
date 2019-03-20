@@ -1,7 +1,9 @@
 import pytest
 
+from bitcaster.framework.db.fields import Role
 from bitcaster.models import Application
-from bitcaster.utils.tests.factories import ApplicationFactory
+from bitcaster.utils.tests.factories import (ApplicationFactory,
+                                             ApplicationRoleFactory,)
 
 
 def test_application():
@@ -27,8 +29,9 @@ def test_application_create_slug(organization1):
 
 
 @pytest.mark.django_db
-def test_application_admins(application1):
-    assert list(application1.admins) == []
+def test_application_admins(team1):
+    ApplicationRoleFactory(team=team1, role=Role.ADMIN)
+    assert list(team1.application.admins)
 
 
 @pytest.mark.django_db

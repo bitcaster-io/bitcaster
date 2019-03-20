@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "bootstrap": "^4.1.2",
+    "bootstrap": "^4.3.1",
     "font-awesome": "^4.7.0",
     "fontawesome": "^4.7.2",
     "jquery": "^3.3.1",
