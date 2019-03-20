@@ -2,6 +2,7 @@
 from logging import getLogger
 
 import skpy.main
+from django.core.exceptions import ObjectDoesNotExist
 
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
@@ -49,10 +50,13 @@ class Skype(CoreDispatcher):
     def emit(self, subscription: object, subject: str, message: str,
              connection=None, *args, **kwargs) -> int:
         try:
-            recipient = self.get_recipient_address(subscription)
-            self.logger.info('Processing {0}'.format(subscription, recipient))
+            address = self.get_recipient_address(subscription)
+            self.logger.info('Processing {0}'.format(subscription, address))
             connection = connection or self._get_connection()
-            ch = connection.contacts[recipient].chat  # 1-to-1 conversation
+            recipient = connection.contacts[address]
+            if not recipient:
+                raise PluginSendError('Invalid Skype address %s ' % address)
+            ch = recipient.chat  # 1-to-1 conversation
             ch.sendMsg(message)  # plain-text message
             return 1
         except skpy.core.SkypeApiException as e:
@@ -62,9 +66,12 @@ class Skype(CoreDispatcher):
                 raise RecipientNotFound(e) from e
             logger.error(e)
             raise PluginSendError(e) from e
+        except ObjectDoesNotExist as e:  # pragma: no cover
+            logger.exception(e)
+            raise PluginSendError('Unable to find valid address for Skype: %s' % e) from e
         except Exception as e:  # pragma: no cover
             logger.exception(e)
-            raise PluginSendError(e) from e
+            raise PluginSendError('Unable to send Skype message to %s: %s' % (recipient, e)) from e
 
     def test_connection(self, raise_exception=False):
         sk = skpy.main.Skype(self.config['username'],

@@ -47,6 +47,10 @@ class Facebook(CoreDispatcher):
 - Select `Get Started with the Pages API`
 - get `App ID` and `App Secret`
 
+If you alread have an app, got to
+- goto [https://developers.facebook.com/apps/](https://developers.facebook.com/apps/)
+ and create a new app that represent your Biscaster instance
+- under Settings/Basic on the left menu, pick your Api ID/Secret
 """)
 
     @classproperty
@@ -54,9 +58,10 @@ class Facebook(CoreDispatcher):
         return 'Facebook'
 
     def get_usage_message(self, **kwargs) -> object:
-        return _('To receive messages thru Facebook chat, '
-                 'you must add {config[account]} to your Facebook friends list.').format(config=self.config,
-                                                                                         **kwargs)
+        return _("""To receive messages thru Facebook chat,
+                 you must add **{config[account]}** to your Facebook friends list.
+ navigate to [[https://www.facebook.com/{config[account]}]] add add to your friends
+ """).format(config=self.config, **kwargs)
 
     def _get_connection(self) -> Client:
         return Client(self.config['key'].encode('utf8'),
@@ -74,12 +79,12 @@ class Facebook(CoreDispatcher):
             if not friends:
                 raise RecipientNotFound(recipient)
             friend = friends[0]
-            msg = Message(text=message.encode('utf8'))
+            msg = Message(text=message.encode('utf8'), emoji_size=None)
             connection.send(msg, friend.uid)
             return 1
         except RecipientNotFound as e:  # pragma: no cover
             logger.exception(e)
-            raise PluginSendError(_('User %(user)s is not a friend of this Facebook account').format(user=e))
+            raise PluginSendError(_('User {user} is not a friend of this Facebook account').format(user=e))
         except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e)

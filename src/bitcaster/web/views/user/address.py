@@ -86,7 +86,7 @@ class UserAddressesAssignmentView(UserMixin, BitcasterBaseUpdateView):
         for assignment in formset.new_objects:
             usage_message = assignment.channel.get_usage_message()
             if usage_message:
-                self.message_user(usage_message, extra_tags='keep')
+                self.message_user(_('This subscription is not complete. Check extra info'), extra_tags='keep')
         for assignment, __ in formset.changed_objects:
             usage_message = assignment.channel.get_usage_message()
             if usage_message:

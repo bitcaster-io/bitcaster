@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from bitcaster.models import Message
 from bitcaster.utils.tests.factories import ChannelFactory, SubscriptionFactory
 
 pytestmark = pytest.mark.django_db
@@ -63,4 +64,4 @@ class DispatcherBaseTest:
         assert dispatcher.validate_subscription(subscription.recipient)
 
     def test_validate_message(self, dispatcher):
-        assert dispatcher.validate_message('message')
+        assert dispatcher.validate_message(Message(body='message'))

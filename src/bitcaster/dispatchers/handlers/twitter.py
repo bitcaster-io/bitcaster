@@ -2,16 +2,16 @@
 from logging import getLogger
 
 import tweepy
+from django.utils.translation import gettext as _
 
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
-from bitcaster.dispatchers.base import (CoreDispatcher,
-                                        DispatcherOptions, MessageType,)
+from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
+                                        MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
 from bitcaster.plugins.validators import MaxBodyLengthValidator
 from bitcaster.utils.language import classproperty
-from bitcaster.web.templatetags.markdown import markdown
 
 logger = getLogger(__name__)
 
@@ -29,6 +29,9 @@ class TwitterOptions(DispatcherOptions):
     access_token_secret = PasswordField()
 
 
+class TwitterSubscriptionOptions(SubscriptionOptions):
+    recipient = serializers.CharField(validators=[])
+
 # class TwitterSubscriptionOptions(SubscriptionOptions):
 #     pass
 #
@@ -44,7 +47,7 @@ class TwitterOptions(DispatcherOptions):
 class Twitter(CoreDispatcher):
     options_class = TwitterOptions
     message_class = TwitterMessage
-    subscription_class = None
+    subscription_class = TwitterSubscriptionOptions
     __help__ = """
 
 - Apply for a developer accout at [https://developer.twitter.com/en/apply-for-access]
@@ -62,9 +65,9 @@ class Twitter(CoreDispatcher):
         auth.set_access_token(config['access_token_key'], config['access_token_secret'])
         return tweepy.API(auth)
 
-    def get_usage_message(self, config: DispatcherOptions) -> object:
-        return markdown('Remeber to follow [{0}](https://twitter.com/{0}) '
-                        'to receive messages.'.format(config['account']))
+    def get_usage_message(self) -> object:
+        return _('Remember to follow [{0}](https://twitter.com/{0}) '
+                 'to receive messages.'.format(self.owner.config['account']))
 
     @classmethod
     def validate_address(cls, address, *args, **kwargs) -> bool:

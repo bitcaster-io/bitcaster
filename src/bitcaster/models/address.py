@@ -11,9 +11,10 @@ logger = logging.getLogger(__name__)
 
 class AssignmentQuerySet(models.QuerySet):
     def get_address(self, klass):
-        # if isinstance(klass, Dispatcher):
-        #     klass = fqn(klass)
-        return super().get(channel__handler=klass).address.address
+        try:
+            return super().get(channel__handler=klass).address.address
+        except Exception:
+            raise Address.DoesNotExist()
 
 
 class Address(models.Model):
@@ -22,6 +23,7 @@ class Address(models.Model):
                              on_delete=models.CASCADE)
     address = models.CharField(max_length=200)
     label = models.CharField(max_length=50)
+    verified = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('user', 'label'),
@@ -29,6 +31,16 @@ class Address(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.label, self.address)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__address = self.address
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.pk and (self.address != self.__address):
+            self.verified = False
+
+        super().save(force_insert, force_update, using, update_fields)
 
 
 class AddressAssignment(models.Model):
@@ -44,7 +56,7 @@ class AddressAssignment(models.Model):
     objects = AssignmentQuerySet.as_manager()
 
     class Meta:
-        unique_together = ('user', 'channel', ),
+        unique_together = ('user', 'channel',),
         app_label = 'bitcaster'
 
     def __str__(self):

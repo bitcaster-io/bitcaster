@@ -28,7 +28,8 @@ class ZulipOptions(DispatcherOptions):
     site = serializers.URLField(help_text=_('URL where your Zulip server is located.'))
     key = serializers.CharField(help_text=_("API key, which you can get through Zulip's web interface."))
     email = serializers.EmailField(help_text=_('The email address of the user who owns the API key mentioned above.'))
-    insecure = serializers.BooleanField(help_text=_('Use insecure connection'))
+    insecure = serializers.BooleanField(default=True,
+                                        help_text=_('Use insecure connection'))
 
 
 @dispatcher_registry.register
