@@ -9,20 +9,20 @@
         </div>
     </div>
     <div class="container">
-        <table class="table">
+    <table class="table table-striped table-hover col-12">
             <thead>
-            <tr scope="row" lass="row col-12">
-                <th scope="col" lass="col-4">{% trans "Name" %}</th>
-                <th scope="col" lass="col-6">{% trans "Description" %}</th>
-                <th scope="col" lass="col-2"></th>
+            <tr scope="row" class="row inline-flex">
+                <th scope="col" class="col-4">{% trans "Name" %}</th>
+                <th scope="col" class="col-6">{% trans "Description" %}</th>
+                <th scope="col" class="col-2"></th>
             </tr>
             </thead>
             <tbody>
             {% for team in application.teams.all %}
-                <tr scope="row" lass="row col-12">
-                    <td lass="col-4">{{ team.name }}</td>
-                    <td lass="col-6">{{ team.description }}</td>
-                    <td lass="col-2">
+                <tr scope="row" class="row inline-flex">
+                    <td class="col-4">{{ team.name }}</td>
+                    <td class="col-6">{{ team.description }}</td>
+                    <td class="col-2 formset-commands">
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="edit"
                            href="{% app-url "app-team-edit" team.slug %}">
@@ -59,7 +59,7 @@
                         </td>
                         <td class="col-3">{{ membership.get_role_display }}</td>
                         <td class="col-3">{{ membership.date_added }}</td>
-                        <td class="text-nowrap col-1">
+                        <td class="text-nowrap col-1 formset-commands">
 
                             <button onclick="window.location.href = '{% org-url "org-invite-delete" membership.pk %}';">
                                 <i class="far fa-trash-alt pointer"></i>

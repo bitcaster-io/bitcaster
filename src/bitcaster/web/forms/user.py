@@ -203,6 +203,9 @@ class AddressForm(forms.ModelForm):
 
 
 class AddressAssignmentForm(forms.ModelForm):
+    # address = forms.ModelChoiceField(queryset=Address.objects.all(),
+    #                                  widget=ModelSelect2(url='address-autocomplete')
+    #                                  )
     class Meta:
         model = AddressAssignment
         fields = ('id', 'user', 'channel', 'address')

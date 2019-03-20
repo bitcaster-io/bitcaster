@@ -10,7 +10,7 @@ from bitcaster.utils.tests.factories import ChannelFactory, SubscriptionFactory
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.usefixtures('dispatcher', 'subscription')
+@pytest.mark.skipif_missing('TEST_GMAIL_USER', 'TEST_GMAIL_PASSWORD', 'TEST_GMAIL_RECIPIENT')
 class TestDispatcherGmail(DispatcherBaseTest):
     TARGET = Email
     CONFIG = {'server': 'server',

@@ -7,6 +7,8 @@ from strategy_field.utils import get_attr
 from bitcaster import get_full_version
 from bitcaster.api.fields import EventField
 from bitcaster.configurable import ConfigurableMixin, get_full_config
+from bitcaster.utils import fqn
+from bitcaster.utils.language import classproperty
 
 from . import serializers
 
@@ -39,9 +41,9 @@ class Agent(ConfigurableMixin, metaclass=abc.ABCMeta):
         cfg = get_full_config(self.options_class, config)
         return self.get_options_form(data=cfg).is_valid(raise_exception)
 
-    # @classproperty
-    # def fqn(cls):
-    #     return fqn(cls)
+    @classproperty
+    def fqn(cls):
+        return fqn(cls)
 
     def poll(self):
         pass

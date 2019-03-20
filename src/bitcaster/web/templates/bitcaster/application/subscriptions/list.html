@@ -34,7 +34,7 @@
                 <td>
                     {{ subscription.get_status_display }}
                 </td>
-                <td class="text-right">
+                <td class="text-right formset-commands ">
                     <a class="btn btn-outline-light"
                        data-toggle="tooltip" title="{% if subscription.enabled %}Disable{% else %}Enable{% endif %}"
                        href="{% app-url 'app-event-subscription-toggle' subscription.event.id subscription.id %}">

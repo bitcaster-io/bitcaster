@@ -12,9 +12,15 @@ class RoleMixin(SelectedApplicationMixin):
 
 class RoleFormMixin(RoleMixin):
     template_name = 'bitcaster/application/roles/form.html'
+    form_class = ApplicationRoleForm
 
     def get_success_url(self):
         return self.selected_application.urls.roles
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'application': self.selected_application})
+        return kwargs
 
 
 class ApplicationRoleList(RoleMixin, BitcasterBaseListView):
@@ -22,12 +28,7 @@ class ApplicationRoleList(RoleMixin, BitcasterBaseListView):
 
 
 class ApplicationRoleCreate(RoleFormMixin, BitcasterBaseCreateView):
-    form_class = ApplicationRoleForm
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.update({'application': self.selected_application})
-        return kwargs
+    pass
 
 
 class ApplicationRoleUpdate(RoleFormMixin, BitcasterBaseUpdateView):

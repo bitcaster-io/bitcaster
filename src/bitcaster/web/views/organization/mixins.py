@@ -2,6 +2,7 @@ from django.http import Http404
 from django.utils.functional import cached_property
 
 from bitcaster.models import Organization
+from bitcaster.state import state
 from bitcaster.web.views.mixins import SecuredViewMixin, SidebarMixin
 
 
@@ -17,6 +18,7 @@ class SelectedOrganizationMixin(SidebarMixin, SecuredViewMixin):
             return None
         try:
             organization = Organization.objects.get(slug=self.kwargs['org'])
+            state.debug['organization'] = organization
             self.check_perms(self.request, organization, True)
         except Organization.DoesNotExist:
             raise Http404

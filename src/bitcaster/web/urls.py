@@ -4,6 +4,8 @@ from django.conf import settings
 from django.urls import include, path
 from django.views.generic import TemplateView
 
+from bitcaster.web.views import (AddressAutocomplete,
+                                 ChannelAutocomplete, UserAutocomplete,)
 from bitcaster.web.views.callbacks import confirm_address
 from bitcaster.web.views.invitations import (InvitationAccept,
                                              InvitationDelete, InvitationSend,)
@@ -46,6 +48,7 @@ urlpatterns = [
 
     path('plugins/icons/channel/<int:pk>/', channel_icon, name='channel-icon'),
     path('plugins/icons/<str:fqn>/', plugin_icon, name='plugin-icon'),
+    path('plugins/info/<str:fqn>/', PluginInfo.as_view(), name='plugin-info'),
 
     # General
     path('terms/', TemplateView.as_view(template_name='bitcaster/legal/terms.html'), name='legal-terms'),
@@ -58,7 +61,6 @@ urlpatterns = [
     path('settings/sysinfo/', SettingsSystemInfo.as_view(), name='settings-sysinfo'),
     path('settings/ldap/', SettingsLdapView.as_view(), name='settings-ldap'),
 
-    path('plugins/info/<str:fqn>/', PluginInfo.as_view(), name='plugin-info'),
 
     # Social
     path('', include('social_django.urls', namespace='social')),
@@ -74,7 +76,7 @@ urlpatterns = [
     path('<slug:org>/me/subscriptions/', UserSubscriptionListView.as_view(), name='user-subscriptions'),
     path('<slug:org>/me/profile/', UserProfileView.as_view(), name='user-profile'),
     path('<slug:org>/me/addresses/', UserAddressesView.as_view(), name='user-address'),
-    path('<slug:org>/me/addresses/<int:pk>/info', UserAddressesInfoView.as_view(), name='user-address-info'),
+    path('<slug:org>/me/addresses/<int:pk>/info/', UserAddressesInfoView.as_view(), name='user-address-info'),
     path('<slug:org>/me/assignment/', UserAddressesAssignmentView.as_view(), name='user-address-assignment'),
 
     # path('new-user/', TemplateView.as_view(template_name='bitcaster/users/user_new.html')),
@@ -97,7 +99,8 @@ urlpatterns = [
 
     # Applications / Invitations
     path('<slug:org>/a/<slug:app>/invite/', ApplicationInvite.as_view(), name='app-invite'),
-    path('<slug:org>/a/<slug:app>/i/<int:pk>/delete/', ApplicationInvitationDelete.as_view(), name='app-invitation-delete'),
+    path('<slug:org>/a/<slug:app>/i/<int:pk>/delete/', ApplicationInvitationDelete.as_view(),
+         name='app-invitation-delete'),
     # path('<slug:org>/a/<slug:app>/i/<int:pk>/accept/', ApplicationInvitationAccept.as_view(), name='invitation-accept'),
     path('<slug:org>/a/<slug:app>/i/<int:pk>/send/', ApplicationInvitationSend.as_view(), name='app-invitation-send'),
 
@@ -192,7 +195,7 @@ urlpatterns = [
 
     path('<slug:org>/channel/', OrganizationChannels.as_view(), name='org-channels'),
     path('<slug:org>/channel/add/', OrganizationChannelCreate.as_view(), name='org-channel-create'),
-    path('<slug:org>/channel/<int:pk>/usage/', OrganizationChannelUsage.as_view(), name='org-channel-usage'),
+    # path('<slug:org>/channel/<int:pk>/usage/', OrganizationChannelUsage.as_view(), name='org-channel-usage'),
     path('<slug:org>/channel/<int:pk>/edit/', OrganizationChannelUpdate.as_view(), name='org-channel-edit'),
     path('<slug:org>/channel/<int:pk>/delete/', OrganizationChannelRemove.as_view(), name='org-channel-delete'),
     path('<slug:org>/channel/<int:pk>/toggle/', OrganizationChannelToggle.as_view(), name='org-channel-toggle'),
@@ -206,4 +209,10 @@ urlpatterns = [
 
     # path('tpl/<str:path>', PreviewView.as_view(), name='wip'),
 
+]
+
+urlpatterns += [
+    path('dal/user-autocomplete/', UserAutocomplete.as_view(), name='user-autocomplete'),
+    path('dal/address-autocomplete/', AddressAutocomplete.as_view(), name='address-autocomplete'),
+    path('dal/channel-autocomplete/', ChannelAutocomplete.as_view(), name='channel-autocomplete'),
 ]

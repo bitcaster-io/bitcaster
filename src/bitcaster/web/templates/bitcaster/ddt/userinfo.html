@@ -1,0 +1,52 @@
+{% load bc_permissions i18n %}
+<h4>{% trans "View information" %}</h4>
+<table>
+	<thead>
+		<tr>
+			<th>{% trans "View function" %}</th>
+			<th>{% trans "Arguments" %}</th>
+			<th>{% trans "Keyword arguments" %}</th>
+			<th>{% trans "URL name" %}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="djDebugOdd">
+			<td><code>{{ view_func }}</code></td>
+			<td><code>{{ view_args|pprint }}</code></td>
+			<td><code>{{ view_kwargs|pprint }}</code></td>
+			<td><code>{{ view_urlname }}</code></td>
+		</tr>
+	</tbody>
+</table>
+<h3>State</h3>
+<table>
+    <tr>
+        <th>Organization</th>
+        <td>{{ organization }}</td>
+    </tr>
+    <tr>
+        <th>application</th>
+        <td>{{ application }}</td>
+    </tr>
+    <tr>
+        <th>url</th>
+        <td>{{ url }}</td>
+    </tr>
+{#    <tr>#}
+{#        <th>perms</th>#}
+{#        <td>{{ perms }}</td>#}
+{#    </tr>#}
+    </tr>
+</table>
+
+{% check_permissions organization as org_perm %}
+{% check_permissions application as app_perm %}
+<h3>Permissions</h3>
+<table>
+    <tr>
+        <th>Organization</th><td>{{ org_perm }}</td>
+    </tr>
+<tr><th>application</th>
+        <td>{{ app_perm }}</td>
+    </tr>
+</table>

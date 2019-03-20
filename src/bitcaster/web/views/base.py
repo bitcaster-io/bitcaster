@@ -8,6 +8,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 from django.views.generic.detail import SingleObjectMixin
 from strategy_field.utils import import_by_name
 
+from bitcaster import messages
 from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.web.templatetags.bitcaster import verbose_name
 
@@ -65,8 +66,12 @@ class BitcasterBaseToggleView(MessageUserMixin, SingleObjectMixin, RedirectView)
         obj = self.get_object()
         obj.enabled = not obj.enabled
         obj.save()
-        op = _('enabled') if obj.enabled else _('disabled')
-        self.message_user(f'{obj._meta.verbose_name} #{obj.pk} {op}')
+        if obj.enabled:
+            self.message_user(f'{obj._meta.verbose_name} #{obj.pk} enabled',
+                              level=messages.SUCCESS)
+        else:
+            self.message_user(f'{obj._meta.verbose_name} #{obj.pk} disabled',
+                          level=messages.WARNING)
         return RedirectToRefererResponse(request)
 
 

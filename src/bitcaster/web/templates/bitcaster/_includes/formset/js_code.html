@@ -22,19 +22,24 @@
             var $deletion = $target.find(":input[type=checkbox]");
             $deletion.prop('checked', true);
             $target.hide();
-            $commands.show();
+            var $rows = $("div.fieldset>div.row:visible");
+            console.log($rows.length);
+            if ($rows.length === 0) {
+                $commands.hide();
+            }
             e.preventDefault();
         });
         $("#add_more").click(function (e) {
             e.preventDefault();
             $commands.prop("disabled", true);
             cloneMore();
+            $commands.show();
         });
 
         var setNumber = function (e) {
             var $rows = $("div.fieldset>div.row");
             $TOTAL_FORMS.val($rows.length);
-            var ID=$rows.length - 1;
+            var ID = $rows.length - 1;
             $(e).find(":input").each(function () {
                 var name = $(this).attr("name").replace(/__prefix__/, ID);
                 var id = "id_" + name;

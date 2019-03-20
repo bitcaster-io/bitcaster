@@ -21,7 +21,7 @@ class FacebookMessage(MessageType):
 
 
 class FacebookOptions(DispatcherOptions):
-    account = serializers.CharField(required=False, allow_blank=True)
+    account = serializers.CharField()
     key = serializers.CharField()
     password = PasswordField()
 
@@ -52,6 +52,12 @@ class Facebook(CoreDispatcher):
     @classproperty
     def name(cls):
         return 'Facebook'
+
+    def get_usage_message(self, **kwargs) -> object:
+        return _('To receive messages thru Facebook chat, '
+                 'you must add {config[account]} to your Facebook friends list.').format(self=self,
+                                                                                         config=self.config,
+                                                                                         **kwargs)
 
     def _get_connection(self) -> Client:
         return Client(self.config['key'].encode('utf8'),

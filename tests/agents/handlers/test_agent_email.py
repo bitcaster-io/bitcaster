@@ -21,3 +21,8 @@ def test_emailmessage():
 def test_agent_get_usage(monitor1):
     agent = EmailAgent(monitor1)
     assert agent.get_usage()
+
+
+def test_agent_fqn(monitor1):
+    agent = EmailAgent(monitor1)
+    assert agent.fqn

@@ -1,7 +1,7 @@
 {% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
 {% block page %}
     {% check_permissions application %}
-    {% if permissions.create_monitor %}
+    {% if permissions.add_monitor %}
         <div class="container">
             <div class="row col-12">
                 <div class="pull-right col-12 p-4">
@@ -25,7 +25,7 @@
                 <td>
                     {{ monitor.name }}
                 </td>
-                <td style="width:30%" class="nowrap">
+                <td style="width:30%" class="nowrap formset-commands">
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="configure"
                        href="{{ monitor.urls.edit }}">

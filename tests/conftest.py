@@ -23,8 +23,8 @@ def pytest_configure(config):
     os.environ['BITCASTER_LOG_LEVEL'] = 'ERROR'
 
     config.SITE_URL = 'http://testserver/'
-    # from bitcaster.config.environ import env
-    # env.load_config(str(here / '.conf'))
+    from bitcaster.config.environ import env
+    env.load_config(str(here / '.test_env'))
     import django
     django.setup()
     from django.conf import settings
@@ -255,9 +255,10 @@ def add_extra_form_to_formset_with_data(form, prefix, field_names_and_values):
 Form.add_formset_field = add_extra_form_to_formset_with_data
 
 
-# @pytest.fixture(autouse=True)
-# def skip_if_markers_logic(request):
-#     if request.node.get_marker('skipif_missing'):
-#         arg = request.node.get_marker('skipif_missing').args[0]
-#         if not arg in os.environ:
-#             pytest.skip('{} not fount in environment'.format(arg))
+@pytest.fixture(autouse=True)
+def _check_environ(request):
+    marker = request.node.get_closest_marker('skipif_missing')
+    if marker:
+        missing = [v for v in marker.args if v not in os.environ]
+        if missing:
+            pytest.skip(f"{','.join(missing)} not found in environment")
