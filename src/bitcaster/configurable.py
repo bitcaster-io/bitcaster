@@ -106,7 +106,8 @@ class ConfigurableMixin:
 
     def _configure(self):
         if self.options_class:
-            opts = self.get_options_form(data=self.owner.config)
+            cfg = get_full_config(self.options_class, self.owner.config)
+            opts = self.get_options_form(data=cfg)
             if opts.is_valid():
                 return opts.data
             else:

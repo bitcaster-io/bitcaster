@@ -9,8 +9,8 @@ from .skype import Skype
 from .slack import SlackWebhook
 from .system_email import SystemEmail
 from .twilio import Twilio
-from .twitter import Twitter
+from .twitter import Twitter, TwitterDirectMessage
 from .xmpp import Xmpp
-from .zulip import ZulipClient
+from .zulip import ZulipPrivate
 
 # https://developer.websms.com/

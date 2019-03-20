@@ -116,6 +116,11 @@
             );
         });
     });
+    {% if messages %}
+    setTimeout(function () {
+        $('.alert').not('.keep').alert('close');
+    }, 5000);
+    {% endif %}
 </script>
 {% block js %}
 {% endblock js %}

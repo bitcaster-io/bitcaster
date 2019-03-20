@@ -107,6 +107,11 @@ It can be Global or Application specific.
             raise PluginValidationError()
 
     def validate_message(self, message, **kwargs):
+        """
+        :param message models.Message instance:
+        :param kwargs:
+        :return:
+        """
         self.handler.validate_message(message, **kwargs)
 
     def get_usage_message(self):

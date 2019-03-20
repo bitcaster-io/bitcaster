@@ -31,11 +31,11 @@
             <div class="row col-12 m-0 p-0">
                 <div class="row m-0 p-2 col-12 line-fields" style="display: inline-flex" {% if form.errors %}has-error{% endif %}>
                     <div class="hidden order" data-order="__prefix__">
-                        {{ form.empty_form.id }}{{ form.empty_form.user }}{{ form.empty_form.DELETE }}</div>
+                        {{ form.empty_form.user }}{{ form.empty_form.DELETE }}</div>
                     <div class="col col-3">{{ form.empty_form.label|as_crispy_field }}</div>
                     <div class="col col-5">{{ form.empty_form.address|as_crispy_field }}</div>
-                    <div class="col col-2 align-middle align-items-center">
-                        <a href="." class="remove_line">
+                    <div class="col col-2 align-middle align-items-center formset-commands">
+                        <a href="." class="btn remove_line">
                             <i class="fas fa-trash-alt"></i></a>
                     </div>
                 </div>

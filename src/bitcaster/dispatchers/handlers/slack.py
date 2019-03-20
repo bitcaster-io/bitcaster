@@ -5,7 +5,7 @@ import requests
 from django.conf.urls.static import static
 from django.utils.translation import ugettext as _
 
-from bitcaster.exceptions import PluginSendError, PluginValidationError
+from bitcaster.exceptions import PluginSendError
 from bitcaster.utils.language import classproperty
 
 from .. import serializers
@@ -60,11 +60,11 @@ Navigate to https://<YOUR_SPACE>.slack.com/apps/" and enable `Incoming WebHooks`
         s.headers = {'user-agent': 'bitcaster'}
         return s
 
-    def validate_subscription(self, subscription, *args, **kwargs) -> bool:
-        ser = self.subscription_class(data=subscription.config)
-        if not ser.is_valid():
-            raise PluginValidationError(ser.errors)
-        return True
+    # def validate_subscription(self, subscription, *args, **kwargs) -> bool:
+    #     ser = self.subscription_class(data=subscription.config)
+    #     if not ser.is_valid():
+    #         raise PluginValidationError(ser.errors)
+    #     return True
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:
