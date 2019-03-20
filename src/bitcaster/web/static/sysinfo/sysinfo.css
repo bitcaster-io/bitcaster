@@ -1,0 +1,21 @@
+table.sysinfo-results {
+  width: 100%;
+}
+table.sysinfo-results li {
+  list-style-type: none;
+}
+table.sysinfo-results span.label {
+  font-weight: bold;
+  display: inline-block;
+  width: 100px;
+}
+
+tr.project.installed_apps td.value ul li span.name {
+  display: inline-block;
+  width: 300px;
+}
+caption h2 {
+  float: left;
+}
+
+/*# sourceMappingURL=sysinfo.css.map */

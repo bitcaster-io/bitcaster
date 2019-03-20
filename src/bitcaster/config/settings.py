@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 from django_regex.utils import RegexList
 
 from bitcaster.config.environ import env
-from bitcaster.config.logging_conf import LOGGING
 
 logger = logging.getLogger(__name__)
 
@@ -512,11 +511,6 @@ CONSTANCE_CONFIG_FIELDSETS = {'Options': list(CONSTANCE_CONFIG.keys())}
 # SENTRY & RAVEN
 if env.bool('SENTRY_ENABLED', False):
     import bitcaster
-
-    LOGGING['handlers']['sentry'] = {'level': 'ERROR',
-                                     # 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-                                     'class': 'bitcaster.logging.BitcasterHandler',
-                                     }
 
     INSTALLED_APPS += ['raven.contrib.django.raven_compat', ]
     RAVEN_CONFIG = {

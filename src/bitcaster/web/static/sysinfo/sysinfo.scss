@@ -1,0 +1,26 @@
+table.sysinfo-results {
+  width: 100%;
+  li {
+    list-style-type: none;
+  }
+  span.label {
+    font-weight: bold;
+    display: inline-block;
+    width: 100px;
+  }
+}
+
+tr.project {
+  &.installed_apps td.value ul li span.name {
+    display: inline-block;
+    width: 300px;
+  }
+  &.mail td.value ul li {
+
+  }
+}
+caption{
+  h2{
+    float: left;
+  }
+}
