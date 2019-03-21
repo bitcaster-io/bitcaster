@@ -4,7 +4,7 @@
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET?=0.6.1a1
+TARGET?=0.6.1a2
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
@@ -87,7 +87,7 @@ release:
 	$(MAKE) bump
 
 bump:
-	cd .. && bumpversion --config-file=.bumpversion.cfg num
+	cd .. && bumpversion --config-file=.bumpversion.cfg num --commit
 
 run:
 	$(MAKE) .run
