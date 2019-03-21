@@ -15,11 +15,9 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
-from bitcaster.agents import serializers
-from bitcaster.configurable import get_full_config
 from bitcaster.framework.db.fields import Role
 from bitcaster.mail import send_mail_by_template
-from bitcaster.models import Address, AddressAssignment, Subscription, User
+from bitcaster.models import Address, AddressAssignment, Channel, User
 from bitcaster.otp import totp
 from bitcaster.state import state
 from bitcaster.utils.email_verification import check_new_email_address_request
@@ -273,52 +271,13 @@ class AddressAssignmentFormSet(AddressAssignmentFormSetBase, BaseInlineFormSet):
     def get_queryset(self):
         return super().get_queryset().order_by('channel')
 
-    # def __init__(self, *args, **kwargs):
-    #     super(AddressAssignmentFormSet, self).__init__(*args, **kwargs)
-    #     self.queryset = self.queryset
 
+class UserSubscriptionForm(forms.Form):
+    # recipient = forms.CharField(required=False)
+    # channels = forms.MultipleChoiceField()
+    channels = forms.ModelMultipleChoiceField(queryset=Channel.objects.none())
 
-class UserSubscriptionForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def clean_config(self):
-        config = self.cleaned_data['config']
-        if self.instance:
-            handler = self.instance.channel.handler
-            serializer_class = handler.subscription_class
-            try:
-                ser = serializer_class(data=config)
-                ser.is_valid(True)
-                self.cleaned_data['config'] = ser.data
-            except serializers.ValidationError as e:
-                config = get_full_config(serializer_class, config)
-                self.cleaned_data['config'] = config
-                self.instance.config = config
-                raise ValidationError(str(e))
-
-        return self.cleaned_data['config']
-
-    def clean(self):
-        cleaned_data = super().clean()
-        if self.event:
-            cleaned_data['event'] = self.event
-        cleaned_data['trigger_by'] = state.request.user
-        return cleaned_data
-
-    class Meta:
-        model = Subscription
-        fields = ('subscriber', 'channel', 'event')
-
-
-class UserSubscriptionBaseFormSet(BaseInlineFormSet):
-    pass
-
-
-UserSubscriptionFormSet = forms.inlineformset_factory(User,
-                                                      Subscription,
-                                                      form=UserSubscriptionForm,
-                                                      formset=UserSubscriptionBaseFormSet,
-                                                      min_num=0,
-                                                      fk_name='subscriber',
-                                                      extra=0)
+    def __init__(self, instance, **kwargs):
+        self.event = instance
+        super().__init__(**kwargs)
+        self.fields['channels'].queryset = self.event.channels.filter(addresses__user=state.request.user)

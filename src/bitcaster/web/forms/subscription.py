@@ -45,6 +45,12 @@ logger = logging.getLogger(__name__)
 #         return self.cleaned_data['config']
 
 
+class UserSubscriptionForm(forms.ModelForm):
+    class Meta:
+        model = Subscription
+        fields = ('channel', 'event')
+
+
 class EventSubscriptionForm(forms.ModelForm):
     trigger_by = forms.ModelChoiceField(User.objects.all(),
                                         required=False)

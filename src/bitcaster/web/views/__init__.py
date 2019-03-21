@@ -14,7 +14,7 @@ from .application.events.subscription import (EventSubscriptionCreate,
 from .autocomplete import (AddressAutocomplete,
                            ChannelAutocomplete, UserAutocomplete,)
 from .base import PluginInfo
-from .callbacks import confirm_registration
+from .callbacks import confirm_address, confirm_registration
 from .channel import ChannelCreateWizard, ChannelListView
 from .handlers import handler404, handler500
 from .icons import channel_icon, plugin_icon

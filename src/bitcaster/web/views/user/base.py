@@ -27,11 +27,6 @@ class UserHome(UserMixin, TemplateView):
     title = _('Home')
 
 
-class UserEventListView(UserMixin, TemplateView):
-    template_name = 'bitcaster/user/events.html'
-    title = _('Events')
-
-
 class UserProfileView(UserMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/user/profile.html'
     model = User

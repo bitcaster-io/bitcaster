@@ -16,7 +16,7 @@ elif [[ "$*" == "bitcaster" ]];then
     gunicorn -b 0.0.0.0:8000 bitcaster.config.wsgi
 elif [[ "$*" == "stack" ]];then
     bitcaster check --deploy --wait-services
-    bitcaster upgrade --no-input
+    bitcaster upgrade --static --no-input
     exec circusd /etc/circus.conf
 else
     exec "$@"

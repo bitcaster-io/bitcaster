@@ -64,14 +64,13 @@ ENV GUNICORN_CMD_ARGS "-b 0.0.0.0:8000 \
 --chdir /var/bitcaster \
 --access-logfile - \
 --access-logformat \"%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s\" "
-
+ENV DJANGO_SETTINGS_MODULE "bitcaster.config.settings"
 ENV BITCASTER_MEDIA_ROOT /var/bitcaster/media
 ENV BITCASTER_STATIC_ROOT /var/bitcaster/static
-ENV BITCASTER_CONF $HOME/conf/config
 ENV BITCASTER_DATABASE_URL ""
-ENV BITCASTER_CELERY_BROKER_URL ""
-ENV BITCASTER_REDIS_CACHE_URL ""
-ENV BITCASTER_REDIS_LOCK_URL ""
+ENV BITCASTER_CELERY_BROKER_URL "redis://localhost:6379/1"
+ENV BITCASTER_REDIS_CACHE_URL "redis://localhost:6379/1"
+ENV BITCASTER_REDIS_LOCK_URL "redis://localhost:6379/1"
 ENV BITCASTER_LOG_LEVEL "ERROR"
 
 
@@ -101,11 +100,14 @@ COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY docker/circus.conf /etc/circus.conf
 
 RUN adduser -S bitcaster \
+    && mkdir -p /backups \
     && mkdir -p /var/bitcaster \
-    && chown bitcaster /var/bitcaster/
+    && chown bitcaster /var/bitcaster/ /backups
 
 WORKDIR /var/bitcaster
 USER bitcaster
+
+RUN django-admin collectstatic
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 

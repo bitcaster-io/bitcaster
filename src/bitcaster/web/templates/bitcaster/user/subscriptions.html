@@ -1,4 +1,4 @@
-{% extends "bitcaster/user/base.html" %}{% load i18n crispy_forms_tags %}
+{% extends "bitcaster/user/base.html" %}{% load i18n bitcaster %}
 {% block page %}
         <table class="table table-striped table-hover col-12">
         <thead>
@@ -20,12 +20,12 @@
                 <td style="width:10%" class="nowrap formset-commands">
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="{% if subscription.enabled %}Disable{% else %}Enable{% endif %}"
-                       href="{% url 'user-subscription-toggle' subscription.pk %}">
+                       href="{% org-url 'user-subscription-toggle' subscription.pk %}">
                         <i class="fas {% if subscription.enabled %}fa-toggle-on green{% else %}fa-toggle-off red{% endif %}"></i>
                     </a>
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="delete"
-                       href="{% url 'user-subscription-delete' subscription.pk %}">
+                       href="{% org-url 'user-subscription-delete' subscription.pk %}">
                         <i class="fas fa-trash-alt pointer"></i>
                     </a>
                 </td>

@@ -1,0 +1,14 @@
+{% extends "bitcaster/user/base.html" %}{% load i18n bitcaster crispy_forms_filters %}
+{% block page %}
+    <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-primary" value="{% trans "Save" %}">
+    </form>
+{% endblock page %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $('select').select2()
+    </script>
+{% endblock %}

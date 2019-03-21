@@ -243,6 +243,7 @@ USE_X_FORWARDED_HOST = True
 
 # STATIC FILE CONFIGURATION
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
@@ -253,8 +254,7 @@ STATIC_URL = f'/{URL_PREFIX}static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
-    # '/data/PROGETTI/saxix/mercury/src/bitcaster/static',
-    # str(PROJECT_DIR / 'static'),
+    str(BITCASTER_DIR / 'web' / 'static'),
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
@@ -266,7 +266,7 @@ STATICFILES_FINDERS = [
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
-MEDIA_ROOT = env.str('MEDIA_ROOT', '')
+MEDIA_ROOT = env.str('MEDIA_ROOT')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = f'/{URL_PREFIX}media/'
@@ -309,32 +309,6 @@ KEY_FUNCTION = 'bitcaster.utils.cache.make_key'
 CACHES = {
     'default': env.cache('REDIS_CACHE_URL'),
     'lock': env.cache('REDIS_LOCK_URL'),
-    # 'default': {
-    #     'BACKEND': 'django_redis.cache.RedisCache',
-    #     'KEY_PREFIX': 'bitcaster',
-    #     'LOCATION': env('REDIS_CACHE_URL'),
-    #     # "LOCATION": "redis://127.0.0.1:6379/1",
-    #
-    #     'OPTIONS': {
-    #         'PICKLE_VERSION': -1,  # default
-    #         # 'PARSER_CLASS': 'redis.connection.HiredisParser',
-    #         # 'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
-    #         'CLIENT_CLASS': 'django_redis.client.DefaultClient'
-    #
-    #     },
-    # },
-    # 'lock': {
-    #     'BACKEND': 'django_redis.cache.RedisCache',
-    #     # 'BACKEND': 'redis_lock.django_cache.RedisCache',
-    #     'KEY_PREFIX': 'bitcaster-lock',
-    #     'LOCATION': env('REDIS_LOCK_URL'),
-    #     'OPTIONS': {
-    #         'PICKLE_VERSION': -1,  # default
-    #         'CLIENT_CLASS': 'django_redis.client.DefaultClient'
-    #         # "CLIENT_CLASS": "redis.client.StrictRedis"
-    #
-    #     },
-    # },
 }
 
 # AUTHENTICATION CONFIGURATION
