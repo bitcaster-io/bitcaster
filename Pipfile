@@ -75,6 +75,7 @@ viberbot = "*"
 django-crashlog = "*"
 django-filters = "*"
 django-autocomplete-light= "*"
+python-telegram = "*"
 
 [dev-packages]
 bumpversion = "*"

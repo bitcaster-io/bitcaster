@@ -4,7 +4,6 @@
 **/tests
 **/tox.ini
 .git
-.virtualenv_hooks
 /extras
 /node_modules
 /sidebar
@@ -22,3 +21,4 @@ src/bitcaster.egg-info
 src/bitcaster/assets/
 webpack.config.js
 ~*
+bitcaster.json

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d17441093dba0596ac381cf4d89a0318b53fdcec3d5409595fdc91fb5631003e"
+            "sha256": "cd8e9c36fcbf290c4ce0ccb4b736c39b9509c2bde537d85298bccc42c6204b23"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -805,6 +805,13 @@
             "index": "pypi",
             "version": "==3.3.1"
         },
+        "python-telegram": {
+            "hashes": [
+                "sha256:db87de76b7e2a8b1b8002c92aa815e358a459906cae826a7f53a1453cca3f66f"
+            ],
+            "index": "pypi",
+            "version": "==0.8.0"
+        },
         "python3-openid": {
             "hashes": [
                 "sha256:0086da6b6ef3161cfe50fb1ee5cceaf2cda1700019fda03c2c5c440ca6abe4fa",
@@ -1017,11 +1024,11 @@
         },
         "websocket-client": {
             "hashes": [
-                "sha256:47a3ddf3ee7ecd4e2f81610bcdc7f44d5dd03b602b911d4ce991cd82310d3f3b",
-                "sha256:f6029deea21218f2c771848935aa26c15699c831770f4fa66958bdaabff80ca0"
+                "sha256:1151d5fb3a62dc129164292e1227655e4bbc5dd5340a5165dfae61128ec50aa9",
+                "sha256:1fd5520878b68b84b5748bb30e592b10d0a91529d5383f74f4964e72b297fd3a"
             ],
             "index": "pypi",
-            "version": "==0.55.0"
+            "version": "==0.56.0"
         },
         "whitenoise": {
             "hashes": [
@@ -1040,10 +1047,10 @@
         },
         "zulip": {
             "hashes": [
-                "sha256:7462b12d4adb01b043cb7f47748daea1b7546683a9fdd328cef48cce9d1feaba"
+                "sha256:a5dc654ba05adb432130d6791879a6ac71ba17c6ef4ddcc63af64cdd3a35d826"
             ],
             "index": "pypi",
-            "version": "==0.5.9"
+            "version": "==0.6.0"
         }
     },
     "develop": {
@@ -1221,11 +1228,11 @@
         },
         "docker": {
             "hashes": [
-                "sha256:2840ffb9dc3ef6d00876bde476690278ab13fa1f8ba9127ef855ac33d00c3152",
-                "sha256:5831256da3477723362bc71a8df07b8cd8493e4a4a60cebd45580483edbe48ae"
+                "sha256:0076504c42b6a671c8e7c252913f59852669f5f882522f4d320ec7613b853553",
+                "sha256:d2c14d2cc7d54818897cc6f3cf73923c4e7dfe12f08f7bddda9dbea7fa82ea36"
             ],
             "index": "pypi",
-            "version": "==3.7.0"
+            "version": "==3.7.1"
         },
         "docker-pycreds": {
             "hashes": [
@@ -1465,10 +1472,10 @@
         },
         "pdbpp": {
             "hashes": [
-                "sha256:62dea08830eea5df685c957de4fac6e7f699ed635dd58975a689432450b3258b"
+                "sha256:62150302a61b0c45943597258a9685eb976c4750919557724f058b4e33abb8e7"
             ],
             "index": "pypi",
-            "version": "==0.9.12"
+            "version": "==0.9.13"
         },
         "pexpect": {
             "hashes": [
@@ -1790,11 +1797,11 @@
         },
         "websocket-client": {
             "hashes": [
-                "sha256:47a3ddf3ee7ecd4e2f81610bcdc7f44d5dd03b602b911d4ce991cd82310d3f3b",
-                "sha256:f6029deea21218f2c771848935aa26c15699c831770f4fa66958bdaabff80ca0"
+                "sha256:1151d5fb3a62dc129164292e1227655e4bbc5dd5340a5165dfae61128ec50aa9",
+                "sha256:1fd5520878b68b84b5748bb30e592b10d0a91529d5383f74f4964e72b297fd3a"
             ],
             "index": "pypi",
-            "version": "==0.55.0"
+            "version": "==0.56.0"
         },
         "websockets": {
             "hashes": [
