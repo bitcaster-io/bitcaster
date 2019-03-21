@@ -1,7 +1,7 @@
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster.models import Subscription
-from bitcaster.web.forms.user import UserSubscriptionForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
                                       BitcasterBaseToggleView,
@@ -21,15 +21,17 @@ class UserSubscriptionMixin:
 
 class UserSubscriptionListView(ApplicationListMixin, SidebarMixin, UserSubscriptionMixin, BitcasterBaseListView):
     template_name = 'bitcaster/user/subscriptions.html'
-    form_class = UserSubscriptionForm
 
 
-class UserSubscriptionToggle(UserSubscriptionMixin, BitcasterBaseToggleView):
+class UserSubscriptionToggle(ApplicationListMixin, UserSubscriptionMixin, BitcasterBaseToggleView):
     def get_object(self, queryset=None):
         return self.get_queryset().get(id=self.kwargs['pk'])
 
 
-class UserSubscriptionRemove(UserSubscriptionMixin, BitcasterBaseDeleteView):
+class UserSubscriptionRemove(ApplicationListMixin, UserSubscriptionMixin, BitcasterBaseDeleteView):
+
+    def get_success_url(self):
+        return reverse('user-subscriptions', args=[self.selected_organization.slug])
 
     def get_object(self, queryset=None):
         return self.get_queryset().get(id=self.kwargs['pk'])

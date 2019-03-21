@@ -51,7 +51,7 @@ class AddressAssignment(models.Model):
                                 related_name='used_by')
     channel = models.ForeignKey(Channel,
                                 on_delete=models.CASCADE,
-                                related_name='+')
+                                related_name='addresses')
 
     objects = AssignmentQuerySet.as_manager()
 

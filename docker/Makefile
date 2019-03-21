@@ -32,6 +32,7 @@ build-base:
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
 			--build-arg DEVELOP=${DEVELOP} \
+			--target base \
 			-t ${DOCKER_IMAGE_NAME}-${VERSION}:base \
 			-f docker/${DOCKERFILE} .
 #	docker tag ${DOCKER_IMAGE_NAME}:${TARGET} ${DOCKER_IMAGE_NAME}:dev
@@ -62,6 +63,7 @@ build:
 			-e BITCASTER_REDIS_CACHE_URL=${BITCASTER_REDIS_CACHE_URL} \
 			-e BITCASTER_REDIS_LOCK_URL=${BITCASTER_REDIS_LOCK_URL} \
 			-e BITCASTER_CELERY_BROKER_URL=${BITCASTER_CELERY_BROKER_URL} \
+			-e BITCASTER_STATIC_ROOT=/var/bitcaster/pippo \
 			-e BITCASTER_DATABASE_URL=${BITCASTER_DATABASE_URL} \
 			-e BITCASTER_DEBUG=false \
 			${RUN_OPTIONS} \
@@ -102,7 +104,7 @@ test:
 
 
 shell:
-	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:latest RUN_OPTIONS=-it CMD='/bin/bash' $(MAKE) .run
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:latest RUN_OPTIONS=-it CMD='/bin/sh' $(MAKE) .run
 
 stack:
 	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:latest RUN_OPTIONS=-it CMD='stack' $(MAKE) .run
@@ -110,3 +112,6 @@ stack:
 ignore:
 	cd .. && docker build -f docker/Dockerfile.ignore -t build-context .
 	docker run --rm -it build-context
+
+backup:
+	lazo rancher shell bitcaster:bitcaster -- bitcaster backup --filename /backups/backup.json

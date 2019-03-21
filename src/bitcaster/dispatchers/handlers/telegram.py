@@ -81,7 +81,7 @@ class Telegram(CoreDispatcher):
 
     def test_connection(self, raise_exception=False):
         try:
-            api = self._get_connection()
+            self._get_connection()
             return False
         except Exception as e:
             logger.exception(e)

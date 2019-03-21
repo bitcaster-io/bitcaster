@@ -4,41 +4,45 @@ from django.conf import settings
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from bitcaster.web.views import (AddressAutocomplete,
-                                 ChannelAutocomplete, UserAutocomplete,)
-from bitcaster.web.views.callbacks import confirm_address
-from bitcaster.web.views.invitations import (InvitationAccept,
-                                             InvitationDelete, InvitationSend,)
-from bitcaster.web.views.user.base import UserEventListView, UserHome
-
-from .views import (  # OrganizationTeamCreate, OrganizationTeamDelete,; OrganizationTeamList, OrganizationTeamMember,OrganizationTeamUpdate,
-    ApplicationCheckConfigView, ApplicationCreate, ApplicationDashboard,
-    ApplicationDeleteView, ApplicationInvite, ApplicationKeyCreate,
-    ApplicationKeyDelete, ApplicationKeyList, ApplicationKeyUpdate,
-    ApplicationMonitorCreate, ApplicationMonitorList, ApplicationMonitorRemove,
-    ApplicationMonitorTest, ApplicationMonitorToggle, ApplicationMonitorUpdate,
-    ApplicationMonitorUsage, ApplicationRoleCreate, ApplicationRoleList,
-    ApplicationRoleUpdate, ApplicationSubscriptionList, ApplicationTeamCreate,
-    ApplicationTeamDelete, ApplicationTeamList, ApplicationTeamMember,
-    ApplicationTeamUpdate, ApplicationUpdateView, EventCreate, EventDelete,
-    EventKeys, EventList, EventMessages, EventSubscriptionCreate,
-    EventSubscriptionDelete, EventSubscriptionInvite, EventSubscriptionList,
-    EventSubscriptionToggle, EventTest, EventToggle, EventUpdate, IndexView,
-    InviteAccept, OrgInviteDelete, OrgInviteSend, LoginView, LogoutView,
-    MessageCreate, MessageDelete, MessageList, MessageUpdate,
-    OrganizationApplications, OrganizationChannelCreate,
-    OrganizationChannelDeprecate, OrganizationChannelRemove,
-    OrganizationChannels, OrganizationChannelTest, OrganizationChannelToggle,
-    OrganizationChannelUpdate, OrganizationChannelUsage,
-    OrganizationCheckConfigView, OrganizationConfiguration,
-    OrganizationDashboard, OrganizationInvite, OrganizationMembershipDelete,
-    OrganizationMembershipEdit, OrganizationMembershipList, PluginInfo,
-    SettingsEmailView, SettingsLdapView, SettingsOAuthView, SettingsSystemInfo,
-    SettingsView, SetupView, UserAddressesAssignmentView, UserAddressesInfoView,
-    UserAddressesView, UserProfileView, UserSubscriptionEdit,
-    UserSubscriptionListView, UserSubscriptionRemove, UserSubscriptionToggle,
-    WorkInProgressView, channel_icon, confirm_registration, plugin_icon, ApplicationInvitationDelete,
-    ApplicationInvitationSend)
+from .views import (AddressAutocomplete, ApplicationCheckConfigView,
+                    ApplicationCreate, ApplicationDashboard,
+                    ApplicationDeleteView, ApplicationInvitationDelete,
+                    ApplicationInvitationSend, ApplicationInvite,
+                    ApplicationKeyCreate, ApplicationKeyDelete,
+                    ApplicationKeyList, ApplicationKeyUpdate,
+                    ApplicationMonitorCreate, ApplicationMonitorList,
+                    ApplicationMonitorRemove, ApplicationMonitorTest,
+                    ApplicationMonitorToggle, ApplicationMonitorUpdate,
+                    ApplicationMonitorUsage, ApplicationRoleCreate,
+                    ApplicationRoleList, ApplicationRoleUpdate,
+                    ApplicationSubscriptionList, ApplicationTeamCreate,
+                    ApplicationTeamDelete, ApplicationTeamList,
+                    ApplicationTeamMember, ApplicationTeamUpdate,
+                    ApplicationUpdateView, ChannelAutocomplete, EventCreate,
+                    EventDelete, EventKeys, EventList, EventMessages,
+                    EventSubscriptionCreate, EventSubscriptionDelete,
+                    EventSubscriptionInvite, EventSubscriptionList,
+                    EventSubscriptionToggle, EventTest, EventToggle,
+                    EventUpdate, IndexView, InviteAccept, LoginView, LogoutView,
+                    MessageCreate, MessageDelete, MessageList, MessageUpdate,
+                    OrganizationApplications, OrganizationChannelCreate,
+                    OrganizationChannelDeprecate, OrganizationChannelRemove,
+                    OrganizationChannels, OrganizationChannelTest,
+                    OrganizationChannelToggle, OrganizationChannelUpdate,
+                    OrganizationChannelUsage, OrganizationCheckConfigView,
+                    OrganizationConfiguration, OrganizationDashboard,
+                    OrganizationInvite, OrganizationMembershipDelete,
+                    OrganizationMembershipEdit, OrganizationMembershipList,
+                    OrgInviteDelete, OrgInviteSend, PluginInfo,
+                    SettingsEmailView, SettingsLdapView, SettingsOAuthView,
+                    SettingsSystemInfo, SettingsView, SetupView,
+                    UserAddressesAssignmentView, UserAddressesInfoView,
+                    UserAddressesView, UserAutocomplete, UserEventListView,
+                    UserEventSubcribe, UserHome, UserProfileView,
+                    UserSubscriptionEdit, UserSubscriptionListView,
+                    UserSubscriptionRemove, UserSubscriptionToggle,
+                    WorkInProgressView, channel_icon, confirm_address,
+                    confirm_registration, plugin_icon,)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
@@ -61,7 +65,6 @@ urlpatterns = [
     path('settings/sysinfo/', SettingsSystemInfo.as_view(), name='settings-sysinfo'),
     path('settings/ldap/', SettingsLdapView.as_view(), name='settings-ldap'),
 
-
     # Social
     path('', include('social_django.urls', namespace='social')),
     path('user/register/register-wait-email/<int:pk>/',
@@ -73,7 +76,12 @@ urlpatterns = [
     # path('me/', UserHome.as_view(), name='me'),
     path('<slug:org>/me/', UserHome.as_view(), name='me'),
     path('<slug:org>/me/events/', UserEventListView.as_view(), name='user-events'),
+    path('<slug:org>/me/event/<int:pk>/subscribe/', UserEventSubcribe.as_view(), name='user-event-subscribe'),
     path('<slug:org>/me/subscriptions/', UserSubscriptionListView.as_view(), name='user-subscriptions'),
+    path('<slug:org>/me/subscriptions/<int:pk>/toggle/', UserSubscriptionToggle.as_view(), name='user-subscription-toggle'),
+    path('<slug:org>/me/subscriptions/<int:pk>/delete/', UserSubscriptionRemove.as_view(), name='user-subscription-delete'),
+    path('<slug:org>/me/subscriptions/<int:pk>/edit/', UserSubscriptionEdit.as_view(), name='user-subscription-edit'),
+
     path('<slug:org>/me/profile/', UserProfileView.as_view(), name='user-profile'),
     path('<slug:org>/me/addresses/', UserAddressesView.as_view(), name='user-address'),
     path('<slug:org>/me/addresses/<int:pk>/info/', UserAddressesInfoView.as_view(), name='user-address-info'),
@@ -169,9 +177,6 @@ urlpatterns = [
     # path('org/add/', OrganizationCreate.as_view(), name='org-create'),
 
     path('<slug:org>/', OrganizationDashboard.as_view(), name='org-home'),
-    path('subscriptions/<int:pk>/toggle/', UserSubscriptionToggle.as_view(), name='user-subscription-toggle'),
-    path('subscriptions/<int:pk>/delete/', UserSubscriptionRemove.as_view(), name='user-subscription-delete'),
-    path('subscriptions/<int:pk>/edit/', UserSubscriptionEdit.as_view(), name='user-subscription-edit'),
 
     path('<slug:org>/check/', OrganizationCheckConfigView.as_view(), name='org-check'),
     path('<slug:org>/dashboard', OrganizationDashboard.as_view(), name='org-dashboard'),
