@@ -16,6 +16,7 @@ RUN apk add --no-cache --virtual .build-deps \
         libressl-dev \
         libxml2-dev \
         libxslt-dev \
+        openldap-dev \
         jpeg-dev \
         linux-headers \
         postgresql-dev \

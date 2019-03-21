@@ -8,6 +8,7 @@ from .plivo import Plivo
 from .skype import Skype
 from .slack import SlackWebhook
 from .system_email import SystemEmail
+# from .telegram import Telegram
 from .twilio import Twilio
 from .twitter import Twitter, TwitterDirectMessage
 from .xmpp import Xmpp
