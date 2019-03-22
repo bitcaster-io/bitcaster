@@ -70,6 +70,8 @@ class Invitation(models.Model):
     def send_email(self):
         code = totp.now()
         url = reverse('org-member-accept', args=[self.organization.slug, self.pk, code])
+        self.date_sent = timezone.now()
+        self.save()
         return send_mail_by_template('[Bitcaster] invitation',
                                      'user_invite', {'invitation': self,
                                                      'url': absolute_uri(url)},

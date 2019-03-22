@@ -1,6 +1,8 @@
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+from bitcaster import messages
+from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.models import Subscription
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
@@ -26,6 +28,26 @@ class UserSubscriptionListView(ApplicationListMixin, SidebarMixin, UserSubscript
 class UserSubscriptionToggle(ApplicationListMixin, UserSubscriptionMixin, BitcasterBaseToggleView):
     def get_object(self, queryset=None):
         return self.get_queryset().get(id=self.kwargs['pk'])
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        try:
+            if obj.recipient:
+                obj.enabled = not obj.enabled
+                if obj.enabled:
+                    self.message_user(f'{obj._meta.verbose_name} #{obj.pk} enabled',
+                                  level=messages.SUCCESS)
+                else:
+                    self.message_user(f'{obj._meta.verbose_name} #{obj.pk} disabled',
+                                  level=messages.WARNING)
+        except Exception:
+            obj.enabled = False
+            self.message_user(_('{} #{} cannot be enabled because '
+                                'there are no valid address').format(obj._meta.verbose_name, obj.pk),
+                              level=messages.WARNING)
+
+        obj.save()
+        return RedirectToRefererResponse(request)
 
 
 class UserSubscriptionRemove(ApplicationListMixin, UserSubscriptionMixin, BitcasterBaseDeleteView):

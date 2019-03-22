@@ -1,9 +1,12 @@
 {% extends "bitcaster/user/base.html" %}{% load i18n bitcaster %}
 {% block page %}
     <div class="container-fluid pb-3">
-        <div class="col-12 push-lg-7">
-            <input type="text" class="pull-right col-4" id="filter">
-            <span class="pull-right">Filter:&nbsp;</span>
+        <div class="col-12 mt-5 row">
+            <div class="col-5 col-push"></div>
+            <div class="col-1 p-0 text-lg-right align-middle" style="line-height: 40px">Filter:</div>
+            <div class="col-6 ">
+                <input type="text" id="filter" maxlength="50" class="textinput textInput form-control">
+            </div>
         </div>
     </div>
 

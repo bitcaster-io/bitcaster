@@ -59,7 +59,8 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
 
     event = models.ForeignKey(Event, on_delete=models.CASCADE,
                               related_name='subscriptions')
-    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE,
+                                related_name='linked_subscriptions')
     enabled = models.BooleanField(default=True)
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=SubscriptionStatus.as_choices(),

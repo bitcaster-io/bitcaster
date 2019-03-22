@@ -76,8 +76,16 @@
                     {% endfor %}
                 </div>
             </form>
-                {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}
         </div>
+
+        <div class="row">
+            <div class="row col-12 p-3">
+                <div class="pull-left col-8">
+                </div>
+                {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}
+            </div>
+        </div>
+
     </div> <!-- tab-content -->
 {% endblock %}
 {% block js %}

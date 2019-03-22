@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from django.template.defaultfilters import pluralize
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -83,6 +84,12 @@ class UserAddressesAssignmentView(UserMixin, BitcasterBaseUpdateView):
     def form_valid(self, formset):
         formset.instance = self.request.user
         formset.save()
+        if formset.disabled_subscriptions:
+            msg = _('{} subscriptions {} been disabled.').format(formset.disabled_subscriptions,
+                                                                 pluralize(formset.disabled_subscriptions,
+                                                                           'has,have'))
+            self.message_user(msg, extra_tags='keep')
+
         for assignment in formset.new_objects:
             usage_message = assignment.channel.get_usage_message()
             if usage_message:

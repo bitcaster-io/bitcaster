@@ -263,10 +263,18 @@ class AddressFormSet(AddressFormSetBase, BaseInlineFormSet):
 
 
 class AddressAssignmentFormSet(AddressAssignmentFormSetBase, BaseInlineFormSet):
+    disabled_subscriptions = None
+
     def save(self, commit=True):
         a = self.save_existing_objects(commit)
         b = self.save_new_objects(commit)
         return a + b
+
+    def delete_existing(self, obj, commit=True):
+        # disable all subscriptions that use this address
+        self.disabled_subscriptions = obj.channel.linked_subscriptions.filter(subscriber=obj.user,
+                                                                              enabled=True).update(enabled=False)
+        super().delete_existing(obj, commit)
 
     def get_queryset(self):
         return super().get_queryset().order_by('channel')

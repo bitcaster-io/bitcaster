@@ -140,7 +140,9 @@ class InvitationCreate(InviteMixin, BitcasterBaseCreateView):
 
     def form_valid(self, form):
         form.instance = self.get_parent_instance()
-        form.save()
+        invitation = form.save()
+        invitation.send_email()
+        self.message_user(_('Email sending scheduled'))
         return super(InviteMixin, self).form_valid(form)
 
 
