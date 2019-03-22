@@ -485,12 +485,16 @@ CONSTANCE_CONFIG = OrderedDict({
 CONSTANCE_CONFIG_FIELDSETS = {'Options': list(CONSTANCE_CONFIG.keys())}
 
 # SENTRY & RAVEN
-if env.bool('SENTRY_ENABLED', False):
+# need to copy in settings because we inject these values in the templates
+SENTRY_ENABLED = env.bool('SENTRY_ENABLED', False)
+SENTRY_DSN = env('SENTRY_DSN', '')
+SENTRY_KEY = env('SENTRY_KEY', '')
+if SENTRY_ENABLED:
     import bitcaster
 
     INSTALLED_APPS += ['raven.contrib.django.raven_compat', ]
     RAVEN_CONFIG = {
-        'dsn': env('SENTRY_DSN'),
+        'dsn': SENTRY_DSN,
         'release': bitcaster.get_full_version(),
         # If you are using git, you can also automatically configure the
         # release based on the git info.
