@@ -35,9 +35,17 @@ class UserEventSubcribe(ApplicationListMixin, UserEventMixin, BitcasterBaseCreat
     def get_object(self, queryset=None):
         return self.get_queryset().get(id=self.kwargs['pk'])
 
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        ret = super().get_context_data(**kwargs)
+        ret['not_usable_channels'] = self.object.channels.exclude(addresses__user=self.request.user)
+        ret['usable_channels'] = self.object.channels.filter(addresses__user=self.request.user)
+        ret['object'] = self.object
+        return ret
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['instance'] = self.get_object()
+        kwargs['instance'] = self.object
         return kwargs
 
     def form_valid(self, form):

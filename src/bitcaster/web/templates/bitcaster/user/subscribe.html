@@ -1,10 +1,36 @@
 {% extends "bitcaster/user/base.html" %}{% load i18n bitcaster crispy_forms_filters %}
 {% block page %}
-    <form method="post">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input type="submit" class="btn btn-primary" value="{% trans "Save" %}">
-    </form>
+    <div>{% blocktrans %}Choose which channels you want to use to receive messages{% endblocktrans %}</div>
+    {% if not_usable_channels %}
+        <div class="box-container alert-warning border-warning p-2">
+            This event has channels that cannot be used because you don't have any address assigned to
+            them.
+            <div>
+                To add missing assignment go to
+                <a href="{% url "user-address-assignment" organization.slug %}">Address Assignmentp page</a>
+                and set an appropriate address for the desired channel.
+            </div>
+            <ul class="pt-3">
+                {% for ch in not_usable_channels %}
+                    <li>{{ ch }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% if usable_channels %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-primary" value="{% trans "Save" %}">
+            <input type="button" class="btn btn-secondary"
+                   onclick="history.back();"
+                   value="{% trans "Cancel" %}">
+        </form>
+    {% else %}
+        <div class="box-container alert-danger    border-danger p-2 m-5">
+        No channel available
+        </div>
+    {% endif %}
 {% endblock page %}
 {% block js %}
     {{ block.super }}
