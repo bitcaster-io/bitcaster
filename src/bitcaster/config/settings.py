@@ -416,6 +416,8 @@ CONSTANCE_CONFIG = OrderedDict({
     'INITIALIZED': (False, '', bool),
     'SYSTEM_CONFIGURED': (0, '', int),
     'SITE_URL': ('', '', str),
+
+    'GOOGLE_ANALYTICS_CODE': ('', 'Google Analytics code', str),
     'ALLOW_CHANGE_PRIMARY_ADDRESS': (False, 'Users can change their primary email address', bool),
     'RECAPTCHA_PUBLIC_KEY': ('', '', str),
     'RECAPTCHA_PRIVATE_KEY': ('', '', str),
