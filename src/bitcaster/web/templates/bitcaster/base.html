@@ -118,9 +118,9 @@
         });
     });
     {% if messages %}
-    setTimeout(function () {
-        $('.alert').not('.keep').alert('close');
-    }, 5000);
+        setTimeout(function () {
+            $('.alert').not('.keep').alert('close');
+        }, 5000);
     {% endif %}
 </script>
 {% block js %}
@@ -161,13 +161,13 @@
 
     </style>
     <script>
-        var closeModal = function(){
+        var closeModal = function () {
             $("body").css("overflow", "");
-                    $('#myModal').hide()
+            $('#myModal').hide()
 
         };
         $('#myModal .blocker .window').on('click', function (e) {
-            if(e.target !== this) return;
+            if (e.target !== this) return;
             closeModal();
         });
         $('[rel="modal:open"]').on('click', function (e) {
@@ -187,14 +187,30 @@
     </script>
 {% endblock %}
 {% if config.GOOGLE_ANALYTICS_CODE %}
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ config.GOOGLE_ANALYTICS_CODE }}"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', '{{ config.GOOGLE_ANALYTICS_CODE }}');
-  gtag('version', '{{ bitcaster_version }}');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.GOOGLE_ANALYTICS_CODE }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', '{{ config.GOOGLE_ANALYTICS_CODE }}');
+        gtag('version', '{{ bitcaster_version }}');
+    </script>
+{% endif %}
+
+{% if settings.SENTRY_ENABLED %}
+    <script src="https://cdn.ravenjs.com/2.1.0/raven.min.js"></script>
+
+    <script>
+        Raven.config("{{ settings.SENTRY_KEY }}").install();
+        function handleRouteError(err) {
+            Raven.captureException(err);
+            Raven.showReportDialog();
+        }
+    </script>
 {% endif %}
 </body>
 </html>
