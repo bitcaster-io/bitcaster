@@ -23,9 +23,10 @@
             $deletion.prop('checked', true);
             $target.hide();
             var $rows = $("div.fieldset>div.row:visible");
-            console.log($rows.length);
             if ($rows.length === 0) {
                 $commands.hide();
+            }else{
+                $commands.show();
             }
             e.preventDefault();
         });

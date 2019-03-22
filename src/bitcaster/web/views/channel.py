@@ -12,7 +12,7 @@ from strategy_field.utils import import_by_name
 
 from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
-from bitcaster.models import AddressAssignment, Channel
+from bitcaster.models import Address, AddressAssignment, Channel
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 from bitcaster.web.templatetags.markdown import markdown
 
@@ -190,6 +190,8 @@ class ChannelTestView(MessageUserMixin, RedirectView):
             msg = _("""Message sent to {}""").format(address)
             self.message_user(markdown(msg), messages.SUCCESS)
 
+        except Address.DoesNotExist:
+            self.message_user(_('You do not have an address assigned to this channel'), messages.ERROR)
         except AddressAssignment.DoesNotExist:
             url = reverse('user-address-assignment', args=[self.selected_organization.slug])
             msg = _("""You do not have a valid address for this channel.
@@ -198,5 +200,5 @@ Goto [addresses]({0}) to set your choice for **{1}**""").format(url, self.object
         except PluginSendError as e:  # pragma: no cover
             self.message_user(_("Unable to send message to '{}': {}").format(address, e), messages.ERROR)
         except Exception as e:
-            self.message_user(_("Unable to send message to '{}': {}").format(address, e), messages.ERROR)
+            self.message_user(_('Unable to send message: {}').format(e), messages.ERROR)
         return super().get(request, *args, **kwargs)

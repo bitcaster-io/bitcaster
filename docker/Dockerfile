@@ -99,10 +99,13 @@ RUN apk add --no-cache --virtual .run-deps \
 COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY docker/circus.conf /etc/circus.conf
 
-RUN adduser -S bitcaster \
-    && mkdir -p /backups \
-    && mkdir -p /var/bitcaster \
-    && chown bitcaster /var/bitcaster/ /backups
+
+RUN addgroup --gid 1024 bitcaster \
+    && adduser --disabled-password --ingroup bitcaster -S bitcaster \
+    && mkdir -p /backups /var/bitcaster \
+    && chown :1024 /var/bitcaster/ /backups \
+    && chmod 775 /var/bitcaster/ /backups \
+    && chmod g+s /var/bitcaster/ /backups
 
 WORKDIR /var/bitcaster
 USER bitcaster
