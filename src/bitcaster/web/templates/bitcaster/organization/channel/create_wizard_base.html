@@ -13,16 +13,19 @@
             {% endblock wizard-content %}
         </div>
         {% block wizard-buttons %}
-            {% if wizard.steps.prev %}
-                <button name="wizard_goto_step" type="submit"
-                        class="btn btn-secondary"
-                        value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
-            {% endif %}
             {% if wizard.steps.next %}
 {#                <input type="submit" class="btn btn-primary" value="{% trans "next step" %}"/>#}
             {% else %}
                 <input type="submit" class="btn btn-primary" value="{% trans "Save" %}"/>
             {% endif %}
+
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit"
+                        class="btn btn-secondary pull-right"
+                        value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
+            {% endif %}
+
+
         {% endblock %}
     </form>
 {% endblock %}
