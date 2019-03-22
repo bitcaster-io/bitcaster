@@ -12,17 +12,18 @@ from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic import CreateView
+from django.views.generic import CreateView, RedirectView
+from django.views.generic.detail import SingleObjectMixin
 from strategy_field.utils import fqn
 
 from bitcaster import messages
 from bitcaster.framework.db.fields import Role
+from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.models import Invitation, Organization, OrganizationMember, User
 from bitcaster.otp import totp
 from bitcaster.web.forms import UserInviteRegistrationForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
-                                      BitcasterBaseDeleteView,
-                                      BitcasterBaseUpdateView,)
+                                      BitcasterBaseDeleteView,)
 from bitcaster.web.views.mixins import MessageUserMixin
 
 logger = logging.getLogger(__name__)
@@ -105,8 +106,8 @@ class InvitationAccept(MessageUserMixin, CreateView):
         return HttpResponseRedirect('/')
 
 
-class InvitationSend(InviteMixin, BitcasterBaseUpdateView):
-    def form_valid(self, form):
+class InvitationSend(InviteMixin, MessageUserMixin, SingleObjectMixin, RedirectView):
+    def get(self, request, *args, **kwargs):
         membership = self.get_object()
         try:
             membership.send_email()
@@ -114,7 +115,7 @@ class InvitationSend(InviteMixin, BitcasterBaseUpdateView):
         except Exception as e:
             logger.exception(e)
             self.message_user(_('Error sending email'), messages.ERROR)
-        return super().form_valid(form)
+        return RedirectToRefererResponse(request)
 
 
 class InvitationCreate(InviteMixin, BitcasterBaseCreateView):

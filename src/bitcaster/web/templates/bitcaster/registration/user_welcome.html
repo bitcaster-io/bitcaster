@@ -1,11 +1,11 @@
 {% extends "bitcaster/base.html" %}{% load crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
-{% block page %}
+{% block body %}
 
     <div class="container">
         <div class="row col-12 justify-content-center align-items-center">
             <div class="box box-modal login-form col-6 p-3">
-                {% if membership %}
-                    {% if membership.user %}
+                {% if invitation %}
+                    {% if invitation.user %}
                         <div>Registration token already used</div>
                     {% else %}
                         <div class="container-fluid p-3">
@@ -18,7 +18,7 @@
                                        class="btn btn-primary"/>
                             </form>
                         </div>
-                        {% include "bitcaster/includes/_oauth.html" %}
+{#                        {% include "bitcaster/includes/_oauth.html" %}#}
                     {% endif %}
                 {% else %}
                     <div class="text-center align-middle h1">

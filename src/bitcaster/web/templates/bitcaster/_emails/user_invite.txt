@@ -1,4 +1,4 @@
-You have beed invited to {{ organization }}!
+You have beed invited to {{ invitation.organization }}!
 
 Please accept your invitation pointing your browser to the address below.
 
