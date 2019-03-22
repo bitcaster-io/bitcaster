@@ -1,6 +1,8 @@
 {% extends "bitcaster/user/base.html" %}{% load i18n bitcaster crispy_forms_filters %}
 {% block page %}
+    {% if usable_channels %}
     <div>{% blocktrans %}Choose which channels you want to use to receive messages{% endblocktrans %}</div>
+    {% endif %}
     {% if not_usable_channels %}
         <div class="box-container alert-warning border-warning p-2">
             This event has channels that cannot be used because you don't have any address assigned to
@@ -26,10 +28,6 @@
                    onclick="history.back();"
                    value="{% trans "Cancel" %}">
         </form>
-    {% else %}
-        <div class="box-container alert-danger    border-danger p-2 m-5">
-        No channel available
-        </div>
     {% endif %}
 {% endblock page %}
 {% block js %}
