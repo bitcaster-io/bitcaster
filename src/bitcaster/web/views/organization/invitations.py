@@ -96,7 +96,7 @@ class OrganizationInvite(OrgInviteMixin, InvitationCreate):
 
 
 class InviteAccept(MessageUserMixin, CreateView):
-    model = User
+    model = Invitation
     form_class = UserInviteRegistrationForm
     template_name = 'bitcaster/registration/user_welcome.html'
 
@@ -125,17 +125,20 @@ class InviteAccept(MessageUserMixin, CreateView):
                                        friendly_name=form.cleaned_data['friendly_name'],
                                        password=make_password(form.cleaned_data['password']),
                                        )
-            self.membership.user = user
-            self.membership.date_enrolled = timezone.now()
-            self.membership.save()
+            membership = OrganizationMember.objects.create(organization=self.selected_organization,
+                                              user=user,
+                                              role=self.invitation.role or Role.SUBSCRIBER,
+                                              date_enrolled=timezone.now())
+            self.invitation.date_accepted = timezone.now()
+            self.invitation.save()
             login(self.request, user, backend=fqn(ModelBackend))
             assert self.request.user == user
 
-        if self.membership.role in [Role.OWNER, Role.ADMIN]:
-            url = reverse('org-dashboard', args=[self.selected_organization.slug])
-        else:
-            url = reverse('me', args=[self.selected_organization.slug])
-        logger.debug(f'Invitation accepted by user {user.email} with role {self.membership.role}. '
+        # if self.invitation.role in [Role.OWNER, Role.ADMIN]:
+        #     url = reverse('org-dashboard', args=[self.selected_organization.slug])
+        # else:
+        url = reverse('me', args=[self.selected_organization.slug])
+        logger.debug(f'Invitation accepted by user {user.email} with role {membership.role}. '
                      f'Redirecting to {url}')
         return HttpResponseRedirect(url)
 
@@ -143,27 +146,30 @@ class InviteAccept(MessageUserMixin, CreateView):
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
-        if self.membership:
-            kwargs['membership'] = self.membership
-            kwargs['invitation_id'] = self.membership.pk  # this is required by oauth
+        if self.invitation:
+            kwargs['invitation'] = self.invitation
+            kwargs['invitation_id'] = self.invitation.pk  # this is required by oauth
             return super().get_context_data(**kwargs)
         else:
             return {}
 
     def get_initial(self):
-        return {'email': self.membership.email,
-                'friendly_name': self.membership.email}
+        return {'email': self.invitation.target,
+                'friendly_name': self.invitation.target}
 
     @cached_property
-    def membership(self):
+    def invitation(self):
         pk = self.kwargs['pk']
-        return OrganizationMember.objects.filter(pk=pk,
-                                                 organization__slug=self.kwargs['org']).first()
+        return Invitation.objects.filter(pk=pk,
+                                         organization__slug=self.kwargs['org']).first()
 
     def get(self, request, **kwargs):
         check = kwargs['check']
+        if User.objects.filter(email=self.invitation.target).exists():
+            self.message_user(_('Email used'), messages.ERROR)
         if totp.verify(check, valid_window=config.INVITATION_EXPIRE):
             return super(InviteAccept, self).get(request, **kwargs)
+
         self.message_user(_('Invite expired'), messages.ERROR)
         return HttpResponseRedirect('/')
 

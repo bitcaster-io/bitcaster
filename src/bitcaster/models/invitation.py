@@ -71,7 +71,7 @@ class Invitation(models.Model):
         code = totp.now()
         url = reverse('org-member-accept', args=[self.organization.slug, self.pk, code])
         return send_mail_by_template('[Bitcaster] invitation',
-                                     'user_invite', {'membership': self,
+                                     'user_invite', {'invitation': self,
                                                      'url': absolute_uri(url)},
                                      [self.target],
                                      async=True)
