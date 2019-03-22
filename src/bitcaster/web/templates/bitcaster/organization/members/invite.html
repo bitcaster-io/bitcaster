@@ -14,16 +14,8 @@
 
         </div>
     </div>
-{#    <div class="pull-right col-4 hidden commands">#}
-{#        <button type="button" id="btn-save"#}
-{#                class="btn btn-primary btn-small mr-3">{% trans "Send" %}</button>#}
-{##}
-{#        <button type="button" id="btn-cancel" class="btn btn-secondary"#}
-{#                onclick="location.href=location.href;">#}
-{#            {% trans "Cancel" %}#}
-{#        </button>#}
-{#    </div>#}
-    {% include "bitcaster/_includes/formset/commands.html" %}
+
+    {% include "bitcaster/_includes/formset/commands.html" with label="Send" %}
 
     <div id="empty-form" class="d-none">
         <div class="row col-12 m-0 p-0">
@@ -76,19 +68,9 @@
         </form>
     </div>
 
-    {% include "bitcaster/_includes/formset/commands.html" %}
-
-{#    <div class="pull-right col-4 hidden commands comm">#}
-{#        <button type="button" id="btn-save"#}
-{#                class="btn btn-primary btn-small mr-3">{% trans "Send" %}</button>#}
-{##}
-{#        <button type="button" id="btn-cancel" class="btn btn-secondary"#}
-{#                onclick="location.href=location.href;">#}
-{#            {% trans "Cancel" %}#}
-{#        </button>#}
-{#    </div>#}
+    {% include "bitcaster/_includes/formset/commands.html" with label="Send" %}
 
 {% endblock %}
 {% block js %}
-    {% include "bitcaster/_includes/formset/js_code.html" with formsetName="memberships" %}
+    {% include "bitcaster/_includes/formset/js_code.html" with formsetName="invitations" %}
 {% endblock js %}

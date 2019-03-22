@@ -23,7 +23,7 @@
                        href=".">{% trans "Add Address" %}
                     </a>
                 </div>
-                {% include "bitcaster/_includes/formset/commands.html" %}
+                {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}
             </div>
         </div>
 
@@ -76,7 +76,7 @@
                     {% endfor %}
                 </div>
             </form>
-            {% include "bitcaster/_includes/formset/commands.html" %}
+                {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}
         </div>
     </div> <!-- tab-content -->
 {% endblock %}
