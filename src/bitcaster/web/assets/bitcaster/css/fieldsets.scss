@@ -1,0 +1,36 @@
+.fieldset {
+    .non-field-errors.invalid-feedback {
+        line-height: 30px !important;
+        padding-left: 30px;
+        height: 30px;
+    }
+    .col{
+        height:42px;
+    }
+
+    .row {
+        display: inline-block;
+        line-height: 50px;
+        margin-bottom: 0;
+        height: 50px;
+        //display: inline-table;
+        &.has-error{
+            height: 75px;
+        }
+        .line-fields {
+            &.has-error{
+
+            }
+            .form-group {
+                margin-bottom: 0;
+                .invalid-feedback {
+                    display: block;
+                    margin: 0;
+                    padding: 0;
+                    line-height: 15px;
+                }
+            }
+
+        }
+    }
+}

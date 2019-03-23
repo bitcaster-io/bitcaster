@@ -34,60 +34,60 @@ div.avatar {
 //    border-width: 1px;
 //    padding: 1px 7px 2px;
 //}
-.fieldset {
-    display: block;
-    .row {
-        line-height: 42px;
-        margin-bottom: 0;
-        height: 60px;
-        display: inline-table;
+//.fieldset {
+//    display: block;
+//    .row {
+//        line-height: 42px;
+//        margin-bottom: 0;
+//        height: 60px;
+//        display: inline-table;
+//
+//        &.error {
+//            padding-left: 50px;
+//            padding-top: 0;
+//            color: red;
+//            line-height: 40px;
+//        }
+//
+//        &.line-fields {
+//            .col {
+//                height: 42px;
+//            }
+//
+//            &.has-error {
+//                //height: 80px;
+//                .non-field-errors{
+//                    padding-left: 50px;
+//                }
+//
+//                input,select {
+//                    border: 1px solid $error-color;
+//                }
+//            }
+//        }
+//    }
+//
+//    .form-group {
+//        margin-bottom: 0;
+//        line-height: 40px;
+//    }
+//}
 
-        &.error {
-            padding-left: 50px;
-            padding-top: 0;
-            color: red;
-            line-height: 40px;
-        }
-
-        &.line-fields {
-            .col {
-                height: 42px;
-            }
-
-            &.has-error {
-                //height: 80px;
-                .non-field-errors{
-                    padding-left: 50px;
-                }
-
-                input,select {
-                    border: 1px solid $error-color;
-                }
-            }
-        }
-    }
-
-    .form-group {
-        margin-bottom: 0;
-        line-height: 40px;
-    }
-}
-
-.form-group {
-    .label {
-        display: inline-block;
-        margin-bottom: 0.5rem;
-    }
-
-    &.has-error {
-        border: 1px solid $error-color;
-
-        .errors {
-            color: $error-color;
-        }
-
-        input {
-            border: 1px solid $error-color;
-        }
-    }
-}
+//.form-group {
+//    .label {
+//        display: inline-block;
+//        margin-bottom: 0.5rem;
+//    }
+//
+//    &.has-error {
+//        border: 1px solid $error-color;
+//
+//        .errors {
+//            color: $error-color;
+//        }
+//
+//        input {
+//            border: 1px solid $error-color;
+//        }
+//    }
+//}

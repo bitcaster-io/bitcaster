@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from bitcaster.framework.db.fields import Role, RoleField
 from bitcaster.mail import send_mail_by_template
 from bitcaster.otp import totp
 from bitcaster.state import get_current_user
@@ -13,7 +14,7 @@ from bitcaster.utils.http import absolute_uri
 from .application import Application
 from .event import Event
 from .organization import Organization
-from .team import ApplicationRole, Team
+from .team import Team
 
 
 class Invitation(models.Model):
@@ -42,12 +43,9 @@ class Invitation(models.Model):
                              blank=True, null=True,
                              on_delete=models.CASCADE,
                              related_name='invitations')
-    role = models.ForeignKey(ApplicationRole,
-                             blank=True, null=True,
-                             on_delete=models.CASCADE,
-                             related_name='invitations')
-    event = models.ForeignKey(Event,
+    role = RoleField(default=Role.SUBSCRIBER)
 
+    event = models.ForeignKey(Event,
                               default=None, blank=True, null=True,
                               on_delete=models.CASCADE,
                               related_name='invitations')
@@ -89,9 +87,9 @@ class Invitation(models.Model):
             self.application = self.team.application
             self.organization = self.application.organization
         elif self.role:
-            self.team = self.role.team
-            self.application = self.role.team.application
-            self.organization = self.role.team.application.organization
+            self.team = None
+            self.application = None
+            assert self.organization
         elif self.application:
             self.organization = self.application.organization
         elif self.organization:

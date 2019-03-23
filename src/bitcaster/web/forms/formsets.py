@@ -17,7 +17,7 @@ class OrganizationInvitationForm(forms.ModelForm):
 
     class Meta:
         model = Invitation
-        fields = ('target',)
+        fields = ('target', 'role')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
