@@ -1,4 +1,4 @@
-{% extends "bitcaster/base.html" %}{% load crispy_forms_tags i18n %}
+{% extends "bitcaster/base.html" %}{% load crispy_forms_tags i18n menu %}
 {% block bodyclass %}settings{% endblock %}
 {% block pageId %}settings{% endblock %}
 {% block header_class %}settings{% endblock %}
@@ -6,28 +6,28 @@
 {% block left-menu %}
     <ul class="list-unstyled components">
         <li>
-            <a href="{% url "settings" %}">
+            <a class="{{ view|menu_item:'settingsview' }}" href="{% url "settings" %}">
                 <i class="fas fa-wrench"></i>
                 {% trans 'General' %}
             </a>
         </li>
         <li>
-            <a href="{% url 'settings-email' %}">
+            <a class="{{ view|menu_item:'mail' }}" href="{% url 'settings-email' %}">
                 <i class="fas fa-envelope"></i>
                 {% trans 'Mail Server' %}</a>
         </li>
         <li>
-            <a href="{% url 'settings-oauth' %}">
+            <a class="{{ view|menu_item:'oauth' }}" href="{% url 'settings-oauth' %}">
                 <i class="fas fa-lock"></i>
                 {% trans 'OAuth 2.0' %}</a>
         </li>
         <li>
-            <a href="{% url 'settings-ldap' %}">
+            <a class="{{ view|menu_item:'ldap' }}" href="{% url 'settings-ldap' %}">
                 <i class="fas fa-laptop-code"></i>
                 {% trans 'LDAP' %}</a>
         </li>
         <li>
-            <a href="{% url 'settings-sysinfo' %}">
+            <a class="{{ view|menu_item:'systeminfo' }}" href="{% url 'settings-sysinfo' %}">
                 <i class="fas fa-list-ul"></i>
                 {% trans 'Environment' %}</a>
         </li>

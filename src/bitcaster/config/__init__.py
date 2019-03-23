@@ -18,7 +18,7 @@ DEFAULTS = dict(
     REDIS_LOCK_URL=(str, 'redis://localhost:6379/1?key_prefix=bs-lock&backend=django_redis.cache.RedisCache'),
     SECRET_KEY=(str, ''),
     SENTRY_DSN=(str, ''),
-    SENTRY_KEY=(str, ''),
+    SENTRY_JDSN=(str, ''),
     SENTRY_ENABLED=(bool, False),
     STATIC_ROOT=(str, str(Path(__file__).parent.parent / 'web' / 'static')),
     URL_PREFIX=(str, ''),

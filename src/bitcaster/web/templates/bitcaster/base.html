@@ -91,11 +91,6 @@
                             <a href="//bitcaster.io/"><img src="{% asset "bitcaster/images/bitcaster32.png" %}"></a>
                         </div>
                         <div class="col-sm justify-content-end">
-                            {% if user.is_authenticated %}
-                                <span class="pull-right">
-                                    <a class="d-none d-md-block" href="/api/">API</a>
-                                </span>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -208,7 +203,7 @@
     <script src="https://cdn.ravenjs.com/2.1.0/raven.min.js"></script>
 
     <script>
-        Raven.config("{{ settings.SENTRY_KEY }}").install();
+        Raven.config("{{ settings.SENTRY_JDSN }}").install();
         function handleRouteError(err) {
             Raven.captureException(err);
             Raven.showReportDialog();

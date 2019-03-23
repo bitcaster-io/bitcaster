@@ -94,9 +94,17 @@ span {
                 padding: 10px;
                 font-size: 1.1em;
                 display: block;
+                &.active{
+                    color: $org-hover;
+                    background-color: white;
+
+                    i {
+                        color: $org-hover;
+                    }
+                }
                 &:hover {
                     color: $org-hover;
-                    background: #fff;
+                    background: #eeeeee;
 
                     i {
                         color: $org-hover;
@@ -113,21 +121,18 @@ span {
                 > a,
                 a[aria-expanded="true"] {
                     color: $org-hover;
-                    //background: #6d7fcc;
                 }
             }
         }
 
         &.components {
             padding: 20px 0;
-            //border-bottom: 1px solid #47748b;
         }
 
         ul {
             a {
                 font-size: 0.9em !important;
                 padding-left: 30px !important;
-                //background: #6d7fcc;
             }
         }
     }

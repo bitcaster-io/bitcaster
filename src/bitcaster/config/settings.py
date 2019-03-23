@@ -488,7 +488,7 @@ CONSTANCE_CONFIG_FIELDSETS = {'Options': list(CONSTANCE_CONFIG.keys())}
 # need to copy in settings because we inject these values in the templates
 SENTRY_ENABLED = env.bool('SENTRY_ENABLED', False)
 SENTRY_DSN = env('SENTRY_DSN', '')
-SENTRY_KEY = env('SENTRY_KEY', '')
+SENTRY_JDSN = env('SENTRY_JDSN', '')
 if SENTRY_ENABLED:
     import bitcaster
 
