@@ -28,12 +28,11 @@ totp = TOTP('base32secret3232', interval=1)
 
 
 class OtpHandler:
-    def __init__(self, separator="|") -> None:
+    def __init__(self, separator='|') -> None:
         super().__init__()
         self.separator = separator
         # Fernet key must be 32 url-safe base64-encoded byte
         self.encryption_suite = Fernet(base64.urlsafe_b64encode(settings.SECRET_KEY.encode()[:32]))
-
 
     def get_otp(self, message_list):
         """
@@ -49,12 +48,12 @@ class OtpHandler:
             message_list = [message_list, ]
         for x in message_list:
             if self.separator in x:
-                raise ValueError("Messages cannot contain separator")
+                raise ValueError('Messages cannot contain separator')
         message_list = self.separator.join(message_list)
         dt = int(time.time())
-        prefix = "".join([random.choice(string.ascii_letters) for x in range(random.randint(0, 20))])
-        tail = "".join([random.choice(string.ascii_letters) for x in range(random.randint(0, 20))])
-        message_list = f"{message_list}{self.separator}{prefix}{dt}{tail}"
+        prefix = ''.join([random.choice(string.ascii_letters) for x in range(random.randint(0, 20))])
+        tail = ''.join([random.choice(string.ascii_letters) for x in range(random.randint(0, 20))])
+        message_list = f'{message_list}{self.separator}{prefix}{dt}{tail}'
         message_list = self.encryption_suite.encrypt(message_list.encode())
         return base64.urlsafe_b64encode(message_list)
 
@@ -73,8 +72,8 @@ class OtpHandler:
         cipher_text = base64.urlsafe_b64decode(cipher_text)
         decrypted = self.encryption_suite.decrypt(cipher_text).decode().split(self.separator)
         message_list, dt = decrypted[:-1], decrypted[-1]
-        dt = int("".join(re.findall('\d+', dt)))
+        dt = int(''.join(re.findall(r'\d+', dt)))
         now = int(time.time())
         if max_timedelta and max_timedelta < now - dt:
-            raise ValueError("Expired")
+            raise ValueError('Expired')
         return message_list, dt
