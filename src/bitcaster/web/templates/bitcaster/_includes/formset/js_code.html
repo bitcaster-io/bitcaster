@@ -6,7 +6,7 @@
         var $commands = $(".commands");
         {% if form.errors %}$(".commands").show();{% endif %}
 
-        $('#btn-save').on('click', function () {
+        $('.commands>.btn-save').on('click', function () {
             $("#Form").submit();
         });
         $("#Form")
