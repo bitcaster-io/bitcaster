@@ -33,31 +33,14 @@ class ChannelQuerySet(models.QuerySet):
         #         c.save()
         return self.all()
 
-    # def organization_configurable(self, organization):
-    #     return self.filter(organization=organization,
-    #                        application=None,
-    #                        system=False)
-    #
-    # def application_configurable(self, application):
-    #     return self.filter(application=application, system=False)
-    #
-    # def system_configurable(self):
-    #     return self.filter(system=True)
-    #
     def selectable(self, application):
         return self.filter(Q(organization=application.organization) |
                            Q(system=True) |
                            Q(application=application))
 
-    # def enabled(self, application):
-    #     return self.filter(application=application,
-    #                        )
-
 
 class Channel(ReverseWrapperMixin, AbstractModel):
-    """ A Channel represent a configured dispatcher.
-It can be Global or Application specific.
-    """
+    """ A Channel represent a configured dispatcher. """
     name = models.CharField(max_length=255)
     organization = models.ForeignKey(Organization,
                                      null=True,
@@ -120,14 +103,6 @@ It can be Global or Application specific.
     def get_usage(self):
         return self.handler.get_usage()
 
-    # def is_configurable_by(self, user):
-    #     if user.is_superuser:
-    #         return True
-    #     if self.system:
-    #         return user.is_superuser
-    #     if not self.application:
-    #         return
-    #
     @property
     def is_configured(self):
         if self.handler:
@@ -138,17 +113,8 @@ It can be Global or Application specific.
         if not self.handler and self.enabled:
             raise ValidationError('Cannot enable Channel without handler')
         if self.enabled:
-            if not self.config:
-                raise ValidationError('Channel must be configured')
-            elif not self.is_configured:
+            if not self.is_configured:
                 raise ValidationError('Configure channel before enable it')
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        # if self.application:
-        #     self.organization = self.application.organization
-        # if self.handler:
-        #     self.config = self.handler.get_full_config(self.config)
-        super().save(force_insert, force_update, using, update_fields)
 
     def process_event(self, event, context):
         if not self.enabled:

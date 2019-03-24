@@ -3,6 +3,7 @@ import logging
 
 from django import forms
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -157,10 +158,14 @@ class ChannelToggleView(MessageUserMixin, RedirectView):
     def get(self, request, *args, **kwargs):
         obj = self.get_queryset().get(id=kwargs['pk'])
         obj.enabled = not obj.enabled
-        obj.clean()
-        obj.save()
-        op = 'enabled' if obj.enabled else 'disabled'
-        self.message_user(f'Channel {op}')
+        try:
+            obj.clean()
+            obj.save()
+        except ValidationError as e:
+            self.error_user(''.join(e))
+        else:
+            op = 'enabled' if obj.enabled else 'disabled'
+            self.message_user(f'Channel {op}')
         return super().get(request, *args, **kwargs)
 
 

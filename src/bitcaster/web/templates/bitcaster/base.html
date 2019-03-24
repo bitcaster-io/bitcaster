@@ -199,7 +199,7 @@
     </script>
 {% endif %}
 {% if settings.SENTRY_ENABLED %}
-    <script src="https://cdn.ravenjs.com/2.1.0/raven.min.js"></script>
+    <script src="https://cdn.ravenjs.com/3.23.1/raven.min.js"></script>
 
     <script>
         Raven.config("{{ settings.SENTRY_JDSN }}").install();
