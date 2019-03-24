@@ -186,12 +186,6 @@ def subscription2(application1, subscriber2):
 
 
 @pytest.fixture
-def role1(team1):
-    from bitcaster.utils.tests.factories import ApplicationRoleFactory
-    return ApplicationRoleFactory(team=team1)
-
-
-@pytest.fixture
 def team1(application1):
     from bitcaster.utils.tests.factories import TeamFactory
     return TeamFactory(application=application1)

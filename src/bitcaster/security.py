@@ -1,9 +1,24 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from bitcaster.framework.db.fields import Role
+from django.utils.translation import gettext as _
+
+from bitcaster.utils.enumfield import EnumField
 
 logger = logging.getLogger(__name__)
+
+
+class Role(EnumField):
+    OWNER = 1
+    ADMIN = 2
+    SUBSCRIBER = 4
+
+    @classmethod
+    def as_choices(cls):
+        return tuple(sorted([(int(cls.OWNER), _('Owner')),
+                             (int(cls.ADMIN), _('Admin')),
+                             (int(cls.SUBSCRIBER), _('Subscriber'))]))
+
 
 OPS = {'add', 'manage', 'delete'}
 TARGETS = {'channel', 'monitor', 'subscription', 'event', 'application', 'organization'}

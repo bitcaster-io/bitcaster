@@ -27,14 +27,6 @@ def test_create_with_team(team1):
     assert i.organization == team1.application.organization
 
 
-def test_create_with_role(role1):
-    i = Invitation(role=role1)
-    i.save()
-    assert i.team == role1.team
-    assert i.application == role1.team.application
-    assert i.organization == role1.team.application.organization
-
-
 def test_create_with_event(event1):
     i = Invitation(event=event1)
     i.save()

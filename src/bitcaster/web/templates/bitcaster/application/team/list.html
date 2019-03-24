@@ -18,7 +18,8 @@
             <thead>
             <tr scope="row" class="row inline-flex">
                 <th scope="col" class="col-4">{% trans "Name" %}</th>
-                <th scope="col" class="col-6">{% trans "Description" %}</th>
+                <th scope="col" class="col-3">{% trans "Description" %}</th>
+                <th scope="col" class="col-3">{% trans "Role" %}</th>
                 <th scope="col" class="col-2"></th>
             </tr>
             </thead>
@@ -26,7 +27,8 @@
             {% for team in application.teams.all %}
                 <tr scope="row" class="row inline-flex">
                     <td class="col-4">{{ team.name }}</td>
-                    <td class="col-6">{{ team.description }}</td>
+                    <td class="col-3">{{ team.description }}</td>
+                    <td class="col-3">{{ team.get_role_display }}</td>
                     <td class="col-2 formset-commands">
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="edit"

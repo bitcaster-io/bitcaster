@@ -2,7 +2,6 @@
 import base64
 import json
 import logging
-from enum import Enum
 
 from cryptography.fernet import Fernet, MultiFernet
 from django.conf import settings
@@ -20,8 +19,10 @@ from bitcaster.agents.registry import agent_registry
 from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.exceptions import HandlerNotFound
 from bitcaster.file_storage import AvatarFileSystemStorage
-
 # from bitcaster.web.forms.fields.d import DispatcherFormField
+from bitcaster.security import Role
+from bitcaster.utils.enumfield import EnumField
+
 from ..forms.fields import DispatcherFormField
 
 logger = logging.getLogger(__name__)
@@ -82,33 +83,6 @@ class LanguageField(models.CharField):
         super().__init__(*args, **kwargs)
 
 
-class EnumField(Enum):
-
-    def __new__(cls, value):
-        member = object.__new__(cls)
-        member._value_ = value
-        return member
-
-    def __int__(self):
-        return self.value
-
-    def __gt__(self, other):
-        return int(self) > int(other or '0')
-
-    def __lt__(self, other):
-        return int(self) < int(other or '0')
-
-    def __eq__(self, other):
-        return int(self) == int(other or '0')
-
-    def __hash__(self):
-        return int(self)
-
-    @classmethod
-    def as_choices(cls):
-        raise NotImplementedError
-
-
 class DeletionStatus(EnumField):
     ACTIVE = 1
     PENDING_DELETION = 2
@@ -145,18 +119,6 @@ class DeletionStatusField(models.IntegerField):
         This is used by the serialization framework.
         """
         return str(int(self.value_from_object(obj)))
-
-
-class Role(EnumField):
-    OWNER = 1
-    ADMIN = 2
-    SUBSCRIBER = 4
-
-    @classmethod
-    def as_choices(cls):
-        return tuple(sorted([(int(cls.OWNER), _('Owner')),
-                             (int(cls.ADMIN), _('Admin')),
-                             (int(cls.SUBSCRIBER), _('Subscriber'))]))
 
 
 class RoleField(models.IntegerField):

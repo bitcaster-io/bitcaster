@@ -21,7 +21,6 @@ from bitcaster.utils.slug import slugify_instance
 from .base import AbstractModel
 from .mixins import ReverseWrapperMixin
 from .organization import Organization
-# from bitcaster.models import ApplicationRole
 from .validators import ListValidator
 
 logger = logging.getLogger(__name__)
@@ -90,6 +89,6 @@ class Application(AbstractModel, ReverseWrapperMixin):
     @cached_property
     def admins(self):
         admins = []
-        for t in self.teams.filter(roles__role=Role.ADMIN):
+        for t in self.teams.filter(role=Role.ADMIN):
             admins.extend([m.user for m in t.members.all()])
         return admins

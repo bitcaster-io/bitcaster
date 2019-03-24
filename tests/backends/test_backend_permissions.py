@@ -5,7 +5,7 @@ from strategy_field.utils import fqn
 from bitcaster.backends import BitcasterBackend
 from bitcaster.dispatchers import Email
 from bitcaster.framework.db.fields import Role
-from bitcaster.models import ApplicationRole, OrganizationMember
+from bitcaster.models import OrganizationMember
 from bitcaster.security import OWNER_PERMISSIONS, PERMISSIONS
 from bitcaster.utils.tests.factories import TeamFactory, UserFactory, faker
 
@@ -20,9 +20,8 @@ def subscriber11(message1):
     for addr in user.addresses.all():
         user.assignments.create(address=addr, channel=message1.channel)
 
-    team = TeamFactory(application=application, name='Subscribers')
+    team = TeamFactory(application=application, name='Subscribers', role=Role.SUBSCRIBER)
     membership = OrganizationMember.objects.create(organization=org, user=user)
-    ApplicationRole.objects.create(team=team, role=Role.SUBSCRIBER)
     team.members.add(membership)
     return user
 
@@ -60,10 +59,8 @@ def test_backend(subscription11):
 def admin1(application1):
     org = application1.organization
     user = UserFactory()
-    team = TeamFactory(application=application1, name='Subscribers')
+    team = TeamFactory(application=application1, name='Subscribers', role=Role.ADMIN)
     membership, __ = OrganizationMember.objects.get_or_create(organization=org, user=user)
-    ApplicationRole.objects.get_or_create(team=team,
-                                          role=Role.ADMIN)
     team.members.add(membership)
     return user
 
@@ -72,10 +69,9 @@ def admin1(application1):
 def admin2(application2):
     org = application2.organization
     user = UserFactory()
-    team = TeamFactory(application=application2, name='Subscribers')
-    OrganizationMember.objects.get_or_create(organization=org, user=user)
-    ApplicationRole.objects.get_or_create(team=team,
-                                          role=Role.ADMIN)
+    team = TeamFactory(application=application2, name='Subscribers', role=Role.SUBSCRIBER)
+    membership, __ = OrganizationMember.objects.get_or_create(organization=org, user=user)
+    team.members.add(membership)
     return user
 
 

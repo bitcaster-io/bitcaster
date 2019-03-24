@@ -234,15 +234,6 @@ class TeamFactory(AutoRegisterModelFactory):
         self.members.add(m)
 
 
-class ApplicationRoleFactory(AutoRegisterModelFactory):
-    class Meta:
-        model = bitcaster.models.ApplicationRole
-        django_get_or_create = ('team',)
-
-    team = factory.SubFactory(TeamFactory)
-    role = Role.SUBSCRIBER
-
-
 class InvitationFactory(AutoRegisterModelFactory):
     class Meta:
         model = bitcaster.models.Invitation

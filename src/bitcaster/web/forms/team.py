@@ -8,6 +8,7 @@ from django import forms
 from django.utils.translation import gettext as _
 
 from bitcaster.models import OrganizationMember, Team, User
+from bitcaster.security import Role
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,8 @@ class TeamForm(forms.ModelForm):
     manager = forms.ModelChoiceField(queryset=User.objects.all(),
                                      widget=ModelSelect2(url='user-autocomplete')
                                      )
+    role = forms.ChoiceField(choices=Role.as_choices(),
+                             widget=ModelSelect2())
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application')
@@ -32,5 +35,5 @@ class TeamForm(forms.ModelForm):
         self.fields['manager'].queryset = User.objects.filter(memberships__organization=self.application.organization)
 
     class Meta:
-        fields = ('name', 'manager', 'description', 'members')
+        fields = ('name', 'manager', 'description', 'role', 'members')
         model = Team

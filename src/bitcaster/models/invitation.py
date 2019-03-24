@@ -86,12 +86,13 @@ class Invitation(models.Model):
         elif self.team:
             self.application = self.team.application
             self.organization = self.application.organization
+        elif self.application:
+            self.organization = self.application.organization
         elif self.role:
             self.team = None
             self.application = None
-            assert self.organization
-        elif self.application:
-            self.organization = self.application.organization
+            if not self.organization:
+                raise ValidationError('Organization is mandatory')
         elif self.organization:
             pass
         else:

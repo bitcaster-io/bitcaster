@@ -44,6 +44,7 @@ Bitcaster comes loaded with all of the following channel plugins:
 * Telegram
 * WhatsApp
 * WebSMS
+* WeChat
 
 
 In addition a plugin SDK will allow you to create your own plugins in order to extend the reach of your signals to any possible conceivable target. 
