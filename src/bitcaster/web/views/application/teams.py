@@ -23,8 +23,6 @@ class TeamMixin(ApplicationBaseView):
     model = Team
     slug_url_kwarg = 'slug'
 
-    # title = _('Teams')
-
     def get_queryset(self):
         return self.selected_application.teams.all()
 
@@ -57,14 +55,11 @@ class ApplicationTeamCreate(TeamMixin, BitcasterBaseCreateView):
 
 class ApplicationTeamDelete(TeamMixin, BitcasterBaseDeleteView):
     pass
-    # title = _('Remove Team')
 
 
 class ApplicationTeamUpdate(TeamMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/team/form.html'
     form_class = TeamForm
-
-    # title = _('Edit Team')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
