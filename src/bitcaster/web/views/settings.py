@@ -78,7 +78,10 @@ class SettingsEmailView(SettingsBaseView):
             use_tls=kwargs['EMAIL_USE_TLS'],
             fail_silently=False)
         try:
-            return send_mail(subject='test message',
+            prefix = kwargs.get("EMAIL_SUBJECT_PREFIX", None)
+            if prefix:
+                prefix += " "
+            return send_mail(subject=f'{prefix}test message',
                              message='This is only a test message',
                              connection=conn,
                              from_email=kwargs['EMAIL_SENDER'],
