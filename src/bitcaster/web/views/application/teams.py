@@ -15,11 +15,7 @@ from .app import SelectedApplicationMixin
 logger = logging.getLogger(__name__)
 
 
-class ApplicationBaseView(SelectedApplicationMixin):
-    pass
-
-
-class TeamMixin(ApplicationBaseView):
+class TeamMixin(SelectedApplicationMixin):
     model = Team
     slug_url_kwarg = 'slug'
 

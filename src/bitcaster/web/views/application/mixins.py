@@ -3,10 +3,12 @@ from django.utils.functional import cached_property
 
 from bitcaster.models import Application
 from bitcaster.state import state
-from bitcaster.web.views.organization.mixins import ApplicationListMixin
+from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
 
 
-class SelectedApplicationMixin(ApplicationListMixin):
+class SelectedApplicationMixin(SelectedOrganizationMixin):
+    permissions = ['manage_application']
+
     def get_context_data(self, **kwargs):
         kwargs['application'] = self.selected_application
         return super().get_context_data(**kwargs)

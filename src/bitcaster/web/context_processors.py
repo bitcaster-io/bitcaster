@@ -15,7 +15,6 @@ def bitcaster(request):
     return {'bitcaster_version': app.get_full_version(settings.DEBUG),
             'setup_url': setup_url,
             'settings': settings,
-            'ON_PREMISE': settings.ON_PREMISE,
             'git_status': app.get_git_status()
             }
 

@@ -1,7 +1,7 @@
 from django import template
 
 from bitcaster.models import Application, Organization
-from bitcaster.security import PERMISSIONS
+from bitcaster.security import ALL_PERMISSIONS
 
 register = template.Library()
 
@@ -28,9 +28,9 @@ class CheckPermissions(template.Node):
         user = context['request'].user
         target = context[self.target]
         if isinstance(target, Organization):
-            perms = [perm for perm in PERMISSIONS if user.has_perm(perm, target)]
+            perms = [perm for perm in ALL_PERMISSIONS if user.has_perm(perm, target)]
         elif isinstance(target, Application):
-            perms = [perm for perm in PERMISSIONS if user.has_perm(perm, target)]
+            perms = [perm for perm in ALL_PERMISSIONS if user.has_perm(perm, target)]
         else:
             perms = []
         context[self.var_name] = AuthWrapper(perms)

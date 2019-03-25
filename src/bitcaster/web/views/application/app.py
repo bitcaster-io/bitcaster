@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.utils.decorators import method_decorator
 from django.views.generic import RedirectView
 
 from bitcaster.models import Application
@@ -22,18 +18,6 @@ logger = logging.getLogger(__name__)
 class ApplicationViewMixin(SelectedApplicationMixin):
     model = Application
     slug_url_kwarg = 'app'
-
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect('/')
-        if not request.user.has_perm('app:configure', self.selected_application):
-            raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
-
-
-class ApplicationBaseView(ApplicationViewMixin):
-    pass
 
 
 class ApplicationUpdateView(ApplicationViewMixin, BitcasterBaseUpdateView):

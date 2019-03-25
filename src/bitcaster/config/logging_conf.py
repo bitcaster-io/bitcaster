@@ -23,8 +23,8 @@ LOGGING = {
     },
     'handlers': {
         'sentry': {
-            # 'level': 'DEBUG',
-            'class': 'logging.NullHandler',
+            'level': 'INFO',  # To capture more than ERROR, change to WARNING, INFO, etc.
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
         },
         'console': {
             # 'level': 'DEBUG',
@@ -53,21 +53,6 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
-        'bitcaster.config.environ': {
-            'level': 'ERROR',
-            'handlers': ['console', 'sentry'],
-            'propagate': False,
-        },
-        'bitcaster.dispatchers.registry': {
-            'level': 'ERROR',
-            'handlers': ['console', 'sentry'],
-            'propagate': False,
-        },
-        'bitcaster': {
-            'level': level,
-            'handlers': ['console', 'sentry'],
-            'propagate': False,
-        },
         'celery': {
             'level': level,
             'handlers': ['console', 'sentry'],
@@ -89,18 +74,13 @@ LOGGING = {
             'propagate': False,
         },
         'django_auth_ldap': {
-            'handlers': ['console'],  # do not use 'db' here
-            'propagate': False,  # do not propagate
+            'handlers': ['console'],
+            'propagate': False,
             'level': 'DEBUG'
         },
         'ldap': {
-            'handlers': ['console'],  # do not use 'db' here
-            'propagate': False,  # do not propagate
-            'level': 'DEBUG'
-        },
-        'bitcaster.backends.ldap': {
-            'handlers': ['console'],  # do not use 'db' here
-            'propagate': False,  # do not propagate
+            'handlers': ['console'],
+            'propagate': False,
             'level': 'DEBUG'
         },
         'django_db_logging': {
@@ -108,55 +88,30 @@ LOGGING = {
             'propagate': False,  # do not propagate
             'level': 'ERROR'
         },
-        'bitcaster.dispatcher': {
-            'handlers': ['db'],  # do not use 'db' here
-            'propagate': True,  # do not propagate
-            'level': 'ERROR'
+        'bitcaster': {
+            'level': level,
+            'handlers': ['console', 'sentry'],
+            'propagate': False,
         },
-        'bitcaster.tasks': {
-            'handlers': ['db'],  # do not use 'db' here
-            'propagate': True,  # do not propagate
-            'level': 'ERROR'
-        },
-        # 'redis': {
+        # 'bitcaster.config.environ': {
         #     'level': 'ERROR',
+        #     'handlers': ['console', 'sentry'],
+        #     'propagate': False,
+        # },
+        # 'bitcaster.backends.ldap': {
         #     'handlers': ['console'],
         #     'propagate': False,
-        # },
-        # 'gunicorn': {
-        #     'level': 'DEBUG',
-        #     'handlers': ['console'],
-        #     'propagate': False,
-        # },
-        # 'django.middleware': {
-        #     'level': 'INFO',
-        #     'handlers': ['console'],
-        #     'propagate': False,
-        # },
-        # 'raven': {
-        #     'level': 'ERROR',
-        #     'handlers': ['null'],
-        #     'propagate': False,
-        # },
-        # 'oauth2client': {
-        #     'level': 'ERROR',
-        #     'handlers': ['sentry'],
-        #     'propagate': False,
-        # },
-        # 'bitcaster.security': {
-        #     'level': 'INFO',
-        #     'handlers': ['sentry'],
-        #     'propagate': False,
+        #     'level': 'DEBUG'
         # },
         # 'bitcaster.dispatchers': {
-        #     'level': 'ERROR',
-        #     'handlers': ['console', 'sentry'],
-        #     'propagate': False,
+        #     'handlers': ['db'],
+        #     'propagate': True,
+        #     'level': 'ERROR'
         # },
-        # 'bitcaster.plugins': {
-        #     'level': 'ERROR',
-        #     'handlers': ['console', 'sentry'],
-        #     'propagate': False,
+        # 'bitcaster.tasks': {
+        #     'handlers': ['db', 'sentry'],
+        #     'propagate': True,
+        #     'level': 'ERROR'
         # },
     },
 }

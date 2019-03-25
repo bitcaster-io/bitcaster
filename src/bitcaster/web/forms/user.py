@@ -3,6 +3,7 @@ import logging
 
 from constance import config
 from crispy_forms.helper import FormHelper
+from dal_select2.widgets import ModelSelect2, Select2
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (
@@ -65,6 +66,9 @@ class UserProfileForm(forms.ModelForm):
     friendly_name = forms.CharField(label=_('Friendly Name'), required=False)
     name = forms.CharField(label=_('Full Name'), required=False)
     email = forms.EmailField()
+    timezone = forms.ChoiceField(widget=Select2())
+    # timezone = ModelSelect2()
+    country = ModelSelect2()
 
     class Meta:
         model = User

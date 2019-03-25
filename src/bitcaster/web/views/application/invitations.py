@@ -7,12 +7,12 @@ from bitcaster.web.forms.invitations import ApplicationInvitationFormSet
 from bitcaster.web.views.invitations import (InvitationCreate,
                                              InvitationDelete, InvitationSend,)
 
-from .app import ApplicationBaseView
+from .app import ApplicationViewMixin
 
 logger = logging.getLogger(__name__)
 
 
-class ApplicationInvitationMixin(ApplicationBaseView):
+class ApplicationInvitationMixin(ApplicationViewMixin):
     model = Invitation
 
     def get_success_url(self):

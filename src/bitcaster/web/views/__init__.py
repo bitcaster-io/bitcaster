@@ -16,7 +16,7 @@ from .autocomplete import (AddressAutocomplete,
 from .base import PluginInfo
 from .callbacks import confirm_address, confirm_registration
 from .channel import ChannelCreateWizard, ChannelListView
-from .handlers import handler404, handler500
+from .handlers import handler400, handler403, handler404, handler500
 from .icons import channel_icon, plugin_icon
 from .login_logout import LoginView, LogoutView
 from .organization import *

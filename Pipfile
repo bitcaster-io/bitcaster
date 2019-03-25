@@ -76,6 +76,7 @@ django-crashlog = "*"
 django-filters = "*"
 django-autocomplete-light= "*"
 python-telegram = "*"
+sentry-sdk = "*"
 
 [dev-packages]
 bumpversion = "*"

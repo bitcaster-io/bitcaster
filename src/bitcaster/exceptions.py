@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.core.exceptions import PermissionDenied as _PermissionDenied
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from social_core.exceptions import AuthFailed
+
+from bitcaster.utils.language import repr_list
 
 
 class BitcasterError(Exception):
@@ -61,3 +64,14 @@ class MaxChannelError(Exception):
 
     def __str__(self):
         return f'Channel {self.channel} max allowed errors'
+
+
+class PermissionDenied(_PermissionDenied):
+    def __init__(self, view, obj, message=None):
+        self.view = view
+        self.target = obj
+        self.message = message or ('You do not have required permission %s' %
+                                   repr_list(view.permissions))
+
+    def __str__(self):
+        return self.message

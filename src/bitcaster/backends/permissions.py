@@ -30,24 +30,13 @@ class BitcasterBackend:
                 roles.append(Role.OWNER)
             if user_obj in obj.admins:
                 roles = [Role.ADMIN]
-
-            [perms.extend(list(PERM_MAP[x])) for x in roles]
-        elif isinstance(obj, Event):
-            org = obj.application.organization
-            if org.owner == user_obj or user_obj in org.owners:
-                roles = [Role.OWNER]
-            if user_obj in obj.application.admins:
-                roles = [Role.ADMIN]
-
-            [perms.extend(list(PERM_MAP[x])) for x in roles]
-
         elif isinstance(obj, Organization):
             if obj.owner == user_obj or user_obj in obj.owners:
                 roles += [Role.OWNER]
             if user_obj in obj.admins:
                 roles += [Role.ADMIN]
-            [perms.extend(list(PERM_MAP[x])) for x in roles]
-
+        for r in roles:
+            perms.extend(PERM_MAP[r])
         return set(perms)
 
     def has_perm(self, user_obj, perm, obj=None):
@@ -64,7 +53,8 @@ class BitcasterBackend:
             elif isinstance(obj, Application):
                 return (obj.organization.owner == user_obj or
                         user_obj in obj.organization.managers or
-                        user_obj in obj.owners)
+                        user_obj in obj.owners or
+                        user_obj in obj.admins)
             elif isinstance(obj, Event):
                 app = obj.application
                 org = app.organization

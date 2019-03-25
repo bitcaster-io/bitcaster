@@ -1,5 +1,6 @@
 {% extends "bitcaster/user/base.html" %}{% load gravatar crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
 {% block page %}
+    {{ form.media }}
     <div class="container-fluid">
         <div class="row col-12">
             <div class="container-fluid user-profile">
@@ -28,9 +29,9 @@
         </div>
     </div>
 {% endblock %}
-{% block js %}
-    {{ block.super }}
-    <script>
-        $("select").select2();
-    </script>
-{% endblock %}
+{#{% block js %}#}
+{#    {{ block.super }}#}
+{#    <script>#}
+{#        $("select").select2();#}
+{#    </script>#}
+{#{% endblock %}#}

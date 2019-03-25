@@ -48,6 +48,8 @@ urlpatterns = [path('api/', include(bitcaster.api.urls), name='api'),
                path('admin/', site.urls),
                ]
 
+handler400 = 'bitcaster.web.views.handler400'
+handler403 = 'bitcaster.web.views.handler403'
 handler404 = 'bitcaster.web.views.handler404'
 handler500 = 'bitcaster.web.views.handler500'
 

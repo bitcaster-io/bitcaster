@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 
 from bitcaster import messages
+from bitcaster.exceptions import PermissionDenied
 from bitcaster.web.decorators import authorized_or_403
 from bitcaster.web.templatetags.bitcaster import (verbose_name,
                                                   verbose_name_plural,)
@@ -14,8 +15,23 @@ logger = logging.getLogger(__name__)
 
 
 class SecuredViewMixin:
+    permissions = []
+    target = ''
+
+    # @lru_cache()
     def check_perms(self, request, obj=None, raise_exception=False):
-        return request.user.has_perm('', obj)
+        if self.permissions is None:
+            return True
+        if obj is None:
+            if not self.target:
+                raise ValueError('View must set `target` attribute')
+            obj = getattr(self, self.target)
+        for perm in self.permissions:
+            if request.user.has_perm(perm, obj):
+                return True
+        if raise_exception:
+            raise PermissionDenied(self, obj)
+        return False
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):

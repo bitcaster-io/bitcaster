@@ -7,12 +7,10 @@ from bitcaster.models.subscription import SubscriptionStatus
 from bitcaster.web.forms.user import UserSubscriptionForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseListView,)
-from bitcaster.web.views.organization.mixins import ApplicationListMixin
-
-from ..mixins import SidebarMixin
+from bitcaster.web.views.user.base import UserMixin
 
 
-class UserEventMixin:
+class UserEventMixin(UserMixin):
     model = User
     title = _('Events')
 
@@ -20,11 +18,11 @@ class UserEventMixin:
         return Event.objects.all()
 
 
-class UserEventListView(ApplicationListMixin, SidebarMixin, UserEventMixin, BitcasterBaseListView):
+class UserEventListView(UserEventMixin, BitcasterBaseListView):
     template_name = 'bitcaster/user/events.html'
 
 
-class UserEventSubcribe(ApplicationListMixin, UserEventMixin, BitcasterBaseCreateView):
+class UserEventSubcribe(UserEventMixin, BitcasterBaseCreateView):
     template_name = 'bitcaster/user/subscribe.html'
 
     form_class = UserSubscriptionForm

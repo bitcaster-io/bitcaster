@@ -8,12 +8,11 @@ from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
                                       BitcasterBaseToggleView,
                                       BitcasterBaseUpdateView,)
-from bitcaster.web.views.organization.mixins import ApplicationListMixin
 
-from ..mixins import SidebarMixin
+from .base import UserMixin
 
 
-class UserSubscriptionMixin:
+class UserSubscriptionMixin(UserMixin):
     model = Subscription
     title = _('Subscriptions')
 
@@ -21,11 +20,11 @@ class UserSubscriptionMixin:
         return self.request.user.subscriptions.all()
 
 
-class UserSubscriptionListView(ApplicationListMixin, SidebarMixin, UserSubscriptionMixin, BitcasterBaseListView):
+class UserSubscriptionListView(UserSubscriptionMixin, BitcasterBaseListView):
     template_name = 'bitcaster/user/subscriptions.html'
 
 
-class UserSubscriptionToggle(ApplicationListMixin, UserSubscriptionMixin, BitcasterBaseToggleView):
+class UserSubscriptionToggle(UserSubscriptionMixin, BitcasterBaseToggleView):
     def get_object(self, queryset=None):
         return self.get_queryset().get(id=self.kwargs['pk'])
 
@@ -50,7 +49,7 @@ class UserSubscriptionToggle(ApplicationListMixin, UserSubscriptionMixin, Bitcas
         return RedirectToRefererResponse(request)
 
 
-class UserSubscriptionRemove(ApplicationListMixin, UserSubscriptionMixin, BitcasterBaseDeleteView):
+class UserSubscriptionRemove(UserSubscriptionMixin, BitcasterBaseDeleteView):
 
     def get_success_url(self):
         return reverse('user-subscriptions', args=[self.selected_organization.slug])
@@ -59,6 +58,6 @@ class UserSubscriptionRemove(ApplicationListMixin, UserSubscriptionMixin, Bitcas
         return self.get_queryset().get(id=self.kwargs['pk'])
 
 
-class UserSubscriptionEdit(UserSubscriptionMixin, SidebarMixin, BitcasterBaseUpdateView):
+class UserSubscriptionEdit(UserSubscriptionMixin, BitcasterBaseUpdateView):
     def get_object(self, queryset=None):
         return self.get_queryset().get(id=self.kwargs['pk'])

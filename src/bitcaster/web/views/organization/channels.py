@@ -24,17 +24,14 @@ class ChannelMixin(OrganizationBaseView):
 
 class OrganizationChannels(ChannelMixin, ChannelListView):
     template_name = 'bitcaster/organization/channel/list.html'
-    # title = _('Channels')
 
 
 class OrganizationChannelUpdate(ChannelMixin, ChannelUpdateView):
     template_name = 'bitcaster/organization/channel/form.html'
-    # title = _('Edit Channel')
 
 
 class OrganizationChannelRemove(ChannelMixin, ChannelDeleteView):
     pass
-    # title = _('Remove Channel')
 
 
 class OrganizationChannelToggle(ChannelMixin, ChannelToggleView):

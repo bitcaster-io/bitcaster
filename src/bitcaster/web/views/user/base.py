@@ -19,7 +19,7 @@ __all__ = ('UserProfileView',)
 
 
 class UserMixin(SelectedOrganizationMixin, SidebarMixin, TitleMixin):
-    pass
+    permissions = None
 
 
 class UserHome(UserMixin, TemplateView):

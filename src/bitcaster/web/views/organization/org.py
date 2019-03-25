@@ -17,23 +17,24 @@ from bitcaster.models import Organization
 from bitcaster.utils.dashboard import check_channels, get_status
 from bitcaster.web.forms import OrganizationForm
 from bitcaster.web.views.mixins import TitleMixin
-from bitcaster.web.views.organization.mixins import ApplicationListMixin
+from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
 
 from ..base import BitcasterBaseDetailView, BitcasterBaseUpdateView
 
 logger = logging.getLogger(__name__)
 
 
-class OrganizationBaseView(TitleMixin, ApplicationListMixin):
+class OrganizationBaseView(TitleMixin, SelectedOrganizationMixin):
     model = Organization
     slug_url_kwarg = 'org'
+    target = 'selected_organization'
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
-        if not request.user.has_perm('org:configure', self.selected_organization):
-            raise PermissionDenied("'org:configure'permission needed")
+        if not request.user.has_perm('admin', self.selected_organization):
+            raise PermissionDenied("'admin' permission needed")
         return super().dispatch(request, *args, **kwargs)
 
 

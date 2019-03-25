@@ -2,11 +2,11 @@ from django.http import Http404
 from django.utils.functional import cached_property
 
 from bitcaster.models import Organization
-from bitcaster.state import state
 from bitcaster.web.views.mixins import SecuredViewMixin, SidebarMixin
 
 
 class SelectedOrganizationMixin(SidebarMixin, SecuredViewMixin):
+    permissions = ['manage_organization']
 
     def get_context_data(self, **kwargs):
         kwargs['organization'] = self.selected_organization
@@ -18,7 +18,6 @@ class SelectedOrganizationMixin(SidebarMixin, SecuredViewMixin):
             return None
         try:
             organization = Organization.objects.get(slug=self.kwargs['org'])
-            state.debug['organization'] = organization
             self.check_perms(self.request, organization, True)
         except Organization.DoesNotExist:
             raise Http404
@@ -31,12 +30,12 @@ class OrganizationListMixin(SecuredViewMixin):
         ret['organizations'] = Organization.objects.filter(members=self.request.user)
         return ret
 
-
-class ApplicationListMixin(SelectedOrganizationMixin):
-    def get_context_data(self, **kwargs):
-        ret = super().get_context_data(**kwargs)
-        if self.selected_organization:
-            ret['applications'] = self.selected_organization.applications.all()
-        else:
-            ret['applications'] = None
-        return ret
+#
+# class ApplicationListMixin(SelectedOrganizationMixin):
+#     def get_context_data(self, **kwargs):
+#         ret = super().get_context_data(**kwargs)
+#         if self.selected_organization:
+#             ret['applications'] = self.selected_organization.applications.all()
+#         else:
+#             ret['applications'] = None
+#         return ret

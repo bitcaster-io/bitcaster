@@ -1,4 +1,4 @@
-{% extends "bitcaster/base.html" %}{% load i18n crispy_forms_tags menu %}
+{% extends "bitcaster/base.html" %}{% load i18n crispy_forms_tags menu bc_permissions %}
 {% block bodyclass %}user{% endblock %}
 
 {% block page %}
@@ -44,12 +44,22 @@
         </li>
     </ul>
     <ul class="list-unstyled components sidebar-footer">
-        {% if perms.configure %}
+    {% check_permissions organization as org_perm %}
+        {% if org_perm.admin %}
             <li>
                 <a style="bottom:0;" href="{{ organization.urls.dashboard }}">
                     <i class="fas fa-sitemap"></i>{% trans "Admin" %} {{ organization }}</a>
             </li>
         {% endif %}
+        {% if user.is_manager %}
+            <li>
+                <a class="{{ view|menu_item:'logout' }}" href="{% url 'user-applications' organization.slug %}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    {% trans "Applications" %}
+                </a>
+            </li>
+        {% endif %}
+
         {% if user.is_superuser %}
             <li>
                 <a style="bottom:0;" href="{% url 'settings' %}">

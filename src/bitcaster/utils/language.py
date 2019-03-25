@@ -58,3 +58,7 @@ class classproperty(object):
 
     def __get__(self, instance, owner):
         return self.getter(owner)
+
+
+def repr_list(iterable):
+    return ', '.join("'%s'" % str(i) for i in iterable)
