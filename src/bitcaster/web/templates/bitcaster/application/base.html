@@ -1,38 +1,48 @@
-{% extends "bitcaster/base.html" %}{% load bitcaster bc_permissions i18n %}
+{% extends "bitcaster/base.html" %}{% load bitcaster bc_permissions i18n menu %}
 {% block bodyclass %}application{% endblock %}
 
 {% block left-menu %}
     <div class="text-center">{{ application }}</div>
     <ul class="list-unstyled components">
-        <li><a href="{% app-url 'app-dashboard' %}">
+        <li><a class="{{ view|menu_item:'dashboard' }}"
+               href="{% app-url 'app-dashboard' %}">
             <i class="fas fa-chart-bar"></i>{% trans "Dashboard" %}</a>
         </li>
-        <li><a href="{% app-url 'app-edit' %}">
+        <li><a class="{{ view|menu_item:'update' }}"
+               href="{% app-url 'app-edit' %}">
             <i class="fas fa-tools"></i>{% trans "Configuration" %}</a>
         </li>
-        <li><a href="{% app-url 'app-keys' %}">
+        <li><a class="{{ view|menu_item:'key' }}"
+               href="{% app-url 'app-keys' %}">
             <i class="fas fa-key"></i>{% trans "Keys" %}</a>
         </li>
-        <li><a href="{% app-url 'app-events' %}">
+        <li><a class="{{ view|menu_item:'event' }}"
+               href="{% app-url 'app-events' %}">
             <i class="fas fa-rss"></i>{% trans "Events" %}</a>
         </li>
         <li>
-            <a href="{{ application.urls.monitors }}">
+            <a class="{{ view|menu_item:'monitor' }}"
+               href="{{ application.urls.monitors }}">
                 <i class="fas fa-check-double"></i>{% trans "Monitors" %}</a>
         </li>
 
-        <li><a href="{% app-url 'app-subscriptions' %}">
+        <li><a class="{{ view|menu_item:'subscription' }}"
+               href="{% app-url 'app-subscriptions' %}">
             <i class="fas fa-bookmark"></i>{% trans "Subscriptions" %}</a>
         </li>
-        <li><a href="{{ application.urls.teams }}">
+        <li><a class="{{ view|menu_item:'teams' }}"
+               href="{{ application.urls.teams }}">
             <i class="fas fa-users"></i>{% trans "Teams" %}</a>
         </li>
     </ul>
     <ul class="list-unstyled components sidebar-footer">
+        {% check_permissions organization as org_perms %}
+        {% if org_perms.admin %}
         <li>
             <a style="bottom:0;" href="{{ organization.urls.dashboard }}">
                 <i class="fas fa-sitemap"></i>{{ organization }}</a>
         </li>
+        {% endif %}
         <li>
             <a style="bottom:0;" href="{% org-url "me" %}">
                 <i class="fas fa-home"></i>{% trans "User Home" %}</a>
