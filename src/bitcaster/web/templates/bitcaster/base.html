@@ -71,6 +71,15 @@
                     {% endif %}</div>
                 {% endblock messages %}
             {% endblock toggler %}
+            {% if alarms %}
+                <div id="alarmBar">
+                    <ul class="messagelist">{% for alarm in alarms %}
+                        <li class="alarm {% if alarm.tags %} alert-{{ alarm.tags }}{% endif %} show ">
+                            <span>{{ alarm|capfirst }}</span>
+                        </li>
+                    {% endfor %}</ul>
+                </div>
+            {% endif %}
             {% block page %}
 
             {% endblock page %}

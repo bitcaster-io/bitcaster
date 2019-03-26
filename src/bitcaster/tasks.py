@@ -19,8 +19,7 @@ def trigger_event(event_id, context, *, token=None, origin=None):
 
 
 def emit_event(event, context, origin=None, token=None, ignore_disabled=False):
-    from bitcaster.models import Channel
-    from bitcaster.models.counters import Counter, Occurence
+    from bitcaster.models import Channel, Counter, Occurence, DispatcherMetaData
     logger.debug('Event [{0.name} {0.enabled}] emit()'.format(event))
     total_success = 0
     total_failure = 0
@@ -33,6 +32,9 @@ def emit_event(event, context, origin=None, token=None, ignore_disabled=False):
     o = Occurence.objects.create(event=event, token=token, origin=origin)
     Counter.objects.initialize(event)
     for channel in Channel.objects.filter(id__in=ids, enabled=True):
+        if not DispatcherMetaData.objects.get(handler=channel.handler).enabled:
+            logger.error("Channel '%s' is using a disabled dispatcher" % channel)
+            continue
         try:
             logger.debug(f'Processing channel {channel}')
             successes, failures = channel.process_event(event, context)

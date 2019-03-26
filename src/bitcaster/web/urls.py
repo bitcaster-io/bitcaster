@@ -4,6 +4,8 @@ from django.conf import settings
 from django.urls import include, path
 from django.views.generic import TemplateView
 
+from bitcaster.web.views.settings import SettingsPlugin, SettingsPluginToggle
+
 from .views import (AddressAutocomplete, ApplicationCheckConfigView,
                     ApplicationCreate, ApplicationDashboard,
                     ApplicationDeleteView, ApplicationInvitationDelete,
@@ -21,15 +23,15 @@ from .views import (AddressAutocomplete, ApplicationCheckConfigView,
                     EventList, EventMessages, EventSubscriptionCreate,
                     EventSubscriptionDelete, EventSubscriptionInvite,
                     EventSubscriptionList, EventSubscriptionToggle, EventTest,
-                    EventToggle, EventUpdate, IndexView, InviteAccept,
-                    LoginView, LogoutView, MessageCreate, MessageDelete,
-                    MessageList, MessageUpdate, OrganizationApplications,
-                    OrganizationChannelCreate, OrganizationChannelDeprecate,
-                    OrganizationChannelRemove, OrganizationChannels,
-                    OrganizationChannelTest, OrganizationChannelToggle,
-                    OrganizationChannelUpdate, OrganizationChannelUsage,
-                    OrganizationCheckConfigView, OrganizationConfiguration,
-                    OrganizationDashboard, OrganizationInvite,
+                    EventToggle, EventUpdate, IndexView, LoginView, LogoutView,
+                    MessageCreate, MessageDelete, MessageList, MessageUpdate,
+                    OrganizationApplications, OrganizationChannelCreate,
+                    OrganizationChannelDeprecate, OrganizationChannelRemove,
+                    OrganizationChannels, OrganizationChannelTest,
+                    OrganizationChannelToggle, OrganizationChannelUpdate,
+                    OrganizationChannelUsage, OrganizationCheckConfigView,
+                    OrganizationConfiguration, OrganizationDashboard,
+                    OrganizationMemberInvite, OrganizationMemberInviteAccept,
                     OrganizationMembershipDelete, OrganizationMembershipEdit,
                     OrganizationMembershipList, OrgInviteDelete, OrgInviteSend,
                     PluginInfo, SettingsEmailView, SettingsLdapView,
@@ -63,6 +65,9 @@ urlpatterns = [
     path('settings/oauth/', SettingsOAuthView.as_view(), name='settings-oauth'),
     path('settings/sysinfo/', SettingsSystemInfo.as_view(), name='settings-sysinfo'),
     path('settings/ldap/', SettingsLdapView.as_view(), name='settings-ldap'),
+    path('settings/plugins/<str:type>/', SettingsPlugin.as_view(), name='settings-plugin'),
+    path('settings/plugins/<str:type>/<int:pk>/toggle/', SettingsPluginToggle.as_view(), name='settings-plugin-toggle'),
+
 
     # Social
     path('', include('social_django.urls', namespace='social')),
@@ -182,10 +187,10 @@ urlpatterns = [
     path('<slug:org>/member/<int:pk>/edit/', OrganizationMembershipEdit.as_view(), name='org-member-edit'),
     path('<slug:org>/member/<int:pk>/delete/', OrganizationMembershipDelete.as_view(), name='org-member-delete'),
 
-    path('<slug:org>/invite/accept/<int:pk>/<str:check>/', InviteAccept.as_view(), name='org-member-accept'),
+    path('<slug:org>/invite/accept/<int:pk>/<str:check>/', OrganizationMemberInviteAccept.as_view(), name='org-member-accept'),
     path('<slug:org>/invite/delete/<int:pk>/', OrgInviteDelete.as_view(), name='org-invitation-delete'),
     path('<slug:org>/invite/send/<int:pk>/', OrgInviteSend.as_view(), name='org-invitation-send'),
-    path('<slug:org>/invite/', OrganizationInvite.as_view(), name='org-invite'),
+    path('<slug:org>/invite/', OrganizationMemberInvite.as_view(), name='org-invite'),
 
     # path('<slug:org>/team/', OrganizationTeamList.as_view(), name='org-teams'),
     # path('<slug:org>/team/add/', OrganizationTeamCreate.as_view(), name='org-team-create'),

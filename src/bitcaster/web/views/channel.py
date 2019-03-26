@@ -11,9 +11,9 @@ from django.views.generic import RedirectView
 from formtools.wizard.views import SessionWizardView
 from strategy_field.utils import import_by_name
 
-from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
-from bitcaster.models import Address, AddressAssignment, Channel
+from bitcaster.models import (Address, AddressAssignment,
+                              Channel, DispatcherMetaData,)
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 from bitcaster.web.templatetags.markdown import markdown
 
@@ -74,7 +74,7 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
         context = super().get_context_data(form=form, **kwargs)
         handler_fqn = self.get_all_cleaned_data().get('handler', None)
         if self.steps.current == 'a':
-            context.update({'registry': dispatcher_registry,
+            context.update({'registry': DispatcherMetaData.objects.filter(enabled=True),
                             'selection': handler_fqn
                             })
         else:

@@ -8,13 +8,13 @@ class PluginManager(models.Manager):
         registry = self.model._meta.get_field('handler').registry
         for handler in registry:
             is_core = fqn(handler).startswith('bitcaster.')
-            self.update_or_create(fqn=fqn(handler),
-                                  defaults=dict(is_core=is_core,
-                                                handler=fqn(handler),
-                                                description=handler.help,
-                                                enabled=True,
-                                                version=handler.version)
-                                  )
+            self.get_or_create(fqn=fqn(handler),
+                               defaults=dict(is_core=is_core,
+                                             handler=fqn(handler),
+                                             description=handler.help,
+                                             enabled=True,
+                                             version=handler.version)
+                               )
         # if registry:
         self.exclude(handler__in=registry).update(enabled=False)
         return self.all()
@@ -32,6 +32,7 @@ class Plugin(models.Model):
     class Meta:
         app_label = 'bitcaster'
         abstract = True
+        ordering = ('fqn',)
 
     # def __str__(self):
     #     return self.fqn

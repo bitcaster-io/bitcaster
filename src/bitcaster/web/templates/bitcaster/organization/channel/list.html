@@ -1,4 +1,4 @@
-{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n %}
+{% extends "bitcaster/organization/base.html" %}
 {% load crispy_forms_tags i18n bc_assets bitcaster bc_permissions %}
 {% block page %}
     {% check_permissions organization %}
@@ -28,18 +28,18 @@
                 </td>
                 <td style="width:10%">
                 </td>
-                <td style="width:30%" class="nowrap formset-commands">
-                    <a class="btn btn-light"
-                       data-toggle="tooltip" title="configure"
-                       href="{{ channel.urls.edit }}">
-                        <i class="fas fa-wrench pointer"></i>
-                    </a>
+                <td style="width:40%" class="nowrap formset-commands">
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="delete"
                        href="{{ channel.urls.delete }}">
                         <i class="far fa-trash-alt pointer"></i>
                     </a>
-                    {% if channel.handler %}
+                    {% if channel.handler|dispatcher_enabled %}
+                        <a class="btn btn-light"
+                           data-toggle="tooltip" title="configure"
+                           href="{{ channel.urls.edit }}">
+                            <i class="fas fa-wrench pointer"></i>
+                        </a>
                         <a class="btn btn-light"
                            data-toggle="tooltip" title="{% if channel.enabled %}Disable{% else %}Enable{% endif %}"
                            href="{{ channel.urls.toggle }}">
@@ -64,6 +64,8 @@
                             data-remote="{% url "plugin-info" channel.handler.fqn %}"
                             href=".">
                             <i class="fa fa-info"></i></a>
+                    {% elif channel.handler %}
+                        Channel disabled by System Administrator
                     {% endif %}
                 </td>
             </tr>

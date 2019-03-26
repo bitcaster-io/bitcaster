@@ -40,7 +40,7 @@ class OrgInviteMixin(OrganizationBaseView):
         return self.selected_organization.invitations
 
 
-class OrganizationInvite(OrgInviteMixin, InvitationCreate):
+class OrganizationMemberInvite(OrgInviteMixin, InvitationCreate):
     form_class = OrganizationInvitationFormSet
     template_name = 'bitcaster/organization/members/invite.html'
     title = _('Invite people')
@@ -95,7 +95,7 @@ class OrganizationInvite(OrgInviteMixin, InvitationCreate):
 # return super(OrganizationInvite, self).form_valid(form)
 
 
-class InviteAccept(MessageUserMixin, CreateView):
+class OrganizationMemberInviteAccept(MessageUserMixin, CreateView):
     model = Invitation
     form_class = UserInviteRegistrationForm
     template_name = 'bitcaster/registration/user_welcome.html'
@@ -168,7 +168,7 @@ class InviteAccept(MessageUserMixin, CreateView):
         if User.objects.filter(email=self.invitation.target).exists():
             self.message_user(_('Email used'), messages.ERROR)
         if totp.verify(check, valid_window=config.INVITATION_EXPIRE):
-            return super(InviteAccept, self).get(request, **kwargs)
+            return super(OrganizationMemberInviteAccept, self).get(request, **kwargs)
 
         self.message_user(_('Invite expired'), messages.ERROR)
         return HttpResponseRedirect('/')

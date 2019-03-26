@@ -5,16 +5,20 @@ from constance import config
 from django.conf import settings
 from django.core.mail import get_connection, send_mail
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import FormView
+from django.views.generic import FormView, RedirectView
 
 from bitcaster import messages
+from bitcaster.middleware.exception import RedirectToRefererResponse
+from bitcaster.models import AgentMetaData, Channel, DispatcherMetaData, Monitor
+from bitcaster.utils import fqn
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsLdapForm,
                                                  SettingsMainForm,
                                                  SettingsOAuthForm,)
 
 from .base import BitcasterTemplateView
-from .mixins import SidebarMixin, SuperuserViewMixin, TitleMixin
+from .mixins import (MessageUserMixin, SidebarMixin,
+                     SuperuserViewMixin, TitleMixin,)
 
 logger = logging.getLogger(__name__)
 
@@ -78,9 +82,9 @@ class SettingsEmailView(SettingsBaseView):
             use_tls=kwargs['EMAIL_USE_TLS'],
             fail_silently=False)
         try:
-            prefix = kwargs.get("EMAIL_SUBJECT_PREFIX", None)
+            prefix = kwargs.get('EMAIL_SUBJECT_PREFIX', None)
             if prefix:
-                prefix += " "
+                prefix += ' '
             return send_mail(subject=f'{prefix}test message',
                              message='This is only a test message',
                              connection=conn,
@@ -152,3 +156,41 @@ class SettingsSystemInfo(SettingsTemplateMixin, ):
             settings=self._filter(settings),
             sysinfo=get_sysinfo(self.request),
             **kwargs)
+
+
+class SettingsPluginToggle(MessageUserMixin, RedirectView):
+    def get_queryset(self):
+        if self.kwargs['type'] == 'd':
+            return DispatcherMetaData.objects.all()
+        else:
+            return AgentMetaData.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_queryset().get(pk=self.kwargs['pk'])
+        obj.enabled = not obj.enabled
+        obj.save()
+        if obj.enabled:
+            self.message_user(f'{obj.fqn} enabled',
+                              level=messages.SUCCESS)
+        else:
+            if self.kwargs['type'] == 'd':
+                if Channel.objects.filter(handler=fqn(obj.handler)).exists():
+                    self.alarm('You have disabled a dispatecher used by one or more Channels')
+            else:
+                if Monitor.objects.filter(handler=fqn(obj.handler)).exists():
+                    self.alarm('You have disabled a agent used by one or more Monitor')
+            self.message_user(f'{obj.fqn} disabled',
+                              level=messages.WARNING)
+        return RedirectToRefererResponse(request)
+
+
+class SettingsPlugin(SettingsTemplateMixin, ):
+    template_name = 'plugins'
+    title = _('Plugins')
+
+    def get_context_data(self, **kwargs):
+        if self.kwargs['type'] == 'd':
+            plugin_list = DispatcherMetaData.objects.all()
+        else:
+            plugin_list = AgentMetaData.objects.all()
+        return super().get_context_data(plugin_list=plugin_list, **kwargs)

@@ -1,0 +1,33 @@
+{% extends "bitcaster/settings/base.html" %}{% load  i18n %}
+{% block page %}
+    <ul class="nav nav-tabs">
+        <li class="nav-item {% if view.kwargs.type == "d" %}active{% endif %}">
+            <a class="nav-link {% if view.kwargs.type == "d" %}active{% endif %}"
+               href="{% url "settings-plugin" 'd' %}">{% trans "Dispatchers" %}</a>
+        </li>
+        <li class="nav-item {% if view.kwargs.type == "a" %}active{% endif %}">
+            <a class="nav-link {% if view.kwargs.type == "a" %}active{% endif %}"
+               href="{% url "settings-plugin" 'a' %}">{% trans "Agents" %}</a>
+        </li>
+    </ul>
+    <div class="tab-content formset">
+        <table class="table table-striped table-hover col-12 channel-list">
+            <tbody>
+            {% for plugin in plugin_list.all %}
+                <tr>
+                <td class="col col-7">{{ plugin.fqn }}</td>
+                <td class="col col-1">{{ plugin.version }}</td>
+                <td class="col col-3">
+                    <a class="btn btn-light"
+                       data-toggle="tooltip" title="{% if plugin.enabled %}Disable{% else %}Enable{% endif %}"
+                       href="{% url "settings-plugin-toggle" view.kwargs.type plugin.pk     %}">
+                        <i class="fas {% if plugin.enabled %}fa-toggle-on green{% else %}fa-toggle-off red{% endif %}"></i>
+                    </a>
+                </td>
+            {% endfor %}
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

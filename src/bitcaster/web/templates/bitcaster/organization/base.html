@@ -1,30 +1,36 @@
-{% extends "bitcaster/base.html" %}{% load bc_permissions bitcaster i18n %}
+{% extends "bitcaster/base.html" %}{% load bc_permissions bitcaster i18n menu %}
 {% block bodyclass %}organization{% endblock %}
 {% block left-menu %}
     <div class="text-center">{{ organization }}</div>
     <ul class="list-unstyled components">
         <li>
-            <a href="{{ organization.urls.dashboard }}">
+            <a class="{{ view|menu_item:'dashboard' }}"
+               href="{{ organization.urls.dashboard }}">
                 <i class="fas fa-tachometer-alt"></i>{% trans "Dashboard" %}</a>
         </li>
         <li>
-            <a href="{{ organization.urls.config }}">
+            <a class="{{ view|menu_item:'organizationconfiguration' }}"
+                href="{{ organization.urls.config }}">
                 <i class="fas fa-cogs"></i>{% trans "Configuration" %}</a>
         </li>
         <li>
-            <a href="{{ organization.urls.channels }}">
+            <a class="{{ view|menu_item:'channel' }}"
+                href="{{ organization.urls.channels }}">
                 <i class="fas fa-broadcast-tower"></i>{% trans "Channels" %}</a>
         </li>
         <li>
-            <a href="{{ organization.urls.members }}">
+            <a class="{{ view|menu_item:'member' }}"
+               href="{{ organization.urls.members }}">
                 <i class="fas fa-users"></i>{% trans "Members" %}</a>
         </li>
         <li>
-            <a href="{{ organization.urls.applications }}">
+            <a class="{{ view|menu_item:'application' }}"
+               href="{{ organization.urls.applications }}">
                 <i class="fas fa-server"></i>{% trans "Applications" %}</a>
         </li>
         <li>
-            <a href="/api/">
+            <a class="{{ view|menu_item:'api' }}"
+               href="/api/">
                 <i class="fas fa-font"></i>{% trans "API" %}</a>
         </li>
     </ul>

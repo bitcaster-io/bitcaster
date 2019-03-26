@@ -3,8 +3,9 @@ from .channels import (OrganizationChannelCreate, OrganizationChannelDeprecate,
                        OrganizationChannelRemove, OrganizationChannels,
                        OrganizationChannelTest, OrganizationChannelToggle,
                        OrganizationChannelUpdate, OrganizationChannelUsage,)
-from .invitations import (InviteAccept, OrganizationInvite,
-                          OrgInviteDelete, OrgInviteSend,)
+from .invitations import (OrganizationMemberInvite,
+                          OrganizationMemberInviteAccept, OrgInviteDelete,
+                          OrgInviteSend,)
 from .members import (OrganizationMembershipDelete,
                       OrganizationMembershipEdit, OrganizationMembershipList,)
 from .org import (OrganizationCheckConfigView,

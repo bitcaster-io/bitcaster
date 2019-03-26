@@ -1,17 +1,18 @@
-#messageBar {
+#messageBar{
     float: right;
     position: absolute;
     z-index: 999;
     right: 17px;
     top: 85px;
-
+}
+#messageBar, #alarmBar{
     ul.messagelist {
         li {
             list-style: none;
         }
 
-        .alert {
-            &.error {
+        .alert,.alarm {
+            &.error, &.alert-error {
                 color: white;
                 background-color: #f2271e;
                 border-color: #eb204d;

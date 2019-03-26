@@ -2,13 +2,13 @@
 
 {% block wizard-content %}
     <div class="row">
-        {% for handler in registry %}
-            <div id="id_{{ handler.fqn|slugify }}" class="col-2 inline text-center align-content-center handler box p-2">
-                <a href="#" class="handler-selector" data-value="{{ handler.fqn }}">
+        {% for entry in registry %}
+            <div id="id_{{ entry.handler.fqn|slugify }}" class="col-2 inline text-center align-content-center handler box p-2">
+                <a href="#" class="handler-selector" data-value="{{ entry.handler.fqn }}">
                     <div>
-                        <img src="{% url "plugin-icon" handler.fqn %}">
+                        <img src="{% url "plugin-icon" entry.handler.fqn %}">
                         <div>
-                            <label>{{ handler.name }}</label>
+                            <label>{{ entry.handler.name }}</label>
                         </div>
 {#                        <div class="plugin-info">#}
 {#                            <a rel="modal:open" href="{% url "plugin-info" handler.fqn %}">#}

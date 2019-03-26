@@ -47,7 +47,7 @@
     {% check_permissions organization as org_perm %}
         {% if org_perm.admin %}
             <li>
-                <a class="{{ view|menu_item:'home' }}" style="bottom:0;" href="{{ organization.urls.dashboard }}">
+                <a class="{{ view|menu_item:'organization' }}" style="bottom:0;" href="{{ organization.urls.dashboard }}">
                     <i class="fas fa-sitemap"></i>{% trans "Admin" %} {{ organization }}</a>
             </li>
         {% endif %}
