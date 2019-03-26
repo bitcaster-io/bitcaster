@@ -198,16 +198,5 @@
         gtag('version', '{{ bitcaster_version }}');
     </script>
 {% endif %}
-{% if settings.SENTRY_ENABLED %}
-    <script src="https://cdn.ravenjs.com/3.23.1/raven.min.js"></script>
-
-    <script>
-        Raven.config("{{ settings.SENTRY_JDSN }}").install();
-        function handleRouteError(err) {
-            Raven.captureException(err);
-            Raven.showReportDialog();
-        }
-    </script>
-{% endif %}
 </body>
 </html>

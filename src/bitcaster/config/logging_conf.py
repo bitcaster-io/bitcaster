@@ -24,7 +24,8 @@ LOGGING = {
     'handlers': {
         'sentry': {
             'level': 'INFO',  # To capture more than ERROR, change to WARNING, INFO, etc.
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'class': 'logging.NullHandler',
+            # 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
         },
         'console': {
             # 'level': 'DEBUG',

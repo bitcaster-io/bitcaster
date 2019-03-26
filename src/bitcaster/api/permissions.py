@@ -7,9 +7,9 @@ from rest_framework.authentication import (BaseAuthentication,
                                            SessionAuthentication,
                                            get_authorization_header,)
 from rest_framework.permissions import BasePermission, IsAuthenticated
+from sentry_sdk import capture_exception
 
 from bitcaster.models import ApiAuthToken, ApplicationTriggerKey, User
-from bitcaster.sentry import client
 
 # class SameUser(BasePermission):
 #     def has_object_permission(self, request, view, obj):
@@ -23,14 +23,14 @@ class EventTriggerPermission(BasePermission):
         try:
             return request.key.application == view.selected_application
         except Exception:
-            client.captureException()
+            capture_exception()
             return False
 
     def has_object_permission(self, request, view, obj):
         try:
             return request.key.all_events or request.key.events.filter(id=obj.id).exists()
         except Exception:
-            client.captureException()
+            capture_exception()
             return False
 
 

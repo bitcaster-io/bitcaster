@@ -1,21 +1,25 @@
-.. Bitcaster documentation master file, created by
-   sphinx-quickstart.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. include:: _globals
+.. _index:
 
+=====================================
 Welcome to Bitcaster's documentation!
-====================================================================
+=====================================
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   install
-   deploy
-   docker_ec2
-   tests
 
+    overview.rst
+    terminology.rst
+    sections.rst
+    security.rst
+    dispatchers.rst
+    writing_plugins.rst
+    contribute.rst
+    glossary.rst
+    faq.rst
 
 
 Indices and tables

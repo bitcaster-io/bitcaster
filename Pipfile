@@ -56,7 +56,6 @@ pycrypto = "*"
 pyotp = "*"
 python-redis-lock = {extras = ["django"]}
 pyyaml = ">=4.2b1"
-raven = "*"
 redis = "*"
 requests-oauthlib = "*"
 skpy = "*"
@@ -104,6 +103,9 @@ selenium = "*"
 tox = "*"
 vcrpy = "*"
 transifex-client = "*"
+sphinx = "*"
+recommonmark = "*"
+sphinxbootstrap4theme = "*"
 
 [requires]
 python_version = "3.6"

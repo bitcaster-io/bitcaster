@@ -4,9 +4,10 @@ PYTHONPATH:=${PWD}/tests/:${PWD}:${PYTHONPATH}
 SUBDIRS:=$(wildcard plugins/bitcaster-*)
 BITCASTER_DATABASE_HOST?=127.0.0.1
 BITCASTER_DATABASE_PORT?=5432
+BUILDDIR?=./~build
 
 .mkbuilddir:
-	mkdir -p ${BUILDDIR}
+	@mkdir -p ${BUILDDIR}
 
 help:
 	@echo "develop                 setup development environment"
@@ -69,8 +70,8 @@ fullclean:
 
 
 docs: .mkbuilddir
-	mkdir -p ${BUILDDIR}/docs
-	sphinx-build -aE docs/ ${BUILDDIR}/docs
+	@mkdir -p ${BUILDDIR}/docs
+	@sphinx-build -aE docs/ ${BUILDDIR}/docs
 ifdef BROWSE
 	firefox ${BUILDDIR}/docs/index.html
 endif

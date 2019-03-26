@@ -495,12 +495,8 @@ if SENTRY_ENABLED:
     from sentry_sdk.integrations.django import DjangoIntegration
 
     sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()],
+                    release=bitcaster.get_full_version(),
                     debug=True)
-    MIDDLEWARE.insert(0,
-                      'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware')
-    INSTALLED_APPS += ['raven.contrib.django.raven_compat', ]
-    RAVEN_CONFIG = {'dsn': SENTRY_DSN, 'release': bitcaster.get_full_version(),
-                    'debug': True}
 
 # OAUTH2
 GOOGLE_APP_ID = env.str('GOOGLE_APP_ID', '')
