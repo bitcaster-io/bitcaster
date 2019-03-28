@@ -496,7 +496,7 @@ if SENTRY_ENABLED:
 
     sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()],
                     release=bitcaster.get_full_version(),
-                    debug=True)
+                    debug=DEBUG)
 
 # OAUTH2
 GOOGLE_APP_ID = env.str('GOOGLE_APP_ID', '')

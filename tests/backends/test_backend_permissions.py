@@ -6,7 +6,7 @@ from bitcaster.backends import BitcasterBackend
 from bitcaster.dispatchers import Email
 from bitcaster.framework.db.fields import Role
 from bitcaster.models import OrganizationMember
-from bitcaster.security import OWNER_PERMISSIONS, PERMISSIONS
+from bitcaster.security import ADMIN_PERMISSIONS, OWNER_PERMISSIONS
 from bitcaster.utils.tests.factories import TeamFactory, UserFactory, faker
 
 pytestmark = pytest.mark.django_db
@@ -84,8 +84,6 @@ def test_get_all_permisssions(event1, event2, admin, user3, admin1, subscriber11
 
     assert backend.get_all_permissions(owner1, org1) == OWNER_PERMISSIONS
     assert backend.get_all_permissions(owner1, app1) == OWNER_PERMISSIONS
-    assert backend.get_all_permissions(owner1, event1) == OWNER_PERMISSIONS
 
     assert backend.get_all_permissions(admin1, org1) == set()
-    assert backend.get_all_permissions(admin1, app1) == PERMISSIONS
-    assert backend.get_all_permissions(admin1, event1) == PERMISSIONS
+    assert backend.get_all_permissions(admin1, app1) == ADMIN_PERMISSIONS

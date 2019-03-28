@@ -3,6 +3,7 @@ import logging
 
 from django import forms
 from django.forms import inlineformset_factory
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
@@ -12,11 +13,33 @@ from bitcaster.web.forms import MessageForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,
                                       BitcasterBaseUpdateView,)
+from bitcaster.web.views.mixins import MessageUserMixin
 
 from ..mixins import SelectedApplicationMixin
-from .mixins import EventFormMixin, EventMixin, MessageFormMixin, MessageMixin
+from .event import EventFormMixin, EventMixin
 
 logger = logging.getLogger(__name__)
+
+
+class MessageMixin(SelectedApplicationMixin, MessageUserMixin):
+    model = Message
+
+    def get_success_url(self):
+        return reverse('app-messages',
+                       args=[self.selected_organization.slug,
+                             self.selected_application.slug])
+
+    def get_queryset(self):
+        return self.selected_application.messages.all()
+
+
+class MessageFormMixin:
+    form_class = MessageForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'application': self.selected_application})
+        return kwargs
 
 
 class MessageInlineFormSet(forms.BaseInlineFormSet):
@@ -59,6 +82,7 @@ class MessageDelete(MessageMixin, BitcasterBaseDeleteView):
 
 class EventMessages(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/events/messages.html'
+
     # title = 'Messages'
 
     # def get_context_data(self, **kwargs):

@@ -2,6 +2,7 @@
 import logging
 
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 from rest_framework.serializers import Serializer
@@ -9,13 +10,53 @@ from strategy_field.utils import import_by_name
 
 from bitcaster import messages
 from bitcaster.models import Event, Message
+from bitcaster.web.forms import EventForm
+from bitcaster.web.views.application.mixins import SelectedApplicationMixin
 from bitcaster.web.views.base import (
     BitcasterBaseCreateView, BitcasterBaseDeleteView, BitcasterBaseDetailView,
     BitcasterBaseListView, BitcasterBaseUpdateView, MessageUserMixin,)
 
-from .mixins import EventFormMixin, EventMixin
-
 logger = logging.getLogger(__name__)
+
+
+class EventMixin(SelectedApplicationMixin):
+    model = Event
+
+    def get_success_url(self):
+        if 'save_edit_messages' in self.request.POST:
+            return reverse('app-event-messages',
+                           args=[self.selected_organization.slug,
+                                 self.selected_application.slug,
+                                 self.object.pk]
+                           )
+        else:
+            return reverse('app-events',
+                           args=[self.selected_organization.slug,
+                                 self.selected_application.slug])
+
+    def get_queryset(self):
+        return self.selected_application.events.all()
+
+
+class SingleEventMixin(EventMixin):
+    def get_context_data(self, **kwargs):
+        kwargs['event'] = self.selected_event
+        return super().get_context_data(selected_event=self.selected_event,
+                                        **kwargs)
+
+    @cached_property
+    def selected_event(self):
+        return Event.objects.get(application=self.selected_application,
+                                 id=self.kwargs['event'])
+
+
+class EventFormMixin:
+    form_class = EventForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'application': self.selected_application})
+        return kwargs
 
 
 class EventList(EventMixin, BitcasterBaseListView):

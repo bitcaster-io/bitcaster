@@ -8,11 +8,10 @@ from bitcaster.framework.db.fields import Role
 from bitcaster.web.forms.subscription import (EventSubscriptionForm,
                                               InviteFormSet,
                                               SubscriptionFormSet,)
+from bitcaster.web.views.application.events.event import SingleEventMixin
 from bitcaster.web.views.base import (
     BitcasterBaseDeleteView, BitcasterBaseListView, BitcasterBaseToggleView,
     MessageUserMixin,)
-
-from .mixins import SingleEventMixin
 
 
 class EventSubscriptionList(SingleEventMixin, BitcasterBaseListView):

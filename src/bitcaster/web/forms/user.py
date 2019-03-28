@@ -3,8 +3,9 @@ import logging
 
 from constance import config
 from crispy_forms.helper import FormHelper
-from dal_select2.widgets import ModelSelect2, Select2
+from dal_select2.widgets import Select2
 from django import forms
+from django.conf import settings
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (
     AuthenticationForm as _AuthenticationForm,
@@ -14,7 +15,9 @@ from django.forms import BaseInlineFormSet, PasswordInput
 from django.forms.utils import ErrorList
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django_countries import countries
 from rest_framework.exceptions import ValidationError as DRFValidationError
+from timezone_field import TimeZoneField
 
 from bitcaster.framework.db.fields import Role
 from bitcaster.mail import send_mail_by_template
@@ -66,9 +69,9 @@ class UserProfileForm(forms.ModelForm):
     friendly_name = forms.CharField(label=_('Friendly Name'), required=False)
     name = forms.CharField(label=_('Full Name'), required=False)
     email = forms.EmailField()
-    timezone = forms.ChoiceField(widget=Select2())
-    # timezone = ModelSelect2()
-    country = ModelSelect2()
+    timezone = forms.ChoiceField(choices=TimeZoneField.CHOICES, widget=Select2())
+    language = forms.ChoiceField(choices=settings.LANGUAGES, widget=Select2())
+    country = forms.ChoiceField(choices=countries, widget=Select2())
 
     class Meta:
         model = User

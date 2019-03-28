@@ -43,7 +43,7 @@ def test_clean(channel1):
     c = Channel(enabled=True, handler=fqn(Gmail))
     with pytest.raises(ValidationError) as e:
         c.clean()
-    assert e.value.message == 'Channel must be configured'
+    assert e.value.message == 'Configure channel before enable it'
 
     c = Channel(enabled=True, handler=fqn(Gmail), config=Gmail.get_full_config({}))
     with pytest.raises(ValidationError) as e:

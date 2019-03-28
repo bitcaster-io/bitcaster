@@ -18,9 +18,9 @@ class ApplicationCreateForm(forms.ModelForm):
 
     def save(self, commit=True):
         obj = super().save(commit)
-        Team.objects.create(application=obj, name='Admins', role=Role.OWNER)
-        Team.objects.create(application=obj, name='Managers', role=Role.ADMIN)
-        Team.objects.create(application=obj, name='Subscribers', role=Role.SUBSCRIBER)
+        Team.objects.create(application=obj, manager=obj.owner, name='Admins', role=Role.OWNER)
+        Team.objects.create(application=obj, manager=obj.owner, name='Managers', role=Role.ADMIN)
+        Team.objects.create(application=obj, manager=obj.owner, name='Subscribers', role=Role.SUBSCRIBER)
 
         return obj
 

@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 
 from bitcaster.models import ApplicationTriggerKey, Event
 
@@ -18,6 +19,11 @@ class ApplicationTriggerKeyForm(forms.ModelForm):
             self.instance.application = self.application
 
         return super().save(commit)
+
+    def clean_name(self):
+        value = self.cleaned_data['name']
+        if self.application.events.filter(name=value).exists():
+            raise ValidationError('Key with this Name already exists.')
 
     class Meta:
         model = ApplicationTriggerKey

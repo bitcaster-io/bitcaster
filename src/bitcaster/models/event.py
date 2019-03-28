@@ -42,7 +42,7 @@ class Event(ReverseWrapperMixin, AbstractModel):
 
     class Meta:
         app_label = 'bitcaster'
-        unique_together = ('application', 'name')
+        unique_together = (('application', 'name'),)
         ordering = ('name', 'id')
         verbose_name = _('Event')
         verbose_name_plural = _('Events')
@@ -53,12 +53,6 @@ class Event(ReverseWrapperMixin, AbstractModel):
 
     def __str__(self):
         return f'{self.application.name}:{self.name}'
-
-    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-    #     super().save(force_insert, force_update, using, update_fields)
-    #
-    # def clean(self):
-    #     super().clean()
 
     @cached_property
     def valid_channels(self):

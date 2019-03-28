@@ -4,6 +4,7 @@ import logging
 from django import forms
 from django.contrib.postgres.forms import JSONField
 # from django.forms import Form, formset_factory, ModelForm
+from django.core.exceptions import ValidationError
 from jsoneditor.forms import JSONEditor
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRFValidationError
@@ -34,34 +35,25 @@ class EventForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)
-        # self.arg_formset_class = forms.formset_factory(ArgumentLineForm,
-        #                                                extra=0)
         super().__init__(*args, **kwargs)
-        # if self.instance and self.instance.arguments:
-        #     fields_def = self.instance.arguments['fields']
-        #     self.arguments = self.arg_formset_class(initial=fields_def)
-        # elif self.data:
-        #     self.arguments = self.arg_formset_class(data=self.data)
-        # else:
-        #     self.arguments = self.arg_formset_class()
+
+    def _get_validation_exclusions(self):
+        exclude = super()._get_validation_exclusions()
+        exclude.remove('application')
+        return exclude
+
+    def clean_name(self):
+        value = self.cleaned_data['name']
+        if self.application.events.filter(name=value).exists():
+            raise ValidationError('Event with this Name already exists.')
 
     def full_clean(self):
+        self.instance.application = self.application
         super().full_clean()
-
-    # def is_valid(self):
-    #     self.arguments = self.arg_formset_class(data=self.data)
-    #     return super().is_valid() and self.arguments.is_valid()
 
     def save(self, commit=True):
         if self.application:
             self.instance.application = self.application
-        # arguments = {'fields': []}
-        # for form in self.arguments:
-        #     if form.cleaned_data:
-        #         arguments['fields'].append({'name': form.cleaned_data['name'],
-        #                                     'type': form.cleaned_data['type'],
-        #                                     })
-        # self.instance.arguments = arguments
         return super().save(commit)
 
 

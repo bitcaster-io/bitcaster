@@ -85,6 +85,9 @@ EXPOSE 8000
 #    pip uninstall pipenv
 
 RUN apk add --no-cache --virtual .run-deps \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+        gosu \
         libpq \
         libxslt \
         libzmq \
@@ -101,14 +104,9 @@ COPY docker/circus.conf /etc/circus.conf
 
 
 RUN addgroup --gid 1024 bitcaster \
-    && adduser --disabled-password --ingroup bitcaster -S bitcaster \
-    && mkdir -p /backups /var/bitcaster \
-    && chown :1024 /var/bitcaster/ /backups \
-    && chmod 775 /var/bitcaster/ /backups \
-    && chmod g+s /var/bitcaster/ /backups
+    && adduser --disabled-password --ingroup bitcaster -S bitcaster
 
 WORKDIR /var/bitcaster
-USER bitcaster
 
 RUN django-admin collectstatic
 
