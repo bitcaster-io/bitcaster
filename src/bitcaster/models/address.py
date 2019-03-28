@@ -26,7 +26,7 @@ class Address(models.Model):
     verified = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('user', 'label'),
+        unique_together = (('user', 'label'),)
         app_label = 'bitcaster'
 
     def __str__(self):
@@ -34,7 +34,7 @@ class Address(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__address = self.address
+        self.__address = str(self.address)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.pk and (self.address != self.__address):

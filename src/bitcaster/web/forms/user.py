@@ -36,16 +36,6 @@ class AuthenticationForm(_AuthenticationForm):
     password = forms.CharField(widget=PasswordInput(attrs={'autocomplete': 'current-password'}))
 
 
-# class UserChangeForm(_UserChangeForm):
-#     last_password_change = forms.DateTimeField(disabled=True, required=False)
-#     date_joined = forms.DateTimeField(disabled=True, required=False)
-#     last_login = forms.DateTimeField(disabled=True, required=False)
-#
-#     class Meta:
-#         model = User
-#         exclude = ('user_permissions', 'groups')
-
-
 class UserInviteRegistrationForm(forms.ModelForm):
     email = forms.EmailField(disabled=True)
 
@@ -198,13 +188,6 @@ class AddressForm(forms.ModelForm):
                          use_required_attribute, renderer)
         self.helper = FormHelper()
         self.helper.form_show_labels = False
-
-    # def has_changed(self):
-    #     return super().has_changed()
-    #
-    # @cached_property
-    # def changed_data(self):
-    #     return super().changed_data
 
 
 class AddressAssignmentForm(forms.ModelForm):
