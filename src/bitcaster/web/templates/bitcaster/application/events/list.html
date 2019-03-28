@@ -22,41 +22,41 @@
                 <td style="width:40%" class="nowrap formset-commands">
                     <a class="btn btn-light {% if not event.enabled_channels.exists %}red{% endif %}"
                        data-toggle="tooltip" title="configure"
-                       href="{{ event.pk }}/edit/">
+                       href="{{ event.urls.edit }}">
                         <i class="fas fa-wrench pointer"></i>
                     </a>
                     <a class="btn btn-light {% if not event.valid_channels.exists %}red{% endif %}"
                        data-toggle="tooltip" title="messages"
-                       href="{{ event.pk }}/messages/">
+                       href="{{ event.urls.messages }}">
                         <i class="far fa-comment pointer"></i>
                     </a>
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="{% if event.enabled %}Disable{% else %}Enable{% endif %}"
-                       href="{{ event.pk }}/toggle/">
-                        <i class="fas {% if event.enabled %}fa-toggle-off green{% else %}fa-toggle-on red{% endif %}"></i>
+                       href="{{ event.urls.toggle }}">
+                        <i class="fas {% if event.enabled %}fa-toggle-on green{% else %}fa-toggle-off red{% endif %}"></i>
                     </a>
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="delete"
-                       href="{{ event.pk }}/delete/">
+                       href="{{ event.urls.delete }}">
                         <i class="far fa-trash-alt"></i>
                     </a>
 
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="test"
-                       href="{{ event.pk }}/test/">
+                       href="{{ event.urls.test }}">
                         <i class="fas fa-terminal"></i>
                     </a>
 
 
-                    <a class="btn btn-light"
-                       data-toggle="tooltip" title="subscriptions"
-                       href="{{ event.pk }}/subscriptions/">
-                        <i class="fas fa-user"></i>
-                    </a>
+{#                    <a class="btn btn-light"#}
+{#                       data-toggle="tooltip" title="subscriptions"#}
+{#                       href="{{ event.urls.subscriptions }}">#}
+{#                        <i class="fas fa-user"></i>#}
+{#                    </a>#}
 
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="keys"
-                       href="{{ event.pk }}/keys/">
+                       href="{{ event.urls.keys }}">
                         <i class="fas fa-key"></i>
                     </a>
 

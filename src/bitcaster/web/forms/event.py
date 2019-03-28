@@ -44,8 +44,14 @@ class EventForm(forms.ModelForm):
 
     def clean_name(self):
         value = self.cleaned_data['name']
-        if self.application.events.filter(name=value).exists():
+        if self.instance.pk:
+            qs = self.application.events.filter(name=value).exclude(id=self.instance.pk)
+        else:
+            qs = self.application.events.filter(name=value)
+
+        if qs.exists():
             raise ValidationError('Event with this Name already exists.')
+        return value
 
     def full_clean(self):
         self.instance.application = self.application

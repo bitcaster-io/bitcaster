@@ -20,7 +20,7 @@ class EventSubscriptionList(SingleEventMixin, BitcasterBaseListView):
     # title = 'Subscribers'
 
     def get_context_data(self, **kwargs):
-        kwargs['pending'] = self.selected_organization.memberships.filter(event=self.selected_event)
+        # kwargs['pending'] = self.selected_organization.memberships.filter(event=self.selected_event)
         return super().get_context_data(**kwargs)
 
 
@@ -74,7 +74,7 @@ class EventSubscriptionInvite(SingleEventMixin, MessageUserMixin, FormView):
     form_class = InviteFormSet
 
     def get_object(self):
-        return self.get_queryset().get(pk=self.kwargs['pk'])
+        return self.get_queryset().get(pk=self.kwargs['event'])
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
