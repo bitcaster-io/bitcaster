@@ -88,15 +88,15 @@ class Invitation(models.Model):
             self.organization = self.application.organization
         elif self.application:
             self.organization = self.application.organization
-        elif self.role:
-            self.team = None
-            self.application = None
-            if not self.organization:
-                raise ValidationError('Organization is mandatory')
+        # elif self.role:
+        #     self.team = None
+        #     self.application = None
+        #     if not self.organization:
+        #         raise ValidationError('Organization is mandatory')
         elif self.organization:
             pass
         else:
-            raise ValidationError('Cannoo save an Invitation withoune one of event,team,role,application,organization')
+            raise ValidationError('Cannot save an Invitation without one of event,team,application,organization')
         super().save(force_insert, force_update, using, update_fields)
     # def save(self, force_insert=False, force_update=False, using=None,
     #          update_fields=None):

@@ -15,12 +15,14 @@ def pytest_configure(config):
     root = here.parent
     sys.path.insert(0, str(here / 'extras'))
     sys.path.insert(0, str(root / 'src'))
-    os.environ.setdefault('BITCASTER_CONF', str(here / '.conf'))
+    # os.environ.setdefault('BITCASTER_CONF', str(here / '.conf'))
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings')
     os.environ['CELERY_TASK_ALWAYS_EAGER'] = 'True'
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     os.environ['RECAPTCHA_DISABLE'] = 'True'
     os.environ['BITCASTER_LOG_LEVEL'] = 'ERROR'
+    os.environ['BITCASTER_SENTRY_ENABLED'] = '0'
+    os.environ['BITCASTER_SENTRY_DSN'] = ''
 
     config.SITE_URL = 'http://testserver/'
     from bitcaster.config.environ import env
@@ -152,6 +154,15 @@ def message1(event1, channel1):
 def message2(event2):
     from bitcaster.utils.tests.factories import MessageFactory
     return MessageFactory(event=event2)
+
+
+@pytest.fixture
+def assignment1(user1, channel1):
+    from bitcaster.utils.tests.factories import AddressAssignmentFactory, AddressFactory
+    return AddressAssignmentFactory(channel=channel1,
+                                    user=user1,
+                                    address=AddressFactory(user=user1,
+                                                           address='address'))
 
 
 @pytest.fixture

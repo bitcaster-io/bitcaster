@@ -10,3 +10,7 @@ class TestDispatcherGmail(DispatcherBaseTest):
     TARGET = ConsoleDispatcher
     CONFIG = {}
     RECIPIENT = 'unused'
+
+    def test_misconfigured(self, application1):
+        # ConsoleDispatcher does not have config
+        pass

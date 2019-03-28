@@ -18,3 +18,7 @@ def test_get_attr():
 
     assert get_attr(a, 'b.c.y', None) is None
     assert get_attr(a, 'b.c.y', 1) == 1
+
+
+def repr_list():
+    assert [1, 2, 3] == "'1', '2', '3'"

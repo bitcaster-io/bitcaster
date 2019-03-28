@@ -7,9 +7,11 @@ from django.template import Library
 from rest_framework.fields import Field
 from rest_framework.serializers import Serializer
 
-from bitcaster.models import Application, Organization, User
+from bitcaster.dispatchers import Email
+from bitcaster.models import Application, DispatcherMetaData, Organization, User
 from bitcaster.web.templatetags.bitcaster import (app_reverse,
-                                                  channel_submit_row, httpiefy,
+                                                  channel_submit_row,
+                                                  dispatcher_enabled, httpiefy,
                                                   jsonify, order_formset,
                                                   org_reverse, render_field,
                                                   render_serializer,
@@ -33,7 +35,7 @@ def test_verbose_name():
     assert verbose_name(User())
 
 
-@register.filter()
+# @register.filter()
 def test_verbose_name_plural():
     assert verbose_name_plural(User())
 
@@ -76,6 +78,12 @@ def test_render_field():
     field = serializer['test_field']
 
     assert render_field(field, {})
+
+
+@pytest.mark.django_db
+def test_dispatcher_enable():
+    DispatcherMetaData.objects.inspect()
+    assert dispatcher_enabled(Email)
 
 #
 # @register.simple_tag(takes_context=True)

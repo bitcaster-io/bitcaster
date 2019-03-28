@@ -21,6 +21,12 @@ def test_user_addresses(django_app, organization1, subscriber1):
     assert subscriber1.addresses.filter(label='label1', address='value1').exists()
 
 
+def test_user_addresses_info(django_app, organization1, assignment1, ):
+    url = reverse('user-address-info', args=[organization1.slug, assignment1.pk])
+    res = django_app.get(url, user=assignment1.user)
+    assert res
+
+
 def test_user_addresses_duplicate(django_app, organization1, subscriber1):
     # UserAddressesView
     url = reverse('user-address', args=[organization1.slug])

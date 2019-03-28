@@ -19,3 +19,6 @@ class TestDispatcherTwitter(DispatcherBaseTest):
               'access_token_secret': os.environ.get('TEST_TWITTER_TOKEN_SECRET'),
               }
     RECIPIENT = os.environ.get('TEST_TWITTER_RECIPIENT')
+
+    def test_get_recipient_address_alternative(self, dispatcher):
+        dispatcher.get_recipient_address('@sax')

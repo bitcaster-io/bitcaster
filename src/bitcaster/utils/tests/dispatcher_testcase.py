@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from bitcaster.exceptions import PluginValidationError
 from bitcaster.models import Message
 from bitcaster.utils.tests.factories import ChannelFactory, SubscriptionFactory
 
@@ -22,6 +23,11 @@ class DispatcherBaseTest:
     def subscription(self, dispatcher):
         return SubscriptionFactory(channel=ChannelFactory(handler=dispatcher),
                                    address=self.RECIPIENT)
+
+    def test_misconfigured(self, application1):
+        target = self.TARGET(Mock(application=application1, config=None))
+        with pytest.raises(PluginValidationError):
+            assert target.config
 
     def test_create(self):
         base = self.TARGET(Mock())

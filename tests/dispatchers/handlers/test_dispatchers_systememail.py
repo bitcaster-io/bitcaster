@@ -34,3 +34,7 @@ class TestDispatcherSystemEmail(DispatcherBaseTest):
               'tls': os.environ.get('TEST_EMAIL_TLS', '1'),
               'sender': 'sender@sender.com'}
     RECIPIENT = os.environ.get('TEST_EMAIL_RECIPIENT')
+
+    def test_misconfigured(self, application1):
+        # SystemEmail does not have config
+        pass
