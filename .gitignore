@@ -17,3 +17,4 @@ bitcaster.egg-info
 !.secrets.baseline
 !.travis.yml
 ghostdriver.log
+!.circleci
