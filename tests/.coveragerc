@@ -38,19 +38,18 @@ exclude_lines =
 
 
 ignore_errors = True
-omit =
-    src/bitcaster/utils/tests/*
-    src/bitcaster/utils/ddt.py
-    src/bitcaster/utils/ddt.py
-    src/bitcaster/cli/*
-    src/bitcaster/config/settings.py
-    src/bitcaster/config/logging_conf.py
-    src/bitcaster/config/urls.py
+#omit =
+#    src/bitcaster/utils/tests/*
+#    src/bitcaster/utils/ddt.py
+#    src/bitcaster/cli/*
+#    src/bitcaster/config/settings.py
+#    src/bitcaster/config/logging_conf.py
+#    src/bitcaster/config/urls.py
 
 include =
     src/bitcaster/agents/*
     src/bitcaster/config/*
-    src/bitcaster/dispatchers/*
+#    src/bitcaster/dispatchers/*
     src/bitcaster/framework/*
     src/bitcaster/middleware/*
     src/bitcaster/models/*

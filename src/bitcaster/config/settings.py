@@ -7,6 +7,8 @@ from django_regex.utils import RegexList
 
 from bitcaster.config.environ import env
 
+from . import logging_conf  # noqa
+
 logger = logging.getLogger(__name__)
 
 PACKAGE_DIR = Path(__file__).parent.parent  # bitcaster/
@@ -33,7 +35,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'jsoneditor',
     'corsheaders',
-    'crashlog',
     'dal',
     'dal_select2',
     'django_sysinfo',
@@ -122,30 +123,8 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': env.db('DATABASE_URL',
                       default='psql://postgres:@127.0.0.1:5432/bitcaster'),
-    'crashlog': env.db('DATABASE_URL',
-                       default='psql://postgres:@127.0.0.1:5432/bitcaster'),
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = True
-
-
-class DBRouter:
-    def db_for_read(self, model, **hints):
-        if model._meta.app_label == 'crashlog':
-            return 'crashlog'
-        return None
-
-    def db_for_write(self, model, **hints):
-        if model._meta.app_label == 'crashlog':
-            return 'crashlog'
-        return None
-
-    def allow_relation(self, obj1, obj2, **hints):
-        if obj1._meta.app_label == 'crashlog' or obj2._meta.app_label == 'crashlog':
-            return True
-        return None
-
-
-DATABASE_ROUTERS = [DBRouter()]
 
 # GENERAL CONFIGURATION
 # ------------------------------------------------------------------------------

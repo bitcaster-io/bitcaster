@@ -6,7 +6,8 @@ from bitcaster.utils.tests.dispatcher_testcase import DispatcherBaseTest
 pytestmark = pytest.mark.django_db
 
 
-class TestDispatcherGmail(DispatcherBaseTest):
+@pytest.mark.plugin
+class TestDispatcherConsole(DispatcherBaseTest):
     TARGET = ConsoleDispatcher
     CONFIG = {}
     RECIPIENT = 'unused'

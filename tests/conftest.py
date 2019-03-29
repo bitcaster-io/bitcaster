@@ -10,6 +10,11 @@ from webtest import Field as WebTestField, Form
 faker = Faker()
 
 
+def pytest_addoption(parser):
+    parser.addoption('--plugins', action='store_true', dest='enable_plugins',
+                     default=False, help='enable plugins tests')
+
+
 def pytest_configure(config):
     here = Path(__file__).parent
     root = here.parent
@@ -267,3 +272,8 @@ def _check_environ(request):
         missing = [v for v in marker.args if v not in os.environ]
         if missing:
             pytest.skip(f"{','.join(missing)} not found in environment")
+
+    marker = request.node.get_closest_marker('plugin')
+    if marker:
+        if not pytest.config.option.enable_plugins:
+            pytest.skip('Plugins test disabled. Use --plugins to enable them')

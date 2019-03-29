@@ -9,6 +9,7 @@ from bitcaster.utils.tests.factories import ChannelFactory, SubscriptionFactory
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.plugin
 @pytest.mark.incremental
 class DispatcherBaseTest:
     CONFIG = None
