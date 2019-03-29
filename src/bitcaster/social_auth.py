@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
 from requests import HTTPError
+from sentry_sdk import capture_exception
 from social_core.backends.github import GithubOAuth2
 from social_django.strategy import DjangoStrategy
 
@@ -51,7 +52,11 @@ def create_default_membership(backend, details, new_association=False, uid=None,
         try:
             social = storage.user.create_social_auth(user, uid, backend.name)
         except IntegrityError:
+            capture_exception()
             social = storage.user.get_social_auth(backend.name, uid)
+        except Exception:
+            capture_exception()
+            raise
 
         return {'user': user,
                 'is_new': user is None,
@@ -109,8 +114,12 @@ class BitcasterGithubOrganizationOAuth2(GithubOAuth2):
                 'access_token': access_token
             })
         except HTTPError as err:
+            capture_exception()
             # if the user is a member of the organization, response code
             # will be 204, see http://bit.ly/ZS6vFl
             if err.response.status_code != 204:
                 raise NotMemberOfOrganization(self)
+        except Exception:
+            capture_exception()
+            raise
         return user_data
