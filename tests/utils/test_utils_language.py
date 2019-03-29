@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from bitcaster.utils.language import flatten, get_attr
+from bitcaster.utils.language import flatten, get_attr, repr_list
 
 
 def test_flatten():
@@ -20,5 +20,5 @@ def test_get_attr():
     assert get_attr(a, 'b.c.y', 1) == 1
 
 
-def repr_list():
-    assert [1, 2, 3] == "'1', '2', '3'"
+def test_repr_list():
+    assert repr_list([1, 2, 3]) == "'1', '2', '3'"
