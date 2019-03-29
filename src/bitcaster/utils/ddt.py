@@ -1,3 +1,4 @@
+# pragma: no cover
 from debug_toolbar.panels import Panel
 from debug_toolbar.utils import get_name_from_obj
 from django.template.loader import render_to_string

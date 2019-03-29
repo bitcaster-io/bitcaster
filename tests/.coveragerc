@@ -1,8 +1,6 @@
 [run]
 branch = True
-#source = bitcaster
-include =
-        src/bitcaster/modeles
+source = bitcaster
 # partial_branches =
 # fail_under = 90
 omit =
@@ -24,6 +22,8 @@ exclude_lines =
     # Don't complain about missing debug-only code:
     def __repr__
     pass
+    if DEBUG
+    if SENTRY_ENABLED
     if self\.debug
     # Don't complain if tests don't hit defensive assertion code:
     raise AssertionError
@@ -38,13 +38,14 @@ exclude_lines =
 
 
 ignore_errors = True
-#omit =
-#    src/bitcaster/utils/tests/*
-#    src/bitcaster/utils/ddt.py
-#    src/bitcaster/cli/*
-#    src/bitcaster/config/settings.py
-#    src/bitcaster/config/logging_conf.py
-#    src/bitcaster/config/urls.py
+omit =
+    src/bitcaster/utils/tests/*
+    src/bitcaster/utils/ddt.py
+    src/bitcaster/cli/*
+    src/bitcaster/config/settings.py
+    src/bitcaster/config/logging_conf.py
+    src/bitcaster/config/urls.py
+    src/bitcaster/utils/ddt.py
 
 include =
     src/bitcaster/agents/*
