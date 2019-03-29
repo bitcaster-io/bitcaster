@@ -92,9 +92,9 @@ urlpatterns = [
     path('<slug:org>/me/assignment/', UserAddressesAssignmentView.as_view(), name='user-address-assignment'),
     path('<slug:org>/me/applications/', UserApplicationListView.as_view(), name='user-applications'),
 
-    # path('new-user/', TemplateView.as_view(template_name='bitcaster/users/user_new.html')),
-    # path('new-association/', TemplateView.as_view(template_name='bitcaster/users/user_associated.html')),
-    # path('login-error/', TemplateView.as_view(template_name='bitcaster/users/login_error.html')),
+    path('new-user/', TemplateView.as_view(template_name='bitcaster/oauth/user_new.html')),
+    path('new-association/', TemplateView.as_view(template_name='bitcaster/oauth/user_associated.html')),
+    path('login-error/', TemplateView.as_view(template_name='bitcaster/oauth/login_error.html')),
 
     # path('user/<slug:org>/', UserHomeView.as_view(), name='user-org'),
     # path('user/<slug:org>/<slug:app>/', UserHomeView.as_view(), name='user-app'),

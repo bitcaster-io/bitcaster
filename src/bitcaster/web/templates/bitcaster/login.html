@@ -1,5 +1,16 @@
 {% extends "bitcaster/base.html" %}{% load i18n crispy_forms_tags %}
 {% block body %}
+    {% if alarms %}
+        <div id="alarmBar">
+            <ul class="messagelist">{% for alarm in alarms %}
+                <li class="alarm {% if alarm.tags %} alert-{{ alarm.tags }}{% endif %} show ">
+                    <span>{{ alarm|capfirst }}</span>
+                </li>{% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+
     <div class="container">
         <div class="row col-12 justify-content-center align-items-center">
             <div class="box box-modal login-form col-6 p-3">
@@ -9,9 +20,9 @@
                         <input type="hidden" name="next" value="/">
                         {{ form|crispy }}
                         <div class="col-md-12 text-center">
-                        <input type="submit" value="{% trans "Login" %}"
-                               class="btn btn-primary"/>
-                            </div>
+                            <input type="submit" value="{% trans "Login" %}"
+                                   class="btn btn-primary"/>
+                        </div>
                     </form>
                 </div>
                 {% include "bitcaster/_includes/oauth.html" %}
