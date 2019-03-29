@@ -21,10 +21,14 @@ class UserEventMixin(UserMixin):
 class UserEventListView(UserEventMixin, BitcasterBaseListView):
     template_name = 'bitcaster/user/events.html'
 
+    def get_queryset(self):
+        return super().get_queryset().exclude(subscriptions__subscriber=self.request.user,
+                                              subscriptions__isnull=False).order_by('application__name', 'name')
+
 
 class UserEventSubcribe(UserEventMixin, BitcasterBaseCreateView):
     template_name = 'bitcaster/user/subscribe.html'
-
+    title = 'Event %(object)s'
     form_class = UserSubscriptionForm
 
     def get_success_url(self):
@@ -35,15 +39,14 @@ class UserEventSubcribe(UserEventMixin, BitcasterBaseCreateView):
 
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
-        ret = super().get_context_data(**kwargs)
+        ret = super().get_context_data(object=self.object, **kwargs)
         ret['not_usable_channels'] = self.object.channels.exclude(addresses__user=self.request.user)
         ret['usable_channels'] = self.object.channels.filter(addresses__user=self.request.user)
-        ret['object'] = self.object
         return ret
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['instance'] = self.object
+        kwargs['instance'] = self.get_object()
         return kwargs
 
     def form_valid(self, form):

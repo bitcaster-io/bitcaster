@@ -23,6 +23,9 @@ class UserSubscriptionMixin(UserMixin):
 class UserSubscriptionListView(UserSubscriptionMixin, BitcasterBaseListView):
     template_name = 'bitcaster/user/subscriptions.html'
 
+    def get_queryset(self):
+        return super().get_queryset().order_by('event__application__name', 'event__name')
+
 
 class UserSubscriptionToggle(UserSubscriptionMixin, BitcasterBaseToggleView):
     def get_object(self, queryset=None):
