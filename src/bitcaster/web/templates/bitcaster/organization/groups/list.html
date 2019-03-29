@@ -1,0 +1,96 @@
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block page %}
+    <div class="container">
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr class="d-flex">
+                <th scope="col" class="col-4">User</th>
+                <th scope="col" class="col-2">Role</th>
+                <th scope="col" class="col-3">Enrollment Date</th>
+                <th scope="col" class="col-3">&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="d-flex">
+                <td class="col-4">
+                    {{ organization.owner }}{% if organization.owner == user %}
+                        <span class="label warn">you</span>{% endif %}
+                </td>
+                <td class="col-2">Owner</td>
+                <td class="col-2">&nbsp;</td>
+                <td class="col-2">&nbsp;</td>
+            </tr>
+            {% for membership in memberships.all %}
+                <tr class="d-flex">
+                    <td class="col-4">
+                        {{ membership.user }}{% if membership.user == user %}<span class="you">you</span>{% endif %}
+                    </td>
+                    <td class="col-2">{{ membership.get_role_display }}</td>
+                    <td class="col-3">{{ membership.date_enrolled|date:"Y, M d" }}</td>
+                    <td class="col-3 formset-commands">
+                        <a class="btn btn-outline-light"
+                           data-toggle="tooltip" title="edit"
+                           href="{% org-url "org-member-edit" membership.pk %}">
+                            <i class="far fa-edit"></i>
+                        </a>
+                        <a class="btn btn-outline-light"
+                           data-toggle="tooltip" title="remove"
+                           href="{% org-url "org-member-delete" membership.pk %}">
+                            <i class="far fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="container">
+        {% if invitations %}
+            <h4>Pending invitations</h4>
+            <table class="table">
+                <thead>
+                <tr class="d-flex">
+                    <th scope="col" class="col-4">User</th>
+                    <th scope="col" class="col-2">Invited By</th>
+                    <th scope="col" class="col-3">On</th>
+                    <th scope="col" class="col-3"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for invitation in invitations.all %}
+                    <tr class="d-flex">
+                        <td class="col-4">
+                            {{ invitation.target }}
+                        </td>
+                        <td class="col-2">{{ invitation.invited_by }}</td>
+                        <td class="col-3">{{ invitation.date_created|date:"Y, M d" }}</td>
+                        <td class="text-nowrap col-3 formset-commands">
+                            <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'">
+                            <i class="far fa-trash-alt"></i>
+                            </a>
+                            <form method="post" class="d-inline"
+                                  action="{% org-url "org-invitation-send" invitation.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" title="resend email" class="btn btn-outline-light">
+                                    <i class="far fa-envelope"></i>
+                                </button>
+                            </form>
+
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+{% endblock %}
