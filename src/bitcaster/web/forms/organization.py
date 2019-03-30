@@ -21,10 +21,12 @@ class OrganizationGroupForm(forms.ModelForm):
         model = OrganizationGroup
         fields = ('name', 'members')
 
-    # def __init__(self, organization, *args, **kwargs):
-    #     self.organization = organization
-    #     super(OrganizationGroupForm, self).__init__(*args, **kwargs)
-    #
+    def __init__(self, organization, *args, **kwargs):
+        self.organization = organization
+        super(OrganizationGroupForm, self).__init__(*args, **kwargs)
+        if 'applications' in self.fields:
+            self.fields['applications'].queryset = self.organization.applications.all()
+
     # def save(self, commit=True):
     #     self.instance.organization = self.organization
     #     return super().save(commit)

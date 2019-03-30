@@ -47,6 +47,7 @@ reset-migrations: .init-db
 	./manage.py makemigrations bitcaster
 	./manage.py makemigrations --check
 	bitcaster upgrade --no-input
+	bitcaster reindex
 
 test:
 	py.test tests -v --create-db

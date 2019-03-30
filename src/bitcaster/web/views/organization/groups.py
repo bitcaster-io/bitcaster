@@ -1,6 +1,8 @@
 import logging
 
+from django.forms import modelform_factory
 from django.utils.translation import ugettext as _
+from django.views.generic.edit import ModelFormMixin
 
 from bitcaster.models import OrganizationGroup
 from bitcaster.web.forms.organization import OrganizationGroupForm
@@ -16,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 class GroupMixin(OrganizationBaseView):
     model = OrganizationGroup
-    form_class = OrganizationGroupForm
 
     def get_success_url(self):
         return self.selected_organization.urls.groups
@@ -25,17 +26,21 @@ class GroupMixin(OrganizationBaseView):
         return self.selected_organization.groups.all()
 
 
-class OrganizationGroupCreate(GroupMixin, BitcasterBaseCreateView):
-    template_name = 'bitcaster/organization/groups/form.html'
+class OrganizationGroupFormMixin(ModelFormMixin):
+    form_class = OrganizationGroupForm
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        # kwargs.update({'organization': self.selected_organization})
+        kwargs.update({'organization': self.selected_organization})
         return kwargs
 
     def form_valid(self, form):
         form.instance.organization = self.selected_organization
         return super().form_valid(form)
+
+    def get_form_class(self):
+        return modelform_factory(OrganizationGroup, form=OrganizationGroupForm,
+                                 fields=self.fields)
 
 
 class OrganizationGroupList(GroupMixin, BitcasterBaseListView):
@@ -43,12 +48,26 @@ class OrganizationGroupList(GroupMixin, BitcasterBaseListView):
     context_object_name = 'groups'
 
 
-class OrganizationGroupEdit(GroupMixin, BitcasterBaseUpdateView):
+class OrganizationGroupCreate(GroupMixin, OrganizationGroupFormMixin, BitcasterBaseCreateView):
     template_name = 'bitcaster/organization/groups/form.html'
+    fields = ('name', 'closed')
+
+
+class OrganizationGroupEdit(GroupMixin, OrganizationGroupFormMixin, BitcasterBaseUpdateView):
+    template_name = 'bitcaster/organization/groups/form.html'
+    fields = ('name',)
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)
         return self.selected_organization.groups.get(pk=pk)
+
+
+class OrganizationGroupMembers(OrganizationGroupEdit):
+    fields = ('members',)
+
+
+class OrganizationGroupApplications(OrganizationGroupEdit):
+    fields = ('applications',)
 
 
 class OrganizationGroupDelete(GroupMixin, BitcasterBaseDeleteView):

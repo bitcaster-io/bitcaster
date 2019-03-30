@@ -31,8 +31,9 @@ from .views import (AddressAutocomplete, ApplicationCheckConfigView,
                     OrganizationChannelToggle, OrganizationChannelUpdate,
                     OrganizationChannelUsage, OrganizationCheckConfigView,
                     OrganizationConfiguration, OrganizationDashboard,
-                    OrganizationGroupCreate, OrganizationGroupDelete,
-                    OrganizationGroupEdit, OrganizationGroupList,
+                    OrganizationGroupApplications, OrganizationGroupCreate,
+                    OrganizationGroupDelete, OrganizationGroupEdit,
+                    OrganizationGroupList, OrganizationGroupMembers,
                     OrganizationMemberInvite, OrganizationMemberInviteAccept,
                     OrganizationMembershipDelete, OrganizationMembershipEdit,
                     OrganizationMembershipList, OrgInviteDelete, OrgInviteSend,
@@ -70,7 +71,6 @@ urlpatterns = [
     path('settings/plugins/<str:type>/', SettingsPlugin.as_view(), name='settings-plugin'),
     path('settings/plugins/<str:type>/<int:pk>/toggle/', SettingsPluginToggle.as_view(), name='settings-plugin-toggle'),
 
-
     # Social
     path('', include('social_django.urls', namespace='social')),
     path('user/register/register-wait-email/<int:pk>/',
@@ -84,8 +84,10 @@ urlpatterns = [
     path('<slug:org>/me/events/', UserEventListView.as_view(), name='user-events'),
     path('<slug:org>/me/event/<int:pk>/subscribe/', UserEventSubcribe.as_view(), name='user-event-subscribe'),
     path('<slug:org>/me/subscriptions/', UserSubscriptionListView.as_view(), name='user-subscriptions'),
-    path('<slug:org>/me/subscriptions/<int:pk>/toggle/', UserSubscriptionToggle.as_view(), name='user-subscription-toggle'),
-    path('<slug:org>/me/subscriptions/<int:pk>/delete/', UserSubscriptionRemove.as_view(), name='user-subscription-delete'),
+    path('<slug:org>/me/subscriptions/<int:pk>/toggle/', UserSubscriptionToggle.as_view(),
+         name='user-subscription-toggle'),
+    path('<slug:org>/me/subscriptions/<int:pk>/delete/', UserSubscriptionRemove.as_view(),
+         name='user-subscription-delete'),
     path('<slug:org>/me/subscriptions/<int:pk>/edit/', UserSubscriptionEdit.as_view(), name='user-subscription-edit'),
 
     path('<slug:org>/me/profile/', UserProfileView.as_view(), name='user-profile'),
@@ -192,14 +194,18 @@ urlpatterns = [
     path('<slug:org>/member/<int:pk>/edit/', OrganizationMembershipEdit.as_view(), name='org-member-edit'),
     path('<slug:org>/member/<int:pk>/delete/', OrganizationMembershipDelete.as_view(), name='org-member-delete'),
 
-    path('<slug:org>/invite/accept/<int:pk>/<str:check>/', OrganizationMemberInviteAccept.as_view(), name='org-member-accept'),
+    path('<slug:org>/invite/accept/<int:pk>/<str:check>/', OrganizationMemberInviteAccept.as_view(),
+         name='org-member-accept'),
     path('<slug:org>/invite/delete/<int:pk>/', OrgInviteDelete.as_view(), name='org-invitation-delete'),
     path('<slug:org>/invite/send/<int:pk>/', OrgInviteSend.as_view(), name='org-invitation-send'),
     path('<slug:org>/invite/', OrganizationMemberInvite.as_view(), name='org-invite'),
 
     path('<slug:org>/group/', OrganizationGroupList.as_view(), name='org-groups'),
     path('<slug:org>/group/add/', OrganizationGroupCreate.as_view(), name='org-group-add'),
-    path('<slug:org>/group/<int:pk>/edit/', OrganizationGroupEdit.as_view(), name='org-group-edit'),
+    path('<slug:org>/group/<int:pk>/settings/', OrganizationGroupEdit.as_view(), name='org-group-settings'),
+    path('<slug:org>/group/<int:pk>/members/', OrganizationGroupMembers.as_view(), name='org-group-members'),
+    path('<slug:org>/group/<int:pk>/applications/', OrganizationGroupApplications.as_view(),
+         name='org-group-applications'),
     path('<slug:org>/group/<int:pk>/delete/', OrganizationGroupDelete.as_view(), name='org-group-delete'),
 
     # path('<slug:org>/team/', OrganizationTeamList.as_view(), name='org-teams'),

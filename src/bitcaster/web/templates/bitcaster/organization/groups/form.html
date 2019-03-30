@@ -1,5 +1,20 @@
 {% extends "bitcaster/organization/base.html" %}{% load crispy_forms_filters i18n bitcaster %}
 {% block page %}
+    {% if form.instance.pk %}
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ form.instance.urls.settings }}">{% trans "Properties" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               href="{{ form.instance.urls.members }}">{% trans "Members" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               href="{{ form.instance.urls.applications }}">{% trans "Applications" %}</a>
+        </li>
+    </ul>
+    {% endif %}
     <div class="container">
         <div class="row col-12">
         <form method="post" action="." class="col-12 m-5">

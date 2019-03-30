@@ -1,5 +1,6 @@
 from django.db import models
 
+from bitcaster.models import Application
 from bitcaster.models.mixins import ReverseWrapperMixin
 
 from .organization import Organization
@@ -12,7 +13,10 @@ class OrganizationGroup(ReverseWrapperMixin, models.Model):
                                      on_delete=models.CASCADE,
                                      db_index=True,
                                      related_name='groups')
-    members = models.ManyToManyField(OrganizationMember)
+    members = models.ManyToManyField(OrganizationMember, blank=True)
+    applications = models.ManyToManyField(Application, blank=True,
+                                          related_name='groups')
+    closed = models.BooleanField(blank=True, null=True)
 
     class Meta:
         app_label = 'bitcaster'

@@ -25,7 +25,7 @@
                     <td class="col-3 formset-commands">
                         <a class="btn btn-outline-light"
                            data-toggle="tooltip" title="edit"
-                           href="{{ group.urls.edit }}">
+                           href="{{ group.urls.settings }}">
                             <i class="far fa-edit"></i>
                         </a>
                         <a class="btn btn-outline-light"
@@ -39,45 +39,4 @@
             </tbody>
         </table>
     </div>
-    <div class="container">
-        {% if invitations %}
-            <h4>Pending invitations</h4>
-            <table class="table">
-                <thead>
-                <tr class="d-flex">
-                    <th scope="col" class="col-4">User</th>
-                    <th scope="col" class="col-2">Invited By</th>
-                    <th scope="col" class="col-3">On</th>
-                    <th scope="col" class="col-3"></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for invitation in invitations.all %}
-                    <tr class="d-flex">
-                        <td class="col-4">
-                            {{ invitation.target }}
-                        </td>
-                        <td class="col-2">{{ invitation.invited_by }}</td>
-                        <td class="col-3">{{ invitation.date_created|date:"Y, M d" }}</td>
-                        <td class="text-nowrap col-3 formset-commands">
-                            <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'>
-                            <i class="far fa-trash-alt"></i>
-                            </a>
-                            <form method="post" class="d-inline"
-                                  action="{% org-url "org-invitation-send" invitation.pk %}">
-                                {% csrf_token %}
-                                <button type="submit" title="resend email" class="btn btn-outline-light">
-                                    <i class="far fa-envelope"></i>
-                                </button>
-                            </form>
-
-
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-    </div>
-
 {% endblock %}
