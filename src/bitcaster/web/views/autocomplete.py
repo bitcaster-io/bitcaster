@@ -1,6 +1,7 @@
 from dal_select2.views import Select2QuerySetView
 
-from bitcaster.models import Address, Channel, OrganizationMember
+from bitcaster.models import Channel, OrganizationMember
+from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
 
 
 class UserAutocomplete(Select2QuerySetView):
@@ -31,14 +32,29 @@ class ChannelAutocomplete(Select2QuerySetView):
 
 class AddressAutocomplete(Select2QuerySetView):
     def get_queryset(self):
-        return Address.objects.all()
-
-        if not self.request.user.is_authenticated:
-            return Address.objects.all()
-
         qs = self.request.user.addresses.all()
 
-        # if self.q:
-        #     qs = qs.filter(address__istartswith=self.q)
+        if self.q:
+            qs = qs.filter(address__istartswith=self.q)
+
+        return qs
+
+
+class ApplicationAutocomplete(SelectedOrganizationMixin, Select2QuerySetView):
+    def get_queryset(self):
+        qs = self.selected_organization.applications.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+
+
+class OrganizationMembersAutocomplete(SelectedOrganizationMixin, Select2QuerySetView):
+    def get_queryset(self):
+        qs = self.selected_organization.members.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
 
         return qs

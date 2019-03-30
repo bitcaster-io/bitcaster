@@ -4,6 +4,8 @@ from django.conf import settings
 from django.urls import include, path, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
+from bitcaster.web.views import (ApplicationAutocomplete,
+                                 OrganizationMembersAutocomplete,)
 from bitcaster.web.views.settings import SettingsPlugin, SettingsPluginToggle
 
 from .views import (AddressAutocomplete, ApplicationCheckConfigView,
@@ -236,4 +238,6 @@ urlpatterns += [
     path('dal/user-autocomplete/', UserAutocomplete.as_view(), name='user-autocomplete'),
     path('dal/address-autocomplete/', AddressAutocomplete.as_view(), name='address-autocomplete'),
     path('dal/channel-autocomplete/', ChannelAutocomplete.as_view(), name='channel-autocomplete'),
+    path('<slug:org>/dal/application-autocomplete/', ApplicationAutocomplete.as_view(), name='application-autocomplete'),
+    path('<slug:org>/dal/members-autocomplete/', OrganizationMembersAutocomplete.as_view(), name='members-autocomplete'),
 ]

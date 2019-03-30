@@ -2,9 +2,8 @@
 {% block page %}
     <div class="container">
         <div class="row col-12">
-        <form method="post" action="." class="col-12 m-5">
+        <form method="post" action="." class="col-12">
             {% csrf_token %}
-            {{ form.errors }}
             {{ form.non_field_errors }}
             <table class="table col-12">
                 <tbody>
@@ -17,20 +16,12 @@
                     <td class="col-4">{{ form.role.errors }}{{ form.role|as_crispy_field }}</td>
                 </tr>
                 <tr lass="d-flex">
-                    <td>{% trans "Invited by" %}</td>
-                    <td class="col-4">{{ membership.invited_by }}</td>
-                </tr>
-                <tr lass="d-flex">
-                    <td>{% trans "Invited on" %}</td>
-                    <td class="col-4">{{ membership.date_added }}</td>
-                </tr>
-                <tr lass="d-flex">
                     <td>{% trans "Enrolled on" %}</td>
                     <td class="col-4">{{ membership.date_enrolled|default_if_none:"" }}</td>
                 </tr>
                 </tbody>
             </table>
-            <button type="submit" class="btn btn-danger btn-small pull-left" href=".">{% trans "Save" %}</button>
+            <button type="submit" class="btn btn-primary btn-small pull-left mr-3" href=".">{% trans "Save" %}</button>
             <button type="button"
                     class="btn btn-light btn-small pull-left"
                     onclick="window.location.href = '{{ organization.urls.members }}';">

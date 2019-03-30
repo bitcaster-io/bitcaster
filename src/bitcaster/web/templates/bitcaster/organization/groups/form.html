@@ -1,28 +1,27 @@
-{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_filters i18n bitcaster %}
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_filters menu i18n bitcaster %}
 {% block page %}
-    {% if form.instance.pk %}
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link active" href="{{ form.instance.urls.settings }}">{% trans "Properties" %}</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link"
-               href="{{ form.instance.urls.members }}">{% trans "Members" %}</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link"
-               href="{{ form.instance.urls.applications }}">{% trans "Applications" %}</a>
-        </li>
-    </ul>
-    {% endif %}
+    {{ form.media }}
+{#    {% if form.instance.pk %}#}
+{#    <ul class="nav nav-tabs">#}
+{#        <li class="nav-item">#}
+{#            <a class="nav-link {{ view|menu_item:'edit' }}" href="{{ form.instance.urls.settings }}">{% trans "Properties" %}</a>#}
+{#        </li>#}
+{#        <li class="nav-item">#}
+{#            <a class="nav-link  {{ view|menu_item:'members' }}"#}
+{#               href="{{ form.instance.urls.members }}">{% trans "Members" %}</a>#}
+{#        </li>#}
+{#        <li class="nav-item">#}
+{#            <a class="nav-link {{ view|menu_item:'applications' }}"#}
+{#               href="{{ form.instance.urls.applications }}">{% trans "Applications" %}</a>#}
+{#        </li>#}
+{#    </ul>#}
+{#    {% endif %}#}
     <div class="container">
         <div class="row col-12">
-        <form method="post" action="." class="col-12 m-5">
+        <form method="post" action="." class="col-12">
             {% csrf_token %}
-            {{ form.errors }}
-            {{ form.non_field_errors }}
             {{ form|crispy }}
-            <button type="submit" class="btn btn-danger btn-small pull-left">{% trans "Save" %}</button>
+            <button type="submit" class="btn btn-primary btn-small pull-left mr-3" href=".">{% trans "Save" %}</button>
             <button type="button"
                     class="btn btn-light btn-small pull-left"
                     onclick="window.location.href = '{{ organization.urls.groups }}';">

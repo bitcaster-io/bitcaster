@@ -2,8 +2,10 @@ import logging
 
 from crispy_forms.helper import FormHelper
 from django.utils.translation import ugettext as _
+from django.views.generic.edit import ModelFormMixin
 
 from bitcaster.models import OrganizationMember
+from bitcaster.web.forms import OrganizationMemberForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
                                       BitcasterBaseUpdateView,)
@@ -23,6 +25,31 @@ class MemberMixin(OrganizationBaseView):
         return self.selected_organization.memberships.exclude(user=self.selected_organization.owner)
 
 
+class MemberFormMixin(ModelFormMixin):
+    form_class = OrganizationMemberForm
+    form_show_labels = True
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'organization': self.selected_organization,
+                       'form_show_labels': self.form_show_labels})
+        return kwargs
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.helper = FormHelper(form)
+        form.helper.form_show_labels = False
+        return form
+
+    def form_valid(self, form):
+        form.instance.organization = self.selected_organization
+        return super().form_valid(form)
+
+    # def get_form_class(self):
+    #     return modelform_factory(OrganizationGroup, form=OrganizationGroupForm,
+    #                              fields=self.fields)
+
+
 class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
     template_name = 'bitcaster/organization/members/list.html'
 
@@ -35,17 +62,9 @@ class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
         return data
 
 
-class OrganizationMembershipEdit(MemberMixin, BitcasterBaseUpdateView):
+class OrganizationMembershipEdit(MemberMixin, MemberFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/organization/members/form.html'
-    fields = ('role',)
-    # title = _('Edit Membership')
     context_object_name = 'membership'
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.helper = FormHelper(form)
-        form.helper.form_show_labels = False
-        return form
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)

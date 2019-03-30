@@ -11,8 +11,9 @@ from .application.events.subscription import (EventSubscriptionCreate,
                                               EventSubscriptionInvite,
                                               EventSubscriptionList,
                                               EventSubscriptionToggle,)
-from .autocomplete import (AddressAutocomplete,
-                           ChannelAutocomplete, UserAutocomplete,)
+from .autocomplete import (AddressAutocomplete, ApplicationAutocomplete,
+                           ChannelAutocomplete, OrganizationMembersAutocomplete,
+                           UserAutocomplete,)
 from .base import PluginInfo
 from .callbacks import confirm_address, confirm_registration
 from .channel import ChannelCreateWizard, ChannelListView

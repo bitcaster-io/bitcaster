@@ -5,7 +5,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic.edit import ModelFormMixin
 
 from bitcaster.models import OrganizationGroup
-from bitcaster.web.forms.organization import OrganizationGroupForm
+from bitcaster.web.forms import OrganizationGroupForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
@@ -28,10 +28,12 @@ class GroupMixin(OrganizationBaseView):
 
 class OrganizationGroupFormMixin(ModelFormMixin):
     form_class = OrganizationGroupForm
+    form_show_labels = True
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({'organization': self.selected_organization})
+        kwargs.update({'organization': self.selected_organization,
+                       'form_show_labels': self.form_show_labels})
         return kwargs
 
     def form_valid(self, form):
@@ -55,7 +57,7 @@ class OrganizationGroupCreate(GroupMixin, OrganizationGroupFormMixin, BitcasterB
 
 class OrganizationGroupEdit(GroupMixin, OrganizationGroupFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/organization/groups/form.html'
-    fields = ('name',)
+    fields = ('name', 'closed',)
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)
@@ -64,10 +66,12 @@ class OrganizationGroupEdit(GroupMixin, OrganizationGroupFormMixin, BitcasterBas
 
 class OrganizationGroupMembers(OrganizationGroupEdit):
     fields = ('members',)
+    form_show_labels = False
 
 
 class OrganizationGroupApplications(OrganizationGroupEdit):
     fields = ('applications',)
+    form_show_labels = False
 
 
 class OrganizationGroupDelete(GroupMixin, BitcasterBaseDeleteView):
