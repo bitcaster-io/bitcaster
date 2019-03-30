@@ -2,9 +2,9 @@ import base64
 from unittest.mock import Mock
 from uuid import uuid4
 
-from bitcaster.framework.db.fields import (AgentField, DeletionStatus,
+from bitcaster.framework.db.fields import (ROLES, AgentField, DeletionStatus,
                                            DeletionStatusField, DispatcherField,
-                                           EncryptedJSONField, Role, RoleField,
+                                           EncryptedJSONField, RoleField,
                                            SubscriptionPolicy,
                                            SubscriptionPolicyField,)
 
@@ -69,7 +69,7 @@ def test_RoleField():
     f = RoleField()
     f.attname = 'attr'
     assert f.value_to_string(Mock(attr=1)) == '1'
-    assert f.get_prep_value(Role.OWNER) == 1
+    assert f.get_prep_value(ROLES.OWNER) == 1
 
 
 def test_DeletionStatusField():

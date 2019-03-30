@@ -60,7 +60,7 @@
                         <td class="col-2">{{ invitation.invited_by }}</td>
                         <td class="col-3">{{ invitation.date_created|date:"Y, M d" }}</td>
                         <td class="text-nowrap col-3 formset-commands">
-                            <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'">
+                            <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'>
                             <i class="far fa-trash-alt"></i>
                             </a>
                             <form method="post" class="d-inline"

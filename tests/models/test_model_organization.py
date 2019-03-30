@@ -1,6 +1,6 @@
 import pytest
 
-from bitcaster.framework.db.fields import Role
+from bitcaster.framework.db.fields import ROLES
 from bitcaster.models import Organization
 from bitcaster.utils.tests.factories import OrganizationFactory
 
@@ -37,12 +37,12 @@ def test_application_no_admins(organization1):
 
 
 def test_admins(organization1, user1):
-    organization1.add_member(user1, Role.ADMIN)
+    organization1.add_member(user1, ROLES.ADMIN)
     assert list(organization1.admins) == [user1]
 
 
 def test_managers(organization1, user1):
-    organization1.add_member(user1, Role.ADMIN)
+    organization1.add_member(user1, ROLES.ADMIN)
     assert list(organization1.managers) == [user1]
 
 
