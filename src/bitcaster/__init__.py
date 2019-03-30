@@ -4,7 +4,7 @@ from functools import lru_cache
 DIR = pathlib.Path(__file__).parent
 
 NAME = 'bitcaster'
-VERSION = __version__ = '0.7.0a8'
+VERSION = __version__ = '0.7.0a9'
 __author__ = 'Stefano Apostolico'
 
 
