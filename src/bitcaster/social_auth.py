@@ -14,25 +14,35 @@ from social_core.backends.github import GithubOAuth2
 from social_django.strategy import DjangoStrategy
 
 from bitcaster.exceptions import NotMemberOfOrganization
-from bitcaster.models import OrganizationMember, User
+from bitcaster.models import Invitation, Organization, User
+from bitcaster.security import ROLES
 
 USER_FIELDS = ['username', 'email', 'fullname']
 
 
 def associate_invitation(backend, details, user=None, strategy=None, *args, **kwargs):
     invitation_id = strategy.session_get('invitation')
-    is_new = False
-    if invitation_id:
-        invite = OrganizationMember.objects.get(pk=invitation_id, user__isnull=True)
-        # if not user:
-        is_new = True
+    is_new = kwargs['is_new']
+    if is_new:
         fields = {'email': details['email'],
                   'name': details['fullname'],
                   'friendly_name': details['username']}
+        if invitation_id:
+            invite = Invitation.objects.get(pk=id, date_accepted__isnull=True)
+            invite.date_accepted = timezone.now()
+            invite.save()
+            organization = invite.organization
+            # application = invite.application
+            role = invite.role
+
+            if invite:
+                is_new = True
+        else:
+            organization = Organization.objects.get()
+            role = ROLES.SUBSCRIBER
+
         user = User.objects.create(**fields)
-        invite.user = user
-        invite.date_enrolled = timezone.now()
-        invite.save()
+        organization.memberships.create(user=user, role=role)
 
     return {
         'is_new': is_new,
@@ -118,7 +128,7 @@ class BitcasterGithubOrganizationOAuth2(GithubOAuth2):
             # if the user is a member of the organization, response code
             # will be 204, see http://bit.ly/ZS6vFl
             if err.response.status_code != 204:
-                raise NotMemberOfOrganization(self)
+                raise NotMemberOfOrganization(self, user_data)
         except Exception:
             capture_exception()
             raise

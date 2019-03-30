@@ -19,6 +19,16 @@
                 <i class="fas fa-broadcast-tower"></i>{% trans "Channels" %}</a>
         </li>
         <li>
+            <a class="{{ view|menu_item:'application' }}"
+               href="{{ organization.urls.applications }}">
+                <i class="fas fa-server"></i>{% trans "Applications" %}</a>
+        </li>
+        <li>
+            <a class="{{ view|menu_item:'groups' }}"
+               href="{{ organization.urls.groups }}">
+                <i class="fas fa-users"></i>{% trans "Groups" %}</a>
+        </li>
+        <li>
             <a class="{{ view|menu_item:'member' }}"
                href="{{ organization.urls.members }}">
                 <i class="fas fa-users"></i>{% trans "Members" %}</a>

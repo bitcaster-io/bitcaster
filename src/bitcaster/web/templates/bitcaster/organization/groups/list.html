@@ -4,7 +4,7 @@
         <div class="row col-12">
             <div class="pull-right col-12 p-4">
                 <a class="btn btn-danger btn-small pull-right"
-                   href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>
+                   href="{{ organization.urls.group_add }}">{% trans "Create Group" %}</a>
             </div>
         </div>
     </div>
@@ -12,38 +12,25 @@
         <table class="table">
             <thead>
             <tr class="d-flex">
-                <th scope="col" class="col-4">User</th>
-                <th scope="col" class="col-2">Role</th>
-                <th scope="col" class="col-3">Enrollment Date</th>
+                <th scope="col" class="col-9">Name</th>
                 <th scope="col" class="col-3">&nbsp;</th>
             </tr>
             </thead>
             <tbody>
-            <tr class="d-flex">
-                <td class="col-4">
-                    {{ organization.owner }}{% if organization.owner == user %}
-                        <span class="label warn">you</span>{% endif %}
-                </td>
-                <td class="col-2">Owner</td>
-                <td class="col-2">&nbsp;</td>
-                <td class="col-2">&nbsp;</td>
-            </tr>
-            {% for membership in memberships.all %}
+            {% for group in groups.all %}
                 <tr class="d-flex">
-                    <td class="col-4">
-                        {{ membership.user }}{% if membership.user == user %}<span class="you">you</span>{% endif %}
+                    <td class="col-9">
+                        {{ group.name }}
                     </td>
-                    <td class="col-2">{{ membership.get_role_display }}</td>
-                    <td class="col-3">{{ membership.date_enrolled|date:"Y, M d" }}</td>
                     <td class="col-3 formset-commands">
                         <a class="btn btn-outline-light"
                            data-toggle="tooltip" title="edit"
-                           href="{% org-url "org-member-edit" membership.pk %}">
+                           href="{{ group.urls.edit }}">
                             <i class="far fa-edit"></i>
                         </a>
                         <a class="btn btn-outline-light"
                            data-toggle="tooltip" title="remove"
-                           href="{% org-url "org-member-delete" membership.pk %}">
+                           href="{{ group.urls.delete }}">
                             <i class="far fa-trash-alt"></i>
                         </a>
                     </td>

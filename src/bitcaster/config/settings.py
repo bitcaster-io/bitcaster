@@ -393,6 +393,7 @@ CONSTANCE_ADDITIONAL_FIELDS = {
 
 CONSTANCE_CONFIG = OrderedDict({
     'INITIALIZED': (False, '', bool),
+    'CONFIGURATION': (0, '', int),
     'SYSTEM_CONFIGURED': (0, '', int),
     'SITE_URL': ('', '', str),
 
@@ -475,7 +476,7 @@ if SENTRY_ENABLED:
 
     sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()],
                     release=bitcaster.get_full_version(),
-                    debug=DEBUG)
+                    debug=False)
 
 # OAUTH2
 GOOGLE_APP_ID = env.str('GOOGLE_APP_ID', '')

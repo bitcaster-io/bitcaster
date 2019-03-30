@@ -4,9 +4,7 @@ from django.http import (HttpResponse, HttpResponseForbidden,
                          HttpResponseRedirect,)
 from django.template.loader import get_template
 from django.urls import reverse
-from django.views.generic import TemplateView
-
-from bitcaster.models import Organization
+from django.views.generic import RedirectView, TemplateView
 
 __all__ = ('IndexView', 'WorkInProgressView')
 
@@ -34,15 +32,7 @@ class PreviewView(TemplateView):
     #     return self.kwargs['path'].replace("|", "/")
 
 
-class IndexView(TemplateView):
-    template_name = 'bitcaster/index.html'
-
-    def get_context_data(self, **kwargs):
-        if self.request.user.is_superuser:
-            kwargs['organizations'] = Organization.objects.all()
-        else:
-            kwargs['organizations'] = Organization.objects.filter(members=self.request.user)
-        return super().get_context_data(**kwargs)
+class IndexView(RedirectView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -51,10 +41,10 @@ class IndexView(TemplateView):
                 return HttpResponseRedirect(reverse('me', args=[membership.organization.slug]))
             elif self.request.user.is_superuser:
                 pass
-            # if request.user.memberships.filter(role=Role.OWNER):
+            # if request.user.memberships.filter(role=ROLES.OWNER):
             #     url = reverse('org-dashboard', args=[request.user.memberships.first().organization.slug])
             #     return HttpResponseRedirect(url)
-            # elif request.user.memberships.filter(role=Role.SUBSCRIBER):
+            # elif request.user.memberships.filter(role=ROLES.SUBSCRIBER):
             #     url = reverse('user-org', args=[request.user.memberships.first().organization.slug])
             #     return HttpResponseRedirect(url)
 

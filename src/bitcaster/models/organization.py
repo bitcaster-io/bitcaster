@@ -7,8 +7,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.file_storage import org_media_root
-from bitcaster.framework.db.fields import (AvatarField, DeletionStatusField,
-                                           Role, RoleField,)
+from bitcaster.framework.db.fields import (ROLES, AvatarField,
+                                           DeletionStatusField, RoleField,)
 from bitcaster.framework.db.manager import DeleteableModelManagerMixin
 from bitcaster.framework.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.models.mixins import ReverseWrapperMixin
@@ -55,7 +55,7 @@ class Organization(AbstractModel, ReverseWrapperMixin):
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
     is_core = models.BooleanField(editable=False, default=False)
-    default_role = RoleField(default=Role.ADMIN)
+    default_role = RoleField(default=ROLES.ADMIN)
     rate_limit = models.CharField(max_length=100,
                                   null=True, default=None, blank=True,
                                   validators=[RateLimitValidator()])
@@ -103,7 +103,7 @@ class Organization(AbstractModel, ReverseWrapperMixin):
     #
     #     return queryset.exists()
 
-    def add_member(self, user, role=Role.SUBSCRIBER, **kwargs):
+    def add_member(self, user, role=ROLES.SUBSCRIBER, **kwargs):
         from bitcaster.models import OrganizationMember
         return OrganizationMember.objects.update_or_create(organization=self,
                                                            user=user,
@@ -116,18 +116,18 @@ class Organization(AbstractModel, ReverseWrapperMixin):
     #
     @property
     def owners(self):
-        return self.members.filter(memberships__role=Role.OWNER)
+        return self.members.filter(memberships__role=ROLES.OWNER)
 
     @property
     def admins(self):
-        admins = self.memberships.filter(role=Role.ADMIN)
+        admins = self.memberships.filter(role=ROLES.ADMIN)
         if admins:
             return [m.user for m in admins.all()]
         return []
 
     @property
     def managers(self):
-        admins = self.memberships.filter(role__in=[Role.ADMIN, Role.OWNER])
+        admins = self.memberships.filter(role__in=[ROLES.ADMIN, ROLES.OWNER])
         return [m.user for m in admins.all()]
 
     # @property

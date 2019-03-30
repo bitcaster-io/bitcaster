@@ -5,6 +5,7 @@ from django.contrib.auth import login, password_validation
 from django.contrib.auth.backends import ModelBackend
 from django.db import transaction
 from django.http import HttpResponseNotFound
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -12,7 +13,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin, ProcessFormView
 from strategy_field.utils import fqn
 
-from bitcaster.framework.db.fields import Role
+from bitcaster.framework.db.fields import ROLES
 from bitcaster.models import Organization, User
 # from bitcaster.models.configurationissue import check_organization
 from bitcaster.models.organization import RESERVED_ORGANIZATION_NAME
@@ -55,7 +56,9 @@ class SetupForm(forms.Form):
 class SetupView(TemplateView, FormMixin, ProcessFormView):
     template_name = 'bitcaster/setup.html'
     form_class = SetupForm
-    success_url = '/'
+
+    def get_success_url(self):
+        return reverse('settings')
 
     def get(self, request, *args, **kwargs):
         if bool(config.INITIALIZED):
@@ -72,7 +75,7 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
                                               admin_email=user.email,
                                               is_core=True,
                                               owner=user)
-            org.add_member(user, role=Role.OWNER, date_enrolled=timezone.now())
+            org.add_member(user, role=ROLES.OWNER, date_enrolled=timezone.now())
             # org.teams.create(name='Owners', manager=user)
 
             # check_organization(org)

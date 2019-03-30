@@ -16,7 +16,7 @@ from timezone_field import TimeZoneField
 from bitcaster.file_storage import MediaFileSystemStorage, profile_media_root
 from bitcaster.framework.db.fields import EncryptedJSONField, LanguageField
 from bitcaster.mail import send_mail_async
-from bitcaster.security import Role
+from bitcaster.security import ROLES
 from bitcaster.utils.http import absolute_uri
 
 # from social_auth.backends.facebook import FacebookBackend
@@ -132,7 +132,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_manager(self):
         # return true is user is a manager of any application
-        return self.memberships.filter(role=Role.ADMIN).exists()
+        return self.memberships.filter(role=ROLES.ADMIN).exists()
 
     def set_password(self, raw_password):
         super(User, self).set_password(raw_password)

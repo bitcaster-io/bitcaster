@@ -1,8 +1,8 @@
 # line too long
 # flake8: noqa: E501
 from django.conf import settings
-from django.urls import include, path
-from django.views.generic import TemplateView
+from django.urls import include, path, reverse_lazy
+from django.views.generic import RedirectView, TemplateView
 
 from bitcaster.web.views.settings import SettingsPlugin, SettingsPluginToggle
 
@@ -31,6 +31,8 @@ from .views import (AddressAutocomplete, ApplicationCheckConfigView,
                     OrganizationChannelToggle, OrganizationChannelUpdate,
                     OrganizationChannelUsage, OrganizationCheckConfigView,
                     OrganizationConfiguration, OrganizationDashboard,
+                    OrganizationGroupCreate, OrganizationGroupDelete,
+                    OrganizationGroupEdit, OrganizationGroupList,
                     OrganizationMemberInvite, OrganizationMemberInviteAccept,
                     OrganizationMembershipDelete, OrganizationMembershipEdit,
                     OrganizationMembershipList, OrgInviteDelete, OrgInviteSend,
@@ -92,8 +94,12 @@ urlpatterns = [
     path('<slug:org>/me/assignment/', UserAddressesAssignmentView.as_view(), name='user-address-assignment'),
     path('<slug:org>/me/applications/', UserApplicationListView.as_view(), name='user-applications'),
 
-    path('new-user/', TemplateView.as_view(template_name='bitcaster/oauth/user_new.html')),
-    path('new-association/', TemplateView.as_view(template_name='bitcaster/oauth/user_associated.html')),
+    # path('new-user/', TemplateView.as_view(template_name='bitcaster/oauth/user_new.html')),
+    # path('new-association/', TemplateView.as_view(template_name='bitcaster/oauth/user_associated.html')),
+
+    path('new-user/', RedirectView.as_view(url=reverse_lazy('me'))),
+    path('new-association/', RedirectView.as_view(url=reverse_lazy('me'))),
+
     path('login-error/', TemplateView.as_view(template_name='bitcaster/oauth/login_error.html')),
 
     # path('user/<slug:org>/', UserHomeView.as_view(), name='user-org'),
@@ -183,7 +189,6 @@ urlpatterns = [
     path('<slug:org>/config/', OrganizationConfiguration.as_view(), name='org-config'),
 
     path('<slug:org>/member/', OrganizationMembershipList.as_view(), name='org-members'),
-    # path('<slug:org>/member/add/', OrganizationCreateMember.as_view(), name='org-member-register'),
     path('<slug:org>/member/<int:pk>/edit/', OrganizationMembershipEdit.as_view(), name='org-member-edit'),
     path('<slug:org>/member/<int:pk>/delete/', OrganizationMembershipDelete.as_view(), name='org-member-delete'),
 
@@ -191,6 +196,11 @@ urlpatterns = [
     path('<slug:org>/invite/delete/<int:pk>/', OrgInviteDelete.as_view(), name='org-invitation-delete'),
     path('<slug:org>/invite/send/<int:pk>/', OrgInviteSend.as_view(), name='org-invitation-send'),
     path('<slug:org>/invite/', OrganizationMemberInvite.as_view(), name='org-invite'),
+
+    path('<slug:org>/group/', OrganizationGroupList.as_view(), name='org-groups'),
+    path('<slug:org>/group/add/', OrganizationGroupCreate.as_view(), name='org-group-add'),
+    path('<slug:org>/group/<int:pk>/edit/', OrganizationGroupEdit.as_view(), name='org-group-edit'),
+    path('<slug:org>/group/<int:pk>/delete/', OrganizationGroupDelete.as_view(), name='org-group-delete'),
 
     # path('<slug:org>/team/', OrganizationTeamList.as_view(), name='org-teams'),
     # path('<slug:org>/team/add/', OrganizationTeamCreate.as_view(), name='org-team-create'),

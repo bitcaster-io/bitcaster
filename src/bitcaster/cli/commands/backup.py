@@ -119,14 +119,17 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
         if 'options' in selection:
             click.echo(f'restore...options')
             for key, value in data['options']:
-                _type = constance.settings.CONFIG[key][2]
-                if _type is bool:
-                    value = str(value).lower() in ['1', 'true', 't']
-                elif isinstance(_type, str):
-                    value = str(value)
-                else:
-                    value = _type(value)
-                setattr(config, key, value)
+                try:
+                    _type = constance.settings.CONFIG[key][2]
+                    if _type is bool:
+                        value = str(value).lower() in ['1', 'true', 't']
+                    elif isinstance(_type, str):
+                        value = str(value)
+                    else:
+                        value = _type(value)
+                    setattr(config, key, value)
+                except Exception:
+                    ctx.fail('%s=%s' % (key, value))
 
         ALL_MODELS = get_all_models()
         for model_name in ALL_MODELS:

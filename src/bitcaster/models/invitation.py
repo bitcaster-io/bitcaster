@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from bitcaster.framework.db.fields import Role, RoleField
+from bitcaster.framework.db.fields import ROLES, RoleField
 from bitcaster.mail import send_mail_by_template
 from bitcaster.otp import totp
 from bitcaster.state import get_current_user
@@ -43,7 +43,7 @@ class Invitation(models.Model):
                              blank=True, null=True,
                              on_delete=models.CASCADE,
                              related_name='invitations')
-    role = RoleField(default=Role.SUBSCRIBER)
+    role = RoleField(default=ROLES.SUBSCRIBER)
 
     event = models.ForeignKey(Event,
                               default=None, blank=True, null=True,
@@ -78,6 +78,9 @@ class Invitation(models.Model):
 
     def send_sms(self):
         raise NotImplementedError
+
+    def accept(self, user):
+        return
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.event:

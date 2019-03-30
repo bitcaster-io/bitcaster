@@ -1,6 +1,8 @@
 import click
+from django.apps import apps
 
 from bitcaster.cli import need_setup
+from bitcaster.cli.commands.upgrade import upgrade
 
 
 def parse_bool(value):
@@ -13,22 +15,15 @@ caster = {bool: parse_bool,
 
 
 @click.command()
-@click.argument('key', required=False, default=None)
-@click.argument('value', required=False, default=None)
 @click.pass_context
 @need_setup
-def option(ctx, key, value):
-    from constance import config, settings
-    if not key:
-        for entry, __ in settings.CONFIG.items():
-            click.echo('%s=%s' % (entry, str(getattr(config, entry))))
-    elif value:
-        try:
-            default, help, type = settings.CONFIG[key]
-            cast = caster.get(type, type)
-            setattr(config, key, cast(value))
-            click.echo('%s=%s' % (key, str(getattr(config, key))))
-        except AttributeError:
-            ctx.fail('%s is not a valid option' % key)
-    else:
-        click.echo('%s=%s' % (key, str(getattr(config, key))))
+def zap(ctx):
+    from django.db import connection
+    cursor = connection.cursor()
+    for app_name in ['bitcaster', 'social_django', 'constance']:
+        app = apps.get_app_config(app_name)
+        for model in app.get_models():
+            click.echo('Zapping {}'.format(model._meta.verbose_name))
+            cursor.execute('TRUNCATE TABLE "{0}" CASCADE '.format(model._meta.db_table))
+
+    ctx.invoke(upgrade)

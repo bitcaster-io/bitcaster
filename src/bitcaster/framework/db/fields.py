@@ -20,7 +20,7 @@ from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.exceptions import HandlerNotFound
 from bitcaster.file_storage import AvatarFileSystemStorage
 # from bitcaster.web.forms.fields.d import DispatcherFormField
-from bitcaster.security import Role
+from bitcaster.security import ROLES
 from bitcaster.utils.enumfield import EnumField
 
 from ..forms.fields import DispatcherFormField
@@ -123,8 +123,8 @@ class DeletionStatusField(models.IntegerField):
 
 class RoleField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
-                 choices=Role.as_choices(),
-                 default=int(Role.SUBSCRIBER),
+                 choices=ROLES,
+                 default=ROLES.SUBSCRIBER,
                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
         super().__init__(verbose_name=verbose_name, name=name,
                          choices=choices,

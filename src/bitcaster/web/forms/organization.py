@@ -3,7 +3,7 @@ import logging
 
 from django import forms
 
-from bitcaster.models import Organization
+from bitcaster.models import Organization, OrganizationGroup
 from bitcaster.web.forms.fields import EmailField
 
 logger = logging.getLogger(__name__)
@@ -14,6 +14,34 @@ class OrganizationSystemForm(forms.ModelForm):
         model = Organization
         fields = ('name', 'admin_email', 'slug', 'avatar',
                   'default_role', 'rate_limit')
+
+
+class OrganizationGroupForm(forms.ModelForm):
+    class Meta:
+        model = OrganizationGroup
+        fields = ('name', 'members')
+
+    # def __init__(self, organization, *args, **kwargs):
+    #     self.organization = organization
+    #     super(OrganizationGroupForm, self).__init__(*args, **kwargs)
+    #
+    # def save(self, commit=True):
+    #     self.instance.organization = self.organization
+    #     return super().save(commit)
+    #
+    # def full_clean(self):
+    #     super().full_clean()
+
+    # def clean_name(self):
+    #     value = self.cleaned_data['name']
+    #     if self.instance.pk:
+    #         qs = self.organization.groups.filter(name=value).exclude(id=self.instance.pk)
+    #     else:
+    #         qs = self.organization.groups.filter(name=value)
+    #
+    #     if qs.exists():
+    #         raise ValidationError('Group with this name already exists.')
+    #     return value
 
 
 class OrganizationForm(forms.ModelForm):

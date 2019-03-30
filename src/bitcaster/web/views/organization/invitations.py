@@ -16,7 +16,7 @@ from django.views.generic import CreateView
 from strategy_field.utils import fqn
 
 from bitcaster import messages
-from bitcaster.framework.db.fields import Role
+from bitcaster.framework.db.fields import ROLES
 from bitcaster.models import Invitation, Organization, OrganizationMember, User
 from bitcaster.otp import totp
 from bitcaster.web.forms import (OrganizationInvitationFormSet,
@@ -127,14 +127,14 @@ class OrganizationMemberInviteAccept(MessageUserMixin, CreateView):
                                        )
             membership = OrganizationMember.objects.create(organization=self.selected_organization,
                                               user=user,
-                                              role=self.invitation.role or Role.SUBSCRIBER,
+                                              role=self.invitation.role or ROLES.SUBSCRIBER,
                                               date_enrolled=timezone.now())
             self.invitation.date_accepted = timezone.now()
             self.invitation.save()
             login(self.request, user, backend=fqn(ModelBackend))
             assert self.request.user == user
 
-        # if self.invitation.role in [Role.OWNER, Role.ADMIN]:
+        # if self.invitation.role in [ROLES.OWNER, ROLES.ADMIN]:
         #     url = reverse('org-dashboard', args=[self.selected_organization.slug])
         # else:
         url = reverse('me', args=[self.selected_organization.slug])

@@ -12,7 +12,7 @@ import bitcaster
 from bitcaster import models
 from bitcaster.agents import EmailAgent
 from bitcaster.dispatchers import Email
-from bitcaster.framework.db.fields import Role
+from bitcaster.framework.db.fields import ROLES
 from bitcaster.models.token import generate_api_token
 from bitcaster.utils import fqn
 
@@ -156,7 +156,7 @@ class UserFactory(AutoRegisterModelFactory):
 
 
 class MemberFactory(UserFactory):
-    role = Role.SUBSCRIBER
+    role = ROLES.SUBSCRIBER
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
@@ -195,7 +195,7 @@ class OrganizationFactory(AutoRegisterModelFactory):
     @classmethod
     def _after_postgeneration(cls, instance, create, results=None):
         super()._after_postgeneration(instance, create, results)
-        instance.add_member(instance.owner, role=Role.OWNER)
+        instance.add_member(instance.owner, role=ROLES.OWNER)
 
 
 class ApplicationFactory(AutoRegisterModelFactory):
@@ -249,7 +249,7 @@ class InvitationFactory(AutoRegisterModelFactory):
 #
 #     application = factory.SubFactory(ApplicationFactory)
 #     team = factory.SubFactory(TeamFactory)
-#     role = Role.SUBSCRIBER
+#     role = ROLES.SUBSCRIBER
 
 
 class ApplicationTriggerKeyFactory(AutoRegisterModelFactory):

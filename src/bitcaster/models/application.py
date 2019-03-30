@@ -13,7 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
 from bitcaster.file_storage import app_media_root
-from bitcaster.framework.db.fields import (AvatarField, Role,
+from bitcaster.framework.db.fields import (ROLES, AvatarField,
                                            SubscriptionPolicyField,)
 from bitcaster.framework.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.utils.slug import slugify_instance
@@ -89,6 +89,6 @@ class Application(AbstractModel, ReverseWrapperMixin):
     @cached_property
     def admins(self):
         admins = []
-        for t in self.teams.filter(role=Role.ADMIN):
+        for t in self.teams.filter(role=ROLES.ADMIN):
             admins.extend([m.user for m in t.members.all()])
         return admins

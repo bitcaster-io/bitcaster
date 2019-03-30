@@ -17,7 +17,7 @@ from django.views.generic.detail import SingleObjectMixin
 from strategy_field.utils import fqn
 
 from bitcaster import messages
-from bitcaster.framework.db.fields import Role
+from bitcaster.framework.db.fields import ROLES
 from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.models import Invitation, Organization, OrganizationMember, User
 from bitcaster.otp import totp
@@ -69,7 +69,7 @@ class InvitationAccept(MessageUserMixin, CreateView):
             login(self.request, user, backend=fqn(ModelBackend))
             assert self.request.user == user
 
-        if self.membership.role in [Role.OWNER, Role.ADMIN]:
+        if self.membership.role in [ROLES.OWNER, ROLES.ADMIN]:
             url = reverse('org-dashboard', args=[self.selected_organization.slug])
         else:
             url = reverse('me', args=[self.selected_organization.slug])

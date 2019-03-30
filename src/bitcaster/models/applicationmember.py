@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.db import models
-from django.utils import timezone
 
 from bitcaster.framework.db.fields import RoleField
 
-from .organization import Organization
+from .application import Application
+from .organizationmember import OrganizationMember
 
 
-class OrganizationMember(models.Model):
+class ApplicationMember(models.Model):
     """
     Identifies relationships between teams and users.
 
@@ -16,22 +16,26 @@ class OrganizationMember(models.Model):
     be set to ownership.
     """
 
-    organization = models.ForeignKey(Organization,
-                                     on_delete=models.CASCADE,
-                                     db_index=True,
-                                     related_name='memberships')
+    application = models.ForeignKey(Application,
+                                    on_delete=models.CASCADE,
+                                    db_index=True,
+                                    related_name='memberships')
+    org_member = models.ForeignKey(OrganizationMember,
+                                   db_index=True,
+                                   on_delete=models.CASCADE,
+                                   related_name='application')
+    # this is a denormalization
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              null=True, blank=True,
                              db_index=True,
                              on_delete=models.CASCADE,
-                             related_name='memberships')
+                             related_name='application')
     role = RoleField()
-    date_enrolled = models.DateTimeField(default=timezone.now, help_text='enrollemnt date')
 
     class Meta:
         app_label = 'bitcaster'
         unique_together = (
-            ('organization', 'user'),
+            ('application', 'org_member'),
         )
 
     def __str__(self):

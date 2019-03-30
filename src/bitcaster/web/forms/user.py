@@ -19,7 +19,7 @@ from django_countries import countries
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from timezone_field import TimeZoneField
 
-from bitcaster.framework.db.fields import Role
+from bitcaster.framework.db.fields import ROLES
 from bitcaster.mail import send_mail_by_template
 from bitcaster.models import Address, AddressAssignment, Channel, User
 from bitcaster.otp import totp
@@ -133,7 +133,7 @@ class NewMemberForm(_UserCreationForm):
     error_messages = {
         'password_mismatch': _("The two password fields didn't match."),
     }
-    role = forms.ChoiceField(choices=Role.as_choices())
+    role = forms.ChoiceField(choices=ROLES)
 
     password1 = forms.CharField(
         label=_('Password'),

@@ -51,8 +51,9 @@ class OAuthError(Exception):
 
 
 class NotMemberOfOrganization(AuthFailed):
-    def __init__(self, backend):
+    def __init__(self, backend, user_data):
         self.backend = backend
+        self.user_data = user_data
 
     def __str__(self):
         return 'User doesn\'t belong to the organization'

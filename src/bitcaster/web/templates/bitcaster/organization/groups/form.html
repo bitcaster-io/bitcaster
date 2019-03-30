@@ -6,38 +6,14 @@
             {% csrf_token %}
             {{ form.errors }}
             {{ form.non_field_errors }}
-            <table class="table col-12">
-                <tbody>
-                <tr lass="d-flex">
-                    <td style="width: 20%">{% trans "User" %}</td>
-                    <td class="col-4">{{ membership.user }}</td>
-                </tr>
-                <tr lass="d-flex">
-                    <td>{% trans "Role" %}</td>
-                    <td class="col-4">{{ form.role.errors }}{{ form.role|as_crispy_field }}</td>
-                </tr>
-                <tr lass="d-flex">
-                    <td>{% trans "Invited by" %}</td>
-                    <td class="col-4">{{ membership.invited_by }}</td>
-                </tr>
-                <tr lass="d-flex">
-                    <td>{% trans "Invited on" %}</td>
-                    <td class="col-4">{{ membership.date_added }}</td>
-                </tr>
-                <tr lass="d-flex">
-                    <td>{% trans "Enrolled on" %}</td>
-                    <td class="col-4">{{ membership.date_enrolled|default_if_none:"" }}</td>
-                </tr>
-                </tbody>
-            </table>
-            <button type="submit" class="btn btn-danger btn-small pull-left" href=".">{% trans "Save" %}</button>
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-danger btn-small pull-left">{% trans "Save" %}</button>
             <button type="button"
                     class="btn btn-light btn-small pull-left"
-                    onclick="window.location.href = '{{ organization.urls.members }}';">
+                    onclick="window.location.href = '{{ organization.urls.groups }}';">
                 Cancel
             </button>
-
         </form>
-    </div>
+        </div>
     </div>
 {% endblock %}
