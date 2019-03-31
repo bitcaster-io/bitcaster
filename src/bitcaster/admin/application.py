@@ -3,7 +3,7 @@ import logging
 
 from django.contrib import admin
 
-from bitcaster.models import Application
+from bitcaster.models import Application, ApplicationMember
 
 from .forms import ApplicationForm
 from .inlines import ChannelInline, EventInline
@@ -18,3 +18,8 @@ class ApplicationAdmin(admin.ModelAdmin):
     list_filter = ('organization', )
     inlines = [ChannelInline, EventInline]
     form = ApplicationForm
+
+
+@admin.register(ApplicationMember, site=site)
+class ApplicationMemberAdmin(admin.ModelAdmin):
+    list_display = ('application', 'user', 'role',)

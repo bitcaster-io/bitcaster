@@ -1,44 +1,31 @@
 from django.db import models
-from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.functional import cached_property
+from django.utils.translation import gettext_lazy as _
 
-from bitcaster.framework.db.fields import DeletionStatusField, RoleField
-from bitcaster.utils.slug import slugify_instance
-
+from .application import Application
+from .applicationmember import ApplicationMember
 from .base import AbstractModel
-from .organizationmember import OrganizationMember
 from .user import User
 
 
-class Team(AbstractModel):
-    """
-    A team represents a group of individuals belongs same organization
-    """
-    application = models.ForeignKey('bitcaster.Application',
+class ApplicationTeam(AbstractModel):
+    name = models.CharField(max_length=100)
+    application = models.ForeignKey(Application,
                                     related_name='teams',
                                     on_delete=models.CASCADE)
-    members = models.ManyToManyField(OrganizationMember)
+    memberships = models.ManyToManyField(ApplicationMember)
     manager = models.ForeignKey(User,
                                 related_name='+',
                                 on_delete=models.CASCADE)
-    role = RoleField()
-    slug = models.SlugField()
-    name = models.CharField(_('Name'), max_length=64)
-    description = models.CharField(_('Description'), max_length=255, null=True, blank=True)
-    status = DeletionStatusField()
-    date_added = models.DateTimeField(default=timezone.now, null=True)
 
     class Meta:
         app_label = 'bitcaster'
+        verbose_name = _('Team')
+        verbose_name_plural = _('Teams')
 
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            # lock = locks.get('slug:team', 5)
-            # with TimedRetryPolicy(10, lock.acquire):
-            slugify_instance(self, self.name, application=self.application)
-            super(Team, self).save(*args, **kwargs)
-        else:
-            super(Team, self).save(*args, **kwargs)
+    @cached_property
+    def members(self):
+        return User.objects.filter(memberships__applications__application__teams=self)

@@ -7,9 +7,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.file_storage import org_media_root
-from bitcaster.framework.db.fields import (ROLES, AvatarField,
-                                           DeletionStatusField, RoleField,)
-from bitcaster.framework.db.manager import DeleteableModelManagerMixin
+from bitcaster.framework.db.fields import ROLES, AvatarField, RoleField
 from bitcaster.framework.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.models.validators import ListValidator, NameValidator
@@ -24,7 +22,7 @@ RESERVED_ORGANIZATION_NAME = frozenset(RESERVED_NAMES)
 RESERVED_ORGANIZATION_SLUGS = frozenset(RESERVED_NAMES)
 
 
-class OrganizationManager(DeleteableModelManagerMixin, models.Manager):
+class OrganizationManager(models.Manager):
     pass
 
 
@@ -41,7 +39,6 @@ class Organization(AbstractModel, ReverseWrapperMixin):
                             )
     slug = models.SlugField(_('Short name'), unique=True, blank=True,
                             validators=[])
-    status = DeletionStatusField()
     enabled = models.BooleanField(default=True)
     date_added = models.DateTimeField(default=timezone.now)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL,
@@ -64,6 +61,8 @@ class Organization(AbstractModel, ReverseWrapperMixin):
 
     class Meta:
         app_label = 'bitcaster'
+        verbose_name = _('Organization')
+        verbose_name_plural = _('Organizations')
 
     class Reverse:
         args = ['slug']

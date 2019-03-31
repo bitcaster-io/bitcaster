@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster.framework.db.fields import RoleField
 
@@ -33,6 +34,8 @@ class OrganizationMember(models.Model):
         unique_together = (
             ('organization', 'user'),
         )
+        verbose_name = _('Member')
+        verbose_name_plural = _('Members')
 
     def __str__(self):
         return str(self.user)

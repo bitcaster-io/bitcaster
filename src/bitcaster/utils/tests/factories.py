@@ -206,6 +206,18 @@ class ApplicationFactory(AutoRegisterModelFactory):
     name = factory.Sequence(lambda n: 'Application %03d' % n)
     organization = factory.SubFactory(OrganizationFactory)
 
+    # @factory.post_generation
+    # def members(self, create, extracted, **kwargs):
+    #     if not create:
+    #         # Simple build, do nothing.
+    #         return
+    #     u = UserFactory()
+    #     m = OrganizationMemberFactory(organization=self.organization, user=u)
+    #     m = ApplicationMemberFactory(application=self,
+    #                                  org_member=m,
+    #                                  user=u)
+    #
+
 
 class OrganizationMemberFactory(AutoRegisterModelFactory):
     organization = factory.SubFactory(OrganizationFactory)
@@ -216,9 +228,19 @@ class OrganizationMemberFactory(AutoRegisterModelFactory):
         django_get_or_create = ('organization', 'user')
 
 
+class ApplicationMemberFactory(AutoRegisterModelFactory):
+    application = factory.SubFactory(ApplicationFactory)
+    org_member = factory.SubFactory(OrganizationMemberFactory)
+    role = ROLES.SUBSCRIBER
+
+    class Meta:
+        model = bitcaster.models.ApplicationMember
+        django_get_or_create = ('application', 'org_member')
+
+
 class TeamFactory(AutoRegisterModelFactory):
     class Meta:
-        model = bitcaster.models.Team
+        model = bitcaster.models.ApplicationTeam
         django_get_or_create = ('name',)
 
     application = factory.SubFactory(ApplicationFactory)
@@ -226,12 +248,14 @@ class TeamFactory(AutoRegisterModelFactory):
     name = factory.Faker('name')
 
     @factory.post_generation
-    def tokens(self, create, extracted, **kwargs):
+    def memberships(self, create, extracted, **kwargs):
         if not create:
             # Simple build, do nothing.
             return
-        m = OrganizationMemberFactory(organization=self.application.organization)
-        self.members.add(m)
+        o = OrganizationMemberFactory(organization=self.application.organization)
+        m = ApplicationMemberFactory(application=self.application,
+                                     org_member=o)
+        self.memberships.add(m)
 
 
 class InvitationFactory(AutoRegisterModelFactory):

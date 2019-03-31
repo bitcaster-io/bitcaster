@@ -4,8 +4,9 @@ import logging
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+from model_utils import Choices
 
-from bitcaster.framework.db.fields import EncryptedJSONField, EnumField
+from bitcaster.framework.db.fields import EncryptedJSONField
 
 from .base import AbstractModel
 from .channel import Channel
@@ -24,32 +25,17 @@ class SubscriptionQuerySet(models.QuerySet):
         return self.filter(enabled=True, channel__enabled=True, *args, **kwargs)
 
 
-class SubscriptionStatus(EnumField):
-    a = 1
-    b = 2
-
-    PROPOSED = 10
-    REQUESTED = 20
-
-    ACCEPTED = 30
-    APPROVED = 40
-    MANAGED = 50
-    OWNED = 60
-
-    @classmethod
-    def as_choices(cls):
-        return sorted([(int(cls.PROPOSED), _('Admin has sent subscription proposal to user')),
-                       (int(cls.REQUESTED), _('User has requested the subscripiton')),
-
-                       (int(cls.ACCEPTED), _('User accepted subscription proposal')),
-                       (int(cls.APPROVED), _('Admin approved the subscription request')),
-                       (int(cls.MANAGED), _('Admin subscribed user')),
-                       (int(cls.OWNED), _('User subscribed to event')),
-                       ])
-
-
 class Subscription(ReverseWrapperMixin, AbstractModel):
     """ """
+    STATUSES = Choices(
+        (10, 'PROPOSED', _('Admin has sent subscription proposal to user')),
+        (20, 'REQUESTED', _('User has requested the subscripiton')),
+
+        (30, 'ACCEPTED', _('User accepted subscription proposal')),
+        (40, 'APPROVED', _('Admin approved the subscription request')),
+        (50, 'MANAGED', _('Admin subscribed user')),
+        (60, 'OWNED', _('User subscribed to event')),
+    )
     subscriber = models.ForeignKey(User, models.CASCADE,
                                    # blank=True, null=True,
                                    related_name='subscriptions')
@@ -63,14 +49,14 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
                                 related_name='linked_subscriptions')
     enabled = models.BooleanField(default=True)
     config = EncryptedJSONField(null=True, blank=True)
-    status = models.IntegerField(choices=SubscriptionStatus.as_choices(),
-                                 default=SubscriptionStatus.OWNED)
+    status = models.IntegerField(choices=STATUSES,
+                                 default=STATUSES.OWNED)
 
     objects = SubscriptionQuerySet.as_manager()
 
     class Meta:
         app_label = 'bitcaster'
-        # unique_together = ('channel', 'subscriber', 'event')
+        unique_together = ('channel', 'subscriber', 'event')
         get_latest_by = 'id'
         verbose_name = _('Subscription')
         verbose_name_plural = _('Subscriptions')

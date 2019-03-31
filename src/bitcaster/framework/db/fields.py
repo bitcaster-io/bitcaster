@@ -6,13 +6,12 @@ import logging
 from cryptography.fernet import Fernet, MultiFernet
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField as _JSONField
-from django.contrib.postgres.forms import JSONField as _JSONFormField
+# from django.contrib.postgres.forms import JSONField as _JSONFormField
 from django.db import models
 from django.db.models import Field
 from django.utils.functional import cached_property
-from django.utils.translation import gettext_lazy as _
 from fernet_fields import hkdf
-from jsoneditor.forms import JSONEditor
+# from jsoneditor.forms import JSONEditor
 from strategy_field.fields import StrategyField
 
 from bitcaster.agents.registry import agent_registry
@@ -21,19 +20,19 @@ from bitcaster.exceptions import HandlerNotFound
 from bitcaster.file_storage import AvatarFileSystemStorage
 # from bitcaster.web.forms.fields.d import DispatcherFormField
 from bitcaster.security import ROLES
-from bitcaster.utils.enumfield import EnumField
 
 from ..forms.fields import DispatcherFormField
 
 logger = logging.getLogger(__name__)
 
 
-class JSONFormField(_JSONFormField):
-    widget = JSONEditor
-
-    def __init__(self, *av, **kw):
-        kw['widget'] = self.widget  # force avoiding widget override
-        super(JSONFormField, self).__init__(*av, **kw)
+#
+# class JSONFormField(_JSONFormField):
+#     widget = JSONEditor
+#
+#     def __init__(self, *av, **kw):
+#         kw['widget'] = self.widget  # force avoiding widget override
+#         super(JSONFormField, self).__init__(*av, **kw)
 
 
 class EncryptedJSONField(_JSONField):
@@ -64,12 +63,12 @@ class EncryptedJSONField(_JSONField):
         value = {'f': self.fernet.encrypt(json.dumps(value).encode('utf8')).decode('utf8')}
         return super().get_prep_value(value)
 
-    def formfield(self, **kwargs):
-        defaults = {
-            'form_class': kwargs.get('form_class', JSONFormField),
-        }
-        defaults.update(kwargs)
-        return super(EncryptedJSONField, self).formfield(**defaults)
+    # def formfield(self, **kwargs):
+    #     defaults = {
+    #         'form_class': kwargs.get('form_class', JSONFormField),
+    #     }
+    #     defaults.update(kwargs)
+    #     return super(EncryptedJSONField, self).formfield(**defaults)
 
 
 class LanguageField(models.CharField):
@@ -83,90 +82,48 @@ class LanguageField(models.CharField):
         super().__init__(*args, **kwargs)
 
 
-class DeletionStatus(EnumField):
-    ACTIVE = 1
-    PENDING_DELETION = 2
-    DELETION_IN_PROGRESS = 3
-    DEPRECATED = 4
+# class DeletionStatus(EnumField):
+#     ACTIVE = 1
+#     PENDING_DELETION = 2
+#     DELETION_IN_PROGRESS = 3
+#     DEPRECATED = 4
+#
+#     @classmethod
+#     def as_choices(cls):
+#         return sorted([(int(cls.ACTIVE), _('Active')),
+#                        (int(cls.DEPRECATED), _('Deprecated')),
+#                        (int(cls.PENDING_DELETION), _('Pending Deletion')),
+#                        (int(cls.DELETION_IN_PROGRESS), _('Deletion in Progress')),
+#                        ])
 
-    @classmethod
-    def as_choices(cls):
-        return sorted([(int(cls.ACTIVE), _('Active')),
-                       (int(cls.DEPRECATED), _('Deprecated')),
-                       (int(cls.PENDING_DELETION), _('Pending Deletion')),
-                       (int(cls.DELETION_IN_PROGRESS), _('Deletion in Progress')),
-                       ])
 
-
-class DeletionStatusField(models.IntegerField):
-    def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
-                 choices=DeletionStatus.as_choices(),
-                 default=DeletionStatus.ACTIVE,
-                 help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
-        super().__init__(verbose_name=verbose_name, name=name,
-                         choices=choices,
-                         db_index=db_index, serialize=serialize, default=default,
-                         help_text=help_text,
-                         db_column=db_column, db_tablespace=db_tablespace, validators=validators,
-                         error_messages=error_messages)
-
-    def get_prep_value(self, value):
-        return super().get_prep_value(int(value))
-
-    def value_to_string(self, obj):
-        """
-        Return a string value of this field from the passed obj.
-        This is used by the serialization framework.
-        """
-        return str(int(self.value_from_object(obj)))
+# class DeletionStatusField(models.IntegerField):
+#     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
+#                  choices=DeletionStatus.as_choices(),
+#                  default=DeletionStatus.ACTIVE,
+#                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
+#         super().__init__(verbose_name=verbose_name, name=name,
+#                          choices=choices,
+#                          db_index=db_index, serialize=serialize, default=default,
+#                          help_text=help_text,
+#                          db_column=db_column, db_tablespace=db_tablespace, validators=validators,
+#                          error_messages=error_messages)
+#
+#     def get_prep_value(self, value):
+#         return super().get_prep_value(int(value))
+#
+#     def value_to_string(self, obj):
+#         """
+#         Return a string value of this field from the passed obj.
+#         This is used by the serialization framework.
+#         """
+#         return str(int(self.value_from_object(obj)))
 
 
 class RoleField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
                  choices=ROLES,
                  default=ROLES.SUBSCRIBER,
-                 help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
-        super().__init__(verbose_name=verbose_name, name=name,
-                         choices=choices,
-                         db_index=db_index, serialize=serialize, default=default,
-                         help_text=help_text,
-                         db_column=db_column, db_tablespace=db_tablespace, validators=validators,
-                         error_messages=error_messages)
-
-    def get_prep_value(self, value):
-        return super().get_prep_value(int(value))
-
-    def value_to_string(self, obj):
-        """
-        Return a string value of this field from the passed obj.
-        This is used by the serialization framework.
-        """
-        return str(int(self.value_from_object(obj)))
-
-
-class SubscriptionPolicy(EnumField):
-    FREE = 1
-    REQUIRE_CONFIRMATION = 2
-    INVITATION = 3
-    MANAGED = 4
-    MEMBERS = 5
-
-    @classmethod
-    def as_choices(cls):
-        return tuple(sorted([(int(cls.FREE), _('Free. (Everybody can automatically subscribe)')),
-                             (int(cls.INVITATION), _('Invitation. (Require invitation. Event will not be visible)')),
-                             (int(cls.MEMBERS), _('Members only. (Only members of Application Teams can subscribe)')),
-                             #  (int(cls.REQUIRE_CONFIRMATION),
-                             #  _('Require Confirmation. (User can ask to subscribe)')),
-                             #  (int(cls.MANAGED),
-                             #  _('Managed. (User cannot subscribe/unsubscribe but can change channel)')),
-                             ]))
-
-
-class SubscriptionPolicyField(models.IntegerField):
-    def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
-                 choices=SubscriptionPolicy.as_choices(),
-                 default=int(SubscriptionPolicy.FREE),
                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
         super().__init__(verbose_name=verbose_name, name=name,
                          choices=choices,

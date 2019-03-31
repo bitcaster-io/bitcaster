@@ -55,3 +55,11 @@ def test_slugify_instance_fail():
     with mock.patch('%s.objects.all' % fqn(Organization), DummyQS(Organization)):
         slugify_instance(org, collision.slug, reserved=('reserved',), )
     assert org.slug
+
+
+def test_slugify_instance_kwargs():
+    collision = OrganizationFactory(slug='slug')
+    org = Organization()
+    with mock.patch('%s.objects.all' % fqn(Organization), DummyQS(Organization)):
+        slugify_instance(org, collision.slug, aaa=1, reserved=('reserved',), )
+    assert org.slug

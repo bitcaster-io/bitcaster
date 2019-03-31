@@ -21,7 +21,8 @@ from timezone_field import TimeZoneField
 
 from bitcaster.framework.db.fields import ROLES
 from bitcaster.mail import send_mail_by_template
-from bitcaster.models import Address, AddressAssignment, Channel, User
+from bitcaster.models import (Address, AddressAssignment,
+                              Channel, Subscription, User,)
 from bitcaster.otp import totp
 from bitcaster.state import state
 from bitcaster.utils.email_verification import check_new_email_address_request
@@ -270,7 +271,7 @@ class AddressAssignmentFormSet(AddressAssignmentFormSetBase, BaseInlineFormSet):
         return super().get_queryset().order_by('channel')
 
 
-class UserSubscriptionForm(forms.Form):
+class UserSubscribeForm(forms.Form):
     # recipient = forms.CharField(required=False)
     # channels = forms.MultipleChoiceField()
     channels = forms.ModelMultipleChoiceField(queryset=Channel.objects.none())
@@ -279,3 +280,25 @@ class UserSubscriptionForm(forms.Form):
         self.event = instance
         super().__init__(**kwargs)
         self.fields['channels'].queryset = self.event.channels.filter(addresses__user=state.request.user)
+
+
+class UserSubscriptionEditForm(forms.ModelForm):
+
+    class Meta:
+        model = Subscription
+        fields = ('channel', )
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.fields['channel'].queryset = self.instance.event.channels.filter(addresses__user=state.request.user)
+
+    def clean_channel(self):
+        value = self.cleaned_data['channel']
+        # this form i sonly for edit
+        qs = Subscription.objects.filter(subscriber=self.instance.subscriber,
+                                         event=self.instance.event,
+                                         channel=value).exclude(id=self.instance.pk)
+
+        if qs.exists():
+            raise ValidationError(_('This channel is already used.'))
+        return value

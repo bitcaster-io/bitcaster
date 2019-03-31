@@ -171,6 +171,22 @@ def assignment1(user1, channel1):
 
 
 @pytest.fixture
+def organization_member(organization1, user1):
+    from bitcaster.utils.tests.factories import OrganizationMemberFactory
+
+    return OrganizationMemberFactory(organization=organization1,
+                                     user=user1)
+
+
+@pytest.fixture
+def application_member(application1, organization_member):
+    from bitcaster.utils.tests.factories import ApplicationMemberFactory
+
+    return ApplicationMemberFactory(application=application1,
+                                    org_member=organization_member)
+
+
+@pytest.fixture
 def subscriber1(user1, message1):
     for addr in user1.addresses.all():
         user1.assignments.create(address=addr, channel=message1.channel)

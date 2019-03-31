@@ -2,6 +2,7 @@ import datetime
 from logging import getLogger
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import Event
 from bitcaster.models.application import Application
@@ -33,8 +34,8 @@ class ApplicationTriggerKey(ReverseWrapperMixin, AbstractModel):
 
     class Meta:
         app_label = 'bitcaster'
-        verbose_name = 'Key'
-        verbose_name_plural = 'Keys'
+        verbose_name = _('Key')
+        verbose_name_plural = _('Keys')
 
     class Reverse:
         pattern = 'app-key-{op}'

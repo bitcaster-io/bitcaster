@@ -7,13 +7,12 @@ from dal_select2.widgets import ModelSelect2, ModelSelect2Multiple
 from django import forms
 from django.utils.translation import gettext as _
 
-from bitcaster.models import OrganizationMember, Team, User
-from bitcaster.security import ROLES
+from bitcaster.models import ApplicationTeam, OrganizationMember, User
 
 logger = logging.getLogger(__name__)
 
 
-class TeamForm(forms.ModelForm):
+class ApplicationTeamForm(forms.ModelForm):
     members = forms.ModelMultipleChoiceField(queryset=OrganizationMember.objects.all(),
                                              widget=ModelSelect2Multiple(url='user-autocomplete')
                                              )
@@ -21,8 +20,6 @@ class TeamForm(forms.ModelForm):
     manager = forms.ModelChoiceField(queryset=User.objects.all(),
                                      widget=ModelSelect2(url='user-autocomplete')
                                      )
-    role = forms.ChoiceField(choices=ROLES,
-                             widget=ModelSelect2())
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application')
@@ -35,5 +32,5 @@ class TeamForm(forms.ModelForm):
         self.fields['manager'].queryset = User.objects.filter(memberships__organization=self.application.organization)
 
     class Meta:
-        fields = ('name', 'manager', 'description', 'role', 'members')
-        model = Team
+        fields = ('name', 'manager', 'members')
+        model = ApplicationTeam

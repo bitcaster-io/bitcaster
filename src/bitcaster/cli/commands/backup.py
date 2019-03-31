@@ -10,9 +10,11 @@ from bitcaster.cli import need_setup
 from bitcaster.utils.json import Decoder, Encoder
 
 DATA = ['user',
-        # 'agentmetadata', 'dispatchermetadata',
         'organization',
+        'organizationmember',
+        'organizationgroup',
         'application',
+        'applicationteam',
         'channel',
         'event',
         'message',
@@ -89,13 +91,14 @@ def backup(ctx, filename):
 
 @click.command()  # noqa: C901
 @click.option('--filename', default='bitcaster.json', type=click.Path())
+@click.option('--reindex/--no-reindex', default=False)
 @click.option('-o', '--only', 'selection', default=None, multiple=True, type=click.Choice(SECTIONS))
 @click.option('-w', '--overwrite', 'overwrite', default=False, is_flag=True)
 @click.option('-i', '--ignore-errors', default=False, is_flag=True,
               help='Try to continueon error')
 @click.pass_context
 @need_setup
-def restore(ctx, filename, overwrite, ignore_errors, selection):
+def restore(ctx, filename, overwrite, ignore_errors, selection, reindex):
     from django.apps import apps
     from django.db.models.signals import post_save
     import constance.settings
@@ -166,12 +169,14 @@ def restore(ctx, filename, overwrite, ignore_errors, selection):
                         m2m_attr = getattr(parent, m2m_field_name)
                         related = related_model.objects.get(pk=record[m2m_field_name])
                         m2m_attr.add(related)
+    if reindex:
+        ctx.invoke(reindex)
 
-        from bitcaster.models import AgentMetaData
-        from bitcaster.models import DispatcherMetaData
+    from bitcaster.models import AgentMetaData
+    from bitcaster.models import DispatcherMetaData
 
-        AgentMetaData.objects.inspect()
-        DispatcherMetaData.objects.inspect()
+    AgentMetaData.objects.inspect()
+    DispatcherMetaData.objects.inspect()
     # except Exception as e:
     #     raise
     #     click.echo(e, color='red')

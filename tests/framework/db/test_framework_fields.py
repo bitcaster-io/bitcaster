@@ -2,11 +2,8 @@ import base64
 from unittest.mock import Mock
 from uuid import uuid4
 
-from bitcaster.framework.db.fields import (ROLES, AgentField, DeletionStatus,
-                                           DeletionStatusField, DispatcherField,
-                                           EncryptedJSONField, RoleField,
-                                           SubscriptionPolicy,
-                                           SubscriptionPolicyField,)
+from bitcaster.framework.db.fields import (ROLES, AgentField, DispatcherField,
+                                           EncryptedJSONField, RoleField,)
 
 
 def get_key():
@@ -42,12 +39,6 @@ def test_encryptedjsonfield():
     assert f.from_db_value(v.adapted, None, None, None)
 
 
-def test_DeletionStatus():
-    assert DeletionStatus.ACTIVE == 1
-    assert DeletionStatus.ACTIVE > 0
-    assert DeletionStatus.ACTIVE < 2
-
-
 def test_DispatcherField_eq():
     f = DispatcherField()
     assert not f == 2
@@ -58,22 +49,8 @@ def test_AgentField_eq():
     assert not f == 2
 
 
-def test_SubscriptionPolicyField():
-    f = SubscriptionPolicyField()
-    f.attname = 'attr'
-    assert f.value_to_string(Mock(attr=1)) == '1'
-    assert f.get_prep_value(SubscriptionPolicy.FREE) == 1
-
-
 def test_RoleField():
     f = RoleField()
     f.attname = 'attr'
     assert f.value_to_string(Mock(attr=1)) == '1'
     assert f.get_prep_value(ROLES.OWNER) == 1
-
-
-def test_DeletionStatusField():
-    f = DeletionStatusField()
-    f.attname = 'attr'
-    assert f.value_to_string(Mock(attr=1)) == '1'
-    assert f.get_prep_value(DeletionStatus.ACTIVE) == 1

@@ -7,19 +7,26 @@ from django.db import models
 from django.db.models import UUIDField
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+from model_utils import Choices
 
-from bitcaster.framework.db.fields import SubscriptionPolicyField
 from bitcaster.framework.db.validators import RateLimitValidator
 
 from .application import Application
 from .base import AbstractModel
 from .mixins import ReverseWrapperMixin
+from .team import ApplicationTeam
 
 logger = logging.getLogger(__name__)
 
 
 class Event(ReverseWrapperMixin, AbstractModel):
     """Event is something that can happen into an Application."""
+
+    POLICIES = Choices(
+        (1, 'FREE', _('Free. (Everybody can automatically subscribe)')),
+        (2, 'INVITATION', _('Invitation. (Require invitation. Event will not be visible)')),
+        (3, 'MEMBERS'), _('Members only. (Only members of Application Teams can subscribe)')
+    )
     uuid = UUIDField(default=uuid4, editable=False)
     application = models.ForeignKey(Application,
                                     on_delete=models.CASCADE,
@@ -38,7 +45,9 @@ class Event(ReverseWrapperMixin, AbstractModel):
     channels = models.ManyToManyField('bitcaster.Channel',
                                       # through='bitcaster.EventChannel'
                                       )
-    subscription_policy = SubscriptionPolicyField()
+    subscription_policy = models.IntegerField(choices=POLICIES,
+                                              default=POLICIES.FREE)
+    limit_to_teams = models.ManyToManyField(ApplicationTeam)
 
     class Meta:
         app_label = 'bitcaster'

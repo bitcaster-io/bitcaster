@@ -14,7 +14,7 @@ from bitcaster.utils.http import absolute_uri
 from .application import Application
 from .event import Event
 from .organization import Organization
-from .team import Team
+from .team import ApplicationTeam
 
 
 class Invitation(models.Model):
@@ -28,26 +28,26 @@ class Invitation(models.Model):
     target = models.CharField(max_length=200)
     invited_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                    null=True, blank=True,
-                                   on_delete=models.CASCADE,
+                                   on_delete=models.SET_NULL,
                                    default=get_current_user,
                                    related_name='invitations')
     organization = models.ForeignKey(Organization,
                                      blank=True, null=True,
-                                     on_delete=models.CASCADE,
+                                     on_delete=models.SET_NULL,
                                      related_name='invitations')
     application = models.ForeignKey(Application,
                                     blank=True, null=True,
-                                    on_delete=models.CASCADE,
+                                    on_delete=models.SET_NULL,
                                     related_name='invitations')
-    team = models.ForeignKey(Team,
+    team = models.ForeignKey(ApplicationTeam,
                              blank=True, null=True,
-                             on_delete=models.CASCADE,
+                             on_delete=models.SET_NULL,
                              related_name='invitations')
     role = RoleField(default=ROLES.SUBSCRIBER)
 
     event = models.ForeignKey(Event,
                               default=None, blank=True, null=True,
-                              on_delete=models.CASCADE,
+                              on_delete=models.SET_NULL,
                               related_name='invitations')
     date_created = models.DateTimeField(default=timezone.now,
                                         help_text='date when email was sent')
@@ -61,6 +61,8 @@ class Invitation(models.Model):
     class Meta:
         unique_together = (('target', 'application'),
                            ('target', 'organization'),)
+        verbose_name = _('Invitation')
+        verbose_name_plural = _('Invitations')
 
     def __str__(self):
         return self.target
@@ -78,9 +80,6 @@ class Invitation(models.Model):
 
     def send_sms(self):
         raise NotImplementedError
-
-    def accept(self, user):
-        return
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.event:

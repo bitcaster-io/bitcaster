@@ -33,6 +33,8 @@ class Plugin(models.Model):
         app_label = 'bitcaster'
         abstract = True
         ordering = ('fqn',)
+        verbose_name = _('Plugin')
+        verbose_name_plural = _('Plugins')
 
     # def __str__(self):
     #     return self.fqn

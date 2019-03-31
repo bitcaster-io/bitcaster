@@ -13,14 +13,15 @@ from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
 from bitcaster.file_storage import app_media_root
-from bitcaster.framework.db.fields import (ROLES, AvatarField,
-                                           SubscriptionPolicyField,)
+from bitcaster.framework.db.fields import ROLES, AvatarField
 from bitcaster.framework.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.utils.slug import slugify_instance
 
 from .base import AbstractModel
 from .mixins import ReverseWrapperMixin
 from .organization import Organization
+from .organizationgroup import OrganizationGroup
+from .user import User
 from .validators import ListValidator
 
 logger = logging.getLogger(__name__)
@@ -51,12 +52,19 @@ class Application(AbstractModel, ReverseWrapperMixin):
     avatar = AvatarField(upload_to=app_media_root)
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
-    default_subscription_policy = SubscriptionPolicyField()
     enabled = models.BooleanField(default=True)
 
     rate_limit = models.CharField(max_length=100,
                                   null=True, default=None, blank=True,
                                   validators=[RateLimitValidator()])
+
+    limit_to_groups = models.ManyToManyField(OrganizationGroup,
+                                             blank=True,
+                                             help_text='limit access to this application only to selected groups')
+
+    manageable_groups = models.BooleanField(null=False, default=False,
+                                            help_text='Managers can change allowed groups. '
+                                                      'Otherwise only admins can.')
 
     class Meta:
         app_label = 'bitcaster'
@@ -86,9 +94,11 @@ class Application(AbstractModel, ReverseWrapperMixin):
     def owners(self):
         return self.organization.owners
 
+    @property
+    def members(self):
+        return User.objects.filter(memberships__applications__application=self)
+
     @cached_property
     def admins(self):
-        admins = []
-        for t in self.teams.filter(role=ROLES.ADMIN):
-            admins.extend([m.user for m in t.members.all()])
-        return admins
+        return User.objects.filter(memberships__applications__application=self,
+                                   memberships__applications__role=ROLES.ADMIN)

@@ -3,8 +3,8 @@ import logging
 from django.db import transaction
 from django.http import HttpResponseRedirect
 
-from bitcaster.models import Team
-from bitcaster.web.forms import TeamForm
+from bitcaster.models import ApplicationTeam
+from bitcaster.web.forms import ApplicationTeamForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class TeamMixin(SelectedApplicationMixin):
-    model = Team
+    model = ApplicationTeam
     slug_url_kwarg = 'slug'
 
     def get_queryset(self):
@@ -32,7 +32,7 @@ class ApplicationTeamList(TeamMixin, BitcasterBaseListView):
 
 class ApplicationTeamCreate(TeamMixin, BitcasterBaseCreateView):
     template_name = 'bitcaster/application/team/form.html'
-    form_class = TeamForm
+    form_class = ApplicationTeamForm
 
     def get_initial(self):
         return {'manager': self.request.user}
@@ -55,7 +55,7 @@ class ApplicationTeamDelete(TeamMixin, BitcasterBaseDeleteView):
 
 class ApplicationTeamUpdate(TeamMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/team/form.html'
-    form_class = TeamForm
+    form_class = ApplicationTeamForm
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

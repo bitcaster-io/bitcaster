@@ -1,6 +1,6 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
-from bitcaster.models import Application
 from bitcaster.models.mixins import ReverseWrapperMixin
 
 from .organization import Organization
@@ -14,13 +14,13 @@ class OrganizationGroup(ReverseWrapperMixin, models.Model):
                                      db_index=True,
                                      related_name='groups')
     members = models.ManyToManyField(OrganizationMember, blank=True)
-    applications = models.ManyToManyField(Application, blank=True,
-                                          related_name='groups')
-    closed = models.BooleanField(blank=True, null=True)
+    closed = models.BooleanField(default=True)
 
     class Meta:
         app_label = 'bitcaster'
         unique_together = (('organization', 'name'),)
+        verbose_name = _('Group')
+        verbose_name_plural = _('Groups')
 
     class Reverse:
         pattern = 'org-group-{op}'

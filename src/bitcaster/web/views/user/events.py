@@ -3,8 +3,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster.models import Event, Subscription, User
-from bitcaster.models.subscription import SubscriptionStatus
-from bitcaster.web.forms.user import UserSubscriptionForm
+from bitcaster.web.forms.user import UserSubscribeForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseListView,)
 from bitcaster.web.views.user.base import UserMixin
@@ -29,7 +28,7 @@ class UserEventListView(UserEventMixin, BitcasterBaseListView):
 class UserEventSubcribe(UserEventMixin, BitcasterBaseCreateView):
     template_name = 'bitcaster/user/subscribe.html'
     title = 'Event %(object)s'
-    form_class = UserSubscriptionForm
+    form_class = UserSubscribeForm
 
     def get_success_url(self):
         return reverse('user-events', args=[self.selected_organization.slug])
@@ -56,5 +55,5 @@ class UserEventSubcribe(UserEventMixin, BitcasterBaseCreateView):
                                         event=form.event,
                                         channel=channel,
                                         enabled=True,
-                                        status=SubscriptionStatus.OWNED)
+                                        status=Subscription.STATUSES.OWNED)
         return HttpResponseRedirect(self.get_success_url())

@@ -44,6 +44,8 @@ class Message(AbstractModel):
     class Meta:
         app_label = 'bitcaster'
         unique_together = ('event', 'channel', 'language')
+        verbose_name = _('Message')
+        verbose_name_plural = _('Messages')
 
     class Reverse:
         pattern = 'app-key-{op}'

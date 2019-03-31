@@ -3,7 +3,6 @@ from logging import getLogger
 from admin_extra_urls.extras import ExtraUrlMixin, action
 from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.contrib.postgres import fields as pg
 from django.db import router, transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -11,7 +10,6 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from jsoneditor.forms import JSONEditor
 from rest_framework.reverse import reverse
 from strategy_field.utils import fqn
 
@@ -37,9 +35,6 @@ class ChannelAdmin(ExtraUrlMixin, admin.ModelAdmin):
 
     change_form_template = None
 
-    formfield_overrides = {
-        pg.JSONField: {'widget': JSONEditor}
-    }
     actions = ['validate_channel',
                'activate',
                deactivator_factory('enabled'),

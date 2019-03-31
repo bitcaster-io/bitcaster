@@ -15,6 +15,6 @@ from .organizationgroup import OrganizationGroup
 from .organizationmember import OrganizationMember
 # from .registry import Registry
 from .subscription import Subscription
-from .team import Team
+from .team import ApplicationTeam
 from .token import ApiAuthToken, ApplicationTriggerKey
 from .user import User

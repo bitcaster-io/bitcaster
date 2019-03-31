@@ -7,8 +7,10 @@ from model_utils import Choices
 logger = logging.getLogger(__name__)
 
 ROLES = Choices(
+    (99, 'ADMINSTRATOR', _('Adminstrator')),  # Superuser
     (1, 'OWNER', _('Owner')),
-    (2, 'ADMIN', _('Admin')),
+    (2, 'ADMIN', _('Admin')),  # Organization Admin
+    (3, 'MANAGER', _('Manager')),  # Application Manager
     (4, 'SUBSCRIBER', _('Subscriber')))
 
 OPS = {'manage', 'access'}

@@ -9,7 +9,7 @@ from django.db import models
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
 
@@ -132,7 +132,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_manager(self):
         # return true is user is a manager of any application
-        return self.memberships.filter(role=ROLES.ADMIN).exists()
+        return bool(self.memberships.filter(applications__role=ROLES.ADMIN).exists())
 
     def set_password(self, raw_password):
         super(User, self).set_password(raw_password)

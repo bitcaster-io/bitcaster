@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 from bitcaster import messages
 from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.models import Subscription
+from bitcaster.web.forms.user import UserSubscriptionEditForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
                                       BitcasterBaseToggleView,
@@ -21,7 +22,7 @@ class UserSubscriptionMixin(UserMixin):
 
 
 class UserSubscriptionListView(UserSubscriptionMixin, BitcasterBaseListView):
-    template_name = 'bitcaster/user/subscriptions.html'
+    template_name = 'bitcaster/user/subscriptions/list.html'
 
     def get_queryset(self):
         return super().get_queryset().order_by('event__application__name', 'event__name')
@@ -34,14 +35,14 @@ class UserSubscriptionToggle(UserSubscriptionMixin, BitcasterBaseToggleView):
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
         try:
-            if obj.recipient:
-                obj.enabled = not obj.enabled
-                if obj.enabled:
-                    self.message_user(f'{obj._meta.verbose_name} #{obj.pk} enabled',
-                                  level=messages.SUCCESS)
-                else:
-                    self.message_user(f'{obj._meta.verbose_name} #{obj.pk} disabled',
-                                  level=messages.WARNING)
+            assert obj.recipient  # address or assignment could be deleted
+            obj.enabled = not obj.enabled
+            if obj.enabled:
+                self.message_user(f'{obj._meta.verbose_name} #{obj.pk} enabled',
+                              level=messages.SUCCESS)
+            else:
+                self.message_user(f'{obj._meta.verbose_name} #{obj.pk} disabled',
+                              level=messages.WARNING)
         except Exception:
             obj.enabled = False
             self.message_user(_('{} #{} cannot be enabled because '
@@ -62,5 +63,12 @@ class UserSubscriptionRemove(UserSubscriptionMixin, BitcasterBaseDeleteView):
 
 
 class UserSubscriptionEdit(UserSubscriptionMixin, BitcasterBaseUpdateView):
+    template_name = 'bitcaster/user/subscriptions/form.html'
+    form_class = UserSubscriptionEditForm
+    title = _('Change Subscription Channel')
+
+    def get_success_url(self):
+        return reverse('user-subscriptions', args=[self.selected_organization.slug])
+
     def get_object(self, queryset=None):
         return self.get_queryset().get(id=self.kwargs['pk'])

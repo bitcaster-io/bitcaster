@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-
 import logging
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.functional import cached_property
+from django.utils.translation import gettext_lazy as _
 from strategy_field.utils import fqn
 
 from bitcaster.framework.db.fields import AgentField, EncryptedJSONField
@@ -56,6 +56,8 @@ class Monitor(ReverseWrapperMixin, AbstractModel):
         app_label = 'bitcaster'
         ordering = ('name',)
         unique_together = (('organization', 'application', 'name'),)
+        verbose_name = _('Monitor')
+        verbose_name_plural = _('Monitors')
 
     class Reverse:
         pattern = 'app-monitor-{op}'

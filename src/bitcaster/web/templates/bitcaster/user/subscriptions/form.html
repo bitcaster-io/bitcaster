@@ -1,0 +1,12 @@
+{% extends "bitcaster/user/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block pageId %}event{% endblock %}
+{% block page %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-primary" value="{% trans "Save" %}">
+            <input type="button" class="btn btn-secondary"
+                   onclick="history.back();"
+                   value="{% trans "Cancel" %}">
+        </form>
+{% endblock %}

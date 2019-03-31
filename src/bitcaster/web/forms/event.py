@@ -2,10 +2,8 @@
 import logging
 
 from django import forms
-from django.contrib.postgres.forms import JSONField
 # from django.forms import Form, formset_factory, ModelForm
 from django.core.exceptions import ValidationError
-from jsoneditor.forms import JSONEditor
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from strategy_field.utils import fqn
@@ -99,7 +97,7 @@ class EventCreateSetupMessage(forms.Form):
 
 
 class EventTriggerForm(forms.Form):
-    arguments = JSONField(widget=JSONEditor, required=False)
+    # arguments = JSONField(widget=JSONEditor, required=False)
 
     def __init__(self, event, *args, **kwargs):
         self.event = event
