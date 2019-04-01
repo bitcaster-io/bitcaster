@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 #
 #     def __init__(self, *av, **kw):
 #         kw['widget'] = self.widget  # force avoiding widget override
-#         super(JSONFormField, self).__init__(*av, **kw)
+#         super().__init__(*av, **kw)
 
 
 class EncryptedJSONField(_JSONField):
@@ -201,7 +201,7 @@ class AvatarField(models.ImageField):
     #     return filename
 
     # def save_form_data(self, instance, data):
-    #     super(AvatarField, self).save_form_data(instance, data)
+    #     super().save_form_data(instance, data)
 #
 #
 #

@@ -56,7 +56,7 @@ class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
     # title = _('Users')
 
     def get_context_data(self, **kwargs):
-        data = super(OrganizationMembershipList, self).get_context_data(**kwargs)
+        data = super().get_context_data(**kwargs)
         data['memberships'] = self.get_queryset()
         data['invitations'] = self.selected_organization.invitations.filter(date_accepted=None)
         return data

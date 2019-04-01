@@ -20,7 +20,7 @@ class EventField(ChoiceField):
 
 class RegexField(CharField):
     def __init__(self, **kwargs):
-        super(RegexField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         validator = RegexFieldValidator()
         self.validators.append(validator)
 
@@ -31,6 +31,6 @@ class PhoneNumberField(CharField):
     }
 
     def __init__(self, **kwargs):
-        super(PhoneNumberField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         validator = PhoneNumberValidator(message=self.error_messages['invalid'])
         self.validators.append(validator)

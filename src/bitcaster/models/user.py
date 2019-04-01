@@ -135,7 +135,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return bool(self.memberships.filter(applications__role=ROLES.ADMIN).exists())
 
     def set_password(self, raw_password):
-        super(User, self).set_password(raw_password)
+        super().set_password(raw_password)
         self.last_password_change = timezone.now()
         self.is_password_expired = False
 

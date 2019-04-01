@@ -18,7 +18,7 @@ class OrganizationForm(forms.ModelForm):
         fields = ('name', 'admin_email', 'slug')
 
     def __init__(self, *args, **kwargs):
-        super(OrganizationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not self.instance or self.instance.is_core:
             self.fields['slug'].disabled = True
             self.fields['slug'].validators = []

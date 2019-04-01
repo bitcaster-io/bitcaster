@@ -107,7 +107,7 @@ LOG_LEVELS = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'FATAL')
 class CaseInsensitiveChoice(click.Choice):
     def convert(self, value, param, ctx):
         self.choices = [choice.upper() for choice in self.choices]
-        return super(CaseInsensitiveChoice, self).convert(value.upper(), param, ctx)
+        return super().convert(value.upper(), param, ctx)
 
 
 class LogLevelParamType(CaseInsensitiveChoice):
@@ -116,7 +116,7 @@ class LogLevelParamType(CaseInsensitiveChoice):
         super().__init__(choices)
 
     def convert(self, value, param, ctx):
-        value = super(CaseInsensitiveChoice, self).convert(value.upper(), param, ctx)
+        value = super().convert(value.upper(), param, ctx)
         os.environ['BITCASTER_LOG_LEVEL'] = value.upper()
         return value
 

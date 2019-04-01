@@ -36,7 +36,7 @@ class BitcasterBaseUpdateView(BitcasterBaseViewMixin, BitcasterSingleObjectMixin
 
     def form_valid(self, form):
         self.message_user(_('Changes saved'), level=messages.SUCCESS)
-        return super(BitcasterBaseUpdateView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class BitcasterBaseDeleteView(BitcasterBaseViewMixin, BitcasterSingleObjectMixin, DeleteView):

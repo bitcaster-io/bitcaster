@@ -54,7 +54,7 @@ class ApplicationMembershipList(MemberMixin, TitleMixin, FormMixin, ProcessFormV
 
     def get_form_kwargs(self):
         """Return the keyword arguments for instantiating the form."""
-        kwargs = super(ApplicationMembershipList, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['instance'] = self.selected_application
         return kwargs
 
