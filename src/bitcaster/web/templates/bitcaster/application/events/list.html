@@ -1,4 +1,4 @@
-{% extends "bitcaster/application/base.html" %}{% load i18n bitcaster %}
+{% extends "bitcaster/application/base.html" %}{% load i18n bitcaster bc_permissions %}
 {% block page %}
     <div class="container">
         <div class="row col-12">
@@ -20,46 +20,12 @@
             <tr>
                 <td>{{ event.name }}</td>
                 <td style="width:40%" class="nowrap formset-commands">
-                    <a class="btn btn-light {% if not event.enabled_channels.exists %}red{% endif %}"
-                       data-toggle="tooltip" title="configure"
-                       href="{{ event.urls.edit }}">
-                        <i class="fas fa-wrench pointer"></i>
-                    </a>
-                    <a class="btn btn-light {% if not event.valid_channels.exists %}red{% endif %}"
-                       data-toggle="tooltip" title="messages"
-                       href="{{ event.urls.messages }}">
-                        <i class="far fa-comment pointer"></i>
-                    </a>
-                    <a class="btn btn-light"
-                       data-toggle="tooltip" title="{% if event.enabled %}Disable{% else %}Enable{% endif %}"
-                       href="{{ event.urls.toggle }}">
-                        <i class="fas {% if event.enabled %}fa-toggle-on green{% else %}fa-toggle-off red{% endif %}"></i>
-                    </a>
-                    <a class="btn btn-light"
-                       data-toggle="tooltip" title="delete"
-                       href="{{ event.urls.delete }}">
-                        <i class="far fa-trash-alt"></i>
-                    </a>
-
-                    <a class="btn btn-light"
-                       data-toggle="tooltip" title="test"
-                       href="{{ event.urls.test }}">
-                        <i class="fas fa-terminal"></i>
-                    </a>
-
-
-{#                    <a class="btn btn-light"#}
-{#                       data-toggle="tooltip" title="subscriptions"#}
-{#                       href="{{ event.urls.subscriptions }}">#}
-{#                        <i class="fas fa-user"></i>#}
-{#                    </a>#}
-
-                    <a class="btn btn-light"
-                       data-toggle="tooltip" title="keys"
-                       href="{{ event.urls.keys }}">
-                        <i class="fas fa-key"></i>
-                    </a>
-
+                    {% button event.urls.edit True "fas fa-wrench" "configure" %}
+                    {% button event.urls.messages True "fas fa-comment" "messages" %}
+                    {% button event.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" event.enabled %}
+                    {% button event.urls.delete True "far fa-trash-alt" "delete" %}
+                    {% button event.urls.test True "fas fa-terminal" "test" %}
+                    {% button event.urls.keys True "fas fa-key" "keys" %}
                 </td>
             </tr>
         {% endfor %}

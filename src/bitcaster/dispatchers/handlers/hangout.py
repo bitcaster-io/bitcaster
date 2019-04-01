@@ -26,8 +26,7 @@ class HangoutMessage(MessageType):
 
 
 class HangoutOptions(DispatcherOptions):
-    username = serializers.RegexField(r'.*@gmail\.com',
-                                      error_messages={'invalid': 'use a @gmail.com address'})
+    username = serializers.EmailField()
     password = PasswordField()
 
 

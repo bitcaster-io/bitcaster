@@ -44,7 +44,7 @@ class IndexView(RedirectView):
             # if request.user.memberships.filter(role=ROLES.OWNER):
             #     url = reverse('org-dashboard', args=[request.user.memberships.first().organization.slug])
             #     return HttpResponseRedirect(url)
-            # elif request.user.memberships.filter(role=ROLES.SUBSCRIBER):
+            # elif request.user.memberships.filter(role=ROLES.MEMBER):
             #     url = reverse('user-org', args=[request.user.memberships.first().organization.slug])
             #     return HttpResponseRedirect(url)
 

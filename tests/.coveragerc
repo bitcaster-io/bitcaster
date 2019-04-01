@@ -47,16 +47,6 @@ omit =
     src/bitcaster/config/urls.py
     src/bitcaster/utils/ddt.py
 
-include =
-    src/bitcaster/agents/*
-    src/bitcaster/config/*
-#    src/bitcaster/dispatchers/*
-    src/bitcaster/framework/*
-    src/bitcaster/middleware/*
-    src/bitcaster/models/*
-    src/bitcaster/utils/*
-    src/bitcaster/web/templatetags/*
-    src/bitcaster/web/views/user/*
 
 [html]
 directory = ~build/coverage

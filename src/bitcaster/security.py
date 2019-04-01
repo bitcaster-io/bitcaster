@@ -7,40 +7,32 @@ from model_utils import Choices
 logger = logging.getLogger(__name__)
 
 ROLES = Choices(
-    (99, 'ADMINSTRATOR', _('Adminstrator')),  # Superuser
-    (1, 'OWNER', _('Owner')),
-    (2, 'ADMIN', _('Admin')),  # Organization Admin
-    (3, 'MANAGER', _('Manager')),  # Application Manager
-    (4, 'SUBSCRIBER', _('Subscriber')))
-
-OPS = {'manage', 'access'}
-TARGETS = {'application', 'organization'}
+    (99, 'SUPERUSER', _('Superuser')),  # Access to system settings
+    (1, 'OWNER', _('Owner')),  # Organization Owner
+    (2, 'ADMIN', _('Admin')),  # Application Admin
+    (4, 'MEMBER', _('Member')))
 
 
-# ROLES = {'admin', 'subscriber'}
+APP_ROLES = Choices(
+    (ROLES.ADMIN, 'ADMIN', _('Admin')),  # Application Admin
+    (ROLES.MEMBER, 'MEMBER', _('Member'))
+)
 
+ALL_PERMISSIONS = set()
+OWNER_PERMISSIONS = {'manage_organization',
+                     'create_channel',
+                     'edit_channel',
+                     'create_application',
+                     'manage_application',
+                     'invite_member', # invite new Organization member from within an app
+                     }
+ADMIN_PERMISSIONS = set()
+MEMBER_PERMISSIONS = set()
+ALL_PERMISSIONS.update(OWNER_PERMISSIONS)
+ALL_PERMISSIONS.update(ADMIN_PERMISSIONS)
+ALL_PERMISSIONS.update(MEMBER_PERMISSIONS)
+ALL_PERMISSIONS.add('admin_system')
 
-def build(ops):
-    ret = set()
-    for op in ops:
-        for target in TARGETS:
-            ret.add('%s_%s' % (op, target))
-    return ret
-
-
-# PERMISSIONS.add('admin')
-
-# PERM_MAP = {}
-# for role in ROLES:
-#     PERM_MAP[role] = PERMISSIONS
-
-ALL_PERMISSIONS = build(OPS)
-ALL_PERMISSIONS.add('admin')
-
-OWNER_PERMISSIONS = build(OPS)
-ADMIN_PERMISSIONS = build(['manage'])
-SUBSCRIBER_PERMISSIONS = set()
-
-PERM_MAP = {ROLES.OWNER: ADMIN_PERMISSIONS,
+PERM_MAP = {ROLES.OWNER: OWNER_PERMISSIONS,
             ROLES.ADMIN: ADMIN_PERMISSIONS,
-            ROLES.SUBSCRIBER: SUBSCRIBER_PERMISSIONS}
+            ROLES.MEMBER: MEMBER_PERMISSIONS}

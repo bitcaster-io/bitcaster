@@ -76,6 +76,7 @@ websocket-client = "*"
 whitenoise = ">=4.0"
 yampy = "*"
 zulip = "*"
+django-select2 = "*"
 
 [dev-packages]
 bumpversion = "*"

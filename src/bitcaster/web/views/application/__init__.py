@@ -4,6 +4,8 @@ from .invitations import (ApplicationInvitationDelete,
                           ApplicationInvitationSend, ApplicationInvite,)
 from .keys import (ApplicationKeyCreate, ApplicationKeyDelete,
                    ApplicationKeyList, ApplicationKeyUpdate,)
+from .members import (ApplicationMembershipCreate, ApplicationMembershipDelete,
+                      ApplicationMembershipEdit, ApplicationMembershipList,)
 from .monitors import (ApplicationMonitorCreate, ApplicationMonitorList,
                        ApplicationMonitorRemove, ApplicationMonitorTest,
                        ApplicationMonitorToggle, ApplicationMonitorUpdate,

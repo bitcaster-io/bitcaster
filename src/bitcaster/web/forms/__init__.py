@@ -1,5 +1,6 @@
 # flake8: noqa
 from .application import ApplicationCreateForm, ApplicationForm
+from .applicationmember import ApplicationMemberForm
 from .channel import ChannelForm
 from .event import (EventCreateSelectChannel, EventCreateSetupMessage,
                     EventForm, EventTriggerForm,)

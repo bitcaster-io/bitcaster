@@ -2,7 +2,7 @@
 {% load crispy_forms_tags i18n bc_assets bitcaster bc_permissions %}
 {% block page %}
     {% check_permissions organization %}
-    {% if permissions.add_channel %}
+    {% if permissions.create_channel %}
         <div class="container">
             <div class="row col-12">
                 <div class="pull-right col-12 p-4">
@@ -29,41 +29,12 @@
                 <td style="width:10%">
                 </td>
                 <td style="width:40%" class="nowrap formset-commands">
-                    <a class="btn btn-light"
-                       data-toggle="tooltip" title="delete"
-                       href="{{ channel.urls.delete }}">
-                        <i class="far fa-trash-alt pointer"></i>
-                    </a>
+                    {% button channel.urls.delete permissions.edit_channel "far fa-trash-alt" "delete" %}
                     {% if channel.handler|dispatcher_enabled %}
-                        <a class="btn btn-light"
-                           data-toggle="tooltip" title="configure"
-                           href="{{ channel.urls.edit }}">
-                            <i class="fas fa-wrench pointer"></i>
-                        </a>
-                        <a class="btn btn-light"
-                           data-toggle="tooltip" title="{% if channel.enabled %}Disable{% else %}Enable{% endif %}"
-                           href="{{ channel.urls.toggle }}">
-                            <i class="fas {% if channel.enabled %}fa-toggle-on green{% else %}fa-toggle-off red{% endif %}"></i>
-                        </a>
-                        <a class="btn btn-light"
-                           data-toggle="tooltip"
-                           title="{% if channel.deprecated %}Activate{% else %}Deprecate{% endif %}"
-                           href="{{ channel.urls.deprecate }}">
-                            <i class="fas {% if channel.deprecated %}fa-unlink red{% else %}fa-link green{% endif %}"></i>
-                        </a>
-
-                        <a class="btn btn-light"
-                           data-toggle="tooltip" title="test channel"
-                           href="{{ channel.urls.test }}">
-                            <i class="fas fa-broadcast-tower"></i>
-                        </a>
-                        <a
-                            rel="modal:open"
-                            class="btn btn-light"
-                            title="info"
-                            data-remote="{% url "plugin-info" channel.handler.fqn %}"
-                            href=".">
-                            <i class="fa fa-info"></i></a>
+                        {% button channel.urls.edit permissions.edit_channel "fas fa-wrench" "configure" %}
+                        {% button channel.urls.toggle permissions.edit_channel "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" channel.enabled %}
+                        {% button channel.urls.deprecate permissions.edit_channel "fas fa-unlink red:fas fa-link green" "Activate:Deprecate" channel.deprecated %}
+                        {% button channel.urls.test permissions.edit_channel "fas fa-broadcast-tower" "Test" %}
                     {% elif channel.handler %}
                         Channel disabled by System Administrator
                     {% endif %}

@@ -39,7 +39,7 @@ def associate_invitation(backend, details, user=None, strategy=None, *args, **kw
                 is_new = True
         else:
             organization = Organization.objects.get()
-            role = ROLES.SUBSCRIBER
+            role = ROLES.MEMBER
 
         user = User.objects.create(**fields)
         organization.memberships.create(user=user, role=role)

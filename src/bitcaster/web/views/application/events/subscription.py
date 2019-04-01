@@ -91,7 +91,7 @@ class EventSubscriptionInvite(SingleEventMixin, MessageUserMixin, FormView):
             else:
                 form.instance.organization = self.selected_organization
                 form.instance.event = self.get_object()
-                form.instance.role = ROLES.SUBSCRIBER
+                form.instance.role = ROLES.MEMBER
                 form.instance.invited_by = self.request.user
                 membership = form.save()
                 membership.send_email()

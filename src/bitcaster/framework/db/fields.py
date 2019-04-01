@@ -123,7 +123,7 @@ class LanguageField(models.CharField):
 class RoleField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
                  choices=ROLES,
-                 default=ROLES.SUBSCRIBER,
+                 default=ROLES.MEMBER,
                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
         super().__init__(verbose_name=verbose_name, name=name,
                          choices=choices,

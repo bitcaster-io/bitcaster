@@ -1,0 +1,61 @@
+{% load bc_assets %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="shortcut icon" type="image/png" href="/images/favicon.ico"/>
+    <link rel="stylesheet" href="{% asset "bitcaster/bitcaster.css" %}">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+            integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+
+</head>
+<body class="">
+<h1 class="p-5">bitcaster</h1>
+<div class="row pl-5 ">
+    <div class="col-7">
+        <h3><b>{{ code }}. </b>{{ title|title }}</h3>
+        <h4>{{ description }}</h4>
+        {% if permissions %}
+        <div style="padding: 5px;display: block">{{ permissions }}</div>
+        {% endif %}
+        <div style="margin-top: 50px;margin-bottom:50px;display: block">
+            {% if event_id %}
+                <h4>If you need assistance, you may reference this error as
+                    <strong>{{ event_id }}</strong>.</h4>
+                <button style="padding: 10px" class="error_feedback">Add Feedback</button>
+            {% endif %}
+        </div>
+
+
+        <h4 class="pt-5"><a href="{{ referer }}">Back</a></h4>
+
+    </div>
+    <div class="col-4">
+        <img src="{% asset "bitcaster/images/bitcaster100.png" %}">
+    </div>
+</div>
+{% block js %}
+    {% if event_id %}
+        <script src="https://browser.sentry-cdn.com/4.6.4/bundle.min.js" crossorigin="anonymous"></script>
+        <script>
+            (function ($) {
+                $('.error_feedback').click(function () {
+                    Sentry.init({dsn: '{{ settings.SENTRY_DSN }}'});
+                    Sentry.showReportDialog({
+                        eventId: '{{ event_id }}',
+                        user: {
+                            email: "{{user.email}}",
+                            name: "{{user.name}}"
+                        },
+                        subtitle: "",
+
+                    });
+                });
+            })(jQuery);
+        </script>
+    {% endif %}
+{% endblock %}
+
+
+</body>
+</html>

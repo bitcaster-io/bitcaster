@@ -102,11 +102,11 @@ class Organization(AbstractModel, ReverseWrapperMixin):
     #
     #     return queryset.exists()
 
-    def add_member(self, user, role=ROLES.SUBSCRIBER, **kwargs):
+    def add_member(self, user, role=ROLES.MEMBER, **kwargs):
         from bitcaster.models import OrganizationMember
         return OrganizationMember.objects.update_or_create(organization=self,
                                                            user=user,
-                                                           defaults={'role': int(role)},
+                                                           defaults={'role': role},
                                                            **kwargs
                                                            )[0]
 

@@ -5,7 +5,13 @@ from django.urls import include, path, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
 from bitcaster.web.views import (ApplicationAutocomplete,
+                                 ApplicationMembershipDelete,
+                                 ApplicationMembershipEdit,
+                                 ApplicationMembershipList,
                                  OrganizationMembersAutocomplete,)
+from bitcaster.web.views.application.members import ApplicationMembershipCreate
+from bitcaster.web.views.autocomplete import (ApplicationCandidateAutocomplete,
+                                              ApplicationMembersAutocomplete,)
 from bitcaster.web.views.settings import SettingsPlugin, SettingsPluginToggle
 
 from .views import (AddressAutocomplete, ApplicationCheckConfigView,
@@ -127,6 +133,12 @@ urlpatterns = [
     # path('<slug:org>/a/<slug:app>/i/<int:pk>/accept/', ApplicationInvitationAccept.as_view(), name='invitation-accept'),
     path('<slug:org>/a/<slug:app>/i/<int:pk>/send/', ApplicationInvitationSend.as_view(), name='app-invitation-send'),
 
+    # Applications / Member
+    path('<slug:org>/a/<slug:app>/member/', ApplicationMembershipList.as_view(), name='app-members'),
+    path('<slug:org>/a/<slug:app>/member/<int:pk>/edit/', ApplicationMembershipEdit.as_view(), name='app-member-edit'),
+    path('<slug:org>/a/<slug:app>/member/<int:pk>/delete/', ApplicationMembershipDelete.as_view(), name='app-member-delete'),
+    path('<slug:org>/a/<slug:app>/member/add/', ApplicationMembershipCreate.as_view(), name='app-member-add'),
+
     # Applications / Teams
     path('<slug:org>/a/<slug:app>/team/', ApplicationTeamList.as_view(), name='app-teams'),
     path('<slug:org>/a/<slug:app>/team/add/', ApplicationTeamCreate.as_view(), name='app-team-create'),
@@ -235,9 +247,15 @@ urlpatterns = [
 ]
 
 urlpatterns += [
+    path('select2/', include('django_select2.urls')),
+
     path('dal/user-autocomplete/', UserAutocomplete.as_view(), name='user-autocomplete'),
     path('dal/address-autocomplete/', AddressAutocomplete.as_view(), name='address-autocomplete'),
     path('dal/channel-autocomplete/', ChannelAutocomplete.as_view(), name='channel-autocomplete'),
-    path('<slug:org>/dal/application-autocomplete/', ApplicationAutocomplete.as_view(), name='application-autocomplete'),
-    path('<slug:org>/dal/members-autocomplete/', OrganizationMembersAutocomplete.as_view(), name='members-autocomplete'),
+
+    path('dal/<slug:org>/application-autocomplete/', ApplicationAutocomplete.as_view(), name='application-autocomplete'),
+    path('dal/<slug:org>/members-autocomplete/', OrganizationMembersAutocomplete.as_view(), name='org-member-autocomplete'),
+
+    path('dal/<slug:org>/a/<slug:app>/members-autocomplete/', ApplicationMembersAutocomplete.as_view(), name='app-member-autocomplete'),
+    path('dal/<slug:org>/a/<slug:app>/candidate-autocomplete/', ApplicationCandidateAutocomplete.as_view(), name='app-candidate-autocomplete'),
 ]

@@ -69,7 +69,7 @@ def admin1(application1):
 def admin2(application2):
     org = application2.organization
     user = UserFactory()
-    team = TeamFactory(application=application2, name='Subscribers', role=ROLES.SUBSCRIBER)
+    team = TeamFactory(application=application2, name='Subscribers', role=ROLES.MEMBER)
     membership, __ = OrganizationMember.objects.get_or_create(organization=org, user=user)
     team.members.add(membership)
     return user

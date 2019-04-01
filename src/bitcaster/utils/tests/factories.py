@@ -156,7 +156,7 @@ class UserFactory(AutoRegisterModelFactory):
 
 
 class MemberFactory(UserFactory):
-    role = ROLES.SUBSCRIBER
+    role = ROLES.MEMBER
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
@@ -231,7 +231,7 @@ class OrganizationMemberFactory(AutoRegisterModelFactory):
 class ApplicationMemberFactory(AutoRegisterModelFactory):
     application = factory.SubFactory(ApplicationFactory)
     org_member = factory.SubFactory(OrganizationMemberFactory)
-    role = ROLES.SUBSCRIBER
+    role = ROLES.MEMBER
 
     class Meta:
         model = bitcaster.models.ApplicationMember
@@ -273,7 +273,7 @@ class InvitationFactory(AutoRegisterModelFactory):
 #
 #     application = factory.SubFactory(ApplicationFactory)
 #     team = factory.SubFactory(TeamFactory)
-#     role = ROLES.SUBSCRIBER
+#     role = ROLES.MEMBER
 
 
 class ApplicationTriggerKeyFactory(AutoRegisterModelFactory):

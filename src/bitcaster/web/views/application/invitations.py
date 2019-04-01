@@ -26,6 +26,7 @@ class ApplicationInvite(ApplicationInvitationMixin, InvitationCreate):
     form_class = ApplicationInvitationFormSet
     template_name = 'bitcaster/application/subscriptions/invite.html'
     title = _('Invite people')
+    permissions = ['invite_member']
 
     def get_parent_instance(self):
         return self.selected_application

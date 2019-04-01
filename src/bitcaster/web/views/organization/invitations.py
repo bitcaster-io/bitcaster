@@ -127,7 +127,7 @@ class OrganizationMemberInviteAccept(MessageUserMixin, CreateView):
                                        )
             membership = OrganizationMember.objects.create(organization=self.selected_organization,
                                               user=user,
-                                              role=self.invitation.role or ROLES.SUBSCRIBER,
+                                              role=self.invitation.role or ROLES.MEMBER,
                                               date_enrolled=timezone.now())
             self.invitation.date_accepted = timezone.now()
             self.invitation.save()

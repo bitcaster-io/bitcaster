@@ -3,12 +3,14 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
 from bitcaster.framework.db.fields import RoleField
+from bitcaster.models.mixins import ReverseWrapperMixin
+from bitcaster.security import APP_ROLES
 
 from .application import Application
 from .organizationmember import OrganizationMember
 
 
-class ApplicationMember(models.Model):
+class ApplicationMember(ReverseWrapperMixin, models.Model):
     application = models.ForeignKey(Application,
                                     on_delete=models.CASCADE,
                                     db_index=True,
@@ -17,13 +19,7 @@ class ApplicationMember(models.Model):
                                    db_index=True,
                                    on_delete=models.CASCADE,
                                    related_name='applications')
-    # # this is a denormalization
-    # user = models.ForeignKey(settings.AUTH_USER_MODEL,
-    #                          null=True, blank=True,
-    #                          db_index=True,
-    #                          on_delete=models.CASCADE,
-    #                          related_name='application')
-    role = RoleField()
+    role = RoleField(choices=APP_ROLES, default=APP_ROLES.MEMBER, )
 
     class Meta:
         app_label = 'bitcaster'
@@ -32,6 +28,10 @@ class ApplicationMember(models.Model):
         unique_together = (
             ('application', 'org_member'),
         )
+
+    class Reverse:
+        pattern = 'app-member-{op}'
+        args = ['application.organization.slug', 'application.slug', 'id']
 
     @cached_property
     def user(self):

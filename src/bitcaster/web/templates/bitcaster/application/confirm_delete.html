@@ -1,0 +1,23 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster i18n %}
+{% block page %}
+    <div class="container-fluid">
+        <h5 class="text-center alert alert-danger">
+            This action is not recoverable
+        </h5>
+        <div class="card mb-5">
+            <div class="card-block">
+                <p class="card-text p-5">
+                    {{ message }}
+                </p>
+                <p class="card-text p-5">
+                    {{ extras }}
+                </p>
+            </div>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="button" class="btn btn-secondary" onclick="history.back();" value="{% trans "Cancel" %}">
+            <input type="submit" class="btn btn-danger" value="{% trans "Remove" %}">
+        </form>
+    </div>
+{% endblock page %}

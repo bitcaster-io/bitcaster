@@ -1,0 +1,136 @@
+{% extends "bitcaster/application/base.html" %}{% load bitcaster crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
+{% block page %}
+    <div class="tab-content">
+        <div class="row">
+            <div class="row col-12 p-3">
+                <div class="pull-left col-8">
+                    <a id="add_more" class="btn btn-danger btn-small pull-left"
+                       href=".">{% trans "Add line" %}
+                    </a>
+                    <a class="btn btn-dark btn-small pull-left ml-3"
+                       href="{{ application.urls.members }}">{% trans "Back" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {{ form.media }}
+        {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}
+
+        <div id="empty-form" class="d-none">
+            <div class="row col-12 m-0 p-0 {% if form.errors %}has-error{% endif %}">
+                <div class="row m-0 p-0 col-12 line-fields" style="display: inline-flex">
+                    <div class="hidden order" data-order="__prefix__">
+                        {{ form.empty_form.id }}{{ form.empty_form.DELETE }}</div>
+                    <div class="col col-5">{{ form.empty_form.org_member|as_crispy_field }}</div>
+                    <div class="col col-5">{{ form.empty_form.role|as_crispy_field }}</div>
+                    <div class="col col-2 align-middle align-items-center formset-commands">
+                        <a href="." class="btn remove_line">
+                            <i class="far fa-trash-alt"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="invalid-feedback">{{ form.empty_form.non_field_errors.as_text }}</div>
+        </div>
+        <div class="container pl-0 m-0" style="display: block; min-height: 30px">
+            <form method="post" id="Form">
+                {{ form.management_form }}
+                {% csrf_token %}
+                <div class="content addresses fieldset">
+                    {% for form in form.forms|order_formset %}
+                        <div class="row col-12 m-0 p-0 {% if form.errors %}has-error{% endif %}">
+                            <div class="row m-0 p-0 col-12 line-fields" style="display: inline-flex">
+                                <div class="hidden">{{ form.id }}{{ form.DELETE }}</div>
+                                <div class="col col-5">{{ form.org_member|as_crispy_field }}</div>
+                                <div class="col col-5">{{ form.role|as_crispy_field }}</div>
+                                <div class="col col-2 formset-commands">
+                                    <a href="." class="btn btn-outline-light remove_line align-top">
+                                        <i class="far fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                                {% if form.non_field_errors %}
+                                    <div class="row non-field-errors invalid-feedback">
+                                        {{ form.non_field_errors.as_text }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+
+        {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}
+
+    </div> <!-- tab-content -->
+{% endblock %}
+{% block js %}
+<script>
+    (function ($) {
+        var formsetName = "memberships";
+        var $TOTAL_FORMS = $("#id_memberships-TOTAL_FORMS");
+        var selector2 = "div.fieldset>.row:first";
+        var $commands = $(".commands");
+        $(".commands").show();
+
+        $('.commands>.btn-save').on('click', function () {
+            $("#Form").submit();
+        });
+        $("#Form")
+            .on("input", function (e) {
+                console.log($(e.target).parents('div.row'));
+                $(e.target).parents('div.row').css('background-color', '#fffccf');
+                $commands.show();
+            });
+
+        $(".remove_line").click(function (e) {
+            $commands.prop("disabled", true);
+            var $target = $(this).parent().parent().parent();
+            var $deletion = $target.find(":input[type=checkbox]");
+            $deletion.prop('checked', true);
+            $target.hide();
+            var $rows = $("div.fieldset>div.row:visible");
+            if ($rows.length === 0) {
+                $commands.hide();
+            }else{
+                $commands.show();
+            }
+            e.preventDefault();
+        });
+        $("#add_more").click(function (e) {
+            e.preventDefault();
+            $commands.prop("disabled", true);
+            cloneMore();
+            $commands.show();
+        });
+
+        var setNumber = function (e) {
+            var $rows = $("div.fieldset>div.row");
+            $TOTAL_FORMS.val($rows.length);
+            var ID = $rows.length - 1;
+            $(e).find(":input").each(function () {
+                var name = $(this).attr("name").replace(/__prefix__/, ID);
+                var id = "id_" + name;
+                $(this).attr({"name": name, "id": id});
+            });
+            $(e).find("div.form-group").each(function () {
+                var newId = $(this).attr("id").replace(/__prefix__/, ID);
+                $(this).attr("id", newId);
+            });
+
+        };
+
+        function cloneMore() {
+            var $newElement = $("#empty-form>div.row").clone(true);
+            $newElement.removeClass("d-none");
+            $(selector2).before($newElement);
+            setNumber($newElement);
+            $(selector2).find('select').each(function(i, e){
+                __dal__initialize(e);
+            });
+
+            {#$(selector2).find('select').select2();#}
+        }
+    })(yl.jQuery);
+
+</script>
+{% endblock js %}

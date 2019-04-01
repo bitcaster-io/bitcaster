@@ -7,8 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import Address, AddressAssignment
 from bitcaster.web.forms import (AddressAssignmentForm,
-                                 AddressAssignmentFormSet, AddressForm,
-                                 AddressFormSet,)
+                                 AddressAssignmentFormSet, AddressFormSet,)
 
 from ..base import BitcasterBaseDetailView, BitcasterBaseUpdateView
 from .base import UserMixin
@@ -21,7 +20,7 @@ __all__ = ('UserAddressesView', 'UserAddressesInfoView', 'UserAddressesAssignmen
 class UserAddressesView(UserMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/user/addresses.html'
     model = Address
-    form_class = AddressForm
+    # form_class = AddressForm
     title = _('Addresses')
 
     def get_object(self, queryset=None):

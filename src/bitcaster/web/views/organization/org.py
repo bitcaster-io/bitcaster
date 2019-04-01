@@ -33,7 +33,7 @@ class OrganizationBaseView(TitleMixin, SelectedOrganizationMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
-        if not request.user.has_perm('admin', self.selected_organization):
+        if not request.user.has_perm('manage_organization', self.selected_organization):
             raise PermissionDenied("'admin' permission needed")
         return super().dispatch(request, *args, **kwargs)
 

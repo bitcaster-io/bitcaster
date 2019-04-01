@@ -18,3 +18,4 @@ bitcaster.egg-info
 !.travis.yml
 ghostdriver.log
 !.circleci
+!.github

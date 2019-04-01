@@ -1,13 +1,16 @@
-{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster bc_permissions %}
 {% block page %}
-    <div class="container">
-        <div class="row col-12">
-            <div class="pull-right col-12 p-4">
-                <a class="btn btn-danger btn-small pull-right"
-                   href="{% url "application-create" organization.slug %}">{% trans "Create new application" %}</a>
+    {% check_permissions organization as org_perms %}
+    {% if org_perms.create_application %}
+        <div class="container">
+            <div class="row col-12">
+                <div class="pull-right col-12 p-4">
+                    <a class="btn btn-danger btn-small pull-right"
+                       href="{% url "application-create" organization.slug %}">{% trans "Create new application" %}</a>
+                </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
     <div class="container">
         <table class="table">

@@ -43,7 +43,7 @@ class Invitation(models.Model):
                              blank=True, null=True,
                              on_delete=models.SET_NULL,
                              related_name='invitations')
-    role = RoleField(default=ROLES.SUBSCRIBER)
+    role = RoleField(default=ROLES.MEMBER)
 
     event = models.ForeignKey(Event,
                               default=None, blank=True, null=True,

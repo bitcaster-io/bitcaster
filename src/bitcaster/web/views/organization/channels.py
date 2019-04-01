@@ -28,6 +28,7 @@ class OrganizationChannels(ChannelMixin, ChannelListView):
 
 class OrganizationChannelUpdate(ChannelMixin, ChannelUpdateView):
     template_name = 'bitcaster/organization/channel/form.html'
+    permissions = ['edit_channel']
 
 
 class OrganizationChannelRemove(ChannelMixin, ChannelDeleteView):
@@ -55,6 +56,10 @@ class OrganizationChannelCreate(ChannelMixin, ChannelCreateWizard):
                  'b': 'bitcaster/organization/channel/create_wizard_2.html',
                  }
     title = _('Create Channel')
+    permissions = ['create_channel']
+
+    def check_perms(self, request, obj=None, raise_exception=False):
+        return super().check_perms(request, obj, raise_exception)
 
     def get_extra_instance_kwargs(self):
         return super().get_extra_instance_kwargs(organization=self.selected_organization)

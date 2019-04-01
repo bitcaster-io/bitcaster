@@ -46,6 +46,10 @@ class Application(AbstractModel, ReverseWrapperMixin):
                                                           _('Enter a valid name.'),
                                                           'invalid')],
                             unique=True)
+    # members = models.ManyToManyField(settings.AUTH_USER_MODEL,
+    #                                  through='bitcaster.applicationmember',
+    #                                  through_fields=('application', 'org_member__user'))
+
     slug = models.SlugField(blank=True)
     timezone = TimeZoneField(default='UTC')
 
