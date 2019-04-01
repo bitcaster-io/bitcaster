@@ -1,0 +1,28 @@
+{% extends "bitcaster/settings/base.html" %}{% load  i18n %}
+{% block page %}
+    {% if json %}
+        <div>
+            <a class="btn btn-large btn-primary" href="{% url 'settings-backup' %}">Back</a>
+        </div>
+        <pre style="position:static; border:1px solid #d5d5d5; margin-top:10px; overflow:scroll; width:70%;height: 800px">
+            {{ json }}
+        </pre>
+    {% else %}
+    <form method="post">
+        {% csrf_token %}
+        <input class="btn btn-large btn-primary" type="submit" value="New Backup">
+    </form>
+    <div class="container mt-5">
+        <ul>
+            {% for entry in file_list %}
+                <li>
+                    <span>{{ entry }}</span> -
+                    <a href="?dn=1&file={{ entry }}">get</a> -
+                    <a href="?view=1&file={{ entry }}">view</a>
+
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+{% endblock page %}

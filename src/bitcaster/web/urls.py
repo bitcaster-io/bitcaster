@@ -12,7 +12,8 @@ from bitcaster.web.views import (ApplicationAutocomplete,
 from bitcaster.web.views.application.members import ApplicationMembershipCreate
 from bitcaster.web.views.autocomplete import (ApplicationCandidateAutocomplete,
                                               ApplicationMembersAutocomplete,)
-from bitcaster.web.views.settings import SettingsPlugin, SettingsPluginToggle
+from bitcaster.web.views.settings import (SettingsBackupRestore, SettingsPlugin,
+                                          SettingsPluginToggle,)
 
 from .views import (AddressAutocomplete, ApplicationCheckConfigView,
                     ApplicationCreate, ApplicationDashboard,
@@ -76,6 +77,7 @@ urlpatterns = [
     path('settings/oauth/', SettingsOAuthView.as_view(), name='settings-oauth'),
     path('settings/sysinfo/', SettingsSystemInfo.as_view(), name='settings-sysinfo'),
     path('settings/ldap/', SettingsLdapView.as_view(), name='settings-ldap'),
+    path('settings/backup/', SettingsBackupRestore.as_view(), name='settings-backup'),
     path('settings/plugins/<str:type>/', SettingsPlugin.as_view(), name='settings-plugin'),
     path('settings/plugins/<str:type>/<int:pk>/toggle/', SettingsPluginToggle.as_view(), name='settings-plugin-toggle'),
 

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
+import os
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django import forms
+from django.core.exceptions import ValidationError
 from django.forms import Form
 from rest_framework.reverse import reverse
 
@@ -113,8 +115,15 @@ class SettingsMainForm(Form):
     SITE_URL = forms.URLField()
     ALLOW_CHANGE_PRIMARY_ADDRESS = forms.BooleanField(required=False)
     GOOGLE_ANALYTICS_CODE = forms.CharField(required=False)
-    # RECAPTCHA_PUBLIC_KEY = forms.CharField(required=False)
+    BACKUPS_LOCATION = forms.CharField(required=False)
+
     # RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
+
+    def clean_BACKUPS_LOCATION(self):
+        value = self.cleaned_data['BACKUPS_LOCATION']
+        if not os.path.isdir(value):
+            raise ValidationError('"%s" is not a valid location' % value)
+        return value
 
 
 class SettingsEmailForm(Form):

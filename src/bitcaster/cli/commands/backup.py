@@ -1,56 +1,7 @@
-import json
-from pathlib import Path
-
 import click
-from django.db.models import ManyToManyField
-from django.db.transaction import atomic
-from django_regex.utils import RegexList
 
 from bitcaster.cli import need_setup
-from bitcaster.utils.json import Decoder, Encoder
-
-DATA = ['user',
-        'organization',
-        'organizationmember',
-        'organizationgroup',
-        'application',
-        'applicationteam',
-        'channel',
-        'event',
-        'message',
-        'monitor',
-        'address',
-        'addressassignment',
-        'applicationtriggerkey',
-        'subscription',
-        ]
-IGNORE = RegexList([r'auth\.permission', r'auth\.group'])
-
-POP_FIELDS = ['version', 'last_modifed_date']
-
-SECTIONS = ['options'] + DATA
-
-
-def get_all_models():
-    from django.apps import apps
-
-    ret = [f'bitcaster.{n}' for n in DATA]
-    for model_name in DATA:
-        model = apps.get_model(f'bitcaster.{model_name}')
-
-        m2m_attrs = [getattr(model, f.name) for f in model._meta.get_fields() if isinstance(f, ManyToManyField)]
-        for m2m_attr in m2m_attrs:
-            rel = m2m_attr.rel
-            name = f'{rel.model._meta.app_label}.{rel.model._meta.model_name}'
-            if name in IGNORE:
-                continue
-            # if name not in ret:
-            #     ret.append(name)
-            if not m2m_attr.rel.through._meta.auto_created:
-                name = f'{rel.through._meta.app_label}.{rel.through._meta.model_name}'
-                if name not in ret:  # pragma: no cover
-                    ret.append(name)
-    return ret
+from bitcaster.utils.backup import SECTIONS
 
 
 @click.command()
@@ -58,32 +9,10 @@ def get_all_models():
 @click.pass_context
 @need_setup
 def backup(ctx, filename):
-    from constance import config, settings as sett
-    from django.apps import apps
+    from bitcaster.utils.backup import backup_data
 
     try:
-        data = {'options': [(key, getattr(config, key)) for key, value in
-                            sett.CONFIG.items()],
-                }
-        ALL_MODELS = get_all_models()
-
-        for model_name in ALL_MODELS:
-            data[model_name] = {'__data__': [], '__m2m__': {}}
-            click.echo(f'backup...{model_name}')
-            model = apps.get_model(model_name)
-            data[model_name]['__data__'] = list(model.objects.all().values())
-            m2ms = [f for f in model._meta.get_fields() if isinstance(f, ManyToManyField)]
-            for m2m in m2ms:
-                m2m_attr = getattr(model, m2m.name)
-                if m2m_attr.rel.through._meta.auto_created:
-                    data[model_name]['__m2m__'][m2m.name] = list(
-                        model.objects.filter(**{f'{m2m.name}__isnull': False}).values('id', m2m.name))
-            json.dumps(data, cls=Encoder)
-
-        output = Path(filename)
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(data, cls=Encoder))
-        click.echo(f'Configuration saved to {output.absolute()}')
+        backup_data(filename, echo=click.echo)
     except Exception as e:
         click.echo(str(e))
         ctx.abort()
@@ -99,84 +28,16 @@ def backup(ctx, filename):
 @click.pass_context
 @need_setup
 def restore(ctx, filename, overwrite, ignore_errors, selection, reindex):
-    from django.apps import apps
-    from django.db.models.signals import post_save
-    import constance.settings
-    from constance import config
+    from bitcaster.utils.backup import restore_data
 
-    # try:
-    input_file = Path(filename)
-    click.echo(f'Using backup {input_file.absolute()}')
-    data = json.loads(input_file.read_text(), cls=Decoder)
-    if not selection:
-        selection = ['options'] + get_all_models()
-    else:
-        selection = ['bitcaster.%s' % name for name in selection]
+    try:
+        restore_data(filename, echo=click.echo, overwrite=overwrite,
+                     ignore_errors=ignore_errors, selection=selection,
+                     reindex=reindex)
+    except Exception as e:
+        click.echo(str(e))
+        ctx.abort()
 
-    with atomic():
-        post_save.disconnect(dispatch_uid='channel-check-config')
-        post_save.disconnect(dispatch_uid='event-check-config')
-        post_save.disconnect(dispatch_uid='message-check-config')
-        post_save.disconnect(dispatch_uid='key-check-config')
-
-        if 'options' in selection:
-            click.echo(f'restore...options')
-            for key, value in data['options']:
-                try:
-                    _type = constance.settings.CONFIG[key][2]
-                    if _type is bool:
-                        value = str(value).lower() in ['1', 'true', 't']
-                    elif isinstance(_type, str):
-                        value = str(value)
-                    else:
-                        value = _type(value)
-                    setattr(config, key, value)
-                except Exception:
-                    ctx.fail('%s=%s' % (key, value))
-
-        ALL_MODELS = get_all_models()
-        for model_name in ALL_MODELS:
-            if model_name in selection:
-                model = apps.get_model(model_name)
-                try:
-                    model_data = data[model_name]
-                except KeyError:
-                    click.echo(f'skipping...{model_name} no data exists', color='red')
-                    continue
-                click.echo(f'restore...{model_name}')
-                for record in model_data['__data__']:
-                    try:
-                        pk = record.pop('id')
-                        for field_name in POP_FIELDS:
-                            record.pop(field_name, None)
-                        if overwrite:
-                            model.objects.update_or_create(id=pk, defaults=record)
-                        else:
-                            model.objects.get_or_create(id=pk, defaults=record)
-                    except Exception as e:
-                        click.echo(click.style(str(e), fg='red'))
-
-                        click.echo(model_name)
-                        click.echo(record)
-                        if not ignore_errors:
-                            ctx.abort()
-                # # ManyToMany
-                for m2m_field_name, m2m_records in data[model_name]['__m2m__'].items():
-                    m2m_field = model._meta.get_field(m2m_field_name)
-                    related_model = m2m_field.related_model
-                    for record in m2m_records:
-                        parent = model.objects.get(pk=record['id'])
-                        m2m_attr = getattr(parent, m2m_field_name)
-                        related = related_model.objects.get(pk=record[m2m_field_name])
-                        m2m_attr.add(related)
-    if reindex:
-        ctx.invoke(reindex)
-
-    from bitcaster.models import AgentMetaData
-    from bitcaster.models import DispatcherMetaData
-
-    AgentMetaData.objects.inspect()
-    DispatcherMetaData.objects.inspect()
     # except Exception as e:
     #     raise
     #     click.echo(e, color='red')

@@ -33,8 +33,13 @@
         </li>
         <li>
             <a class="{{ view|menu_item:'plugin' }}" href="{% url 'settings-plugin' 'd' %}">
-                <i class="fas fa-list-ul"></i>
+                <i class="fas fa-calendar-plus"></i>
                 {% trans 'Plugins' %}</a>
+        </li>
+        <li>
+            <a class="{{ view|menu_item:'backup' }}" href="{% url 'settings-backup' %}">
+                <i class="fas fa-save"></i>
+                {% trans 'Backup/Restore' %}</a>
         </li>
     </ul>
     <ul class="list-unstyled components">

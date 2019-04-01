@@ -1,16 +1,25 @@
 # -*- coding: utf-8 -*-
+import datetime
+import json
 import logging
+import os
 
 from constance import config
 from django.conf import settings
 from django.core.mail import get_connection, send_mail
+from django.http import HttpResponse
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView, RedirectView
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import JsonLexer
 
 from bitcaster import messages
 from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.models import AgentMetaData, Channel, DispatcherMetaData, Monitor
 from bitcaster.utils import fqn
+from bitcaster.utils.backup import backup_data
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsLdapForm,
                                                  SettingsMainForm,
@@ -194,3 +203,44 @@ class SettingsPlugin(SettingsTemplateMixin, ):
         else:
             plugin_list = AgentMetaData.objects.all()
         return super().get_context_data(plugin_list=plugin_list, **kwargs)
+
+
+class SettingsBackupRestore(SettingsTemplateMixin):
+    template_name = 'backup'
+    title = _('Backup / Restore')
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        if 'file' in request.GET:
+            filename = request.GET['file']
+            dest = os.path.join(config.BACKUPS_LOCATION, filename)
+
+            if 'view' in request.GET:
+                json_object = json.load(open(dest))
+                json_str = json.dumps(json_object, indent=2, sort_keys=True)
+                context['json'] = mark_safe(highlight(json_str, JsonLexer(), HtmlFormatter()))
+            elif 'dn' in request.GET:
+                with open(dest, 'r'):
+                    from django.utils.encoding import smart_str
+                    from wsgiref.util import FileWrapper
+                    wrapper = FileWrapper(open(dest))
+
+                    response = HttpResponse(wrapper, content_type='application/force-download')
+                    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(filename)
+                    response['Content-Length'] = os.path.getsize(dest)
+                    return response
+
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        today = datetime.date.today()
+
+        dest = os.path.join(config.BACKUPS_LOCATION, today.strftime('%Y-%m-%d.json'))
+
+        backup_data(dest, lambda x: True)
+        return RedirectToRefererResponse(request)
+
+    def get_context_data(self, **kwargs):
+        file_list = os.listdir(config.BACKUPS_LOCATION)
+        # return {'file_list':file_list}
+        return super().get_context_data(file_list=file_list, **kwargs)
