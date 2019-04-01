@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import F
 from strategy_field.utils import fqn
@@ -61,6 +62,7 @@ class LogEntry(models.Model):
     event = models.ForeignKey('bitcaster.Event',
                               related_name='+',
                               on_delete=models.CASCADE)
+    address = models.CharField(max_length=200, null=True, blank=True)
     subscription = models.ForeignKey('bitcaster.Subscription',
                                      null=True,
                                      related_name='+',
@@ -71,6 +73,7 @@ class LogEntry(models.Model):
                                 on_delete=models.SET_NULL)
     status = models.BooleanField(help_text='True if successed', default=True)
     info = models.TextField(null=True, blank=True)
+    data = JSONField(null=True, blank=True)
 
     class Meta:
         app_label = 'bitcaster'

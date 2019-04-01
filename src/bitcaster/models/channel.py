@@ -147,7 +147,10 @@ class Channel(ReverseWrapperMixin, AbstractModel):
                     Counter.objects.increment(subscription)
                     success += 1
                     LogEntry.objects.create(event=event,
+                                            address=self.handler.get_recipient_address(subscription),
                                             channel=self,
+                                            data={'message': m,
+                                                  'subject': s},
                                             subscription=subscription,
                                             application=event.application)
                 except Exception as e:

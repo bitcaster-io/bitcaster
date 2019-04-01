@@ -9,6 +9,7 @@ from bitcaster.web.views import (ApplicationAutocomplete,
                                  ApplicationMembershipEdit,
                                  ApplicationMembershipList,
                                  OrganizationMembersAutocomplete,)
+from bitcaster.web.views.application.log import ApplicationLog
 from bitcaster.web.views.application.members import ApplicationMembershipCreate
 from bitcaster.web.views.autocomplete import (ApplicationCandidateAutocomplete,
                                               ApplicationMembersAutocomplete,)
@@ -183,6 +184,8 @@ urlpatterns = [
     path('o/<slug:org>/a/<slug:app>/message/add/', MessageCreate.as_view(), name='app-message-create'),
     path('o/<slug:org>/a/<slug:app>/message/<int:pk>/edit/', MessageUpdate.as_view(), name='app-message-edit'),
     path('o/<slug:org>/a/<slug:app>/message/<int:pk>/delete/', MessageDelete.as_view(), name='app-message-delete'),
+    # Log
+    path('o/<slug:org>/a/<slug:app>/log/', ApplicationLog.as_view(), name='app-log'),
 
     # Applications / Monitors
     path('<slug:org>/a/<slug:app>/monitors/', ApplicationMonitorList.as_view(), name='app-monitors'),

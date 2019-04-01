@@ -1,7 +1,7 @@
 {% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
 {% block page %}
     {% check_permissions application %}
-    {% if permissions.add_monitor %}
+    {% if permissions.manage_monitor %}
         <div class="container">
             <div class="row col-12">
                 <div class="pull-right col-12 p-4">

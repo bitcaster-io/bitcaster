@@ -25,6 +25,7 @@ OWNER_PERMISSIONS = {'manage_organization',
                      'create_application',
                      'manage_application',
                      'invite_member', # invite new Organization member from within an app
+                     'manage_monitor',
                      }
 ADMIN_PERMISSIONS = set()
 MEMBER_PERMISSIONS = set()

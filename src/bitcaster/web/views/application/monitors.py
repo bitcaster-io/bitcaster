@@ -36,7 +36,6 @@ class MonitorMixin(SelectedApplicationMixin):
 
 class ApplicationMonitorList(MonitorMixin, BitcasterBaseListView):
     template_name = 'bitcaster/application/monitors/list.html'
-    # title = _('Monitors')
 
 
 class ApplicationMonitorUsage(MonitorMixin, BitcasterBaseDetailView):
@@ -47,6 +46,7 @@ class ApplicationMonitorUpdate(MonitorMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/monitors/form.html'
     form_class = MonitorUpdateConfigurationForm
     # title = _('Edit Monitor')
+    permissions = ['manage_monitor']
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -55,15 +55,18 @@ class ApplicationMonitorUpdate(MonitorMixin, BitcasterBaseUpdateView):
 
 
 class ApplicationMonitorRemove(MonitorMixin, BitcasterBaseDeleteView):
-    pass
+    permissions = ['manage_monitor']
 
 
 class ApplicationMonitorToggle(MonitorMixin, BitcasterBaseToggleView):
+    permissions = ['manage_monitor']
+
     def get_redirect_url(self, *args, **kwargs):
         return self.get_success_url()
 
 
 class ApplicationMonitorTest(MonitorMixin, SingleObjectMixin, MessageUserMixin, RedirectView):
+    permissions = ['manage_monitor']
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -75,6 +78,8 @@ class ApplicationMonitorTest(MonitorMixin, SingleObjectMixin, MessageUserMixin, 
 
 
 class ApplicationMonitorCreate(MonitorMixin, MessageUserMixin, SessionWizardView):
+    permissions = ['manage_monitor']
+
     TEMPLATES = {'a': 'bitcaster/application/monitors/create_wizard_1.html',
                  'b': 'bitcaster/application/monitors/create_wizard_2.html',
                  }

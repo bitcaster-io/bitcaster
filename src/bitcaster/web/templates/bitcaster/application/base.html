@@ -40,6 +40,10 @@
                href="{{ application.urls.teams }}">
             <i class="fas fa-users"></i>{% trans "Teams" %}</a>
         </li>
+        <li><a class="{{ view|menu_item:'log' }}"
+               href="{{ application.urls.log }}">
+            <i class="fas fa-users"></i>{% trans "Log" %}</a>
+        </li>
     </ul>
     <ul class="list-unstyled components sidebar-footer">
         {% check_permissions organization as org_perms %}
