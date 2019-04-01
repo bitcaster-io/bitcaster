@@ -232,7 +232,7 @@ urlpatterns = [
 
     path('<slug:org>/channel/', OrganizationChannels.as_view(), name='org-channels'),
     path('<slug:org>/channel/add/', OrganizationChannelCreate.as_view(), name='org-channel-create'),
-    # path('<slug:org>/channel/<int:pk>/usage/', OrganizationChannelUsage.as_view(), name='org-channel-usage'),
+    path('<slug:org>/channel/<int:pk>/usage/', OrganizationChannelUsage.as_view(), name='org-channel-usage'),
     path('<slug:org>/channel/<int:pk>/edit/', OrganizationChannelUpdate.as_view(), name='org-channel-edit'),
     path('<slug:org>/channel/<int:pk>/delete/', OrganizationChannelRemove.as_view(), name='org-channel-delete'),
     path('<slug:org>/channel/<int:pk>/toggle/', OrganizationChannelToggle.as_view(), name='org-channel-toggle'),

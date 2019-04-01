@@ -40,7 +40,7 @@ class OrganizationChannelToggle(ChannelMixin, ChannelToggleView):
 
 
 class OrganizationChannelUsage(ChannelMixin, ChannelUsageView):
-    template_name = 'bitcaster/organization/channel/usage.html'
+    template_name = 'bitcaster/organization/channel/_info.html'
 
 
 class OrganizationChannelTest(ChannelMixin, ChannelTestView):

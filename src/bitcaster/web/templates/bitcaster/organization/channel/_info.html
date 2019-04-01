@@ -1,21 +1,52 @@
-<img width="80" height="80" src="{% url "plugin-icon" handler.fqn %}">
-<ul>
-    <li class="name">
+{% load markdown %}
+<style>
+    .label{
+        font-weight: bold;
+    }
+    ul{
+        list-style-type: none;
+        padding-inline-start: 0px;
+    }
+</style>
+<div class="modal-header">
+    <h3 class="modal-title" id="exampleModalLongTitle">
+        <img width="80" height="80" src="{% url "plugin-icon" handler.fqn %}">
         {{ handler.name }}
-        {% if channel.handler.url %}
-            <a class="url" href="{{ channel.handler.url }}">{{ handler.url }}</a>
-        {% endif %}
-    </li>
-    <li class="author">
-        <div class="label">Author</div>
-        {{ handler.author }}</li>
-    <li class="version">
-        <div class="label">Version</div>
-        {{ handler.version }}</li>
-    <li class="version">
-        <div class="label">License</div>
-        {{ handler.license }}</li>
-{#    <a rel="modal:open" href="{% url "plugin-info" handler.fqn %}">#}
-{#        <i class="fa fa-info">&nbsp;</i> Info </a>#}
+    </h3>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class=" row col-12">
+    <div class="col-3">
+    <ul>
+        <li class="name">
+            <div class="label">Name</div>
+            {% if channel.handler.url %}
+                <a class="url" href="{{ channel.handler.url }}">{{ handler.url }}</a>
+            {% endif %}
+        </li>
+        <li class="author">
+            <div class="label">Author</div>
+            {{ handler.author }}</li>
+        <li class="version">
+            <div class="label">Version</div>
+            {{ handler.version }}</li>
+        <li class="version">
+            <div class="label">License</div>
+            {{ handler.license }}</li>
+        {#    <a rel="modal:open" href="{% url "plugin-info" handler.fqn %}">#}
+        {#        <i class="fa fa-info">&nbsp;</i> Info </a>#}
 
-</ul>
+    </ul>
+    </div>
+    <div class="col-9">
+        {{ handler.help|markdown }}
+    </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+</div>

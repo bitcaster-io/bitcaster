@@ -35,6 +35,16 @@
                         {% button channel.urls.toggle permissions.edit_channel "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" channel.enabled %}
                         {% button channel.urls.deprecate permissions.edit_channel "fas fa-unlink red:fas fa-link green" "Activate:Deprecate" channel.deprecated %}
                         {% button channel.urls.test permissions.edit_channel "fas fa-broadcast-tower" "Test" %}
+
+{#<a data-toggle="modal" href="{{ channel.urls.usage }}" data-target="#exampleModalCenter">Click me !</a>#}
+
+
+                        <a class="btn btn-light pointer" rel="modal:open" data-toggle="tooltip" title="Info"
+                           data-remote="{{ channel.urls.usage }}">
+                            <i class="fas fa-info pointer"></i>
+                        </a>
+
+{#                        {% button channel.urls.usage permissions.edit_channel "fas fa-info" "Info" %}#}
                     {% elif channel.handler %}
                         Channel disabled by System Administrator
                     {% endif %}
