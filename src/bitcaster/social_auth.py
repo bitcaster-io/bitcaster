@@ -33,8 +33,12 @@ def associate_invitation(backend, details, user=None, strategy=None, *args, **kw
             invite.save()
             organization = invite.organization
             # application = invite.application
-            role = invite.role
 
+            if invite.role == ROLES.SUPERUSER:
+                fields['is_superuser'] = True
+                role = ROLES.OWNER
+            else:
+                role = invite.role
             if invite:
                 is_new = True
         else:
