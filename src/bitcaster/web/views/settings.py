@@ -218,7 +218,9 @@ class SettingsBackupRestore(SettingsTemplateMixin):
             if 'view' in request.GET:
                 json_object = json.load(open(dest))
                 json_str = json.dumps(json_object, indent=2, sort_keys=True)
-                context['json'] = mark_safe(highlight(json_str, JsonLexer(), HtmlFormatter()))
+                formatter = HtmlFormatter(linenos='table')
+                context['css'] = formatter.get_style_defs()
+                context['json'] = mark_safe(highlight(json_str, JsonLexer(), formatter))
             elif 'dn' in request.GET:
                 with open(dest, 'r'):
                     from django.utils.encoding import smart_str

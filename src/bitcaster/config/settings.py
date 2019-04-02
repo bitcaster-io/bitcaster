@@ -366,14 +366,16 @@ CONSTANCE_ADDITIONAL_FIELDS = {
         'required': False,
     }],
 
+    # 'log_message': ['django.forms.fields.ChoiceField', {
+    #     'widget': 'django.forms.Select',
+    #     'choices': ((0, 'None'), (1, 'Template'), (2, 'Arguments'), (3, 'Full message'))
+    # }],
+
     'yes_no_null_select': ['django.forms.fields.ChoiceField', {
         'widget': 'django.forms.Select',
         'choices': ((None, '-----'), ('yes', 'Yes'), ('no', 'No'))
     }],
-    # 'yes_no_null_select': ['django.forms.fields.ChoiceField', {
-    #     'widget': 'django.forms.Select',
-    #     'choices': ((None, "-----"), ("yes", "Yes"), ("no", "No"))
-    # }],
+
     'read_only_text': ['django.forms.fields.CharField', {
         'required': False,
         'widget': 'bitcaster.utils.constance.ObfuscatedInput',
@@ -399,6 +401,10 @@ CONSTANCE_CONFIG = OrderedDict({
     'SITE_URL': ('', '', str),
     'BACKUPS_LOCATION': ('', '', str),
     'GOOGLE_ANALYTICS_CODE': ('', 'Google Analytics code', str),
+    'LOG_NOTIFICATION': (True, 'Enable/Disable notification log', bool),
+    'LOG_MESSAGE': (0, 'Log message ', int),
+
+
     'ALLOW_CHANGE_PRIMARY_ADDRESS': (False, 'Users can change their primary email address', bool),
     'RECAPTCHA_PUBLIC_KEY': ('', '', str),
     'RECAPTCHA_PRIVATE_KEY': ('', '', str),

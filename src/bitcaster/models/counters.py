@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from constance import config
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import F
@@ -55,6 +56,15 @@ class Occurence(models.Model):
 
 
 class LogEntry(models.Model):
+    MESSAGE_NONE = 0
+    MESSAGE_TPL = 1
+    MESSAGE_ARG = 2
+    MESSAGE_ALL = 3
+    MESSAGE_POLICIES = ((MESSAGE_NONE, 'None'),
+                        (MESSAGE_TPL, 'Template'),
+                        (MESSAGE_ARG, 'Arguments'),
+                        (MESSAGE_ALL, 'Full message'))
+
     timestamp = models.DateTimeField(auto_now_add=True)
     application = models.ForeignKey('bitcaster.Application',
                                     related_name='+',
@@ -77,3 +87,23 @@ class LogEntry(models.Model):
 
     class Meta:
         app_label = 'bitcaster'
+
+    @classmethod
+    def log(cls, subscription, payload, **kwargs):
+        if config.LOG_MESSAGE == cls.MESSAGE_ALL:
+            data = payload
+        elif config.LOG_MESSAGE == cls.MESSAGE_TPL:
+            data = payload
+        elif config.LOG_MESSAGE == cls.MESSAGE_TPL:
+            data = payload
+        else:
+            data = {}
+        values = dict(event=subscription.event,
+                      address=subscription.channel.handler.get_recipient_address(subscription),
+                      channel=subscription.channel,
+                      data=data,
+                      subscription=subscription,
+                      application=subscription.event.application,
+                      status=True)
+        values.update(kwargs)
+        cls.objects.create(**values)

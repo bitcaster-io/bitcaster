@@ -3,6 +3,7 @@ import logging
 
 from django.utils import timezone
 from rest_framework.decorators import action
+from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 
 from bitcaster.api.filters import ApplicationFilterBackend
@@ -23,6 +24,7 @@ class EventViewSet(BaseModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [IsApplicationRelated.create('application')]
     filter_backends = [ApplicationFilterBackend]
+    parser_classes = (FileUploadParser,)
 
     # def get_serializer(self, *args, **kwargs):
     #     ret = super().get_serializer(*args, **kwargs)

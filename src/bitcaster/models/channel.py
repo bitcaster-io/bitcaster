@@ -131,6 +131,7 @@ class Channel(ReverseWrapperMixin, AbstractModel):
             for subscription in event.subscriptions.valid(channel=self):
                 # state.data['subscription'] = subscription
                 logger.debug(f'Processing {subscription}')
+                payload = {}
                 try:
                     ctx = dict(context or {})
                     ctx.update({
@@ -143,24 +144,17 @@ class Channel(ReverseWrapperMixin, AbstractModel):
                         'today': datetime.datetime.today()})
                     m = body.render(SecureContext(ctx))
                     s = subject.render(SecureContext(ctx))
+                    payload = {'message': m,
+                               'subject': s,
+                               'context': context,
+                               'template': body}
                     self.handler.emit(subscription, s, m, conn)
                     Counter.objects.increment(subscription)
                     success += 1
-                    LogEntry.objects.create(event=event,
-                                            address=self.handler.get_recipient_address(subscription),
-                                            channel=self,
-                                            data={'message': m,
-                                                  'subject': s},
-                                            subscription=subscription,
-                                            application=event.application)
+                    LogEntry.log(subscription, payload)
                 except Exception as e:
                     logger.exception(e)
-                    LogEntry.objects.create(event=event,
-                                            subscription=subscription,
-                                            application=event.application,
-                                            channel=self,
-                                            status=False,
-                                            info=str(e))
+                    LogEntry.log(subscription, payload, status=False, info=str(e))
                     failures += 1
                 if failures >= self.errors_threshold:
                     raise MaxChannelError(self)

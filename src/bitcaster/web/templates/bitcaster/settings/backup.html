@@ -1,6 +1,9 @@
 {% extends "bitcaster/settings/base.html" %}{% load  i18n %}
 {% block page %}
     {% if json %}
+        <style>
+        {{ css }}
+        </style>
         <div>
             <a class="btn btn-large btn-primary" href="{% url 'settings-backup' %}">Back</a>
         </div>
