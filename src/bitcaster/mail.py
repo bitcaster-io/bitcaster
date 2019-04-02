@@ -32,7 +32,8 @@ def send_mail_by_template(subject, template_name, context,
             return send_mail_async.delay(subject, message, html_message,
                                          recipient_list,
                                          from_email=from_email,
-                                         fail_silently=fail_silently)
+                                         fail_silently=fail_silently,
+                                         )
         else:
             return send_mail_async(subject, message, html_message,
                                    recipient_list,

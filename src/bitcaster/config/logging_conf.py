@@ -89,6 +89,11 @@ LOGGING = {
             'propagate': False,  # do not propagate
             'level': 'ERROR'
         },
+        'telegram': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'sentry'],
+            'propagate': False,
+        },
         'bitcaster': {
             'level': level,
             'handlers': ['console', 'sentry'],

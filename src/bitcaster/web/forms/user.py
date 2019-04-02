@@ -39,6 +39,7 @@ class AuthenticationForm(_AuthenticationForm):
 
 class UserInviteRegistrationForm(forms.ModelForm):
     email = forms.EmailField(disabled=True)
+    password = forms.CharField(widget=PasswordInput(attrs={'autocomplete': 'new-password'}))
 
     class Meta:
         model = User
@@ -283,10 +284,9 @@ class UserSubscribeForm(forms.Form):
 
 
 class UserSubscriptionEditForm(forms.ModelForm):
-
     class Meta:
         model = Subscription
-        fields = ('channel', )
+        fields = ('channel',)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

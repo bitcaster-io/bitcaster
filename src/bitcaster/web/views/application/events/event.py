@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from constance import config
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -147,8 +148,8 @@ class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
         #
         extra = {'serializer': eventform_factory(event),
                  'key': key,
-                 'api_url': self.request.build_absolute_uri(reverse('api:application-event-trigger',
-                                                                    args=[event.application.pk, event.pk]))}
+                 'api_url': '%s%s' % (config.SITE_URL, reverse('api:application-event-trigger',
+                                                               args=[event.application.pk, event.pk]))}
 
         kwargs.update(extra)
         return super().get_context_data(**kwargs)

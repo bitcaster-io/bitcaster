@@ -63,7 +63,6 @@ pycrypto = "*"
 pyotp = "*"
 python-redis-lock = {extras = ["django"]}
 python-slugify = "*"
-python-telegram = "*"
 pyyaml = ">=4.2b1"
 redis = "*"
 requests-oauthlib = "*"
@@ -78,6 +77,7 @@ yampy = "*"
 zulip = "*"
 django-select2 = "*"
 pygments = "*"
+python-telegram = "*"
 
 [dev-packages]
 bumpversion = "*"
