@@ -20,6 +20,7 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from timezone_field import TimeZoneField
 
 from bitcaster.framework.db.fields import ROLES
+from bitcaster.framework.forms.fields import generic
 from bitcaster.mail import send_mail_by_template
 from bitcaster.models import (Address, AddressAssignment,
                               Channel, Subscription, User,)
@@ -180,6 +181,9 @@ class NewMemberForm(_UserCreationForm):
 
 
 class AddressForm(forms.ModelForm):
+    label = generic.CharField(hint='email,mobile')
+    address = generic.CharField(hint='me@email.com')
+
     class Meta:
         model = Address
         fields = ('id', 'user', 'label', 'address')
