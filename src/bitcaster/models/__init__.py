@@ -4,7 +4,7 @@ from .application import Application
 from .applicationmember import ApplicationMember
 from .base import AbstractModel
 from .channel import Channel
-from .counters import Counter, Occurence
+from .counters import Counter, LogEntry, Occurence
 from .event import Event
 from .invitation import Invitation
 from .message import Message

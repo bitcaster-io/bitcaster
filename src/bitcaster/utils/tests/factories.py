@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+import datetime
 from contextlib import ContextDecorator
 from random import choice
 
 import factory
 from django.contrib.auth.models import Group, Permission
 from factory.base import FactoryMetaClass
+from factory.fuzzy import FuzzyDateTime
 from faker import Faker
+from pytz import UTC
 from rest_framework.test import APIClient
 
 import bitcaster
@@ -219,6 +222,15 @@ class ApplicationFactory(AutoRegisterModelFactory):
     #
 
 
+class OrganizationGroupFactory(AutoRegisterModelFactory):
+    organization = factory.SubFactory(OrganizationFactory)
+    name = factory.Faker('name')
+
+    class Meta:
+        model = bitcaster.models.OrganizationGroup
+        django_get_or_create = ('organization', 'name')
+
+
 class OrganizationMemberFactory(AutoRegisterModelFactory):
     organization = factory.SubFactory(OrganizationFactory)
     user = factory.SubFactory(UserFactory)
@@ -426,3 +438,16 @@ class AddressAssignmentFactory(AutoRegisterModelFactory):
     user = factory.SubFactory(UserFactory)
     address = factory.SubFactory(AddressFactory)
     channel = factory.SubFactory(ChannelFactory)
+
+
+class LogEntryFactory(AutoRegisterModelFactory):
+    class Meta:
+        model = models.LogEntry
+
+    timestamp = FuzzyDateTime(datetime.datetime(2019, 1, 1, tzinfo=UTC))
+    application = factory.SubFactory(ApplicationFactory)
+    event = factory.SubFactory(EventFactory)
+    subscription = factory.SubFactory(SubscriptionFactory)
+    address = factory.Sequence(lambda n: 'address-%03d' % n)
+    channel = factory.SubFactory(ChannelFactory)
+    status = True

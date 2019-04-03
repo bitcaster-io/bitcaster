@@ -25,6 +25,7 @@ class BitcasterTemplateView(MessageUserMixin, TemplateView):
 class BitcasterBaseListView(BitcasterBaseViewMixin, ListView):
     template_name_base = None
     title = _('%(verbose_name_plural)s')
+    paginate_by = 50
 
 
 class BitcasterBaseCreateView(BitcasterBaseViewMixin, CreateView):

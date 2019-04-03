@@ -5,8 +5,14 @@ let _ = {};
 
 _.toggleSidebar = function () {
     let that = $("#sidebar");
-    that.style.flex = "auto";
-    that.style["max-width"] = "none";
+    that.toggleClass('active');
+    Cookies.set('sidebar',
+        that.hasClass('active') ? "active" : "",
+        {path: '/'}
+    );
+
+
 };
 _.passwords = require("./password.input.js");
+_.paginator = require("./paginator.js");
 module.exports = _;

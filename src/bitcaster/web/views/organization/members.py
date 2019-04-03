@@ -5,6 +5,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic.edit import ModelFormMixin
 
 from bitcaster.models import OrganizationMember
+from bitcaster.utils.http import get_query_string
 from bitcaster.web.forms import OrganizationMemberForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
@@ -49,10 +50,18 @@ class MemberFormMixin(ModelFormMixin):
 class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
     template_name = 'bitcaster/organization/members/list.html'
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        target = self.request.GET.get('filter')
+        if target:
+            qs = qs.filter(user__email__istartswith=target)
+        return qs
+
     # title = _('Users')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
+        data['filters'] = get_query_string(self.request, remove=['page'])
         data['memberships'] = self.get_queryset()
         data['invitations'] = self.selected_organization.invitations.filter(date_accepted=None)
         return data

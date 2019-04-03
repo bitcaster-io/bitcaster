@@ -1,9 +1,24 @@
-{% extends "bitcaster/application/base.html" %}{% load crispy_forms_filters i18n bitcaster bc_permissions %}
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block page %}
     <div class="container">
-        {% check_permissions application  %}
-        <div class="row col-12">
-            <div class="pull-right col-12 p-4">
+        <div class="row col-12 mb-5">
+            <div class="col-7">
+                <form id="search">
+                <input type="text" name="filter" maxlength="50"
+                       value="{{ request.GET.filter }}"
+                       placeholder="insert email to filter"
+                       onfocus="this.placeholder=''"
+                       onblur="this.placeholder='insert email to filter'"
+                       class="textinput textInput form-control">
+                    </form>
+            </div>
+            <div class="col-1">
+                <input class="btn btn-primary"
+                       onclick="search.submit()"
+                       type="submit" value="{% trans "Search" %}">
+            </div>
+
+            <div class="pull-right col-3">
                 <a class="btn btn-danger btn-small pull-right ml-3"
                    href="{{ application.urls.member_add }}">{% trans "Add members" %}</a>
                 {% if permissions.invite_member %}
@@ -14,52 +29,82 @@
         </div>
     </div>
     <div class="container">
-        {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}
-        <form method="post" id="Form">
-        {% csrf_token %}
-        {{ formset.management_form }}
         <table class="table">
             <thead>
             <tr class="d-flex">
                 <th scope="col" class="col-4">User</th>
-                <th scope="col" class="col-4">Role</th>
-                <th scope="col" class="col-4">&nbsp;</th>
+                <th scope="col" class="col-2">Role</th>
+                <th scope="col" class="col-3">&nbsp;</th>
             </tr>
             </thead>
-
             <tbody>
-            {% for form in formset %}
-                {{ form.errors }}{{ form.id }}
+            <tr class="d-flex">
+            {% for membership in object_list %}
                 <tr class="d-flex">
-                    <td class="col-4">{{ form.instance.org_member.user.email }}</td>
-                    <td class="col-4">{{ form.role|as_crispy_field }}</td>
                     <td class="col-4">
-                        {% button form.instance.urls.delete True "far fa-trash-alt" "delete" %}
+                        {{ membership.user }}{% if membership.user == user %}<span class="you">you</span>{% endif %}
+                    </td>
+                    <td class="col-2">{{ membership.get_role_display }}</td>
+                    <td class="col-3 formset-commands">
+                        <a class="btn btn-outline-light"
+                           data-toggle="tooltip" title="edit"
+                           href="{% app-url "app-member-edit" membership.pk %}">
+                            <i class="far fa-edit"></i>
+                        </a>
+                        <a class="btn btn-outline-light"
+                           data-toggle="tooltip" title="remove"
+                           href="{% app-url "app-member-delete" membership.pk %}">
+                            <i class="far fa-trash-alt"></i>
+                        </a>
                     </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
-        {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}
-        </form>
+        <!-- pagination-->
+        {% if is_paginated %}
+            {% include "bitcaster/_includes/pagination.html" with page_obj=page_obj %}
+        {% endif %}
+        <!-- end pagination-->
+    </div>
+    <div class="container">
+        {% if invitations %}
+            <h4>Pending invitations</h4>
+            <table class="table">
+                <thead>
+                <tr class="d-flex">
+                    <th scope="col" class="col-4">User</th>
+                    <th scope="col" class="col-2">Invited By</th>
+                    <th scope="col" class="col-3">On</th>
+                    <th scope="col" class="col-3"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for invitation in invitations.all %}
+                    <tr class="d-flex">
+                        <td class="col-4">
+                            {{ invitation.target }}
+                        </td>
+                        <td class="col-2">{{ invitation.invited_by }}</td>
+                        <td class="col-3">{{ invitation.date_created|date:"Y, M d" }}</td>
+                        <td class="text-nowrap col-3 formset-commands">
+                            <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'">
+                            <i class="far fa-trash-alt"></i>
+                            </a>
+                            <form method="post" class="d-inline"
+                                  action="{% org-url "org-invitation-send" invitation.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" title="resend email" class="btn btn-outline-light">
+                                    <i class="far fa-envelope"></i>
+                                </button>
+                            </form>
+
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
     </div>
 {% endblock %}
-{% block js %}
-
-<script>
-    (function ($) {
-        var $commands = $(".commands");
-
-        $("#Form")
-            .on("input", function (e) {
-                console.log($(e.target).parents('div.row'));
-                $(e.target).parents('div.row').css('background-color', '#fffccf');
-                $commands.show();
-            });
-        $('.commands>.btn-save').on('click', function () {
-            $("#Form").submit();
-        });
-
-    })($);
-</script>
-{% endblock js %}

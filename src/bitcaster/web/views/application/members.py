@@ -1,17 +1,17 @@
 import logging
 
-from django.forms import inlineformset_factory
 from django.utils.translation import ugettext as _
-from django.views.generic.edit import FormMixin, ModelFormMixin, ProcessFormView
+from django.views.generic.edit import ModelFormMixin
 
-from bitcaster.models import Application, ApplicationMember
+from bitcaster.models import ApplicationMember
+from bitcaster.utils.http import get_query_string
 from bitcaster.web.forms import ApplicationMemberForm
 from bitcaster.web.forms.applicationmember import ApplicationMemberFormSet
 from bitcaster.web.views.application.app import ApplicationViewMixin
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,
-                                      BitcasterBaseUpdateView, TemplateView,)
-from bitcaster.web.views.mixins import TitleMixin
+                                      BitcasterBaseListView,
+                                      BitcasterBaseUpdateView,)
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,8 @@ class MemberMixin(ApplicationViewMixin):
 
 
 class MemberFormMixin(ModelFormMixin):
-    # form_class = ApplicationMemberFormSet
+    form_class = ApplicationMemberForm
+
     # def get_form(self, form_class=None):
     #     form = super().get_form(form_class)
     #     form.helper = FormHelper(form)
@@ -39,36 +40,56 @@ class MemberFormMixin(ModelFormMixin):
         return super().form_valid(form)
 
 
-class ApplicationMembershipList(MemberMixin, TitleMixin, FormMixin, ProcessFormView, TemplateView):
+class ApplicationMembershipList(MemberMixin, BitcasterBaseListView):
     template_name = 'bitcaster/application/members/list.html'
-    # form_class = ApplicationMemberFormSet
     title = _('Application members')
 
-    def get_form_class(self):
-        return inlineformset_factory(Application,
-                                     ApplicationMember,
-                                     form=ApplicationMemberForm,
-                                     min_num=0,
-                                     labels={'role': '', 'org_member': ''},
-                                     extra=0)
+    def get_queryset(self):
+        qs = super().get_queryset()
+        target = self.request.GET.get('filter')
+        if target:
+            qs = qs.filter(org_member__user__email__istartswith=target)
+        return qs
 
-    def get_form_kwargs(self):
-        """Return the keyword arguments for instantiating the form."""
-        kwargs = super().get_form_kwargs()
-        kwargs['instance'] = self.selected_application
-        return kwargs
-
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+    # title = _('Users')
 
     def get_context_data(self, **kwargs):
-        ret = super().get_context_data(**kwargs)
-        ret['formset'] = ret['form']
-        return ret
+        data = super().get_context_data(**kwargs)
+        data['filters'] = get_query_string(self.request, remove=['page'])
+        # data['memberships'] = self.get_queryset()
+        return data
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
+
+# class ApplicationMembershipList(MemberMixin, TitleMixin, FormMixin, ProcessFormView, TemplateView):
+#     template_name = 'bitcaster/application/members/list.html'
+#     # form_class = ApplicationMemberFormSet
+#     title = _('Application members')
+#
+#     def get_form_class(self):
+#         return inlineformset_factory(Application,
+#                                      ApplicationMember,
+#                                      form=ApplicationMemberForm,
+#                                      min_num=0,
+#                                      labels={'role': '', 'org_member': ''},
+#                                      extra=0)
+#
+#     def get_form_kwargs(self):
+#         """Return the keyword arguments for instantiating the form."""
+#         kwargs = super().get_form_kwargs()
+#         kwargs['instance'] = self.selected_application
+#         return kwargs
+#
+#     def post(self, request, *args, **kwargs):
+#         return super().post(request, *args, **kwargs)
+#
+#     def get_context_data(self, **kwargs):
+#         ret = super().get_context_data(**kwargs)
+#         ret['formset'] = ret['form']
+#         return ret
+#
+#     def form_valid(self, form):
+#         form.save()
+#         return super().form_valid(form)
 
 
 class ApplicationMembershipCreate(MemberMixin, MemberFormMixin, BitcasterBaseCreateView):

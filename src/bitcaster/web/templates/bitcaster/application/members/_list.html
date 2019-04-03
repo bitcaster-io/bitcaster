@@ -1,0 +1,65 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_filters i18n bitcaster bc_permissions %}
+{% block page %}
+    <div class="container">
+        {% check_permissions application  %}
+        <div class="row col-12">
+            <div class="pull-right col-12 p-4">
+                <a class="btn btn-danger btn-small pull-right ml-3"
+                   href="{{ application.urls.member_add }}">{% trans "Add members" %}</a>
+                {% if permissions.invite_member %}
+                <a class="btn btn-danger btn-small pull-right"
+                   href="{{ application.urls.invite }}">{% trans "Invite members" %}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}
+        <form method="post" id="Form">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <table class="table">
+            <thead>
+            <tr class="d-flex">
+                <th scope="col" class="col-4">User</th>
+                <th scope="col" class="col-4">Role</th>
+                <th scope="col" class="col-4">&nbsp;</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for form in formset %}
+                {{ form.errors }}{{ form.id }}
+                <tr class="d-flex">
+                    <td class="col-4">{{ form.instance.org_member.user.email }}</td>
+                    <td class="col-4">{{ form.role|as_crispy_field }}</td>
+                    <td class="col-4">
+                        {% button form.instance.urls.delete True "far fa-trash-alt" "delete" %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}
+        </form>
+    </div>
+{% endblock %}
+{% block js %}
+
+<script>
+    (function ($) {
+        var $commands = $(".commands");
+
+        $("#Form")
+            .on("input", function (e) {
+                console.log($(e.target).parents('div.row'));
+                $(e.target).parents('div.row').css('background-color', '#fffccf');
+                $commands.show();
+            });
+        $('.commands>.btn-save').on('click', function () {
+            $("#Form").submit();
+        });
+
+    })($);
+</script>
+{% endblock js %}

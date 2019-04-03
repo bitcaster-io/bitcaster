@@ -18,7 +18,7 @@ class OrganizationGroupForm(forms.ModelForm):
                                                   )
     members = forms.ModelMultipleChoiceField(queryset=OrganizationMember.objects.all(),
                                              required=False,
-                                             widget=ModelSelect2Multiple(url='members-autocomplete')
+                                             widget=ModelSelect2Multiple(url='org-member-autocomplete')
                                              )
 
     class Meta:
@@ -35,7 +35,7 @@ class OrganizationGroupForm(forms.ModelForm):
                                                          )
 
         self.fields['members'].queryset = self.organization.members.all()
-        self.fields['members'].widget.url = reverse('members-autocomplete',
+        self.fields['members'].widget.url = reverse('org-member-autocomplete',
                                                     args=[self.organization.slug]
                                                     )
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 
 logger = logging.getLogger(__name__)

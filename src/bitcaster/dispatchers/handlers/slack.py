@@ -3,7 +3,7 @@ from logging import getLogger
 
 import requests
 from django.conf.urls.static import static
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from bitcaster.exceptions import PluginSendError
 from bitcaster.utils.language import classproperty

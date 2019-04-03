@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     # 'jsoneditor',
     'corsheaders',
-    'django_select2',
     'dal',
     'dal_select2',
     'django_sysinfo',

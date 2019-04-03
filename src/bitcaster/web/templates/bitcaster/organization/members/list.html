@@ -1,9 +1,25 @@
 {% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block page %}
     <div class="container">
-        <div class="row col-12">
-            <div class="pull-right col-12 p-4">
-                <a class="btn btn-danger btn-small pull-right"
+        <div class="row col-12 mb-5">
+            <div class="col-7">
+                <form id="search">
+                <input type="text" name="filter" maxlength="50"
+                       value="{{ request.GET.filter }}"
+                       placeholder="insert email to filter"
+                       onfocus="this.placeholder=''"
+                       onblur="this.placeholder='insert email to filter'"
+                       class="textinput textInput form-control">
+                    </form>
+            </div>
+            <div class="col-1">
+                <input class="btn btn-primary"
+                       onclick="search.submit()"
+                       type="submit" value="{% trans "Search" %}">
+            </div>
+
+            <div class="pull-right col-3">
+                <a class="btn btn-danger pull-right"
                    href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>
             </div>
         </div>
@@ -28,7 +44,7 @@
                 <td class="col-2">&nbsp;</td>
                 <td class="col-2">&nbsp;</td>
             </tr>
-            {% for membership in memberships.all %}
+            {% for membership in object_list %}
                 <tr class="d-flex">
                     <td class="col-4">
                         {{ membership.user }}{% if membership.user == user %}<span class="you">you</span>{% endif %}
@@ -51,6 +67,11 @@
             {% endfor %}
             </tbody>
         </table>
+        <!-- pagination-->
+        {% if is_paginated %}
+            {% include "bitcaster/_includes/pagination.html" with page_obj=page_obj %}
+        {% endif %}
+        <!-- end pagination-->
     </div>
     <div class="container">
         {% if invitations %}
@@ -92,5 +113,4 @@
             </table>
         {% endif %}
     </div>
-
 {% endblock %}

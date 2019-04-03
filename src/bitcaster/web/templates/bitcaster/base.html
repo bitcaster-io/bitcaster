@@ -138,17 +138,16 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('button.btn.toggle').on('click', function () {
-            $('#sidebar').toggleClass('active');
-            Cookies.set('sidebar',
-                $('#sidebar').hasClass('active') ? "active" : "",
-                {path: '/'}
-            );
+            bitcaster.toggleSidebar();
         });
     });
     {% if messages %}
         setTimeout(function () {
             $('.alert').not('.keep').alert('close');
         }, 5000);
+    {% endif %}
+    {% if paginator %}
+        bitcaster.paginator({{ page_obj.number }}, {{paginator.num_pages}}, "{{ filters }}");
     {% endif %}
 </script>
 {% block js %}
