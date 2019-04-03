@@ -20,10 +20,9 @@ def resource(path):
     return
 
 
-@cache_page(60 * 60 * 24, key_prefix=bitcaster.__version__)
+@cache_page(60 * 60 * 24, key_prefix=bitcaster.get_full_version())
 def plugin_icon(request, fqn):
     h = import_by_name(fqn)
-    # loc = inspect.getfile(h)
     if h.icon and h.icon.startswith('/'):
         return HttpResponseRedirect(static(h.icon))
     elif h.icon:

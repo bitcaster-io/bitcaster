@@ -14,6 +14,9 @@ def pytest_addoption(parser):
     parser.addoption('--plugins', action='store_true', dest='enable_plugins',
                      default=False, help='enable plugins tests')
 
+    parser.addoption('--paid', action='store_true', dest='enable_paid',
+                     default=False, help='enable paid plugins tests')
+
 
 def pytest_configure(config):
     here = Path(__file__).parent
@@ -293,3 +296,8 @@ def _check_environ(request):
     if marker:
         if not pytest.config.option.enable_plugins:
             pytest.skip('Plugins test disabled. Use --plugins to enable them')
+
+    marker = request.node.get_closest_marker('paid')
+    if marker:
+        if not pytest.config.option.enable_paid:
+            pytest.skip('Paid plugins disabled. Use --paid to enable them')

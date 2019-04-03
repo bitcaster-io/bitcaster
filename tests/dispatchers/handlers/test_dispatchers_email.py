@@ -8,6 +8,7 @@ from bitcaster.utils.tests.dispatcher_testcase import DispatcherBaseTest
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.plugin
 @pytest.mark.skipif_missing('TEST_EMAIL_USER', 'TEST_EMAIL_PASSWORD', 'TEST_EMAIL_RECIPIENT')
 class TestDispatcherEmail(DispatcherBaseTest):
     TARGET = Email

@@ -9,7 +9,6 @@ from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
-from bitcaster.utils.language import classproperty
 
 logger = getLogger(__name__)
 
@@ -34,9 +33,7 @@ class Plivo(CoreDispatcher):
     options_class = PlivoOptions
     message_class = PlivoMessage
 
-    @classproperty
-    def name(cls):
-        return 'Plivo (SMS)'
+    name = 'SMS (Plivo)'
 
     # def validate_subscription(self, subscription, *args, **kwargs) -> None:
     #     ser = self.subscription_class(data=subscription.config)

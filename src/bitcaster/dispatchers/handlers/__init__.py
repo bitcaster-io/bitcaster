@@ -10,6 +10,7 @@ from .slack import SlackWebhook
 from .system_email import SystemEmail
 # from .telegram import Telegram
 from .twilio import Twilio
+from .twilio_wa import TwilioWhatsApp
 from .twitter import Twitter, TwitterDirectMessage
 from .xmpp import Xmpp
 from .zulip import ZulipPrivate
