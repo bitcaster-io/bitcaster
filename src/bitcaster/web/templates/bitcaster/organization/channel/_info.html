@@ -23,8 +23,8 @@
     <ul>
         <li class="name">
             <div class="label">Name</div>
-            {% if channel.handler.url %}
-                <a class="url" href="{{ channel.handler.url }}">{{ handler.url }}</a>
+            {% if handler.url %}
+                <a class="url" href="{{ handler.url }}">{{ handler.url }}</a>
             {% endif %}
         </li>
         <li class="author">
