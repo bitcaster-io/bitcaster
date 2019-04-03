@@ -249,7 +249,7 @@ AddressAssignmentFormSetBase = forms.inlineformset_factory(User,
 
 class AddressFormSet(AddressFormSetBase, BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
-        super(AddressFormSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.queryset = self.queryset.order_by('label')
 
     def save(self, commit=True):

@@ -19,7 +19,7 @@ class OrganizationMemberForm(forms.ModelForm):
     def __init__(self, organization, *args, **kwargs):
         self.organization = organization
         form_show_labels = kwargs.pop('form_show_labels', False)
-        super(OrganizationMemberForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.form_show_labels = form_show_labels

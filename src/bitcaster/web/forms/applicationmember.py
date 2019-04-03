@@ -28,7 +28,7 @@ class ApplicationMemberAddForm(forms.ModelForm):
     def __init__(self, application, *args, **kwargs):
         self.application = application
         self.organization = application.organization
-        super(ApplicationMemberAddForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['org_member'].queryset = self.organization.memberships.all()
         self.fields['org_member'].widget.url = reverse('app-candidate-autocomplete',
                                                        args=[self.organization.slug,
@@ -59,7 +59,7 @@ ApplicationMemberFormSetBase = forms.inlineformset_factory(Application,
 class ApplicationMemberFormSet(ApplicationMemberFormSetBase, BaseInlineFormSet):
     def __init__(self, application, *args, **kwargs):
         self.application = application
-        super(ApplicationMemberFormSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_form_kwargs(self, index):
         ret = super().get_form_kwargs(index)

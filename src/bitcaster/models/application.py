@@ -87,7 +87,7 @@ class Application(AbstractModel, ReverseWrapperMixin):
         if not self.slug:
             slugify_instance(self, self.name,
                              reserved=RESERVED_APPLICATION_SLUGS)
-        super(Application, self).save(force_insert, force_update, using, update_fields)
+        super().save(force_insert, force_update, using, update_fields)
 
     @property
     def channels(self):

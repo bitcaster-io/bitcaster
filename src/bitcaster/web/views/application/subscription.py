@@ -11,7 +11,7 @@ class ApplicationSubscriptionList(SelectedApplicationMixin, BitcasterBaseListVie
         kwargs['pending'] = self.selected_application.invitations.filter()
         return super().get_context_data(**kwargs)
     # def get_context_data(self, **kwargs):
-    #     data = super(OrganizationMembershipList, self).get_context_data(**kwargs)
+    #     data = super().get_context_data(**kwargs)
     #     base = self.get_queryset()
     #     data['memberships'] = base.filter(user__isnull=False)
     #     data['invitations'] = base.filter(user__isnull=True)

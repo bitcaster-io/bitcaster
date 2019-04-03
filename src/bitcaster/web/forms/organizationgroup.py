@@ -28,7 +28,7 @@ class OrganizationGroupForm(forms.ModelForm):
     def __init__(self, organization, *args, **kwargs):
         self.organization = organization
         form_show_labels = kwargs.pop('form_show_labels', True)
-        super(OrganizationGroupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['applications'].queryset = self.organization.applications.all()
         self.fields['applications'].widget.url = reverse('application-autocomplete',
                                                          args=[self.organization.slug]

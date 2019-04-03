@@ -101,7 +101,7 @@ class InvitationAccept(MessageUserMixin, CreateView):
     def get(self, request, **kwargs):
         check = kwargs['check']
         if totp.verify(check, valid_window=config.INVITATION_EXPIRE):
-            return super(InvitationAccept, self).get(request, **kwargs)
+            return super().get(request, **kwargs)
         self.message_user(_('Invite expired'), messages.ERROR)
         return HttpResponseRedirect('/')
 
@@ -136,7 +136,7 @@ class InvitationCreate(InviteMixin, BitcasterBaseCreateView):
 
     def form_invalid(self, form):
         self.message_user(_('invalid'), messages.WARNING)
-        return super(InviteMixin, self).form_invalid(form)
+        return super().form_invalid(form)
 
     def form_valid(self, form):
         form.instance = self.get_parent_instance()

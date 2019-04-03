@@ -88,12 +88,12 @@ class Organization(AbstractModel, ReverseWrapperMixin):
             # with TimedRetryPolicy(10, lock.acquire):
             slugify_instance(self, self.name,
                              reserved=RESERVED_ORGANIZATION_SLUGS)
-        super(Organization, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
         if self.is_core:
             raise Exception('You cannot delete the the default organization.')
-        return super(Organization, self).delete()
+        return super().delete()
 
     # def has_access(self, user, access=None):
     #     queryset = self.members.filter(user=user)

@@ -42,7 +42,7 @@ class TimezoneField(serializers.Field):
 #
 #     def validate(self, attrs):
 #         attrs['username'] = attrs.get('email', '')
-#         return super(RegisterUserSerializer, self).validate(attrs)
+#         return super().validate(attrs)
 
 
 # class CreateUserSerializer(serializers.ModelSerializer):

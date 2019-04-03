@@ -21,7 +21,7 @@ class SimpleLinkExtension(Extension):
             'html_class': ['', 'CSS hook. Leave blank for none.'],
             'build_url': [build_url, 'Callable formats URL from label.'],
         }
-        super(SimpleLinkExtension, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
         self.md = md
