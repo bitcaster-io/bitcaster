@@ -45,10 +45,6 @@ class MemberFormMixin(ModelFormMixin):
         form.instance.organization = self.selected_organization
         return super().form_valid(form)
 
-    # def get_form_class(self):
-    #     return modelform_factory(OrganizationGroup, form=OrganizationGroupForm,
-    #                              fields=self.fields)
-
 
 class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
     template_name = 'bitcaster/organization/members/list.html'

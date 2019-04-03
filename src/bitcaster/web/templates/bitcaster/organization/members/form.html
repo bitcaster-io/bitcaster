@@ -4,6 +4,7 @@
         <div class="row col-12">
         <form method="post" action="." class="col-12">
             {% csrf_token %}
+            {{ form.errors }}
             {{ form.non_field_errors }}
             <table class="table col-12">
                 <tbody>

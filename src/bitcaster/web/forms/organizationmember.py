@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class OrganizationMemberForm(forms.ModelForm):
     class Meta:
         model = OrganizationMember
-        exclude = ('organization',)
+        exclude = ('organization', 'date_enrolled', 'user')
 
     def __init__(self, organization, *args, **kwargs):
         self.organization = organization
