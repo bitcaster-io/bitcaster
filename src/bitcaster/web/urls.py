@@ -255,8 +255,6 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('select2/', include('django_select2.urls')),
-
     path('dal/user-autocomplete/', UserAutocomplete.as_view(), name='user-autocomplete'),
     path('dal/address-autocomplete/', AddressAutocomplete.as_view(), name='address-autocomplete'),
     path('dal/channel-autocomplete/', ChannelAutocomplete.as_view(), name='channel-autocomplete'),
