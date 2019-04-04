@@ -8,6 +8,7 @@ from bitcaster.web.views import (ApplicationAutocomplete,
                                  ApplicationMembershipDelete,
                                  ApplicationMembershipEdit,
                                  ApplicationMembershipList,
+                                 OrganizationGroupMemberRemove,
                                  OrganizationMembersAutocomplete,)
 from bitcaster.web.views.application.log import ApplicationLog
 from bitcaster.web.views.application.members import ApplicationMembershipCreate
@@ -113,7 +114,8 @@ urlpatterns = [
     path('new-user/', RedirectView.as_view(url=reverse_lazy('me'))),
     path('new-association/', RedirectView.as_view(url=reverse_lazy('me'))),
 
-    path('login-error/', TemplateView.as_view(template_name='bitcaster/oauth/login_error.html')),
+    path('login-error/',
+         TemplateView.as_view(template_name='bitcaster/oauth/login_error.html')),
 
     # path('user/<slug:org>/', UserHomeView.as_view(), name='user-org'),
     # path('user/<slug:org>/<slug:app>/', UserHomeView.as_view(), name='user-app'),
@@ -221,11 +223,12 @@ urlpatterns = [
 
     path('<slug:org>/group/', OrganizationGroupList.as_view(), name='org-groups'),
     path('<slug:org>/group/add/', OrganizationGroupCreate.as_view(), name='org-group-add'),
-    path('<slug:org>/group/<int:pk>/settings/', OrganizationGroupEdit.as_view(), name='org-group-settings'),
-    path('<slug:org>/group/<int:pk>/members/', OrganizationGroupMembers.as_view(), name='org-group-members'),
-    path('<slug:org>/group/<int:pk>/applications/', OrganizationGroupApplications.as_view(),
+    path('<slug:org>/group/<int:group>/settings/', OrganizationGroupEdit.as_view(), name='org-group-settings'),
+    path('<slug:org>/group/<int:group>/members/', OrganizationGroupMembers.as_view(), name='org-group-members'),
+    path('<slug:org>/group/<int:group>/members/<int:member>/remove/', OrganizationGroupMemberRemove.as_view(), name='org-group-member-remove'),
+    path('<slug:org>/group/<int:group>/applications/', OrganizationGroupApplications.as_view(),
          name='org-group-applications'),
-    path('<slug:org>/group/<int:pk>/delete/', OrganizationGroupDelete.as_view(), name='org-group-delete'),
+    path('<slug:org>/group/<int:group>/delete/', OrganizationGroupDelete.as_view(), name='org-group-delete'),
 
     # path('<slug:org>/team/', OrganizationTeamList.as_view(), name='org-teams'),
     # path('<slug:org>/team/add/', OrganizationTeamCreate.as_view(), name='org-team-create'),

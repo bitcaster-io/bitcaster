@@ -1,0 +1,20 @@
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_filters menu i18n bitcaster %}
+{% block page %}
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link {{ view|menu_item:'groupedit' }}"
+               href="{{ group.urls.settings }}">{% trans "Settings" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ view|menu_item:'groupmembers' }}"
+               href="{{ group.urls.members }}">{% trans "Members" %}</a>
+        </li>
+    </ul>
+    <div class="container">
+        <div class="row col-12">
+            {% block tab %}
+
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

@@ -5,7 +5,8 @@ from .channels import (OrganizationChannelCreate, OrganizationChannelDeprecate,
                        OrganizationChannelUpdate, OrganizationChannelUsage,)
 from .groups import (OrganizationGroupApplications, OrganizationGroupCreate,
                      OrganizationGroupDelete, OrganizationGroupEdit,
-                     OrganizationGroupList, OrganizationGroupMembers,)
+                     OrganizationGroupList, OrganizationGroupMemberRemove,
+                     OrganizationGroupMembers,)
 from .invitations import (OrganizationMemberInvite,
                           OrganizationMemberInviteAccept, OrgInviteDelete,
                           OrgInviteSend,)

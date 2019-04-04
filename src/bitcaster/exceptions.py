@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.exceptions import PermissionDenied as _PermissionDenied
+from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from social_core.exceptions import AuthFailed
 
@@ -56,7 +57,7 @@ class NotMemberOfOrganization(AuthFailed):
         self.user_data = user_data
 
     def __str__(self):
-        return 'User doesn\'t belong to the organization'
+        return _('Sorry, you do not seem to be a public member of %s' % self.backend.setting('NAME'))
 
 
 class MaxChannelError(Exception):

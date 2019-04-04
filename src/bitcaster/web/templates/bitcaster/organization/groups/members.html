@@ -1,0 +1,122 @@
+{% extends "bitcaster/organization/groups/base.html" %}{% load i18n bitcaster %}
+{% block tab %}
+    <div class="container">
+        <div class="row col-12 m-3">
+            <div class="col-7">
+                <form method="post" id="addForm">
+                    {% csrf_token %}
+                    <select id="id_user" class="select2 form-control"
+                            name="user"
+                            data-url="/dal/os4d/a/dummy1/candidate-autocomplete/"
+                            tabindex="-1" aria-hidden="true">
+                        <option value="" selected=""></option>
+                    </select>
+                </form>
+            </div>
+            <div class="col-1">
+                <input class="btn btn-dark" id="add-button" type="button" value="{% trans "Add" %}">
+            </div>
+
+            <div class="pull-right col-3">
+            </div>
+        </div>
+    </div>
+    <div class="container table-responsive ">
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr lass="d-flex">
+                <th cope="col" colspan="2" class="col-4 inline_block">
+                    <form id="search" class="row">
+                        <input type="text" name="filter" maxlength="50"
+                               size="50"
+                               value="{{ request.GET.filter }}"
+                               placeholder="insert email to filter"
+                               onfocus="this.placeholder=''"
+                               onblur="this.placeholder='insert email to filter'"
+                               class="textinput orm-control">&nbsp;
+                        <input class="btn btn-primary push-right"
+                               type="submit" value="{% trans "Search" %}">
+                    </form>
+
+
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for membership in object_list %}
+                <tr lass="d-flex">
+                    <td lass="col-4">
+                        {{ membership.user }}{% if membership.user == user %}<span class="label warn">you</span>{% endif %}
+                    </td>
+                    <td class="formset-commands">
+                        <a class="btn btn-outline-light"
+                           data-toggle="tooltip" title="remove"
+                           href="{% org-url 'org-group-member-remove' group.pk membership.pk %}">
+                            <i class="far fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <!-- pagination-->
+        {% if is_paginated %}
+            {% include "bitcaster/_includes/pagination.html" with page_obj=page_obj %}
+        {% endif %}
+        <!-- end pagination-->
+    </div>
+    <div class="container">
+        {% if invitations %}
+            <h4>Pending invitations</h4>
+            <table class="table">
+                <thead>
+                <tr class="d-flex">
+                    <th scope="col" class="col-4">User</th>
+                    <th scope="col" class="col-2">Invited By</th>
+                    <th scope="col" class="col-3">On</th>
+                    <th scope="col" class="col-3"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for invitation in invitations.all %}
+                    <tr class="d-flex">
+                        <td class="col-4">
+                            {{ invitation.target.friendly_name }}
+                        </td>
+                        <td class="col-2">{{ invitation.invited_by }}</td>
+                        <td class="col-3">{{ invitation.date_created|date:"Y, M d" }}</td>
+                        <td class="text-nowrap col-3 formset-commands">
+                            <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'">
+                            <i class="far fa-trash-alt"></i>
+                            </a>
+                            <form method="post" class="d-inline"
+                                  action="{% org-url "org-invitation-send" invitation.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" title="resend email" class="btn btn-outline-light">
+                                    <i class="far fa-envelope"></i>
+                                </button>
+                            </form>
+
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        $('#id_user').select2({
+            ajax: {
+                url: '/dal/os4d/members-autocomplete/',
+                dataType: 'json'
+            }
+        });
+        $('#add-button').on('click', function (e) {
+            addForm.submit();
+        });
+
+    </script>
+{% endblock %}

@@ -2,7 +2,7 @@
 
 import './css/public.scss';
 
-import 'bootstrap';
+// import 'bootstrap';
 // import 'js-cookie';
 
 

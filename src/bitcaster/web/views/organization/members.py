@@ -57,8 +57,6 @@ class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
             qs = qs.filter(user__email__istartswith=target)
         return qs
 
-    # title = _('Users')
-
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['filters'] = get_query_string(self.request, remove=['page'])

@@ -18,3 +18,11 @@ class HintFieldMixin:
 
 class CharField(HintFieldMixin, forms.CharField):
     pass
+
+
+class Select2ChoiceField(forms.ChoiceField):
+
+    def widget_attrs(self, widget):
+        attrs = super().widget_attrs(widget)
+        attrs['class'] = 'select2'
+        return attrs

@@ -14,7 +14,7 @@
     "lscache": "^1.1.0",
     "phantomjs-prebuilt": "^2.1.16",
     "popper": "^1.0.1",
-    "sweetalert2": "^8.5.0",
+    "sweetalert2": "^8.8.1",
     "underscore": "^1.9.1"
   },
   "devDependencies": {
