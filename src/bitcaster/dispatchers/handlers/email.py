@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import smtplib
 from logging import getLogger
 

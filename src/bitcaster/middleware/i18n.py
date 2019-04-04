@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.utils import translation
 
 from bitcaster.config import settings

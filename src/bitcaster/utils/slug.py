@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 from uuid import uuid4
 

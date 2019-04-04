@@ -1,4 +1,3 @@
-# # -*- coding: utf-8 -*-
 # # import logging
 #
 # import redis_lock

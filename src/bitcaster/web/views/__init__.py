@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # flake8: noqa
 from .application import *
 from .application.events import (EventCreate, EventDelete, EventKeys,

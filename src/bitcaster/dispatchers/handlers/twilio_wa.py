@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from logging import getLogger
 
 from django.utils.translation import gettext_lazy as _
