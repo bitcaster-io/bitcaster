@@ -62,6 +62,9 @@ class OrganizationGroupCreate(GroupMixin, OrganizationGroupFormMixin, BitcasterB
     template_name = 'bitcaster/organization/groups/form.html'
     fields = ('name', 'closed')
 
+    def get_success_url(self):
+        return self.selected_organization.urls.groups
+
 
 class OrganizationGroupEdit(SelectedGroupMixin, OrganizationGroupFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/organization/groups/form.html'
