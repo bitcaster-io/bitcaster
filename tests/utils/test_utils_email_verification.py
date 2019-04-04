@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import pytest
 
 from bitcaster.utils.email_verification import (check_new_email_address_request,

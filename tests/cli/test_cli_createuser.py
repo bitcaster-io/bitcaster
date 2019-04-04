@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from click.testing import CliRunner
 
 from bitcaster.cli.commands.createuser import createuser

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from django.utils.safestring import mark_safe

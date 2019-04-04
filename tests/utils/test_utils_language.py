@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from bitcaster.utils.language import flatten, get_attr, repr_list
 
 

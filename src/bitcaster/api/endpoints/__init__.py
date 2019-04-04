@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from bitcaster.api.endpoints.application import ApplicationViewSet  # noqa
 # from bitcaster.api.endpoints.channel import ChannelViewSet  # noqa
 # from bitcaster.api.endpoints.dispatchers import DispatcherViewSet  # noqa

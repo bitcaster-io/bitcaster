@@ -1,7 +1,6 @@
 import os
 # from functools import lru_cache
 #
-# # -*- coding: utf-8 -*-
 # import logging
 # import re
 import urllib

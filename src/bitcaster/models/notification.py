@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from constance import config
 from django.contrib.postgres.fields import JSONField
 from django.db import models

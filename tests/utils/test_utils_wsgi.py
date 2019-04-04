@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from bitcaster.utils.wsgi import get_client_ip
 

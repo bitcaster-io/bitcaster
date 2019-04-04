@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+from constance import config
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import F
 from strategy_field.utils import fqn

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .address import Address, AddressAssignment
 from .application import Application
 from .applicationmember import ApplicationMember

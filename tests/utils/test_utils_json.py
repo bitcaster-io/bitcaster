@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 from decimal import Decimal
 from uuid import uuid4
