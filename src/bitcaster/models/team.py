@@ -2,13 +2,15 @@ from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
+from bitcaster.models.mixins import ReverseWrapperMixin
+
 from .application import Application
 from .applicationmember import ApplicationMember
 from .base import AbstractModel
 from .user import User
 
 
-class ApplicationTeam(AbstractModel):
+class ApplicationTeam(ReverseWrapperMixin, AbstractModel):
     name = models.CharField(max_length=100)
     application = models.ForeignKey(Application,
                                     related_name='teams',
@@ -22,6 +24,10 @@ class ApplicationTeam(AbstractModel):
         app_label = 'bitcaster'
         verbose_name = _('Team')
         verbose_name_plural = _('Teams')
+
+    class Reverse:
+        pattern = 'app-team-{op}'
+        args = ['application.organization.slug', 'application.slug', 'id']
 
     def __str__(self):
         return self.name

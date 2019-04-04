@@ -14,4 +14,4 @@ from .monitors import (ApplicationMonitorCreate, ApplicationMonitorList,
 from .subscription import ApplicationSubscriptionList
 from .teams import (ApplicationTeamCreate, ApplicationTeamDelete,
                     ApplicationTeamList, ApplicationTeamMember,
-                    ApplicationTeamUpdate,)
+                    ApplicationTeamMemberRemove, ApplicationTeamUpdate,)

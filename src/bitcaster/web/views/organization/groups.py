@@ -8,6 +8,7 @@ from django.views.generic.edit import ModelFormMixin
 from sentry_sdk import capture_exception
 
 from bitcaster.models import OrganizationGroup
+from bitcaster.utils.http import get_query_string
 from bitcaster.web.forms import OrganizationGroupForm
 from bitcaster.web.forms.organizationgroup import OrganizationGroupAddMemberForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
@@ -59,15 +60,19 @@ class OrganizationGroupList(GroupMixin, BitcasterBaseListView):
 
 
 class OrganizationGroupCreate(GroupMixin, OrganizationGroupFormMixin, BitcasterBaseCreateView):
-    template_name = 'bitcaster/organization/groups/form.html'
+    template_name = 'bitcaster/organization/groups/create.html'
     fields = ('name', 'closed')
 
+    def form_valid(self, form):
+        return super().form_valid(form)
+
     def get_success_url(self):
-        return self.selected_organization.urls.groups
+        return reverse('org-group-settings', args=[self.selected_organization.slug,
+                                                   self.object.pk])
 
 
 class OrganizationGroupEdit(SelectedGroupMixin, OrganizationGroupFormMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/organization/groups/form.html'
+    template_name = 'bitcaster/organization/groups/edit.html'
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)
@@ -75,11 +80,17 @@ class OrganizationGroupEdit(SelectedGroupMixin, OrganizationGroupFormMixin, Bitc
 
 
 class OrganizationGroupMembers(SelectedGroupMixin, BitcasterBaseListView):
-    title = _('Group members')
+    title = _('%(name)s members')
     template_name = 'bitcaster/organization/groups/members.html'
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(form=OrganizationGroupAddMemberForm(),
+                                        name=self.selected_group.name,
+                                        filters=get_query_string(self.request, remove=['page']),
+                                        member_automplete_url=reverse('org-member-autocomplete',
+                                                                      args=[
+                                                                          self.selected_organization.slug,
+                                                                      ]),
                                         **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -99,7 +110,7 @@ class OrganizationGroupMembers(SelectedGroupMixin, BitcasterBaseListView):
         target = self.request.GET.get('filter')
         if target:
             qs = qs.filter(user__friendly_name__istartswith=target)
-        return qs
+        return qs.order_by('user__email')
 
 
 class OrganizationGroupApplications(SelectedGroupMixin, BitcasterBaseListView):

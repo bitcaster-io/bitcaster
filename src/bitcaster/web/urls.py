@@ -8,6 +8,7 @@ from bitcaster.web.views import (ApplicationAutocomplete,
                                  ApplicationMembershipDelete,
                                  ApplicationMembershipEdit,
                                  ApplicationMembershipList,
+                                 ApplicationTeamMemberRemove,
                                  OrganizationGroupMemberRemove,
                                  OrganizationMembersAutocomplete,)
 from bitcaster.web.views.application.log import ApplicationLog
@@ -147,9 +148,11 @@ urlpatterns = [
     # Applications / Teams
     path('<slug:org>/a/<slug:app>/team/', ApplicationTeamList.as_view(), name='app-teams'),
     path('<slug:org>/a/<slug:app>/team/add/', ApplicationTeamCreate.as_view(), name='app-team-create'),
-    path('<slug:org>/a/<slug:app>/team/<slug:slug>/edit/', ApplicationTeamUpdate.as_view(), name='app-team-edit'),
-    path('<slug:org>/a/<slug:app>/team/<slug:slug>/delete/', ApplicationTeamDelete.as_view(), name='app-team-delete'),
-    path('<slug:org>/a/<slug:app>/team/<slug:slug>/members/', ApplicationTeamMember.as_view(), name='app-team-member'),
+    path('<slug:org>/a/<slug:app>/team/<int:team>/edit/', ApplicationTeamUpdate.as_view(), name='app-team-edit'),
+    path('<slug:org>/a/<slug:app>/team/<int:team>/delete/', ApplicationTeamDelete.as_view(), name='app-team-delete'),
+    path('<slug:org>/a/<slug:app>/team/<int:team>/members/', ApplicationTeamMember.as_view(), name='app-team-members'),
+    path('<slug:org>/a/<slug:app>/team/<int:team>/members/<int:member>/remove/', ApplicationTeamMemberRemove.as_view(),
+         name='app-team-member-remove'),
 
     # Applications / Keys
     path('<slug:org>/a/<slug:app>/key/', ApplicationKeyList.as_view(), name='app-keys'),

@@ -1,36 +1,32 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from crispy_forms import helper, layout
-from crispy_forms.bootstrap import FormActions
-from dal_select2.widgets import ModelSelect2, ModelSelect2Multiple
 from django import forms
-from django.utils.translation import gettext as _
 
-from bitcaster.models import ApplicationTeam, OrganizationMember, User
+from bitcaster.models import ApplicationTeam
 
 logger = logging.getLogger(__name__)
 
 
+class ApplicationTeamAddMemberForm(forms.Form):
+    user = forms.IntegerField()
+
+
+class ApplicationCreateTeamForm(forms.ModelForm):
+    pass
+
+
 class ApplicationTeamForm(forms.ModelForm):
-    members = forms.ModelMultipleChoiceField(queryset=OrganizationMember.objects.all(),
-                                             widget=ModelSelect2Multiple(url='user-autocomplete')
-                                             )
-
-    manager = forms.ModelChoiceField(queryset=User.objects.all(),
-                                     widget=ModelSelect2(url='user-autocomplete')
-                                     )
-
-    def __init__(self, *args, **kwargs):
-        self.application = kwargs.pop('application')
-        super().__init__(*args, **kwargs)
-        self.helper = helper.FormHelper(self)
-        self.helper.layout = helper.Layout(*self.Meta.fields,
-                                           FormActions(
-                                               layout.Submit('submit', _('Save'), css_class='btn-primary')
-                                           ))
-        self.fields['manager'].queryset = User.objects.filter(memberships__organization=self.application.organization)
-
     class Meta:
-        fields = ('name', 'manager', 'members')
+        fields = ('name', 'manager')
         model = ApplicationTeam
+
+    def __init__(self, application, *args, **kwargs):
+        self.application = application
+        super().__init__(*args, **kwargs)
+
+        self.fields['manager'].queryset = self.application.members.all()
+        # self.fields['manager'].widget.url = reverse('app-member-autocomplete',
+        #                                             args=[self.application.organization.slug,
+        #                                                   self.application.slug]
+        #                                             )

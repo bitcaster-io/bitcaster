@@ -1,4 +1,4 @@
-{% extends "bitcaster/organization/groups/base.html" %}{% load i18n bitcaster %}
+{% extends "bitcaster/application/team/base.html" %}{% load i18n bitcaster %}
 {% block tab %}
 
     <div class="container mt-3 pl-0">
@@ -33,7 +33,7 @@
                     {% csrf_token %}
                     <select id="id_user" style="width:100%" class="select2 form-control"
                             name="user"
-                            data-url="{{ member_automplete_url }}"
+                            data-url="/dal/os4d/a/dummy1/candidate-autocomplete/"
                             tabindex="-1" aria-hidden="true">
                         <option value="" selected=""></option>
                     </select>
@@ -63,13 +63,13 @@
             {% for membership in object_list %}
                 <tr>
                     <td>
-                        {{ membership.user.email }}{% if membership.user == user %}
+                        {{ membership }}{% if membership.user == user %}
                             <span class="label warn">you</span>{% endif %}
                     </td>
                     <td class="formset-commands">
                         <a class="btn btn-outline-light"
                            data-toggle="tooltip" title="remove"
-                           href="{% org-url 'org-group-member-remove' group.pk membership.pk %}">
+                           href="{% app-url 'app-team-member-remove' team.pk membership.pk %}">
                             <i class="far fa-trash-alt"></i>
                         </a>
                     </td>
@@ -83,6 +83,46 @@
         {% endif %}
         <!-- end pagination-->
     </div>
+    <div class="container">
+        {% if invitations %}
+            <h4>Pending invitations</h4>
+            <table class="table">
+                <thead>
+                <tr class="d-flex">
+                    <th scope="col" class="col-4">User</th>
+                    <th scope="col" class="col-2">Invited By</th>
+                    <th scope="col" class="col-3">On</th>
+                    <th scope="col" class="col-3"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for invitation in invitations.all %}
+                    <tr class="d-flex">
+                        <td class="col-4">
+                            {{ invitation.target.friendly_name }}
+                        </td>
+                        <td class="col-2">{{ invitation.invited_by }}</td>
+                        <td class="col-3">{{ invitation.date_created|date:"Y, M d" }}</td>
+                        <td class="text-nowrap col-3 formset-commands">
+                            <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'">
+                            <i class="far fa-trash-alt"></i>
+                            </a>
+                            <form method="post" class="d-inline"
+                                  action="{% org-url "org-invitation-send" invitation.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" title="resend email" class="btn btn-outline-light">
+                                    <i class="far fa-envelope"></i>
+                                </button>
+                            </form>
+
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
 {% endblock %}
 {% block js %}
     <script>
@@ -91,7 +131,7 @@
         });
         $('#id_user').select2({
             ajax: {
-                url: '{{ member_automplete_url }}',
+                url: '/dal/os4d/members-autocomplete/',
                 dataType: 'json'
             }
         });
