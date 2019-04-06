@@ -13,14 +13,15 @@ logger = logging.getLogger(__name__)
 class ApplicationMemberAddForm(forms.Form):
     role = forms.TypedChoiceField(label='', choices=APP_ROLES, coerce=int)
     members = forms.ModelMultipleChoiceField(label='',
-                                        queryset=OrganizationMember.objects.all())
+                                             queryset=OrganizationMember.objects.none())
 
     def __init__(self, application, *args, **kwargs):
         self.instance = kwargs.pop('instance')
         self.application = application
         self.organization = application.organization
         super().__init__(*args, **kwargs)
-        self.fields['members'].queryset = self.organization.memberships.all()
+        if self.is_bound:
+            self.fields['members'].queryset = self.organization.memberships.all()
 
 
 class ApplicationMemberForm(forms.ModelForm):
@@ -34,23 +35,3 @@ class ApplicationMemberForm(forms.ModelForm):
 
         self.helper = FormHelper()
         self.helper.form_show_labels = form_show_labels
-#
-#
-# ApplicationMemberFormSetBase = forms.inlineformset_factory(Application,
-#                                                            ApplicationMember,
-#                                                            form=ApplicationMemberAddForm,
-#                                                            min_num=1,
-#                                                            extra=0)
-#
-#
-# class ApplicationMemberFormSet(ApplicationMemberFormSetBase, BaseInlineFormSet):
-#     def __init__(self, application, *args, **kwargs):
-#         self.application = application
-#         super().__init__(*args, **kwargs)
-#
-#     def get_form_kwargs(self, index):
-#         ret = super().get_form_kwargs(index)
-#         ret['application'] = self.application
-#         ret['initial'] = {'role': APP_ROLES.MEMBER}
-#
-#         return ret
