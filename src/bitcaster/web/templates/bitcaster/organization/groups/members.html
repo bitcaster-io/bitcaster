@@ -2,10 +2,10 @@
 {% block tab %}
 
     <div class="container mt-3 pl-0">
-                    <form id="search" class="row">
+        <form id="search" class="row">
 
-        <div class="row col-12">
-            <div class="col-7">
+            <div class="row col-12">
+                <div class="col-7">
                     <input type="text" name="filter" maxlength="50"
                            size="50"
                            value="{{ request.GET.filter }}"
@@ -13,17 +13,17 @@
                            onfocus="this.placeholder=''"
                            onblur="this.placeholder='insert email to filter'"
                            class="textinput form-control">&nbsp;
-            </div>
-            <div class="col-1 align-middle">
+                </div>
+                <div class="col-1 align-middle">
                     <input class="btn btn-primary push-right"
                            type="submit" value="{% trans "Search" %}">
 
+                </div>
+                <div class="col-2 align-middle">
+                    <a class="btn btn-light" id="add" href="#"><i class="fas fa-plus-circle"></i>Add new</a>
+                </div>
             </div>
-            <div class="col-2 align-middle">
-                <a class="btn btn-light" id="add" href="#"><i class="fas fa-plus-circle"></i>Add new</a>
-            </div>
-        </div>
-                </form>
+        </form>
     </div>
 
     <div class="container hidden pl-0" id="add-form">

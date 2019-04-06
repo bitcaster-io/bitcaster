@@ -243,6 +243,6 @@ class SettingsBackupRestore(SettingsTemplateMixin):
         return RedirectToRefererResponse(request)
 
     def get_context_data(self, **kwargs):
-        file_list = os.listdir(config.BACKUPS_LOCATION)
+        file_list = [f for f in os.listdir(config.BACKUPS_LOCATION) if os.path.isfile(f)]
         # return {'file_list':file_list}
         return super().get_context_data(file_list=file_list, **kwargs)

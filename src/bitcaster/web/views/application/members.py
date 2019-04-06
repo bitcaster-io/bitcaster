@@ -1,12 +1,14 @@
 import logging
 
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import ModelFormMixin
 
 from bitcaster.models import ApplicationMember
 from bitcaster.utils.http import get_query_string
 from bitcaster.web.forms import ApplicationMemberForm
-from bitcaster.web.forms.applicationmember import ApplicationMemberFormSet
+from bitcaster.web.forms.applicationmember import ApplicationMemberAddForm
 from bitcaster.web.views.application.app import ApplicationViewMixin
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,
@@ -29,15 +31,12 @@ class MemberMixin(ApplicationViewMixin):
 class MemberFormMixin(ModelFormMixin):
     form_class = ApplicationMemberForm
 
-    # def get_form(self, form_class=None):
-    #     form = super().get_form(form_class)
-    #     form.helper = FormHelper(form)
-    #     form.helper.form_show_labels = False
-    #     return form
-
-    def form_valid(self, form):
-        form.instance.application = self.selected_application
-        return super().form_valid(form)
+    def get_context_data(self, **kwargs):
+        kwargs['members_autocomplete_url'] = reverse('app-candidate-autocomplete',
+                                                     args=[self.selected_organization.slug,
+                                                           self.selected_application.slug,
+                                                           ])
+        return super().get_context_data(**kwargs)
 
 
 class ApplicationMembershipList(MemberMixin, BitcasterBaseListView):
@@ -51,12 +50,9 @@ class ApplicationMembershipList(MemberMixin, BitcasterBaseListView):
             qs = qs.filter(org_member__user__email__istartswith=target)
         return qs
 
-    # title = _('Users')
-
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['filters'] = get_query_string(self.request, remove=['page'])
-        # data['memberships'] = self.get_queryset()
         return data
 
 
@@ -94,18 +90,19 @@ class ApplicationMembershipList(MemberMixin, BitcasterBaseListView):
 
 class ApplicationMembershipCreate(MemberMixin, MemberFormMixin, BitcasterBaseCreateView):
     template_name = 'bitcaster/application/members/add.html'
-    form_class = ApplicationMemberFormSet
-    title = _('Add member')
+    form_class = ApplicationMemberAddForm
+    title = _('Add members')
 
     def get_form_kwargs(self):
         ret = super().get_form_kwargs()
         ret['application'] = self.selected_application
         return ret
 
-    def form_valid(self, formset):
-        formset.instance = self.selected_application
-        formset.save()
-        return super().form_valid(formset)
+    def form_valid(self, form):
+        role = form.cleaned_data['role']
+        self.selected_application.add_member(form.cleaned_data['members'],
+                                             role)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ApplicationMembershipEdit(MemberMixin, MemberFormMixin, BitcasterBaseUpdateView):

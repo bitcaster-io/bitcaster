@@ -2,38 +2,25 @@
 import logging
 
 from crispy_forms.helper import FormHelper
-from dal_select2.widgets import ModelSelect2, Select2
 from django import forms
-from django.forms import BaseInlineFormSet
-from django.urls import reverse
 
-from bitcaster.models import Application, ApplicationMember, OrganizationMember
+from bitcaster.models import ApplicationMember, OrganizationMember
 from bitcaster.security import APP_ROLES
 
 logger = logging.getLogger(__name__)
 
 
-class ApplicationMemberAddForm(forms.ModelForm):
-    org_member = forms.ModelChoiceField(label='',
-                                        queryset=OrganizationMember.objects.all(),
-                                        widget=ModelSelect2(url='app-candidate-autocomplete')
-                                        )
-    role = forms.ChoiceField(label='', choices=APP_ROLES,
-                             widget=Select2)
-
-    class Meta:
-        model = ApplicationMember
-        fields = ('org_member', 'role')
+class ApplicationMemberAddForm(forms.Form):
+    role = forms.TypedChoiceField(label='', choices=APP_ROLES, coerce=int)
+    members = forms.ModelMultipleChoiceField(label='',
+                                        queryset=OrganizationMember.objects.all())
 
     def __init__(self, application, *args, **kwargs):
+        self.instance = kwargs.pop('instance')
         self.application = application
         self.organization = application.organization
         super().__init__(*args, **kwargs)
-        self.fields['org_member'].queryset = self.organization.memberships.all()
-        self.fields['org_member'].widget.url = reverse('app-candidate-autocomplete',
-                                                       args=[self.organization.slug,
-                                                             self.application.slug]
-                                                       )
+        self.fields['members'].queryset = self.organization.memberships.all()
 
 
 class ApplicationMemberForm(forms.ModelForm):
@@ -47,23 +34,23 @@ class ApplicationMemberForm(forms.ModelForm):
 
         self.helper = FormHelper()
         self.helper.form_show_labels = form_show_labels
-
-
-ApplicationMemberFormSetBase = forms.inlineformset_factory(Application,
-                                                           ApplicationMember,
-                                                           form=ApplicationMemberAddForm,
-                                                           min_num=1,
-                                                           extra=0)
-
-
-class ApplicationMemberFormSet(ApplicationMemberFormSetBase, BaseInlineFormSet):
-    def __init__(self, application, *args, **kwargs):
-        self.application = application
-        super().__init__(*args, **kwargs)
-
-    def get_form_kwargs(self, index):
-        ret = super().get_form_kwargs(index)
-        ret['application'] = self.application
-        ret['initial'] = {'role': APP_ROLES.MEMBER}
-
-        return ret
+#
+#
+# ApplicationMemberFormSetBase = forms.inlineformset_factory(Application,
+#                                                            ApplicationMember,
+#                                                            form=ApplicationMemberAddForm,
+#                                                            min_num=1,
+#                                                            extra=0)
+#
+#
+# class ApplicationMemberFormSet(ApplicationMemberFormSetBase, BaseInlineFormSet):
+#     def __init__(self, application, *args, **kwargs):
+#         self.application = application
+#         super().__init__(*args, **kwargs)
+#
+#     def get_form_kwargs(self, index):
+#         ret = super().get_form_kwargs(index)
+#         ret['application'] = self.application
+#         ret['initial'] = {'role': APP_ROLES.MEMBER}
+#
+#         return ret

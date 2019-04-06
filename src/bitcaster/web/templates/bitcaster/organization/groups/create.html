@@ -1,5 +1,5 @@
 {% extends "bitcaster/organization/groups/base.html" %}{% load crispy_forms_filters menu i18n bitcaster %}
-{% block tab %}
+{% block page %}
         <form method="post" action="." class="col-12">
             {% csrf_token %}
             {{ form|crispy }}

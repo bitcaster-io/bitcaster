@@ -105,6 +105,7 @@ vcrpy = "*"
 transifex-client = "*"
 #recommonmark = "*"
 bitcaster = {editable = true,path = "."}
+ipdb = "*"
 
 [requires]
 python_version = "3.6"

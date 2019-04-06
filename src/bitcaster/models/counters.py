@@ -98,6 +98,7 @@ class LogEntry(models.Model):
             data = payload
         else:
             data = {}
+
         values = dict(event=subscription.event,
                       address=subscription.channel.handler.get_recipient_address(subscription),
                       channel=subscription.channel,

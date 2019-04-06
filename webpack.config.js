@@ -67,6 +67,26 @@ module.exports = [
             sourceMapFilename: "[name].js.map",
         },
     },
+    // {
+    //     entry: "bootstrap",
+    //     output: {
+    //         path: outputDir,
+    //         filename: "bootstrap.js",
+    //         libraryTarget: "window",
+    //         // library: "$",
+    //         // sourceMapFilename: "jquery.js.map",
+    //     },
+    // },
+    {
+        entry: "select2",
+        output: {
+            path: outputDir,
+            filename: "select2.js",
+            libraryTarget: "window",
+            // library: "$",
+            // sourceMapFilename: "jquery.js.map",
+        },
+    },
     {
         entry: "jquery",
         output: {
@@ -88,9 +108,9 @@ module.exports = [
     },
     {
         entry: {
-            bitcaster: [rel("bitcaster/index")],
+            bitcaster: [rel("bitcaster/bitcaster")],
             vendor: [rel("bitcaster/vendor")],
-            public: [rel("bitcaster/public")],
+            theme: [rel("bitcaster/theme")],
         }, // -entry
         context: rel("."),
         module: {

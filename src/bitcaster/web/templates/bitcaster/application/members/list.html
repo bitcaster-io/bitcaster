@@ -42,7 +42,7 @@
             {% for membership in object_list %}
                 <tr class="d-flex">
                     <td class="col-4">
-                        {{ membership.user }}{% if membership.user == user %}<span class="you">you</span>{% endif %}
+                        {{ membership.user }}{% if membership.user == user %}<span class="label warn">you</span>{% endif %}
                     </td>
                     <td class="col-2">{{ membership.get_role_display }}</td>
                     <td class="col-3 formset-commands">
