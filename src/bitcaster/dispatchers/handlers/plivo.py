@@ -45,7 +45,7 @@ class Plivo(CoreDispatcher):
                                 auth_token=self.config['token'])
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection=None, *args, **kwargs) -> int:
+             connection=None, *args, **kwargs) -> str:
         try:
             recipient = self.get_recipient_address(subscription)
             logger.info('Processing {0}'.format(subscription, recipient))
@@ -58,7 +58,7 @@ class Plivo(CoreDispatcher):
             )
             if 'message_uuid' not in ret:
                 raise PluginSendError(ret)
-            return 1
+            return recipient
         except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e)

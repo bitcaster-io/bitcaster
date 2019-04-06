@@ -10,24 +10,55 @@
                href="{% url "settings-plugin" 'a' %}">{% trans "Agents" %}</a>
         </li>
     </ul>
+
     <div class="tab-content formset">
-        <table class="table table-striped table-hover col-12 channel-list">
+        <div class="col-12 m-2 row">
+            <div class="col-6 ">
+                <input type="text" id="filter" maxlength="50" class="textinput textInput form-control">
+            </div>
+            <div class="col-5 col-push"></div>
+            <div class="col-1 p-0 text-lg-right align-middle" style="line-height: 40px">
+                <a href="{% url 'settings-plugin-refresh' %}" class="btn btn-danger">Refresh</a>
+            </div>
+        </div>
+        <table class="table table-striped table-hover col-12 plugin-list">
             <tbody>
             {% for plugin in plugin_list.all %}
-                <tr>
-                <td class="col col-7">{{ plugin.fqn }}</td>
-                <td class="col col-1">{{ plugin.version }}</td>
-                <td class="col col-3">
+                <tr class="inline-flex">
+                <td><img width="40" height="40" class="" src="{% url 'plugin-icon' plugin.fqn %}"></td>
+                <td class="col-6">{{ plugin.fqn }}</td>
+                <td class="col-2">{{ plugin.version }}</td>
+                <td class="col-2">
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="{% if plugin.enabled %}Disable{% else %}Enable{% endif %}"
                        href="{% url "settings-plugin-toggle" view.kwargs.type plugin.pk     %}">
                         <i class="fas {% if plugin.enabled %}fa-toggle-on green{% else %}fa-toggle-off red{% endif %}"></i>
                     </a>
                 </td>
+                </tr>
             {% endfor %}
-            </tr>
             </tbody>
         </table>
     </div>
 
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+
+        $.expr[":"].contains = $.expr.createPseudo(function (arg) {
+            return function (elem) {
+                return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+            };
+        });
+        $("#filter").keyup(function () {
+            var target = $(this).val().toUpperCase();
+            if (target) {
+                $("tr.inline-flex").hide();
+                $("tr:contains('" + target + "')").show();
+            } else {
+                $("tr.inline-flex").show();
+            }
+        });
+    </script>
 {% endblock %}

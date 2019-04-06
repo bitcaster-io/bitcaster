@@ -61,7 +61,7 @@ You need a valid [Twilio](https://www.twilio.com/) account to use this service.
                 from_='whatsapp:' + self.config['sender'],
                 body=message
             )
-            return 1
+            return recipient
         except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e)

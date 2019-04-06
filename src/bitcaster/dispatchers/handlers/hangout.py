@@ -97,7 +97,7 @@ class Hangout(CoreDispatcher):
         return FireAndForget(source_jid, None, settings)
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection=None, *args, **kwargs) -> int:
+             connection=None, *args, **kwargs) -> str:
         try:
             recipient = self.get_recipient_address(subscription)
             logger.debug(f"Processing {subscription} '{recipient}'")
@@ -109,7 +109,7 @@ class Hangout(CoreDispatcher):
 
             conn.action = lambda c: c.stream.send(msg)
             conn.run()
-            return 1
+            return recipient
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)

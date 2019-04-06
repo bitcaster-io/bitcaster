@@ -8,9 +8,9 @@
 
     <title>Bitcaster: {{ title }}</title>
     <link rel="shortcut icon" type="image/png" href="{% asset "bitcaster/images/favicon.ico" %}"/>
-    <link rel="stylesheet" href="{% asset "bitcaster/theme.css" %}">
-{#    <link rel="stylesheet" href="{% asset "bitcaster/public.css" %}">#}
-{#    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>#}
+    <link rel="stylesheet" href="{% asset "bitcaster/bitcaster.css" %}">
+    <link rel="stylesheet" href="{% asset "bitcaster/public.css" %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 
 </head>
 
@@ -148,7 +148,7 @@
                 closeWith: ['click', 'button'],
                 layout   : 'topRight',
                 timeout: '{{ message.tags }}' !== 'error' ? 105000: 1010000,
-                text: '{{ message }}',
+                text: '{{ message|escapejs }}',
             }).show();
         {% endfor %}
     {% endif %}

@@ -126,7 +126,7 @@ class TwitterDirectMessage(Twitter):
                 }
             }
             api.send_direct_message_new(event)
-            return 1
+            return recipient
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)
