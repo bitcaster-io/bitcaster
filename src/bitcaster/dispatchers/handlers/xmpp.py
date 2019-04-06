@@ -58,7 +58,7 @@ class Xmpp(CoreDispatcher):
                          self.config['password'],
                          recipient,
                          message)
-            return 1
+            return recipient
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)

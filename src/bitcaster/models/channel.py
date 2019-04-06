@@ -148,10 +148,10 @@ class Channel(ReverseWrapperMixin, AbstractModel):
                                'subject': s,
                                'context': context,
                                'template': body}
-                    self.handler.emit(subscription, s, m, conn)
+                    recipient = self.handler.emit(subscription, s, m, conn)
                     Counter.objects.increment(subscription)
                     success += 1
-                    LogEntry.log(subscription, payload)
+                    LogEntry.log(recipient, subscription, payload)
                 except Exception as e:
                     logger.exception(e)
                     LogEntry.log(subscription, payload, status=False, info=str(e))

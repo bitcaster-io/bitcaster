@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import os
 from logging import getLogger
+from urllib.parse import urlencode
 
+import requests
+from django.core.validators import RegexValidator
 from django.utils.translation import gettext as _
-from telegram.client import Telegram as Client
 
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
@@ -11,6 +12,7 @@ from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
+from bitcaster.utils import fqn
 from bitcaster.utils.language import classproperty
 
 logger = getLogger(__name__)
@@ -39,16 +41,13 @@ class TelegramMessage(MessageType):
 
 
 class TelegramOptions(DispatcherOptions):
-    api_id = serializers.CharField()
-    api_hash = PasswordField()
-    short_name = serializers.CharField()
-    title = serializers.CharField()
-    bot_token = serializers.CharField()
-    encryption_key = serializers.CharField()
+    bot_name = serializers.CharField()
+    bot_token = PasswordField()
 
 
 class TelegramSubscriptionOptions(SubscriptionOptions):
-    recipient = serializers.CharField(validators=[])
+    recipient = serializers.CharField(validators=[RegexValidator('^@',
+                                                                 'username must starts  with @')])
 
 
 @dispatcher_registry.register
@@ -58,42 +57,56 @@ class Telegram(CoreDispatcher):
     icon = 'telegram'
     subscription_class = TelegramSubscriptionOptions
     __help__ = _("""
-
-- Follow instrunction at [[https://core.telegram.org/api/obtaining_api_id]]
-- Obtaining api_id at [[https://my.telegram.org/apps]]
-- Create new BOT following [[https://telegra.ph/Awesome-Telegram-Bot-11-11]]
+### Creating your bot
+1. On Telegram, search @BotFather, send him a “/start” message
+2. Send another “/newbot” message, then follow the instructions to setup a name and a username
+3. Your bot is now ready, be sure to save a backup of your API token, and correct
 """)
 
     @classproperty
     def name(cls):
         return 'Telegram'
 
-    def _get_connection(self) -> Client:
-        conn = Client(
-            api_id=self.config['api_id'],
-            api_hash=self.config['api_hash'],
-            phone=self.config['bot_token'],
-            use_test_dc=True,
-            database_encryption_key=self.config['encryption_key'],
-            library_path=os.environ.get('TD_LIB', ''),
-            use_message_database=False,
-            tdlib_verbosity=9,
-            files_directory='/data/PROGETTI/saxix/bitcaster/mercury/~build/tdlib',
-            login=True,
-        )
-        conn.login()
-        return conn
+    def _get_connection(self) -> requests.Session:
+        s = requests.Session()
+
+        s.headers = {'user-agent': 'bitcaster'}
+        return s
 
     def get_usage_message(self) -> object:
-        return ''
+        return 'Send a message to %s to receive notifications' % self.config['bot_name']
 
-    @classmethod
-    def validate_address(cls, address, *args, **kwargs) -> bool:
-        return True
+    def _get_url(self, method, **params):
+        base = 'https://api.telegram.org/bot' + self.config['bot_token']
+        return base + '/%s?%s' % (method, urlencode(params))
+
+    def _get_chat_id_for_username(self, subscription):
+        user = subscription.subscriber
+        chat_id = user.storage.get(fqn(self), None)
+        if not chat_id:
+            username = self.get_recipient_address(subscription)
+            url = self._get_url('getUpdates')
+            conn = self._get_connection()
+            response = conn.get(url)
+            data = response.json()
+            for update in data['result']:
+                if update['message']['from']['username'] == username[1:]:  # username starts with @
+                    chat_id = update['message']['from']['id']
+                    user.storage[fqn(self)] = chat_id
+                    user.save()
+                    return chat_id
+            raise PluginSendError('Unable to get chat_id')
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:
-            return 0
+            chat_id = self._get_chat_id_for_username(subscription)
+            conn = self._get_connection()
+            url = self._get_url('sendMessage', chat_id=chat_id,
+                                text=message)
+            ret = conn.get(url)
+            if ret.status_code != 200:
+                raise PluginSendError(ret.content)
+            return '--'
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)

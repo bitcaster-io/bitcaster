@@ -89,7 +89,7 @@ class LogEntry(models.Model):
         app_label = 'bitcaster'
 
     @classmethod
-    def log(cls, subscription, payload, **kwargs):
+    def log(cls, address: str, subscription, payload, **kwargs):
         if config.LOG_MESSAGE == cls.MESSAGE_ALL:
             data = payload
         elif config.LOG_MESSAGE == cls.MESSAGE_TPL:
@@ -100,7 +100,7 @@ class LogEntry(models.Model):
             data = {}
 
         values = dict(event=subscription.event,
-                      address=subscription.channel.handler.get_recipient_address(subscription),
+                      address=address or '-',
                       channel=subscription.channel,
                       data=data,
                       subscription=subscription,

@@ -76,6 +76,7 @@ whitenoise = ">=4.0"
 yampy = "*"
 zulip = "*"
 pygments = "*"
+python-telegram-bot = "*"
 
 [dev-packages]
 bumpversion = "*"

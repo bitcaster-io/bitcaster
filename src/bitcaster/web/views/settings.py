@@ -193,6 +193,14 @@ class SettingsPluginToggle(MessageUserMixin, RedirectView):
         return RedirectToRefererResponse(request)
 
 
+class SettingsPluginRefresh(SettingsTemplateMixin, ):
+
+    def get(self, request, *args, **kwargs):
+        DispatcherMetaData.objects.inspect()
+        AgentMetaData.objects.inspect()
+        return RedirectToRefererResponse(request)
+
+
 class SettingsPlugin(SettingsTemplateMixin, ):
     template_name = 'plugins'
     title = _('Plugins')

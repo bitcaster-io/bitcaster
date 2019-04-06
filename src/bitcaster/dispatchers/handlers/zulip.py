@@ -63,9 +63,9 @@ class ZulipPrivate(CoreDispatcher):
                              site=config['site'])
         return client
 
-    def emit(self, subscription, subject, message, connection=None, *args, **kwargs) -> int:
-        recipient = self.get_recipient_address(subscription)
+    def emit(self, subscription, subject, message, connection=None, *args, **kwargs) -> str:
         try:
+            recipient = self.get_recipient_address(subscription)
             conn = connection or self._get_connection()
             # Send a stream message
             request = {
@@ -77,7 +77,7 @@ class ZulipPrivate(CoreDispatcher):
             if result['result'] != 'success':
                 raise PluginSendError(result['msg'])
             self.logger.debug(f'{fqn(self)} sent to {recipient}')
-            return 1
+            return recipient
         except Exception as e:
             self.logger.exception(e)
 

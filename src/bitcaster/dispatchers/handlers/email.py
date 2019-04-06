@@ -60,17 +60,17 @@ class Email(CoreDispatcher):
         except (ObjectDoesNotExist, TypeError):  # pragma: no cover
             return subscription.subscriber.email
 
-    def emit(self, subscription, subject, message, connection=None, *args, **kwargs):
-        email = self.get_recipient_address(subscription)
+    def emit(self, subscription, subject, message, connection=None, *args, **kwargs) -> str:
         try:
+            email = self.get_recipient_address(subscription)
             connection = connection or self._get_connection()
-            ret = send_mail(subject=subject,
-                            message=message,
-                            connection=connection,
-                            from_email=self.config['sender'],
-                            recipient_list=[email])
+            send_mail(subject=subject,
+                      message=message,
+                      connection=connection,
+                      from_email=self.config['sender'],
+                      recipient_list=[email])
             self.logger.debug(f'{fqn(self)} email sent to {email}')
-            return ret
+            return email
         except smtplib.SMTPException as e:  # pragma: no cover
             raise ValidationError(str(e)) from e
         except ValidationError as e:

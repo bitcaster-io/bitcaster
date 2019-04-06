@@ -54,7 +54,7 @@ You need a valid [Twilio](https://www.twilio.com/) account to use this service.
                       self.config['token'])
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection=None, *args, **kwargs) -> int:
+             connection=None, *args, **kwargs) -> str:
         try:
             self.validate_subscription(subscription)
             recipient = self.get_recipient_address(subscription)
@@ -64,7 +64,7 @@ You need a valid [Twilio](https://www.twilio.com/) account to use this service.
                 from_=self.config['sender'].encode('utf8'),
                 body=message
             )
-            return 1
+            return recipient
         except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e)
