@@ -1,5 +1,8 @@
 "use strict";
 import 'bootstrap';
+import "noty";
+import "noty/lib/noty.css";
+import "noty/lib/themes/bootstrap-v4.css";
 
 import './css/index.scss';
 
@@ -40,4 +43,5 @@ import './images/icons/zulip.png';
 
 window.jQuery = window.$ = require('jquery');
 window.select2 = require('select2');
-// window.Cookie = require('js-cookie');
+window.Swal = require('sweetalert2');
+window.Noty = require('noty');

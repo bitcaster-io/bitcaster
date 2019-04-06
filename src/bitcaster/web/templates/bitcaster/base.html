@@ -79,18 +79,18 @@
                     </div>
                 </nav>
 
-                {% block messages %}
-                    <div id="messageBar">{% if messages %}
-                        <ul class="messagelist">{% for message in messages %}
-                            <li class="alert {% if message.tags %} {{ message.tags }}{% endif %} fade show alert-dismissible ">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                <span>{{ message }}</span>
-                            </li>
-                        {% endfor %}</ul>
-                    {% endif %}</div>
-                {% endblock messages %}
+{#                {% block messages %}#}
+{#                    <div id="messageBar">{% if messages %}#}
+{#                        <ul class="messagelist">{% for message in messages %}#}
+{#                            <li class="alert {% if message.tags %} {{ message.tags }}{% endif %} fade show alert-dismissible ">#}
+{#                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">#}
+{#                                    <span aria-hidden="true">&times;</span>#}
+{#                                </button>#}
+{#                                <span>{{ message }}</span>#}
+{#                            </li>#}
+{#                        {% endfor %}</ul>#}
+{#                    {% endif %}</div>#}
+{#                {% endblock messages %}#}
             {% endblock toggler %}
             {% if alarms %}
                 <div id="alarmBar">
@@ -141,6 +141,18 @@
 {% endblock %}
 
 <script type="text/javascript">
+    {% if messages %}
+        {% for message in messages %}
+            new Noty({
+                type: '{{ message.tags }}',
+                theme: 'bootstrap-v4',
+                closeWith: ['click', 'button'],
+                layout   : 'topRight',
+                timeout: '{{ message.tags }}' !== 'error' ? 105000: 1010000,
+                text: '{{ message }}',
+            }).show();
+        {% endfor %}
+    {% endif %}
     $(document).ready(function () {
         $('button.btn.toggle').on('click', function () {
             bitcaster.toggleSidebar();
