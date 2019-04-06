@@ -99,7 +99,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(
         _('date joined'), default=timezone.now)
 
-    storage = EncryptedJSONField(_('storage'), blank=True, null=True)
+    storage = EncryptedJSONField(_('storage'),
+                                 default=dict,
+                                 blank=True, null=True)
     avatar = models.ImageField(blank=True, null=True,
                                # upload_to="pictures",
                                upload_to=profile_media_root,

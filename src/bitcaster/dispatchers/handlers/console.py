@@ -10,9 +10,9 @@ class ConsoleDispatcher(CoreDispatcher):
     __help__ = 'Simple Dispatcher that emit on standard output'
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection=None, silent=True, *args, **kwargs) -> int:
+             connection=None, silent=True, *args, **kwargs) -> str:
         print(**kwargs)
-        return 1
+        return 'console'
 
     @classproperty
     def name(self):

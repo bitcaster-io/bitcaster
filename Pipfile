@@ -78,6 +78,7 @@ yampy = "*"
 zulip = "*"
 django-select2 = "*"
 pygments = "*"
+python-telegram-bot = "*"
 
 [dev-packages]
 bumpversion = "*"

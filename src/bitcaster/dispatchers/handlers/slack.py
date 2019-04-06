@@ -80,7 +80,7 @@ Navigate to https://<YOUR_SPACE>.slack.com/apps/" and enable `Incoming WebHooks`
                             )
             if ret.status_code != 200:
                 raise PluginSendError(ret.content)
-            return 1
+            return recipient
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e) from e

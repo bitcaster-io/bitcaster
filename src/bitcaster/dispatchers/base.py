@@ -75,14 +75,14 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def emit(self, subscription: object, subject: str, message: str,
-             connection=None, silent=True, *args, **kwargs) -> int:
+             connection=None, silent=True, *args, **kwargs) -> str:
         """
 
         :param subscription: bitcaster.models.Subscription
         :param connection: object
         :param subject: message subject
         :param message: message body
-        :return:
+        :return: recipient used
         """
         pass  # pragma: no-cover
 

@@ -48,7 +48,7 @@ class Skype(CoreDispatcher):
         return skpy.main.Skype(self.config['username'], self.config['password'])
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection=None, *args, **kwargs) -> int:
+             connection=None, *args, **kwargs) -> str:
         try:
             address = self.get_recipient_address(subscription)
             self.logger.info('Processing {0}'.format(subscription, address))
@@ -58,7 +58,7 @@ class Skype(CoreDispatcher):
                 raise PluginSendError('Invalid Skype address %s ' % address)
             ch = recipient.chat  # 1-to-1 conversation
             ch.sendMsg(message)  # plain-text message
-            return 1
+            return address
         except skpy.core.SkypeApiException as e:
             if e.args[1].status_code == 404:
                 subscription.enabled = False

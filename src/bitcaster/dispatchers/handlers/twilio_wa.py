@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from logging import getLogger
 
 from django.utils.translation import gettext_lazy as _
@@ -18,50 +19,46 @@ class Message(MessageType):
     pass
 
 
-class TwilioSubscription(SubscriptionOptions):
+class TwilioWhatsAppSubscription(SubscriptionOptions):
     recipient = PhoneNumberField()
 
 
-class TwilioOptions(DispatcherOptions):
+class TwilioWhatsAppOptions(DispatcherOptions):
     sid = serializers.CharField(allow_blank=False, required=True)
     token = serializers.CharField(allow_blank=False, required=True)
     sender = PhoneNumberField()
 
 
 @dispatcher_registry.register
-class Twilio(CoreDispatcher):
+class TwilioWhatsApp(CoreDispatcher):
     __help__ = _("""
 
 You need a valid [Twilio](https://www.twilio.com/) account to use this service.
 
-- Get your token at https://www.twilio.com/console
-- Get twilio number  at https://www.twilio.com/console/phone-numbers/incoming
+- Get your token at [[https://www.twilio.com/console]]
+- Get twilio number  at [[https://www.twilio.com/console/phone-numbers/incoming]]
+- Get twilio SMS number  at [[https://www.twilio.com/console/sms/getting-started/build]]
 
 """)
-
-    name = 'Twilio'
-    subscription_class = TwilioSubscription
-    options_class = TwilioOptions
+    icon = 'whatsapp'
+    name = 'WhatsApp (Twilio)'
+    subscription_class = TwilioWhatsAppSubscription
+    options_class = TwilioWhatsAppOptions
     message_class = MessageType
-
-    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
-    #     ser = TwilioSubscription(data=subscription.config)
-    #     if not ser.is_valid():
-    #         raise PluginValidationError(ser.errors)
 
     def _get_connection(self) -> Client:
         return Client(self.config['sid'],
                       self.config['token'])
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection=None, *args, **kwargs) -> str:
+             connection=None, *args, **kwargs) -> int:
         try:
             self.validate_subscription(subscription)
             recipient = self.get_recipient_address(subscription)
             connection = connection or self._get_connection()
             connection.messages.create(
-                to=recipient.encode('utf8'),
-                from_=self.config['sender'].encode('utf8'),
+                to='whatsapp:' + recipient,
+                from_='whatsapp:' + self.config['sender'],
                 body=message
             )
             return recipient

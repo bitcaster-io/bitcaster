@@ -69,7 +69,7 @@ If you alread have an app, got to
                       max_tries=1)
 
     def emit(self, subscription: object, subject: str, message: str,
-             connection=None, *args, **kwargs) -> int:
+             connection=None, *args, **kwargs) -> str:
         try:
             recipient = self.get_recipient_address(subscription)
             logger.info(f'Processing {subscription} to {recipient}')
@@ -81,7 +81,7 @@ If you alread have an app, got to
             friend = friends[0]
             msg = Message(text=message.encode('utf8'), emoji_size=None)
             connection.send(msg, friend.uid)
-            return 1
+            return recipient
         except RecipientNotFound as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(_('User {user} is not a friend of this Facebook account').format(user=e))

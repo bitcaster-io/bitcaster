@@ -14,6 +14,7 @@ from bitcaster.web.views.application.members import ApplicationMembershipCreate
 from bitcaster.web.views.autocomplete import (ApplicationCandidateAutocomplete,
                                               ApplicationMembersAutocomplete,)
 from bitcaster.web.views.settings import (SettingsBackupRestore, SettingsPlugin,
+                                          SettingsPluginRefresh,
                                           SettingsPluginToggle,)
 
 from .views import (AddressAutocomplete, ApplicationCheckConfigView,
@@ -81,6 +82,7 @@ urlpatterns = [
     path('settings/backup/', SettingsBackupRestore.as_view(), name='settings-backup'),
     path('settings/plugins/<str:type>/', SettingsPlugin.as_view(), name='settings-plugin'),
     path('settings/plugins/<str:type>/<int:pk>/toggle/', SettingsPluginToggle.as_view(), name='settings-plugin-toggle'),
+    path('settings/plugins/refresh', SettingsPluginRefresh.as_view(), name='settings-plugin-refresh'),
 
     # Social
     path('', include('social_django.urls', namespace='social')),

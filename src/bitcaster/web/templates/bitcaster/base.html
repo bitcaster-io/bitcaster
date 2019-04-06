@@ -8,9 +8,9 @@
 
     <title>Bitcaster: {{ title }}</title>
     <link rel="shortcut icon" type="image/png" href="{% asset "bitcaster/images/favicon.ico" %}"/>
-    <link rel="stylesheet" href="{% asset "bitcaster/bitcaster.css" %}">
-    <link rel="stylesheet" href="{% asset "bitcaster/public.css" %}">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <link rel="stylesheet" href="{% asset "bitcaster/theme.css" %}">
+{#    <link rel="stylesheet" href="{% asset "bitcaster/public.css" %}">#}
+{#    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>#}
 
 </head>
 
@@ -79,18 +79,18 @@
                     </div>
                 </nav>
 
-                {% block messages %}
-                    <div id="messageBar">{% if messages %}
-                        <ul class="messagelist">{% for message in messages %}
-                            <li class="alert {% if message.tags %} {{ message.tags }}{% endif %} fade show alert-dismissible ">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                <span>{{ message }}</span>
-                            </li>
-                        {% endfor %}</ul>
-                    {% endif %}</div>
-                {% endblock messages %}
+{#                {% block messages %}#}
+{#                    <div id="messageBar">{% if messages %}#}
+{#                        <ul class="messagelist">{% for message in messages %}#}
+{#                            <li class="alert {% if message.tags %} {{ message.tags }}{% endif %} fade show alert-dismissible ">#}
+{#                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">#}
+{#                                    <span aria-hidden="true">&times;</span>#}
+{#                                </button>#}
+{#                                <span>{{ message }}</span>#}
+{#                            </li>#}
+{#                        {% endfor %}</ul>#}
+{#                    {% endif %}</div>#}
+{#                {% endblock messages %}#}
             {% endblock toggler %}
             {% if alarms %}
                 <div id="alarmBar">
@@ -130,25 +130,40 @@
 {% endblock body %}
 
 
-<script src="{% static "bitcaster/jquery.js" %}"></script>
-<script src="{% static "bitcaster/js-cookie.js" %}"></script>
+{% block js-base %}
+<script src="{% static "bitcaster/theme.js" %}"></script>
 <script src="{% static "bitcaster/bitcaster.js" %}"></script>
-<script src="{% static "bitcaster/vendor.js" %}"></script>
+{#<script src="{% static "bitcaster/select2.js" %}"></script>#}
+{#<script src="{% static "bitcaster/js-cookie.js" %}"></script>#}
+{#<script src="{% static "bitcaster/vendor.js" %}"></script>#}
+{#<script src="{% static "bitcaster/bitcaster.js" %}"></script>#}
+{% endblock %}
 
 <script type="text/javascript">
+    {% if messages %}
+        {% for message in messages %}
+            new Noty({
+                type: '{{ message.tags }}',
+                theme: 'bootstrap-v4',
+                closeWith: ['click', 'button'],
+                layout   : 'topRight',
+                timeout: '{{ message.tags }}' !== 'error' ? 105000: 1010000,
+                text: '{{ message|escapejs }}',
+            }).show();
+        {% endfor %}
+    {% endif %}
     $(document).ready(function () {
         $('button.btn.toggle').on('click', function () {
-            $('#sidebar').toggleClass('active');
-            Cookies.set('sidebar',
-                $('#sidebar').hasClass('active') ? "active" : "",
-                {path: '/'}
-            );
+            bitcaster.toggleSidebar();
         });
     });
     {% if messages %}
         setTimeout(function () {
             $('.alert').not('.keep').alert('close');
         }, 5000);
+    {% endif %}
+    {% if paginator and page_obj.num_pages > 1%}
+        bitcaster.paginator({{ page_obj.number }}, {{paginator.num_pages}}, "{{ filters }}");
     {% endif %}
 </script>
 {% block js %}
