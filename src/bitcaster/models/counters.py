@@ -71,24 +71,24 @@ class LogEntry(models.Model):
                                     on_delete=models.CASCADE)
     event = models.ForeignKey('bitcaster.Event',
                               related_name='+',
-                              on_delete=models.CASCADE)
+                              on_delete=models.SET_NULL)
     subscription = models.ForeignKey('bitcaster.Subscription',
                                      null=True,
                                      related_name='+',
                                      on_delete=models.SET_NULL)
-    # user = models.ForeignKey('bitcaster.User',
-    #                                  null=True,
-    #                                  related_name='+',
-    #                                  on_delete=models.SET_NULL)
+    user = models.ForeignKey('bitcaster.User',
+                             null=True,
+                             related_name='+',
+                             on_delete=models.SET_NULL)
     channel = models.ForeignKey('bitcaster.Channel',
                                 null=True,
                                 related_name='+',
                                 on_delete=models.SET_NULL)
-    #
-    # address = models.CharField(max_length=200, null=True, blank=True)
-    # event_name = models.CharField(max_length=200, null=True, blank=True)
-    # username = models.CharField(max_length=200, null=True, blank=True)
-    #
+
+    address = models.CharField(max_length=200, null=True, blank=True)
+    event_name = models.CharField(max_length=200, null=True, blank=True)
+    username = models.CharField(max_length=200, null=True, blank=True)
+
     status = models.BooleanField(help_text='True if successed', default=True)
     info = models.TextField(null=True, blank=True)
     data = JSONField(null=True, blank=True)
@@ -108,11 +108,12 @@ class LogEntry(models.Model):
             data = {}
 
         values = dict(event=subscription.event,
+                      event_name=subscription.event.name,
                       address=address or '-',
                       channel=subscription.channel,
                       data=data,
-                      # user=subscription.subscriber,
-                      # username=subscription.subscriber.email,
+                      user=subscription.subscriber,
+                      username=subscription.subscriber.email,
                       subscription=subscription,
                       application=subscription.event.application,
                       status=True)
