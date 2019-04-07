@@ -65,12 +65,15 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         return self.get_usage_message()
 
     def get_recipient_address(self, subscription):
-        if isinstance(subscription, str):
-            return subscription
-        user = subscription.subscriber
+        if hasattr(subscription, 'subscriber'):
+            user = subscription.subscriber
+        elif hasattr(subscription, 'assignments'):
+            user = subscription
+        else:
+            raise ValueError
         try:
             return subscription.config['recipient']
-        except (KeyError, TypeError):
+        except (KeyError, TypeError, AttributeError):
             return user.assignments.get_address(self)
 
     @abc.abstractmethod
