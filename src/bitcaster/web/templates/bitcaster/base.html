@@ -162,7 +162,7 @@
             $('.alert').not('.keep').alert('close');
         }, 5000);
     {% endif %}
-    {% if paginator and page_obj.num_pages > 1%}
+    {% if paginator and paginator.num_pages > 1 %}
         bitcaster.paginator({{ page_obj.number }}, {{paginator.num_pages}}, "{{ filters }}");
     {% endif %}
 </script>

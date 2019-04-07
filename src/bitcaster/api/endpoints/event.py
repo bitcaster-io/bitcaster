@@ -3,7 +3,7 @@ import logging
 
 from django.utils import timezone
 from rest_framework.decorators import action
-from rest_framework.parsers import FileUploadParser
+from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 from bitcaster.api.filters import ApplicationFilterBackend
@@ -24,22 +24,24 @@ class EventViewSet(BaseModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [IsApplicationRelated.create('application')]
     filter_backends = [ApplicationFilterBackend]
-    parser_classes = (FileUploadParser,)
+    parser_classes = (FileUploadParser, JSONParser, MultiPartParser,)
 
     # def get_serializer(self, *args, **kwargs):
     #     ret = super().get_serializer(*args, **kwargs)
     #     ret.application = self.get_selected_application()
     #     return ret
 
-    @action(methods=['get', 'post'],
+    @action(methods=['get', 'post', 'options'],
             authentication_classes=[TriggerKeyAuthentication],
             permission_classes=[EventTriggerPermission],
+            parser_classes=(JSONParser, FileUploadParser, MultiPartParser,),
             detail=True)
     def trigger(self, request, application__pk, pk):
         event = self.get_object()
         if not event.enabled:
             return Response({'error': 'Event disabled'}, status=400)
-        trigger_event.delay(event.id, request.GET,
+
+        trigger_event.delay(event.id, request.data,
                             token=request.key.token,
                             origin=get_client_ip(request))
         return Response({'message': 'Event triggered',

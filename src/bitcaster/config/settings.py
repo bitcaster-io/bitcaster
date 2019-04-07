@@ -403,7 +403,6 @@ CONSTANCE_CONFIG = OrderedDict({
     'LOG_NOTIFICATION': (True, 'Enable/Disable notification log', bool),
     'LOG_MESSAGE': (0, 'Log message ', int),
 
-
     'ALLOW_CHANGE_PRIMARY_ADDRESS': (False, 'Users can change their primary email address', bool),
     'RECAPTCHA_PUBLIC_KEY': ('', '', str),
     'RECAPTCHA_PRIVATE_KEY': ('', '', str),
@@ -627,13 +626,30 @@ if DEBUG:
     INTERNAL_IPS = ['127.0.0.1', 'localhost', '0.0.0.0', '*']
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = rf'{STATIC_URL}.*$'
+CORS_ORIGIN_WHITELIST = (
+    '127.0.0.1',
+    'localhost'
+)
+# CORS_URLS_REGEX = rf'{STATIC_URL}.*$'
+CORS_URLS_REGEX = r'^/api/.*$'
 CORS_ALLOW_METHODS = (
     # 'DELETE',
     'GET',
     'OPTIONS',
     # 'PATCH',
-    # 'POST',
+    'POST',
     # 'PUT',
 )
-SELECT2_JS = ''
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)

@@ -238,6 +238,7 @@ class TriggerKeyAuthentication(TokenAuthenticationBase):
             request.key = key
             request.application = key.application
         except ApplicationTriggerKey.DoesNotExist:
+            capture_exception()
             raise exceptions.AuthenticationFailed(_('Invalid token.'))
 
         return (key.application, key)
