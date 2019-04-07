@@ -11,7 +11,7 @@ from django.utils.http import base36_to_int, int_to_base36
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from viberbot import Api, BotConfiguration
-# from viberbot.api.messages import TextMessage
+from viberbot.api.messages import TextMessage
 from viberbot.api.viber_requests import (ViberMessageRequest,
                                          ViberSubscribedRequest,
                                          ViberUnsubscribedRequest,)
@@ -20,6 +20,7 @@ from bitcaster.api.fields import PhoneNumberField
 from bitcaster.otp import OtpHandler
 from bitcaster.state import state
 from bitcaster.utils import fqn
+from bitcaster.utils.http import absolute_uri
 
 from ..base import (CoreDispatcher, DispatcherOptions,
                     MessageType, SubscriptionOptions,)
@@ -38,14 +39,12 @@ class ViberSubscription(SubscriptionOptions):
 
 
 class ViberOptions(DispatcherOptions):
-    application_name = serializers.CharField(help_text=_('Application Name'),
-                                             initial='Bitcaster')
+    account_name = serializers.CharField(help_text=_('Application Name'), initial='Bitcaster')
     site = serializers.URLField(help_text=_('This server url.'),
                                 initial=lambda: state.request.build_absolute_uri('/'))
     avatar = serializers.URLField(help_text=_('URL of image to use as avatar'),
-                                  required=False)
+                                  required=False, allow_blank=True)
     auth_token = serializers.CharField()
-    account_id = serializers.CharField()
 
 
 @dispatcher_registry.register
@@ -112,19 +111,22 @@ class Viber(CoreDispatcher):
         config = self.config
 
         bot_configuration = BotConfiguration(
-            name=config['application_name'],
+            name=config['account_name'],
             avatar=config['avatar'],
             auth_token=config['auth_token'],
         )
         return Api(bot_configuration)
 
-    def registration(self, request):
-        otp = request.GET['otp']
-        # TODO: remove me
-        print('1111111111', 'viber.py:75', 'Here we get the OTP and update user with the id encoded in the OTP')
+    def registration(self, request, otp):
         messages, dt = OtpHandler().validate(otp)
+        # we record the Viber user id
+        if request.user.storage is None:
+            request.user.storage = {fqn(self): messages[0]}
+        else:
+            request.user.storage[fqn(self)] = messages[0]
         # TODO: remove me
-        print('1111111111', 'viber.py:127', f'messages[0] is user id: {messages[0]}')
+        print(111, 'viber.py:131', 2222222, f'Subscribing: {request.user}')
+        request.user.save()
         return HttpResponse()
 
     def callback(self, request):
@@ -132,37 +134,51 @@ class Viber(CoreDispatcher):
         if not conn.verify_signature(request.body, request.META.get('X-Viber-Content-Signature')):
             logger.error('Viber 403')
         viber_request = conn.parse_request(request.body)
-        # TODO: remove me
-        print(111, 'viber.py:79', 2222222, viber_request, type(viber_request))
         if isinstance(viber_request, ViberUnsubscribedRequest):
-            pass
+            # viber_request.event_type == "unsubscribed"
+            # viber_request.timestamp == int: milliseconds since epoch , eg 1554674273997
+            # viber_request.user_id == str ... eg "qc7TSxYS+jiMst8pEYI56w=="
+            try:
+                # TODO: very inefficient way of retrieving the user
+                from bitcaster.models import User
+                user = None
+                for u in User.objects.all():
+                    if u.storage and u.storage.get(fqn(self), None) == viber_request.user_id:
+                        user = u
+                        break
+                if user:
+                    # TODO: remove me
+                    print(111, 'viber.py:152', 2222222, f'Unsubscribing: {user}')
+                    user.storage[fqn(self)] = None
+                    user.save()
+            except Exception:
+                pass
         elif isinstance(viber_request, ViberSubscribedRequest):
+            # viber_request.user.__dict__ = {'_name': 'Gio Bro', '_avatar': None,
+            #                                '_id': 'ex2kb4P6D4gd58h7zVA//A==', '_country': 'GB',
+            #                                '_language': 'en', '_api_version': 7}
             otp = OtpHandler().get_otp(str(viber_request.user.id))
-            url = reverse('callback_registration', kwargs={'otp', otp})
-
-            # TODO: remove me
-            print(111, 'viber.py:84', 'What do we do here?')
-            return url
+            url = absolute_uri(reverse('channel-registration', args=[self.owner.pk, otp.decode()]))
+            message = TextMessage(text=url)
+            conn.send_messages(viber_request.user.id, [message])
+            return HttpResponse()
         elif isinstance(viber_request, ViberMessageRequest):
             message = viber_request.message
-            # TODO: remove me
-            print(111, 'viber.py:88', viber_request.sender)
-            print(111, 'viber.py:89', viber_request.sender.id)
             conn.send_messages(viber_request.sender.id, [message])
         return HttpResponse()
 
     def emit(self, subscription, subject, message, connection=None, silent=True, *args, **kwargs) -> int:
-        recipient = self.get_recipient_address(subscription)
+        # ### TODO ripesca il viber id
+        recipient = subscription.subscriber.storage.get(fqn(self), None)
+        # recipient = self.get_recipient_address(subscription)
         try:
             conn = connection or self._get_connection()
             url = reverse('channel-callback', args=[self.owner.pk])
             cb = '%s%s' % (self.config['site'], url)
-            # TODO: remove me
-            print(111, 'viber.py:93', 111111, recipient)
             conn.set_webhook(cb)
 
-            # ## text_message = TextMessage(text=message)
-            # ## sent_messages_tokens = conn.send_messages(recipient, text_message)
+            text_message = TextMessage(text=message)
+            conn.send_messages(recipient, text_message)
             self.logger.debug(f'{fqn(self)} sent to {recipient}')
             return 1
         except Exception as e:
@@ -173,8 +189,7 @@ class Viber(CoreDispatcher):
 
     def test_connection(self, raise_exception=False) -> bool:
         try:
-            conn = self._get_connection()
-            conn.ensure_session()
+            self._get_connection()
             return True
         except Exception as e:
             self.logger.exception(e)

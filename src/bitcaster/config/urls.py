@@ -30,16 +30,16 @@ def channel_callback(request, pk):
 
 
 @login_required
-def channel_registration(request, pk):
+def channel_registration(request, pk, *args, **kwargs):
     from bitcaster.models import Channel
     channel = Channel.objects.get(pk=pk)
-    return channel.handler.registration(request)
+    return channel.handler.registration(request, *args, **kwargs)
 
 
 urlpatterns = [path('api/', include(bitcaster.api.urls), name='api'),
                path('oauth2callback/', oauth2callback),
                path('channel-callback/<int:pk>/', channel_callback, name='channel-callback'),
-               path('channel-registration/<int:pk>/', channel_registration, name='channel-registration'),
+               path('channel-registration/<int:pk>/<str:otp>/', channel_registration, name='channel-registration'),
                path('admin/info/html/', admin_sysinfo, name='admin_info'),
                path('info/json/', http_basic_login(sysinfo), name='sys-info'),
 

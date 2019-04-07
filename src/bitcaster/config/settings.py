@@ -80,9 +80,9 @@ MIDDLEWARE = [
 ]
 
 AUTH_USER_MODEL = 'bitcaster.user'
-# SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY')
 # FERNET_KEYS = [SECRET_KEY] + env('FERNET_KEYS')
-SECRET_KEY = 's'
+# SECRET_KEY = 's'
 FERNET_KEYS = ['a']
 ON_PREMISE = env('ON_PREMISE')
 
