@@ -189,8 +189,7 @@ class ChannelTestView(MessageUserMixin, RedirectView):
         self.object = self.get_queryset().get(id=kwargs['pk'])
         try:
             dispatcher = self.object.handler
-            address = request.user.assignments.get_address(dispatcher)
-            dispatcher.emit(address, '-', 'test channel message', silent=False)
+            address = dispatcher.emit(request.user, '-', 'test channel message', silent=False)
 
             msg = _("""Message sent to {}""").format(address)
             self.message_user(markdown(msg), messages.SUCCESS)
@@ -203,7 +202,7 @@ class ChannelTestView(MessageUserMixin, RedirectView):
 Goto [addresses]({0}) to set your choice for **{1}**""").format(url, self.object.name)
             self.message_user(markdown(msg), messages.ERROR, extra_tags='keep')
         except PluginSendError as e:  # pragma: no cover
-            self.message_user(_("Unable to send message to '{}': {}").format(address, e), messages.ERROR)
+            self.message_user(_('Unable to send message: {}').format(e), messages.ERROR)
         except Exception as e:
             self.message_user(_('Unable to send message: {}').format(e), messages.ERROR)
         return super().get(request, *args, **kwargs)

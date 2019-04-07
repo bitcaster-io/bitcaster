@@ -3,7 +3,7 @@ from logging import getLogger
 from urllib.parse import urlencode
 
 import requests
-from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from bitcaster.api.fields import PasswordField
@@ -45,9 +45,21 @@ class TelegramOptions(DispatcherOptions):
     bot_token = PasswordField()
 
 
+class TelegramAccountValidator:
+    def __call__(self, value):
+        if value:
+            try:
+                return int(value)
+            except Exception:
+                pass
+        if not value.startswith('@'):
+            raise ValidationError('This should be a chat_id number or Telegram account name')
+
+
 class TelegramSubscriptionOptions(SubscriptionOptions):
-    recipient = serializers.CharField(validators=[RegexValidator('^@',
-                                                                 'username must starts  with @')])
+    # recipient = serializers.CharField(validators=[RegexValidator('^@',
+    #                                                              'username must starts  with @')])
+    recipient = serializers.CharField(validators=[TelegramAccountValidator()])
 
 
 @dispatcher_registry.register
@@ -74,17 +86,30 @@ class Telegram(CoreDispatcher):
         return s
 
     def get_usage_message(self) -> object:
-        return 'Send a message to %s to receive notifications' % self.config['bot_name']
+        return """Send a message to %s to receive notifications.
+Check your username under menu->settings.
+*Note:* Accounts without username are not supported
+
+""" % self.config['bot_name']
 
     def _get_url(self, method, **params):
         base = 'https://api.telegram.org/bot' + self.config['bot_token']
         return base + '/%s?%s' % (method, urlencode(params))
 
     def _get_chat_id_for_username(self, subscription):
-        user = subscription.subscriber
+        if hasattr(subscription, 'subscriber'):
+            user = subscription.subscriber
+        elif hasattr(subscription, 'assignments'):
+            user = subscription
+        else:
+            raise ValueError
         chat_id = user.storage.get(fqn(self), None)
         if not chat_id:
             username = self.get_recipient_address(subscription)
+            try:
+                return int(username)
+            except ValueError:
+                pass
             url = self._get_url('getUpdates')
             conn = self._get_connection()
             response = conn.get(url)
