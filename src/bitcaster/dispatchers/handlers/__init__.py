@@ -12,6 +12,7 @@ from .system_email import SystemEmail
 from .twilio import Twilio
 from .twilio_wa import TwilioWhatsApp
 from .twitter import Twitter, TwitterDirectMessage
+from .viber import Viber
 from .xmpp import Xmpp
 from .zulip import ZulipPrivate
 
