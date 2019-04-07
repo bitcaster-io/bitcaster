@@ -1,5 +1,5 @@
 var paginator = function (current_page, total_pages, filters) {
-    console.log(current_page, total_pages)
+    console.log(current_page, total_pages);
     var skip_pages = 1; //change your number accordingly you want to show numbers
 
     var factor = Math.floor(current_page / skip_pages);
