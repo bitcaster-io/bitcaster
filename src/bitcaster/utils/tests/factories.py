@@ -380,9 +380,8 @@ class EventFactory(AutoRegisterModelFactory):
 class MessageFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.Message
-        django_get_or_create = ('event', 'name',)
+        django_get_or_create = ('event', 'channel',)
 
-    name = factory.Sequence(lambda n: 'Message %03d' % n)
     event = factory.SubFactory(EventFactory)
     channel = factory.SubFactory(ChannelFactory)
     enabled = True

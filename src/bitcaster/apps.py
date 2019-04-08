@@ -12,3 +12,22 @@ class Config(AppConfig):
         from .agents.registry import agent_registry  # noqa
         from . import tasks  # noqa
         from . import checks  # noqa
+        from django.contrib.auth.signals import user_logged_in, user_logged_out
+
+        user_logged_in.connect(log_login)
+        user_logged_out.connect(log_logout)
+
+
+def log_login(sender, user, request, **kwargs):
+    from bitcaster.models.audit import AuditLogEntry
+
+    AuditLogEntry.objects.create(event=AuditLogEntry.Event.MEMBER_LOGIN,
+                                 actor=user,
+                                 )
+
+
+def log_logout(sender, user, request, **kwargs):
+    from bitcaster.models.audit import AuditLogEntry
+
+    AuditLogEntry.objects.create(event=AuditLogEntry.Event.MEMBER_LOGOUT,
+                                 actor=user)

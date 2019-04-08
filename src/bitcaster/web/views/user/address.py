@@ -6,18 +6,19 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import Address, AddressAssignment
+from bitcaster.models.audit import AuditLogEntry
 from bitcaster.web.forms import (AddressAssignmentForm,
                                  AddressAssignmentFormSet, AddressFormSet,)
 
 from ..base import BitcasterBaseDetailView, BitcasterBaseUpdateView
-from .base import UserMixin
+from .base import LogAuditMixin, UserMixin
 
 logger = logging.getLogger(__name__)
 
 __all__ = ('UserAddressesView', 'UserAddressesInfoView', 'UserAddressesAssignmentView')
 
 
-class UserAddressesView(UserMixin, BitcasterBaseUpdateView):
+class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/user/addresses.html'
     model = Address
     # form_class = AddressForm
@@ -40,6 +41,22 @@ class UserAddressesView(UserMixin, BitcasterBaseUpdateView):
     def form_valid(self, formset):
         formset.instance = self.request.user
         formset.save()
+        for a in formset.deleted_objects:
+            self.audit(event=AuditLogEntry.Event.MEMBER_DELETE_ADDRESS,
+                       target_object=a.pk,
+                       target_label=str(a))
+
+        for obj, changed_data in formset.changed_objects:
+            self.audit(event=AuditLogEntry.Event.MEMBER_UPDATE_ADDRESS,
+                       data=changed_data,
+                       target_object=obj.pk,
+                       target_label=str(obj))
+
+        for a in formset.new_objects:
+            self.audit(event=AuditLogEntry.Event.MEMBER_ADD_ADDRESS,
+                       target_object=a.pk,
+                       target_label=str(a))
+
         return super().form_valid(formset)
 
 
@@ -53,7 +70,7 @@ class UserAddressesInfoView(UserMixin, BitcasterBaseDetailView):
         return super().get_context_data(**kwargs)
 
 
-class UserAddressesAssignmentView(UserMixin, BitcasterBaseUpdateView):
+class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/user/addresses_assignment.html'
     model = AddressAssignment
     form_class = AddressAssignmentForm
@@ -89,12 +106,26 @@ class UserAddressesAssignmentView(UserMixin, BitcasterBaseUpdateView):
                                                                            'has,have'))
             self.message_user(msg, extra_tags='keep')
 
+        for a in formset.deleted_objects:
+            self.audit(event=AuditLogEntry.Event.MEMBER_DELETE_ASSIGNMENT,
+                       target_object=a.pk,
+                       target_label=str(a))
+
         for assignment in formset.new_objects:
-            usage_message = assignment.channel.get_usage_message()
-            if usage_message:
-                self.message_user(_('This subscription is not complete. Check extra info'), extra_tags='keep')
-        for assignment, __ in formset.changed_objects:
-            usage_message = assignment.channel.get_usage_message()
-            if usage_message:
-                self.message_user(usage_message, extra_tags='keep')
+            # usage_message = assignment.channel.get_usage_message()
+            self.audit(event=AuditLogEntry.Event.MEMBER_ADD_ASSIGNMENT,
+                       target_object=assignment.pk,
+                       target_label=str(assignment))
+            # if usage_message:
+            #     self.message_user(_('This subscription is not complete. Check extra info'), extra_tags='keep')
+
+        for assignment, changed_data in formset.changed_objects:
+            # usage_message = assignment.channel.get_usage_message()
+            # if usage_message:
+            #     self.message_user(usage_message, extra_tags='keep')
+            self.audit(event=AuditLogEntry.Event.MEMBER_CHANGE_ASSIGNMENT,
+                       data=changed_data,
+                       target_object=assignment.pk,
+                       target_label=str(assignment))
+
         return super().form_valid(formset)

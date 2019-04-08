@@ -3,10 +3,11 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster.models import Event, Subscription, User
+from bitcaster.models.audit import AuditLogEntry
 from bitcaster.web.forms.user import UserSubscribeForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseListView,)
-from bitcaster.web.views.user.base import UserMixin
+from bitcaster.web.views.user.base import LogAuditMixin, UserMixin
 
 
 class UserEventMixin(UserMixin):
@@ -25,7 +26,7 @@ class UserEventListView(UserEventMixin, BitcasterBaseListView):
                                               subscriptions__isnull=False).order_by('application__name', 'name')
 
 
-class UserEventSubcribe(UserEventMixin, BitcasterBaseCreateView):
+class UserEventSubcribe(UserEventMixin, LogAuditMixin, BitcasterBaseCreateView):
     template_name = 'bitcaster/user/subscribe.html'
     title = 'Event %(object)s'
     form_class = UserSubscribeForm
@@ -50,10 +51,14 @@ class UserEventSubcribe(UserEventMixin, BitcasterBaseCreateView):
 
     def form_valid(self, form):
         for channel in form.cleaned_data['channels']:
-            Subscription.objects.create(subscriber=self.request.user,
-                                        trigger_by=self.request.user,
-                                        event=form.event,
-                                        channel=channel,
-                                        enabled=True,
-                                        status=Subscription.STATUSES.OWNED)
+            obj = Subscription.objects.create(subscriber=self.request.user,
+                                              trigger_by=self.request.user,
+                                              event=form.event,
+                                              channel=channel,
+                                              enabled=True,
+                                              status=Subscription.STATUSES.OWNED)
+            self.audit(event=AuditLogEntry.Event.MEMBER_SUBSCRIBE_EVENT,
+                       target_object=obj.pk,
+                       target_label=str(obj))
+
         return HttpResponseRedirect(self.get_success_url())

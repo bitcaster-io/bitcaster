@@ -53,7 +53,7 @@ class Message(AbstractModel):
         verbose_name_plural = _('Messages')
 
     def __str__(self):
-        return self.name
+        return '%s %s' % (self.channel, self.event)
 
     def parse_body(self, ctx):
         return self.body.format(**ctx)

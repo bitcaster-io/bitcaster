@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 
 from bitcaster import messages
 from bitcaster.models import User
+from bitcaster.models.audit import AuditLogEntry
 from bitcaster.utils.email_verification import set_request_new_email_address
 from bitcaster.web.forms import UserProfileForm, send_address_verification_email
 from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
@@ -18,6 +19,14 @@ logger = logging.getLogger(__name__)
 __all__ = ('UserProfileView',)
 
 
+class LogAuditMixin:
+
+    def audit(self, **kwargs):
+        kwargs.setdefault('organization', self.selected_organization)
+        kwargs.setdefault('actor', self.request.user)
+        AuditLogEntry.objects.create(**kwargs)
+
+
 class UserMixin(SelectedOrganizationMixin, SidebarMixin, TitleMixin):
     permissions = None
 
@@ -27,7 +36,7 @@ class UserHome(UserMixin, TemplateView):
     title = _('Home')
 
 
-class UserProfileView(UserMixin, BitcasterBaseUpdateView):
+class UserProfileView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/user/profile.html'
     model = User
     form_class = UserProfileForm
@@ -54,5 +63,5 @@ class UserProfileView(UserMixin, BitcasterBaseUpdateView):
             form.instance.email = form.initial['email']
             self.message_user(_('Check your inbox to validate your new email address'), messages.SUCCESS)
         ret = super().form_valid(form)
-        # self.message_user(_('Profile Updated'), messages.SUCCESS)
+        self.audit(event=AuditLogEntry.Event.MEMBER_UPDATE_PROFILE)
         return ret

@@ -17,8 +17,6 @@ repos:
         exclude: /(_plugin_template|python_twitter|migrations|tweepy)/
         name: flake8
         entry: flake8
-        args:
-          - src/
         language: system
         types: [python]
         stages: [commit]
