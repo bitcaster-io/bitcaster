@@ -147,21 +147,18 @@
                 theme: 'bootstrap-v4',
                 closeWith: ['click', 'button'],
                 layout   : 'topRight',
-                timeout: '{{ message.tags }}' !== 'error' ? 105000: 1010000,
+                timeout: '{{ message.tags }}' !== 'error' ? 10000: 50000,
                 text: '{{ message|escapejs }}',
             }).show();
         {% endfor %}
     {% endif %}
     $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+
         $('button.btn.toggle').on('click', function () {
             bitcaster.toggleSidebar();
         });
     });
-    {% if messages %}
-        setTimeout(function () {
-            $('.alert').not('.keep').alert('close');
-        }, 5000);
-    {% endif %}
     {% if paginator and paginator.num_pages > 1 %}
         bitcaster.paginator({{ page_obj.number }}, {{paginator.num_pages}}, "{{ filters }}");
     {% endif %}

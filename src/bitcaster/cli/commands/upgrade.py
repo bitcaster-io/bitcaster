@@ -6,7 +6,7 @@ import click
 from bitcaster.cli import global_options
 
 
-@click.command()
+@click.command()  # noqa: C901
 @global_options
 @click.option('--prompt/--no-input', default=True, is_flag=True,
               help='Do not prompt for parameters')
@@ -16,8 +16,10 @@ from bitcaster.cli import global_options
               help='Collect static assets')
 @click.option('--reindex/--no-reindex', default=False, is_flag=True,
               help='Run Database full reindex')
+@click.option('--check/--no-check', 'run_check', default=True, is_flag=True,
+              help='Run check framework')
 @click.pass_context
-def upgrade(ctx, prompt, migrate, static, verbose, reindex, **kwargs):
+def upgrade(ctx, prompt, migrate, static, verbose, reindex, run_check, **kwargs):
     try:
         from django.core.management import execute_from_command_line
         from bitcaster.config.environ import env
@@ -46,14 +48,12 @@ def upgrade(ctx, prompt, migrate, static, verbose, reindex, **kwargs):
             execute_from_command_line(argv=['manage', 'collectstatic'] + extra)
         if migrate:
             execute_from_command_line(argv=['manage', 'migrate'] + extra)
+        if run_check:
+            from .check import check
+            ctx.invoke(check)
         if reindex:
             from .reindex import reindex
             ctx.invoke(reindex)
-
-        # conn = get_connection()
-        # cursor = conn.cursor()
-        # update_status = f'REINDEX DATABASE {settings.DATABASES["default"]["NAME"]};'
-        # cursor.execute(update_status)
 
     except Exception as e:
         click.echo(str(e))

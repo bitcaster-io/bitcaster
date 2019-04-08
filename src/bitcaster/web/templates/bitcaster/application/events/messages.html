@@ -1,11 +1,24 @@
 {% extends "bitcaster/application/base.html" %}{% load i18n bitcaster crispy_forms_filters %}
 {% block page %}
-    <div class="breadcrumbs pb-4">
-        <a href="{% app-url "app-events" %}">events</a> :
-        <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a> :
-        <a href="{% app-url "app-event-messages" event.pk %}">messages</a>
-    </div>
     <style>
+        a.btn.btn-outline {
+            border: 1px solid black;
+        }
+
+        a.btn.btn-outline-m {
+            border: 1px solid black;
+            background-color: #e6e6e6;
+            padding: 2px;
+            margin: 2px;
+        }
+
+        a.btn.btn-outline-m.collapsed {
+            border: 1px solid grey;
+            background-color: white;
+            padding: 2px;
+            margin: 2px;
+        }
+
         .messageForm {
             border: 1px solid grey;
             padding: 10px;
@@ -13,53 +26,96 @@
             background-color: #e4e4e4;
         }
     </style>
-    <form method="post">
+    {% for frm in form.forms %}
+        <a class="btn btn-outline-m collapsed"
+           style="width:180px"
+           data-toggle="collapse" href="#frm{{ frm.id.value }}" role="button" aria-expanded="false">
+            <img width=40 height=40 src="{% url "plugin-icon" frm.instance.channel.handler.fqn %}"/>
+            <span data-toggle="tooltip"
+                  title="{{ frm.instance.channel.name }}">{{ frm.instance.channel.name|truncatechars:10 }}<span>
+        </a>
+    {% endfor %}
+    <form>
         {% csrf_token %}
         {{ form.management_form }}
+        <div class="row p-2" style="min-height: 60px">
+            <div class="col-5">
+                <a href="#" title="broadcast all"
+                   data-toggle="tooltip"
+                   class="btn btn-outline broadcast_all"><i class="fa fa-wifi"></i></a>
+                <a href="#" title="broadcast visible"
+                   data-toggle="tooltip"
+                   class="btn btn-outline copy_visible"><i class="fa fa-sync"></i></a>
+                <span id="broadcast_message"></span>
+            </div>
+
+            <div class="col-4 p-0"></div>
+            <div class="col-2 p-0 float-right">
+                <input type="button" class="btn btn-secondary"
+                       onclick="history.back();"
+                       value="{% trans "Cancel" %}">
+
+                <input id="btn-submit"
+                       name="save_and_exit"
+                       value="{% trans "Save" %}"
+                       type="submit" class="btn btn-primary">
+            </div>
+        </div>
         {% for frm in form.forms %}
-            <div class="messageForm">
-                {{ frm.channel }}{{ frm.id }}
-                <div>
-                    <img width=40 height=40 src="{% url "plugin-icon" frm.instance.channel.handler.fqn %}"/>
-                    {{ frm.instance.channel }}
-                    <span class="pull-right">
+            <div class="collapse" id="frm{{ frm.id.value }}">
+                <div class="card card-body">
+                    <div class="messageForm">
+                        <div class="hidden">{{ frm.channel }}{{ frm.id }}{{ frm.enabled }}</div>
+                        <img width=20 height=20 src="{% url "plugin-icon" frm.instance.channel.handler.fqn %}"/>
+                        {{ frm.instance.channel }}
+                        <span class="pull-right">
                                             <a href="#" title="enable/disable message"
-                       class="btn btn-small fa toggle {% if frm.instance.enabled %}fa-check green{% else %}fa-ban red{% endif %}"
-                       data-target="#{{ frm.enabled.auto_id }}"></a>
-
-
+                                               class="btn btn-small fa toggle-message {% if frm.instance.enabled %}fa-check green{% else %}fa-ban red{% endif %}"
+                                               data-target="#{{ frm.enabled.auto_id }}"></a>
                     </span>
-                </div>
-                {{ frm.name|as_crispy_field }}
-                {% if frm.has_subject %}
-                    {{ frm.subject|as_crispy_field }}
-                {% endif %}
-                {{ frm.body|as_crispy_field }}
-                {{ frm.enabled|as_crispy_field }}
-                <div>
-                    <a href="#" title="copy text" class="btn btn-small fa fa-copy copyText" data-target="#{{ frm.body.auto_id }}"></a>
-                    <a href="#" class="btn btn-small fa fa-paste pasteText" data-target="#{{ frm.body.auto_id }}"></a>
-                    <a href="#" title="broadcast input" class="btn btn-small fa fa-wifi broadcast" data-target="#{{ frm.body.auto_id }}"></a>
+                        {% if frm.has_subject %}
+                            {{ frm.subject|as_crispy_field }}
+                        {% endif %}
+                        {{ frm.body|as_crispy_field }}
+                        <a href="#" title="copy text" class="btn btn-small fa fa-copy copyText"
+                           data-target="#{{ frm.body.auto_id }}"></a>
+                        <a href="#" class="btn btn-small fa fa-paste pasteText"
+                           data-target="#{{ frm.body.auto_id }}"></a>
+                        <a href="#" title="broadcast input" class="btn btn-small fa fa-wifi broadcast"
+                           data-target="#{{ frm.body.auto_id }}"></a>
+                    </div>
+
                 </div>
             </div>
         {% endfor %}
-        <input type="button" class="btn btn-secondary"
-               onclick="history.back();"
-               value="{% trans "Cancel" %}">
-
-        <input id="btn-submit"
-               name="save_and_exit"
-               value="{% trans "Save" %}"
-               type="submit" class="btn btn-primary">
     </form>
 {% endblock %}
 {% block js %}
     {{ block.super }}
     <script>
         (function () {
-            let broadcast = false;
-            let $source = null;
+            var broadcast = false;
+            var copy_visible = false;
 
+            var $source = null;
+            var broadcast_source = null;
+
+            $('textarea').on('focus', function (e) {
+                broadcast_source = e.target;
+                if (broadcast) {
+                    $(broadcast_source).keyup(function () {
+                        $("textarea").not(broadcast_source).val($(broadcast_source).val());
+                    });
+                } else if (copy_visible){
+                    $(broadcast_source).keyup(function () {
+                        $("textarea").not(broadcast_source).not(':hidden').val($(broadcast_source).val());
+                    });
+                }
+            }).on('blur', function (e) {
+                if (broadcast_source) {
+                    $(broadcast_source).unbind("keyup");
+                }
+            });
             $(".copyText").click(function (event) {
                 event.preventDefault();
                 let target = $(this).data("target");
@@ -70,34 +126,46 @@
             $(".pasteText").click(function (event) {
                 event.preventDefault();
                 let target = $(this).data("target");
-                $(target).val( $source.val() );
+                $(target).val($source.val());
             });
 
-            $(".toggle").click(function (event) {
+            $(".toggle-message").click(function (event) {
                 event.preventDefault();
                 var target = $(this).data("target");
                 $(target).prop("checked", !$(target).prop("checked"));
-                if ($(target).prop("checked")){
+                if ($(target).prop("checked")) {
                     $(this).removeClass('fa-ban red').addClass('fa-check green')
-                }else{
+                } else {
                     $(this).removeClass('fa-check green').addClass('fa-ban red')
                 }
-                {#$(".broadcast").css("color", broadcast ? "red" : "black");#}
+                $(".broadcast_all").css("color", broadcast ? "red" : "black");
 
             });
 
-            $(".broadcast").click(function (event) {
+            $(".broadcast_all").click(function (event) {
                 event.preventDefault();
                 broadcast = !broadcast;
-                $(".broadcast").css("color", broadcast ? "red" : "black");
-                var target = $(this).data("target");
                 if (broadcast) {
-                    $(target).keyup(function () {
-                        $("textarea").not(target).val($(target).val());
-                    });
-                } else {
-                    $(target).unbind("keyup");
+                    copy_visible = false;
+                    $('.copy_visible i').css("color", copy_visible ? "red" : "black");
+                    $('#broadcast_message').html('Text will be copied to all channels')
+                }else{
+                    $('#broadcast_message').html('')
                 }
+                $('.broadcast_all i').css("color", broadcast ? "red" : "black");
+            });
+
+            $(".copy_visible").click(function (event) {
+                event.preventDefault();
+                copy_visible = !copy_visible;
+                if (copy_visible) {
+                    $('#broadcast_message').html('Text will be copied to all checked (visible) channels');
+                    broadcast = false;
+                    $('.broadcast_all i').css("color", broadcast ? "red" : "black");
+                }else {
+                    $('#broadcast_message').html('')
+                }
+                $('.copy_visible i').css("color", copy_visible ? "red" : "black");
             });
 
         })($);

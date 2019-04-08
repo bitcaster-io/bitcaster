@@ -51,7 +51,7 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=STATUSES,
                                  default=STATUSES.OWNED)
-
+    errors = models.IntegerField(default=0)
     objects = SubscriptionQuerySet.as_manager()
 
     class Meta:

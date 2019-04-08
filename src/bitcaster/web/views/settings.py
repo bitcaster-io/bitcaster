@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import glob
 import json
 import logging
 import os
@@ -251,6 +252,7 @@ class SettingsBackupRestore(SettingsTemplateMixin):
         return RedirectToRefererResponse(request)
 
     def get_context_data(self, **kwargs):
-        file_list = [f for f in os.listdir(config.BACKUPS_LOCATION) if os.path.isfile(f)]
+        # file_list = [f for f in os.listdir(config.BACKUPS_LOCATION) if os.path.isfile(f)]
+        file_list = [os.path.basename(f) for f in glob.glob('%s/*.json' % config.BACKUPS_LOCATION)]
         # return {'file_list':file_list}
         return super().get_context_data(file_list=file_list, **kwargs)

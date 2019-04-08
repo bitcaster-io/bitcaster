@@ -71,6 +71,7 @@ class LogEntry(models.Model):
                                     on_delete=models.CASCADE)
     event = models.ForeignKey('bitcaster.Event',
                               related_name='+',
+                              null=True,
                               on_delete=models.SET_NULL)
     subscription = models.ForeignKey('bitcaster.Subscription',
                                      null=True,

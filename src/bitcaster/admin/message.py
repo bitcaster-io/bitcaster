@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 @admin.register(Message, site=site)
 class MessageAdmin(admin.ModelAdmin):
     # form = MessageForm
-    list_display = ('name', 'event', 'channel', 'language')
+    list_display = ('event', 'channel', 'language')
     list_filter = ('event__application', 'language')
     search_fields = ('name',)
 

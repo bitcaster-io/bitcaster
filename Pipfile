@@ -102,8 +102,7 @@ selenium = "*"
 tox = "*"
 vcrpy = "*"
 transifex-client = "*"
-#recommonmark = "*"
-bitcaster = {editable = true,path = "."}
+pyngrok = "*"
 
 [requires]
 python_version = "3.6"

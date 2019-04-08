@@ -19,7 +19,6 @@ LANGUAGES = (('all', 'All'),
 
 
 class Message(AbstractModel):
-    name = models.CharField(max_length=100)
     application = models.ForeignKey(Application, editable=False,
                                     on_delete=models.CASCADE,
                                     related_name='messages')

@@ -18,7 +18,7 @@ class MessageForm(forms.ModelForm):
 
     class Meta:
         model = Message
-        fields = ('name', 'subject', 'body', 'channel', 'id', 'enabled')
+        fields = ('subject', 'body', 'channel', 'id', 'enabled')
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)

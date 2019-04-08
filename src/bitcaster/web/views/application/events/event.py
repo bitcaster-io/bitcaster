@@ -83,7 +83,6 @@ class EventCreate(EventMixin, EventFormMixin, BitcasterBaseCreateView):
                                           channel=channel,
                                           defaults={
                                               'enabled': True,
-                                              'name': f'{event} {channel}',
                                           })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
         return ret
@@ -107,7 +106,6 @@ class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
                                              application=event.application,
                                              defaults={
                                                  'enabled': True,
-                                                 'name': f'{event.name} {channel.name}',
                                              })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
         return ret
