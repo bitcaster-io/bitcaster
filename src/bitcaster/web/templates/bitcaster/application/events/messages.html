@@ -4,7 +4,9 @@
         a.btn.btn-outline {
             border: 1px solid black;
         }
-
+        a.btn-outline-m .goto {
+            {#float: right;#}
+        }
         a.btn.btn-outline-m {
             border: 1px solid black;
             background-color: #e6e6e6;
@@ -19,6 +21,11 @@
             margin: 2px;
         }
 
+        a.btn.btn-outline-m.errored {
+            background-color: #f2dede;
+            border: 1px solid red;
+        }
+
         .messageForm {
             border: 1px solid grey;
             padding: 10px;
@@ -26,20 +33,31 @@
             background-color: #e4e4e4;
         }
     </style>
+    <div class="container-fluid p-2">
+        {% blocktrans %}
+Because each channel has different characteristics /limitations, it is required to write one message for each channel. Is it possible to "broadcast" the typing to all the message forms, be sure that the text is compatible with all channels
+        {% endblocktrans %}
+    </div>
     {% for frm in form.forms %}
-        <a class="btn btn-outline-m collapsed"
+        <a class="btn btn-outline-m collapsed {% if frm.errors %}errored{% endif %}"
            style="width:180px"
            data-toggle="collapse" href="#frm{{ frm.id.value }}" role="button" aria-expanded="false">
             <img width=40 height=40 src="{% url "plugin-icon" frm.instance.channel.handler.fqn %}"/>
             <span data-toggle="tooltip"
-                  title="{{ frm.instance.channel.name }}">{{ frm.instance.channel.name|truncatechars:10 }}<span>
+                  title="{{ frm.instance.channel.name }}">{{ frm.instance.channel.name|truncatechars:10 }}</span>
         </a>
     {% endfor %}
-    <form>
+    <form method="post">
         {% csrf_token %}
         {{ form.management_form }}
         <div class="row p-2" style="min-height: 60px">
-            <div class="col-5">
+            <div class="col-10">
+                <a href="#" title="expand all" id="expand_all"
+                   data-toggle="tooltip"
+                   class="btn btn-outline"><i class="fas fa-plus-square"></i></a>
+                <a href="#" title="collapse all"  id="collapse_all"
+                   data-toggle="tooltip"
+                   class="btn btn-outline"><i class="fas fa-minus-square"></i></a>
                 <a href="#" title="broadcast all"
                    data-toggle="tooltip"
                    class="btn btn-outline broadcast_all"><i class="fa fa-wifi"></i></a>
@@ -49,7 +67,6 @@
                 <span id="broadcast_message"></span>
             </div>
 
-            <div class="col-4 p-0"></div>
             <div class="col-2 p-0 float-right">
                 <input type="button" class="btn btn-secondary"
                        onclick="history.back();"
@@ -62,7 +79,8 @@
             </div>
         </div>
         {% for frm in form.forms %}
-            <div class="collapse" id="frm{{ frm.id.value }}">
+            <a name="jump{{ frm.id.value }}"></a>
+            <div class="form-box collapse" id="frm{{ frm.id.value }}">
                 <div class="card card-body">
                     <div class="messageForm">
                         <div class="hidden">{{ frm.channel }}{{ frm.id }}{{ frm.enabled }}</div>
@@ -80,8 +98,6 @@
                         <a href="#" title="copy text" class="btn btn-small fa fa-copy copyText"
                            data-target="#{{ frm.body.auto_id }}"></a>
                         <a href="#" class="btn btn-small fa fa-paste pasteText"
-                           data-target="#{{ frm.body.auto_id }}"></a>
-                        <a href="#" title="broadcast input" class="btn btn-small fa fa-wifi broadcast"
                            data-target="#{{ frm.body.auto_id }}"></a>
                     </div>
 
@@ -106,7 +122,7 @@
                     $(broadcast_source).keyup(function () {
                         $("textarea").not(broadcast_source).val($(broadcast_source).val());
                     });
-                } else if (copy_visible){
+                } else if (copy_visible) {
                     $(broadcast_source).keyup(function () {
                         $("textarea").not(broadcast_source).not(':hidden').val($(broadcast_source).val());
                     });
@@ -149,7 +165,7 @@
                     copy_visible = false;
                     $('.copy_visible i').css("color", copy_visible ? "red" : "black");
                     $('#broadcast_message').html('Text will be copied to all channels')
-                }else{
+                } else {
                     $('#broadcast_message').html('')
                 }
                 $('.broadcast_all i').css("color", broadcast ? "red" : "black");
@@ -162,12 +178,17 @@
                     $('#broadcast_message').html('Text will be copied to all checked (visible) channels');
                     broadcast = false;
                     $('.broadcast_all i').css("color", broadcast ? "red" : "black");
-                }else {
+                } else {
                     $('#broadcast_message').html('')
                 }
                 $('.copy_visible i').css("color", copy_visible ? "red" : "black");
             });
-
+            $('#expand_all').on('click', function(){
+                $('.form-box').collapse('show');
+            });
+            $('#collapse_all').on('click', function(){
+                $('.form-box').collapse('hide');
+            });
         })($);
 
     </script>

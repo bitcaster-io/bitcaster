@@ -83,7 +83,7 @@ class MessageDelete(MessageMixin, BitcasterBaseDeleteView):
 class EventMessages(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/events/messages.html'
 
-    # title = 'Messages'
+    title = _('Event Messages')
 
     # def get_context_data(self, **kwargs):
     #     return super().get_context_data(**kwargs)
