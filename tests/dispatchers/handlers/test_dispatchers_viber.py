@@ -2,18 +2,30 @@ import os
 
 import pytest
 
-from bitcaster.dispatchers import ZulipPrivate
+from bitcaster.dispatchers import Viber
 from bitcaster.utils.tests.dispatcher_testcase import DispatcherBaseTest
+from bitcaster.utils.tests.factories import ChannelFactory
 
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.skipif_missing('TEST_ZULIP_SITE', 'TEST_ZULIP_KEY', 'TEST_ZULIP_EMAIL')
+@pytest.mark.skipif_missing('TEST_ACCOUNT_NAME', 'TEST_VIBER_SITE', 'TEST_VIBER_TOKEN', 'TEST_VIBER_RECIPIENT')
 @pytest.mark.django_db
-class TestDispatcherTwitter(DispatcherBaseTest):
-    TARGET = ZulipPrivate
-    CONFIG = {'site': os.environ.get('TEST_ZULIP_SITE'),
-              'key': os.environ.get('TEST_ZULIP_KEY'),
-              'email': os.environ.get('TEST_ZULIP_EMAIL'),
-              }
-    RECIPIENT = os.environ.get('TEST_ZULIP_RECIPIENT')
+class TestDispatcherViber(DispatcherBaseTest):
+    TARGET = Viber
+
+    CONFIG = {
+        'account_name': os.environ.get('TEST_ACCOUNT_NAME'),
+        'site': os.environ.get('TEST_VIBER_SITE'),
+        'auth_token': os.environ.get('TEST_VIBER_TOKEN')
+    }
+    RECIPIENT = os.environ.get('TEST_VIBER_RECIPIENT')
+
+    @pytest.fixture()
+    def dispatcher(self, application1):
+        ch = ChannelFactory(id=1, organization=application1.organization, handler=self.TARGET, config=self.CONFIG)
+        # return self.TARGET(Mock(application=application1, config=self.CONFIG))
+        return ch.handler
+
+    def test_emit(self, dispatcher, subscription):
+        super().test_emit(dispatcher, subscription)
