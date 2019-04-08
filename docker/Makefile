@@ -4,7 +4,7 @@
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET?=0.11.0a2
+TARGET?=0.12.0a
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
