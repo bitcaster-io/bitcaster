@@ -20,7 +20,7 @@ def backup(ctx, filename):
 
 @click.command()  # noqa: C901
 @click.option('--filename', default='bitcaster.json', type=click.Path())
-@click.option('--reindex/--no-reindex', default=False)
+@click.option('--reindex/--no-reindex', default=True)
 @click.option('-o', '--only', 'selection', default=None, multiple=True, type=click.Choice(SECTIONS))
 @click.option('-w', '--overwrite', 'overwrite', default=False, is_flag=True)
 @click.option('-i', '--ignore-errors', default=False, is_flag=True,

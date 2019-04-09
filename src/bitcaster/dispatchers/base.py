@@ -3,6 +3,7 @@ import abc
 from logging import getLogger
 
 from django.core.exceptions import ValidationError
+from sentry_sdk import capture_exception
 
 from bitcaster import get_full_version
 from bitcaster.configurable import ConfigurableMixin, get_full_config
@@ -65,16 +66,15 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         return self.get_usage_message()
 
     def get_recipient_address(self, subscription):
-        if hasattr(subscription, 'subscriber'):
+        if isinstance(subscription, str):
+            return subscription
+        if hasattr(subscription, 'subscriber'):  # models.Subscription
             user = subscription.subscriber
-        elif hasattr(subscription, 'assignments'):
+        elif hasattr(subscription, 'assignments'):  # models.User
             user = subscription
         else:
-            raise ValueError
-        try:
-            return subscription.config['recipient']
-        except (KeyError, TypeError, AttributeError):
-            return user.assignments.get_address(self)
+            raise ValueError()
+        return user.assignments.get_address(self).address
 
     @abc.abstractmethod
     def emit(self, subscription: object, subject: str, message: str,
@@ -107,6 +107,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         try:
             return self.subscription_class(data=cfg).is_valid(True)
         except (serializers.ValidationError, ValidationError) as e:  # pragma: no cover
+            capture_exception(e)
             raise PluginValidationError(str(e)) from e
 
     @abc.abstractmethod

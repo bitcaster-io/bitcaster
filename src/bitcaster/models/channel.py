@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Q
 from django.template import Template
 from django.utils.translation import gettext_lazy as _
+from sentry_sdk import capture_exception
 
 from bitcaster.exceptions import MaxChannelError, PluginValidationError
 from bitcaster.framework.db.fields import DispatcherField, EncryptedJSONField
@@ -86,8 +87,9 @@ class Channel(ReverseWrapperMixin, AbstractModel):
     def validate_subscription(self, subscription):
         try:
             return self.handler.validate_subscription(subscription)
-        except Exception:
-            raise PluginValidationError()
+        except Exception as e:
+            capture_exception()
+            raise PluginValidationError() from e
 
     def validate_message(self, message, **kwargs):
         """
@@ -148,13 +150,15 @@ class Channel(ReverseWrapperMixin, AbstractModel):
                                'subject': s,
                                'context': context,
                                'template': body}
-                    recipient = self.handler.emit(subscription, s, m, conn)
+                    # address
+                    address = self.handler.emit(subscription, s, m, conn)
                     Counter.objects.increment(subscription)
                     success += 1
-                    LogEntry.log(recipient, subscription, payload)
+                    LogEntry.log(address, subscription, payload)
                 except Exception as e:
+                    subscription.register_error()
                     logger.exception(e)
-                    LogEntry.log(subscription, payload, status=False, info=str(e))
+                    LogEntry.log('', subscription, payload, status=False, info=str(e))
                     failures += 1
                 if failures >= self.errors_threshold:
                     raise MaxChannelError(self)

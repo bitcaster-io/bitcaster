@@ -12,13 +12,13 @@
     <div class="tab-content">
         <div class="row">
             <div class="row col-12 p-3">
-                <div class="pull-left col-8">
-                    <a id="add_more" class="btn btn-danger btn-small pull-left"
+                <div class="pull-left col-12">
+                    <a id="add_more" class="btn btn-danger btn-small pull-right"
                        href=".">{% trans "Add Assignment" %}
                     </a>
-                    <a class="btn btn-dark btn-small pull-left ml-3"
-                       href="{{ organization.urls.members }}">{% trans "Back" %}
-                    </a>
+                    {#                    <a class="btn btn-dark btn-small pull-left ml-3"#}
+                    {#                       href="{{ organization.urls.members }}">{% trans "Back" %}#}
+                    {#                    </a>#}
                 </div>
             </div>
         </div>
@@ -59,8 +59,18 @@
                                         <a rel="modal:open"
                                            class="btn btn-outline-light align-top"
                                            title="info"
-                                           data-remote="{% url "user-address-info" organization.slug form.instance.id %}"
+                                           data-remote="{% org-url "user-address-info" form.instance.id %}"
                                            href="."><i class="fa fa-info"></i></a>
+                                        {% if not form.instance.address.verified %}
+                                            <a rel="modal:open"
+                                               data-assignment="{{ form.instance.id }}"
+                                               class="btn btn-outline-light align-top"
+                                               title="verify"
+                                               data-remote="{% org-url "user-address-verify" form.instance.id %}"
+                                               href="."><i class="fas fa-exclamation-circle red"></i>
+                                            </a>
+                                        {% endif %}
+
                                     {% endif %}
                                 </div>
                                 {% if form.non_field_errors %}

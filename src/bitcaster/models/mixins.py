@@ -1,3 +1,4 @@
+import reversion
 from django.db import models
 from django.db.models.base import ModelBase
 from django.urls import NoReverseMatch, reverse
@@ -58,3 +59,12 @@ class ReverseWrapperMixin(models.Model, metaclass=Reverseable):
 
     class Meta:
         abstract = True
+
+
+class ReversionMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        with reversion.create_revision():
+            super().save(force_insert, force_update, using, update_fields)

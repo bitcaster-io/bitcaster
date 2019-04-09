@@ -31,7 +31,7 @@ INSTALLED_APPS = [
 
     # Useful libraries and add-ons
     'constance.backends.database',
-    # 'snowpenguin.django.recaptcha2',
+    'reversion',
     'crispy_forms',
     # 'jsoneditor',
     'corsheaders',

@@ -12,19 +12,11 @@ from bitcaster.web.forms import UserProfileForm, send_address_verification_email
 from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
 
 from ..base import BitcasterBaseUpdateView
-from ..mixins import SidebarMixin, TitleMixin
+from ..mixins import LogAuditMixin, SidebarMixin, TitleMixin
 
 logger = logging.getLogger(__name__)
 
 __all__ = ('UserProfileView',)
-
-
-class LogAuditMixin:
-
-    def audit(self, **kwargs):
-        kwargs.setdefault('organization', self.selected_organization)
-        kwargs.setdefault('actor', self.request.user)
-        AuditLogEntry.objects.create(**kwargs)
 
 
 class UserMixin(SelectedOrganizationMixin, SidebarMixin, TitleMixin):

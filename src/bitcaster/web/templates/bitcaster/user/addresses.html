@@ -40,15 +40,15 @@
             </div>
             <div class="invalid-feedback">{{ form.empty_form.non_field_errors.as_text }}</div>
         </div>
-    <div class="container pl-0 m-0" style="display: block; min-height: 30px">
-                        <div class="row col-12 m-0 p-0 {% if form.errors %}has-error{% endif %}">
-                            <div class="row m-0 p-0 col-12 line-fields" style="display: inline-flex">
-                                <div class="col col-3">{% trans "Label" %}</div>
-                                <div class="col col-5">{% trans "Address" %}</div>
-                                <div class="col col-2 align-middle align-items-center formset-commands">
-                                </div>
-                            </div>
-                        </div>
+        <div class="container pl-0 m-0" style="display: block; min-height: 30px">
+            <div class="row col-12 m-0 p-0 {% if form.errors %}has-error{% endif %}">
+                <div class="row m-0 p-0 col-12 line-fields" style="display: inline-flex">
+                    <div class="col col-3">{% trans "Label" %}</div>
+                    <div class="col col-5">{% trans "Address" %}</div>
+                    <div class="col col-2 align-middle align-items-center formset-commands">
+                    </div>
+                </div>
+            </div>
 
             <form method="post" id="Form">
                 {{ form.management_form }}
@@ -64,6 +64,11 @@
                                     <a href="." class="btn btn-outline-light remove_line align-top">
                                         <i class="far fa-trash-alt"></i>
                                     </a>
+                                    {% if not form.instance.verified %}
+                                        <a href="#" class="btn btn-outline-light info align-top">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                        </a>
+                                    {% endif %}
                                 </div>
                                 {% if form.non_field_errors %}
                                     <div
@@ -82,4 +87,14 @@
 {% endblock %}
 {% block js %}
     {% include "bitcaster/_includes/formset/js_code.html" with formsetName="addresses" %}
+    <script>
+        $('.info').on('click', function (e) {
+            Swal.fire({
+                title: 'info!',
+                text: 'This address has not been verified. Assign it to a channel and insert the verification code you receive',
+                type: 'info',
+                confirmButtonText: 'Ok'
+            })
+        });
+    </script>
 {% endblock js %}

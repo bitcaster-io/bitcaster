@@ -7,6 +7,16 @@
         list-style-type: none;
         padding-inline-start: 0px;
     }
+    .handler-usage .left li {
+        margin: 3px;
+        padding: 3px;
+    }
+    .handler-usage .right{
+        line-height: 20px;
+    }
+    .handler-usage .right a {
+        color: blue;
+    }
 </style>
 <div class="modal-header">
     <h3 class="modal-title" id="exampleModalLongTitle">
@@ -17,9 +27,9 @@
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
-<div class="modal-body">
+<div class="modal-body handler-usage">
     <div class=" row col-12">
-    <div class="col-3">
+    <div class="col-3 left">
     <ul>
         <li class="name">
             <div class="label">Name</div>
@@ -41,7 +51,7 @@
 
     </ul>
     </div>
-    <div class="col-9">
+    <div class="col-9 right">
         {{ usage|markdown }}
     </div>
     </div>

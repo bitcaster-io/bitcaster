@@ -17,10 +17,12 @@ def test_cli_backup_restore(subscription1):
                                obj={'env': env})
         assert result.exit_code == 0, result.output
 
-        result = runner.invoke(restore, ['--filename', 'test_backup.json'], obj={'env': env})
+        result = runner.invoke(restore, ['--filename', 'test_backup.json',
+                                         '--no-reindex'], obj={'env': env})
         assert result.exit_code == 0, result.output
 
         result = runner.invoke(restore, ['--filename', 'test_backup.json',
+                                         '--no-reindex',
                                          '-o', 'organization', '-o', 'organization', '-w'],
                                obj={'env': env})
         assert result.exit_code == 0, result.output
@@ -28,10 +30,10 @@ def test_cli_backup_restore(subscription1):
         with Path('old_backup.json').open('w') as f:
             json.dump({'options': []}, f)
 
-        result = runner.invoke(restore, ['--filename', f.name],
+        result = runner.invoke(restore, ['--filename', f.name, '--no-reindex'],
                                obj={'env': env})
         assert result.exit_code == 0, result.output
 
-        result = runner.invoke(restore, ['--filename', f.name, '-i'],
+        result = runner.invoke(restore, ['--filename', f.name, '-i', '--no-reindex'],
                                obj={'env': env})
         assert result.exit_code == 0, result.output

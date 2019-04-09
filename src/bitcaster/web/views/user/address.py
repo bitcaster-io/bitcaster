@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 import logging
+import string
 
+from django.http import HttpResponseRedirect, JsonResponse
 from django.template.defaultfilters import pluralize
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from bitcaster import messages
 from bitcaster.models import Address, AddressAssignment
 from bitcaster.models.audit import AuditLogEntry
+from bitcaster.utils.strings import random_string
 from bitcaster.web.forms import (AddressAssignmentForm,
                                  AddressAssignmentFormSet, AddressFormSet,)
 
-from ..base import BitcasterBaseDetailView, BitcasterBaseUpdateView
+from ..base import (BitcasterBaseDetailView,
+                    BitcasterBaseUpdateView, BitcasterTemplateView,)
 from .base import LogAuditMixin, UserMixin
 
 logger = logging.getLogger(__name__)
@@ -58,6 +63,58 @@ class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
                        target_label=str(a))
 
         return super().form_valid(formset)
+
+
+class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
+    template_name = 'bitcaster/user/address_verify.html'
+    model = AddressAssignment
+    mode = ''  # verify or resend
+
+    def get_object(self, queryset=None):
+        return self.request.user.assignments.get(pk=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(object=self.get_object(),
+                                        **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if self.mode == 'form':
+            context = self.get_context_data(**kwargs)
+            return self.render_to_response(context)
+        elif self.mode == 'resend':
+            assignment = self.get_object()
+            address = assignment.address
+            code = random_string(6, string.digits)
+            address.code = code
+            address.save()
+            try:
+                recipient = assignment.channel.handler.emit(address.address,
+                                                            'Bitcaster confirmation code',
+                                                            'Bitcaster confirmation code %s' % code)
+                return JsonResponse({'status': 'sent',
+                                     'recipient': recipient})
+            except Exception as e:
+                return JsonResponse({'status': 'error',
+                                     'message': str(e)}, status=400)
+
+    def post(self, request, *args, **kwargs):
+        code = request.POST.get('code')
+        if code:
+            assignment = self.get_object()
+            if str(assignment.address.code) == code:
+                assignment.address.verified = True
+                assignment.address.save()
+                self.message_user('Address verified', messages.SUCCESS)
+                self.audit(event=AuditLogEntry.Event.MEMBER_VALIDATE_ADDRESS,
+                           target_object=assignment.address.pk,
+                           target_label=str(assignment))
+            else:
+                self.message_user('Invalid Code', messages.ERROR)
+        url = reverse('user-address-assignment', args=[self.selected_organization.slug])
+        return HttpResponseRedirect(url)
+
+    # def get_object(self, queryset=None):
+    #     return self.request.user.assignments.get(pk=self.kwargs[self.pk_url_kwarg])
 
 
 class UserAddressesInfoView(UserMixin, BitcasterBaseDetailView):

@@ -21,6 +21,7 @@ class CounterManager(models.Manager):
 
 
 class Counter(models.Model):
+
     target = models.CharField(unique=True,
                               max_length=200)
     total = models.IntegerField(default=0)

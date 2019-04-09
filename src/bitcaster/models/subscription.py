@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 
 from bitcaster.framework.db.fields import EncryptedJSONField
+from bitcaster.models.audit import AuditLogEntry
 
 from .base import AbstractModel
 from .channel import Channel
@@ -74,6 +75,14 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     @cached_property
     def recipient(self):
         return self.channel.handler.get_recipient_address(self)
+
+    def register_error(self):
+        AuditLogEntry.objects.create(event=AuditLogEntry.Event.SUBSCRIPTION_ERROR,
+                                     actor=self.subscriber,
+                                     target_object=self.pk,
+                                     target_label=str(self))
+        self.errors += 1
+        self.save()
     # def update_token(self):
     #     self.deactivation_token = generate_subscription_token(self)
     #

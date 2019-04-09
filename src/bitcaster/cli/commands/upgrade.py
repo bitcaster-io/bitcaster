@@ -48,6 +48,7 @@ def upgrade(ctx, prompt, migrate, static, verbose, reindex, run_check, **kwargs)
             execute_from_command_line(argv=['manage', 'collectstatic'] + extra)
         if migrate:
             execute_from_command_line(argv=['manage', 'migrate'] + extra)
+            execute_from_command_line(argv=['manage', 'createinitialrevisions'])
         if run_check:
             from .check import check
             ctx.invoke(check)

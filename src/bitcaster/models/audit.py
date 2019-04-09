@@ -22,6 +22,9 @@ class AuditLogEntry(models.Model):
         MEMBER_SUBSCRIBE_EVENT = 8
         MEMBER_DELETE_SUBSCRIPTION = 9
         MEMBER_TOGGLE_SUBSCRIPTION = 10
+        MEMBER_VALIDATE_ADDRESS = 11
+
+        SUBSCRIPTION_ERROR = 401
 
         @classmethod
         def get_by_value(cls, v):

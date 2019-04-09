@@ -10,7 +10,8 @@ from bitcaster.web.views import (ApplicationAutocomplete,
                                  ApplicationMembershipList,
                                  ApplicationTeamMemberRemove,
                                  OrganizationGroupMemberRemove,
-                                 OrganizationMembersAutocomplete,)
+                                 OrganizationMembersAutocomplete,
+                                 UserAddressesVerifyView,)
 from bitcaster.web.views.application.log import ApplicationLog
 from bitcaster.web.views.application.members import ApplicationMembershipCreate
 from bitcaster.web.views.autocomplete import (ApplicationCandidateAutocomplete,
@@ -108,6 +109,8 @@ urlpatterns = [
     path('<slug:org>/me/profile/', UserProfileView.as_view(), name='user-profile'),
     path('<slug:org>/me/addresses/', UserAddressesView.as_view(), name='user-address'),
     path('<slug:org>/me/addresses/<int:pk>/info/', UserAddressesInfoView.as_view(), name='user-address-info'),
+    path('<slug:org>/me/assignment/<int:pk>/resend/', UserAddressesVerifyView.as_view(mode='resend'), name='user-address-resend'),
+    path('<slug:org>/me/assignment/<int:pk>/verify/', UserAddressesVerifyView.as_view(mode='form'), name='user-address-verify'),
     path('<slug:org>/me/assignment/', UserAddressesAssignmentView.as_view(), name='user-address-assignment'),
     path('<slug:org>/me/applications/', UserApplicationListView.as_view(), name='user-applications'),
 

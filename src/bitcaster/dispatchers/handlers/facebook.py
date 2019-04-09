@@ -78,11 +78,11 @@ If you alread have an app, got to
             friends = connection.searchForUsers(recipient)
             if not friends:
                 raise RecipientNotFound(recipient)
-            friend = friends[0]
+            friend = [f for f in friends if f.url.endswith(recipient)][0]
             msg = Message(text=message.encode('utf8'), emoji_size=None)
             connection.send(msg, friend.uid)
             return recipient
-        except RecipientNotFound as e:  # pragma: no cover
+        except (RecipientNotFound, IndexError) as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(_('User {user} is not a friend of this Facebook account').format(user=e))
         except Exception as e:  # pragma: no cover

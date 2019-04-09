@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 
 from bitcaster import messages
 from bitcaster.exceptions import PermissionDenied
+from bitcaster.models.audit import AuditLogEntry
 from bitcaster.web.decorators import authorized_or_403
 from bitcaster.web.templatetags.bitcaster import (verbose_name,
                                                   verbose_name_plural,)
@@ -36,6 +37,14 @@ class SecuredViewMixin:
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+
+class LogAuditMixin:
+
+    def audit(self, **kwargs):
+        kwargs.setdefault('organization', self.selected_organization)
+        kwargs.setdefault('actor', self.request.user)
+        AuditLogEntry.objects.create(**kwargs)
 
 
 class SidebarMixin:

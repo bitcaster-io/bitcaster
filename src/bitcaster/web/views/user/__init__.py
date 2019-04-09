@@ -1,5 +1,5 @@
-from .address import (UserAddressesAssignmentView,
-                      UserAddressesInfoView, UserAddressesView,)
+from .address import (UserAddressesAssignmentView, UserAddressesInfoView,
+                      UserAddressesVerifyView, UserAddressesView,)
 from .application import UserApplicationListView
 from .base import UserHome, UserProfileView
 from .events import UserEventListView, UserEventSubcribe

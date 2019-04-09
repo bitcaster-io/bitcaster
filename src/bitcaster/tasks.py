@@ -18,6 +18,11 @@ def trigger_event(event_id, context, *, token=None, origin=None):
     emit_event(event, context, token=token, origin=origin)
 
 
+@app.task()
+def process_channel(event_pk, channel_pk):
+    pass
+
+
 def emit_event(event, context, origin=None, token=None, ignore_disabled=False):
     from bitcaster.models import Channel, Counter, Occurence, DispatcherMetaData
     logger.debug('Event [{0.name} {0.enabled}] emit()'.format(event))
