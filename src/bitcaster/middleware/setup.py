@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from constance import config
 from django.conf import settings
 from django.http import HttpResponseRedirect

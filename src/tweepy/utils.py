@@ -2,8 +2,6 @@
 # Copyright 2010 Joshua Roesslein
 # See LICENSE for details.
 
-from __future__ import print_function
-
 from datetime import datetime
 from email.utils import parsedate
 
