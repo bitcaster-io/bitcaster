@@ -12,12 +12,9 @@
     <div class="tab-content">
         <div class="row">
             <div class="row col-12 p-3">
-                <div class="pull-left col-8">
-                    <a id="add_more" class="btn btn-danger btn-small pull-left"
+                <div class="pull-left col-12">
+                    <a id="add_more" class="btn btn-danger btn-small pull-right"
                        href=".">{% trans "Add Address" %}
-                    </a>
-                    <a class="btn btn-dark btn-small pull-left ml-3"
-                       href="{{ organization.urls.members }}">{% trans "Back" %}
                     </a>
                 </div>
             </div>
@@ -66,7 +63,7 @@
                                     </a>
                                     {% if not form.instance.verified %}
                                         <a href="#" class="btn btn-outline-light info align-top">
-                                            <i class="fas fa-exclamation-circle"></i>
+                                            <i class="fas fa-exclamation-circle red"></i>
                                         </a>
                                     {% endif %}
                                 </div>
@@ -91,7 +88,7 @@
         $('.info').on('click', function (e) {
             Swal.fire({
                 title: 'info!',
-                text: {% trans 'This address has not been verified. Assign it to a channel and insert the verification code you receive' %},
+                text: "{% trans 'This address has not been verified. Assign it to a channel and insert the verification code you receive' %}",
                 type: 'info',
                 confirmButtonText: 'Ok'
             })
