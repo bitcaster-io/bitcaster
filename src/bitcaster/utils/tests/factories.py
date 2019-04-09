@@ -153,6 +153,7 @@ class UserFactory(AutoRegisterModelFactory):
         if addresses:
             for handler, address in addresses.items():
                 user.addresses.create(label=handler,
+                                      verified=True,
                                       address=address)
 
         return user
