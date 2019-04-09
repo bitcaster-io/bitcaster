@@ -1,4 +1,4 @@
-{% load markdown bitcaster %}
+{% load bitcaster i18n %}
 <div class="modal-header">
     <h3 class="modal-title" id="exampleModalLongTitle">
         {{ handler.name }}
@@ -9,8 +9,10 @@
 </div>
 <div class="modal-body handler-usage">
     <div class=" row col-12">
+        {% blocktrans %}
         A code has been sent to your {{ object.channel.handler.name }}
         account&nbsp;<strong> {{ object.address.address }} </strong>.
+        {% endblocktrans %}
         <div class="container-fluid p-3">
             <form action="{% org-url "user-address-verify" object.pk %}" method="post">
                 {% csrf_token %}

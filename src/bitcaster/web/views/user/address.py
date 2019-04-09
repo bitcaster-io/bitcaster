@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import string
 
 from django.http import HttpResponseRedirect, JsonResponse
 from django.template.defaultfilters import pluralize
@@ -10,7 +9,6 @@ from django.utils.translation import gettext_lazy as _
 from bitcaster import messages
 from bitcaster.models import Address, AddressAssignment
 from bitcaster.models.audit import AuditLogEntry
-from bitcaster.utils.strings import random_string
 from bitcaster.web.forms import (AddressAssignmentForm,
                                  AddressAssignmentFormSet, AddressFormSet,)
 
@@ -83,14 +81,8 @@ class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
             return self.render_to_response(context)
         elif self.mode == 'resend':
             assignment = self.get_object()
-            address = assignment.address
-            code = random_string(6, string.digits)
-            address.code = code
-            address.save()
             try:
-                recipient = assignment.channel.handler.emit(address.address,
-                                                            'Bitcaster confirmation code',
-                                                            'Bitcaster confirmation code %s' % code)
+                recipient = assignment.send_verification_code()
                 return JsonResponse({'status': 'sent',
                                      'recipient': recipient})
             except Exception as e:
@@ -99,17 +91,14 @@ class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
 
     def post(self, request, *args, **kwargs):
         code = request.POST.get('code')
-        if code:
-            assignment = self.get_object()
-            if str(assignment.address.code) == code:
-                assignment.address.verified = True
-                assignment.address.save()
-                self.message_user('Address verified', messages.SUCCESS)
-                self.audit(event=AuditLogEntry.Event.MEMBER_VALIDATE_ADDRESS,
-                           target_object=assignment.address.pk,
-                           target_label=str(assignment))
-            else:
-                self.message_user('Invalid Code', messages.ERROR)
+        assignment = self.get_object()
+        if assignment.code_is_valid(code):
+            self.message_user('Address verified', messages.SUCCESS)
+            self.audit(event=AuditLogEntry.Event.MEMBER_VALIDATE_ADDRESS,
+                       target_object=assignment.address.pk,
+                       target_label=str(assignment))
+        else:
+            self.message_user('Invalid Code', messages.ERROR)
         url = reverse('user-address-assignment', args=[self.selected_organization.slug])
         return HttpResponseRedirect(url)
 

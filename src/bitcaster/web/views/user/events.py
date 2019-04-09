@@ -40,8 +40,10 @@ class UserEventSubcribe(UserEventMixin, LogAuditMixin, BitcasterBaseCreateView):
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         ret = super().get_context_data(object=self.object, **kwargs)
-        ret['not_usable_channels'] = self.object.channels.exclude(addresses__user=self.request.user)
-        ret['usable_channels'] = self.object.channels.filter(addresses__user=self.request.user)
+        ret['not_usable_channels'] = self.object.channels.exclude(addresses__user=self.request.user,
+                                                                  addresses__address__verified=True)
+        ret['usable_channels'] = self.object.channels.filter(addresses__user=self.request.user,
+                                                             addresses__address__verified=True)
         return ret
 
     def get_form_kwargs(self):
