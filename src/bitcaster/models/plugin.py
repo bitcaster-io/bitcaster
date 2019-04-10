@@ -15,8 +15,11 @@ class PluginManager(models.Manager):
                                              enabled=True,
                                              version=handler.version)
                                )
-        # if registry:
-        self.exclude(handler__in=registry).update(enabled=False)
+        for record in self.all():
+            if not record.handler:
+                record.delete()
+
+        # self.exclude(handler__in=registry).update(enabled=False)
         return self.all()
 
 

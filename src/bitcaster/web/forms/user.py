@@ -3,6 +3,7 @@ import logging
 
 from constance import config
 from crispy_forms.helper import FormHelper
+from dal_select2.widgets import ModelSelect2
 from django import forms
 from django.conf import settings
 from django.contrib.auth import password_validation
@@ -196,9 +197,11 @@ class AddressForm(forms.ModelForm):
 
 
 class AddressAssignmentForm(forms.ModelForm):
-    # address = forms.ModelChoiceField(queryset=Address.objects.all(),
-    #                                  widget=ModelSelect2(url='address-autocomplete')
-    #                                  )
+    address = forms.ModelChoiceField(queryset=Address.objects.all(),
+                                     widget=ModelSelect2(url='address-autocomplete'))
+    channel = forms.ModelChoiceField(queryset=Channel.objects.all(),
+                                     widget=ModelSelect2(url=''))
+
     class Meta:
         model = AddressAssignment
         fields = ('id', 'user', 'channel', 'address')
@@ -209,13 +212,16 @@ class AddressAssignmentForm(forms.ModelForm):
         }
 
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
-                 label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None):
+                 label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None,
+                 organization=None):
+        self.organization = organization
         super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
                          use_required_attribute)
 
-        # choices = self.fields['dispatcher'].choices
-        # self.fields['dispatcher'].choices = [c for c in choices[1:]]
-        # self.fields['dispatcher'].choices = [c for c in choices[1:] if import_string(c[0]).subscription_class]
+        self.fields['channel'].queryset = self.organization.channels.all()
+        self.fields['channel'].widget.url = reverse('channel-autocomplete',
+                                                    args=[self.organization.slug])
+
         request = state.request
         self.fields['address'].queryset = request.user.addresses.all()
         self.helper = FormHelper()
@@ -260,10 +266,21 @@ class AddressFormSet(AddressFormSetBase, BaseInlineFormSet):
 class AddressAssignmentFormSet(AddressAssignmentFormSetBase, BaseInlineFormSet):
     disabled_subscriptions = None
 
+    def __init__(self, data=None, files=None, instance=None,
+                 save_as_new=False, prefix=None, queryset=None, **kwargs):
+        self.organization = kwargs.pop('organization')
+        queryset = self.model._default_manager.order_by('channel__name')
+        super().__init__(data, files, instance, save_as_new, prefix, queryset, **kwargs)
+
     def save(self, commit=True):
         a = self.save_existing_objects(commit)
         b = self.save_new_objects(commit)
         return a + b
+
+    def get_form_kwargs(self, index):
+        ret = super().get_form_kwargs(index)
+        ret['organization'] = self.organization
+        return ret
 
     def delete_existing(self, obj, commit=True):
         # disable all subscriptions that use this address

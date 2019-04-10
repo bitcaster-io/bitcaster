@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from bitcaster.dispatchers import TwitterDirectMessage
+from bitcaster.dispatchers import Twitter
 from bitcaster.utils.tests.dispatcher_testcase import DispatcherBaseTest
 
 pytestmark = pytest.mark.django_db
@@ -10,8 +10,8 @@ pytestmark = pytest.mark.django_db
 
 @pytest.mark.skipif_missing('TEST_TWITTER_ACCOUNT')
 @pytest.mark.django_db
-class TestDispatcherTwitter(DispatcherBaseTest):
-    TARGET = TwitterDirectMessage
+class TestTwitterDispatcherTwitter(DispatcherBaseTest):
+    TARGET = Twitter
     CONFIG = {'account': os.environ.get('TEST_TWITTER_ACCOUNT'),
               'consumer_key': os.environ.get('TEST_TWITTER_CONSUMER_KEY'),
               'consumer_secret': os.environ.get('TEST_TWITTER_CONSUMER_SECRET'),

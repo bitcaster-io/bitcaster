@@ -428,6 +428,7 @@ class AddressFactory(AutoRegisterModelFactory):
     user = factory.SubFactory(UserFactory)
     label = factory.Sequence(lambda n: 'Label %03d' % n)
     address = factory.Sequence(lambda n: 'Address %03d' % n)
+    verified = True
 
 
 class AddressAssignmentFactory(AutoRegisterModelFactory):

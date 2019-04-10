@@ -4,6 +4,8 @@
         var $TOTAL_FORMS = $("#id_{{ formsetName }}-TOTAL_FORMS");
         var selector2 = "div.fieldset>.row:first";
         var $commands = $(".commands");
+        var modified = false;
+
         {% if form.errors %}$(".commands").show();{% endif %}
 
         $('.commands>.btn-save').on('click', function () {
@@ -11,7 +13,11 @@
         });
         $("#Form")
             .on("input", function (e) {
-                console.log($(e.target).parents('div.row'));
+                $(e.target).parents('div.row').css('background-color', '#fffccf');
+                $commands.show();
+            });
+        $("select")
+            .on("change", function (e) {
                 $(e.target).parents('div.row').css('background-color', '#fffccf');
                 $commands.show();
             });
@@ -23,11 +29,7 @@
             $deletion.prop('checked', true);
             $target.hide();
             var $rows = $("div.fieldset>div.row:visible");
-            if ($rows.length === 0) {
-                $commands.hide();
-            }else{
-                $commands.show();
-            }
+            $commands.show();
             e.preventDefault();
         });
         $("#add_more").click(function (e) {

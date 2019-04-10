@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import Enum
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -6,25 +6,26 @@ from django.utils import timezone
 
 
 class AuditLogEntry(models.Model):
-    class Event(IntEnum):
-        MEMBER_LOGIN = -1
-        MEMBER_LOGOUT = -2
+    class Event(Enum):
+        MEMBER_LOGIN = 'MEMBER_LOGIN'
+        MEMBER_LOGOUT = 'MEMBER_LOGOUT'
 
-        MEMBER_EDIT = 1
-        MEMBER_UPDATE_ADDRESS = 2
-        MEMBER_DELETE_ADDRESS = 3
-        MEMBER_ADD_ADDRESS = 4
+        MEMBER_EDIT = 'MEMBER_EDIT'
+        MEMBER_UPDATE_ADDRESS = 'MEMBER_UPDATE_ADDRESS'
+        MEMBER_DELETE_ADDRESS = 'MEMBER_DELETE_ADDRESS'
+        MEMBER_ADD_ADDRESS = 'MEMBER_ADD_ADDRESS'
 
-        MEMBER_ADD_ASSIGNMENT = 5
-        MEMBER_CHANGE_ASSIGNMENT = 6
+        MEMBER_ADD_ASSIGNMENT = 'MEMBER_ADD_ASSIGNMENT'
+        MEMBER_CHANGE_ASSIGNMENT = 'MEMBER_CHANGE_ASSIGNMENT'
+        MEMBER_DELETE_ASSIGNMENT = 'MEMBER_DELETE_ASSIGNMENT'
 
-        MEMBER_UPDATE_PROFILE = 7
-        MEMBER_SUBSCRIBE_EVENT = 8
-        MEMBER_DELETE_SUBSCRIPTION = 9
-        MEMBER_TOGGLE_SUBSCRIPTION = 10
-        MEMBER_VALIDATE_ADDRESS = 11
+        MEMBER_UPDATE_PROFILE = 'MEMBER_UPDATE_PROFILE'
+        MEMBER_SUBSCRIBE_EVENT = 'MEMBER_SUBSCRIBE_EVENT'
+        MEMBER_DELETE_SUBSCRIPTION = 'MEMBER_DELETE_SUBSCRIPTION'
+        MEMBER_TOGGLE_SUBSCRIPTION = 'MEMBER_TOGGLE_SUBSCRIPTION'
+        MEMBER_VALIDATE_ADDRESS = 'MEMBER_VALIDATE_ADDRESS'
 
-        SUBSCRIPTION_ERROR = 401
+        SUBSCRIPTION_ERROR = 'SUBSCRIPTION_ERROR'
 
         @classmethod
         def get_by_value(cls, v):
@@ -44,7 +45,8 @@ class AuditLogEntry(models.Model):
     target_object = models.PositiveIntegerField(null=True)
     target_label = models.CharField(max_length=300, null=True, blank=True)
 
-    event = models.IntegerField(choices=[(tag.value, tag.name) for tag in Event])
+    event = models.CharField(choices=[(tag.value, tag.name) for tag in Event],
+                             max_length=100)
 
     ip_address = models.GenericIPAddressField(null=True, unpack_ipv4=True)
     data = JSONField(null=True)

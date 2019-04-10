@@ -265,7 +265,7 @@ urlpatterns = [
 urlpatterns += [
     path('dal/user-autocomplete/', UserAutocomplete.as_view(), name='user-autocomplete'),
     path('dal/address-autocomplete/', AddressAutocomplete.as_view(), name='address-autocomplete'),
-    path('dal/channel-autocomplete/', ChannelAutocomplete.as_view(), name='channel-autocomplete'),
+    path('dal/<slug:org>/channel-autocomplete/', ChannelAutocomplete.as_view(), name='channel-autocomplete'),
 
     path('dal/<slug:org>/application-autocomplete/', ApplicationAutocomplete.as_view(), name='application-autocomplete'),
     path('dal/<slug:org>/members-autocomplete/', OrganizationMembersAutocomplete.as_view(), name='org-member-autocomplete'),

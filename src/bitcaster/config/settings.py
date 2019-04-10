@@ -653,3 +653,9 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
+
+IMPERSONATE = {
+    'PAGINATE_COUNT': 50,
+    'REQUIRE_SUPERUSER': True,
+    'CUSTOM_USER_QUERYSET': 'etools_datamart.libs.impersonate.queryset'
+}

@@ -8,10 +8,11 @@ from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
 from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
-from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
 from bitcaster.plugins.validators import MaxBodyLengthValidator
 from bitcaster.utils.language import classproperty
+
+from ..registry import dispatcher_registry
 
 logger = getLogger(__name__)
 
@@ -50,10 +51,10 @@ class Twitter(CoreDispatcher):
     subscription_class = TwitterSubscriptionOptions
     __help__ = """
 
-- Apply for a developer accout at [https://developer.twitter.com/en/apply-for-access]
-- Create a new app at [https://apps.twitter.com/]
-- Generate your keys and configure the Channel
-"""
+# - Apply for a developer accout at [https://developer.twitter.com/en/apply-for-access]
+# - Create a new app at [https://apps.twitter.com/]
+# - Generate your keys and configure the Channel
+# """
 
     @classproperty
     def name(cls):
@@ -79,33 +80,14 @@ class Twitter(CoreDispatcher):
             return addr[1:]
         return addr
 
-    def emit(self, subscription, subject, message, *args, **kwargs):
-        try:
-            api = self._get_connection()
-            api.update_status(status=message)
-            return 1
-        except Exception as e:
-            logger.exception(e)
-            raise PluginSendError(e)
-
-    def test_connection(self, raise_exception=False):
-        try:
-            api = self._get_connection()
-            msg = api.update_status(status='test message')
-            api.destroy_status(id=msg.id)
-            return True
-        except Exception as e:
-            logger.exception(e)
-            return False
-
-
-@dispatcher_registry.register
-class TwitterDirectMessage(Twitter):
-    icon = 'twitter'
-
-    @classproperty
-    def name(cls):
-        return 'Twitter Direct Message'
+    # def __emit(self, subscription, subject, message, *args, **kwargs):
+    #     try:
+    #         api = self._get_connection()
+    #         api.update_status(status=message)
+    #         return 1
+    #     except Exception as e:
+    #         logger.exception(e)
+    #         raise PluginSendError(e)
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:
@@ -130,3 +112,55 @@ class TwitterDirectMessage(Twitter):
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)
+
+    def test_connection(self, raise_exception=False):
+        try:
+            api = self._get_connection()
+            msg = api.update_status(status='test message')
+            api.destroy_status(id=msg.id)
+            return True
+        except Exception as e:
+            logger.exception(e)
+            return False
+
+
+# @dispatcher_registry.register
+# class TwitterDirectMessage(CoreDispatcher):
+#     options_class = TwitterOptions
+#     message_class = TwitterMessage
+#     subscription_class = TwitterSubscriptionOptions
+#     icon = 'twitter'
+#     __help__ = """
+#
+#     - Apply for a developer accout at [https://developer.twitter.com/en/apply-for-access]
+#     - Create a new app at [https://apps.twitter.com/]
+#     - Generate your keys and configure the Channel
+#     """
+#
+#     @classproperty
+#     def name(cls):
+#         return 'Twitter Direct Message'
+#
+#     def emit(self, subscription, subject, message, *args, **kwargs):
+#         try:
+#             api = self._get_connection()
+#             recipient = self.get_recipient_address(subscription)
+#             user = api.get_user(recipient)
+#             event = {
+#                 'event': {
+#                     'type': 'message_create',
+#                     'message_create': {
+#                         'target': {
+#                             'recipient_id': user.id
+#                         },
+#                         'message_data': {
+#                             'text': message
+#                         }
+#                     }
+#                 }
+#             }
+#             api.send_direct_message_new(event)
+#             return recipient
+#         except Exception as e:
+#             logger.exception(e)
+#             raise PluginSendError(e)

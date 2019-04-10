@@ -5,6 +5,7 @@ from urllib.parse import urlencode
 import requests
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from sentry_sdk import capture_message
 
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
@@ -104,12 +105,9 @@ Check your username under menu->settings.
         else:
             raise ValueError
         chat_id = user.storage.get(fqn(self), None)
+        username = self.get_recipient_address(subscription)
         if not chat_id:
-            username = self.get_recipient_address(subscription)
-            try:
-                return int(username)
-            except ValueError:
-                pass
+            logger.info('No chat_id')
             url = self._get_url('getUpdates')
             conn = self._get_connection()
             response = conn.get(url)
@@ -119,19 +117,23 @@ Check your username under menu->settings.
                     chat_id = update['message']['from']['id']
                     user.storage[fqn(self)] = chat_id
                     user.save()
-                    return chat_id
-            raise PluginSendError('Unable to get chat_id')
+                    break
+            else:
+                raise PluginSendError('Unable to get chat_id')
+        return (chat_id, username)
 
     def emit(self, subscription, subject, message, *args, **kwargs):
         try:
-            chat_id = self._get_chat_id_for_username(subscription)
+            # username = self.get_recipient_address(subscription)
+            chat_id, username = self._get_chat_id_for_username(subscription)
             conn = self._get_connection()
             url = self._get_url('sendMessage', chat_id=chat_id,
                                 text=message)
             ret = conn.get(url)
             if ret.status_code != 200:
+                capture_message(ret.content)
                 raise PluginSendError(ret.content)
-            return '--'
+            return username
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)

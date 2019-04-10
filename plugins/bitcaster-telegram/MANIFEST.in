@@ -1,4 +1,0 @@
-include-recursive bitcaster_telegram *.py
-include README.rst
-include setup.py
-include pytest.ini

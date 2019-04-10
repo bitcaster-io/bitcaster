@@ -40,7 +40,7 @@
 
 
                         <a class="btn btn-light pointer" rel="modal:open" data-toggle="tooltip" title="Info"
-                           data-remote="{{ channel.urls.usage }}">
+                           data-remote="{% url 'plugin-info' channel.handler.fqn %}">
                             <i class="fas fa-info pointer"></i>
                         </a>
 

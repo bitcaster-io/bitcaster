@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.template.defaultfilters import pluralize
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from bitcaster import messages
 from bitcaster.models import Address, AddressAssignment
 from bitcaster.models.audit import AuditLogEntry
-from bitcaster.web.forms import (AddressAssignmentForm,
-                                 AddressAssignmentFormSet, AddressFormSet,)
+from bitcaster.web.forms import AddressAssignmentFormSet, AddressFormSet
 
 from ..base import (BitcasterBaseDetailView,
                     BitcasterBaseUpdateView, BitcasterTemplateView,)
@@ -93,15 +91,18 @@ class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
         code = request.POST.get('code')
         assignment = self.get_object()
         if assignment.code_is_valid(code):
-            self.message_user('Address verified', messages.SUCCESS)
             self.audit(event=AuditLogEntry.Event.MEMBER_VALIDATE_ADDRESS,
                        target_object=assignment.address.pk,
                        target_label=str(assignment))
-        else:
-            self.message_user('Invalid Code', messages.ERROR)
-        url = reverse('user-address-assignment', args=[self.selected_organization.slug])
-        return HttpResponseRedirect(url)
+            return JsonResponse({'status': 'success',
+                                 'message': 'Address Verified'})
 
+            # url = reverse('user-address-assignment', args=[self.selected_organization.slug])
+            # return HttpResponseRedirect(url)
+        else:
+            return JsonResponse({'status': 'error',
+                                 'message': 'Invalid Code'}, status=400)
+        #
     # def get_object(self, queryset=None):
     #     return self.request.user.assignments.get(pk=self.kwargs[self.pk_url_kwarg])
 
@@ -119,7 +120,7 @@ class UserAddressesInfoView(UserMixin, BitcasterBaseDetailView):
 class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/user/addresses_assignment.html'
     model = AddressAssignment
-    form_class = AddressAssignmentForm
+    form_class = AddressAssignmentFormSet
     title = _('Address Usage')
 
     def get_object(self, queryset=None):
@@ -128,15 +129,13 @@ class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateV
     def get_success_url(self):
         return reverse('user-address-assignment', args=[self.selected_organization.slug])
 
-    def get_form_class(self):
-        return AddressAssignmentFormSet
-
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['instance'] = self.request.user
+        kwargs['organization'] = self.selected_organization
         return kwargs
 
     def form_invalid(self, form):
@@ -150,20 +149,23 @@ class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateV
             msg = _('{} subscriptions {} been disabled.').format(formset.disabled_subscriptions,
                                                                  pluralize(formset.disabled_subscriptions,
                                                                            'has,have'))
-            self.message_user(msg, extra_tags='keep')
+            self.message_user(msg)
 
         for a in formset.deleted_objects:
             self.audit(event=AuditLogEntry.Event.MEMBER_DELETE_ASSIGNMENT,
                        target_object=a.pk,
                        target_label=str(a))
-
-        for assignment in formset.new_objects:
-            # usage_message = assignment.channel.get_usage_message()
-            self.audit(event=AuditLogEntry.Event.MEMBER_ADD_ASSIGNMENT,
-                       target_object=assignment.pk,
-                       target_label=str(assignment))
-            # if usage_message:
-            #     self.message_user(_('This subscription is not complete. Check extra info'), extra_tags='keep')
+        need_config = 0
+        if formset.new_objects:
+            self.message_user(_('To complete your configuration. Insert codes that you receive to each new address'))
+            for assignment in formset.new_objects:
+                self.audit(event=AuditLogEntry.Event.MEMBER_ADD_ASSIGNMENT,
+                           target_object=assignment.pk,
+                           target_label=str(assignment))
+                if assignment.channel.get_usage_message():
+                    need_config += 1
+            if need_config:
+                self.message_user(_('Some subscription need extra steps to complete. '))
 
         for assignment, changed_data in formset.changed_objects:
             # usage_message = assignment.channel.get_usage_message()
