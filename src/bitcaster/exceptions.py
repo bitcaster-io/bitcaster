@@ -24,7 +24,12 @@ class PluginSubscriptionError(BitcasterError):
 
 
 class PluginSendError(BitcasterError):
-    pass
+    def __init__(self, message, **kwargs):
+        self.message = str(message)
+        self.extra = kwargs
+
+    def __str__(self):
+        return self.message
 
 
 class LogicError(BitcasterError):

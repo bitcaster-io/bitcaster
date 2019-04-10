@@ -11,13 +11,8 @@
         margin: 3px;
         padding: 3px;
     }
-    .handler-help .right{
-        line-height: 20px;
-    }
-    .handler-help .right a {
-        color: blue;
-    }
 </style>
+
 <div class="modal-header">
     <h3 class="modal-title" id="exampleModalLongTitle">
         <img width="80" height="80" src="{% url "plugin-icon" handler.fqn %}">
@@ -27,13 +22,12 @@
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
-<div class="modal-body handler-help">
-    <div class=" row col-12">
+<div class="modal-body">
+    <div class=" row col-12 handler-help">
     <div class="col-3 left">
     <ul>
         <li class="name">
             <div class="label">Name</div>
-            {{ handler.name }}
             {% if handler.url %}
                 <a class="url" href="{{ handler.url }}">{{ handler.url }}</a>
             {% endif %}

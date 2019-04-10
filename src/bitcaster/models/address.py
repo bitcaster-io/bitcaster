@@ -4,7 +4,6 @@ import string
 
 from django.conf import settings
 from django.db import models
-from sentry_sdk import capture_exception
 
 from bitcaster.models.mixins import ReversionMixin
 from bitcaster.utils.strings import random_string
@@ -30,7 +29,7 @@ class Address(ReversionMixin, models.Model):
     label = models.CharField(max_length=50)
 
     verified = models.BooleanField(default=False)
-    code = models.IntegerField(null=True)
+    code = models.CharField(null=True, max_length=9)
 
     class Meta:
         unique_together = (('user', 'label'),)
@@ -70,7 +69,7 @@ class AddressAssignment(ReversionMixin, models.Model):
         return str(self.address)
 
     def code_is_valid(self, code):
-        if code and str(self.address.code) == code:
+        if code and self.address.code == code:
             self.address.verified = True
             self.address.save()
         return self.address.verified
@@ -80,10 +79,6 @@ class AddressAssignment(ReversionMixin, models.Model):
         code = random_string(6, string.digits)
         address.code = code
         address.save()
-        try:
-            return self.channel.handler.emit(address.address,
-                                             'Bitcaster confirmation code',
-                                             'Bitcaster confirmation code %s' % code)
-        except Exception:
-            capture_exception()
-            raise
+        return self.channel.handler.emit(self.user,
+                                         'Bitcaster confirmation code',
+                                         'Bitcaster confirmation code %s' % code)

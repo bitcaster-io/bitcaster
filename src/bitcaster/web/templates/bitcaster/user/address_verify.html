@@ -10,18 +10,18 @@
 <div class="modal-body handler-usage">
     <div class=" row col-12">
         {% blocktrans %}
-        A code has been sent to your {{ object.channel.handler.name }}
-        account&nbsp;<strong> {{ object.address.address }} </strong>.
+            A code has been sent to your {{ object.channel.handler.name }}
+            account&nbsp;<strong> {{ object.address.address }} </strong>.
         {% endblocktrans %}
         <div class="container-fluid p-3">
-            <form action="{% org-url "user-address-verify" object.pk %}" method="post">
+            <form action="#">
                 {% csrf_token %}
                 <input type="number" name="code" value=""
                        placeholder="code"
                        class="textinput textInput form-control">
                 <div class="container-fluid p-3">
                     <button id="resend" type="button" class="btn btn-outline-success">Send Again</button>
-                    <input class="btn btn-primary" type="submit" value="Verify Address">
+                    <button id="verify" type="button" class="btn btn-primary">Verify Address</button>
                 </div>
             </form>
         </div>
@@ -33,13 +33,51 @@
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 </div>
 <script>
-    $('#resend').on('click', function () {
-        $.get('{% org-url "user-address-resend" object.pk %}')
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    function csrfSafeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            $('#message').html('');
+
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+    $('#verify').on('click', function (e) {
+        var code = $('input[name="code"]').val();
+        if (!code) {
+            return
+        }
+        $.post('{% org-url "user-address-verify" object.pk %}', {code: code})
             .done(function (data) {
-                $('#message').html('Code sent to ' +data.recipient)
+                new Noty({
+                    type: 'success',
+                    theme: 'bootstrap-v4',
+                    closeWith: ['click', 'button'],
+                    layout: 'topRight',
+                    timeout: 1000,
+                    text: data.message,
+                }).show();
+                $('#modalWindow').modal('hide');
+                $('a[data-owner="btn-verify-{{ object.pk }}"]').hide();
             })
             .fail(function (resp, msg, data) {
-                $('#message').html(resp.responseJSON.message);
+                $('#message').addClass('red').html(resp.responseJSON.message);
+            })
+    });
+    $('#resend').on('click', function () {
+        $('input[type=number]').val('');
+        $.get('{% org-url "user-address-resend" object.pk %}')
+            .done(function (data) {
+                $('#message').removeClass('red').html('Code sent to ' + data.recipient)
+            })
+            .fail(function (resp, msg, data) {
+                $('#message').addClass('red').html(resp.responseJSON.message);
             })
     });
 </script>

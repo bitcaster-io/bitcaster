@@ -18,12 +18,12 @@
                 {% trans "Addresses" %}
             </a>
         </li>
-        <li>
-            <a class="{{ view|menu_item:'profile' }}" href="{% url 'user-profile' organization.slug %}">
-                <i class="fas fa-user"></i>
-                {% trans "Profile" %}
-            </a>
-        </li>
+{#        <li>#}
+{#            <a class="{{ view|menu_item:'profile' }}" href="{% url 'user-profile' organization.slug %}">#}
+{#                <i class="fas fa-user"></i>#}
+{#                {% trans "Profile" %}#}
+{#            </a>#}
+{#        </li>#}
         <li>
             <a class="{{ view|menu_item:'subscriptions' }}" href="{% url 'user-subscriptions' organization.slug %}">
                 <i class="fas fa-bookmark"></i>
@@ -36,11 +36,11 @@
                 {% trans "Events" %}
             </a>
         </li>
-        <li>
-            <a class="{{ view|menu_item:'logout' }}" href="{% url 'logout' %}">
-                <i class="fas fa-sign-out-alt"></i>
-                {% trans "Logout" %}
-            </a>
+{#        <li>#}
+{#            <a class="{{ view|menu_item:'logout' }}" href="{% url 'logout' %}">#}
+{#                <i class="fas fa-sign-out-alt"></i>#}
+{#                {% trans "Logout" %}#}
+{#            </a>#}
         </li>
     </ul>
     <ul class="list-unstyled components sidebar-footer">
@@ -60,13 +60,13 @@
             </li>
         {% endif %}
 
-        {% if user.is_superuser %}
-            <li>
-                <a style="bottom:0;" href="{% url 'settings' %}">
-                    <i class="fas fa-cog"></i>
-                    {% trans "Settings" %}
-                </a>
-            </li>
-        {% endif %}
+{#        {% if user.is_superuser %}#}
+{#            <li>#}
+{#                <a style="bottom:0;" href="{% url 'settings' %}">#}
+{#                    <i class="fas fa-cog"></i>#}
+{#                    {% trans "Settings" %}#}
+{#                </a>#}
+{#            </li>#}
+{#        {% endif %}#}
     </ul>
 {% endblock left-menu %}

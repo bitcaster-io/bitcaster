@@ -26,8 +26,8 @@
                 <div class="row m-0 p-0 col-12 line-fields" style="display: inline-flex">
                     <div class="hidden">
                         {{ form.empty_form.id }}{{ form.empty_form.user }}{{ form.empty_form.DELETE }}</div>
-                    <div class="col col-3">{{ form.empty_form.channel|as_crispy_field }}</div>
-                    <div class="col col-5">{{ form.empty_form.address|as_crispy_field }}</div>
+                    <div class="col col-3 channel">{{ form.empty_form.channel|as_crispy_field }}</div>
+                    <div class="col col-5 address">{{ form.empty_form.address|as_crispy_field }}</div>
                     <div class="col col-2 align-middle align-items-center formset-commands">
                         <a href="#" class="btn remove_line mr-2">
                             <i class="far fa-trash-alt pointer"></i>
@@ -46,23 +46,24 @@
                         <div class="row col-12 m-0 p-0  {% if form.errors %}has-error{% endif %}">
                             <div class="row m-0 p-0 col-12 line-fields" style="display: inline-flex">
                                 <div class="hidden">{{ form.user }}{{ form.id }}{{ form.DELETE }}</div>
-                                <div class="col col-3">{{ form.channel|as_crispy_field }}</div>
-                                <div class="col col-5">{{ form.address|as_crispy_field }}</div>
+                                <div class="col col-3 channel">{{ form.channel|as_crispy_field }}</div>
+                                <div class="col col-5 address">{{ form.address|as_crispy_field }}</div>
                                 <div class="col col-2 align-middle align-items-center formset-commands">
-                                    <a href="#" class="btn remove_line mr-2 btn-outline-light align-top">
+                                    <a href="#" class="btn remove_line mr-2 btn-outline-light">
                                         <i class="far fa-trash-alt pointer"></i>
                                     </a>
                                     {% if form.instance.id %}
                                         <a rel="modal:open"
-                                           class="btn btn-outline-light align-top"
+                                           class="btn btn-outline-light"
                                            title="info"
                                            data-remote="{% org-url "user-address-info" form.instance.id %}"
                                            href="."><i class="fa fa-info"></i></a>
                                         {% if not form.instance.address.verified %}
                                             <a rel="modal:open"
                                                data-assignment="{{ form.instance.id }}"
-                                               class="btn btn-outline-light align-top"
+                                               class="btn btn-outline-light"
                                                title="verify"
+                                               data-owner="btn-verify-{{ form.instance.id }}"
                                                data-remote="{% org-url "user-address-verify" form.instance.id %}"
                                                href="."><i class="fas fa-exclamation-circle red"></i>
                                             </a>
@@ -85,4 +86,42 @@
 {% endblock %}
 {% block js %}
     {% include "bitcaster/_includes/formset/js_code.html" with formsetName="assignments" %}
+    <script>
+        var $TOTAL_FORMS = $("#id_{{ formsetName }}-TOTAL_FORMS");
+        $("#add_more").click(function (e) {
+            var justAdded = $("div.fieldset>div.row").first();
+            $(justAdded).find('.address select').select2({
+                ajax: {
+                    url: '{% url "address-autocomplete" %}',
+                    dataType: 'json'
+                }
+            });
+            $(justAdded).find('.channel select').select2({
+                ajax: {
+                    url: '{% org-url "channel-autocomplete" %}',
+                    dataType: 'json'
+                }
+            });
+        });
+
+        $('.fieldset .channel select').select2({
+            ajax: {
+                url: '{% org-url "channel-autocomplete" %}',
+                dataType: 'json'
+            }
+        });
+        $('.fieldset .address select').select2({
+            ajax: {
+                url: '{% url "address-autocomplete" %}',
+                dataType: 'json'
+            }
+        });
+        {#$("select")#}
+        {#    .on("change", function (e) {#}
+        {#        $(e.target).parents('div.row').css('background-color', '#fffccf');#}
+        {#        $commands.show();#}
+        {#    });#}
+
+    </script>
+
 {% endblock js %}

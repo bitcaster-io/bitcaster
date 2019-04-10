@@ -9,32 +9,13 @@
     <title>Bitcaster: {{ title }}</title>
     <link rel="shortcut icon" type="image/png" href="{% asset "bitcaster/images/favicon.ico" %}"/>
     <link rel="stylesheet" href="{% asset "bitcaster/theme.css" %}">
-{#    <link rel="stylesheet" href="{% asset "bitcaster/public.css" %}">#}
-{#    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>#}
+    {#    <link rel="stylesheet" href="{% asset "bitcaster/public.css" %}">#}
+    {#    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>#}
 
 </head>
 
 <body class="{% block bodyclass %}{% endblock %}">
-<div class="modal fade" id="modalWindow" tabindex="-1" role="dialog" aria-labelledby="modalWindowTitle"
-     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                {#        <button type="button" class="btn btn-primary">Save changes</button>#}
-            </div>
-        </div>
-    </div>
-</div>
+{% include 'bitcaster/_includes/modalwindow.html' %}
 {% block body %}
     <div class="wrapper">
         <!-- Sidebar  -->
@@ -65,32 +46,57 @@
                     <div class="container-fluid">
                         {% block user-links %}
                             {% if user.is_authenticated %}
-
                                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                                    <ul class="nav navbar-nav ml-auto">
-                                        <li class="nav-item">
-                                            {% if organization %}{{ organization }} /{% endif %} {{ user }}
-                                        </li>
-                                    </ul>
-                                    <img class="gravatar" src="{{ user|gravatar:30 }}"/>
+                                <div class="dropdown show ml-auto">
+                                    <a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown"
+                                       aria-haspopup="true" ria-expanded="false">
+                                        {% if organization %}{{ organization }} /{% endif %} {{ user }}
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        {% if organization %}
+                                            <a class="dropdown-item" href="{% url 'user-profile' organization.slug %}">
+                                                <i class="fas fa-user"></i>
+                                                {% trans "Profile" %}
+                                            </a>
+                                        {% else %}
+                                            <a class="dropdown-item" href="/">
+                                                <i class="fas fa-home"></i>
+                                                {% trans "Home" %}
+                                            </a>
+
+                                        {% endif %}
+                                            {% if user.is_superuser %}
+                                                <a class="dropdown-item" href="{% url 'settings' %}">
+                                                    <i class="fas fa-cog"></i>
+                                                    {% trans "Settings" %}
+                                                </a>
+                                            {% endif %}
+
+                                        <div class="dropdown-divider"></div>
+
+                                        <a class="dropdown-item" href="{% url 'logout' %}">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                            {% trans "Logout" %}
+                                        </a>
+
+                                    </div>
                                 </div>
+                                <img class="gravatar" src="{{ user|gravatar:30 }}"/>
+
+                                </div>
+
+{#                                <div class="collapse navbar-collapse" id="navbarSupportedContent">#}
+{#                                    <ul class="nav navbar-nav ml-auto">#}
+{#                                        <li class="nav-item">#}
+{#                                            {% if organization %}{{ organization }} /{% endif %} {{ user }}#}
+{#                                        </li>#}
+{#                                    </ul>#}
+{#                                    <img class="gravatar" src="{{ user|gravatar:30 }}"/>#}
+{#                                </div>#}
                             {% endif %}
                         {% endblock user-links %}
                     </div>
                 </nav>
-
-{#                {% block messages %}#}
-{#                    <div id="messageBar">{% if messages %}#}
-{#                        <ul class="messagelist">{% for message in messages %}#}
-{#                            <li class="alert {% if message.tags %} {{ message.tags }}{% endif %} fade show alert-dismissible ">#}
-{#                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">#}
-{#                                    <span aria-hidden="true">&times;</span>#}
-{#                                </button>#}
-{#                                <span>{{ message }}</span>#}
-{#                            </li>#}
-{#                        {% endfor %}</ul>#}
-{#                    {% endif %}</div>#}
-{#                {% endblock messages %}#}
             {% endblock toggler %}
             {% if alarms %}
                 <div id="alarmBar">
@@ -131,12 +137,12 @@
 
 
 {% block js-base %}
-<script src="{% static "bitcaster/theme.js" %}"></script>
-<script src="{% static "bitcaster/bitcaster.js" %}"></script>
-{#<script src="{% static "bitcaster/select2.js" %}"></script>#}
-<script src="{% static "bitcaster/js-cookie.js" %}"></script>
-{#<script src="{% static "bitcaster/vendor.js" %}"></script>#}
-{#<script src="{% static "bitcaster/bitcaster.js" %}"></script>#}
+    <script src="{% static "bitcaster/theme.js" %}"></script>
+    <script src="{% static "bitcaster/bitcaster.js" %}"></script>
+    {#<script src="{% static "bitcaster/select2.js" %}"></script>#}
+    <script src="{% static "bitcaster/js-cookie.js" %}"></script>
+    {#<script src="{% static "bitcaster/vendor.js" %}"></script>#}
+    {#<script src="{% static "bitcaster/bitcaster.js" %}"></script>#}
 {% endblock %}
 
 <script type="text/javascript">
@@ -146,8 +152,8 @@
                 type: '{{ message.tags }}',
                 theme: 'bootstrap-v4',
                 closeWith: ['click', 'button'],
-                layout   : 'topRight',
-                timeout: '{{ message.tags }}' !== 'error' ? 10000: 50000,
+                layout: 'topRight',
+                timeout: '{{ message.tags }}' !== 'error' ? 10000 : 50000,
                 text: '{{ message|escapejs }}',
             }).show();
         {% endfor %}
@@ -171,8 +177,8 @@
         $('[rel="modal:open"]').on('click', function (e) {
             e.preventDefault();
             var url = $(this).data("remote");
-            $('#modalWindow .modal-content').load(url, function(result){
-                $('#modalWindow').modal({show:true});
+            $('#modalWindow .modal-content').load(url, function (result) {
+                $('#modalWindow').modal({show: true});
             });
         });
     </script>

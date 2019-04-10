@@ -32,16 +32,16 @@ def test_userautocomplete_anonymous(django_app, organization1):
 
 # ChannelAutocomplete
 def test_channelautocomplete_full(django_app, channel1):
-    url = reverse('channel-autocomplete')
     organization = channel1.organization
+    url = reverse('channel-autocomplete', args=[organization.slug])
     user = organization.owner
     res = django_app.get(url, user=user)
     assert res.json['results'][0]['text'] == channel1.name
 
 
 def test_channelautocomplete_query(django_app, channel1):
-    url = reverse('channel-autocomplete')
     organization = channel1.organization
+    url = reverse('channel-autocomplete', args=[organization.slug])
     user = organization.owner
 
     url = '%s?q=%s' % (url, channel1.name)
@@ -50,8 +50,8 @@ def test_channelautocomplete_query(django_app, channel1):
 
 
 def test_channelautocomplete_anonymous(django_app, channel1):
-    url = reverse('channel-autocomplete')
     organization = channel1.organization
+    url = reverse('channel-autocomplete', args=[organization.slug])
     user = organization.owner
 
     url = '%s?q=%s' % (url, user.email)

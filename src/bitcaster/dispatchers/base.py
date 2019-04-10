@@ -67,7 +67,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
 
     def get_recipient_address(self, subscription):
         if isinstance(subscription, str):
-            return subscription
+            raise ValueError(subscription)
         if hasattr(subscription, 'subscriber'):  # models.Subscription
             user = subscription.subscriber
         elif hasattr(subscription, 'assignments'):  # models.User

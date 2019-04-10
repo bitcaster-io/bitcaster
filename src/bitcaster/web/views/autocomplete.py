@@ -2,7 +2,7 @@ from dal_select2.views import Select2QuerySetView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 
-from bitcaster.models import Channel, OrganizationMember
+from bitcaster.models import OrganizationMember
 from bitcaster.web.views.application.mixins import SelectedApplicationMixin
 from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
 
@@ -17,9 +17,9 @@ class UserAutocomplete(LoginRequiredMixin, Select2QuerySetView):
         return qs
 
 
-class ChannelAutocomplete(LoginRequiredMixin, Select2QuerySetView):
+class ChannelAutocomplete(SelectedOrganizationMixin, LoginRequiredMixin, Select2QuerySetView):
     def get_queryset(self):
-        qs = Channel.objects.all()
+        qs = self.selected_organization.channels.all()
 
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
@@ -32,7 +32,7 @@ class AddressAutocomplete(LoginRequiredMixin, Select2QuerySetView):
         qs = self.request.user.addresses.all()
 
         if self.q:
-            qs = qs.filter(label__istartswith=self.q)
+            qs = qs.filter(Q(label__icontains=self.q) | Q(address__icontains=self.q))
 
         return qs
 

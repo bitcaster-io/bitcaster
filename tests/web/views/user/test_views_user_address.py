@@ -56,18 +56,22 @@ def test_user_assign_address(django_app, organization1, admin):
     from bitcaster.utils.tests.factories import AddressFactory, ChannelFactory
     address1 = AddressFactory(user=admin, address='+3912345678')
     address2 = AddressFactory(user=admin, address='email@example.org')
-    channel1 = ChannelFactory()
+    channel1 = ChannelFactory(organization=organization1)
     url = reverse('user-address-assignment', args=[organization1.slug])
     res = django_app.get(url, user=admin)
     res = res.form.submit()
     assert res.status_code == 200
-    res.form['assignments-0-channel'] = channel1.pk
-    res.form['assignments-0-address'] = address1.pk
+
+    res.form['assignments-0-channel'].force_value(channel1.pk)
+    res.form['assignments-0-address'].force_value(address1.pk)
     res = res.form.submit()
     assert res.status_code == 200
 
-    res.form['assignments-0-address'] = address2.pk
+    res.form['assignments-0-channel'].force_value(channel1.pk)
+    res.form['assignments-0-address'].force_value(address2.pk)
     res = res.form.submit()
+
     assert res.status_code == 302, f"Submit failed with: {repr(res.context['form'].errors)}"
     assert admin.assignments.filter(user=admin,
+                                    channel=channel1,
                                     address=address2).exists()

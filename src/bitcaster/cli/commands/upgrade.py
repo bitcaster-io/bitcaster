@@ -19,7 +19,7 @@ from bitcaster.cli import global_options
 @click.option('--check/--no-check', 'run_check', default=True, is_flag=True,
               help='Run check framework')
 @click.pass_context
-def upgrade(ctx, prompt, migrate, static, verbose, reindex, run_check, **kwargs):
+def upgrade(ctx, prompt, migrate, static, verbose, run_check, **kwargs):
     try:
         from django.core.management import execute_from_command_line
         from bitcaster.config.environ import env
@@ -52,9 +52,6 @@ def upgrade(ctx, prompt, migrate, static, verbose, reindex, run_check, **kwargs)
         if run_check:
             from .check import check
             ctx.invoke(check)
-        if reindex:
-            from .reindex import reindex
-            ctx.invoke(reindex)
 
     except Exception as e:
         click.echo(str(e))

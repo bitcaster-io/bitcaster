@@ -7,12 +7,17 @@
     .col{
         height:42px;
     }
-
+    >.row{
+        vertical-align: middle;
+        margin-bottom: 1px!important;
+        margin-top: 1px!important;
+        padding-bottom: 1px!important;
+        padding-top: 1px!important;
+        line-height: 50px;
+        height: 50px;
+    }
     .row {
         display: inline-block;
-        //line-height: 50px;
-        margin-bottom: 0;
-        height: 50px;
         //display: inline-table;
         &.has-error{
             height: 75px;

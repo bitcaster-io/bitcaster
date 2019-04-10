@@ -11,7 +11,6 @@ from django.views.generic import RedirectView
 from formtools.wizard.views import SessionWizardView
 from strategy_field.utils import import_by_name
 
-from bitcaster.exceptions import PluginSendError
 from bitcaster.models import (Address, AddressAssignment,
                               Channel, DispatcherMetaData,)
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
@@ -46,7 +45,10 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
     def get_form_initial(self, step):
         handler = self.storage.extra_data.get('handler', None)
         if step == 'b' and handler:
-            defaults = {'name': 'Channel%s (%s)' % (Channel.objects.count(), handler.name)}
+            is_dupe = Channel.objects.filter(name=handler.name).count()
+            default_name = '%s%s' % (handler.name, {True: ' (2)', False: ''}[is_dupe > 0])
+
+            defaults = {'name': default_name}
             defaults.update(handler.get_full_config())
             return defaults
         return super().get_form_initial(step)
@@ -189,6 +191,7 @@ class ChannelTestView(MessageUserMixin, RedirectView):
         self.object = self.get_queryset().get(id=kwargs['pk'])
         try:
             dispatcher = self.object.handler
+            assert request.user.assignments.filter(channel=self.object).exists()
             address = dispatcher.emit(request.user, '-', 'test channel message', silent=False)
 
             msg = _("""Message sent to {}""").format(address)
@@ -196,13 +199,13 @@ class ChannelTestView(MessageUserMixin, RedirectView):
 
         except Address.DoesNotExist:
             self.message_user(_('You do not have an address assigned to this channel'), messages.ERROR)
-        except AddressAssignment.DoesNotExist:
+        except (AddressAssignment.DoesNotExist, AssertionError):
             url = reverse('user-address-assignment', args=[self.selected_organization.slug])
             msg = _("""You do not have a valid address for this channel.
 Goto [addresses]({0}) to set your choice for **{1}**""").format(url, self.object.name)
-            self.message_user(markdown(msg), messages.ERROR, extra_tags='keep')
-        except PluginSendError as e:  # pragma: no cover
-            self.message_user(_('Unable to send message: {}').format(e), messages.ERROR)
+            self.message_user(markdown(msg), messages.ERROR)
+        # except PluginSendError as e:  # pragma: no cover
+        #     self.message_user(_('Unable to send message: {}').format(e), messages.ERROR)
         except Exception as e:
             self.message_user(_('Unable to send message: {}').format(e), messages.ERROR)
         return super().get(request, *args, **kwargs)

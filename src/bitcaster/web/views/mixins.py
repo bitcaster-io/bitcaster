@@ -92,21 +92,16 @@ class MessageUserMixin:
                            extra_tags=extra_tags,
                            fail_silently=fail_silently)
 
-    def message_user(self, message, level=messages.INFO, extra_tags='',
-                     fail_silently=False):
+    def message_user(self, message, level=messages.INFO, fail_silently=False):
         messages.add_message(self.request, level, mark_safe(message),
-                             extra_tags=extra_tags,
                              fail_silently=fail_silently)
 
-    def error_user(self, message, level=messages.ERROR, extra_tags='keep',
-                   fail_silently=False):
+    def error_user(self, message, level=messages.ERROR, fail_silently=False):
         messages.add_message(self.request, level, mark_safe(message),
-                             extra_tags=extra_tags,
                              fail_silently=fail_silently)
 
-    def warn_user(self, message, level=messages.ERROR, extra_tags=None, fail_silently=False):
+    def warn_user(self, message, level=messages.ERROR, fail_silently=False):
         messages.add_message(self.request, level, mark_safe(message),
-                             extra_tags=extra_tags,
                              fail_silently=fail_silently)
 
 
