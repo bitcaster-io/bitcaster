@@ -85,10 +85,7 @@ release:
 	docker push ${DOCKER_IMAGE_NAME}:${TARGET}
 	curl -XPOST https://hooks.microbadger.com/images/bitcaster/bitcaster/MQKzhkSXITqlkZMgcN1sQbKCnQo=
 	lazo rancher --insecure upgrade bitcaster:bitcaster bitcaster/bitcaster:${TARGET}
-	$(MAKE) bump
 
-bump:
-	cd .. && bumpversion --config-file=.bumpversion.cfg num --commit
 
 run:
 	$(MAKE) .run
