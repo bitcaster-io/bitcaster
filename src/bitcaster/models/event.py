@@ -61,7 +61,7 @@ class Event(ReverseWrapperMixin, AbstractModel):
         args = ['application.organization.slug', 'application.slug', 'id']
 
     def __str__(self):
-        return f'{self.application.name}:{self.name}'
+        return self.name
 
     @cached_property
     def valid_channels(self):

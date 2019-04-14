@@ -22,7 +22,7 @@ class TruncateTableMixin(ExtraUrlMixin):
 
 @admin.register(AuditLogEntry, site=site)
 class AuditLogEntryAdmin(TruncateTableMixin, admin.ModelAdmin):
-    list_display = ('datetime', 'organization', 'actor', 'target_object',
+    list_display = ('timestamp', 'organization', 'actor', 'target_object',
                     'target_label', 'event', 'ip_address', 'get_message')
 
-    date_hierarchy = 'datetime'
+    date_hierarchy = 'timestamp'

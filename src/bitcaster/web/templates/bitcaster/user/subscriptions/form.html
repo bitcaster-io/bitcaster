@@ -1,7 +1,23 @@
 {% extends "bitcaster/user/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block pageId %}event{% endblock %}
+
 {% block page %}
-        <form method="post">
+    {% if not_usable_channels %}
+        <div class="box-container alert-warning border-warning p-2">
+            This subscription refers to an event with channels that cannot be used because you don't have any address assigned to
+            them.
+            <div>
+                To add missing assignment go to
+                <a href="{% url "user-address-assignment" organization.slug %}">Address Assignment page</a>
+                and set an appropriate address for the desired channel.
+            </div>
+            <ul class="pt-3">
+                {% for ch in not_usable_channels %}
+                    <li>{{ ch }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}        <form method="post">
             {% csrf_token %}
             {{ form|crispy }}
             <input type="submit" class="btn btn-primary" value="{% trans "Save" %}">
@@ -9,4 +25,9 @@
                    onclick="history.back();"
                    value="{% trans "Cancel" %}">
         </form>
+{% endblock %}
+{% block js %}
+    <script>
+        $('select').select2();
+    </script>
 {% endblock %}

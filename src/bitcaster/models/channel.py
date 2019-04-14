@@ -17,7 +17,8 @@ from bitcaster.template.secure_context import SecureContext
 
 from .application import Application
 from .base import AbstractModel
-from .counters import Counter, LogEntry
+from .counters import Counter
+from .notification import Notification
 from .organization import Organization
 
 logger = logging.getLogger(__name__)
@@ -154,11 +155,11 @@ class Channel(ReverseWrapperMixin, AbstractModel):
                     address = self.handler.emit(subscription, s, m, conn)
                     Counter.objects.increment(subscription)
                     success += 1
-                    LogEntry.log(address, subscription, payload)
+                    Notification.log(address, subscription, payload)
                 except Exception as e:
                     subscription.register_error()
                     logger.exception(e)
-                    LogEntry.log('', subscription, payload, status=False, info=str(e))
+                    Notification.log('', subscription, payload, status=False, info=str(e))
                     failures += 1
                 if failures >= self.errors_threshold:
                     raise MaxChannelError(self)

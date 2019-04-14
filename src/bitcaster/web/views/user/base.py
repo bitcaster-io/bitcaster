@@ -55,5 +55,5 @@ class UserProfileView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
             form.instance.email = form.initial['email']
             self.message_user(_('Check your inbox to validate your new email address'), messages.SUCCESS)
         ret = super().form_valid(form)
-        self.audit(event=AuditLogEntry.Event.MEMBER_UPDATE_PROFILE)
+        self.audit(event=AuditLogEntry.AuditEvent.MEMBER_UPDATE_PROFILE)
         return ret

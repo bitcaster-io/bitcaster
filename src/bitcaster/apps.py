@@ -21,7 +21,7 @@ class Config(AppConfig):
 def log_login(sender, user, request, **kwargs):
     from bitcaster.models.audit import AuditLogEntry
 
-    AuditLogEntry.objects.create(event=AuditLogEntry.Event.MEMBER_LOGIN,
+    AuditLogEntry.objects.create(event=AuditLogEntry.AuditEvent.MEMBER_LOGIN,
                                  actor=user,
                                  )
 
@@ -29,5 +29,5 @@ def log_login(sender, user, request, **kwargs):
 def log_logout(sender, user, request, **kwargs):
     from bitcaster.models.audit import AuditLogEntry
 
-    AuditLogEntry.objects.create(event=AuditLogEntry.Event.MEMBER_LOGOUT,
+    AuditLogEntry.objects.create(event=AuditLogEntry.AuditEvent.MEMBER_LOGOUT,
                                  actor=user)

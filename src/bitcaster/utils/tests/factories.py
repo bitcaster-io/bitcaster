@@ -6,7 +6,7 @@ from random import choice
 import factory
 from django.contrib.auth.models import Group, Permission
 from factory.base import FactoryMetaClass
-from factory.fuzzy import FuzzyDateTime
+from factory.fuzzy import FuzzyDateTime, FuzzyText
 from faker import Faker
 from pytz import UTC
 from rest_framework.test import APIClient
@@ -443,7 +443,7 @@ class AddressAssignmentFactory(AutoRegisterModelFactory):
 
 class LogEntryFactory(AutoRegisterModelFactory):
     class Meta:
-        model = models.LogEntry
+        model = models.Notification
 
     timestamp = FuzzyDateTime(datetime.datetime(2019, 1, 1, tzinfo=UTC))
     application = factory.SubFactory(ApplicationFactory)
@@ -452,3 +452,29 @@ class LogEntryFactory(AutoRegisterModelFactory):
     address = factory.Sequence(lambda n: 'address-%03d' % n)
     channel = factory.SubFactory(ChannelFactory)
     status = True
+
+
+class OccurenceFactory(AutoRegisterModelFactory):
+    timestamp = FuzzyDateTime(datetime.datetime(2019, 1, 1, tzinfo=UTC))
+    organization = factory.SubFactory(OrganizationFactory)
+    application = factory.SubFactory(ApplicationFactory)
+    event = factory.SubFactory(EventFactory)
+    # origin = models.GenericIPAddressField(blank=True, null=True)
+    token = FuzzyText(length=32)
+    user = factory.SubFactory(UserFactory)
+
+    # submissions = models.IntegerField(default=0,
+    #                                   help_text='number of subscriptions')
+    # successes = models.IntegerField(default=0)
+    # failures = models.IntegerField(default=0)
+    class Meta:
+        model = models.Occurence
+
+
+class AuditLogEntryFactory(AutoRegisterModelFactory):
+    class Meta:
+        model = models.AuditLogEntry
+
+    timestamp = FuzzyDateTime(datetime.datetime(2019, 1, 1, tzinfo=UTC))
+    organization = factory.SubFactory(OrganizationFactory)
+    event = factory.SubFactory(EventFactory)

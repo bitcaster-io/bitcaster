@@ -59,7 +59,7 @@ class UserEventSubcribe(UserEventMixin, LogAuditMixin, BitcasterBaseCreateView):
                                               channel=channel,
                                               enabled=True,
                                               status=Subscription.STATUSES.OWNED)
-            self.audit(event=AuditLogEntry.Event.MEMBER_SUBSCRIBE_EVENT,
+            self.audit(event=AuditLogEntry.AuditEvent.MEMBER_SUBSCRIBE_EVENT,
                        target_object=obj.pk,
                        target_label=str(obj))
 

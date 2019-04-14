@@ -4,10 +4,13 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
+from sentry_sdk import capture_exception, push_scope
 
 from bitcaster import messages
 from bitcaster.exceptions import PermissionDenied
 from bitcaster.models.audit import AuditLogEntry
+from bitcaster.utils import fqn
+from bitcaster.utils.filtering import FilterParser
 from bitcaster.web.decorators import authorized_or_403
 from bitcaster.web.templatetags.bitcaster import (verbose_name,
                                                   verbose_name_plural,)
@@ -81,8 +84,6 @@ class BitcasterSingleObjectMixin:
 @method_decorator(authorized_or_403(lambda u: u.is_superuser), name='dispatch')
 class SuperuserViewMixin(SecuredViewMixin):
     pass
-    # def check_perms(self, request, obj=None, raise_exception=False):
-    #     return request.user.has_perm(obj)
 
 
 class MessageUserMixin:
@@ -108,8 +109,24 @@ class MessageUserMixin:
 class BitcasterBaseViewMixin(TitleMixin, MessageUserMixin):
     pass
 
-# class BitcasterSingleObjectTemplateResponseMixin(TemplateResponseMixin):
-#     pass
-# def get_context_data(self, **kwargs):
-#     kwargs['opts'] = self.model._meta
-#     return super().get_context_data(**kwargs)
+
+class FilterQuerysetMixin:
+    filter_fieldmap = {}
+    filter_url_kwarg = 'filter'
+
+    def get_parser(self):
+        return FilterParser(self.filter_fieldmap)
+
+    def filter_queryset(self, queryset):
+        try:
+            target = self.request.GET.get(self.filter_url_kwarg)
+            args, kw = self.get_parser().parse(target)
+            if args:
+                queryset = queryset.filter(args, **kw)
+        except Exception as e:
+            with push_scope() as scope:
+                scope.set_tag('view', fqn(self))
+                capture_exception()
+
+            logger.exception(e)
+        return queryset

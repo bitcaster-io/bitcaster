@@ -27,7 +27,7 @@ OWNER_PERMISSIONS = {'manage_organization',
                      'invite_member', # invite new Organization member from within an app
                      'manage_monitor',
                      }
-ADMIN_PERMISSIONS = set()
+ADMIN_PERMISSIONS = set('manage_application')
 MEMBER_PERMISSIONS = set()
 ALL_PERMISSIONS.update(OWNER_PERMISSIONS)
 ALL_PERMISSIONS.update(ADMIN_PERMISSIONS)

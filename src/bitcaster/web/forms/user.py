@@ -310,7 +310,7 @@ class UserSubscriptionEditForm(forms.ModelForm):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.fields['channel'].queryset = self.instance.event.channels.filter(addresses__user=state.request.user)
+        self.fields['channel'].queryset = self.instance.event.channels.filter(addresses__user=self.instance.subscriber)
 
     def clean_channel(self):
         value = self.cleaned_data['channel']

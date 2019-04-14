@@ -44,8 +44,7 @@ class Application(AbstractModel, ReverseWrapperMixin):
                                 ListValidator(RESERVED_APPLICATION_NAME),
                                 validators.RegexValidator(r'^[\w -]+$',
                                                           _('Enter a valid name.'),
-                                                          'invalid')],
-                            unique=True)
+                                                          'invalid')])
     # members = models.ManyToManyField(settings.AUTH_USER_MODEL,
     #                                  through='bitcaster.applicationmember',
     #                                  through_fields=('application', 'org_member__user'))

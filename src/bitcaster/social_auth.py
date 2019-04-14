@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from urllib.parse import urljoin
-
 from constance import config
 from django.conf import settings
 from django.db import IntegrityError
@@ -8,12 +6,12 @@ from django.shortcuts import resolve_url
 from django.utils import timezone
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
-from requests import HTTPError
+from django.utils.translation import gettext as _
 from sentry_sdk import capture_exception
-from social_core.backends.github import GithubOAuth2
+from social_core.backends.github import GithubOrganizationOAuth2
+from social_core.exceptions import AuthFailed
 from social_django.strategy import DjangoStrategy
 
-from bitcaster.exceptions import NotMemberOfOrganization
 from bitcaster.models import Invitation, Organization, User
 from bitcaster.security import ROLES
 
@@ -104,36 +102,17 @@ class BitcasterStrategy(DjangoStrategy):
         return value
 
 
-class BitcasterGithubOrganizationOAuth2(GithubOAuth2):
+class BitcasterGithubOrganizationOAuth2(GithubOrganizationOAuth2):
     """Github OAuth2 authentication backend for organizations"""
     name = 'github-org'
-    no_member_string = 'User doesn\'t belong to the organization'
-
-    def member_url(self, user_data):
-        return urljoin(
-            self.api_url(),
-            'orgs/{org}/members/{username}'.format(
-                org=self.setting('NAME'),
-                username=user_data.get('login')
-            )
-        )
 
     def user_data(self, access_token, *args, **kwargs):
         """Loads user data from service"""
-        user_data = super().user_data(
-            access_token, *args, **kwargs
-        )
         try:
-            self.request(self.member_url(user_data), params={
-                'access_token': access_token
-            })
-        except HTTPError as err:
-            capture_exception()
-            # if the user is a member of the organization, response code
-            # will be 204, see http://bit.ly/ZS6vFl
-            if err.response.status_code != 204:
-                raise NotMemberOfOrganization(self, user_data)
-        except Exception:
-            capture_exception()
-            raise
+            user_data = super().user_data(access_token, *args, **kwargs)
+        except AuthFailed:
+            raise AuthFailed(self, _('Sorry, you do not seem to be a public member of %s') % self.setting('NAME'))
+        if not user_data.get('email'):
+            raise AuthFailed(self, _('You must have a public email configured in GitHub. '
+                                     'Goto Settings/Profile and choose your public email'))
         return user_data

@@ -44,7 +44,7 @@ class UserSubscriptionToggle(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
             else:
                 self.message_user(f'{obj._meta.verbose_name} #{obj.pk} disabled',
                                   level=messages.WARNING)
-            self.audit(event=AuditLogEntry.Event.MEMBER_TOGGLE_SUBSCRIPTION,
+            self.audit(event=AuditLogEntry.AuditEvent.MEMBER_TOGGLE_SUBSCRIPTION,
                        target_object=obj.pk,
                        target_label=str(obj),
                        data={'enabled': obj.enabled})
@@ -70,7 +70,7 @@ class UserSubscriptionRemove(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
-        self.audit(event=AuditLogEntry.Event.MEMBER_DELETE_SUBSCRIPTION,
+        self.audit(event=AuditLogEntry.AuditEvent.MEMBER_DELETE_SUBSCRIPTION,
                    target_object=obj.pk,
                    target_label=str(obj))
 
@@ -87,3 +87,13 @@ class UserSubscriptionEdit(UserSubscriptionMixin, BitcasterBaseUpdateView):
 
     def get_object(self, queryset=None):
         return self.get_queryset().get(id=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        # org  =
+        ret = super().get_context_data(object=self.object, **kwargs)
+        ret['not_usable_channels'] = self.object.event.channels.exclude(addresses__user=self.request.user,
+                                                                  addresses__address__verified=True)
+        ret['usable_channels'] = self.object.event.channels.filter(addresses__user=self.request.user,
+                                                             addresses__address__verified=True)
+        return ret

@@ -43,18 +43,18 @@ class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
         formset.instance = self.request.user
         formset.save()
         for a in formset.deleted_objects:
-            self.audit(event=AuditLogEntry.Event.MEMBER_DELETE_ADDRESS,
+            self.audit(event=AuditLogEntry.AuditEvent.MEMBER_DELETE_ADDRESS,
                        target_object=a.pk,
                        target_label=str(a))
 
         for obj, changed_data in formset.changed_objects:
-            self.audit(event=AuditLogEntry.Event.MEMBER_UPDATE_ADDRESS,
+            self.audit(event=AuditLogEntry.AuditEvent.MEMBER_UPDATE_ADDRESS,
                        data=changed_data,
                        target_object=obj.pk,
                        target_label=str(obj))
 
         for a in formset.new_objects:
-            self.audit(event=AuditLogEntry.Event.MEMBER_ADD_ADDRESS,
+            self.audit(event=AuditLogEntry.AuditEvent.MEMBER_ADD_ADDRESS,
                        target_object=a.pk,
                        target_label=str(a))
 
@@ -91,7 +91,7 @@ class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
         code = request.POST.get('code')
         assignment = self.get_object()
         if assignment.code_is_valid(code):
-            self.audit(event=AuditLogEntry.Event.MEMBER_VALIDATE_ADDRESS,
+            self.audit(event=AuditLogEntry.AuditEvent.MEMBER_VALIDATE_ADDRESS,
                        target_object=assignment.address.pk,
                        target_label=str(assignment))
             return JsonResponse({'status': 'success',
@@ -152,14 +152,14 @@ class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateV
             self.message_user(msg)
 
         for a in formset.deleted_objects:
-            self.audit(event=AuditLogEntry.Event.MEMBER_DELETE_ASSIGNMENT,
+            self.audit(event=AuditLogEntry.AuditEvent.MEMBER_DELETE_ASSIGNMENT,
                        target_object=a.pk,
                        target_label=str(a))
         need_config = 0
         if formset.new_objects:
             self.message_user(_('To complete your configuration. Insert codes that you receive to each new address'))
             for assignment in formset.new_objects:
-                self.audit(event=AuditLogEntry.Event.MEMBER_ADD_ASSIGNMENT,
+                self.audit(event=AuditLogEntry.AuditEvent.MEMBER_ADD_ASSIGNMENT,
                            target_object=assignment.pk,
                            target_label=str(assignment))
                 if assignment.channel.get_usage_message():
@@ -171,7 +171,7 @@ class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateV
             # usage_message = assignment.channel.get_usage_message()
             # if usage_message:
             #     self.message_user(usage_message, extra_tags='keep')
-            self.audit(event=AuditLogEntry.Event.MEMBER_CHANGE_ASSIGNMENT,
+            self.audit(event=AuditLogEntry.AuditEvent.MEMBER_CHANGE_ASSIGNMENT,
                        data=changed_data,
                        target_object=assignment.pk,
                        target_label=str(assignment))

@@ -1,6 +1,6 @@
-{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
 {% block page %}
-    {% check_permissions application %}
+    {% check_permissions organization %}
     <div class="container">
         <div class="row col-12 mb-5">
             <div class="col-7">

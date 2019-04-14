@@ -2,14 +2,15 @@ from django.utils.translation import gettext as _
 
 from bitcaster.models import Notification
 from bitcaster.utils.http import get_query_string
-from bitcaster.web.views.application.mixins import SelectedApplicationMixin
-from bitcaster.web.views.base import BitcasterBaseListView
 from bitcaster.web.views.mixins import FilterQuerysetMixin
 
+from ..base import BitcasterBaseListView
+from .mixins import SelectedOrganizationMixin
 
-class ApplicationLog(FilterQuerysetMixin,
-                     SelectedApplicationMixin, BitcasterBaseListView):
-    template_name = 'bitcaster/application/log.html'
+
+class OrganizationNotificationLogView(FilterQuerysetMixin,
+                                      SelectedOrganizationMixin, BitcasterBaseListView):
+    template_name = 'bitcaster/organization/log.html'
     model = Notification
     title = _('Notification Log')
     paginate_by = 50
@@ -17,10 +18,11 @@ class ApplicationLog(FilterQuerysetMixin,
                        'application': 'application__name__istartswith',
                        'event': 'event__name__istartswith',
                        'user': 'subscription__subscriber__email__istartswith',
-                       'subscriber': 'subscription__subscriber__email__istartswith'}
+                       'subscriber': 'subscription__subscriber__email__istartswith',
+                       }
 
     def get_queryset(self):
-        qs = Notification.objects.filter(application=self.selected_application)
+        qs = Notification.objects.filter(application__organization=self.selected_organization)
         qs = self.filter_queryset(qs)
         return qs.order_by('-timestamp')
 

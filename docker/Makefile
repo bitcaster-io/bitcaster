@@ -4,7 +4,7 @@
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET?=0.14.0a1
+TARGET?=0.14.0a2
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
@@ -32,10 +32,10 @@ build-base:
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
 			--build-arg DEVELOP=${DEVELOP} \
-			--target base \
-			-t ${DOCKER_IMAGE_NAME}-${VERSION}:base \
-			-f docker/${DOCKERFILE} .
-#	docker tag ${DOCKER_IMAGE_NAME}:${TARGET} ${DOCKER_IMAGE_NAME}:dev
+			-t ${DOCKER_IMAGE_NAME}-0.1:base \
+			-f docker/Dockerfile.base .
+	pass docker/saxix | docker login -u saxix --password-stdin
+	docker push ${DOCKER_IMAGE_NAME}-0.1:base
 	docker images | grep ${DOCKER_IMAGE_NAME}
 
 
@@ -47,7 +47,6 @@ build:
 			--build-arg BUILD_DATE=${BUILD_DATE} \
 			-t ${DOCKER_IMAGE} \
 			-f docker/${DOCKERFILE} .
-#	docker tag ${DOCKER_IMAGE_NAME}:${TARGET} ${DOCKER_IMAGE_NAME}:dev
 	docker images | grep ${DOCKER_IMAGE_NAME}
 
 
@@ -65,6 +64,8 @@ build:
 			-e BITCASTER_CELERY_BROKER_URL=${BITCASTER_CELERY_BROKER_URL} \
 			-e BITCASTER_STATIC_ROOT=/var/bitcaster/static \
 			-e BITCASTER_DATABASE_URL=${BITCASTER_DATABASE_URL} \
+			-e BITCASTER_ADVANCED_MODE=1 \
+			-e BITCASTER_ENABLE_IMPERSONATE=1 \
 			-e BITCASTER_DEBUG=false \
 			${RUN_OPTIONS} \
 			${DOCKER_IMAGE} \

@@ -13,9 +13,9 @@
 
         .alert,.alarm {
             &.error, &.alert-error {
-                color: white;
-                background-color: #f2271e;
-                border-color: #eb204d;
+                color: #721c24;
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
             }
 
             &.note {

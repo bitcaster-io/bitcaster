@@ -1,0 +1,50 @@
+FROM python:3.6.8-alpine3.8
+
+ARG BUILD_DATE
+ARG PIPENV_ARGS
+ARG VERSION
+ARG DEVELOP
+
+ENV CPLUS_INCLUDE_PATH /usr/include/libxml2/
+ENV C_INCLUDE_PATH /usr/include/libxml2/
+
+RUN apk add --no-cache --virtual .build-deps \
+        gcc \
+        musl-dev \
+        python3-dev \
+        libffi-dev \
+        libressl-dev \
+        libxml2-dev \
+        libxslt-dev \
+        openldap-dev \
+        jpeg-dev \
+        linux-headers \
+        postgresql-dev \
+        zeromq-dev
+
+
+RUN apk add --no-cache --virtual .run-deps \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+        curl \
+        gosu \
+        libpq \
+        libxslt \
+        libzmq \
+        jpeg
+
+
+RUN mkdir -p /code
+COPY Pipfile* /code/
+WORKDIR /code
+
+RUN set -ex \
+    ls -al /code \
+    && pip install pip pipenv \
+    && pipenv install --verbose --system --deploy --ignore-pipfile $PIPENV_ARGS
+
+RUN apk del .build-deps
+RUN rm -rf /var/cache/apk/* \
+    rm -fr /root/.cache/ \
+    rm -fr /var/bitcaster/.cache/ \
+    rm -fr /usr/include/

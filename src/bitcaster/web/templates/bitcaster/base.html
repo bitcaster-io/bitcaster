@@ -47,52 +47,75 @@
                         {% block user-links %}
                             {% if user.is_authenticated %}
                                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                                <div class="dropdown show ml-auto">
-                                    <a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown"
-                                       aria-haspopup="true" ria-expanded="false">
-                                        {% if organization %}{{ organization }} /{% endif %} {{ user }}
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        {% if organization %}
-                                            <a class="dropdown-item" href="{% url 'user-profile' organization.slug %}">
-                                                <i class="fas fa-user"></i>
-                                                {% trans "Profile" %}
-                                            </a>
-                                        {% else %}
-                                            <a class="dropdown-item" href="/">
-                                                <i class="fas fa-home"></i>
-                                                {% trans "Home" %}
-                                            </a>
+                                    <div class="dropdown show ml-auto">
+                                        <a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown"
+                                           aria-haspopup="true" ria-expanded="false">
+                                            {% if organization %}{{ organization }} /{% endif %} {{ user }}
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                            {% if organization %}
+                                                <a class="dropdown-item"
+                                                   href="{% url 'user-profile' organization.slug %}">
+                                                    <i class="fas fa-user"></i>
+                                                    {% trans "Profile" %}
+                                                </a>
+                                            {% else %}
+                                                <a class="dropdown-item" href="/">
+                                                    <i class="fas fa-home"></i>
+                                                    {% trans "Home" %}
+                                                </a>
 
-                                        {% endif %}
+                                            {% endif %}
+
                                             {% if user.is_superuser %}
+                                                {% if env.ADVANCED_MODE %}
+                                                    <a class="dropdown-item" href="{% url 'admin:index' %}">
+                                                        <i class="fas fa-tools"></i>
+                                                        {% trans "Admin" %}
+                                                    </a>
+                                                {% endif %}
                                                 <a class="dropdown-item" href="{% url 'settings' %}">
                                                     <i class="fas fa-cog"></i>
                                                     {% trans "Settings" %}
                                                 </a>
                                             {% endif %}
+                                            {% if env.ENABLE_IMPERSONATE %}
+                                                {% if user.is_impersonate %}
+                                                    <a class="dropdown-item" href="{% url 'impersonate-stop' %}">
+                                                        <i class="fas fa-user red"></i>
+                                                        {% trans "Stop Impersonate" %}
+                                                    </a>
+                                                {% elif user.is_superuser %}
+                                                    <a class="dropdown-item" href="{% url 'impersonate-list' %}">
+                                                        <i class="fas fa-user red"></i>
+                                                        {% trans "Impersonate" %}
+                                                    </a>
 
-                                        <div class="dropdown-divider"></div>
+                                                {% endif %}
 
-                                        <a class="dropdown-item" href="{% url 'logout' %}">
-                                            <i class="fas fa-sign-out-alt"></i>
-                                            {% trans "Logout" %}
-                                        </a>
+                                            {% endif %}
 
+                                            <div class="dropdown-divider"></div>
+
+                                            <a class="dropdown-item" href="{% url 'logout' %}">
+                                                <i class="fas fa-sign-out-alt"></i>
+                                                {% trans "Logout" %}
+                                            </a>
+
+                                        </div>
                                     </div>
-                                </div>
-                                <img class="gravatar" src="{{ user|gravatar:30 }}"/>
+                                    <img class="gravatar" src="{{ user|gravatar:30 }}"/>
 
                                 </div>
 
-{#                                <div class="collapse navbar-collapse" id="navbarSupportedContent">#}
-{#                                    <ul class="nav navbar-nav ml-auto">#}
-{#                                        <li class="nav-item">#}
-{#                                            {% if organization %}{{ organization }} /{% endif %} {{ user }}#}
-{#                                        </li>#}
-{#                                    </ul>#}
-{#                                    <img class="gravatar" src="{{ user|gravatar:30 }}"/>#}
-{#                                </div>#}
+                                {#                                <div class="collapse navbar-collapse" id="navbarSupportedContent">#}
+                                {#                                    <ul class="nav navbar-nav ml-auto">#}
+                                {#                                        <li class="nav-item">#}
+                                {#                                            {% if organization %}{{ organization }} /{% endif %} {{ user }}#}
+                                {#                                        </li>#}
+                                {#                                    </ul>#}
+                                {#                                    <img class="gravatar" src="{{ user|gravatar:30 }}"/>#}
+                                {#                                </div>#}
                             {% endif %}
                         {% endblock user-links %}
                     </div>
@@ -145,6 +168,7 @@
     {#<script src="{% static "bitcaster/bitcaster.js" %}"></script>#}
 {% endblock %}
 
+{% block js-common %}
 <script type="text/javascript">
     {% if messages %}
         {% for message in messages %}
@@ -169,6 +193,7 @@
         bitcaster.paginator({{ page_obj.number }}, {{paginator.num_pages}}, "{{ filters }}");
     {% endif %}
 </script>
+{% endblock js-common %}
 {% block js %}
 {% endblock js %}
 
