@@ -10,7 +10,7 @@ from django.forms import Form
 from rest_framework.reverse import reverse
 
 from bitcaster.framework.forms.widgets import PasswordEyeInput
-from bitcaster.models.counters import LogEntry
+from bitcaster.models import Notification
 from bitcaster.state import state
 from bitcaster.utils.constance import FieldMappingField, LdapDNField
 
@@ -118,7 +118,7 @@ class SettingsMainForm(Form):
     GOOGLE_ANALYTICS_CODE = forms.CharField(required=False)
     BACKUPS_LOCATION = forms.CharField(required=False)
     LOG_NOTIFICATION = forms.BooleanField(help_text='Enable/Disable notification log')
-    LOG_MESSAGE = forms.ChoiceField(choices=LogEntry.MESSAGE_POLICIES, required=False)
+    LOG_MESSAGE = forms.ChoiceField(choices=Notification.MESSAGE_POLICIES, required=False)
 
     # RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
 

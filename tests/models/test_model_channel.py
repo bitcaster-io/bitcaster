@@ -109,7 +109,7 @@ def test_process_event_errors_threshold(subscription1):
     channel.errors_threshold = 0
     event = subscription1.event
     with pytest.raises(MaxChannelError):
-        with mock.patch('bitcaster.models.LogEntry.log'):
+        with mock.patch('bitcaster.models.Notification.log'):
             with mock.patch('bitcaster.models.Channel.handler', Mock(side_effect=Mock(side_effect=Exception))):
                 assert channel.process_event(event, {})
     assert not channel.enabled

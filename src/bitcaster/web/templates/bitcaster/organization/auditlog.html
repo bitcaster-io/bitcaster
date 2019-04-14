@@ -1,6 +1,6 @@
-{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
 {% block page %}
-    {% check_permissions application %}
+    {% check_permissions organization %}
     <div class="container">
         <div class="row col-12 mb-5">
             <div class="col-7">
@@ -31,19 +31,13 @@
                 Date
             </th>
             <th>
-                Application
+                Actor
             </th>
             <th>
-                Event
+                Target
             </th>
             <th>
-                Subscriber
-            </th>
-            <th>
-                Channel
-            </th>
-            <th>
-                Success
+                Message
             </th>
         </tr>
         {% for entry in object_list %}
@@ -52,19 +46,13 @@
                     {{ entry.timestamp }}
                 </td>
                 <td>
-                    {{ entry.application }}
+                    {{ entry.actor_label }}
                 </td>
                 <td>
-                    {{ entry.event }}
+                    {{ entry.target_label|default_if_none:"" }}
                 </td>
                 <td>
-                    {{ entry.subscription.subscriber }}
-                </td>
-                <td>
-                    {{ entry.channel }}
-                </td>
-                <td>
-                    {{ entry.status }}
+{#                    {{ entry.get_message }}#}
                 </td>
             </tr>
         {% endfor %}

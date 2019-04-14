@@ -28,17 +28,20 @@
         <li>
             <a class="{{ view|menu_item:'memberview' }}"
                href="{{ organization.urls.members }}">
-                <i class="fas fa-users"></i>{% trans "Members" %}</a>
+                <i class="fas fa-user-friends"></i>{% trans "Members" %}</a>
         </li>
         <li>
             <a class="{{ view|menu_item:'groups' }}"
                href="{{ organization.urls.groups }}">
-                <i class="fas fa-users"></i>{% trans "Groups" %}</a>
+                <i class="fas fa-users-cog"></i>{% trans "Groups" %}</a>
         </li>
-        <li>
-            <a class="{{ view|menu_item:'api' }}"
-               href="/api/">
-                <i class="fas fa-font"></i>{% trans "API" %}</a>
+        <li><a class="{{ view|menu_item:'notificationlog' }}"
+               href="{{ organization.urls.log }}">
+            <i class="far fa-file-alt"></i>{% trans "Notification Log" %}</a>
+        </li>
+        <li><a class="{{ view|menu_item:'auditlog' }}"
+               href="{{ organization.urls.auditlog }}">
+            <i class="far fa-file-alt"></i>{% trans "Audit Log" %}</a>
         </li>
     </ul>
     <ul class="list-unstyled components sidebar-footer">

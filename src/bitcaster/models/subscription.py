@@ -77,7 +77,7 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
         return self.channel.handler.get_recipient_address(self)
 
     def register_error(self):
-        AuditLogEntry.objects.create(event=AuditLogEntry.Event.SUBSCRIPTION_ERROR,
+        AuditLogEntry.objects.create(event=AuditLogEntry.AuditEvent.SUBSCRIPTION_ERROR,
                                      actor=self.subscriber,
                                      target_object=self.pk,
                                      target_label=str(self))

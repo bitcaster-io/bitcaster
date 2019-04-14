@@ -7,10 +7,10 @@ from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 from bitcaster.api.filters import ApplicationFilterBackend
-from bitcaster.models import Event
 from bitcaster.tasks import trigger_event
 from bitcaster.utils.wsgi import get_client_ip
 
+from ...models.event import Event
 from ..permissions import (EventTriggerPermission, IsApplicationRelated,
                            TriggerKeyAuthentication,)
 from ..serializers import EventSerializer

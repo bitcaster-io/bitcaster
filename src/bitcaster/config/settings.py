@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'constance.backends.database',
     'reversion',
     'crispy_forms',
-    # 'jsoneditor',
+    'impersonate',
     'corsheaders',
     'dal',
     'dal_select2',
@@ -72,6 +72,11 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+]
+if env('ENABLE_IMPERSONATE'):
+    MIDDLEWARE += ['impersonate.middleware.ImpersonateMiddleware', ]
+
+MIDDLEWARE += [
     'bitcaster.middleware.i18n.UserLanguageMiddleware',
     'bitcaster.middleware.message.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -400,6 +405,7 @@ CONSTANCE_CONFIG = OrderedDict({
     'SITE_URL': ('', '', str),
     'BACKUPS_LOCATION': ('', '', str),
     'GOOGLE_ANALYTICS_CODE': ('', 'Google Analytics code', str),
+
     'LOG_NOTIFICATION': (True, 'Enable/Disable notification log', bool),
     'LOG_MESSAGE': (0, 'Log message ', int),
 
@@ -657,5 +663,6 @@ CORS_ALLOW_HEADERS = (
 IMPERSONATE = {
     'PAGINATE_COUNT': 50,
     'REQUIRE_SUPERUSER': True,
-    'CUSTOM_USER_QUERYSET': 'etools_datamart.libs.impersonate.queryset'
+    # 'REDIRECT_URL': 'me/',
+    'CUSTOM_USER_QUERYSET': 'bitcaster.utils.impersonate.queryset'
 }

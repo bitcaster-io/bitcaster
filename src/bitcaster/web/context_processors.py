@@ -1,8 +1,21 @@
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse
 
 import bitcaster as app
+from bitcaster.config.environ import env
 from bitcaster.messages import DEFAULT_LEVELS
+
+
+class EnvWrapper:
+    def __init__(self, environ):
+        self.environ = environ
+
+    def __getattr__(self, item):
+        try:
+            return self.environ(item)
+        except ImproperlyConfigured:
+            return None
 
 
 def bitcaster(request):
@@ -15,6 +28,7 @@ def bitcaster(request):
     return {'bitcaster_version': app.get_full_version(settings.DEBUG),
             'setup_url': setup_url,
             'settings': settings,
+            'env': EnvWrapper(env),
             'git_status': app.get_git_status()
             }
 

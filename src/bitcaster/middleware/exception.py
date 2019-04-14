@@ -1,8 +1,5 @@
 from django.http import HttpResponseRedirect
 
-from bitcaster.exceptions import NotMemberOfOrganization
-from bitcaster.messages import alarms
-
 
 class RedirectToRefererResponse(HttpResponseRedirect):
     def __init__(self, request, *args, **kwargs):
@@ -20,7 +17,4 @@ class ExceptionHandlerMiddleware(object):
         return self.get_response(request)
 
     def process_exception(self, request, exception):
-        if isinstance(exception, NotMemberOfOrganization):
-            message = 'Sorry, you do not seem to be a public member of %s' % exception.backend.setting('NAME')
-            alarms.error(request, message)
-            return RedirectToRefererResponse(request)
+        pass

@@ -22,7 +22,10 @@ from .handlers import handler400, handler403, handler404, handler500
 from .icons import channel_icon, plugin_icon
 from .login_logout import LoginView, LogoutView
 from .organization import *
-from .settings import *
+from .settings import (SettingsBackupRestore, SettingsEmailView,
+                       SettingsLdapView, SettingsOAuthView, SettingsPlugin,
+                       SettingsPluginRefresh, SettingsPluginToggle,
+                       SettingsSystemInfo, SettingsView,)
 from .system_setup import *
 from .user import *
 from .views import *

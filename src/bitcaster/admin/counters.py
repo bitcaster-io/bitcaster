@@ -3,8 +3,7 @@ import logging
 
 from django.contrib import admin
 
-from bitcaster.models import Counter, Occurence
-from bitcaster.models.counters import LogEntry
+from bitcaster.models import Counter, Notification, Occurence
 
 from .site import site
 
@@ -21,7 +20,7 @@ class OccurenceAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'event', 'submissions', 'successes', 'failures')
 
 
-@admin.register(LogEntry, site=site)
+@admin.register(Notification, site=site)
 class LogEntryAdmin(admin.ModelAdmin):
     date_hierarchy = 'timestamp'
     list_display = ('timestamp', 'application', 'event', 'subscription', 'channel', 'status')

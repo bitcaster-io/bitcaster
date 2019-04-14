@@ -17,13 +17,14 @@ from strategy_field.utils import fqn
 
 from bitcaster import messages
 from bitcaster.framework.db.fields import ROLES
-from bitcaster.models import Invitation, Organization, OrganizationMember, User
+from bitcaster.models import (AuditLogEntry, Invitation, Organization,
+                              OrganizationMember, User,)
 from bitcaster.otp import totp
 from bitcaster.web.forms import (OrganizationInvitationFormSet,
                                  UserInviteRegistrationForm,)
 from bitcaster.web.views.invitations import (InvitationCreate,
                                              InvitationDelete, InvitationSend,)
-from bitcaster.web.views.mixins import MessageUserMixin
+from bitcaster.web.views.mixins import LogAuditMixin, MessageUserMixin
 
 from .org import OrganizationBaseView
 
@@ -40,7 +41,7 @@ class OrgInviteMixin(OrganizationBaseView):
         return self.selected_organization.invitations
 
 
-class OrganizationMemberInvite(OrgInviteMixin, InvitationCreate):
+class OrganizationMemberInvite(OrgInviteMixin, LogAuditMixin, InvitationCreate):
     form_class = OrganizationInvitationFormSet
     template_name = 'bitcaster/organization/members/invite.html'
     title = _('Invite people')
@@ -48,54 +49,18 @@ class OrganizationMemberInvite(OrgInviteMixin, InvitationCreate):
     def get_parent_instance(self):
         return self.selected_organization
 
-
-# class OrganizationInvite(OrgInviteMixin, BitcasterBaseCreateView):
-#     form_class = OrganizationInvitationFormSet
-#     template_name = 'bitcaster/organization/members/invite.html'
-#
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         data['invitations'] = data['form']
-#         return data
-#
-#     def get_form(self, form_class=None):
-#         form = super().get_form(form_class)
-#         form.instance = self.selected_organization
-#         return form
-
-# def get_form_class(self):
-#     return OrganizationInvitationFormSet
-
-# def form_invalid(self, form):
-#     self.message_user(_('invalid'), messages.WARNING)
-#     return super(OrganizationInvite, self).form_invalid(form)
-#
-# def form_valid(self, form):
-#     sent = False
-#     form.instance = self.selected_organization
-# for inline_form in form.extra_forms:
-#     if not inline_form.has_changed():
-#         continue
-#     recipient = inline_form.cleaned_data.get('email', None)
-#     if recipient:
-#         if not self.selected_organization.memberships.filter(email=recipient).exists():
-#             inline_form.instance.organization = self.selected_organization
-#             inline_form.instance.invited_by = self.request.user
-#             membership = inline_form.save()
-#             membership.send_email()
-#             self.audit_log(AuditEvent.MEMBER_INVITE,
-#                            role=membership.get_role_display(),
-#                            email=membership.email)
-#             sent = True
-#         else:
-#             self.message_user(_('Invitation to {0} already sent').format(recipient),
-#                               messages.WARNING)
-# if sent:
-#     self.message_user(_('Invitations sent'), messages.SUCCESS)
-# return super().form_valid(form)
+    def form_valid(self, formset):
+        ret = super().form_valid(formset)
+        if formset.new_objects:
+            for invitation in formset.new_objects:
+                self.audit(event=AuditLogEntry.AuditEvent.INVITATION_CREATED,
+                           actor=invitation.invited_by,
+                           target_object=invitation.pk,
+                           target_label=str(invitation))
+        return ret
 
 
-class OrganizationMemberInviteAccept(MessageUserMixin, CreateView):
+class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView):
     model = Invitation
     form_class = UserInviteRegistrationForm
     template_name = 'bitcaster/registration/user_welcome.html'
@@ -131,6 +96,16 @@ class OrganizationMemberInviteAccept(MessageUserMixin, CreateView):
                                               date_enrolled=timezone.now())
             self.invitation.date_accepted = timezone.now()
             self.invitation.save()
+            self.audit(event=AuditLogEntry.AuditEvent.INVITATION_ACCEPTED,
+                       actor=user,
+                       target_object=self.invitation.pk,
+                       target_label=str(self.invitation))
+
+            self.audit(event=AuditLogEntry.AuditEvent.MEMBERSHIP_CREATED,
+                       actor=user,
+                       target_object=membership.pk,
+                       target_label=str(membership))
+
             login(self.request, user, backend=fqn(ModelBackend))
             assert self.request.user == user
 

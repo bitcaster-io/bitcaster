@@ -19,3 +19,4 @@ bitcaster.egg-info
 ghostdriver.log
 !.circleci
 !.github
+!.bumpversion.cfg
