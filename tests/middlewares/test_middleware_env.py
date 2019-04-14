@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from django.http import HttpResponse
 
 from bitcaster.middleware.env import BitcasterEnvMiddleware, clear_request

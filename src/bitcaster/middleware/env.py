@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from django.core.signals import request_finished
 
 from bitcaster.state import state

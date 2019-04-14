@@ -2,8 +2,6 @@
 # Copyright 2009-2010 Joshua Roesslein
 # See LICENSE for details.
 
-from __future__ import print_function
-
 import logging
 import re
 import sys

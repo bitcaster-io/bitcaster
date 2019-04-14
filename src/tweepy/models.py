@@ -2,8 +2,6 @@
 # Copyright 2009-2010 Joshua Roesslein
 # See LICENSE for details.
 
-from __future__ import absolute_import, print_function
-
 from tweepy.utils import parse_a_href, parse_datetime, parse_html_value
 
 

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from constance.test import override_config
 from django.http import HttpResponse
 
