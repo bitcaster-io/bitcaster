@@ -58,21 +58,29 @@ class SettingsLdapForm(SettingsForm):
 
 
 class SettingsOAuthForm(SettingsForm):
+    SOCIAL_AUTH_GOOGLE_OAUTH2_ENABLE_LOGIN = forms.BooleanField(label='Enable Login', required=False)
     SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = forms.CharField(label='Key', required=False)
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = forms.CharField(label='Secret', required=False)
     SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = forms.CharField(label='Allowed domains',
                                                                     help_text='comma separated list of allowed domains',
                                                                     required=False)
 
+    SOCIAL_AUTH_GITHUB_ORG_ENABLE_LOGIN = forms.BooleanField(label='Enable Login', required=False)
     SOCIAL_AUTH_GITHUB_ORG_NAME = forms.CharField(label='Organization name', required=False)
     SOCIAL_AUTH_GITHUB_ORG_KEY = forms.CharField(label='Key', required=False)
     SOCIAL_AUTH_GITHUB_ORG_SECRET = forms.CharField(label='Secret', required=False)
 
-    # SOCIAL_AUTH_GITHUB_KEY = forms.CharField(label='Key', required=False)
-    # SOCIAL_AUTH_GITHUB_SECRET = forms.CharField(label='Secret', required=False)
+    SOCIAL_AUTH_GITHUB_ENABLE_LOGIN = forms.BooleanField(label='Enable Login', required=False)
+    SOCIAL_AUTH_GITHUB_KEY = forms.CharField(label='Key', required=False)
+    SOCIAL_AUTH_GITHUB_SECRET = forms.CharField(label='Secret', required=False)
     #
-    # SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = forms.CharField(required=False)
-    # SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = forms.CharField(required=False)\
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_ENABLE_LOGIN = forms.BooleanField(label='Enable Login', required=False)
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = forms.CharField(required=False)
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = forms.CharField(required=False)
+
+    SOCIAL_AUTH_FACEBOOK_ENABLE_LOGIN = forms.BooleanField(label='Enable Login', required=False)
+    SOCIAL_AUTH_FACEBOOK_KEY = forms.CharField(required=False)
+    SOCIAL_AUTH_FACEBOOK_SECRET = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -84,6 +92,7 @@ class SettingsOAuthForm(SettingsForm):
                                       callback=reverse('social:complete',
                                                        args=['google-oauth2'],
                                                        request=state.request))),
+                     'SOCIAL_AUTH_GOOGLE_OAUTH2_ENABLE_LOGIN',
                      'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY',
                      'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET',
                      'SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS',
@@ -96,14 +105,48 @@ class SettingsOAuthForm(SettingsForm):
                          callback=reverse('social:complete',
                                           args=['github-org'],
                                           request=state.request))),
+                     'SOCIAL_AUTH_GITHUB_ORG_ENABLE_LOGIN',
                      'SOCIAL_AUTH_GITHUB_ORG_NAME',
                      'SOCIAL_AUTH_GITHUB_ORG_KEY',
                      'SOCIAL_AUTH_GITHUB_ORG_SECRET',
                      ),
-            # Fieldset('GitHub',
-            #          'SOCIAL_AUTH_GITHUB_KEY',
-            #          'SOCIAL_AUTH_GITHUB_SECRET',
-            #          ),
+
+            Fieldset('GitHub',
+                     HTML(HELP.format(
+                         help_url='https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/',
+                         help_label='https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/',
+                         callback=reverse('social:complete',
+                                          args=['github-org'],
+                                          request=state.request))),
+                     'SOCIAL_AUTH_GITHUB_ENABLE_LOGIN',
+                     'SOCIAL_AUTH_GITHUB_KEY',
+                     'SOCIAL_AUTH_GITHUB_SECRET',
+                     ),
+
+            Fieldset('Linkedin',
+                     HTML(HELP.format(
+                         help_url='https://www.linkedin.com/developers/apps',
+                         help_label='https://www.linkedin.com/developers/apps',
+                         callback=reverse('social:complete',
+                                          args=['linkedin-oauth2'],
+                                          request=state.request))),
+
+                     'SOCIAL_AUTH_LINKEDIN_OAUTH2_ENABLE_LOGIN',
+                     'SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY',
+                     'SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET',
+                     ),
+            Fieldset('Facebook',
+                     HTML(HELP.format(
+                         help_url='',
+                         help_label='',
+                         callback=reverse('social:complete',
+                                          args=['facebook'],
+                                          request=state.request))),
+
+                     'SOCIAL_AUTH_FACEBOOK_ENABLE_LOGIN',
+                     'SOCIAL_AUTH_FACEBOOK_KEY',
+                     'SOCIAL_AUTH_FACEBOOK_SECRET',
+                     ),
             Submit('submit', 'Save')
         )
 

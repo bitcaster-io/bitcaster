@@ -1,0 +1,17 @@
+{% load bitcaster bc_assets i18n %}
+<div class="row m-3 provider align-middle">
+    <div class="align-middle">
+        <i class="fab {{ fas }} {% if target in social_auth %}green{% endif %}"></i>
+    </div>
+    <div class="col-2 align-middle">
+        {{ name }}
+    </div>
+    <div class="col-2">
+        {% if target in social_auth %}
+            <a class="disconnect"
+               href="{% org-url "user-socialauth-disconnect" target %}">connected</a>
+        {% else %}
+            <a href="{% url "social:begin" target %}?next=/os4d/me/social/">connect</a>
+        {% endif %}
+    </div>
+</div>

@@ -9,6 +9,7 @@ from django.utils.functional import Promise
 from django.utils.translation import gettext as _
 from sentry_sdk import capture_exception
 from social_core.backends.github import GithubOrganizationOAuth2
+from social_core.backends.linkedin import LinkedinOAuth2
 from social_core.exceptions import AuthFailed
 from social_django.strategy import DjangoStrategy
 
@@ -102,6 +103,10 @@ class BitcasterStrategy(DjangoStrategy):
         return value
 
 
+class BitcasterLinkedinOAuth2(LinkedinOAuth2):
+    pass
+
+
 class BitcasterGithubOrganizationOAuth2(GithubOrganizationOAuth2):
     """Github OAuth2 authentication backend for organizations"""
     name = 'github-org'
@@ -110,9 +115,12 @@ class BitcasterGithubOrganizationOAuth2(GithubOrganizationOAuth2):
         """Loads user data from service"""
         try:
             user_data = super().user_data(access_token, *args, **kwargs)
+            if not user_data.get('email'):
+                raise AuthFailed(self, _('You must have a public email configured in GitHub. '
+                                         'Goto Settings/Profile and choose your public email'))
         except AuthFailed:
+            # from bitcaster.state import state
+            # if not state.request.user.is_authenticated:
             raise AuthFailed(self, _('Sorry, you do not seem to be a public member of %s') % self.setting('NAME'))
-        if not user_data.get('email'):
-            raise AuthFailed(self, _('You must have a public email configured in GitHub. '
-                                     'Goto Settings/Profile and choose your public email'))
+
         return user_data

@@ -455,22 +455,27 @@ CONSTANCE_CONFIG = OrderedDict({
     # 'AUTH_LDAP_USER_ATTR_MAP': {},
     # 'AUTH_LDAP_USER_FLAGS_BY_GROUP': {},
 
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_ENABLE_LOGIN': (False, '', bool),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY': ('', '', str),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET': ('', '', str),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS': ('', 'aaa', str),
 
+    'SOCIAL_AUTH_GITHUB_ORG_ENABLE_LOGIN': (False, '', bool),
     'SOCIAL_AUTH_GITHUB_ORG_KEY': ('', '', str),
     'SOCIAL_AUTH_GITHUB_ORG_SECRET': ('', '', str),
     'SOCIAL_AUTH_GITHUB_ORG_NAME': ('', '', str),
 
+    'SOCIAL_AUTH_GITHUB_ENABLE_LOGIN': (False, '', bool),
     'SOCIAL_AUTH_GITHUB_KEY': ('', '', str),
     'SOCIAL_AUTH_GITHUB_SECRET': ('', '', str),
 
-    # 'SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY': ('', '', str),
-    # 'SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET': ('', '', str),
-    #
-    # 'SOCIAL_AUTH_FACEBOOK_KEY': ('', '', str),
-    # 'SOCIAL_AUTH_FACEBOOK_SECRET': ('', '', str),
+    'SOCIAL_AUTH_LINKEDIN_OAUTH2_ENABLE_LOGIN': (False, '', bool),
+    'SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY': ('', '', str),
+    'SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET': ('', '', str),
+
+    'SOCIAL_AUTH_FACEBOOK_ENABLE_LOGIN': (False, '', bool),
+    'SOCIAL_AUTH_FACEBOOK_KEY': ('', '', str),
+    'SOCIAL_AUTH_FACEBOOK_SECRET': ('', '', str),
 
 })
 CONSTANCE_CONFIG_FIELDSETS = {'Options': list(CONSTANCE_CONFIG.keys())}
@@ -530,8 +535,8 @@ SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
     # 'social_core.backends.github.GithubOAuth2',
     # 'social_core.backends.github.GithubOrganizationOAuth2',
     'bitcaster.social_auth.BitcasterGithubOrganizationOAuth2',
-    # 'social_core.backends.linkedin.LinkedinOAuth2',
-    # 'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.linkedin.LinkedinOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
 )
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',  # 0
@@ -580,6 +585,15 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_LOGIN_URL = '/'
 SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
     'access_type': 'offline'
 }
+
+SOCIAL_AUTH_LINKEDIN_SCOPE = ['r_basicprofile', 'r_emailaddress', 'r_liteprofile']
+SOCIAL_AUTH_LINKEDIN_FIELD_SELECTORS = ['email-address', 'headline', 'industry']
+SOCIAL_AUTH_LINKEDIN_EXTRA_DATA = [('id', 'id'),
+                                   ('firstName', 'first_name'),
+                                   ('lastName', 'last_name'),
+                                   ('emailAddress', 'email_address'),
+                                   ('headline', 'headline'),
+                                   ('industry', 'industry')]
 
 #
 # # SOCIAL_AUTH_GITHUB_ORG_NAME = 'bitcaster-io'

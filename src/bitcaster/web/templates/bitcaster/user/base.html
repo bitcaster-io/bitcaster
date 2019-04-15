@@ -1,4 +1,4 @@
-{% extends "bitcaster/base.html" %}{% load i18n crispy_forms_tags menu bc_permissions %}
+{% extends "bitcaster/base.html" %}{% load i18n crispy_forms_tags menu bc_permissions bitcaster %}
 {% block bodyclass %}user{% endblock %}
 
 {% block page %}
@@ -7,66 +7,67 @@
 {% block left-menu %}
     <ul class="list-unstyled components">
         <li>
-            <a class="{{ view|menu_item:'home' }}" href="{% url 'me' organization.slug %}">
+            <a class="{{ view|menu_item:'home' }}" href="{% org-url 'me' %}">
                 <i class="fas fa-home"></i>
                 Home
             </a>
         </li>
         <li>
-            <a class="{{ view|menu_item:'address' }}" href="{% url 'user-address' organization.slug %}">
+            <a class="{{ view|menu_item:'address' }}" href="{% org-url 'user-address' %}">
                 <i class="fas fa-mail-bulk"></i>
                 {% trans "Addresses" %}
             </a>
         </li>
-{#        <li>#}
-{#            <a class="{{ view|menu_item:'profile' }}" href="{% url 'user-profile' organization.slug %}">#}
-{#                <i class="fas fa-user"></i>#}
-{#                {% trans "Profile" %}#}
-{#            </a>#}
-{#        </li>#}
+        {#        <li>#}
+        {#            <a class="{{ view|menu_item:'profile' }}" href="{% url 'user-profile' organization.slug %}">#}
+        {#                <i class="fas fa-user"></i>#}
+        {#                {% trans "Profile" %}#}
+        {#            </a>#}
+        {#        </li>#}
         <li>
-            <a class="{{ view|menu_item:'subscriptions' }}" href="{% url 'user-subscriptions' organization.slug %}">
+            <a class="{{ view|menu_item:'subscriptions' }}" href="{% org-url 'user-subscriptions' %}">
                 <i class="fas fa-bookmark"></i>
                 {% trans "Subscriptions" %}
             </a>
         </li>
         <li>
-            <a class="{{ view|menu_item:'events' }}" href="{% url 'user-events' organization.slug %}">
+            <a class="{{ view|menu_item:'events' }}" href="{% org-url 'user-events' %}">
                 <i class="fas fa-rss"></i>
                 {% trans "Events" %}
             </a>
         </li>
-{#        <li>#}
-{#            <a class="{{ view|menu_item:'logout' }}" href="{% url 'logout' %}">#}
-{#                <i class="fas fa-sign-out-alt"></i>#}
-{#                {% trans "Logout" %}#}
-{#            </a>#}
+        <li>
+            <a class="{{ view|menu_item:'socialauth' }}" href="{% org-url 'user-socialauth' %}">
+                <i class="fas fa-sign-out-alt"></i>
+                {% trans "Social Login" %}
+            </a>
         </li>
     </ul>
     <ul class="list-unstyled components sidebar-footer">
-    {% check_permissions organization as org_perm %}
+        {% check_permissions organization as org_perm %}
         {% if org_perm.manage_organization %}
             <li>
-                <a class="{{ view|menu_item:'organization' }}" style="bottom:0;" href="{{ organization.urls.dashboard }}">
+                <a class="{{ view|menu_item:'organization' }}" style="bottom:0;"
+                   href="{{ organization.urls.dashboard }}">
                     <i class="fas fa-sitemap"></i>{% trans "Admin" %} {{ organization }}</a>
             </li>
         {% endif %}
         {% if user.is_manager %}
             <li>
-                <a class="{{ view|menu_item:'application' }}" href="{% url 'user-applications' organization.slug %}">
+                <a class="{{ view|menu_item:'application' }}" href="{% org-url 'user-applications' %}">
                     <i class="fas fa-sign-out-alt"></i>
                     {% trans "Applications" %}
                 </a>
             </li>
         {% endif %}
 
-{#        {% if user.is_superuser %}#}
-{#            <li>#}
-{#                <a style="bottom:0;" href="{% url 'settings' %}">#}
-{#                    <i class="fas fa-cog"></i>#}
-{#                    {% trans "Settings" %}#}
-{#                </a>#}
-{#            </li>#}
-{#        {% endif %}#}
+        {#        {% if user.is_superuser %}#}
+        {#            <li>#}
+        {#                <a style="bottom:0;" href="{% url 'settings' %}">#}
+        {#                    <i class="fas fa-cog"></i>#}
+        {#                    {% trans "Settings" %}#}
+        {#                </a>#}
+        {#            </li>#}
+        {#        {% endif %}#}
     </ul>
 {% endblock left-menu %}

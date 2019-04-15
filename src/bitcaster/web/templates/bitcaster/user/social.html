@@ -1,0 +1,35 @@
+{% extends "bitcaster/user/base.html" %}{% load bitcaster bc_assets i18n %}
+{% block page %}
+    <style>
+        .provider {
+        {#border: 1px solid red;#} line-height: 30px;
+            vertical-align: middle;
+        }
+
+        .provider i {
+            font-size: 30px;
+            line-height: 30px;
+            height: 30px;
+        }
+    </style>
+    <div>{% blocktrans %}
+        Link your Bitcaster account to any of the providers below and log in without a username or password.
+    {% endblocktrans %}</div>
+
+
+    <div class="table m-5">
+        {% if config.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY %}
+            {% include "bitcaster/_includes/_social_auth_link.html" with name="Google" target="google-oauth2" fas="fa-google-plus-square" social_auth=social_auth %}
+        {% endif %}
+        {% if config.SOCIAL_AUTH_GITHUB_ORG_KEY %}
+            {% include "bitcaster/_includes/_social_auth_link.html" with name="GitHub" target="github-org" fas="fa-github-square" social_auth=social_auth %}
+        {% endif %}
+        {% if config.SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY %}
+            {% include "bitcaster/_includes/_social_auth_link.html" with name="Linkedin" target="linkedin-oauth2" fas="fa-linkedin" social_auth=social_auth %}
+        {% endif %}
+        {% if config.SOCIAL_AUTH_FECEBOOK_OAUTH2_KEY %}
+            {% include "bitcaster/_includes/_social_auth_link.html" with name="GitHub" target="github-org" fas="fa-github-square" social_auth=social_auth %}
+        {% endif %}
+    </div>
+
+{% endblock %}
