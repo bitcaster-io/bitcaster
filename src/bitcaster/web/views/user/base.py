@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 import logging
 
+import requests
+from constance import config
+from django.core.cache import cache
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
+from pytz import country_timezones
 
 from bitcaster import messages
 from bitcaster.models import User
 from bitcaster.models.audit import AuditLogEntry
 from bitcaster.utils.email_verification import set_request_new_email_address
+from bitcaster.utils.wsgi import get_client_ip
 from bitcaster.web.forms import UserProfileForm, send_address_verification_email
 from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
 
@@ -37,6 +42,42 @@ class UserProfileView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+    def get_initial(self):  # noqa C901
+        initial = {}
+        user = self.get_object()
+        if not user.country or user.timezone:
+            remote_ip = get_client_ip(self.request)
+            if remote_ip and config.IPSTACK_KEY:
+                try:
+                    response = cache.get('ipstack-%s' % remote_ip)
+                    if not response:
+                        url = '{0}/{2}?access_key={1}'.format(config.IPSTACK_HOST,
+                                                              config.IPSTACK_KEY,
+                                                              remote_ip)
+                        response = requests.get(url).json()
+
+                    if not user.country:
+                        try:
+                            initial['country'] = response['country_code']
+                        except KeyError:
+                            initial['country'] = None
+
+                    if not user.language:
+                        try:
+                            initial['language'] = response['location']['languages'][0]['code']
+                        except (KeyError, IndexError):
+                            initial['timezone'] = None
+
+                    if not user.timezone:
+                        try:
+                            initial['timezone'] = country_timezones(initial['country'])
+                        except KeyError:
+                            initial['timezone'] = None
+                except Exception:
+                    pass
+
+        return initial
 
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)

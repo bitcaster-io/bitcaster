@@ -24,6 +24,7 @@ urlpatterns = [
 
     # Settings
     path('settings/', views.SettingsView.as_view(), name='settings'),
+    path('settings/services/', views.SettingsServicesView.as_view(), name='settings-services'),
     path('settings/email/', views.SettingsEmailView.as_view(), name='settings-email'),
     path('settings/oauth/', views.SettingsOAuthView.as_view(), name='settings-oauth'),
     path('settings/sysinfo/', views.SettingsSystemInfo.as_view(), name='settings-sysinfo'),

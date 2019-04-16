@@ -155,10 +155,16 @@ class SettingsChannelsForm(Form):
     pass
 
 
+class SettingsServicesForm(Form):
+    GOOGLE_ANALYTICS_CODE = forms.CharField(required=False)
+    RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
+    IPSTACK_HOST = forms.URLField(required=False)
+    IPSTACK_KEY = forms.CharField(required=False)
+
+
 class SettingsMainForm(Form):
     SITE_URL = forms.URLField()
     ALLOW_CHANGE_PRIMARY_ADDRESS = forms.BooleanField(required=False)
-    GOOGLE_ANALYTICS_CODE = forms.CharField(required=False)
     BACKUPS_LOCATION = forms.CharField(required=False)
     LOG_NOTIFICATION = forms.BooleanField(help_text='Enable/Disable notification log')
     LOG_MESSAGE = forms.ChoiceField(choices=Notification.MESSAGE_POLICIES, required=False)

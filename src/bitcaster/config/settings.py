@@ -74,6 +74,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
     'bitcaster.middleware.i18n.UserLanguageMiddleware',
+    'bitcaster.middleware.timezone.UserTimezoneMiddleware',
     'bitcaster.middleware.message.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -401,16 +402,16 @@ CONSTANCE_CONFIG = OrderedDict({
     'SITE_URL': ('', '', str),
     'BACKUPS_LOCATION': ('', '', str),
     'GOOGLE_ANALYTICS_CODE': ('', 'Google Analytics code', str),
-
     'LOG_NOTIFICATION': (True, 'Enable/Disable notification log', bool),
     'LOG_MESSAGE': (0, 'Log message ', int),
 
     'ALLOW_CHANGE_PRIMARY_ADDRESS': (False, 'Users can change their primary email address', bool),
     'RECAPTCHA_PUBLIC_KEY': ('', '', str),
     'RECAPTCHA_PRIVATE_KEY': ('', '', str),
-    'HOSTIP_ADDRESS': ('http://api.hostip.info/get_html.php',
-                       'api.hostip.info info',
-                       str),
+
+    'IPSTACK_HOST': ('http://api.ipstack.com/', 'ipstack api addredss', str),
+    'IPSTACK_KEY': ('', 'ipstack access key', str),
+
     'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/', '', str),
     'ALLOW_REGISTRATION': (False, '', bool),
     'INVITATION_EXPIRE': (60 * 60 * 24, '', int),

@@ -25,7 +25,7 @@ from .organization import *
 from .settings import (SettingsBackupRestore, SettingsEmailView,
                        SettingsLdapView, SettingsOAuthView, SettingsPlugin,
                        SettingsPluginRefresh, SettingsPluginToggle,
-                       SettingsSystemInfo, SettingsView,)
+                       SettingsServicesView, SettingsSystemInfo, SettingsView,)
 from .system_setup import *
 from .user import *
 from .views import *

@@ -24,7 +24,8 @@ from bitcaster.utils.backup import backup_data
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsLdapForm,
                                                  SettingsMainForm,
-                                                 SettingsOAuthForm,)
+                                                 SettingsOAuthForm,
+                                                 SettingsServicesForm,)
 
 from .base import BitcasterTemplateView
 from .mixins import (MessageUserMixin, SidebarMixin,
@@ -73,6 +74,12 @@ class SettingsBaseView(SettingsTemplateMixin, FormView):
 class SettingsView(SettingsBaseView):
     form_class = SettingsMainForm
     title = _('General')
+    bit = 1
+
+
+class SettingsServicesView(SettingsBaseView):
+    form_class = SettingsServicesForm
+    title = _('External services')
     bit = 1
 
 
