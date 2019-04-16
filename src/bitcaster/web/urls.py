@@ -129,7 +129,7 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/key/<int:pk>/delete/', views.ApplicationKeyDelete.as_view(), name='app-key-delete'),
 
     # Applications / Events
-    path('<slug:org>/a/<slug:app>/event/', views.EventList.as_view(), name='app-views.Events'),
+    path('<slug:org>/a/<slug:app>/event/', views.EventList.as_view(), name='app-events'),
     path('<slug:org>/a/<slug:app>/event/add/', views.EventCreate.as_view(), name='app-event-create'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/edit/', views.EventUpdate.as_view(), name='app-event-edit'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/toggle/', views.EventToggle.as_view(), name='app-event-toggle'),

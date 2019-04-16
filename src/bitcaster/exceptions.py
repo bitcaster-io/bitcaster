@@ -57,12 +57,11 @@ class OAuthError(Exception):
 
 
 class NotMemberOfOrganization(AuthFailed):
-    def __init__(self, backend, user_data):
-        self.backend = backend
-        self.user_data = user_data
+    def __init__(self, org_name):
+        self.org_name = org_name
 
     def __str__(self):
-        return _('Sorry, you do not seem to be a public member of %s' % self.backend.setting('NAME'))
+        return _('Sorry, you do not seem to be a public member of %s' % self.org_name)
 
 
 class MaxChannelError(Exception):

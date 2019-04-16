@@ -13,7 +13,7 @@ class RedirectToRefererResponse(HttpResponseRedirect):
             redirect_to, *args, **kwargs)
 
 
-class ExceptionHandlerMiddleware(object):
+class ExceptionHandlerMiddleware:
     def __init__(self, get_response=None):
         self.get_response = get_response
         super().__init__()

@@ -11,9 +11,9 @@ def test_exceptionhandlermiddleware_call(rf):
     request._alarms = Mock()
     m = ExceptionHandlerMiddleware(lambda r: HttpResponse('Ok'))
     m(request)
-    response = m.process_exception(request, NotMemberOfOrganization(Mock(), Mock()))
+    response = m.process_exception(request, NotMemberOfOrganization('Org1'))
     assert response.status_code == 302
-    assert response['Location'] == '/from/'
+    assert response['Location'] == '/login/'
 
 
 def test_exceptionhandlermiddleware_noop(rf):
