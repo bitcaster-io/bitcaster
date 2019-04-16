@@ -177,7 +177,7 @@ class EventToggle(EventMixin, EventFormMixin, MessageUserMixin, RedirectView):
                 for msg in obj.messages.all():
                     if not msg.body:
                         self.message_user(f'Event cannot be enabled because '
-                                          f'message "{msg.name}" does not validate', messages.ERROR)
+                                          f'message "{msg.channel.name}" does not validate', messages.ERROR)
                         return super().get(request, *args, **kwargs)
 
                     msg.clean()
