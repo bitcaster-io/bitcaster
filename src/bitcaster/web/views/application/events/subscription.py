@@ -1,17 +1,31 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
 from bitcaster import messages
 from bitcaster.framework.db.fields import ROLES
+from bitcaster.models import Event
 from bitcaster.web.forms.subscription import (EventSubscriptionForm,
                                               InviteFormSet,
                                               SubscriptionFormSet,)
-from bitcaster.web.views.application.events.event import SingleEventMixin
+from bitcaster.web.views.application.events.event import EventMixin
 from bitcaster.web.views.base import (
     BitcasterBaseDeleteView, BitcasterBaseListView, BitcasterBaseToggleView,
     MessageUserMixin,)
+
+
+class SingleEventMixin(EventMixin):
+    def get_context_data(self, **kwargs):
+        kwargs['event'] = self.selected_event
+        return super().get_context_data(selected_event=self.selected_event,
+                                        **kwargs)
+
+    @cached_property
+    def selected_event(self):
+        return Event.objects.get(application=self.selected_application,
+                                 id=self.kwargs['event'])
 
 
 class EventSubscriptionList(SingleEventMixin, BitcasterBaseListView):
@@ -25,9 +39,10 @@ class EventSubscriptionList(SingleEventMixin, BitcasterBaseListView):
 
 
 class EventSubscriptionDelete(SingleEventMixin, BitcasterBaseDeleteView):
+    pk_url_kwarg = 'subscription'
 
     def get_queryset(self):
-        return self.selected_application.subscriptions.all()
+        return self.selected_event.subscriptions.all()
 
 
 class EventSubscriptionToggle(SingleEventMixin, BitcasterBaseToggleView):

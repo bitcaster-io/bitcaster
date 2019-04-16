@@ -3,11 +3,9 @@ import logging
 
 from constance import config
 from django.urls import reverse
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 from rest_framework.serializers import Serializer
-from strategy_field.utils import import_by_name
 
 from bitcaster import messages
 from bitcaster.models import Event, Message
@@ -37,18 +35,6 @@ class EventMixin(SelectedApplicationMixin):
 
     def get_queryset(self):
         return self.selected_application.events.all()
-
-
-class SingleEventMixin(EventMixin):
-    def get_context_data(self, **kwargs):
-        kwargs['event'] = self.selected_event
-        return super().get_context_data(selected_event=self.selected_event,
-                                        **kwargs)
-
-    @cached_property
-    def selected_event(self):
-        return Event.objects.get(application=self.selected_application,
-                                 id=self.kwargs['event'])
 
 
 class EventFormMixin:
@@ -121,9 +107,9 @@ class EventDelete(EventMixin, EventFormMixin, BitcasterBaseDeleteView):
 
 def eventform_factory(event: Event):
     attrs = {}
-    if event.arguments:
-        for fld in event.arguments['fields']:
-            attrs[fld['name']] = import_by_name(fld['type'])()
+    # if event.arguments:
+    #     for fld in event.arguments['fields']:
+    #         attrs[fld['name']] = import_by_name(fld['type'])()
 
     return type('AAA', (Serializer,), attrs)()
 
@@ -168,16 +154,16 @@ class EventToggle(EventMixin, EventFormMixin, MessageUserMixin, RedirectView):
         else:
             obj.enabled = not obj.enabled
             if obj.enabled:
-                ok = obj.messages.filter(enabled=True).exists()
-                if not ok:
-                    self.message_user(f'Event cannot be enabled because '
-                                      f'all messages are disabled', messages.ERROR)
-                    return super().get(request, *args, **kwargs)
+                # ok = obj.messages.filter(enabled=True).exists()
+                # if not ok:
+                #     self.message_user(f'Event cannot be enabled because '
+                #                       f'all messages are disabled', messages.ERROR)
+                #     return super().get(request, *args, **kwargs)
 
                 for msg in obj.messages.all():
                     if not msg.body:
                         self.message_user(f'Event cannot be enabled because '
-                                          f'message "{msg.channel.name}" does not validate', messages.ERROR)
+                                          f"'{msg.channel.name}' message does not validate", messages.ERROR)
                         return super().get(request, *args, **kwargs)
 
                     msg.clean()
