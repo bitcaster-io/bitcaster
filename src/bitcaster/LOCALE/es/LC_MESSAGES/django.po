@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-15 09:01+0200\n"
+"POT-Creation-Date: 2019-04-16 13:05+0200\n"
 "PO-Revision-Date: 2018-03-02 17:53+0000\n"
 "Last-Translator: Domenico Di Nicola <dom.dinicola@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/sax9/teams/84041/es/)\n"
@@ -35,15 +35,15 @@ msgstr "Pendiente"
 msgid "Concluded"
 msgstr "Concluido"
 
-#: bitcaster/admin/security.py:40
+#: bitcaster/admin/security.py:41
 msgid "Personal info"
 msgstr "Información personal"
 
-#: bitcaster/admin/security.py:43
+#: bitcaster/admin/security.py:44
 msgid "Permissions"
 msgstr ""
 
-#: bitcaster/admin/security.py:46
+#: bitcaster/admin/security.py:47
 msgid "Important dates"
 msgstr ""
 
@@ -64,15 +64,15 @@ msgstr ""
 msgid "User inactive or deleted."
 msgstr ""
 
-#: bitcaster/config/settings.py:146
+#: bitcaster/config/settings.py:142
 msgid "English"
 msgstr ""
 
-#: bitcaster/config/settings.py:147
+#: bitcaster/config/settings.py:143
 msgid "French"
 msgstr ""
 
-#: bitcaster/config/settings.py:148
+#: bitcaster/config/settings.py:144
 msgid "Italian"
 msgstr ""
 
@@ -226,7 +226,7 @@ msgid ""
 "    "
 msgstr ""
 
-#: bitcaster/exceptions.py:65 bitcaster/social_auth.py:114
+#: bitcaster/exceptions.py:65 bitcaster/social_auth.py:122
 #, python-format
 msgid "Sorry, you do not seem to be a public member of %s"
 msgstr ""
@@ -281,14 +281,14 @@ msgstr ""
 msgid "Members only. (Only members of Application Teams can subscribe)"
 msgstr ""
 
-#: bitcaster/models/event.py:56
+#: bitcaster/models/event.py:57
 #: bitcaster/web/templates/bitcaster/application/subscriptions/list.html:15
 #: bitcaster/web/templates/bitcaster/user/events.html:17
 #: bitcaster/web/templates/bitcaster/user/subscriptions/list.html:7
 msgid "Event"
 msgstr ""
 
-#: bitcaster/models/event.py:57
+#: bitcaster/models/event.py:58
 #: bitcaster/web/templates/bitcaster/application/base.html:21
 #: bitcaster/web/templates/bitcaster/user/base.html:36
 #: bitcaster/web/templates/bitcaster/~OLD/users/base.html:59
@@ -296,32 +296,32 @@ msgstr ""
 msgid "Events"
 msgstr ""
 
-#: bitcaster/models/invitation.py:22
+#: bitcaster/models/invitation.py:23
 msgid "Queued"
 msgstr ""
 
-#: bitcaster/models/invitation.py:23
+#: bitcaster/models/invitation.py:24
 #: bitcaster/web/templates/bitcaster/application/subscriptions/list.html:58
 msgid "Sent"
 msgstr ""
 
-#: bitcaster/models/invitation.py:24
+#: bitcaster/models/invitation.py:25
 msgid "Accepted"
 msgstr ""
 
-#: bitcaster/models/invitation.py:25
+#: bitcaster/models/invitation.py:26
 msgid "Canceled"
 msgstr ""
 
-#: bitcaster/models/invitation.py:26
+#: bitcaster/models/invitation.py:27
 msgid "Expired"
 msgstr ""
 
-#: bitcaster/models/invitation.py:64
+#: bitcaster/models/invitation.py:67
 msgid "Invitation"
 msgstr ""
 
-#: bitcaster/models/invitation.py:65
+#: bitcaster/models/invitation.py:68
 msgid "Invitations"
 msgstr ""
 
@@ -552,11 +552,15 @@ msgstr ""
 
 #: bitcaster/security.py:12 bitcaster/security.py:17
 #: bitcaster/web/templates/bitcaster/base.html:74
-#: bitcaster/web/templates/bitcaster/user/base.html:51
+#: bitcaster/web/templates/bitcaster/user/base.html:52
 msgid "Admin"
 msgstr ""
 
-#: bitcaster/social_auth.py:116
+#: bitcaster/social_auth.py:36
+msgid "Invitation not found"
+msgstr ""
+
+#: bitcaster/social_auth.py:119
 msgid ""
 "You must have a public email configured in GitHub. Goto Settings/Profile and "
 "choose your public email"
@@ -598,38 +602,50 @@ msgstr ""
 msgid "Monitor with this name already exists"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:62
+#: bitcaster/web/forms/user.py:42 bitcaster/web/views/system_setup.py:27
+msgid "Passwords do not match"
+msgstr ""
+
+#: bitcaster/web/forms/user.py:45
+msgid "Set your new password"
+msgstr ""
+
+#: bitcaster/web/forms/user.py:47
+msgid "Repeat password"
+msgstr ""
+
+#: bitcaster/web/forms/user.py:77
 msgid "Friendly Name"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:63
+#: bitcaster/web/forms/user.py:78
 msgid "Full Name"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:90 bitcaster/web/forms/user.py:137
+#: bitcaster/web/forms/user.py:105 bitcaster/web/forms/user.py:152
 msgid "The two password fields didn't match."
 msgstr ""
 
-#: bitcaster/web/forms/user.py:94 bitcaster/web/forms/user.py:142
-#: bitcaster/web/views/system_setup.py:33
+#: bitcaster/web/forms/user.py:109 bitcaster/web/forms/user.py:157
+#: bitcaster/web/views/system_setup.py:34
 msgid "Password"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:101 bitcaster/web/forms/user.py:149
-#: bitcaster/web/views/system_setup.py:39
+#: bitcaster/web/forms/user.py:116 bitcaster/web/forms/user.py:164
+#: bitcaster/web/views/system_setup.py:40
 msgid "Password confirmation"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:105 bitcaster/web/forms/user.py:153
-#: bitcaster/web/views/system_setup.py:42
+#: bitcaster/web/forms/user.py:120 bitcaster/web/forms/user.py:168
+#: bitcaster/web/views/system_setup.py:43
 msgid "Enter the same password as before, for verification."
 msgstr ""
 
-#: bitcaster/web/forms/user.py:210
+#: bitcaster/web/forms/user.py:225
 msgid "Address assignment for this Channel already exists."
 msgstr ""
 
-#: bitcaster/web/forms/user.py:323
+#: bitcaster/web/forms/user.py:338
 msgid "This channel is already used."
 msgstr ""
 
@@ -1253,11 +1269,7 @@ msgstr ""
 msgid "Stop Impersonate"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/base.html:91
-msgid "Impersonate"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/base.html:102
+#: bitcaster/web/templates/bitcaster/base.html:96
 #: bitcaster/web/templates/bitcaster/~OLD/users/base.html:65
 msgid "Logout"
 msgstr ""
@@ -1282,7 +1294,7 @@ msgstr ""
 msgid "URL name"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/login.html:32
+#: bitcaster/web/templates/bitcaster/login.html:33
 msgid "Login"
 msgstr ""
 
@@ -1292,7 +1304,7 @@ msgid "Create new application"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/organization/base.html:24
-#: bitcaster/web/templates/bitcaster/user/base.html:58
+#: bitcaster/web/templates/bitcaster/user/base.html:59
 #: bitcaster/web/views/user/application.py:20
 msgid "Applications"
 msgstr ""
@@ -1356,7 +1368,7 @@ msgstr ""
 msgid "Agents"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/user/address_verify.html:43
+#: bitcaster/web/templates/bitcaster/user/address_verify.html:42
 #, python-format
 msgid ""
 "\n"
@@ -1400,6 +1412,10 @@ msgstr ""
 msgid "Add Assignment"
 msgstr ""
 
+#: bitcaster/web/templates/bitcaster/user/base.html:42
+msgid "Social Login"
+msgstr ""
+
 #: bitcaster/web/templates/bitcaster/user/events.html:16
 #: bitcaster/web/templates/bitcaster/user/subscriptions/list.html:6
 msgid "Application"
@@ -1411,6 +1427,14 @@ msgstr ""
 
 #: bitcaster/web/templates/bitcaster/user/profile.html:13
 msgid "To change your picture, go to"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/social.html:15
+msgid ""
+"\n"
+"        Link your Bitcaster account to any of the providers below and log in "
+"without a username or password.\n"
+"    "
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/user/subscribe.html:4
@@ -1594,7 +1618,7 @@ msgstr ""
 #: bitcaster/web/views/application/members.py:125
 #: bitcaster/web/views/application/teams.py:133
 #: bitcaster/web/views/organization/groups.py:130
-#: bitcaster/web/views/organization/members.py:79
+#: bitcaster/web/views/organization/members.py:80
 msgid "User removed"
 msgstr ""
 
@@ -1676,7 +1700,7 @@ msgid "Unable to send message: {}"
 msgstr ""
 
 #: bitcaster/web/views/invitations.py:105
-#: bitcaster/web/views/organization/invitations.py:148
+#: bitcaster/web/views/organization/invitations.py:154
 msgid "Invite expired"
 msgstr ""
 
@@ -1733,11 +1757,19 @@ msgstr ""
 msgid "User <strong>%(object)s</strong> will be removed from group"
 msgstr ""
 
-#: bitcaster/web/views/organization/invitations.py:144
+#: bitcaster/web/views/organization/invitations.py:125
+msgid "Accept invitation"
+msgstr ""
+
+#: bitcaster/web/views/organization/invitations.py:146
+msgid "Invalid invitation"
+msgstr ""
+
+#: bitcaster/web/views/organization/invitations.py:150
 msgid "Email used"
 msgstr ""
 
-#: bitcaster/web/views/organization/members.py:78
+#: bitcaster/web/views/organization/members.py:79
 #, python-format
 msgid "User <strong>%(object)s</strong> will be removed from %(organization)s"
 msgstr ""
@@ -1760,10 +1792,6 @@ msgstr ""
 
 #: bitcaster/web/views/settings.py:219
 msgid "Backup / Restore"
-msgstr ""
-
-#: bitcaster/web/views/system_setup.py:26
-msgid "Passwords do not match"
 msgstr ""
 
 #: bitcaster/web/views/user/address.py:124
@@ -1790,6 +1818,10 @@ msgstr ""
 
 #: bitcaster/web/views/user/base.py:56
 msgid "Check your inbox to validate your new email address"
+msgstr ""
+
+#: bitcaster/web/views/user/social.py:12 bitcaster/web/views/user/social.py:21
+msgid "Social login settings"
 msgstr ""
 
 #: bitcaster/web/views/user/subscriptions.py:54
