@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-16 13:05+0200\n"
+"POT-Creation-Date: 2019-04-16 17:13+0200\n"
 "PO-Revision-Date: 2018-03-02 17:53+0000\n"
 "Last-Translator: Domenico Di Nicola <dom.dinicola@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/sax9/teams/84041/es/)\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: bitcaster/admin/channel.py:74 bitcaster/admin/monitor.py:91
 #: bitcaster/web/views/organization/org.py:80
-#: bitcaster/web/views/settings.py:67
+#: bitcaster/web/views/settings.py:68
 msgid "Configuration saved"
 msgstr "Configuración guardada"
 
@@ -64,15 +64,15 @@ msgstr ""
 msgid "User inactive or deleted."
 msgstr ""
 
-#: bitcaster/config/settings.py:142
+#: bitcaster/config/settings.py:143
 msgid "English"
 msgstr ""
 
-#: bitcaster/config/settings.py:143
+#: bitcaster/config/settings.py:144
 msgid "French"
 msgstr ""
 
-#: bitcaster/config/settings.py:144
+#: bitcaster/config/settings.py:145
 msgid "Italian"
 msgstr ""
 
@@ -381,8 +381,8 @@ msgid "Plugin"
 msgstr ""
 
 #: bitcaster/models/plugin.py:40
-#: bitcaster/web/templates/bitcaster/settings/base.html:37
-#: bitcaster/web/views/settings.py:207
+#: bitcaster/web/templates/bitcaster/settings/base.html:42
+#: bitcaster/web/views/settings.py:214
 msgid "Plugins"
 msgstr ""
 
@@ -686,7 +686,7 @@ msgstr ""
 #: bitcaster/web/templates/admin/invalid_setup.html:6
 #: bitcaster/web/templates/admin/object_history.html:6
 #: bitcaster/web/templates/bitcaster/base.html:65
-#: bitcaster/web/templates/bitcaster/settings/base.html:49
+#: bitcaster/web/templates/bitcaster/settings/base.html:54
 #: bitcaster/web/templates/registration/logged_out.html:4
 #: bitcaster/web/templates/registration/password_change_done.html:6
 #: bitcaster/web/templates/registration/password_change_form.html:7
@@ -694,7 +694,7 @@ msgstr ""
 #: bitcaster/web/templates/registration/password_reset_confirm.html:7
 #: bitcaster/web/templates/registration/password_reset_done.html:6
 #: bitcaster/web/templates/registration/password_reset_form.html:7
-#: bitcaster/web/views/user/base.py:28
+#: bitcaster/web/views/user/base.py:33
 msgid "Home"
 msgstr ""
 
@@ -1334,12 +1334,12 @@ msgid "Enrolled on"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/settings/base.html:11
-#: bitcaster/web/views/settings.py:75
+#: bitcaster/web/views/settings.py:76
 msgid "General"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/settings/base.html:17
-#: bitcaster/web/views/settings.py:81
+#: bitcaster/web/views/settings.py:88
 msgid "Mail Server"
 msgstr ""
 
@@ -1348,15 +1348,19 @@ msgid "OAuth 2.0"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/settings/base.html:27
-msgid "LDAP"
+msgid "Services"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/settings/base.html:32
-#: bitcaster/web/views/settings.py:136
+msgid "LDAP"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/settings/base.html:37
+#: bitcaster/web/views/settings.py:143
 msgid "Environment"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/settings/base.html:42
+#: bitcaster/web/templates/bitcaster/settings/base.html:47
 msgid "Backup/Restore"
 msgstr ""
 
@@ -1774,23 +1778,27 @@ msgstr ""
 msgid "User <strong>%(object)s</strong> will be removed from %(organization)s"
 msgstr ""
 
-#: bitcaster/web/views/settings.py:111
+#: bitcaster/web/views/settings.py:82
+msgid "External services"
+msgstr ""
+
+#: bitcaster/web/views/settings.py:118
 msgid "Test succeed. Check your inbox"
 msgstr ""
 
-#: bitcaster/web/views/settings.py:114
+#: bitcaster/web/views/settings.py:121
 msgid "Configuration problem. Unable to send emails."
 msgstr ""
 
-#: bitcaster/web/views/settings.py:125
+#: bitcaster/web/views/settings.py:132
 msgid "Oauth"
 msgstr ""
 
-#: bitcaster/web/views/settings.py:131
+#: bitcaster/web/views/settings.py:138
 msgid "Ldap"
 msgstr ""
 
-#: bitcaster/web/views/settings.py:219
+#: bitcaster/web/views/settings.py:226
 msgid "Backup / Restore"
 msgstr ""
 
@@ -1812,11 +1820,11 @@ msgstr ""
 msgid "Some subscription need extra steps to complete. "
 msgstr ""
 
-#: bitcaster/web/views/user/base.py:36
+#: bitcaster/web/views/user/base.py:41
 msgid "My Profile"
 msgstr ""
 
-#: bitcaster/web/views/user/base.py:56
+#: bitcaster/web/views/user/base.py:97
 msgid "Check your inbox to validate your new email address"
 msgstr ""
 
