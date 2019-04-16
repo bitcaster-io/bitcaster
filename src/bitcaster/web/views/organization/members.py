@@ -1,6 +1,7 @@
 import logging
 
 from crispy_forms.helper import FormHelper
+from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import ModelFormMixin
 
@@ -77,3 +78,9 @@ class OrganizationMembershipEdit(MemberMixin, MemberFormMixin, BitcasterBaseUpda
 class OrganizationMembershipDelete(MemberMixin, BitcasterBaseDeleteView):
     message = _('User <strong>%(object)s</strong> will be removed from %(organization)s')
     user_message = _('User removed')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.user.delete()
+        return HttpResponseRedirect(success_url)

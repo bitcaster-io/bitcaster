@@ -15,5 +15,8 @@ class LogoutView(_LogoutView):
 
 class LoginView(_LoginView):
     form_class = AuthenticationForm
-
     template_name = 'bitcaster/login.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = 'Login'
+        return super().get_context_data(**kwargs)

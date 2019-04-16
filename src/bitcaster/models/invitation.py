@@ -15,6 +15,7 @@ from .application import Application
 from .event import Event
 from .organization import Organization
 from .team import ApplicationTeam
+from .user import User
 
 
 class Invitation(models.Model):
@@ -26,6 +27,8 @@ class Invitation(models.Model):
         EXPIRED = _('Expired')
 
     target = models.CharField(max_length=200)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             blank=True, null=True)
     invited_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                    null=True, blank=True,
                                    on_delete=models.SET_NULL,

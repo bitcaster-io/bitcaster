@@ -22,43 +22,43 @@ USER_FIELDS = ['username', 'email', 'fullname']
 def associate_invitation(backend, details, user=None, strategy=None, *args, **kwargs):
     invitation_id = strategy.session_get('invitation')
     is_new = kwargs['is_new']
-    if is_new:
-        fields = {'email': details['email'],
-                  'name': details['fullname'],
-                  'friendly_name': details['username']}
+    organization = None,
+    role = None
+    if is_new and invitation_id:
+        fields = {'name': details['fullname'],
+                  'friendly_name': details['fullname']}
         if invitation_id:
-            invite = Invitation.objects.get(pk=id, date_accepted__isnull=True)
+            user, is_new = User.objects.get_or_create(email=details['email'],
+                                                      defaults=fields)
+            try:
+                invite = Invitation.objects.get(pk=invitation_id, date_accepted__isnull=True)
+            except Invitation.DoesNotExist:
+                raise AuthFailed(backend, _('Invitation not found'))
             invite.date_accepted = timezone.now()
+            invite.user = user
             invite.save()
             organization = invite.organization
-            # application = invite.application
 
             if invite.role == ROLES.SUPERUSER:
                 fields['is_superuser'] = True
                 role = ROLES.OWNER
             else:
                 role = invite.role
-            if invite:
-                is_new = True
         else:
             organization = Organization.objects.get()
             role = ROLES.MEMBER
 
-        user = User.objects.create(**fields)
         organization.memberships.create(user=user, role=role)
 
     return {
+        'organization': organization,
+        'role': role,
         'is_new': is_new,
         'user': user
     }
 
 
-def create_default_membership(backend, details, new_association=False, uid=None, *args, **kwargs):
-    # this must be called AFTER associate_invitation
-    # invitation_id = backend.strategy.session_get('invitation')
-    # if invitation_id:
-    #     invite = OrganizationMember.objects.filter(pk=invitation_id, user__isnull=False).first()
-
+def link_social_account(backend, details, new_association=False, uid=None, *args, **kwargs):
     if new_association:
         storage = backend.strategy.storage
         user = User.objects.get(email=details['email'])
@@ -119,8 +119,4 @@ class BitcasterGithubOrganizationOAuth2(GithubOrganizationOAuth2):
                 raise AuthFailed(self, _('You must have a public email configured in GitHub. '
                                          'Goto Settings/Profile and choose your public email'))
         except AuthFailed:
-            # from bitcaster.state import state
-            # if not state.request.user.is_authenticated:
             raise AuthFailed(self, _('Sorry, you do not seem to be a public member of %s') % self.setting('NAME'))
-
-        return user_data

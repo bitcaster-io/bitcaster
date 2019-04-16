@@ -14,7 +14,8 @@ from django.views.generic.edit import FormMixin, ProcessFormView
 from strategy_field.utils import fqn
 
 from bitcaster.framework.db.fields import ROLES
-from bitcaster.models import Organization, User
+from bitcaster.models import (Application, AuditLogEntry,
+                              Event, Organization, User,)
 # from bitcaster.models.configurationissue import check_organization
 from bitcaster.models.organization import RESERVED_ORGANIZATION_NAME
 from bitcaster.models.validators import ListValidator, NameValidator
@@ -67,19 +68,29 @@ class SetupView(TemplateView, FormMixin, ProcessFormView):
 
     def form_valid(self, form):
         with transaction.atomic():
-            organization = form.cleaned_data['organization']
+            name = form.cleaned_data['organization']
             user = User.objects.create_superuser(form.cleaned_data['email'],
                                                  form.cleaned_data['password1'])
-            org = Organization.objects.create(name=organization,
-                                              slug=slugify(organization),
-                                              admin_email=user.email,
-                                              is_core=True,
-                                              owner=user)
-            org.add_member(user, role=ROLES.OWNER, date_enrolled=timezone.now())
-            # org.teams.create(name='Owners', manager=user)
 
-            # check_organization(org)
+            configure_system(name, user)
             config.SYSTEM_CONFIGURED = 0
             config.INITIALIZED = 1
             login(self.request, user, fqn(ModelBackend))
         return super().form_valid(form)
+
+
+def configure_system(name, owner):
+    org = Organization.objects.create(name=name,
+                                      slug=slugify(name),
+                                      admin_email=owner.email,
+                                      is_core=True,
+                                      owner=owner)
+    org.add_member(owner, role=ROLES.OWNER, date_enrolled=timezone.now())
+    bitcaster = Application.objects.create(name='Bitcaster',
+                                           organization=org,
+                                           core=True)
+    for evt in AuditLogEntry.AuditEvent:
+        Event.objects.create(application=bitcaster,
+                             core=True,
+                             name=evt.name,
+                             subscription_policy=Event.POLICIES.MEMBERS)

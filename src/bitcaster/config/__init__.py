@@ -21,6 +21,4 @@ DEFAULTS = dict(
     SENTRY_ENABLED=(bool, False),
     STATIC_ROOT=(str, str(Path(__file__).parent.parent / 'web' / 'static')),
     URL_PREFIX=(str, ''),
-    ADVANCED_MODE=(bool, False),
-    ENABLE_IMPERSONATE=(bool, False)
 )

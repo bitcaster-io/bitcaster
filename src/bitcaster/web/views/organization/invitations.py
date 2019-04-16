@@ -88,13 +88,14 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
             user = User.objects.create(email=form.cleaned_data['email'],
                                        is_active=True,
                                        friendly_name=form.cleaned_data['friendly_name'],
-                                       password=make_password(form.cleaned_data['password']),
+                                       password=make_password(form.cleaned_data['password1']),
                                        )
             membership = OrganizationMember.objects.create(organization=self.selected_organization,
                                               user=user,
                                               role=self.invitation.role or ROLES.MEMBER,
                                               date_enrolled=timezone.now())
             self.invitation.date_accepted = timezone.now()
+            self.invitation.user = user
             self.invitation.save()
             self.audit(event=AuditLogEntry.AuditEvent.INVITATION_ACCEPTED,
                        actor=user,
@@ -121,6 +122,7 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
+        kwargs['title'] = _('Accept invitation')
         if self.invitation:
             kwargs['invitation'] = self.invitation
             kwargs['invitation_id'] = self.invitation.pk  # this is required by oauth
@@ -140,6 +142,10 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
 
     def get(self, request, **kwargs):
         check = kwargs['check']
+        if not self.invitation:
+            self.message_user(_('Invalid invitation'), messages.ERROR)
+            return HttpResponseRedirect('/')
+
         if User.objects.filter(email=self.invitation.target).exists():
             self.message_user(_('Email used'), messages.ERROR)
         if totp.verify(check, valid_window=config.INVITATION_EXPIRE):

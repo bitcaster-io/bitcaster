@@ -4,7 +4,7 @@ from django.conf import settings
 from django.urls import include, path, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
-from bitcaster.config.environ import env
+from bitcaster.utils.impersonate import impersonate_start, impersonate_stop
 
 from . import views
 
@@ -48,7 +48,8 @@ urlpatterns = [
     path('<slug:org>/me/', views.UserHome.as_view(), name='me'),
     path('<slug:org>/me/events/', views.UserEventListView.as_view(), name='user-events'),
     path('<slug:org>/me/social/', views.UserSocialAuthView.as_view(), name='user-socialauth'),
-    path('<slug:org>/me/social/<str:provider>/disconnect/', views.UserSocialAuthDisconnectView.as_view(), name='user-socialauth-disconnect'),
+    path('<slug:org>/me/social/<str:provider>/disconnect/', views.UserSocialAuthDisconnectView.as_view(),
+         name='user-socialauth-disconnect'),
     path('<slug:org>/me/event/<int:pk>/subscribe/', views.UserEventSubcribe.as_view(), name='user-event-subscribe'),
     path('<slug:org>/me/subscriptions/', views.UserSubscriptionListView.as_view(), name='user-subscriptions'),
     path('<slug:org>/me/subscriptions/<int:pk>/toggle/', views.UserSubscriptionToggle.as_view(),
@@ -245,7 +246,7 @@ urlpatterns += [
          name='app-candidate-autocomplete'),
 ]
 
-if env('ENABLE_IMPERSONATE'):
-    urlpatterns += (
-        path('impersonate/', include('impersonate.urls')),
-    )
+urlpatterns += (
+    path('impersonate/stop/', impersonate_stop, name='impersonate-stop'),
+    path('impersonate/<int:uid>/', impersonate_start, name='impersonate-start'),
+)

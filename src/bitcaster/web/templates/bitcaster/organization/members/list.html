@@ -62,6 +62,13 @@
                            href="{% org-url "org-member-delete" membership.pk %}">
                             <i class="far fa-trash-alt"></i>
                         </a>
+                        {% if config.ENABLE_IMPERSONATE %}
+                        <a class="btn btn-outline-light"
+                           data-toggle="tooltip" title="impersonate"
+                           href="{% url 'impersonate-start' membership.user.pk %}">
+                            <i class="far fa-user red"></i>
+                        </a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

@@ -1,6 +1,6 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from social_core.exceptions import AuthFailed
+from social_core.exceptions import AuthCanceled, AuthFailed
 
 from bitcaster.exceptions import NotMemberOfOrganization
 from bitcaster.messages import alarms
@@ -24,7 +24,7 @@ class ExceptionHandlerMiddleware(object):
     def process_exception(self, request, exception):
         # Actually this code is only used if DEBUG=True
         # and it is needed to provide the same behaviour as in production (DEBUG=False)
-        if isinstance(exception, (NotMemberOfOrganization, AuthFailed)):
+        if isinstance(exception, (NotMemberOfOrganization, AuthFailed, AuthCanceled)):
             alarms.error(request, str(exception))
             url = reverse('login')
             return HttpResponseRedirect(url)

@@ -72,11 +72,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-]
-if env('ENABLE_IMPERSONATE'):
-    MIDDLEWARE += ['impersonate.middleware.ImpersonateMiddleware', ]
-
-MIDDLEWARE += [
+    'impersonate.middleware.ImpersonateMiddleware',
     'bitcaster.middleware.i18n.UserLanguageMiddleware',
     'bitcaster.middleware.message.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -477,6 +473,9 @@ CONSTANCE_CONFIG = OrderedDict({
     'SOCIAL_AUTH_FACEBOOK_KEY': ('', '', str),
     'SOCIAL_AUTH_FACEBOOK_SECRET': ('', '', str),
 
+    'ENABLE_IMPERSONATE': (False, '', bool),
+    'ADVANCED_MODE': (False, '', bool),
+
 })
 CONSTANCE_CONFIG_FIELDSETS = {'Options': list(CONSTANCE_CONFIG.keys())}
 
@@ -544,12 +543,13 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.auth_allowed',  # 2
     'social_core.pipeline.social_auth.social_user',  # 3
     'social_core.pipeline.user.get_username',  # 4
-    'social_core.pipeline.social_auth.associate_by_email',  # 5
-    'social_core.pipeline.social_auth.associate_user',  # 6
+    # 'social_core.pipeline.user.create_user',  # 4
+    # 'bitcaster.social_auth.associate_by_email',  # 5
+    'social_core.pipeline.social_auth.associate_user',  # 6  create SocialAuth instance
     'social_core.pipeline.social_auth.load_extra_data',  # 7
     'social_core.pipeline.user.user_details',  # 8
     'bitcaster.social_auth.associate_invitation',  # 9
-    'bitcaster.social_auth.create_default_membership',  # 10
+    'bitcaster.social_auth.link_social_account',  # 10
     # 'social_core.pipeline.social_auth.social_details',
     # 'social_core.pipeline.social_auth.social_uid',
     # 'social_core.pipeline.social_auth.social_user',
@@ -595,14 +595,6 @@ SOCIAL_AUTH_LINKEDIN_EXTRA_DATA = [('id', 'id'),
                                    ('headline', 'headline'),
                                    ('industry', 'industry')]
 
-#
-# # SOCIAL_AUTH_GITHUB_ORG_NAME = 'bitcaster-io'
-# SOCIAL_AUTH_GITHUB_KEY = env('SOCIAL_AUTH_GITHUB_KEY')
-# SOCIAL_AUTH_GITHUB_SECRET = env('SOCIAL_AUTH_GITHUB_SECRET')
-#
-# # SOCIAL_AUTH_GITHUB_KEY = env('SOCIAL_AUTH_GITHUB_KEY')
-# # SOCIAL_AUTH_GITHUB_SECRET = env('SOCIAL_AUTH_GITHUB_SECRET')
-#
 # DJANGO-RECAPTCHA
 RECAPTCHA_PUBLIC_KEY = ''
 RECAPTCHA_PRIVATE_KEY = ''

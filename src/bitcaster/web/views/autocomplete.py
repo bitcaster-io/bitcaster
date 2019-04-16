@@ -18,6 +18,8 @@ class UserAutocomplete(LoginRequiredMixin, Select2QuerySetView):
 
 
 class ChannelAutocomplete(SelectedOrganizationMixin, LoginRequiredMixin, Select2QuerySetView):
+    permissions = None
+
     def get_queryset(self):
         qs = self.selected_organization.channels.all()
 

@@ -68,6 +68,7 @@ class Application(AbstractModel, ReverseWrapperMixin):
     manageable_groups = models.BooleanField(null=False, default=False,
                                             help_text='Managers can change allowed groups. '
                                                       'Otherwise only admins can.')
+    core = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'bitcaster'

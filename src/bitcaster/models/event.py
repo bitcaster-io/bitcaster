@@ -48,6 +48,7 @@ class Event(ReverseWrapperMixin, AbstractModel):
     subscription_policy = models.IntegerField(choices=POLICIES,
                                               default=POLICIES.FREE)
     limit_to_teams = models.ManyToManyField(ApplicationTeam)
+    core = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'bitcaster'

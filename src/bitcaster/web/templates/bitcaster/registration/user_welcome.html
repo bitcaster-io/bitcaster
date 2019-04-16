@@ -1,4 +1,4 @@
-{% extends "bitcaster/base.html" %}{% load crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
+{% extends "bitcaster/base.html" %}{% load crispy_forms_utils bc_assets crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
 {% block body %}
 
     <div class="container">
@@ -8,25 +8,40 @@
                     {% if invitation.user %}
                         <div>Registration token already used</div>
                     {% else %}
-                        <div class="container-fluid p-3">
-                            <form method="post">
+                        <form method="post" class="mb-1">
+                            <div class="container-fluid p-3">
                                 {% csrf_token %}
                                 {{ form.errors|as_crispy_errors }}
-                                {#                            <input type="hidden" name="next" value="/">#}
-                                {{ form|crispy }}
-                                <input type="submit" value="Register"
-                                       class="btn btn-primary"/>
-                            </form>
-                        </div>
-{#                        {% include "bitcaster/includes/_oauth.html" %}#}
+                                {{ form.friendly_name|as_crispy_field }}
+                                {{ form.email|as_crispy_field }}
+                                {{ form.password1|as_crispy_field }}
+                                <div class="password-strength"></div>
+                                {{ form.password2|as_crispy_field }}
+                            </div>
+                            <input type="submit" value="Register"
+                                   class="btn btn-primary"/>
+                        </form>
+                        {% include "bitcaster/_includes/oauth.html" %}
                     {% endif %}
                 {% else %}
                     <div class="text-center align-middle h1">
-                    <i class="fa fa-ban red mr-5 fa-large"></i>
+                        <i class="fa fa-ban red mr-5 fa-large"></i>
                         <span class="mb-5">Invitation not found</span>
                     </div>
                 {% endif %}
             </div>
         </div>
     </div>
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script src="{% asset "bitcaster/pwstrength.js" %}"></script>
+    <script>
+        if (window.pwds) {
+            window.pwds.addStrengthIndicator(
+                "#id_password",
+                ".password-strength"
+            );
+        }
+    </script>
 {% endblock %}
