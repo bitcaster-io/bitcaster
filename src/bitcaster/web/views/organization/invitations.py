@@ -1,7 +1,7 @@
 import logging
 
 from constance import config
-from django.contrib.auth import login, logout
+from django.contrib.auth import login
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
@@ -13,6 +13,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import CreateView
+from django.views.generic.edit import FormMixin, ProcessFormView
 from strategy_field.utils import fqn
 
 from bitcaster import messages
@@ -20,10 +21,10 @@ from bitcaster.framework.db.fields import ROLES
 from bitcaster.models import (AuditLogEntry, Invitation, Organization,
                               OrganizationMember, User,)
 from bitcaster.otp import totp
-from bitcaster.web.forms import (OrganizationInvitationFormSet,
+from bitcaster.web.forms import (OrganizationInvitationForm,
                                  UserInviteRegistrationForm,)
-from bitcaster.web.views.invitations import (InvitationCreate,
-                                             InvitationDelete, InvitationSend,)
+from bitcaster.web.views.base import BitcasterTemplateView
+from bitcaster.web.views.invitations import InvitationDelete, InvitationSend
 from bitcaster.web.views.mixins import LogAuditMixin, MessageUserMixin
 
 from .org import OrganizationBaseView
@@ -34,30 +35,62 @@ logger = logging.getLogger(__name__)
 class OrgInviteMixin(OrganizationBaseView):
     model = Invitation
 
-    def get_success_url(self):
-        return self.selected_organization.urls.members
+    # def get_success_url(self):
+    #     return self.selected_organization.urls.members
+    #
+    # def get_queryset(self):
+    #     return self.selected_organization.invitations
 
-    def get_queryset(self):
-        return self.selected_organization.invitations
 
+class OrganizationMemberInvite(OrganizationBaseView, LogAuditMixin,
+                               FormMixin,
+                               ProcessFormView,
+                               BitcasterTemplateView):
+    form_class = OrganizationInvitationForm
 
-class OrganizationMemberInvite(OrgInviteMixin, LogAuditMixin, InvitationCreate):
-    form_class = OrganizationInvitationFormSet
     template_name = 'bitcaster/organization/members/invite.html'
     title = _('Invite people')
 
-    def get_parent_instance(self):
-        return self.selected_organization
+    def get_success_url(self):
+        return self.selected_organization.urls.members
 
-    def form_valid(self, formset):
-        ret = super().form_valid(formset)
-        if formset.new_objects:
-            for invitation in formset.new_objects:
-                self.audit(event=AuditLogEntry.AuditEvent.INVITATION_CREATED,
-                           actor=invitation.invited_by,
-                           target_object=invitation.pk,
-                           target_label=str(invitation))
-        return ret
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['organization'] = self.selected_organization
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        kwargs['roles'] = ROLES
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        values = {'role': form.cleaned_data['role'],
+                  'organization': self.selected_organization,
+                  'invited_by': self.request.user}
+        for email in form.cleaned_data['emails']:
+            values['target'] = email
+            invitation = Invitation.objects.create(**values)
+            invitation.groups.set(form.cleaned_data['groups'])
+            invitation.send_email()
+            self.audit(event=AuditLogEntry.AuditEvent.INVITATION_CREATED,
+                       actor=invitation.invited_by,
+                       target_object=invitation.pk,
+                       target_label=str(invitation))
+
+        return super().form_valid(form)
+
+    # def get_parent_instance(self):
+    #     return self.selected_organization
+    #
+    # def form_valid(self, formset):
+    #     ret = super().form_valid(formset)
+    #     if formset.new_objects:
+    #         for invitation in formset.new_objects:
+    #             self.audit(event=AuditLogEntry.AuditEvent.INVITATION_CREATED,
+    #                        actor=invitation.invited_by,
+    #                        target_object=invitation.pk,
+    #                        target_label=str(invitation))
+    #     return ret
 
 
 class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView):
@@ -70,14 +103,14 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
         organization = Organization.objects.get(slug=self.kwargs['org'])
         return organization
 
-    def check_perms(self, *args, **kwargs):
-        return True
+    # def check_perms(self, *args, **kwargs):
+    #     return True
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            logout(request)
-            # return HttpResponseBadRequest("User already logged")
-        return super().dispatch(request, *args, **kwargs)
+    # def dispatch(self, request, *args, **kwargs):
+    #     if request.user.is_authenticated:
+    #         logout(request)
+    #         # return HttpResponseBadRequest("User already logged")
+    #     return super().dispatch(request, *args, **kwargs)
 
     @method_decorator(sensitive_post_parameters())
     def post(self, request, *args, **kwargs):
@@ -91,9 +124,12 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
                                        password=make_password(form.cleaned_data['password1']),
                                        )
             membership = OrganizationMember.objects.create(organization=self.selected_organization,
-                                              user=user,
-                                              role=self.invitation.role or ROLES.MEMBER,
-                                              date_enrolled=timezone.now())
+                                                           user=user,
+                                                           role=self.invitation.role or ROLES.MEMBER,
+                                                           date_enrolled=timezone.now())
+            for g in self.invitation.groups.all():
+                g.members.add(membership)
+
             self.invitation.date_accepted = timezone.now()
             self.invitation.user = user
             self.invitation.save()
@@ -144,7 +180,7 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
         check = kwargs['check']
         if not self.invitation:
             self.message_user(_('Invalid invitation'), messages.ERROR)
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('')
 
         if User.objects.filter(email=self.invitation.target).exists():
             self.message_user(_('Email used'), messages.ERROR)
@@ -152,7 +188,7 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
             return super().get(request, **kwargs)
 
         self.message_user(_('Invite expired'), messages.ERROR)
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/login/')
 
 
 class OrgInviteSend(OrgInviteMixin, InvitationSend):

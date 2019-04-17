@@ -14,6 +14,7 @@ from bitcaster.utils.http import absolute_uri
 from .application import Application
 from .event import Event
 from .organization import Organization
+from .organizationgroup import OrganizationGroup
 from .team import ApplicationTeam
 from .user import User
 
@@ -42,10 +43,12 @@ class Invitation(models.Model):
                                     blank=True, null=True,
                                     on_delete=models.SET_NULL,
                                     related_name='invitations')
-    team = models.ForeignKey(ApplicationTeam,
-                             blank=True, null=True,
-                             on_delete=models.SET_NULL,
-                             related_name='invitations')
+    groups = models.ManyToManyField(OrganizationGroup,
+                                    blank=True,
+                                    related_name='invitations')
+    teams = models.ManyToManyField(ApplicationTeam,
+                                   blank=True,
+                                   related_name='invitations')
     role = RoleField(default=ROLES.MEMBER)
 
     event = models.ForeignKey(Event,
@@ -88,16 +91,8 @@ class Invitation(models.Model):
         if self.event:
             self.application = self.event.application
             self.organization = self.event.application.organization
-        elif self.team:
-            self.application = self.team.application
-            self.organization = self.application.organization
         elif self.application:
             self.organization = self.application.organization
-        # elif self.role:
-        #     self.team = None
-        #     self.application = None
-        #     if not self.organization:
-        #         raise ValidationError('Organization is mandatory')
         elif self.organization:
             pass
         else:

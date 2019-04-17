@@ -257,7 +257,6 @@ class TeamFactory(AutoRegisterModelFactory):
         django_get_or_create = ('name',)
 
     application = factory.SubFactory(ApplicationFactory)
-    manager = factory.SubFactory(UserFactory)
     name = factory.Faker('name')
 
     @factory.post_generation
@@ -274,8 +273,17 @@ class TeamFactory(AutoRegisterModelFactory):
 class InvitationFactory(AutoRegisterModelFactory):
     class Meta:
         model = bitcaster.models.Invitation
+        django_get_or_create = ('target',)
 
     organization = factory.SubFactory(OrganizationFactory)
+
+    @classmethod
+    def _get_or_create(cls, model_class, *args, **kwargs):
+        groups = kwargs.pop('groups', None)
+        invitation = super()._get_or_create(model_class, *args, **kwargs)
+        if groups:
+            invitation.groups.set(groups)
+        return invitation
 
 
 #

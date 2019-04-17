@@ -25,7 +25,7 @@ class Event(ReverseWrapperMixin, AbstractModel):
     POLICIES = Choices(
         (1, 'FREE', _('Free. (Everybody can automatically subscribe)')),
         (2, 'INVITATION', _('Invitation. (Require invitation. Event will not be visible)')),
-        (3, 'MEMBERS'), _('Members only. (Only members of Application Teams can subscribe)')
+        (3, 'MEMBERS', _('Members only. (Only members of Application Teams can subscribe)'))
     )
     uuid = UUIDField(default=uuid4, editable=False)
     application = models.ForeignKey(Application,

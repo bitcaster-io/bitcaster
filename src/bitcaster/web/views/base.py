@@ -35,9 +35,9 @@ class BitcasterBaseCreateView(BitcasterBaseViewMixin, CreateView):
 class BitcasterBaseUpdateView(BitcasterBaseViewMixin, BitcasterSingleObjectMixin, UpdateView):
     title = _('Edit %(verbose_name)s')
 
-    def form_valid(self, form):
-        self.message_user(_('Changes saved'), level=messages.SUCCESS)
-        return super().form_valid(form)
+    # def form_valid(self, form):
+    #     self.message_user(_('Changes saved'), level=messages.SUCCESS)
+    #     return super().form_valid(form)
 
 
 class BitcasterBaseDeleteView(BitcasterBaseViewMixin, BitcasterSingleObjectMixin, DeleteView):

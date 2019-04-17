@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-16 17:13+0200\n"
+"POT-Creation-Date: 2019-04-16 23:40+0200\n"
 "PO-Revision-Date: 2018-03-02 17:53+0000\n"
 "Last-Translator: Giovanni Bronzini, 2019\n"
 "Language-Team: French (https://www.transifex.com/sax9/teams/84041/fr/)\n"
@@ -294,7 +294,7 @@ msgstr ""
 "\n"
 "    "
 
-#: bitcaster/exceptions.py:65 bitcaster/social_auth.py:122
+#: bitcaster/exceptions.py:64 bitcaster/social_auth.py:122
 #, python-format
 msgid "Sorry, you do not seem to be a public member of %s"
 msgstr ""
@@ -416,7 +416,6 @@ msgid "Monitor"
 msgstr ""
 
 #: bitcaster/models/monitor.py:60
-#: bitcaster/web/templates/bitcaster/application/base.html:26
 msgid "Monitors"
 msgstr ""
 
@@ -940,6 +939,7 @@ msgstr "Sauvegarder et continuer configuration"
 #: bitcaster/web/templates/bitcaster/application/keys/form.html:9
 #: bitcaster/web/templates/bitcaster/application/members/add.html:8
 #: bitcaster/web/templates/bitcaster/application/members/form.html:20
+#: bitcaster/web/templates/bitcaster/application/monitors/create_wizard_base.html:23
 #: bitcaster/web/templates/bitcaster/application/monitors/form.html:12
 #: bitcaster/web/templates/bitcaster/application/roles/form.html:9
 #: bitcaster/web/templates/bitcaster/application/team/create.html:6
@@ -1343,6 +1343,17 @@ msgstr ""
 msgid "Role"
 msgstr "Rôle"
 
+#: bitcaster/web/templates/bitcaster/application/monitors/create_wizard_base.html:8
+#: bitcaster/web/templates/bitcaster/~OLD/application/monitors/create_wizard_base.html:8
+msgid "Create new monitor"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/application/monitors/create_wizard_base.html:28
+#: bitcaster/web/templates/bitcaster/organization/channel/create_wizard_base.html:25
+#: bitcaster/web/templates/bitcaster/~OLD/application/monitors/create_wizard_base.html:28
+msgid "prev step"
+msgstr "Étape précédente"
+
 #: bitcaster/web/templates/bitcaster/application/monitors/list.html:9
 msgid "Create monitor"
 msgstr ""
@@ -1372,9 +1383,10 @@ msgid "Reason"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/application/subscriptions/list.html:56
+#: bitcaster/web/templates/bitcaster/user/addresses.html:44
 #, fuzzy
 #| msgid "Addresses"
-msgid "Addredd"
+msgid "Address"
 msgstr "Addresses"
 
 #: bitcaster/web/templates/bitcaster/application/subscriptions/list.html:57
@@ -1454,11 +1466,6 @@ msgstr "Applications"
 #: bitcaster/web/views/organization/log.py:15
 msgid "Notification Log"
 msgstr ""
-
-#: bitcaster/web/templates/bitcaster/organization/channel/create_wizard_base.html:25
-#: bitcaster/web/templates/bitcaster/~OLD/application/monitors/create_wizard_base.html:28
-msgid "prev step"
-msgstr "Étape précédente"
 
 #: bitcaster/web/templates/bitcaster/organization/channel/list.html:10
 #: bitcaster/web/templates/bitcaster/~OLD/organization/channels/list.html:10
@@ -1546,12 +1553,6 @@ msgstr ""
 msgid "Label"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/user/addresses.html:44
-#, fuzzy
-#| msgid "Addresses"
-msgid "Address"
-msgstr "Addresses"
-
 #: bitcaster/web/templates/bitcaster/user/addresses.html:91
 msgid ""
 "This address has not been verified. Assign it to a channel and insert the "
@@ -1593,10 +1594,6 @@ msgstr ""
 
 #: bitcaster/web/templates/bitcaster/user/subscriptions/list.html:9
 msgid "Deliver To"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/~OLD/application/monitors/create_wizard_base.html:8
-msgid "Create new monitor"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/~OLD/message/message_list.html:16
@@ -1726,20 +1723,20 @@ msgstr ""
 msgid "Reset my password"
 msgstr ""
 
-#: bitcaster/web/views/application/events/event.py:73
+#: bitcaster/web/views/application/events/event.py:59
 msgid "Create Event"
 msgstr ""
 
-#: bitcaster/web/views/application/events/event.py:78
+#: bitcaster/web/views/application/events/event.py:64
 msgid "Event created"
 msgstr ""
 
-#: bitcaster/web/views/application/events/event.py:96
-#: bitcaster/web/views/application/events/event.py:118
+#: bitcaster/web/views/application/events/event.py:82
+#: bitcaster/web/views/application/events/event.py:104
 msgid "Save Event"
 msgstr ""
 
-#: bitcaster/web/views/application/events/event.py:100
+#: bitcaster/web/views/application/events/event.py:86
 msgid "Event saved"
 msgstr ""
 
@@ -1753,7 +1750,7 @@ msgstr ""
 msgid "Event Messages"
 msgstr "Messages"
 
-#: bitcaster/web/views/application/events/subscription.py:90
+#: bitcaster/web/views/application/events/subscription.py:105
 #, python-format
 msgid "Email %s already exists in this organization"
 msgstr ""
@@ -2036,6 +2033,11 @@ msgstr ""
 #| msgid "Subscription"
 msgid "Change Subscription Channel"
 msgstr "Souscription"
+
+#, fuzzy
+#~| msgid "Addresses"
+#~ msgid "Addredd"
+#~ msgstr "Addresses"
 
 #, fuzzy
 #~| msgid "Log in"

@@ -18,15 +18,9 @@ class ApplicationCreateTeamForm(forms.ModelForm):
 
 class ApplicationTeamForm(forms.ModelForm):
     class Meta:
-        fields = ('name', 'manager')
+        fields = ('name', )
         model = ApplicationTeam
 
     def __init__(self, application, *args, **kwargs):
         self.application = application
         super().__init__(*args, **kwargs)
-
-        self.fields['manager'].queryset = self.application.members.all()
-        # self.fields['manager'].widget.url = reverse('app-member-autocomplete',
-        #                                             args=[self.application.organization.slug,
-        #                                                   self.application.slug]
-        #                                             )

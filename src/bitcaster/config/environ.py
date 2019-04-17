@@ -19,6 +19,9 @@ class Env(environ.Env):
         # t = f"{self.prefix}{var}"
         return self.get_value(var)
 
+    def __copy__(self):
+        return type(self)(self.prefix, **self.scheme)
+
     def get_value(self, var, cast=None, default=environ.Env.NOTSET,  # noqa: C901
                   parse_default=False, raw=False):
         """Return value for given environment variable.

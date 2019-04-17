@@ -16,9 +16,6 @@ class ApplicationTeam(ReverseWrapperMixin, AbstractModel):
                                     related_name='teams',
                                     on_delete=models.CASCADE)
     memberships = models.ManyToManyField(ApplicationMember)
-    manager = models.ForeignKey(User,
-                                related_name='+',
-                                on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'bitcaster'

@@ -1,0 +1,70 @@
+{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags crispy_forms_filters i18n %}
+{% block page %}
+
+    <div class="row">
+        <div class="row col-12 p-3">
+            <div class="pull-left col-8">
+                <a id="add_more" class="btn btn-danger btn-small pull-left m-2"
+                   href=".">{% trans "Add more" %}
+                </a>
+                <a class="btn btn-dark btn-small pull-left m-2"
+                   href="{{ organization.urls.members }}">{% trans "Back" %}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% include "bitcaster/_includes/formset/commands.html" with label="Send" %}
+    <div id="empty-form" class="d-none">
+        <div class="row col-12 m-0 p-0">
+            <div class="row m-0 p-0 col-12 line-fields" style="display: inline-flex"
+                 {% if form.errors %}has-error{% endif %}>
+                <div class="hidden order" data-order="__prefix__">
+                    {{ invitations.empty_form.id }}{{ invitations.empty_form.DELETE }}</div>
+                <div class="col col-3">{{ invitations.empty_form.target|as_crispy_field }}</div>
+                <div class="col col-3">{{ invitations.empty_form.role|as_crispy_field }}</div>
+                <div class="col col-2 align-middle align-items-center formset-commands">
+                    <a href="." class="btn remove_line">
+                        <i class="fas fa-trash-alt"></i></a>
+                </div>
+            </div>
+            {% if form.non_field_errors %}
+                <div class="row error">
+                    {{ form.non_field_errors.as_text }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container pl-0 m-0" style="display: block; min-height: 30px">
+        <form method="post" id="Form">
+            {{ invitations.management_form }}
+            {% csrf_token %}
+            <div class="content invitations fieldset">
+                {% for form in invitations.forms %}
+                    <div class="row col-12 m-0 p-0  {% if form.errors %}has-error{% endif %}">
+                        <div class="row m-0 p-0 col-12 line-fields" style="display: inline-flex">
+                            <div class="hidden">{{ form.user }}{{ form.id }}{{ form.DELETE }}</div>
+                            <div class="col col-3">{{ form.target|as_crispy_field }}</div>
+                            <div class="col col-3">{{ form.role|as_crispy_field }}</div>
+                            <div class="col col-2 align-middle align-items-center formset-commands">
+                                <a href="." class="btn remove_line">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                            {% if form.non_field_errors %}
+                                <div
+                                    class="row non-field-errors invalid-feedback">{{ form.non_field_errors.as_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+
+    {% include "bitcaster/_includes/formset/commands.html" with label="Send" %}
+
+{% endblock %}
+{% block js %}
+    {% include "bitcaster/_includes/formset/js_code.html" with formsetName="invitations" %}
+{% endblock js %}

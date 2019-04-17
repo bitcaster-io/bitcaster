@@ -7,7 +7,7 @@ from model_utils import Choices
 logger = logging.getLogger(__name__)
 
 ROLES = Choices(
-    (99, 'SUPERUSER', _('Superuser')),  # Access to system settings
+    (-1, 'SUPERUSER', _('Superuser')),  # Access to system settings
     (1, 'OWNER', _('Owner')),  # Organization Owner
     (2, 'ADMIN', _('Admin')),  # Application Admin
     (4, 'MEMBER', _('Member')))
