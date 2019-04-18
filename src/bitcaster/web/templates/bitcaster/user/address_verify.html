@@ -1,4 +1,4 @@
-{% load bitcaster i18n %}
+{% load bitcaster i18n markdown %}
 <div class="modal-header">
     <h3 class="modal-title" id="exampleModalLongTitle">
         {{ handler.name }}
@@ -38,6 +38,8 @@
     }
 </style>
 <div class="modal-body handler-usage">
+
+    <div class=" row col-12">{{ usage|markdown }}</div>
     <div class=" row col-12">
         {% blocktrans %}
             A code has been sent to your {{ object.channel.handler.name }}

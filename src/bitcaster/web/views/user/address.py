@@ -70,8 +70,10 @@ class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
         return self.request.user.assignments.get(pk=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(object=self.get_object(),
-                                        **kwargs)
+        self.object = self.get_object()
+        kwargs['handler'] = self.object.channel.handler
+        kwargs['usage'] = self.object.channel.handler.get_usage()
+        return super().get_context_data(object=self.object, **kwargs)
 
     def get(self, request, *args, **kwargs):
         if self.mode == 'form':

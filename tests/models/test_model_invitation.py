@@ -20,13 +20,6 @@ def test_create_with_application(application1):
     assert i.organization == i.application.organization
 
 
-def test_create_with_team(team1):
-    i = Invitation(team=team1)
-    i.save()
-    assert i.application == team1.application
-    assert i.organization == team1.application.organization
-
-
 def test_create_with_event(event1):
     i = Invitation(event=event1)
     i.save()

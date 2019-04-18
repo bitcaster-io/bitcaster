@@ -12,7 +12,14 @@
     <div class="tab-content">
         <div class="row">
             <div class="row col-12 p-3">
-                <div class="pull-left col-12">
+                <div class="pull-left col-10">{% blocktrans %}
+Add here all your addresses.
+<b>Note:</b> because each channel has different requirements, each address can be validated only after it has
+                    been assigned to a Channel.
+For this reason, is possible that you are forced to insert the same address multiple times.
+i.e SMS channel that uses E.164 and other SMS Channell that uses a different number format.
+                {% endblocktrans %}</div>
+                <div class="pull-left col-2">
                     <a id="add_more" class="btn btn-danger btn-small pull-right"
                        href=".">{% trans "Add Address" %}
                     </a>
@@ -61,11 +68,14 @@
                                     <a href="." class="btn btn-outline-light remove_line align-top">
                                         <i class="far fa-trash-alt"></i>
                                     </a>
-                                    {% if not form.instance.verified %}
-                                        <a href="#" class="btn btn-outline-light info align-top">
-                                            <i class="fas fa-exclamation-circle red"></i>
-                                        </a>
-                                    {% endif %}
+{#                                    {% if not form.instance.verified %}#}
+{#                                        <a href="#" class="btn btn-outline-light info align-top">#}
+{#                                            <i class="fas fa-exclamation-circle red"></i>#}
+{#                                        </a>#}
+{#                                        <i class="far fa-trash-alt"></i>#}
+{#                                        {% else %}#}
+{#                                        <i class="far fa-trash-alt"></i>#}
+{#                                    {% endif %}#}
                                 </div>
                                 {% if form.non_field_errors %}
                                     <div

@@ -3,6 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from rest_framework.exceptions import ValidationError as DRFValidationError
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import Gmail, Twitter
@@ -56,7 +57,7 @@ def test_clean(channel1):
 
 @pytest.mark.django_db
 def test_validate_address(channel1):
-    with pytest.raises(PluginValidationError):
+    with pytest.raises(DRFValidationError):
         assert not channel1.validate_address('---')
     assert channel1.validate_address('test@example.com')
 

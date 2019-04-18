@@ -250,7 +250,8 @@ class AddressAssignmentForm(forms.ModelForm):
             if channel and address and address.address:
                 try:
                     channel.validate_address(address.address)
-                except DRFValidationError as e:
+                except (DRFValidationError, ValidationError) as e:
+
                     raise ValidationError({'address': ', '.join(e.detail)})
         return self.cleaned_data
 

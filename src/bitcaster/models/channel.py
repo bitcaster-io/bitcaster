@@ -80,10 +80,7 @@ class Channel(ReverseWrapperMixin, AbstractModel):
         return self.name
 
     def validate_address(self, address):
-        try:
-            return self.handler.validate_address(address)
-        except Exception:
-            raise PluginValidationError()
+        return self.handler.validate_address(address)
 
     def validate_subscription(self, subscription):
         try:
