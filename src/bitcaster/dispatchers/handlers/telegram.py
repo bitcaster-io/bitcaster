@@ -87,11 +87,10 @@ class Telegram(CoreDispatcher):
         return s
 
     def get_usage_message(self) -> object:
-        return """Send a message to %s to receive notifications.
-Check your username under menu->settings.
-*Note:* Accounts without username are not supported
-
-""" % self.config['bot_name']
+        return _("""
+* Send a message to **%(bot_name)s** to receive notifications.
+* Check your username under menu->settings.
+* **Note:** Accounts without username are not supported""") % self.config
 
     def _get_url(self, method, **params):
         base = 'https://api.telegram.org/bot' + self.config['bot_token']

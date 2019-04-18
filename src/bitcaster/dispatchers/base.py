@@ -53,13 +53,13 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     def _get_connection(self) -> object:
         pass  # pragma: no-cover
 
-    def get_usage_message(self) -> object:
+    def get_usage_message(self) -> str:
         """ return a message to the User to extra informations to complete the subscription.
         ie. follow Twitter
         """
         return ''
 
-    def get_usage(self) -> object:
+    def get_usage(self) -> str:
         """ return a message to the User to extra informations to complete the subscription.
         ie. follow Twitter
         """

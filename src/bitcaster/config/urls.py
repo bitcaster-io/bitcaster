@@ -1,10 +1,12 @@
 import re
 from urllib.parse import parse_qs
 
+import qrcode
 from django.conf import settings
 from django.conf.urls import include
 from django.contrib.admin import site
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.urls import path, re_path
 from django.views.decorators.csrf import csrf_exempt
 from django.views.static import serve
@@ -12,6 +14,23 @@ from django_sysinfo.views import admin_sysinfo, http_basic_login, sysinfo
 
 import bitcaster.api.urls
 import bitcaster.web.urls
+
+
+@csrf_exempt
+def get_qrcode(request):
+    text = request.GET['text']
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=5,
+        border=0,
+    )
+    qr.add_data(text)
+    qr.make(fit=True)
+    image = qr.make_image(fill_color='black', back_color='white')
+    response = HttpResponse(content_type='image/png')
+    image.save(response, 'PNG')
+    return response
 
 
 @csrf_exempt
@@ -40,6 +59,8 @@ urlpatterns = [path('api/', include(bitcaster.api.urls), name='api'),
                path('oauth2callback/', oauth2callback),
                path('channel-callback/<int:pk>/', channel_callback, name='channel-callback'),
                path('channel-registration/<int:pk>/', channel_registration, name='channel-registration'),
+               path('qrcode/', get_qrcode, name='qrcode'),
+
                path('admin/info/html/', admin_sysinfo, name='admin_info'),
                path('info/json/', http_basic_login(sysinfo), name='sys-info'),
 

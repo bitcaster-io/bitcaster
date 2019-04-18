@@ -3,30 +3,31 @@ from django import template
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
 from markdown import Extension
-from markdown.extensions.wikilinks import WikiLinksInlineProcessor
+from markdown.inlinepatterns import InlineProcessor
+from markdown.util import etree
 
 register = template.Library()
 
 
-def build_url(label, base, end):
-    return label
+class LinksInlineProcessor(InlineProcessor):
+    def handleMatch(self, m, data):
+        if m.group(1).strip():
+            label = m.group(1).strip()
+            url = label
+            a = etree.Element('a')
+            a.text = label
+            a.set('href', url)
+            a.set('target', '_new')
+        else:
+            a = ''
+        return a, m.start(0), m.end(0)
 
 
 class SimpleLinkExtension(Extension):
-
-    def __init__(self, **kwargs):
-        self.config = {
-            'base_url': ['', 'String to append to beginning or URL.'],
-            'end_url': ['', 'String to append to end of URL.'],
-            'html_class': ['', 'CSS hook. Leave blank for none.'],
-            'build_url': [build_url, 'Callable formats URL from label.'],
-        }
-        super().__init__(**kwargs)
-
     def extendMarkdown(self, md):
         self.md = md
         SIMPLELINK_RE = r'\[\[(.*)\]\]'
-        wikilinkPattern = WikiLinksInlineProcessor(SIMPLELINK_RE, self.getConfigs())
+        wikilinkPattern = LinksInlineProcessor(SIMPLELINK_RE, self.getConfigs())
         wikilinkPattern.md = md
         md.inlinePatterns.register(wikilinkPattern, 'simplelink', 75)
 

@@ -12,6 +12,7 @@ from .telegram import Telegram
 from .twilio import Twilio
 from .twilio_wa import TwilioWhatsApp
 from .twitter import Twitter
+from .viber import Viber
 from .xmpp import Xmpp
 from .zulip import ZulipPrivate
 

@@ -6,4 +6,5 @@ def test_markdown():
 
 
 def test_markdown_href():
-    assert markdown('[[http://bitcaster.io]]') == '<p><a href="http://bitcaster.io">http://bitcaster.io</a></p>'
+    assert markdown('[[http://bitcaster.io]]') == '<p><a href="http://bitcaster.io" target="_new">' \
+                                                  'http://bitcaster.io</a></p>'
