@@ -36,6 +36,7 @@ ENV GUNICORN_CMD_ARGS "-b 0.0.0.0:8000 \
 --access-logfile - \
 --access-logformat \"%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s\" "
 ENV DJANGO_SETTINGS_MODULE "bitcaster.config.settings"
+ENV BITCASTER_SECRET_KEY "secret-key-just-for-build"
 ENV BITCASTER_MEDIA_ROOT /var/bitcaster/media
 ENV BITCASTER_STATIC_ROOT /var/bitcaster/static
 ENV BITCASTER_DATABASE_URL ""

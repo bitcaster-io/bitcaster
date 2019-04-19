@@ -18,22 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 @register()
-def check_fernet(*args, **kwargs):
-    errors = []
-    try:
-        Fernet(base64.urlsafe_b64encode(settings.FERNET_KEYS[0].encode()[:32]))
-    except Exception as e:
-        errors.append(Error(
-            str(e),
-            hint='check your BITCASTER_FERNET_KEYS environment variable',
-            obj=None,
-            id='bitcaster.F001'
-        ))
-
-    return errors
-
-
-@register()
 def check_settings(*args, **kwargs):
     errors = []
     for i, dir in enumerate(['MEDIA_ROOT', 'STATIC_ROOT']):
@@ -138,7 +122,7 @@ def check_fernets(*args, **kwargs):
         errors.append(
             Error(
                 'Unable to decrypt database',
-                hint='SECRET_KEY seems changed. Cannot decrypt existing data',
+                hint='SECRET_KEY/FERNET_KEYS seems changed. Cannot decrypt existing data',
                 obj=None,
                 id='bitcaster.E006',
             )
@@ -146,4 +130,15 @@ def check_fernets(*args, **kwargs):
     except ProgrammingError:  # pragma: no cover
         # check fails if first setup, because migrations have not ran
         pass
+
+    try:
+        Fernet(base64.urlsafe_b64encode(settings.FERNET_KEYS[0].encode()[:32]))
+    except Exception as e:
+        errors.append(Error(
+            str(e),
+            hint='check your BITCASTER_FERNET_KEYS environment variable',
+            obj=None,
+            id='bitcaster.E007'
+        ))
+
     return errors
