@@ -5,7 +5,7 @@ from logging import getLogger
 import six
 from constance import config
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.crypto import constant_time_compare, salted_hmac
 from django.utils.http import base36_to_int, int_to_base36
@@ -54,6 +54,7 @@ class Viber(CoreDispatcher):
     options_class = ViberOptions
     subscription_class = ViberSubscription
     message_class = ViberMessage
+    need_verification = False
     icon = 'viber'
     __help__ = _("""Viber dispatcher to send private message
 
@@ -128,16 +129,19 @@ class Viber(CoreDispatcher):
         )
         return Api(bot_configuration)
 
-    def registration(self, request, otp):
+    def registration(self, request):
+        otp = request.GET.get('otp')
         messages, dt = OtpHandler().validate(otp)
-        # we record the Viber user id
-        self.save(self.owner.pk, messages[0])
-        return HttpResponse()
+        request.user.store(fqn(self), self.owner.pk, messages[0])
+        address = request.user.assignments.get(channel=self.owner).address
+        address.verified = True
+        address.save()
+        return HttpResponseRedirect('/')
 
     def callback(self, request):
         conn = self._get_connection()
         if not conn.verify_signature(request.body, request.META.get('X-Viber-Content-Signature')):
-            logger.error('Viber 403')
+            logger.error('Viber 403: %s' % request.body)
         viber_request = conn.parse_request(request.body)
 
         if isinstance(viber_request, ViberUnsubscribedRequest):
@@ -159,8 +163,8 @@ class Viber(CoreDispatcher):
                 logger.exception(e)
         elif isinstance(viber_request, ViberSubscribedRequest):
             otp = OtpHandler().get_otp(str(viber_request.user.id))
-            url = absolute_uri(reverse('channel-registration', args=[self.owner.pk, otp.decode()]))
-            message = TextMessage(text=url)
+            url = absolute_uri(reverse('channel-registration', args=[self.owner.pk]))
+            message = TextMessage(text='%s?otp=%s' % (url, otp.decode()))
             conn.send_messages(viber_request.user.id, [message])
             return HttpResponse()
         elif isinstance(viber_request, ViberMessageRequest):

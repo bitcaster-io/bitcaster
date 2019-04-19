@@ -40,43 +40,42 @@
 <div class="modal-body handler-usage">
 
     <div class=" row col-12">{{ usage|markdown }}</div>
-    <div class=" row col-12">
-{#        {% blocktrans %}#}
-{#            A code has been sent to your {{ object.channel.handler.name }}#}
-{#            account&nbsp;<strong> {{ object.address.address }} </strong>.#}
-{#        {% endblocktrans %}#}
-        <div class="container-fluid p-3">
-            <form action="#">
-                {% csrf_token %}
-                <input type="hidden" name="code" value=""
-                       placeholder="code"
-                       class="textinput textInput form-control">
+    {% if handler.need_verification %}
+        <div class=" row col-12">
+            <div class="container-fluid p-3">
+                <form action="#">
+                    {% csrf_token %}
+                    <input type="hidden" name="code" value=""
+                           placeholder="code"
+                           class="textinput textInput form-control">
 
-                <div class="confirmation_code split_input large_bottom_margin" data-multi-input-code="true">
-                    <div class="confirmation_code_group">
-                        <input type="text" class="inline_input first" maxlength="1" tabindex="1">
-                        <input type="text" class="inline_input" maxlength="1" tabindex="2">
-                        <input type="text" class="inline_input" maxlength="1" tabindex="3">
-                        <div class="confirmation_code_span_cell">—</div>
-                        <input type="text" class="inline_input" maxlength="1" tabindex="4">
-                        <input type="text" class="inline_input" maxlength="1" tabindex="5">
-                        <input type="text" class="inline_input" maxlength="1" tabindex="6">
+                    <div class="confirmation_code split_input large_bottom_margin" data-multi-input-code="true">
+                        <div class="confirmation_code_group">
+                            <input type="text" class="inline_input first" maxlength="1" tabindex="1">
+                            <input type="text" class="inline_input" maxlength="1" tabindex="2">
+                            <input type="text" class="inline_input" maxlength="1" tabindex="3">
+                            <div class="confirmation_code_span_cell">—</div>
+                            <input type="text" class="inline_input" maxlength="1" tabindex="4">
+                            <input type="text" class="inline_input" maxlength="1" tabindex="5">
+                            <input type="text" class="inline_input" maxlength="1" tabindex="6">
+                        </div>
                     </div>
-                </div>
-                <div class="row p-3">
-                    <div class="col-9">
-                        <button id="verify" tabindex="7" type="button" class="btn btn-primary">{% trans "Verify Address" %}</button>
+                    <div class="row p-3">
+                        <div class="col-9">
+                            <button id="verify" tabindex="7" type="button"
+                                    class="btn btn-primary">{% trans "Verify Address" %}</button>
+                        </div>
+                        <div class="col-3">
+                            <button id="resend" type="button"
+                                    class="btn btn-outline-success">{% trans "Send Code" %}</button>
+                        </div>
                     </div>
-                    <div class="col-3">
-                        <button id="resend" type="button" class="btn btn-outline-success">{% trans "Send Code" %}</button>
-                    </div>
-                </div>
 
-            </form>
+                </form>
+            </div>
+            <div id="message" style="min-height: 20px;" class="container-fluid"></div>
         </div>
-        <div id="message" style="min-height: 20px;" class="container-fluid"></div>
-    </div>
-
+    {% endif %}
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Close" %}</button>

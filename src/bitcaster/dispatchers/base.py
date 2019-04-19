@@ -37,6 +37,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     subscription_class = SubscriptionOptions
     options_class = DispatcherOptions
     message_class = MessageType
+    need_verification = True
     icon = None
     __media__ = None
     __help__ = ''
