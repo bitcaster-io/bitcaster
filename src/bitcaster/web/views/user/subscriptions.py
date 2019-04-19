@@ -2,14 +2,14 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster import messages
-from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.models import Subscription
 from bitcaster.models.audit import AuditLogEntry
 from bitcaster.web.forms.user import UserSubscriptionEditForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
                                       BitcasterBaseToggleView,
-                                      BitcasterBaseUpdateView,)
+                                      BitcasterBaseUpdateView,
+                                      HttpResponseRedirectToReferrer,)
 
 from .base import LogAuditMixin, UserMixin
 
@@ -57,7 +57,7 @@ class UserSubscriptionToggle(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
 
         obj.save()
 
-        return RedirectToRefererResponse(request)
+        return HttpResponseRedirectToReferrer(request)
 
 
 class UserSubscriptionRemove(UserSubscriptionMixin, LogAuditMixin, BitcasterBaseDeleteView):

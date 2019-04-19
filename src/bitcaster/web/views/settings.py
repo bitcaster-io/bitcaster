@@ -17,7 +17,6 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import JsonLexer
 
 from bitcaster import messages
-from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.models import AgentMetaData, Channel, DispatcherMetaData, Monitor
 from bitcaster.utils import fqn
 from bitcaster.utils.backup import backup_data
@@ -27,7 +26,7 @@ from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsOAuthForm,
                                                  SettingsServicesForm,)
 
-from .base import BitcasterTemplateView
+from .base import BitcasterTemplateView, HttpResponseRedirectToReferrer
 from .mixins import (MessageUserMixin, SidebarMixin,
                      SuperuserViewMixin, TitleMixin,)
 
@@ -198,7 +197,7 @@ class SettingsPluginToggle(MessageUserMixin, RedirectView):
                     self.alarm('You have disabled a agent used by one or more Monitor')
             self.message_user(f'{obj.fqn} disabled',
                               level=messages.WARNING)
-        return RedirectToRefererResponse(request)
+        return HttpResponseRedirectToReferrer(request)
 
 
 class SettingsPluginRefresh(SettingsTemplateMixin, ):
@@ -206,7 +205,7 @@ class SettingsPluginRefresh(SettingsTemplateMixin, ):
     def get(self, request, *args, **kwargs):
         DispatcherMetaData.objects.inspect()
         AgentMetaData.objects.inspect()
-        return RedirectToRefererResponse(request)
+        return HttpResponseRedirectToReferrer(request)
 
 
 class SettingsPlugin(SettingsTemplateMixin, ):
@@ -232,11 +231,15 @@ class SettingsBackupRestore(SettingsTemplateMixin):
             dest = os.path.join(config.BACKUPS_LOCATION, filename)
 
             if 'view' in request.GET:
+                context['title'] = _('Backup / Restore: %s') % filename
                 json_object = json.load(open(dest))
                 json_str = json.dumps(json_object, indent=2, sort_keys=True)
                 formatter = HtmlFormatter(linenos='table')
                 context['css'] = formatter.get_style_defs()
                 context['json'] = mark_safe(highlight(json_str, JsonLexer(), formatter))
+            elif 'delete' in request.GET:
+                os.unlink(dest)
+                return HttpResponseRedirectToReferrer()
             elif 'dn' in request.GET:
                 with open(dest, 'r'):
                     from django.utils.encoding import smart_str
@@ -256,10 +259,12 @@ class SettingsBackupRestore(SettingsTemplateMixin):
         dest = os.path.join(config.BACKUPS_LOCATION, today.strftime('%Y-%m-%d.json'))
 
         backup_data(dest, lambda x: True)
-        return RedirectToRefererResponse(request)
+        return HttpResponseRedirectToReferrer(request)
 
     def get_context_data(self, **kwargs):
         # file_list = [f for f in os.listdir(config.BACKUPS_LOCATION) if os.path.isfile(f)]
-        file_list = [os.path.basename(f) for f in glob.glob('%s/*.json' % config.BACKUPS_LOCATION)]
+        file_list = sorted([os.path.basename(f)
+                            for f in glob.glob('%s/*.json' % config.BACKUPS_LOCATION)],
+                           reverse=True)
         # return {'file_list':file_list}
         return super().get_context_data(file_list=file_list, **kwargs)

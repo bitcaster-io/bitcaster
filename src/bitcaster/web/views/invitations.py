@@ -18,12 +18,12 @@ from strategy_field.utils import fqn
 
 from bitcaster import messages
 from bitcaster.framework.db.fields import ROLES
-from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.models import Invitation, Organization, OrganizationMember, User
 from bitcaster.otp import totp
 from bitcaster.web.forms import UserInviteRegistrationForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
-                                      BitcasterBaseDeleteView,)
+                                      BitcasterBaseDeleteView,
+                                      HttpResponseRedirectToReferrer,)
 from bitcaster.web.views.mixins import MessageUserMixin
 
 logger = logging.getLogger(__name__)
@@ -115,7 +115,7 @@ class InvitationSend(InviteMixin, MessageUserMixin, SingleObjectMixin, RedirectV
         except Exception as e:
             logger.exception(e)
             self.message_user(_('Error sending email'), messages.ERROR)
-        return RedirectToRefererResponse(request)
+        return HttpResponseRedirectToReferrer(request)
 
 
 class InvitationCreate(InviteMixin, BitcasterBaseCreateView):

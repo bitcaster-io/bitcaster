@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
@@ -9,7 +10,6 @@ from django.views.generic.detail import SingleObjectMixin
 from strategy_field.utils import import_by_name
 
 from bitcaster import messages
-from bitcaster.middleware.exception import RedirectToRefererResponse
 from bitcaster.web.templatetags.bitcaster import verbose_name
 
 from .mixins import (BitcasterBaseViewMixin,
@@ -72,8 +72,8 @@ class BitcasterBaseToggleView(MessageUserMixin, SingleObjectMixin, RedirectView)
                               level=messages.SUCCESS)
         else:
             self.message_user(f'{obj._meta.verbose_name} #{obj.pk} disabled',
-                          level=messages.WARNING)
-        return RedirectToRefererResponse(request)
+                              level=messages.WARNING)
+        return HttpResponseRedirectToReferrer(request)
 
 
 class PluginInfo(BitcasterTemplateView):
@@ -85,3 +85,10 @@ class PluginInfo(BitcasterTemplateView):
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+
+class HttpResponseRedirectToReferrer(HttpResponseRedirect):
+    def __init__(self, request, *args, **kwargs):
+        redirect_to = request.META.get('HTTP_REFERER', '/')
+        super().__init__(
+            redirect_to, *args, **kwargs)

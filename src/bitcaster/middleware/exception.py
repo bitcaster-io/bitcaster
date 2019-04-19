@@ -6,13 +6,6 @@ from bitcaster.exceptions import NotMemberOfOrganization
 from bitcaster.messages import alarms
 
 
-class RedirectToRefererResponse(HttpResponseRedirect):
-    def __init__(self, request, *args, **kwargs):
-        redirect_to = request.META.get('HTTP_REFERER', '/')
-        super().__init__(
-            redirect_to, *args, **kwargs)
-
-
 class ExceptionHandlerMiddleware:
     def __init__(self, get_response=None):
         self.get_response = get_response

@@ -7,7 +7,7 @@
         <div>
             <a class="btn btn-large btn-primary" href="{% url 'settings-backup' %}">Back</a>
         </div>
-        <pre style="position:static; border:1px solid #d5d5d5; margin-top:10px; overflow:scroll; width:70%;height: 800px">
+        <pre style="position:static; border:1px solid #d5d5d5; margin-top:10px; overflow:scroll; width:70%;height: 500px">
             {{ json }}
         </pre>
     {% else %}
@@ -18,10 +18,11 @@
     <div class="container mt-5">
         <ul>
             {% for entry in file_list %}
-                <li>
+                <li class="p-2">
                     <span>{{ entry }}</span> -
-                    <a href="?dn=1&file={{ entry }}">get</a> -
-                    <a href="?view=1&file={{ entry }}">view</a>
+                    <a class="btn btn-success" href="?dn=1&file={{ entry }}">get</a>
+                    <a class="btn btn-primary" href="?view=1&file={{ entry }}">view</a>
+                    <a class="btn btn-danger" href="?delete=1&file={{ entry }}">delete</a>
 
                 </li>
             {% endfor %}

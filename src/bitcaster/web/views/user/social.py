@@ -1,10 +1,9 @@
 from django.utils.translation import gettext as _
 from social_django.models import UserSocialAuth
 
-from bitcaster.middleware.exception import RedirectToRefererResponse
-from bitcaster.web.views.base import (BitcasterBaseDeleteView,
-                                      BitcasterTemplateView,)
-from bitcaster.web.views.user.base import UserMixin
+from ..base import (BitcasterBaseDeleteView, BitcasterTemplateView,
+                    HttpResponseRedirectToReferrer,)
+from .base import UserMixin
 
 
 class UserSocialAuthView(UserMixin, BitcasterTemplateView):
@@ -23,4 +22,4 @@ class UserSocialAuthDisconnectView(UserMixin, BitcasterBaseDeleteView):
 
     def get(self, request, *args, **kwargs):
         self.request.user.social_auth.filter(provider=self.kwargs['provider']).delete()
-        return RedirectToRefererResponse(request)
+        return HttpResponseRedirectToReferrer(request)
