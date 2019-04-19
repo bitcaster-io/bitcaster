@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import base64
 import logging
 from pathlib import Path
 
 import redis
-from cryptography.fernet import InvalidToken
+from cryptography.fernet import Fernet, InvalidToken
 from django.contrib.auth import get_user_model
 from django.core.cache import caches
 from django.core.checks import Error, register
@@ -14,6 +15,22 @@ from bitcaster.config.environ import env
 from bitcaster.models import AgentMetaData, DispatcherMetaData
 
 logger = logging.getLogger(__name__)
+
+
+@register()
+def check_fernet(*args, **kwargs):
+    errors = []
+    try:
+        Fernet(base64.urlsafe_b64encode(settings.FERNET_KEYS[0].encode()[:32]))
+    except Exception as e:
+        errors.append(Error(
+            str(e),
+            hint='check your BITCASTER_FERNET_KEYS environment variable',
+            obj=None,
+            id='bitcaster.F001'
+        ))
+
+    return errors
 
 
 @register()

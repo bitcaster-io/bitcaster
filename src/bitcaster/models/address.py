@@ -81,4 +81,5 @@ class AddressAssignment(ReversionMixin, models.Model):
         address.save()
         return self.channel.handler.emit(self.user,
                                          'Bitcaster confirmation code',
-                                         'Bitcaster confirmation code %s' % code)
+                                         'Bitcaster confirmation code %s' % code,
+                                         silent=False)

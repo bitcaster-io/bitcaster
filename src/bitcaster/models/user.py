@@ -168,3 +168,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                               from_email='bitcaster@os4d.org',
                               recipient_list=[self.email])
         return ret
+
+    def store(self, namespace: str, key: str, value):
+        pass
+
+    def retrieve(self, namespace: str, key: str):
+        pass

@@ -83,7 +83,8 @@ def backup_data(filename, echo=None):
     return output
 
 
-def restore_data(filename, echo, overwrite=True, ignore_errors=False, reindex=True, selection=None):
+def restore_data(filename, echo, overwrite=True, ignore_errors=False, reindex=True,
+                 selection=None, reset_cryptography=False):
     from django.apps import apps
     import constance.settings
     from constance import config
@@ -114,6 +115,11 @@ def restore_data(filename, echo, overwrite=True, ignore_errors=False, reindex=Tr
                     raise Exception('%s=%s' % (key, value))
 
         ALL_MODELS = get_all_models()
+        if reset_cryptography:
+            from bitcaster.models import User, Channel
+            User.objects.update(storage={})
+            Channel.objects.update(config={})
+
         for model_name in ALL_MODELS:
             if model_name in selection:
                 model = apps.get_model(model_name)
@@ -133,9 +139,13 @@ def restore_data(filename, echo, overwrite=True, ignore_errors=False, reindex=Tr
                         else:
                             model.objects.get_or_create(id=pk, defaults=record)
                     except Exception as e:
-                        echo(str(e))
-                        echo(model_name)
+                        echo('Error restoring %s' % model_name)
+                        echo('ERROR: %s' % type(e))
                         echo(record)
+                        # io = StringIO()
+                        # traceback.print_exc(file=io)
+                        # io.seek(0)
+                        # echo(io.read())
                         if not ignore_errors:
                             raise
                 # # ManyToMany

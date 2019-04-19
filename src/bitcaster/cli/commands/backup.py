@@ -23,17 +23,17 @@ def backup(ctx, filename):
 @click.option('--reindex/--no-reindex', default=True)
 @click.option('-o', '--only', 'selection', default=None, multiple=True, type=click.Choice(SECTIONS))
 @click.option('-w', '--overwrite', 'overwrite', default=False, is_flag=True)
-@click.option('-i', '--ignore-errors', default=False, is_flag=True,
-              help='Try to continueon error')
+@click.option('-i', '--ignore-errors', default=False, is_flag=True, help='Try to continueon error')
+@click.option('--reset-cryptography', default=False, is_flag=True, help='Try to continueon error')
 @click.pass_context
 @need_setup
-def restore(ctx, filename, overwrite, ignore_errors, selection, reindex):
+def restore(ctx, filename, overwrite, ignore_errors, selection, reindex, reset_cryptography):
     from bitcaster.utils.backup import restore_data
 
     try:
         restore_data(filename, echo=click.echo, overwrite=overwrite,
                      ignore_errors=ignore_errors, selection=selection,
-                     reindex=reindex)
+                     reindex=reindex, reset_cryptography=reset_cryptography)
     except Exception as e:
         click.echo(str(e))
         ctx.abort()

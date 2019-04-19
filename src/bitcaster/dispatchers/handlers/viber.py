@@ -3,6 +3,7 @@ import time
 from logging import getLogger
 
 import six
+from constance import config
 from django.conf import settings
 from django.http import HttpResponse
 from django.urls import reverse
@@ -148,12 +149,11 @@ class Viber(CoreDispatcher):
                 from bitcaster.models import User
                 user = None
                 for u in User.objects.all():
-                    if u.storage and self.retrieve(self.owner.pk) == viber_request.user_id:
+                    if u.storage and u.retrieve(fqn(self), self.owner.pk) == viber_request.user_id:
                         user = u
                         break
                 if user:
-
-                    self.save(self.owner.pk, None)
+                    user.store(fqn(self), self.owner.pk, None)
             except Exception as e:
                 capture_exception()
                 logger.exception(e)
@@ -177,7 +177,7 @@ class Viber(CoreDispatcher):
             user = subscription
         else:
             raise ValueError()
-        return user.storage.get(fqn(self), None)
+        return user.retrieve(fqn(self), self.owner.pk)
         # return user.assignments.get_address(self).address
 
     def emit(self, subscription, subject, message, connection=None, silent=True, *args, **kwargs) -> int:
@@ -186,7 +186,7 @@ class Viber(CoreDispatcher):
         try:
             conn = connection or self._get_connection()
             url = reverse('channel-callback', args=[self.owner.pk])
-            cb = '%s%s' % (self.config['site'], url)
+            cb = '%s%s' % (config.SITE_URL, url)
             conn.set_webhook(cb)
 
             text_message = TextMessage(text=message)

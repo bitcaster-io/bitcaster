@@ -76,16 +76,6 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
             raise ValueError()
         return self.current_user.assignments.get_address(self).address
 
-    def save(self, key, value):
-        if self.current_user.storage.get(fqn(self)):
-            self.current_user.storage[fqn(self)][key] = value
-        else:
-            self.current_user.storage[fqn(self)] = {key: value}
-        self.current_user.save()
-
-    def retrieve(self, key):
-        return self.current_user.storage[fqn(self)][key]
-
     @abc.abstractmethod
     def emit(self, subscription: object, subject: str, message: str,
              connection=None, silent=True, *args, **kwargs) -> str:

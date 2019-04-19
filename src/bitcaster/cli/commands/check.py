@@ -11,20 +11,6 @@ from bitcaster.cli.utils import ErrorLeveParamType, wait_for_service
 from bitcaster.exceptions import ImproperlyConfigured
 
 
-def check_configuration(*args, **kwargs):
-    # from bitcaster.models import Organization
-    # from bitcaster.models.configurationissue import check_organization, check_application
-    errors = []
-    # for org in Organization.objects.all():
-    #     issues = check_organization(org)
-    #     errors += [Warning(i.message, id=i.pk, obj=org) for i in issues]
-    #
-    #     for app in org.applications.all():
-    #         issues = check_application(app)
-    #         errors += [Warning(i.message, id=i.pk, obj=app) for i in issues]
-    return errors
-
-
 def checkdb(wait=True, timeout=60, debug=False, connection='default'):
     from django.db import connections
     elapsed = 0
@@ -56,15 +42,6 @@ def checkdb(wait=True, timeout=60, debug=False, connection='default'):
     return retcode
 
 
-# def checkfernet():
-#     try:
-#         UserModel = get_user_model()
-#         u = UserModel.objects.first()
-#         assert u.storage
-#     except InvalidToken as e:
-#         raise ImproperlyConfigured(e)
-#
-
 @click.command()  # noqa
 @global_options
 @click.option('--debug', '-d', default=False, is_flag=True,
@@ -92,7 +69,7 @@ def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
         os.environ['BITCASTER_DEBUG'] = 'True'
         os.environ['BITCASTER_PLUGINS_AUTOLOAD'] = 'False'
 
-    os.environ['BITCASTER_CONF'] = ctx.obj['config']
+    # os.environ['BITCASTER_CONF'] = ctx.obj['config']
 
     from bitcaster.config.environ import env
     # env.load_config()
@@ -131,12 +108,6 @@ def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
         from django.core.management import execute_from_command_line
         import django
         django.setup()
-
-        from constance import config
-        if config.INITIALIZED:
-            click.echo(f'Checking configuration')
-            check_configuration()
-
         execute_from_command_line(argv=['manage'] + ['check'] + extra)
     except Exception as e:
         click.echo(str(e))

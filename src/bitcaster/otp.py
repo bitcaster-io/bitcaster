@@ -32,7 +32,7 @@ class OtpHandler:
         super().__init__()
         self.separator = separator
         # Fernet key must be 32 url-safe base64-encoded byte
-        self.encryption_suite = Fernet(base64.urlsafe_b64encode(settings.SECRET_KEY.encode()[:32]))
+        self.encryption_suite = Fernet(base64.urlsafe_b64encode(settings.FERNET_KEYS[0].encode()[:32]))
 
     def get_otp(self, message_list):
         """

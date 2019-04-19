@@ -82,10 +82,8 @@ MIDDLEWARE = [
 ]
 
 AUTH_USER_MODEL = 'bitcaster.user'
-# SECRET_KEY = env('SECRET_KEY')
-# FERNET_KEYS = [SECRET_KEY] + env('FERNET_KEYS')
-SECRET_KEY = 's'
-FERNET_KEYS = ['a']
+SECRET_KEY = env('SECRET_KEY')
+FERNET_KEYS = [SECRET_KEY] + env('FERNET_KEYS')
 ON_PREMISE = env('ON_PREMISE')
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
