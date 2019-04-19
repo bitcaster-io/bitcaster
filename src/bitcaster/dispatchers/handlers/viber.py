@@ -19,7 +19,6 @@ from viberbot.api.viber_requests import (ViberMessageRequest,
 
 from bitcaster.api.fields import PasswordField, PhoneNumberField
 from bitcaster.otp import OtpHandler
-from bitcaster.state import state
 from bitcaster.utils import fqn
 from bitcaster.utils.http import absolute_uri
 
@@ -40,11 +39,12 @@ class ViberSubscription(SubscriptionOptions):
 
 
 class ViberOptions(DispatcherOptions):
-    account_name = serializers.CharField(help_text=_('Application Name'), initial='Bitcaster')
-    site = serializers.URLField(help_text=_('This server url.'),
-                                initial=lambda: state.request.build_absolute_uri('/'))
-    # avatar = serializers.URLField(help_text=_('URL of image to use as avatar'),
-    #                               required=False, allow_blank=True)
+    account_name = serializers.CharField(help_text=_('Account Name'))
+    uri = serializers.CharField(help_text=_('Uri'))
+    # site = serializers.URLField(help_text=_('This server url.'),
+    #                             initial=lambda: state.request.build_absolute_uri('/'))
+    avatar = serializers.URLField(help_text=_('Account Image'),
+                                  required=False, allow_blank=True)
     auth_token = PasswordField()
 
 
@@ -65,7 +65,7 @@ class Viber(CoreDispatcher):
 """)
 
     def get_usage(self) -> object:
-        info = {'qrcode': 'viber://pa/info?uri=%s' % self.config['account_name'],
+        info = {'qrcode': 'viber://pa/info?uri=%s' % self.config['uri'],
                 'url': reverse('qrcode')}
         info.update(self.config)
         return _("""
@@ -130,11 +130,7 @@ class Viber(CoreDispatcher):
     def registration(self, request, otp):
         messages, dt = OtpHandler().validate(otp)
         # we record the Viber user id
-        if request.user.storage is None:
-            request.user.storage = {fqn(self): messages[0]}
-        else:
-            request.user.storage[fqn(self)] = messages[0]
-        request.user.save()
+        self.save(self.owner.pk, messages[0])
         return HttpResponse()
 
     def callback(self, request):
@@ -152,12 +148,12 @@ class Viber(CoreDispatcher):
                 from bitcaster.models import User
                 user = None
                 for u in User.objects.all():
-                    if u.storage and u.storage.get(fqn(self), None) == viber_request.user_id:
+                    if u.storage and self.retrieve(self.owner.pk) == viber_request.user_id:
                         user = u
                         break
                 if user:
-                    user.storage[fqn(self)] = None
-                    user.save()
+
+                    self.save(self.owner.pk, None)
             except Exception as e:
                 capture_exception()
                 logger.exception(e)

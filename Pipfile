@@ -78,6 +78,7 @@ yampy = "*"
 zulip = "*"
 django-impersonate = "*"
 qrcode = "*"
+viberbot = "*"
 
 [dev-packages]
 bumpversion = "*"

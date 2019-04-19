@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db
 
 @pytest.mark.skipif_missing('TEST_TWITTER_ACCOUNT')
 @pytest.mark.django_db
-class TestTwitterDispatcherTwitter(DispatcherBaseTest):
+class TestDispatcherTwitter(DispatcherBaseTest):
     TARGET = Twitter
     CONFIG = {'account': os.environ.get('TEST_TWITTER_ACCOUNT'),
               'consumer_key': os.environ.get('TEST_TWITTER_CONSUMER_KEY'),
@@ -20,5 +20,5 @@ class TestTwitterDispatcherTwitter(DispatcherBaseTest):
               }
     RECIPIENT = os.environ.get('TEST_TWITTER_RECIPIENT')
 
-    def test_get_recipient_address_alternative(self, dispatcher):
-        dispatcher.get_recipient_address('@sax')
+    # def test_get_recipient_address_alternative(self, dispatcher):
+    #     dispatcher.get_recipient_address('@sax')

@@ -3,6 +3,7 @@ import os
 import pytest
 
 from bitcaster.dispatchers import Viber
+from bitcaster.utils import fqn
 from bitcaster.utils.tests.dispatcher_testcase import DispatcherBaseTest
 from bitcaster.utils.tests.factories import ChannelFactory
 
@@ -26,3 +27,13 @@ class TestDispatcherViber(DispatcherBaseTest):
         ch = ChannelFactory(id=1, organization=application1.organization, handler=self.TARGET, config=self.CONFIG)
         # return self.TARGET(Mock(application=application1, config=self.CONFIG))
         return ch.handler
+
+    def test_validate_subscription(self, dispatcher, subscription):
+        assert dispatcher.validate_subscription(self.RECIPIENT)
+
+    def test_emit(self, dispatcher, subscription):
+        pytest.xfail()
+
+    def test_get_recipient_address(self, dispatcher, subscription):
+        subscription.subscriber.storage[fqn(Viber)] = self.RECIPIENT
+        super().test_get_recipient_address(dispatcher, subscription)

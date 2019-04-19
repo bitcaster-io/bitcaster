@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "151c7ce82623f43ee17de43ad57145e3e6185b5c2156b387ee345a3236709da1"
+            "sha256": "7ecd7d17ce8aee6ff5fe7a07c30f29d9be9efbd13294dd8c5e692e748d765e9b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -981,6 +981,13 @@
                 "sha256:9a247273df709c4fedb38c711e44292304f73f39ab01beda9f6b9fc375669ac3"
             ],
             "version": "==1.24.2"
+        },
+        "viberbot": {
+            "hashes": [
+                "sha256:11f06adc6319e695c518bdecfd5390acbec480b4b11c91976863140741ed173d"
+            ],
+            "index": "pypi",
+            "version": "==1.0.11"
         },
         "vine": {
             "hashes": [

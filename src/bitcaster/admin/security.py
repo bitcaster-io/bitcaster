@@ -30,7 +30,7 @@ class UserAdmin(_UserAdmin):
     # add_form_template = 'admin/auth/user/add_form.html'
     add_form = UserCreationForm
     # form = UserChangeForm
-    search_fields = ('email', )
+    search_fields = ('email',)
     list_display = ('email', 'name', 'is_staff', 'is_superuser',
                     'language', 'timezone')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups',)
@@ -41,6 +41,9 @@ class UserAdmin(_UserAdmin):
         (_('Personal info'), {'fields': (('name', 'friendly_name'),
                                          ('language',),
                                          ('country', 'timezone'))}),
+        (_('Extra'), {'fields': ('storage',
+                                 # 'groups', 'user_permissions'
+                                 )}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                        # 'groups', 'user_permissions'
                                        )}),
