@@ -4,7 +4,7 @@
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET?=0.18.0a
+TARGET?=0.19.0a
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
@@ -56,6 +56,8 @@ build:
 	 		--rm \
 	 		--name=${CONTAINER_NAME} \
 			-p 8000:8000 \
+			-e BITCASTER_SECRET_KEY="${BITCASTER_SECRET_KEY}" \
+			-e BITCASTER_FERNET_KEYS="${BITCASTER_FERNET_KEYS}" \
 			-e BITCASTER_SENTRY_DSN="${BITCASTER_SENTRY_DSN}" \
 			-e BITCASTER_SENTRY_ENABLED=True \
 			-e BITCASTER_SECRET_KEY="${BITCASTER_SECRET_KEY}" \
