@@ -62,9 +62,7 @@ class Viber(CoreDispatcher):
 
 * Register at [[https://partners.viber.com/about]]
 * Click on [Create Bot Account](https://partners.viber.com/account/create-bot-account)
-* Copy the token and paste it here
-
-""")
+* Copy the token and paste it here""")
 
     def get_usage(self) -> object:
         info = {'qrcode': 'viber://pa/info?uri=%s' % self.config['uri'],
@@ -72,11 +70,12 @@ class Viber(CoreDispatcher):
         info.update(self.config)
         return _("""
 * Open your Viber application and goto More->QR code
-* Scan the following code and follow **%(account_name)s**
+* Scan the following code
 <div class="container">
 <img class="mx-auto d-block m-3" src="%(url)s?text=%(qrcode)s" style="display:block">
 </div>
-* When ready click on **Send Code** and paste it here.
+* On the top-right open the popup menu and select **Receive messages**
+* That's all. Now you are ready to receive messages.
 """) % dict(info)
 
     def _make_token_with_timestamp(self, user):
