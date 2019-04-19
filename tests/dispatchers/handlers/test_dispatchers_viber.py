@@ -18,13 +18,15 @@ class TestDispatcherViber(DispatcherBaseTest):
     CONFIG = {
         'account_name': os.environ.get('TEST_VIBER_ACCOUNT'),
         'site': os.environ.get('TEST_VIBER_SITE'),
+        'uri': os.environ.get('TEST_VIBER_URI'),
         'auth_token': os.environ.get('TEST_VIBER_TOKEN')
     }
     RECIPIENT = os.environ.get('TEST_VIBER_RECIPIENT')
 
     @pytest.fixture()
     def dispatcher(self, application1):
-        ch = ChannelFactory(id=1, organization=application1.organization, handler=self.TARGET, config=self.CONFIG)
+        ch = ChannelFactory(id=1, organization=application1.organization,
+                            handler=self.TARGET, config=self.CONFIG)
         # return self.TARGET(Mock(application=application1, config=self.CONFIG))
         return ch.handler
 
@@ -35,5 +37,8 @@ class TestDispatcherViber(DispatcherBaseTest):
         pytest.xfail()
 
     def test_get_recipient_address(self, dispatcher, subscription):
-        subscription.subscriber.storage[fqn(Viber)] = self.RECIPIENT
+        subscription.subscriber.store(fqn(Viber),
+                                      dispatcher.owner.pk,
+                                      # subscription.channel.pk,
+                                      self.RECIPIENT)
         super().test_get_recipient_address(dispatcher, subscription)

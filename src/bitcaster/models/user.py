@@ -170,7 +170,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         return ret
 
     def store(self, namespace: str, key: str, value):
-        pass
+        try:
+            self.storage[namespace][key] = value
+        except KeyError:
+            self.storage[namespace] = {key: value}
+        self.save()
 
     def retrieve(self, namespace: str, key: str):
-        pass
+        try:
+            return self.storage[namespace][key]
+        except KeyError:
+            return None
