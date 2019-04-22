@@ -45,7 +45,7 @@ class UserProfileView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
     def get_initial(self):  # noqa C901
         initial = {}
         user = self.get_object()
-        if not user.country or user.timezone:
+        if not (user.country and user.timezone and user.language):
             remote_ip = get_client_ip(self.request)
             if remote_ip and config.IPSTACK_KEY:
                 try:
@@ -59,21 +59,22 @@ class UserProfileView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
                     if not user.country:
                         try:
                             initial['country'] = response['country_code']
-                        except KeyError:
+                        except KeyError:  # pragma: no cover
                             initial['country'] = None
 
                     if not user.language:
                         try:
                             initial['language'] = response['location']['languages'][0]['code']
-                        except (KeyError, IndexError):
+                        except (KeyError, IndexError):  # pragma: no cover
                             initial['timezone'] = None
 
                     if not user.timezone:
                         try:
                             initial['timezone'] = country_timezones(initial['country'])
-                        except KeyError:
+                        except KeyError:  # pragma: no cover
                             initial['timezone'] = None
-                except Exception:
+                    cache.set('ipstack-%s' % remote_ip, response)
+                except Exception:  # pragma: no cover
                     pass
 
         return initial

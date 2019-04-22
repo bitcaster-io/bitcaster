@@ -14,7 +14,7 @@ class UserAutocomplete(LoginRequiredMixin, Select2QuerySetView):
         if self.q:
             qs = qs.filter(user__email__istartswith=self.q)
 
-        return qs
+        return qs.order_by('user__email')
 
 
 class ChannelAutocomplete(SelectedOrganizationMixin, LoginRequiredMixin, Select2QuerySetView):
@@ -26,7 +26,7 @@ class ChannelAutocomplete(SelectedOrganizationMixin, LoginRequiredMixin, Select2
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
-        return qs
+        return qs.order_by('name')
 
 
 class AddressAutocomplete(LoginRequiredMixin, Select2QuerySetView):
@@ -36,7 +36,7 @@ class AddressAutocomplete(LoginRequiredMixin, Select2QuerySetView):
         if self.q:
             qs = qs.filter(Q(label__icontains=self.q) | Q(address__icontains=self.q))
 
-        return qs
+        return qs.order_by('label')
 
 
 class ApplicationAutocomplete(SelectedOrganizationMixin, Select2QuerySetView):
@@ -46,7 +46,7 @@ class ApplicationAutocomplete(SelectedOrganizationMixin, Select2QuerySetView):
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
-        return qs
+        return qs.order_by('name')
 
 
 class OrganizationMembersAutocomplete(SelectedOrganizationMixin, Select2QuerySetView):
@@ -58,7 +58,7 @@ class OrganizationMembersAutocomplete(SelectedOrganizationMixin, Select2QuerySet
         if self.q:
             qs = qs.filter(email__istartswith=self.q)
 
-        return qs
+        return qs.order_by('email')
 
 
 class ApplicationMembersAutocomplete(SelectedApplicationMixin, Select2QuerySetView):
@@ -70,7 +70,7 @@ class ApplicationMembersAutocomplete(SelectedApplicationMixin, Select2QuerySetVi
                            Q(friendly_name__istartswith=self.q) |
                            Q(email__istartswith=self.q))
 
-        return qs
+        return qs.order_by('name')
 
 
 class ApplicationCandidateAutocomplete(SelectedApplicationMixin, Select2QuerySetView):
@@ -83,4 +83,4 @@ class ApplicationCandidateAutocomplete(SelectedApplicationMixin, Select2QuerySet
                            Q(user__friendly_name__istartswith=self.q) |
                            Q(user__email__istartswith=self.q))
 
-        return qs
+        return qs.order_by('user__name')

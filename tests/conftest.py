@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 from faker import Faker
 from strategy_field.utils import fqn
+from vcr import VCR
 from webtest import Field as WebTestField, Form
 
 faker = Faker()
@@ -50,7 +51,22 @@ def patch(monkeypatch, db, settings):
     pass
 
 
-#     monkeypatch.setattr('bitcaster.utils.locks.get', lambda key, duration: Mock())
+@pytest.fixture()
+def test_dir():
+    return str(Path(__file__).parent)
+
+
+@pytest.fixture(scope='function')
+def vcr(request):
+    path = str(Path(request.fspath).parent / 'cassetes' / str(request.function.__name__))
+    vcr = VCR(cassette_library_dir=path, filter_query_parameters=['access_key'])
+    return vcr
+    # # TODO: remove me
+    # print(111, "conftest.py:60", request)
+    # # FIXME: pdb
+    # import ipdb; ipdb.set_trace()
+    #
+    # return str(Path(__file__).parent)
 
 
 @pytest.fixture

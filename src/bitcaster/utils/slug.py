@@ -1,4 +1,5 @@
 import logging
+import string
 from uuid import uuid4
 
 from django.utils.crypto import get_random_string
@@ -16,7 +17,6 @@ def slugify_instance(inst, label, reserved=(), max_length=30, *args, **kwargs):
 
     if not base_value:
         base_value = uuid4().hex[:12]
-
     base_qs = type(inst).objects.all()
     if inst.id:
         base_qs = base_qs.exclude(id=inst.id)
@@ -47,7 +47,8 @@ def slugify_instance(inst, label, reserved=(), max_length=30, *args, **kwargs):
     )
     for attempts, size in sizes:
         for i in range(attempts):
-            end = get_random_string(size, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456790')
+
+            end = get_random_string(size, allowed_chars=string.ascii_lowercase + string.digits)
             value = base_value[:max_length - size - 1] + '-' + end
             inst.slug = value
             if not base_qs.filter(slug__iexact=value).exists():

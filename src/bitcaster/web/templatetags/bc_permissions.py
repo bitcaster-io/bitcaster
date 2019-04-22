@@ -57,12 +57,13 @@ def check_permissions(parser, token):
 
 @register.simple_tag(takes_context=True)
 def button(context, href, has_perm, icon, label, toggler=None):
-    if toggler is not None and toggler:
-        label = label.split(':')[0]
-        icon = icon.split(':')[0]
-    elif toggler is not None and not toggler:
-        label = label.split(':')[1]
-        icon = icon.split(':')[1]
+    if toggler is not None:
+        if toggler:
+            label = label.split(':')[0]
+            icon = icon.split(':')[0]
+        else:
+            label = label.split(':')[1]
+            icon = icon.split(':')[1]
 
     params = {'disabled': 'disabled',
               'css': icon,

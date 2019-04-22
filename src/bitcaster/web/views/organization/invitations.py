@@ -154,17 +154,14 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
                      f'Redirecting to {url}')
         return HttpResponseRedirect(url)
 
-    def form_invalid(self, form):
-        return super().form_invalid(form)
-
+    # def form_invalid(self, form):
+    #     return super().form_invalid(form)
+    #
     def get_context_data(self, **kwargs):
         kwargs['title'] = _('Accept invitation')
-        if self.invitation:
-            kwargs['invitation'] = self.invitation
-            kwargs['invitation_id'] = self.invitation.pk  # this is required by oauth
-            return super().get_context_data(**kwargs)
-        else:
-            return {}
+        kwargs['invitation'] = self.invitation
+        kwargs['invitation_id'] = self.invitation.pk  # this is required by oauth
+        return super().get_context_data(**kwargs)
 
     def get_initial(self):
         return {'email': self.invitation.target,

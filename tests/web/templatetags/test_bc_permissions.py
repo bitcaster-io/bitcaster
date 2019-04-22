@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 import pytest
+from django.contrib.auth.models import AnonymousUser
 from django.template import Context, Template, TemplateSyntaxError
 
 pytestmark = pytest.mark.django_db
@@ -38,7 +39,24 @@ def test_check_permissions_alien():
 
 @pytest.mark.parametrize('target', ['', 'aa bb'])
 def test_check_permissions_invalid(target):
-    tpl = '{{% load bc_permissions %}}{{% check_permissions {} %}}'.format(target)
+    tpl = '{%% load bc_permissions %%}{%% check_permissions %s %%}' % target
     request = Mock()
     with pytest.raises(TemplateSyntaxError):
         render_template(tpl, {'target': target, 'request': request})
+
+
+@pytest.mark.parametrize('toggler', [None,
+                                     True,
+                                     False],
+                         ids=['user', 'admin', 'anonymous'])
+@pytest.mark.parametrize('user', [pytest.lazy_fixture('user1'),
+                                  pytest.lazy_fixture('admin'),
+                                  AnonymousUser()],
+                         ids=['user', 'admin', 'anonymous'])
+def test_button(organization1, user, toggler):
+    tpl = '{{% load bc_permissions %}}' \
+          '{{% check_permissions organization %}}' \
+          '{{% button "" permissions.edit_channel "ic:ci" "enabled:disabled" {} %}}'.format(toggler)
+    request = Mock()
+    request.user = user
+    assert render_template(tpl, {'request': request, 'organization': organization1})

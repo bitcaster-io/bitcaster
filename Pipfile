@@ -104,6 +104,8 @@ requests-html = "*"
 responses = "*"
 selenium = "*"
 transifex-client = "*"
+pytest-lazy-fixture = "*"
+vcrpy = "*"
 
 [requires]
 python_version = "3.6"

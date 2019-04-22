@@ -1,0 +1,39 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.21.0
+    method: GET
+    uri: http://api.ipstack.com//127.0.0.1
+  response:
+    body:
+      string: '{"success":false,"error":{"code":101,"type":"invalid_access_key","info":"You
+        have not supplied a valid API Access Key. [Technical Support: support@apilayer.com]"}}'
+    headers:
+      Access-Control-Allow-Methods:
+      - GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Content-Type:
+      - application/json; Charset=UTF-8
+      Date:
+      - Mon, 22 Apr 2019 22:16:38 GMT
+      Server:
+      - nginx
+      Transfer-Encoding:
+      - chunked
+      X-Apilayer-Transaction-Id:
+      - 48b8a0ba-3258-4dda-93cb-80a54236ce2d
+      X-Request-Time:
+      - '0.008'
+    status:
+      code: 200
+      message: OK
+version: 1

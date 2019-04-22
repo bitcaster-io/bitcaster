@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 from contextlib import ContextDecorator
 from random import choice
@@ -135,7 +134,9 @@ class UserFactory(AutoRegisterModelFactory):
         django_get_or_create = ('email',)
 
     name = factory.Faker('name')
-
+    country = 'IT'
+    language = 'en'
+    timezone = 'UTC'
     email = factory.Sequence(lambda n: 'm%03d@example.com' % n)
     password = '123'
     is_active = True
@@ -437,6 +438,7 @@ class AddressFactory(AutoRegisterModelFactory):
     label = factory.Sequence(lambda n: 'Label %03d' % n)
     address = factory.Sequence(lambda n: 'Address %03d' % n)
     verified = True
+    code = '123456'
 
 
 class AddressAssignmentFactory(AutoRegisterModelFactory):

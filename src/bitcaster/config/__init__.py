@@ -1,4 +1,5 @@
 import os
+import tempfile
 from pathlib import Path
 
 DEFAULT_CONFIG = os.path.expanduser('~/.bitcaster/conf')
@@ -11,7 +12,7 @@ DEFAULTS = dict(
     DEBUG=(bool, False),
     FAKE_OTP=(bool, False),
     FERNET_KEYS=(list, []),
-    MEDIA_ROOT=(str, str(Path('~/.bitcaster/media').expanduser())),
+    MEDIA_ROOT=(str, os.path.join(tempfile.gettempdir(), 'bitcaster', 'media')),
     ON_PREMISE=(bool, True),
     PLUGINS_AUTOLOAD=(bool, False),
     REDIS_CACHE_URL=(str, 'redis://localhost:6379/0?key_prefix=bs'),
@@ -19,6 +20,6 @@ DEFAULTS = dict(
     SECRET_KEY=(str, ''),
     SENTRY_DSN=(str, ''),
     SENTRY_ENABLED=(bool, False),
-    STATIC_ROOT=(str, str(Path(__file__).parent.parent / 'web' / 'static')),
+    STATIC_ROOT=(str, os.path.join(tempfile.gettempdir(), 'bitcaster', 'static')),
     URL_PREFIX=(str, ''),
 )

@@ -7,8 +7,8 @@ from bitcaster.otp import OtpHandler
 
 
 def test_otp_handler(settings):
-    settings.SECRET_KEY = "1" * 40
-    message = "A really secret message. Not for prying eyes."
+    settings.SECRET_KEY = '1' * 40
+    message = 'A really secret message. Not for prying eyes.'
 
     otp_handler = OtpHandler()
 

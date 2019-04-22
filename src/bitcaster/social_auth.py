@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from constance import config
 from django.conf import settings
 from django.db import IntegrityError

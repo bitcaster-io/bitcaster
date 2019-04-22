@@ -1,7 +1,6 @@
 import logging
 
 from django.http import JsonResponse
-from django.template.defaultfilters import pluralize
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -78,7 +77,7 @@ class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
         if self.mode == 'form':
             context = self.get_context_data(**kwargs)
             return self.render_to_response(context)
-        elif self.mode == 'resend':
+        else:  # self.mode == 'resend'
             assignment = self.get_object()
             try:
                 recipient = assignment.send_verification_code()
@@ -146,27 +145,26 @@ class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateV
     def form_valid(self, formset):
         formset.instance = self.request.user
         formset.save()
-        if formset.disabled_subscriptions:
-            msg = _('{} subscriptions {} been disabled.').format(formset.disabled_subscriptions,
-                                                                 pluralize(formset.disabled_subscriptions,
-                                                                           'has,have'))
-            self.message_user(msg)
+        # if formset.disabled_subscriptions:
+        #     msg = _('{} subscriptions {} been disabled.').format(formset.disabled_subscriptions,
+        #                                                          pluralize(formset.disabled_subscriptions,
+        #                                                                    'has,have'))
+        #     self.message_user(msg)
 
         for a in formset.deleted_objects:
             self.audit(event=AuditLogEntry.AuditEvent.MEMBER_DELETE_ASSIGNMENT,
                        target_object=a.pk,
                        target_label=str(a))
-        need_config = 0
         if formset.new_objects:
             self.message_user(_('To complete your configuration. Insert codes that you receive to each new address'))
             for assignment in formset.new_objects:
                 self.audit(event=AuditLogEntry.AuditEvent.MEMBER_ADD_ASSIGNMENT,
                            target_object=assignment.pk,
                            target_label=str(assignment))
-                if assignment.channel.get_usage_message():
-                    need_config += 1
-            if need_config:
-                self.message_user(_('Some subscription need extra steps to complete. '))
+                # if assignment.channel.get_usage_message():
+                #     need_config += 1
+            # if need_config:
+            #     self.message_user(_('Some subscription need extra steps to complete. '))
 
         for assignment, changed_data in formset.changed_objects:
             # usage_message = assignment.channel.get_usage_message()

@@ -13,7 +13,7 @@ class ChannelMixin(OrganizationBaseView):
     model = Channel
 
     def get_queryset(self):
-        return self.selected_organization.channels.valid()
+        return self.selected_organization.channels.valid().order_by('name')
 
     def get_success_url(self):
         return self.selected_organization.urls.channels

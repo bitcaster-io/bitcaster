@@ -1,0 +1,39 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.21.0
+    method: GET
+    uri: http://api.ipstack.com//77.242.184.162
+  response:
+    body:
+      string: '{"ip":"77.242.184.162","type":"ipv4","continent_code":"EU","continent_name":"Europe","country_code":"IT","country_name":"Italy","region_code":"21","region_name":"Piedmont","city":"Biella","zip":"13900","latitude":45.563,"longitude":8.058,"location":{"geoname_id":3182043,"capital":"Rome","languages":[{"code":"it","name":"Italian","native":"Italiano"}],"country_flag":"http:\/\/assets.ipstack.com\/flags\/it.svg","country_flag_emoji":"\ud83c\uddee\ud83c\uddf9","country_flag_emoji_unicode":"U+1F1EE
+        U+1F1F9","calling_code":"39","is_eu":true}}'
+    headers:
+      Access-Control-Allow-Methods:
+      - GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Content-Type:
+      - application/json; Charset=UTF-8
+      Date:
+      - Mon, 22 Apr 2019 22:03:43 GMT
+      Server:
+      - nginx
+      Transfer-Encoding:
+      - chunked
+      X-Apilayer-Transaction-Id:
+      - 9ba989ff-a069-427d-af0e-437ff84dd1cd
+      X-Request-Time:
+      - '0.022'
+    status:
+      code: 200
+      message: OK
+version: 1

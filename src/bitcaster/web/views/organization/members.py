@@ -56,7 +56,7 @@ class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
         target = self.request.GET.get('filter')
         if target:
             qs = qs.filter(user__email__istartswith=target)
-        return qs
+        return qs.order_by('user__email')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)

@@ -7,6 +7,7 @@ from rest_framework.fields import Field
 from rest_framework.serializers import Serializer
 
 from bitcaster.dispatchers import Email
+from bitcaster.dispatchers.base import CoreDispatcher
 from bitcaster.models import Application, DispatcherMetaData, Organization, User
 from bitcaster.web.templatetags.bitcaster import (app_reverse,
                                                   channel_submit_row,
@@ -83,6 +84,12 @@ def test_render_field():
 def test_dispatcher_enable():
     DispatcherMetaData.objects.inspect()
     assert dispatcher_enabled(Email)
+
+
+@pytest.mark.django_db
+def test_dispatcher_not_enable():
+    assert not dispatcher_enabled(CoreDispatcher)
+
 
 #
 # @register.simple_tag(takes_context=True)

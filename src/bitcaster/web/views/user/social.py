@@ -1,9 +1,12 @@
+import pytest
 from django.utils.translation import gettext as _
 from social_django.models import UserSocialAuth
 
 from ..base import (BitcasterBaseDeleteView, BitcasterTemplateView,
                     HttpResponseRedirectToReferrer,)
 from .base import UserMixin
+
+pytestmark = pytest.mark.django_db
 
 
 class UserSocialAuthView(UserMixin, BitcasterTemplateView):
