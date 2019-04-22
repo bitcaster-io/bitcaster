@@ -19,11 +19,15 @@ import bitcaster.web.urls
 @csrf_exempt
 def get_qrcode(request):
     text = request.GET['text']
+    version = request.GET.get('version', 1)
+    correction = request.GET.get('c', qrcode.constants.ERROR_CORRECT_M)
+    size = request.GET.get('s', 8)
+
     qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=5,
-        border=0,
+        version=version,
+        error_correction=correction,
+        box_size=size,
+        border=2,
     )
     qr.add_data(text)
     qr.make(fit=True)

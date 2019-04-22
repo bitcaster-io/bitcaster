@@ -75,6 +75,7 @@ class Viber(CoreDispatcher):
 <img class="mx-auto d-block m-3" src="%(url)s?text=%(qrcode)s" style="display:block">
 </div>
 * On the top-right open the popup menu and select **Receive messages**
+* Check your chat and click on the link you have just received
 * That's all. Now you are ready to receive messages.
 """) % dict(info)
 

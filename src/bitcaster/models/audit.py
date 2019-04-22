@@ -4,6 +4,8 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
 
+MESSAGES = {}
+
 
 class AuditLogEntry(models.Model):
     class AuditEvent(Enum):
