@@ -536,42 +536,55 @@ SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
     'social_core.backends.linkedin.LinkedinOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
 )
+
 SOCIAL_AUTH_PIPELINE = (
+    # Get the information we can about the user and return it in a simple
+    # format to create the user instance later. On some cases the details are
+    # already part of the auth response from the provider, but sometimes this
+    # could hit a provider API.
     'social_core.pipeline.social_auth.social_details',  # 0
+
+    # Get the social uid from whichever service we're authing thru. The uid is
+    # the unique identifier of the given user in the provider.
     'social_core.pipeline.social_auth.social_uid',  # 1
+
+    # Verifies that the current auth process is valid within the current
+    # project, this is where emails and domains whitelists are applied (if
+    # defined).
     'social_core.pipeline.social_auth.auth_allowed',  # 2
+
+    # Checks if the current social-account is already associated in the site.
     'social_core.pipeline.social_auth.social_user',  # 3
+
+    # Make up a username for this person, appends a random string at the end if
+    # there's any collision.
     'social_core.pipeline.user.get_username',  # 4
-    # 'social_core.pipeline.user.create_user',  # 4
+
+    # Create a user account if we haven't found one yet.
+    'social_core.pipeline.user.create_user',  # 4
+
     # 'bitcaster.social_auth.associate_by_email',  # 5
+    # Create the record that associates the social account with the user.
     'social_core.pipeline.social_auth.associate_user',  # 6  create SocialAuth instance
+
+    # Populate the extra_data field in the social record with the values
+    # specified by settings (and the default ones like access_token, etc).
     'social_core.pipeline.social_auth.load_extra_data',  # 7
+
+    # Update the user record with any changed info from the auth service.
     'social_core.pipeline.user.user_details',  # 8
     'bitcaster.social_auth.associate_invitation',  # 9
     'bitcaster.social_auth.link_social_account',  # 10
-    # 'social_core.pipeline.social_auth.social_details',
-    # 'social_core.pipeline.social_auth.social_uid',
-    # 'social_core.pipeline.social_auth.social_user',
-    # 'social_core.pipeline.user.get_username',
-    # 'social_core.pipeline.social_auth.associate_by_email',
-    # 'bitcaster.social_auth.associate',
-    # 'bitcaster.social_auth.avatar',
-    # 'social_core.pipeline.user.create_user',
-    # 'bitcaster.social_auth.create_user',
-    # 'social_core.pipeline.social_auth.associate_user',
-    # 'social_core.pipeline.social_auth.load_extra_data',
-    # 'social_core.pipeline.user.user_details',
-    # 'social_core.pipeline.debug.debug',
-
 )
+
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/login/'
 SOCIAL_AUTH_LOGIN_URL = '/login/'
-SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/new-user/'
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/'
 SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/'
-SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/account-disconnected-redirect-url/'
-SOCIAL_AUTH_INACTIVE_USER_URL = '/inactive-user/'
+SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/'
+SOCIAL_AUTH_INACTIVE_USER_URL = '/'
 SOCIAL_AUTH_USER_MODEL = 'bitcaster.User'
 SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True

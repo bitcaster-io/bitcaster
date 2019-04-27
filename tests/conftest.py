@@ -61,12 +61,6 @@ def vcr(request):
     path = str(Path(request.fspath).parent / 'cassetes' / str(request.function.__name__))
     vcr = VCR(cassette_library_dir=path, filter_query_parameters=['access_key'])
     return vcr
-    # # TODO: remove me
-    # print(111, "conftest.py:60", request)
-    # # FIXME: pdb
-    # import ipdb; ipdb.set_trace()
-    #
-    # return str(Path(__file__).parent)
 
 
 @pytest.fixture

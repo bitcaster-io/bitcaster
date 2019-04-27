@@ -26,9 +26,6 @@ class PreviewView(TemplateView):
         content = transform(content)
         return HttpResponse(content)
 
-    # def get_template_names(self):
-    #     return self.kwargs['path'].replace("|", "/")
-
 
 class IndexView(RedirectView):
     url = '/login/'

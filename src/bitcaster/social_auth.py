@@ -1,6 +1,5 @@
 from constance import config
 from django.conf import settings
-from django.db import IntegrityError
 from django.shortcuts import resolve_url
 from django.utils import timezone
 from django.utils.encoding import force_text
@@ -12,23 +11,23 @@ from social_core.backends.linkedin import LinkedinOAuth2
 from social_core.exceptions import AuthFailed
 from social_django.strategy import DjangoStrategy
 
-from bitcaster.models import Invitation, Organization, User
+from bitcaster.models import Invitation, Organization
 from bitcaster.security import ROLES
 
 USER_FIELDS = ['username', 'email', 'fullname']
 
 
-def associate_invitation(backend, details, user=None, strategy=None, *args, **kwargs):
+def associate_invitation(backend, details, user=None, strategy=None, **kwargs):
     invitation_id = strategy.session_get('invitation')
     is_new = kwargs['is_new']
     organization = None,
     role = None
-    if is_new and invitation_id:
+    if invitation_id:
         fields = {'name': details['fullname'],
                   'friendly_name': details['fullname']}
         if invitation_id:
-            user, is_new = User.objects.get_or_create(email=details['email'],
-                                                      defaults=fields)
+            # user, is_new = User.objects.get_or_create(email=details['email'],
+            #                                           defaults=fields)
             try:
                 invite = Invitation.objects.get(pk=invitation_id, date_accepted__isnull=True)
             except Invitation.DoesNotExist:
@@ -43,11 +42,11 @@ def associate_invitation(backend, details, user=None, strategy=None, *args, **kw
                 role = ROLES.OWNER
             else:
                 role = invite.role
-        else:
-            organization = Organization.objects.get()
-            role = ROLES.MEMBER
+    else:
+        organization = Organization.objects.get()
+        role = ROLES.MEMBER
 
-        organization.memberships.create(user=user, role=role)
+    organization.memberships.get_or_create(user=user, role=role)
 
     return {
         'organization': organization,
@@ -57,22 +56,16 @@ def associate_invitation(backend, details, user=None, strategy=None, *args, **kw
     }
 
 
-def link_social_account(backend, details, new_association=False, uid=None, *args, **kwargs):
-    if new_association:
+def link_social_account(backend, new_association=False, social=None, uid=None, user=None, **kwargs):
+    if (new_association and user) and not social:
         storage = backend.strategy.storage
-        user = User.objects.get(email=details['email'])
         try:
             social = storage.user.create_social_auth(user, uid, backend.name)
-        except IntegrityError:
-            capture_exception()
-            social = storage.user.get_social_auth(backend.name, uid)
         except Exception:
             capture_exception()
             raise
 
         return {'user': user,
-                'is_new': user is None,
-                'new_association': social is None,
                 'social': social}
     return {}
 
@@ -86,7 +79,7 @@ class BitcasterStrategy(DjangoStrategy):
         notfound = object()
         "get configuration from 'constance.config' first "
         value = getattr(config, name, notfound)
-        if name == 'SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS':
+        if name.endswith('_WHITELISTED_DOMAINS'):
             if value:
                 return value.split(',')
             else:
@@ -110,6 +103,9 @@ class BitcasterGithubOrganizationOAuth2(GithubOrganizationOAuth2):
     """Github OAuth2 authentication backend for organizations"""
     name = 'github-org'
 
+    def auth_allowed(self, response, details):
+        return super().auth_allowed(response, details)
+
     def user_data(self, access_token, *args, **kwargs):
         """Loads user data from service"""
         try:
@@ -119,3 +115,5 @@ class BitcasterGithubOrganizationOAuth2(GithubOrganizationOAuth2):
                                          'Goto Settings/Profile and choose your public email'))
         except AuthFailed:
             raise AuthFailed(self, _('Sorry, you do not seem to be a public member of %s') % self.setting('NAME'))
+
+        return user_data
