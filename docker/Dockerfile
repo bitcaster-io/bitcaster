@@ -28,6 +28,7 @@ LABEL org.label.name="Bitcaster" \
       org.label.version=${VERSION} \
       org.label.date=${BUILD_DATE}
 
+ENV DOCKER_BUILD ${BUILD_DATE}
 ENV VERSION ${VERSION}
 ENV PIPENV_ARGS ${PIPENV_ARGS}
 ENV PYTHONUNBUFFERED 1

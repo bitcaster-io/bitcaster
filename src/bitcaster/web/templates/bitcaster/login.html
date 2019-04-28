@@ -1,4 +1,4 @@
-{% extends "bitcaster/base.html" %}{% load i18n crispy_forms_tags %}
+{% extends "bitcaster/base.html" %}{% load i18n crispy_forms_tags bc_assets %}
 
 {% block body %}
     {% if alarms %}
@@ -25,6 +25,9 @@
         <div class="row col-12 justify-content-center align-items-center">
             <div class="box box-modal login-form col-6 p-3">
                 <div class="container-fluid p-3 align-center">
+                    <div class="col-md-12 text-center">
+                        <img src="{% asset "bitcaster/images/bitcaster64.png" %}">
+                    </div>
                     <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="next" value="/">
@@ -37,8 +40,12 @@
                 </div>
                 {% include "bitcaster/_includes/oauth.html" %}
             </div>
+            <div class="col-md-12 text-center">
+                <span>bitcaster {{ bitcaster_version }} - {{ bitcaster_copyright }}</span>
+            </div>
         </div>
     </div>
+
 {% endblock %}
 {% block js-modal %}{% endblock js-modal %}
 {% block js-base %}{% endblock js-base %}

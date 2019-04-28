@@ -9,9 +9,6 @@
     <title>Bitcaster: {{ title }}</title>
     <link rel="shortcut icon" type="image/png" href="{% asset "bitcaster/images/favicon.ico" %}"/>
     <link rel="stylesheet" href="{% asset "bitcaster/theme.css" %}">
-    {#    <link rel="stylesheet" href="{% asset "bitcaster/public.css" %}">#}
-    {#    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>#}
-
 </head>
 
 <body class="{% block bodyclass %}{% endblock %}">
@@ -101,15 +98,6 @@
                                     <img class="gravatar" src="{{ user|gravatar:30 }}"/>
 
                                 </div>
-
-                                {#                                <div class="collapse navbar-collapse" id="navbarSupportedContent">#}
-                                {#                                    <ul class="nav navbar-nav ml-auto">#}
-                                {#                                        <li class="nav-item">#}
-                                {#                                            {% if organization %}{{ organization }} /{% endif %} {{ user }}#}
-                                {#                                        </li>#}
-                                {#                                    </ul>#}
-                                {#                                    <img class="gravatar" src="{{ user|gravatar:30 }}"/>#}
-                                {#                                </div>#}
                             {% endif %}
                         {% endblock user-links %}
                     </div>
@@ -143,7 +131,8 @@
                         <div class="col-sm justify-content-center">
                             <a href="//bitcaster.io/"><img src="{% asset "bitcaster/images/bitcaster32.png" %}"></a>
                         </div>
-                        <div class="col-sm justify-content-end">
+                        <div class="col-sm pull-right">
+                            {{ bitcaster_copyright }} {{bitcaster_docker}}
                         </div>
                     </div>
                 </div>
@@ -156,10 +145,7 @@
 {% block js-base %}
     <script src="{% static "bitcaster/theme.js" %}"></script>
     <script src="{% static "bitcaster/bitcaster.js" %}"></script>
-    {#<script src="{% static "bitcaster/select2.js" %}"></script>#}
     <script src="{% static "bitcaster/js-cookie.js" %}"></script>
-    {#<script src="{% static "bitcaster/vendor.js" %}"></script>#}
-    {#<script src="{% static "bitcaster/bitcaster.js" %}"></script>#}
 {% endblock %}
 
 {% block js-common %}

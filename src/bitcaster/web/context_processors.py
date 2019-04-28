@@ -1,6 +1,9 @@
+import os
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 import bitcaster as app
 from bitcaster.config.environ import env
@@ -26,6 +29,8 @@ def bitcaster(request):
             setup_url = reverse('org-dashboard', args=[membership.organization.slug])
 
     return {'bitcaster_version': app.get_full_version(settings.DEBUG),
+            'bitcaster_copyright': mark_safe('&copy; 2019 OS4D Ltd'),
+            'bitcaster_docker': os.environ.get('DOCKER_BUILD', ''),
             'setup_url': setup_url,
             'settings': settings,
             'env': EnvWrapper(env),
