@@ -10,9 +10,11 @@ from sentry_sdk import capture_exception
 
 from bitcaster.exceptions import MaxChannelError, PluginValidationError
 from bitcaster.framework.db.fields import DispatcherField, EncryptedJSONField
+from bitcaster.models.error import ErrorEntry, ErrorEvent
 from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.state import state
 from bitcaster.template.secure_context import SecureContext
+from bitcaster.tsdb.logging import log_notification
 
 from .application import Application
 from .base import AbstractModel
@@ -58,6 +60,8 @@ class Channel(ReverseWrapperMixin, AbstractModel):
     description = models.TextField(blank=True, null=True)
     handler = DispatcherField(null=True)
     deprecated = models.BooleanField(default=False)
+
+    errors = models.PositiveIntegerField(default=0)
     errors_threshold = models.IntegerField(default=100,
                                            help_text='Number or errors before channel will be automatically disabled')
     objects = ChannelQuerySet().as_manager()
@@ -154,9 +158,11 @@ class Channel(ReverseWrapperMixin, AbstractModel):
                     Notification.log(address, subscription, payload)
                 except Exception as e:
                     subscription.register_error()
+                    self.register_error()
                     logger.exception(e)
                     Notification.log('', subscription, payload, status=False, info=str(e))
                     failures += 1
+                log_notification()
                 if failures >= self.errors_threshold:
                     raise MaxChannelError(self)
         except MaxChannelError as e:
@@ -172,3 +178,9 @@ class Channel(ReverseWrapperMixin, AbstractModel):
             raise
 
         return success, failures
+
+    def register_error(self):
+        ErrorEntry.objects.create(event=ErrorEvent.SUBSCRIPTION_ERROR, target=self)
+        self.errors += 1
+        self.save()
+        return self.errors

@@ -178,5 +178,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     def retrieve(self, namespace: str, key: str):
         try:
             return self.storage[namespace][key]
-        except KeyError:
+        except KeyError:  # pragma: no cover
             return None

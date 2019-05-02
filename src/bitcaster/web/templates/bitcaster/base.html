@@ -1,6 +1,4 @@
 {% load bc_assets bc_permissions bitcaster i18n static gravatar cache %}<!DOCTYPE html>
-<html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +7,7 @@
     <title>Bitcaster: {{ title }}</title>
     <link rel="shortcut icon" type="image/png" href="{% asset "bitcaster/images/favicon.ico" %}"/>
     <link rel="stylesheet" href="{% asset "bitcaster/theme.css" %}">
+    {% block head %}{% endblock head %}
 </head>
 
 <body class="{% block bodyclass %}{% endblock %}">

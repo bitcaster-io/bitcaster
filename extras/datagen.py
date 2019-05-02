@@ -1,5 +1,12 @@
 import factory
 
+USERS = 1000
+GROUPS = 5
+EVENTS = 5
+NOTIFICATIONS = 5000
+OCCURENCES = 2000
+AUDITLOGS = 1000
+
 if __name__ == '__main__':  # noqa: C901
     import os
     import random
@@ -8,14 +15,14 @@ if __name__ == '__main__':  # noqa: C901
     os.environ['DJANGO_SETTINGS_MODULE'] = 'bitcaster.config.settings'
     application = get_wsgi_application()
 
-    from bitcaster.models import Organization, Subscription, Notification, Event, User, AuditLogEntry
+    from bitcaster.models import Organization, Subscription, Notification, Event
     from bitcaster.utils.tests import factories
 
     org = Organization.objects.first()
     app = factories.ApplicationFactory(organization=org, name='Dummy1')
     users = []
 
-    for i in range(0, 1000):
+    for i in range(0, USERS):
         print('.', end='')
         user = factories.UserFactory(email='user%s@example.com' % i)
         org_member = factories.OrganizationMemberFactory(organization=org, user=user)
@@ -28,7 +35,7 @@ if __name__ == '__main__':  # noqa: C901
 
     channels = list(org.channels.all())
 
-    for i in range(0, 5):
+    for i in range(0, GROUPS):
         group = factories.OrganizationGroupFactory(organization=org, name='Group-%s' % i)
         assert Organization.objects.count() == 1
         if not group.members.exists():
@@ -36,7 +43,7 @@ if __name__ == '__main__':  # noqa: C901
             for m in members:
                 group.members.add(m)
 
-    for i in range(0, 10):
+    for i in range(0, EVENTS):
         event = factories.EventFactory(application=app, enabled=True, name='Event-%s' % i)
         assert Organization.objects.count() == 1
         chs = random.sample(channels, random.randint(1, 5))
@@ -63,23 +70,24 @@ if __name__ == '__main__':  # noqa: C901
     events = list(app.events.all())
     subscriptions = list(Subscription.objects.filter(event__application=app))
     # Notification Log
-    for i in range(2000):
+    for i in range(NOTIFICATIONS):
         subscription = random.choice(subscriptions)
-        factories.LogEntryFactory(application=app,
-                                  event=subscription.event,
-                                  subscription=subscription,
-                                  channel=subscription.channel)
+        factories.NotificationFactory(id=i,
+                                      application=app,
+                                      event=subscription.event,
+                                      subscription=subscription,
+                                      channel=subscription.channel)
         assert Organization.objects.count() == 1
 
     # Notification Log
-    for i in range(2000):
-        factories.OccurenceFactory(organization=org,
+    for i in range(OCCURENCES):
+        factories.OccurenceFactory(id=i,
+                                   organization=org,
                                    application=app,
                                    event=factory.LazyAttribute(lambda a: Event.objects.order_by('?').first()))
-    # Notification Log
-    for i in range(2000):
-        factories.AuditLogEntryFactory(organization=org,
-                                       actor=factory.LazyAttribute(lambda a: User.objects.order_by('?').first()),
-                                       event=factory.LazyFunction(
-                                           lambda: random.choice(AuditLogEntry.AUDITEVENT_CHOICES)),
-                                       )
+
+    # Audit Log
+    for i in range(AUDITLOGS):
+        e = factories.AuditLogEntryFactory(id=i,
+                                           organization=org,
+                                           )

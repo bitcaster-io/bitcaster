@@ -34,6 +34,7 @@ develop:
 	pipenv run pre-commit install --hook-type pre-push
 	$(MAKE) .init-db
 	pip install -e .
+	npm install
 
 .init-db:
 	# initializing '${DBENGINE}' database 'bitcaster'

@@ -73,7 +73,6 @@ def admin2(application2):
     team.members.add(membership)
     return user
 
-
 # @pytest.mark.django_db
 # def test_get_all_permisssions(event1, event2, admin, user3, admin1, subscriber11):
 #     backend = BitcasterBackend()

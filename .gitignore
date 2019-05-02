@@ -3,7 +3,7 @@
 /dist
 /build
 /node_modules
-*.mo
+/*.mo
 bitcaster.egg-info
 /bitcaster.json
 *.pyc
@@ -20,3 +20,4 @@ ghostdriver.log
 !.circleci
 !.github
 !.bumpversion.cfg
+!/tests/.coveragerc

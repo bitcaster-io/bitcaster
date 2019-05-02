@@ -1,8 +1,10 @@
 import datetime
+import random
 from contextlib import ContextDecorator
 from random import choice
 
 import factory
+import pytz
 from django.contrib.auth.models import Group, Permission
 from factory.base import FactoryMetaClass
 from factory.fuzzy import FuzzyDateTime, FuzzyText
@@ -15,6 +17,7 @@ from bitcaster import models
 from bitcaster.agents import EmailAgent
 from bitcaster.dispatchers import Email
 from bitcaster.framework.db.fields import ROLES
+from bitcaster.models.audit import AuditEvent
 from bitcaster.models.token import generate_api_token
 from bitcaster.utils import fqn
 
@@ -143,6 +146,7 @@ class UserFactory(AutoRegisterModelFactory):
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
+        organization = kwargs.pop('organization', None)
         permissions = kwargs.pop('permissions', None)
         addresses = kwargs.pop('addresses', None)
         raw_password = kwargs.pop('password', cls.password)
@@ -156,7 +160,9 @@ class UserFactory(AutoRegisterModelFactory):
                 user.addresses.create(label=handler,
                                       verified=True,
                                       address=address)
-
+        if not organization:
+            organization = OrganizationFactory(owner=user)
+        # organization.add_member(user)
         return user
 
 
@@ -451,9 +457,10 @@ class AddressAssignmentFactory(AutoRegisterModelFactory):
     channel = factory.SubFactory(ChannelFactory)
 
 
-class LogEntryFactory(AutoRegisterModelFactory):
+class NotificationFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.Notification
+        django_get_or_create = ('id',)
 
     timestamp = FuzzyDateTime(datetime.datetime(2019, 1, 1, tzinfo=UTC))
     application = factory.SubFactory(ApplicationFactory)
@@ -466,7 +473,7 @@ class LogEntryFactory(AutoRegisterModelFactory):
 
 class OccurenceFactory(AutoRegisterModelFactory):
     timestamp = FuzzyDateTime(datetime.datetime(2019, 1, 1, tzinfo=UTC))
-    organization = factory.SubFactory(OrganizationFactory)
+    # organization = factory.SubFactory(OrganizationFactory)
     application = factory.SubFactory(ApplicationFactory)
     event = factory.SubFactory(EventFactory)
     # origin = models.GenericIPAddressField(blank=True, null=True)
@@ -479,12 +486,47 @@ class OccurenceFactory(AutoRegisterModelFactory):
     # failures = models.IntegerField(default=0)
     class Meta:
         model = models.Occurence
+        django_get_or_create = ('id',)
 
 
 class AuditLogEntryFactory(AutoRegisterModelFactory):
     class Meta:
         model = models.AuditLogEntry
+        django_get_or_create = ('id',)
 
-    timestamp = FuzzyDateTime(datetime.datetime(2019, 1, 1, tzinfo=UTC))
-    organization = factory.SubFactory(OrganizationFactory)
-    event = factory.SubFactory(EventFactory)
+    timestamp = FuzzyDateTime(datetime.datetime(2019, 1, 1, tzinfo=pytz.UTC))
+    # organization = factory.SubFactory(OrganizationFactory)
+    actor = factory.LazyAttribute(lambda a: models.User.objects.order_by('?').first())
+
+    @classmethod
+    def _get_or_create(cls, model_class, *args, **kwargs):
+        manager = cls._get_manager(model_class)
+        kwargs.setdefault('event', random.choice(list(AuditEvent)).value)
+
+        org = kwargs['organization']
+        actor = kwargs['actor']
+        event = kwargs['event']
+
+        family = (event % 100)
+        if event == AuditEvent.MEMBER_SUBSCRIBE_EVENT:
+            e = EventFactory(application=models.Application.objects.first())
+            kwargs['target_label'] = str(e)
+        elif family == 1:
+            AddressFactory(user=actor)
+            kwargs['target_label'] = str(actor.addresses.first())
+        elif family == 4:
+            AddressAssignmentFactory(user=actor)
+            kwargs['target_label'] = str(actor.assignments.first())
+        # elif family == 4:
+        #     AddressAssignmentFactory(user=actor)
+        #     kwargs['target_label'] = str(actor.assignments.first())
+        elif family == 5:
+            kwargs['target_label'] = str(org.members.order_by('?').first())
+
+        key_fields = {}
+        for field in cls._meta.django_get_or_create:
+            key_fields[field] = kwargs.pop(field)
+        key_fields['defaults'] = kwargs
+
+        instance, _created = manager.update_or_create(*args, **key_fields)
+        return instance

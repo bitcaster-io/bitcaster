@@ -7,6 +7,7 @@ from rest_framework.response import Response
 
 from bitcaster.api.filters import ApplicationFilterBackend
 from bitcaster.tasks import trigger_event
+from bitcaster.tsdb.logging import log_occurence
 from bitcaster.utils.wsgi import get_client_ip
 
 from ...models.event import Event
@@ -37,6 +38,7 @@ class EventViewSet(BaseModelViewSet):
             detail=True)
     def trigger(self, request, application__pk, pk):
         event = self.get_object()
+        log_occurence(event.enabled)
         if not event.enabled:
             return Response({'error': 'Event disabled'}, status=400)
 

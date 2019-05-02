@@ -1,11 +1,14 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Occurence(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=timezone.now)
     organization = models.ForeignKey('bitcaster.Organization',
+                                     related_name='occurences',
                                      on_delete=models.CASCADE)
     application = models.ForeignKey('bitcaster.Application',
+                                    related_name='occurences',
                                     on_delete=models.CASCADE)
     event = models.ForeignKey('bitcaster.Event',
                               on_delete=models.CASCADE)

@@ -1,4 +1,4 @@
-# flake8: noqa
+# flake8: noqa E401
 from .application import *
 from .application.events import (EventCreate, EventDelete, EventKeys,
                                  EventList, EventMessages, EventTest,
@@ -17,6 +17,7 @@ from .autocomplete import (AddressAutocomplete, ApplicationAutocomplete,
 from .base import PluginInfo
 from .callbacks import confirm_address, confirm_registration
 from .channel import ChannelCreateWizard, ChannelListView
+from .charts import *
 from .handlers import handler400, handler403, handler404, handler500
 from .icons import channel_icon, plugin_icon
 from .login_logout import LoginView, LogoutView

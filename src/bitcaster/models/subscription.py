@@ -1,15 +1,16 @@
 import logging
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 
 from bitcaster.framework.db.fields import EncryptedJSONField
-from bitcaster.models.audit import AuditLogEntry
 
 from .base import AbstractModel
 from .channel import Channel
+from .error import ErrorEntry, ErrorEvent
 from .event import Event
 from .mixins import ReverseWrapperMixin
 from .user import User
@@ -54,6 +55,8 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     errors = models.IntegerField(default=0)
     objects = SubscriptionQuerySet.as_manager()
 
+    error_log = GenericRelation(ErrorEntry)
+
     class Meta:
         app_label = 'bitcaster'
         unique_together = ('channel', 'subscriber', 'event')
@@ -76,12 +79,13 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
         return self.channel.handler.get_recipient_address(self)
 
     def register_error(self):
-        AuditLogEntry.objects.create(event=AuditLogEntry.AuditEvent.SUBSCRIPTION_ERROR,
-                                     actor=self.subscriber,
-                                     target_object=self.pk,
-                                     target_label=str(self))
+        ErrorEntry.objects.create(event=ErrorEvent.SUBSCRIPTION_ERROR,
+                                  application=self.event.application,
+                                  target=self)
         self.errors += 1
         self.save()
+        return self.errors
+
     # def update_token(self):
     #     self.deactivation_token = generate_subscription_token(self)
     #

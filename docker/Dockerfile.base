@@ -27,6 +27,7 @@ RUN apk add --no-cache --virtual .run-deps \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
         curl \
+        rrdtool \
         gosu \
         libpq \
         libxslt \

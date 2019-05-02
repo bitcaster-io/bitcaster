@@ -35,7 +35,7 @@ build-base:
 			-t ${DOCKER_IMAGE_NAME}-0.1:base \
 			-f docker/Dockerfile.base .
 	pass docker/saxix | docker login -u saxix --password-stdin
-	docker push ${DOCKER_IMAGE_NAME}-0.1:base
+	docker push ${DOCKER_IMAGE_NAME}-0.2:base
 	docker images | grep ${DOCKER_IMAGE_NAME}
 
 

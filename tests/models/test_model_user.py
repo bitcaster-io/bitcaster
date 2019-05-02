@@ -28,6 +28,11 @@ def test_is_manager(user1):
     assert user1.is_manager
 
 
+def test_store(user1):
+    user1.store('ns', 'key', 1)
+    assert user1.retrieve('ns', 'key') == 1
+
+
 # UserManager
 
 

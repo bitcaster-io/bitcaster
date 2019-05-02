@@ -215,6 +215,12 @@ def subscriber2(user2, message2):
 
 
 @pytest.fixture
+def address1(application1, subscriber1):
+    from bitcaster.utils.tests.factories import AddressFactory
+    return AddressFactory(user=subscriber1)
+
+
+@pytest.fixture
 def subscription1(application1, subscriber1):
     from bitcaster.utils.tests.factories import SubscriptionFactory
     return SubscriptionFactory(subscriber=subscriber1,

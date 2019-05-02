@@ -9,8 +9,8 @@ const rel = path.resolve.bind(null, __dirname + "/src/bitcaster/web/assets/");
 const outputDir = path.resolve.bind(null, __dirname + "/src/bitcaster/web/static/bitcaster/")();
 const VERSION = require("./package.json").version;
 
-let IS_PRODUCTION = false;
-let WITH_CSS_SOURCEMAPS = true;
+var IS_PRODUCTION = false;
+var WITH_CSS_SOURCEMAPS = true;
 
 const loaders = {
     css: {
@@ -18,7 +18,7 @@ const loaders = {
         options: {
             sourceMap: WITH_CSS_SOURCEMAPS,
             minimize: IS_PRODUCTION,
-             devtool: 'source-map',
+            devtool: 'source-map',
         },
     },
     postcss: {
@@ -26,12 +26,14 @@ const loaders = {
         options: {
             sourceMap: WITH_CSS_SOURCEMAPS,
             minimize: IS_PRODUCTION,
-             devtool: 'source-map',
-            plugins: (loader) => [
-                autoprefixer({
-                    browsers: ["last 2 versions"]
-                })
-            ]
+            devtool: 'source-map',
+            plugins: function (loader) {
+                return [
+                    autoprefixer({
+                        browsers: ["last 2 versions"]
+                    })
+                ]
+            }
         }
     },
     scss: {
@@ -41,7 +43,7 @@ const loaders = {
             indentedSyntax: true,
             sourceMap: WITH_CSS_SOURCEMAPS,
             minimize: IS_PRODUCTION,
-             devtool: 'source-map',
+            devtool: 'source-map',
             // includePaths: [path.resolve(__dirname, "./src")]
         }
     }
@@ -67,16 +69,6 @@ module.exports = [
             sourceMapFilename: "[name].js.map",
         },
     },
-    // {
-    //     entry: "bootstrap",
-    //     output: {
-    //         path: outputDir,
-    //         filename: "bootstrap.js",
-    //         libraryTarget: "window",
-    //         // library: "$",
-    //         // sourceMapFilename: "jquery.js.map",
-    //     },
-    // },
     {
         entry: "select2",
         output: {
@@ -111,6 +103,7 @@ module.exports = [
             bitcaster: [rel("bitcaster/bitcaster")],
             vendor: [rel("bitcaster/vendor")],
             theme: [rel("bitcaster/theme")],
+            charts: [rel("bitcaster/js/charts")],
         }, // -entry
         context: rel("."),
         module: {
@@ -178,7 +171,7 @@ module.exports = [
         },
         plugins: [
             // new BundleTracker({filename: './webpack-stats.json'}),
-
+            new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
             new ExtractTextPlugin("[name].css"),
             new CleanWebpackPlugin(outputDir),
             new webpack.LoaderOptionsPlugin({

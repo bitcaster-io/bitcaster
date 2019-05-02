@@ -31,12 +31,6 @@
                 Date
             </th>
             <th>
-                Actor
-            </th>
-            <th>
-                Target
-            </th>
-            <th>
                 Message
             </th>
         </tr>
@@ -46,13 +40,7 @@
                     {{ entry.timestamp }}
                 </td>
                 <td>
-                    {{ entry.actor_label }}
-                </td>
-                <td>
-                    {{ entry.target_label|default_if_none:"" }}
-                </td>
-                <td>
-                    {{ entry.get_message }}
+                    {{ entry }}
                 </td>
             </tr>
         {% endfor %}

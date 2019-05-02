@@ -1,45 +1,107 @@
-{% extends "bitcaster/organization/base.html" %}{% load bc_permissions bc_dashboard i18n %}
+{% extends "bitcaster/organization/base.html" %}{% load bc_permissions bc_dashboard i18n static %}
+{% block head %}
+    {{ block.super }}
+    <script src="{% static "bitcaster/charts.js" %}"></script>
 
+{% endblock head %}
 {% block page %}
     <div class="row col-12 p-3 m-1">
-        {% if organization.issues %}
-            <ul class="col-10 issuelist">{% for issue in organization.issues.all %}
-                <li class="issue {% if issue.tags %} issue-{{ issue.tags }}{% endif %}">{{ issue.message|safe }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <div class="col-2">
-            <a class="btn btn-dark btn-small pull-right"
-               href="{{ organization.urls.check }}">{% trans "Validate Configuration" %}</a>
+        <div style="width:1000px">
+            <canvas id="audit"></canvas>
         </div>
-    </div>
-    <div class="row col-12 p-3 m-1">
-        <div class="card mr-3" style="width:30%">
-            <div class="card-header bg-{{ data.box_members }}">Members
-                <a href="{{ organization.urls.members }}" class="pull-right"><i class="fa fa-wrench"></i></a>
-            </div>
-            <div class="card-body ">
-                {% metric "Active Users" data.active_users %}
-                {% metric "Pending Invitations" data.pending_users %}
-            </div>
+        <div style="width:1000px">
+            <canvas id="notification"></canvas>
         </div>
-        <div class="card mr-3" style="width:30%">
-            <div class="card-header bg-{{ data.box_channels }}">Channels
-                <a href="{{ organization.urls.channels  }}" class="pull-right"><i class="fa fa-wrench"></i></a>
-            </div>
-            <div class="card-body ">
-                {% metric "Enabled Channels" data.enabled_channels %}
-                {% metric "Disabled Channels" data.disabled_channels %}
-                {% metric "Deprecated Channels" data.deprecated_channels %}
-            </div>
-        </div>
-        <div class="card mr-3" style="width:30%">
-            <div class="card-header bg-{{ data.box_apps }}">Applications
-                <a href="{{ organization.urls.applications }}" class="pull-right"><i class="fa fa-wrench"></i></a>
-            </div>
-            <div class="card-body">
-                {% metric "Total" data.applications %}
-            </div>
+        <div style="width:1000px">
+            <canvas id="occurence"></canvas>
         </div>
     </div>
 {% endblock page %}
+{% block js %}
+    <script>
+        var color = Chart.helpers.color;
+
+        var cfg = {
+            {#type: 'bar',#}
+            data: {
+                datasets: [{
+                    label: 'Audit events',
+                    backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                    borderColor: window.chartColors.red,
+                    data: [],
+                    type: 'line',
+                    pointRadius: 0,
+                    fill: false,
+                    lineTension: 0,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                legend: false,
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            displayFormats: {
+                                quarter: 'MMM DD'
+                            }
+                        },
+                        {#distribution: 'series',#}
+                        ticks: {
+                            {#source: 'data',#}
+                            autoSkip: false
+                         }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Events'
+                        }
+                    }]
+                },
+                tooltips: {
+                    intersect: false,
+                    mode: 'index',
+                    callbacks: {
+                        label: function (tooltipItem, myData) {
+                            var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += parseFloat(tooltipItem.value).toFixed(2);
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+        var charts = {};
+        ['audit', 'notification', 'occurence'].forEach(function(value, index, ar){
+            var ctx = document.getElementById(value).getContext('2d');
+            ctx.canvas.width = 500;
+            ctx.canvas.height = 100;
+            charts[value] = new Chart(ctx, cfg);
+        });
+
+        $.get('{{ organization.urls.charts_audit}}')
+            .done(function (data) {
+                charts['audit'].config.data.datasets[0].data = data;
+                charts['audit'].update();
+            });
+
+        $.get('{{ organization.urls.charts_occurence}}')
+            .done(function (data) {
+                charts['occurence'].config.data.datasets[0].data = data;
+                charts['occurence'].update();
+            });
+
+        $.get('{{ organization.urls.charts_notification }}')
+            .done(function (data) {
+                charts['notification'].config.data.datasets[0].data = data;
+                charts['notification'].update();
+            });
+
+    </script>
+
+
+{% endblock %}

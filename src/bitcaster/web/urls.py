@@ -223,6 +223,10 @@ urlpatterns = [
     path('<slug:org>/channel/<int:pk>/deprecate/', views.OrganizationChannelDeprecate.as_view(),
          name='org-channel-deprecate'),
 
+    path('<slug:org>/charts/audit/', views.audit_log, name='org-charts-audit'),
+    path('<slug:org>/charts/notification/', views.notification_log, name='org-charts-notification'),
+    path('<slug:org>/charts/occurence/', views.occurence_log, name='org-charts-occurence'),
+
     path('<slug:org>/applications/', views.OrganizationApplications.as_view(), name='org-applications'),
 
     path('wip/', views.WorkInProgressView.as_view(), name='wip'),

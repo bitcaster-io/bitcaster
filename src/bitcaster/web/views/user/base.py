@@ -9,7 +9,7 @@ from pytz import country_timezones
 
 from bitcaster import messages
 from bitcaster.models import User
-from bitcaster.models.audit import AuditLogEntry
+from bitcaster.models.audit import AuditEvent
 from bitcaster.utils.email_verification import set_request_new_email_address
 from bitcaster.utils.wsgi import get_client_ip
 from bitcaster.web.forms import UserProfileForm, send_address_verification_email
@@ -96,5 +96,5 @@ class UserProfileView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
             form.instance.email = form.initial['email']
             self.message_user(_('Check your inbox to validate your new email address'), messages.SUCCESS)
         ret = super().form_valid(form)
-        self.audit(event=AuditLogEntry.AuditEvent.MEMBER_UPDATE_PROFILE)
+        self.audit(event=AuditEvent.MEMBER_UPDATE_PROFILE)
         return ret

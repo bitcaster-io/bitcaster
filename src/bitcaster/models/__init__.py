@@ -1,10 +1,11 @@
 from .address import Address, AddressAssignment
 from .application import Application
 from .applicationmember import ApplicationMember
-from .audit import AuditLogEntry
+from .audit import AuditEvent, AuditLogEntry
 from .base import AbstractModel
 from .channel import Channel
 from .counters import Counter
+from .error import ErrorEntry
 from .event import Event
 from .invitation import Invitation
 from .message import Message

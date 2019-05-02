@@ -1,9 +1,10 @@
+import logging
+
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster import messages
-from bitcaster.models import Subscription
-from bitcaster.models.audit import AuditLogEntry
+from bitcaster.models import AuditEvent, AuditLogEntry, Subscription
 from bitcaster.web.forms.user import UserSubscriptionEditForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
@@ -12,6 +13,8 @@ from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       HttpResponseRedirectToReferrer,)
 
 from .base import LogAuditMixin, UserMixin
+
+logger = logging.getLogger()
 
 
 class UserSubscriptionMixin(UserMixin):
@@ -44,16 +47,17 @@ class UserSubscriptionToggle(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
             else:
                 self.message_user(f'{obj._meta.verbose_name} #{obj.pk} disabled',
                                   level=messages.WARNING)
-            self.audit(event=AuditLogEntry.AuditEvent.MEMBER_TOGGLE_SUBSCRIPTION,
-                       target_object=obj.pk,
-                       target_label=str(obj),
-                       data={'enabled': obj.enabled})
-
-        except Exception:
+        except Exception as e:
+            logger.exception(e)
             obj.enabled = False
             self.message_user(_('{} #{} cannot be enabled because '
                                 'there are no valid address').format(obj._meta.verbose_name, obj.pk),
                               level=messages.WARNING)
+        event = AuditEvent.MEMBER_ENABLE_SUBSCRIPTION if obj.enabled else AuditEvent.MEMBER_DISABLE_SUBSCRIPTION
+        self.audit(event=event,
+                   target_object=obj.pk,
+                   target_label=str(obj),
+                   data={'enabled': obj.enabled})
 
         obj.save()
 
@@ -93,7 +97,7 @@ class UserSubscriptionEdit(UserSubscriptionMixin, BitcasterBaseUpdateView):
         # org  =
         ret = super().get_context_data(object=self.object, **kwargs)
         ret['not_usable_channels'] = self.object.event.channels.exclude(addresses__user=self.request.user,
-                                                                  addresses__address__verified=True)
+                                                                        addresses__address__verified=True)
         ret['usable_channels'] = self.object.event.channels.filter(addresses__user=self.request.user,
-                                                             addresses__address__verified=True)
+                                                                   addresses__address__verified=True)
         return ret

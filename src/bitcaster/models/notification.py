@@ -70,4 +70,4 @@ class Notification(models.Model):
                       application=subscription.event.application,
                       status=True)
         values.update(kwargs)
-        cls.objects.create(**values)
+        return cls.objects.create(**values)

@@ -1,52 +1,83 @@
-from enum import Enum
+from enum import IntEnum
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
-MESSAGES = {}
+
+class AuditEvent(IntEnum):
+    MEMBER_LOGIN = 0
+    MEMBER_LOGOUT = 1
+
+    # Invitations 2xx
+    INVITATION_CREATED = 201
+    INVITATION_SENT = 202
+    INVITATION_ACCEPTED = 203
+
+    # user
+    MEMBER_UPDATE_PROFILE = 301
+    MEMBER_UPDATE_ADDRESS = 302
+    MEMBER_DELETE_ADDRESS = 303
+    MEMBER_ADD_ADDRESS = 304
+    MEMBER_VALIDATE_ADDRESS = 305
+
+    MEMBER_ADD_ASSIGNMENT = 401
+    MEMBER_CHANGE_ASSIGNMENT = 402
+    MEMBER_DELETE_ASSIGNMENT = 403
+
+    MEMBER_SUBSCRIBE_EVENT = 505
+    MEMBER_DELETE_SUBSCRIPTION = 506
+    MEMBER_ENABLE_SUBSCRIPTION = 507
+    MEMBER_DISABLE_SUBSCRIPTION = 507
+
+    MEMBERSHIP_CREATED = 601
+
+    # SUBSCRIPTION_ERROR = 701
+    #
+    # @classmethod
+    # def get_by_value(cls, v):
+    #     try:
+    #         label = ([val for val in cls if val == v][0]).name
+    #         return label.replace('_', ' ').title()
+    #     except IndexError:
+    #         return 'N/A (%s)' % v
+
+
+MESSAGES = {
+    AuditEvent.MEMBER_LOGIN: _('%(actor)s logged in'),
+    AuditEvent.MEMBER_LOGOUT: _('%(actor)s logged out'),
+
+    AuditEvent.INVITATION_CREATED: _("%(actor)s invited '%(target)s'"),
+    AuditEvent.INVITATION_SENT: _("%(actor)s sent invitation to '%(target)s'"),
+    AuditEvent.INVITATION_ACCEPTED: _('%(actor)s accepted invitation'),
+
+    AuditEvent.MEMBER_UPDATE_PROFILE: _('%(actor)s updated profile'),
+    AuditEvent.MEMBER_UPDATE_ADDRESS: _("%(actor)s updated address '%(target)s'"),
+    AuditEvent.MEMBER_DELETE_ADDRESS: _("%(actor)s removed address '%(target)s'"),
+    AuditEvent.MEMBER_ADD_ADDRESS: _("%(actor)s added address '%(target)s'"),
+    AuditEvent.MEMBER_VALIDATE_ADDRESS: _("%(actor)s succesfully validated address '%(target)s'"),
+
+    AuditEvent.MEMBER_ADD_ASSIGNMENT: _("%(actor)s assigned address to'%(target)s'"),
+    AuditEvent.MEMBER_CHANGE_ASSIGNMENT: _("%(actor)s changed assignment for '%(target)s'"),
+    AuditEvent.MEMBER_DELETE_ASSIGNMENT: _("%(actor)s removed assignment for '%(target)s'"),
+
+    AuditEvent.MEMBER_DELETE_SUBSCRIPTION: _("%(actor)s deleted subscription '%(target)s'"),
+    AuditEvent.MEMBER_ENABLE_SUBSCRIPTION: _("%(actor)s enabled subscription '%(target)s'"),
+    AuditEvent.MEMBER_DISABLE_SUBSCRIPTION: _("%(actor)s disabled subscription '%(target)s'"),
+    AuditEvent.MEMBER_SUBSCRIBE_EVENT: _("%(actor)s subscribed to '%(target)s'"),
+
+    AuditEvent.MEMBERSHIP_CREATED: _('%(actor)s add %(target)s to organization'),
+
+}
 
 
 class AuditLogEntry(models.Model):
-    class AuditEvent(Enum):
-        MEMBER_LOGIN = 'MEMBER_LOGIN'
-        MEMBER_LOGOUT = 'MEMBER_LOGOUT'
-
-        MEMBER_EDIT = 'MEMBER_EDIT'
-        MEMBER_UPDATE_ADDRESS = 'MEMBER_UPDATE_ADDRESS'
-        MEMBER_DELETE_ADDRESS = 'MEMBER_DELETE_ADDRESS'
-        MEMBER_ADD_ADDRESS = 'MEMBER_ADD_ADDRESS'
-
-        INVITATION_CREATED = 'INVITATION_CREATED'
-        INVITATION_SENT = 'INVITATION_SENT'
-        INVITATION_ACCEPTED = 'INVITATION_ACCEPTED'
-
-        MEMBER_ADD_ASSIGNMENT = 'MEMBER_ADD_ASSIGNMENT'
-        MEMBER_CHANGE_ASSIGNMENT = 'MEMBER_CHANGE_ASSIGNMENT'
-        MEMBER_DELETE_ASSIGNMENT = 'MEMBER_DELETE_ASSIGNMENT'
-
-        MEMBER_UPDATE_PROFILE = 'MEMBER_UPDATE_PROFILE'
-        MEMBER_SUBSCRIBE_EVENT = 'MEMBER_SUBSCRIBE_EVENT'
-        MEMBER_DELETE_SUBSCRIPTION = 'MEMBER_DELETE_SUBSCRIPTION'
-        MEMBER_TOGGLE_SUBSCRIPTION = 'MEMBER_TOGGLE_SUBSCRIPTION'
-        MEMBER_VALIDATE_ADDRESS = 'MEMBER_VALIDATE_ADDRESS'
-
-        MEMBERSHIP_CREATED = 'MEMBERSHIP_CREATED'
-
-        SUBSCRIPTION_ERROR = 'SUBSCRIPTION_ERROR'
-
-        @classmethod
-        def get_by_value(cls, v):
-            try:
-                label = ([val for val in cls if val == v][0]).name
-                return label.replace('_', ' ').title()
-            except IndexError:
-                return 'N/A (%s)' % v
-
+    AuditEvent = AuditEvent
     AUDITEVENT_CHOICES = [(tag.value, tag.name) for tag in AuditEvent]
 
     organization = models.ForeignKey('bitcaster.Organization',
-                                     blank=True, null=True,
+                                     related_name='auditlog',
                                      on_delete=models.CASCADE)
     actor = models.ForeignKey('bitcaster.User', models.SET_NULL,
                               related_name='audit_actors', null=True, blank=True)
@@ -55,12 +86,16 @@ class AuditLogEntry(models.Model):
     target_object = models.PositiveIntegerField(blank=True, null=True)
     target_label = models.CharField(max_length=300, null=True, blank=True)
 
-    event = models.CharField(choices=AUDITEVENT_CHOICES,
-                             max_length=100)
+    event = models.IntegerField(choices=AUDITEVENT_CHOICES)
 
     ip_address = models.GenericIPAddressField(blank=True, null=True, unpack_ipv4=True)
     data = JSONField(blank=True, null=True)
     timestamp = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return MESSAGES.get(self.event, '') % dict(actor=self.actor,
+                                                   target=self.target_label,
+                                                   timestamp=self.timestamp, )
 
     def get_message(self):
         msg = self.AuditEvent.get_by_value(self.event)

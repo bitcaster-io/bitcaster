@@ -13,9 +13,8 @@ from django.views.generic.edit import FormMixin, ProcessFormView
 from strategy_field.utils import fqn
 
 from bitcaster.framework.db.fields import ROLES
-from bitcaster.models import (Application, AuditLogEntry,
-                              Event, Organization, User,)
-# from bitcaster.models.configurationissue import check_organization
+from bitcaster.models import Application, Event, Organization, User
+from bitcaster.models.audit import AuditEvent
 from bitcaster.models.organization import RESERVED_ORGANIZATION_NAME
 from bitcaster.models.validators import ListValidator, NameValidator
 
@@ -88,7 +87,7 @@ def configure_system(name, owner):
     bitcaster = Application.objects.create(name='Bitcaster',
                                            organization=org,
                                            core=True)
-    for evt in AuditLogEntry.AuditEvent:
+    for evt in AuditEvent:
         Event.objects.create(application=bitcaster,
                              core=True,
                              name=evt.name,

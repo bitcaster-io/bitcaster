@@ -2,6 +2,7 @@
 Bitcaster
 =========
 
+
 Prerequisites
 -------------
 
@@ -10,6 +11,8 @@ Prerequisites
     - git
 
 
-Working with codebase
+Setup environment
+-----------------
 
     $ git clone
+    $ make develop
