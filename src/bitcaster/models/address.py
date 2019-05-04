@@ -3,6 +3,7 @@ import string
 
 from django.conf import settings
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from bitcaster.models.mixins import ReversionMixin
 from bitcaster.utils.strings import random_string
@@ -79,6 +80,6 @@ class AddressAssignment(ReversionMixin, models.Model):
         address.code = code
         address.save()
         return self.channel.handler.emit(self.user,
-                                         'Bitcaster confirmation code',
-                                         'Bitcaster confirmation code %s' % code,
+                                         _('Bitcaster confirmation code'),
+                                         _('Bitcaster confirmation code {} Tip: Use copy/paste').format(code),
                                          silent=False)

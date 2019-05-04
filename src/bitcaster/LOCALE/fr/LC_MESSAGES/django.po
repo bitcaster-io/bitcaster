@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-04 18:01+0200\n"
+"POT-Creation-Date: 2019-05-04 19:22+0200\n"
 "PO-Revision-Date: 2018-03-02 17:53+0000\n"
 "Last-Translator: Giovanni Bronzini, 2019\n"
 "Language-Team: French (https://www.transifex.com/sax9/teams/84041/fr/)\n"
@@ -373,6 +373,14 @@ msgstr "'%(value)s' est un mot reservé"
 #, python-format
 msgid "'%(value)s'is not a valid ratelimit value "
 msgstr "'%(value)s' n'est pas une limite de débit valide "
+
+#: bitcaster/models/address.py:84
+msgid "Bitcaster confirmation code"
+msgstr ""
+
+#: bitcaster/models/address.py:85
+msgid "Bitcaster confirmation code {} Tip: Use copy/paste"
+msgstr ""
 
 #: bitcaster/models/application.py:39 bitcaster/models/organization.py:34
 #: bitcaster/models/plugin.py:27
@@ -1727,15 +1735,21 @@ msgstr "Répartiteurs"
 msgid "Agents"
 msgstr "Agents"
 
-#: bitcaster/web/templates/bitcaster/user/address_verify.html:66
+#: bitcaster/web/templates/bitcaster/user/address_verify.html:44
+msgid ""
+"Warning: cannot send verification codes as channel is disabled. Ask your "
+"administrator to enable it first"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/address_verify.html:68
 msgid "Verify Address"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/user/address_verify.html:70
+#: bitcaster/web/templates/bitcaster/user/address_verify.html:72
 msgid "Send Code"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/user/address_verify.html:81
+#: bitcaster/web/templates/bitcaster/user/address_verify.html:83
 msgid "Close"
 msgstr ""
 
