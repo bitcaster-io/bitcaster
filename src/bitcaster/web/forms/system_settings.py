@@ -6,6 +6,7 @@ from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import Form
+from django.utils.translation import ugettext_lazy as _
 from rest_framework.reverse import reverse
 
 from bitcaster.framework.forms.widgets import PasswordEyeInput
@@ -37,49 +38,49 @@ HELP = '''
 
 
 class SettingsLdapForm(SettingsForm):
-    AUTH_LDAP_ENABLE = forms.BooleanField(label='Enable', required=False)
-    AUTH_LDAP_SERVER_URI = forms.CharField(label='Server address', required=False)
-    AUTH_LDAP_BIND_DN = forms.CharField(label='Bind DN', required=False)
-    AUTH_LDAP_BIND_PASSWORD = forms.CharField(label='Bind Password', required=False)
-    AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = forms.BooleanField(label='Bind as authenticating user',
+    AUTH_LDAP_ENABLE = forms.BooleanField(label=_('Enable'), required=False)
+    AUTH_LDAP_SERVER_URI = forms.CharField(label=_('Server address'), required=False)
+    AUTH_LDAP_BIND_DN = forms.CharField(label=_('Bind DN'), required=False)
+    AUTH_LDAP_BIND_PASSWORD = forms.CharField(label=_('Bind Password'), required=False)
+    AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = forms.BooleanField(label=_('Bind as authenticating user'),
                                                                required=False)
 
-    AUTH_LDAP_START_TLS = forms.BooleanField(label='Use Tls', required=False)
-    AUTH_LDAP_USER_ATTR_MAP = FieldMappingField(label='Field mapping', required=False)
-    AUTH_LDAP_USER_DN_TEMPLATE = LdapDNField(label='User DN template', required=False)
+    AUTH_LDAP_START_TLS = forms.BooleanField(label=_('Use Tls'), required=False)
+    AUTH_LDAP_USER_ATTR_MAP = FieldMappingField(label=_('Field mapping'), required=False)
+    AUTH_LDAP_USER_DN_TEMPLATE = LdapDNField(label=_('User DN template'), required=False)
     AUTH_LDAP_USER_QUERY_FIELD = forms.CharField(
         label="User field used for matching. Must be present in 'Field mapping'", required=False)
 
-    AUTH_LDAP_ALWAYS_UPDATE_USER = forms.BooleanField(label='Always update user', required=False)
-    # AUTH_LDAP_AUTHORIZE_ALL_USERS = forms.BooleanField(label='Authorize all users', required=False)
-    # AUTH_LDAP_USER_SEARCH = forms.BooleanField(label='User search',
+    AUTH_LDAP_ALWAYS_UPDATE_USER = forms.BooleanField(label=_('Always update user'), required=False)
+    # AUTH_LDAP_AUTHORIZE_ALL_USERS = forms.BooleanField(label=_('Authorize all users'), required=False)
+    # AUTH_LDAP_USER_SEARCH = forms.BooleanField(label=_('User search'),
     #                                            required=False)
 
 
 class SettingsOAuthForm(SettingsForm):
-    SOCIAL_AUTH_GOOGLE_OAUTH2_ENABLE_LOGIN = forms.BooleanField(label='Enable Login', required=False)
-    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = forms.CharField(label='Key', required=False)
-    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = forms.CharField(label='Secret', required=False)
-    SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = forms.CharField(label='Allowed domains',
+    SOCIAL_AUTH_GOOGLE_OAUTH2_ENABLE_LOGIN = forms.BooleanField(label=_('Enable Login'), required=False)
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = forms.CharField(label=_('Client id'), required=False)
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = forms.CharField(label=_('Secret'), required=False)
+    SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = forms.CharField(label=_('Allowed domains'),
                                                                     help_text='comma separated list of allowed domains',
                                                                     required=False)
 
-    SOCIAL_AUTH_GITHUB_ORG_ENABLE_LOGIN = forms.BooleanField(label='Enable Login', required=False)
-    SOCIAL_AUTH_GITHUB_ORG_NAME = forms.CharField(label='Organization name', required=False)
-    SOCIAL_AUTH_GITHUB_ORG_KEY = forms.CharField(label='Key', required=False)
-    SOCIAL_AUTH_GITHUB_ORG_SECRET = forms.CharField(label='Secret', required=False)
+    SOCIAL_AUTH_GITHUB_ORG_ENABLE_LOGIN = forms.BooleanField(label=_('Enable Login'), required=False)
+    SOCIAL_AUTH_GITHUB_ORG_NAME = forms.CharField(label=_('Organization name'), required=False)
+    SOCIAL_AUTH_GITHUB_ORG_KEY = forms.CharField(label=_('Key'), required=False)
+    SOCIAL_AUTH_GITHUB_ORG_SECRET = forms.CharField(label=_('Secret'), required=False)
 
-    SOCIAL_AUTH_GITHUB_ENABLE_LOGIN = forms.BooleanField(label='Enable Login', required=False)
-    SOCIAL_AUTH_GITHUB_KEY = forms.CharField(label='Key', required=False)
-    SOCIAL_AUTH_GITHUB_SECRET = forms.CharField(label='Secret', required=False)
+    SOCIAL_AUTH_GITHUB_ENABLE_LOGIN = forms.BooleanField(label=_('Enable Login'), required=False)
+    SOCIAL_AUTH_GITHUB_KEY = forms.CharField(label=_('Key'), required=False)
+    SOCIAL_AUTH_GITHUB_SECRET = forms.CharField(label=_('Secret'), required=False)
     #
-    SOCIAL_AUTH_LINKEDIN_OAUTH2_ENABLE_LOGIN = forms.BooleanField(label='Enable Login', required=False)
-    SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = forms.CharField(required=False)
-    SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = forms.CharField(required=False)
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_ENABLE_LOGIN = forms.BooleanField(label=_('Enable Login'), required=False)
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = forms.CharField(label='Key', required=False)
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = forms.CharField(label='Secret', required=False)
 
-    SOCIAL_AUTH_FACEBOOK_ENABLE_LOGIN = forms.BooleanField(label='Enable Login', required=False)
-    SOCIAL_AUTH_FACEBOOK_KEY = forms.CharField(required=False)
-    SOCIAL_AUTH_FACEBOOK_SECRET = forms.CharField(required=False)
+    SOCIAL_AUTH_FACEBOOK_ENABLE_LOGIN = forms.BooleanField(label=_('Enable Login'), required=False)
+    SOCIAL_AUTH_FACEBOOK_KEY = forms.CharField(label='Key', required=False)
+    SOCIAL_AUTH_FACEBOOK_SECRET = forms.CharField(label='Secret', required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -87,7 +88,7 @@ class SettingsOAuthForm(SettingsForm):
         self.helper.layout = Layout(
             Fieldset('Google',
                      HTML(HELP.format(help_url='https://developers.google.com/+/web/signin/',
-                                      help_label='https://developers.google.com/+/web/signin/',
+                                      help_label=_('https://developers.google.com/+/web/signin/'),
                                       callback=reverse('social:complete',
                                                        args=['google-oauth2'],
                                                        request=state.request))),
@@ -100,7 +101,7 @@ class SettingsOAuthForm(SettingsForm):
             Fieldset('GitHub - Organization',
                      HTML(HELP.format(
                          help_url='https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/',
-                         help_label='https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/',
+                         help_label=_('https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/'),
                          callback=reverse('social:complete',
                                           args=['github-org'],
                                           request=state.request))),
@@ -113,7 +114,7 @@ class SettingsOAuthForm(SettingsForm):
             Fieldset('GitHub',
                      HTML(HELP.format(
                          help_url='https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/',
-                         help_label='https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/',
+                         help_label=_('https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/'),
                          callback=reverse('social:complete',
                                           args=['github-org'],
                                           request=state.request))),
@@ -125,7 +126,7 @@ class SettingsOAuthForm(SettingsForm):
             Fieldset('Linkedin',
                      HTML(HELP.format(
                          help_url='https://www.linkedin.com/developers/apps',
-                         help_label='https://www.linkedin.com/developers/apps',
+                         help_label=_('https://www.linkedin.com/developers/apps'),
                          callback=reverse('social:complete',
                                           args=['linkedin-oauth2'],
                                           request=state.request))),
@@ -155,18 +156,18 @@ class SettingsChannelsForm(Form):
 
 
 class SettingsServicesForm(Form):
-    GOOGLE_ANALYTICS_CODE = forms.CharField(required=False)
-    RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
-    IPSTACK_HOST = forms.URLField(required=False)
-    IPSTACK_KEY = forms.CharField(required=False)
+    GOOGLE_ANALYTICS_CODE = forms.CharField(label='Google analytics code', required=False)
+    RECAPTCHA_PRIVATE_KEY = forms.CharField(label='Recaptcha private key', required=False)
+    IPSTACK_HOST = forms.URLField(label='Ipstack host address', required=False)
+    IPSTACK_KEY = forms.CharField(label='Ipstack key', required=False)
 
 
 class SettingsMainForm(Form):
     SITE_URL = forms.URLField()
-    ALLOW_CHANGE_PRIMARY_ADDRESS = forms.BooleanField(required=False)
-    BACKUPS_LOCATION = forms.CharField(required=False)
-    LOG_NOTIFICATION = forms.BooleanField(help_text='Enable/Disable notification log')
-    LOG_MESSAGE = forms.ChoiceField(choices=Notification.MESSAGE_POLICIES, required=False)
+    ALLOW_CHANGE_PRIMARY_ADDRESS = forms.BooleanField(label=_('Allow user to change primary address'), required=False)
+    BACKUPS_LOCATION = forms.CharField(label='Backup location', required=False)
+    LOG_NOTIFICATION = forms.BooleanField(label='Log notification', help_text='Enable/Disable notification log')
+    LOG_MESSAGE = forms.ChoiceField(label='Log message', choices=Notification.MESSAGE_POLICIES, required=False)
 
     # RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
 
@@ -178,10 +179,10 @@ class SettingsMainForm(Form):
 
 
 class SettingsEmailForm(Form):
-    EMAIL_HOST = forms.CharField(required=True)
-    EMAIL_HOST_PORT = forms.IntegerField(required=True)
-    EMAIL_HOST_USER = forms.CharField(required=True)
-    EMAIL_HOST_PASSWORD = forms.CharField(required=False, widget=PasswordEyeInput)
-    EMAIL_USE_TLS = forms.BooleanField(required=False)
-    EMAIL_SENDER = forms.EmailField(required=True)
-    EMAIL_SUBJECT_PREFIX = forms.CharField(required=False)
+    EMAIL_HOST = forms.CharField(label='SMTP server host address', required=True)
+    EMAIL_HOST_PORT = forms.IntegerField(label=']SMTP server host port', required=True)
+    EMAIL_HOST_USER = forms.CharField(label='SMTP server user', required=True)
+    EMAIL_HOST_PASSWORD = forms.CharField(label='SMTP server password', required=False, widget=PasswordEyeInput)
+    EMAIL_USE_TLS = forms.BooleanField(label='Use TLS', required=False)
+    EMAIL_SENDER = forms.EmailField(label='Email sender', required=True)
+    EMAIL_SUBJECT_PREFIX = forms.CharField(label='Email prefix', required=False)

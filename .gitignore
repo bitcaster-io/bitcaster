@@ -3,7 +3,7 @@
 /dist
 /build
 /node_modules
-/*.mo
+*.mo
 bitcaster.egg-info
 /bitcaster.json
 *.pyc

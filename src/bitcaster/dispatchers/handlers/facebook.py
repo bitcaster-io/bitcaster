@@ -58,9 +58,9 @@ If you alread have an app, got to
 
     def get_usage_message(self, **kwargs) -> object:
         return _("""To receive messages thru Facebook chat,
-                 you must add **{config[account]}** to your Facebook friends list.
- navigate to [[https://www.facebook.com/{config[account]}]] add add to your friends
- """).format(config=self.config, **kwargs)
+                 you must add **{account}** to your Facebook friends list.
+ navigate to [[https://www.facebook.com/{account}]] add add to your friends
+ """).format(account=self.config['account'], **kwargs)
 
     def _get_connection(self) -> Client:
         return Client(self.config['key'].encode('utf8'),
