@@ -290,6 +290,7 @@ CACHES = {
     'lock': env.cache('REDIS_LOCK_URL'),
 }
 
+TSDB_STORE = env('TSDB_STORE')
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
@@ -400,8 +401,14 @@ CONSTANCE_CONFIG = OrderedDict({
     'SITE_URL': ('', '', str),
     'BACKUPS_LOCATION': ('', '', str),
     'GOOGLE_ANALYTICS_CODE': ('', 'Google Analytics code', str),
+    # Logging
     'LOG_NOTIFICATION': (True, 'Enable/Disable notification log', bool),
     'LOG_MESSAGE': (0, 'Log message ', int),
+    'LOG_OCCURENCES': (True, 'Enable/Disable event occurences log', bool),
+
+    'LOG_OCCURENCES_RETENTION': (30, 'Occurences log retention days', int),
+    'LOG_NOTIFICATION_RETENTION': (30, 'Notification log retention days', int),
+    'LOG_ERROR_RETENTION': (30, 'Error log retention days', int),
 
     'ALLOW_CHANGE_PRIMARY_ADDRESS': (False, 'Users can change their primary email address', bool),
     'RECAPTCHA_PUBLIC_KEY': ('', '', str),

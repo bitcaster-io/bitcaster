@@ -86,8 +86,14 @@ release:
 	docker push ${DOCKER_IMAGE_NAME}:latest
 	docker push ${DOCKER_IMAGE_NAME}:${TARGET}
 	curl -XPOST https://hooks.microbadger.com/images/bitcaster/bitcaster/MQKzhkSXITqlkZMgcN1sQbKCnQo=
-	lazo rancher --insecure upgrade bitcaster:bitcaster bitcaster/bitcaster:${TARGET}
 
+deploy:
+#	lazo rancher shell bitcaster:bitcaster -- circusctl stop
+#	lazo rancher shell bitcaster:db -- dropdb -U postgres bitcaster;
+#	lazo rancher shell bitcaster:db -- createdb -U postgres bitcaster;
+#	lazo rancher shell bitcaster:bitcaster -- bitcaster backup --filename /backups3/latest.json
+#	lazo rancher upgrade bitcaster:bitcaster bitcaster/bitcaster:${TARGET}
+	lazo rancher shell bitcaster:bitcaster -- bitcaster restore --filename /backups3/latest.json
 
 run:
 	$(MAKE) .run

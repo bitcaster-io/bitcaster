@@ -7,8 +7,10 @@ from django.db.models import UUIDField
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
+from rest_framework.reverse import reverse
 
 from bitcaster.framework.db.validators import RateLimitValidator
+from bitcaster.utils.http import absolute_uri
 
 from .application import Application
 from .base import AbstractModel
@@ -59,6 +61,16 @@ class Event(ReverseWrapperMixin, AbstractModel):
     class Reverse:
         pattern = 'app-event-{op}'
         args = ['application.organization.slug', 'application.slug', 'id']
+
+    def get_api_url(self):
+        return absolute_uri(reverse('api:application-event-trigger',
+                                    args=[self.application.organization.slug,
+                                          self.application.pk,
+                                          self.pk]))
+        # return '%s%s' % (config.SITE_URL, reverse('api:application-event-trigger',
+        #                                           args=[self.application.organization.slug,
+        #                                                 self.application.pk,
+        #                                                 self.pk]))
 
     def __str__(self):
         return self.name

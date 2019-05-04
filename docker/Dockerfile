@@ -1,4 +1,4 @@
-FROM bitcaster/bitcaster-0.2:base
+FROM bitcaster/bitcaster-0.1:base
 
 ARG BUILD_DATE
 ARG PIPENV_ARGS

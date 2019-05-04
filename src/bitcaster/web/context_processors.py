@@ -2,7 +2,6 @@ import os
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 import bitcaster as app
@@ -22,16 +21,16 @@ class EnvWrapper:
 
 
 def bitcaster(request):
-    setup_url = ''
-    if request.user.is_authenticated:
-        membership = request.user.memberships.first()
-        if membership:
-            setup_url = reverse('org-dashboard', args=[membership.organization.slug])
+    # setup_url = ''
+    # if request.user.is_authenticated:
+    #     membership = request.user.memberships.first()
+    #     if membership:
+    #         setup_url = reverse('org-dashboard', args=[membership.organization.slug])
 
     return {'bitcaster_version': app.get_full_version(settings.DEBUG),
             'bitcaster_copyright': mark_safe('&copy; 2019 OS4D Ltd'),
             'bitcaster_docker': os.environ.get('DOCKER_BUILD', ''),
-            'setup_url': setup_url,
+            # 'setup_url': setup_url,
             'settings': settings,
             'env': EnvWrapper(env),
             'git_status': app.get_git_status()

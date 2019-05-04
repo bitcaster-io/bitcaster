@@ -1,6 +1,6 @@
 import logging
 
-from django.db.models import Q
+# from django.db.models import Q
 from rest_framework.filters import BaseFilterBackend
 
 logger = logging.getLogger(__name__)
@@ -28,18 +28,18 @@ logger = logging.getLogger(__name__)
 #                                Q(application__organization__members=request.user))
 
 
-class IsOwnerFilter(BaseFilterBackend):
-    def filter_queryset(self, request, queryset, view):
-        # if not request.user.is_authenticated:
-        #     return queryset.none()
-        # app = view.get_selected_application()
-        # if app:
-        #     return queryset.filter(id=app.pk)
-        # else:
-        if request.user.is_superuser:
-            return queryset
-        return queryset.filter(Q(organization__owner=request.user) |
-                               Q(organization__members=request.user))
+# class IsOwnerFilter(BaseFilterBackend):
+#     def filter_queryset(self, request, queryset, view):
+#         # if not request.user.is_authenticated:
+#         #     return queryset.none()
+#         # app = view.get_selected_application()
+#         # if app:
+#         #     return queryset.filter(id=app.pk)
+#         # else:
+#         if request.user.is_superuser:
+#             return queryset
+#         return queryset.filter(Q(organization__owner=request.user) |
+#                                Q(organization__members=request.user))
 
 
 class MasterChildFilterBackend(BaseFilterBackend):

@@ -1,29 +1,13 @@
-import redis
-from redis_timeseries import TimeSeries, days, hours, minutes
+import pytest
 
-from bitcaster.config.environ import env
-
-
-class TSDBBase:
-    pass
+pytestmark = pytest.mark.django_db
 
 
-class TSDBMemory(TSDBBase):
-    pass
+def test_tsdb(notification1):
+    from bitcaster.tsdb.logging import broker
+    ts = broker.get_ts(notification1.application.organization.pk)
+    ts.log_notification(notification1)
 
-
-def test_tsdb():
-    EVENT = 'event:1'
-    MINUTE = '1minute'
-    HOUR = '1hour'
-    DAY = '1day'
-    client = redis.StrictRedis.from_url(env('REDIS_TSDB_URL'))
-    my_granularities = {
-        MINUTE: {'ttl': hours(1), 'duration': minutes(1)},
-        HOUR: {'ttl': days(7), 'duration': hours(1)},
-        DAY: {'ttl': days(30), 'duration': days(1)},
-    }
-    ts = TimeSeries(client, base_key='my_timeseries', granularities=my_granularities)
-
-    ts.record_hit(EVENT)
-    assert ts.get_hits(EVENT, MINUTE, 3)
+    # ts.record_hit(EVENT)
+    # TODO: remove me
+    # print(111, "test_tsdb.py:23", ts.get_hits(EVENT, MINUTE, 3))

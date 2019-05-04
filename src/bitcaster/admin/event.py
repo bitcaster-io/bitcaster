@@ -5,7 +5,6 @@ from admin_extra_urls.extras import ExtraUrlMixin, action
 from django.contrib import admin, messages
 from django.db.models import Count
 from django.shortcuts import render
-from django.urls import reverse
 
 from bitcaster.models import Event
 from bitcaster.tasks import emit_event
@@ -51,8 +50,7 @@ class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
                'user_token': key,
                'arguments': event.arguments or {},
                # 'arguments': json.dumps(event.arguments),
-               'api_url': request.build_absolute_uri(reverse('api:application-event-trigger',
-                                                             args=[event.application.pk, event.pk])),
+               'api_url': event.get_api_url(),
                'change': True,
                'is_popup': False,
                'save_as': False,

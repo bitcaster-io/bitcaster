@@ -2,6 +2,8 @@ from constance import config
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
+# from .subscription import Subscription
+
 
 class Notification(models.Model):
     MESSAGE_NONE = 0
@@ -49,25 +51,29 @@ class Notification(models.Model):
         app_label = 'bitcaster'
 
     @classmethod
-    def log(cls, address: str, subscription, payload, **kwargs):
+    def log(cls, subscription, *, message=None, subject=None, address: str = None,
+            context=None, template=None, error='', **kwargs):
         if config.LOG_MESSAGE == cls.MESSAGE_ALL:
-            data = payload
+            data = {'message': message}
         elif config.LOG_MESSAGE == cls.MESSAGE_TPL:
-            data = payload
-        elif config.LOG_MESSAGE == cls.MESSAGE_TPL:
-            data = payload
+            data = {'template': template}
+        elif config.LOG_MESSAGE == cls.MESSAGE_ARG:
+            data = {'context': context}
         else:
-            data = {}
-
+            data = None
         values = dict(event=subscription.event,
                       event_name=subscription.event.name,
                       address=address or '-',
                       channel=subscription.channel,
                       data=data,
+                      info=str(error),
                       user=subscription.subscriber,
                       username=subscription.subscriber.email,
                       subscription=subscription,
                       application=subscription.event.application,
-                      status=True)
+                      status=not bool(error))
+        if error:
+            values['info'] = str(error)
+
         values.update(kwargs)
         return cls.objects.create(**values)

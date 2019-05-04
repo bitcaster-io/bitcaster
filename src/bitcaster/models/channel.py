@@ -1,25 +1,18 @@
-import datetime
 import logging
 
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
-from django.template import Template
 from django.utils.translation import gettext_lazy as _
 from sentry_sdk import capture_exception
 
-from bitcaster.exceptions import MaxChannelError, PluginValidationError
+from bitcaster.exceptions import PluginValidationError
 from bitcaster.framework.db.fields import DispatcherField, EncryptedJSONField
 from bitcaster.models.error import ErrorEntry, ErrorEvent
 from bitcaster.models.mixins import ReverseWrapperMixin
-from bitcaster.state import state
-from bitcaster.template.secure_context import SecureContext
-from bitcaster.tsdb.logging import log_notification
 
 from .application import Application
 from .base import AbstractModel
-from .counters import Counter
-from .notification import Notification
 from .organization import Organization
 
 logger = logging.getLogger(__name__)
@@ -118,66 +111,6 @@ class Channel(ReverseWrapperMixin, AbstractModel):
         if self.enabled:
             if not self.is_configured:
                 raise ValidationError('Configure channel before enable it')
-
-    def process_event(self, event, context):
-        if not self.enabled:
-            logger.error('Channel {0} disabled'.format(self))
-            return 0, 0
-        try:
-            message = self.messages.get(event=event)
-            body = Template(message.body)
-            subject = Template(message.subject)
-            state.data['event'] = event
-            # logger.debug(f"Processing event {event}")
-            conn = self.handler._get_connection()
-            success, failures = 0, 0
-            for subscription in event.subscriptions.valid(channel=self):
-                # state.data['subscription'] = subscription
-                logger.debug(f'Processing {subscription}')
-                payload = {}
-                try:
-                    ctx = dict(context or {})
-                    ctx.update({
-                        'event': event,
-                        'channel': self,
-                        'application': self.application,
-                        'organization': self.organization,
-                        'subscription': subscription,
-                        'recipient': subscription.subscriber,
-                        'today': datetime.datetime.today()})
-                    m = body.render(SecureContext(ctx))
-                    s = subject.render(SecureContext(ctx))
-                    payload = {'message': m,
-                               'subject': s,
-                               'context': context,
-                               'template': body}
-                    # address
-                    address = self.handler.emit(subscription, s, m, conn)
-                    Counter.objects.increment(subscription)
-                    success += 1
-                    Notification.log(address, subscription, payload)
-                except Exception as e:
-                    subscription.register_error()
-                    self.register_error()
-                    logger.exception(e)
-                    Notification.log('', subscription, payload, status=False, info=str(e))
-                    failures += 1
-                log_notification()
-                if failures >= self.errors_threshold:
-                    raise MaxChannelError(self)
-        except MaxChannelError as e:
-            logger.error(e)
-            self.enabled = False
-            self.save()
-            raise
-        except ObjectDoesNotExist as e:
-            logger.error(e)
-            raise ObjectDoesNotExist(f'Unable to find a message for {self}/{event}') from e
-        except Exception as e:
-            logger.exception(e)
-            raise
-
-        return success, failures
 
     def register_error(self):
         ErrorEntry.objects.create(event=ErrorEvent.SUBSCRIPTION_ERROR, target=self)

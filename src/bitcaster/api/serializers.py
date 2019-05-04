@@ -1,4 +1,3 @@
-
 import logging
 
 from rest_framework import serializers
@@ -95,10 +94,10 @@ class UserSerializerLight(UserSerializer):
 #             raise ValidationError("Invalid user")
 #         return value
 
-
 class ApplicationSerializer(serializers.ModelSerializer):
     timezone = TimezoneField(default='UTC')
     owner = UserSerializerLight(read_only=True)
+
     # maintainers = serializers.PrimaryKeyRelatedField(many=True,
     #                                                  queryset=User.objects.all(),
     #                                                  required=False)
@@ -204,7 +203,6 @@ class EventSerializer(ApplicationNestedMixin, serializers.ModelSerializer):
         model = Event
         fields = ('name', 'id', 'preferences')
         read_only_fields = ('id',)
-
 
 # class MessageSerializer(ApplicationNestedMixin, serializers.ModelSerializer):
 #     class Meta:

@@ -2,7 +2,7 @@ import logging
 
 from bitcaster.models import Application
 
-from ..filters import IsOwnerFilter
+# from ..filters import IsOwnerFilter
 from ..permissions import IsOwnerOrMaintainter
 from ..serializers import ApplicationSerializer
 from .base import BaseModelViewSet
@@ -25,7 +25,7 @@ class ApplicationViewSet(BaseModelViewSet):
     serializer_class = ApplicationSerializer
     search_fields = ('name',)
     permission_classes = (IsOwnerOrMaintainter,)
-    filter_backends = (IsOwnerFilter,)
+    # filter_backends = (IsOwnerFilter,)
 
     # lookup_url_kwarg = 'application__pk'
     # def get_serializer(self, *args, **kwargs):

@@ -1,13 +1,12 @@
-from unittest import mock
 from unittest.mock import Mock
 
 import pytest
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import Gmail, Twitter
-from bitcaster.exceptions import MaxChannelError, PluginValidationError
+from bitcaster.exceptions import PluginValidationError
 from bitcaster.models import Channel, Message
 from bitcaster.utils.tests.factories import ChannelFactory
 
@@ -95,40 +94,6 @@ def test_get_usage_message(channel1):
 @pytest.mark.django_db
 def test_get_usage(channel1):
     assert channel1.get_usage() is not None
-
-
-@pytest.mark.django_db
-def test_process_event(subscription1):
-    channel = subscription1.channel
-    event = subscription1.event
-    assert channel.process_event(event, {})
-
-
-@pytest.mark.django_db
-def test_process_event_errors_threshold(subscription1):
-    channel = subscription1.channel
-    channel.errors_threshold = 0
-    event = subscription1.event
-    with pytest.raises(MaxChannelError):
-        with mock.patch('bitcaster.models.Notification.log'):
-            with mock.patch('bitcaster.models.Channel.handler', Mock(side_effect=Mock(side_effect=Exception))):
-                assert channel.process_event(event, {})
-    assert not channel.enabled
-
-
-@pytest.mark.django_db
-def test_process_event_no_messages(subscription1):
-    channel = subscription1.channel
-    channel.messages.all().delete()
-    event = subscription1.event
-    with pytest.raises(ObjectDoesNotExist):
-        assert channel.process_event(event, {})
-
-
-@pytest.mark.django_db
-def test_process_disabled_event(subscription1):
-    channel = Channel(enabled=False)
-    assert channel.process_event(Mock(), {}) == (0, 0)
 
 
 @pytest.mark.django_db

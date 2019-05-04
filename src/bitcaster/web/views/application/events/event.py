@@ -1,6 +1,5 @@
 import logging
 
-from constance import config
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
@@ -131,8 +130,8 @@ class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
         #
         extra = {'serializer': eventform_factory(event),
                  'key': key,
-                 'api_url': '%s%s' % (config.SITE_URL, reverse('api:application-event-trigger',
-                                                               args=[event.application.pk, event.pk]))}
+                 'api_url': event.get_api_url()
+                 }
 
         kwargs.update(extra)
         return super().get_context_data(**kwargs)

@@ -17,7 +17,7 @@ DEFAULTS = dict(
     PLUGINS_AUTOLOAD=(bool, False),
     REDIS_CACHE_URL=(str, 'redis://localhost:6379/0?key_prefix=bs'),
     REDIS_LOCK_URL=(str, 'redis://localhost:6379/1?key_prefix=bs-lock&backend=django_redis.cache.RedisCache'),
-    REDIS_TSDB_URL=(str, 'redis://localhost:6379/2'),
+    TSDB_STORE=(str, 'redis://localhost:6379/2'),
     SECRET_KEY=(str, ''),
     SENTRY_DSN=(str, ''),
     SENTRY_ENABLED=(bool, False),

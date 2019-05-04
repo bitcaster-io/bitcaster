@@ -11,7 +11,8 @@ def get_client_ip(request):
     Note: Don't use this in security sensitive situations since this
     value may be forged from a client.
     """
-    try:
-        return request.META['HTTP_X_FORWARDED_FOR'].split(',')[0].strip()
-    except (KeyError, IndexError):
-        return request.META.get('REMOTE_ADDR')
+    if request:
+        try:
+            return request.META['HTTP_X_FORWARDED_FOR'].split(',')[0].strip()
+        except (KeyError, IndexError):
+            return request.META.get('REMOTE_ADDR')

@@ -237,6 +237,16 @@ def subscription2(application1, subscriber2):
 
 
 @pytest.fixture
+def notification1(subscription1):
+    from bitcaster.utils.tests.factories import NotificationFactory
+    return NotificationFactory(id=1,
+                               event=subscription1.event,
+                               channel=subscription1.channel,
+                               subscription=subscription1,
+                               application=subscription1.event.application)
+
+
+@pytest.fixture
 def team1(application1):
     from bitcaster.utils.tests.factories import TeamFactory
     return TeamFactory(application=application1)
