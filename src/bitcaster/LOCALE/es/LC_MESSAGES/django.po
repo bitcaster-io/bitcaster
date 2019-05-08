@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-04 19:22+0200\n"
+"POT-Creation-Date: 2019-05-09 01:15+0200\n"
 "PO-Revision-Date: 2018-03-02 17:53+0000\n"
 "Last-Translator: Domenico Di Nicola <dom.dinicola@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/sax9/teams/84041/es/)\n"
@@ -291,11 +291,11 @@ msgstr ""
 msgid "'%(value)s'is not a valid ratelimit value "
 msgstr ""
 
-#: bitcaster/models/address.py:84
+#: bitcaster/models/address.py:83
 msgid "Bitcaster confirmation code"
 msgstr ""
 
-#: bitcaster/models/address.py:85
+#: bitcaster/models/address.py:84
 msgid "Bitcaster confirmation code {} Tip: Use copy/paste"
 msgstr ""
 
