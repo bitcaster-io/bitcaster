@@ -50,10 +50,11 @@ class Twitter(CoreDispatcher):
     subscription_class = TwitterSubscriptionOptions
     __help__ = """
 
-# - Apply for a developer accout at [https://developer.twitter.com/en/apply-for-access]
-# - Create a new app at [https://apps.twitter.com/]
-# - Generate your keys and configure the Channel
-# """
+- Apply for a developer accout at [[https://developer.twitter.com/en/apply-for-access]]
+- Create a new app at [[https://apps.twitter.com/]]
+- Generate your keys and configure the Channel
+
+"""
 
     @classproperty
     def name(cls):

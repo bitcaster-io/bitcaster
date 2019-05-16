@@ -48,6 +48,7 @@ class Skype(CoreDispatcher):
 
     def emit(self, subscription: object, subject: str, message: str,
              connection=None, *args, **kwargs) -> str:
+        address = 'unknown'
         try:
             address = self.get_recipient_address(subscription)
             self.logger.info('Processing {0}'.format(subscription, address))
@@ -70,7 +71,7 @@ class Skype(CoreDispatcher):
             raise PluginSendError('Unable to find valid address for Skype: %s' % e) from e
         except Exception as e:  # pragma: no cover
             logger.exception(e)
-            raise PluginSendError('Unable to send Skype message to %s: %s' % (recipient, e)) from e
+            raise PluginSendError('Unable to send Skype message to %s: %s' % (address, e)) from e
 
     def test_connection(self, raise_exception=False):
         sk = skpy.main.Skype(self.config['username'],

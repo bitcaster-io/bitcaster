@@ -11,7 +11,8 @@ from django.db import OperationalError, ProgrammingError, connection
 
 from bitcaster.config import settings
 from bitcaster.config.environ import env
-from bitcaster.models import AgentMetaData, DispatcherMetaData
+from bitcaster.exceptions import PluginValidationError
+from bitcaster.models import AgentMetaData, Channel, DispatcherMetaData
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,28 @@ def check_settings(*args, **kwargs):
                     id='bitcaster.C00%s' % i
                 )
             )
+    return errors
+
+
+@register()
+def check_channel_configuration(*args, **kwargs):
+    errors = []
+    invalid = []
+    for record in Channel.objects.filter(enabled=True):
+        try:
+            record.handler.validate_configuration(record.handler.config, True)
+        except PluginValidationError:
+            invalid.append(record.pk)
+            errors.append(
+                Error(
+                    'Channel %s has been disabled' % record,
+                    hint='check channel configuration',
+                    obj=record.pk,
+                    id='bitcaster.E001',
+                )
+            )
+
+    # Channel.objects.filter(id__in=invalid).update(enabled=False)
     return errors
 
 

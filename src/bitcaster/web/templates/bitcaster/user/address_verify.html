@@ -40,7 +40,9 @@
 <div class="modal-body handler-usage">
 
     <div class=" row col-12">{{ usage|markdown }}</div>
-    {% if handler.need_verification %}
+    {% if not object.enabled %}
+        {% trans "Sorry, this channel is currently disabled. Please try later" %}
+    {% elif handler.need_verification %}
         <div class=" row col-12">
             <div class="container-fluid p-3">
                 <form action="#">

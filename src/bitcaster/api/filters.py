@@ -55,11 +55,11 @@ class MasterChildFilterBackend(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         lookup_url_kwarg = self.lookup_url_kwarg or view.parent_lookup_url_kwarg
         lookup_field = self.lookup_field or view.parent_lookup_field
-        if lookup_url_kwarg in view.kwargs:
-            return queryset.filter(**{lookup_field: view.kwargs[lookup_url_kwarg]})
-        elif request.user.is_superuser:
-            return queryset
-        return queryset
+        # if lookup_url_kwarg in view.kwargs:
+        return queryset.filter(**{lookup_field: view.kwargs[lookup_url_kwarg]})
+        # elif request.user.is_superuser:
+        #     return queryset
+        # return queryset
 
 
 # class UserFilterBackend(MasterChildFilterBackend):

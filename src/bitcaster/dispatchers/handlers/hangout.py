@@ -76,6 +76,7 @@ class Hangout(CoreDispatcher):
 - Make sure Other (custom name) is selected in the Select app drop-down menu.
  Type the application name (ie. Bitcaster)
 - Click Generate.
+- Do not forget to check `Access for less secure app`
 """)
 
     @classproperty

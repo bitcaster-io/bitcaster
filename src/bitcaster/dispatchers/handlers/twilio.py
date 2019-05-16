@@ -55,7 +55,7 @@ You need a valid [Twilio](https://www.twilio.com/) account to use this service.
     def emit(self, subscription: object, subject: str, message: str,
              connection=None, *args, **kwargs) -> str:
         try:
-            self.validate_subscription(subscription)
+            # self.validate_subscription(subscription)
             recipient = self.get_recipient_address(subscription)
             connection = connection or self._get_connection()
             connection.messages.create(
