@@ -13,7 +13,7 @@ from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.forms import BaseInlineFormSet, PasswordInput
 from django.forms.utils import ErrorList
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ngettext_lazy, ugettext_lazy as _
 from django_countries import countries
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from timezone_field import TimeZoneField
@@ -312,10 +312,30 @@ class UserSubscribeForm(forms.Form):
     # channels = forms.MultipleChoiceField()
     channels = forms.ModelMultipleChoiceField(queryset=Channel.objects.none())
 
-    def __init__(self, instance, **kwargs):
+    def __init__(self, instance, user, **kwargs):
         self.event = instance
+        self.user = user
         super().__init__(**kwargs)
-        self.fields['channels'].queryset = self.event.channels.filter(addresses__user=state.request.user)
+        self.fields['channels'].queryset = self.event.channels.filter(addresses__user=user)
+
+    def clean_channels(self):
+        channels = self.cleaned_data['channels']
+        # this form is only for edit
+        existing = []
+        for ch in channels:
+            qs = Subscription.objects.filter(subscriber=self.user,
+                                             event=self.event,
+                                             channel=ch)
+
+            if qs.exists():
+                existing.append(ch.name)
+        if existing:
+            message = ngettext_lazy(
+                'Channel %(channels)s is already used.',
+                'Channels %(channels)s are already used.',
+                len(existing))
+            raise ValidationError(message % {'channels': ','.join(existing)})
+        return channels
 
 
 class UserSubscriptionEditForm(forms.ModelForm):
@@ -329,7 +349,7 @@ class UserSubscriptionEditForm(forms.ModelForm):
 
     def clean_channel(self):
         value = self.cleaned_data['channel']
-        # this form i sonly for edit
+        # this form is only for edit
         qs = Subscription.objects.filter(subscriber=self.instance.subscriber,
                                          event=self.instance.event,
                                          channel=value).exclude(id=self.instance.pk)

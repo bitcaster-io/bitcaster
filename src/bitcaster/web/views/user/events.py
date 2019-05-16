@@ -22,8 +22,9 @@ class UserEventListView(UserEventMixin, BitcasterBaseListView):
     template_name = 'bitcaster/user/events.html'
 
     def get_queryset(self):
-        return super().get_queryset().exclude(subscriptions__subscriber=self.request.user,
-                                              subscriptions__isnull=False).order_by('application__name', 'name')
+        return super().get_queryset().filter().order_by('application__name', 'name')
+        # return super().get_queryset().exclude(subscriptions__subscriber=self.request.user,
+        #                                       subscriptions__isnull=False).order_by('application__name', 'name')
 
 
 class UserEventSubcribe(UserEventMixin, LogAuditMixin, BitcasterBaseCreateView):
@@ -49,16 +50,17 @@ class UserEventSubcribe(UserEventMixin, LogAuditMixin, BitcasterBaseCreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['instance'] = self.get_object()
+        kwargs['user'] = self.request.user
         return kwargs
 
     def form_valid(self, form):
         for channel in form.cleaned_data['channels']:
-            obj = Subscription.objects.create(subscriber=self.request.user,
-                                              trigger_by=self.request.user,
-                                              event=form.event,
-                                              channel=channel,
-                                              enabled=True,
-                                              status=Subscription.STATUSES.OWNED)
+            obj, __ = Subscription.objects.get_or_create(subscriber=self.request.user,
+                                                     channel=channel,
+                                                     event=form.event,
+                                                     defaults={'trigger_by': self.request.user,
+                                                               'enabled': True,
+                                                               'status': Subscription.STATUSES.OWNED})
             self.audit(event=AuditLogEntry.AuditEvent.MEMBER_SUBSCRIBE_EVENT,
                        target_object=obj.pk,
                        target_label=str(obj))

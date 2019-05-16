@@ -79,6 +79,7 @@ zulip = "*"
 django-impersonate = "*"
 qrcode = "*"
 viberbot = "*"
+redis-timeseries = "*"
 
 [dev-packages]
 bumpversion = "*"
