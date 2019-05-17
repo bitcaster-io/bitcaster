@@ -19,7 +19,7 @@ logger = getLogger(__name__)
 def trigger_event(event_id, context, *, token=None, origin=None):
     from bitcaster.models import Event
     event = Event.objects.get(id=event_id)
-    emit_event(event, context, token=token, origin=origin)
+    emit_event(event, context)
 
 
 @app.task()
