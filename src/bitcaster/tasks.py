@@ -46,7 +46,7 @@ def emit_event(event, context, ignore_disabled=False):
             continue
         try:
             logger.debug(f'Processing channel {channel}')
-            successes, failures = channel.process_event(event, context)
+            successes, failures = process_event(channel, event, context)
             total_success += successes
             total_failure += failures
             Counter.objects.increment(event)
@@ -83,6 +83,8 @@ def process_event(channel, event, context):
             try:
                 ctx = dict(context or {})
                 ctx.update({
+                    'user': subscription.subscriber,
+                    'subscriber': subscription.subscriber,
                     'event': event,
                     'channel': channel,
                     'application': channel.application,
