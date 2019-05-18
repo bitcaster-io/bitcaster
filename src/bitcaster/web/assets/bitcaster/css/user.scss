@@ -11,6 +11,10 @@ i, a {
     display: none;
 }
 
+.copy {
+    cursor: pointer;
+}
+
 //
 //p {
 //    font-family: 'Poppins', sans-serif;
@@ -74,12 +78,15 @@ span {
     //background: #7386D5;
     color: #fff;
     transition: all 0.3s;
+
     * {
         overflow: hidden;
     }
+
     i {
         font-size: 0.8em;
     }
+
     ul {
         li {
             a {
@@ -87,7 +94,8 @@ span {
                 padding: 10px;
                 font-size: 1.1em;
                 display: block;
-                &.active{
+
+                &.active {
                     color: $org-hover;
                     background-color: white;
 
@@ -95,6 +103,7 @@ span {
                         color: $org-hover;
                     }
                 }
+
                 &:hover {
                     color: $org-hover;
                     background: #eeeeee;
@@ -317,6 +326,7 @@ span {
 a[data-toggle="collapse"] {
     position: relative;
 }
+
 //
 //.dropdown-toggle::after {
 //    display: block;

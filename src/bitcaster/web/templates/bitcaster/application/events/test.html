@@ -28,18 +28,28 @@
         <a href="{{ event.urls.edit }}">{{ event }}</a> :
         <a href="{{ events.urls.test }}">test</a>
     </div>
-
-    <div class="container-fluid border p-3">
-        <form id="ser">
-            {% render_serializer serializer "rest_framework/inline2" %}
-        </form>
+    <div class="container-fluid border p-1">
+        <div class="row">
+            <div class="col-1 m-2">Url:</div>
+            <div class="copy col-5 m-2">{{ api_url }}</div>
+        </div>
+        <div class="row">
+            <div class="col-1 m-2">Token:</div>
+            <div class="copy col-5 m-2">{{ key.token }}</div>
+        </div>
     </div>
+    {#    <div class="container-fluid border p-3">#}
+    {#        <form id="ser">#}
+    {#            {% render_serializer serializer "rest_framework/inline2" %}#}
+    {#        </form>#}
+    {#    </div>#}
     <textarea id="_hiddenCopyText_"></textarea>
 
     <div class="p-2 m-3">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-curl" role="tab" aria-controls="home"
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-curl" role="tab"
+                   aria-controls="home"
                    aria-selected="true">cUrl</a>
             </li>
             <li class="nav-item">
@@ -96,22 +106,46 @@ wget -O- "{{ api_url }}" \
             </div>
 
 
-
             <div class="tab-pane" id="tab-web" role="tabpanel" aria-labelledby="profile-tab">
                 <button id="trigger" class="btn btn-primary">Trigger</button>
-<pre id="web"></pre>
+                <pre id="web"></pre>
             </div>
 
         </div>
     </div>
 
-            <input type="button" class="btn btn-secondary"
-               onclick="history.back();"
-               value="{% trans "Cancel" %}">
+    <input type="button" class="btn btn-secondary"
+           onclick="history.back();"
+           value="{% trans "Cancel" %}">
 
 {% endblock %}
 {% block js %}
     {{ block.super }}
+    <script>
+        function copyToClipboard(element) {
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val($(element).text()).select();
+            document.execCommand("copy");
+            $temp.remove();
+        };
+        $('.copy').tooltip({
+            trigger: 'hover',
+            placement: 'top',
+            title: "click to copy",
+        }).popover({
+            animation: false,
+            trigger: 'click',
+            placement: 'top',
+            content: 'copied'
+        }).on('click', function (evt) {
+            $(evt.currentTarget).tooltip('hide');
+            copyToClipboard(evt.currentTarget);
+            setTimeout(function () {
+                $(evt.currentTarget).popover('hide');
+            }, 800);
+        });
+    </script>
     <script>
         $("#ser input").change(function () {
             var args = "";
@@ -141,13 +175,13 @@ wget -O- "{{ api_url }}" \
             */
             xhttp.open("POST", "{{ api_url }}", false);
             $monitor.append("OPEN CONNECTION: {{ api_url }}\n");
-             xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.setRequestHeader("Content-type", "application/json");
             xhttp.setRequestHeader("Authorization", "Key {{ key.token }}");
             $monitor.append("SENDING REQUEST\n");
             xhttp.send();
-            if ( xhttp.status !== 201){
+            if (xhttp.status !== 201) {
                 $monitor.append("ERROR ", xhttp.status, "\n");
-            }else {
+            } else {
                 $monitor.append("SUCCESS ", "\n");
             }
             $monitor.append(xhttp.responseText, "\n");

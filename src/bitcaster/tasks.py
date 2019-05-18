@@ -85,12 +85,12 @@ def process_event(channel, event, context):
                 ctx.update({
                     'user': subscription.subscriber,
                     'subscriber': subscription.subscriber,
+                    'recipient': subscription.subscriber,
                     'event': event,
                     'channel': channel,
                     'application': channel.application,
                     'organization': channel.organization,
                     'subscription': subscription,
-                    'recipient': subscription.subscriber,
                     'today': datetime.datetime.today()})
                 m = body.render(SecureContext(ctx))
                 s = subject.render(SecureContext(ctx))
