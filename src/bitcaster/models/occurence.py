@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from bitcaster.state import state
 # from .event import Event
+from bitcaster.tsdb.db import stats
 from bitcaster.utils.wsgi import get_client_ip
 
 
@@ -42,4 +43,5 @@ class Occurence(models.Model):
 
         obj = Occurence(event=event, **kwargs)
         obj.save()
+        stats.log_occurence(kwargs['organization'])
         return obj

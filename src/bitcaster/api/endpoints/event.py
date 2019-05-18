@@ -5,10 +5,8 @@ from rest_framework.decorators import action
 from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
-# from bitcaster.api.filters import ApplicationFilterBackend
-# from bitcaster.logging import log_occurence
 from bitcaster.api.filters import ApplicationFilterBackend
-from bitcaster.models import Counter
+from bitcaster.logging import log_occurence
 from bitcaster.tasks import trigger_event
 from bitcaster.tsdb.logging import broker
 from bitcaster.utils.wsgi import get_client_ip
@@ -41,8 +39,9 @@ class EventViewSet(BaseModelViewSet):
             detail=True)
     def trigger(self, request, organization__pk, application__pk, pk):
         event = self.get_object()
-        Counter.objects.initialize(event)
+        # Counter.objects.initialize(event)
         broker.get_ts(organization__pk)
+        log_occurence(event)
         if not event.enabled:
             return Response({'error': 'Event disabled'}, status=400)
 

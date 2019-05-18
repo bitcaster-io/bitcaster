@@ -6,11 +6,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.db.models import Count
 from django.template import Template
+from sentry_sdk import capture_exception
 
 from bitcaster.celery import app
 from bitcaster.exceptions import LogicError, MaxChannelError
 from bitcaster.logging import log_notification, log_occurence
 from bitcaster.template.secure_context import SecureContext
+from bitcaster.tsdb.db import stats
 
 logger = getLogger(__name__)
 
@@ -77,6 +79,7 @@ def process_event(channel, event, context):
         conn = channel.handler._get_connection()
         success, failures = 0, 0
         logging_kwargs = {}
+        organization = channel.organization
         for subscription in event.subscriptions.valid(channel=channel):
             # state.data['subscription'] = subscription
             logger.debug(f'Processing {subscription}')
@@ -89,7 +92,7 @@ def process_event(channel, event, context):
                     'event': event,
                     'channel': channel,
                     'application': channel.application,
-                    'organization': channel.organization,
+                    'organization': organization,
                     'subscription': subscription,
                     'today': datetime.datetime.today()})
                 m = body.render(SecureContext(ctx))
@@ -103,13 +106,16 @@ def process_event(channel, event, context):
                 logging_kwargs['address'] = used_address
                 # Counter.objects.increment(subscription)
                 success += 1
-                # Notification.log(address, subscription, payload)
+                log_notification(subscription, **logging_kwargs)
             except Exception as e:
+                capture_exception(e)
                 logging_kwargs['error'] = e
                 subscription.register_error()
                 channel.register_error()
                 logger.exception(e)
-                # Notification.log('', subscription, payload, status=False, info=str(e))
+                log_notification(subscription, **logging_kwargs,
+                                 status=False, info=str(e))
+                stats.log_error(organization)
                 failures += 1
 
             log_notification(subscription, **logging_kwargs)

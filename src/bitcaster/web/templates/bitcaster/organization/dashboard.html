@@ -7,12 +7,7 @@
 {% block page %}
     <div class="row col-12 p-3 m-1">
         <div style="width:1000px">
-            <canvas id="audit"></canvas>
-        </div>
-        <div style="width:1000px">
-            <canvas id="notification"></canvas>
-        </div>
-        <div style="width:1000px">
+            <div class="h4">Overview</div>
             <canvas id="occurence"></canvas>
         </div>
     </div>
@@ -21,20 +16,47 @@
     <script>
         var color = Chart.helpers.color;
 
-        var cfg = {
-            {#type: 'bar',#}
+        var commonConfig = {
+            type: 'line',
+            adapters: {
+                date: {
+                    timezone: 'Europe/Rome'
+                }
+            },
             data: {
                 datasets: [{
-                    label: 'Audit events',
-                    backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-                    borderColor: window.chartColors.red,
+                    label: 'Occurences',
+                    backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
+                    borderColor: window.chartColors.green,
                     data: [],
-                    type: 'line',
-                    pointRadius: 0,
-                    fill: false,
-                    lineTension: 0,
-                    borderWidth: 2
-                }]
+                    {#type: 'line',#}
+                    {#pointRadius: 0,#}
+                    {#fill: false,#}
+                    {#lineTension: 0,#}
+                    {#borderWidth: 2#}
+                },
+                    {
+                        label: 'Notifications',
+                        backgroundColor: color(window.chartColors.yellow).alpha(0.5).rgbString(),
+                        borderColor: window.chartColors.yellow,
+                        data: [],
+                        {#type: 'line',#}
+                        {#pointRadius: 0,#}
+                        {#fill: false,#}
+                        {#lineTension: 0,#}
+                        {#borderWidth: 2#}
+                    },
+                    {
+                        label: 'Errors',
+                        backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                        borderColor: window.chartColors.red,
+                        data: [],
+                        {#type: 'line',#}
+                        {#pointRadius: 0,#}
+                        {#fill: false,#}
+                        {#lineTension: 0,#}
+                        {#borderWidth: 2#}
+                    }]
             },
             options: {
                 legend: false,
@@ -42,21 +64,30 @@
                     xAxes: [{
                         type: 'time',
                         time: {
+                            parser: function(dt){
+                                return moment(dt).local()
+                            },
                             displayFormats: {
-                                quarter: 'MMM DD'
+                                day: 'HH:mm',
+                                hour: 'HH:mm',
+                                minute: 'HH:mm',
                             }
                         },
-                        {#distribution: 'series',#}
+                        distribution: 'series',
                         ticks: {
                             {#source: 'data',#}
-                            autoSkip: false
-                         }
+                            autoSkip: true
+                        }
                     }],
                     yAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Events'
-                        }
+                        type: 'linear',
+                        min: 0,
+                        beginAtZero: true,
+                        {#stepSize: 1,#}
+                        {#scaleLabel: {#}
+                        {#    display: true,#}
+                        {#labelString: 'Events'#}
+                        {# }#}
                     }]
                 },
                 tooltips: {
@@ -76,29 +107,33 @@
             }
         };
         var charts = {};
-        ['audit', 'notification', 'occurence'].forEach(function(value, index, ar){
-            var ctx = document.getElementById(value).getContext('2d');
-            ctx.canvas.width = 500;
-            ctx.canvas.height = 100;
-            charts[value] = new Chart(ctx, cfg);
-        });
+        {#['error', 'notification', 'occurence'].forEach(function (value, index, ar) {#}
+        var ctx = document.getElementById('occurence').getContext('2d');
+        {#    ctx.canvas.width = 500;#}
+        {#    ctx.canvas.height = 100;#}
+        {#    var config = $.extend(true, {}, commonConfig);#}
+        {#    config.data.dataset[0].backgroundColor#}
+        {#    charts[value] = new Chart(ctx, config);#}
+        {# });#}
+        var config = $.extend(true, {}, commonConfig);
+        chart = new Chart(ctx, config);
 
-        $.get('{{ organization.urls.charts_audit}}')
+        $.get('{{ organization.urls.charts_errors}}')
             .done(function (data) {
-                charts['audit'].config.data.datasets[0].data = data;
-                charts['audit'].update();
+                chart.config.data.datasets[2].data = data;
+                chart.update();
             });
 
         $.get('{{ organization.urls.charts_occurence}}')
             .done(function (data) {
-                charts['occurence'].config.data.datasets[0].data = data;
-                charts['occurence'].update();
+                chart.config.data.datasets[0].data = data;
+                chart.update();
             });
 
         $.get('{{ organization.urls.charts_notification }}')
             .done(function (data) {
-                charts['notification'].config.data.datasets[0].data = data;
-                charts['notification'].update();
+                chart.config.data.datasets[1].data = data;
+                chart.update();
             });
 
     </script>

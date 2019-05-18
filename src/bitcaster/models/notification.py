@@ -3,6 +3,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 # from .subscription import Subscription
+from bitcaster.tsdb.db import stats
 
 
 class Notification(models.Model):
@@ -74,6 +75,6 @@ class Notification(models.Model):
                       status=not bool(error))
         if error:
             values['info'] = str(error)
-
+        stats.log_notification(subscription.event.application.organization)
         values.update(kwargs)
         return cls.objects.create(**values)

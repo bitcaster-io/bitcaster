@@ -18,5 +18,5 @@ def log_occurence(event, **kwargs):
     :return:
     """
     Counter.objects.increment(event)
-    if config.LOG_OCCURENCES:
-        return Occurence.log(event, **kwargs)
+    # if config.LOG_OCCURENCES:
+    return Occurence.log(event, **kwargs)

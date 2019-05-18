@@ -49,7 +49,6 @@ class ErrorEntry(models.Model):
         #
         if self.application:
             self.organization = self.application.organization
-        #
         # if not self.organization and hasattr(self.target, 'organization'):
         #     self.organization = self.target.organization
         super().save(force_insert, force_update, using, update_fields)
