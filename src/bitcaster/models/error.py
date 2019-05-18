@@ -42,14 +42,14 @@ class ErrorEntry(models.Model):
         ordering = ('timestamp',)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        # if self.application:
+        #     self.organization = self.application.organization
+        # elif not self.application and hasattr(self.target, 'application'):
+        #     self.application = self.target.application
+        #
         if self.application:
             self.organization = self.application.organization
-        elif not self.application and hasattr(self.target, 'application'):
-            self.application = self.target.application
-
-        if self.application:
-            self.organization = self.target.application.organization
-
-        if not self.organization and hasattr(self.target, 'organization'):
-            self.organization = self.target.organization
+        #
+        # if not self.organization and hasattr(self.target, 'organization'):
+        #     self.organization = self.target.organization
         super().save(force_insert, force_update, using, update_fields)
