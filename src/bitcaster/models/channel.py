@@ -113,7 +113,10 @@ class Channel(ReverseWrapperMixin, AbstractModel):
                 raise ValidationError('Configure channel before enable it')
 
     def register_error(self):
-        ErrorEntry.objects.create(event=ErrorEvent.SUBSCRIPTION_ERROR, target=self)
+        ErrorEntry.objects.create(event=ErrorEvent.SUBSCRIPTION_ERROR,
+                                  application=None,
+                                  organization=self.organization,
+                                  target=self)
         self.errors += 1
         self.save()
         return self.errors

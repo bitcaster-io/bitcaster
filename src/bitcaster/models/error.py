@@ -46,6 +46,8 @@ class ErrorEntry(models.Model):
             self.organization = self.application.organization
         elif not self.application and hasattr(self.target, 'application'):
             self.application = self.target.application
+
+        if self.application:
             self.organization = self.target.application.organization
 
         if not self.organization and hasattr(self.target, 'organization'):
