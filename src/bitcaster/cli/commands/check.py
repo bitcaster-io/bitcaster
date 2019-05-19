@@ -80,15 +80,20 @@ def check(ctx, debug, deploy, tags, list_tags, fail_level, wait_services,
         for service, name in [('DATABASE_URL', 'database'),
                               ('CELERY_BROKER_URL', 'celery broker'),
                               ('REDIS_CACHE_URL', 'cache server'),
-                              ('REDIS_LOCK_URL', 'lock server')]:
+                              ('REDIS_LOCK_URL', 'lock server'),
+                              ('REDIS_TSDB_URL', 'tsdb server'),
+                              ]:
             try:
-                sys.stdout.write(f'Check {name}')
+                sys.stdout.write(f'Check {name} {env(service)}')
                 sys.stdout.flush()
+                time.sleep(5)
                 wait_for_service(env(service),
                                  caption='.',
                                  sleep=sleep,
                                  timeout=timeout,
                                  stdout=sys.stdout if verbose > 0 else None)
+                sys.stdout.flush()
+
             except TimeoutError:
                 click.echo(f"Timeout checking {name}: '{env(service)}'")
                 sys.exit(1)

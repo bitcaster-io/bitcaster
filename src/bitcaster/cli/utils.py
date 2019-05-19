@@ -129,7 +129,7 @@ class ErrorLeveParamType(CaseInsensitiveChoice):
         super().__init__(choices)
 
 
-def wait_for_service(address, timeout=30, caption='', stdout=None, sleep=0):
+def wait_for_service(address, timeout=30, caption='', stdout=None, sleep=0.5):
     import socket
     import time
 
@@ -152,10 +152,9 @@ def wait_for_service(address, timeout=30, caption='', stdout=None, sleep=0):
             s.close()
             break
         except socket.error:
-            time.sleep(0.5)
+            time.sleep(sleep)
         except Exception as e:
             raise ImproperlyConfigured(f'Error checking {address}. {e}')
         if time.time() > end:
             raise TimeoutError
     stdout.write(caption + 'OK\n')
-    time.sleep(sleep)

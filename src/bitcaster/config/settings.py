@@ -290,7 +290,7 @@ CACHES = {
     'lock': env.cache('REDIS_LOCK_URL'),
 }
 
-TSDB_STORE = env('TSDB_STORE')
+TSDB_STORE = env('REDIS_TSDB_URL')
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
@@ -495,8 +495,17 @@ if SENTRY_ENABLED:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
 
+    def before_send(event, hint):
+        try:
+            pass
+        except Exception:
+            pass
+        return event
+
     sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()],
                     release=bitcaster.get_full_version(),
+                    send_default_pii=True,
+                    before_send=before_send,
                     debug=False)
 
 # OAUTH2

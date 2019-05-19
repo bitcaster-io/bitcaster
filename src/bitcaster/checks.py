@@ -72,7 +72,7 @@ def check_tsdb(*args, **kwargs):
         from bitcaster.tsdb.db import stats
         stats.client.dbsize()
     except Exception as e:
-        return [Error('Unable to contact TSDB_STORE',
+        return [Error('Unable to contact REDIS_TSDB_URL',
                       hint=str(e),
                       obj=None,
                       id='bitcaster.TS001',
