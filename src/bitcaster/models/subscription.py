@@ -52,6 +52,7 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=STATUSES,
                                  default=STATUSES.OWNED)
+    # Remove me
     errors = models.IntegerField(default=0)
     objects = SubscriptionQuerySet.as_manager()
 
@@ -82,8 +83,6 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
         ErrorEntry.objects.create(event=ErrorEvent.SUBSCRIPTION_ERROR,
                                   application=self.event.application,
                                   target=self)
-        self.errors += 1
-        self.save()
         return self.errors
 
     # def update_token(self):

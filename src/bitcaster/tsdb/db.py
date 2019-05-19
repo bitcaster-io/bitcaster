@@ -1,7 +1,8 @@
 from collections import OrderedDict
 
 import pytz
-import redis
+from django.conf import settings
+from redis import StrictRedis
 from redis_timeseries import TimeSeries, days, hours, minutes
 
 
@@ -34,5 +35,5 @@ granularities = OrderedDict([
     ('y', {'duration': days(1), 'ttl': days(365)}),
 ])
 
-client = redis.StrictRedis()
+client = StrictRedis.from_url(settings.TSDB_STORE)
 stats = TS(client, base_key='stats', granularities=granularities, timezone=pytz.UTC)
