@@ -66,6 +66,20 @@ def check_dispatchers(*args, **kwargs):
     return []
 
 
+@register()
+def check_tsdb(*args, **kwargs):
+    try:
+        from bitcaster.tsdb.db import stats
+        stats.client.dbsize()
+    except Exception as e:
+        return [Error('Unable to contact TSDB_STORE',
+                      hint=str(e),
+                      obj=None,
+                      id='bitcaster.TS001',
+                      )]
+    return []
+
+
 @register(deploy=True)
 def check(*args, **kwargs):
     errors = []
@@ -104,6 +118,7 @@ def check(*args, **kwargs):
                 id='bitcaster.E003',
             )
         )
+
     try:
         caches['lock'].set('check', 1)
     except Exception as e:

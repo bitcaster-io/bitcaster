@@ -4,11 +4,11 @@ from django.utils import timezone
 from rest_framework.decorators import action
 from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
+from sentry_sdk import capture_event
 
 from bitcaster.api.filters import ApplicationFilterBackend
 from bitcaster.logging import log_occurence
 from bitcaster.tasks import trigger_event
-from bitcaster.tsdb.logging import broker
 from bitcaster.utils.wsgi import get_client_ip
 
 from ...models.event import Event
@@ -40,8 +40,6 @@ class EventViewSet(BaseModelViewSet):
     def trigger(self, request, organization__pk, application__pk, pk):
         try:
             event = self.get_object()
-            # Counter.objects.initialize(event)
-            broker.get_ts(organization__pk)
             log_occurence(event)
             if not event.enabled:
                 return Response({'error': 'Event disabled'}, status=400)
@@ -50,13 +48,10 @@ class EventViewSet(BaseModelViewSet):
                                 token=request.key.token,
                                 origin=get_client_ip(request))
         except Exception as e:
-            # TODO: remove me
-            print(111, 'event.py:55', 111111111, e)
-            logger.error(str(e))
-            # capture_event()
-            # logger.exception(e)
-            # return Response({'message': str(e),
-            #                  'timestamp': timezone.now()}, status=500)
+            capture_event()
+            logger.exception(e)
+            return Response({'message': str(e),
+                             'timestamp': timezone.now()}, status=500)
         else:
             return Response({'message': 'Event triggered',
                              'subscriptions': event.subscriptions.count(),
