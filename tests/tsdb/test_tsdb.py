@@ -1,13 +1,18 @@
+import time
+
 import pytest
+
+from bitcaster.tsdb.db import counters, stats
 
 pytestmark = pytest.mark.django_db
 
 
-def test_tsdb(notification1):
-    from bitcaster.tsdb.logging import broker
-    ts = broker.get_ts(notification1.application.organization.pk)
-    ts.log_notification(notification1)
+def test_tsdb_log_notification(organization1):
+    stats.log_notification(organization1)
 
-    # ts.record_hit(EVENT)
-    # TODO: remove me
-    # print(111, "test_tsdb.py:23", ts.get_hits(EVENT, MINUTE, 3))
+
+def test_errors():
+    key = 'test-%s' % time.time()
+    counters.increase(key)
+    counters.increase(key)
+    assert counters.get_buckets(key, 'd', 1)[0][1] == 2

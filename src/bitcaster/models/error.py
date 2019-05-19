@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 class ErrorEvent(IntEnum):
     SUBSCRIPTION_ERROR = 100
+    CHANNEL_ERROR = 200
 
 
 MESSAGES = {
@@ -47,6 +48,11 @@ class ErrorEntry(models.Model):
         # elif not self.application and hasattr(self.target, 'application'):
         #     self.application = self.target.application
         #
+        if self.target and hasattr(self.target, 'application'):
+            self.application = self.target.application
+        elif self.target and hasattr(self.target, 'event'):
+            self.application = self.target.event.application
+
         if self.application:
             self.organization = self.application.organization
         # if not self.organization and hasattr(self.target, 'organization'):

@@ -4,7 +4,7 @@ import pytz
 from django.conf import settings
 from django.utils.functional import SimpleLazyObject
 from redis import StrictRedis
-from redis_timeseries import TimeSeries, days, hours, minutes
+from redis_timeseries import TimeSeries, days, hours, minutes, seconds
 
 
 class TS(TimeSeries):
@@ -43,3 +43,19 @@ def get_stats():
 
 
 stats = SimpleLazyObject(get_stats)
+
+counters_granularities = OrderedDict([
+    ('m', {'duration': seconds(60), 'ttl': minutes(1)}),
+    ('h', {'duration': minutes(60), 'ttl': hours(1)}),
+    ('d', {'duration': hours(24), 'ttl': days(1)}),
+])
+
+
+def get_counters():
+    client = StrictRedis.from_url(settings.TSDB_STORE)
+    return TS(client, base_key='counters',
+              granularities=counters_granularities,
+              timezone=pytz.UTC)
+
+
+counters = SimpleLazyObject(get_counters)

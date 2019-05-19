@@ -1,5 +1,4 @@
 import pytest
-from django.core.exceptions import ObjectDoesNotExist
 
 from bitcaster.models import ErrorEntry
 from bitcaster.models.error import ErrorEvent
@@ -30,10 +29,3 @@ def test_create_target(event1):
     c.save()
     assert c.pk
     assert c.application == event1.application
-
-
-@pytest.mark.django_db
-def test_create_fail(subscription1):
-    c = ErrorEntry(event=ErrorEvent.SUBSCRIPTION_ERROR, target=subscription1)
-    with pytest.raises(ObjectDoesNotExist):
-        c.save()

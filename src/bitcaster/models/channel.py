@@ -10,6 +10,7 @@ from bitcaster.exceptions import PluginValidationError
 from bitcaster.framework.db.fields import DispatcherField, EncryptedJSONField
 from bitcaster.models.error import ErrorEntry, ErrorEvent
 from bitcaster.models.mixins import ReverseWrapperMixin
+from bitcaster.tsdb.db import counters
 
 from .application import Application
 from .base import AbstractModel
@@ -54,7 +55,6 @@ class Channel(ReverseWrapperMixin, AbstractModel):
     handler = DispatcherField(null=True)
     deprecated = models.BooleanField(default=False)
 
-    errors = models.PositiveIntegerField(default=0)
     errors_threshold = models.IntegerField(default=100,
                                            help_text='Number or errors before channel will be automatically disabled')
     objects = ChannelQuerySet().as_manager()
@@ -112,12 +112,19 @@ class Channel(ReverseWrapperMixin, AbstractModel):
             if not self.is_configured:
                 raise ValidationError('Configure channel before enable it')
 
+    @property
+    def errors(self):
+        try:
+            counters.get_buckets('channel:%s:errors' % self.pk, 'd', 1)[0][1]
+        except Exception as e:
+            logger.exception(e)
+            return 0
+
     def register_error(self, **kwargs):
         ErrorEntry.objects.create(event=ErrorEvent.CHANNEL_ERROR,
                                   application=None,
                                   organization=self.organization,
                                   target=self,
                                   data=kwargs)
-        self.errors += 1
-        self.save()
+        counters.increase('channel:%s:errors' % self.pk)
         return self.errors

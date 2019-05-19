@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 
 from bitcaster.framework.db.fields import EncryptedJSONField
+from bitcaster.tsdb.db import counters
 
 from .base import AbstractModel
 from .channel import Channel
@@ -52,8 +53,6 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=STATUSES,
                                  default=STATUSES.OWNED)
-    # Remove me
-    errors = models.IntegerField(default=0)
     objects = SubscriptionQuerySet.as_manager()
 
     error_log = GenericRelation(ErrorEntry)
@@ -79,11 +78,20 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     def recipient(self):
         return self.channel.handler.get_recipient_address(self)
 
+    @property
+    def errors(self):
+        try:
+            counters.get_buckets('subscription:%s:errors' % self.pk, 'd', 1)[0][1]
+        except Exception as e:
+            logger.exception(e)
+            return 0
+
     def register_error(self, **kwargs):
         ErrorEntry.objects.create(event=ErrorEvent.SUBSCRIPTION_ERROR,
                                   application=self.event.application,
                                   target=self,
                                   data=kwargs)
+        counters.increase('subscription:%s:errors' % self.pk)
         return self.errors
 
     # def update_token(self):
