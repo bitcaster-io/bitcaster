@@ -3,11 +3,12 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import BaseFormSet, BaseInlineFormSet
+from django.utils.translation import ungettext
 from rest_framework import serializers
 
 from bitcaster.configurable import get_full_config
-from bitcaster.models import (Event, Organization, OrganizationMember,
-                              Subscription, User,)
+from bitcaster.models import (Channel, Event, Organization,
+                              OrganizationMember, Subscription, User,)
 from bitcaster.state import state
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,49 @@ logger = logging.getLogger(__name__)
 #                 raise ValidationError(str(e))
 #
 #         return self.cleaned_data['config']
+
+class EventSubscriptionCreateForm(forms.Form):
+    channel = forms.ModelChoiceField(queryset=Channel.objects.none())
+    members = forms.ModelMultipleChoiceField(label='',
+                                             queryset=User.objects.none())
+
+    def __init__(self, application, *args, **kwargs):
+        self.instance = kwargs.pop('instance')
+        self.application = application
+        self.organization = application.organization
+        super().__init__(*args, **kwargs)
+        # if self.is_bound:
+        self.fields['members'].queryset = self.organization.members.all()
+        self.fields['channel'].queryset = self.instance.channels.all()
+
+    def clean(self):
+        duplicated = []
+        invalid = []
+        channel = self.cleaned_data['channel']
+        value = self.cleaned_data['members']
+        for user in value:
+            if not user.has_address_for_channel(channel):
+                invalid.append(user.display_name)
+            elif user.subscriptions.filter(event=self.instance, channel=channel).exists():
+                duplicated.append(user.display_name)
+
+        msg = []
+        if invalid:
+            msg.append(ungettext('%s does not have valid address for this channel',
+                                 '%s do not have valid address for this channel',
+                                 len(invalid)
+                                 ) % ','.join(invalid))
+
+        if duplicated:
+            msg.append(ungettext('%s is already subscribed',
+                                 '%s are already subscribed',
+                                 len(duplicated)
+                                 ) % ','.join(duplicated))
+
+        if msg:
+            raise ValidationError(msg)
+
+        return self.cleaned_data
 
 
 class EventSubscriptionForm(forms.ModelForm):

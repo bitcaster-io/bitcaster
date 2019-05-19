@@ -61,14 +61,14 @@ class TitleMixin:
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        vars = dict(kwargs)
+        vars = dict(ctx)
         if hasattr(self, 'model'):
             vars.update(verbose_name=verbose_name(self.model),
                         verbose_name_plural=verbose_name_plural(self.model))
-        if 'object' in ctx:
-            ctx['title'] = mark_safe(self.title % vars)
-        else:
-            ctx['title'] = mark_safe(self.title % vars)
+        # if 'object' in ctx:
+        #     vars['object'] = ctx
+
+        ctx['title'] = mark_safe(self.title % vars)
         return ctx
 
 

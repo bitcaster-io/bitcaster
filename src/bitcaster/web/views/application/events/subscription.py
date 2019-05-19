@@ -1,15 +1,14 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.functional import cached_property
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ungettext
 from django.views.generic import FormView
 
 from bitcaster import messages
 from bitcaster.framework.db.fields import ROLES
 from bitcaster.models import Event
-from bitcaster.web.forms.subscription import (EventSubscriptionForm,
-                                              InviteFormSet,
-                                              SubscriptionFormSet,)
+from bitcaster.web.forms.subscription import (EventSubscriptionCreateForm,
+                                              InviteFormSet,)
 from bitcaster.web.views.application.events.event import EventMixin
 from bitcaster.web.views.base import (
     BitcasterBaseDeleteView, BitcasterBaseListView, BitcasterBaseToggleView,
@@ -31,10 +30,10 @@ class SingleEventMixin(EventMixin):
 class EventSubscriptionList(SingleEventMixin, BitcasterBaseListView):
     template_name = 'bitcaster/application/events/subscriptions/list.html'
 
-    # title = 'Subscribers'
+    title = '%(event)s Subscribers'
 
     def get_context_data(self, **kwargs):
-        # kwargs['pending'] = self.selected_organization.memberships.filter(event=self.selected_event)
+        # kwargs['event'] = self.selected_event
         return super().get_context_data(**kwargs)
 
 
@@ -50,12 +49,12 @@ class EventSubscriptionToggle(SingleEventMixin, BitcasterBaseToggleView):
         return self.selected_event.subscriptions.get(id=self.kwargs['subscription'])
 
 
-class EventSubscriptionCreate(SingleEventMixin, FormView):
+class EventSubscriptionCreate(SingleEventMixin, MessageUserMixin, FormView):
     template_name = 'bitcaster/application/events/subscriptions/subscribe.html'
     # title = 'Subscribers'
-    form_class = EventSubscriptionForm
+    form_class = EventSubscriptionCreateForm
 
-    def get_object(self):
+    def get_object(self, queryset):
         return self.selected_event
 
     def get_success_url(self):
@@ -64,21 +63,40 @@ class EventSubscriptionCreate(SingleEventMixin, FormView):
                              self.selected_application.slug,
                              self.selected_event.pk])
 
-    def get_form_class(self):
-        return SubscriptionFormSet
-
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['event'] = self.selected_event
-        kwargs['requestor'] = self.request.user
+        kwargs['application'] = self.selected_application
+        kwargs['instance'] = self.selected_event
         return kwargs
 
-    def form_valid(self, formset):
-        formset.instance = self.selected_event
-        formset.save()
+    def form_valid(self, form):
+        existing = []
+        channel = form.cleaned_data['channel']
+        count = len(form.cleaned_data['members'])
+        for user in form.cleaned_data['members']:
+            if user.subscriptions.filter(event=self.selected_event):
+                existing.append(user.display_name)
+
+            user.subscriptions.create(event=self.selected_event,
+                                      trigger_by=self.request.user,
+                                      channel=channel)
+
+        self.message_user(ungettext('%s subscription created',
+                                    '%s subscriptions created',
+                                    count
+                                    ) % count)
+        if existing:
+            self.message_user(ungettext('%s was alredy subscribed',
+                                        '%s were alredy subscribed',
+                                        len(existing)
+                                        ) % ','.join(existing))
+
         return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
+        kwargs['members_autocomplete_url'] = reverse('org-member-autocomplete',
+                                                     args=[self.selected_organization.slug,
+                                                           ])
         kwargs['event'] = self.selected_event
         return super().get_context_data(**kwargs)
 

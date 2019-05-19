@@ -144,6 +144,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.tokens.create(application=application,
                                   enabled=True)
 
+    def has_address_for_channel(self, channel):
+        return self.assignments.filter(channel=channel).exists()
+
     def send_confirmation_email(self):
         from oath.google_authenticator import from_b32key
         # check = totp(settings.OTP_KEY, period=settings.CONFIRM_EMAIL_EXPIRE)

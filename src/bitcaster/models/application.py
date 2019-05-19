@@ -1,12 +1,9 @@
 import logging
 from uuid import uuid4
 
-# from bitfield import BitField
-# from django.contrib.postgres.fields import ArrayField
 from django.core import validators
 from django.db import models
-from django.db.models import UUIDField
-# from django.utils.functional import cached_property
+from django.db.models import QuerySet, UUIDField
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
@@ -44,9 +41,6 @@ class Application(AbstractModel, ReverseWrapperMixin):
                                 validators.RegexValidator(r'^[\w -]+$',
                                                           _('Enter a valid name.'),
                                                           'invalid')])
-    # members = models.ManyToManyField(settings.AUTH_USER_MODEL,
-    #                                  through='bitcaster.applicationmember',
-    #                                  through_fields=('application', 'org_member__user'))
 
     slug = models.SlugField(blank=True)
     timezone = TimeZoneField(default='UTC')
@@ -88,14 +82,14 @@ class Application(AbstractModel, ReverseWrapperMixin):
                              reserved=RESERVED_APPLICATION_SLUGS)
         super().save(force_insert, force_update, using, update_fields)
 
-    # def add_member(self, org_member, role):
-    #     from bitcaster.models import ApplicationMember
-    #     if isinstance(org_member, (list, QuerySet)):
-    #         for m in org_member:
-    #             ApplicationMember.objects.update_or_create(application=self,
-    #                                                        org_member=m,
-    #                                                        defaults=dict(
-    #                                                            role=role))
+    def add_member(self, org_member, role):
+        from bitcaster.models import ApplicationMember
+        if isinstance(org_member, (list, QuerySet)):
+            for m in org_member:
+                ApplicationMember.objects.update_or_create(application=self,
+                                                           org_member=m,
+                                                           defaults=dict(
+                                                               role=role))
 
     @property
     def channels(self):
