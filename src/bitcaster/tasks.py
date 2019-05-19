@@ -111,8 +111,10 @@ def process_event(channel, event, context):
                 logging_kwargs['error'] = e
                 logging_kwargs['status'] = False
                 logging_kwargs['info'] = traceback.format_stack()
-                subscription.register_error()
-                channel.register_error()
+
+                subscription.register_error(error=str(e))
+                channel.register_error(error=str(e))
+
                 logger.exception(e)
                 stats.log_error(organization)
                 failures += 1

@@ -79,10 +79,11 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     def recipient(self):
         return self.channel.handler.get_recipient_address(self)
 
-    def register_error(self):
+    def register_error(self, **kwargs):
         ErrorEntry.objects.create(event=ErrorEvent.SUBSCRIPTION_ERROR,
                                   application=self.event.application,
-                                  target=self)
+                                  target=self,
+                                  data=kwargs)
         return self.errors
 
     # def update_token(self):
