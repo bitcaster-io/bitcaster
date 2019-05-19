@@ -1,4 +1,5 @@
 import datetime
+import traceback
 from logging import getLogger
 
 from constance import config
@@ -104,17 +105,15 @@ def process_event(channel, event, context):
                 # address
                 used_address = channel.handler.emit(subscription, s, m, conn)
                 logging_kwargs['address'] = used_address
-                # Counter.objects.increment(subscription)
                 success += 1
-                log_notification(subscription, **logging_kwargs)
             except Exception as e:
                 capture_exception(e)
                 logging_kwargs['error'] = e
+                logging_kwargs['status'] = False
+                logging_kwargs['info'] = traceback.format_stack()
                 subscription.register_error()
                 channel.register_error()
                 logger.exception(e)
-                log_notification(subscription, **logging_kwargs,
-                                 status=False, info=str(e))
                 stats.log_error(organization)
                 failures += 1
 
