@@ -29,6 +29,7 @@
                     backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
                     borderColor: window.chartColors.green,
                     data: [],
+                    yAxisID: 'O',
                     {#type: 'line',#}
                     {#pointRadius: 0,#}
                     {#fill: false,#}
@@ -40,6 +41,7 @@
                         backgroundColor: color(window.chartColors.yellow).alpha(0.5).rgbString(),
                         borderColor: window.chartColors.yellow,
                         data: [],
+                        yAxisID: 'N',
                         {#type: 'line',#}
                         {#pointRadius: 0,#}
                         {#fill: false,#}
@@ -59,12 +61,12 @@
                     }]
             },
             options: {
-                legend: false,
+                {#legend: true,#}
                 scales: {
                     xAxes: [{
                         type: 'time',
                         time: {
-                            parser: function(dt){
+                            parser: function (dt) {
                                 return moment(dt).local()
                             },
                             displayFormats: {
@@ -80,15 +82,23 @@
                         }
                     }],
                     yAxes: [{
+                        id: 'O',
                         type: 'linear',
-                        min: 0,
+                        ticks: {
+                            min: 0
+                        },
+                        position: 'left',
                         beginAtZero: true,
-                        {#stepSize: 1,#}
-                        {#scaleLabel: {#}
-                        {#    display: true,#}
-                        {#labelString: 'Events'#}
-                        {# }#}
-                    }]
+                    },
+                        {
+                            id: 'N',
+                            type: 'linear',
+                            ticks: {
+                                min: 0
+                            },
+                            position: 'right',
+                            beginAtZero: true,
+                        }]
                 },
                 tooltips: {
                     intersect: false,
