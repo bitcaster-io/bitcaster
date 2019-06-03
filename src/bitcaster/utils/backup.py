@@ -24,6 +24,8 @@ DATA = ['user',
         'addressassignment',
         'applicationtriggerkey',
         'subscription',
+        'dispatchermetadata',
+        'agentmetadata'
         ]
 IGNORE = RegexList([r'auth\.permission', r'auth\.group'])
 

@@ -1,49 +1,45 @@
-from unittest import mock
-from unittest.mock import Mock
-
 import pytest
 from django.core.exceptions import ObjectDoesNotExist
 
-from bitcaster.exceptions import MaxChannelError
-from bitcaster.models import Channel
-from bitcaster.tasks import emit_event, process_event
+from bitcaster.tasks import process_channel, trigger_event
 
 
 @pytest.mark.django_db
-def test_process_event(subscription1):
+def test_process_event(subscription1, occurence1):
     channel = subscription1.channel
     event = subscription1.event
-    assert process_event(channel, event, {})
+    assert process_channel(channel.pk, event.pk, occurence1.pk, {})
+
+#
+# @pytest.mark.django_db
+# def test_process_event_errors_threshold(subscription1):
+#     channel = subscription1.channel
+#     channel.errors_threshold = 0
+#     event = subscription1.event
+#     with pytest.raises(MaxChannelError):
+#         with mock.patch('bitcaster.models.Notification.log'):
+#             H = fqn(channel.handler)
+#             H.emit =  MagicMock(side_effect=Mock(side_effect=Exception))
+#             # with mock.patch(,
+#             #                 emit=):
+#             assert process_channel(channel.pk, event.pk, {})
+#     assert not channel.enabled
 
 
 @pytest.mark.django_db
-def test_process_event_errors_threshold(subscription1):
-    channel = subscription1.channel
-    channel.errors_threshold = 0
-    event = subscription1.event
-    with pytest.raises(MaxChannelError):
-        with mock.patch('bitcaster.models.Notification.log'):
-            with mock.patch('bitcaster.models.Channel.handler',
-                            Mock(side_effect=Mock(side_effect=Exception))):
-                assert process_event(channel, event, {})
-    assert not channel.enabled
-
-
-@pytest.mark.django_db
-def test_process_event_no_messages(subscription1):
+def test_process_event_no_messages(subscription1, occurence1):
     channel = subscription1.channel
     channel.messages.all().delete()
     event = subscription1.event
     with pytest.raises(ObjectDoesNotExist):
-        assert process_event(channel, event, {})
+        assert process_channel(channel.pk, event.pk, occurence1.pk, {})
 
 
 @pytest.mark.django_db
-def test_process_disabled_event(subscription1):
-    channel = Channel(enabled=False)
-    assert process_event(channel, Mock(), {}) == (0, 0)
+def test_emit_event(occurence1):
+    assert trigger_event(occurence1.pk, {})
 
 
 @pytest.mark.django_db
-def test_emit_event(event1):
-    assert emit_event(event1, {})
+def test_acknowledge():
+    pass

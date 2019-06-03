@@ -1,6 +1,7 @@
 import logging
 
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -8,9 +9,8 @@ from sentry_sdk import capture_exception
 
 from bitcaster.exceptions import PluginValidationError
 from bitcaster.framework.db.fields import DispatcherField, EncryptedJSONField
-from bitcaster.models.error import ErrorEntry, ErrorEvent
+from bitcaster.models.fields import ThrottleField
 from bitcaster.models.mixins import ReverseWrapperMixin
-from bitcaster.tsdb.db import counters
 
 from .application import Application
 from .base import AbstractModel
@@ -58,6 +58,10 @@ class Channel(ReverseWrapperMixin, AbstractModel):
     errors_threshold = models.IntegerField(default=100,
                                            help_text='Number or errors before channel will be automatically disabled')
     objects = ChannelQuerySet().as_manager()
+
+    dispatch_page_size = models.IntegerField(validators=[MinValueValidator(1)],
+                                             default=1000)
+    dispatch_rate = ThrottleField(default='1/s')
 
     class Meta:
         app_label = 'bitcaster'
@@ -111,20 +115,20 @@ class Channel(ReverseWrapperMixin, AbstractModel):
         if self.enabled:
             if not self.is_configured:
                 raise ValidationError('Configure channel before enable it')
-
-    @property
-    def errors(self):
-        try:
-            counters.get_buckets('channel:%s:errors' % self.pk, 'd', 1)[0][1]
-        except Exception as e:
-            logger.exception(e)
-            return 0
-
-    def register_error(self, **kwargs):
-        ErrorEntry.objects.create(event=ErrorEvent.CHANNEL_ERROR,
-                                  application=None,
-                                  organization=self.organization,
-                                  target=self,
-                                  data=kwargs)
-        counters.increase('channel:%s:errors' % self.pk)
-        return self.errors
+    #
+    # @property
+    # def errors(self):
+    #     try:
+    #         return counters.get_buckets('channel:%s:errors' % self.pk, 'd', 1)[0][1]
+    #     except Exception as e:
+    #         logger.exception(e)
+    #         return 0
+    #
+    # def register_error(self, **kwargs):
+    #     ErrorEntry.objects.create(event=ErrorEvent.CHANNEL_ERROR,
+    #                               application=None,
+    #                               organization=self.organization,
+    #                               target=self,
+    #                               data=kwargs)
+    #     counters.increase('channel:%s:errors' % self.pk)
+    #     return self.errors

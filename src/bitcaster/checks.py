@@ -34,11 +34,11 @@ def check_settings(*args, **kwargs):
     return errors
 
 
-@register()
+@register(deploy=True)
 def check_channel_configuration(*args, **kwargs):
     errors = []
     invalid = []
-    for record in Channel.objects.filter(enabled=True):
+    for record in Channel.objects.filter(enabled=True).only('handler'):
         try:
             record.handler.validate_configuration(record.handler.config, True)
         except PluginValidationError:
@@ -69,7 +69,7 @@ def check_dispatchers(*args, **kwargs):
 @register()
 def check_tsdb(*args, **kwargs):
     try:
-        from bitcaster.tsdb.db import stats
+        from bitcaster.tsdb.api import stats
         stats.client.dbsize()
     except Exception as e:
         return [Error('Unable to contact REDIS_TSDB_URL',

@@ -7,6 +7,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from bitcaster.tasks.model import async
+
 
 class ErrorEvent(IntEnum):
     SUBSCRIPTION_ERROR = 100
@@ -18,43 +20,63 @@ MESSAGES = {
 }
 
 
-class ErrorEntry(models.Model):
-    ERROREVENT_CHOICES = [(tag.value, tag.name) for tag in ErrorEvent]
-    event = models.IntegerField(choices=ERROREVENT_CHOICES)
+class ErrorEntryManager(models.Manager):
+    def consolidate(self):
+        for e in self.filter(organization__isnull=True):
+            e.consolidate(async=False)
 
+
+class ErrorEntry(models.Model):
+    timestamp = models.DateTimeField(default=timezone.now)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    target = GenericForeignKey('content_type', 'object_id')
+    data = JSONField(blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
+
+    target_label = models.CharField(max_length=300, null=True, blank=True)
     organization = models.ForeignKey('bitcaster.Organization',
+                                     blank=True, null=True,
                                      related_name='errors',
                                      on_delete=models.CASCADE)
     application = models.ForeignKey('bitcaster.Application',
                                     blank=True, null=True,
                                     related_name='errors',
                                     on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(default=timezone.now)
 
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
-    object_id = models.PositiveIntegerField(null=True, blank=True)
-    target = GenericForeignKey('content_type', 'object_id')
-    target_label = models.CharField(max_length=300, null=True, blank=True)
-
-    data = JSONField(blank=True, null=True)
+    objects = ErrorEntryManager()
 
     class Meta:
         get_latest_by = 'timestamp'
         ordering = ('timestamp',)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        # if self.application:
-        #     self.organization = self.application.organization
-        # elif not self.application and hasattr(self.target, 'application'):
-        #     self.application = self.target.application
-        #
-        if self.target and hasattr(self.target, 'application'):
+    @async(quque='consolidate')
+    def consolidate(self):
+        if hasattr(self.target, 'application'):
             self.application = self.target.application
-        elif self.target and hasattr(self.target, 'event'):
+        elif hasattr(self.target, 'event'):
             self.application = self.target.event.application
 
         if self.application:
             self.organization = self.application.organization
-        # if not self.organization and hasattr(self.target, 'organization'):
-        #     self.organization = self.target.organization
-        super().save(force_insert, force_update, using, update_fields)
+        self.save()
+    # @classmethod
+    # def log(cls, target, **kwargs):
+    #     return ErrorEntry.objects.create(target=target, **kwargs)
+    #
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     # if self.application:
+    #     #     self.organization = self.application.organization
+    #     # elif not self.application and hasattr(self.target, 'application'):
+    #     #     self.application = self.target.application
+    #     #
+    #     if self.target and hasattr(self.target, 'application'):
+    #         self.application = self.target.application
+    #     elif self.target and hasattr(self.target, 'event'):
+    #         self.application = self.target.event.application
+    #
+    #     if self.application:
+    #         self.organization = self.application.organization
+    #     # if not self.organization and hasattr(self.target, 'organization'):
+    #     #     self.organization = self.target.organization
+    #     super().save(force_insert, force_update, using, update_fields)

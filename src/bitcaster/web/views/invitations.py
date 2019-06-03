@@ -67,7 +67,8 @@ class InvitationAccept(MessageUserMixin, CreateView):
             self.membership.date_enrolled = timezone.now()
             self.membership.save()
             login(self.request, user, backend=fqn(ModelBackend))
-            assert self.request.user == user
+            if self.request.user != user:
+                raise Exception('')
 
         if self.membership.role in [ROLES.OWNER, ROLES.ADMIN]:
             url = reverse('org-dashboard', args=[self.selected_organization.slug])

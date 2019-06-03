@@ -2,6 +2,7 @@ import logging
 from uuid import uuid4
 
 from django.contrib.postgres.fields import ArrayField, JSONField
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UUIDField
 from django.utils.functional import cached_property
@@ -10,7 +11,9 @@ from model_utils import Choices
 from rest_framework.reverse import reverse
 
 from bitcaster.framework.db.validators import RateLimitValidator
+from bitcaster.models.fields import TTLDBField
 from bitcaster.utils.http import absolute_uri
+from bitcaster.utils.ttl import DAY
 
 from .application import Application
 from .base import AbstractModel
@@ -43,13 +46,33 @@ class Event(ReverseWrapperMixin, AbstractModel):
     rate_limit = models.CharField(max_length=100,
                                   null=True, default=None, blank=True,
                                   validators=[RateLimitValidator()])
-    channels = models.ManyToManyField('bitcaster.Channel',
-                                      # through='bitcaster.EventChannel'
-                                      )
+    channels = models.ManyToManyField('bitcaster.Channel')
     subscription_policy = models.IntegerField(choices=POLICIES,
                                               default=POLICIES.FREE)
     limit_to_teams = models.ManyToManyField(ApplicationTeam)
     core = models.BooleanField(default=False)
+
+    # Retrying
+    retry_interval = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    retry_max = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+
+    # Confirmation
+    need_confirmation = models.BooleanField(default=False, help_text='Need read message confirmation')
+    code_prefix = models.CharField(max_length=5, blank=True, null=True,
+                                   db_index=True, unique=True,
+                                   help_text='Prefix to use to create confirmation code')
+
+    # Reminders
+    reminders = models.IntegerField(default=0, validators=[MaxValueValidator(10),
+                                                           MinValueValidator(0)])
+
+    reminder_interval = models.IntegerField(default=30,
+                                            help_text=_('Minimum interval between reminders. (minutes)'),
+                                            validators=[MaxValueValidator(DAY),
+                                                        MinValueValidator(1)])
+
+    event_expiration = TTLDBField(default=DAY)
+    allow_attachments = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'bitcaster'

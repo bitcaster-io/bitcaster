@@ -7,7 +7,7 @@ from django.db.models import Count
 from django.shortcuts import render
 
 from bitcaster.models import Event
-from bitcaster.tasks import emit_event
+from bitcaster.tasks.event import trigger_event
 from bitcaster.utils.django import (activator_factory,
                                     deactivator_factory, toggler_factory,)
 # from .forms.event import EventForm, EventTriggerForm
@@ -67,9 +67,8 @@ class EventAdmin(ExtraUrlMixin, admin.ModelAdmin):
             if form.is_valid():
                 try:
                     # success, fail = event.emit(form.cleaned_data['arguments'], False)
-                    success, fail = emit_event(event,
-                                               form.cleaned_data['arguments'],
-                                               ignore_disabled=True)
+                    success, fail = trigger_event.delay(event.pk,
+                                               form.cleaned_data['arguments'])
                     self.message_user(request, f'Success:{success} - Failures:{fail}', messages.INFO)
                     # return render(request, 'admin/event_trigger.html', ctx)
 

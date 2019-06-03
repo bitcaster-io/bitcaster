@@ -19,7 +19,7 @@ from bitcaster.dispatchers import Email
 from bitcaster.framework.db.fields import ROLES
 from bitcaster.models.audit import AuditEvent
 from bitcaster.models.token import generate_api_token
-from bitcaster.utils import fqn
+from bitcaster.utils.reflect import fqn
 
 whitespace = ' \t\n\r\v\f'
 lowercase = 'abcdefghijklmnopqrstuvwxyz'
@@ -486,7 +486,6 @@ class OccurenceFactory(AutoRegisterModelFactory):
     # failures = models.IntegerField(default=0)
     class Meta:
         model = models.Occurence
-        django_get_or_create = ('id',)
 
 
 class AuditLogEntryFactory(AutoRegisterModelFactory):

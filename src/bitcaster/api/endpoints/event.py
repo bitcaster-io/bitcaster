@@ -1,14 +1,16 @@
 import logging
 
+from crashlog.middleware import process_exception
+from django.db.transaction import atomic
 from django.utils import timezone
 from rest_framework.decorators import action
 from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
-from sentry_sdk import capture_event
 
 from bitcaster.api.filters import ApplicationFilterBackend
-from bitcaster.logging import log_occurence
-from bitcaster.tasks import trigger_event
+from bitcaster.models import Occurence
+from bitcaster.tasks.event import trigger_event
+from bitcaster.tsdb.api import log_new_occurence, log_occurence_error
 from bitcaster.utils.wsgi import get_client_ip
 
 from ...models.event import Event
@@ -40,19 +42,22 @@ class EventViewSet(BaseModelViewSet):
     def trigger(self, request, organization__pk, application__pk, pk):
         try:
             event = self.get_object()
-            log_occurence(event)
             if not event.enabled:
+                log_occurence_error(event)
+                event.register_error('Cannot emit disabled event')
                 return Response({'error': 'Event disabled'}, status=400)
-
-            trigger_event.delay(event.id, request.data,
+            occurence = Occurence.log(event=event)
+            log_new_occurence(occurence)
+            trigger_event.delay(occurence.pk,
+                                request.data,
                                 token=request.key.token,
                                 origin=get_client_ip(request))
         except Exception as e:
-            capture_event()
+            with atomic():
+                process_exception(e)
             logger.exception(e)
             return Response({'message': str(e),
                              'timestamp': timezone.now()}, status=500)
         else:
             return Response({'message': 'Event triggered',
-                             'subscriptions': event.subscriptions.count(),
                              'timestamp': timezone.now()}, status=201)

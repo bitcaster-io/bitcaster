@@ -46,12 +46,11 @@ class Skype(CoreDispatcher):
     def _get_connection(self) -> skpy.main.Skype:
         return skpy.main.Skype(self.config['username'], self.config['password'])
 
-    def emit(self, subscription: object, subject: str, message: str,
+    def emit(self, address: str, subject: str, message: str,
              connection=None, *args, **kwargs) -> str:
         address = 'unknown'
         try:
-            address = self.get_recipient_address(subscription)
-            self.logger.info('Processing {0}'.format(subscription, address))
+            logger.debug(f"Processing '{address}'")
             connection = connection or self._get_connection()
             recipient = connection.contacts[address]
             if not recipient:
@@ -61,8 +60,6 @@ class Skype(CoreDispatcher):
             return address
         except skpy.core.SkypeApiException as e:
             if e.args[1].status_code == 404:
-                subscription.enabled = False
-                subscription.save()
                 raise RecipientNotFound(e) from e
             logger.error(e)
             raise PluginSendError(e) from e

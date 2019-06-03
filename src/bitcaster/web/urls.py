@@ -19,8 +19,8 @@ urlpatterns = [
     path('plugins/info/<str:fqn>/', views.PluginInfo.as_view(), name='plugin-info'),
 
     # General
-    path('terms/', TemplateView.as_view(template_name='bitcaster/legal/terms.html'), name='legal-terms'),
-    path('privacy/', TemplateView.as_view(template_name='bitcaster/legal/privacy.html'), name='legal-privacy'),
+    # path('terms/', TemplateView.as_view(template_name='bitcaster/legal/terms.html'), name='legal-terms'),
+    # path('privacy/', TemplateView.as_view(template_name='bitcaster/legal/privacy.html'), name='legal-privacy'),
 
     # Settings
     path('settings/', views.SettingsView.as_view(), name='settings'),
@@ -35,11 +35,17 @@ urlpatterns = [
          name='settings-plugin-toggle'),
     path('settings/plugins/refresh', views.SettingsPluginRefresh.as_view(), name='settings-plugin-refresh'),
 
+    # Message
+    path('confirmation/<int:event>/<int:subscription>/<int:channel>/<int:occurence>/<str:code>/',
+         views.confirmation, name='confirmation'),
+    path('pixel/<int:event>/<int:subscription>/<int:channel>/<int:code>/',
+         views.pixel, name='pixel'),
+
     # Social
     path('', include('social_django.urls', namespace='social')),
-    path('user/register/register-wait-email/<int:pk>/',
-         TemplateView.as_view(template_name='bitcaster/registration/register_wait_email.html'),
-         name='register-wait-email'),
+    # path('user/register/register-wait-email/<int:pk>/',
+    #      TemplateView.as_view(template_name='bitcaster/registration/register_wait_email.html'),
+    #      name='register-wait-email'),
     path('user/register/confirm-registratiom/<int:pk>/<str:check>/', views.confirm_registration,
          name='confirm-registratiom'),
     path('user/register/confirm-address/<int:pk>/<str:address>/<str:check>/', views.confirm_address,
@@ -227,11 +233,14 @@ urlpatterns = [
     path('<slug:org>/charts/notification/', views.notification_log, name='org-charts-notification'),
     path('<slug:org>/charts/occurence/', views.occurence_log, name='org-charts-occurence'),
     path('<slug:org>/charts/error/', views.error_log, name='org-charts-errors'),
+    path('<slug:org>/charts/buffers/<str:name>/', views.get_buffers, name='org-charts-buffers'),
+
+    path('trigger/<str:task_fqn>/', views.trigger_task, name='org-charts-buffers'),
 
     path('<slug:org>/applications/', views.OrganizationApplications.as_view(), name='org-applications'),
 
-    path('wip/', views.WorkInProgressView.as_view(), name='wip'),
-
+    # path('wip/', views.WorkInProgressView.as_view(), name='wip'),
+    #
     # path('tpl/<str:path>', PreviewView.as_view(), name='wip'),
 
 ]

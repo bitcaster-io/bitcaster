@@ -10,10 +10,10 @@ rm -f /var/bitcaster/run/*
 
 if [[ "$*" == "workers" ]];then
     bitcaster check --deploy --wait-services
-    exec gosu bitcaster celery worker -A bitcaster --loglevel=DEBUG --concurrency=4 --purge --pidfile run/celery.pid
+    exec gosu bitcaster bitcaster run worker --loglevel=DEBUG --concurrency=4 --pidfile run/celery.pid
 elif [[ "$*" == "beat" ]];then
     bitcaster check --deploy --wait-services
-    exec gosu bitcaster celery beat -A bitcaster --loglevel=DEBUG --pidfile run/celerybeat.pid
+    exec gosu bitcaster bitcaster run beat --loglevel=DEBUG --pidfile run/celerybeat.pid
 elif [[ "$*" == "bitcaster" ]];then
     bitcaster check --deploy --wait-services
     bitcaster upgrade --static --migrate --no-input

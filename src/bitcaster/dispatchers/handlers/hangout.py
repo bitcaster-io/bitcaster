@@ -2,12 +2,14 @@ from logging import getLogger
 
 from django.utils.translation import gettext_lazy as _
 from pyxmpp2.client import Client
+from pyxmpp2.clientstream import ClientStream
 from pyxmpp2.jid import JID
 from pyxmpp2.mainloop.interfaces import QUIT, EventHandler, event_handler
 from pyxmpp2.message import Message
 from pyxmpp2.settings import XMPPSettings
 from pyxmpp2.streamevents import (AuthorizedEvent, ConnectedEvent,
                                   DisconnectedEvent,)
+from pyxmpp2.transport import TCPTransport
 
 from bitcaster.api.fields import PasswordField
 from bitcaster.dispatchers import serializers
@@ -33,10 +35,38 @@ class HangoutSubscription(SubscriptionOptions):
     recipient = serializers.CharField()
 
 
+class BitcasterClient(Client):
+    def connect(self):
+        """Schedule a new XMPP c2s connection.
+        """
+        with self.lock:
+            if self.stream:
+                logger.debug('Closing the previously used stream.')
+                self._close_stream()
+
+            transport = TCPTransport(self.settings)
+
+            addr = self.settings['server']
+            service = self.settings['c2s_service']
+
+            transport.connect(addr, self.settings['c2s_port'], service)
+            handlers = self._base_handlers[:]
+            handlers += self.handlers + [self]
+            self.clear_response_handlers()
+            self.setup_stanza_handlers(handlers, 'pre-auth')
+            stream = ClientStream(self.jid, self, handlers, self.settings)
+            stream.initiate(transport)
+            self.main_loop.add_handler(transport)
+            self.main_loop.add_handler(stream)
+            self._ml_handlers += [transport, stream]
+            self.stream = stream
+            self.uplink = stream
+
+
 class FireAndForget(EventHandler):
     def __init__(self, local_jid, action, settings):
         self.action = action
-        self.client = Client(local_jid, [self], settings)
+        self.client = BitcasterClient(local_jid, [self], settings)
         self.connected = False
 
     def run(self):
@@ -66,7 +96,7 @@ class FireAndForget(EventHandler):
 class Hangout(CoreDispatcher):
     subscription_class = HangoutSubscription
     options_class = HangoutOptions
-    message_class = MessageType
+    message_class = HangoutMessage
     __help__ = _("""
 #### Generate Application password
 
@@ -83,33 +113,31 @@ class Hangout(CoreDispatcher):
     def name(cls):
         return 'Hangout'
 
-    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
-    #     ser = HangoutSubscription(data=subscription.config)
-    #     if not ser.is_valid():
-    #         raise PluginValidationError(ser.errors)
-
     def _get_connection(self) -> FireAndForget:
         settings = XMPPSettings({'starttls': True,
                                  'password': self.config['password'],
+                                 'server': 'gmail.com',
+                                 'c2s_service': 'xmpp-client',
+                                 'c2s_port': 5222,
+                                 # 'default_stanza_timeout': 30,
                                  'tls_verify_peer': False})
         source_jid = JID(self.config['username'])
 
         return FireAndForget(source_jid, None, settings)
 
-    def emit(self, subscription: object, subject: str, message: str,
+    def emit(self, address: str, subject: str, message: str,
              connection=None, *args, **kwargs) -> str:
         try:
-            recipient = self.get_recipient_address(subscription)
-            logger.debug(f"Processing {subscription} '{recipient}'")
+            logger.debug(f"Processing '{address}'")
             conn = connection or self._get_connection()
 
-            target_jid = JID(recipient)
+            target_jid = JID(address)
 
             msg = Message(to_jid=target_jid, body=message, subject=subject, stanza_type='chat')
 
             conn.action = lambda c: c.stream.send(msg)
             conn.run()
-            return recipient
+            return address
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)

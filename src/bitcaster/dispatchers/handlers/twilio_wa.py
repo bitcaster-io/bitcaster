@@ -48,18 +48,16 @@ You need a valid [Twilio](https://www.twilio.com/) account to use this service.
         return Client(self.config['sid'],
                       self.config['token'])
 
-    def emit(self, subscription: object, subject: str, message: str,
-             connection=None, *args, **kwargs) -> int:
+    def emit(self, address: str, subject: str, message: str,
+             connection=None, *args, **kwargs) -> str:
         try:
-            self.validate_subscription(subscription)
-            recipient = self.get_recipient_address(subscription)
             connection = connection or self._get_connection()
             connection.messages.create(
-                to='whatsapp:' + recipient,
+                to='whatsapp:' + address,
                 from_='whatsapp:' + self.config['sender'],
                 body=message
             )
-            return recipient
+            return address
         except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e)

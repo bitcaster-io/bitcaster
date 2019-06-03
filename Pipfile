@@ -62,7 +62,7 @@ pycountry = "*"
 pycrypto = "*"
 pygments = "*"
 pyotp = "*"
-python-redis-lock = {extras = ["django"]}
+python-redis-lock = {extras = ["django"],version = "*"}
 python-slugify = "*"
 pyyaml = ">=4.2b1"
 redis = "*"
@@ -80,6 +80,7 @@ django-impersonate = "*"
 qrcode = "*"
 viberbot = "*"
 redis-timeseries = "*"
+celery-once = "*"
 
 [dev-packages]
 bumpversion = "*"

@@ -3,12 +3,13 @@ from .application import ApplicationAdmin
 from .audit import AuditLogEntryAdmin
 from .channel import ChannelAdmin
 # from .configurationissue import ConfigurationIssueAdmin
-from .counters import CounterAdmin, LogEntryAdmin, OccurenceAdmin
+from .counters import CounterAdmin, OccurenceAdmin
 from .errorentry import ErrorEntry
 from .event import EventAdmin
 from .invitation import InvitationAdmin
 from .message import MessageAdmin
 from .monitor import MonitorAdmin
+from .notification import NotificationAdmin
 from .organization import OrganizationAdmin
 from .plugins import AgentMetaDataAdmin, DispatcherMetaDataAdmin
 from .security import ApiAuthTokenAdmin, ApplicationTriggerKey, UserAdmin

@@ -167,6 +167,9 @@ class DispatcherField(StrategyField):
     def formfield(self, form_class=None, choices_form_class=None, **kwargs):
         return super().formfield(form_class, choices_form_class, **kwargs)
 
+    def __hash__(self):
+        return hash(self.__str__())
+
 
 class AgentField(StrategyField):
 

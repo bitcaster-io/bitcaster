@@ -3,7 +3,7 @@ import os
 import pytest
 
 from bitcaster.dispatchers import Viber
-from bitcaster.utils import fqn
+from bitcaster.utils.reflect import fqn
 from bitcaster.utils.tests.dispatcher_testcase import DispatcherBaseTest
 from bitcaster.utils.tests.factories import ChannelFactory
 

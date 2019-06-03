@@ -6,6 +6,6 @@ from .site import site
 
 
 @admin.register(ErrorEntry, site=site)
-class CounterAdmin(admin.ModelAdmin):
-    list_display = ('timestamp', 'event', 'application', 'target_label')
-    list_filter = ('application', 'event')
+class ErrorEntryAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'target', 'application', 'target_label', 'message')
+    list_filter = ('application', 'content_type')

@@ -163,6 +163,8 @@ class SettingsServicesForm(Form):
 
 class SettingsMainForm(Form):
     SITE_URL = forms.URLField()
+    SHOW_DISABLED_DISPATCHERS = forms.BooleanField(required=False,
+                                                   help_text='Show dispatcher even if globally disabled')
     ALLOW_CHANGE_PRIMARY_ADDRESS = forms.BooleanField(required=False)
     BACKUPS_LOCATION = forms.CharField(required=False)
     LOG_NOTIFICATION = forms.BooleanField(help_text='Enable/Disable notification log')

@@ -1,6 +1,6 @@
 from django import template
 
-from bitcaster.utils import fqn
+from bitcaster.utils.reflect import fqn
 
 register = template.Library()
 

@@ -78,7 +78,7 @@ class AddressAssignment(ReversionMixin, models.Model):
         code = random_string(6, string.digits)
         address.code = code
         address.save()
-        return self.channel.handler.emit(self.user,
+        return self.channel.handler.emit(self.address.address,
                                          'Bitcaster confirmation code',
                                          'Bitcaster confirmation code %s' % code,
                                          silent=False)

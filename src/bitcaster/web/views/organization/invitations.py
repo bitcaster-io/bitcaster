@@ -144,7 +144,7 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
                        target_label=str(membership))
 
             login(self.request, user, backend=fqn(ModelBackend))
-            assert self.request.user == user
+            # assert self.request.user == user
 
         # if self.invitation.role in [ROLES.OWNER, ROLES.ADMIN]:
         #     url = reverse('org-dashboard', args=[self.selected_organization.slug])

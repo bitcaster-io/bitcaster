@@ -6,7 +6,8 @@ from django.core.mail import get_connection, send_mail
 from rest_framework import serializers
 
 from bitcaster.api.fields import PasswordField
-from bitcaster.utils import fqn
+from bitcaster.exceptions import PluginSendError
+from bitcaster.utils.reflect import fqn
 
 from ..base import (CoreDispatcher, DispatcherOptions,
                     MessageType, SubscriptionOptions,)
@@ -33,6 +34,7 @@ class EmailOptions(DispatcherOptions):
     sender = serializers.EmailField(required=True)
     timeout = serializers.IntegerField(default=60)
     backend = serializers.CharField(default='django.core.mail.backends.smtp.EmailBackend')
+    allow_attachments = serializers.BooleanField(required=False)
 
 
 @dispatcher_registry.register
@@ -59,23 +61,24 @@ class Email(CoreDispatcher):
         except (ObjectDoesNotExist, TypeError):  # pragma: no cover
             return subscription.subscriber.email
 
-    def emit(self, subscription, subject, message, connection=None, *args, **kwargs) -> str:
+    def emit(self, address, subject, message, connection=None, *args, **kwargs) -> str:
         try:
-            email = self.get_recipient_address(subscription)
             connection = connection or self._get_connection()
             send_mail(subject=subject,
                       message=message,
                       connection=connection,
                       from_email=self.config['sender'],
-                      recipient_list=[email])
-            self.logger.debug(f'{fqn(self)} email sent to {email}')
-            return email
+                      recipient_list=[address])
+            self.logger.debug(f'{fqn(self)} email sent to {address}')
+            return address
         except smtplib.SMTPException as e:  # pragma: no cover
             raise ValidationError(str(e)) from e
         except ValidationError as e:
             self.logger.exception(e)
+            raise PluginSendError(e)
         except Exception as e:
             self.logger.exception(e)
+            raise PluginSendError(e)
 
     def test_connection(self, raise_exception=False):
         try:

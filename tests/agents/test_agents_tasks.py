@@ -4,7 +4,7 @@ import pytest
 
 from bitcaster.agents import EmailAgent
 from bitcaster.agents.tasks import check_all
-from bitcaster.utils import fqn
+from bitcaster.utils.reflect import fqn
 
 pytestmark = pytest.mark.django_db
 

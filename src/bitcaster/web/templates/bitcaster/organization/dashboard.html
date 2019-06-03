@@ -6,147 +6,34 @@
 {% endblock head %}
 {% block page %}
     <div class="row col-12 p-3 m-1">
-        <div style="width:1000px">
+        <div style="width:1000px;">
             <div class="h4">Overview</div>
-            <canvas id="occurence"></canvas>
+            <canvas id="ts"></canvas>
+        </div>
+        {#        <div tyle="width:1000px;height:100px">#}
+        <div class="container-fluid">
+            <div class="h4">Buffers</div>
+            <div class="row">
+                <div class="col-5">
+                    <canvas id="occurence"></canvas>
+                </div>
+                <div class="col-5">
+                    <canvas id="notification"></canvas>
+                </div>
+            </div>
+            >
         </div>
     </div>
 {% endblock page %}
 {% block js %}
     <script>
-        var color = Chart.helpers.color;
+        var tsUrls = ['{{ organization.urls.charts_occurence}}',
+            '{{ organization.urls.charts_notification }}',
+            '{{ organization.urls.charts_errors}}'];
 
-        var commonConfig = {
-            type: 'line',
-            adapters: {
-                date: {
-                    timezone: 'Europe/Rome'
-                }
-            },
-            data: {
-                datasets: [{
-                    label: 'Occurences',
-                    backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-                    borderColor: window.chartColors.green,
-                    data: [],
-                    yAxisID: 'O',
-                    {#type: 'line',#}
-                    {#pointRadius: 0,#}
-                    {#fill: false,#}
-                    {#lineTension: 0,#}
-                    {#borderWidth: 2#}
-                },
-                    {
-                        label: 'Notifications',
-                        backgroundColor: color(window.chartColors.yellow).alpha(0.5).rgbString(),
-                        borderColor: window.chartColors.yellow,
-                        data: [],
-                        yAxisID: 'N',
-                        {#type: 'line',#}
-                        {#pointRadius: 0,#}
-                        {#fill: false,#}
-                        {#lineTension: 0,#}
-                        {#borderWidth: 2#}
-                    },
-                    {
-                        label: 'Errors',
-                        backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-                        borderColor: window.chartColors.red,
-                        data: [],
-                        {#type: 'line',#}
-                        {#pointRadius: 0,#}
-                        {#fill: false,#}
-                        {#lineTension: 0,#}
-                        {#borderWidth: 2#}
-                    }]
-            },
-            options: {
-                {#legend: true,#}
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            parser: function (dt) {
-                                return moment(dt).local()
-                            },
-                            displayFormats: {
-                                day: 'HH:mm',
-                                hour: 'HH:mm',
-                                minute: 'HH:mm',
-                            }
-                        },
-                        distribution: 'series',
-                        ticks: {
-                            {#source: 'data',#}
-                            autoSkip: true
-                        }
-                    }],
-                    yAxes: [{
-                        id: 'O',
-                        type: 'linear',
-                        ticks: {
-                            min: 0
-                        },
-                        position: 'left',
-                        beginAtZero: true,
-                    },
-                        {
-                            id: 'N',
-                            type: 'linear',
-                            ticks: {
-                                min: 0
-                            },
-                            position: 'right',
-                            beginAtZero: true,
-                        }]
-                },
-                tooltips: {
-                    intersect: false,
-                    mode: 'index',
-                    callbacks: {
-                        label: function (tooltipItem, myData) {
-                            var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            label += parseFloat(tooltipItem.value).toFixed(2);
-                            return label;
-                        }
-                    }
-                }
-            }
-        };
-        var charts = {};
-        {#['error', 'notification', 'occurence'].forEach(function (value, index, ar) {#}
-        var ctx = document.getElementById('occurence').getContext('2d');
-        {#    ctx.canvas.width = 500;#}
-        {#    ctx.canvas.height = 100;#}
-        {#    var config = $.extend(true, {}, commonConfig);#}
-        {#    config.data.dataset[0].backgroundColor#}
-        {#    charts[value] = new Chart(ctx, config);#}
-        {# });#}
-        var config = $.extend(true, {}, commonConfig);
-        chart = new Chart(ctx, config);
-
-        $.get('{{ organization.urls.charts_errors}}')
-            .done(function (data) {
-                chart.config.data.datasets[2].data = data;
-                chart.update();
-            });
-
-        $.get('{{ organization.urls.charts_occurence}}')
-            .done(function (data) {
-                chart.config.data.datasets[0].data = data;
-                chart.update();
-            });
-
-        $.get('{{ organization.urls.charts_notification }}')
-            .done(function (data) {
-                chart.config.data.datasets[1].data = data;
-                chart.update();
-            });
-
+        charts.setupMainChart('ts', tsUrls);
+        charts.setupOccurenceQueueChart('occurence', '/os4d/charts/buffers/occurence/');
+        charts.setupNotificationQueueChart('notification', '/os4d/charts/buffers/notification/');
     </script>
-
 
 {% endblock %}

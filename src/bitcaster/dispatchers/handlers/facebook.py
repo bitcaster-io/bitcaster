@@ -67,20 +67,19 @@ If you alread have an app, got to
                       self.config['password'].encode('utf8'),
                       max_tries=1)
 
-    def emit(self, subscription: object, subject: str, message: str,
+    def emit(self, address: str, subject: str, message: str,
              connection=None, *args, **kwargs) -> str:
         try:
-            recipient = self.get_recipient_address(subscription)
-            logger.info(f'Processing {subscription} to {recipient}')
+            logger.info(f'Processing {address}')
             connection = connection or self._get_connection()
 
-            friends = connection.searchForUsers(recipient)
+            friends = connection.searchForUsers(address)
             if not friends:
-                raise RecipientNotFound(recipient)
-            friend = [f for f in friends if f.url.endswith(recipient)][0]
+                raise RecipientNotFound(address)
+            friend = [f for f in friends if f.url.endswith(address)][0]
             msg = Message(text=message.encode('utf8'), emoji_size=None)
             connection.send(msg, friend.uid)
-            return recipient
+            return address
         except (RecipientNotFound, IndexError) as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(_('User {user} is not a friend of this Facebook account').format(user=e))

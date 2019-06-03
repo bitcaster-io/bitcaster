@@ -2,7 +2,7 @@ import logging
 
 from django.template.loader import get_template
 
-from bitcaster.tasks import send_mail_async
+from bitcaster.tasks.mail import send_mail_async
 
 logger = logging.getLogger(__name__)
 

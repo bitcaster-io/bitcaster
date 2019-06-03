@@ -1,6 +1,6 @@
 from bitcaster.dispatchers import Email, Gmail, dispatcher_registry
 from bitcaster.framework.forms.fields import DispatcherFormField
-from bitcaster.utils import fqn
+from bitcaster.utils.reflect import fqn
 
 
 def test_DispatcherFormField():

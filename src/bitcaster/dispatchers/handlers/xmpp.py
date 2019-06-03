@@ -48,16 +48,14 @@ class Xmpp(CoreDispatcher):
         # })
         # return Client(self.config['username'], [self, ], settings)
 
-    def emit(self, subscription: object, subject: str, message: str,
+    def emit(self, address: str, subject: str, message: str,
              connection=None, *args, **kwargs) -> int:
         try:
-            recipient = self.get_recipient_address(subscription)
-            logger.debug(f"Processing {subscription} '{recipient}'")
             send_message(self.config['username'],
                          self.config['password'],
-                         recipient,
+                         address,
                          message)
-            return recipient
+            return address
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)

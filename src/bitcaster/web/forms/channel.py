@@ -21,7 +21,9 @@ class ChannelUpdateConfigurationForm(forms.ModelForm):
 
     class Meta:
         model = Channel
-        fields = ('name', 'description', 'config')
+        fields = ('name', 'description', 'dispatch_page_size',
+                  'dispatch_rate',
+                  'config')
 
     def __init__(self, *args, **kwargs):
         self.serializer_class = kwargs.pop('serializer', None)

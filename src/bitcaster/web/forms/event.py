@@ -23,12 +23,17 @@ class ArgumentLineForm(forms.Form):
 
 
 class EventForm(forms.ModelForm):
+    allow_attachments = forms.BooleanField(required=False)
     description = forms.CharField(required=False,
                                   widget=forms.Textarea(attrs={'rows': '2'}))
 
     class Meta:
         model = Event
-        fields = ('name', 'description', 'channels', 'subscription_policy')
+        fields = ('name', 'description', 'channels', 'subscription_policy',
+                  'allow_attachments',
+                  'need_confirmation',
+                  'reminders',
+                  'reminder_interval', 'event_expiration')
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)

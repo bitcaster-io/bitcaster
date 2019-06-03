@@ -1,0 +1,68 @@
+from django import forms
+from django.core.validators import RegexValidator
+from django.db import models
+
+from bitcaster.utils.ttl import parse_ttl
+
+
+class TTLFormField(forms.CharField):
+    def to_python(self, value):
+        """Return a string."""
+        if value not in self.empty_values:
+            value = str(value)
+            if self.strip:
+                value = value.strip()
+        if value in self.empty_values:
+            return self.empty_value
+        return parse_ttl(value)
+
+
+class ThrottleField(models.CharField):
+    default_validators = [RegexValidator(r'(\d+)/(s|m|h|d|second|minute|hour|day)',
+                                         message='Insert value in the form <num>/[second,minute,hour,day]')]
+    DURATION = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}
+    IDURATION = {v: k for k, v in DURATION.items()}
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('max_length', 10)
+        super().__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        return self.parse_rate(value)
+
+    def clean(self, value, model_instance):
+        self.validate(value, model_instance)
+        self.run_validators(value)
+        return value
+
+    def get_prep_value(self, value):
+        value = super().get_prep_value(value)
+        return '%s/%s' % (value[0], self.IDURATION[value[1]])
+
+    def parse_rate(self, rate):
+        """
+        Given the request rate string, return a two tuple of:
+        <allowed number of requests>, <period of time in seconds>
+        """
+        if rate is None:
+            return (None, None)
+        num, period = rate.split('/')
+        num_requests = int(num)
+        return (num_requests, self.DURATION[period[0]])
+
+
+class TTLDBField(models.IntegerField):
+
+    def __init__(self, *args, **kwargs):
+        self.window = kwargs.pop('window', 1)
+        super().__init__(*args, **kwargs)
+
+    def clean(self, value, model_instance):
+        value = super().clean(value, model_instance)
+        return value // self.window
+
+    def formfield(self, **kwargs):
+        return super().formfield(**{
+            'form_class': TTLFormField,
+            **kwargs,
+        })

@@ -65,21 +65,20 @@ Navigate to https://<YOUR_SPACE>.slack.com/apps/" and enable `Incoming WebHooks`
     #         raise PluginValidationError(ser.errors)
     #     return True
 
-    def emit(self, subscription, subject, message, *args, **kwargs):
+    def emit(self, address, subject, message, *args, **kwargs):
         try:
-            recipient = self.get_recipient_address(subscription)
-            logger.info('Processing {0}'.format(subscription, recipient))
+            logger.debug(f"Processing '{address}'")
             conn = self._get_connection()
             ret = conn.post(self.config['url'],
                             json={'username': self.config['bot_name'],
                                   'icon_url': self.config['icon_url'],
-                                  'channel': recipient,
+                                  'channel': address,
                                   'text': message,
                                   }
                             )
             if ret.status_code != 200:
                 raise PluginSendError(ret.content)
-            return recipient
+            return address
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e) from e

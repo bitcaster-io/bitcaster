@@ -1,30 +1,29 @@
-from django.http import (Http404, HttpResponse, HttpResponseForbidden,
-                         HttpResponseRedirect,)
-from django.template.loader import get_template
+from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
+# from django.template.loader import get_template
 from django.urls import reverse
 from django.views.generic import RedirectView, TemplateView
 
-__all__ = ('IndexView', 'WorkInProgressView')
+__all__ = ('IndexView', )
 
 
 class Error403(TemplateView):
     response_class = HttpResponseForbidden
 
 
-class WorkInProgressView(TemplateView):
-    template_name = 'bitcaster/wip.html'
-
-
-class PreviewView(TemplateView):
-    template_name = 'bitcaster/wip.html'
-
-    def get(self, request, *args, **kwargs):
-        tplname = kwargs['path'].replace('|', '/')
-        tpl = get_template(tplname)
-        content = tpl.render({}, request)
-        from premailer import transform
-        content = transform(content)
-        return HttpResponse(content)
+# class WorkInProgressView(TemplateView):
+#     template_name = 'bitcaster/wip.html'
+#
+#
+# class PreviewView(TemplateView):
+#     template_name = 'bitcaster/wip.html'
+#
+#     def get(self, request, *args, **kwargs):
+#         tplname = kwargs['path'].replace('|', '/')
+#         tpl = get_template(tplname)
+#         content = tpl.render({}, request)
+#         from premailer import transform
+#         content = transform(content)
+#         return HttpResponse(content)
 
 
 class IndexView(RedirectView):

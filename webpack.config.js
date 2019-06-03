@@ -103,7 +103,7 @@ module.exports = [
             bitcaster: [rel("bitcaster/bitcaster")],
             vendor: [rel("bitcaster/vendor")],
             theme: [rel("bitcaster/theme")],
-            charts: [rel("bitcaster/js/charts")],
+            charts: [rel("bitcaster/charts")],
         }, // -entry
         context: rel("."),
         module: {
@@ -166,7 +166,10 @@ module.exports = [
         devtool: 'source-map',
         output: {
             filename: "[name].js",
-            path: outputDir
+            path: outputDir,
+            // library: "[name]",
+            // libraryTarget: 'window',
+            // libraryExport: 'default'
             // publicPath: "/build"
         },
         plugins: [

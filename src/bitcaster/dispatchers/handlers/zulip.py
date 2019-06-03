@@ -5,7 +5,7 @@ from rest_framework import serializers
 from zulip import Client as ZulipClient
 
 from bitcaster.exceptions import PluginSendError
-from bitcaster.utils import fqn
+from bitcaster.utils.reflect import fqn
 
 from ..base import (CoreDispatcher, DispatcherOptions,
                     MessageType, SubscriptionOptions,)
@@ -62,21 +62,20 @@ class ZulipPrivate(CoreDispatcher):
                              site=config['site'])
         return client
 
-    def emit(self, subscription, subject, message, connection=None, *args, **kwargs) -> str:
+    def emit(self, address, subject, message, connection=None, *args, **kwargs) -> str:
         try:
-            recipient = self.get_recipient_address(subscription)
             conn = connection or self._get_connection()
             # Send a stream message
             request = {
                 'type': 'private',
-                'to': recipient,
+                'to': address,
                 'content': message,
             }
             result = conn.send_message(request)
             if result['result'] != 'success':
                 raise PluginSendError(result['msg'])
-            self.logger.debug(f'{fqn(self)} sent to {recipient}')
-            return recipient
+            self.logger.debug(f'{fqn(self)} sent to {address}')
+            return address
         except Exception as e:
             self.logger.exception(e)
 

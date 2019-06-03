@@ -5,7 +5,7 @@ DIR = pathlib.Path(__file__).parent
 
 NAME = 'bitcaster'
 VERSION = __version__ = '0.38.0a'
-__author__ = 'Stefano Apostolico'
+__author__ = 'Bitcaster Team'
 
 
 @lru_cache(1)

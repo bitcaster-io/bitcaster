@@ -39,7 +39,7 @@ class UserSubscriptionToggle(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
         try:
-            assert obj.recipient  # address or assignment could be deleted
+            # obj.recipient  # address or assignment could be deleted
             obj.enabled = not obj.enabled
             if obj.enabled:
                 self.message_user(f'{obj._meta.verbose_name} #{obj.pk} enabled',

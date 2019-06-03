@@ -89,11 +89,11 @@ class Twitter(CoreDispatcher):
     #         logger.exception(e)
     #         raise PluginSendError(e)
 
-    def emit(self, subscription, subject, message, *args, **kwargs):
+    def emit(self, address: str, subject: str, message: str,
+             connection=None, *args, **kwargs) -> str:
         try:
-            api = self._get_connection()
-            recipient = self.get_recipient_address(subscription)
-            user = api.get_user(recipient)
+            connection = connection or self._get_connection()
+            user = connection.get_user(address)
             event = {
                 'event': {
                     'type': 'message_create',
@@ -107,8 +107,8 @@ class Twitter(CoreDispatcher):
                     }
                 }
             }
-            api.send_direct_message_new(event)
-            return recipient
+            connection.send_direct_message_new(event)
+            return address
         except Exception as e:
             logger.exception(e)
             raise PluginSendError(e)

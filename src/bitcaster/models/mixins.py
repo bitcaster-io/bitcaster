@@ -68,3 +68,103 @@ class ReversionMixin(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         with reversion.create_revision():
             super().save(force_insert, force_update, using, update_fields)
+
+
+#
+# class LogMixin:
+#     @classmethod
+#     def log(cls, **kwargs):
+#         request = kwargs.pop('request', state.request)
+#         # kwargs.setdefault('application', event.application)
+#         # kwargs.setdefault('organization', event.application.organization)
+#         # kwargs.setdefault('origin', get_client_ip(request))
+#
+#         obj = cls.objects.create(**kwargs)
+#         stats.occurence.log(event)
+#         stats.occurence.log(event.application)
+#         stats.occurence.log(event.application.organization)
+#         return obj
+
+#
+# class RegisterErrorMixin:
+#
+#     def get_errors(self, granularity='d'):
+#         pass
+#         # ret = counters.error.get_data(self, granularity=granularity)
+#         # return ret[0][1]
+#
+#     def register_error(self, message, **kwargs):
+#         from .error import ErrorEntry
+#
+#         ErrorEntry.objects.create(message=message,
+#                                   application=None,
+#                                   target=self,
+#                                   data=kwargs).consolidate()
+#         # stats.error.log(self)
+#         # counters.error.log(self)
+#
+#
+# class StatLogger:
+#     def __get__(self, instance, owner):
+#         self.instance = instance
+#         self.ts = get_timeseries(instance.__class__.__name__)
+#         return self
+#
+#     def __init__(self, metrics: [str] = None) -> None:
+#         self.metrics = metrics
+#         self.key = 'stats'
+#         super().__init__()
+#
+#     # def contribute_to_class(self, model, name):
+#     #     self.model = model
+#     #     self.instance = None
+#     #     self.ts = get_timeseries(model.__name__)
+#     #     self.key = 'stats'
+#     #     setattr(model, name, self)
+#
+#     def get_key(self, metric):
+#         if metric:
+#             return "%s:%s" % (self.key, metric)
+#         return self.key
+#
+#     def incr(self, metric=None, value=1):
+#         self.ts.increase(key=self.get_key(metric), amount=value)
+#
+#     def decr(self, metric=None, value=1):
+#         self.ts.decrease(key=self.get_key(metric), amount=value)
+#
+#     def set(self, metric=None, value=1):
+#         self.ts.set(key=self.get_key(metric), amount=value)
+#
+#     def get_data(self, metric=None, granularity='h', count=None):
+#         if count is None:
+#             props = self.ts.granularities[granularity]
+#             count = props['ttl'] // props['duration']
+#         return self.ts.get_buckets(key=self.get_key(metric),
+#                                    granularity=granularity,
+#                                    count=count)
+#
+#
+# class QueueLogger:
+#     def contribute_to_class(self, model, name):
+#         self.model = model
+#         self.ts = get_timeseries(model.__name__)
+#         self.key = 'queue'
+#         setattr(model, name, self)
+#
+#     def incr(self, value=1, obj=None):
+#         self.ts.increase(key=self.key, amount=value)
+#
+#     def decr(self, value=1, obj=None):
+#         self.ts.decrease(key=self.key, amount=value)
+#
+#     def set(self, value=1, obj=None):
+#         self.ts.set(key=self.key, amount=value)
+#
+#     def get_data(self, granularity='h', count=None):
+#         if count is None:
+#             props = self.ts.granularities[granularity]
+#             count = props['ttl'] // props['duration']
+#         return self.ts.get_buckets(key=self.key,
+#                                    granularity=granularity,
+#                                    count=count)

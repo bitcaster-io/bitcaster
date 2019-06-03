@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 
 from bitcaster.models import Organization
-from bitcaster.utils import fqn
+from bitcaster.utils.reflect import fqn
 from bitcaster.utils.slug import slugify_instance
 from bitcaster.utils.tests.factories import OrganizationFactory
 

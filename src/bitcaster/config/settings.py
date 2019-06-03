@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_cleanup.apps.CleanupConfig',
     'django_db_logging',
-    # 'django_celery_beat',
+    'crashlog',
     # 'django_celery_results',
 
     # Admin
@@ -123,9 +123,15 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': env.db('DATABASE_URL',
                       default='psql://postgres:@127.0.0.1:5432/bitcaster'),
+    'crashlog': env.db('DATABASE_URL',
+                       default='psql://postgres:@127.0.0.1:5432/bitcaster'),
 }
-DATABASES['default']['ATOMIC_REQUESTS'] = True
 
+DATABASES['default']['ATOMIC_REQUESTS'] = True
+DATABASES['crashlog']['ATOMIC_REQUESTS'] = True
+DATABASE_ROUTERS = [
+    'bitcaster.routers.DBLogRouter',
+]
 # GENERAL CONFIGURATION
 # ------------------------------------------------------------------------------
 # Local time zone for this installation. Choices can be found here:
@@ -347,6 +353,7 @@ REST_FRAMEWORK = {
 
 # CELERY SETTINGS
 CELERY_TASK_ALWAYS_EAGER = env.bool('CELERY_TASK_ALWAYS_EAGER', False)
+CELERY_RESULT_BACKEND = env.str('CELERY_BROKER_URL')
 CELERYD_HIJACK_ROOT_LOGGER = False
 CELERYD_LOG_FILE = None
 CELERY_REDIRECT_STDOUTS = True
@@ -395,31 +402,28 @@ CONSTANCE_ADDITIONAL_FIELDS = {
 }
 
 CONSTANCE_CONFIG = OrderedDict({
+    # Internal
     'INITIALIZED': (False, '', bool),
     'CONFIGURATION': (0, '', int),
     'SYSTEM_CONFIGURED': (0, '', int),
+
+    # General
     'SITE_URL': ('', '', str),
     'BACKUPS_LOCATION': ('', '', str),
-    'GOOGLE_ANALYTICS_CODE': ('', 'Google Analytics code', str),
-    # Logging
+    'ALLOW_CHANGE_PRIMARY_ADDRESS': (False, 'Users can change their primary email address', bool),
     'LOG_NOTIFICATION': (True, 'Enable/Disable notification log', bool),
     'LOG_MESSAGE': (0, 'Log message ', int),
-    'LOG_OCCURENCES': (True, 'Enable/Disable event occurences log', bool),
-
-    'LOG_OCCURENCES_RETENTION': (30, 'Occurences log retention days', int),
-    'LOG_NOTIFICATION_RETENTION': (30, 'Notification log retention days', int),
-    'LOG_ERROR_RETENTION': (30, 'Error log retention days', int),
-
-    'ALLOW_CHANGE_PRIMARY_ADDRESS': (False, 'Users can change their primary email address', bool),
+    'SHOW_DISABLED_DISPATCHERS': (True, 'Show dispatcher even if globally disabled', bool),
+    # Services
     'RECAPTCHA_PUBLIC_KEY': ('', '', str),
     'RECAPTCHA_PRIVATE_KEY': ('', '', str),
-
+    'GOOGLE_ANALYTICS_CODE': ('', 'Google Analytics code', str),
     'IPSTACK_HOST': ('http://api.ipstack.com/', 'ipstack api addredss', str),
     'IPSTACK_KEY': ('', 'ipstack access key', str),
-
-    'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/', '', str),
+    # Other
     'ALLOW_REGISTRATION': (False, '', bool),
     'INVITATION_EXPIRE': (60 * 60 * 24, '', int),
+    # Email
     'EMAIL_USE_TLS': (False, '', bool),
     'EMAIL_TIMEOUT': (60, '', int),
     'EMAIL_HOST': ('', '', str),
@@ -428,7 +432,7 @@ CONSTANCE_CONFIG = OrderedDict({
     'EMAIL_HOST_PASSWORD': ('', '', str),
     'EMAIL_SENDER': ('noreply@bitcaster.io', '', str),
     'EMAIL_SUBJECT_PREFIX': ('[bitcaster] ', '', str),
-
+    # Ldap
     'AUTH_LDAP_ENABLE': (False, 'Enable LDAP Authentication', bool),
     'AUTH_LDAP_SERVER_URI': ('', 'LDAP server address', str),
     'AUTH_LDAP_BIND_DN': ('', '', 'ldap_dn'),
@@ -457,6 +461,9 @@ CONSTANCE_CONFIG = OrderedDict({
     # 'AUTH_LDAP_USER_ATTR_MAP': {},
     # 'AUTH_LDAP_USER_FLAGS_BY_GROUP': {},
 
+    # Oauth
+    'OAUTH_CALLBACK': ('http://localhost:8000/oauth2callback/', '', str),
+
     'SOCIAL_AUTH_GOOGLE_OAUTH2_ENABLE_LOGIN': (False, '', bool),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY': ('', '', str),
     'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET': ('', '', str),
@@ -479,6 +486,11 @@ CONSTANCE_CONFIG = OrderedDict({
     'SOCIAL_AUTH_FACEBOOK_KEY': ('', '', str),
     'SOCIAL_AUTH_FACEBOOK_SECRET': ('', '', str),
 
+    # Hidden
+    'LOG_OCCURENCES': (True, 'Enable/Disable event occurences log', bool),
+    'LOG_OCCURENCES_RETENTION': (30, 'Occurences log retention days', int),
+    'LOG_NOTIFICATION_RETENTION': (30, 'Notification log retention days', int),
+    'LOG_ERROR_RETENTION': (30, 'Error log retention days', int),
     'ENABLE_IMPERSONATE': (False, '', bool),
     'ADVANCED_MODE': (False, '', bool),
 

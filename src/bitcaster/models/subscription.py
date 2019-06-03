@@ -1,17 +1,15 @@
 import logging
+from _md5 import md5
 
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 
 from bitcaster.framework.db.fields import EncryptedJSONField
-from bitcaster.tsdb.db import counters
 
 from .base import AbstractModel
 from .channel import Channel
-from .error import ErrorEntry, ErrorEvent
 from .event import Event
 from .mixins import ReverseWrapperMixin
 from .user import User
@@ -55,8 +53,6 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
                                  default=STATUSES.OWNED)
     objects = SubscriptionQuerySet.as_manager()
 
-    error_log = GenericRelation(ErrorEntry)
-
     class Meta:
         app_label = 'bitcaster'
         unique_together = ('channel', 'subscriber', 'event')
@@ -69,7 +65,7 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
         args = ['event.application.organization.slug', 'event.application.slug', 'event.id', 'id']
 
     def __str__(self):
-        return 'Subscription to {0.event} via {0.channel}'.format(self)
+        return 'Subscription {0.subscriber} to {0.event} via {0.channel}'.format(self)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super().save(force_insert, force_update, using, update_fields)
@@ -78,30 +74,13 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     def recipient(self):
         return self.channel.handler.get_recipient_address(self)
 
-    @property
-    def errors(self):
-        try:
-            counters.get_buckets('subscription:%s:errors' % self.pk, 'd', 1)[0][1]
-        except Exception as e:
-            logger.exception(e)
-            return 0
-
-    def register_error(self, **kwargs):
-        ErrorEntry.objects.create(event=ErrorEvent.SUBSCRIPTION_ERROR,
-                                  application=self.event.application,
-                                  target=self,
-                                  data=kwargs)
-        counters.increase('subscription:%s:errors' % self.pk)
-        return self.errors
-
-    # def update_token(self):
-    #     self.deactivation_token = generate_subscription_token(self)
-    #
-    # def clean(self):
+    # @property
+    # def errors(self):
     #     try:
-    #         if not self.channel.messages.filter(event=self.event).exists():
-    #             raise ValidationError({'channel': 'Channel cannot be used as no messages are configured for it'})
-    #     except ObjectDoesNotExist:
-    #         raise ValidationError({'channel': 'Cannot save subscription without a channel'})
-    #
-    #     return super().clean()
+    #         return counters.get_buckets('subscription:%s:errors' % self.pk, 'd', 1)[0][1]
+    #     except Exception as e:
+    #         logger.exception(e)
+    #         return 0
+
+    def get_code(self):
+        return md5(f'{self.pk}-{self.channel_id}-{self.event_id}-{self.subscriber.email}'.encode('utf8')).hexdigest()

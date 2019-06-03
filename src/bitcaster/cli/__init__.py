@@ -4,16 +4,11 @@ from functools import update_wrapper
 from pathlib import Path
 
 import click
-# from setproctitle import setproctitle
 from strategy_field.utils import import_by_name
 
 import bitcaster
 from bitcaster.cli.utils import Verbosity
 from bitcaster.config import DEFAULT_CONFIG
-
-# from bitcaster.logging import getLogger
-
-# logger = getLogger(__name__)
 
 _global_options = [
     click.option('-v', '--verbose',
@@ -71,12 +66,6 @@ def cli(ctx, config, verbose, **kwargs):
     os.environ['BITCASTER_CONF'] = filepath
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bitcaster.config.settings')
     from bitcaster.config.environ import env
-    # if verbose > 0:
-    #     if config.exists():
-    #         click.echo(f'Using configuration from {filepath}')
-    #     else:
-    #         click.echo(f"Configuration file '{filepath}' does not exists.")
-    #     env.load_config(str(config), False)
 
     ctx.obj = {'env': env,
                'config': filepath}
@@ -88,6 +77,8 @@ cli.add_command(import_by_name('bitcaster.cli.commands.createuser.createuser'))
 cli.add_command(import_by_name('bitcaster.cli.commands.backup.backup'))
 cli.add_command(import_by_name('bitcaster.cli.commands.backup.restore'))
 cli.add_command(import_by_name('bitcaster.cli.commands.reindex.reindex'))
+cli.add_command(import_by_name('bitcaster.cli.commands.run.run'))
+cli.add_command(import_by_name('bitcaster.cli.commands.changepassword.changepassword'))
 
 
 def main():  # pragma: no cover

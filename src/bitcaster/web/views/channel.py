@@ -190,15 +190,16 @@ class ChannelTestView(MessageUserMixin, RedirectView):
         self.object = self.get_queryset().get(id=kwargs['pk'])
         try:
             dispatcher = self.object.handler
-            assert request.user.assignments.filter(channel=self.object).exists()
-            address = dispatcher.emit(request.user, '-', 'test channel message', silent=False)
+            assignment = request.user.assignments.get(channel=self.object)
+            # address = dispatcher.get_recipient_address(request.user)
+            address = dispatcher.emit(assignment.address.address, '-', 'test channel message', silent=False)
 
             msg = _("""Message sent to {}""").format(address)
             self.message_user(markdown(msg), messages.SUCCESS)
 
         except Address.DoesNotExist:
             self.message_user(_('You do not have an address assigned to this channel'), messages.ERROR)
-        except (AddressAssignment.DoesNotExist, AssertionError):
+        except (AddressAssignment.DoesNotExist):
             url = reverse('user-address-assignment', args=[self.selected_organization.slug])
             msg = _("""You do not have a valid address for this channel.
 Goto [addresses]({0}) to set your choice for **{1}**""").format(url, self.object.name)

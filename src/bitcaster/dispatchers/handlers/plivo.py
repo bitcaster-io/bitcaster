@@ -43,21 +43,20 @@ class Plivo(CoreDispatcher):
         return plivo.RestClient(auth_id=self.config['sid'],
                                 auth_token=self.config['token'])
 
-    def emit(self, subscription: object, subject: str, message: str,
+    def emit(self, address: str, subject: str, message: str,
              connection=None, *args, **kwargs) -> str:
         try:
-            recipient = self.get_recipient_address(subscription)
-            logger.info('Processing {0}'.format(subscription, recipient))
+            logger.debug(f"Processing '{address}'")
             connection = connection or self._get_connection()
 
             ret = connection.messages.create(
                 src=self.config['sender'],
-                dst=recipient,
+                dst=address,
                 text=message
             )
             if 'message_uuid' not in ret:
                 raise PluginSendError(ret)
-            return recipient
+            return address
         except Exception as e:  # pragma: no cover
             logger.exception(e)
             raise PluginSendError(e)

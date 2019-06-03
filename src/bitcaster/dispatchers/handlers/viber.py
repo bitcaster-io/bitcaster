@@ -18,9 +18,10 @@ from viberbot.api.viber_requests import (ViberMessageRequest,
                                          ViberUnsubscribedRequest,)
 
 from bitcaster.api.fields import PasswordField, PhoneNumberField
+from bitcaster.exceptions import PluginSendError
 from bitcaster.otp import OtpHandler
-from bitcaster.utils import fqn
 from bitcaster.utils.http import absolute_uri
+from bitcaster.utils.reflect import fqn
 
 from ..base import (CoreDispatcher, DispatcherOptions,
                     MessageType, SubscriptionOptions,)
@@ -183,9 +184,7 @@ class Viber(CoreDispatcher):
         return user.retrieve(fqn(self), self.owner.pk)
         # return user.assignments.get_address(self).address
 
-    def emit(self, subscription, subject, message, connection=None, silent=True, *args, **kwargs) -> int:
-        # recipient = subscription.subscriber.storage.get(fqn(self), None)
-        recipient = self.get_recipient_address(subscription)
+    def emit(self, address: str, subject, message, connection=None, *args, **kwargs) -> str:
         try:
             conn = connection or self._get_connection()
             url = reverse('channel-callback', args=[self.owner.pk])
@@ -193,14 +192,11 @@ class Viber(CoreDispatcher):
             conn.set_webhook(cb)
 
             text_message = TextMessage(text=message)
-            conn.send_messages(recipient, text_message)
-            self.logger.debug(f'{fqn(self)} sent to {recipient}')
-            return 1
+            conn.send_messages(address, text_message)
+            self.logger.debug(f'{fqn(self)} sent to {address}')
+            return address
         except Exception as e:
-            if silent:
-                self.logger.exception(e)
-            else:
-                raise
+            raise PluginSendError(e)
 
     def test_connection(self, raise_exception=False) -> bool:
         try:

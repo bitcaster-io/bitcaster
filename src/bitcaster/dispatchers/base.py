@@ -8,8 +8,8 @@ from sentry_sdk import capture_exception
 from bitcaster import get_full_version
 from bitcaster.configurable import ConfigurableMixin, get_full_config
 from bitcaster.exceptions import PluginValidationError
-from bitcaster.utils import fqn
 from bitcaster.utils.language import classproperty
+from bitcaster.utils.reflect import fqn
 
 from . import serializers
 
@@ -78,7 +78,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
         return self.current_user.assignments.get_address(self).address
 
     @abc.abstractmethod
-    def emit(self, subscription: object, subject: str, message: str,
+    def emit(self, address: str, subject: str, message: str,
              connection=None, silent=True, *args, **kwargs) -> str:
         """
 

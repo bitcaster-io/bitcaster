@@ -277,6 +277,12 @@ def monitor1(application1):
     return MonitorFactory(application=application1)
 
 
+@pytest.fixture
+def occurence1(db, event1):
+    from bitcaster.utils.tests.factories import OccurenceFactory
+    return OccurenceFactory(application=event1.application, event=event1)
+
+
 @pytest.fixture()
 def rf2():
     from django.test.client import RequestFactory

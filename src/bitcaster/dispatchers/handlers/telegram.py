@@ -12,8 +12,8 @@ from bitcaster.dispatchers.base import (CoreDispatcher, DispatcherOptions,
                                         MessageType, SubscriptionOptions,)
 from bitcaster.dispatchers.registry import dispatcher_registry
 from bitcaster.exceptions import PluginSendError
-from bitcaster.utils import fqn
 from bitcaster.utils.language import classproperty
+from bitcaster.utils.reflect import fqn
 
 logger = getLogger(__name__)
 
@@ -95,15 +95,17 @@ class Telegram(CoreDispatcher):
         base = 'https://api.telegram.org/bot' + self.config['bot_token']
         return base + '/%s?%s' % (method, urlencode(params))
 
-    def _get_chat_id_for_username(self, subscription):
-        if hasattr(subscription, 'subscriber'):
-            user = subscription.subscriber
-        elif hasattr(subscription, 'assignments'):
-            user = subscription
-        else:
-            raise ValueError
+    def _get_chat_id_for_username(self, address):
+        # if hasattr(subscription, 'subscriber'):
+        #     user = subscription.subscriber
+        # elif hasattr(subscription, 'assignments'):
+        #     user = subscription
+        # else:
+        #     raise ValueError
+        from bitcaster.models import User
+        user = User.objects.get(assignments__address__address=address)
         chat_id = user.storage.get(fqn(self), None)
-        username = self.get_recipient_address(subscription)
+        # username = self.get_recipient_address(subscription)
         if not chat_id:
             logger.info('No chat_id')
             url = self._get_url('getUpdates')
@@ -111,19 +113,19 @@ class Telegram(CoreDispatcher):
             response = conn.get(url)
             data = response.json()
             for update in data['result']:
-                if update['message']['from']['username'] == username[1:]:  # username starts with @
+                if update['message']['from']['username'] == address[1:]:  # address starts with @
                     chat_id = update['message']['from']['id']
                     user.storage[fqn(self)] = chat_id
                     user.save()
                     break
             else:
                 raise PluginSendError('Unable to get chat_id')
-        return (chat_id, username)
+        return (chat_id, address)
 
-    def emit(self, subscription, subject, message, *args, **kwargs):
+    def emit(self, address, subject, message, *args, **kwargs):
         try:
             # username = self.get_recipient_address(subscription)
-            chat_id, username = self._get_chat_id_for_username(subscription)
+            chat_id, username = self._get_chat_id_for_username(address)
             conn = self._get_connection()
             url = self._get_url('sendMessage', chat_id=chat_id,
                                 text=message)

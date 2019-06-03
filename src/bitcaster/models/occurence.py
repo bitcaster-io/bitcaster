@@ -1,22 +1,45 @@
 from django.db import models
 from django.utils import timezone
 
-from bitcaster.state import state
-# from .event import Event
-from bitcaster.tsdb.db import stats
-from bitcaster.utils.wsgi import get_client_ip
+from bitcaster.tasks.model import async
+
+
+class OccurenceManager(models.Manager):
+    def active(self):
+        return Occurence.objects.filter(expire__gt=timezone.now(),
+                                        status=Occurence.RUNNING)
+
+    def inactive(self):
+        return Occurence.objects.filter(expire__lt=timezone.now())
 
 
 class Occurence(models.Model):
+    RUNNING = 0
+    ABORTED = 1
+    EXPIRED = 2
+    PAUSED = 3
+    TERMINATED = 99
+    STATUSES = ((RUNNING, 'Running'),
+                (ABORTED, 'Aborted'),
+                (EXPIRED, 'Expired'),
+                (PAUSED, 'Paused'),
+                (TERMINATED, 'Terminated'),  # all data processed
+                )
     timestamp = models.DateTimeField(default=timezone.now)
     organization = models.ForeignKey('bitcaster.Organization',
+                                     blank=True, null=True,
                                      related_name='occurences',
                                      on_delete=models.CASCADE)
     application = models.ForeignKey('bitcaster.Application',
+                                    blank=True, null=True,
                                     related_name='occurences',
                                     on_delete=models.CASCADE)
     event = models.ForeignKey('bitcaster.Event',
                               on_delete=models.CASCADE)
+    expire = models.DateTimeField(blank=True, null=True)
+    status = models.IntegerField(choices=STATUSES,
+                                 default=RUNNING)
+
     origin = models.GenericIPAddressField(blank=True, null=True)
     token = models.CharField(max_length=64, blank=True, null=True)
     user = models.ForeignKey('bitcaster.User', on_delete=models.CASCADE,
@@ -26,22 +49,31 @@ class Occurence(models.Model):
     successes = models.IntegerField(default=0)
     failures = models.IntegerField(default=0)
 
+    # max_loops = models.IntegerField(default=1)
+    # loop = models.IntegerField(default=0)
+
+    objects = OccurenceManager()
+
     class Meta:
         app_label = 'bitcaster'
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def __str__(self):
+        return '#{} {}'.format(self.pk, self.timestamp.strftime('%d %b %Y'), self.event)
+
+    @async(quque='consolidate')
+    def consolidate(self):
         self.application = self.event.application
         self.organization = self.application.organization
-        super().save(force_insert, force_update, using, update_fields)
+        self.save()
+        return self
 
-    @classmethod
-    def log(self, event, **kwargs):
-        request = kwargs.pop('request', state.request)
-        kwargs.setdefault('application', event.application)
-        kwargs.setdefault('organization', event.application.organization)
-        kwargs.setdefault('origin', get_client_ip(request))
-
-        obj = Occurence(event=event, **kwargs)
-        obj.save()
-        stats.log_occurence(kwargs['organization'])
-        return obj
+    # @classmethod
+    # def log(cls, event, **kwargs):
+    #     now = timezone.now()
+    #     expire = now + datetime.timedelta(seconds=event.event_expiration)
+    #     obj = cls.objects.create(event=event,
+    #                              timestamp=now,
+    #                              expire=expire,
+    #                              **kwargs)
+    #     obj.consolidate()
+    #     return obj
