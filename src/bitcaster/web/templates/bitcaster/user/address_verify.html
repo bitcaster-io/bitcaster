@@ -40,8 +40,8 @@
 <div class="modal-body handler-usage">
 
     <div class=" row col-12">{{ usage|markdown }}</div>
-    {% if not object.channel.enabled %}
-        {% trans "Sorry, this channel is currently disabled. Please try later" %}
+    {% if not channel_enabled %}
+        {% trans "Warning: cannot send verification codes as channel is disabled. Ask your administrator to enable it first" %}
     {% elif handler.need_verification %}
         <div class=" row col-12">
             <div class="container-fluid p-3">
@@ -82,6 +82,7 @@
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Close" %}</button>
 </div>
+{% if channel_enabled %}
 <script>
     $(function () {
         $('#modalWindow').on('shown.bs.modal', function (e) {
@@ -184,3 +185,4 @@
     });
 
 </script>
+{% endif %}

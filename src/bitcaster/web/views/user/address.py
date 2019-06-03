@@ -75,7 +75,7 @@ class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
 
     def get(self, request, *args, **kwargs):
         if self.mode == 'form':
-            context = self.get_context_data(**kwargs)
+            context = self.get_context_data(channel_enabled=self.get_object().channel.enabled, **kwargs)
             return self.render_to_response(context)
         else:  # self.mode == 'resend'
             assignment = self.get_object()
