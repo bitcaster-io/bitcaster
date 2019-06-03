@@ -34,7 +34,7 @@ class EmailOptions(DispatcherOptions):
     sender = serializers.EmailField(required=True)
     timeout = serializers.IntegerField(default=60)
     backend = serializers.CharField(default='django.core.mail.backends.smtp.EmailBackend')
-    allow_attachments = serializers.BooleanField(required=False)
+    allow_attachments = serializers.BooleanField(required=False, default=False)
 
 
 @dispatcher_registry.register

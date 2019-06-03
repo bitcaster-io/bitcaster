@@ -48,7 +48,6 @@ class Skype(CoreDispatcher):
 
     def emit(self, address: str, subject: str, message: str,
              connection=None, *args, **kwargs) -> str:
-        address = 'unknown'
         try:
             logger.debug(f"Processing '{address}'")
             connection = connection or self._get_connection()

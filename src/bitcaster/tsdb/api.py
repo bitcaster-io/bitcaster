@@ -22,7 +22,7 @@ def log_new_occurence(occurence, *args, **kwargs):
 
 
 def log_occurence_error(event, *args, **kwargs):
-    pass
+    event.register_error('Cannot emit disabled event')
 
 
 def log_new_notifications(channel_pk, page_size, *args, **kwargs):

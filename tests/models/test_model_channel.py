@@ -105,8 +105,8 @@ def test_valid(channel1):
 def test_selectable(channel1, application1):
     assert Channel.objects.selectable(application1)
 
-
-@pytest.mark.django_db
-def test_register_error(channel1):
-    assert channel1.register_error('err1') == 1
-    assert channel1.register_error('err1') == 2
+#
+# @pytest.mark.django_db
+# def test_register_error(channel1):
+#     assert channel1.register_error('err1') == 1
+#     assert channel1.register_error('err1') == 2

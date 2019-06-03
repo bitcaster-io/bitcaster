@@ -378,6 +378,8 @@ class ChannelFactory(AutoRegisterModelFactory):
             kwargs['config'] = {'server': 'server',
                                 'backend': 'django.core.mail.backends.locmem.EmailBackend',
                                 'port': 9000,
+                                'username': 'username',
+                                'password': 'password',
                                 'sender': 'sender@sender.org'}
         channel = super()._get_or_create(model_class, *args, **kwargs)
 

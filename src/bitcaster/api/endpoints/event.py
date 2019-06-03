@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from bitcaster.api.filters import ApplicationFilterBackend
 from bitcaster.models import Occurence
 from bitcaster.tasks.event import trigger_event
-from bitcaster.tsdb.api import log_new_occurence, log_occurence_error
+from bitcaster.tsdb.api import log_error_event, log_new_occurence
 from bitcaster.utils.wsgi import get_client_ip
 
 from ...models.event import Event
@@ -43,8 +43,7 @@ class EventViewSet(BaseModelViewSet):
         try:
             event = self.get_object()
             if not event.enabled:
-                log_occurence_error(event)
-                event.register_error('Cannot emit disabled event')
+                log_error_event(event, 'Event disabled')
                 return Response({'error': 'Event disabled'}, status=400)
             occurence = Occurence.log(event=event)
             log_new_occurence(occurence)

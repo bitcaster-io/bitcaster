@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils import timezone
 
@@ -67,13 +69,13 @@ class Occurence(models.Model):
         self.save()
         return self
 
-    # @classmethod
-    # def log(cls, event, **kwargs):
-    #     now = timezone.now()
-    #     expire = now + datetime.timedelta(seconds=event.event_expiration)
-    #     obj = cls.objects.create(event=event,
-    #                              timestamp=now,
-    #                              expire=expire,
-    #                              **kwargs)
-    #     obj.consolidate()
-    #     return obj
+    @classmethod
+    def log(cls, event, **kwargs):
+        now = timezone.now()
+        expire = now + datetime.timedelta(seconds=event.event_expiration)
+        obj = cls.objects.create(event=event,
+                                 timestamp=now,
+                                 expire=expire,
+                                 **kwargs)
+        # obj.consolidate()
+        return obj
