@@ -6,7 +6,7 @@ import redis
 from cryptography.fernet import Fernet, InvalidToken
 from django.contrib.auth import get_user_model
 from django.core.cache import caches
-from django.core.checks import Error, register
+from django.core.checks import Error, Warning, register
 from django.db import OperationalError, ProgrammingError, connection
 
 from bitcaster.config import settings
@@ -38,21 +38,26 @@ def check_settings(*args, **kwargs):
 def check_channel_configuration(*args, **kwargs):
     errors = []
     invalid = []
-    for record in Channel.objects.filter(enabled=True).only('handler'):
-        try:
-            record.handler.validate_configuration(record.handler.config, True)
-        except PluginValidationError:
-            invalid.append(record.pk)
-            errors.append(
-                Error(
-                    'Channel %s has been disabled' % record,
-                    hint='check channel configuration',
-                    obj=record.pk,
-                    id='bitcaster.E001',
+    try:
+        for record in Channel.objects.filter(enabled=True).only('handler'):
+            try:
+                record.handler.validate_configuration(record.handler.config, True)
+            except PluginValidationError:
+                invalid.append(record.pk)
+                errors.append(
+                    Error(
+                        'Channel %s has been disabled' % record,
+                        hint='check channel configuration',
+                        obj=record.pk,
+                        id='bitcaster.E001',
+                    )
                 )
-            )
+    except ProgrammingError as e:
+        errors.append(Warning(
+            str(e),
+        ))
 
-    # Channel.objects.filter(id__in=invalid).update(enabled=False)
+        # Channel.objects.filter(id__in=invalid).update(enabled=False)
     return errors
 
 
