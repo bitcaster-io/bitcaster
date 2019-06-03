@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.core.exceptions import ImproperlyConfigured
 from django.core.signals import got_request_exception
 from django.db import ProgrammingError
 
@@ -23,7 +24,7 @@ class Config(AppConfig):
         from bitcaster.models import Organization
         try:
             state.data['organization'] = Organization.objects.first()
-        except ProgrammingError:
+        except (ProgrammingError, ImproperlyConfigured):
             pass
 
         got_request_exception.connect(capture_exception)

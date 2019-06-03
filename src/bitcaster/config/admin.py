@@ -14,18 +14,6 @@ from bitcaster import get_full_version
 cache = caches['default']
 
 DEFAULT_INDEX_SECTIONS = {
-    'Administration': ['unicef_rest_framework', 'constance',
-                       'dbtemplates', 'subscriptions', 'etl'],
-    'Data': ['data', 'etools'],
-    'Security': ['auth',
-                 'unicef_security.User',
-                 'security',
-                 'unicef_rest_framework.GroupAccessControl',
-                 'unicef_rest_framework.UserAccessControl',
-                 ],
-    'Logs': ['tracking', 'django_db_logging', 'crashlog', ],
-    'System': ['redisboard', 'django_celery_beat', 'post_office',
-               'unicef_rest_framework.PeriodicTask'],
     'Other': [],
     '_hidden_': ['sites', 'unicef_rest_framework.Application',
                  'oauth2_provider', 'social_django',
