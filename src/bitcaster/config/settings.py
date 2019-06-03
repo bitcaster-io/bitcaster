@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 
     # Admin
     'django.contrib.admin',
+    # 'bitcaster.config.admin.AdminConfig',
 
     'bitcaster.web',
     'bitcaster.apps.Config',
@@ -175,7 +176,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
         'DIRS': [
-            str(PACKAGE_DIR / 'templates'),
+            str(PACKAGE_DIR / 'web/templates'),
         ],
         'OPTIONS': {
             # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
