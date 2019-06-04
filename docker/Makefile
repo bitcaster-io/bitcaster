@@ -4,7 +4,7 @@
 DEVELOP?=0
 DOCKER_PASS?=
 DOCKER_USER?=
-TARGET?=0.41.0a
+TARGET?=0.42.0a
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
@@ -32,7 +32,7 @@ build-base:
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
 			--build-arg DEVELOP=${DEVELOP} \
-			-t ${DOCKER_IMAGE_NAME}-0.2:base \
+			-t ${DOCKER_IMAGE_NAME}-0.3:base \
 			-f docker/Dockerfile.base .
 	pass docker/saxix | docker login -u saxix --password-stdin
 	docker push ${DOCKER_IMAGE_NAME}-0.2:base
