@@ -3,7 +3,6 @@ import logging
 from django import forms
 from django.utils.functional import cached_property
 
-from bitcaster.dispatchers import ConsoleDispatcher
 from bitcaster.models import Channel
 
 logger = logging.getLogger(__name__)
@@ -29,10 +28,7 @@ class ChannelUpdateConfigurationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.serializer_class = kwargs.pop('serializer', None)
         super().__init__(*args, **kwargs)
-
-        if self.instance:
-            if self.instance.handler is None:
-                self.instance.handler = ConsoleDispatcher(self.instance)
+        if self.instance and self.instance.handler:
             self.serializer_class = self.instance.handler.options_class
 
     @cached_property
