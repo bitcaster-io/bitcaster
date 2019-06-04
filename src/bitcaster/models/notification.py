@@ -24,14 +24,18 @@ class Notification(models.Model):
     RETRY = 20  # Sent failed retrying
     REMIND = 21  # Reminder scheduled
 
+    WAIT = 88
     EXPIRED = 99
+    CONFIRMED = 101  # confirmation received / or single successful sent with no confirmations
     COMPLETE = 100  # confirmation received / or single successful sent with no confirmations
 
     STATUSES = ((PENDING, _('Pending')),
                 (RETRY, _('Retry')),
                 (REMIND, _('Remind')),
+                (WAIT, _('Waiting confirmation')),
                 (EXPIRED, _('Expired')),
                 (COMPLETE, _('Complete')),
+                (CONFIRMED, _('Confirmed')),
                 )
     MESSAGE_NONE = 0
     MESSAGE_TPL = 1
@@ -84,7 +88,7 @@ class Notification(models.Model):
                                   on_delete=models.CASCADE)
     status = models.IntegerField(choices=STATUSES, default=PENDING, db_index=True)
     retry_scheduled = models.BooleanField(default=False)
-    # expired = models.BooleanField(default=False)
+    next_sent = models.DateTimeField(blank=True, null=True)
 
     need_confirmation = models.BooleanField(default=False)
     confirmed = models.DateTimeField(default=None, blank=True, null=True)

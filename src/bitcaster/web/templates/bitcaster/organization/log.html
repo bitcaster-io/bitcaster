@@ -28,22 +28,22 @@
         <tbody>
         <tr>
             <th>
-                Date
+                {% trans "Date" %}
             </th>
             <th>
-                Application
+                {% trans "Application/Event" %}
             </th>
             <th>
-                Event
+                {% trans "Subscriber" %}
             </th>
             <th>
-                Subscriber
+                {% trans "Channel" %}
             </th>
             <th>
-                Channel
+                {% trans "Confirmed" %}
             </th>
             <th>
-                Success
+                {% trans "Status" %}
             </th>
         </tr>
         {% for entry in object_list %}
@@ -52,9 +52,7 @@
                     {{ entry.timestamp }}
                 </td>
                 <td>
-                    {{ entry.application }}
-                </td>
-                <td>
+                    {{ entry.application }}<br/>
                     {{ entry.event }}
                 </td>
                 <td>
@@ -64,7 +62,18 @@
                     {{ entry.channel }}
                 </td>
                 <td>
-                    {{ entry.success }}
+                    {% if entry.need_confirmation %}
+                        {{ entry.confirmed|default_if_none:"No" }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    {{ entry.get_status_display }}
+                    {% if entry.status < 100 %}
+                    ({{ entry.reminders }}/{{ entry.max_reminders }})
+                    {{ entry.next_sent|date:"H:i:s" }}
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

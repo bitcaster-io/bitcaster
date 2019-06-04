@@ -2,12 +2,12 @@ import logging
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.forms import BaseFormSet, BaseInlineFormSet
+from django.forms import BaseFormSet
 from django.utils.translation import ungettext
 from rest_framework import serializers
 
 from bitcaster.configurable import get_full_config
-from bitcaster.models import (Channel, Event, Organization,
+from bitcaster.models import (Channel, Organization,
                               OrganizationMember, Subscription, User,)
 from bitcaster.state import state
 
@@ -131,15 +131,15 @@ class EventSubscriptionForm(forms.ModelForm):
 
 SubscriptionForm = EventSubscriptionForm
 
-
-class SubscriptionBaseFormSet(BaseInlineFormSet):
-
-    def __init__(self, *args, **kwargs):
-        self.event = kwargs.pop('event')
-        self.requestor = kwargs.pop('requestor')
-        super().__init__(*args, **kwargs)
-        self.form_kwargs['event'] = self.event
-        self.form_kwargs['requestor'] = self.requestor
+#
+# class SubscriptionBaseFormSet(BaseInlineFormSet):
+#
+#     def __init__(self, *args, **kwargs):
+#         self.event = kwargs.pop('event')
+#         self.requestor = kwargs.pop('requestor')
+#         super().__init__(*args, **kwargs)
+#         self.form_kwargs['event'] = self.event
+#         self.form_kwargs['requestor'] = self.requestor
 
 
 class InviteForm(forms.ModelForm):
@@ -166,12 +166,12 @@ class InviteBaseFormSet(BaseFormSet):
         self.form_kwargs['requestor'] = self.requestor
 
 
-SubscriptionFormSet = forms.inlineformset_factory(Event,
-                                                  Subscription,
-                                                  form=EventSubscriptionForm,
-                                                  formset=SubscriptionBaseFormSet,
-                                                  min_num=1,
-                                                  extra=0)
+# SubscriptionFormSet = forms.inlineformset_factory(Event,
+#                                                   Subscription,
+#                                                   form=EventSubscriptionForm,
+#                                                   formset=SubscriptionBaseFormSet,
+#                                                   min_num=1,
+#                                                   extra=0)
 InviteFormSet = forms.inlineformset_factory(Organization,
                                             OrganizationMember,
                                             form=InviteForm,

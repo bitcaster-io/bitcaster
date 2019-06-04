@@ -35,7 +35,7 @@ class Address(ReversionMixin, models.Model):
         app_label = 'bitcaster'
 
     def __str__(self):
-        return self.address
+        return self.label
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

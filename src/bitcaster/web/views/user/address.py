@@ -84,8 +84,9 @@ class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
                 return JsonResponse({'status': 'sent',
                                      'recipient': recipient})
             except Exception as e:
+                msg = 'Error sendig code to %s: %s' % (assignment.address.address, str(e))
                 return JsonResponse({'status': 'error',
-                                     'message': str(e)}, status=400)
+                                     'message': msg}, status=400)
 
     def post(self, request, *args, **kwargs):
         code = request.POST.get('code')

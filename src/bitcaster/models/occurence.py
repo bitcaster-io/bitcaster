@@ -3,8 +3,6 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
-from bitcaster.tasks.model import async
-
 
 class OccurenceManager(models.Manager):
     def active(self):
@@ -62,7 +60,7 @@ class Occurence(models.Model):
     def __str__(self):
         return '#{} {}'.format(self.pk, self.timestamp.strftime('%d %b %Y'), self.event)
 
-    @async(quque='consolidate')
+    # @async(quque='consolidate')
     def consolidate(self):
         self.application = self.event.application
         self.organization = self.application.organization

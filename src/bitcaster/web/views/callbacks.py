@@ -9,6 +9,7 @@ from django.views.decorators.http import require_http_methods
 
 from bitcaster.models import Notification, Occurence, Subscription, User
 from bitcaster.otp import totp
+from bitcaster.tsdb.api import log_confirmation_notification
 from bitcaster.utils.email_verification import clear_new_email_address_request
 
 logger = logging.getLogger(__name__)
@@ -55,13 +56,26 @@ def confirmation(request, event, subscription, channel, occurence, code):
                                             event_id=event,
                                             channel_id=channel)
     Occurence.objects.get(pk=occurence)
-
     if code == subscription.get_code():
+        # set all notifications as completed
         ok = Notification.objects.filter(occurence_id=occurence,
+                                         subscription__subscriber=subscription.subscriber,
                                          event_id=event,
-                                         expired=False,
+                                         status__in=[Notification.PENDING,
+                                                     Notification.WAIT,
+                                                     Notification.REMIND,
+                                                     Notification.REMIND],
                                          confirmed__isnull=True,
-                                         need_confirmation=True).update(confirmed=timezone.now())
+                                         need_confirmation=True).update(confirmed=timezone.now(),
+                                                                        status=Notification.COMPLETE)
+        # set selected notification as confirmed
+        Notification.objects.filter(occurence_id=occurence,
+                                    subscription=subscription,
+                                    event_id=event,
+                                    need_confirmation=True).update(status=Notification.CONFIRMED)
+
+        log_confirmation_notification(subscription, ok)
+
         return HttpResponse(f'Confirmed {ok}')
     else:
         return HttpResponse(f'Error {code} {subscription.get_code()}', status=400)

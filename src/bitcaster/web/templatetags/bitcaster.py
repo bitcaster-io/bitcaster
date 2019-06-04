@@ -108,6 +108,8 @@ def channel_submit_row(context):
 
 @register.filter()
 def dispatcher_enabled(dispatcher):
+    if dispatcher is None:
+        return True
     try:
         return DispatcherMetaData.objects.get(handler=dispatcher).enabled
     except DispatcherMetaData.DoesNotExist:

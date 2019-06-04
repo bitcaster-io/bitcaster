@@ -17,9 +17,14 @@ class OrganizationNotificationLogView(FilterQuerysetMixin,
     filter_fieldmap = {'channel': 'channel__name__iexact',
                        'application': 'application__name__istartswith',
                        'event': 'event__name__istartswith',
+                       'status': '_filter_status',
                        'user': 'subscription__subscriber__email__istartswith',
                        'subscriber': 'subscription__subscriber__email__istartswith',
                        }
+
+    def _filter_status(self, parser, keyword, value):
+        code = [c[0] for c in Notification.STATUSES if c[1].lower() == value]
+        parser.kwargs[keyword] = code[0]
 
     def get_queryset(self):
         qs = Notification.objects.filter(application__organization=self.selected_organization)
@@ -29,4 +34,5 @@ class OrganizationNotificationLogView(FilterQuerysetMixin,
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['filters'] = get_query_string(self.request, remove=['page'])
+        data['Notification'] = Notification
         return data

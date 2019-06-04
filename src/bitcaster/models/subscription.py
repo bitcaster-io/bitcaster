@@ -1,6 +1,7 @@
 import logging
 from _md5 import md5
 
+from crashlog.middleware import process_exception
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -47,6 +48,7 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
                               related_name='subscriptions')
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE,
                                 related_name='linked_subscriptions')
+    address = models.CharField(max_length=255, blank=True, null=True)
     enabled = models.BooleanField(default=True)
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=STATUSES,
@@ -72,7 +74,11 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
 
     @cached_property
     def recipient(self):
-        return self.channel.handler.get_recipient_address(self)
+        try:
+            return self.channel.handler.get_recipient_address(self)
+        except AttributeError as e:
+            process_exception(e)
+            return None
 
     # @property
     # def errors(self):

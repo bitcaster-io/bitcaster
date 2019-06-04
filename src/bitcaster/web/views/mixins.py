@@ -1,5 +1,6 @@
 import logging
 
+from crashlog.middleware import process_exception
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
@@ -114,7 +115,7 @@ class FilterQuerysetMixin:
     filter_url_kwarg = 'filter'
 
     def get_parser(self):
-        return FilterParser(self.filter_fieldmap)
+        return FilterParser(self, self.filter_fieldmap)
 
     def filter_queryset(self, queryset):
         try:
@@ -122,7 +123,10 @@ class FilterQuerysetMixin:
             args, kw = self.get_parser().parse(target)
             if args:
                 queryset = queryset.filter(args, **kw)
+            else:
+                queryset = queryset.filter(**kw)
         except Exception as e:
+            process_exception(e)
             with push_scope() as scope:
                 scope.set_tag('view', fqn(self))
                 capture_exception()

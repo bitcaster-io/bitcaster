@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from strategy_field.utils import fqn
 
-from bitcaster.models import Event
+from bitcaster.models import Channel, DispatcherMetaData, Event
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +26,7 @@ class EventForm(forms.ModelForm):
     allow_attachments = forms.BooleanField(required=False)
     description = forms.CharField(required=False,
                                   widget=forms.Textarea(attrs={'rows': '2'}))
+    channels = forms.ModelMultipleChoiceField(Channel.objects.none())
 
     class Meta:
         model = Event
@@ -38,6 +39,11 @@ class EventForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)
         super().__init__(*args, **kwargs)
+        enabled_dispatcher = DispatcherMetaData.objects.filter(enabled=True).values_list('handler',
+                                                                                         flat=True)
+        # enabled_dispatcher = []
+        self.fields['channels'].queryset = Channel.objects.selectable(self.application,
+                                                                      handler__in=enabled_dispatcher)
 
     def _get_validation_exclusions(self):
         exclude = super()._get_validation_exclusions()
@@ -62,6 +68,7 @@ class EventForm(forms.ModelForm):
     def save(self, commit=True):
         if self.application:
             self.instance.application = self.application
+        self.instance.need_confirmation = bool(self.cleaned_data['need_confirmation'])
         return super().save(commit)
 
 

@@ -4,6 +4,7 @@ from datetime import timedelta
 from celery import chord
 from celery.task import periodic_task
 from crashlog.models import Error
+from django.core.cache import caches
 from django.utils import timezone
 
 from bitcaster.celery import app
@@ -11,6 +12,8 @@ from bitcaster.models.error import ErrorEntry
 from bitcaster.models.notification import Notification
 from bitcaster.models.occurence import Occurence
 from bitcaster.tsdb.api import stats
+
+cache = caches['lock']
 
 
 @periodic_task(run_every=timedelta(minutes=1))
@@ -46,14 +49,18 @@ def set_occurences_status():
 
     # updates queue counters
     pending = Occurence.objects.exclude(status__in=[Notification.EXPIRED,
+                                                    Notification.CONFIRMED,
                                                     Notification.COMPLETE]).count()
     stats.set('occurence', pending)
 
     pending = Notification.objects.filter(occurence__expire__gt=timezone.now(),
                                           status__in=[Notification.PENDING,
-                                                      Notification.REMIND,
                                                       Notification.RETRY]).count()
     stats.set('notification', pending)
+
+    retry = Notification.objects.filter(occurence__expire__gt=timezone.now(),
+                                        status=Notification.REMIND).count()
+    stats.set('notification:retry', retry)
 
 
 @periodic_task(run_every=timedelta(minutes=1))
@@ -75,8 +82,12 @@ def consolidate():
 
 
 @app.task(bind=True)
-def callback(self, *args, **kwargs):
-    pass
+def callback(self, occurence_pk, result, *args, **kwargs):
+    # TODO: remove me
+    print(111, 'periodic.py:86', 2222, occurence_pk, result, *args, **kwargs)
+    lock = cache.lock('occurence:%s' % occurence_pk)
+    # TODO: remove me
+    print(111, 'periodic.py:90', lock.name, lock.locked())
 
 
 @periodic_task(bind=True, run_every=timedelta(minutes=1))
@@ -86,19 +97,27 @@ def process_notifications(self):
 
     for occurence in Occurence.objects.active():
         chord_pages = []
+        lock = cache.lock('occurence:%s' % occurence.pk)
+        if lock.acquire(False):
+            print(f'Processing occurence {occurence}')
 
-        for channel in occurence.event.channels.all():
-            partition = channel.dispatch_page_size
-            page = []
-            for notification in Notification.objects.pending().filter(channel=channel,
-                                                                      occurence=occurence):
-                page.append(notification.pk)
-                if len(page) == partition:
+            for channel in occurence.event.channels.all():
+                partition = channel.dispatch_page_size
+                page = []
+                filters = dict(channel=channel,
+                               occurence=occurence,
+                               next_sent__lt=timezone.now())
+                for notification in Notification.objects.pending().filter(**filters):
+                    page.append(notification.pk)
+                    if len(page) == partition:
+                        chord_pages.append(send_page.s(channel.pk, occurence.pk, page))
+                        page = []
+
+                if page:
                     chord_pages.append(send_page.s(channel.pk, occurence.pk, page))
-                    page = []
+            lock.release()
+        else:
+            print(f'Cannot process {occurence}. Lock found')
 
-            if page:
-                chord_pages.append(send_page.s(channel.pk, occurence.pk, page))
-
-            if chord_pages:
-                chord(chord_pages)(callback.s())
+        if chord_pages:
+            chord(chord_pages)(callback.s(occurence.pk))

@@ -10,7 +10,7 @@ from .site import site
 class NotificationAdmin(ExtraUrlMixin, admin.ModelAdmin):
     date_hierarchy = 'timestamp'
     list_display = ('timestamp', 'occurence', 'event', 'channel', 'address', 'status',
-                    'need_confirmation', 'send')
+                    'need_confirmation', 'send', 'next_sent')
     list_filter = ('status', 'application', 'channel')
 
     @link()

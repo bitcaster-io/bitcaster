@@ -1,3 +1,5 @@
+import datetime
+
 from django.conf import settings
 from redis import StrictRedis
 
@@ -32,8 +34,24 @@ def log_new_notifications(channel_pk, page_size, *args, **kwargs):
 def log_sent_notification(notification, *args, **kwargs):
     stats.rm('notification', 1)
     stats.increase('notification')
-    notification.status = Notification.COMPLETE
+    if notification.need_confirmation:
+        if (notification.reminders < notification.max_reminders):
+            interval = notification.event.reminder_interval
+            notification.reminders += 1
+            notification.next_sent = notification.timestamp + datetime.timedelta(
+                minutes=interval * notification.reminders)
+            notification.status = Notification.REMIND
+        elif (notification.reminders >= notification.max_reminders):
+            notification.status = Notification.COMPLETE
+        else:
+            notification.status = Notification.WAIT
+    else:
+        notification.status = Notification.COMPLETE
     notification.save()
+
+
+def log_confirmation_notification(subscription, count, *args, **kwargs):
+    stats.rm('notification', count)
 
 
 def log_error_event(event, message='Error', *args, **kwargs):

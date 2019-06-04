@@ -5,14 +5,18 @@ from django.db.models import Q
 
 
 class FilterParser:
-    def __init__(self, mapping):
+    def __init__(self, view, mapping):
+        self.view = view
         self.mapping = mapping
 
     def _parse_field(self, token):
         try:
             kw, value = token.split(':')
             rule = self.mapping.get(kw)
-            if isinstance(rule, str):
+            handler = getattr(self.view, rule, None)
+            if callable(handler):
+                handler(self, kw, value)
+            elif isinstance(rule, str):
                 self.kwargs[rule] = value.strip()
             elif callable(rule):
                 rule(self)
@@ -21,7 +25,7 @@ class FilterParser:
 
     def parse(self, string: str):
         if not string:
-            return None, None
+            return [], {}
         self.args = [Q()]
         self.kwargs = {}
         # _aa = [Q()]

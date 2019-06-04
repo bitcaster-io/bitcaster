@@ -4,23 +4,12 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from ..models import (Address, AddressAssignment, ApiAuthToken,
-                      ApplicationTriggerKey, User,)
+from ..models import ApiAuthToken, ApplicationTriggerKey, User
 from .forms import UserCreationForm
 from .inlines import ApiTokenInline
 from .site import site
 
 logger = logging.getLogger(__name__)
-
-
-@admin.register(Address, site=site)
-class AddressAdmin(admin.ModelAdmin):
-    list_display = ('user', 'label', 'address')
-
-
-@admin.register(AddressAssignment, site=site)
-class AddressAssignmentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'address', 'channel')
 
 
 @admin.register(User, site=site)

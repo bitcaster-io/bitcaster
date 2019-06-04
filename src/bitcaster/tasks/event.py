@@ -57,7 +57,6 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
             log_error_channel(channel, str(e))
             process_exception(e)
             logger.exception(e)
-    return occurence
 
 
 @app.task()
@@ -87,7 +86,7 @@ def create_notifications_for_channel(channel_pk, event_pk, occurence_pk, context
         raise
 
     try:
-        partition = channel.dispatch_page_size
+        partition = 1000
         page = []
         for subscription in event.subscriptions.valid(channel=channel):
             logger.debug(f'Processing {subscription}')
@@ -122,6 +121,7 @@ def create_notifications_for_channel(channel_pk, event_pk, occurence_pk, context
                                    'reminders': 0,
                                    'subscription_id': subscription.pk,
                                    'address': address,
+                                   'next_sent': timezone.now(),
                                    'data': {'subject': subject,
                                             'message': message}
                                    }
@@ -143,6 +143,8 @@ def create_notifications_for_channel(channel_pk, event_pk, occurence_pk, context
         process_exception(e)
         logger.exception(e)
         raise
+    from .periodic import process_notifications
+    process_notifications.delay()
     return True
 
 
@@ -150,16 +152,25 @@ def create_notifications_for_channel(channel_pk, event_pk, occurence_pk, context
 def send_page(self, channel_pk: int, occurence_pk: int, page: list):
     from bitcaster.models import Channel, Notification
     channel = Channel.objects.get(pk=channel_pk)
-    conn = channel.handler._get_connection()
+    handler = channel.handler
+    conn = handler._get_connection()
     for notification_id in page:
         try:
             notification = Notification.objects.pending(occurence=occurence_pk).get(id=notification_id)
         except Notification.DoesNotExist:
             continue
+        subject = notification.data['subject']
+        message = notification.data['message']
+        if notification.reminders > 0:
+            if handler.message_class.has_subject:
+                subject = _('%s - Reminder #%d') % (subject, notification.reminders)
+            else:
+                message += _('%s\n---\nReminder #%d') % (message, notification.reminders)
+
         try:
             channel.handler.emit(notification.address,
-                                 notification.data['subject'],
-                                 notification.data['message'],
+                                 subject,
+                                 message,
                                  connection=conn)
             log_sent_notification(notification)
         except Exception as e:

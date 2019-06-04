@@ -81,6 +81,7 @@ qrcode = "*"
 viberbot = "*"
 redis-timeseries = "*"
 celery-once = "*"
+slackclient = "*"
 
 [dev-packages]
 bumpversion = "*"

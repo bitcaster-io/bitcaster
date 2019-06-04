@@ -6,7 +6,8 @@ from .gmail import Gmail
 from .hangout import Hangout
 from .plivo import Plivo
 from .skype import Skype
-from .slack import SlackWebhook
+from .slack import Slack
+from .slack_webhook import SlackWebhook
 from .system_email import SystemEmail
 from .telegram import Telegram
 from .twilio import Twilio

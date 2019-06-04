@@ -21,7 +21,11 @@ def resource(path):
 
 # @cache_page(60 * 60 * 24, key_prefix=bitcaster.get_full_version())
 def plugin_icon(request, fqn):
-    h = import_by_name(fqn)
+    try:
+        h = import_by_name(fqn)
+    except (ImportError, AttributeError, ValueError):
+        return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))
+
     if h.icon and h.icon.startswith('/'):
         return HttpResponseRedirect(static(h.icon))
     elif h.icon:
@@ -33,5 +37,5 @@ def plugin_icon(request, fqn):
         image = icon.read_bytes()
     except (Exception, FileNotFoundError, TypeError):
         return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))
+
     return HttpResponse(image, content_type='image/png')
-    # return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))

@@ -55,7 +55,7 @@ def aurl(name, *args, **kwargs):
 #     if a.exists():
 #         return settings.STATIC_URL + f'bitcaster/images/icons/{name.lower()}.png'
 #     return '/static/bitcaster/images/plugin.png'
-#
+# #
 #
 # @lru_cache(100)
 # @register.simple_tag
