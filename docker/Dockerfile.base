@@ -31,7 +31,8 @@ RUN apk add --no-cache --virtual .run-deps \
         libpq \
         libxslt \
         libzmq \
-        jpeg
+        jpeg \
+        zlib
 
 
 RUN mkdir -p /code
