@@ -41,8 +41,7 @@ class Slack(CoreDispatcher):
         return 'Slack'
 
     def _get_connection(self):
-        # return WebClient(token=self.config['api_token'])
-        return WebClient(token='xoxb-322216249634-656690363510-G7zgunjy2xsNaILog8KvzbAo')
+        return WebClient(token=self.config['api_token'])
 
     def emit(self, address, subject, message, connection=None, *args, **kwargs):
         try:
