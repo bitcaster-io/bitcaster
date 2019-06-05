@@ -1,7 +1,7 @@
 import imaplib
 import logging
 import re
-from email import message_from_string
+from email import message_from_bytes
 
 from crashlog.middleware import process_exception
 from django.utils.functional import cached_property
@@ -25,9 +25,17 @@ def parse_uid(data):
 
 class EmailMessage:
     def __init__(self, email):
+        # for e in ['utf-8', 'windows-1252']:
+        #     try:
+        #         raw_email_string = email.decode(e)
+        #         break
+        #     except UnicodeDecodeError:
+        #         pass
+
         self.raw_email = email
-        raw_email_string = email.decode('utf-8')
-        self.email_message = message_from_string(raw_email_string)
+        # raw_email_string = email.decode('utf-8')
+        # self.email_message = message_from_string(raw_email_string)
+        self.email_message = message_from_bytes(email)
 
     @property
     def subject(self):
@@ -35,7 +43,7 @@ class EmailMessage:
 
     @property
     def sender(self):
-        return self.email_message.get('sender')
+        return self.email_message.get('from')
 
     @property
     def recipient(self):
@@ -109,9 +117,16 @@ class EmailAgent(Agent):  # pragma: no cover
         return Event.objects.get(pk=self.config['event'])
 
     def filter(self, message: EmailMessage):
-        if self.subject_regex.match(message.subject):
-            return True
-        return False
+        if self.subject_regex and not self.subject_regex.match(message.subject):
+            return False
+        if self.sender_regex and not self.sender_regex.match(message.sender):
+            return False
+        if self.body_regex and not self.body_regex.match(message.text.decode()):
+            return False
+        if self.recipient_regex and not self.recipient_regex.match(message.recipient):
+            return False
+
+        return True
 
     def trigger(self, payload=None):
         from bitcaster.models.occurence import Occurence
@@ -172,6 +187,7 @@ class EmailAgent(Agent):  # pragma: no cover
         self.subject_regex = re.compile(self.config['subject_regex'])
         self.sender_regex = re.compile(self.config['sender_regex'])
         self.body_regex = re.compile(self.config['body_regex'])
+        self.recipient_regex = re.compile(self.config['to_regex'])
         ret = 0
         conn = self._get_connection()
         conn.select(self.config['folder'])
