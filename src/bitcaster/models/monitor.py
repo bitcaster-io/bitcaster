@@ -8,10 +8,8 @@ from strategy_field.utils import fqn
 
 from bitcaster.framework.db.fields import AgentField, EncryptedJSONField
 
-from .application import Application
 from .base import AbstractModel
 from .mixins import ReverseWrapperMixin
-from .organization import Organization
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +30,12 @@ class MonitorQuerySet(models.QuerySet):
 
 class Monitor(ReverseWrapperMixin, AbstractModel):
     name = models.CharField(max_length=255)
-    organization = models.ForeignKey(Organization,
+    organization = models.ForeignKey('bitcaster.Organization',
                                      null=True,
                                      blank=True,
                                      related_name='monitors',
                                      on_delete=models.CASCADE)
-    application = models.ForeignKey(Application,
+    application = models.ForeignKey('bitcaster.Application',
                                     null=True,
                                     blank=True,
                                     related_name='monitors',

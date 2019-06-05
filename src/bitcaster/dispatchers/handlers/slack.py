@@ -32,7 +32,10 @@ class Slack(CoreDispatcher):
     message_class = SlackMessage
     subscription_class = SlackSubscriptionOptions
     icon = 'slack'
-    __help__ = """To use this plugin you need to create a BOT application in your workspace
+    __help__ = """To use this plugin you need to create a BOT application in your workspace.
+ - Build or edit your app at [[https://api.slack.com/apps]]
+ - Add a `Bot User` to your app
+ - Add `chat:write:bot` permission scope
 """
     __core__ = True
 

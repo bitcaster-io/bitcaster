@@ -72,6 +72,7 @@ class ApplicationMonitorTest(MonitorMixin, SingleObjectMixin, MessageUserMixin, 
         self.object = self.get_object()
         try:
             self.object.handler.test()
+            self.message_user('Success', messages.SUCCESS)
         except Exception as e:
             self.message_user(str(e), messages.ERROR)
         return super().get(request, *args, **kwargs)
@@ -79,6 +80,7 @@ class ApplicationMonitorTest(MonitorMixin, SingleObjectMixin, MessageUserMixin, 
 
 class ApplicationMonitorCreate(MonitorMixin, MessageUserMixin, SessionWizardView):
     permissions = ['manage_monitor']
+    title = _('Create Monitor')
 
     TEMPLATES = {'a': 'bitcaster/application/monitors/create_wizard_1.html',
                  'b': 'bitcaster/application/monitors/create_wizard_2.html',

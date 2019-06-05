@@ -91,6 +91,13 @@ def callback(self, occurence_pk, result, *args, **kwargs):
 
 
 @periodic_task(bind=True, run_every=timedelta(minutes=1))
+def check_monitors(self):
+    from .monitor import check_monitor, Monitor
+    for monitor in Monitor.objects.filter(enabled=True):
+        check_monitor.delay(monitor.pk)
+
+
+@periodic_task(bind=True, run_every=timedelta(minutes=1))
 def process_notifications(self):
     from bitcaster.models import Occurence, Notification
     from .event import send_page

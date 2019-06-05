@@ -28,13 +28,19 @@ class ErrorEntryManager(models.Manager):
 
 class ErrorEntry(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
-    object_id = models.PositiveIntegerField(null=True, blank=True)
-    target = GenericForeignKey('content_type', 'object_id')
+
+    actor_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    actor_object_id = models.PositiveIntegerField(null=True, blank=True)
+    actor = GenericForeignKey('actor_content_type', 'actor_object_id')
+
+    # target_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    # target_object_id = models.PositiveIntegerField(null=True, blank=True)
+    # target = GenericForeignKey('target_content_type', 'target_object_id')
+
     data = JSONField(blank=True, null=True)
     message = models.TextField(blank=True, null=True)
 
-    target_label = models.CharField(max_length=300, null=True, blank=True)
+    actor_label = models.CharField(max_length=300, null=True, blank=True)
     organization = models.ForeignKey('bitcaster.Organization',
                                      blank=True, null=True,
                                      related_name='errors',
@@ -49,13 +55,14 @@ class ErrorEntry(models.Model):
     class Meta:
         get_latest_by = 'timestamp'
         ordering = ('timestamp',)
+        app_label = 'bitcaster'
 
     @async(quque='consolidate')
     def consolidate(self):
-        if hasattr(self.target, 'application'):
-            self.application = self.target.application
-        elif hasattr(self.target, 'event'):
-            self.application = self.target.event.application
+        if hasattr(self.actor, 'application'):
+            self.application = self.actor.application
+        elif hasattr(self.actor, 'event'):
+            self.application = self.actor.event.application
 
         if self.application:
             self.organization = self.application.organization

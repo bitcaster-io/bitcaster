@@ -45,8 +45,11 @@ class Agent(ConfigurableMixin, metaclass=abc.ABCMeta):
     def fqn(cls):
         return fqn(cls)
 
-    def poll(self):
+    def poll(self, trigger=True):
         pass
 
     def notify(self):
         pass
+
+    def test(self):
+        self.poll(trigger=False)

@@ -1,1 +1,1 @@
-from . import event, mail, periodic
+from . import event, mail, monitor, periodic

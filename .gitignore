@@ -6,7 +6,9 @@
 *.mo
 bitcaster.egg-info
 /bitcaster.json
-*.pyc
+*e.pyc
+celery.pid
+celerybeat-schedule.*
 !.tx
 !.dockerignore
 !.editorconfig

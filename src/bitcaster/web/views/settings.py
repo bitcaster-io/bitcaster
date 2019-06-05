@@ -238,7 +238,7 @@ class SettingsBackupRestore(SettingsTemplateMixin):
                 context['json'] = mark_safe(highlight(json_str, JsonLexer(), formatter))
             elif 'delete' in request.GET:
                 os.unlink(dest)
-                return HttpResponseRedirectToReferrer()
+                return HttpResponseRedirectToReferrer(request)
             elif 'dn' in request.GET:
                 with open(dest, 'r'):
                     from django.utils.encoding import smart_str

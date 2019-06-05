@@ -97,6 +97,11 @@ class AuditLogEntry(models.Model):
                                                    target=self.target_label,
                                                    timestamp=self.timestamp, )
 
+    class Meta:
+        get_latest_by = 'timestamp'
+        ordering = ('timestamp',)
+        app_label = 'bitcaster'
+
     def get_message(self):
         msg = self.AuditEvent.get_by_value(self.event)
         return '{msg} '.format(msg=msg)
