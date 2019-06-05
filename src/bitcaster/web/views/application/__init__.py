@@ -8,9 +8,9 @@ from .log import ApplicationLog
 from .members import (ApplicationMembershipCreate, ApplicationMembershipDelete,
                       ApplicationMembershipEdit, ApplicationMembershipList,)
 from .monitors import (ApplicationMonitorCreate, ApplicationMonitorList,
-                       ApplicationMonitorRemove, ApplicationMonitorTest,
-                       ApplicationMonitorToggle, ApplicationMonitorUpdate,
-                       ApplicationMonitorUsage,)
+                       ApplicationMonitorPoll, ApplicationMonitorRemove,
+                       ApplicationMonitorTest, ApplicationMonitorToggle,
+                       ApplicationMonitorUpdate, ApplicationMonitorUsage,)
 from .subscription import ApplicationSubscriptionList
 from .teams import (ApplicationTeamCreate, ApplicationTeamDelete,
                     ApplicationTeamList, ApplicationTeamMember,

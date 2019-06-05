@@ -26,27 +26,14 @@
                     {{ monitor.name }}
                 </td>
                 <td style="width:30%" class="nowrap formset-commands">
-                    <a class="btn btn-light"
-                       data-toggle="tooltip" title="configure"
-                       href="{{ monitor.urls.edit }}">
-                        <i class="fas fa-wrench pointer"></i>
-                    </a>
-                    <a class="btn btn-light"
-                       data-toggle="tooltip" title="delete"
-                       href="{{ monitor.urls.delete }}">
-                        <i class="far fa-trash-alt pointer"></i>
-                    </a>
                     {% if monitor.handler %}
-                        <a class="btn btn-light"
-                           data-toggle="tooltip" title="{% if monitor.enabled %}Disable{% else %}Enable{% endif %}"
-                           href="{{ monitor.urls.toggle}}">
-                            <i class="fas {% if monitor.enabled %}fa-toggle-on green{% else %}fa-toggle-off red{% endif %}"></i>
-                        </a>
-                        <a class="btn btn-light"
-                           data-toggle="tooltip" title="test monitor"
-                           href="{{ monitor.urls.test }}">
-                            <i class="fas fa-broadcast-tower"></i>
-                        </a>
+                        {% button monitor.urls.delete True "far fa-trash-alt" "delete" %}
+                        {% button monitor.urls.edit True "fas fa-wrench" "configure" %}
+                        {% button monitor.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" monitor.enabled %}
+
+                        {% button monitor.urls.poll True "fas fa-broadcast-tower" "poll" %}
+                        {% button monitor.urls.test True "fas fa-terminal" "test" %}
+
                     {% endif %}
                 </td>
             </tr>

@@ -65,7 +65,18 @@ class ApplicationMonitorToggle(MonitorMixin, BitcasterBaseToggleView):
         return self.get_success_url()
 
 
-class ApplicationMonitorTest(MonitorMixin, SingleObjectMixin, MessageUserMixin, RedirectView):
+class ApplicationMonitorTest(ApplicationMonitorUpdate):
+    template_name = 'bitcaster/application/monitors/check.html'
+
+    def get_context_data(self, **kwargs):
+        ret = super().get_context_data(**kwargs)
+        emails = self.object.handler.get_matched_elements()
+
+        ret['emails'] = emails
+        return ret
+
+
+class ApplicationMonitorPoll(MonitorMixin, SingleObjectMixin, MessageUserMixin, RedirectView):
     permissions = ['manage_monitor']
 
     def get(self, request, *args, **kwargs):

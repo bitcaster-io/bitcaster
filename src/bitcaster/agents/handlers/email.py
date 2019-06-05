@@ -1,3 +1,4 @@
+import datetime
 import imaplib
 import logging
 import re
@@ -25,17 +26,15 @@ def parse_uid(data):
 
 class EmailMessage:
     def __init__(self, email):
-        # for e in ['utf-8', 'windows-1252']:
-        #     try:
-        #         raw_email_string = email.decode(e)
-        #         break
-        #     except UnicodeDecodeError:
-        #         pass
-
         self.raw_email = email
-        # raw_email_string = email.decode('utf-8')
-        # self.email_message = message_from_string(raw_email_string)
-        self.email_message = message_from_bytes(email)
+
+    @cached_property
+    def email_message(self):
+        return message_from_bytes(self.raw_email)
+
+    @property
+    def id(self):
+        return hash(self.email_message['Message-ID'])
 
     @property
     def subject(self):
@@ -50,11 +49,15 @@ class EmailMessage:
         return self.email_message.get('to')
 
     @property
+    def date(self):
+        return self.email_message.get('Date')
+
+    @property
     def text(self):  # pragma: no cover
         body = ''
         for part in self.email_message.walk():
             if part.get_content_type() == 'text/plain':
-                body = part.get_payload(decode=True)
+                body = part.get_payload(decode=False)
             else:
                 continue
         return body
@@ -116,14 +119,30 @@ class EmailAgent(Agent):  # pragma: no cover
         from bitcaster.models import Event
         return Event.objects.get(pk=self.config['event'])
 
+    @cached_property
+    def subject_regex(self):
+        return re.compile(self.config['subject_regex'])
+
+    @cached_property
+    def sender_regex(self):
+        return re.compile(self.config['sender_regex'])
+
+    @cached_property
+    def body_regex(self):
+        return re.compile(self.config['body_regex'])
+
+    @cached_property
+    def recipient_regex(self):
+        return re.compile(self.config['to_regex'])
+
     def filter(self, message: EmailMessage):
         if self.subject_regex and not self.subject_regex.match(message.subject):
             return False
         if self.sender_regex and not self.sender_regex.match(message.sender):
             return False
-        if self.body_regex and not self.body_regex.match(message.text.decode()):
-            return False
         if self.recipient_regex and not self.recipient_regex.match(message.recipient):
+            return False
+        if self.body_regex and not self.body_regex.match(message.text):
             return False
 
         return True
@@ -149,8 +168,7 @@ class EmailAgent(Agent):  # pragma: no cover
                                  'subject': payload.subject,
                                  'sender': payload.sender,
                                  'recipient': payload.recipient,
-                                 },
-                                )
+                                 })
             return True
         except Exception as e:
             logger.error(e)
@@ -182,23 +200,45 @@ class EmailAgent(Agent):  # pragma: no cover
             from bitcaster.tsdb.api import log_monitor_error
             log_monitor_error(self.owner, str(e))
 
+    def get_matched_elements(self, connection=None):
+        conn = connection or self._get_connection()
+        conn.select(self.config['folder'])
+        date = (datetime.date.today() - datetime.timedelta(hours=1)).strftime('%d-%b-%Y')
+
+        if self.config['unseen']:
+            seen = ' (UnSeen)'
+        else:
+            seen = ''
+
+        filter = f'(SENTSINCE {date}){seen}'
+
+        type, data = conn.search(None, filter)
+        ret = []
+        for num in reversed(data[0].split()):
+            # typ, data = conn.fetch(num, '(BODY.PEEK[])')
+            typ, data = conn.fetch(num, '(BODY.PEEK[] UID)')
+            message = EmailMessage(data[0][1])
+            if self.filter(message):
+                ret.append(message)
+        return ret
+
     def poll(self, trigger=True):  # pragma: no cover
         from bitcaster.tsdb.api import log_monitor_poll
-        self.subject_regex = re.compile(self.config['subject_regex'])
-        self.sender_regex = re.compile(self.config['sender_regex'])
-        self.body_regex = re.compile(self.config['body_regex'])
-        self.recipient_regex = re.compile(self.config['to_regex'])
         ret = 0
         conn = self._get_connection()
         conn.select(self.config['folder'])
+        date = (datetime.date.today() - datetime.timedelta(hours=10)).strftime('%d-%b-%Y')
+
         if self.config['unseen']:
-            filter = 'UnSeen'
+            seen = ' (UnSeen)'
         else:
-            filter = 'ALL'
+            seen = ''
+
+        filter = f'(SENTSINCE {date}){seen}'
         type, data = conn.search(None, filter)
 
         for num in reversed(data[0].split()):
-            typ, data = conn.fetch(num, '(BODY.PEEK[])')
+            typ, data = conn.fetch(num, '(BODY.PEEK[] UID)')
             message = EmailMessage(data[0][1])
             if self.filter(message):
                 if trigger and self.trigger(message):

@@ -1,0 +1,41 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
+{% block page %}
+    <a href="{{ application.urls.dashboard }}">{{ application }}</a> /
+    <a href="{{ application.urls.monitors }}">monitors</a> /
+    <a href="{{ monitor.urls.edit }}">{{ monitor }}</a>
+
+    <div class="container mt-5">
+        <div class="row col-12 m-2">
+            <div class="col-3 font-weight-bold">Date</div>
+            <div class="col-3 font-weight-bold">Subject</div>
+            <div class="col-3 font-weight-bold">Sender</div>
+        </div>
+        {% for email in emails %}
+            <div class="row col-12 m-2">
+                <div class="row col-12 aaa pointer" data-target="#{{ email.id }}">
+                    <div class="col-3">{{ email.date }}</div>
+                    <div class="col-3">{{ email.subject }}</div>
+                    <div class="col-3">{{ email.sender }}</div>
+                </div>
+                <pre id="{{ email.id }}" class="row col-12 p-2 m-1 border border-primary d-none">
+                    {{ email.text }}
+                </pre>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $('.aaa').on('click', function (e) {
+
+            var $target = $($(e.currentTarget).data('target'));
+            if ( $target.hasClass('d-none') ){
+                $target.removeClass('d-none').addClass('d-block')
+            }else{
+                 $target.removeClass('d-block').addClass('d-none')
+            }
+        });
+    </script>
+
+{% endblock %}

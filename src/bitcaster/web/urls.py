@@ -178,6 +178,9 @@ urlpatterns = [
          name='app-monitor-delete'),
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/toggle/', views.ApplicationMonitorToggle.as_view(),
          name='app-monitor-toggle'),
+    path('<slug:org>/a/<slug:app>/monitor/<int:pk>/poll/', views.ApplicationMonitorPoll.as_view(),
+         name='app-monitor-poll'),
+
     path('<slug:org>/a/<slug:app>/monitor/<int:pk>/test/', views.ApplicationMonitorTest.as_view(),
          name='app-monitor-test'),
 
