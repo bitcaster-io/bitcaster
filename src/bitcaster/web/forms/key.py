@@ -24,6 +24,7 @@ class ApplicationTriggerKeyForm(forms.ModelForm):
         value = self.cleaned_data['name']
         if self.application.events.filter(name=value).exists():
             raise ValidationError('Key with this Name already exists.')
+        return value
 
     class Meta:
         model = ApplicationTriggerKey
