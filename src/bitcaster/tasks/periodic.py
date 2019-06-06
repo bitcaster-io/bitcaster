@@ -13,7 +13,7 @@ from bitcaster.models.notification import Notification
 from bitcaster.models.occurence import Occurence
 from bitcaster.tsdb.api import stats
 
-cache = caches['lock']
+cache_lock = caches['lock']
 
 
 @periodic_task(run_every=timedelta(minutes=1))
@@ -82,12 +82,9 @@ def consolidate():
 
 
 @app.task(bind=True)
-def callback(self, occurence_pk, result, *args, **kwargs):
-    # TODO: remove me
-    print(111, 'periodic.py:86', 2222, occurence_pk, result, *args, **kwargs)
-    lock = cache.lock('occurence:%s' % occurence_pk)
-    # TODO: remove me
-    print(111, 'periodic.py:90', lock.name, lock.locked())
+def callback(self, result, occurence_pk, *args, **kwargs):
+    lock = cache_lock.lock('occurence:%s' % occurence_pk)
+    cache_lock.delete(lock.name)
 
 
 @periodic_task(bind=True, run_every=timedelta(minutes=1))
@@ -102,9 +99,12 @@ def process_notifications(self):
     from bitcaster.models import Occurence, Notification
     from .event import send_page
 
+    if cache_lock.get('STOP'):
+        return
+
     for occurence in Occurence.objects.active():
         chord_pages = []
-        lock = cache.lock('occurence:%s' % occurence.pk)
+        lock = cache_lock.lock('occurence:%s' % occurence.pk)
         if lock.acquire(False):
             print(f'Processing occurence {occurence}')
 
@@ -122,7 +122,6 @@ def process_notifications(self):
 
                 if page:
                     chord_pages.append(send_page.s(occurence.pk, channel.pk, page))
-            lock.release()
         else:
             print(f'Cannot process {occurence}. Lock found')
 

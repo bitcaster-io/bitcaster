@@ -2,6 +2,7 @@ import datetime
 from logging import getLogger
 
 from crashlog.middleware import process_exception
+from django.core.cache import caches
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.template import Template
@@ -15,10 +16,12 @@ from bitcaster.exceptions import LogicError
 from bitcaster.template.secure_context import SecureContext
 from bitcaster.tsdb.api import (log_error_channel, log_error_event,
                                 log_error_notification, log_error_occurence,
-                                log_new_notifications,)
+                                log_new_notifications, log_sent_notification,)
 from bitcaster.utils.http import absolute_uri
 
 logger = getLogger(__name__)
+
+cache_lock = caches['lock']
 
 
 @app.task()
@@ -155,10 +158,13 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
 
 @app.task(bind=True)
 def send_page(self, occurence_pk: int, channel_pk: int, page: list):
+    if cache_lock.get('STOP'):
+        return
     from bitcaster.models import Channel, Notification
     channel = Channel.objects.get(pk=channel_pk)
     handler = channel.handler
     conn = handler._get_connection()
+    done = []
     for notification_id in page:
         try:
             notification = Notification.objects.pending(occurence=occurence_pk).get(id=notification_id)
@@ -178,66 +184,15 @@ def send_page(self, occurence_pk: int, channel_pk: int, page: list):
                                  message,
                                  attachments=notification.attachments,
                                  connection=conn)
-            # log_sent_notification(notification)
+            log_sent_notification(notification)
+            done.append(notification_id)
+            if cache_lock.get('STOP'):
+                return done
         except Exception as e:
             capture_exception(e)
             logger.exception(e)
             log_error_notification(notification, str(e))
-    return page
-    # resend_failed.apply_async(args=[channel.pk, occurence_pk],
-    #                           routing_key='replica',
-    #                           queue=fqn(channel.handler),
-    #                           countdown=60 + (60 * event.reminder_interval))
-
-    # stats.notification.log(organization, value=len(notifications))
-    # counters.notification.log(organization, value=len(notifications))
-    # counters.notification.log(channel, value=len(notifications))
-    # stats.notification.log(channel, value=len(notifications))
-    #
-    # counters.notification.log(event, value=len(notifications))
-    # stats.notification.log(event, value=len(notifications))
-
-
-# @app.task()
-# def resend_failed(channel_pk, occurence_pk):
-#     from bitcaster.models import Notification, Channel, Occurence
-#     updates = []
-#     ch = Channel.objects.get(pk=channel_pk)
-#     occurence = Occurence.objects.get(pk=occurence_pk)
-#     event = occurence.event
-#
-#     handler = ch.handler
-#
-#     pending = Notification.objects.filter(channel_id=channel_pk,
-#                                           occurence=occurence,
-#                                           occurence__expire__lt=timezone.now(),
-#                                           reminders__lt=F('max_reminders')).exclude(status=Notification.CONFIRMED)
-#     for n in pending.all():
-#         try:
-#             n.reminders += 1
-#             n.reminders_timestamps += ', %s' % timezone.now().strftime('%d-%b-%Y %H:%M')
-#             message = n.data['message']
-#             subject = n.data['subject']
-#             if handler.message_class.has_subject:
-#                 subject = _('%s - Reminder #%d') % (subject, n.reminders)
-#             else:
-#                 message += _('%s\n---\nReminder #%d') % (message, n.reminders)
-#
-#             handler.emit(n.address,
-#                          subject,
-#                          message)
-#             updates.append(n)
-#         except Exception:
-#             pass
-#     Notification.objects.bulk_update(updates, ['reminders', 'reminders_timestamps'])
-#     # stats.notification.log(ch.organization, value=len(updates))
-#     # stats.notification.log(ch, value=len(updates))
-#     # stats.notification.log(event, value=len(updates))
-#     if pending.exists():
-#         resend_failed.apply_async(args=[channel_pk, occurence_pk],
-#                                   routing_key='replica',
-#                                   queue=fqn(handler),
-#                                   countdown=60 + (60 * event.reminder_interval))
+    return done
 
 
 @app.task()

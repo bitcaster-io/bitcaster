@@ -79,7 +79,7 @@ cli.add_command(import_by_name('bitcaster.cli.commands.backup.restore'))
 cli.add_command(import_by_name('bitcaster.cli.commands.reindex.reindex'))
 cli.add_command(import_by_name('bitcaster.cli.commands.run.run'))
 cli.add_command(import_by_name('bitcaster.cli.commands.changepassword.changepassword'))
-cli.add_command(import_by_name('bitcaster.cli.commands.locks.lock'))
+cli.add_command(import_by_name('bitcaster.cli.commands.locks.locks'))
 cli.add_command(import_by_name('bitcaster.cli.commands.tasks.tasks'))
 
 

@@ -32,10 +32,10 @@ build-base:
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
 			--build-arg DEVELOP=${DEVELOP} \
-			-t ${DOCKER_IMAGE_NAME}-0.3:base \
+			-t ${DOCKER_IMAGE_NAME}-0.4:base \
 			-f docker/Dockerfile.base .
 	pass docker/saxix | docker login -u saxix --password-stdin
-	docker push ${DOCKER_IMAGE_NAME}-0.3:base
+	docker push ${DOCKER_IMAGE_NAME}-0.4:base
 	docker images | grep ${DOCKER_IMAGE_NAME}
 
 

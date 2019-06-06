@@ -65,8 +65,6 @@ def get_buffers(request, org, name):
     # o = Organization.objects.get(slug=org)
     # data = buffers.get('%s:organization' % name)
     data = stats.get_data(name)
-    # TODO: remove me
-    print(111, 'charts.py:69', data)
     return JsonResponse({'value': int(data.decode('utf8'))})
 
 

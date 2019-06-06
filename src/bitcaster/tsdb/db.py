@@ -99,8 +99,6 @@ class TimeSeries:
     def get_data(self, key):
         k = '%s:counter' % key
         ret = self.client.get(k)
-        # TODO: remove me
-        print(111, 'db.py:95', k, ret)
         return ret or b'0'
 
     def increase(self, key, amount=1, timestamp=None, execute=True):
