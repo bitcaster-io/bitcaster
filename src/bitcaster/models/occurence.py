@@ -62,7 +62,7 @@ class Occurence(models.Model):
     def __str__(self):
         return '#{} {}'.format(self.pk, self.timestamp.strftime('%d %b %Y'), self.event)
 
-    @async(quque='consolidate')
+    @async(queue='consolidate')
     def consolidate(self):
         self.application = self.event.application
         self.organization = self.application.organization
@@ -77,5 +77,5 @@ class Occurence(models.Model):
                                  timestamp=now,
                                  expire=expire,
                                  **kwargs)
-        # obj.consolidate()
+        obj.consolidate()
         return obj

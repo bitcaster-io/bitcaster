@@ -107,8 +107,8 @@ class AuditLogEntry(models.Model):
         app_label = 'bitcaster'
 
     def get_message(self):
-        msg = self.AuditEvent.get_by_value(self.event)
-        return '{msg} '.format(msg=msg)
+        # msg = self.AuditEvent.get_by_value(self.event)
+        return str(self)
 
     def save(self, *args, **kwargs):
         if not self.actor_label:

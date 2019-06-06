@@ -9,7 +9,7 @@ from .site import site
 
 @admin.register(ErrorEntry, site=site)
 class ErrorEntryAdmin(TruncateTableMixin, admin.ModelAdmin):
-    list_display = ('timestamp', 'actor', 'application', 'actor_label', 'message')
+    list_display = ('timestamp', 'application', 'actor', 'target', 'message')
     list_filter = ('application', 'actor_content_type')
 
     @link()

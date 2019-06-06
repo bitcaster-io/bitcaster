@@ -16,7 +16,7 @@ from bitcaster.tsdb.api import stats
 cache_lock = caches['lock']
 
 
-@periodic_task(run_every=timedelta(minutes=1))
+@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
 def clean_data():
     today = timezone.now()
     older_than = today - datetime.timedelta(days=30)
@@ -27,7 +27,7 @@ def clean_data():
     qs._raw_delete(qs.db)
 
 
-@periodic_task(run_every=timedelta(minutes=1))
+@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
 def set_occurences_status():
     # check for expired occurences
     Occurence.objects.filter(expire__lt=timezone.now(),
@@ -63,7 +63,7 @@ def set_occurences_status():
     stats.set('notification:retry', retry)
 
 
-@periodic_task(run_every=timedelta(minutes=1))
+@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
 def set_notification_status():
     Notification.objects.filter(occurence__expire__lt=timezone.now(),
                                 status__in=[Notification.PENDING, Notification.RETRY, Notification.REMIND]
@@ -75,7 +75,7 @@ def clean_errors():
     Error.objects.filter(date_time__lte=datetime.datetime.today() - datetime.timedelta(days=30)).delete()
 
 
-@periodic_task(run_every=timedelta(minutes=1))
+@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
 def consolidate():
     Notification.objects.consolidate()
     ErrorEntry.objects.consolidate()
@@ -87,14 +87,14 @@ def callback(self, result, occurence_pk, *args, **kwargs):
     cache_lock.delete(lock.name)
 
 
-@periodic_task(bind=True, run_every=timedelta(minutes=1))
+@periodic_task(bind=True, run_every=timedelta(minutes=1), options={'expires': 60})
 def check_monitors(self):
     from .monitor import check_monitor, Monitor
     for monitor in Monitor.objects.filter(enabled=True):
         check_monitor.delay(monitor.pk)
 
 
-@periodic_task(bind=True, run_every=timedelta(minutes=1))
+@periodic_task(bind=True, run_every=timedelta(minutes=1), options={'expires': 60})
 def process_notifications(self):
     from bitcaster.models import Occurence, Notification
     from .event import send_page

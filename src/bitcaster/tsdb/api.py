@@ -41,8 +41,8 @@ def log_sent_notification(notification, *args, **kwargs):
             notification.next_sent = notification.timestamp + datetime.timedelta(
                 minutes=interval * notification.reminders)
             notification.status = Notification.REMIND
-        elif (notification.reminders >= notification.max_reminders):
-            notification.status = Notification.COMPLETE
+        # elif (notification.reminders >= notification.max_reminders):
+        #     notification.status = Notification.COMPLETE
         else:
             notification.status = Notification.WAIT
     else:

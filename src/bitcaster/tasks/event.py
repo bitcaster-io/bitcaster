@@ -38,8 +38,7 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
     if len(channels) == 0:
         logger.warning(f'No subscriptions/channels found for `{event}`')
     for channel in Channel.objects.filter(id__in=ids,
-                                          event=event,
-                                          enabled=True):
+                                          event=event):
         if not channel.enabled:
             log_error_channel(channel, "Channel '%(channel)s' is disabled")
             logger.error("Channel '%s' is disabled" % channel)
@@ -157,8 +156,8 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
         logger.exception(e)
         process_exception(e)
         raise
-    from .periodic import process_notifications
-    process_notifications.delay()
+    # from .periodic import process_notifications
+    # process_notifications.delay()
     return True
 
 

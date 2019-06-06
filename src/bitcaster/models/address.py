@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 class AssignmentQuerySet(models.QuerySet):
     def get_address(self, klass):
         try:
-            return self.filter(verified=True).get(channel__handler=klass).address
+            return self.filter(address__verified=True).get(channel__handler=klass).address
         except Exception:
-            raise Address.DoesNotExist()
+            raise Address.DoesNotExist('Cannot find valid any address for %s' % klass)
 
 
 class Address(ReversionMixin, models.Model):

@@ -18,15 +18,6 @@ class FileGetterQuerySet(models.QuerySet):
     def valid(self):
         return self.all()
 
-    # def selectable(self, application):
-    #     return self.filter(Q(organization=application.organization) |
-    #                        Q(system=True) |
-    #                        Q(application=application))
-    #
-    # def enabled(self, application):
-    #     return self.filter(application=application,
-    #                        )
-
 
 class FileGetter(ReverseWrapperMixin, AbstractModel):
     name = models.CharField(max_length=255)
