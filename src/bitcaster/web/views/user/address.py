@@ -168,8 +168,8 @@ class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateV
                 enabled=assignment.address.verified)
             if disabled:
                 message = ngettext_lazy(
-                    '%(disabled)s subscription has been disabled.',
-                    '%(disabled)s subscriptions have been disabled.',
-                    len(disabled))
+                    '%s subscription has been disabled.' % disabled,
+                    '%s subscriptions have been disabled.' % disabled,
+                    disabled)
                 self.message_user(message)
         return super().form_valid(formset)

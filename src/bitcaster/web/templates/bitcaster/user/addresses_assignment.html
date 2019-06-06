@@ -62,14 +62,15 @@
                                     </a>
                                     {% if form.instance.id %}
                                         {% if not form.instance.address.verified %}
-                                            <a rel="modal:open"
+                                            <button rel="modal:open"
                                                data-assignment="{{ form.instance.id }}"
-                                               class="btn btn-outline-light"
+                                               class="btn btn-outline-danger"
                                                title="verify"
                                                data-owner="btn-verify-{{ form.instance.id }}"
                                                data-remote="{% org-url "user-address-verify" form.instance.id %}"
-                                               href="."><i class="fas fa-exclamation-circle red"></i>
-                                            </a>
+                                               href=".">
+                                            VERIFY
+                                            </button>
 {#                                        {% else %}#}
 {#                                            <a rel="modal:open"#}
 {#                                               class="btn btn-outline-light"#}

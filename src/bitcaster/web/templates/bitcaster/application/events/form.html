@@ -2,8 +2,8 @@
 {#{% block pageId %}event{% endblock %}#}
 {% block page %}
     <div class="breadcrumbs pb-4">
-        <a href="{% app-url "app-events" %}">events</a> :
-        <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a>
+        <a href="{% app-url "app-events" %}">events</a>
+        {% if event %}: <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a>{% endif %}
     </div>
 
     <div class="container">

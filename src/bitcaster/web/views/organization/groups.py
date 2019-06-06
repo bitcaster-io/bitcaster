@@ -53,6 +53,10 @@ class OrganizationGroupFormMixin(ModelFormMixin):
         return modelform_factory(OrganizationGroup, form=OrganizationGroupForm,
                                  fields=self.fields)
 
+    def get_success_url(self):
+        return reverse('org-group-settings', args=[self.selected_organization.slug,
+                                                   self.object.pk])
+
 
 class OrganizationGroupList(GroupMixin, BitcasterBaseListView):
     template_name = 'bitcaster/organization/groups/list.html'
@@ -66,10 +70,6 @@ class OrganizationGroupCreate(GroupMixin, OrganizationGroupFormMixin, BitcasterB
     def form_valid(self, form):
         return super().form_valid(form)
 
-    def get_success_url(self):
-        return reverse('org-group-settings', args=[self.selected_organization.slug,
-                                                   self.object.pk])
-
 
 class OrganizationGroupEdit(SelectedGroupMixin, OrganizationGroupFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/organization/groups/edit.html'
@@ -77,6 +77,9 @@ class OrganizationGroupEdit(SelectedGroupMixin, OrganizationGroupFormMixin, Bitc
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)
         return self.selected_organization.groups.get(pk=pk)
+
+    def get_success_url(self):
+        return reverse('org-groups', args=[self.selected_organization.slug])
 
 
 class OrganizationGroupMembers(SelectedGroupMixin, BitcasterBaseListView):
@@ -123,6 +126,10 @@ class OrganizationGroupApplications(SelectedGroupMixin, BitcasterBaseListView):
 class OrganizationGroupDelete(GroupMixin, BitcasterBaseDeleteView):
     message = _('Group <strong>%(object)s</strong> will be removed from %(organization)s')
     user_message = _('Group removed')
+    pk_url_kwarg = 'group'
+
+    def get_success_url(self):
+        return reverse('org-groups', args=[self.selected_organization.slug])
 
 
 class OrganizationGroupMemberRemove(SelectedGroupMixin, BitcasterBaseDeleteView):
