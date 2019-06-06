@@ -75,6 +75,7 @@ urlpatterns = [
          name='user-address-verify'),
     path('<slug:org>/me/assignment/', views.UserAddressesAssignmentView.as_view(), name='user-address-assignment'),
     path('<slug:org>/me/applications/', views.UserApplicationListView.as_view(), name='user-applications'),
+    path('<slug:org>/me/logs/', views.UserNotificationLogView.as_view(), name='user-logs'),
 
     # path('new-user/', TemplateView.as_view(template_name='bitcaster/oauth/user_new.html')),
     # path('new-association/', TemplateView.as_view(template_name='bitcaster/oauth/user_associated.html')),

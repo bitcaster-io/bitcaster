@@ -25,21 +25,27 @@
         {#            </a>#}
         {#        </li>#}
         <li>
-            <a class="{{ view|menu_item:'subscriptions' }}" href="{% org-url 'user-subscriptions' %}">
-                <i class="fas fa-bookmark"></i>
-                {% trans "Subscriptions" %}
-            </a>
-        </li>
-        <li>
             <a class="{{ view|menu_item:'events' }}" href="{% org-url 'user-events' %}">
                 <i class="fas fa-rss"></i>
                 {% trans "Events" %}
             </a>
         </li>
         <li>
+            <a class="{{ view|menu_item:'subscriptions' }}" href="{% org-url 'user-subscriptions' %}">
+                <i class="fas fa-bookmark"></i>
+                {% trans "Subscriptions" %}
+            </a>
+        </li>
+        <li>
             <a class="{{ view|menu_item:'socialauth' }}" href="{% org-url 'user-socialauth' %}">
                 <i class="fas fa-sign-out-alt"></i>
                 {% trans "Social Login" %}
+            </a>
+        </li>
+        <li>
+            <a class="{{ view|menu_item:'log' }}" href="{% org-url 'user-logs' %}">
+                <i class="fas fa-sign-out-alt"></i>
+                {% trans "Notification Log" %}
             </a>
         </li>
     </ul>
