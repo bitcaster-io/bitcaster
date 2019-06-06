@@ -4,9 +4,11 @@
         a.btn.btn-outline {
             border: 1px solid black;
         }
+
         a.btn-outline-m .goto {
-            {#float: right;#}
+        {#float: right;#}
         }
+
         a.btn.btn-outline-m {
             border: 1px solid black;
             background-color: #e6e6e6;
@@ -33,9 +35,17 @@
             background-color: #e4e4e4;
         }
     </style>
-    <div class="container-fluid p-2">
+    <div class="breadcrumbs pb-4">
+        <a href="{% app-url "app-events" %}">events</a> :
+        <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a> :
+        <a href="{% app-url "app-event-keys" event.pk %}">keys</a>
+    </div>
+
+    <div class="p-2">
         {% blocktrans %}
-Because each channel has different characteristics /limitations, it is required to write one message for each channel. Is it possible to "broadcast" the typing to all the message forms, be sure that the text is compatible with all channels
+            Because each channel has different characteristics /limitations, it is required to write one message for
+            each channel. Is it possible to "broadcast" the typing to all the message forms, be sure that the text is
+            compatible with all channels
         {% endblocktrans %}
     </div>
     {% for frm in form.forms %}
@@ -55,7 +65,7 @@ Because each channel has different characteristics /limitations, it is required 
                 <a href="#" title="expand all" id="expand_all"
                    data-toggle="tooltip"
                    class="btn btn-outline"><i class="fas fa-plus-square"></i></a>
-                <a href="#" title="collapse all"  id="collapse_all"
+                <a href="#" title="collapse all" id="collapse_all"
                    data-toggle="tooltip"
                    class="btn btn-outline"><i class="fas fa-minus-square"></i></a>
                 <a href="#" title="broadcast all"
@@ -182,10 +192,10 @@ Because each channel has different characteristics /limitations, it is required 
                 }
                 $('.copy_visible i').css("color", copy_visible ? "red" : "black");
             });
-            $('#expand_all').on('click', function(){
+            $('#expand_all').on('click', function () {
                 $('.form-box').collapse('show');
             });
-            $('#collapse_all').on('click', function(){
+            $('#collapse_all').on('click', function () {
                 $('.form-box').collapse('hide');
             });
         })($);

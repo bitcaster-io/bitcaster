@@ -1,25 +1,14 @@
 {% extends "bitcaster/application/base.html" %}{% load crispy_forms_filters i18n bitcaster %}
 {#{% block pageId %}event{% endblock %}#}
 {% block page %}
-    {#    <div class="breadcrumbs pb-4">#}
-    {#        <a href="{{ application.urls.events }}">events</a> :#}
-    {#        {% if event %}#}
-    {#            <a href="{{ event.urls.edit }}">{{ event }}</a>#}
-    {#        {% endif %}#}
-    {#    </div>#}
-{#    <div class="container">#}
-        {#        <div id="empty-form" class="d-none">#}
-        {#            <div class="row">#}
-        {#                <div class="row col-sm">{{ form.arguments.empty_form.name|as_crispy_field }}</div>#}
-        {#                <div class="row col-sm">{{ form.arguments.empty_form.type|as_crispy_field }}</div>#}
-        {#                <div class="row col-sm align-items-center"><a href="#" class="remove_line">#}
-        {#                    <i class="fa fa-remove"></i></a>#}
-        {#                </div>#}
-        {#            </div>#}
-        {#        </div>#}
-        <div class="container-fluid">
-            <div class="row col-12">
-            <div class="container-fluid user-profile">
+    <div class="breadcrumbs pb-4">
+        <a href="{% app-url "app-events" %}">events</a> :
+        <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a>
+    </div>
+
+    <div class="container">
+        <div class="row col-12">
+            <div class="container-fluid">
 
                 <form method="post" lass="d-none" id="form-event">
                     {% csrf_token %}
@@ -65,9 +54,9 @@
                     {# End of Arguments #}
                 </form>
             </div>
-            </div>
         </div>
-{#    </div>#}
+    </div>
+    {#    </div>#}
 
 {% endblock %}
 {% block js %}
