@@ -52,6 +52,7 @@
                     <td class="col-2">{{ membership.get_role_display }}</td>
                     <td class="col-3">{{ membership.date_enrolled|date:"Y, M d" }}</td>
                     <td class="col-3 formset-commands">
+                    {% if user_role < membership.role %}
                         <a class="btn btn-outline-light"
                            data-toggle="tooltip" title="edit"
                            href="{% org-url "org-member-edit" membership.pk %}">
@@ -69,6 +70,7 @@
                             <i class="far fa-user red"></i>
                         </a>
                         {% endif %}
+                    {% endif %}
                     </td>
                 </tr>
             {% endfor %}

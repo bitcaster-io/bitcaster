@@ -34,6 +34,7 @@ class MemberFormMixin(ModelFormMixin):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({'organization': self.selected_organization,
+                       'user_role': self.request.user.memberships.get(organization=self.selected_organization).role,
                        'form_show_labels': self.form_show_labels})
         return kwargs
 
@@ -61,6 +62,7 @@ class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['filters'] = get_query_string(self.request, remove=['page'])
+        data['user_role'] = self.request.user.memberships.get(organization=self.selected_organization).role
         data['memberships'] = self.get_queryset()
         data['invitations'] = self.selected_organization.invitations.filter(date_accepted=None)
         return data
