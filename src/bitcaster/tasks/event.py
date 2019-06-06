@@ -60,96 +60,102 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
     return True
 
 
-@app.task()
-def create_notifications_for_channel(occurence_pk, channel_pk, context):
-    from bitcaster.models import Channel, Message, Notification, Occurence
-
-    channel = Channel.objects.get(pk=channel_pk)
-    occurence = Occurence.objects.select_related('event').get(pk=occurence_pk)
-    event = occurence.event
-    logger.debug(f'Processing channel {channel}')
+def _get_message_parts(channel, event) -> [Template, Template]:
     try:
         message = channel.messages.get(event=event)
         if not message.body.strip():
             msg = _('Empty message for channel %s') % channel
             log_error_event(event, msg)
             raise Exception(msg)
-        body_template = Template(message.body)
-        subject_template = Template(message.subject)
-        organization = channel.organization
-
-    except Message.DoesNotExist as e:
-        logger.error(e)
+        return Template(message.subject), Template(message.body)
+    except ObjectDoesNotExist as e:
         msg = 'Unable to find a message for %(channel)s'
-        log_error_channel(channel, msg)
+        logger.error(e)
+        log_error_event(event, msg)
         raise ObjectDoesNotExist(msg) from e
     except Exception as e:
         process_exception(e)
         raise
 
+
+@app.task()
+def create_notifications_for_channel(occurence_pk, channel_pk, context):
+    from bitcaster.models import Channel, Notification, Occurence, Address
+
+    channel = Channel.objects.select_related('organization').get(pk=channel_pk)
+    organization = channel.organization
+    occurence = Occurence.objects.select_related('event').get(pk=occurence_pk)
+    event = occurence.event
+    logger.debug(f'Processing channel {channel}')
+    subject_template, body_template = _get_message_parts(channel, event)
     try:
         partition = 1000
         page = []
         for subscription in event.subscriptions.valid(channel=channel):
-            logger.debug(f'Processing {subscription}')
-            ctx = dict(context or {})
-            code = subscription.get_code()
-            ctx.update({
-                'user': subscription.subscriber,
-                'subscriber': subscription.subscriber,
-                'recipient': subscription.subscriber,
-                'event': event,
-                'channel': channel,
-                'confirmation': absolute_uri(reverse('confirmation', args=[event.pk,
-                                                                           subscription.pk,
-                                                                           channel.pk,
-                                                                           occurence_pk,
-                                                                           code])),
-                'application': channel.application,
-                'organization': organization,
-                'subscription': subscription,
-                'today': datetime.datetime.today(),
-            })
-            message = body_template.render(SecureContext(ctx))
-            subject = subject_template.render(SecureContext(ctx))
-            address = channel.handler.get_recipient_address(subscription)
-            attachments = None
-            if event.attachment and channel.handler.handle_attachments:
-                file_getter = event.attachment
-                attachment = file_getter.handler.get(subscription)
-                attachments = [attachment]
+            try:
+                logger.debug(f'Processing {subscription}')
+                ctx = dict(context or {})
+                code = subscription.get_code()
+                ctx.update({
+                    'user': subscription.subscriber,
+                    'subscriber': subscription.subscriber,
+                    'recipient': subscription.subscriber,
+                    'event': event,
+                    'channel': channel,
+                    'confirmation': absolute_uri(reverse('confirmation', args=[event.pk,
+                                                                               subscription.pk,
+                                                                               channel.pk,
+                                                                               occurence_pk,
+                                                                               code])),
+                    'application': channel.application,
+                    'organization': organization,
+                    'subscription': subscription,
+                    'today': datetime.datetime.today(),
+                })
+                message = body_template.render(SecureContext(ctx))
+                subject = subject_template.render(SecureContext(ctx))
+                address = channel.handler.get_recipient_address(subscription)
+                attachments = None
+                if event.attachment and channel.handler.handle_attachments:
+                    file_getter = event.attachment
+                    attachment = file_getter.handler.get(subscription)
+                    attachments = [attachment]
 
-            notification_kwargs = {'channel': channel,
-                                   'event_id': event.pk,
-                                   'occurence_id': occurence_pk,
-                                   'need_confirmation': event.need_confirmation,
-                                   'reminders_timestamps': timezone.now().strftime('%d-%b-%Y %H:%M'),
-                                   'max_reminders': event.reminders,
-                                   'reminders': 0,
-                                   'attachments': attachments,
-                                   'subscription_id': subscription.pk,
-                                   'address': address,
-                                   'next_sent': timezone.now(),
-                                   'data': {'subject': subject,
-                                            'message': message}
-                                   }
+                notification_kwargs = {'channel': channel,
+                                       'event_id': event.pk,
+                                       'occurence_id': occurence_pk,
+                                       'need_confirmation': event.need_confirmation,
+                                       'reminders_timestamps': timezone.now().strftime('%d-%b-%Y %H:%M'),
+                                       'max_reminders': event.reminders,
+                                       'reminders': 0,
+                                       'attachments': attachments,
+                                       'subscription_id': subscription.pk,
+                                       'address': address,
+                                       'next_sent': timezone.now(),
+                                       'data': {'subject': subject,
+                                                'message': message}
+                                       }
 
-            # page.append([address, subject, message, subscription.pk])
-            page.append(Notification(**notification_kwargs))
+                page.append(Notification(**notification_kwargs))
 
-            if len(page) == partition:
-                ids = Notification.objects.bulk_create(page)
-                log_new_notifications(channel_pk, len(ids))
-                page = []
+                if len(page) == partition:
+                    ids = Notification.objects.bulk_create(page)
+                    log_new_notifications(channel_pk, len(ids))
+                    page = []
+            except Address.DoesNotExist as e:
+                log_error_event(event, 'Address not validated', target=subscription)
+                process_exception(e)
+            except Exception as e:
+                process_exception(e)
+                raise
 
         # process incomplete page
         if len(page):
             ids = Notification.objects.bulk_create(page)
             log_new_notifications(channel_pk, len(ids))
-
     except Exception as e:
-        process_exception(e)
         logger.exception(e)
+        process_exception(e)
         raise
     from .periodic import process_notifications
     process_notifications.delay()

@@ -4,7 +4,8 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster import messages
-from bitcaster.models import AuditEvent, AuditLogEntry, Subscription
+from bitcaster.exceptions import AddressNotVerified
+from bitcaster.models import Address, AuditEvent, AuditLogEntry, Subscription
 from bitcaster.web.forms.user import UserSubscriptionEditForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
@@ -37,29 +38,43 @@ class UserSubscriptionToggle(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
         return self.get_queryset().get(id=self.kwargs['pk'])
 
     def get(self, request, *args, **kwargs):
-        obj = self.get_object()
+        subscription = self.get_object()
         try:
-            # obj.recipient  # address or assignment could be deleted
-            obj.enabled = not obj.enabled
-            if obj.enabled:
-                self.message_user(f'{obj._meta.verbose_name} #{obj.pk} enabled',
+            assignment = request.user.assignments.get(channel=subscription.channel)
+            if assignment and not assignment.address.verified:
+                raise AddressNotVerified()
+
+            subscription.enabled = not subscription.enabled
+            if subscription.enabled:
+                self.message_user(f'{subscription._meta.verbose_name} #{subscription.pk} enabled',
                                   level=messages.SUCCESS)
             else:
-                self.message_user(f'{obj._meta.verbose_name} #{obj.pk} disabled',
+                self.message_user(f'{subscription._meta.verbose_name} #{subscription.pk} disabled',
                                   level=messages.WARNING)
-        except Exception as e:
-            logger.exception(e)
-            obj.enabled = False
+        except AddressNotVerified:
+            subscription.enabled = False
             self.message_user(_('{} #{} cannot be enabled because '
-                                'there are no valid address').format(obj._meta.verbose_name, obj.pk),
+                                'address has not been verified').format(subscription._meta.verbose_name,
+                                                                        subscription.pk),
                               level=messages.WARNING)
-        event = AuditEvent.MEMBER_ENABLE_SUBSCRIPTION if obj.enabled else AuditEvent.MEMBER_DISABLE_SUBSCRIPTION
-        self.audit(event=event,
-                   target_object=obj.pk,
-                   target_label=str(obj),
-                   data={'enabled': obj.enabled})
 
-        obj.save()
+        except Address.DoesNotExist as e:
+            logger.exception(e)
+            subscription.enabled = False
+            self.message_user(_('{} #{} cannot be enabled because '
+                                'there is no valid address to use').format(
+                subscription._meta.verbose_name, subscription.pk, e),
+                level=messages.WARNING)
+        if subscription.enabled:
+            event = AuditEvent.MEMBER_ENABLE_SUBSCRIPTION
+        else:
+            event = AuditEvent.MEMBER_DISABLE_SUBSCRIPTION
+        self.audit(event=event,
+                   target_object=subscription.pk,
+                   target_label=str(subscription),
+                   data={'enabled': subscription.enabled})
+
+        subscription.save()
 
         return HttpResponseRedirectToReferrer(request)
 

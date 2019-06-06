@@ -9,7 +9,7 @@
                            value="{{ request.GET.filter }}"
                            placeholder="insert email to filter"
                            onfocus="this.placeholder=''"
-                           onblur="this.placeholder='insert email to filter'"
+                           onblur="this.placeholder='type your filter'"
                            class="textinput textInput form-control">
                 </form>
             </div>
@@ -28,58 +28,19 @@
         <tbody>
         <tr>
             <th>
-                {% trans "Date" %}
+                Date
             </th>
             <th>
-                #
-            </th>
-            <th>
-                {% trans "Application/Event" %}
-            </th>
-            <th>
-                {% trans "Subscriber" %}
-            </th>
-            <th>
-                {% trans "Channel" %}
-            </th>
-            <th>
-                {% trans "Confirmed" %}
-            </th>
-            <th>
-                {% trans "Status" %}
+                Message
             </th>
         </tr>
         {% for entry in object_list %}
             <tr>
                 <td>
-                    {{ entry.timestamp|date:"j M Y H:i" }}
+                    {{ entry.timestamp }}
                 </td>
                 <td>
-                    {{ entry.occurence_id }}
-                </td>
-                <td>
-                    {{ entry.application }}<br/>
-                    {{ entry.event }}
-                </td>
-                <td>
-                    {{ entry.subscription.subscriber }}
-                </td>
-                <td>
-                    {{ entry.channel }}
-                </td>
-                <td>
-                    {% if entry.need_confirmation %}
-                        {{ entry.confirmed|default_if_none:"No" }}
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </td>
-                <td>
-                    {{ entry.get_status_display }}
-                    {% if entry.status < 100 %}
-                    ({{ entry.reminders }}/{{ entry.max_reminders }})
-                    {{ entry.next_sent|date:"H:i:s" }}
-                    {% endif %}
+                    {{ entry }}
                 </td>
             </tr>
         {% endfor %}

@@ -1,7 +1,7 @@
 import smtplib
 from logging import getLogger
 
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives, get_connection
 from rest_framework import serializers
 
@@ -55,11 +55,8 @@ class Email(CoreDispatcher):
             use_tls=config['tls'],
             fail_silently=False)
 
-    def get_recipient_address(self, subscription):
-        try:
-            return super().get_recipient_address(subscription)
-        except (ObjectDoesNotExist, TypeError):  # pragma: no cover
-            return subscription.subscriber.email
+    # def get_recipient_address(self, subscription):
+    #     return super().get_recipient_address(subscription)
 
     def emit(self, address, subject, message, connection=None, attachments=None,
              html_message=None,

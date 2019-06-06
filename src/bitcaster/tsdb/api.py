@@ -58,7 +58,7 @@ def log_error_event(event, message='Error', *args, **kwargs):
     ErrorEntry.objects.create(message=message % dict(event=event),
                               application=None,
                               actor=event,
-                              data=kwargs).consolidate()
+                              **kwargs).consolidate()
     stats.add('event:%s' % event.pk, type='error')
 
 
@@ -66,7 +66,7 @@ def log_error_channel(channel, message='Error', *args, **kwargs):
     ErrorEntry.objects.create(message=message % dict(channel=channel),
                               application=None,
                               actor=channel,
-                              data=kwargs).consolidate()
+                              **kwargs).consolidate()
     stats.add('channel:%s' % channel.pk, type='error')
 
 
@@ -74,7 +74,7 @@ def log_error_occurence(occurence, message='Error', *args, **kwargs):
     ErrorEntry.objects.create(message=message,
                               application=None,
                               actor=occurence,
-                              data=kwargs).consolidate()
+                              **kwargs).consolidate()
     stats.add('occurence', type='error')
     stats.add('occurence:%s' % occurence.pk, type='error')
     stats.add('event:%s' % occurence.event.pk, type='error')
@@ -88,7 +88,7 @@ def log_error_notification(notification: Notification, message='Error', *args, *
     ErrorEntry.objects.create(message=message,
                               application=None,
                               actor=notification,
-                              data=kwargs).consolidate()
+                              **kwargs).consolidate()
     notification.status = Notification.RETRY
     notification.save()
     stats.add('notification', type='error')
@@ -106,7 +106,7 @@ def log_monitor_error(monitor, message, *args, **kwargs):
     ErrorEntry.objects.create(message=message,
                               application=None,
                               actor=monitor,
-                              data=kwargs).consolidate()
+                              **kwargs).consolidate()
 
 
 def log_monitor_poll(monitor, *args, **kwargs):

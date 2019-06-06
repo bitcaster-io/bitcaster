@@ -23,7 +23,6 @@ class ArgumentLineForm(forms.Form):
 
 
 class EventForm(forms.ModelForm):
-    allow_attachments = forms.BooleanField(required=False)
     description = forms.CharField(required=False,
                                   widget=forms.Textarea(attrs={'rows': '2'}))
     channels = forms.ModelMultipleChoiceField(Channel.objects.none())

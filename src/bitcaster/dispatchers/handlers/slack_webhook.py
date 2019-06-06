@@ -41,7 +41,7 @@ class SlackWebhook(CoreDispatcher):
     options_class = SlackWebhookOptions
     message_class = SlackWebhookMessage
     subscription_class = SlackWebhookSubscriptionOptions
-    icon = 'slack'
+    icon = 'slack.png'
     __help__ = """To use this plugin you need to enable the `Incoming WebHooks`
  application in you Slack console.
 Navigate to https://<YOUR_SPACE>.slack.com/apps/" and enable `Incoming WebHooks`.

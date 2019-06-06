@@ -17,7 +17,7 @@ class EmailOptions(DispatcherOptions):
 @dispatcher_registry.register
 class SystemEmail(Email):
     options_class = EmailOptions
-    icon = 'email'
+    icon = 'email.png'
     __help__ = 'Email dispatcher that uses system account to '
 
     @property

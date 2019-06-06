@@ -55,7 +55,7 @@ class Viber(CoreDispatcher):
     subscription_class = ViberSubscription
     message_class = ViberMessage
     need_verification = False
-    icon = 'viber'
+    # icon = 'viber'
     __help__ = _("""Viber dispatcher to send private message
 
 #### Get API keys

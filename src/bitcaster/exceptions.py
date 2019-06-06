@@ -80,3 +80,7 @@ class PermissionDenied(_PermissionDenied):
 
     def __str__(self):
         return self.message
+
+
+class AddressNotVerified(Exception):
+    pass

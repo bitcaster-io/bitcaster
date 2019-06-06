@@ -2,7 +2,7 @@ import logging
 
 from django.http import JsonResponse
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext_lazy
 
 from bitcaster.models import Address, AddressAssignment
 from bitcaster.models.audit import AuditLogEntry
@@ -146,11 +146,6 @@ class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateV
     def form_valid(self, formset):
         formset.instance = self.request.user
         formset.save()
-        # if formset.disabled_subscriptions:
-        #     msg = _('{} subscriptions {} been disabled.').format(formset.disabled_subscriptions,
-        #                                                          pluralize(formset.disabled_subscriptions,
-        #                                                                    'has,have'))
-        #     self.message_user(msg)
 
         for a in formset.deleted_objects:
             self.audit(event=AuditLogEntry.AuditEvent.MEMBER_DELETE_ASSIGNMENT,
@@ -162,18 +157,19 @@ class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateV
                 self.audit(event=AuditLogEntry.AuditEvent.MEMBER_ADD_ASSIGNMENT,
                            target_object=assignment.pk,
                            target_label=str(assignment))
-                # if assignment.channel.get_usage_message():
-                #     need_config += 1
-            # if need_config:
-            #     self.message_user(_('Some subscription need extra steps to complete. '))
 
         for assignment, changed_data in formset.changed_objects:
-            # usage_message = assignment.channel.get_usage_message()
-            # if usage_message:
-            #     self.message_user(usage_message, extra_tags='keep')
             self.audit(event=AuditLogEntry.AuditEvent.MEMBER_CHANGE_ASSIGNMENT,
                        data=changed_data,
                        target_object=assignment.pk,
                        target_label=str(assignment))
-
+            disabled = self.request.user.subscriptions.filter(channel=assignment.channel,
+                                                              enabled=True).update(
+                enabled=assignment.address.verified)
+            if disabled:
+                message = ngettext_lazy(
+                    '%(disabled)s subscription has been disabled.',
+                    '%(disabled)s subscriptions have been disabled.',
+                    len(disabled))
+                self.message_user(message)
         return super().form_valid(formset)

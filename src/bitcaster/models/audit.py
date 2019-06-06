@@ -79,6 +79,10 @@ class AuditLogEntry(models.Model):
     organization = models.ForeignKey('bitcaster.Organization',
                                      related_name='auditlog',
                                      on_delete=models.CASCADE)
+    application = models.ForeignKey('bitcaster.Application',
+                                    null=True, blank=True,
+                                    related_name='auditlog',
+                                    on_delete=models.CASCADE)
     actor = models.ForeignKey('bitcaster.User', models.SET_NULL,
                               related_name='audit_actors', null=True, blank=True)
     actor_label = models.CharField(max_length=64, null=True, blank=True)

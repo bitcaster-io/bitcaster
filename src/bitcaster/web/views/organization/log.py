@@ -15,6 +15,8 @@ class OrganizationNotificationLogView(FilterQuerysetMixin,
     title = _('Notification Log')
     paginate_by = 50
     filter_fieldmap = {'channel': 'channel__name__iexact',
+                       'occurence': 'occurence_id',
+                       '#': 'occurence_id',
                        'application': 'application__name__istartswith',
                        'event': 'event__name__istartswith',
                        'status': '_filter_status',

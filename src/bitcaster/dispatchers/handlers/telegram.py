@@ -66,7 +66,7 @@ class TelegramSubscriptionOptions(SubscriptionOptions):
 class Telegram(CoreDispatcher):
     options_class = TelegramOptions
     message_class = TelegramMessage
-    icon = 'telegram'
+    # icon = 'telegram'
     subscription_class = TelegramSubscriptionOptions
     __help__ = _("""
 ### Creating your bot

@@ -165,7 +165,7 @@ urlpatterns = [
     path('o/<slug:org>/a/<slug:app>/message/<int:pk>/delete/', views.MessageDelete.as_view(),
          name='app-message-delete'),
     # Log
-    path('o/<slug:org>/a/<slug:app>/log/', views.ApplicationLog.as_view(), name='app-log'),
+    path('o/<slug:org>/a/<slug:app>/log/', views.ApplicationNotificationLog.as_view(), name='app-log'),
 
     # views.Applications / FileGetter
     path('<slug:org>/a/<slug:app>/files/', views.ApplicationFileGetterList.as_view(), name='app-filegetters'),

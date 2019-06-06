@@ -38,7 +38,7 @@ You need a valid [Twilio](https://www.twilio.com/) account to use this service.
 - Get twilio SMS number  at [[https://www.twilio.com/console/sms/getting-started/build]]
 
 """)
-    icon = 'whatsapp'
+    icon = 'whatsapp.png'
     name = 'WhatsApp (Twilio)'
     subscription_class = TwilioWhatsAppSubscription
     options_class = TwilioWhatsAppOptions

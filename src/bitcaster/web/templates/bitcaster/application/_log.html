@@ -1,6 +1,6 @@
-{% extends "bitcaster/organization/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
 {% block page %}
-    {% check_permissions organization %}
+    {% check_permissions application %}
     <div class="container">
         <div class="row col-12 mb-5">
             <div class="col-7">
@@ -9,7 +9,7 @@
                            value="{{ request.GET.filter }}"
                            placeholder="insert email to filter"
                            onfocus="this.placeholder=''"
-                           onblur="this.placeholder='insert email to filter'"
+                           onblur="this.placeholder='type your filter'"
                            class="textinput textInput form-control">
                 </form>
             </div>
@@ -28,37 +28,33 @@
         <tbody>
         <tr>
             <th>
-                {% trans "Date" %}
+                Date
             </th>
             <th>
-                #
+                Application
             </th>
             <th>
-                {% trans "Application/Event" %}
+                Event
             </th>
             <th>
-                {% trans "Subscriber" %}
+                Subscriber
             </th>
             <th>
-                {% trans "Channel" %}
+                Channel
             </th>
             <th>
-                {% trans "Confirmed" %}
-            </th>
-            <th>
-                {% trans "Status" %}
+                Status
             </th>
         </tr>
         {% for entry in object_list %}
             <tr>
                 <td>
-                    {{ entry.timestamp|date:"j M Y H:i" }}
+                    {{ entry.timestamp }}
                 </td>
                 <td>
-                    {{ entry.occurence_id }}
+                    {{ entry.application }}
                 </td>
                 <td>
-                    {{ entry.application }}<br/>
                     {{ entry.event }}
                 </td>
                 <td>
@@ -68,18 +64,7 @@
                     {{ entry.channel }}
                 </td>
                 <td>
-                    {% if entry.need_confirmation %}
-                        {{ entry.confirmed|default_if_none:"No" }}
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </td>
-                <td>
                     {{ entry.get_status_display }}
-                    {% if entry.status < 100 %}
-                    ({{ entry.reminders }}/{{ entry.max_reminders }})
-                    {{ entry.next_sent|date:"H:i:s" }}
-                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

@@ -61,6 +61,7 @@ class Notification(models.Model):
     REMIND = 21  # Reminder scheduled
 
     WAIT = 88
+    WRONG_ADDRESS = 98
     EXPIRED = 99
     CONFIRMED = 101  # confirmation received / or single successful sent with no confirmations
     COMPLETE = 100  # confirmation received / or single successful sent with no confirmations
@@ -69,6 +70,7 @@ class Notification(models.Model):
                 (RETRY, _('Retry')),
                 (REMIND, _('Remind')),
                 (WAIT, _('Waiting confirmation')),
+                (WRONG_ADDRESS, _('Address not confirmed')),
                 (EXPIRED, _('Expired')),
                 (COMPLETE, _('Complete')),
                 (CONFIRMED, _('Confirmed')),

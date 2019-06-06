@@ -33,9 +33,11 @@ class ErrorEntry(models.Model):
     actor_object_id = models.PositiveIntegerField(null=True, blank=True)
     actor = GenericForeignKey('actor_content_type', 'actor_object_id')
 
-    # target_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
-    # target_object_id = models.PositiveIntegerField(null=True, blank=True)
-    # target = GenericForeignKey('target_content_type', 'target_object_id')
+    target_content_type = models.ForeignKey(ContentType,
+                                            related_name='+',
+                                            on_delete=models.CASCADE, null=True, blank=True)
+    target_object_id = models.PositiveIntegerField(null=True, blank=True)
+    target = GenericForeignKey('target_content_type', 'target_object_id')
 
     data = JSONField(blank=True, null=True)
     message = models.TextField(blank=True, null=True)
