@@ -117,11 +117,11 @@ def process_notifications(self):
                 for notification in Notification.objects.pending().filter(**filters):
                     page.append(notification.pk)
                     if len(page) == partition:
-                        chord_pages.append(send_page.s(channel.pk, occurence.pk, page))
+                        chord_pages.append(send_page.s(occurence.pk, channel.pk, page))
                         page = []
 
                 if page:
-                    chord_pages.append(send_page.s(channel.pk, occurence.pk, page))
+                    chord_pages.append(send_page.s(occurence.pk, channel.pk, page))
             lock.release()
         else:
             print(f'Cannot process {occurence}. Lock found')

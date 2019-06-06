@@ -82,6 +82,7 @@ viberbot = "*"
 redis-timeseries = "*"
 celery-once = "*"
 slackclient = "*"
+jinja2 = "*"
 
 [dev-packages]
 bumpversion = "*"

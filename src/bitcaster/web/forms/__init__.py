@@ -4,6 +4,8 @@ from .applicationmember import ApplicationMemberForm
 from .channel import ChannelForm
 from .event import (EventCreateSelectChannel, EventCreateSetupMessage,
                     EventForm, EventTriggerForm,)
+from .file_getter import (FileGetterCreate1, FileGetterForm,
+                          FileGetterUpdateConfigurationForm,)
 from .invitations import OrganizationInvitationForm
 from .key import ApplicationTriggerKeyForm
 from .message import MessageForm

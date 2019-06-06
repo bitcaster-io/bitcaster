@@ -7,6 +7,7 @@ from .channel import ChannelAdmin
 from .counters import CounterAdmin, OccurenceAdmin
 from .errorentry import ErrorEntry
 from .event import EventAdmin
+from .file_getter import FileGetter
 from .invitation import InvitationAdmin
 from .message import MessageAdmin
 from .monitor import MonitorAdmin

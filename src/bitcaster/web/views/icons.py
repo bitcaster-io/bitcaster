@@ -6,6 +6,7 @@ from django.templatetags.static import static
 from django.views.decorators.cache import cache_page
 from strategy_field.utils import import_by_name
 
+import bitcaster
 from bitcaster.models import Channel
 
 
@@ -19,17 +20,16 @@ def resource(path):
     return
 
 
-# @cache_page(60 * 60 * 24, key_prefix=bitcaster.get_full_version())
+@cache_page(60 * 60 * 24, key_prefix=bitcaster.get_full_version())
 def plugin_icon(request, fqn):
     try:
         h = import_by_name(fqn)
     except (ImportError, AttributeError, ValueError):
         return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))
-
     if h.icon and h.icon.startswith('/'):
         return HttpResponseRedirect(static(h.icon))
     elif h.icon:
-        icon = Path(settings.STATIC_ROOT) / f'bitcaster/images/icons/{h.icon}.png'
+        icon = Path(settings.STATIC_ROOT) / f'bitcaster/images/icons/{h.icon}'
     else:
         name = fqn.split('.')[-1]
         icon = Path(settings.STATIC_ROOT) / f'bitcaster/images/icons/{name.lower()}.png'

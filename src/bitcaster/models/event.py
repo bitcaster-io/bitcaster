@@ -51,6 +51,11 @@ class Event(ReverseWrapperMixin, AbstractModel):
                                               default=POLICIES.FREE)
     limit_to_teams = models.ManyToManyField(ApplicationTeam)
     core = models.BooleanField(default=False)
+    # Attachment
+    # attachment = RetrieverField(blank=True, null=True)
+    attachment = models.ForeignKey('bitcaster.FileGetter',
+                                   on_delete=models.SET_NULL,
+                                   blank=True, null=True)
 
     # Retrying
     retry_interval = models.IntegerField(default=0, validators=[MinValueValidator(0)])

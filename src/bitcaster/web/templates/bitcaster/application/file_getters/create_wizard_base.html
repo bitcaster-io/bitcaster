@@ -1,0 +1,31 @@
+{% extends "bitcaster/application/base.html" %}{% load i18n crispy_forms_tags bc_wizard %}
+
+{% block head %}
+    {{ wizard.form.media }}
+{% endblock %}
+
+{% block page %}
+    <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+    <form action="" method="post" id="form">{% csrf_token %}
+        {{ wizard.management_form }}
+        <div class="container-fluid" id="handler-list">
+            {% block wizard-content %}
+            {% endblock wizard-content %}
+        </div>
+        {% block wizard-buttons %}
+            <div class="col-2">
+            {% if wizard.steps.next %}
+            {% else %}
+                <input type="submit" class="btn btn-primary"
+                       style="float: right"
+                       value="{% trans "Save" %}"/>
+            {% endif %}
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit"
+                        class="btn btn-secondary"
+                        value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
+            {% endif %}
+            </div>
+        {% endblock %}
+    </form>
+{% endblock %}

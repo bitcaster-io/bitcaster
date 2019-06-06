@@ -1,4 +1,4 @@
-{% extends "bitcaster/application/monitors/create_wizard_base.html" %}{% load i18n crispy_forms_filters %}
+{% extends "bitcaster/application/file_getters/create_wizard_base.html" %}{% load i18n crispy_forms_filters %}
 
 {% block wizard-content %}
     <div class="row">
@@ -10,10 +10,6 @@
                         <div>
                             <label>{{ handler.name }}</label>
                         </div>
-{#                        <div class="pull-right">#}
-{#                            <a  rel="modal:open" href="{% url "plugin-info" handler.fqn %}">#}
-{#                            <i class="fa fa-info"></i></a>#}
-{#                        </div>#}
                     </div>
                 </a>
             </div>

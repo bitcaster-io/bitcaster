@@ -7,6 +7,7 @@ from .channel import Channel
 from .counters import Counter
 from .error import ErrorEntry
 from .event import Event
+from .file_getter import FileGetter
 from .invitation import Invitation
 from .message import Message
 from .metadata import AgentMetaData, DispatcherMetaData

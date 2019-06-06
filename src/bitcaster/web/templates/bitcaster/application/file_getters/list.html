@@ -1,0 +1,45 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
+{% block page %}
+    {% check_permissions application %}
+    {% if permissions.manage_monitor %}
+        <div class="container">
+            <div class="row col-12">
+                <div class="pull-right col-12 p-4">
+                    <a class="btn btn-danger btn-small pull-right"
+                       href="{{ application.urls.filegetter_create }}">{% trans "Create FileGetter" %}</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <table class="table table-striped table-hover col-12 channel-list">
+        <tbody>
+        {% for monitor in object_list %}
+            <tr>
+                <td>
+                    {% if monitor.handler %}
+                        <img width="100" class="{% if not monitor.enabled %}blur{% endif %}"
+                             height="100"
+                             src="{% url "plugin-icon" monitor.handler.fqn %}">
+                    {% endif %}
+                </td>
+                <td>
+                    {{ monitor.name }}
+                </td>
+                <td style="width:30%" class="nowrap formset-commands">
+                    {% if monitor.handler %}
+                        {% button monitor.urls.delete True "far fa-trash-alt" "delete" %}
+                        {% button monitor.urls.edit True "fas fa-wrench" "configure" %}
+                        {% button monitor.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" monitor.enabled %}
+
+{#                        {% button monitor.urls.poll True "fas fa-broadcast-tower" "poll" %}#}
+{#                        {% button monitor.urls.test True "fas fa-terminal" "test" %}#}
+
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+{% endblock %}

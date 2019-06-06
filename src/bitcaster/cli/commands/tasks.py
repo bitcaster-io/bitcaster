@@ -30,12 +30,20 @@ def run(name, args, sync):
     from bitcaster.celery import app
     if name.isdigit():
         name = get_tasks()[name]
+    elif '.' not in name:
+        name = next(filter(lambda n: n.endswith(name), get_tasks().values()))
 
     task = app.tasks[name]
     click.echo('Running %s' % name)
+    parsed_args = []
+    for a in args:
+        if a.startswith('[') and a.endswith(']'):
+            parsed_args.append((a[1:-1]).split(','))
+        else:
+            parsed_args.append(a)
     try:
         if sync:
-            ret = task(*args)
+            ret = task(*parsed_args)
             click.echo(ret)
         else:
             ret = task.delay()

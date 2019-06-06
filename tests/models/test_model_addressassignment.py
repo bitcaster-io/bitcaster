@@ -6,5 +6,5 @@ pytestmark = pytest.mark.django_db
 
 
 def test_addressassignment():
-    addr = AddressAssignment(address=Address(address='address'))
-    assert str(addr)
+    addr = AddressAssignment(address=Address(address='address', label='label'))
+    assert str(addr) == 'label'

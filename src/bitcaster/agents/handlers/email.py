@@ -79,7 +79,8 @@ class EmailAbstractOptions(AgentOptions):
     policy = serializers.ChoiceField(((MOVE, _('Move processed')),
                                       (DELETE, _('Delete processed')),
                                       (READ, _('Mark as read')),
-                                      ), )
+                                      ),
+                                     default=READ)
 
     processed_folder = serializers.CharField(default='processed')
 

@@ -8,8 +8,6 @@ from sentry_sdk import capture_exception
 from bitcaster import get_full_version
 from bitcaster.configurable import ConfigurableMixin, get_full_config
 from bitcaster.exceptions import PluginValidationError
-from bitcaster.utils.language import classproperty
-from bitcaster.utils.reflect import fqn
 
 from . import serializers
 
@@ -38,6 +36,7 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     options_class = DispatcherOptions
     message_class = MessageType
     need_verification = True
+    handle_attachments = False
     icon = None
     __media__ = None
     __help__ = ''
@@ -45,10 +44,6 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     def __init__(self, owner=None):
         super().__init__(owner)
         self.logger = getLogger('bitcaster.plugins.%s' % self.name)
-
-    @classproperty
-    def fqn(cls):
-        return fqn(cls)
 
     @abc.abstractmethod
     def _get_connection(self) -> object:

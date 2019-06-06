@@ -31,7 +31,7 @@ class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ('name', 'description', 'channels', 'subscription_policy',
-                  'allow_attachments',
+                  'attachment',
                   'need_confirmation',
                   'reminders',
                   'reminder_interval', 'event_expiration')
@@ -41,7 +41,6 @@ class EventForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         enabled_dispatcher = DispatcherMetaData.objects.filter(enabled=True).values_list('handler',
                                                                                          flat=True)
-        # enabled_dispatcher = []
         self.fields['channels'].queryset = Channel.objects.selectable(self.application,
                                                                       handler__in=enabled_dispatcher)
 

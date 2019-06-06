@@ -14,6 +14,7 @@ from fernet_fields import hkdf
 from strategy_field.fields import StrategyField
 
 from bitcaster.agents.registry import agent_registry
+from bitcaster.attachments.registry import registry as retriever_registry
 from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.exceptions import HandlerNotFound
 from bitcaster.file_storage import AvatarFileSystemStorage
@@ -23,15 +24,6 @@ from bitcaster.security import ROLES
 from ..forms.fields import DispatcherFormField
 
 logger = logging.getLogger(__name__)
-
-
-#
-# class JSONFormField(_JSONFormField):
-#     widget = JSONEditor
-#
-#     def __init__(self, *av, **kw):
-#         kw['widget'] = self.widget  # force avoiding widget override
-#         super().__init__(*av, **kw)
 
 
 class EncryptedJSONField(_JSONField):
@@ -195,21 +187,23 @@ class AvatarField(models.ImageField):
         kwargs.setdefault('width_field', 'picture_width')
         super().__init__(verbose_name, name, **kwargs)
 
-    # def generate_filename(self, instance, filename):
-    #     filename = super().generate_filename(instance, filename)
-    #     if instance.pk:
-    #         ext = os.path.splitext(filename)[1]
-    #         filename = f"{instance.pk}.{ext}"
-    #     return filename
 
-    # def save_form_data(self, instance, data):
-    #     super().save_form_data(instance, data)
-#
-#
-#
-# avatar = models.ImageField(blank=True, null=True,
-#                             upload_to=app_media_root,
-#                             storage=AvatarFileSystemStorage(),
-#                             height_field='picture_height',
-#                             width_field='picture_width'
-#                             )
+class RetrieverField(StrategyField):
+    # form_class = RetrieverFormField
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault('verbose_name', 'Retriever')
+        kwargs.setdefault('display_attribute', 'name')
+        kwargs.setdefault('import_error', handler_not_found)
+        kwargs.setdefault('registry', retriever_registry)
+        super().__init__(**kwargs)
+
+    def __eq__(self, other):
+        if isinstance(other, Field):
+            return self.creation_counter == other.creation_counter
+
+    def formfield(self, form_class=None, choices_form_class=None, **kwargs):
+        return super().formfield(form_class, choices_form_class, **kwargs)
+
+    def __hash__(self):
+        return hash(self.__str__())

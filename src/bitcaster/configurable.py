@@ -6,7 +6,7 @@ from rest_framework.serializers import Serializer
 
 from bitcaster.exceptions import PluginValidationError
 from bitcaster.utils.language import classproperty
-from bitcaster.utils.reflect import package_name
+from bitcaster.utils.reflect import fqn, package_name
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +53,10 @@ class ConfigurableMixin:
     def __init__(self, owner=None):
         self.owner = owner
         self._config = None
+
+    @classproperty
+    def fqn(cls):
+        return fqn(cls)
 
     def get_options_form(self, **kwargs):
         if self.owner:

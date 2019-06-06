@@ -167,6 +167,23 @@ urlpatterns = [
     # Log
     path('o/<slug:org>/a/<slug:app>/log/', views.ApplicationLog.as_view(), name='app-log'),
 
+    # views.Applications / FileGetter
+    path('<slug:org>/a/<slug:app>/files/', views.ApplicationFileGetterList.as_view(), name='app-filegetters'),
+    path('<slug:org>/a/<slug:app>/files/add/', views.ApplicationFileGetterCreate.as_view(), name='app-filegetter-create'),
+    path('<slug:org>/a/<slug:app>/files/<int:pk>/usage/', views.ApplicationFileGetterUsage.as_view(),
+         name='app-filegetter-usage'),
+    path('<slug:org>/a/<slug:app>/files/<int:pk>/edit/', views.ApplicationFileGetterUpdate.as_view(),
+         name='app-filegetter-edit'),
+    path('<slug:org>/a/<slug:app>/files/<int:pk>/delete/', views.ApplicationFileGetterRemove.as_view(),
+         name='app-filegetter-delete'),
+    path('<slug:org>/a/<slug:app>/files/<int:pk>/toggle/', views.ApplicationFileGetterToggle.as_view(),
+         name='app-filegetter-toggle'),
+    path('<slug:org>/a/<slug:app>/files/<int:pk>/poll/', views.ApplicationFileGetterPoll.as_view(),
+         name='app-filegetter-poll'),
+
+    path('<slug:org>/a/<slug:app>/files/<int:pk>/test/', views.ApplicationFileGetterTest.as_view(),
+         name='app-filegetter-test'),
+
     # views.Applications / Monitors
     path('<slug:org>/a/<slug:app>/monitors/', views.ApplicationMonitorList.as_view(), name='app-monitors'),
     path('<slug:org>/a/<slug:app>/monitor/add/', views.ApplicationMonitorCreate.as_view(), name='app-monitor-create'),

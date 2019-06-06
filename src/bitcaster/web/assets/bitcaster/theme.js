@@ -37,6 +37,7 @@ import './images/icons/xmpp.png';
 import './images/icons/whatsapp.png';
 import './images/icons/yammer.png';
 import './images/icons/zulip.png';
+import './images/icons/paperclip.png';
 
 // import './images/icons/*.*';
 

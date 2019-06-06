@@ -29339,6 +29339,17 @@ module.exports = __webpack_require__.p + "images/icons/hangout.png";
 
 /***/ }),
 
+/***/ "./bitcaster/images/icons/paperclip.png":
+/*!**********************************************!*\
+  !*** ./bitcaster/images/icons/paperclip.png ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "images/icons/paperclip.png";
+
+/***/ }),
+
 /***/ "./bitcaster/images/icons/plivo.png":
 /*!******************************************!*\
   !*** ./bitcaster/images/icons/plivo.png ***!
@@ -29643,6 +29654,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _images_icons_yammer_png__WEBPACK_IMPORTED_MODULE_30___default = /*#__PURE__*/__webpack_require__.n(_images_icons_yammer_png__WEBPACK_IMPORTED_MODULE_30__);
 /* harmony import */ var _images_icons_zulip_png__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./images/icons/zulip.png */ "./bitcaster/images/icons/zulip.png");
 /* harmony import */ var _images_icons_zulip_png__WEBPACK_IMPORTED_MODULE_31___default = /*#__PURE__*/__webpack_require__.n(_images_icons_zulip_png__WEBPACK_IMPORTED_MODULE_31__);
+/* harmony import */ var _images_icons_paperclip_png__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./images/icons/paperclip.png */ "./bitcaster/images/icons/paperclip.png");
+/* harmony import */ var _images_icons_paperclip_png__WEBPACK_IMPORTED_MODULE_32___default = /*#__PURE__*/__webpack_require__.n(_images_icons_paperclip_png__WEBPACK_IMPORTED_MODULE_32__);
+
 
 
 

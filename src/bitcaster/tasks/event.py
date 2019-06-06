@@ -15,7 +15,7 @@ from bitcaster.exceptions import LogicError
 from bitcaster.template.secure_context import SecureContext
 from bitcaster.tsdb.api import (log_error_channel, log_error_event,
                                 log_error_notification, log_error_occurence,
-                                log_new_notifications, log_sent_notification,)
+                                log_new_notifications,)
 from bitcaster.utils.http import absolute_uri
 
 logger = getLogger(__name__)
@@ -39,32 +39,31 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
                                           enabled=True):
         if not channel.enabled:
             log_error_channel(channel, "Channel '%(channel)s' is disabled")
-            # channel.register_error("Channel '%s' is disabled" % channel)
             logger.error("Channel '%s' is disabled" % channel)
             continue
         if not DispatcherMetaData.objects.get(handler=channel.handler).enabled:
             log_error_channel(channel, "Channel '%(channel)s' is using a disabled dispatcher")
-            # channel.register_error("Channel '%s' is using a disabled dispatcher" % channel)
             logger.error("Channel '%s' is using a disabled dispatcher" % channel)
             continue
         try:
             logger.debug("Channel '%s' scheduled" % channel)
-            create_notifications_for_channel.apply_async(args=[channel.pk,
-                                                               event.pk,
-                                                               occurence.pk,
+            create_notifications_for_channel.apply_async(args=[occurence.pk,
+                                                               channel.pk,
                                                                context])
         except Exception as e:
             log_error_channel(channel, str(e))
             process_exception(e)
             logger.exception(e)
+    return True
 
 
 @app.task()
-def create_notifications_for_channel(channel_pk, event_pk, occurence_pk, context):
-    from bitcaster.models import Channel, Event, Message, Notification
+def create_notifications_for_channel(occurence_pk, channel_pk, context):
+    from bitcaster.models import Channel, Message, Notification, Occurence
 
     channel = Channel.objects.get(pk=channel_pk)
-    event = Event.objects.get(pk=event_pk)
+    occurence = Occurence.objects.select_related('event').get(pk=occurence_pk)
+    event = occurence.event
     logger.debug(f'Processing channel {channel}')
     try:
         message = channel.messages.get(event=event)
@@ -111,6 +110,11 @@ def create_notifications_for_channel(channel_pk, event_pk, occurence_pk, context
             message = body_template.render(SecureContext(ctx))
             subject = subject_template.render(SecureContext(ctx))
             address = channel.handler.get_recipient_address(subscription)
+            attachments = None
+            if event.attachment and channel.handler.handle_attachments:
+                file_getter = event.attachment
+                attachment = file_getter.handler.get(subscription)
+                attachments = [attachment]
 
             notification_kwargs = {'channel': channel,
                                    'event_id': event.pk,
@@ -119,6 +123,7 @@ def create_notifications_for_channel(channel_pk, event_pk, occurence_pk, context
                                    'reminders_timestamps': timezone.now().strftime('%d-%b-%Y %H:%M'),
                                    'max_reminders': event.reminders,
                                    'reminders': 0,
+                                   'attachments': attachments,
                                    'subscription_id': subscription.pk,
                                    'address': address,
                                    'next_sent': timezone.now(),
@@ -149,7 +154,7 @@ def create_notifications_for_channel(channel_pk, event_pk, occurence_pk, context
 
 
 @app.task(bind=True)
-def send_page(self, channel_pk: int, occurence_pk: int, page: list):
+def send_page(self, occurence_pk: int, channel_pk: int, page: list):
     from bitcaster.models import Channel, Notification
     channel = Channel.objects.get(pk=channel_pk)
     handler = channel.handler
@@ -171,8 +176,9 @@ def send_page(self, channel_pk: int, occurence_pk: int, page: list):
             channel.handler.emit(notification.address,
                                  subject,
                                  message,
+                                 attachments=notification.attachments,
                                  connection=conn)
-            log_sent_notification(notification)
+            # log_sent_notification(notification)
         except Exception as e:
             capture_exception(e)
             logger.exception(e)

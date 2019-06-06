@@ -2,7 +2,7 @@ import smtplib
 from logging import getLogger
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.mail import get_connection, send_mail
+from django.core.mail import EmailMultiAlternatives, get_connection, send_mail
 from rest_framework import serializers
 
 from bitcaster.api.fields import PasswordField
@@ -61,9 +61,23 @@ class Email(CoreDispatcher):
         except (ObjectDoesNotExist, TypeError):  # pragma: no cover
             return subscription.subscriber.email
 
-    def emit(self, address, subject, message, connection=None, *args, **kwargs) -> str:
+    def emit(self, address, subject, message, connection=None, attachments=None,
+             html_message=None,
+             *args, **kwargs) -> str:
         try:
             connection = connection or self._get_connection()
+            mail = EmailMultiAlternatives(subject=subject,
+                                          body=message,
+                                          from_email=self.config['sender'],
+                                          to=[address],
+                                          connection=connection)
+            if attachments:
+                for attachment in attachments:
+                    mail.attach(attachment.name, attachment.read(), attachment.content_type)
+            if html_message:
+                mail.attach_alternative(html_message, 'text/html')
+
+            mail.send()
             send_mail(subject=subject,
                       message=message,
                       connection=connection,

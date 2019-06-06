@@ -30,6 +30,7 @@ class GmailOptions(DispatcherOptions):
 class Gmail(Email):
     options_class = GmailOptions
     message_class = EmailMessage
+    handle_attachments = True
     icon = None
     __help__ = _("""Simplified Email dispatcher for GMail accounts.
 

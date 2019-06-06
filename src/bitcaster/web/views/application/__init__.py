@@ -1,5 +1,12 @@
 from .app import (ApplicationCheckConfigView, ApplicationDashboard,
                   ApplicationDeleteView, ApplicationUpdateView,)
+from .file_getter import (ApplicationFileGetterCreate,
+                          ApplicationFileGetterList, ApplicationFileGetterPoll,
+                          ApplicationFileGetterRemove,
+                          ApplicationFileGetterTest,
+                          ApplicationFileGetterToggle,
+                          ApplicationFileGetterUpdate,
+                          ApplicationFileGetterUsage,)
 from .invitations import (ApplicationInvitationDelete,
                           ApplicationInvitationSend, ApplicationInvite,)
 from .keys import (ApplicationKeyCreate, ApplicationKeyDelete,
