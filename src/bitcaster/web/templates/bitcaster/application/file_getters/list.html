@@ -27,10 +27,9 @@
                 </td>
                 <td style="width:30%" class="nowrap formset-commands">
                     {% if monitor.handler %}
-                        {% button monitor.urls.delete True "far fa-trash-alt" "delete" %}
                         {% button monitor.urls.edit True "fas fa-wrench" "configure" %}
+                        {% button monitor.urls.delete True "far fa-trash-alt" "delete" %}
                         {% button monitor.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" monitor.enabled %}
-
 {#                        {% button monitor.urls.poll True "fas fa-broadcast-tower" "poll" %}#}
 {#                        {% button monitor.urls.test True "fas fa-terminal" "test" %}#}
 

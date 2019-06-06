@@ -35,7 +35,7 @@ class BasicParser(Parser):
 
 
 class ExtendedParser(Parser):
-    name = 'Basic'
+    name = 'Extended'
 
     @classmethod
     def parse(self, tpl, ctx):
@@ -68,8 +68,8 @@ class RetrieverOptions(serializers.Serializer):
     PARSER_EXTENDED = 2
     PARSER_JINJA = 3
     PARSERS = {PARSER_PLAIN: Parser,
-               PARSER_BASIC: BasicParser,
-               PARSER_EXTENDED: ExtendedParser,
+               # PARSER_BASIC: BasicParser,
+               # PARSER_EXTENDED: ExtendedParser,
                PARSER_JINJA: JinjaParser}
 
     parser = serializers.ChoiceField([(i, n.name) for i, n in PARSERS.items()], default=1)

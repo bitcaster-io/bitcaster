@@ -1,0 +1,27 @@
+<div class="col-2">
+    <ul>
+        <li class="name">
+            <div class="label">Name</div>
+            {{ handler.name }}
+            {% if channel.handler.url %}
+                <a class="url" href="{{ handler.url }}">{{ handler.url }}</a>
+            {% endif %}
+        </li>
+        <li class="author">
+            <div class="label">Author</div>
+            {{ handler.author }}</li>
+        <li class="version">
+            <div class="label">Version</div>
+            {{ handler.version }}</li>
+        <li class="version">
+            <div class="label">License</div>
+            {{ handler.license }}</li>
+        {#    <a rel="modal:open" href="{% url "plugin-info" handler.fqn %}">#}
+        {#        <i class="fa fa-info">&nbsp;</i> Info </a>#}
+    </ul>
+    <a class="btn btn-light pointer" rel="modal:open" data-toggle="tooltip" title="Info"
+            data-remote="{% url "plugin-info" handler.fqn %}">
+        <i class="fas fa-info pointer"></i> Info
+    </a>
+
+</div>

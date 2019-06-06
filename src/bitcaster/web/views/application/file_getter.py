@@ -37,6 +37,7 @@ class FileGetterMixin(SelectedApplicationMixin):
 
 class ApplicationFileGetterList(FileGetterMixin, BitcasterBaseListView):
     template_name = 'bitcaster/application/file_getters/list.html'
+    title = _('File Getters')
 
 
 class ApplicationFileGetterUsage(FileGetterMixin, BitcasterBaseDetailView):
@@ -46,7 +47,7 @@ class ApplicationFileGetterUsage(FileGetterMixin, BitcasterBaseDetailView):
 class ApplicationFileGetterUpdate(FileGetterMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/file_getters/form.html'
     form_class = FileGetterUpdateConfigurationForm
-    # title = _('Edit FileGetter')
+    title = _('Edit FileGetter')
     permissions = ['manage_filegetter']
 
     def get_form_kwargs(self):

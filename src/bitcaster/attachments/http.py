@@ -8,11 +8,11 @@ from .registry import registry
 
 
 class HttpOptions(RetrieverOptions):
-    username = serializers.CharField(allow_blank=True, required=False)
-    password = serializers.CharField(allow_blank=True, required=False)
-
     url_pattern = serializers.CharField()
     name_pattern = serializers.CharField()
+
+    username = serializers.CharField(allow_blank=True, required=False)
+    password = serializers.CharField(allow_blank=True, required=False)
 
 
 @registry.register
