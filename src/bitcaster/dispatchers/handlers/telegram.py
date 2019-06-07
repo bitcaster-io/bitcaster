@@ -104,8 +104,9 @@ class Telegram(CoreDispatcher):
         #     raise ValueError
         from bitcaster.models import User
         user = User.objects.get(assignments__address__address=address)
+        if not user.storage:
+            user.storage = {}
         chat_id = user.storage.get(fqn(self), None)
-        # username = self.get_recipient_address(subscription)
         if not chat_id:
             logger.info('No chat_id')
             url = self._get_url('getUpdates')

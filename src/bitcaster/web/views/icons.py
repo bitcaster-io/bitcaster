@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from django.conf import settings
@@ -8,6 +9,8 @@ from strategy_field.utils import import_by_name
 
 import bitcaster
 from bitcaster.models import Channel
+
+logger = logging.getLogger(__name__)
 
 
 @cache_page(60 * 60 * 24)
@@ -24,8 +27,10 @@ def resource(path):
 def plugin_icon(request, fqn):
     try:
         h = import_by_name(fqn)
-    except (ImportError, AttributeError, ValueError):
+    except (ImportError, AttributeError, ValueError) as e:
+        logger.error(e)
         return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))
+
     if h.icon and h.icon.startswith('/'):
         return HttpResponseRedirect(static(h.icon))
     elif h.icon:

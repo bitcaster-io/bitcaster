@@ -26,6 +26,7 @@ import './images/icons/email.png';
 import './images/icons/facebook.png';
 import './images/icons/gmail.png';
 import './images/icons/hangout.png';
+import './images/icons/paperclip.png';
 import './images/icons/plivo.png';
 import './images/icons/plugin.png';
 import './images/icons/skype.png';
@@ -33,11 +34,11 @@ import './images/icons/slack.png';
 import './images/icons/telegram.png';
 import './images/icons/twilio.png';
 import './images/icons/twitter.png';
-import './images/icons/xmpp.png';
 import './images/icons/whatsapp.png';
+import './images/icons/xmpp.png';
 import './images/icons/yammer.png';
+import './images/icons/viber.png';
 import './images/icons/zulip.png';
-import './images/icons/paperclip.png';
 
 // import './images/icons/*.*';
 

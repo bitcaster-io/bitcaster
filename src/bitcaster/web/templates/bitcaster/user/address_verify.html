@@ -9,16 +9,11 @@
 </div>
 <style>
     .confirmation_code {
-    {#display: table;#} width: 600px;
-        alignment: center;
-        text-align: center;
-        display: flex;
-        justify-content: space-around;
+    {#display: table;#}{#    width: 600px;#}{#    alignment: center;#}{#    text-align: center;#}{#    display: flex;#}{#    justify-content: space-around;#}
     }
 
     .confirmation_code_group {
-        display: flex;
-        width: 200px;
+    {#display: flex;#}{#width: 200px;#}
     }
 
     .confirmation_code_span_cell {
@@ -44,34 +39,35 @@
         {% trans "Warning: cannot send verification codes as channel is disabled. Ask your administrator to enable it first" %}
     {% elif handler.need_verification %}
         <div class=" row col-12">
-            <div class="container-fluid p-3">
+            <div class="container-fluid p-1">
                 <form action="#">
                     {% csrf_token %}
                     <input type="hidden" name="code" value=""
                            placeholder="code"
                            class="textinput textInput form-control">
 
-                    <div class="confirmation_code split_input large_bottom_margin" data-multi-input-code="true">
+                    <div class="text-center " data-multi-input-code="true">
                         <div class="confirmation_code_group">
                             <input type="text" class="inline_input first" maxlength="1" tabindex="1">
                             <input type="text" class="inline_input" maxlength="1" tabindex="2">
                             <input type="text" class="inline_input" maxlength="1" tabindex="3">
-                            <div class="confirmation_code_span_cell">—</div>
+                            <div class="confirmation_code_span_cell d-inline">—</div>
                             <input type="text" class="inline_input" maxlength="1" tabindex="4">
                             <input type="text" class="inline_input" maxlength="1" tabindex="5">
                             <input type="text" class="inline_input" maxlength="1" tabindex="6">
                         </div>
                     </div>
-                    <div class="row p-3">
-                        <div class="col-9">
-                            <button id="resend" type="button"
-                                    class="btn btn-outline-success">{% trans "Send Code" %}</button>
-                        </div>
+                    <div class="text-center">
+                        <button id="resend" type="button" tabindex="0"
+                                class="w-50 btn btn-outline-success">{% trans "Send Code" %}</button>
+                    </div>
+                    <div class="row p-1 pt-3">
+                        <div class="col-9"></div>
                         <div class="col-3">
-
                             <button id="verify" tabindex="7" type="button"
                                     class="btn btn-primary">{% trans "Verify Address" %}</button>
-
+                        </div>
+                        <div class="col-9">
                         </div>
                     </div>
 
@@ -85,108 +81,107 @@
     <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Close" %}</button>
 </div>
 {% if channel_enabled %}
-<script>
-    $(function () {
-        $('#modalWindow').on('shown.bs.modal', function (e) {
-            $(".inline_input.first").focus();
-        });
-        var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+    <script>
+        $(function () {
+            $('#modalWindow').on('shown.bs.modal', function (e) {
+                $(".inline_input.first").focus();
+            });
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
 
-        function csrfSafeMethod(method) {
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
+            function csrfSafeMethod(method) {
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
 
-        function pasteCode(value) {
-            if (value.length === 6) {
-                for (var i = 0; i < 6; i++) {
-                    $($('input.inline_input')[i]).val(value.charAt(i));
-                }
-                $('#verify').focus();
-            }
-        }
-
-        $(".inline_input").keyup(function (e) {
-            console.log(e.which);
-            if (e.which === 8) {
-                var elem = $('input, button')[$('input,button').index(this) - 1];
-                $(elem).focus().val('');
-            }
-            if (e.which !== 8 && isNaN(String.fromCharCode(e.which))) {
-                event.preventDefault(); //stop character from entering input
-                return
-            }
-            if ((e.which >= 48) && (e.which <= 65)) {
-                if (this.value.length === 1) {
-                    $('input, button')[$('input,button').index(this) + 1].focus();
+            function pasteCode(value) {
+                if (value.length === 6) {
+                    for (var i = 0; i < 6; i++) {
+                        $($('input.inline_input')[i]).val(value.charAt(i));
+                    }
+                    $('#verify').focus();
                 }
             }
-        }).on('paste', function (e) {
-            var dt = e.originalEvent.clipboardData;
-            if (dt && dt.items && dt.items[0]) {
-                dt.items[0].getAsString(function (text) {
-                    pasteCode(text);
-                });
-            } else if (dt && 'getData' in dt) {
-                pasteCode(dt.getData('text'));
-            }
 
-        });
-
-        function getInput(e) {
-            var clip = $(e.target).val();
-            alert(clip);
-            $(e.target).unbind('keyup');
-        }
-
-        $.ajaxSetup({
-            beforeSend: function (xhr, settings) {
-                $('#message').html('');
-
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            $(".inline_input").keyup(function (e) {
+                if (e.which === 8) {
+                    var elem = $('input, button')[$('input,button').index(this) - 1];
+                    $(elem).focus().val('');
                 }
-            }
-        });
-        $('#verify').on('click', function (e) {
-            var code = '';
-            $('.inline_input').each(function () {
-                code += this.value;
+                if (e.which !== 8 && isNaN(String.fromCharCode(e.which))) {
+                    event.preventDefault(); //stop character from entering input
+                    return
+                }
+                if ((e.which >= 48) && (e.which <= 65)) {
+                    if (this.value.length === 1) {
+                        $('input, button')[$('input,button').index(this) + 1].focus();
+                    }
+                }
+            }).on('paste', function (e) {
+                var dt = e.originalEvent.clipboardData;
+                if (dt && dt.items && dt.items[0]) {
+                    dt.items[0].getAsString(function (text) {
+                        pasteCode(text);
+                    });
+                } else if (dt && 'getData' in dt) {
+                    pasteCode(dt.getData('text'));
+                }
+
             });
 
-            {#var code = $('input[name="code"]').val();#}
-            if (!code) {
-                return
+            function getInput(e) {
+                var clip = $(e.target).val();
+                alert(clip);
+                $(e.target).unbind('keyup');
             }
-            $.post('{% org-url "user-address-verify" object.pk %}', {code: code})
-                .done(function (data) {
-                    new Noty({
-                        type: 'success',
-                        theme: 'bootstrap-v4',
-                        closeWith: ['click', 'button'],
-                        layout: 'topRight',
-                        timeout: 1000,
-                        text: data.message,
-                    }).show();
-                    $('#modalWindow').modal('hide');
-                    $('[data-owner="btn-verify-{{ object.pk }}"]').hide();
-                })
-                .fail(function (resp, msg, data) {
-                    $('#message').addClass('red').html(resp.responseJSON.message);
-                })
-        });
-        $('#resend').on('click', function () {
-            $('input[type=number]').val('');
-            $.get('{% org-url "user-address-resend" object.pk %}')
-                .done(function (data) {
-                    $('#message').removeClass('red').html('Code sent to ' + data.recipient)
-                    $(".inline_input.first").focus();
 
-                })
-                .fail(function (resp, msg, data) {
-                    $('#message').addClass('red').html(resp.responseJSON.message);
-                })
-        });
-    });
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    $('#message').html('');
 
-</script>
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            $('#verify').on('click', function (e) {
+                var code = '';
+                $('.inline_input').each(function () {
+                    code += this.value;
+                });
+
+                {#var code = $('input[name="code"]').val();#}
+                if (!code) {
+                    return
+                }
+                $.post('{% org-url "user-address-verify" object.pk %}', {code: code})
+                    .done(function (data) {
+                        new Noty({
+                            type: 'success',
+                            theme: 'bootstrap-v4',
+                            closeWith: ['click', 'button'],
+                            layout: 'topRight',
+                            timeout: 1000,
+                            text: data.message,
+                        }).show();
+                        $('#modalWindow').modal('hide');
+                        $('[data-owner="btn-verify-{{ object.pk }}"]').hide();
+                    })
+                    .fail(function (resp, msg, data) {
+                        $('#message').addClass('red').html(resp.responseJSON.message);
+                    })
+            });
+            $('#resend').on('click', function () {
+                $('input[type=number]').val('');
+                $.get('{% org-url "user-address-resend" object.pk %}')
+                    .done(function (data) {
+                        $('#message').removeClass('red').html('Code sent to ' + data.recipient)
+                        $(".inline_input.first").focus();
+
+                    })
+                    .fail(function (resp, msg, data) {
+                        $('#message').addClass('red').html(resp.responseJSON.message);
+                    })
+            });
+        });
+
+    </script>
 {% endif %}

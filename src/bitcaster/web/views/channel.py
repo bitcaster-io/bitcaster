@@ -192,7 +192,10 @@ class ChannelTestView(MessageUserMixin, RedirectView):
             dispatcher = self.object.handler
             assignment = request.user.assignments.get(channel=self.object)
             # address = dispatcher.get_recipient_address(request.user)
-            address = dispatcher.emit(assignment.address.address, '-', 'test channel message', silent=False)
+            address = dispatcher.emit(assignment.address.address,
+                                      '-', 'test channel message',
+                                      user=request.user,
+                                      silent=False)
 
             msg = _("""Message sent to {}""").format(address)
             self.message_user(markdown(msg), messages.SUCCESS)
