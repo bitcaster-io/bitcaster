@@ -168,7 +168,7 @@
                         text: data.message,
                     }).show();
                     $('#modalWindow').modal('hide');
-                    $('a[data-owner="btn-verify-{{ object.pk }}"]').hide();
+                    $('[data-owner="btn-verify-{{ object.pk }}"]').hide();
                 })
                 .fail(function (resp, msg, data) {
                     $('#message').addClass('red').html(resp.responseJSON.message);
@@ -179,6 +179,8 @@
             $.get('{% org-url "user-address-resend" object.pk %}')
                 .done(function (data) {
                     $('#message').removeClass('red').html('Code sent to ' + data.recipient)
+                    $(".inline_input.first").focus();
+
                 })
                 .fail(function (resp, msg, data) {
                     $('#message').addClass('red').html(resp.responseJSON.message);
