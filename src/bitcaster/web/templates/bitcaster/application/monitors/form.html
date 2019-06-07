@@ -9,6 +9,7 @@
     <div class="container-fluid">
         <div class="row col-12">
             <div class="col-10">
+                {{ form.errors.non_field_errors }}
                 <form method="post" class="monitor-form">
                     {% csrf_token %}
                     {{ form|crispy }}

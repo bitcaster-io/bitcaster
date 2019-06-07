@@ -8,15 +8,16 @@ logger = logging.getLogger(__name__)
 
 
 class GMailOptions(EmailAbstractOptions):
-    pass
+    def get_agent(self):
+        return GMailAgent
 
 
 @agent_registry.register
 class GMailAgent(EmailAgent):
     options_class = GMailOptions
 
-    def _get_connection(self) -> object:  # pragma: no cover
-        config = self.config
+    def _get_connection(self, config=None) -> object:  # pragma: no cover
+        config = config or self.config
         imap = imaplib.IMAP4_SSL(host='imap.gmail.com', port=993)
         imap.login(config['username'], config['password'])
         return imap

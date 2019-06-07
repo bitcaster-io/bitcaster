@@ -17,6 +17,12 @@ class MonitorForm(forms.ModelForm):
         fields = ('name', 'handler', 'config', 'description',
                   'enabled',)
 
+    def __init__(self, *args, **kwargs):
+        self.serializer_class = kwargs.pop('serializer', None)
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.handler:
+            self.serializer_class = self.instance.handler.options_class
+
     def clean_enabled(self):
         value = self.cleaned_data['enabled']
         if value:
@@ -25,6 +31,12 @@ class MonitorForm(forms.ModelForm):
             elif not self.instance.is_configured:
                 raise ValidationError('Configure monitor before enable it')
         return value
+
+    def is_valid(self):
+        valid = super().is_valid()
+        if self.serializer_class:
+            valid = valid and self.serializer.is_valid()
+        return valid
 
 
 class MonitorCreate1(forms.ModelForm):
@@ -80,10 +92,11 @@ class MonitorUpdateConfigurationForm(forms.ModelForm):
             self.cleaned_data['config'] = self.serializer.data
             return self.serializer.data
 
-    # def is_valid(self):
-    #     valid = self.serializer.is_valid()
-    #     valid = valid and super().is_valid()
-    #     # if self.data:
-    #     if self._errors:
-    #         self._errors.update(self.serializer.errors)
-    #     return valid
+    def is_valid(self):
+        valid = self.serializer.is_valid()
+        valid = valid and super().is_valid()
+        if self._errors:
+            self._errors.update(self.serializer.errors)
+        elif self.serializer.errors:
+            self._errors = self.serializer.errors
+        return valid

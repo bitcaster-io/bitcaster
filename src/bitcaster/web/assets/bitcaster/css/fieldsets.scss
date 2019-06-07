@@ -1,33 +1,49 @@
+.form-group {
+    &.has-error {
+        .field {
+            .errors {
+                color: $error1-color;
+            }
+        }
+    }
+}
+
 .fieldset {
     .non-field-errors.invalid-feedback {
         line-height: 30px !important;
         padding-left: 30px;
         height: 30px;
     }
-    .col{
-        height:42px;
+
+    .col {
+        height: 42px;
     }
-    >.row{
+
+    > .row {
         vertical-align: middle;
-        margin-bottom: 1px!important;
-        margin-top: 1px!important;
-        padding-bottom: 1px!important;
-        padding-top: 1px!important;
+        margin-bottom: 1px !important;
+        margin-top: 1px !important;
+        padding-bottom: 1px !important;
+        padding-top: 1px !important;
         //line-height: 50px;
         height: 50px;
     }
+
     .row {
         display: inline-block;
         //display: inline-table;
-        &.has-error{
+        &.has-error {
             height: 75px;
         }
+
         .line-fields {
-            &.has-error{
+            &.has-error {
 
             }
+
             .form-group {
                 margin-bottom: 0;
+
                 .invalid-feedback {
                     display: block;
                     margin: 0;

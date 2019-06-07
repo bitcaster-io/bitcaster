@@ -7,6 +7,7 @@ from email import message_from_bytes
 from crashlog.middleware import process_exception
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
+from rest_framework.exceptions import ValidationError
 
 from bitcaster.agents import serializers
 from bitcaster.api.fields import PasswordField, RegexField
@@ -63,6 +64,15 @@ class EmailMessage:
         return body
 
 
+list_response_pattern = re.compile(rb'\((?P<flags>.*?)\) "(?P<delimiter>.*)" (?P<name>.*)')
+
+
+def parse_list_response(line):
+    flags, delimiter, mailbox_name = list_response_pattern.match(line).groups()
+    mailbox_name = mailbox_name.strip(b'"')
+    return (flags.decode('utf-8'), delimiter.decode('utf-8'), mailbox_name.decode('utf-8'))
+
+
 class EmailAbstractOptions(AgentOptions):
     MOVE = 1
     DELETE = 2
@@ -90,19 +100,51 @@ class EmailAbstractOptions(AgentOptions):
     sender_regex = RegexField(allow_blank=True, required=False)
     to_regex = RegexField(allow_blank=True, required=False)
 
+    def get_agent(self):
+        raise NotImplementedError
+
+    def validate(self, attrs):
+        errs = {}
+        try:
+            agent = self.get_agent()()
+            config = agent.get_full_config(attrs)
+            conn = agent._get_connection(config)
+            typ, data = conn.list()
+            folders = [parse_list_response(e)[2] for e in data]
+            if config['folder'] not in folders:
+                errs['folder'] = 'Invalid folder. Valid choices are: %s' % ', '.join(folders)
+            if config['policy'] == self.MOVE:
+                if config['folder'] in folders:
+                    folders.remove(config['folder'])
+                if config['processed_folder'] not in folders:
+                    errs['processed_folder'] = 'Invalid folder. Valid choices are: %s' % ', '.join(folders)
+        except imaplib.IMAP4.error as e:
+            raise ValidationError({'username': str(e)})
+        except Exception as e:
+            logger.exception(e)
+            process_exception(e)
+            raise ValidationError(str(e))
+
+        if errs:
+            raise ValidationError(errs)
+        return attrs
+
 
 class EmailOptions(EmailAbstractOptions):
     server = serializers.CharField()
     port = serializers.IntegerField()
     tls = serializers.BooleanField(default=False)
 
+    def get_agent(self):
+        return EmailAgent
+
 
 @agent_registry.register
 class EmailAgent(Agent):  # pragma: no cover
     options_class = EmailOptions
 
-    def _get_connection(self) -> imaplib.IMAP4:  # pragma: no cover
-        config = self.config
+    def _get_connection(self, config=None) -> imaplib.IMAP4:  # pragma: no cover
+        config = config or self.config
         if config['tls']:
             imap = imaplib.IMAP4_SSL(host=config['server'],
                                      port=config['port'])

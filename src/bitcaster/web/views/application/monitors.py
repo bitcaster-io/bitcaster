@@ -50,7 +50,8 @@ class ApplicationMonitorUpdate(MonitorMixin, BitcasterBaseUpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({'application': self.selected_application})
+        kwargs.update({'application': self.selected_application,
+                       'handler': self.object.handler})
         return kwargs
 
 
