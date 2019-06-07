@@ -269,6 +269,7 @@ urlpatterns = [
 # locks
 urlpatterns += [
     path('locks/<slug:org>/<str:lock_name>/unlock/', views.unlock, name='locks-unlock'),
+    path('locks/<slug:org>/', views.lock_list, name='locks-list'),
 ]
 
 urlpatterns += [

@@ -4,8 +4,21 @@ from django.http import JsonResponse
 
 from bitcaster.models import OrganizationMember
 from bitcaster.security import ROLES
+from bitcaster.utils.locks import get_all_locks
 
 cache_lock = caches['lock']
+
+
+@login_required()
+def lock_list(request, org):
+    user = OrganizationMember.objects.filter(organization__slug=org,
+                                             user=request.user,
+                                             role__in=[ROLES.OWNER,
+                                                       ROLES.SUPERUSER]).first()
+    if user:
+        locks = get_all_locks()
+        return JsonResponse(locks)
+    return JsonResponse({}, 400)
 
 
 @login_required()

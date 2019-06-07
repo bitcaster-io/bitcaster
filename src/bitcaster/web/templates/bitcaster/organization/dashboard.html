@@ -44,7 +44,7 @@
                         </div>
                     {% else %}
                         <div class="card-body">
-                            {% trans "No locks found" %}
+                            <i class="far fa-check-circle green"></i> {% trans "No locks found" %}
                         </div>
                     {% endif %}
                 </div>
@@ -52,7 +52,7 @@
 
             <div class="col-sm ml-1">
                 <div class="card">
-                    <div class="card-header w-100">Occurences</div>
+                    <div class="card-header w-100"><i class="fas fa-stream"></i> Occurences</div>
                     {% if occurences %}
                         <div class="list-group list-group-flush w-100">
                             {% for n in occurences %}
@@ -61,7 +61,7 @@
                         </div>
                     {% else %}
                         <div class="card-body">
-                            {% trans "All subscriptions enabled" %}
+                            <i class="far fa-check-circle green"></i> {% trans "No pending occurences" %}
                         </div>
                     {% endif %}
                 </div>
