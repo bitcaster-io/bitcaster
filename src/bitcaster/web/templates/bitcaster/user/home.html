@@ -1,12 +1,31 @@
 {% extends "bitcaster/user/base.html" %}{% load i18n crispy_forms_tags bitcaster %}
 {% block page %}
-    <div class="container border border-secondary text-center col-12 p-3" style="min-height: 50px">
-        {% for n in missing %}
-            <div class="row">{{ n }}</div>
-        {% empty %}
-            <div>{% trans "Congratulation you do not have any missed notitification" %}</div>
-        {% endfor %}
-
+    <div class="container border border-secondary col-12 p-3" style="min-height: 50px">
+        <div class="card">
+            <div class="card-header w-100">Addresses</div>
+            {% if invalid %}
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {% trans "You have missed to confirm some notifications" %}
+                    </h5>
+                    <p class="card-text">{% trans "Check your client " %}</p>
+                </div>
+                <div class="list-group list-group-flush w-100">
+                    {% for n in missing %}
+                        <div class="list-group-item w-100">
+                            {{ n.timestamp|date:"d b Y" }} {{ n.event }} {{ n.channel }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <a href="{% org-url 'user-logs' %}"
+                   class="btn btn-danger btn-small m-2">Check</a>
+            {% else %}
+                <div class="card-body text-center ">
+                    {% trans "Congratulation you do not have any missed notitification" %}
+                </div>
+            {% endif %}
+        </div>
 
     </div>
     <div class="container mt-2 border border-secondary p-3">

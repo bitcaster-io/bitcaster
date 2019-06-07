@@ -3,7 +3,7 @@ import logging
 from rest_framework import serializers
 from rest_framework.fields import JSONField
 
-from bitcaster.models import Application, Event, User
+from bitcaster.models import Application, Event, Occurence, User
 
 logger = logging.getLogger(__name__)
 
@@ -194,6 +194,13 @@ class ApplicationNestedMixin(object):
 #             raise ValidationError("Invalid event")
 #
 #         return super().validate(attrs)
+
+
+class OccurenceSerializer(ApplicationNestedMixin, serializers.ModelSerializer):
+    class Meta:
+        model = Occurence
+        fields = ('application', 'organization', 'event')
+        read_only_fields = ('id',)
 
 
 class EventSerializer(ApplicationNestedMixin, serializers.ModelSerializer):

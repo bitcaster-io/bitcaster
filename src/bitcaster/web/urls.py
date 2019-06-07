@@ -266,6 +266,11 @@ urlpatterns = [
 
 ]
 
+# locks
+urlpatterns += [
+    path('locks/<slug:org>/<str:lock_name>/unlock/', views.unlock, name='locks-unlock'),
+]
+
 urlpatterns += [
     path('dal/user-autocomplete/', views.UserAutocomplete.as_view(), name='user-autocomplete'),
     path('dal/address-autocomplete/', views.AddressAutocomplete.as_view(), name='address-autocomplete'),

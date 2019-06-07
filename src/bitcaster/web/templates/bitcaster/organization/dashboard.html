@@ -1,16 +1,16 @@
-{% extends "bitcaster/organization/base.html" %}{% load bc_permissions bc_dashboard i18n static %}
+{% extends "bitcaster/organization/base.html" %}{% load bc_permissions bc_dashboard i18n static bitcaster %}
 {% block head %}
     {{ block.super }}
     <script src="{% static "bitcaster/charts.js" %}"></script>
 
 {% endblock head %}
 {% block page %}
-    <div class="row col-12 p-3 m-1">
+    <div class="container border border-secondary p-3">
         <div style="width:1000px;">
             <div class="h4">Overview</div>
             <canvas id="ts"></canvas>
         </div>
-        {#        <div tyle="width:1000px;height:100px">#}
+
         <div class="container-fluid">
             <div class="h4">Buffers</div>
             <div class="row">
@@ -21,19 +21,90 @@
                     <canvas id="notification"></canvas>
                 </div>
             </div>
-            >
         </div>
     </div>
+
+
+    <div class="container mt-2 border border-secondary p-3">
+        <div class="row">
+            <div class="col-sm mr-1">
+                <div class="card">
+                    <div class="card-header w-100"><i class="fas fa-lock"></i> Locks</div>
+                    {% if locks %}
+                        <div class="list-group list-group-flush w-100">
+                            {% for n,c in locks.items %}
+                                <div class="list-group-item w-100">
+                                    {{ c }}
+                                    <span data-url="{% org-url 'locks-unlock' c %}"
+                                          class="pull-right d-block pointer remove-lock">
+                                    <i class="far fa-times-circle"></i>
+                                </span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="card-body">
+                            {% trans "No locks found" %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-sm ml-1">
+                <div class="card">
+                    <div class="card-header w-100">Occurences</div>
+                    {% if occurences %}
+                        <div class="list-group list-group-flush w-100">
+                            {% for n in occurences %}
+                                <div class="list-group-item w-100">#{{ n.id }} {{ n.event }}</div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="card-body">
+                            {% trans "All subscriptions enabled" %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+{% csrf_token %}
+
 {% endblock page %}
 {% block js %}
     <script>
         var tsUrls = ['{{ organization.urls.charts_occurence}}',
             '{{ organization.urls.charts_notification }}',
             '{{ organization.urls.charts_errors}}'];
+        var csrftoken = $("[name=csrfmiddlewaretoken]").val();
 
         charts.setupMainChart('ts', tsUrls);
         charts.setupOccurenceQueueChart('occurence', '/os4d/charts/buffers/occurence/');
         charts.setupNotificationQueueChart('notification', '/os4d/charts/buffers/notification/');
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                $('#message').html('');
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        });
+
+        $('.remove-lock').on('click', function (e) {
+            $target = $(e.currentTarget);
+            var url = $target.data('url');
+            $.post(url)
+                .done(function (data) {
+                    $target.parent().hide();
+                })
+                .fail(function (resp, msg, data) {
+
+                })
+
+
+        });
     </script>
 
 {% endblock %}

@@ -22,6 +22,7 @@ from .charts import *
 from .general import IndexView
 from .handlers import handler400, handler403, handler404, handler500
 from .icons import channel_icon, plugin_icon
+from .locks import unlock
 from .login_logout import LoginView, LogoutView
 from .organization import *
 from .settings import (SettingsBackupRestore, SettingsEmailView,

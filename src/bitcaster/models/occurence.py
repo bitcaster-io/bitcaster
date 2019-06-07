@@ -1,9 +1,12 @@
 import datetime
 
+from django.core.cache import caches
 from django.db import models
 from django.utils import timezone
 
 from bitcaster.tasks.model import async
+
+cache_lock = caches['lock']
 
 
 class OccurenceManager(models.Manager):
@@ -79,3 +82,14 @@ class Occurence(models.Model):
                                  **kwargs)
         obj.consolidate()
         return obj
+
+    def lock(self):
+        lock = cache_lock.lock('occurence:%s' % self.pk)
+        return lock.acquire(False)
+
+    def locked(self):
+        return cache_lock.get('occurence:%s' % self.pk)
+
+    def unlock(self):
+        lock = cache_lock.lock('occurence:%s' % self.pk)
+        cache_lock.delete(lock.name)

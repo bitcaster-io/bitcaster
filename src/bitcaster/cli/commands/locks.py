@@ -5,8 +5,8 @@ from bitcaster.cli import need_setup
 
 
 def get_all_keys():
-    lock = caches['lock']
-    return {i: key for i, key in enumerate(lock.keys('*'))}
+    from bitcaster.utils.locks import get_all_locks
+    return get_all_locks()
 
 
 @click.group()

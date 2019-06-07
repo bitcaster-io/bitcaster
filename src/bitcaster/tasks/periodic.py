@@ -84,7 +84,8 @@ def consolidate():
 @app.task(bind=True)
 def callback(self, result, occurence_pk, *args, **kwargs):
     lock = cache_lock.lock('occurence:%s' % occurence_pk)
-    cache_lock.delete(lock.name)
+    ret = cache_lock.delete(lock.name)
+    print(f'Removing lock {lock.name}. {ret}')
 
 
 @periodic_task(bind=True, run_every=timedelta(minutes=1), options={'expires': 60})
@@ -104,8 +105,9 @@ def process_notifications(self):
 
     for occurence in Occurence.objects.active():
         chord_pages = []
-        lock = cache_lock.lock('occurence:%s' % occurence.pk)
-        if lock.acquire(False):
+        # lock = cache_lock.lock('occurence:%s' % occurence.pk)
+        # if lock.acquire(False):
+        if occurence.lock():
             print(f'Processing occurence {occurence}')
 
             for channel in occurence.event.channels.all():
