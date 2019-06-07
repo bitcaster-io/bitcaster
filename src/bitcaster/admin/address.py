@@ -17,6 +17,6 @@ class AddressAdmin(admin.ModelAdmin):
 
 @admin.register(AddressAssignment, site=site)
 class AddressAssignmentAdmin(admin.ModelAdmin):
-    search_fields = ('user__username',)
+    search_fields = ('user__email',)
     list_display = ('user', 'address', 'channel')
     list_filter = ('channel',)

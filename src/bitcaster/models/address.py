@@ -3,7 +3,9 @@ import string
 
 from django.conf import settings
 from django.db import models
+from strategy_field.fields import MultipleStrategyField
 
+from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.models.mixins import ReversionMixin
 from bitcaster.utils.strings import random_string
 
@@ -29,6 +31,9 @@ class Address(ReversionMixin, models.Model):
 
     verified = models.BooleanField(default=False)
     code = models.CharField(null=True, max_length=9)
+
+    valid_for = MultipleStrategyField(registry=dispatcher_registry,
+                                      blank=True, null=True)
 
     class Meta:
         unique_together = (('user', 'label'),)

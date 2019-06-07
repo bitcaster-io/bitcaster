@@ -24,6 +24,11 @@ class NotificationManager(models.Manager):
                                        Notification.REMIND],
                            **kwargs)
 
+    def missed(self, **kwargs):
+        return self.filter(status__in=[Notification.EXPIRED,
+                                       Notification.WAIT],
+                           **kwargs)
+
 
 def parse_attachment(attachment_string):
     c = base64.b64decode(attachment_string['content'])
@@ -112,7 +117,7 @@ class Notification(models.Model):
                               on_delete=models.SET_NULL)
     user = models.ForeignKey('bitcaster.User',
                              null=True, blank=True,
-                             related_name='+',
+                             related_name='notifications',
                              on_delete=models.SET_NULL)
     channel = models.ForeignKey('bitcaster.Channel',
                                 null=True, blank=True,

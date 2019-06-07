@@ -9,6 +9,7 @@ from model_utils import Choices
 
 from bitcaster.framework.db.fields import EncryptedJSONField
 
+from .address import Address
 from .base import AbstractModel
 from .channel import Channel
 from .event import Event
@@ -48,7 +49,10 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
                               related_name='subscriptions')
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE,
                                 related_name='linked_subscriptions')
-    address = models.CharField(max_length=255, blank=True, null=True)
+    address = models.ForeignKey(Address,
+                                related_name='subscriptions',
+                                on_delete=models.CASCADE,
+                                blank=True, null=True)
     enabled = models.BooleanField(default=True)
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=STATUSES,

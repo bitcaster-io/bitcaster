@@ -1,5 +1,70 @@
-{% extends "bitcaster/user/base.html" %}{% load i18n crispy_forms_tags %}
+{% extends "bitcaster/user/base.html" %}{% load i18n crispy_forms_tags bitcaster %}
 {% block page %}
+    <div class="container border border-secondary text-center col-12 p-3" style="min-height: 50px">
+        {% for n in missing %}
+            <div class="row">{{ n }}</div>
+        {% empty %}
+            <div>{% trans "Congratulation you do not have any missed notitification" %}</div>
+        {% endfor %}
+
+
+    </div>
+    <div class="container mt-2 border border-secondary p-3">
+        <div class="row">
+            <div class="col-sm mr-1">
+                <div class="card">
+                    <div class="card-header w-100">Addresses</div>
+                    {% if invalid %}
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {% trans "You have not validated addresses" %}
+                            </h5>
+                            <p class="card-text">{% trans "These addresses cannot be used until not properly validated" %}</p>
+                        </div>
+                        <div class="list-group list-group-flush w-100">
+                            {% for n in invalid %}
+                                <div class="list-group-item w-100">{{ n }}</div>
+                            {% endfor %}
+                        </div>
+                        <a href="{% org-url 'user-address-assignment' %}"
+                           class="btn btn-danger btn-small m-2">Verify</a>
+                    {% else %}
+                        <div class="card-body">
+                            {% trans "All addresses successfully verified" %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-sm ml-1">
+                <div class="card">
+                    <div class="card-header w-100">Subscriptions</div>
+                    {% if disabled %}
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {% trans "You have some disabled subscriptions" %}
+                            </h5>
+                            <p class="card-text">{% trans "You don't receive any message until you do not enable them" %}</p>
+                        </div>
+                        <div class="list-group list-group-flush w-100">
+                            {% for n in disabled %}
+                                <div class="list-group-item w-100">{{ n.event }}</div>
+                            {% endfor %}
+                        </div>
+                        <a href="{% org-url 'user-subscriptions' %}" class="btn btn-danger btn-small m-2">Enable</a>
+                    {% else %}
+                        <div class="card-body">
+                            {% trans "All subscriptions enabled" %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+    </div>
 
 {% endblock page %}
 {#{% block toggler %}#}
