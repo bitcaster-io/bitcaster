@@ -21,10 +21,12 @@ def test_handler_name(monitor1):
     assert monitor1.handler_name
 
 
+@pytest.mark.skipif_missing('TEST_MONITOR_USER', 'TEST_MONITOR_PASSWORD', 'TEST_MONITOR_FOLDER')
 def test_validate_configuration(monitor1):
     monitor1.handler.validate_configuration(monitor1.config)
 
 
+@pytest.mark.skipif_missing('TEST_MONITOR_USER', 'TEST_MONITOR_PASSWORD', 'TEST_MONITOR_FOLDER')
 def test_is_configured(monitor1):
     assert monitor1.is_configured
 

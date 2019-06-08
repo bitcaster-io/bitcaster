@@ -53,9 +53,9 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
                                                                channel.pk,
                                                                context])
         except Exception as e:
+            logger.exception(e)
             log_error_channel(channel, str(e))
             process_exception(e)
-            logger.exception(e)
     return True
 
 
@@ -73,6 +73,7 @@ def _get_message_parts(channel, event) -> [Template, Template]:
         log_error_event(event, msg)
         raise ObjectDoesNotExist(msg) from e
     except Exception as e:
+        logger.exception(e)
         process_exception(e)
         raise
 
@@ -142,9 +143,11 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
                     log_new_notifications(channel_pk, len(ids))
                     page = []
             except Address.DoesNotExist as e:
+                logger.exception(e)
                 log_error_event(event, 'Address not validated', target=subscription)
                 process_exception(e)
             except Exception as e:
+                logger.exception(e)
                 process_exception(e)
                 raise
 

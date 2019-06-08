@@ -52,9 +52,9 @@ class EventViewSet(BaseModelViewSet):
                                 token=request.key.token,
                                 origin=get_client_ip(request))
         except Exception as e:
+            logger.exception(e)
             with atomic():
                 process_exception(e)
-            logger.exception(e)
             return Response({'message': str(e),
                              'timestamp': timezone.now()}, status=500)
         else:

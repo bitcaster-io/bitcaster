@@ -8,7 +8,7 @@ from .site import site
 
 @admin.register(AuditLogEntry, site=site)
 class AuditLogEntryAdmin(TruncateTableMixin, admin.ModelAdmin):
-    list_display = ('timestamp', 'organization', 'actor', 'target_object',
+    list_display = ('timestamp', 'organization', 'actor',
                     'target_label', 'event', 'ip_address', 'get_message')
 
     date_hierarchy = 'timestamp'

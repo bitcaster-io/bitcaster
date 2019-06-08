@@ -1,5 +1,7 @@
 from enum import IntEnum
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
@@ -33,18 +35,23 @@ class AuditEvent(IntEnum):
 
     MEMBERSHIP_CREATED = 601
 
-    # SUBSCRIPTION_ERROR = 701
-    #
-    # @classmethod
-    # def get_by_value(cls, v):
-    #     try:
-    #         label = ([val for val in cls if val == v][0]).name
-    #         return label.replace('_', ' ').title()
-    #     except IndexError:
-    #         return 'N/A (%s)' % v
+    CHANNEL_DEPRECATED = 800
+    CHANNEL_DELETED = 801
+    CHANNEL_ENABLED = 802
+    CHANNEL_DISABLED = 803
+    CHANNEL_UPDATED = 804
+    CHANNEL_CREATED = 805
 
+
+_CREATED = _('%(actor)s has created %(content_type)s %(target)s')
+_UPDATED = _('%(actor)s has updated %(content_type)s %(target)s')
+_DELETED = _('%(actor)s has deleted %(content_type)s %(target)s')
+_DISABLED = _('%(actor)s disabled %(content_type)s %(target)s')
+_ENABLED = _('%(actor)s enabled %(content_type)s %(target)s')
+_DEPRECATED = _('%(actor)s has deprecated %(content_type)s %(target)s')
 
 MESSAGES = {
+
     AuditEvent.MEMBER_LOGIN: _('%(actor)s logged in'),
     AuditEvent.MEMBER_LOGOUT: _('%(actor)s logged out'),
 
@@ -69,6 +76,13 @@ MESSAGES = {
 
     AuditEvent.MEMBERSHIP_CREATED: _('%(actor)s add %(target)s to organization'),
 
+    AuditEvent.CHANNEL_CREATED: _CREATED,
+    AuditEvent.CHANNEL_DISABLED: _DISABLED,
+    AuditEvent.CHANNEL_ENABLED: _ENABLED,
+    AuditEvent.CHANNEL_UPDATED: _UPDATED,
+    AuditEvent.CHANNEL_DELETED: _DELETED,
+    AuditEvent.CHANNEL_DEPRECATED: _DEPRECATED,
+
 }
 
 
@@ -83,12 +97,20 @@ class AuditLogEntry(models.Model):
                                     null=True, blank=True,
                                     related_name='auditlog',
                                     on_delete=models.CASCADE)
-    actor = models.ForeignKey('bitcaster.User', models.SET_NULL,
+    actor = models.ForeignKey('bitcaster.User',
+                              models.SET_NULL,
                               related_name='audit_actors', null=True, blank=True)
     actor_label = models.CharField(max_length=64, null=True, blank=True)
 
-    target_object = models.PositiveIntegerField(blank=True, null=True)
+    # target_object = models.PositiveIntegerField(blank=True, null=True)
     target_label = models.CharField(max_length=300, null=True, blank=True)
+
+    target_content_type = models.ForeignKey(ContentType,
+                                            related_name='+',
+                                            on_delete=models.SET_NULL,
+                                            null=True, blank=True)
+    target_object_id = models.PositiveIntegerField(null=True, blank=True)
+    target = GenericForeignKey('target_content_type', 'target_object_id')
 
     event = models.IntegerField(choices=AUDITEVENT_CHOICES)
 
@@ -97,9 +119,18 @@ class AuditLogEntry(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return MESSAGES.get(self.event, '') % dict(actor=self.actor,
-                                                   target=self.target_label,
-                                                   timestamp=self.timestamp, )
+        if self.event in MESSAGES:
+            return MESSAGES[self.event] % dict(actor=self.actor,
+                                               content_type=self.target_content_type,
+                                               target=self.target_label,
+                                               timestamp=self.timestamp, )
+        else:
+            return """Event #%(event)s %(actor)s - %(target)s """ % dict(
+                event=self.event,
+                actor=self.actor,
+                content_type=self.target_content_type,
+                target=self.target_label,
+                timestamp=self.timestamp, )
 
     class Meta:
         get_latest_by = 'timestamp'
@@ -111,9 +142,9 @@ class AuditLogEntry(models.Model):
         return str(self)
 
     def save(self, *args, **kwargs):
-        if not self.actor_label:
-            if self.actor:
-                self.actor_label = self.actor.display_name
+        # if not self.actor_label:
+        #     if self.actor:
+        #         self.actor_label = self.actor.display_name
         super(AuditLogEntry, self).save(*args, **kwargs)
 
     def get_actor_name(self):

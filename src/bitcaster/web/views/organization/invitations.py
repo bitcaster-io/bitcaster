@@ -72,10 +72,8 @@ class OrganizationMemberInvite(OrganizationBaseView, LogAuditMixin,
             invitation = Invitation.objects.create(**values)
             invitation.groups.set(form.cleaned_data['groups'])
             invitation.send_email()
-            self.audit(event=AuditLogEntry.AuditEvent.INVITATION_CREATED,
-                       actor=invitation.invited_by,
-                       target_object=invitation.pk,
-                       target_label=str(invitation))
+            self.audit(invitation,
+                       AuditLogEntry.AuditEvent.INVITATION_CREATED)
 
         return super().form_valid(form)
 
@@ -133,15 +131,12 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
             self.invitation.date_accepted = timezone.now()
             self.invitation.user = user
             self.invitation.save()
-            self.audit(event=AuditLogEntry.AuditEvent.INVITATION_ACCEPTED,
-                       actor=user,
-                       target_object=self.invitation.pk,
-                       target_label=str(self.invitation))
+            self.audit(self.invitation,
+                       AuditLogEntry.AuditEvent.INVITATION_ACCEPTED,
+                       actor=user)
 
-            self.audit(event=AuditLogEntry.AuditEvent.MEMBERSHIP_CREATED,
-                       actor=user,
-                       target_object=membership.pk,
-                       target_label=str(membership))
+            self.audit(membership,
+                       AuditLogEntry.AuditEvent.MEMBERSHIP_CREATED)
 
             login(self.request, user, backend=fqn(ModelBackend))
             # assert self.request.user == user

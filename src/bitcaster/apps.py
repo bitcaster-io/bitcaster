@@ -32,7 +32,8 @@ class Config(AppConfig):
 
 def capture_exception(sender, request, **kwargs):
     from crashlog.middleware import process_exception
-    process_exception(sender, request, message_user=False)
+    if not __debug__:
+        process_exception(sender, request, message_user=False)
 
 
 def log_login(sender, user, request, **kwargs):

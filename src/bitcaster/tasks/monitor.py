@@ -15,6 +15,7 @@ def check_monitor(monitor_pk):
     try:
         return monitor.handler.poll()
     except Exception as e:
+        logger.exception(e)
         from bitcaster.tsdb.api import log_monitor_error
         process_exception(e)
         log_monitor_error(monitor, str(e))

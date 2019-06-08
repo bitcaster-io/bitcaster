@@ -10,10 +10,11 @@ from django.views.generic import RedirectView
 from formtools.wizard.views import SessionWizardView
 from strategy_field.utils import import_by_name
 
-from bitcaster.models import (Address, AddressAssignment,
+from bitcaster.models import (Address, AddressAssignment, AuditEvent,
                               Channel, DispatcherMetaData,)
 from bitcaster.web.forms.channel import ChannelUpdateConfigurationForm
 from bitcaster.web.templatetags.markdown import markdown
+from bitcaster.web.views.mixins import LogAuditMixin
 
 from .base import (BitcasterBaseDeleteView,
                    BitcasterBaseDetailView, BitcasterBaseListView,
@@ -30,7 +31,7 @@ class ChannelCreate1(forms.ModelForm):
         fields = ('handler',)
 
 
-class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
+class ChannelCreateWizard(LogAuditMixin, MessageUserMixin, SessionWizardView):
     form_list = [('a', ChannelCreate1),
                  ('b', ChannelUpdateConfigurationForm),
                  # todo: add summary screen
@@ -38,6 +39,7 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
     TEMPLATES = {'a': 'bitcaster/settings/channel_wizard1.html',
                  'b': 'bitcaster/settings/channel_wizard2.html',
                  }
+
     # title = _('Create Channel')
     # success_url = reverse_lazy('settings-channels')
 
@@ -97,43 +99,35 @@ class ChannelCreateWizard(MessageUserMixin, SessionWizardView):
         data = self.get_all_cleaned_data()
         data.update(self.get_extra_instance_kwargs())
         self.object = Channel.objects.create(**dict(data))
+        self.audit(self.object, AuditEvent.CHANNEL_CREATED)
         self.message_user(_('Channel created'))
         return HttpResponseRedirect(self.get_success_url())
 
 
-# class ChannelCreateView(BitcasterBaseCreateView):
-#     model = Channel
-    #
-    # def get_queryset(self):
-    #     return self.selected_organization.channels.all()
-    #
-
-
 class ChannelListView(BitcasterBaseListView):
-
     pass
-    # def get_queryset(self):
-    #     raise NotImplementedError
-    #
-    # def get_context_data(self, **kwargs):
-    #     kwargs['channel_context'] = 1111
-    #     kwargs['channels'] = self.get_queryset()
-    #     return super().get_context_data(**kwargs)
 
 
-class ChannelUpdateView(BitcasterBaseUpdateView):
+class ChannelUpdateView(LogAuditMixin, BitcasterBaseUpdateView):
     form_class = ChannelUpdateConfigurationForm
 
-    # def get_queryset(self):
-    #     return self.selected_organization.channels
+    def form_valid(self, form):
+        ret = super().form_valid(form)
+        self.audit(self.object, AuditEvent.CHANNEL_UPDATED)
+        return ret
 
 
-class ChannelDeleteView(BitcasterBaseDeleteView):
+class ChannelDeleteView(LogAuditMixin, BitcasterBaseDeleteView):
     def get_queryset(self):
         raise NotImplementedError
 
+    def delete(self, request, *args, **kwargs):
+        self.audit(self.object, AuditEvent.CHANNEL_DELETED)
+        ret = super().delete(request, *args, **kwargs)
+        return ret
 
-class ChannelDeprecateView(MessageUserMixin, RedirectView):
+
+class ChannelDeprecateView(LogAuditMixin, MessageUserMixin, RedirectView):
     # url = reverse_lazy("settings-channels")
 
     def get_queryset(self):
@@ -145,10 +139,11 @@ class ChannelDeprecateView(MessageUserMixin, RedirectView):
         obj.save()
         op = 'hidden' if obj.deprecated else 'visible'
         self.message_user(f'Channel {op}')
+        self.audit(obj, AuditEvent.CHANNEL_DEPRECATED)
         return super().get(request, *args, **kwargs)
 
 
-class ChannelToggleView(MessageUserMixin, RedirectView):
+class ChannelToggleView(LogAuditMixin, MessageUserMixin, RedirectView):
 
     def get_queryset(self):
         raise NotImplementedError
@@ -167,6 +162,8 @@ class ChannelToggleView(MessageUserMixin, RedirectView):
         else:
             op = 'enabled' if obj.enabled else 'disabled'
             self.message_user(f'Channel {op}')
+            self.audit(obj, AuditEvent.CHANNEL_ENABLED if obj.enabled else AuditEvent.CHANNEL_DISABLED)
+
         return super().get(request, *args, **kwargs)
 
 

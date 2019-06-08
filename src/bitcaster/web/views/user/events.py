@@ -61,8 +61,7 @@ class UserEventSubcribe(UserEventMixin, LogAuditMixin, BitcasterBaseCreateView):
                                                      defaults={'trigger_by': self.request.user,
                                                                'enabled': True,
                                                                'status': Subscription.STATUSES.OWNED})
-            self.audit(event=AuditLogEntry.AuditEvent.MEMBER_SUBSCRIBE_EVENT,
-                       target_object=obj.pk,
-                       target_label=str(obj))
+            self.audit(obj,
+                       AuditLogEntry.AuditEvent.MEMBER_SUBSCRIBE_EVENT)
 
         return HttpResponseRedirect(self.get_success_url())

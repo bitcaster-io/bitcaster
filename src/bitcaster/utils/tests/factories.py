@@ -1,4 +1,5 @@
 import datetime
+import os
 import random
 from contextlib import ContextDecorator
 from random import choice
@@ -346,11 +347,12 @@ class MonitorFactory(AutoRegisterModelFactory):
     def _get_or_create(cls, model_class, *args, **kwargs):
         if 'config' not in kwargs:
             kwargs['config'] = {'event': EventFactory(application=kwargs['application']).pk,
-                                'username': 'user',
-                                'password': '111',
-                                'server': 'mail.example.com',
-                                'port': '123',
-                                'folder': 'linkedin.com',
+                                'username': os.environ.get('TEST_MONITOR_USER', ''),
+                                'password': os.environ.get('TEST_MONITOR_PASSWORD', ''),
+                                'server': os.environ.get('TEST_MONITOR_SERVER', ''),
+                                'port': os.environ.get('TEST_MONITOR_PORT', ''),
+                                'folder': os.environ.get('TEST_MONITOR_FOLDER', ''),
+                                'tls': os.environ.get('TEST_MONITOR_TLS', ''),
                                 'body_regex': '',
                                 'subject_regex': 'gerardo',
                                 'sender_regex': '',

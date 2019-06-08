@@ -9,8 +9,10 @@ from sentry_sdk import capture_exception, push_scope
 from bitcaster import messages
 from bitcaster.exceptions import PermissionDenied
 from bitcaster.models.audit import AuditLogEntry
+from bitcaster.state import state
 from bitcaster.utils.filtering import FilterParser
 from bitcaster.utils.reflect import fqn
+from bitcaster.utils.wsgi import get_client_ip
 from bitcaster.web.decorators import authorized_or_403
 from bitcaster.web.templatetags.bitcaster import (verbose_name,
                                                   verbose_name_plural,)
@@ -44,10 +46,17 @@ class SecuredViewMixin:
 
 class LogAuditMixin:
 
-    def audit(self, **kwargs):
-        kwargs.setdefault('organization', self.selected_organization)
-        kwargs.setdefault('actor', self.request.user)
-        AuditLogEntry.objects.create(**kwargs)
+    def audit(self, target, event, **kwargs):
+        if self.request.user.is_authenticated:
+            kwargs.setdefault('organization', self.selected_organization)
+            kwargs.setdefault('actor', self.request.user)
+            kwargs.setdefault('actor_label', kwargs['actor'].display_name)
+            kwargs.setdefault('target_label', str(target))
+            kwargs.setdefault('ip_address', get_client_ip(state.request))
+
+            AuditLogEntry.objects.create(target=target,
+                                         event=event,
+                                         **kwargs)
 
 
 class SidebarMixin:
@@ -126,10 +135,10 @@ class FilterQuerysetMixin:
             else:
                 queryset = queryset.filter(**kw)
         except Exception as e:
+            logger.exception(e)
             process_exception(e)
             with push_scope() as scope:
                 scope.set_tag('view', fqn(self))
                 capture_exception()
 
-            logger.exception(e)
         return queryset
