@@ -4,15 +4,17 @@ from bitcaster.models import Notification
 from bitcaster.utils.http import get_query_string
 from bitcaster.web.views.mixins import FilterQuerysetMixin
 from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
+from bitcaster.web.views.user.base import UserMixin
 
 from ..base import BitcasterBaseListView
 
 
-class UserNotificationLogView(FilterQuerysetMixin,
+class UserNotificationLogView(UserMixin,
+                              FilterQuerysetMixin,
                               SelectedOrganizationMixin, BitcasterBaseListView):
     template_name = 'bitcaster/user/log.html'
     model = Notification
-    title = _('Notification Log')
+    title = _('Notifications')
     paginate_by = 50
     filter_fieldmap = {'channel': 'channel__name__iexact',
                        'occurence': 'occurence_id',
