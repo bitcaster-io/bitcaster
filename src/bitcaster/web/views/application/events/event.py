@@ -107,9 +107,9 @@ class EventDelete(EventMixin, EventFormMixin, BitcasterBaseDeleteView):
                                         **kwargs)
 
     def delete(self, request, *args, **kwargs):
+        ret = super().delete(request, *args, **kwargs)
         self.audit(self.object, AuditEvent.EVENT_DELETED)
         self.message_user(_('Event deleted'))
-        ret = super().delete(request, *args, **kwargs)
         return ret
 
 

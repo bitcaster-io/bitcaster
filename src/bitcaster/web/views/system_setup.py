@@ -12,7 +12,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin, ProcessFormView
 from strategy_field.utils import fqn
 
-from bitcaster.framework.db.fields import ROLES
+from bitcaster.framework.db.fields import ORG_ROLES
 from bitcaster.models import Application, Event, Organization, User
 from bitcaster.models.audit import AuditEvent
 from bitcaster.models.organization import RESERVED_ORGANIZATION_NAME
@@ -83,7 +83,7 @@ def configure_system(name, owner):
                                       admin_email=owner.email,
                                       is_core=True,
                                       owner=owner)
-    org.add_member(owner, role=ROLES.OWNER, date_enrolled=timezone.now())
+    org.add_member(owner, role=ORG_ROLES.OWNER, date_enrolled=timezone.now())
     bitcaster = Application.objects.create(name='Bitcaster',
                                            organization=org,
                                            core=True)

@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _, ungettext
 from django.views.generic import FormView
 
 from bitcaster import messages
-from bitcaster.framework.db.fields import ROLES
+from bitcaster.framework.db.fields import ORG_ROLES
 from bitcaster.models import Event
 from bitcaster.web.forms.subscription import (EventSubscriptionCreateForm,
                                               InviteFormSet,)
@@ -124,7 +124,7 @@ class EventSubscriptionInvite(SingleEventMixin, MessageUserMixin, FormView):
             else:
                 form.instance.organization = self.selected_organization
                 form.instance.event = self.get_object()
-                form.instance.role = ROLES.MEMBER
+                form.instance.role = ORG_ROLES.MEMBER
                 form.instance.invited_by = self.request.user
                 membership = form.save()
                 membership.send_email()

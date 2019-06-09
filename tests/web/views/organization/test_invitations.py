@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 
 from bitcaster.models import Invitation
-from bitcaster.security import ROLES
+from bitcaster.security import ORG_ROLES
 from bitcaster.utils.tests.environ import override_environ
 from bitcaster.utils.tests.factories import (InvitationFactory,
                                              OrganizationGroupFactory,)
@@ -17,13 +17,13 @@ def test_invite_members(django_app, organization1, emails):
     res = django_app.get(organization1.urls.invite, user=user)
     res.form['emails'] = emails
     res.form['groups'] = [group.pk]
-    res.form['role'] = ROLES.MEMBER
+    res.form['role'] = ORG_ROLES.MEMBER
     res = res.form.submit()
     assert res.status_code == 302, f"Submit failed with: {repr(res.context['form'].errors)}"
     res.follow()
 
     i = Invitation.objects.filter(target='t1@a.com',
-                                  role=ROLES.MEMBER,
+                                  role=ORG_ROLES.MEMBER,
                                   organization=organization1).first()
     assert i
     assert list(i.groups.all()) == [group]
@@ -34,7 +34,7 @@ def test_invite_members_validate_emails(django_app, organization1):
     user = organization1.owner
     res = django_app.get(organization1.urls.invite, user=user)
     res.form['emails'] = 'aaa'
-    res.form['role'] = ROLES.MEMBER
+    res.form['role'] = ORG_ROLES.MEMBER
     res = res.form.submit()
     assert res.status_code == 200
     assert res.context['form'].errors == {'emails': ['aaa is not a valid email address']}
@@ -57,7 +57,7 @@ def test_invitation_accept(django_app, organization1):
     res = res.form.submit()
     assert res.status_code == 302, f"Submit failed with: {repr(res.context['form'].errors)}"
     assert organization1.memberships.filter(user__email='a@b.com',
-                                            role=ROLES.MEMBER).exists()
+                                            role=ORG_ROLES.MEMBER).exists()
     assert group.members.filter(user__email='a@b.com').exists()
 
 

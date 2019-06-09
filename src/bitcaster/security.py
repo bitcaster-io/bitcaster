@@ -5,34 +5,50 @@ from model_utils import Choices
 
 logger = logging.getLogger(__name__)
 
-ROLES = Choices(
-    (-1, 'SUPERUSER', _('Superuser')),  # Access to system settings
-    (1, 'OWNER', _('Owner')),  # Organization Owner
-    (2, 'ADMIN', _('Admin')),  # Application Admin
-    (4, 'MEMBER', _('Member')))
+ROLE_SUPERUSER = -1
+ROLE_OWNER = 1
+ROLE_SUPERVISOR = 2
+ROLE_MEMBER = 4
+ROLE_ADMIN = 100
+ROLE_USER = 101
 
+ORG_ROLES = Choices(
+    (ROLE_SUPERUSER, 'SUPERUSER', _('Superuser')),  # Access to system settings
+    (ROLE_OWNER, 'OWNER', _('Owner')),  # Organization Owner
+    (ROLE_SUPERVISOR, 'SUPERVISOR', _('Supervisor')),  # Organization Supervisor
+    (ROLE_MEMBER, 'MEMBER', _('Member'))
+)
 
 APP_ROLES = Choices(
-    (ROLES.ADMIN, 'ADMIN', _('Admin')),  # Application Admin
-    (ROLES.MEMBER, 'MEMBER', _('Member'))
+    (ROLE_ADMIN, 'ADMIN', _('Admin')),  # Application Admin
+    (ROLE_USER, 'USER', _('User'))
 )
 
 ALL_PERMISSIONS = set()
-OWNER_PERMISSIONS = {'manage_organization',
-                     'create_channel',
-                     'edit_channel',
-                     'create_application',
-                     'manage_application',
-                     'invite_member', # invite new Organization member from within an app
-                     'manage_monitor',
-                     }
-ADMIN_PERMISSIONS = set('manage_application')
+ORG_PERMISSIONS = {'manage_organization',
+                   'create_channel',
+                   'edit_channel',
+                   'create_application',
+                   'manage_application',
+                   'invite_member',  # invite new Organization member from within an app
+                   'manage_monitor',
+                   }
+APP_PERMISSIONS = {'manage_application',
+                   }
+
+OWNER_PERMISSIONS = ORG_PERMISSIONS
+SUPERVISOR_PERMISSIONS = ORG_PERMISSIONS
+ADMIN_PERMISSIONS = APP_PERMISSIONS
+USER_PERMISSIONS = set()
 MEMBER_PERMISSIONS = set()
-ALL_PERMISSIONS.update(OWNER_PERMISSIONS)
-ALL_PERMISSIONS.update(ADMIN_PERMISSIONS)
-ALL_PERMISSIONS.update(MEMBER_PERMISSIONS)
+
+ALL_PERMISSIONS.update(ORG_PERMISSIONS)
+ALL_PERMISSIONS.update(APP_PERMISSIONS)
 ALL_PERMISSIONS.add('admin_system')
 
-PERM_MAP = {ROLES.OWNER: OWNER_PERMISSIONS,
-            ROLES.ADMIN: ADMIN_PERMISSIONS,
-            ROLES.MEMBER: MEMBER_PERMISSIONS}
+PERM_MAP = {ORG_ROLES.OWNER: OWNER_PERMISSIONS,
+            ORG_ROLES.SUPERVISOR: SUPERVISOR_PERMISSIONS,
+            ORG_ROLES.MEMBER: MEMBER_PERMISSIONS,
+            APP_ROLES.ADMIN: ADMIN_PERMISSIONS,
+            APP_ROLES.USER: USER_PERMISSIONS,
+            }

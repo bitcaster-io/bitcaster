@@ -12,8 +12,6 @@ from .invitations import (ApplicationInvitationDelete,
 from .keys import (ApplicationKeyCreate, ApplicationKeyDelete,
                    ApplicationKeyList, ApplicationKeyUpdate,)
 from .log import ApplicationNotificationLog
-from .members import (ApplicationMembershipCreate, ApplicationMembershipDelete,
-                      ApplicationMembershipEdit, ApplicationMembershipList,)
 from .monitors import (ApplicationMonitorCreate, ApplicationMonitorList,
                        ApplicationMonitorPoll, ApplicationMonitorRemove,
                        ApplicationMonitorTest, ApplicationMonitorToggle,
@@ -22,3 +20,5 @@ from .subscription import ApplicationSubscriptionList
 from .teams import (ApplicationTeamCreate, ApplicationTeamDelete,
                     ApplicationTeamList, ApplicationTeamMember,
                     ApplicationTeamMemberRemove, ApplicationTeamUpdate,)
+from .users import (ApplicationMembershipCreate, ApplicationMembershipDelete,
+                    ApplicationMembershipEdit, ApplicationMembershipList,)

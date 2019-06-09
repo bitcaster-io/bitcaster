@@ -2,15 +2,14 @@ from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
-from bitcaster.framework.db.fields import RoleField
+from bitcaster.framework.db.fields import ApplicationRoleField
 from bitcaster.models.mixins import ReverseWrapperMixin
-from bitcaster.security import APP_ROLES
 
 from .application import Application
 from .organizationmember import OrganizationMember
 
 
-class ApplicationMember(ReverseWrapperMixin, models.Model):
+class ApplicationUser(ReverseWrapperMixin, models.Model):
     application = models.ForeignKey(Application,
                                     on_delete=models.CASCADE,
                                     db_index=True,
@@ -19,7 +18,7 @@ class ApplicationMember(ReverseWrapperMixin, models.Model):
                                    db_index=True,
                                    on_delete=models.CASCADE,
                                    related_name='applications')
-    role = RoleField(choices=APP_ROLES, default=APP_ROLES.MEMBER, )
+    role = ApplicationRoleField()
 
     class Meta:
         app_label = 'bitcaster'

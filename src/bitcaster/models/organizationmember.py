@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from bitcaster.framework.db.fields import RoleField
+from bitcaster.framework.db.fields import OrganizationRoleField
 
 from .organization import Organization
 
@@ -26,7 +26,7 @@ class OrganizationMember(models.Model):
                              db_index=True,
                              on_delete=models.CASCADE,
                              related_name='memberships')
-    role = RoleField()
+    role = OrganizationRoleField()
     date_enrolled = models.DateTimeField(default=timezone.now, help_text='enrollemnt date')
 
     class Meta:

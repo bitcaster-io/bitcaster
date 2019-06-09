@@ -102,7 +102,7 @@ def test_event_test(django_app, event1, user1):
 
 
 def test_event_update(django_app, event1, user1):
-    DispatcherMetaData.objects.all().update(enabled=True)
+    DispatcherMetaData.objects.inspect()
 
     application = event1.application
     organization = application.organization
@@ -110,7 +110,7 @@ def test_event_update(django_app, event1, user1):
                                           application.slug,
                                           event1.pk])
     res = django_app.get(url, user=user1)
-    res.form['channels'].force_value([a.pk for a in event1.channels.all()])
+    res.form['channels'].force_value([str(a.pk) for a in event1.channels.all()])
     res = res.form.submit()
     assert res.status_code == 302, f"Submit failed with: {repr(res.context['form'].errors)}"
 

@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from bitcaster.framework.db.fields import ROLES, RoleField
+from bitcaster.framework.db.fields import ORG_ROLES, OrganizationRoleField
 from bitcaster.mail import send_mail_by_template
 from bitcaster.otp import totp
 from bitcaster.state import get_current_user
@@ -49,7 +49,7 @@ class Invitation(models.Model):
     teams = models.ManyToManyField(ApplicationTeam,
                                    blank=True,
                                    related_name='invitations')
-    role = RoleField(default=ROLES.MEMBER)
+    role = OrganizationRoleField(default=ORG_ROLES.MEMBER)
 
     event = models.ForeignKey(Event,
                               default=None, blank=True, null=True,

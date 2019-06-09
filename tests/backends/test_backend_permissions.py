@@ -3,8 +3,8 @@ from strategy_field.utils import fqn
 
 from bitcaster.backends import BitcasterBackend
 from bitcaster.dispatchers import Email
-from bitcaster.framework.db.fields import ROLES
-from bitcaster.models import ApplicationMember, OrganizationMember
+from bitcaster.framework.db.fields import ORG_ROLES
+from bitcaster.models import ApplicationUser, OrganizationMember
 from bitcaster.utils.tests.factories import (OrganizationMemberFactory,
                                              TeamFactory, UserFactory, faker,)
 
@@ -21,7 +21,7 @@ def subscriber11(message1):
 
     TeamFactory(application=application, name='Subscribers')
     membership = OrganizationMember.objects.create(organization=org, user=user)
-    ApplicationMember.objects.create(application=application, org_member=membership)
+    ApplicationUser.objects.create(application=application, org_member=membership)
     # team.members.add(membership)
     return user
 
@@ -60,7 +60,7 @@ def admin1(application1):
     org = application1.organization
     user = UserFactory()
     OrganizationMemberFactory(organization=org, user=user,
-                              role=ROLES.ADMIN)
+                              role=ORG_ROLES.SUPERVISOR)
     return user
 
 
@@ -68,7 +68,7 @@ def admin1(application1):
 def admin2(application2):
     org = application2.organization
     user = UserFactory()
-    team = TeamFactory(application=application2, name='Subscribers', role=ROLES.MEMBER)
+    team = TeamFactory(application=application2, name='Subscribers', role=ORG_ROLES.MEMBER)
     membership, __ = OrganizationMember.objects.get_or_create(organization=org, user=user)
     team.members.add(membership)
     return user

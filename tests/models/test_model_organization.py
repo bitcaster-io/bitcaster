@@ -1,6 +1,6 @@
 import pytest
 
-from bitcaster.framework.db.fields import ROLES
+from bitcaster.framework.db.fields import ORG_ROLES
 from bitcaster.models import Organization
 from bitcaster.utils.tests.factories import OrganizationFactory
 
@@ -33,16 +33,16 @@ def test_create(user1):
 
 
 def test_application_no_admins(organization1):
-    assert list(organization1.admins) == []
+    assert list(organization1.supervisors) == []
 
 
-def test_admins(organization1, user1):
-    organization1.add_member(user1, ROLES.ADMIN)
-    assert list(organization1.admins) == [user1]
+def test_supervisors(organization1, user1):
+    organization1.add_member(user1, ORG_ROLES.SUPERVISOR)
+    assert list(organization1.supervisors) == [user1]
 
 
 def test_managers(organization1, user1):
-    organization1.add_member(user1, ROLES.ADMIN)
+    organization1.add_member(user1, ORG_ROLES.SUPERVISOR)
     assert list(organization1.managers) == [user1]
 
 

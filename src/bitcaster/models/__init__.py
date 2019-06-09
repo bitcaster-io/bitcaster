@@ -1,6 +1,6 @@
 from .address import Address, AddressAssignment
 from .application import Application
-from .applicationmember import ApplicationMember
+from .applicationuser import ApplicationUser
 from .audit import AuditEvent, AuditLogEntry
 from .base import AbstractModel
 from .channel import Channel

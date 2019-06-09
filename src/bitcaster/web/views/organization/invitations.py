@@ -17,7 +17,7 @@ from django.views.generic.edit import FormMixin, ProcessFormView
 from strategy_field.utils import fqn
 
 from bitcaster import messages
-from bitcaster.framework.db.fields import ROLES
+from bitcaster.framework.db.fields import ORG_ROLES
 from bitcaster.models import (AuditLogEntry, Invitation, Organization,
                               OrganizationMember, User,)
 from bitcaster.otp import totp
@@ -60,7 +60,7 @@ class OrganizationMemberInvite(OrganizationBaseView, LogAuditMixin,
         return kwargs
 
     def get_context_data(self, **kwargs):
-        kwargs['roles'] = ROLES
+        kwargs['roles'] = ORG_ROLES
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
@@ -123,7 +123,7 @@ class OrganizationMemberInviteAccept(MessageUserMixin, LogAuditMixin, CreateView
                                        )
             membership = OrganizationMember.objects.create(organization=self.selected_organization,
                                                            user=user,
-                                                           role=self.invitation.role or ROLES.MEMBER,
+                                                           role=self.invitation.role or ORG_ROLES.MEMBER,
                                                            date_enrolled=timezone.now())
             for g in self.invitation.groups.all():
                 g.members.add(membership)

@@ -12,7 +12,7 @@ from social_core.exceptions import AuthFailed
 from social_django.strategy import DjangoStrategy
 
 from bitcaster.models import Invitation, Organization
-from bitcaster.security import ROLES
+from bitcaster.security import ORG_ROLES
 
 USER_FIELDS = ['username', 'email', 'fullname']
 
@@ -37,14 +37,14 @@ def associate_invitation(backend, details, user=None, strategy=None, **kwargs):
             invite.save()
             organization = invite.organization
 
-            if invite.role == ROLES.SUPERUSER:
+            if invite.role == ORG_ROLES.SUPERUSER:
                 fields['is_superuser'] = True
-                role = ROLES.OWNER
+                role = ORG_ROLES.OWNER
             else:
                 role = invite.role
     else:
         organization = Organization.objects.get()
-        role = ROLES.MEMBER
+        role = ORG_ROLES.MEMBER
 
     organization.memberships.get_or_create(user=user, role=role)
 

@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from bitcaster.models.mixins import ReverseWrapperMixin
 
 from .application import Application
-from .applicationmember import ApplicationMember
+from .applicationuser import ApplicationUser
 from .base import AbstractModel
 from .user import User
 
@@ -15,7 +15,7 @@ class ApplicationTeam(ReverseWrapperMixin, AbstractModel):
     application = models.ForeignKey(Application,
                                     related_name='teams',
                                     on_delete=models.CASCADE)
-    memberships = models.ManyToManyField(ApplicationMember)
+    memberships = models.ManyToManyField(ApplicationUser)
 
     class Meta:
         app_label = 'bitcaster'

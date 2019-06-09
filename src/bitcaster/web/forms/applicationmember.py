@@ -3,7 +3,7 @@ import logging
 from crispy_forms.helper import FormHelper
 from django import forms
 
-from bitcaster.models import ApplicationMember, OrganizationMember
+from bitcaster.models import ApplicationUser, OrganizationMember
 from bitcaster.security import APP_ROLES
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class ApplicationMemberAddForm(forms.Form):
 
 class ApplicationMemberForm(forms.ModelForm):
     class Meta:
-        model = ApplicationMember
+        model = ApplicationUser
         fields = ('role',)
 
     def __init__(self, *args, **kwargs):

@@ -32,7 +32,9 @@ class Config(AppConfig):
 
 def capture_exception(sender, request, **kwargs):
     from crashlog.middleware import process_exception
-    if not __debug__:
+    # TODO: remove me
+    print(111, 'apps.py:36', request, **kwargs)
+    if sender:
         process_exception(sender, request, message_user=False)
 
 

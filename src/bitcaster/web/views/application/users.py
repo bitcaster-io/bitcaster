@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import ModelFormMixin
 
-from bitcaster.models import ApplicationMember
+from bitcaster.models import ApplicationUser
 from bitcaster.utils.http import get_query_string
 from bitcaster.web.forms import ApplicationMemberForm
 from bitcaster.web.forms.applicationmember import ApplicationMemberAddForm
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class MemberMixin(ApplicationViewMixin):
-    model = ApplicationMember
+    model = ApplicationUser
 
     def get_success_url(self):
         return self.selected_application.urls.members
@@ -40,7 +40,7 @@ class MemberFormMixin(ModelFormMixin):
 
 
 class ApplicationMembershipList(MemberMixin, BitcasterBaseListView):
-    template_name = 'bitcaster/application/members/list.html'
+    template_name = 'bitcaster/application/users/list.html'
     title = _('Application members')
 
     def get_queryset(self):
@@ -89,7 +89,7 @@ class ApplicationMembershipList(MemberMixin, BitcasterBaseListView):
 
 
 class ApplicationMembershipCreate(MemberMixin, MemberFormMixin, BitcasterBaseCreateView):
-    template_name = 'bitcaster/application/members/add.html'
+    template_name = 'bitcaster/application/users/add.html'
     form_class = ApplicationMemberAddForm
     title = _('Add members')
 
@@ -106,7 +106,7 @@ class ApplicationMembershipCreate(MemberMixin, MemberFormMixin, BitcasterBaseCre
 
 
 class ApplicationMembershipEdit(MemberMixin, MemberFormMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/application/members/form.html'
+    template_name = 'bitcaster/application/users/form.html'
     context_object_name = 'membership'
 
     def form_valid(self, form):

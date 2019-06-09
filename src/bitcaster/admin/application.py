@@ -2,7 +2,7 @@ import logging
 
 from django.contrib import admin
 
-from bitcaster.models import Application, ApplicationMember
+from bitcaster.models import Application, ApplicationUser
 
 from .forms import ApplicationForm
 from .inlines import ChannelInline, EventInline
@@ -19,6 +19,6 @@ class ApplicationAdmin(admin.ModelAdmin):
     form = ApplicationForm
 
 
-@admin.register(ApplicationMember, site=site)
+@admin.register(ApplicationUser, site=site)
 class ApplicationMemberAdmin(admin.ModelAdmin):
     list_display = ('application', 'user', 'role',)

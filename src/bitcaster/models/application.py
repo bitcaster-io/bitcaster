@@ -9,7 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
 from bitcaster.file_storage import app_media_root
-from bitcaster.framework.db.fields import ROLES, AvatarField, EncryptedJSONField
+from bitcaster.framework.db.fields import (APP_ROLES, AvatarField,
+                                           EncryptedJSONField,)
 from bitcaster.framework.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.utils.slug import slugify_instance
 
@@ -91,13 +92,13 @@ This message has been sent only to the Application's Admin
         super().save(force_insert, force_update, using, update_fields)
 
     def add_member(self, org_member, role):
-        from bitcaster.models import ApplicationMember
+        from bitcaster.models import ApplicationUser
         if isinstance(org_member, (list, QuerySet)):
             for m in org_member:
-                ApplicationMember.objects.update_or_create(application=self,
-                                                           org_member=m,
-                                                           defaults=dict(
-                                                               role=role))
+                ApplicationUser.objects.update_or_create(application=self,
+                                                         org_member=m,
+                                                         defaults=dict(
+                                                             role=role))
 
     @property
     def channels(self):
@@ -115,4 +116,4 @@ This message has been sent only to the Application's Admin
     @cached_property
     def admins(self):
         return User.objects.filter(memberships__applications__application=self,
-                                   memberships__applications__role=ROLES.ADMIN)
+                                   memberships__applications__role=APP_ROLES.ADMIN)

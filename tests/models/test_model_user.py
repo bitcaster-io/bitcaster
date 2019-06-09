@@ -1,7 +1,7 @@
 import pytest
 
 from bitcaster.models import User
-from bitcaster.security import ROLES
+from bitcaster.security import APP_ROLES
 from bitcaster.utils.tests.factories import (ApplicationMemberFactory,
                                              OrganizationMemberFactory,)
 
@@ -24,7 +24,7 @@ def test_is_manager(user1):
     o = OrganizationMemberFactory(user=user1)
     ApplicationMemberFactory(org_member=o,
                              application__organization=o.organization,
-                             role=ROLES.ADMIN)
+                             role=APP_ROLES.ADMIN)
     assert user1.is_manager
 
 

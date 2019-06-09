@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 
-from bitcaster.framework.db.fields import ROLES
+from bitcaster.framework.db.fields import APP_ROLES, ORG_ROLES
 from bitcaster.models import Application, Event, Organization
 from bitcaster.security import PERM_MAP
 
@@ -26,14 +26,14 @@ class BitcasterBackend:
         if isinstance(obj, Application):
             org = obj.organization
             if org.owner == user_obj or user_obj in org.owners:
-                roles.append(ROLES.OWNER)
-            if user_obj in obj.admins:
-                roles = [ROLES.ADMIN]
+                roles.append(ORG_ROLES.OWNER)
+                if user_obj in obj.admins:
+                    roles = [APP_ROLES.ADMINS]
         elif isinstance(obj, Organization):
             if obj.owner == user_obj or user_obj in obj.owners:
-                roles += [ROLES.OWNER]
-            if user_obj in obj.admins:
-                roles += [ROLES.ADMIN]
+                roles += [ORG_ROLES.OWNER]
+            if user_obj in obj.supervisors:
+                roles += [ORG_ROLES.SUPERVISOR]
         for r in roles:
             perms.extend(PERM_MAP[r])
         return set(perms)
@@ -65,7 +65,7 @@ class BitcasterBackend:
                         return True
                     return app.application_teams.filter(
                         team__members__user=user_obj,
-                        role__in=[ROLES.ADMIN, ROLES.OWNER]
+                        role__in=[APP_ROLES.ADMIN]
                     ).exists()
                     # applicationteam = app.application_teams.get(role=ROLES.ADMIN)
                     # return applicationteam.members.filter(user=user_obj).exists()

@@ -12,6 +12,7 @@ pytestmark = pytest.mark.django_db
 # "https://www.gravatar.com/avatar/%s?%s" % \
 # (hashlib.md5(email.lower()).hexdigest(), urllib.urlencode({'d':default, 's':str(size)}))
 
+@pytest.mark.plugin
 def test_filegetter():
     subscriber = Mock(email='guido@python.org')
     subscription = Mock(subscriber=subscriber)

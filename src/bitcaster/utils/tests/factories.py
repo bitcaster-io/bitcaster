@@ -17,9 +17,10 @@ import bitcaster
 from bitcaster import models
 from bitcaster.agents import EmailAgent
 from bitcaster.dispatchers import Email
-from bitcaster.framework.db.fields import ROLES
+from bitcaster.framework.db.fields import ORG_ROLES
 from bitcaster.models.audit import AuditEvent
 from bitcaster.models.token import generate_api_token
+from bitcaster.security import APP_ROLES
 from bitcaster.utils.reflect import fqn
 
 whitespace = ' \t\n\r\v\f'
@@ -168,7 +169,7 @@ class UserFactory(AutoRegisterModelFactory):
 
 
 class MemberFactory(UserFactory):
-    role = ROLES.MEMBER
+    role = ORG_ROLES.MEMBER
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
@@ -207,7 +208,7 @@ class OrganizationFactory(AutoRegisterModelFactory):
     @classmethod
     def _after_postgeneration(cls, instance, create, results=None):
         super()._after_postgeneration(instance, create, results)
-        instance.add_member(instance.owner, role=ROLES.OWNER)
+        instance.add_member(instance.owner, role=ORG_ROLES.OWNER)
 
 
 class ApplicationFactory(AutoRegisterModelFactory):
@@ -252,10 +253,10 @@ class OrganizationMemberFactory(AutoRegisterModelFactory):
 class ApplicationMemberFactory(AutoRegisterModelFactory):
     application = factory.SubFactory(ApplicationFactory)
     org_member = factory.SubFactory(OrganizationMemberFactory)
-    role = ROLES.MEMBER
+    role = APP_ROLES.USER
 
     class Meta:
-        model = bitcaster.models.ApplicationMember
+        model = bitcaster.models.ApplicationUser
         django_get_or_create = ('application', 'org_member')
 
 

@@ -20,7 +20,7 @@ from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.exceptions import HandlerNotFound
 from bitcaster.file_storage import AvatarFileSystemStorage
 # from bitcaster.web.forms.fields.d import DispatcherFormField
-from bitcaster.security import ROLES
+from bitcaster.security import APP_ROLES, ORG_ROLES
 
 from ..forms.fields import DispatcherFormField
 
@@ -127,11 +127,10 @@ class LanguageField(models.CharField):
 #         """
 #         return str(int(self.value_from_object(obj)))
 
-
-class RoleField(models.IntegerField):
+class OrganizationRoleField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
-                 choices=ROLES,
-                 default=ROLES.MEMBER,
+                 choices=ORG_ROLES,
+                 default=ORG_ROLES.MEMBER,
                  help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
         super().__init__(verbose_name=verbose_name, name=name,
                          choices=choices,
@@ -144,10 +143,28 @@ class RoleField(models.IntegerField):
         return super().get_prep_value(int(value))
 
     def value_to_string(self, obj):
-        """
-        Return a string value of this field from the passed obj.
-        This is used by the serialization framework.
-        """
+        return str(int(self.value_from_object(obj)))
+
+
+RoleField = OrganizationRoleField
+
+
+class ApplicationRoleField(models.IntegerField):
+    def __init__(self, verbose_name=None, name=None, db_index=False, serialize=True,
+                 choices=APP_ROLES,
+                 default=APP_ROLES.USER,
+                 help_text='', db_column=None, db_tablespace=None, validators=(), error_messages=None):
+        super().__init__(verbose_name=verbose_name, name=name,
+                         choices=choices,
+                         db_index=db_index, serialize=serialize, default=default,
+                         help_text=help_text,
+                         db_column=db_column, db_tablespace=db_tablespace, validators=validators,
+                         error_messages=error_messages)
+
+    def get_prep_value(self, value):
+        return super().get_prep_value(int(value))
+
+    def value_to_string(self, obj):
         return str(int(self.value_from_object(obj)))
 
 

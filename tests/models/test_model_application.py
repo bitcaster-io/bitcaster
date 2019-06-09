@@ -1,7 +1,7 @@
 import pytest
 
 from bitcaster.models import Application
-from bitcaster.security import ROLES
+from bitcaster.security import APP_ROLES
 from bitcaster.utils.tests.factories import (ApplicationFactory,
                                              ApplicationMemberFactory,
                                              OrganizationMemberFactory,)
@@ -57,5 +57,5 @@ def test_application_membership(application1):
 @pytest.mark.django_db
 def test_application_admins(application1):
     o = OrganizationMemberFactory(organization=application1.organization)
-    m = ApplicationMemberFactory(application=application1, org_member=o, role=ROLES.ADMIN)
+    m = ApplicationMemberFactory(application=application1, org_member=o, role=APP_ROLES.ADMIN)
     assert list(application1.admins) == [m.user]

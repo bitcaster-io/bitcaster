@@ -2,8 +2,9 @@ import base64
 from unittest.mock import Mock
 from uuid import uuid4
 
-from bitcaster.framework.db.fields import (ROLES, AgentField, DispatcherField,
-                                           EncryptedJSONField, RoleField,)
+from bitcaster.framework.db.fields import (ORG_ROLES, AgentField,
+                                           DispatcherField, EncryptedJSONField,
+                                           OrganizationRoleField,)
 
 
 def get_key():
@@ -50,7 +51,7 @@ def test_AgentField_eq():
 
 
 def test_RoleField():
-    f = RoleField()
+    f = OrganizationRoleField()
     f.attname = 'attr'
     assert f.value_to_string(Mock(attr=1)) == '1'
-    assert f.get_prep_value(ROLES.OWNER) == 1
+    assert f.get_prep_value(ORG_ROLES.OWNER) == 1
