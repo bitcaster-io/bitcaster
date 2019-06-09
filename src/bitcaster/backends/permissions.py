@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from bitcaster.framework.db.fields import APP_ROLES, ORG_ROLES
 from bitcaster.models import Application, Event, Organization
-from bitcaster.security import PERM_MAP
+from bitcaster.security import ORG_PERMISSIONS, PERM_MAP
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +48,8 @@ class BitcasterBackend:
             return True
         if obj:
             if isinstance(obj, Organization):
+                if perm not in ORG_PERMISSIONS:
+                    return True
                 return perm in self.get_all_permissions(user_obj, obj)
             elif isinstance(obj, Application):
                 return (obj.organization.owner == user_obj or

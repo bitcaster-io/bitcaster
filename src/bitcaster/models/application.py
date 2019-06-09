@@ -92,12 +92,16 @@ class Application(AbstractModel, ReverseWrapperMixin):
 
     def add_member(self, org_member, role):
         from bitcaster.models import ApplicationUser
-        if isinstance(org_member, (list, QuerySet)):
-            for m in org_member:
-                ApplicationUser.objects.update_or_create(application=self,
-                                                         org_member=m,
-                                                         defaults=dict(
-                                                             role=role))
+        if isinstance(org_member, User):
+            org_member = self.organization.memberships.get(user=org_member)
+
+        if not isinstance(org_member, (list, QuerySet)):
+            org_member = [org_member]
+        for m in org_member:
+            ApplicationUser.objects.update_or_create(application=self,
+                                                     org_member=m,
+                                                     defaults=dict(
+                                                         role=role))
 
     @property
     def channels(self):

@@ -47,7 +47,7 @@ def pytest_configure(config):
 
 
 @pytest.yield_fixture(scope='session')
-def django_db_setup(request,
+def dddjango_db_setup(request,
                     django_test_environment,
                     django_db_blocker,
                     django_db_use_migrations,

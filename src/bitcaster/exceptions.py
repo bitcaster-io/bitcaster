@@ -75,8 +75,8 @@ class PermissionDenied(_PermissionDenied):
     def __init__(self, view, obj, message=None):
         self.view = view
         self.target = obj
-        self.message = message or ('You do not have required permission %s' %
-                                   repr_list(view.permissions))
+        self.message = message or ('You do not have required permission %s on %s' %
+                                   (repr_list(view.permissions), obj))
 
     def __str__(self):
         return self.message

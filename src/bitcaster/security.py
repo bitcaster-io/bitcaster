@@ -34,6 +34,7 @@ ORG_PERMISSIONS = {'manage_organization',
                    'manage_monitor',
                    }
 APP_PERMISSIONS = {'manage_application',
+                   'manage_monitor',
                    }
 
 OWNER_PERMISSIONS = ORG_PERMISSIONS

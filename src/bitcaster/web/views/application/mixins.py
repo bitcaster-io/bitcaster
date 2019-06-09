@@ -14,11 +14,16 @@ class SelectedApplicationMixin(SelectedOrganizationMixin):
         return super().get_context_data(**kwargs)
 
     @cached_property
+    def selected_organization(self):  # returns selected office and caches the office
+        return self.selected_application.organization
+
+    @cached_property
     def selected_application(self):
-        if self.selected_organization and 'app' in self.kwargs:
+        if 'app' in self.kwargs:
             slug = self.kwargs['app']
             try:
-                app = self.selected_organization.applications.get(slug=slug)
+                app = Application.objects.filter(slug=slug,
+                                                 organization__slug=self.kwargs['org']).first()
                 state.debug['application'] = app
                 self.check_perms(self.request, app, True)
             except Application.DoesNotExist:  # pragma: no cover
