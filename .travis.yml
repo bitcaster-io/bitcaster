@@ -19,12 +19,13 @@ env:
 install:
   - nvm install $TRAVIS_NODE_VERSION
   - npm install -g yarn@1.3.2
-  - pip install tox codecov
+  - pip install pipenv codecov
+  - pipenv install --verbose --system --deploy --ignore-pipfile
 
 script:
   - npm install
   - mkdir /tmp/static
-  - tox -re d21-py36
+  - pytest tests/
 
 before_success:
   - coverage erase
