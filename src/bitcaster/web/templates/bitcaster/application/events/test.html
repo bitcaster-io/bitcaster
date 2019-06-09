@@ -28,33 +28,47 @@
         <a href="{{ event.urls.edit }}">{{ event }}</a> :
         <a href="{{ events.urls.test }}">test</a>
     </div>
-    <div class="container-fluid border p-1">
-        <div class="row">
-            <div class="col-1 m-2">Url:</div>
-            <div class="copy col-5 m-2">{{ api_url }}</div>
+    <div class="container border p-1 m-1">
+        <div class="p-2">
+            <select id="method" class="form-control">
+                <option>get</option>
+                <option>post</option>
+            </select>
         </div>
-        <div class="row">
-            <div class="col-1 m-2">Token:</div>
-            <div class="copy col-5 m-2">{{ key.token }}</div>
-        </div>
-    </div>
-    <div class="p-2 m-3">
-        {# WEB #}
-        <div class="tab-pane" id="tab-web" role="tabpanel" aria-labelledby="profile-tab">
-            {% if event.development_mode %}
-                <pre id="web" style="min-height: 200px"></pre>
-                <button id="trigger" class="btn btn-primary">Trigger</button>
-            {% else %}
-                {% trans "Developer mode need to be enabled to test event from this interface" %}
-            {% endif %}
+        <div class="p-2 copy" id="endpoint">
         </div>
     </div>
+    {# WEB #}
+    {% if event.development_mode %}
+        <div class="container border p-1 m-1">
+            {#  Arguments #}
+            <div class="content arguments">
+                <div class="align-items-center row-template d-none">
+                    <div class="col-5"><input class="form-control name" type="text"></div>
+                    <div class="col-5"><input class="form-control value" type="text"></div>
+                    <div class="col-2">
+                        <span class="pointer remove-param">
+                            <i class="far fa-times-circle"></i>&nbsp;
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {# End of Arguments #}`
+        </div>
+        <div class="container border p-1 m-1">
+            <pre id="web" style="min-height: 200px"></pre>
+            <button id="trigger" class="btn btn-primary">Trigger</button>
+            <button id="add-argument" class="btn btn-primary">Add Argument</button>
+        </div>
+    {% else %}
+        {% trans "Developer mode need to be enabled to test event from this interface" %}
+    {% endif %}
+    <div class="container mt-3">
+        <input type="button" class="btn btn-secondary"
+               onclick="history.back();"
+               value="{% trans "Cancel" %}">
 
-    <input type="button" class="btn btn-secondary"
-           onclick="history.back();"
-           value="{% trans "Cancel" %}">
     </div>
-
 {% endblock %}
 {% block js %}
     {{ block.super }}
@@ -99,9 +113,32 @@
         });
     </script>
     <script>
+        var BASE_URL = "{{ api_short_url }}";
+        var params = {};
+        var workingURL = BASE_URL;
+        $('#endpoint').html(workingURL);
+        $("#add-argument").click(function () {
+            $(".row-template").clone()
+                .removeClass('row-template d-none')
+                .addClass('row')
+                .appendTo(".arguments").find('.name').focus();
+
+        });
+        $('.arguments').on('click', '.remove-param', function () {
+            $(this).parent().parent().remove()
+        }).on('keyup', 'input', function () {
+            params = {};
+            $('.arguments>.row').each(function (i, el) {
+                params[$(el).find('.name').val()] = $(el).find('.value').val();
+            });
+            workingURL = BASE_URL + '?' + $.param(params);
+            $('#endpoint').html(workingURL);
+        });
+
         $("#trigger").click(function () {
             var xhttp = new XMLHttpRequest();
             $monitor = $('#web');
+            $monitor.html("");
             xhttp.onprogress = function () {
                 $monitor.append("LOADING\n"); // readyState will be 3
             };
@@ -110,10 +147,14 @@
                 $monitor.append("SUCCESS\n"); // readyState will be 4
             };
             */
-            xhttp.open("POST", "{{ api_url }}", false);
-            $monitor.append("OPEN CONNECTION: {{ api_url }}\n");
+            var method = $('#method').val();
+            xhttp.open(method, workingURL, false);
+            $monitor.append("METHOD: " + method + "\n");
+            $monitor.append("OPEN CONNECTION: " + workingURL + "\n");
             xhttp.setRequestHeader("Content-type", "application/json");
             xhttp.setRequestHeader("Authorization", "Key {{ key.token }}");
+            {#$monitor.append("setRequestHeader: Authorization, \"Key {{ key.token }}\"\n");#}
+            $monitor.append("setRequestHeader: Content-type, \"application/json\"\n");
             $monitor.append("SENDING REQUEST\n");
             xhttp.send();
             if (xhttp.status !== 201) {
@@ -121,7 +162,8 @@
             } else {
                 $monitor.append("SUCCESS ", "\n");
             }
-            $monitor.append(xhttp.responseText, "\n");
+            var json = JSON.parse(xhttp.responseText);
+            $monitor.append(JSON.stringify(json, null, 4) + "\n");
         });
 
         $("button.fa-copy").click(function () {

@@ -159,7 +159,7 @@ class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
         extra = {'serializer': eventform_factory(event),
                  'key': key,
                  'api_url': event.get_api_url(),
-                 'short_api_url': event.get_short_api_url(key.token)
+                 'api_short_url': event.get_short_api_url(key.token)
                  }
 
         kwargs.update(extra)
