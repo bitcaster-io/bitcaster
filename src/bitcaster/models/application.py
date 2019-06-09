@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from timezone_field import TimeZoneField
 
 from bitcaster.file_storage import app_media_root
-from bitcaster.framework.db.fields import ROLES, AvatarField
+from bitcaster.framework.db.fields import ROLES, AvatarField, EncryptedJSONField
 from bitcaster.framework.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.utils.slug import slugify_instance
 
@@ -29,6 +29,12 @@ RESERVED_APPLICATION_SLUGS = frozenset(RESERVED_NAMES)
 
 class Application(AbstractModel, ReverseWrapperMixin):
     """Application """
+
+    DEF_MESSAGE = """DEVELOP MODE ENABLED
+This message has been sent only to the Application's Admin
+---
+"""
+
     uuid = UUIDField(default=uuid4, editable=False, blank=False, null=False)
     organization = models.ForeignKey(Organization,
                                      related_name='applications',
@@ -49,6 +55,8 @@ class Application(AbstractModel, ReverseWrapperMixin):
     picture_height = models.IntegerField(editable=False, null=True)
     picture_width = models.IntegerField(editable=False, null=True)
     enabled = models.BooleanField(default=True)
+
+    storage = EncryptedJSONField(_('storage'), default=dict)
 
     rate_limit = models.CharField(max_length=100,
                                   null=True, default=None, blank=True,

@@ -2,8 +2,10 @@ import logging
 
 from crashlog.middleware import process_exception
 from django.db.transaction import atomic
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
@@ -35,13 +37,28 @@ class EventViewSet(BaseModelViewSet):
     #     return ret
 
     @action(methods=['get', 'post', 'options'],
+            authentication_classes=[],
+            permission_classes=[],
+            parser_classes=(JSONParser, FileUploadParser, MultiPartParser,),
+            detail=True)
+    def tr(self, request, organization__pk, application__pk, pk):
+        key, pk = pk.split(':')
+        app, key = TriggerKeyAuthentication().authenticate_credentials(request, key)
+        perm = EventTriggerPermission()
+        event = self.selected_application.events.get(pk=pk)
+        if not perm.has_object_permission(request, self, event):
+            raise PermissionDenied('Key not enabled for this event')
+        return self.trigger(request, organization__pk, application__pk, pk)
+
+    @action(methods=['get', 'post', 'options'],
             authentication_classes=[TriggerKeyAuthentication],
             permission_classes=[EventTriggerPermission],
             parser_classes=(JSONParser, FileUploadParser, MultiPartParser,),
             detail=True)
     def trigger(self, request, organization__pk, application__pk, pk):
         try:
-            event = self.get_object()
+            event = get_object_or_404(self.selected_application.events,
+                                      pk=pk)
             if not event.enabled:
                 log_error_event(event, 'Event disabled')
                 return Response({'error': 'Event disabled'}, status=400)
@@ -55,9 +72,12 @@ class EventViewSet(BaseModelViewSet):
             logger.exception(e)
             with atomic():
                 process_exception(e)
-            return Response({'message': str(e),
+            return Response({'error': 500,
+                             'message': str(e),
                              'timestamp': timezone.now()}, status=500)
         else:
             return Response({'message': 'Event triggered',
+                             'event': event.pk,
+                             'development': event.development_mode,
                              'id': occurence.pk,
                              'timestamp': timezone.now()}, status=201)

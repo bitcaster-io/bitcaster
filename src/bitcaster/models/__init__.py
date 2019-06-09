@@ -14,6 +14,7 @@ from .metadata import AgentMetaData, DispatcherMetaData
 from .monitor import Monitor
 from .notification import Notification
 from .occurence import Occurence
+from .option import Option, OrganizationOption
 from .organization import Organization
 from .organizationgroup import OrganizationGroup
 from .organizationmember import OrganizationMember

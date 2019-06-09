@@ -6,7 +6,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.file_storage import org_media_root
-from bitcaster.framework.db.fields import ROLES, AvatarField, RoleField
+from bitcaster.framework.db.fields import (ROLES, AvatarField,
+                                           EncryptedJSONField, RoleField,)
 from bitcaster.framework.db.validators import RESERVED_NAMES, RateLimitValidator
 from bitcaster.models.mixins import ReverseWrapperMixin
 from bitcaster.models.validators import ListValidator, NameValidator
@@ -55,6 +56,8 @@ class Organization(AbstractModel, ReverseWrapperMixin):
     rate_limit = models.CharField(max_length=100,
                                   null=True, default=None, blank=True,
                                   validators=[RateLimitValidator()])
+
+    storage = EncryptedJSONField(_('storage'), default=dict)
 
     objects = OrganizationManager()
 

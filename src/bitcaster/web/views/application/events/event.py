@@ -6,17 +6,18 @@ from django.views.generic import RedirectView
 from rest_framework.serializers import Serializer
 
 from bitcaster import messages
-from bitcaster.models import Event, Message
+from bitcaster.models import AuditEvent, Event, Message
 from bitcaster.web.forms import EventForm
 from bitcaster.web.views.application.mixins import SelectedApplicationMixin
 from bitcaster.web.views.base import (
     BitcasterBaseCreateView, BitcasterBaseDeleteView, BitcasterBaseDetailView,
     BitcasterBaseListView, BitcasterBaseUpdateView, MessageUserMixin,)
+from bitcaster.web.views.mixins import LogAuditMixin
 
 logger = logging.getLogger(__name__)
 
 
-class EventMixin(SelectedApplicationMixin):
+class EventMixin(LogAuditMixin, SelectedApplicationMixin):
     model = Event
 
     def get_success_url(self):
@@ -69,6 +70,8 @@ class EventCreate(EventMixin, EventFormMixin, BitcasterBaseCreateView):
                                               'enabled': True,
                                           })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
+        self.audit(self.object, AuditEvent.EVENT_CREATED)
+        self.message_user(_('Event created'))
         return ret
 
 
@@ -81,7 +84,6 @@ class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
                                         **kwargs)
 
     def form_valid(self, form):
-        self.message_user(_('Event saved'), messages.SUCCESS)
         ret = super().form_valid(form)
         event = self.object
         for channel in event.channels.all():
@@ -92,6 +94,8 @@ class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
                                                  'enabled': True,
                                              })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
+        self.audit(self.object, AuditEvent.CHANNEL_UPDATED)
+        self.message_user(_('Event updated'))
         return ret
 
 
@@ -102,6 +106,12 @@ class EventDelete(EventMixin, EventFormMixin, BitcasterBaseDeleteView):
         return super().get_context_data(save_label=_('Save Event'),
                                         **kwargs)
 
+    def delete(self, request, *args, **kwargs):
+        self.audit(self.object, AuditEvent.EVENT_DELETED)
+        self.message_user(_('Event deleted'))
+        ret = super().delete(request, *args, **kwargs)
+        return ret
+
 
 def eventform_factory(event: Event):
     attrs = {}
@@ -110,6 +120,28 @@ def eventform_factory(event: Event):
     #         attrs[fld['name']] = import_by_name(fld['type'])()
 
     return type('AAA', (Serializer,), attrs)()
+
+
+class EventBee(EventMixin, EventFormMixin, BitcasterBaseDetailView):
+    template_name = 'bitcaster/application/events/links.html'
+    title = 'Event endpoints'
+
+    def get_context_data(self, **kwargs):
+        event = self.get_object()
+        key = self.selected_application.keys.filter(events=event).first()
+        if not key:
+            key = self.selected_application.keys.create(name=f'Auto created key for {event}')
+            key.events.add(event)
+            self.message_user('Warning new key has been created', messages.WARNING)
+
+        extra = {'serializer': eventform_factory(event),
+                 'key': key,
+                 'api_url': event.get_api_url(),
+                 'short_api_url': event.get_short_api_url(key.token)
+                 }
+
+        kwargs.update(extra)
+        return super().get_context_data(**kwargs)
 
 
 class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
@@ -124,20 +156,36 @@ class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
             key.events.add(event)
             self.message_user('Warning new key has been created', messages.WARNING)
 
-        # key = self.request.user.triggers.filter(application=event.application).first()
-        # if not key:
-        #     key = self.request.user.triggers.create(application=event.application)
-        #
         extra = {'serializer': eventform_factory(event),
                  'key': key,
-                 'api_url': event.get_api_url()
+                 'api_url': event.get_api_url(),
+                 'short_api_url': event.get_short_api_url(key.token)
                  }
 
         kwargs.update(extra)
         return super().get_context_data(**kwargs)
 
 
-class EventToggle(EventMixin, EventFormMixin, MessageUserMixin, RedirectView):
+class EventDeveloperModeToggle(EventMixin, LogAuditMixin, EventFormMixin, MessageUserMixin, RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        return self.get_success_url()
+
+    def get(self, request, *args, **kwargs):
+        obj = self.selected_application.events.get(id=kwargs['pk'])
+        obj.development_mode = not obj.development_mode
+        obj.save()
+        # op = 'enabled' if obj.development_mode else 'disabled'
+        # self.message_user(f'Event development mode {op}')
+        if obj.development_mode:
+            self.message_user(f'Event debug mode enabled')
+            self.audit(obj, AuditEvent.EVENT_DEV_MODE_ON)
+        else:
+            self.message_user(f'Event debug mode disabled')
+            self.audit(obj, AuditEvent.EVENT_DEV_MODE_OFF)
+        return super().get(request, *args, **kwargs)
+
+
+class EventToggle(EventMixin, LogAuditMixin, EventFormMixin, MessageUserMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         return self.get_success_url()
 
@@ -152,12 +200,6 @@ class EventToggle(EventMixin, EventFormMixin, MessageUserMixin, RedirectView):
         else:
             obj.enabled = not obj.enabled
             if obj.enabled:
-                # ok = obj.messages.filter(enabled=True).exists()
-                # if not ok:
-                #     self.message_user(f'Event cannot be enabled because '
-                #                       f'all messages are disabled', messages.ERROR)
-                #     return super().get(request, *args, **kwargs)
-
                 for msg in obj.messages.all():
                     if not msg.body:
                         self.message_user(f'Event cannot be enabled because '
@@ -167,8 +209,12 @@ class EventToggle(EventMixin, EventFormMixin, MessageUserMixin, RedirectView):
                     msg.clean()
 
             obj.save()
-            op = 'enabled' if obj.enabled else 'disabled'
-            self.message_user(f'Event {op}')
+            if obj.enabled:
+                self.message_user(f'Event enabled')
+                self.audit(obj, AuditEvent.EVENT_ENABLED)
+            else:
+                self.message_user(f'Event disabled')
+                self.audit(obj, AuditEvent.EVENT_DISABLED)
         return super().get(request, *args, **kwargs)
 
 

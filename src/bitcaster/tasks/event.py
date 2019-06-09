@@ -59,14 +59,14 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
     return True
 
 
-def _get_message_parts(channel, event) -> [Template, Template]:
+def _get_message_parts(channel, event, header) -> [Template, Template]:
     try:
         message = channel.messages.get(event=event)
         if not message.body.strip():
             msg = _('Empty message for channel %s') % channel
             log_error_event(event, msg)
             raise Exception(msg)
-        return Template(message.subject), Template(message.body)
+        return Template(message.subject), Template(header + message.body)
     except ObjectDoesNotExist as e:
         msg = 'Unable to find a message for %(channel)s'
         logger.error(e)
@@ -86,12 +86,23 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
     organization = channel.organization
     occurence = Occurence.objects.select_related('event').get(pk=occurence_pk)
     event = occurence.event
+    application = event.application
+    if event.development_mode:
+        header = application.storage.get('dev_mode_message', application.DEF_MESSAGE)
+    else:
+        header = ''
+
     logger.debug(f'Processing channel {channel}')
-    subject_template, body_template = _get_message_parts(channel, event)
+
+    subject_template, body_template = _get_message_parts(channel, event, header)
+
+    subscription_filter = {'channel': channel}
+    if event.development_mode:
+        subscription_filter['subscriber__in'] = event.application.admins
     try:
         partition = 1000
         page = []
-        for subscription in event.subscriptions.valid(channel=channel):
+        for subscription in event.subscriptions.valid(**subscription_filter):
             try:
                 logger.debug(f'Processing {subscription}')
                 ctx = dict(context or {})

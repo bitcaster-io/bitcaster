@@ -36,7 +36,7 @@
         }
     </style>
     <div class="breadcrumbs pb-4">
-        <a href="{% app-url "app-events" %}">events</a> :
+        <a href="{{ application.urls.events }}">events</a> :
         <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a> :
         <a href="{% app-url "app-event-keys" event.pk %}">keys</a>
     </div>

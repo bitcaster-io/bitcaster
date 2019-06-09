@@ -11,6 +11,10 @@ from django.utils.translation import gettext as _
 class AuditEvent(IntEnum):
     MEMBER_LOGIN = 0
     MEMBER_LOGOUT = 1
+    # Application
+    APPLICATION_UPDATED = 101
+    APPLICATION_CREATED = 102
+    APPLICATION_DELETED = 103
 
     # Invitations 2xx
     INVITATION_CREATED = 201
@@ -41,6 +45,14 @@ class AuditEvent(IntEnum):
     CHANNEL_DISABLED = 803
     CHANNEL_UPDATED = 804
     CHANNEL_CREATED = 805
+
+    EVENT_DELETED = 801
+    EVENT_ENABLED = 802
+    EVENT_DISABLED = 803
+    EVENT_UPDATED = 804
+    EVENT_CREATED = 805
+    EVENT_DEV_MODE_ON = 806
+    EVENT_DEV_MODE_OFF = 807
 
 
 _CREATED = _('%(actor)s has created %(content_type)s %(target)s')

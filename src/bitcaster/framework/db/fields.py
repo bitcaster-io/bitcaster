@@ -11,6 +11,7 @@ from django.db.models import Field
 from django.utils.functional import cached_property
 from fernet_fields import hkdf
 # from jsoneditor.forms import JSONEditor
+from picklefield import PickledObjectField
 from strategy_field.fields import StrategyField
 
 from bitcaster.agents.registry import agent_registry
@@ -26,8 +27,7 @@ from ..forms.fields import DispatcherFormField
 logger = logging.getLogger(__name__)
 
 
-class EncryptedJSONField(_JSONField):
-
+class FernetMixin:
     @cached_property
     def keys(self):
         keys = getattr(settings, 'FERNET_KEYS', None)
@@ -47,19 +47,36 @@ class EncryptedJSONField(_JSONField):
             return Fernet(self.fernet_keys[0])
         return MultiFernet([Fernet(k) for k in self.fernet_keys])
 
+
+class EncryptedPickledObjectField(FernetMixin, PickledObjectField):
+    def get_db_prep_value(self, value, *args, **kwargs):
+        if isinstance(value, bytes):
+            value = value.decode('utf-8')
+        value = super(EncryptedPickledObjectField, self).get_db_prep_value(value, *args, **kwargs)
+        return self.fernet.encrypt(value)
+
+    def to_python(self, value):
+        if value is not None and isinstance(value, str):
+            value = self.fernet.decrypt(value)
+        return super(EncryptedPickledObjectField, self).to_python(value)
+
+    def get_prep_lookup(self, lookup_type, value):
+        raise NotImplementedError(
+            u'{!r} lookup type for {!r} is not supported'.format(
+                lookup_type,
+                self,
+            )
+        )
+
+
+class EncryptedJSONField(FernetMixin, _JSONField):
+
     def from_db_value(self, value, expression, connection, context):
         return json.loads(self.fernet.decrypt(value['f'].encode('utf8')))
 
     def get_prep_value(self, value):
         value = {'f': self.fernet.encrypt(json.dumps(value).encode('utf8')).decode('utf8')}
         return super().get_prep_value(value)
-
-    # def formfield(self, **kwargs):
-    #     defaults = {
-    #         'form_class': kwargs.get('form_class', JSONFormField),
-    #     }
-    #     defaults.update(kwargs)
-    #     return super(EncryptedJSONField, self).formfield(**defaults)
 
 
 class LanguageField(models.CharField):

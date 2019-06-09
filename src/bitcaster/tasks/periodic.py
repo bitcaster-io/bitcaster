@@ -29,37 +29,29 @@ def clean_data():
 
 @periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
 def set_occurences_status():
-    # check for expired occurences
+    # updates expiraration on expired occurences
     Occurence.objects.filter(expire__lt=timezone.now(),
                              status=Occurence.RUNNING).update(status=Occurence.EXPIRED)
 
-    # terminate all occurences with no pending notifications
-    # closed = Notification.objects.filter(status__in=[Notification.EXPIRED,
-    #                                                  Notification.COMPLETE]).distinct().values_list('occurence',
-    #                                                                                                 flat=True)
-    #
-    # Occurence.objects.filter(id__in=closed, status=Occurence.RUNNING).update(status=Occurence.TERMINATED)
+    Notification.objects.filter(occurence__status=Occurence.EXPIRED,
+                                status__in=Notification.RUNNING).update(status=Notification.EXPIRED)
 
+    # terminate all occurences with no pending notifications
     qs = Occurence.objects.filter(status__in=[Occurence.RUNNING]).exclude(
-        notifications__status__in=[Notification.PENDING,
-                                   Notification.REMIND,
-                                   Notification.RETRY])
+        notifications__status__in=Notification.RUNNING)
 
     qs.update(status=Occurence.TERMINATED)
 
     # updates queue counters
-    pending = Occurence.objects.exclude(status__in=[Notification.EXPIRED,
-                                                    Notification.CONFIRMED,
-                                                    Notification.COMPLETE]).count()
+    pending = Occurence.objects.exclude(status__in=Notification.NOT_RUNNING).count()
     stats.set('occurence', pending)
 
     pending = Notification.objects.filter(occurence__expire__gt=timezone.now(),
-                                          status__in=[Notification.PENDING,
-                                                      Notification.RETRY]).count()
+                                          status__in=Notification.RUNNING).count()
     stats.set('notification', pending)
 
     retry = Notification.objects.filter(occurence__expire__gt=timezone.now(),
-                                        status=Notification.REMIND).count()
+                                        status=Notification.RETRY).count()
     stats.set('notification:retry', retry)
 
 

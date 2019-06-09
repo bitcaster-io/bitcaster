@@ -12,6 +12,7 @@ from .invitation import InvitationAdmin
 from .message import MessageAdmin
 from .monitor import MonitorAdmin
 from .notification import NotificationAdmin
+from .option import OptionAdmin
 from .organization import OrganizationAdmin
 from .plugins import AgentMetaDataAdmin, DispatcherMetaDataAdmin
 from .security import ApiAuthTokenAdmin, ApplicationTriggerKey, UserAdmin

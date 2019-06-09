@@ -2,10 +2,12 @@ import logging
 
 from django.core.cache import cache
 from django.urls import reverse
+from django.utils.translation import ugettext as _
 from django.views.generic import RedirectView
 
-from bitcaster.models import Application
+from bitcaster.models import Application, AuditEvent
 from bitcaster.web.forms import ApplicationForm
+from bitcaster.web.views.mixins import LogAuditMixin, MessageUserMixin
 
 from ..base import (BitcasterBaseDeleteView, BitcasterBaseDetailView,
                     BitcasterBaseUpdateView,)
@@ -14,7 +16,7 @@ from .mixins import SelectedApplicationMixin
 logger = logging.getLogger(__name__)
 
 
-class ApplicationViewMixin(SelectedApplicationMixin):
+class ApplicationViewMixin(LogAuditMixin, MessageUserMixin, SelectedApplicationMixin):
     model = Application
     slug_url_kwarg = 'app'
 
@@ -26,6 +28,12 @@ class ApplicationUpdateView(ApplicationViewMixin, BitcasterBaseUpdateView):
 
     def get_success_url(self):
         return self.selected_application.urls.edit
+
+    def form_valid(self, form):
+        ret = super().form_valid(form)
+        self.audit(self.object, AuditEvent.APPLICATION_UPDATED)
+        self.message_user(_('Application updated'))
+        return ret
 
 
 class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):
@@ -63,6 +71,12 @@ class ApplicationDeleteView(ApplicationViewMixin, BitcasterBaseDeleteView):
 
     def get_success_url(self):
         return reverse('org-applications', args=[self.selected_organization.slug])
+
+    def delete(self, request, *args, **kwargs):
+        self.audit(self.object, AuditEvent.APPLICATION_DELETED)
+        self.message_user(_('Application deleted'))
+        ret = super().delete(request, *args, **kwargs)
+        return ret
 
 
 class ApplicationCheckConfigView(ApplicationViewMixin, RedirectView):

@@ -24,7 +24,7 @@
 
     </style>
     <div class="breadcrumbs pb-4">
-        <a href="{{ app.url.events }}">events</a> :
+        <a href="{{ application.urls.events }}">events</a> :
         <a href="{{ event.urls.edit }}">{{ event }}</a> :
         <a href="{{ events.urls.test }}">test</a>
     </div>
@@ -38,85 +38,22 @@
             <div class="copy col-5 m-2">{{ key.token }}</div>
         </div>
     </div>
-    {#    <div class="container-fluid border p-3">#}
-    {#        <form id="ser">#}
-    {#            {% render_serializer serializer "rest_framework/inline2" %}#}
-    {#        </form>#}
-    {#    </div>#}
-    <textarea id="_hiddenCopyText_"></textarea>
-
     <div class="p-2 m-3">
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-curl" role="tab"
-                   aria-controls="home"
-                   aria-selected="true">cUrl</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-httpie" role="tab"
-                   aria-controls="profile"
-                   aria-selected="false">Httpie</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-wget" role="tab"
-                   aria-controls="profile"
-                   aria-selected="false">wget</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-web" role="tab"
-                   aria-controls="profile"
-                   aria-selected="false">web</a>
-            </li>
-        </ul>
-
-        <div class="tab-content p-2" id="myTabContent">
-            <div class="tab-pane show active" id="tab-curl" role="tabpanel" aria-labelledby="home-tab">
-                <div class="pb-2">
-                    <button data-target="#curl" class="fa fa-copy"></button>
-                    copy multiline: <input type="checkbox" id="multiline">
-                </div>
-                <pre id="curl">
-curl -H "Content-Type: application/json" \
-     -H "Authorization:Key {{ key.token }}" \
-     -X POST \<span id="params1"></span>
-     {{ api_url }}
-</pre>
-            </div>
-
-            <div class="tab-pane" id="tab-httpie" role="tabpanel" aria-labelledby="profile-tab">
-                <div class="pb-2">
-                    <button data-target="#httpie" class="fa fa-copy"></button>
-                </div>
-                <pre id="httpie">
-http POST {{ api_url }} \
-     Authorization:"Key {{ key.token }}" <span id="params2"></span>
-</pre>
-
-            </div>
-
-            <div class="tab-pane" id="tab-wget" role="tabpanel" aria-labelledby="profile-tab">
-                <div class="pb-2">
-                    <button data-target="#wget" class="fa fa-copy"></button>
-                </div>
-                <pre id="wget">
-wget -O- "{{ api_url }}" \
-     --header=Content-Type:application/json \
-     --header="Authorization:Key {{ key.token }}" <span id="params3"></span>
-            </pre>
-            </div>
-
-
-            <div class="tab-pane" id="tab-web" role="tabpanel" aria-labelledby="profile-tab">
+        {# WEB #}
+        <div class="tab-pane" id="tab-web" role="tabpanel" aria-labelledby="profile-tab">
+            {% if event.development_mode %}
+                <pre id="web" style="min-height: 200px"></pre>
                 <button id="trigger" class="btn btn-primary">Trigger</button>
-                <pre id="web"></pre>
-            </div>
-
+            {% else %}
+                {% trans "Developer mode need to be enabled to test event from this interface" %}
+            {% endif %}
         </div>
     </div>
 
     <input type="button" class="btn btn-secondary"
            onclick="history.back();"
            value="{% trans "Cancel" %}">
+    </div>
 
 {% endblock %}
 {% block js %}

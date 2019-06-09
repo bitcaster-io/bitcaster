@@ -6,7 +6,7 @@
 *.mo
 bitcaster.egg-info
 /bitcaster.json
-*e.pyc
+*.pyc
 celery.pid
 celerybeat-schedule.*
 !.tx

@@ -21,6 +21,9 @@ class Env(environ.Env):
     def __copy__(self):
         return type(self)(self.prefix, **self.scheme)
 
+    def as_dict(self):
+        return {k: v for k, v in self.ENVIRON.items() if k.startswith(self.prefix)}
+
     def get_value(self, var, cast=None, default=environ.Env.NOTSET,  # noqa: C901
                   parse_default=False, raw=False):
         """Return value for given environment variable.

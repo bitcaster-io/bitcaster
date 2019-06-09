@@ -23,8 +23,8 @@ def backup(ctx, filename):
 @click.option('--reindex/--no-reindex', default=True)
 @click.option('-o', '--only', 'selection', default=None, multiple=True, type=click.Choice(SECTIONS))
 @click.option('-w', '--overwrite', 'overwrite', default=False, is_flag=True)
-@click.option('-i', '--ignore-errors', default=False, is_flag=True, help='Try to continueon error')
-@click.option('--reset-cryptography', default=False, is_flag=True, help='Try to continueon error')
+@click.option('-i', '--ignore-errors', default=False, is_flag=True, help='Try to continue on error')
+@click.option('--reset-cryptography', default=False, is_flag=True, help='encrypth records')
 @click.pass_context
 @need_setup
 def restore(ctx, filename, overwrite, ignore_errors, selection, reindex, reset_cryptography):

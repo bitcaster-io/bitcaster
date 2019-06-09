@@ -64,8 +64,8 @@ class Notification(models.Model):
     PENDING = 0  # Queued no sending happened
     RETRY = 20  # Sent failed retrying
     REMIND = 21  # Reminder scheduled
+    WAIT = 22
 
-    WAIT = 88
     WRONG_ADDRESS = 98
     EXPIRED = 99
     CONFIRMED = 101  # confirmation received / or single successful sent with no confirmations
@@ -80,6 +80,9 @@ class Notification(models.Model):
                 (COMPLETE, _('Complete')),
                 (CONFIRMED, _('Confirmed')),
                 )
+    RUNNING = [PENDING, RETRY, REMIND, WAIT]
+    NOT_RUNNING = [WRONG_ADDRESS, EXPIRED, CONFIRMED, COMPLETE]
+
     MESSAGE_NONE = 0
     MESSAGE_TPL = 1
     MESSAGE_ARG = 2

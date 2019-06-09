@@ -1,6 +1,7 @@
 # flake8: noqa E401
 from .application import *
-from .application.events import (EventCreate, EventDelete, EventKeys,
+from .application.events import (EventBee, EventCreate, EventDelete,
+                                 EventDeveloperModeToggle, EventKeys,
                                  EventList, EventMessages, EventTest,
                                  EventToggle, EventUpdate,)
 from .application.events.messages import (MessageCreate, MessageDelete,

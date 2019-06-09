@@ -43,6 +43,9 @@ class Event(ReverseWrapperMixin, AbstractModel):
     group = models.CharField(max_length=30, null=True, blank=True)
     arguments = JSONField(null=True, blank=True)
     enabled = models.BooleanField(default=False)
+    development_mode = models.BooleanField(default=False,
+                                           help_text=_('Only Admins will receive events'),
+                                           )
     rate_limit = models.CharField(max_length=100,
                                   null=True, default=None, blank=True,
                                   validators=[RateLimitValidator()])
@@ -89,6 +92,12 @@ class Event(ReverseWrapperMixin, AbstractModel):
     class Reverse:
         pattern = 'app-event-{op}'
         args = ['application.organization.slug', 'application.slug', 'id']
+
+    def get_short_api_url(self, key):
+        return absolute_uri(reverse('api:application-event-tr',
+                                    args=[self.application.organization.slug,
+                                          self.application.pk,
+                                          '%s:%s' % (key, self.pk)]))
 
     def get_api_url(self):
         return absolute_uri(reverse('api:application-event-trigger',
