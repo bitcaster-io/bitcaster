@@ -45,7 +45,7 @@ def check_channel_configuration(*args, **kwargs):
             except PluginValidationError:
                 invalid.append(record.pk)
                 errors.append(
-                    Error(
+                    Warning(
                         'Channel %s has been disabled' % record,
                         hint='check channel configuration',
                         obj=record.pk,
@@ -56,8 +56,7 @@ def check_channel_configuration(*args, **kwargs):
         errors.append(Warning(
             str(e),
         ))
-
-        # Channel.objects.filter(id__in=invalid).update(enabled=False)
+        Channel.objects.filter(id__in=invalid).update(enabled=False)
     return errors
 
 
