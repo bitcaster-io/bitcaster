@@ -18,6 +18,7 @@ from bitcaster import models
 from bitcaster.agents import EmailAgent
 from bitcaster.dispatchers import Email
 from bitcaster.framework.db.fields import ORG_ROLES
+from bitcaster.models import DispatcherMetaData
 from bitcaster.models.audit import AuditEvent
 from bitcaster.models.token import generate_api_token
 from bitcaster.security import APP_ROLES
@@ -378,9 +379,13 @@ class ChannelFactory(AutoRegisterModelFactory):
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
         if 'config' not in kwargs:
+            DispatcherMetaData.objects.update_or_create(fqn=fqn(Email),
+                                                        defaults=dict(enabled=True)
+                                                        )
             kwargs['config'] = {'server': 'server',
                                 'backend': 'django.core.mail.backends.locmem.EmailBackend',
                                 'port': 9000,
+                                'timeout': 30,
                                 'username': 'username',
                                 'password': 'password',
                                 'sender': 'sender@sender.org'}
@@ -408,7 +413,10 @@ class MessageFactory(AutoRegisterModelFactory):
     enabled = True
     language = factory.Iterator(['it', 'en', 'es', 'fr'])
     subject = factory.Sequence(lambda n: 'Subject %03d' % n)
-    body = factory.LazyAttribute(lambda n: faker.text(max_nb_chars=200), )
+    body = """Message Body
+param1:{{param1}}
+param2:{{param2}}
+"""
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):

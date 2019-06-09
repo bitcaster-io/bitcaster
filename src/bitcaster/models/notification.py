@@ -1,12 +1,12 @@
 import base64
-import json
 from io import BytesIO
 
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import ugettext as _
 
 from bitcaster.attachments.base import Attachment
+from bitcaster.framework.db.fields import EncryptedJSONField
 
 
 class NotificationManager(models.Manager):
@@ -37,18 +37,18 @@ def parse_attachment(attachment_string):
                       attachment_string['content_type'])
 
 
-class AttachmentField(JSONField):
-    def from_db_value(self, value, expression, connection):
+class AttachmentField(EncryptedJSONField):
+    def from_db_value(self, value, expression, connection, context):
         if value is None:
             return value
+        value = super().from_db_value(value, expression, connection, context)
         return parse_attachment(value)
 
     def get_prep_value(self, value):
         c = value.content.read()
-
-        return json.dumps(dict(name=value.name,
-                               content=base64.b64encode(c).decode(),
-                               content_type=value.content_type))
+        return super().get_prep_value(dict(name=value.name,
+                                           content=base64.b64encode(c).decode(),
+                                           content_type=value.content_type))
 
     def to_python(self, value):
         if isinstance(value, Attachment):
@@ -103,7 +103,7 @@ class Notification(models.Model):
 
     success = models.BooleanField(help_text='True if successed', default=True)
     info = models.TextField(null=True, blank=True)
-    data = JSONField(null=True, blank=True)
+    data = EncryptedJSONField(null=True, blank=True)
 
     development_mode = models.BooleanField(default=False)
     # post processed

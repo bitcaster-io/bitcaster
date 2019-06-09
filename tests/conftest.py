@@ -79,10 +79,10 @@ def django_db_setup(request,
     if not django_db_keepdb:
         request.addfinalizer(teardown_database)
 
-    with django_db_blocker.unblock():
-        from bitcaster.models import DispatcherMetaData, AgentMetaData
-        DispatcherMetaData.objects.inspect()
-        AgentMetaData.objects.inspect()
+    # with django_db_blocker.unblock():
+    #     from bitcaster.models import DispatcherMetaData, AgentMetaData
+    #     DispatcherMetaData.objects.inspect()
+    #     AgentMetaData.objects.inspect()
 
 
 @pytest.fixture(autouse=True)

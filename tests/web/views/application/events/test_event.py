@@ -20,7 +20,7 @@ def test_event_list(django_app, event1, user1):
     res_list.click(href='/%d/delete' % event1.pk)
     res_list.click(href='/%d/test' % event1.pk)
     res_list.click(href='/%d/keys' % event1.pk)
-    res_list.click(href='/%d/links' % event1.pk)
+    res_list.click(href='/%d/bee' % event1.pk)
 
 
 # @pytest.mark.parametrize("url", )

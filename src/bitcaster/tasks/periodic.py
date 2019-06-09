@@ -87,8 +87,8 @@ def check_monitors(self):
         check_monitor.delay(monitor.pk)
 
 
-@periodic_task(bind=True, run_every=timedelta(minutes=1), options={'expires': 60})
-def process_notifications(self):
+@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
+def process_notifications():
     from bitcaster.models import Occurence, Notification
     from .event import send_page
 

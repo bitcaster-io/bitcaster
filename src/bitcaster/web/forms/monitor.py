@@ -74,7 +74,7 @@ class MonitorUpdateConfigurationForm(forms.ModelForm):
         self.instance.application = self.application
         if self.instance and self.instance.handler:
             ser = self.instance.handler.get_options_form(**args)
-        else:
+        elif self.handler:
             ser = self.handler(self.instance).get_options_form(**args)
         if args['data']:
             ser.is_valid()
@@ -93,10 +93,11 @@ class MonitorUpdateConfigurationForm(forms.ModelForm):
             return self.serializer.data
 
     def is_valid(self):
-        valid = self.serializer.is_valid()
-        valid = valid and super().is_valid()
-        if self._errors:
-            self._errors.update(self.serializer.errors)
-        elif self.serializer.errors:
-            self._errors = self.serializer.errors
+        valid = super().is_valid()
+        if self.handler:
+            valid = valid and self.serializer.is_valid()
+            if self._errors:
+                self._errors.update(self.serializer.errors)
+            elif self.serializer.errors:
+                self._errors = self.serializer.errors
         return valid

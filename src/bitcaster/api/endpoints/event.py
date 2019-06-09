@@ -13,6 +13,7 @@ from bitcaster.api.filters import ApplicationFilterBackend
 from bitcaster.models import Occurence
 from bitcaster.tasks.event import trigger_event
 from bitcaster.tsdb.api import log_error_event, log_new_occurence
+from bitcaster.utils.http import flatten_query_dict
 from bitcaster.utils.wsgi import get_client_ip
 
 from ...models.event import Event
@@ -62,10 +63,15 @@ class EventViewSet(BaseModelViewSet):
             if not event.enabled:
                 log_error_event(event, 'Event disabled')
                 return Response({'error': 'Event disabled'}, status=400)
-            occurence = Occurence.log(event=event)
+            if request.method == 'GET':
+                context = flatten_query_dict(request.query_params)
+            else:
+                context = flatten_query_dict(request.data)
+
+            occurence = Occurence.log(event=event, context=context)
             log_new_occurence(occurence)
             trigger_event.delay(occurence.pk,
-                                request.data,
+                                context,
                                 token=request.key.token,
                                 origin=get_client_ip(request))
         except Exception as e:

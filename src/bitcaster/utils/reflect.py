@@ -27,3 +27,7 @@ def fqn(o):
 
 def package_name(c):
     return fqn(c).split('.')[0]
+
+
+def classname(c):
+    return fqn(c).split('.')[-1]

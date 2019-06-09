@@ -1,5 +1,5 @@
-{% extends "bitcaster/application/base.html" %}{% load i18n bitcaster crispy_forms_filters %}
-{% block page %}
+{% extends "bitcaster/application/events/base_detail.html" %}{% load i18n bitcaster crispy_forms_filters %}
+{% block detail %}
     <style>
         a.btn.btn-outline {
             border: 1px solid black;
@@ -35,12 +35,6 @@
             background-color: #e4e4e4;
         }
     </style>
-    <div class="breadcrumbs pb-4">
-        <a href="{{ application.urls.events }}">events</a> :
-        <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a> :
-        <a href="{% app-url "app-event-keys" event.pk %}">keys</a>
-    </div>
-
     <div class="p-2">
         {% blocktrans %}
             Because each channel has different characteristics /limitations, it is required to write one message for

@@ -4,6 +4,7 @@ from django.core.cache import caches
 from django.db import models
 from django.utils import timezone
 
+from bitcaster.framework.db.fields import EncryptedJSONField
 from bitcaster.tasks.model import async
 
 cache_lock = caches['lock']
@@ -53,7 +54,7 @@ class Occurence(models.Model):
                                       help_text='number of subscriptions')
     successes = models.IntegerField(default=0)
     failures = models.IntegerField(default=0)
-
+    context = EncryptedJSONField(null=True, blank=True)
     # max_loops = models.IntegerField(default=1)
     # loop = models.IntegerField(default=0)
 

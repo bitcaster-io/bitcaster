@@ -1,15 +1,9 @@
-{% extends "bitcaster/application/base.html" %}{% load crispy_forms_filters i18n bitcaster %}
+{% extends "bitcaster/application/events/base_detail.html" %}{% load crispy_forms_filters i18n bitcaster %}
 {#{% block pageId %}event{% endblock %}#}
-{% block page %}
-    <div class="breadcrumbs pb-4">
-        <a href="{{ application.urls.events }}">events</a> :
-        {% if event %}: <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a>{% endif %}
-    </div>
-
+{% block detail %}
     <div class="container">
         <div class="row col-12">
             <div class="container-fluid">
-
                 <form method="post" lass="d-none" id="form-event">
                     {% csrf_token %}
                     {{ form|crispy }}

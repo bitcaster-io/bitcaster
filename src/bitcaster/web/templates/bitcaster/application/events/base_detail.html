@@ -1,0 +1,44 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_filters i18n bitcaster menu bc_permissions %}
+{#{% block pageId %}event{% endblock %}#}
+{% block page %}
+    {% block breadcrumbs %}
+        <div class="d-flex justify-content-between align-items-center ">
+            <div class="p-2">
+                <a href="{{ application.urls.events }}">events</a> :
+                {% if event %}
+                <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a>
+                {% endif %}
+            </div>
+            <div class="ml-auto p-2">
+                {% if view|classname != 'EventUpdate' %}
+                    {% button event.urls.edit True "fas fa-wrench" "configure" %}
+                {% endif %}
+                {% if view|classname != 'EventMessages' %}
+                    {% button event.urls.messages True "fas fa-comment" "messages" %}
+                {% endif %}
+
+                {% button event.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" event.enabled %}
+                {% button event.urls.delete True "far fa-trash-alt" "delete" %}
+                {% button event.urls.develop True "fas fa-bug red:fas fa-bug black" "Debug Mode Off:Debug Mode On" event.development_mode %}
+
+                {% if view|classname != 'EventTest' %}
+                    {% button event.urls.test True "fas fa-terminal" "test" %}
+                {% endif %}
+
+                {% if view|classname != 'EventUpdate' %}
+                    {% button event.urls.bee True "fas fa-link" "bee" %}
+                {% endif %}
+
+                {% if view|classname != 'EventKeys' %}
+                    {% button event.urls.keys True "fas fa-key" "keys" %}
+                {% endif %}
+
+                {% if view|classname != 'EventSubscriptionList' %}
+                    {% button event.urls.subscriptions True "fas fa-user" "subscriptions" %}
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
+    {% block detail %}
+    {% endblock %}
+{% endblock %}

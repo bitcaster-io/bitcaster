@@ -1,12 +1,6 @@
-{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% extends "bitcaster/application/events/base_detail.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block pageId %}event{% endblock %}
-{% block page %}
-    <div class="breadcrumbs">
-        <a href="{% app-url "app-events" %}">events</a> :
-        <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a> :
-        <a href="{% app-url "app-event-subscriptions" event.pk %}">subscriptions</a>
-    </div>
-
+{% block detail %}
     <div class="container">
         <div class="row col-12">
             <div class="pull-right col-12 p-4">

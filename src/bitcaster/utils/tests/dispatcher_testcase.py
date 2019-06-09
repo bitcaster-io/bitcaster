@@ -51,7 +51,8 @@ class DispatcherBaseTest:
         # assert dispatcher.get_recipient_address(subscription.recipient)
 
     def test_emit(self, dispatcher, subscription):
-        assert dispatcher.emit(subscription, 'test message', 'test subject')
+        addr = dispatcher.get_recipient_address(subscription)
+        assert dispatcher.emit(addr, 'test message', 'test subject')
 
     def test_test_connection(self, dispatcher, subscription):
         assert dispatcher.test_connection()

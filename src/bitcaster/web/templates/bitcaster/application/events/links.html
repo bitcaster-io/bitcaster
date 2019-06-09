@@ -1,6 +1,6 @@
-{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% extends "bitcaster/application/events/base_detail.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {% block pageId %}event{% endblock %}
-{% block page %}
+{% block detail %}
     <style>
         pre {
             padding: 8px;
@@ -23,11 +23,6 @@
         }
 
     </style>
-    <div class="breadcrumbs pb-4">
-        <a href="{{ application.urls.events }}">events</a> :
-        <a href="{{ event.urls.edit }}">{{ event }}</a> :
-        <a href="{{ events.urls.test }}">test</a>
-    </div>
     <div class="container-fluid border p-1">
         <div class="row">
             <div class="col-1 ml-2 mt-2 mb-2">Url:</div>

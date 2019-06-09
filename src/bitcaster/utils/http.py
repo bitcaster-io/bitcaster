@@ -1,12 +1,21 @@
 from urllib.parse import urlencode, urljoin
 
 from constance import config
+from django.http import QueryDict
 
 
 def absolute_uri(url=None):
     if not url:
         return config.SITE_URL
     return urljoin(config.SITE_URL.rstrip('/') + '/', url.lstrip('/'))
+
+
+def flatten_query_dict(value: QueryDict):
+    ret = {}
+    for k, v in value.items():
+        if k not in ret:
+            ret[k] = v
+    return ret
 
 
 def get_query_string(request, new_params=None, remove=None):
