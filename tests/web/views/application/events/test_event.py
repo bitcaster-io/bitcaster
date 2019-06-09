@@ -20,6 +20,20 @@ def test_event_list(django_app, event1, user1):
     res_list.click(href='/%d/delete' % event1.pk)
     res_list.click(href='/%d/test' % event1.pk)
     res_list.click(href='/%d/keys' % event1.pk)
+    res_list.click(href='/%d/links' % event1.pk)
+
+
+# @pytest.mark.parametrize("url", )
+#
+# def test_event_buttons(django_app, event1, user1):
+#     application = event1.application
+#     organization = application.organization
+#     url = reverse('app-events', args=[organization.slug,
+#                                       application.slug])
+#     res_list = django_app.get(url, user=user1)
+#     for op in ['edit']:
+#         url = reverse('app-event-%s' % op, args=event1.pk)
+#         res_list.click(href='/%d/messages' % event1.pk)
 
 
 def test_event_toggle_fail(django_app, event1, user1):

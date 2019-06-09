@@ -31,8 +31,7 @@ RESERVED_APPLICATION_SLUGS = frozenset(RESERVED_NAMES)
 class Application(AbstractModel, ReverseWrapperMixin):
     """Application """
 
-    DEF_MESSAGE = """DEVELOP MODE ENABLED
-This message has been sent only to the Application's Admin
+    DEF_MESSAGE = """This message has been sent only to the Application Admins
 ---
 """
 

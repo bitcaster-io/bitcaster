@@ -41,15 +41,15 @@ class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
         formset.instance = self.request.user
         formset.save()
         for a in formset.deleted_objects:
-            self.audit(a, AuditLogEntry.AuditEvent.MEMBER_DELETE_ADDRESS)
+            self.audit(a, AuditLogEntry.AuditEvent.ADDRESS_DELETED)
 
         for obj, changed_data in formset.changed_objects:
             self.audit(obj,
-                       AuditLogEntry.AuditEvent.MEMBER_UPDATE_ADDRESS,
+                       AuditLogEntry.AuditEvent.ADDRESS_UPDATED,
                        data=changed_data)
 
         for a in formset.new_objects:
-            self.audit(a, AuditLogEntry.AuditEvent.MEMBER_ADD_ADDRESS)
+            self.audit(a, AuditLogEntry.AuditEvent.ADDRESS_CREATED)
 
         return super().form_valid(formset)
 
@@ -88,7 +88,7 @@ class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
         assignment = self.get_object()
         if assignment.code_is_valid(code):
             self.audit(assignment.address,
-                       AuditLogEntry.AuditEvent.MEMBER_VALIDATE_ADDRESS)
+                       AuditLogEntry.AuditEvent.ADDRESS_VERIFIED)
             return JsonResponse({'status': 'success',
                                  'message': 'Address Verified'})
 
@@ -142,14 +142,14 @@ class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateV
         formset.save()
 
         for a in formset.deleted_objects:
-            self.audit(a, AuditLogEntry.AuditEvent.MEMBER_DELETE_ASSIGNMENT)
+            self.audit(a, AuditLogEntry.AuditEvent.ASSIGNMENT_DELETED)
         if formset.new_objects:
             self.message_user(_('To complete your configuration. Insert codes that you receive to each new address'))
             for assignment in formset.new_objects:
-                self.audit(assignment, AuditLogEntry.AuditEvent.MEMBER_ADD_ASSIGNMENT)
+                self.audit(assignment, AuditLogEntry.AuditEvent.ASSIGNMENT_CREATED)
 
         for assignment, changed_data in formset.changed_objects:
-            self.audit(assignment, AuditLogEntry.AuditEvent.MEMBER_CHANGE_ASSIGNMENT,
+            self.audit(assignment, AuditLogEntry.AuditEvent.ASSIGNMENT_UPDATED,
                        data=changed_data)
             disabled = self.request.user.subscriptions.filter(channel=assignment.channel,
                                                               enabled=True).update(

@@ -7,52 +7,63 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+xCREATE = 1
+xUPDATE = 2
+xDELETE = 3
+xENABLED = 4
+xDISABLED = 5
+xDEPRECATED = 6
+
 
 class AuditEvent(IntEnum):
     MEMBER_LOGIN = 0
     MEMBER_LOGOUT = 1
-    # Application
-    APPLICATION_UPDATED = 101
-    APPLICATION_CREATED = 102
+    # Application - 100
+    APPLICATION_CREATED = 101
+    APPLICATION_UPDATED = 102
     APPLICATION_DELETED = 103
+    APPLICATION_ENABLED = 104
+    APPLICATION_DISABLED = 105
 
-    # Invitations 2xx
+    # Invitations - 2xx
     INVITATION_CREATED = 201
     INVITATION_SENT = 202
     INVITATION_ACCEPTED = 203
-
-    # user
-    MEMBER_UPDATE_PROFILE = 301
-    MEMBER_UPDATE_ADDRESS = 302
-    MEMBER_DELETE_ADDRESS = 303
-    MEMBER_ADD_ADDRESS = 304
-    MEMBER_VALIDATE_ADDRESS = 305
-
-    MEMBER_ADD_ASSIGNMENT = 401
-    MEMBER_CHANGE_ASSIGNMENT = 402
-    MEMBER_DELETE_ASSIGNMENT = 403
-
-    MEMBER_SUBSCRIBE_EVENT = 505
-    MEMBER_DELETE_SUBSCRIPTION = 506
-    MEMBER_ENABLE_SUBSCRIPTION = 507
-    MEMBER_DISABLE_SUBSCRIPTION = 507
-
     MEMBERSHIP_CREATED = 601
 
-    CHANNEL_DEPRECATED = 800
-    CHANNEL_DELETED = 801
-    CHANNEL_ENABLED = 802
-    CHANNEL_DISABLED = 803
-    CHANNEL_UPDATED = 804
-    CHANNEL_CREATED = 805
+    # user - 3xx
+    MEMBER_UPDATE_PROFILE = 302
 
-    EVENT_DELETED = 801
-    EVENT_ENABLED = 802
-    EVENT_DISABLED = 803
-    EVENT_UPDATED = 804
-    EVENT_CREATED = 805
-    EVENT_DEV_MODE_ON = 806
-    EVENT_DEV_MODE_OFF = 807
+    # user/address - 31x
+    ADDRESS_CREATED = 311
+    ADDRESS_UPDATED = 312
+    ADDRESS_DELETED = 313
+    ADDRESS_VERIFIED = 314
+
+    ASSIGNMENT_CREATED = 401
+    ASSIGNMENT_UPDATED = 402
+    ASSIGNMENT_DELETED = 403
+
+    SUBSCRIPTION_CREATED = 505
+    SUBSCRIPTION_UPDATED = 506
+    SUBSCRIPTION_DELETED = 507
+    SUBSCRIPTION_ENABLED = 507
+    SUBSCRIPTION_DISABLED = 507
+
+    CHANNEL_CREATED = 801
+    CHANNEL_UPDATED = 802
+    CHANNEL_DELETED = 803
+    CHANNEL_ENABLED = 804
+    CHANNEL_DISABLED = 805
+    CHANNEL_DEPRECATED = 806
+
+    EVENT_CREATED = 901
+    EVENT_UPDATED = 902
+    EVENT_DELETED = 903
+    EVENT_ENABLED = 904
+    EVENT_DISABLED = 905
+    EVENT_DEV_MODE_ON = 906
+    EVENT_DEV_MODE_OFF = 907
 
 
 _CREATED = _('%(actor)s has created %(content_type)s %(target)s')
@@ -63,7 +74,11 @@ _ENABLED = _('%(actor)s enabled %(content_type)s %(target)s')
 _DEPRECATED = _('%(actor)s has deprecated %(content_type)s %(target)s')
 
 MESSAGES = {
-
+    AuditEvent.APPLICATION_CREATED: _CREATED,
+    AuditEvent.APPLICATION_UPDATED: _UPDATED,
+    AuditEvent.APPLICATION_DELETED: _DELETED,
+    AuditEvent.APPLICATION_ENABLED: _ENABLED,
+    AuditEvent.APPLICATION_DISABLED: _DISABLED,
     AuditEvent.MEMBER_LOGIN: _('%(actor)s logged in'),
     AuditEvent.MEMBER_LOGOUT: _('%(actor)s logged out'),
 
@@ -72,19 +87,19 @@ MESSAGES = {
     AuditEvent.INVITATION_ACCEPTED: _('%(actor)s accepted invitation'),
 
     AuditEvent.MEMBER_UPDATE_PROFILE: _('%(actor)s updated profile'),
-    AuditEvent.MEMBER_UPDATE_ADDRESS: _("%(actor)s updated address '%(target)s'"),
-    AuditEvent.MEMBER_DELETE_ADDRESS: _("%(actor)s removed address '%(target)s'"),
-    AuditEvent.MEMBER_ADD_ADDRESS: _("%(actor)s added address '%(target)s'"),
-    AuditEvent.MEMBER_VALIDATE_ADDRESS: _("%(actor)s succesfully validated address '%(target)s'"),
+    AuditEvent.ADDRESS_UPDATED: _("%(actor)s updated address '%(target)s'"),
+    AuditEvent.ADDRESS_DELETED: _("%(actor)s removed address '%(target)s'"),
+    AuditEvent.ADDRESS_CREATED: _("%(actor)s added address '%(target)s'"),
+    AuditEvent.ADDRESS_VERIFIED: _("%(actor)s succesfully validated address '%(target)s'"),
 
-    AuditEvent.MEMBER_ADD_ASSIGNMENT: _("%(actor)s assigned address to'%(target)s'"),
-    AuditEvent.MEMBER_CHANGE_ASSIGNMENT: _("%(actor)s changed assignment for '%(target)s'"),
-    AuditEvent.MEMBER_DELETE_ASSIGNMENT: _("%(actor)s removed assignment for '%(target)s'"),
+    AuditEvent.ASSIGNMENT_CREATED: _("%(actor)s assigned address to'%(target)s'"),
+    AuditEvent.ASSIGNMENT_UPDATED: _("%(actor)s changed assignment for '%(target)s'"),
+    AuditEvent.ASSIGNMENT_DELETED: _("%(actor)s removed assignment for '%(target)s'"),
 
-    AuditEvent.MEMBER_DELETE_SUBSCRIPTION: _("%(actor)s deleted subscription '%(target)s'"),
-    AuditEvent.MEMBER_ENABLE_SUBSCRIPTION: _("%(actor)s enabled subscription '%(target)s'"),
-    AuditEvent.MEMBER_DISABLE_SUBSCRIPTION: _("%(actor)s disabled subscription '%(target)s'"),
-    AuditEvent.MEMBER_SUBSCRIBE_EVENT: _("%(actor)s subscribed to '%(target)s'"),
+    AuditEvent.SUBSCRIPTION_CREATED: _("%(actor)s subscribed to '%(target)s'"),
+    AuditEvent.SUBSCRIPTION_DELETED: _("%(actor)s deleted subscription '%(target)s'"),
+    AuditEvent.SUBSCRIPTION_ENABLED: _("%(actor)s enabled subscription '%(target)s'"),
+    AuditEvent.SUBSCRIPTION_DISABLED: _("%(actor)s disabled subscription '%(target)s'"),
 
     AuditEvent.MEMBERSHIP_CREATED: _('%(actor)s add %(target)s to organization'),
 
@@ -114,7 +129,6 @@ class AuditLogEntry(models.Model):
                               related_name='audit_actors', null=True, blank=True)
     actor_label = models.CharField(max_length=64, null=True, blank=True)
 
-    # target_object = models.PositiveIntegerField(blank=True, null=True)
     target_label = models.CharField(max_length=300, null=True, blank=True)
 
     target_content_type = models.ForeignKey(ContentType,
@@ -132,14 +146,14 @@ class AuditLogEntry(models.Model):
 
     def __str__(self):
         if self.event in MESSAGES:
-            return MESSAGES[self.event] % dict(actor=self.actor,
+            return MESSAGES[self.event] % dict(actor=self.actor.email,
                                                content_type=self.target_content_type,
                                                target=self.target_label,
                                                timestamp=self.timestamp, )
         else:
             return """Event #%(event)s %(actor)s - %(target)s """ % dict(
                 event=self.event,
-                actor=self.actor,
+                actor=self.actor.email,
                 content_type=self.target_content_type,
                 target=self.target_label,
                 timestamp=self.timestamp, )

@@ -105,6 +105,7 @@ class Notification(models.Model):
     info = models.TextField(null=True, blank=True)
     data = JSONField(null=True, blank=True)
 
+    development_mode = models.BooleanField(default=False)
     # post processed
     organization = models.ForeignKey('bitcaster.Organization',
                                      null=True, blank=True,

@@ -66,9 +66,9 @@ class UserSubscriptionToggle(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
                 subscription._meta.verbose_name, subscription.pk, e),
                 level=messages.WARNING)
         if subscription.enabled:
-            event = AuditEvent.MEMBER_ENABLE_SUBSCRIPTION
+            event = AuditEvent.SUBSCRIPTION_ENABLED
         else:
-            event = AuditEvent.MEMBER_DISABLE_SUBSCRIPTION
+            event = AuditEvent.SUBSCRIPTION_DISABLED
         self.audit(subscription, event)
 
         subscription.save()
@@ -86,7 +86,7 @@ class UserSubscriptionRemove(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
-        self.audit(obj, AuditLogEntry.AuditEvent.MEMBER_DELETE_SUBSCRIPTION)
+        self.audit(obj, AuditLogEntry.AuditEvent.SUBSCRIPTION_DELETED)
 
         return super().delete(request, *args, **kwargs)
 

@@ -56,12 +56,11 @@ class UserEventSubcribe(UserEventMixin, LogAuditMixin, BitcasterBaseCreateView):
     def form_valid(self, form):
         for channel in form.cleaned_data['channels']:
             obj, __ = Subscription.objects.get_or_create(subscriber=self.request.user,
-                                                     channel=channel,
-                                                     event=form.event,
-                                                     defaults={'trigger_by': self.request.user,
-                                                               'enabled': True,
-                                                               'status': Subscription.STATUSES.OWNED})
-            self.audit(obj,
-                       AuditLogEntry.AuditEvent.MEMBER_SUBSCRIBE_EVENT)
+                                                         channel=channel,
+                                                         event=form.event,
+                                                         defaults={'trigger_by': self.request.user,
+                                                                   'enabled': True,
+                                                                   'status': Subscription.STATUSES.OWNED})
+            self.audit(obj, AuditLogEntry.AuditEvent.SUBSCRIPTION_CREATED)
 
         return HttpResponseRedirect(self.get_success_url())

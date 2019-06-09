@@ -88,7 +88,8 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
     event = occurence.event
     application = event.application
     if event.development_mode:
-        header = application.storage.get('dev_mode_message', application.DEF_MESSAGE)
+        header = 'DEVELOP MODE ENABLED\n'
+        header += application.storage.get('dev_mode_message', application.DEF_MESSAGE)
     else:
         header = ''
 
@@ -113,6 +114,7 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
                     'recipient': subscription.subscriber,
                     'event': event,
                     'channel': channel,
+                    'development_mode': event.development_mode,
                     'confirmation': absolute_uri(reverse('confirmation', args=[event.pk,
                                                                                subscription.pk,
                                                                                channel.pk,
@@ -138,6 +140,7 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
                                        'need_confirmation': event.need_confirmation,
                                        'reminders_timestamps': timezone.now().strftime('%d-%b-%Y %H:%M'),
                                        'max_reminders': event.reminders,
+                                       'development_mode': event.development_mode,
                                        'reminders': 0,
                                        'attachments': attachments,
                                        'subscription_id': subscription.pk,
