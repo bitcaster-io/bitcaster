@@ -6,29 +6,29 @@
         <li>
             <a class="{{ view|menu_item:'dashboard' }}"
                href="{{ organization.urls.dashboard }}">
-                <i class="fas fa-tachometer-alt"></i>{% trans "Dashboard" %}</a>
+                <i class="fas fa-tachometer-alt"></i>{% trans "dashboard" %}</a>
         </li>
         <li>
             <a class="{{ view|menu_item:'organizationconfiguration' }}"
                 href="{{ organization.urls.config }}">
-                <i class="fas fa-cogs"></i>{% trans "Configuration" %}</a>
+                <i class="fas fa-cogs"></i>{% trans "configuration" %}</a>
         </li>
         <li>
             <a class="{{ view|menu_item:'channel' }}"
                 href="{{ organization.urls.channels }}">
-                <i class="fas fa-broadcast-tower"></i>{% trans "Channels" %}</a>
+                <i class="fas fa-broadcast-tower"></i>{% trans "channels" %}</a>
         </li>
         <li>
             <a class="{{ view|menu_item:'applicationview' }}"
                href="{{ organization.urls.applications }}">
-                <i class="fas fa-server"></i>{% trans "Applications" %}</a>
+                <i class="fas fa-server"></i>{% trans "applications" %}</a>
         </li>
         <li><hr/>
         </li>
         <li>
             <a class="{{ view|menu_item:'memberview' }}"
                href="{{ organization.urls.members }}">
-                <i class="fas fa-user-friends"></i>{% trans "Members" %}</a>
+                <i class="fas fa-user-friends"></i>{% trans "members" %}</a>
         </li>
 {#        <li>#}
 {#            <a class="{{ view|menu_item:'groups' }}"#}
@@ -39,17 +39,17 @@
         </li>
         <li><a class="{{ view|menu_item:'notificationlog' }}"
                href="{{ organization.urls.log }}">
-            <i class="far fa-file-alt"></i>{% trans "Notifications" %}</a>
+            <i class="far fa-file-alt"></i>{% trans "notifications" %}</a>
         </li>
         <li><a class="{{ view|menu_item:'auditlog' }}"
                href="{{ organization.urls.auditlog }}">
-            <i class="far fa-file-alt"></i>{% trans "Audit Log" %}</a>
+            <i class="far fa-file-alt"></i>{% trans "audit log" %}</a>
         </li>
     </ul>
     <ul class="list-unstyled components sidebar-footer">
         <li>
             <a style="bottom:0;" href="/">
-                <i class="fas fa-home"></i>{% trans "User Home" %}</a>
+                <i class="fas fa-home"></i>{% trans "user home" %}</a>
         </li>
     </ul>
 {% endblock left-menu %}

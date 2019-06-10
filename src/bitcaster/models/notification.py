@@ -7,9 +7,10 @@ from django.utils.translation import ugettext as _
 
 from bitcaster.attachments.base import Attachment
 from bitcaster.framework.db.fields import EncryptedJSONField
+from bitcaster.framework.db.managers import SmartManager
 
 
-class NotificationManager(models.Manager):
+class NotificationManager(SmartManager):
     def consolidate(self):
         for entry in self.filter(organization__isnull=True):
             entry.event = entry.subscription.event
@@ -71,14 +72,14 @@ class Notification(models.Model):
     CONFIRMED = 101  # confirmation received / or single successful sent with no confirmations
     COMPLETE = 100  # confirmation received / or single successful sent with no confirmations
 
-    STATUSES = ((PENDING, _('Pending')),
-                (RETRY, _('Retry')),
-                (REMIND, _('Remind')),
-                (WAIT, _('Waiting confirmation')),
-                (WRONG_ADDRESS, _('Address not confirmed')),
-                (EXPIRED, _('Expired')),
-                (COMPLETE, _('Complete')),
-                (CONFIRMED, _('Confirmed')),
+    STATUSES = ((PENDING, _('pending')),  # Translators: Notification.STATUSES
+                (RETRY, _('retry')),  # Translators: Notification.STATUSES
+                (REMIND, _('remind')),  # Translators: Notification.STATUSES
+                (WAIT, _('waiting confirmation')),  # Translators: Notification.STATUSES
+                (WRONG_ADDRESS, _('address not confirmed')),  # Translators: Notification.STATUSES
+                (EXPIRED, _('expired')),  # Translators: Notification.STATUSES
+                (COMPLETE, _('completed')),  # Translators: Notification.STATUSES
+                (CONFIRMED, _('confirmed')),  # Translators: Notification.STATUSES
                 )
     RUNNING = [PENDING, RETRY, REMIND, WAIT]
     NOT_RUNNING = [WRONG_ADDRESS, EXPIRED, CONFIRMED, COMPLETE]
@@ -87,10 +88,10 @@ class Notification(models.Model):
     MESSAGE_TPL = 1
     MESSAGE_ARG = 2
     MESSAGE_ALL = 3
-    MESSAGE_POLICIES = ((MESSAGE_NONE, 'None'),
-                        (MESSAGE_TPL, 'Template'),
-                        (MESSAGE_ARG, 'Arguments'),
-                        (MESSAGE_ALL, 'Full message'))
+    MESSAGE_POLICIES = ((MESSAGE_NONE, 'none'),  # Translators: Notification.MESSAGE_POLICIES
+                        (MESSAGE_TPL, 'template'),  # Translators: Notification.MESSAGE_POLICIES
+                        (MESSAGE_ARG, 'arguments'),  # Translators: Notification.MESSAGE_POLICIES
+                        (MESSAGE_ALL, 'full message'))  # Translators: Notification.MESSAGE_POLICIES
 
     timestamp = models.DateTimeField(auto_now_add=True)
     subscription = models.ForeignKey('bitcaster.Subscription',

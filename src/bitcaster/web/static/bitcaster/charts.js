@@ -19618,16 +19618,14 @@ function updateChart(chart, urls) {
         chart.update();
         setTimeout(updateChart.bind(null, chart, urls), 60000);
     });
-};
-
+}
 function updateQueue(chart, url) {
     $.when(get(url)).done(function (d1) {
         chart.config.data.datasets[0].data = [d1.value];
         chart.update();
         setTimeout(updateQueue.bind(null, chart, url), 60000);
     });
-};
-
+}
 function setupMainChart(id, urls) {
     var ctx = document.getElementById('ts').getContext('2d');
     var config = $.extend(true, {}, tsConfig);

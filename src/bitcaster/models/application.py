@@ -39,7 +39,7 @@ class Application(AbstractModel, ReverseWrapperMixin):
     organization = models.ForeignKey(Organization,
                                      related_name='applications',
                                      on_delete=models.CASCADE)
-    name = models.CharField(_('Name'),
+    name = models.CharField(_('name'),
                             max_length=300,
                             null=False,
                             validators=[

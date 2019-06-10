@@ -92,7 +92,7 @@ class ApplicationMonitorPoll(MonitorMixin, SingleObjectMixin, MessageUserMixin, 
 
 class ApplicationMonitorCreate(MonitorMixin, MessageUserMixin, SessionWizardView):
     permissions = ['manage_monitor']
-    title = _('Create Monitor')
+    title = _('create monitor')
 
     TEMPLATES = {'a': 'bitcaster/application/monitors/create_wizard_1.html',
                  'b': 'bitcaster/application/monitors/create_wizard_2.html',
@@ -167,5 +167,5 @@ class ApplicationMonitorCreate(MonitorMixin, MessageUserMixin, SessionWizardView
                 }
                 return self.render_to_response(context)
 
-        self.message_user(_('Monitor created'))
+        self.message_user(_('monitor created'))
         return HttpResponseRedirect(self.get_success_url())

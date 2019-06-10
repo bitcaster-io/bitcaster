@@ -103,7 +103,8 @@ class Telegram(CoreDispatcher):
         # else:
         #     raise ValueError
         from bitcaster.models import User
-        user = User.objects.get(assignments__address__address=address)
+        user = User.objects.get(assignments__address__address=address,
+                                assignments__channel__handler=self)
         if not user.storage:
             user.storage = {}
         chat_id = user.storage.get(fqn(self), None)

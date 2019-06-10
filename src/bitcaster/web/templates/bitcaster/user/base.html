@@ -9,13 +9,13 @@
         <li>
             <a class="{{ view|menu_item:'home' }}" href="{% org-url 'me' %}">
                 <i class="fas fa-home"></i>
-                Home
+                {% trans "home" %}
             </a>
         </li>
         <li>
             <a class="{{ view|menu_item:'address' }}" href="{% org-url 'user-address' %}">
                 <i class="fas fa-mail-bulk"></i>
-                {% trans "Addresses" %}
+                {% trans "addresses" %}
             </a>
         </li>
         {#        <li>#}
@@ -27,25 +27,25 @@
         <li>
             <a class="{{ view|menu_item:'events' }}" href="{% org-url 'user-events' %}">
                 <i class="fas fa-rss"></i>
-                {% trans "Events" %}
+                {% trans "events" %}
             </a>
         </li>
         <li>
             <a class="{{ view|menu_item:'subscriptions' }}" href="{% org-url 'user-subscriptions' %}">
                 <i class="fas fa-bookmark"></i>
-                {% trans "Subscriptions" %}
+                {% trans "subscriptions" %}
             </a>
         </li>
-        <li>
-            <a class="{{ view|menu_item:'socialauth' }}" href="{% org-url 'user-socialauth' %}">
-                <i class="fas fa-sign-out-alt"></i>
-                {% trans "Social Login" %}
-            </a>
-        </li>
+{#        <li>#}
+{#            <a class="{{ view|menu_item:'socialauth' }}" href="{% org-url 'user-socialauth' %}">#}
+{#                <i class="fas fa-sign-out-alt"></i>#}
+{#                {% trans "social login" %}#}
+{#            </a>#}
+{#        </li>#}
         <li>
             <a class="{{ view|menu_item:'log' }}" href="{% org-url 'user-logs' %}">
                 <i class="fas fa-sign-out-alt"></i>
-                {% trans "Notifications" %}
+                {% trans "notifications" %}
             </a>
         </li>
     </ul>

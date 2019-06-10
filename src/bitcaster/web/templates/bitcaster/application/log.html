@@ -1,49 +1,28 @@
 {% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bc_permissions %}
 {% block page %}
     {% check_permissions organization %}
-    <div class="container">
-        <div class="row col-12 mb-5">
-            <div class="col-7">
-                <form id="search">
-                    <input type="text" name="filter" maxlength="50"
-                           value="{{ request.GET.filter }}"
-                           placeholder="insert email to filter"
-                           onfocus="this.placeholder=''"
-                           onblur="this.placeholder='insert email to filter'"
-                           class="textinput textInput form-control">
-                </form>
-            </div>
-            <div class="col-1">
-                <input class="btn btn-primary"
-                       onclick="search.submit()"
-                       type="submit" value="{% trans "Search" %}">
-            </div>
-
-            <div class="pull-right col-3">
-            </div>
-        </div>
-    </div>
+    {% include 'bitcaster/_includes/_filter_queryset.html' %}
 
     <table class="table table-striped table-hover col-12 log-list">
         <tbody>
         <tr>
             <th>
-                {% trans "Date" %}
+                {% trans "date" %}
             </th>
             <th>
-                {% trans "Application/Event" %}
+                {% trans "application/event" %}
             </th>
             <th>
-                {% trans "Subscriber" %}
+                {% trans "user" %}
             </th>
             <th>
-                {% trans "Channel" %}
+                {% trans "channel" %}
             </th>
             <th>
-                {% trans "Confirmed" %}
+                {% trans "confirmed" %}
             </th>
             <th>
-                {% trans "Status" %}
+                {% trans "status" %}
             </th>
         </tr>
         {% for entry in object_list %}

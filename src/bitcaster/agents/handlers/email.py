@@ -196,7 +196,8 @@ class EmailAgent(Agent):  # pragma: no cover
         from bitcaster.tasks.event import trigger_event
 
         if not self.event.enabled:
-            msg = f"Monitor {self.name} cannot trigger disabled event '{self.event}'"
+            msg = _("Monitor %(monitor)s cannot trigger disabled event '%(event)s'" % dict(monitor=self,
+                                                                                           event=self.event))
             logger.error(msg)
             log_monitor_error(self.owner, msg)
             return

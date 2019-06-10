@@ -27,9 +27,9 @@ class MonitorForm(forms.ModelForm):
         value = self.cleaned_data['enabled']
         if value:
             if not self.instance:
-                raise ValidationError('Monitor must be configured')
+                raise ValidationError(_('Monitor must be configured'))
             elif not self.instance.is_configured:
-                raise ValidationError('Configure monitor before enable it')
+                raise ValidationError(_('Configure monitor before enable it'))
         return value
 
     def is_valid(self):

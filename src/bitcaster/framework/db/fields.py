@@ -4,10 +4,12 @@ import logging
 
 from cryptography.fernet import Fernet, MultiFernet
 from django.conf import settings
+from django.contrib.postgres import forms
 from django.contrib.postgres.fields import JSONField as _JSONField
 # from django.contrib.postgres.forms import JSONField as _JSONFormField
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Field
+from django.db.models import NOT_PROVIDED, Field
 from django.utils.functional import cached_property
 from fernet_fields import hkdf
 # from jsoneditor.forms import JSONEditor
@@ -92,6 +94,47 @@ class LanguageField(models.CharField):
         kwargs.setdefault('max_length', 5)
         kwargs.setdefault('choices', settings.LANGUAGES)
         super().__init__(*args, **kwargs)
+
+
+class Storage:
+    def __init__(self):
+        self.data = {}
+
+
+class StorageDescriptor:
+    def __init__(self, field):
+        self.field = field
+
+    def __get__(self, obj, type=None):
+        if obj is None:
+            return None
+
+        value = obj.__dict__.get(self.field.name)
+        try:
+            return Storage()
+        except Exception as e:
+            logger.exception(e)
+            raise ValidationError(value)
+
+    def __set__(self, obj, value):
+        obj.__dict__[self.field.name] = value
+
+
+class StorageField(EncryptedJSONField):
+    descriptor = StorageDescriptor
+    # widget = Select
+    form_class = ''
+
+    def contribute_to_class(self, cls, name, private_only=False, virtual_only=NOT_PROVIDED):
+        self.set_attributes_from_name(name)
+        self.model = cls
+        setattr(cls, self.name, self.descriptor(self))
+
+    def formfield(self, **kwargs):
+        return super().formfield(**{
+            'form_class': forms.JSONField,
+            **kwargs,
+        })
 
 
 # class DeletionStatus(EnumField):

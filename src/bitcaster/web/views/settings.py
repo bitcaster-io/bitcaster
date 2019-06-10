@@ -190,10 +190,10 @@ class SettingsPluginToggle(MessageUserMixin, RedirectView):
         else:
             if self.kwargs['type'] == 'd':
                 if Channel.objects.filter(handler=fqn(obj.handler)).exists():
-                    self.alarm('You have disabled a dispatecher used by one or more Channels')
+                    self.alarm(_('You have disabled a dispatecher used by one or more Channels'))
             else:
                 if Monitor.objects.filter(handler=fqn(obj.handler)).exists():
-                    self.alarm('You have disabled a agent used by one or more Monitor')
+                    self.alarm(_('You have disabled a agent used by one or more Monitor'))
             self.message_user(f'{obj.fqn} disabled',
                               level=messages.WARNING)
         return HttpResponseRedirectToReferrer(request)

@@ -6,41 +6,41 @@
     <ul class="list-unstyled components">
         <li><a class="{{ view|menu_item:'dashboard' }}"
                href="{% app-url 'app-dashboard' %}">
-            <i class="fas fa-chart-bar"></i>{% trans "Dashboard" %}</a>
+            <i class="fas fa-chart-bar"></i>{% trans "dashboard" %}</a>
         </li>
         <li><a class="{{ view|menu_item:'applicationupdate' }}"
                href="{% app-url 'app-edit' %}">
-            <i class="fas fa-tools"></i>{% trans "Configuration" %}</a>
+            <i class="fas fa-tools"></i>{% trans "configuration" %}</a>
         </li>
         <li><a class="{{ view|menu_item:'applicationkey' }}"
                href="{% app-url 'app-keys' %}">
-            <i class="fas fa-key"></i>{% trans "Keys" %}</a>
+            <i class="fas fa-key"></i>{% trans "keys" %}</a>
         </li>
         <li><a class="{{ view|menu_item:'event' }}"
                href="{% app-url 'app-events' %}">
-            <i class="fas fa-rss"></i>{% trans "Events" %}</a>
+            <i class="fas fa-rss"></i>{% trans "events" %}</a>
         </li>
         <li>
             <a class="{{ view|menu_item:'monitor' }}"
                href="{{ application.urls.monitors }}">
-                <i class="fas fa-check-double"></i>{% trans "Monitors" %}</a>
+                <i class="fas fa-check-double"></i>{% trans "monitors" %}</a>
         </li>
         <li>
             <a class="{{ view|menu_item:'files' }}"
                href="{{ application.urls.filegetters }}">
-                <i class="fas fa-paperclip"></i>{% trans "Attachments" %}</a>
+                <i class="fas fa-paperclip"></i>{% trans "attachments" %}</a>
         </li>
         <li><hr/>
         </li>
         <li>
             <a class="{{ view|menu_item:'membership' }}"
                href="{{ application.urls.members }}">
-                <i class="fas fa-user-friends"></i>{% trans "Users" %}</a>
+                <i class="fas fa-user-friends"></i>{% trans "users" %}</a>
         </li>
 
         <li><a class="{{ view|menu_item:'subscriptions' }}"
                href="{% app-url 'app-subscriptions' %}">
-            <i class="fas fa-bookmark"></i>{% trans "Subscriptions" %}</a>
+            <i class="fas fa-bookmark"></i>{% trans "subscriptions" %}</a>
         </li>
 {#        <li><a class="{{ view|menu_item:'teams' }}"#}
 {#               href="{{ application.urls.teams }}">#}

@@ -1,0 +1,30 @@
+{% load crispy_forms_tags i18n bc_permissions %}
+<div class="container">
+    <div class="row col-12 mb-5">
+        <div class="col-7">
+            {% trans "type your filters" as placeholder %}
+
+            <form id="search">
+                <input type="text" name="filter" maxlength="50"
+                       value="{{ request.GET.filter }}"
+                       placeholder="{{ placeholder }}"
+                       onfocus="this.placeholder=''"
+                       onblur="this.placeholder='{{ placeholder }}'"
+                       class="textinput textInput form-control">
+            </form>
+            {% if view.filtering_errors %}
+                {% for err in view.filtering_errors %}
+                    <div class="red">{{ err }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="col-1">
+            <input class="btn btn-primary"
+                   onclick="search.submit()"
+                   type="submit" value="{% trans "Search" %}">
+        </div>
+
+        <div class="pull-right col-3">
+        </div>
+    </div>
+</div>

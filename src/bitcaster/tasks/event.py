@@ -18,6 +18,7 @@ from bitcaster.tsdb.api import (log_error_channel, log_error_event,
                                 log_error_notification, log_error_occurence,
                                 log_new_notifications, log_sent_notification,)
 from bitcaster.utils.http import absolute_uri
+from bitcaster.utils.reflect import fqn
 
 logger = getLogger(__name__)
 
@@ -40,12 +41,13 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
     for channel in Channel.objects.filter(id__in=ids,
                                           event=event):
         if not channel.enabled:
-            log_error_channel(channel, "Channel '%(channel)s' is disabled")
+            log_error_channel(channel, _("Channel '%(channel)s' is disabled"))
             logger.error("Channel '%s' is disabled" % channel)
             continue
-        if not DispatcherMetaData.objects.get(handler=channel.handler).enabled:
-            log_error_channel(channel, "Channel '%(channel)s' is using a disabled dispatcher")
-            logger.error("Channel '%s' is using a disabled dispatcher" % channel)
+        if not DispatcherMetaData.objects.is_enabled(handler=fqn(channel.handler)):
+            msg = "Channel '%s' is using a disabled dispatcher (%s)" % (channel, channel.handler)
+            log_error_channel(channel, _(msg))
+            logger.error(msg)
             continue
         try:
             logger.debug("Channel '%s' scheduled" % channel)
@@ -195,10 +197,13 @@ def send_page(self, occurence_pk: int, channel_pk: int, page: list):
         subject = notification.data['subject']
         message = notification.data['message']
         if notification.reminders > 0:
+            params = dict(subject=subject,
+                          message=message,
+                          reminder=notification.reminders)
             if handler.message_class.has_subject:
-                subject = _('%s - Reminder #%d') % (subject, notification.reminders)
+                subject = _('%(subject)s - Reminder #%(reminder)d') % params
             else:
-                message += _('%s\n---\nReminder #%d') % (message, notification.reminders)
+                message += _('%(message)s\n---\nReminder #%(reminder)d') % params
 
         try:
             channel.handler.emit(notification.address,

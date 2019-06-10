@@ -173,7 +173,7 @@
                 $('input[type=number]').val('');
                 $.get('{% org-url "user-address-resend" object.pk %}')
                     .done(function (data) {
-                        $('#message').removeClass('red').html('Code sent to ' + data.recipient)
+                        $('#message').removeClass('red').html('Code sent to ' + data.recipient);
                         $(".inline_input.first").focus();
 
                     })

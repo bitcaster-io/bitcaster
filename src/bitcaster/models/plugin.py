@@ -2,8 +2,19 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from strategy_field.utils import fqn
 
+from bitcaster.framework.db.managers import SmartManager
 
-class PluginManager(models.Manager):
+
+class PluginManager(SmartManager):
+    def is_enabled(self, *args, **kwargs):
+        return self.get(*args, **kwargs).enabled
+
+    def enable_valid(self):
+        registry = self.model._meta.get_field('handler').registry
+        for handler in registry:
+            self.update_or_create(fqn=fqn(handler), defaults={'enabled': True})
+        return self.all()
+
     def inspect(self):
         registry = self.model._meta.get_field('handler').registry
         for handler in registry:
@@ -15,11 +26,11 @@ class PluginManager(models.Manager):
                                              enabled=True,
                                              version=handler.version)
                                )
-        for record in self.all():
-            if not record.handler:
-                record.delete()
+        # for record in self.all():
+        #     if not record.handler:
+        #         record.delete()
 
-        # self.exclude(handler__in=registry).update(enabled=False)
+        self.exclude(handler__in=registry).update(enabled=False)
         return self.all()
 
 

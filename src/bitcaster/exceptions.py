@@ -84,3 +84,13 @@ class PermissionDenied(_PermissionDenied):
 
 class AddressNotVerified(Exception):
     pass
+
+
+class FilteringError(Exception):
+    def __init__(self, field, value):
+        self.field = field
+        self.value = value
+
+    def __str__(self):
+        return '%(value)s is not a valid value for %(field)s' % dict(field=self.field,
+                                                                     value=self.value)

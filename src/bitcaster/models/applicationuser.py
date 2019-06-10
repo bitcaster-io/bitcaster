@@ -22,8 +22,8 @@ class ApplicationUser(ReverseWrapperMixin, models.Model):
 
     class Meta:
         app_label = 'bitcaster'
-        verbose_name = _('Application Member')
-        verbose_name_plural = _('Application Members')
+        verbose_name = _('application user')
+        verbose_name_plural = _('application users')
         unique_together = (
             ('application', 'org_member'),
         )

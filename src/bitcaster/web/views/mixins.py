@@ -4,10 +4,12 @@ from crashlog.middleware import process_exception
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from sentry_sdk import capture_exception, push_scope
 
 from bitcaster import messages
-from bitcaster.exceptions import PermissionDenied
+from bitcaster.exceptions import FilteringError, PermissionDenied
+from bitcaster.models import Notification
 from bitcaster.models.audit import AuditLogEntry
 from bitcaster.state import state
 from bitcaster.utils.filtering import FilterParser
@@ -121,20 +123,27 @@ class BitcasterBaseViewMixin(TitleMixin, MessageUserMixin):
 
 class FilterQuerysetMixin:
     filter_fieldmap = {}
+    search_fields = []
     filter_url_kwarg = 'filter'
 
     def get_parser(self):
-        return FilterParser(self, self.filter_fieldmap)
+        return FilterParser(self, self.filter_fieldmap, self.search_fields)
 
     def filter_queryset(self, queryset):
+        self.active_filter = [], {}
+        self.filtering_errors = []
         try:
             target = self.request.GET.get(self.filter_url_kwarg)
-            args, kw = self.get_parser().parse(target)
+            args, kw, errors = self.get_parser().parse(target)
             if args:
                 queryset = queryset.filter(args, **kw)
             else:
                 queryset = queryset.filter(**kw)
+            self.active_filter = args, kw
+            self.filtering_errors.extend(errors)
         except Exception as e:
+            self.filtering_errors.append('Syntax error (missing operator) in query expression. Data not filtered')
+            self.filtering_errors.append(str(e))
             logger.exception(e)
             process_exception(e)
             with push_scope() as scope:
@@ -142,3 +151,25 @@ class FilterQuerysetMixin:
                 capture_exception()
 
         return queryset
+
+
+class NotificationLogMixin(FilterQuerysetMixin):
+    search_fields = ['channel__name__iexact']
+    filter_fieldmap = {
+        # Translators: UserNotificationLogView.filter_fieldmap
+        _('channel'): 'channel__name__iexact',
+        _('occurence'): 'occurence_id',
+        '#': 'occurence_id',
+        _('application'): 'application__name__istartswith',
+        _('event'): 'event__name__istartswith',
+        _('status'): '_filter_status',
+        _('user'): 'subscription__subscriber__email__istartswith',
+        _('subscriber'): 'subscription__subscriber__email__istartswith',
+    }
+
+    def _filter_status(self, parser, keyword, value):
+        code = [c[0] for c in Notification.STATUSES if c[1].lower() == value]
+        if code:
+            parser.kwargs['status'] = code[0]
+        else:
+            raise FilteringError('status', value)

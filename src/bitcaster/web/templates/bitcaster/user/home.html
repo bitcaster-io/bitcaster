@@ -2,7 +2,7 @@
 {% block page %}
     <div class="container border border-secondary col-12 p-3" style="min-height: 50px">
         <div class="card">
-            <div class="card-header w-100">Notifications</div>
+            <div class="card-header w-100 text-capitalize">{% trans "notifications" %}</div>
             {% if notifications %}
                 <div class="card-body">
                     <h5 class="card-title">
@@ -43,7 +43,7 @@
         <div class="row">
             <div class="col-sm mr-1">
                 <div class="card">
-                    <div class="card-header w-100">Addresses</div>
+                    <div class="card-header w-100 text-capitalize">{% trans "addresses" %}</div>
                     {% if invalid %}
                         <div class="card-body">
                             <h5 class="card-title">
@@ -69,7 +69,7 @@
 
             <div class="col-sm ml-1">
                 <div class="card">
-                    <div class="card-header w-100">Subscriptions</div>
+                    <div class="card-header w-100 text-capitalize">{% trans "subscriptions" %}</div>
                     {% if disabled %}
                         <div class="card-body">
                             <h5 class="card-title">

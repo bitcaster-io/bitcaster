@@ -53,8 +53,8 @@ class Monitor(ReverseWrapperMixin, AbstractModel):
         app_label = 'bitcaster'
         ordering = ('name',)
         unique_together = (('organization', 'application', 'name'),)
-        verbose_name = _('Monitor')
-        verbose_name_plural = _('Monitors')
+        verbose_name = _('monitor')
+        verbose_name_plural = _('monitors')
 
     class Reverse:
         pattern = 'app-monitor-{op}'
@@ -78,7 +78,7 @@ class Monitor(ReverseWrapperMixin, AbstractModel):
 
     def clean(self):
         if not self.handler and self.enabled:
-            raise ValidationError('Cannot enable Monitor without handler')
+            raise ValidationError(_('Cannot enable Monitor without handler'))
         super().clean()
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):

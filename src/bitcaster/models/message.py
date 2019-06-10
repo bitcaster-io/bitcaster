@@ -42,14 +42,12 @@ class Message(AbstractModel):
     class Meta:
         app_label = 'bitcaster'
         unique_together = ('event', 'channel', 'language')
-        verbose_name = _('Message')
-        verbose_name_plural = _('Messages')
+        verbose_name = _('message')
+        verbose_name_plural = _('messages')
 
     class Reverse:
         pattern = 'app-key-{op}'
         args = ['application.organization.slug', 'application.slug', 'id']
-        verbose_name = _('Message')
-        verbose_name_plural = _('Messages')
 
     def __str__(self):
         return '%s %s' % (self.channel, self.event)

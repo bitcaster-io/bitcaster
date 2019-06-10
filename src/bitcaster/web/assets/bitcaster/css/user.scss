@@ -94,7 +94,7 @@ span {
                 padding: 10px;
                 font-size: 1.1em;
                 display: block;
-
+                text-transform: capitalize;
                 &.active {
                     color: $org-hover;
                     background-color: white;
