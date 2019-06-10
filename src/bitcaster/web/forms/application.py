@@ -31,5 +31,6 @@ class ApplicationForm(forms.ModelForm):
         return super().get_initial_for_field(field, field_name)
 
     def save(self, commit=True):
-        self.instance = super().save(False)
         self.instance.storage['dev_mode_message'] = self.cleaned_data['dev_mode_message']
+        self.instance.save()
+        return self.instance
