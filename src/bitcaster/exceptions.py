@@ -94,3 +94,7 @@ class FilteringError(Exception):
     def __str__(self):
         return '%(value)s is not a valid value for %(field)s' % dict(field=self.field,
                                                                      value=self.value)
+
+
+class BatchError(Exception):
+    pass

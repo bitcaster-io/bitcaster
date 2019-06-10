@@ -54,12 +54,24 @@ class Event(ReverseWrapperMixin, AbstractModel):
                                               default=POLICIES.FREE)
     limit_to_teams = models.ManyToManyField(ApplicationTeam)
     core = models.BooleanField(default=False)
+
+    # Processing
+    START_IMMEDIATLY = 1
+    START_END = 2
+    batch_mode = models.IntegerField(choices=((START_IMMEDIATLY, 'Continue on missing attachent'),
+                                              (START_END, 'Halt on Error')
+                                              ), default=START_IMMEDIATLY)
+
     # Attachment
-    # attachment = RetrieverField(blank=True, null=True)
     attachment = models.ForeignKey('bitcaster.FileGetter',
                                    on_delete=models.SET_NULL,
                                    blank=True, null=True)
-
+    ERROR_IGNORE = 1
+    ERROR_HALT = 2
+    ERROR_ABORT = 3
+    attachment_policy = models.IntegerField(choices=((ERROR_IGNORE, 'Continue on missing attachent'),
+                                                     (ERROR_HALT, 'Halt on Error')
+                                                     ), default=ERROR_HALT)
     # Retrying
     retry_interval = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     retry_max = models.IntegerField(default=0, validators=[MinValueValidator(0)])

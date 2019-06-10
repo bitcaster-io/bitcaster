@@ -62,6 +62,14 @@ def log_error_event(event, message='Error', *args, **kwargs):
     stats.add('event:%s' % event.pk, type='error')
 
 
+def log_error_retriever(retriever, message='Error', *args, **kwargs):
+    ErrorEntry.objects.create(message=message % dict(retriever=retriever),
+                              application=None,
+                              actor=retriever,
+                              **kwargs).consolidate()
+    stats.add('retriever:%s' % retriever.pk, type='error')
+
+
 def log_error_channel(channel, message='Error', *args, **kwargs):
     ErrorEntry.objects.create(message=message % dict(channel=channel),
                               application=None,

@@ -12,11 +12,12 @@ from django.utils.translation import ugettext as _
 from sentry_sdk import capture_exception
 
 from bitcaster.celery import app
-from bitcaster.exceptions import LogicError
+from bitcaster.exceptions import BatchError, LogicError
 from bitcaster.template.secure_context import SecureContext
 from bitcaster.tsdb.api import (log_error_channel, log_error_event,
                                 log_error_notification, log_error_occurence,
-                                log_new_notifications, log_sent_notification,)
+                                log_error_retriever, log_new_notifications,
+                                log_sent_notification,)
 from bitcaster.utils.http import absolute_uri
 from bitcaster.utils.reflect import fqn
 
@@ -51,6 +52,7 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
             continue
         try:
             logger.debug("Channel '%s' scheduled" % channel)
+            # Chord
             create_notifications_for_channel.apply_async(args=[occurence.pk,
                                                                channel.pk,
                                                                context])
@@ -80,7 +82,7 @@ def _get_message_parts(channel, event, header) -> [Template, Template]:
         raise
 
 
-@app.task()
+@app.task()  # noqa: C901
 def create_notifications_for_channel(occurence_pk, channel_pk, context):
     from bitcaster.models import Channel, Notification, Occurence, Address
 
@@ -133,9 +135,17 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
                 attachments = None
                 if event.attachment and channel.handler.handle_attachments:
                     file_getter = event.attachment
-                    attachment = file_getter.handler.get(subscription)
-                    attachments = [attachment]
-
+                    try:
+                        attachment = file_getter.handler.get(subscription)
+                        attachments = [attachment]
+                    except Exception as e:
+                        log_error_retriever(file_getter, str(e))
+                        if event.attachment_policy == event.ERROR_IGNORE:
+                            attachments = []
+                        elif event.attachment_policy == event.ERROR_HALT:
+                            continue
+                        elif event.attachment_policy == event.ERROR_ABORT:
+                            raise BatchError('Error retrieving attachment for %s' % subscription)
                 notification_kwargs = {'channel': channel,
                                        'event_id': event.pk,
                                        'occurence_id': occurence_pk,
