@@ -14,7 +14,7 @@ class UserNotificationLogView(UserMixin,
                               SelectedOrganizationMixin, BitcasterBaseListView):
     template_name = 'bitcaster/user/log.html'
     model = Notification
-    title = _('Notifications')
+    title = _('notifications')
     paginate_by = 50
 
     def get_queryset(self):

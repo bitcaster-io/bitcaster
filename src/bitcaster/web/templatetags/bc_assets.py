@@ -31,7 +31,7 @@ def asset(path):
         {% static "myapp/css/base.css" as admin_base_css %}
         {% static variable_with_path as varname %}
     """
-    commit = bitcaster.get_full_version()
+    commit = bitcaster.get_full_version().strip()
     return mark_safe('{0}?{1}'.format(_static(path), commit))
 
 

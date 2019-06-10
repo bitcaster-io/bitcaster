@@ -33,9 +33,9 @@ class ErrorEntry(models.Model):
     actor_object_id = models.PositiveIntegerField(null=True, blank=True)
     actor = GenericForeignKey('actor_content_type', 'actor_object_id')
 
-    target_content_type = models.ForeignKey(ContentType,
-                                            related_name='+',
-                                            on_delete=models.CASCADE, null=True, blank=True)
+    target_content_type = models.ForeignKey(ContentType, related_name='+',
+                                            on_delete=models.CASCADE, null=True,
+                                            blank=True)
     target_object_id = models.PositiveIntegerField(null=True, blank=True)
     target = GenericForeignKey('target_content_type', 'target_object_id')
 
@@ -43,6 +43,7 @@ class ErrorEntry(models.Model):
     message = models.TextField(blank=True, null=True)
 
     actor_label = models.CharField(max_length=300, null=True, blank=True)
+    target_label = models.CharField(max_length=300, null=True, blank=True)
     organization = models.ForeignKey('bitcaster.Organization',
                                      blank=True, null=True,
                                      related_name='errors',
@@ -68,6 +69,9 @@ class ErrorEntry(models.Model):
 
         if self.application:
             self.organization = self.application.organization
+
+        self.actor_label = str(self.actor)
+        self.target_label = str(self.target)
         self.save()
     # @classmethod
     # def log(cls, target, **kwargs):

@@ -18,5 +18,5 @@ def check_monitor(monitor_pk):
         logger.exception(e)
         from bitcaster.tsdb.api import log_monitor_error
         process_exception(e)
-        log_monitor_error(monitor, str(e))
+        log_monitor_error(monitor, 'Error polling')
         raise

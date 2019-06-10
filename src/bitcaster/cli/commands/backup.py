@@ -25,15 +25,17 @@ def backup(ctx, filename):
 @click.option('-w', '--overwrite', 'overwrite', default=False, is_flag=True)
 @click.option('-i', '--ignore-errors', default=False, is_flag=True, help='Try to continue on error')
 @click.option('--reset-cryptography', default=False, is_flag=True, help='encrypth records')
+@click.option('--zap', default=False, is_flag=True, help='empty all tables before restore')
 @click.pass_context
 @need_setup
-def restore(ctx, filename, overwrite, ignore_errors, selection, reindex, reset_cryptography):
+def restore(ctx, filename, overwrite, ignore_errors, selection, reindex, reset_cryptography, zap):
     from bitcaster.utils.backup import restore_data
 
     try:
         restore_data(filename, echo=click.echo, overwrite=overwrite,
                      ignore_errors=ignore_errors, selection=selection,
-                     reindex=reindex, reset_cryptography=reset_cryptography)
+                     reindex=reindex, reset_cryptography=reset_cryptography,
+                     zap=zap)
     except Exception as e:
         click.echo(str(e))
         ctx.abort()

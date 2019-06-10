@@ -10,12 +10,12 @@
         </li>
         <li>
             <a class="{{ view|menu_item:'organizationconfiguration' }}"
-                href="{{ organization.urls.config }}">
+               href="{{ organization.urls.config }}">
                 <i class="fas fa-cogs"></i>{% trans "configuration" %}</a>
         </li>
         <li>
             <a class="{{ view|menu_item:'channel' }}"
-                href="{{ organization.urls.channels }}">
+               href="{{ organization.urls.channels }}">
                 <i class="fas fa-broadcast-tower"></i>{% trans "channels" %}</a>
         </li>
         <li>
@@ -23,27 +23,42 @@
                href="{{ organization.urls.applications }}">
                 <i class="fas fa-server"></i>{% trans "applications" %}</a>
         </li>
-        <li><hr/>
+        <li>
+            <hr/>
         </li>
         <li>
             <a class="{{ view|menu_item:'memberview' }}"
                href="{{ organization.urls.members }}">
                 <i class="fas fa-user-friends"></i>{% trans "members" %}</a>
         </li>
-{#        <li>#}
-{#            <a class="{{ view|menu_item:'groups' }}"#}
-{#               href="{{ organization.urls.groups }}">#}
-{#                <i class="fas fa-users-cog"></i>{% trans "Groups" %}</a>#}
-{#        </li>#}
-        <li><hr/>
+        {#        <li>#}
+        {#            <a class="{{ view|menu_item:'groups' }}"#}
+        {#               href="{{ organization.urls.groups }}">#}
+        {#                <i class="fas fa-users-cog"></i>{% trans "Groups" %}</a>#}
+        {#        </li>#}
+        <li>
+            <hr/>
         </li>
-        <li><a class="{{ view|menu_item:'notificationlog' }}"
-               href="{{ organization.urls.log }}">
-            <i class="far fa-file-alt"></i>{% trans "notifications" %}</a>
-        </li>
-        <li><a class="{{ view|menu_item:'auditlog' }}"
-               href="{{ organization.urls.auditlog }}">
-            <i class="far fa-file-alt"></i>{% trans "audit log" %}</a>
+        <li>
+
+            <a href="#logsManu" data-toggle="collapse"
+               aria-expanded="false" class="dropdown-toggle {{ view|menu_item:'log' }}">
+                <i class="far fa-file-alt"></i>Logs
+            </a>
+            <ul class="collapse list-unstyled" id="logsManu">
+                <li><a class="{{ view|menu_item:'notificationlog' }}"
+                       href="{{ organization.urls.log }}">
+                    <i class="far fa-file-alt"></i>{% trans "notifications" %}</a>
+                </li>
+                <li><a class="{{ view|menu_item:'auditlog' }}"
+                       href="{{ organization.urls.auditlog }}">
+                    <i class="far fa-file-alt"></i>{% trans "audit log" %}</a>
+                </li>
+                <li><a class="{{ view|menu_item:'errorlog' }}"
+                       href="{{ organization.urls.errorlog }}">
+                    <i class="far fa-file-alt"></i>{% trans "error log" %}</a>
+                </li>
+            </ul>
         </li>
     </ul>
     <ul class="list-unstyled components sidebar-footer">

@@ -33,6 +33,9 @@ class PluginManager(SmartManager):
         self.exclude(handler__in=registry).update(enabled=False)
         return self.all()
 
+    def get_by_natural_key(self, fqn):
+        return self.get(fqn=fqn)
+
 
 class Plugin(models.Model):
     fqn = models.CharField(_('Name'), max_length=2000, unique=True)
@@ -50,5 +53,5 @@ class Plugin(models.Model):
         verbose_name = _('Plugin')
         verbose_name_plural = _('Plugins')
 
-    # def __str__(self):
-    #     return self.fqn
+    def natural_key(self):
+        return (self.fqn,)

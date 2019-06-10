@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 18:50+0200\n"
+"POT-Creation-Date: 2019-06-10 20:59+0200\n"
 "PO-Revision-Date: 2018-03-02 17:53+0000\n"
 "Last-Translator: Stefano Apostolico <s.apostolico@gmail.com>, 2019\n"
 "Language-Team: Italian (Italy) (https://www.transifex.com/sax9/teams/84041/"
@@ -519,7 +519,6 @@ msgstr "%(actor)s ha aggiunto %(target)s all'organizzazione"
 
 #: bitcaster/models/channel.py:73
 #: bitcaster/web/templates/bitcaster/application/subscriptions/list.html:16
-#: bitcaster/web/templates/bitcaster/user/addresses_assignment.html:43
 #: bitcaster/web/templates/bitcaster/user/subscriptions/list.html:8
 msgid "Channel"
 msgstr "Canale"
@@ -627,49 +626,49 @@ msgstr "monitors"
 msgid "Cannot enable Monitor without handler"
 msgstr ""
 
-#: bitcaster/models/notification.py:74
+#: bitcaster/models/notification.py:75
 msgid "pending"
 msgstr ""
 
 #. Translators: Notification.STATUSES
-#: bitcaster/models/notification.py:75
+#: bitcaster/models/notification.py:76
 msgid "retry"
 msgstr "ritenta"
 
 #. Translators: Notification.STATUSES
-#: bitcaster/models/notification.py:76
+#: bitcaster/models/notification.py:77
 msgid "remind"
 msgstr "sollecito"
 
 #. Translators: Notification.STATUSES
-#: bitcaster/models/notification.py:77
+#: bitcaster/models/notification.py:78
 msgid "waiting confirmation"
 msgstr "attesa conferma"
 
 #. Translators: Notification.STATUSES
-#: bitcaster/models/notification.py:78
+#: bitcaster/models/notification.py:79
 msgid "address not confirmed"
 msgstr "indirizzo non verificato"
 
 #. Translators: Notification.STATUSES
-#: bitcaster/models/notification.py:79
+#: bitcaster/models/notification.py:80
 msgid "expired"
 msgstr "scaduto"
 
 #. Translators: Notification.STATUSES
-#: bitcaster/models/notification.py:80
+#: bitcaster/models/notification.py:81
 msgid "completed"
 msgstr "completato"
 
 #. Translators: Notification.STATUSES
-#: bitcaster/models/notification.py:81
+#: bitcaster/models/notification.py:82
 #: bitcaster/web/templates/bitcaster/application/log.html:22
 #: bitcaster/web/templates/bitcaster/organization/log.html:25
 #: bitcaster/web/templates/bitcaster/user/log.html:22
 msgid "confirmed"
 msgstr "confermato"
 
-#: bitcaster/models/organization.py:36 bitcaster/models/plugin.py:41
+#: bitcaster/models/organization.py:36 bitcaster/models/plugin.py:38
 msgid "Name"
 msgstr "Nome"
 
@@ -704,11 +703,11 @@ msgstr "Utenti"
 msgid "Members"
 msgstr "Membri"
 
-#: bitcaster/models/plugin.py:53
+#: bitcaster/models/plugin.py:50
 msgid "Plugin"
 msgstr "Plugin"
 
-#: bitcaster/models/plugin.py:54
+#: bitcaster/models/plugin.py:51
 #: bitcaster/web/templates/bitcaster/settings/base.html:42
 #: bitcaster/web/views/settings.py:212
 msgid "Plugins"
@@ -902,27 +901,22 @@ msgstr ""
 "Devi avere  almeno una mail pubblica configurata  in GitHub. Vai in Settings/"
 "Profile scegli la tua  mail pubblica"
 
-#: bitcaster/tasks/event.py:43
+#: bitcaster/tasks/event.py:44
 #, python-format
 msgid "Channel '%(channel)s' is disabled"
 msgstr ""
 
-#: bitcaster/tasks/event.py:47
-#, python-format
-msgid "Channel '%(channel)s' is using a disabled dispatcher"
-msgstr ""
-
-#: bitcaster/tasks/event.py:66
+#: bitcaster/tasks/event.py:68
 #, python-format
 msgid "Empty message for channel %s"
 msgstr ""
 
-#: bitcaster/tasks/event.py:202
+#: bitcaster/tasks/event.py:204
 #, python-format
 msgid "%(subject)s - Reminder #%(reminder)d"
 msgstr ""
 
-#: bitcaster/tasks/event.py:204
+#: bitcaster/tasks/event.py:206
 #, python-format
 msgid ""
 "%(message)s\n"
@@ -1606,6 +1600,7 @@ msgstr "Elimina %(model)s selezionato"
 #: bitcaster/web/templates/bitcaster/application/team/members.html:19
 #: bitcaster/web/templates/bitcaster/application/users/list.html:18
 #: bitcaster/web/templates/bitcaster/organization/auditlog.html:19
+#: bitcaster/web/templates/bitcaster/organization/errorlog.html:19
 #: bitcaster/web/templates/bitcaster/organization/groups/members.html:19
 #: bitcaster/web/templates/bitcaster/organization/members/list.html:18
 msgid "Search"
@@ -1625,7 +1620,7 @@ msgstr "%(full_result_count)s in totale"
 
 #: bitcaster/web/templates/bitcaster/_includes/_filter_queryset.html:5
 msgid "type your filters"
-msgstr "parametri du ricerca"
+msgstr "parametri di ricerca"
 
 #: bitcaster/web/templates/bitcaster/_includes/formset/commands.html:9
 #: bitcaster/web/templates/bitcaster/application/confirm_delete.html:19
@@ -1642,6 +1637,7 @@ msgstr "Annulla"
 
 #: bitcaster/web/templates/bitcaster/application/auditlog.html:31
 #: bitcaster/web/templates/bitcaster/application/log.html:10
+#: bitcaster/web/templates/bitcaster/organization/errorlog.html:31
 #: bitcaster/web/templates/bitcaster/organization/log.html:10
 #: bitcaster/web/templates/bitcaster/user/log.html:10
 msgid "date"
@@ -1681,7 +1677,6 @@ msgid "subscriptions"
 msgstr "sottoscrizioni"
 
 #: bitcaster/web/templates/bitcaster/application/base.html:54
-#: bitcaster/web/views/user/log.py:17
 msgid "Notifications"
 msgstr ""
 
@@ -1778,6 +1773,7 @@ msgstr "utente"
 #. Translators: UserNotificationLogView.filter_fieldmap
 #: bitcaster/web/templates/bitcaster/application/log.html:19
 #: bitcaster/web/templates/bitcaster/organization/log.html:22
+#: bitcaster/web/templates/bitcaster/user/addresses_assignment.html:43
 #: bitcaster/web/templates/bitcaster/user/log.html:19
 #: bitcaster/web/views/mixins.py:160
 msgid "channel"
@@ -1823,7 +1819,6 @@ msgstr "Motivo"
 
 #: bitcaster/web/templates/bitcaster/application/subscriptions/list.html:56
 #: bitcaster/web/templates/bitcaster/user/addresses.html:51
-#: bitcaster/web/templates/bitcaster/user/addresses_assignment.html:44
 msgid "Address"
 msgstr "Indirizzo/numero/account"
 
@@ -1832,7 +1827,6 @@ msgid "Created"
 msgstr "Creato"
 
 #: bitcaster/web/templates/bitcaster/application/team/base.html:6
-#: bitcaster/web/templates/bitcaster/base.html:75
 #: bitcaster/web/templates/bitcaster/organization/groups/base.html:6
 #: bitcaster/web/templates/bitcaster/~OLD/users/base.html:74
 msgid "Settings"
@@ -1881,6 +1875,12 @@ msgstr "home"
 msgid "admin"
 msgstr "admin"
 
+#: bitcaster/web/templates/bitcaster/base.html:75
+#, fuzzy
+#| msgid "Settings"
+msgid "settings"
+msgstr "Impostazioni"
+
 #: bitcaster/web/templates/bitcaster/base.html:82
 msgid "stop impersonate"
 msgstr "stop impersonate"
@@ -1926,21 +1926,27 @@ msgstr "canali"
 msgid "applications"
 msgstr "applicazioni"
 
-#: bitcaster/web/templates/bitcaster/organization/base.html:31
+#: bitcaster/web/templates/bitcaster/organization/base.html:32
 msgid "members"
 msgstr "mem"
 
-#: bitcaster/web/templates/bitcaster/organization/base.html:42
+#: bitcaster/web/templates/bitcaster/organization/base.html:51
 #: bitcaster/web/templates/bitcaster/user/base.html:48
 #: bitcaster/web/templates/bitcaster/user/home.html:5
+#: bitcaster/web/views/user/log.py:17
 msgid "notifications"
 msgstr "notifiche"
 
-#: bitcaster/web/templates/bitcaster/organization/base.html:46
+#: bitcaster/web/templates/bitcaster/organization/base.html:55
 msgid "audit log"
 msgstr "audit log"
 
-#: bitcaster/web/templates/bitcaster/organization/base.html:52
+#: bitcaster/web/templates/bitcaster/organization/base.html:59
+#: bitcaster/web/views/organization/error.py:15
+msgid "error log"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/organization/base.html:67
 msgid "user home"
 msgstr ""
 
@@ -1960,6 +1966,20 @@ msgstr "Non ci sono blocchi attivi"
 #: bitcaster/web/templates/bitcaster/organization/dashboard.html:64
 msgid "No pending occurences"
 msgstr "Nessuna occorrenza in corso"
+
+#: bitcaster/web/templates/bitcaster/organization/errorlog.html:34
+msgid "actor"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/organization/errorlog.html:37
+msgid "target"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/organization/errorlog.html:40
+#, fuzzy
+#| msgid "message"
+msgid "error message"
+msgstr "messaggio"
 
 #: bitcaster/web/templates/bitcaster/organization/groups/list.html:7
 msgid "Create Group"
@@ -2085,6 +2105,12 @@ msgstr ""
 #: bitcaster/web/templates/bitcaster/user/addresses_assignment.html:17
 msgid "Add Assignment"
 msgstr "Assegna nuovo indirizzo"
+
+#: bitcaster/web/templates/bitcaster/user/addresses_assignment.html:44
+#, fuzzy
+#| msgid "addresses"
+msgid "address"
+msgstr "indirizzi"
 
 #: bitcaster/web/templates/bitcaster/user/base.html:18
 #: bitcaster/web/templates/bitcaster/user/home.html:46

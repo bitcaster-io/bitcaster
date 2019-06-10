@@ -3,11 +3,13 @@ from datetime import timedelta
 
 from celery import chord
 from celery.task import periodic_task
+from constance import config
 from crashlog.models import Error
 from django.core.cache import caches
 from django.utils import timezone
 
 from bitcaster.celery import app
+from bitcaster.models.audit import AuditLogEntry
 from bitcaster.models.error import ErrorEntry
 from bitcaster.models.notification import Notification
 from bitcaster.models.occurence import Occurence
@@ -19,11 +21,23 @@ cache_lock = caches['lock']
 @periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
 def clean_data():
     today = timezone.now()
-    older_than = today - datetime.timedelta(days=30)
-    qs = Occurence.objects.filter(timestamp__lt=older_than)
+    audit_older_than = today - datetime.timedelta(days=config.LOG_RETENTION_AUDIT)
+    events_older_than = today - datetime.timedelta(days=config.LOG_RETENTION_EVENTS)
+    errors_older_than = today - datetime.timedelta(days=config.LOG_RETENTION_ERRORS)
+
+    qs = AuditLogEntry.objects.filter(timestamp__lt=audit_older_than)
     qs._raw_delete(qs.db)
 
-    qs = Notification.objects.filter(timestamp__lt=older_than)
+    qs = Occurence.objects.filter(timestamp__lt=events_older_than)
+    qs._raw_delete(qs.db)
+
+    qs = Notification.objects.filter(timestamp__lt=events_older_than)
+    qs._raw_delete(qs.db)
+
+    qs = ErrorEntry.objects.filter(timestamp__lt=errors_older_than)
+    qs._raw_delete(qs.db)
+
+    Error.objects.filter(date_time__lt=errors_older_than)
     qs._raw_delete(qs.db)
 
 
@@ -60,11 +74,6 @@ def set_notification_status():
     Notification.objects.filter(occurence__expire__lt=timezone.now(),
                                 status__in=[Notification.PENDING, Notification.RETRY, Notification.REMIND]
                                 ).update(status=Notification.EXPIRED)
-
-
-@periodic_task(run_every=timedelta(days=30))
-def clean_errors():
-    Error.objects.filter(date_time__lte=datetime.datetime.today() - datetime.timedelta(days=30)).delete()
 
 
 @periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})

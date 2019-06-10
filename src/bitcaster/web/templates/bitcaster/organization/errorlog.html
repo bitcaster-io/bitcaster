@@ -28,19 +28,31 @@
         <tbody>
         <tr>
             <th>
-                Date
+                {% trans "date" %}
             </th>
             <th>
-                Message
+                {% trans "actor" %}
+            </th>
+            <th>
+                {% trans "target" %}
+            </th>
+            <th>
+                {% trans "error message" %}
             </th>
         </tr>
         {% for entry in object_list %}
             <tr>
                 <td>
-                    {{ entry.timestamp }}
+                    {{ entry.timestamp|date:"d b Y"}}
                 </td>
                 <td>
-                    {{ entry }}
+                    {{ entry.actor }}
+                </td>
+                <td>
+                    {{ entry.target }}
+                </td>
+                <td>
+                    {{ entry.message }}
                 </td>
             </tr>
         {% endfor %}

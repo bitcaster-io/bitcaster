@@ -215,6 +215,7 @@ urlpatterns = [
     path('<slug:org>/config/', views.OrganizationConfiguration.as_view(), name='org-config'),
     path('<slug:org>/log/', views.OrganizationNotificationLogView.as_view(), name='org-log'),
     path('<slug:org>/audit/', views.OrganizationAuditLogView.as_view(), name='org-auditlog'),
+    path('<slug:org>/errors/', views.OrganizationErrorLogView.as_view(), name='org-errorlog'),
 
     path('<slug:org>/member/', views.OrganizationMembershipList.as_view(), name='org-members'),
     path('<slug:org>/member/<int:pk>/edit/', views.OrganizationMembershipEdit.as_view(), name='org-member-edit'),

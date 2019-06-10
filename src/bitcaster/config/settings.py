@@ -414,6 +414,10 @@ CONSTANCE_CONFIG = OrderedDict({
     'ALLOW_CHANGE_PRIMARY_ADDRESS': (False, 'Users can change their primary email address', bool),
     'LOG_NOTIFICATION': (True, 'Enable/Disable notification log', bool),
     'LOG_MESSAGE': (0, 'Log message ', int),
+    'LOG_RETENTION_AUDIT': (365, 'Number of days to keep audit log records', int),
+    'LOG_RETENTION_EVENTS': (365, 'Number of days to keep events log records', int),
+    'LOG_RETENTION_ERRORS': (30, 'Number of days to keep error log rocords', int),
+    # 'LOG_RETENTION_DAYS': (30, 'Number of days to keep log rocords', int),
     'SHOW_DISABLED_DISPATCHERS': (True, 'Show dispatcher even if globally disabled', bool),
     # Services
     'RECAPTCHA_PUBLIC_KEY': ('', '', str),

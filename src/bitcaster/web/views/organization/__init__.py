@@ -7,6 +7,7 @@ from .channels import (OrganizationChannelCreate, OrganizationChannelDeprecate,
                        OrganizationChannelRemove, OrganizationChannels,
                        OrganizationChannelTest, OrganizationChannelToggle,
                        OrganizationChannelUpdate, OrganizationChannelUsage,)
+from .error import OrganizationErrorLogView
 from .groups import (OrganizationGroupApplications, OrganizationGroupCreate,
                      OrganizationGroupDelete, OrganizationGroupEdit,
                      OrganizationGroupList, OrganizationGroupMemberRemove,

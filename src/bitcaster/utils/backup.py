@@ -16,7 +16,9 @@ DATA = ['user',
         'organizationgroup',
         'application',
         'applicationteam',
+        'applicationuser',
         'channel',
+        'filegetter',
         'event',
         'message',
         'monitor',
@@ -85,11 +87,12 @@ def backup_data(filename, echo=None):
     return output
 
 
-def restore_data(filename, echo, overwrite=True, ignore_errors=False, reindex=True,
+def restore_data(filename, echo, zap=False, overwrite=True, ignore_errors=False, reindex=True,
                  selection=None, reset_cryptography=False):
     from django.apps import apps
     import constance.settings
     from constance import config
+    from constance.backends.database.models import Constance
 
     input_file = Path(filename)
     echo(f'Using backup {input_file.absolute()}')
@@ -97,9 +100,12 @@ def restore_data(filename, echo, overwrite=True, ignore_errors=False, reindex=Tr
     if not selection:
         selection = ['options'] + get_all_models()
     else:
-        selection = ['bitcaster.%s' % name for name in selection]
+        selection = ['options'] + ['bitcaster.%s' % name for name in selection if name != 'options']
 
     with atomic():
+        if zap:
+            Constance.objects.all().delete()
+
         if 'options' in selection:
             echo(f'restore...options')
             for key, value in data['options']:
@@ -122,6 +128,13 @@ def restore_data(filename, echo, overwrite=True, ignore_errors=False, reindex=Tr
             User.objects.update(storage={})
             Channel.objects.update(config={})
 
+        if zap:
+            for model_name in ALL_MODELS:
+                if model_name in selection:
+                    echo('zapping...%s' % model_name)
+                    model = apps.get_model(model_name)
+                    model._default_manager.all().delete()
+
         for model_name in ALL_MODELS:
             if model_name in selection:
                 model = apps.get_model(model_name)
@@ -140,14 +153,11 @@ def restore_data(filename, echo, overwrite=True, ignore_errors=False, reindex=Tr
                             model.objects.update_or_create(id=pk, defaults=record)
                         else:
                             model.objects.get_or_create(id=pk, defaults=record)
-                    except Exception as e:
+                    except BaseException as e:
                         echo('Error restoring %s' % model_name)
                         echo('ERROR: %s' % type(e))
+                        echo('pk: %s' % pk)
                         echo(record)
-                        # io = StringIO()
-                        # traceback.print_exc(file=io)
-                        # io.seek(0)
-                        # echo(io.read())
                         if not ignore_errors:
                             raise
                 # # ManyToMany
@@ -155,10 +165,19 @@ def restore_data(filename, echo, overwrite=True, ignore_errors=False, reindex=Tr
                     m2m_field = model._meta.get_field(m2m_field_name)
                     related_model = m2m_field.related_model
                     for record in m2m_records:
-                        parent = model.objects.get(pk=record['id'])
-                        m2m_attr = getattr(parent, m2m_field_name)
-                        related = related_model.objects.get(pk=record[m2m_field_name])
-                        m2m_attr.add(related)
+                        try:
+                            parent = model.objects.get(pk=record['id'])
+                            m2m_attr = getattr(parent, m2m_field_name)
+                            related = related_model.objects.get(pk=record[m2m_field_name])
+                            m2m_attr.add(related)
+                        except Exception as e:
+                            echo('Error restoring %s' % model_name)
+                            echo('ERROR: %s' % type(e))
+                            echo('pk: %s' % pk)
+                            echo(record)
+                            if not ignore_errors:
+                                raise
+
     if reindex:
         reindex_db()
 
