@@ -16,7 +16,7 @@ from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
                                       BitcasterBaseToggleView,
                                       BitcasterBaseUpdateView,)
-from bitcaster.web.views.mixins import MessageUserMixin
+from bitcaster.web.views.mixins import MessageUserMixin, TitleMixin
 
 from .mixins import SelectedApplicationMixin
 
@@ -71,9 +71,12 @@ class ApplicationMonitorTest(ApplicationMonitorUpdate):
 
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
-        emails = self.object.handler.get_matched_elements()
-
-        ret['emails'] = emails
+        try:
+            emails = self.object.handler.get_matched_elements()
+            ret['emails'] = emails
+        except Exception as e:
+            self.message_user(str(e), messages.ERROR)
+            ret['error'] = str(e)
         return ret
 
 
@@ -83,14 +86,14 @@ class ApplicationMonitorPoll(MonitorMixin, SingleObjectMixin, MessageUserMixin, 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         try:
-            self.object.handler.test()
+            self.object.handler.test_connection()
             self.message_user('Success', messages.SUCCESS)
         except Exception as e:
             self.message_user(str(e), messages.ERROR)
         return super().get(request, *args, **kwargs)
 
 
-class ApplicationMonitorCreate(MonitorMixin, MessageUserMixin, SessionWizardView):
+class ApplicationMonitorCreate(MonitorMixin, TitleMixin, MessageUserMixin, SessionWizardView):
     permissions = ['manage_monitor']
     title = _('create monitor')
 

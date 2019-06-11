@@ -2,7 +2,7 @@ import imaplib
 import logging
 
 from ..registry import agent_registry
-from .email import EmailAbstractOptions, EmailAgent
+from .imap import EmailAbstractOptions, ImapAgent
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +13,9 @@ class GMailOptions(EmailAbstractOptions):
 
 
 @agent_registry.register
-class GMailAgent(EmailAgent):
+class GMailAgent(ImapAgent):
     options_class = GMailOptions
+    icon = 'mail-gmail.png'
 
     def _get_connection(self, config=None) -> object:  # pragma: no cover
         config = config or self.config

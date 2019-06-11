@@ -22,6 +22,10 @@ import './images/social_auth_github.png';
 import './images/social_auth_google.png';
 import './images/social_auth_linkedin.png';
 
+import './images/icons/mail-imap.png';
+import './images/icons/mail-pop3.png';
+import './images/icons/mail-gmail.png';
+
 import './images/icons/email.png';
 import './images/icons/facebook.png';
 import './images/icons/gmail.png';

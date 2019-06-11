@@ -1,10 +1,5 @@
-{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster bc_permissions %}
-{% block page %}
-    <div class="breadcrumbs pb-4">
-        <a href="{% app-url "app-monitors" %}">monitors</a> :
-        <a href="{% app-url "app-monitor-edit" monitor.pk %}">{{ monitor }}</a>
-    </div>
-
+{% extends "bitcaster/application/monitors/base_detail.html" %}{% load crispy_forms_tags i18n bitcaster bc_permissions %}
+{% block detail %}
     <div class="container mt-5">
         <div class="row col-12 m-2">
             <div class="col-3 font-weight-bold">Date</div>

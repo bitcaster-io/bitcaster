@@ -5,14 +5,15 @@ from bitcaster.utils.backup import SECTIONS
 
 
 @click.command()
-@click.option('--filename', default='bitcaster.json', type=click.Path())
+@click.option('-f', '--filename', default='bitcaster.json', type=click.Path())
+@click.option('-o', '--overwrite', is_flag=True, default=False, type=click.Path())
 @click.pass_context
 @need_setup
-def backup(ctx, filename):
+def backup(ctx, filename, overwrite):
     from bitcaster.utils.backup import backup_data
 
     try:
-        backup_data(filename, echo=click.echo)
+        backup_data(filename, echo=click.echo, overwrite_exists=overwrite)
     except Exception as e:
         click.echo(str(e))
         ctx.abort()

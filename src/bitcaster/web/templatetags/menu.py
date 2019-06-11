@@ -19,3 +19,8 @@ def _fqn(obj):
 @register.filter(name='classname')
 def _classname(obj):
     return classname(obj)
+
+
+@register.filter(name='contains')
+def contains(target: str, string: str):
+    return string in target

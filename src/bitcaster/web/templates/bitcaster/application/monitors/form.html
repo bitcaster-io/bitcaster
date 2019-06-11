@@ -1,18 +1,17 @@
-{% extends "bitcaster/application/base.html" %}{% load crispy_forms_tags i18n bitcaster %}
-{% block page %}
-    <div class="breadcrumbs pb-4">
-        <a href="{% app-url "app-monitors" %}">monitors</a> :
-        <a href="{% app-url "app-monitor-edit" monitor.pk %}">{{ monitor }}</a>
-    </div>
-
-
+{% extends "bitcaster/application/monitors/base_detail.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% block detail %}
     <div class="container-fluid">
         <div class="row col-12">
             <div class="col-10">
                 {{ form.errors.non_field_errors }}
                 <form method="post" class="monitor-form">
                     {% csrf_token %}
-                    {{ form|crispy }}
+                    <div class="card mb-2">
+                        <div class="card-header text-capitalize">{% trans "monitor configuration" %}</div>
+                        <div class="card-body">
+                            {{ form|crispy }}
+                        </div>
+                    </div>
                     <div class="plugin-config-form">
                         {% render_serializer form.serializer "rest_framework/inline2" %}
                     </div>
@@ -25,4 +24,4 @@
             </div>
         </div>
     </div>
-{% endblock page %}
+{% endblock detail %}

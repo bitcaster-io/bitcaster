@@ -12,6 +12,7 @@ from django.views.generic import RedirectView
 from bitcaster.models import Organization
 from bitcaster.utils.locks import get_all_locks
 from bitcaster.web.forms import OrganizationForm
+from bitcaster.web.forms.organization import OrganizationOptionsForm
 from bitcaster.web.views.mixins import TitleMixin
 from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
 
@@ -64,7 +65,37 @@ class OrganizationCheckConfigView(OrganizationBaseView, RedirectView):
     pattern_name = 'org-dashboard'
 
     def get(self, request, *args, **kwargs):
-        # check_organization(self.selected_organization)
-        # for app in self.selected_organization.applications.all():
-        #     check_application(app)
         return super().get(request, *args, **kwargs)
+
+
+class OrganizationOptionsView(OrganizationBaseView, BitcasterBaseUpdateView):
+    form_class = OrganizationOptionsForm
+    success_url = '.'
+    template_name = 'bitcaster/organization/options.html'
+
+    # def form_valid(self, form):
+    #     slug = form.cleaned_data.get('slug', None)
+    #     self.object = form.save()
+    #     url = reverse('org-config', args=[slug or self.object.slug])
+    #     self.message_user(_('Configuration saved'), messages.SUCCESS)
+    #     return HttpResponseRedirect(url)
+
+    # def get_form(self, form_class=None):
+    #     form_class = self.get_form_class()
+    #     kwargs = self.get_form_kwargs()
+    #     for f in form_class.declared_fields.keys():
+    #         value = getattr(config, f, '')
+    #         if isinstance(value, dict):
+    #             value = str(value)
+    #         kwargs['initial'][f] = value
+    #     return form_class(**kwargs)
+
+    # def form_valid(self, form):
+    #     for k, v in form.cleaned_data.items():
+    #         # TODO: remove me
+    #         print(111, "org.py:96", 111111, k, v)
+    #     #     setattr(config, k, v)
+    #     # self.message_user(_('Configuration saved'), messages.SUCCESS)
+    #     # if self.bit:
+    #     #     config.SYSTEM_CONFIGURED |= self.bit
+    #     return super().form_valid(form)

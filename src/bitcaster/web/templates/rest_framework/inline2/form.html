@@ -1,6 +1,19 @@
 {% load bitcaster %}
-{% for field in form %}
-  {% if not field.read_only %}
-    {% render_field field style=style %}
-  {% endif %}
+{#{{ form }}#}
+{#{{ form.fieldsets }}#}
+{#{{ form.fields.event }}#}
+{#{{  form.serializer.field.event }}#}
+{#{% render_field form.field.event style=style %}#}
+{% for fset, fields in form.fieldsets.items %}
+    <div class="card mb-2">
+        <div class="card-header text-capitalize"
+        data-toggle="" href="#{{ fset }}">{{ fset }}</div>
+        <ul class="collapse show list-group list-group-flush p-3" id="{{ fset }}">
+            {% for field in fields %}
+                {% if not field.read_only %}
+                    {% render_field field style=style %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
 {% endfor %}

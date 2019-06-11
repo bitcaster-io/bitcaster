@@ -1,6 +1,7 @@
 import datetime
 from logging import getLogger
 
+from celery import chord
 from crashlog.middleware import process_exception
 from django.core.cache import caches
 from django.core.exceptions import ObjectDoesNotExist
@@ -28,7 +29,7 @@ cache_lock = caches['lock']
 
 @app.task()
 def trigger_event(occurence_id, context, *, token=None, origin=None):
-    from bitcaster.models import Channel, DispatcherMetaData, Occurence
+    from bitcaster.models import Channel, DispatcherMetaData, Occurence, Event
     occurence = Occurence.objects.select_related('event').get(id=occurence_id)
     event = occurence.event
     logger.debug('Event [{0.name} {0.enabled}] emit()'.format(event))
@@ -39,6 +40,7 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
     ids = [channel['channel'] for channel in channels]
     if len(channels) == 0:
         logger.warning(f'No subscriptions/channels found for `{event}`')
+    batch_sections = []
     for channel in Channel.objects.filter(id__in=ids,
                                           event=event):
         if not channel.enabled:
@@ -53,14 +55,31 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
         try:
             logger.debug("Channel '%s' scheduled" % channel)
             # Chord
-            create_notifications_for_channel.apply_async(args=[occurence.pk,
-                                                               channel.pk,
-                                                               context])
+            if event.batch_mode in [Event.START_END, Event.START_MANUALLY]:
+                batch_sections.append(send_page.s(create_notifications_for_channel(occurence.pk,
+                                                                                   channel.pk, context)))
+            else:
+                create_notifications_for_channel.apply_async(args=[occurence.pk,
+                                                                   channel.pk,
+                                                                   context])
         except Exception as e:
             logger.exception(e)
             log_error_channel(channel, str(e))
             process_exception(e)
+
+    if batch_sections:
+        chord(batch_sections)(occurence_start.s(occurence.pk))
+
     return True
+
+
+def occurence_start(occurence_id):
+    from bitcaster.models import Occurence, Event
+    occurence = Occurence.objects.get(pk=occurence_id)
+    if occurence.event.batch_mode == Event.START_END:
+        occurence.start()
+    else:
+        occurence.ready()
 
 
 def _get_message_parts(channel, event, header) -> [Template, Template]:
@@ -185,6 +204,7 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
         logger.exception(e)
         process_exception(e)
         raise
+
     # from .periodic import process_notifications
     # process_notifications.delay()
     return True

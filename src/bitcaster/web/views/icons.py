@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.templatetags.static import static
 from django.views.decorators.cache import cache_page
 from strategy_field.utils import import_by_name
@@ -30,7 +30,6 @@ def plugin_icon(request, fqn):
     except (ImportError, AttributeError, ValueError) as e:
         logger.error(e)
         return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))
-
     if h.icon and h.icon.startswith('/'):
         return HttpResponseRedirect(static(h.icon))
     elif h.icon:
@@ -38,9 +37,13 @@ def plugin_icon(request, fqn):
     else:
         name = fqn.split('.')[-1]
         icon = Path(settings.STATIC_ROOT) / f'bitcaster/images/icons/{name.lower()}.png'
-    try:
-        image = icon.read_bytes()
-    except (Exception, FileNotFoundError, TypeError):
-        return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))
+    if Path(icon).is_file():
+        try:
+            image = icon.read_bytes()
+            return HttpResponse(image, content_type='image/png')
+        except (Exception, FileNotFoundError, TypeError) as e:
+            logger.exception(e)
+    else:
+        raise Http404(icon)
 
-    return HttpResponse(image, content_type='image/png')
+    return HttpResponseRedirect(static('/bitcaster/images/icons/plugin.png'))

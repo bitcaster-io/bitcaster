@@ -26,12 +26,11 @@
                     {{ monitor.name }}
                 </td>
                 <td style="width:30%" class="nowrap formset-commands">
-                    {% if monitor.handler %}
+                    {% if monitor.handler and permissions.manage_monitor %}
                         {% button monitor.urls.edit True "fas fa-wrench" "configure" %}
                         {% button monitor.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" monitor.enabled %}
                         {% button monitor.urls.delete True "far fa-trash-alt" "delete" %}
-
-                        {% button monitor.urls.poll True "fas fa-broadcast-tower" "poll" %}
+                        {% button monitor.urls.poll True "fas fa-broadcast-tower" _("Check Now") %}
                         {% button monitor.urls.test True "fas fa-terminal" "test" %}
 
                     {% endif %}

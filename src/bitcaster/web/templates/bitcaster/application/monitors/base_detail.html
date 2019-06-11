@@ -1,0 +1,30 @@
+{% extends "bitcaster/application/base.html" %}{% load crispy_forms_filters i18n bitcaster menu bc_permissions %}
+{#{% block pageId %}event{% endblock %}#}
+{% block page %}
+    {% block breadcrumbs %}
+        <div class="d-flex justify-content-between align-items-center ">
+            <div class="p-2">
+                <a href="{{ application.urls.monitors }}">managers</a> :
+                {% if monitor %}
+                <a href="{% app-url "app-monitor-edit" monitor.pk %}">{{ monitor }}</a>
+                {% endif %}
+            </div>
+            <div class="ml-auto p-2">
+                {% if not view|classname|contains:'MonitorUpdate' %}
+                    {% button monitor.urls.edit True "fas fa-wrench" "configure" %}
+                {% endif %}
+                {% button monitor.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" event.enabled %}
+                {% button monitor.urls.delete True "far fa-trash-alt" "delete" %}
+                {% if not view|classname|contains:'Test' %}
+                    {% button monitor.urls.test True "fas fa-terminal" "test" %}
+                {% endif %}
+
+                {% if view|classname != 'MonitorUpdate' %}
+                    {% button monitor.urls.poll True "fas fa-link" "poll" %}
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
+    {% block detail %}
+    {% endblock %}
+{% endblock %}

@@ -18,6 +18,10 @@ class PluginValidationError(DRFValidationError):
     pass
 
 
+class PluginError(BitcasterError):
+    pass
+
+
 class PluginSubscriptionError(BitcasterError):
     pass
 

@@ -58,9 +58,12 @@ class Event(ReverseWrapperMixin, AbstractModel):
     # Processing
     START_IMMEDIATLY = 1
     START_END = 2
-    batch_mode = models.IntegerField(choices=((START_IMMEDIATLY, 'Continue on missing attachent'),
-                                              (START_END, 'Halt on Error')
-                                              ), default=START_IMMEDIATLY)
+    START_MANUALLY = 3
+    batch_mode = models.IntegerField(choices=(
+        (START_IMMEDIATLY, _('Start imeddiatly')),
+        (START_END, _('Start when all notifications are successufully created')),
+        (START_MANUALLY, _('Manually start batch, after all notifications are successufully created')),
+    ), default=START_IMMEDIATLY)
 
     # Attachment
     attachment = models.ForeignKey('bitcaster.FileGetter',

@@ -13,19 +13,23 @@ cache_lock = caches['lock']
 class OccurenceManager(models.Manager):
     def active(self):
         return Occurence.objects.filter(expire__gt=timezone.now(),
-                                        status=Occurence.RUNNING)
+                                        status=Occurence.NEW)
 
     def inactive(self):
         return Occurence.objects.filter(expire__lt=timezone.now())
 
 
 class Occurence(models.Model):
+    NEW = -1
+    READY = -1
     RUNNING = 0
     ABORTED = 1
     EXPIRED = 2
     PAUSED = 3
     TERMINATED = 99
-    STATUSES = ((RUNNING, 'Running'),
+    STATUSES = ((READY, 'Ready'),
+                (NEW, 'New'),
+                (RUNNING, 'Running'),
                 (ABORTED, 'Aborted'),
                 (EXPIRED, 'Expired'),
                 (PAUSED, 'Paused'),
@@ -83,6 +87,10 @@ class Occurence(models.Model):
                                  **kwargs)
         obj.consolidate()
         return obj
+
+    def start(self):
+        self.status = Occurence.RUNNING
+        self.save()
 
     def lock(self):
         lock = cache_lock.lock('occurence:%s' % self.pk)

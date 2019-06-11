@@ -1,5 +1,6 @@
 import logging
 
+from crispy_forms.helper import FormHelper
 from django import forms
 
 from bitcaster.models import Organization
@@ -27,3 +28,9 @@ class OrganizationForm(forms.ModelForm):
         if self.instance and self.instance.is_core:
             return self.instance.slug
         return value
+
+
+class OrganizationOptionsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()

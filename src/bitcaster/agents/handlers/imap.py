@@ -2,7 +2,6 @@ import datetime
 import imaplib
 import logging
 import re
-from email import message_from_bytes
 
 from crashlog.middleware import process_exception
 from django.utils.functional import cached_property
@@ -10,67 +9,14 @@ from django.utils.translation import gettext as _
 from rest_framework.exceptions import ValidationError
 
 from bitcaster.agents import serializers
+from bitcaster.agents.handlers.mail import (ImapMessage,
+                                            parse_list_response, parse_uid,)
 from bitcaster.api.fields import PasswordField, RegexField
 
 from ..base import Agent, AgentOptions
 from ..registry import agent_registry
 
 logger = logging.getLogger(__name__)
-
-pattern_uid = re.compile(r'\d+ \(UID (?P<uid>\d+)\)')
-
-
-def parse_uid(data):
-    match = pattern_uid.match(data)
-    return match.group('uid')
-
-
-class EmailMessage:
-    def __init__(self, email):
-        self.raw_email = email
-
-    @cached_property
-    def email_message(self):
-        return message_from_bytes(self.raw_email)
-
-    @property
-    def id(self):
-        return hash(self.email_message['Message-ID'])
-
-    @property
-    def subject(self):
-        return self.email_message.get('subject')
-
-    @property
-    def sender(self):
-        return self.email_message.get('from')
-
-    @property
-    def recipient(self):
-        return self.email_message.get('to')
-
-    @property
-    def date(self):
-        return self.email_message.get('Date')
-
-    @property
-    def text(self):  # pragma: no cover
-        body = ''
-        for part in self.email_message.walk():
-            if part.get_content_type() == 'text/plain':
-                body = part.get_payload(decode=False)
-            else:
-                continue
-        return body
-
-
-list_response_pattern = re.compile(rb'\((?P<flags>.*?)\) "(?P<delimiter>.*)" (?P<name>.*)')
-
-
-def parse_list_response(line):
-    flags, delimiter, mailbox_name = list_response_pattern.match(line).groups()
-    mailbox_name = mailbox_name.strip(b'"')
-    return (flags.decode('utf-8'), delimiter.decode('utf-8'), mailbox_name.decode('utf-8'))
 
 
 class EmailAbstractOptions(AgentOptions):
@@ -136,12 +82,13 @@ class EmailOptions(EmailAbstractOptions):
     tls = serializers.BooleanField(default=False)
 
     def get_agent(self):
-        return EmailAgent
+        return ImapAgent
 
 
 @agent_registry.register
-class EmailAgent(Agent):  # pragma: no cover
+class ImapAgent(Agent):  # pragma: no cover
     options_class = EmailOptions
+    icon = 'mail-imap.png'
 
     def _get_connection(self, config=None) -> imaplib.IMAP4:  # pragma: no cover
         config = config or self.config
@@ -178,7 +125,7 @@ class EmailAgent(Agent):  # pragma: no cover
     def recipient_regex(self):
         return re.compile(self.config['to_regex'])
 
-    def filter(self, message: EmailMessage):
+    def filter(self, message: ImapMessage):
         if self.subject_regex and not self.subject_regex.match(message.subject):
             return False
         if self.sender_regex and not self.sender_regex.match(message.sender):
@@ -261,7 +208,7 @@ class EmailAgent(Agent):  # pragma: no cover
         for num in reversed(data[0].split()):
             # typ, data = conn.fetch(num, '(BODY.PEEK[])')
             typ, data = conn.fetch(num, '(BODY.PEEK[] UID)')
-            message = EmailMessage(data[0][1])
+            message = ImapMessage(data[0][1])
             if self.filter(message):
                 ret.append(message)
         return ret
@@ -283,7 +230,7 @@ class EmailAgent(Agent):  # pragma: no cover
 
         for num in reversed(data[0].split()):
             typ, data = conn.fetch(num, '(BODY.PEEK[] UID)')
-            message = EmailMessage(data[0][1])
+            message = ImapMessage(data[0][1])
             if self.filter(message):
                 if trigger and self.trigger(message):
                     ret += 1

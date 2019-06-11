@@ -5,7 +5,6 @@
 {% endblock %}
 
 {% block page %}
-    <h2>{% trans "Create new monitor" %}</h2>
     <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
     <form action="" method="post" id="form">{% csrf_token %}
         {{ wizard.management_form }}

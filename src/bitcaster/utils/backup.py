@@ -58,7 +58,7 @@ def get_all_models():
     return ret
 
 
-def backup_data(filename, echo=None):
+def backup_data(filename, echo=None, overwrite_exists=False):
     from constance import config, settings as sett
     # from django.apps import apps
 
@@ -66,6 +66,10 @@ def backup_data(filename, echo=None):
                         sett.CONFIG.items()],
             }
     ALL_MODELS = get_all_models()
+    output = Path(filename)
+    if output.exists() and not overwrite_exists:
+        echo('File exists')
+        return False
 
     for model_name in ALL_MODELS:
         data[model_name] = {'__data__': [], '__m2m__': {}}
@@ -80,7 +84,6 @@ def backup_data(filename, echo=None):
                     model.objects.filter(**{f'{m2m.name}__isnull': False}).values('id', m2m.name))
         json.dumps(data, cls=Encoder)
 
-    output = Path(filename)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(data, cls=Encoder))
     echo(f'Configuration saved to {output.absolute()}')

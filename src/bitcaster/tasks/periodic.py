@@ -82,18 +82,18 @@ def consolidate():
     ErrorEntry.objects.consolidate()
 
 
-@app.task(bind=True)
-def callback(self, result, occurence_pk, *args, **kwargs):
-    lock = cache_lock.lock('occurence:%s' % occurence_pk)
-    ret = cache_lock.delete(lock.name)
-    print(f'Removing lock {lock.name}. {ret}')
-
-
 @periodic_task(bind=True, run_every=timedelta(minutes=1), options={'expires': 60})
 def check_monitors(self):
     from .monitor import check_monitor, Monitor
     for monitor in Monitor.objects.filter(enabled=True):
         check_monitor.delay(monitor.pk)
+
+
+@app.task(bind=True)
+def batch_start(self, result, occurence_pk, *args, **kwargs):
+    from bitcaster.models import Occurence
+    occurence = Occurence.objects.get(pk=occurence_pk)
+    occurence.unlock()
 
 
 @periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
@@ -129,4 +129,4 @@ def process_notifications():
             print(f'Cannot process {occurence}. Lock found')
 
         if chord_pages:
-            chord(chord_pages)(callback.s(occurence.pk))
+            chord(chord_pages)(batch_start.s(occurence.pk))

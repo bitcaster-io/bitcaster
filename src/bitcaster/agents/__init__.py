@@ -1,1 +1,1 @@
-from .handlers import EmailAgent, GMailAgent
+from .handlers import GMailAgent, ImapAgent, Pop3Agent

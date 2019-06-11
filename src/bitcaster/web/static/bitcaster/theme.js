@@ -29339,6 +29339,39 @@ module.exports = __webpack_require__.p + "images/icons/hangout.png";
 
 /***/ }),
 
+/***/ "./bitcaster/images/icons/mail-gmail.png":
+/*!***********************************************!*\
+  !*** ./bitcaster/images/icons/mail-gmail.png ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "images/icons/mail-gmail.png";
+
+/***/ }),
+
+/***/ "./bitcaster/images/icons/mail-imap.png":
+/*!**********************************************!*\
+  !*** ./bitcaster/images/icons/mail-imap.png ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "images/icons/mail-imap.png";
+
+/***/ }),
+
+/***/ "./bitcaster/images/icons/mail-pop3.png":
+/*!**********************************************!*\
+  !*** ./bitcaster/images/icons/mail-pop3.png ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "images/icons/mail-pop3.png";
+
+/***/ }),
+
 /***/ "./bitcaster/images/icons/paperclip.png":
 /*!**********************************************!*\
   !*** ./bitcaster/images/icons/paperclip.png ***!
@@ -29635,40 +29668,50 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _images_social_auth_google_png__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(_images_social_auth_google_png__WEBPACK_IMPORTED_MODULE_15__);
 /* harmony import */ var _images_social_auth_linkedin_png__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./images/social_auth_linkedin.png */ "./bitcaster/images/social_auth_linkedin.png");
 /* harmony import */ var _images_social_auth_linkedin_png__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(_images_social_auth_linkedin_png__WEBPACK_IMPORTED_MODULE_16__);
-/* harmony import */ var _images_icons_email_png__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./images/icons/email.png */ "./bitcaster/images/icons/email.png");
-/* harmony import */ var _images_icons_email_png__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(_images_icons_email_png__WEBPACK_IMPORTED_MODULE_17__);
-/* harmony import */ var _images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./images/icons/facebook.png */ "./bitcaster/images/icons/facebook.png");
-/* harmony import */ var _images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(_images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_18__);
-/* harmony import */ var _images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./images/icons/gmail.png */ "./bitcaster/images/icons/gmail.png");
-/* harmony import */ var _images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(_images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_19__);
-/* harmony import */ var _images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./images/icons/hangout.png */ "./bitcaster/images/icons/hangout.png");
-/* harmony import */ var _images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(_images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_20__);
-/* harmony import */ var _images_icons_paperclip_png__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./images/icons/paperclip.png */ "./bitcaster/images/icons/paperclip.png");
-/* harmony import */ var _images_icons_paperclip_png__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(_images_icons_paperclip_png__WEBPACK_IMPORTED_MODULE_21__);
-/* harmony import */ var _images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./images/icons/plivo.png */ "./bitcaster/images/icons/plivo.png");
-/* harmony import */ var _images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(_images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_22__);
-/* harmony import */ var _images_icons_plugin_png__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./images/icons/plugin.png */ "./bitcaster/images/icons/plugin.png");
-/* harmony import */ var _images_icons_plugin_png__WEBPACK_IMPORTED_MODULE_23___default = /*#__PURE__*/__webpack_require__.n(_images_icons_plugin_png__WEBPACK_IMPORTED_MODULE_23__);
-/* harmony import */ var _images_icons_skype_png__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./images/icons/skype.png */ "./bitcaster/images/icons/skype.png");
-/* harmony import */ var _images_icons_skype_png__WEBPACK_IMPORTED_MODULE_24___default = /*#__PURE__*/__webpack_require__.n(_images_icons_skype_png__WEBPACK_IMPORTED_MODULE_24__);
-/* harmony import */ var _images_icons_slack_png__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./images/icons/slack.png */ "./bitcaster/images/icons/slack.png");
-/* harmony import */ var _images_icons_slack_png__WEBPACK_IMPORTED_MODULE_25___default = /*#__PURE__*/__webpack_require__.n(_images_icons_slack_png__WEBPACK_IMPORTED_MODULE_25__);
-/* harmony import */ var _images_icons_telegram_png__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./images/icons/telegram.png */ "./bitcaster/images/icons/telegram.png");
-/* harmony import */ var _images_icons_telegram_png__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(_images_icons_telegram_png__WEBPACK_IMPORTED_MODULE_26__);
-/* harmony import */ var _images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./images/icons/twilio.png */ "./bitcaster/images/icons/twilio.png");
-/* harmony import */ var _images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(_images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_27__);
-/* harmony import */ var _images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./images/icons/twitter.png */ "./bitcaster/images/icons/twitter.png");
-/* harmony import */ var _images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_28___default = /*#__PURE__*/__webpack_require__.n(_images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_28__);
-/* harmony import */ var _images_icons_whatsapp_png__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./images/icons/whatsapp.png */ "./bitcaster/images/icons/whatsapp.png");
-/* harmony import */ var _images_icons_whatsapp_png__WEBPACK_IMPORTED_MODULE_29___default = /*#__PURE__*/__webpack_require__.n(_images_icons_whatsapp_png__WEBPACK_IMPORTED_MODULE_29__);
-/* harmony import */ var _images_icons_xmpp_png__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./images/icons/xmpp.png */ "./bitcaster/images/icons/xmpp.png");
-/* harmony import */ var _images_icons_xmpp_png__WEBPACK_IMPORTED_MODULE_30___default = /*#__PURE__*/__webpack_require__.n(_images_icons_xmpp_png__WEBPACK_IMPORTED_MODULE_30__);
-/* harmony import */ var _images_icons_yammer_png__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./images/icons/yammer.png */ "./bitcaster/images/icons/yammer.png");
-/* harmony import */ var _images_icons_yammer_png__WEBPACK_IMPORTED_MODULE_31___default = /*#__PURE__*/__webpack_require__.n(_images_icons_yammer_png__WEBPACK_IMPORTED_MODULE_31__);
-/* harmony import */ var _images_icons_viber_png__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./images/icons/viber.png */ "./bitcaster/images/icons/viber.png");
-/* harmony import */ var _images_icons_viber_png__WEBPACK_IMPORTED_MODULE_32___default = /*#__PURE__*/__webpack_require__.n(_images_icons_viber_png__WEBPACK_IMPORTED_MODULE_32__);
-/* harmony import */ var _images_icons_zulip_png__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./images/icons/zulip.png */ "./bitcaster/images/icons/zulip.png");
-/* harmony import */ var _images_icons_zulip_png__WEBPACK_IMPORTED_MODULE_33___default = /*#__PURE__*/__webpack_require__.n(_images_icons_zulip_png__WEBPACK_IMPORTED_MODULE_33__);
+/* harmony import */ var _images_icons_mail_imap_png__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./images/icons/mail-imap.png */ "./bitcaster/images/icons/mail-imap.png");
+/* harmony import */ var _images_icons_mail_imap_png__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(_images_icons_mail_imap_png__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony import */ var _images_icons_mail_pop3_png__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./images/icons/mail-pop3.png */ "./bitcaster/images/icons/mail-pop3.png");
+/* harmony import */ var _images_icons_mail_pop3_png__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(_images_icons_mail_pop3_png__WEBPACK_IMPORTED_MODULE_18__);
+/* harmony import */ var _images_icons_mail_gmail_png__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./images/icons/mail-gmail.png */ "./bitcaster/images/icons/mail-gmail.png");
+/* harmony import */ var _images_icons_mail_gmail_png__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(_images_icons_mail_gmail_png__WEBPACK_IMPORTED_MODULE_19__);
+/* harmony import */ var _images_icons_email_png__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./images/icons/email.png */ "./bitcaster/images/icons/email.png");
+/* harmony import */ var _images_icons_email_png__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(_images_icons_email_png__WEBPACK_IMPORTED_MODULE_20__);
+/* harmony import */ var _images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./images/icons/facebook.png */ "./bitcaster/images/icons/facebook.png");
+/* harmony import */ var _images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(_images_icons_facebook_png__WEBPACK_IMPORTED_MODULE_21__);
+/* harmony import */ var _images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./images/icons/gmail.png */ "./bitcaster/images/icons/gmail.png");
+/* harmony import */ var _images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(_images_icons_gmail_png__WEBPACK_IMPORTED_MODULE_22__);
+/* harmony import */ var _images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./images/icons/hangout.png */ "./bitcaster/images/icons/hangout.png");
+/* harmony import */ var _images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_23___default = /*#__PURE__*/__webpack_require__.n(_images_icons_hangout_png__WEBPACK_IMPORTED_MODULE_23__);
+/* harmony import */ var _images_icons_paperclip_png__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./images/icons/paperclip.png */ "./bitcaster/images/icons/paperclip.png");
+/* harmony import */ var _images_icons_paperclip_png__WEBPACK_IMPORTED_MODULE_24___default = /*#__PURE__*/__webpack_require__.n(_images_icons_paperclip_png__WEBPACK_IMPORTED_MODULE_24__);
+/* harmony import */ var _images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./images/icons/plivo.png */ "./bitcaster/images/icons/plivo.png");
+/* harmony import */ var _images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_25___default = /*#__PURE__*/__webpack_require__.n(_images_icons_plivo_png__WEBPACK_IMPORTED_MODULE_25__);
+/* harmony import */ var _images_icons_plugin_png__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./images/icons/plugin.png */ "./bitcaster/images/icons/plugin.png");
+/* harmony import */ var _images_icons_plugin_png__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(_images_icons_plugin_png__WEBPACK_IMPORTED_MODULE_26__);
+/* harmony import */ var _images_icons_skype_png__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./images/icons/skype.png */ "./bitcaster/images/icons/skype.png");
+/* harmony import */ var _images_icons_skype_png__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(_images_icons_skype_png__WEBPACK_IMPORTED_MODULE_27__);
+/* harmony import */ var _images_icons_slack_png__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./images/icons/slack.png */ "./bitcaster/images/icons/slack.png");
+/* harmony import */ var _images_icons_slack_png__WEBPACK_IMPORTED_MODULE_28___default = /*#__PURE__*/__webpack_require__.n(_images_icons_slack_png__WEBPACK_IMPORTED_MODULE_28__);
+/* harmony import */ var _images_icons_telegram_png__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./images/icons/telegram.png */ "./bitcaster/images/icons/telegram.png");
+/* harmony import */ var _images_icons_telegram_png__WEBPACK_IMPORTED_MODULE_29___default = /*#__PURE__*/__webpack_require__.n(_images_icons_telegram_png__WEBPACK_IMPORTED_MODULE_29__);
+/* harmony import */ var _images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./images/icons/twilio.png */ "./bitcaster/images/icons/twilio.png");
+/* harmony import */ var _images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_30___default = /*#__PURE__*/__webpack_require__.n(_images_icons_twilio_png__WEBPACK_IMPORTED_MODULE_30__);
+/* harmony import */ var _images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./images/icons/twitter.png */ "./bitcaster/images/icons/twitter.png");
+/* harmony import */ var _images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_31___default = /*#__PURE__*/__webpack_require__.n(_images_icons_twitter_png__WEBPACK_IMPORTED_MODULE_31__);
+/* harmony import */ var _images_icons_whatsapp_png__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./images/icons/whatsapp.png */ "./bitcaster/images/icons/whatsapp.png");
+/* harmony import */ var _images_icons_whatsapp_png__WEBPACK_IMPORTED_MODULE_32___default = /*#__PURE__*/__webpack_require__.n(_images_icons_whatsapp_png__WEBPACK_IMPORTED_MODULE_32__);
+/* harmony import */ var _images_icons_xmpp_png__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./images/icons/xmpp.png */ "./bitcaster/images/icons/xmpp.png");
+/* harmony import */ var _images_icons_xmpp_png__WEBPACK_IMPORTED_MODULE_33___default = /*#__PURE__*/__webpack_require__.n(_images_icons_xmpp_png__WEBPACK_IMPORTED_MODULE_33__);
+/* harmony import */ var _images_icons_yammer_png__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./images/icons/yammer.png */ "./bitcaster/images/icons/yammer.png");
+/* harmony import */ var _images_icons_yammer_png__WEBPACK_IMPORTED_MODULE_34___default = /*#__PURE__*/__webpack_require__.n(_images_icons_yammer_png__WEBPACK_IMPORTED_MODULE_34__);
+/* harmony import */ var _images_icons_viber_png__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./images/icons/viber.png */ "./bitcaster/images/icons/viber.png");
+/* harmony import */ var _images_icons_viber_png__WEBPACK_IMPORTED_MODULE_35___default = /*#__PURE__*/__webpack_require__.n(_images_icons_viber_png__WEBPACK_IMPORTED_MODULE_35__);
+/* harmony import */ var _images_icons_zulip_png__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./images/icons/zulip.png */ "./bitcaster/images/icons/zulip.png");
+/* harmony import */ var _images_icons_zulip_png__WEBPACK_IMPORTED_MODULE_36___default = /*#__PURE__*/__webpack_require__.n(_images_icons_zulip_png__WEBPACK_IMPORTED_MODULE_36__);
+
+
+
+
 
 
 

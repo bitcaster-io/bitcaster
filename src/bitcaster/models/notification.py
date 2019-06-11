@@ -62,6 +62,7 @@ class AttachmentField(EncryptedJSONField):
 
 
 class Notification(models.Model):
+    NEW = -1  # Just created not yet queued
     PENDING = 0  # Queued no sending happened
     RETRY = 20  # Sent failed retrying
     REMIND = 21  # Reminder scheduled
@@ -72,7 +73,8 @@ class Notification(models.Model):
     CONFIRMED = 101  # confirmation received / or single successful sent with no confirmations
     COMPLETE = 100  # confirmation received / or single successful sent with no confirmations
 
-    STATUSES = ((PENDING, _('pending')),  # Translators: Notification.STATUSES
+    STATUSES = ((NEW, _('new')),
+                (PENDING, _('pending')),  # Translators: Notification.STATUSES
                 (RETRY, _('retry')),  # Translators: Notification.STATUSES
                 (REMIND, _('remind')),  # Translators: Notification.STATUSES
                 (WAIT, _('waiting confirmation')),  # Translators: Notification.STATUSES
@@ -134,7 +136,8 @@ class Notification(models.Model):
                                   db_index=True,
                                   related_name='notifications',
                                   on_delete=models.CASCADE)
-    status = models.IntegerField(choices=STATUSES, default=PENDING, db_index=True)
+    status = models.IntegerField(choices=STATUSES,
+                                 default=NEW, db_index=True)
     retry_scheduled = models.BooleanField(default=False)
     next_sent = models.DateTimeField(blank=True, null=True)
 
