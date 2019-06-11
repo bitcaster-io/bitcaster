@@ -67,7 +67,7 @@ class Pop3Agent(Agent):  # pragma: no cover
         return pop3
 
     def get_usage(self):
-        return 'Simply set credentials and folder to check'
+        return 'Simply set credentials of POP3 mailbox'
 
     @cached_property
     def event(self):
@@ -135,7 +135,7 @@ class Pop3Agent(Agent):  # pragma: no cover
             raise Exception(''.join(result[1]))
 
     def apply_policy(self, conn, num):
-        pass
+        conn.dele(num)
 
     def get_matched_elements(self, connection=None):
         conn = connection or self._get_connection()
@@ -164,7 +164,7 @@ class Pop3Agent(Agent):  # pragma: no cover
                 if trigger and self.trigger(message):
                     ret += 1
                     self.apply_policy(conn, num)
-
+        conn.quit()
         log_monitor_poll(self.owner)
         return ret
 

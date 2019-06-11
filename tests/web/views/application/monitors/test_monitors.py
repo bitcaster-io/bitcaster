@@ -3,8 +3,7 @@ import os
 import pytest
 from django.urls import reverse
 
-from bitcaster.agents import EmailAgent
-from bitcaster.agents.handlers.email import EmailOptions
+from bitcaster.agents.handlers.imap import ImapAgent
 from bitcaster.utils.reflect import fqn
 
 pytestmark = pytest.mark.django_db
@@ -68,7 +67,7 @@ def test_monitor_create(django_app, application1, event1):
     owner = application1.organization.owner
     url = application1.urls.monitor_create
     res = django_app.get(url, user=owner.email)
-    res.form['a-handler'] = fqn(EmailAgent)
+    res.form['a-handler'] = fqn(ImapAgent)
     res = res.form.submit()
     assert res.status_code == 200, f"Submit failed with: {repr(res.context['form'].errors)}"
 
@@ -79,7 +78,7 @@ def test_monitor_create(django_app, application1, event1):
     res.form['server'] = os.environ['TEST_MONITOR_SERVER']
     res.form['port'] = os.environ['TEST_MONITOR_PORT']
     res.form['tls'] = os.environ['TEST_MONITOR_TLS']
-    res.form['policy'] = EmailOptions.READ
+    res.form['policy'] = ImapAgent.READ
     res.form['event'] = event1.pk
     res = res.form.submit()
     assert res.status_code == 302, f"Submit failed with: {repr(res.context['form'].errors)}"

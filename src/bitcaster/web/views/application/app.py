@@ -73,9 +73,9 @@ class ApplicationDeleteView(ApplicationViewMixin, BitcasterBaseDeleteView):
         return reverse('org-applications', args=[self.selected_organization.slug])
 
     def delete(self, request, *args, **kwargs):
+        ret = super().delete(request, *args, **kwargs)
         self.audit(self.object, AuditEvent.APPLICATION_DELETED)
         self.message_user(_('Application deleted'))
-        ret = super().delete(request, *args, **kwargs)
         return ret
 
 

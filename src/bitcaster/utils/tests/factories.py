@@ -15,7 +15,7 @@ from rest_framework.test import APIClient
 
 import bitcaster
 from bitcaster import models
-from bitcaster.agents import EmailAgent
+from bitcaster.agents import ImapAgent
 from bitcaster.dispatchers import Email
 from bitcaster.framework.db.fields import ORG_ROLES
 from bitcaster.models import DispatcherMetaData
@@ -342,7 +342,7 @@ class MonitorFactory(AutoRegisterModelFactory):
 
     name = factory.Sequence(lambda n: 'Monitor %03d' % n)
     application = factory.SubFactory(ApplicationFactory)
-    handler = factory.LazyAttribute(lambda a: fqn(EmailAgent))
+    handler = factory.LazyAttribute(lambda a: fqn(ImapAgent))
     enabled = True
 
     @classmethod
