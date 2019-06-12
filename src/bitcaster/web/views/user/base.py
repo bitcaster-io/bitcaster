@@ -7,11 +7,11 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from pytz import country_timezones
 
-from bitcaster import messages
 from bitcaster.models import User
 from bitcaster.models.audit import AuditEvent
 from bitcaster.utils.email_verification import set_request_new_email_address
 from bitcaster.utils.wsgi import get_client_ip
+from bitcaster.web import messages
 from bitcaster.web.forms import UserProfileForm, send_address_verification_email
 from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
 

@@ -15,10 +15,10 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import JsonLexer
 
-from bitcaster import messages
 from bitcaster.models import AgentMetaData, Channel, DispatcherMetaData, Monitor
 from bitcaster.utils.backup import backup_data
 from bitcaster.utils.reflect import fqn
+from bitcaster.web import messages
 from bitcaster.web.forms.system_settings import (SettingsEmailForm,
                                                  SettingsLdapForm,
                                                  SettingsMainForm,

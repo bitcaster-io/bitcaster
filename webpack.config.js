@@ -101,7 +101,7 @@ module.exports = [
     {
         entry: {
             bitcaster: [rel("bitcaster/bitcaster")],
-            vendor: [rel("bitcaster/vendor")],
+            // vendor: [rel("bitcaster/vendor")],
             theme: [rel("bitcaster/theme")],
             charts: [rel("bitcaster/charts")],
         }, // -entry
@@ -179,6 +179,10 @@ module.exports = [
             new CleanWebpackPlugin(outputDir),
             new webpack.LoaderOptionsPlugin({
                 minimize: true
+            }),
+            new webpack.ProvidePlugin({
+                $: 'jquery',
+                jQuery: 'jquery'
             }),
             // new webpack.ProvidePlugin({
             //     $: "jQuery",

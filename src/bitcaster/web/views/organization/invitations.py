@@ -16,11 +16,11 @@ from django.views.generic import CreateView
 from django.views.generic.edit import FormMixin, ProcessFormView
 from strategy_field.utils import fqn
 
-from bitcaster import messages
 from bitcaster.framework.db.fields import ORG_ROLES
 from bitcaster.models import (AuditLogEntry, Invitation, Organization,
                               OrganizationMember, User,)
 from bitcaster.otp import totp
+from bitcaster.web import messages
 from bitcaster.web.forms import (OrganizationInvitationForm,
                                  UserInviteRegistrationForm,)
 from bitcaster.web.views.base import BitcasterTemplateView

@@ -3,9 +3,9 @@ import logging
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from bitcaster import messages
 from bitcaster.exceptions import AddressNotVerified
 from bitcaster.models import Address, AuditEvent, AuditLogEntry, Subscription
+from bitcaster.web import messages
 from bitcaster.web.forms.user import UserSubscriptionEditForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,

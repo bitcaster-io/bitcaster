@@ -7,9 +7,9 @@ from formtools.wizard.forms import ManagementForm
 from formtools.wizard.views import SessionWizardView
 from strategy_field.utils import import_by_name
 
-from bitcaster import messages
 from bitcaster.attachments.registry import registry as retriever_registry
 from bitcaster.models import FileGetter
+from bitcaster.web import messages
 from bitcaster.web.forms import (FileGetterCreate1,
                                  FileGetterUpdateConfigurationForm,)
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,

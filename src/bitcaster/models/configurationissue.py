@@ -2,7 +2,7 @@
 # from django.db import models
 # from django.utils.safestring import mark_safe
 #
-# from bitcaster import messages
+# from bitcaster.web import messages
 # from bitcaster.models import (AbstractModel, Application,
 #                               ApplicationTriggerKey, Channel, Event,
 #                               Message, Organization, Subscription,)

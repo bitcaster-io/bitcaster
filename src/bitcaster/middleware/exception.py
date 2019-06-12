@@ -3,7 +3,7 @@ from django.urls import reverse
 from social_core.exceptions import AuthCanceled, AuthFailed
 
 from bitcaster.exceptions import NotMemberOfOrganization
-from bitcaster.messages import alarms
+from bitcaster.web.messages import alarms
 
 
 class ExceptionHandlerMiddleware:

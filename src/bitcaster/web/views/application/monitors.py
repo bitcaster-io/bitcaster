@@ -7,9 +7,9 @@ from formtools.wizard.forms import ManagementForm
 from formtools.wizard.views import SessionWizardView
 from strategy_field.utils import import_by_name
 
-from bitcaster import messages
 from bitcaster.agents.registry import agent_registry
 from bitcaster.models import Monitor
+from bitcaster.web import messages
 from bitcaster.web.forms import MonitorCreate1, MonitorUpdateConfigurationForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseDetailView,

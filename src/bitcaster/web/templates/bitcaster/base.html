@@ -6,6 +6,7 @@
 
     <title>Bitcaster: {{ title }}</title>
     <link rel="shortcut icon" type="image/png" href="{% asset "bitcaster/images/favicon.ico" %}"/>
+    <script src="{% asset "bitcaster/theme.js" %}"></script>
     <link rel="stylesheet" href="{% asset "bitcaster/theme.css" %}">
     {% block head %}{% endblock head %}
 </head>
@@ -142,7 +143,6 @@
 
 
 {% block js-base %}
-    <script src="{% asset "bitcaster/theme.js" %}"></script>
     <script src="{% asset "bitcaster/bitcaster.js" %}"></script>
     <script src="{% asset "bitcaster/js-cookie.js" %}"></script>
 {% endblock %}

@@ -5,8 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 from rest_framework.serializers import Serializer
 
-from bitcaster import messages
 from bitcaster.models import AuditEvent, Event, Message
+from bitcaster.web import messages
 from bitcaster.web.forms import EventForm
 from bitcaster.web.views.application.mixins import SelectedApplicationMixin
 from bitcaster.web.views.base import (
@@ -168,7 +168,7 @@ class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
 
 class EventDeveloperModeToggle(EventMixin, LogAuditMixin, EventFormMixin, MessageUserMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
-        return self.get_success_url()
+        return self.request.META.get('HTTP_REFERER', super().get_success_url())
 
     def get(self, request, *args, **kwargs):
         obj = self.selected_application.events.get(id=kwargs['pk'])

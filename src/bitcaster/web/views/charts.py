@@ -61,7 +61,7 @@ def notification_log(request, org, app=None):
 def get_buffers(request, org, name):
     # o = Organization.objects.get(slug=org)
     # data = buffers.get('%s:organization' % name)
-    data = stats.get_data(name)
+    data = stats.get_data('%s:%s' % (name, org))
     return JsonResponse({'value': int(data.decode('utf8'))})
 
 

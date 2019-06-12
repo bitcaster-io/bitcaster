@@ -76,14 +76,14 @@
 {% endblock page %}
 {% block js %}
     <script>
-        var tsUrls = ['{{ organization.urls.charts_occurence}}',
+        var tsUrls = ['{{ organization.urls.charts_occurence }}',
             '{{ organization.urls.charts_notification }}',
             '{{ organization.urls.charts_errors}}'];
         var csrftoken = $("[name=csrfmiddlewaretoken]").val();
 
         charts.setupMainChart('ts', tsUrls);
-        charts.setupOccurenceQueueChart('occurence', '/os4d/charts/buffers/occurence/');
-        charts.setupNotificationQueueChart('notification', '/os4d/charts/buffers/notification/');
+        charts.setupOccurenceQueueChart('occurence', '{% org-url "org-charts-buffers" "occurence:running" %}');
+        charts.setupNotificationQueueChart('notification', '{% org-url "org-charts-buffers" "notification:running" %}');
         $.ajaxSetup({
             beforeSend: function (xhr, settings) {
                 $('#message').html('');

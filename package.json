@@ -5,6 +5,9 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.3.1",
+    "bootstrap-datepicker": "^1.7.0",
+    "bootstrap-datepicker-webpack": "^1.7.0-dev",
+    "bootstrap-datetimepicker": "0.0.7",
     "chart.js": "^2.8.0",
     "font-awesome": "^4.7.0",
     "fontawesome": "^4.7.2",

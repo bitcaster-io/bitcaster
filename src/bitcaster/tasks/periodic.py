@@ -1,4 +1,5 @@
 import datetime
+import logging
 from datetime import timedelta
 
 from celery import chord
@@ -13,9 +14,12 @@ from bitcaster.models.audit import AuditLogEntry
 from bitcaster.models.error import ErrorEntry
 from bitcaster.models.notification import Notification
 from bitcaster.models.occurence import Occurence
+from bitcaster.models.organization import Organization
 from bitcaster.tsdb.api import stats
 
 cache_lock = caches['lock']
+
+logger = logging.getLogger(__name__)
 
 
 @periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
@@ -41,32 +45,44 @@ def clean_data():
     qs._raw_delete(qs.db)
 
 
-@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
-def set_occurences_status():
-    # updates expiraration on expired occurences
+def _stats(key, **filter):
     Occurence.objects.filter(expire__lt=timezone.now(),
-                             status=Occurence.RUNNING).update(status=Occurence.EXPIRED)
+                             status=Occurence.RUNNING,
+                             **filter).update(status=Occurence.EXPIRED)
 
     Notification.objects.filter(occurence__status=Occurence.EXPIRED,
-                                status__in=Notification.RUNNING).update(status=Notification.EXPIRED)
+                                status__in=Notification.RUNNING,
+                                **filter).update(status=Notification.EXPIRED)
 
     # terminate all occurences with no pending notifications
-    qs = Occurence.objects.filter(status__in=[Occurence.RUNNING]).exclude(
+    qs = Occurence.objects.filter(status__in=[Occurence.RUNNING],
+                                  **filter).exclude(
         notifications__status__in=Notification.RUNNING)
 
     qs.update(status=Occurence.TERMINATED)
 
     # updates queue counters
-    pending = Occurence.objects.exclude(status__in=Notification.NOT_RUNNING).count()
-    stats.set('occurence', pending)
+
+    pending = Occurence.objects.filter(status__in=Notification.RUNNING,
+                                       **filter).count()
+    stats.set('occurence:running:%s' % key, pending)
 
     pending = Notification.objects.filter(occurence__expire__gt=timezone.now(),
-                                          status__in=Notification.RUNNING).count()
-    stats.set('notification', pending)
+                                          status__in=Notification.RUNNING,
+                                          **filter).count()
+    stats.set('notification:running:%s' % key, pending)
 
     retry = Notification.objects.filter(occurence__expire__gt=timezone.now(),
-                                        status=Notification.RETRY).count()
-    stats.set('notification:retry', retry)
+                                        status=Notification.RETRY,
+                                        **filter).count()
+    stats.set('notification:retry:%s' % key, retry)
+
+
+@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
+def all_stats():
+    for org in Organization.objects.all():
+        logger.info('Calculating stats for %s' % org)
+        _stats(org.slug, organization=org)
 
 
 @periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
@@ -85,7 +101,7 @@ def consolidate():
 @periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
 def check_monitors():
     from .monitor import check_monitor, Monitor
-    for monitor in Monitor.objects.filter(enabled=True):
+    for monitor in Monitor.objects.scheduled():
         check_monitor.delay(monitor.pk)
 
 

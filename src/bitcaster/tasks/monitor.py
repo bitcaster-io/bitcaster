@@ -13,7 +13,7 @@ def check_monitor(monitor_pk):
     monitor = Monitor.objects.filter(enabled=True).get(pk=monitor_pk)
     logger.info('Checking monitor %s' % monitor)
     try:
-        return monitor.handler.poll()
+        return monitor.check_and_run()
     except Exception as e:
         logger.exception(e)
         from bitcaster.tsdb.api import log_monitor_error

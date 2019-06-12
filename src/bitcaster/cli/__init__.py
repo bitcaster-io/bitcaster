@@ -81,6 +81,8 @@ cli.add_command(import_by_name('bitcaster.cli.commands.run.run'))
 cli.add_command(import_by_name('bitcaster.cli.commands.changepassword.changepassword'))
 cli.add_command(import_by_name('bitcaster.cli.commands.locks.locks'))
 cli.add_command(import_by_name('bitcaster.cli.commands.tasks.tasks'))
+cli.add_command(import_by_name('bitcaster.cli.commands.lockdown.lockdown'))
+cli.add_command(import_by_name('bitcaster.cli.commands.monitor.monitor'))
 
 
 def main():  # pragma: no cover

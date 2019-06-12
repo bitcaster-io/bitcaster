@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from sentry_sdk import capture_exception
 
+from bitcaster import system
 from bitcaster.celery import app
 from bitcaster.exceptions import BatchError, LogicError
 from bitcaster.template.secure_context import SecureContext
@@ -215,9 +216,9 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
     return True
 
 
-@app.task(bind=True)
-def send_page(self, occurence_pk: int, channel_pk: int, page: list):
-    if cache_lock.get('STOP'):
+@app.task()
+def send_page(occurence_pk: int, channel_pk: int, page: list):
+    if system.stopped():
         return
     from bitcaster.models import Channel, Notification
     channel = Channel.objects.get(pk=channel_pk)
@@ -248,7 +249,7 @@ def send_page(self, occurence_pk: int, channel_pk: int, page: list):
                                  connection=conn)
             log_sent_notification(notification)
             done.append(notification_id)
-            if cache_lock.get('STOP'):
+            if system.stopped():
                 return done
         except Exception as e:
             capture_exception(e)

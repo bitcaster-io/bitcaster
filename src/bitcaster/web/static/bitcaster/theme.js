@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -20659,7 +20659,7 @@ Popper.Defaults = Defaults;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var require;var require;/*!
+/* WEBPACK VAR INJECTION */(function($) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var require;var require;/*!
  * Select2 4.0.6-rc.1
  * https://select2.github.io
  *
@@ -26489,6 +26489,7 @@ S2.define('jquery.select2',[
   return select2;
 }));
 
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "../../../../node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
@@ -29765,7 +29766,7 @@ window.Noty = __webpack_require__(/*! noty */ "../../../../node_modules/noty/lib
 
 /***/ }),
 
-/***/ 2:
+/***/ 1:
 /*!*******************************!*\
   !*** multi ./bitcaster/theme ***!
   \*******************************/

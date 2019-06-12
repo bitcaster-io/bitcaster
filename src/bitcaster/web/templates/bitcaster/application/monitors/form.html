@@ -9,6 +9,7 @@
                     <div class="card mb-2">
                         <div class="card-header text-capitalize">{% trans "monitor configuration" %}</div>
                         <div class="card-body">
+{#                            {{ form }}#}
                             {{ form|crispy }}
                         </div>
                     </div>
@@ -25,3 +26,8 @@
         </div>
     </div>
 {% endblock detail %}
+{% block js %}
+    {{ block.super }}
+    {{ form.media }}
+
+{% endblock js %}

@@ -8,7 +8,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 from django.views.generic.detail import SingleObjectMixin
 from strategy_field.utils import import_by_name
 
-from bitcaster import messages
+from bitcaster.web import messages
 from bitcaster.web.templatetags.bitcaster import verbose_name
 
 from .mixins import (BitcasterBaseViewMixin,

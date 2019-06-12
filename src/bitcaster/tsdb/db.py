@@ -91,14 +91,16 @@ class TimeSeries:
 
     def set(self, key, amount=1, execute=True):
         pipe = self.client.pipeline() if execute else self.chain
-        pipe.set('%s:counter' % key, amount)
+        pipe.set(key, amount)
 
         if execute:
             pipe.execute()
 
     def get_data(self, key):
-        k = '%s:counter' % key
-        ret = self.client.get(k)
+        # k = '%s:counter' % key
+        # TODO: remove me
+        print(111, 'db.py:102', 1111111, key)
+        ret = self.client.get(key)
         return ret or b'0'
 
     def increase(self, key, amount=1, timestamp=None, execute=True):

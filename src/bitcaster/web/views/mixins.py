@@ -7,7 +7,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from sentry_sdk import capture_exception, push_scope
 
-from bitcaster import messages
 from bitcaster.exceptions import FilteringError, PermissionDenied
 from bitcaster.models import Notification
 from bitcaster.models.audit import AuditLogEntry
@@ -15,6 +14,7 @@ from bitcaster.state import state
 from bitcaster.utils.filtering import FilterParser
 from bitcaster.utils.reflect import fqn
 from bitcaster.utils.wsgi import get_client_ip
+from bitcaster.web import messages
 from bitcaster.web.decorators import authorized_or_403
 from bitcaster.web.templatetags.bitcaster import (verbose_name,
                                                   verbose_name_plural,)

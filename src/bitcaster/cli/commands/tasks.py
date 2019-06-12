@@ -23,7 +23,7 @@ def list():
 
 @tasks.command()
 @click.argument('name', metavar='TASK')
-@click.argument('args', nargs=-1, required=False)
+@click.argument('args', nargs=1, required=False)
 @click.option('--sync', is_flag=True)
 @need_setup
 def run(name, args, sync):

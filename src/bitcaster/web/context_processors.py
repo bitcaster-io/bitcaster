@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 
 import bitcaster as app
 from bitcaster.config.environ import env
-from bitcaster.messages import DEFAULT_LEVELS
+from bitcaster.web.messages import DEFAULT_LEVELS
 
 
 class EnvWrapper:

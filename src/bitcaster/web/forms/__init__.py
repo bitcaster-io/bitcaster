@@ -9,7 +9,7 @@ from .file_getter import (FileGetterCreate1, FileGetterForm,
 from .invitations import OrganizationInvitationForm
 from .key import ApplicationTriggerKeyForm
 from .message import MessageForm
-from .monitor import MonitorCreate1, MonitorForm, MonitorUpdateConfigurationForm
+from .monitor import MonitorCreate1, MonitorUpdateConfigurationForm
 from .organization import OrganizationForm
 from .organizationgroup import OrganizationGroupForm
 from .organizationmember import OrganizationMemberForm

@@ -265,7 +265,7 @@ urlpatterns = [
     path('<slug:org>/<slug:app>/charts/error/', views.error_log, name='app-charts-errors'),
     path('<slug:org>/<slug:app>/charts/buffers/<str:name>/', views.get_buffers, name='app-charts-buffers'),
 
-    path('trigger/<str:task_fqn>/', views.trigger_task, name='org-charts-buffers'),
+    # path('trigger/<str:task_fqn>/', views.trigger_task, name='org-charts-buffers'),
 
     path('<slug:org>/applications/', views.OrganizationApplications.as_view(), name='org-applications'),
 

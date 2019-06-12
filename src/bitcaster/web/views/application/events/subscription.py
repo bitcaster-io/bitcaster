@@ -4,9 +4,9 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _, ungettext
 from django.views.generic import FormView
 
-from bitcaster import messages
 from bitcaster.framework.db.fields import ORG_ROLES
 from bitcaster.models import Event
+from bitcaster.web import messages
 from bitcaster.web.forms.subscription import (EventSubscriptionCreateForm,
                                               InviteFormSet,)
 from bitcaster.web.views.application.events.event import EventMixin

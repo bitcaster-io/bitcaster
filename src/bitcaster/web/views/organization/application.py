@@ -1,8 +1,8 @@
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from bitcaster import messages
 from bitcaster.models import Application
+from bitcaster.web import messages
 from bitcaster.web.forms import ApplicationCreateForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseListView,)

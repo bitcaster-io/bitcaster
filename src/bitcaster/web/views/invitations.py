@@ -16,10 +16,10 @@ from django.views.generic import CreateView, RedirectView
 from django.views.generic.detail import SingleObjectMixin
 from strategy_field.utils import fqn
 
-from bitcaster import messages
 from bitcaster.framework.db.fields import ORG_ROLES
 from bitcaster.models import Invitation, Organization, OrganizationMember, User
 from bitcaster.otp import totp
+from bitcaster.web import messages
 from bitcaster.web.forms import UserInviteRegistrationForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,

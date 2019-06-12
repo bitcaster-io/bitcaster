@@ -20,10 +20,7 @@ class NotificationManager(SmartManager):
             entry.save()
 
     def pending(self, **kwargs):
-        return self.filter(status__in=[Notification.PENDING,
-                                       Notification.RETRY,
-                                       Notification.REMIND],
-                           **kwargs)
+        return self.filter(status__in=Notification.RUNNING, **kwargs)
 
     def missed(self, **kwargs):
         return self.filter(status__in=[Notification.EXPIRED,
@@ -79,6 +76,7 @@ class Notification(models.Model):
                 (RETRY, _('retry')),  # Translators: Notification.STATUSES
                 (REMIND, _('remind')),  # Translators: Notification.STATUSES
                 (WAIT, _('waiting confirmation')),  # Translators: Notification.STATUSES
+
                 (WRONG_ADDRESS, _('address not confirmed')),  # Translators: Notification.STATUSES
                 (EXPIRED, _('expired')),  # Translators: Notification.STATUSES
                 (COMPLETE, _('completed')),  # Translators: Notification.STATUSES
@@ -96,7 +94,7 @@ class Notification(models.Model):
                         (MESSAGE_ARG, 'arguments'),  # Translators: Notification.MESSAGE_POLICIES
                         (MESSAGE_ALL, 'full message'))  # Translators: Notification.MESSAGE_POLICIES
 
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
     subscription = models.ForeignKey('bitcaster.Subscription',
                                      null=True,
                                      related_name='+',
@@ -138,7 +136,8 @@ class Notification(models.Model):
                                   related_name='notifications',
                                   on_delete=models.CASCADE)
     status = models.IntegerField(choices=STATUSES,
-                                 default=NEW, db_index=True)
+                                 default=NEW,
+                                 db_index=True)
     retry_scheduled = models.BooleanField(default=False)
     next_sent = models.DateTimeField(blank=True, null=True)
 

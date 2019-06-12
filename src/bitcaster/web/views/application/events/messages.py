@@ -6,8 +6,8 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
-from bitcaster import messages
 from bitcaster.models import Event, Message
+from bitcaster.web import messages
 from bitcaster.web.forms import MessageForm
 from bitcaster.web.views.base import (BitcasterBaseCreateView,
                                       BitcasterBaseDeleteView,

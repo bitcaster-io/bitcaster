@@ -48,6 +48,7 @@ class Occurence(models.Model):
                               on_delete=models.CASCADE)
     expire = models.DateTimeField(blank=True, null=True)
     status = models.IntegerField(choices=STATUSES,
+                                 db_index=True,
                                  default=RUNNING)
 
     origin = models.GenericIPAddressField(blank=True, null=True)

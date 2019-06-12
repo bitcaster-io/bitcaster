@@ -19,8 +19,9 @@ def get_data(key, granularity):
 
 
 def log_new_occurence(occurence, *args, **kwargs):
-    stats.increase('occurence')
-    stats.add('occurence')
+    key = 'occurence:%s:%s' % (occurence.organization_id, occurence.application_id)
+    stats.increase(key)
+    stats.add(key)
 
 
 def log_occurence_error(event, *args, **kwargs):
