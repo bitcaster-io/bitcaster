@@ -7,6 +7,7 @@ from strategy_field.fields import MultipleStrategyField
 
 from bitcaster.dispatchers import dispatcher_registry
 from bitcaster.models.mixins import ReversionMixin
+from bitcaster.utils.reflect import fqn
 from bitcaster.utils.strings import random_string
 
 from .channel import Channel
@@ -17,9 +18,9 @@ logger = logging.getLogger(__name__)
 class AssignmentQuerySet(models.QuerySet):
     def get_address(self, klass):
         try:
-            return self.filter(address__verified=True).get(channel__handler=klass).address
+            return self.filter(address__verified=True).get(channel__handler=fqn(klass)).address
         except Exception:
-            raise Address.DoesNotExist('Cannot find valid any address for %s' % klass)
+            raise Address.DoesNotExist('Cannot find valid any address for %s' % fqn(klass))
 
 
 class Address(ReversionMixin, models.Model):

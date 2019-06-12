@@ -36,9 +36,9 @@ class ChannelCreateWizard(LogAuditMixin, MessageUserMixin, SessionWizardView):
                  ('b', ChannelUpdateConfigurationForm),
                  # todo: add summary screen
                  ]
-    TEMPLATES = {'a': 'bitcaster/settings/channel_wizard1.html',
-                 'b': 'bitcaster/settings/channel_wizard2.html',
-                 }
+    # TEMPLATES = {'a': 'bitcaster/settings/channel_wizard1.html',
+    #              'b': 'bitcaster/settings/channel_wizard2.html',
+    #              }
 
     # title = _('Create Channel')
     # success_url = reverse_lazy('settings-channels')

@@ -102,7 +102,7 @@ class Pop3Agent(Agent):  # pragma: no cover
 
         return True
 
-    def trigger(self, payload=None):
+    def trigger(self, payload: Pop3Message = None):
         from bitcaster.models.occurence import Occurence
         from bitcaster.tsdb.api import log_new_occurence, log_monitor_trigger, log_monitor_error
         from bitcaster.tasks.event import trigger_event
@@ -115,12 +115,17 @@ class Pop3Agent(Agent):  # pragma: no cover
             return
 
         logger.info(f"Monitor {self.name} trigger event '{self.event}'")
-        occurence = Occurence.log(event=self.event)
+        occurence = Occurence.log(event=self.event,
+                                  context={
+                                      # 'message1': payload.as_dict(),
+                                      'message2': str(payload),
+                                      'monitor': str(self.owner)
+                                  })
         log_monitor_trigger(self.owner)
         log_new_occurence(occurence)
         try:
             trigger_event.delay(occurence.pk,
-                                {'message': payload.text.decode(),
+                                {'message': payload.text,
                                  'subject': payload.subject,
                                  'sender': payload.sender,
                                  'recipient': payload.recipient,
@@ -135,13 +140,13 @@ class Pop3Agent(Agent):  # pragma: no cover
             raise Exception(''.join(result[1]))
 
     def apply_policy(self, conn, num):
-        conn.dele(num)
+        pass
+        # conn.dele(num)
 
     def get_matched_elements(self, connection=None):
         conn = connection or self._get_connection()
         resp, mails, octets = conn.list()
         numMessages = len(mails)
-
         ret = []
         for i in range(numMessages):
             mail = conn.retr(i + 1)
@@ -162,8 +167,8 @@ class Pop3Agent(Agent):  # pragma: no cover
             message = Pop3Message(mail)
             if self.filter(message):
                 if trigger and self.trigger(message):
-                    ret += 1
-                    self.apply_policy(conn, num)
+                    ret.append(str(num))
+                    self.apply_policy(conn, num + 1)
         conn.quit()
         log_monitor_poll(self.owner)
         return ret

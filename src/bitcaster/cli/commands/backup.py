@@ -6,7 +6,7 @@ from bitcaster.utils.backup import SECTIONS
 
 @click.command()
 @click.option('-f', '--filename', default='bitcaster.json', type=click.Path())
-@click.option('-o', '--overwrite', is_flag=True, default=False, type=click.Path())
+@click.option('-o', '--overwrite', is_flag=True, default=False)
 @click.pass_context
 @need_setup
 def backup(ctx, filename, overwrite):

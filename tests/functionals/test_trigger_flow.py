@@ -11,7 +11,7 @@ from bitcaster.utils.tests.factories import ApplicationTriggerKeyFactory
 @pytest.mark.django_db
 def test_event_trigger_flow(subscription1):
     DispatcherMetaData.objects.inspect()
-    assert DispatcherMetaData.objects.all().exists()
+    assert DispatcherMetaData.objects.enable_valid()
     assert DispatcherMetaData.objects.get(fqn=fqn(subscription1.channel.handler),
                                           enabled=True)
     event1 = subscription1.event

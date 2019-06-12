@@ -59,6 +59,7 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
                 batch_sections.append(send_page.s(create_notifications_for_channel(occurence.pk,
                                                                                    channel.pk, context)))
             else:
+                occurence.start()
                 create_notifications_for_channel.apply_async(args=[occurence.pk,
                                                                    channel.pk,
                                                                    context])
@@ -73,6 +74,7 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
     return True
 
 
+@app.task()
 def occurence_start(occurence_id):
     from bitcaster.models import Occurence, Event
     occurence = Occurence.objects.get(pk=occurence_id)
@@ -173,6 +175,7 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
                                        'max_reminders': event.reminders,
                                        'development_mode': event.development_mode,
                                        'reminders': 0,
+                                       'status': occurence.status,
                                        'attachments': attachments,
                                        'subscription_id': subscription.pk,
                                        'address': address,
@@ -189,7 +192,9 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
                     page = []
             except Address.DoesNotExist as e:
                 logger.exception(e)
-                log_error_event(event, 'Address not validated', target=subscription)
+                log_error_event(event,
+                                'Address not validated: %(target)s',
+                                target=subscription)
                 process_exception(e)
             except Exception as e:
                 logger.exception(e)

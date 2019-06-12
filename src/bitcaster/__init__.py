@@ -16,11 +16,11 @@ def get_full_version(git_commit=True):
         try:
             res = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'],
                                           stderr=None)
-            commit = '-' + res.decode('utf8')[:-1]
+            commit = ' -' + res.decode('utf8')[:-1]
         except (subprocess.CalledProcessError, FileNotFoundError):  # pragma: no-cover
             pass
 
-    return f'{VERSION} {commit} '
+    return f'{VERSION}{commit}'
 
 
 @lru_cache(1)

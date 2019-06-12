@@ -12,11 +12,16 @@ logger = logging.getLogger(__name__)
 class AddressAdmin(admin.ModelAdmin):
     search_fields = ('label', 'address')
     list_display = ('user', 'label', 'address', 'verified')
-    list_filter = ('verified', )
+    list_filter = ('verified',)
 
 
 @admin.register(AddressAssignment, site=site)
 class AddressAssignmentAdmin(admin.ModelAdmin):
     search_fields = ('user__email',)
-    list_display = ('user', 'address', 'channel')
+    list_display = ('user', 'address', 'channel', 'verified')
     list_filter = ('channel',)
+
+    def verified(self, obj):
+        return obj.address.verified
+
+    verified.boolean = True

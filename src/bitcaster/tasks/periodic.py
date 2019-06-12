@@ -82,8 +82,8 @@ def consolidate():
     ErrorEntry.objects.consolidate()
 
 
-@periodic_task(bind=True, run_every=timedelta(minutes=1), options={'expires': 60})
-def check_monitors(self):
+@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
+def check_monitors():
     from .monitor import check_monitor, Monitor
     for monitor in Monitor.objects.filter(enabled=True):
         check_monitor.delay(monitor.pk)
@@ -100,10 +100,8 @@ def batch_start(self, result, occurence_pk, *args, **kwargs):
 def process_notifications():
     from bitcaster.models import Occurence, Notification
     from .event import send_page
-
     if cache_lock.get('STOP'):
         return
-
     for occurence in Occurence.objects.active():
         chord_pages = []
         # lock = cache_lock.lock('occurence:%s' % occurence.pk)

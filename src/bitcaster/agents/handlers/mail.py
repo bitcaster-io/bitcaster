@@ -1,3 +1,4 @@
+import json
 import re
 from email import message_from_bytes
 
@@ -14,6 +15,24 @@ def parse_uid(data):
 class ImapMessage:
     def __init__(self, email):
         self.raw_email = email
+
+    def __str__(self):
+        return str(json.dumps({
+            'id': self.id,
+            'subject': self.subject,
+            'recipient': self.recipient,
+            'sender': self.sender,
+            'text': self.text,
+        }))
+
+    # def as_dict(self):
+    #     return {
+    #         'id': self.id,
+    #         # 'subject': self.subject.encode(),
+    #         # 'recipient': self.recipient.encode(),
+    #         # 'sender': self.sender.encode(),
+    #         # 'text': self.text,
+    #     }
 
     @cached_property
     def email_message(self):

@@ -31,8 +31,14 @@ jobs:
           command: |
             export PATH=/home/circleci/.local/bin:$PATH
             export PYTHONHASHSEED=${RANDOM}
-            pip install tox==3.7.0 --user
-            tox -re d21-py36
+            pip install pipenv
+            pipenv install --verbose --system --deploy --ignore-pipfile
+            pipenv run pytest tests \
+                        --create-db \
+                        --cov-report=term \
+                        --cov-report=html \
+                        --cov-config=tests/.coveragerc \
+                        --cov=bitcaster
 
       - store_artifacts:
           path: ~build/coverage

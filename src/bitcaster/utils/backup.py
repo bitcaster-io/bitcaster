@@ -184,12 +184,6 @@ def restore_data(filename, echo, zap=False, overwrite=True, ignore_errors=False,
     if reindex:
         reindex_db()
 
-    from bitcaster.models import AgentMetaData
-    from bitcaster.models import DispatcherMetaData
-
-    AgentMetaData.objects.inspect()
-    DispatcherMetaData.objects.inspect()
-
 
 def reindex_db():
     from django.conf import settings

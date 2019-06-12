@@ -13,14 +13,14 @@ cache_lock = caches['lock']
 class OccurenceManager(models.Manager):
     def active(self):
         return Occurence.objects.filter(expire__gt=timezone.now(),
-                                        status=Occurence.NEW)
+                                        status__in=[Occurence.RUNNING, Occurence.READY])
 
     def inactive(self):
         return Occurence.objects.filter(expire__lt=timezone.now())
 
 
 class Occurence(models.Model):
-    NEW = -1
+    NEW = -2
     READY = -1
     RUNNING = 0
     ABORTED = 1

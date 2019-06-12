@@ -55,7 +55,8 @@ def log_confirmation_notification(subscription, count, *args, **kwargs):
 
 
 def log_error_event(event, message='Error', *args, **kwargs):
-    ErrorEntry.objects.create(message=message % dict(event=event),
+    ErrorEntry.objects.create(message=message % dict(event=event,
+                                                     **kwargs),
                               application=None,
                               actor=event,
                               **kwargs).consolidate()

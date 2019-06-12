@@ -35,11 +35,11 @@ logger = logging.getLogger(__name__)
 class OrgInviteMixin(OrganizationBaseView):
     model = Invitation
 
-    # def get_success_url(self):
-    #     return self.selected_organization.urls.members
-    #
-    # def get_queryset(self):
-    #     return self.selected_organization.invitations
+    def get_success_url(self):
+        return self.selected_organization.urls.members
+
+    def get_queryset(self):
+        return self.selected_organization.invitations
 
 
 class OrganizationMemberInvite(OrganizationBaseView, LogAuditMixin,

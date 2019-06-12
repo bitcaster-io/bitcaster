@@ -1,6 +1,5 @@
 import logging
 
-from django.core.cache import cache
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic import RedirectView
@@ -44,26 +43,11 @@ class ApplicationDashboard(ApplicationViewMixin, BitcasterBaseDetailView):
         return self.object.name
 
     def get_context_data(self, **kwargs):
-        app = self.get_object()
-        org = app.organization
-        cache_key = f'org:app:dashboard:{app.pk}'
-        org_data = cache.get(cache_key, version=app.version)
-        if not org_data:
-            org_data = {'active_users': org.members.count(),
-                        'pending_users': org.invitations.count(),
-                        'enabled_channels': app.channels.filter(enabled=True).count(),
-                        'disabled_channels': app.channels.filter(enabled=False).count(),
-                        'enabled_events': app.events.filter(enabled=True).count(),
-                        'disabled_events': app.events.filter(enabled=False).count(),
-                        'enabled_keys': app.keys.filter(enabled=True).count(),
-                        'disabled_keys': app.keys.filter(enabled=False).count(),
-                        'access_all_events_keys': app.keys.filter(all_events=True).count(),
-                        }
-            # org_data['box_channels'] = app.issues.get_tag_for('channels')
-            # org_data['box_events'] = app.issues.get_tag_for('events')
-            # org_data['box_keys'] = app.issues.get_tag_for('keys')
-            cache.set(cache_key, org_data)
-        kwargs['data'] = org_data
+        # app = self.get_object()
+        # org = app.organization
+        # cache_key = f'org:app:dashboard:{app.pk}'
+        kwargs['occurences'] = self.selected_application.occurences.active()
+
         return super().get_context_data(**kwargs)
 
 

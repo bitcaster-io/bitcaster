@@ -259,6 +259,12 @@ urlpatterns = [
     path('<slug:org>/charts/error/', views.error_log, name='org-charts-errors'),
     path('<slug:org>/charts/buffers/<str:name>/', views.get_buffers, name='org-charts-buffers'),
 
+    path('<slug:org>/<slug:app>/charts/audit/', views.audit_log, name='app-charts-audit'),
+    path('<slug:org>/<slug:app>/charts/notification/', views.notification_log, name='app-charts-notification'),
+    path('<slug:org>/<slug:app>/charts/occurence/', views.occurence_log, name='app-charts-occurence'),
+    path('<slug:org>/<slug:app>/charts/error/', views.error_log, name='app-charts-errors'),
+    path('<slug:org>/<slug:app>/charts/buffers/<str:name>/', views.get_buffers, name='app-charts-buffers'),
+
     path('trigger/<str:task_fqn>/', views.trigger_task, name='org-charts-buffers'),
 
     path('<slug:org>/applications/', views.OrganizationApplications.as_view(), name='org-applications'),

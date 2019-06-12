@@ -29,7 +29,7 @@ def audit_log(request, org):
 
 @cache_page(HOUR)
 @login_required
-def error_log(request, org):
+def error_log(request, org, app=None):
     data = []
     # o = Organization.objects.get(slug=org)
     # data = stats.error.get_data(o.pk, target='organization', granularity='h')
@@ -37,9 +37,8 @@ def error_log(request, org):
                               y=e[1]) for e in data], safe=False)
 
 
-# @login_required
-# @cache_page(HOUR)
-def occurence_log(request, org):
+@login_required
+def occurence_log(request, org, app=None):
     # o = Organization.objects.get(slug=org)
     # data = o.stats.get_data(metric='org:%s' % org, granularity='h')
     # data = Occurence.stats.get_data(metric='org:%s' % org, granularity='h')
@@ -49,9 +48,8 @@ def occurence_log(request, org):
                               y=e[1]) for e in data], safe=False)
 
 
-# @login_required
-# @cache_page(HOUR)
-def notification_log(request, org):
+@login_required
+def notification_log(request, org, app=None):
     # o = Organization.objects.get(slug=org)
     # data = stats.notification.get_data(o.pk, target='organization', granularity='h')
     data = get_data('notification', 'h')
@@ -59,8 +57,7 @@ def notification_log(request, org):
                               y=e[1]) for e in data], safe=False)
 
 
-# @login_required
-# @cache_page(HOUR)
+@login_required
 def get_buffers(request, org, name):
     # o = Organization.objects.get(slug=org)
     # data = buffers.get('%s:organization' % name)
