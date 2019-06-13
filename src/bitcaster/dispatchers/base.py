@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 from sentry_sdk import capture_exception
 
 from bitcaster import get_full_version
-from bitcaster.configurable import ConfigurableMixin, get_full_config
+from bitcaster.configurable import (ConfigurableMixin,
+                                    ConfigurableOptionsForm, get_full_config,)
 from bitcaster.exceptions import PluginValidationError
 
 from . import serializers
@@ -27,7 +28,7 @@ class SubscriptionOptions(serializers.Serializer):
     recipient = serializers.CharField()
 
 
-class DispatcherOptions(serializers.Serializer):
+class DispatcherOptions(ConfigurableOptionsForm):
     pass
 
 

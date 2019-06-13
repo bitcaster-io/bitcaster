@@ -38,8 +38,8 @@ class EventForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)
         super().__init__(*args, **kwargs)
-        enabled_dispatcher = DispatcherMetaData.objects.filter(enabled=True).values_list('handler',
-                                                                                         flat=True)
+        enabled_dispatcher = DispatcherMetaData.objects.enabled().values_list('handler',
+                                                                              flat=True)
         self.fields['channels'].queryset = Channel.objects.selectable(self.application,
                                                                       handler__in=enabled_dispatcher)
 

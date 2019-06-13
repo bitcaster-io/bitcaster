@@ -6,15 +6,15 @@ from strategy_field.utils import get_attr
 
 from bitcaster import get_full_version
 from bitcaster.api.fields import EventField
-from bitcaster.configurable import ConfigurableMixin, get_full_config
-from bitcaster.framework.drf.serializer import Configuration
+from bitcaster.configurable import (ConfigurableMixin,
+                                    ConfigurableOptionsForm, get_full_config,)
 from bitcaster.utils.language import classproperty
 from bitcaster.utils.reflect import fqn
 
 logger = logging.getLogger(__name__)
 
 
-class AgentOptions(Configuration):
+class AgentOptions(ConfigurableOptionsForm):
     event = EventField(choices=())
 
     def __init__(self, instance=None, data=empty, **kwargs):

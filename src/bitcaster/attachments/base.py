@@ -9,7 +9,7 @@ from rest_framework.fields import empty
 from slugify import slugify
 
 from bitcaster import get_full_version
-from bitcaster.configurable import ConfigurableMixin
+from bitcaster.configurable import ConfigurableMixin, ConfigurableOptionsForm
 from bitcaster.utils.language import get_attr
 
 environment.DEFAULT_FILTERS['md5'] = lambda s: md5(s.encode('utf-8'))
@@ -62,7 +62,7 @@ class Attachment:
         return self.content.read()
 
 
-class RetrieverOptions(serializers.Serializer):
+class RetrieverOptions(ConfigurableOptionsForm):
     PARSER_PLAIN = 0
     PARSER_BASIC = 1
     PARSER_EXTENDED = 2

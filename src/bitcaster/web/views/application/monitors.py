@@ -1,5 +1,6 @@
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 from django.views.generic.detail import SingleObjectMixin
@@ -109,7 +110,8 @@ class ApplicationMonitorCreate(MonitorMixin, TitleMixin, MessageUserMixin, Sessi
     def get_form_initial(self, step):
         handler = self.storage.extra_data.get('handler', None)
         if step == 'b' and handler:
-            return {'name': '%sMonitor' % handler.name}
+            return {'name': '%sMonitor' % handler.name,
+                    'start_date': timezone.now()}
         return super().get_form_initial(step)
 
     def process_step(self, form):

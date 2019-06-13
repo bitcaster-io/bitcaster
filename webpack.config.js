@@ -4,6 +4,7 @@ const path = require("path");
 // const fs = require("fs");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 const rel = path.resolve.bind(null, __dirname + "/src/bitcaster/web/assets/");
 const outputDir = path.resolve.bind(null, __dirname + "/src/bitcaster/web/static/bitcaster/")();
@@ -48,6 +49,17 @@ const loaders = {
         }
     }
 };
+const optimization = {
+    minimizer: [
+        new UglifyJSPlugin({
+            uglifyOptions: {
+                compress: {
+                    drop_console: true,
+                }
+            }
+        })
+    ]
+};
 
 module.exports = [
     {
@@ -68,6 +80,7 @@ module.exports = [
             library: "pwds",
             sourceMapFilename: "[name].js.map",
         },
+        optimization:optimization
     },
     {
         entry: "select2",
@@ -135,8 +148,8 @@ module.exports = [
                     }],
                 },
                 {
-                    test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
-                    exclude: /(node_modules)/,
+                    test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9#]+)?$/,
+                    // exclude: /(node_modules)/,
                     use: [{
                         loader: "file-loader",
                         options: {

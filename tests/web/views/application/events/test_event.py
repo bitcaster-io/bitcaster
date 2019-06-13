@@ -1,7 +1,8 @@
 import pytest
 from django.urls import reverse
 
-from bitcaster.models import DispatcherMetaData
+from bitcaster.models import Channel, DispatcherMetaData
+from bitcaster.utils.reflect import fqn
 from bitcaster.utils.tests.factories import EventFactory, MessageFactory
 
 pytestmark = pytest.mark.django_db
@@ -115,8 +116,11 @@ def test_event_test(django_app, event1, user1):
     assert b'Warning new key has been created' not in res.body
 
 
-def test_event_update(django_app, event1, user1):
-    DispatcherMetaData.objects.inspect()
+def test_event_update(django_app, event1, user1, monkeypatch):
+    monkeypatch.setattr('%s.objects.enabled' % fqn(DispatcherMetaData),
+                        lambda: DispatcherMetaData.objects.all())
+    monkeypatch.setattr('%s.objects.selectable' % fqn(Channel),
+                        lambda *a, **k: Channel.objects.all())
 
     application = event1.application
     organization = application.organization
@@ -141,8 +145,10 @@ def test_event_delete(django_app, event1, user1):
     assert not application.events.filter(pk=event1.pk).exists()
 
 
-def test_event_create(django_app, channel1, user1):
-    DispatcherMetaData.objects.all().update(enabled=True)
+def test_event_create(django_app, channel1, user1, monkeypatch):
+    monkeypatch.setattr('%s.objects.selectable' % fqn(Channel),
+                        lambda *a, **k: Channel.objects.all())
+
     application = channel1.application
     organization = application.organization
     url = reverse('app-event-create', args=[organization.slug,

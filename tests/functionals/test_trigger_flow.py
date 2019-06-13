@@ -9,11 +9,15 @@ from bitcaster.utils.tests.factories import ApplicationTriggerKeyFactory
 
 
 @pytest.mark.django_db
-def test_event_trigger_flow(subscription1):
-    DispatcherMetaData.objects.inspect()
-    assert DispatcherMetaData.objects.enable_valid()
-    assert DispatcherMetaData.objects.get(fqn=fqn(subscription1.channel.handler),
-                                          enabled=True)
+def test_event_trigger_flow(subscription1, monkeypatch):
+    monkeypatch.setattr('%s.objects.is_enabled' % fqn(DispatcherMetaData),
+                        lambda handler: True)
+
+    monkeypatch.setattr('bitcaster.system.stopped', lambda: False)
+
+    # DispatcherMetaData.objects.inspect()
+    # DispatcherMetaData.objects.enable_valid()
+
     event1 = subscription1.event
     endpoint = reverse('api:application-event-trigger', args=[event1.application.organization.pk,
                                                          event1.application.pk,

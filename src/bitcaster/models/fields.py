@@ -1,5 +1,5 @@
 from django import forms
-from django.core.validators import RegexValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
 from bitcaster.utils.ttl import parse_ttl
@@ -17,14 +17,27 @@ class TTLFormField(forms.CharField):
         return parse_ttl(value)
 
 
+DURATION = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}
+IDURATION = {v: k for k, v in DURATION.items()}
+
+
+class MinRateValidator(MinValueValidator):
+    def get_rate_value(self, rate):
+        num, period = rate.split('/')
+        num_requests = int(num)
+        return num_requests * DURATION[period[0]]
+
+    def compare(self, a, b):
+        return self.get_rate_value(a) < self.get_rate_value(b)
+
+
 class ThrottleField(models.CharField):
     default_validators = [RegexValidator(r'(\d+)/(s|m|h|d|second|minute|hour|day)',
                                          message='Insert value in the form <num>/[second,minute,hour,day]')]
-    DURATION = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}
-    IDURATION = {v: k for k, v in DURATION.items()}
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('max_length', 10)
+        self.min_value = kwargs.pop('min_value', '1/s')
         super().__init__(*args, **kwargs)
 
     def to_python(self, value):
@@ -37,7 +50,7 @@ class ThrottleField(models.CharField):
 
     def get_prep_value(self, value):
         value = super().get_prep_value(value)
-        return '%s/%s' % (value[0], self.IDURATION[value[1]])
+        return '%s/%s' % (value[0], IDURATION[value[1]])
 
     def parse_rate(self, rate):
         """
@@ -48,7 +61,7 @@ class ThrottleField(models.CharField):
             return (None, None)
         num, period = rate.split('/')
         num_requests = int(num)
-        return (num_requests, self.DURATION[period[0]])
+        return (num_requests, DURATION[period[0]])
 
 
 class TTLDBField(models.IntegerField):

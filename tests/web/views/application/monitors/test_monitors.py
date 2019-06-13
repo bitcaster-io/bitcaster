@@ -78,7 +78,7 @@ def test_monitor_create(django_app, application1, event1):
     res.form['server'] = os.environ['TEST_MONITOR_SERVER']
     res.form['port'] = os.environ['TEST_MONITOR_PORT']
     res.form['tls'] = os.environ['TEST_MONITOR_TLS']
-    res.form['policy'] = ImapAgent.READ
+    res.form['policy'] = ImapAgent.options_class.READ
     res.form['event'] = event1.pk
     res = res.form.submit()
     assert res.status_code == 302, f"Submit failed with: {repr(res.context['form'].errors)}"

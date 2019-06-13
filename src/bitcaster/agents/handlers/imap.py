@@ -28,10 +28,17 @@ class EmailAbstractOptions(AgentOptions):
 
                                      required=False)
     password = PasswordField(allow_blank=True, required=False)
+
     folder = serializers.CharField(initial='inbox')
     unseen = serializers.BooleanField(required=False,
                                       default=False,
                                       help_text='Only check unread email')
+    body_regex = RegexField(allow_blank=True, required=False,
+                            help_text='message body regular expression')
+    subject_regex = RegexField(allow_blank=True, required=False)
+    sender_regex = RegexField(allow_blank=True, required=False)
+    to_regex = RegexField(allow_blank=True, required=False)
+
     policy = serializers.ChoiceField(((MOVE, _('Move processed')),
                                       (DELETE, _('Delete processed')),
                                       (READ, _('Mark as read')),
@@ -39,12 +46,6 @@ class EmailAbstractOptions(AgentOptions):
                                      default=READ)
 
     processed_folder = serializers.CharField(default='processed')
-
-    body_regex = RegexField(allow_blank=True, required=False,
-                            help_text='message body regular expression')
-    subject_regex = RegexField(allow_blank=True, required=False)
-    sender_regex = RegexField(allow_blank=True, required=False)
-    to_regex = RegexField(allow_blank=True, required=False)
 
     def get_agent(self):
         raise NotImplementedError
@@ -80,6 +81,11 @@ class EmailOptions(EmailAbstractOptions):
     server = serializers.CharField()
     port = serializers.IntegerField()
     tls = serializers.BooleanField(default=False)
+    fieldset_defs = (('Server', ('server', 'port', 'tls', 'username', 'password')),
+                     ('Event', ('event',)),
+                     ('Filtering', ('folder', 'unseen', 'subject_regex', 'sender_regex', 'to_regex')),
+                     ('Policy', ('policy', 'processed_folder')),
+                     )
 
     def get_agent(self):
         return ImapAgent

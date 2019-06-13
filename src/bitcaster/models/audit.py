@@ -7,6 +7,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from bitcaster.tasks.model import async
+
 xCREATE = 1
 xUPDATE = 2
 xDELETE = 3
@@ -65,6 +67,13 @@ class AuditEvent(IntEnum):
     EVENT_DEV_MODE_ON = 906
     EVENT_DEV_MODE_OFF = 907
 
+    MONITOR_CREATED = 1001
+    MONITOR_UPDATED = 1002
+    MONITOR_DELETED = 1003
+    MONITOR_ENABLED = 1004
+    MONITOR_DISABLED = 1005
+    MONITOR_TERMINATED = 1006
+
 
 _CREATED = _('%(actor)s has created %(content_type)s %(target)s')
 _UPDATED = _('%(actor)s has updated %(content_type)s %(target)s')
@@ -110,7 +119,20 @@ MESSAGES = {
     AuditEvent.CHANNEL_DELETED: _DELETED,
     AuditEvent.CHANNEL_DEPRECATED: _DEPRECATED,
 
+    AuditEvent.MONITOR_CREATED: _CREATED,
+    AuditEvent.MONITOR_DISABLED: _DISABLED,
+    AuditEvent.MONITOR_ENABLED: _ENABLED,
+    AuditEvent.MONITOR_UPDATED: _UPDATED,
+    AuditEvent.MONITOR_DELETED: _DELETED,
+    AuditEvent.MONITOR_TERMINATED: _('%(actor)s reach max number of allowed events'),
+
 }
+
+
+class AuditLogEntryyManager(models.Manager):
+    def consolidate(self):
+        for e in self.filter(organization__isnull=True):
+            e.consolidate(async=False)
 
 
 class AuditLogEntry(models.Model):
@@ -144,6 +166,8 @@ class AuditLogEntry(models.Model):
     data = JSONField(blank=True, null=True)
     timestamp = models.DateTimeField(default=timezone.now)
 
+    objects = AuditLogEntryyManager()
+
     def __str__(self):
         if self.event in MESSAGES:
             return MESSAGES[self.event] % dict(actor=self.actor.email,
@@ -163,15 +187,28 @@ class AuditLogEntry(models.Model):
         ordering = ('timestamp',)
         app_label = 'bitcaster'
 
+    @async(quque='consolidate')
+    def consolidate(self):
+        if hasattr(self.actor, 'application'):
+            self.application = self.actor.application
+        elif hasattr(self.actor, 'event'):
+            self.application = self.actor.event.application
+
+        if self.application:
+            self.organization = self.application.organization
+
+        self.actor_label = str(self.actor)
+        self.target_label = str(self.target)
+        self.save()
+
+    @classmethod
+    def log(self, event: int, actor: models.Model, **kwargs):
+        AuditLogEntry.objects.create(event=event,
+                                     actor=actor, **kwargs)
+
     def get_message(self):
         # msg = self.AuditEvent.get_by_value(self.event)
         return str(self)
-
-    def save(self, *args, **kwargs):
-        # if not self.actor_label:
-        #     if self.actor:
-        #         self.actor_label = self.actor.display_name
-        super(AuditLogEntry, self).save(*args, **kwargs)
 
     def get_actor_name(self):
         if self.actor:

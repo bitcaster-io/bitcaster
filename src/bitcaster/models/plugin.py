@@ -15,6 +15,9 @@ class PluginManager(SmartManager):
             self.update_or_create(fqn=fqn(handler), defaults={'enabled': True})
         return self.all()
 
+    def enabled(self):
+        return self.filter(enabled=True)
+
     def inspect(self):
         registry = self.model._meta.get_field('handler').registry
         for handler in registry:
@@ -52,6 +55,9 @@ class Plugin(models.Model):
         ordering = ('fqn',)
         verbose_name = _('Plugin')
         verbose_name_plural = _('Plugins')
+
+    def __str__(self):
+        return self.fqn
 
     def natural_key(self):
         return (self.fqn,)

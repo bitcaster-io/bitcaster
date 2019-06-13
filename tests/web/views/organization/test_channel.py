@@ -2,11 +2,23 @@ import pytest
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import Gmail
+from bitcaster.models import DispatcherMetaData
 
 pytestmark = pytest.mark.django_db
 
 
-def test_create_channel(django_app, organization1):
+@pytest.fixture(autouse=True)
+def enable_dis(monkeypatch):
+    DispatcherMetaData.objects.inspect()
+    DispatcherMetaData.objects.enable_valid()
+    monkeypatch.setattr('bitcaster.web.templatetags.bitcaster.dispatcher_enabled',
+                        lambda s: True)
+
+
+def test_create_channel(django_app, organization1, monkeypatch):
+    monkeypatch.setattr('%s.objects.enabled' % fqn(DispatcherMetaData),
+                        lambda: DispatcherMetaData.objects.all())
+
     owner = organization1.owner
     url = organization1.urls.channel_create
     res = django_app.get(url, user=owner.email)
@@ -86,7 +98,6 @@ def test_usage(django_app, channel1):
     organization = channel1.organization
     res = django_app.get(channel1.urls.usage, user=organization.owner)
     assert res.status_code == 200
-
 
 # def test_info(django_app, channel1):
 #     organization = channel1.organization

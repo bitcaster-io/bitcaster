@@ -9,6 +9,7 @@ from crashlog.models import Error
 from django.core.cache import caches
 from django.utils import timezone
 
+from bitcaster import system
 from bitcaster.celery import app
 from bitcaster.models.audit import AuditLogEntry
 from bitcaster.models.error import ErrorEntry
@@ -116,7 +117,8 @@ def batch_start(self, result, occurence_pk, *args, **kwargs):
 def process_notifications():
     from bitcaster.models import Occurence, Notification
     from .event import send_page
-    if cache_lock.get('STOP'):
+    if system.stopped():
+        logger.error("Cannot process task 'process_notifications'. LOCKDOWN found")
         return
     for occurence in Occurence.objects.active():
         chord_pages = []

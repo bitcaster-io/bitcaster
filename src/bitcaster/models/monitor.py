@@ -9,9 +9,10 @@ from django.utils.translation import gettext_lazy as _
 from strategy_field.utils import fqn
 
 from bitcaster.framework.db.fields import AgentField, EncryptedJSONField
-from bitcaster.models.fields import ThrottleField
+from bitcaster.models.fields import MinRateValidator, ThrottleField
 from bitcaster.tsdb.api import stats
 
+from .audit import AuditEvent, AuditLogEntry
 from .base import AbstractModel
 from .mixins import ReverseWrapperMixin
 
@@ -50,8 +51,14 @@ class Monitor(ReverseWrapperMixin, AbstractModel):
 
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(blank=True, null=True)
-    max_events = models.PositiveIntegerField(blank=True, null=True)
-    rate = ThrottleField(default='1/s')
+    max_events = models.PositiveIntegerField(blank=True, null=True,
+                                             help_text=_('Max total number of events to trigger'))
+    # internal fields
+    events = models.PositiveIntegerField(default=0,
+                                         help_text=_('Current number of triggered events'))
+    last_check = models.DateTimeField(blank=True, null=True)
+    rate = ThrottleField(default='1/m', validators=[MinRateValidator('1/m')])
+    data = EncryptedJSONField(default=dict)
 
     errors_threshold = models.IntegerField(default=100,
                                            help_text='Number or errors before channel will be automatically disabled')
@@ -93,16 +100,41 @@ class Monitor(ReverseWrapperMixin, AbstractModel):
         lock = cache_lock.lock(self.key)
         cache_lock.delete(lock.name)
 
-    def check_and_run(self):
+    def is_throttle(self):
+        rate, per = self.rate
+        allowance = rate  # unit: messages
+        last_check = timezone.now()  # floating - point, e.g.usecaccuracy.Unit: seconds
 
-        if self.lock():
-            try:
-                self.handler.poll()
-                stats.increase(self.key)
-            finally:
-                self.unlock()
+        current = timezone.now()
+        time_passed = current - last_check
+        # last_check = current
+        allowance += time_passed * (rate / per)
+        if allowance > rate:
+            allowance = rate  # throttle
+        if allowance < 1.0:
+            # discard_message
+            return True
         else:
-            logger.warning('Monitor locked')
+            # forward_message
+            allowance -= 1.0
+            return False
+
+    def check_and_run(self):
+        if self.events >= self.max_events:
+            self.enabled = False
+            AuditLogEntry.log(AuditEvent.MONITOR_TERMINATED, self).consolidate()
+        else:
+            if self.lock():
+                if not self.is_throttle():
+                    try:
+                        self.handler.poll()
+                        stats.increase(self.key)
+                        self.events += 1
+                    finally:
+                        self.unlock()
+            else:
+                logger.warning('Monitor locked')
+        self.save()
 
     @property
     def is_configured(self):

@@ -77,7 +77,7 @@ class ChannelCreateWizard(LogAuditMixin, MessageUserMixin, SessionWizardView):
         context = super().get_context_data(form=form, **kwargs)
         handler_fqn = self.get_all_cleaned_data().get('handler', None)
         if self.steps.current == 'a':
-            context.update({'registry': DispatcherMetaData.objects.filter(enabled=True),
+            context.update({'registry': DispatcherMetaData.objects.enabled(),
                             'selection': handler_fqn
                             })
         else:

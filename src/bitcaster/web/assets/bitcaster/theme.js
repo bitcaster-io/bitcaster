@@ -51,3 +51,6 @@ window.jQuery = window.$ = require('jquery');
 window.select2 = require('select2');
 window.Swal = require('sweetalert2');
 window.Noty = require('noty');
+
+import 'jquery-datetimepicker/build/jquery.datetimepicker.min.css';
+require('jquery-datetimepicker/build/jquery.datetimepicker.full.min');

@@ -2,44 +2,13 @@ import logging
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.utils import timezone
+from django.forms import DateTimeInput
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
-from tempus_dominus.widgets import DateTimePicker
 
 from bitcaster.models import Monitor
 
 logger = logging.getLogger(__name__)
-
-
-#
-# class MonitorForm(forms.ModelForm):
-#     class Meta:
-#         model = Monitor
-#         exclude = []
-#         fields = ('name', 'handler', 'config', 'description',
-#                   'enabled',)
-#
-#     def __init__(self, *args, **kwargs):
-#         self.serializer_class = kwargs.pop('serializer', None)
-#         super().__init__(*args, **kwargs)
-#         if self.instance and self.instance.handler:
-#             self.serializer_class = self.instance.handler.options_class
-#
-#     def clean_enabled(self):
-#         value = self.cleaned_data['enabled']
-#         if value:
-#             if not self.instance:
-#                 raise ValidationError(_('Monitor must be configured'))
-#             elif not self.instance.is_configured:
-#                 raise ValidationError(_('Configure monitor before enable it'))
-#         return value
-#
-#     def is_valid(self):
-#         valid = super().is_valid()
-#         if self.serializer_class:
-#             valid = valid and self.serializer.is_valid()
-#         return valid
 
 
 class MonitorCreate1(forms.ModelForm):
@@ -58,19 +27,15 @@ class MonitorUpdateConfigurationForm(forms.ModelForm):
     config = forms.CharField(widget=forms.HiddenInput, required=False)
     start_date = forms.DateTimeField(
         required=True,
-        widget=DateTimePicker(options={
-            'minDate': timezone.now().strftime('%Y-%m-%d'),
-            'format': 'YYYY-MM-DD HH:mm'
-        }, attrs={'autocomplete': 'off'}
-        ),
+        input_formats=['%Y %b %d %H:%M'],
+        widget=DateTimeInput(attrs={'autocomplete': 'off'},
+                             format='%Y %b %d %H:%M'),
     )
     end_date = forms.DateTimeField(
         required=False,
-        widget=DateTimePicker(options={
-            'minDate': timezone.now().strftime('%Y-%m-%d'),
-            'format': 'YYYY-MM-DD HH:mm'
-        }, attrs={'autocomplete': 'off'}
-        ),
+        input_formats=['%Y %b %d %H:%M'],
+        widget=DateTimeInput(attrs={'autocomplete': 'off'},
+                             format='%Y %b %d %H:%M',),
     )
 
     class Meta:

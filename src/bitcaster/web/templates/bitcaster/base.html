@@ -6,8 +6,13 @@
 
     <title>Bitcaster: {{ title }}</title>
     <link rel="shortcut icon" type="image/png" href="{% asset "bitcaster/images/favicon.ico" %}"/>
-    <script src="{% asset "bitcaster/theme.js" %}"></script>
     <link rel="stylesheet" href="{% asset "bitcaster/theme.css" %}">
+
+    <script src="{% asset "bitcaster/theme.js" %}"></script>
+
+{#    <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>#}
+{#    <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />#}
+
     {% block head %}{% endblock head %}
 </head>
 

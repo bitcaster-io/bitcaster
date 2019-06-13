@@ -42,8 +42,7 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
     if len(channels) == 0:
         logger.warning(f'No subscriptions/channels found for `{event}`')
     batch_sections = []
-    for channel in Channel.objects.filter(id__in=ids,
-                                          event=event):
+    for channel in Channel.objects.filter(id__in=ids, event=event):
         if not channel.enabled:
             log_error_channel(channel, _("Channel '%(channel)s' is disabled"))
             logger.error("Channel '%s' is disabled" % channel)
@@ -71,7 +70,6 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
 
     if batch_sections:
         chord(batch_sections)(occurence_start.s(occurence.pk))
-
     return True
 
 
@@ -107,7 +105,6 @@ def _get_message_parts(channel, event, header) -> [Template, Template]:
 @app.task()  # noqa: C901
 def create_notifications_for_channel(occurence_pk, channel_pk, context):
     from bitcaster.models import Channel, Notification, Occurence, Address
-
     channel = Channel.objects.select_related('organization').get(pk=channel_pk)
     organization = channel.organization
     occurence = Occurence.objects.select_related('event').get(pk=occurence_pk)
@@ -201,7 +198,6 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
                 logger.exception(e)
                 process_exception(e)
                 raise
-
         # process incomplete page
         if len(page):
             ids = Notification.objects.bulk_create(page)
@@ -219,6 +215,7 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
 @app.task()
 def send_page(occurence_pk: int, channel_pk: int, page: list):
     if system.stopped():
+        logger.error("Cannot process task 'send_page'. LOCKDOWN found")
         return
     from bitcaster.models import Channel, Notification
     channel = Channel.objects.get(pk=channel_pk)

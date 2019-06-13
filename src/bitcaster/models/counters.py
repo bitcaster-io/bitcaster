@@ -23,3 +23,6 @@ class Counter(models.Model):
     errors = models.IntegerField(default=0)
 
     objects = CounterManager()
+
+    class Meta:
+        app_label = 'bitcaster'

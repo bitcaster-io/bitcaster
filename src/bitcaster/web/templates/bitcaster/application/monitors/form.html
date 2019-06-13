@@ -9,7 +9,6 @@
                     <div class="card mb-2">
                         <div class="card-header text-capitalize">{% trans "monitor configuration" %}</div>
                         <div class="card-body">
-{#                            {{ form }}#}
                             {{ form|crispy }}
                         </div>
                     </div>
@@ -28,6 +27,9 @@
 {% endblock detail %}
 {% block js %}
     {{ block.super }}
-    {{ form.media }}
-
+    <script>
+        {#$('.datetimeinput').datetimepicker(#}
+        {#    {format: 'Y-m-d H:i'}#}
+        {#)#}
+    </script>
 {% endblock js %}
