@@ -1,9 +1,15 @@
-version: 2
+version: 2.1
+executors:
+  python:
+    docker:
+      - image: python:3.6.8-alpine3.8
+
 jobs:
   build:
     working_directory: ~/code
     docker:
-      - image: bitcaster/bitcaster-0.1:base
+#      - image:
+      - executo     er: python
         environment:
           PGHOST: 127.0.0.1
           PIPENV_VENV_IN_PROJECT: 1
@@ -27,12 +33,40 @@ jobs:
             - deps-v2-{{ checksum "Pipfile.lock" }}
 
       - run:
+          - name: "apk1"
+          - command: |
+            apk add --no-cache --virtual .build-deps \
+            gcc \
+            musl-dev \
+            python3-dev \
+            libffi-dev \
+            libressl-dev \
+            libxml2-dev \
+            libxslt-dev \
+            openldap-dev \
+            jpeg-dev \
+            linux-headers \
+            postgresql-dev \
+            zeromq-dev
+      - run:
+          - name: "apk2"
+          - command: |
+            apk add --no-cache --virtual .run-deps \
+            --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+            --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+            curl \
+            gosu \
+            libpq \
+            libxslt \
+            libzmq \
+            jpeg \
+            zlib
+      - run:
           name: run tests
           command: |
             export PATH=/home/circleci/.local/bin:$PATH
             export PYTHONHASHSEED=${RANDOM}
             pip install pipenv
-            pipenv install --verbose --system --deploy --ignore-pipfile
             pipenv run pytest tests \
                         --create-db \
                         --cov-report=term \
@@ -147,3 +181,9 @@ jobs:
             echo $json | jq .
 
             curl -s -d "payload=$json" "$WEBHOOK_URL"
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test

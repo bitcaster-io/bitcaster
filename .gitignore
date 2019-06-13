@@ -19,7 +19,7 @@ celerybeat-schedule.*
 !.secrets.baseline
 !.travis.yml
 ghostdriver.log
-!.circleci
+!.circleci/*
 !.github
 !.bumpversion.cfg
 !/tests/.coveragerc
