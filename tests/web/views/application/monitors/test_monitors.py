@@ -40,6 +40,8 @@ def test_monitor_test(django_app, monitor1, user1):
     assert res.status_code == 200
 
 
+@pytest.mark.plugin
+@pytest.mark.skipif_missing('TEST_MONITOR_USER', 'TEST_MONITOR_PASSWORD', 'TEST_MONITOR_FOLDER')
 def test_monitor_update(django_app, monitor1, user1):
     application = monitor1.application
     organization = application.organization
