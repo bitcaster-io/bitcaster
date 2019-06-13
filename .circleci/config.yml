@@ -36,23 +36,24 @@ jobs:
       - run:
           name: run tests
           environment:
-              BITCASTER_CELERY_BROKER_URL: redis://redis:6379/2
-              BITCASTER_DATABASE_URL: postgres://postgres:postgres@db:5432/bitcaster
+              BITCASTER_CELERY_BROKER_URL: redis://127.0.0.1:6379/2
+              BITCASTER_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/bitcaster
               BITCASTER_DEBUG: 1
               BITCASTER_DEBUG_TOOLBAR: True
               BITCASTER_LOG_LEVEL: DEBUG
               BITCASTER_FAKE_OTP:
               BITCASTER_ON_PREMISE: True
               BITCASTER_PLUGINS_AUTOLOAD: False
-              BITCASTER_REDIS_CACHE_URL: redis://redis:6379/0?key_prefix=bitcaster
-              BITCASTER_REDIS_LOCK_URL: redis://redis:6379/1?key_prefix=bitcaster-lock
-              BITCASTER_REDIS_TSDB_URL: redis://redis:6379/3
+              BITCASTER_REDIS_CACHE_URL: redis://127.0.0.1:6379/0?key_prefix=bitcaster
+              BITCASTER_REDIS_LOCK_URL: redis://127.0.0.1:6379/1?key_prefix=bitcaster-lock
+              BITCASTER_REDIS_TSDB_URL: redis://127.0.0.1:6379/3
               BITCASTER_SECRET_KEY: "c+#b: 7f7!xxx^8wo!kx9wzu%h_lyabc-gbt0)+%3tz73!6!q!5"
               BITCASTER_FERNET_KEYS: "c+#b: 7f7!xxx^8wo!kx9wzu%h_lyabc-gbt0)+%3tz73!6!q!5,"
               BITCASTER_MEDIA_ROOT: /tmp/media
               BITCASTER_STATIC_ROOT: /tmp/static
           command: |
             pipenv run pytest tests \
+                        --maxfail=10 \
                         --create-db \
                         --cov-report=term \
                         --cov-report=html \

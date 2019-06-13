@@ -63,6 +63,8 @@ def test_monitor_delete(django_app, monitor1, user1):
     assert not application.monitors.filter(pk=monitor1.pk).exists()
 
 
+@pytest.mark.plugin
+@pytest.mark.skipif_missing('TEST_MONITOR_USER', 'TEST_MONITOR_PASSWORD', 'TEST_MONITOR_FOLDER')
 def test_monitor_create(django_app, application1, event1):
     owner = application1.organization.owner
     url = application1.urls.monitor_create
