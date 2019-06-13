@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7ec4ba44d516632c9fbc5c8fd6d2b990d9334fa4584be8c254be3eb7ce6eeda6"
+            "sha256": "e8138990895ab34f19fe647c8e90fac6c823bc20e67f8a389945b7d37ec0c2b6"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -120,13 +120,6 @@
             ],
             "index": "pypi",
             "version": "==4.3.0"
-        },
-        "celery-once": {
-            "hashes": [
-                "sha256:d04e5417fb28543ef3b9c6c9df8d5de8c8410a1ffbce4e376acafa14d5d93d80"
-            ],
-            "index": "pypi",
-            "version": "==3.0.0"
         },
         "certifi": {
             "hashes": [
@@ -465,14 +458,6 @@
             ],
             "index": "pypi",
             "version": "==1.4"
-        },
-        "django-tempus-dominus": {
-            "hashes": [
-                "sha256:8038ecf7b8ed28568e26d3882066de4715712f057050452bffec952c970b20f7",
-                "sha256:c657b1b868c09523f71aa41a5d5c278bad5523f9313ab452f7325b0f0d882cc7"
-            ],
-            "index": "pypi",
-            "version": "==5.1.2.5"
         },
         "django-timezone-field": {
             "hashes": [
@@ -1017,14 +1002,6 @@
             ],
             "index": "pypi",
             "version": "==3.2.1"
-        },
-        "redis-timeseries": {
-            "hashes": [
-                "sha256:20643f30f6821ef9ebcb28d020bf75d9552600aab07ba8e54b3d32b087f72933",
-                "sha256:477d992dc523bf1abab030b369d68aabaf02cd5f32a1ac79873f86234bca0e13"
-            ],
-            "index": "pypi",
-            "version": "==0.1.9"
         },
         "requests": {
             "extras": [

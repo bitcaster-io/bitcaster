@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 
 jobs:
   build:
@@ -43,25 +43,29 @@ jobs:
             linux-headers \
             postgresql-dev \
             zeromq-dev
-#      - run:
-#          - name: "apk2"
-#          - command: |
-#              apk add --no-cache --virtual .run-deps \
-#              --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-#              --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-#              curl \
-#              gosu \
-#              libpq \
-#              libxslt \
-#              libzmq \
-#              jpeg \
-#              zlib
       - run:
-          name: run tests
+          name: "apk2"
+          command: |
+              apk add --no-cache --virtual .run-deps \
+              --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+              --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+              curl \
+              gosu \
+              libpq \
+              libxslt \
+              libzmq \
+              jpeg \
+              zlib
+      - run:
+          name: install packeges
           command: |
             export PATH=/home/circleci/.local/bin:$PATH
             export PYTHONHASHSEED=${RANDOM}
             pip install pipenv
+            pipenv install --verbose --system --deploy --ignore-pipfile --dev
+      - run:
+          name: run tests
+          command: |
             pipenv run pytest tests \
                         --create-db \
                         --cov-report=term \
@@ -81,7 +85,7 @@ jobs:
       - save_cache:
           key: deps-v2-{{ checksum "Pipfile.lock" }}
           paths:
-            - ".venv"
+            - "/usr/local/lib/python3.6"
             - "~/.cache/pip"
 
       - deploy:

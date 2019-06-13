@@ -79,11 +79,8 @@ zulip = "*"
 django-impersonate = "*"
 qrcode = "*"
 viberbot = "*"
-redis-timeseries = "*"
-celery-once = "*"
 slackclient = "*"
 jinja2 = "*"
-django-tempus-dominus = "*"
 
 [dev-packages]
 bumpversion = "*"

@@ -35,7 +35,8 @@ def pytest_configure(config):
 
     config.SITE_URL = 'http://testserver/'
     from bitcaster.config.environ import env
-    env.load_config(str(here / '.test_env'))
+    if (here / '.test_env').exixts():
+        env.load_config(str(here / '.test_env'))
     import django
     django.setup()
     from django.conf import settings

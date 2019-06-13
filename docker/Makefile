@@ -31,11 +31,17 @@ help:
 build-base:
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
-			--build-arg DEVELOP=${DEVELOP} \
 			-t ${DOCKER_IMAGE_NAME}-0.4:base \
 			-f docker/Dockerfile.base .
+	cd .. && docker build \
+			${BUILD_OPTIONS} \
+			--build-arg DEVELOP=--dev \
+			-t ${DOCKER_IMAGE_NAME}-0.4:base-dev \
+			-f docker/Dockerfile.base .
+
 	pass docker/saxix | docker login -u saxix --password-stdin
 	docker push ${DOCKER_IMAGE_NAME}-0.4:base
+	docker push ${DOCKER_IMAGE_NAME}-0.4:base-dev
 	docker images | grep ${DOCKER_IMAGE_NAME}
 
 
