@@ -18,8 +18,8 @@
         <tbody>
         {% for event in object_list %}
             <tr>
-                <td>{{ event.name }}</td>
-                <td style="width:40%" class="nowrap formset-commands">
+                <td style="width:55%">{{ event.name }}</td>
+                <td class="nowrap formset-commands">
                     {% button event.urls.edit True "fas fa-wrench" "configure" %}
                     {% button event.urls.messages True "fas fa-comment" "messages" %}
                     {% button event.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" event.enabled %}

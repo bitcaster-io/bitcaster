@@ -18,7 +18,6 @@ DOCKERFILE?=Dockerfile
 RUN_OPTIONS?=
 PIPENV_ARGS?=
 VOLUME=~build/volumes/var/bitcaster/
-VERSION?=$(shell cat ../VERSION)
 
 help:
 	@echo "dev                  build dev image (based on local code)"
@@ -35,7 +34,7 @@ build-base:
 			-f docker/Dockerfile.base .
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
-			--build-arg DEVELOP=--dev \
+			--build-arg TEST=--dev \
 			-t ${DOCKER_IMAGE_NAME}-0.4:base-dev \
 			-f docker/Dockerfile.base .
 

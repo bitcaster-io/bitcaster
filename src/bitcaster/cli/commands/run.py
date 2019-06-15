@@ -104,3 +104,17 @@ def beat(**options):
 
     from bitcaster.celery import app
     app.Beat(**options).run()
+
+#
+# @run.command()
+# @click.option('--port', default=25, type=int)
+# @click.option('--hostname', default='localhost')
+# @need_setup
+# def smtp(hostname, port):
+#     from smtpd import SMTPServer
+#     import asyncore
+#     foo = SMTPServer((hostname, port), None)
+#     try:
+#         asyncore.loop()
+#     except KeyboardInterrupt:
+#         pass

@@ -139,7 +139,8 @@ class EventBee(EventMixin, EventFormMixin, BitcasterBaseDetailView):
         extra = {'serializer': eventform_factory(event),
                  'key': key,
                  'api_url': event.get_api_url(),
-                 'short_api_url': event.get_short_api_url(key.token)
+                 'short_api_url': event.get_short_api_url(key.token),
+                 'batch_api_url': event.get_batch_url()
                  }
 
         kwargs.update(extra)
@@ -243,4 +244,4 @@ class EventToggle(EventMixin, LogAuditMixin, EventFormMixin, MessageUserMixin, R
 
 class EventKeys(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/events/keys.html'
-    # title = 'Keys'
+    title = 'Keys'

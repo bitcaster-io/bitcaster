@@ -1,4 +1,4 @@
-{% extends "bitcaster/application/events/base_detail.html" %}{% load crispy_forms_filters i18n bitcaster %}
+{% extends "bitcaster/application/events/base_detail.html" %}{% load crispy_forms_tags i18n bitcaster %}
 {#{% block pageId %}event{% endblock %}#}
 {% block detail %}
     <div class="container">
@@ -6,7 +6,7 @@
             <div class="container-fluid">
                 <form method="post" lass="d-none" id="form-event">
                     {% csrf_token %}
-                    {{ form|crispy }}
+                    {% crispy form %}
                     <div class="pt-5">
                         <input
                             name="save_edit_messages"

@@ -3,11 +3,11 @@ FROM python:3.6.8-alpine3.8
 ARG BUILD_DATE
 ARG PIPENV_ARGS
 ARG VERSION
-ARG DEVELOP
+ARG TEST
 
 ENV CPLUS_INCLUDE_PATH /usr/include/libxml2/
 ENV C_INCLUDE_PATH /usr/include/libxml2/
-ENV DEVELOP ${DEVELOP}
+ENV TEST ${TEST}
 
 RUN apk add --no-cache --virtual .build-deps \
         gcc \
@@ -43,7 +43,7 @@ WORKDIR /code
 RUN set -ex \
     ls -al /code \
     && pip install pip pipenv \
-    && pipenv install --verbose --system --deploy $DEVELOP --ignore-pipfile $PIPENV_ARGS
+    && pipenv install --verbose --system --deploy $TEST --ignore-pipfile $PIPENV_ARGS
 
 RUN apk del .build-deps \
     && rm -rf /var/cache/apk/* \

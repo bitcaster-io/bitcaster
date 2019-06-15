@@ -16,9 +16,9 @@
                 {% if view|classname != 'EventMessages' %}
                     {% button event.urls.messages True "fas fa-comment" "messages" %}
                 {% endif %}
-
                 {% button event.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" event.enabled %}
                 {% button event.urls.delete True "far fa-trash-alt" "delete" %}
+                <div class="border border-secondary d-inline-block">
                 {% button event.urls.develop True "fas fa-bug red:fas fa-bug black" "Debug Mode Off:Debug Mode On" event.development_mode %}
 
                 {% if view|classname != 'EventTest' %}
@@ -28,8 +28,8 @@
                 {% if view|classname != 'EventBatch' %}
                     {% button event.urls.batch True "fas fa-layer-group" "batch" %}
                 {% endif %}
-
-                {% if view|classname != 'EventUpdate' %}
+                </div>
+                {% if view|classname != 'EventBee' %}
                     {% button event.urls.bee True "fas fa-link" "bee" %}
                 {% endif %}
 

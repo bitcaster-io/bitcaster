@@ -1,15 +1,17 @@
 FROM bitcaster/bitcaster-0.4:base
 
 ARG BUILD_DATE
-ARG PIPENV_ARGS
 ARG VERSION
 ARG DEVELOP
+
+ENV DEVELOP=${DEVELOP}
 
 RUN mkdir -p /code
 COPY . /code
 WORKDIR /code
-
-RUN set -o pipefail && if [ "${DEVELOP}" = "1" ]; then \
+RUN echo $DEVELOP
+RUN set -o pipefail && \
+    if [ "${DEVELOP}" = "1" ]; then \
     echo "${VERSION}-develop"; \
     else \
     echo "Download package: https://github.com/bitcaster-io/bitcaster/archive/${VERSION}.tar.gz" \
