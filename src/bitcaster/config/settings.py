@@ -448,8 +448,9 @@ CONSTANCE_CONFIG = OrderedDict({
     'LOG_RETENTION_AUDIT': (365, 'Number of days to keep audit log records', int),
     'LOG_RETENTION_EVENTS': (365, 'Number of days to keep events log records', int),
     'LOG_RETENTION_ERRORS': (30, 'Number of days to keep error log rocords', int),
-    # 'LOG_RETENTION_DAYS': (30, 'Number of days to keep log rocords', int),
     'SHOW_DISABLED_DISPATCHERS': (True, 'Show dispatcher even if globally disabled', bool),
+    'DISPLAY_EXTRA_FIELDS_IN_PROFILE': (True,
+                                        'Display custom fields in user profile page', bool),
     # Services
     'RECAPTCHA_PUBLIC_KEY': ('', '', str),
     'RECAPTCHA_PRIVATE_KEY': ('', '', str),

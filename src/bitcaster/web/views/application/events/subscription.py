@@ -39,6 +39,10 @@ class EventSubscriptionList(SingleEventMixin, BitcasterBaseListView):
 
 class EventSubscriptionDelete(SingleEventMixin, BitcasterBaseDeleteView):
     pk_url_kwarg = 'subscription'
+    title = _('Elimina sottoscrizione')
+
+    def get_success_url(self):
+        return self.selected_event.urls.subscriptions
 
     def get_queryset(self):
         return self.selected_event.subscriptions.all()
@@ -73,11 +77,13 @@ class EventSubscriptionCreate(SingleEventMixin, MessageUserMixin, FormView):
         existing = []
         channel = form.cleaned_data['channel']
         count = len(form.cleaned_data['members'])
+        status = form.cleaned_data['type']
         for user in form.cleaned_data['members']:
             if user.subscriptions.filter(event=self.selected_event):
                 existing.append(user.display_name)
 
             user.subscriptions.create(event=self.selected_event,
+                                      status=status,
                                       trigger_by=self.request.user,
                                       channel=channel)
 

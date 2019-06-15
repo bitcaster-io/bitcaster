@@ -29,7 +29,7 @@ class UserAdmin(_UserAdmin):
         (_('Personal info'), {'fields': (('name', 'friendly_name'),
                                          ('language',),
                                          ('country', 'timezone'))}),
-        (_('Extra'), {'fields': ('storage',
+        (_('Extra'), {'fields': ('storage', 'extras', 'options',
                                  # 'groups', 'user_permissions'
                                  )}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',

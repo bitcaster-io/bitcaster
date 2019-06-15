@@ -32,7 +32,7 @@ class Address(ReversionMixin, models.Model):
 
     verified = models.BooleanField(default=False)
     code = models.CharField(null=True, max_length=9)
-
+    locked = models.BooleanField(default=False)
     valid_for = MultipleStrategyField(registry=dispatcher_registry,
                                       blank=True, null=True)
 

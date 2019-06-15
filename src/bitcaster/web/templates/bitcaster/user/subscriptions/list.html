@@ -18,8 +18,9 @@
                 <td style="width:5%">{{ subscription.channel }}</td>
                 <td style="width:5%">{{ subscription.recipient }}</td>
                 <td style="width:10%" class="nowrap formset-commands">
+                    {% if subscription.status == subscription.STATUSES.OWNED %}
                     <a class="btn btn-light"
-                       data-toggle="tooltip" title="{% if subscription.enabled %}Disable{% else %}Enable{% endif %}"
+                       data-toggle="tooltip" title="Change channel"
                        href="{% org-url 'user-subscription-edit' subscription.pk %}">
                         <i class="fas fa-edit"></i>
                     </a>
@@ -33,6 +34,13 @@
                        href="{% org-url 'user-subscription-delete' subscription.pk %}">
                         <i class="far fa-trash-alt pointer"></i>
                     </a>
+                    {% else %}
+                    <a class="btn btn-light disabled" href="">
+                        <i class="fas fa-lock"></i>
+                        {% trans "locked by admin" %}
+                    </a>
+
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

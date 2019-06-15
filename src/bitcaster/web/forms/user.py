@@ -270,7 +270,7 @@ AddressAssignmentFormSetBase = forms.inlineformset_factory(User,
 class AddressFormSet(AddressFormSetBase, BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.queryset = self.queryset.order_by('label')
+        self.queryset = self.queryset.filter(locked=False).order_by('label')
 
     def save(self, commit=True):
         a = self.save_existing_objects(commit)

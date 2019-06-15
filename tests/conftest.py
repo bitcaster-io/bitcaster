@@ -33,6 +33,10 @@ def pytest_configure(config):
     os.environ['BITCASTER_SENTRY_ENABLED'] = '0'
     os.environ['BITCASTER_SENTRY_DSN'] = ''
 
+    os.environ['BITCASTER_REDIS_CACHE_URL'] += '&key_prefix=bitcaster-test'
+    os.environ['BITCASTER_REDIS_LOCK_URL'] += '&key_prefix=bitcaster-lock-test'
+    os.environ['BITCASTER_REDIS_TSDB_URL'] += '&key_prefix=bitcaster-tsdb-test'
+
     config.SITE_URL = 'http://testserver/'
     from bitcaster.config.environ import env
     if (here / '.test_env').exists():
@@ -40,6 +44,10 @@ def pytest_configure(config):
     import django
     django.setup()
     from django.conf import settings
+    settings.CACHES['default']['KEY_PREFIX'] = 'test-default'
+
+    from bitcaster.utils.locks import remove_locks
+    remove_locks('*')
     os.makedirs('/tmp/static', exist_ok=True)
     os.makedirs('/tmp/media', exist_ok=True)
     # from constance import config as c
@@ -88,7 +96,22 @@ def pytest_configure(config):
 
 @pytest.fixture(autouse=True)
 def patch(monkeypatch, db, settings):
-    pass
+    monkeypatch.setattr('crashlog.middleware.process_exception',
+                        lambda *a, **kw: True)
+
+    monkeypatch.setattr('bitcaster.apps.capture_exception',
+                        lambda *a, **kw: True)
+
+
+@pytest.fixture()
+def patch_metadata(monkeypatch):
+    from bitcaster.models import DispatcherMetaData, Channel
+    monkeypatch.setattr('%s.objects.is_enabled' % fqn(DispatcherMetaData),
+                        lambda *a, **kw: True)
+    monkeypatch.setattr('%s.objects.enabled' % fqn(DispatcherMetaData),
+                        lambda: DispatcherMetaData.objects.all())
+    monkeypatch.setattr('%s.objects.selectable' % fqn(Channel),
+                        lambda *a, **k: Channel.objects.all())
 
 
 @pytest.fixture()
@@ -247,9 +270,9 @@ def subscriber1(user1, message1):
 
 
 @pytest.fixture
-def subscriber2(user2, message2):
+def subscriber2(user2, channel1):
     for addr in user2.addresses.all():
-        user2.assignments.create(address=addr, channel=message2.channel)
+        user2.assignments.create(address=addr, channel=channel1)
 
     return user2
 

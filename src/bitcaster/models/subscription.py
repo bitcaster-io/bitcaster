@@ -30,16 +30,11 @@ class SubscriptionQuerySet(models.QuerySet):
 class Subscription(ReverseWrapperMixin, AbstractModel):
     """ """
     STATUSES = Choices(
-        (10, 'PROPOSED', _('Admin has sent subscription proposal to user')),
-        (20, 'REQUESTED', _('User has requested the subscripiton')),
-
-        (30, 'ACCEPTED', _('User accepted subscription proposal')),
-        (40, 'APPROVED', _('Admin approved the subscription request')),
-        (50, 'MANAGED', _('Admin subscribed user')),
+        (10, 'PENDING', _('Subscription process is not completed')),
         (60, 'OWNED', _('User subscribed to event')),
+        (50, 'MANAGED', _('Admin subscribed user. Subscription is locked')),
     )
     subscriber = models.ForeignKey(User, models.CASCADE,
-                                   # blank=True, null=True,
                                    related_name='subscriptions')
 
     trigger_by = models.ForeignKey(User, models.CASCADE,
@@ -57,6 +52,7 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=STATUSES,
                                  default=STATUSES.OWNED)
+    # locked = models.BooleanField(default=False)
     objects = SubscriptionQuerySet.as_manager()
 
     class Meta:
@@ -85,6 +81,8 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
             process_exception(e)
             return None
 
+    def get_address(self):
+        return self.channel.handler.get_recipient_address(self)
     # @property
     # def errors(self):
     #     try:

@@ -32,7 +32,9 @@ from bitcaster.tasks.event import trigger_event
 
 
 @pytest.mark.django_db
-def test_emit_event(occurence1):
+def test_emit_event(occurence1, patch_metadata):
+    from bitcaster.models import DispatcherMetaData
+    DispatcherMetaData.objects.inspect()
     assert trigger_event(occurence1.pk, {})
 
 

@@ -28,9 +28,11 @@ class EventMixin(LogAuditMixin, SelectedApplicationMixin):
                                  self.object.pk]
                            )
         else:
-            return reverse('app-events',
-                           args=[self.selected_organization.slug,
-                                 self.selected_application.slug])
+            return self.request.META.get('HTTP_REFERER',
+                                         reverse('app-events',
+                                                 args=[self.selected_organization.slug,
+                                                       self.selected_application.slug])
+                                         )
 
     def get_queryset(self):
         return self.selected_application.events.all()
@@ -138,6 +140,27 @@ class EventBee(EventMixin, EventFormMixin, BitcasterBaseDetailView):
                  'key': key,
                  'api_url': event.get_api_url(),
                  'short_api_url': event.get_short_api_url(key.token)
+                 }
+
+        kwargs.update(extra)
+        return super().get_context_data(**kwargs)
+
+
+class EventBatch(EventMixin, EventFormMixin, BitcasterBaseDetailView):
+    template_name = 'bitcaster/application/events/batch.html'
+    title = 'Batch Event'
+
+    def get_context_data(self, **kwargs):
+        event = self.get_object()
+        key = self.selected_application.keys.filter(events=event).first()
+        if not key:
+            key = self.selected_application.keys.create(name=f'Auto created key for {event}')
+            key.events.add(event)
+            self.message_user('Warning new key has been created', messages.WARNING)
+
+        extra = {'serializer': eventform_factory(event),
+                 'key': key,
+                 'api_url': event.get_batch_url(),
                  }
 
         kwargs.update(extra)

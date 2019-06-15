@@ -25,6 +25,10 @@
                     {% button event.urls.test True "fas fa-terminal" "test" %}
                 {% endif %}
 
+                {% if view|classname != 'EventBatch' %}
+                    {% button event.urls.batch True "fas fa-layer-group" "batch" %}
+                {% endif %}
+
                 {% if view|classname != 'EventUpdate' %}
                     {% button event.urls.bee True "fas fa-link" "bee" %}
                 {% endif %}

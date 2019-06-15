@@ -165,11 +165,16 @@ class SettingsServicesForm(Form):
 class SettingsMainForm(Form):
     SITE_URL = forms.URLField()
     SHOW_DISABLED_DISPATCHERS = forms.BooleanField(required=False,
-                                                   help_text='Show dispatcher even if globally disabled')
+                                                   help_text=_('Show dispatcher even if globally disabled'))
     ALLOW_CHANGE_PRIMARY_ADDRESS = forms.BooleanField(label=_('Allow user to change primary address'), required=False)
-    BACKUPS_LOCATION = forms.CharField(label='Backup location', required=False)
-    LOG_NOTIFICATION = forms.BooleanField(label='Log notification', help_text='Enable/Disable notification log')
-    LOG_MESSAGE = forms.ChoiceField(label='Log message', choices=Notification.MESSAGE_POLICIES, required=False)
+    BACKUPS_LOCATION = forms.CharField(label=_('Backup location'), required=False)
+    LOG_NOTIFICATION = forms.BooleanField(label='Log notification',
+                                          help_text=_('Enable/Disable notification log'))
+    LOG_MESSAGE = forms.ChoiceField(label='Log message',
+                                    choices=Notification.MESSAGE_POLICIES, required=False)
+
+    DISPLAY_EXTRA_FIELDS_IN_PROFILE = forms.BooleanField(required=False,
+                                                         help_text=_('Display custom fields in user profile page'))
 
     # RECAPTCHA_PRIVATE_KEY = forms.CharField(required=False)
 

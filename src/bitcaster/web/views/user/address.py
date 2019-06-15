@@ -26,6 +26,10 @@ class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(locked_addresses=self.object.addresses.filter(locked=True).order_by('label'),
+                                        **kwargs)
+
     def get_success_url(self):
         return reverse('user-address', args=[self.selected_organization.slug])
 

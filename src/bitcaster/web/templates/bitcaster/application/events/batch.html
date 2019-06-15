@@ -24,14 +24,12 @@
 
     </style>
     <div class="container border p-1 m-1">
-        <div class="p-2">
-            <select id="method" class="form-control">
-                <option>get</option>
-                <option>post</option>
-            </select>
+        <div class="p-2"><input type="text" name="filter" class="form-control name" placeholder="filter"
+                                value="address"></div>
+        <div class="p-2"><textarea name="targets" class="form-control name"
+                                   placeholder="targets">s.apostolico@gmail.com</textarea>
         </div>
-        <div class="p-2 copy" id="endpoint">
-        </div>
+        <div class="p-2 copy" id="endpoint"></div>
     </div>
     {# WEB #}
     {% if event.development_mode %}
@@ -66,7 +64,6 @@
         <input type="button" class="btn btn-secondary"
                onclick="history.back();"
                value="{% trans "Cancel" %}">
-
     </div>
 {% endblock %}
 {% block js %}
@@ -79,6 +76,7 @@
             document.execCommand("copy");
             $temp.remove();
         }
+
         $('.copy').tooltip({
             trigger: 'hover',
             placement: 'top',
@@ -96,23 +94,23 @@
             }, 800);
         });
     </script>
+    {#    <script>#}
+    {#        $("#ser input").change(function () {#}
+    {#            var args = "";#}
+    {#            var j = {};#}
+    {#            $("#ser input").each(function () {#}
+    {#                if ($(this).val() !== "") {#}
+    {#                    args += "\n     " + $(this).attr("name") + "=" + $(this).val() + " \\";#}
+    {#                    j[$(this).attr("name")] = $(this).val();#}
+    {#                }#}
+    {#            });#}
+    {#            $("#params1").text("\\\n     -d '" + JSON.stringify(j) + "'");#}
+    {#            $("#params2").text(args);#}
+    {#            $("#params3").text("\\\n     --post-data='" + JSON.stringify(j) + "'");#}
+    {#        });#}
+    {#    </script>#}
     <script>
-        $("#ser input").change(function () {
-            var args = "";
-            var j = {};
-            $("#ser input").each(function () {
-                if ($(this).val() !== "") {
-                    args += "\n     " + $(this).attr("name") + "=" + $(this).val() + " \\";
-                    j[$(this).attr("name")] = $(this).val();
-                }
-            });
-            $("#params1").text("\\\n     -d '" + JSON.stringify(j) + "'");
-            $("#params2").text(args);
-            $("#params3").text("\\\n     --post-data='" + JSON.stringify(j) + "'");
-        });
-    </script>
-    <script>
-        var BASE_URL = "{{ api_short_url }}";
+        var BASE_URL = "{{ api_url }}";
         var params = {};
         var workingURL = BASE_URL;
         $('#endpoint').html(workingURL);
@@ -135,35 +133,74 @@
         });
 
         $("#trigger").click(function () {
-            var xhttp = new XMLHttpRequest();
-            $monitor = $('#web');
-            $monitor.html("");
-            xhttp.onprogress = function () {
-                $monitor.append("LOADING\n"); // readyState will be 3
-            };
-            /*
-            xhttp.onload = function () {
-                $monitor.append("SUCCESS\n"); // readyState will be 4
-            };
-            */
-            var method = $('#method').val();
-            xhttp.open(method, workingURL, false);
-            $monitor.append("METHOD: " + method + "\n");
-            $monitor.append("OPEN CONNECTION: " + workingURL + "\n");
-            xhttp.setRequestHeader("Content-type", "application/json");
-            xhttp.setRequestHeader("Authorization", "Key {{ key.token }}");
-            $monitor.append("setRequestHeader: Authorization, \"Key {{ key.token }}\"\n");
-            $monitor.append("setRequestHeader: Content-type, \"application/json\"\n");
-            $monitor.append("SENDING REQUEST\n");
-            xhttp.send();
-            if (xhttp.status !== 201) {
-                $monitor.append("ERROR ", xhttp.status, "\n");
-            } else {
-                $monitor.append("SUCCESS ", "\n");
+                var xhttp = new XMLHttpRequest();
+                $monitor = $('#web');
+                $monitor.html("");
+                xhttp.onprogress = function () {
+                    $monitor.append("LOADING\n"); // readyState will be 3
+                };
+                /*
+                xhttp.onload = function () {
+                    $monitor.append("SUCCESS\n"); // readyState will be 4
+                };
+                */
+                var data = {
+                    'filter': $('input[name="filter"]').val(),
+                    'targets': $('textarea[name="targets"]').val().split(',')
+                };
+                $monitor.append("POST " + workingURL + "\n");
+                $monitor.append(JSON.stringify(data, null, 4) + "\n");
+                $.ajax({
+                    type: 'post',
+                    url: workingURL,
+                    cache: false,
+                    dataType: 'json',
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Key {{ key.token }}");
+                    },
+                    success: function (data, textStatus, jqXHR) {
+                        console.log(jqXHR)
+                        $monitor.append(JSON.stringify(data, null, 4) + "\n");
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $monitor.append("ERROR ", XMLHttpRequest.status, "\n");
+                        $monitor.append(JSON.stringify(jqXHR.responseJSON, null, 4) + "\n");
+
+                    }
+                });
+                {#var jqxhr = $.post(workingURL, data,#}
+                {#    beforeSend = function (request) {#}
+                {#        request.setRequestHeader("Authorization", "Key {{ key.token }}");#}
+                {#    },)#}
+                {#    .done(function (data, status, xhr) {#}
+                {#        $monitor.append("SUCCESS ", data, "\n")#}
+                {#    })#}
+                {#    .fail(function (jqxhr, settings, ex) {#}
+                {#        $monitor.append("ERROR ", jqxhr.status, "\n")#}
+                {#    })#}
+                {#    .always(function () {#}
+                {#        $monitor.append("FINISHED ", "\n")#}
+                {#    });#}
+                {#xhttp.open("POST", workingURL, false);#}
+                {#xhttp.setRequestHeader("Content-type", "application/json");#}
+                {#xhttp.setRequestHeader("Authorization", "Key {{ key.token }}");#}
+                {#$monitor.append("setRequestHeader: Authorization, \"Key {{ key.token }}\"\n");#}
+                {#$monitor.append("setRequestHeader: Content-type, \"application/json\"\n");#}
+                {#$monitor.append("SENDING REQUEST\n");#}
+                {#xhttp.send();#}
+                {#if (xhttp.status !== 201) {#}
+                {#    $monitor.append("ERROR ", xhttp.status, "\n");#}
+                {# } else#}
+                {#     }#}
+                {#    $monitor.append("SUCCESS ", "\n");#}
+                {# }#}
+                {#    var json = JSON.parse(xhttp.responseText);#}
+                {#    $monitor.append(JSON.stringify(json, null, 4) + "\n");#}
             }
-            var json = JSON.parse(xhttp.responseText);
-            $monitor.append(JSON.stringify(json, null, 4) + "\n");
-        });
+        );
 
         $("button.fa-copy").click(function () {
             var $target = $($(this).data("target"));

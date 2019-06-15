@@ -35,6 +35,7 @@ class Occurence(models.Model):
                 (PAUSED, 'Paused'),
                 (TERMINATED, 'Terminated'),  # all data processed
                 )
+    ACTIVE = [NEW, READY, RUNNING]
     timestamp = models.DateTimeField(default=timezone.now)
     organization = models.ForeignKey('bitcaster.Organization',
                                      blank=True, null=True,
@@ -92,6 +93,11 @@ class Occurence(models.Model):
     def start(self):
         self.status = Occurence.RUNNING
         self.save()
+
+    def terminate(self):
+        if self.status in Occurence.ACTIVE:
+            self.status = Occurence.TERMINATED
+            self.save()
 
     def lock(self):
         lock = cache_lock.lock('occurence:%s' % self.pk)

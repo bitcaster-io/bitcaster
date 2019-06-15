@@ -3,11 +3,11 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import BaseFormSet
-from django.utils.translation import ungettext
+from django.utils.translation import gettext as _, ungettext
 from rest_framework import serializers
 
 from bitcaster.configurable import get_full_config
-from bitcaster.models import (Channel, Organization,
+from bitcaster.models import (Channel, Event, Organization,
                               OrganizationMember, Subscription, User,)
 from bitcaster.state import state
 
@@ -48,6 +48,11 @@ class EventSubscriptionCreateForm(forms.Form):
     channel = forms.ModelChoiceField(queryset=Channel.objects.none())
     members = forms.ModelMultipleChoiceField(label='',
                                              queryset=User.objects.none())
+    type = forms.ChoiceField(
+        choices=((Subscription.STATUSES.PENDING, _('Send only invitation. Do not actually subscribe users.')),
+                 (Subscription.STATUSES.OWNED, _('Subscribe users but let them freedom to unsubscribe.')),
+                 (Subscription.STATUSES.MANAGED, _('Subscribe users and lock subscription. Users cannot unsubscribe.')),
+                 ))
 
     def __init__(self, application, *args, **kwargs):
         self.instance = kwargs.pop('instance')
@@ -57,6 +62,13 @@ class EventSubscriptionCreateForm(forms.Form):
         # if self.is_bound:
         self.fields['members'].queryset = self.organization.members.all()
         self.fields['channel'].queryset = self.instance.channels.all()
+
+    def clean_type(self):
+        value = self.cleaned_data['type']
+        if value == 3:
+            if self.instance.subscription_policy != Event.POLICIES.MANAGED:
+                raise ValidationError(_('Event must have a MANAGED subscription policy to use this option'))
+        return value
 
     def clean(self):
         duplicated = []
@@ -130,6 +142,7 @@ class EventSubscriptionForm(forms.ModelForm):
 
 
 SubscriptionForm = EventSubscriptionForm
+
 
 #
 # class SubscriptionBaseFormSet(BaseInlineFormSet):

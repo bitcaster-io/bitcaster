@@ -24,13 +24,16 @@ class ApplicationTriggerKey(ReverseWrapperMixin, AbstractModel):
     application = models.ForeignKey(Application,
                                     on_delete=models.CASCADE,
                                     related_name='keys')
-    name = models.CharField(max_length=100)
+    name = models.CharField(_('name'),
+                            max_length=100)
     token = models.CharField(max_length=64, unique=True,
                              default=generate_api_token)
-    enabled = models.BooleanField(default=True, db_index=True)
+    enabled = models.BooleanField(_('enabled'),
+                                  default=True, db_index=True)
 
     events = models.ManyToManyField(Event, related_name='keys')
-    all_events = models.BooleanField(default=False)
+    all_events = models.BooleanField(default=False,
+                                     help_text=_('If checked, the key is valid even those events created later'))
 
     class Meta:
         app_label = 'bitcaster'

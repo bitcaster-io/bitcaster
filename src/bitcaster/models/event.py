@@ -29,7 +29,8 @@ class Event(ReverseWrapperMixin, AbstractModel):
     POLICIES = Choices(
         (1, 'FREE', _('Free. (Everybody can automatically subscribe)')),
         (2, 'INVITATION', _('Invitation. (Require invitation. Event will not be visible)')),
-        (3, 'MEMBERS', _('Members only. (Only members of Application Teams can subscribe)'))
+        (3, 'MEMBERS', _('Members only. (Only members of Application Teams can subscribe)')),
+        (4, 'MANAGED', _('Admin managed. (Only Application Admin can subscribe/unsubscribe)'))
     )
     uuid = UUIDField(default=uuid4, editable=False)
     application = models.ForeignKey(Application,
@@ -116,6 +117,12 @@ class Event(ReverseWrapperMixin, AbstractModel):
 
     def get_api_url(self):
         return absolute_uri(reverse('api:application-event-trigger',
+                                    args=[self.application.organization.slug,
+                                          self.application.pk,
+                                          self.pk]))
+
+    def get_batch_url(self):
+        return absolute_uri(reverse('api:application-event-batch',
                                     args=[self.application.organization.slug,
                                           self.application.pk,
                                           self.pk]))

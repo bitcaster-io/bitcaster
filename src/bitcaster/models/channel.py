@@ -42,7 +42,7 @@ def set_error(value, error):
 
 class Channel(ReverseWrapperMixin, AbstractModel):
     """ A Channel represent a configured dispatcher. """
-    name = models.CharField(max_length=255)
+    name = models.CharField(_('name'), max_length=255)
     organization = models.ForeignKey(Organization,
                                      null=True,
                                      blank=True,
@@ -54,8 +54,10 @@ class Channel(ReverseWrapperMixin, AbstractModel):
                                     on_delete=models.CASCADE)
     system = models.BooleanField(default=False)
     config = EncryptedJSONField(null=True, blank=True)
-    enabled = models.BooleanField(default=False)
-    description = models.TextField(blank=True, null=True)
+    enabled = models.BooleanField(_('enabled'),
+                                  default=False)
+    description = models.TextField(_('description'),
+                                   blank=True, null=True)
     handler = DispatcherField(null=True)
     deprecated = models.BooleanField(default=False)
 
@@ -63,9 +65,11 @@ class Channel(ReverseWrapperMixin, AbstractModel):
                                            help_text='Number or errors before channel will be automatically disabled')
     objects = ChannelQuerySet().as_manager()
 
-    dispatch_page_size = models.IntegerField(validators=[MinValueValidator(1)],
+    dispatch_page_size = models.IntegerField(_('dispatcher page size'),
+                                             validators=[MinValueValidator(1)],
                                              default=1000)
-    dispatch_rate = ThrottleField(default='1/s')
+    dispatch_rate = ThrottleField(_('dispatch rate'),
+                                  default='1/s')
 
     class Meta:
         app_label = 'bitcaster'

@@ -115,7 +115,8 @@ def dispatcher_enabled(dispatcher):
     except DispatcherMetaData.DoesNotExist:
         return False
 
+
+@register.filter()
+def labelize(value):
+    return value.replace('_', ' ').title()
 #
-# @register.filter()
-# def describe_channels(channels):
-#     return mark_safe(', '.join([f'<span class=enabled{c.enabled}>{c.name}</span>' for c in channels.all()]))

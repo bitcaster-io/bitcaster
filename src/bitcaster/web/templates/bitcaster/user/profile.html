@@ -1,4 +1,4 @@
-{% extends "bitcaster/user/base.html" %}{% load gravatar crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
+{% extends "bitcaster/user/base.html" %}{% load gravatar bitcaster crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
 {% block page %}
     {{ form.media }}
     <div class="container-fluid">
@@ -10,7 +10,8 @@
                             <div class="avatar">
                                 <img src="{{ user|gravatar:200 }}">
                             </div>
-                            <div class="small" style="max-width: 230px;text-align: center"> {% trans "To change your picture, go to" %}
+                            <div class="small"
+                                 style="max-width: 230px;text-align: center"> {% trans "To change your picture, go to" %}
                                 <a href="https://en.gravatar.com/" target="_blank">https://gravatar.com</a>
                             </div>
                         </div>
@@ -21,6 +22,16 @@
                                 {% endif %}
                             {% endfor %}
                             {% csrf_token %}
+                            {% if config.DISPLAY_EXTRA_FIELDS_IN_PROFILE %}
+                                {% for k,v in user.extras.items %}
+                                    <div id="div_id_email" class="form-group">
+                                        <label class="col-form-label ">{{ k|labelize }}</label>
+                                        <div class=""><input type="text" value="{{ v }}" class="form-control"
+                                                             disabled=""">
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
                             <input type="submit" value="{% trans "Save" %}" class="btn btn-primary">
                         </div>
                     </div>

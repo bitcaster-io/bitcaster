@@ -7,13 +7,13 @@ class System:
         self.storage = caches['lock']
 
     def stop(self):
-        self.storage.set('STOP', 1)
+        self.storage.set('STOP', '1')
 
     def running(self):
-        return self.storage.get('STOP', 0) == '1'
+        return not self.stopped()
 
     def stopped(self):
-        return not self.running()
+        return self.storage.get('STOP', '0') == '1'
 
     def restart(self):
         self.storage.delete('STOP')

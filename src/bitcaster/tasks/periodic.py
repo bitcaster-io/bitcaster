@@ -146,3 +146,5 @@ def process_notifications():
 
         if chord_pages:
             chord(chord_pages)(batch_start.s(occurence.pk))
+        else:
+            occurence.terminate()

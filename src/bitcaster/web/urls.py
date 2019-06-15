@@ -142,6 +142,7 @@ urlpatterns = [
     path('<slug:org>/a/<slug:app>/event/<int:pk>/dev-mode/', views.EventDeveloperModeToggle.as_view(), name='app-event-develop'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/toggle/', views.EventToggle.as_view(), name='app-event-toggle'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/test/', views.EventTest.as_view(), name='app-event-test'),
+    path('<slug:org>/a/<slug:app>/event/<int:pk>/batch/', views.EventBatch.as_view(), name='app-event-batch'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/bee/', views.EventBee.as_view(), name='app-event-bee'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/delete/', views.EventDelete.as_view(), name='app-event-delete'),
     path('<slug:org>/a/<slug:app>/event/<int:pk>/messages/', views.EventMessages.as_view(), name='app-event-messages'),

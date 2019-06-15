@@ -13,11 +13,12 @@
         <div class="row">
             <div class="row col-12 p-3">
                 <div class="pull-left col-10">{% blocktrans %}
-Add here all your addresses.
-<b>Note:</b> because each channel has different requirements, each address can be validated only after it has
+                    Add here all your addresses.
+                    <b>Note:</b> because each channel has different requirements, each address can be validated only
+                    after it has
                     been assigned to a Channel.
-For this reason, is possible that you are forced to insert the same address multiple times.
-i.e SMS channel that uses E.164 and other SMS Channell that uses a different number format.
+                    For this reason, is possible that you are forced to insert the same address multiple times.
+                    i.e SMS channel that uses E.164 and other SMS Channell that uses a different number format.
                 {% endblocktrans %}</div>
                 <div class="pull-left col-2">
                     <a id="add_more" class="btn btn-danger btn-small pull-right"
@@ -68,14 +69,6 @@ i.e SMS channel that uses E.164 and other SMS Channell that uses a different num
                                     <a href="." class="btn btn-outline-light remove_line align-top">
                                         <i class="far fa-trash-alt"></i>
                                     </a>
-{#                                    {% if not form.instance.verified %}#}
-{#                                        <a href="#" class="btn btn-outline-light info align-top">#}
-{#                                            <i class="fas fa-exclamation-circle red"></i>#}
-{#                                        </a>#}
-{#                                        <i class="far fa-trash-alt"></i>#}
-{#                                        {% else %}#}
-{#                                        <i class="far fa-trash-alt"></i>#}
-{#                                    {% endif %}#}
                                 </div>
                                 {% if form.non_field_errors %}
                                     <div
@@ -86,6 +79,21 @@ i.e SMS channel that uses E.164 and other SMS Channell that uses a different num
                     {% endfor %}
                 </div>
             </form>
+            {% if  locked_addresses %}
+                <h6>{% trans "System managed addresses" %}</h6>
+                <div class="content addresses fieldset">
+                    {% for addr in locked_addresses %}
+                        <div class="row m-0 p-0 col-12 line-fields" style="display: inline-flex">
+                            <div class="col col-3">
+                                <input value="{{ addr.label }}" class="form-control" disabled="">
+                            </div>
+                            <div class="col col-5">
+                                <input value="{{ addr.address }}" class="form-control" disabled="">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
 
         {% include "bitcaster/_includes/formset/commands.html" with label="Save" %}

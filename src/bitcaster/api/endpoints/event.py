@@ -5,13 +5,13 @@ from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 from bitcaster.api.filters import ApplicationFilterBackend
 from bitcaster.models import Occurence
-from bitcaster.tasks.event import trigger_event
+from bitcaster.tasks.event import trigger_batch, trigger_event
 from bitcaster.tsdb.api import log_error_event, log_new_occurence
 from bitcaster.utils.http import flatten_query_dict
 from bitcaster.utils.wsgi import get_client_ip
@@ -78,6 +78,60 @@ class EventViewSet(BaseModelViewSet):
             logger.exception(e)
             with atomic():
                 process_exception(e)
+            return Response({'error': 500,
+                             'message': str(e),
+                             'timestamp': timezone.now()}, status=500)
+        else:
+            return Response({'message': 'Event triggered',
+                             'event': event.pk,
+                             'development': event.development_mode,
+                             'id': occurence.pk,
+                             'timestamp': timezone.now()}, status=201)
+
+    @action(methods=['post', 'get', 'options'],
+            authentication_classes=[TriggerKeyAuthentication],
+            permission_classes=[EventTriggerPermission],
+            parser_classes=(JSONParser, MultiPartParser,),
+            detail=True)
+    def batch(self, request, organization__pk, application__pk, pk):
+        try:
+            event = get_object_or_404(self.selected_application.events,
+                                      pk=pk)
+            if not event.enabled:
+                log_error_event(event, 'Event disabled')
+                return Response({'error': 'Event disabled'}, status=400)
+
+            context = flatten_query_dict(request.data)
+            if 'filter' not in context:
+                raise ValidationError({'filter': 'Missing filter parameter'})
+            if context['filter'] == 'address':
+                context['filter'] = 'subscriber__addresses__address__in'
+            elif context['filter'] == 'email':
+                context['filter'] = 'subscriber__email__in'
+            elif context['filter'].startswith('custom:'):
+                __, field = context['filter'].split(':')
+                context['filter'] = 'subscriber__extras__%s__in' % field
+            else:
+                raise ValidationError({'filter': 'Invalid filter parameter'})
+
+            if 'targets' not in context:
+                raise ValidationError({'targets': 'Missing targets parameter'})
+
+            occurence = Occurence.log(event=event, context=context)
+            log_new_occurence(occurence)
+
+            trigger_batch.delay(occurence.pk,
+                                context,
+                                token=request.key.token,
+                                origin=get_client_ip(request))
+
+        except ValidationError as e:
+            return Response({'error': 400,
+                             'message': str(e),
+                             'timestamp': timezone.now()}, status=400)
+        except Exception as e:
+            logger.exception(e)
+            process_exception(e)
             return Response({'error': 500,
                              'message': str(e),
                              'timestamp': timezone.now()}, status=500)

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import (PermissionsMixin,
                                         UserManager as _UserManager,)
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.template.loader import get_template
 from django.urls import reverse
@@ -58,8 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(_('full name'), max_length=250, blank=True)
     friendly_name = models.CharField(_('display name'), max_length=250, blank=True,
                                      help_text='display/friendly name. Can be given name or nickname')
-    email = models.EmailField(_('email address'), null=True,
-                              unique=True)
+    email = models.EmailField(_('email address'), null=True, unique=True)
 
     is_staff = models.BooleanField(
         _('staff status'),
@@ -102,6 +102,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     storage = EncryptedJSONField(_('storage'),
                                  default=dict,
                                  blank=True, null=True)
+
+    options = EncryptedJSONField(_('options'),
+                                 default=dict,
+                                 blank=True, null=True)
+
+    extras = JSONField(_('extras'),
+                       default=dict,
+                       blank=True, null=True)
+
     avatar = models.ImageField(blank=True, null=True,
                                # upload_to="pictures",
                                upload_to=profile_media_root,

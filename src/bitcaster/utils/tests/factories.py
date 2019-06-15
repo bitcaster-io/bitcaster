@@ -153,7 +153,9 @@ class UserFactory(AutoRegisterModelFactory):
         permissions = kwargs.pop('permissions', None)
         addresses = kwargs.pop('addresses', None)
         raw_password = kwargs.pop('password', cls.password)
-        user = super()._get_or_create(model_class, *args, **kwargs)
+        extras = kwargs.pop('extras', {})
+        extras['index_number'] = '__%s__' % kwargs['email']
+        user = super()._get_or_create(model_class, extras=extras, *args, **kwargs)
         if raw_password:
             user.set_password(raw_password)
         if permissions:

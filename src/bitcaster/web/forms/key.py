@@ -1,12 +1,15 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import ApplicationTriggerKey, Event
 
 
 class ApplicationTriggerKeyForm(forms.ModelForm):
-    events = forms.ModelMultipleChoiceField(queryset=Event.objects.none(),
-                                            required=False)
+    events = forms.ModelMultipleChoiceField(
+        label=_('allowed events'),
+        queryset=Event.objects.none(),
+        required=False)
 
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application', None)

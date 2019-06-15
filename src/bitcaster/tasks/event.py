@@ -5,7 +5,6 @@ from celery import chord
 from crashlog.middleware import process_exception
 from django.core.cache import caches
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count
 from django.template import Template
 from django.urls import reverse
 from django.utils import timezone
@@ -29,20 +28,26 @@ cache_lock = caches['lock']
 
 
 @app.task()
-def trigger_event(occurence_id, context, *, token=None, origin=None):
-    from bitcaster.models import Channel, DispatcherMetaData, Occurence, Event
+def trigger_batch(occurence_id, context, *, token=None, origin=None):
+    trigger_event(occurence_id, context, token=token, origin=origin, batch=True)
+
+
+@app.task()
+def trigger_event(occurence_id, context, *, token=None, origin=None, batch=False):
+    from bitcaster.models import DispatcherMetaData, Occurence, Event
     occurence = Occurence.objects.select_related('event').get(id=occurence_id)
     event = occurence.event
     logger.debug('Event [{0.name} {0.enabled}] emit()'.format(event))
     if not event.enabled:
         log_error_occurence(occurence)
         raise LogicError('Cannot emit disabled event')
-    channels = event.subscriptions.valid().values('channel').annotate(dcount=Count('channel'))
-    ids = [channel['channel'] for channel in channels]
-    if len(channels) == 0:
-        logger.warning(f'No subscriptions/channels found for `{event}`')
+    # channels = event.subscriptions.valid().values('channel').annotate(dcount=Count('channel'))
+    # ids = [channel['channel'] for channel in channels]
+    # if len(channels) == 0:
+    #     logger.warning(f'No subscriptions/channels found for `{event}`')
     batch_sections = []
-    for channel in Channel.objects.filter(id__in=ids, event=event):
+    # for channel in Channel.objects.filter(id__in=ids, event=event):
+    for channel in event.channels.all():
         if not channel.enabled:
             log_error_channel(channel, _("Channel '%(channel)s' is disabled"))
             logger.error("Channel '%s' is disabled" % channel)
@@ -62,7 +67,8 @@ def trigger_event(occurence_id, context, *, token=None, origin=None):
                 occurence.start()
                 create_notifications_for_channel.apply_async(args=[occurence.pk,
                                                                    channel.pk,
-                                                                   context])
+                                                                   context,
+                                                                   batch])
         except Exception as e:
             logger.exception(e)
             log_error_channel(channel, str(e))
@@ -103,7 +109,7 @@ def _get_message_parts(channel, event, header) -> [Template, Template]:
 
 
 @app.task()  # noqa: C901
-def create_notifications_for_channel(occurence_pk, channel_pk, context):
+def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=False):
     from bitcaster.models import Channel, Notification, Occurence, Address
     channel = Channel.objects.select_related('organization').get(pk=channel_pk)
     organization = channel.organization
@@ -123,6 +129,17 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
     subscription_filter = {'channel': channel}
     if event.development_mode:
         subscription_filter['subscriber__in'] = event.application.admins
+    # in batch mode context has a prefixed format
+    # {'filter': 'address',
+    #  'arguments': { 'param1': '**parameter-1**'
+    #               },
+    #  'targets':[address1]
+    #  },
+    if batch:
+        filter_param = context.get('filter', 'subscriber__addresses__address__in')
+        subscription_filter[filter_param] = context.get('targets',
+                                                        context.get('targets'))
+        context = context.get('arguments', {})
     try:
         partition = 1000
         page = []
@@ -150,7 +167,7 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context):
                 })
                 message = body_template.render(SecureContext(ctx))
                 subject = subject_template.render(SecureContext(ctx))
-                address = channel.handler.get_recipient_address(subscription)
+                address = subscription.get_address()
                 attachments = None
                 if event.attachment and channel.handler.handle_attachments:
                     file_getter = event.attachment
