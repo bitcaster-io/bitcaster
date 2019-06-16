@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import click
@@ -31,8 +30,6 @@ def upgrade(ctx, prompt, migrate, static, verbose, run_check, **kwargs):
 
         extra.extend(['-v', str(verbose)])
 
-        os.environ['BITCASTER_DEBUG'] = 'True'
-        os.environ['BITCASTER_PLUGINS_AUTOLOAD'] = 'False'
         for _dir in ('MEDIA_ROOT', 'STATIC_ROOT'):
             target = Path(env.str(_dir))
             if not target.exists():

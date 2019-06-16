@@ -22,7 +22,7 @@ class UserEventListView(UserEventMixin, BitcasterBaseListView):
     template_name = 'bitcaster/user/events.html'
 
     def get_queryset(self):
-        return super().get_queryset().filter().order_by('application__name', 'name')
+        return super().get_queryset().filter(core=False).order_by('application__name', 'name')
         # return super().get_queryset().exclude(subscriptions__subscriber=self.request.user,
         #                                       subscriptions__isnull=False).order_by('application__name', 'name')
 
