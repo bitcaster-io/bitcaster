@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _, ngettext_lazy
@@ -54,6 +55,13 @@ class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
 
         for a in formset.new_objects:
             self.audit(a, AuditLogEntry.AuditEvent.ADDRESS_CREATED)
+
+        if formset.changed_objects:
+            disabled = self.request.user.subscriptions.check_address()
+            if disabled:
+                self.message_user(_('Some subscription have been disabled. '
+                                    'You must verify the new address before you enable it again'),
+                                  messages.WARNING)
 
         return super().form_valid(formset)
 

@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 mkdir -p /backups /var/bitcaster/run ${BITCASTER_MEDIA_ROOT} ${BITCASTER_STATIC_ROOT}
-chown :1024 /var/bitcaster/ /backups
+chown bitcaster:bitcaster -R /var/bitcaster/ /backups
 chmod 775 /var/bitcaster/ /backups
 chmod g+s /var/bitcaster/ /backups
 

@@ -2,6 +2,7 @@ import logging
 from _md5 import md5
 
 from crashlog.middleware import process_exception
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -22,6 +23,16 @@ logger = logging.getLogger(__name__)
 class SubscriptionQuerySet(models.QuerySet):
     # def enabled(self, *args, **kwargs):
     #     return self.filter(active=True, channel__enabled=True, *args, **kwargs)
+
+    def check_address(self, *args, **kwargs):
+        # TODO: updated this code when Subscription.address will be used directly
+        to_disable = []
+        for e in self.only('pk', 'enabled').filter(enabled=True):
+            if not e.recipient:
+                to_disable.append(e.pk)
+        if to_disable:
+            self.filter(id__in=to_disable).update(enabled=False)
+        return to_disable
 
     def valid(self, *args, **kwargs):
         return self.filter(enabled=True, channel__enabled=True, *args, **kwargs)
@@ -75,7 +86,9 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     @cached_property
     def recipient(self):
         try:
-            return self.channel.handler.get_recipient_address(self)
+            return self.subscriber.assignments.get_address(self.channel.handler).address
+        except ObjectDoesNotExist:
+            return None
         except AttributeError as e:
             logger.exception(e)
             process_exception(e)
@@ -83,6 +96,7 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
 
     def get_address(self):
         return self.channel.handler.get_recipient_address(self)
+
     # @property
     # def errors(self):
     #     try:

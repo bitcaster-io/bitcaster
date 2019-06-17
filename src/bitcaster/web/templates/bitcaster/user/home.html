@@ -30,7 +30,7 @@
                     {% endfor %}
                 </table>
                 <a href="{% org-url 'user-logs' %}"
-                   class="btn btn-danger btn-small m-2">Check</a>
+                   class="btn btn-danger btn-small m-2 text-capitalize">{% trans "check notifications" %}</a>
             {% else %}
                 <div class="card-body text-center ">
                     {% trans "Congratulation you do not have any missed notitification" %}
@@ -58,7 +58,7 @@
                             {% endfor %}
                         </div>
                         <a href="{% org-url 'user-address-assignment' %}"
-                           class="btn btn-danger btn-small m-2">Verify</a>
+                           class="btn btn-danger btn-small m-2">{% trans "check addresses" %}</a>
                     {% else %}
                         <div class="card-body">
                             {% trans "All addresses successfully verified" %}
@@ -83,7 +83,9 @@
                                 <div class="list-group-item w-100">{{ n.event }}</div>
                             {% endfor %}
                         </div>
-                        <a href="{% org-url 'user-subscriptions' %}" class="btn btn-danger btn-small m-2">Enable</a>
+                        <a href="{% org-url 'user-subscriptions' %}" class="btn btn-danger btn-small m-2">
+                        {% trans "check subscriptions" %}
+                        </a>
                     {% else %}
                         <div class="card-body">
                             {% trans "All subscriptions enabled" %}

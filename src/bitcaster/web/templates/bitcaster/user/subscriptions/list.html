@@ -16,7 +16,7 @@
                 <td style="width:5%">{{ subscription.event.application }}</td>
                 <td style="width:5%">{{ subscription.event }}</td>
                 <td style="width:5%">{{ subscription.channel }}</td>
-                <td style="width:5%">{{ subscription.recipient }}</td>
+                <td style="width:5%">{{ subscription.recipient|default_if_none:"&lt;invalid subscription&gt;" }}</td>
                 <td style="width:10%" class="nowrap formset-commands">
                     {% if subscription.status == subscription.STATUSES.OWNED %}
                     <a class="btn btn-light"
