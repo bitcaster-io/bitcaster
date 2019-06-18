@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from bitcaster.exceptions import AddressNotVerified
+from bitcaster.exceptions import AddressNotAssigned, AddressNotVerified
 from bitcaster.models import (Address, AuditEvent, AuditLogEntry,
                               Event, Subscription,)
 from bitcaster.web import messages
@@ -45,8 +45,9 @@ class UserSubscriptionToggle(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
     def get(self, request, *args, **kwargs):
         subscription = self.get_object()
         try:
-            assignment = request.user.assignments.get(channel=subscription.channel)
-            if assignment and not assignment.verified:
+            if not subscription.assignment:
+                raise AddressNotAssigned()
+            if not subscription.recipient:
                 raise AddressNotVerified()
 
             subscription.enabled = not subscription.enabled
@@ -56,11 +57,11 @@ class UserSubscriptionToggle(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
             else:
                 self.message_user(f'{subscription._meta.verbose_name} #{subscription.pk} disabled',
                                   level=messages.WARNING)
-        except AddressNotVerified:
+        except (AddressNotVerified, AddressNotAssigned) as e:
             subscription.enabled = False
-            self.message_user(_('{} #{} cannot be enabled because '
-                                'address has not been verified').format(subscription._meta.verbose_name,
-                                                                        subscription.pk),
+            self.message_user(_('{} #{} cannot be enabled. {}').format(subscription._meta.verbose_name,
+                                                                       subscription.pk,
+                                                                       str(e)),
                               level=messages.WARNING)
 
         except Address.DoesNotExist as e:

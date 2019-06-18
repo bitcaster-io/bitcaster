@@ -87,7 +87,13 @@ class PermissionDenied(_PermissionDenied):
 
 
 class AddressNotVerified(Exception):
-    pass
+    def __str__(self):
+        return _('address has not been verified')
+
+
+class AddressNotAssigned(Exception):
+    def __str__(self):
+        return _('subscription does not have any address associated')
 
 
 class FilteringError(Exception):

@@ -134,37 +134,6 @@ class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseListView):
     def get_success_url(self):
         return reverse('user-address', args=[self.selected_organization.slug])
 
-    # def get_form_class(self):
-    #     return AddressFormSet
-
-    # def get_form_kwargs(self):
-    #     kwargs = super().get_form_kwargs()
-    #     kwargs['instance'] = self.request.user
-    #     return kwargs
-
-    # def form_valid(self, formset):
-    #     formset.instance = self.request.user
-    #     formset.save()
-    #     for a in formset.deleted_objects:
-    #         self.audit(a, AuditLogEntry.AuditEvent.ADDRESS_DELETED)
-    #
-    #     for obj, changed_data in formset.changed_objects:
-    #         self.audit(obj,
-    #                    AuditLogEntry.AuditEvent.ADDRESS_UPDATED,
-    #                    data=changed_data)
-    #
-    #     for a in formset.new_objects:
-    #         self.audit(a, AuditLogEntry.AuditEvent.ADDRESS_CREATED)
-    #
-    #     if formset.changed_objects:
-    #         disabled = self.request.user.subscriptions.check_address()
-    #         if disabled:
-    #             self.message_user(_('Some subscription have been disabled. '
-    #                                 'You must verify the new address before you enable it again'),
-    #                               messages.WARNING)
-    #
-    #     return super().form_valid(formset)
-
 
 class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
     template_name = 'bitcaster/user/address/verify.html'

@@ -33,7 +33,7 @@ class UserHome(UserMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         kwargs['missing'] = self.request.user.notifications.missed().distinct('occurence')
-        kwargs['invalid'] = self.request.user.assignments.filter(verified=False)
+        kwargs['invalid'] = self.request.user.assignments.unverified()
         kwargs['disabled'] = self.request.user.subscriptions.filter(enabled=False)
         return super().get_context_data(**kwargs)
 

@@ -22,6 +22,9 @@ class AddressQuerySet(models.QuerySet):
 
 
 class AddressAssignmentQuerySet(models.QuerySet):
+    def unverified(self, *args, **kwargs):
+        return self.unlocked(verified=False).filter(*args, **kwargs)
+
     def unlocked(self, *args, **kwargs):
         return self.filter(locked=False).filter(*args, **kwargs)
 

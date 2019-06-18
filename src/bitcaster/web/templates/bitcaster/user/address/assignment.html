@@ -23,7 +23,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for assignment in user.assignments.unlocked %}
+            {% for assignment in user.assignments.unverified %}
                 <tr>
                 <td style="width:5%">{{ assignment.channel }}</td>
                 <td style="width:5%">{{ assignment.address }}</td>
