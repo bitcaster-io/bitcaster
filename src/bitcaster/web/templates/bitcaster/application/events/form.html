@@ -1,4 +1,4 @@
-{% extends "bitcaster/application/events/base_detail.html" %}{% load crispy_forms_tags i18n bitcaster %}
+{% extends "bitcaster/application/events/base_detail.html" %}{% load crispy_forms_filters i18n bitcaster %}
 {#{% block pageId %}event{% endblock %}#}
 {% block detail %}
     <div class="container">
@@ -6,7 +6,31 @@
             <div class="container-fluid">
                 <form method="post" lass="d-none" id="form-event">
                     {% csrf_token %}
-                    {% crispy form %}
+                    <div class="card mb-2">
+                        <div class="card-header text-capitalize" href="#">General</div>
+                        <ul class="collapse show list-group list-group-flush p-3" id="">
+                            {{ form.name|as_crispy_field }}
+                            {{ form.description|as_crispy_field }}
+                        </ul>
+                    </div>
+                    <div class="card mb-2">
+                        <div class="card-header text-capitalize" href="#">Details</div>
+                        <ul class="collapse show list-group list-group-flush p-3" id="">
+                            {{ form.channels|as_crispy_field }}
+                            {{ form.subscription_policy|as_crispy_field }}
+                            {{ form.attachment|as_crispy_field }}
+                            {{ form.event_expiration|as_crispy_field }}
+                        </ul>
+                    </div>
+                    <div class="card mb-2">
+                        <div class="card-header text-capitalize" href="#">Confirmation</div>
+                        <ul class="collapse show list-group list-group-flush p-3" id="">
+                            {{ form.need_confirmation|as_crispy_field }}
+                            {{ form.reminders|as_crispy_field }}
+                            {{ form.attachment|as_crispy_field }}
+                            {{ form.reminder_interval|as_crispy_field }}
+                        </ul>
+                    </div>
                     <div class="pt-5">
                         <input
                             name="save_edit_messages"

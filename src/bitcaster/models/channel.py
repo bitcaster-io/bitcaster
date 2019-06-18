@@ -5,9 +5,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from sentry_sdk import capture_exception
 
-from bitcaster.exceptions import PluginValidationError
 from bitcaster.framework.db.fields import DispatcherField, EncryptedJSONField
 from bitcaster.models.fields import ThrottleField
 from bitcaster.models.mixins import ReverseWrapperMixin
@@ -89,13 +87,6 @@ class Channel(ReverseWrapperMixin, AbstractModel):
 
     def validate_address(self, address):
         return self.handler.validate_address(address)
-
-    def validate_subscription(self, subscription):
-        try:
-            return self.handler.validate_subscription(subscription)
-        except Exception as e:
-            capture_exception()
-            raise PluginValidationError() from e
 
     def validate_message(self, message, **kwargs):
         """

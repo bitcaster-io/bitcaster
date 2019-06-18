@@ -170,7 +170,7 @@
                     })
             });
             $('#resend').on('click', function () {
-                $('input[type=number]').val('');
+                $('input[type=text]').val('');
                 $.get('{% org-url "user-address-resend" object.pk %}')
                     .done(function (data) {
                         $('#message').removeClass('red').html('Code sent to ' + data.recipient);

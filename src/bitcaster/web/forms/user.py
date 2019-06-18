@@ -2,29 +2,24 @@ import logging
 
 from constance import config
 from crispy_forms.helper import FormHelper
-from dal_select2.widgets import ModelSelect2
 from django import forms
 from django.conf import settings
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (
     AuthenticationForm as _AuthenticationForm,
     UserCreationForm as _UserCreationForm,)
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
-from django.forms import BaseInlineFormSet, PasswordInput
+from django.forms import PasswordInput
 from django.forms.utils import ErrorList
 from django.urls import reverse
-from django.utils.translation import ngettext_lazy, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from django_countries import countries
-from rest_framework.exceptions import ValidationError as DRFValidationError
 from timezone_field import TimeZoneField
 
 from bitcaster.framework.db.fields import ORG_ROLES
 from bitcaster.framework.forms.fields import generic
 from bitcaster.mail import send_mail_by_template
-from bitcaster.models import (Address, AddressAssignment,
-                              Channel, Subscription, User,)
+from bitcaster.models import Address, Subscription, User
 from bitcaster.otp import totp
-from bitcaster.state import state
 from bitcaster.utils.email_verification import check_new_email_address_request
 from bitcaster.utils.http import absolute_uri
 
@@ -210,150 +205,130 @@ class AddressForm(forms.ModelForm):
         self.helper.form_show_labels = False
 
 
-class AddressAssignmentForm(forms.ModelForm):
-    address = forms.ModelChoiceField(queryset=Address.objects.all(),
-                                     widget=ModelSelect2(url='address-autocomplete'))
-    channel = forms.ModelChoiceField(queryset=Channel.objects.all(),
-                                     widget=ModelSelect2(url=''))
+# class AddressAssignmentForm(forms.ModelForm):
+#     address = forms.ModelChoiceField(queryset=Address.objects.all(),
+#                                      widget=ModelSelect2(url='address-autocomplete'))
+#     channel = forms.ModelChoiceField(queryset=Channel.objects.all(),
+#                                      widget=ModelSelect2(url=''))
+#
+#     class Meta:
+#         model = AddressAssignment
+#         fields = ('id', 'user', 'channel', 'address')
+#         error_messages = {
+#             NON_FIELD_ERRORS: {
+#                 'unique_together': _('Address assignment for this Channel already exists.'),
+#             }
+#         }
+#
+#     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
+#                  label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None,
+#                  organization=None):
+#         self.organization = organization
+#         super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
+#                          use_required_attribute)
+#
+#         self.fields['channel'].queryset = self.organization.channels.all()
+#         self.fields['channel'].widget.url = reverse('channel-autocomplete',
+#                                                     args=[self.organization.slug])
+#
+#         request = state.request
+#         self.fields['address'].queryset = request.user.addresses.all()
+#         self.helper = FormHelper()
+#         self.helper.form_show_labels = False
+#
+#     def clean(self):
+#         super().clean()
+#         if self.cleaned_data:  # pragma: no branch
+#             channel = self.cleaned_data.get('channel', None)
+#             address = self.cleaned_data.get('address', None)
+#             if channel and address and address.address:
+#                 try:
+#                     channel.validate_address(address.address)
+#                 except (DRFValidationError, ValidationError) as e:
+#
+#                     raise ValidationError({'address': ', '.join(e.detail)})
+#         return self.cleaned_data
 
-    class Meta:
-        model = AddressAssignment
-        fields = ('id', 'user', 'channel', 'address')
-        error_messages = {
-            NON_FIELD_ERRORS: {
-                'unique_together': _('Address assignment for this Channel already exists.'),
-            }
-        }
+#
+# AddressFormSetBase = forms.inlineformset_factory(User,
+#                                                  Address,
+#                                                  form=AddressForm,
+#                                                  min_num=1,
+#                                                  extra=0)
+# AddressAssignmentFormSetBase = forms.inlineformset_factory(User,
+#                                                            AddressAssignment,
+#                                                            form=AddressAssignmentForm,
+#                                                            min_num=1,
+#                                                            extra=0)
 
-    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
-                 label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None,
-                 organization=None):
-        self.organization = organization
-        super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
-                         use_required_attribute)
-
-        self.fields['channel'].queryset = self.organization.channels.all()
-        self.fields['channel'].widget.url = reverse('channel-autocomplete',
-                                                    args=[self.organization.slug])
-
-        request = state.request
-        self.fields['address'].queryset = request.user.addresses.all()
-        self.helper = FormHelper()
-        self.helper.form_show_labels = False
-
-    def clean(self):
-        super().clean()
-        if self.cleaned_data:  # pragma: no branch
-            channel = self.cleaned_data.get('channel', None)
-            address = self.cleaned_data.get('address', None)
-            if channel and address and address.address:
-                try:
-                    channel.validate_address(address.address)
-                except (DRFValidationError, ValidationError) as e:
-
-                    raise ValidationError({'address': ', '.join(e.detail)})
-        return self.cleaned_data
-
-
-AddressFormSetBase = forms.inlineformset_factory(User,
-                                                 Address,
-                                                 form=AddressForm,
-                                                 min_num=1,
-                                                 extra=0)
-AddressAssignmentFormSetBase = forms.inlineformset_factory(User,
-                                                           AddressAssignment,
-                                                           form=AddressAssignmentForm,
-                                                           min_num=1,
-                                                           extra=0)
-
-
-class AddressFormSet(AddressFormSetBase, BaseInlineFormSet):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.queryset = self.queryset.filter(locked=False).order_by('label')
-
-    def save(self, commit=True):
-        a = self.save_existing_objects(commit)
-        b = self.save_new_objects(commit)
-        return a + b
-
-
-class AddressAssignmentFormSet(AddressAssignmentFormSetBase, BaseInlineFormSet):
-    disabled_subscriptions = None
-
-    def __init__(self, data=None, files=None, instance=None,
-                 save_as_new=False, prefix=None, queryset=None, **kwargs):
-        self.organization = kwargs.pop('organization')
-        queryset = self.model._default_manager.order_by('channel__name')
-        super().__init__(data, files, instance, save_as_new, prefix, queryset, **kwargs)
-
-    def save(self, commit=True):
-        a = self.save_existing_objects(commit)
-        b = self.save_new_objects(commit)
-        return a + b
-
-    def get_form_kwargs(self, index):
-        ret = super().get_form_kwargs(index)
-        ret['organization'] = self.organization
-        return ret
-
-    def delete_existing(self, obj, commit=True):
-        # disable all subscriptions that use this address
-        self.disabled_subscriptions = obj.channel.linked_subscriptions.filter(subscriber=obj.user,
-                                                                              enabled=True).update(enabled=False)
-        super().delete_existing(obj, commit)
-
-    def get_queryset(self):
-        return super().get_queryset().order_by('channel')
+#
+# class AddressFormSet(AddressFormSetBase, BaseInlineFormSet):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.queryset = self.queryset.filter(locked=False).order_by('label')
+#
+#     def save(self, commit=True):
+#         a = self.save_existing_objects(commit)
+#         b = self.save_new_objects(commit)
+#         return a + b
 
 
-class UserSubscribeForm(forms.Form):
-    # recipient = forms.CharField(required=False)
-    # channels = forms.MultipleChoiceField()
-    channels = forms.ModelMultipleChoiceField(queryset=Channel.objects.none())
+# class AddressAssignmentFormSet(AddressAssignmentFormSetBase, BaseInlineFormSet):
+#     disabled_subscriptions = None
+#
+#     def __init__(self, data=None, files=None, instance=None,
+#                  save_as_new=False, prefix=None, queryset=None, **kwargs):
+#         self.organization = kwargs.pop('organization')
+#         queryset = self.model._default_manager.order_by('channel__name')
+#         super().__init__(data, files, instance, save_as_new, prefix, queryset, **kwargs)
+#
+#     def save(self, commit=True):
+#         a = self.save_existing_objects(commit)
+#         b = self.save_new_objects(commit)
+#         return a + b
+#
+#     def get_form_kwargs(self, index):
+#         ret = super().get_form_kwargs(index)
+#         ret['organization'] = self.organization
+#         return ret
+#
+#     def delete_existing(self, obj, commit=True):
+#         # disable all subscriptions that use this address
+#         self.disabled_subscriptions = obj.channel.linked_subscriptions.filter(subscriber=obj.user,
+#                                                                               enabled=True).update(enabled=False)
+#         super().delete_existing(obj, commit)
+#
+#     def get_queryset(self):
+#         return super().get_queryset().order_by('channel')
 
-    def __init__(self, instance, user, **kwargs):
-        self.event = instance
-        self.user = user
+
+class UserSubscriptionCreateForm(forms.Form):
+    addresses = forms.MultipleChoiceField(choices=())
+
+    def __init__(self, **kwargs):
+        self.event = kwargs.pop('event')
+        self.user = kwargs.pop('user')
+        self.instance = kwargs.pop('instance')
         super().__init__(**kwargs)
-        self.fields['channels'].queryset = self.event.channels.filter(addresses__user=user)
+        event_channels = self.event.channels.all()
+        choices = []
 
-    def clean_channels(self):
-        channels = self.cleaned_data['channels']
-        # this form is only for edit
-        existing = []
-        for ch in channels:
-            qs = Subscription.objects.filter(subscriber=self.user,
-                                             event=self.event,
-                                             channel=ch)
-
-            if qs.exists():
-                existing.append(ch.name)
-        if existing:
-            message = ngettext_lazy(
-                'Channel %(channels)s is already used.',
-                'Channels %(channels)s are already used.',
-                len(existing))
-            raise ValidationError(message % {'channels': ','.join(existing)})
-        return channels
+        for a in self.user.assignments.filter(channel__in=event_channels).exclude(subscriptions__event=self.event):
+            choices.append((a.pk, '{0.channel.name} ({0.address.address})'.format(a)))
+        self.fields['addresses'].choices = choices
 
 
 class UserSubscriptionEditForm(forms.ModelForm):
     class Meta:
         model = Subscription
-        fields = ('channel',)
+        fields = ('assignment',)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.fields['channel'].queryset = self.instance.event.channels.filter(addresses__user=self.instance.subscriber)
-
-    def clean_channel(self):
-        value = self.cleaned_data['channel']
-        # this form is only for edit
-        qs = Subscription.objects.filter(subscriber=self.instance.subscriber,
-                                         event=self.instance.event,
-                                         channel=value).exclude(id=self.instance.pk)
-
-        if qs.exists():
-            raise ValidationError(_('This channel is already used.'))
-        return value
+        # user addresses
+        qs = self.instance.subscriber.assignments
+        # select only address valid for event channel
+        qs = qs.filter(channel=self.instance.channel)
+        # esclude address alredy used by this event
+        # qs = qs.exclude(subscriptions=self.instance)
+        self.fields['assignment'].queryset = qs

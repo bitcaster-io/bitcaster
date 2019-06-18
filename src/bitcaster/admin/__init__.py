@@ -1,5 +1,5 @@
 # flake8: noqa
-from .address import AddressAdmin, AddressAssignmentAdmin
+from .address import AddressAdmin
 from .application import ApplicationAdmin
 from .audit import AuditLogEntryAdmin
 from .channel import ChannelAdmin

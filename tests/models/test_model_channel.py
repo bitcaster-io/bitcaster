@@ -1,12 +1,9 @@
-from unittest.mock import Mock
-
 import pytest
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers import Gmail, Twitter
-from bitcaster.exceptions import PluginValidationError
 from bitcaster.models import Channel, Message
 from bitcaster.utils.tests.factories import ChannelFactory
 
@@ -70,14 +67,6 @@ def test_validate_message(application1):
 
     with pytest.raises(ValidationError):
         ch.validate_message(Message(body='1' * 200))
-
-
-@pytest.mark.django_db
-def test_validate_subscription(subscription1):
-    channel = subscription1.channel
-    with pytest.raises(PluginValidationError):
-        assert channel.validate_subscription(Mock())
-    assert channel.validate_subscription(subscription1)
 
 
 @pytest.mark.django_db

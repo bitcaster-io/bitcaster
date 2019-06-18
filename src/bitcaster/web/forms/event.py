@@ -1,16 +1,12 @@
 import logging
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout
 from django import forms
-# from django.forms import Form, formset_factory, ModelForm
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from strategy_field.utils import fqn
 
 from bitcaster.models import Channel, DispatcherMetaData, Event
-from bitcaster.utils.crispy import Fieldset
 
 logger = logging.getLogger(__name__)
 
@@ -45,22 +41,6 @@ class EventForm(forms.ModelForm):
                                                                               flat=True)
         self.fields['channels'].queryset = Channel.objects.selectable(self.application,
                                                                       handler__in=enabled_dispatcher)
-
-        self.helper = FormHelper()
-        self.helper.layout = Layout(Fieldset('General',
-                                             'name',
-                                             'description'),
-                                    Fieldset('Details',
-                                             'channels',
-                                             'subscription_policy',
-                                             'attachment',
-                                             'event_expiration',
-                                             ),
-                                    Fieldset('Confirmation',
-                                             'need_confirmation',
-                                             'reminders',
-                                             'reminder_interval'),
-                                    )
 
     def _get_validation_exclusions(self):
         exclude = super()._get_validation_exclusions()

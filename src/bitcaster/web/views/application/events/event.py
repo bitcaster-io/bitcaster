@@ -73,7 +73,6 @@ class EventCreate(EventMixin, EventFormMixin, BitcasterBaseCreateView):
                                           })
         self.object.messages.exclude(channel__in=self.object.channels.all()).delete()
         self.audit(self.object, AuditEvent.EVENT_CREATED)
-        self.message_user(_('Event created'))
         return ret
 
 
@@ -103,6 +102,10 @@ class EventUpdate(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
 
 class EventDelete(EventMixin, EventFormMixin, BitcasterBaseDeleteView):
     # title = 'Delete Event'
+    def get_success_url(self):
+        return reverse('app-events',
+                       args=[self.selected_organization.slug,
+                             self.selected_application.slug])
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(save_label=_('Save Event'),
@@ -111,7 +114,6 @@ class EventDelete(EventMixin, EventFormMixin, BitcasterBaseDeleteView):
     def delete(self, request, *args, **kwargs):
         ret = super().delete(request, *args, **kwargs)
         self.audit(self.object, AuditEvent.EVENT_DELETED)
-        self.message_user(_('Event deleted'))
         return ret
 
 

@@ -9,6 +9,7 @@
                 <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a>
                 {% endif %}
             </div>
+            {% if event %}
             <div class="ml-auto p-2">
                 {% if view|classname != 'EventUpdate' %}
                     {% button event.urls.edit True "fas fa-wrench" "configure" %}
@@ -41,6 +42,7 @@
                     {% button event.urls.subscriptions True "fas fa-user" "subscriptions" %}
                 {% endif %}
             </div>
+        {% endif %}
         </div>
     {% endblock %}
     {% block detail %}

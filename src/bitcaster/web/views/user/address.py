@@ -1,15 +1,17 @@
 import logging
+import string
 
-from django.contrib import messages
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _, ngettext_lazy
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import Address, AddressAssignment
 from bitcaster.models.audit import AuditLogEntry
-from bitcaster.web.forms import AddressAssignmentFormSet, AddressFormSet
+from bitcaster.utils.strings import random_string
+from bitcaster.web.forms.address import UserAddressForm
 
-from ..base import (BitcasterBaseDetailView,
+from ..base import (BitcasterBaseCreateView, BitcasterBaseDeleteView,
+                    BitcasterBaseDetailView, BitcasterBaseListView,
                     BitcasterBaseUpdateView, BitcasterTemplateView,)
 from .base import LogAuditMixin, UserMixin
 
@@ -18,56 +20,154 @@ logger = logging.getLogger(__name__)
 __all__ = ('UserAddressesView', 'UserAddressesInfoView', 'UserAddressesAssignmentView')
 
 
-class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/user/addresses.html'
+class UserAddressCreate(UserMixin, LogAuditMixin, BitcasterBaseCreateView):
+    template_name = 'bitcaster/user/address/form.html'
+    model = Address
+    form_class = UserAddressForm
+
+    def get_queryset(self):
+        return self.request.user.addresses.all()
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('user-address', args=[self.selected_organization.slug])
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        self.object = Address.objects.create(user=self.request.user,
+                                             address=form.cleaned_data['address'],
+                                             label=form.cleaned_data['label'])
+        for c in form.cleaned_data['channels']:
+            AddressAssignment.objects.create(
+                user=self.request.user,
+                channel=c,
+                address=self.object,
+                verified=False,
+                code=random_string(8, string.digits)
+            )
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class UserAddressUpdate(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
+    template_name = 'bitcaster/user/address/form.html'
+    model = Address
+    form_class = UserAddressForm
+
+    def get_queryset(self):
+        return self.request.user.addresses.unlocked()
+
+    # def get_form_kwargs(self):
+    #     kwargs = super().get_form_kwargs()
+    #     return kwargs
+
+    def get_success_url(self):
+        return reverse('user-address', args=[self.selected_organization.slug])
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        self._old_value = obj.address
+        return obj
+
+    def form_valid(self, form):
+
+        invalidate = False
+        self.object.user = self.request.user
+        if self.object.address != self._old_value:
+            invalidate = True
+
+        # self.object.label = form.cleaned_data['label']
+        self.object.save()
+        qs = AddressAssignment.objects.unlocked(user=self.request.user)
+        # delete removed channels
+        qs.exclude(channel__in=form.cleaned_data['channels']).delete()
+
+        selected_channels = list(form.cleaned_data['channels'])
+
+        existing_channels = [e.channel for e in
+                             qs.filter(channel__in=selected_channels)]
+        new_channels = [item for item in selected_channels if item not in existing_channels]
+
+        for ch in new_channels:
+            AddressAssignment.objects.create(
+                user=self.request.user,
+                channel=ch,
+                address=self.object,
+                verified=False,
+                code=random_string(8, string.digits)
+            )
+
+        if invalidate:
+            for ch in existing_channels:
+                qs.filter(channel=ch, address=self.object).update(
+                    verified=False,
+                    code=random_string(8, string.digits)
+                )
+
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class UserAddressDelete(UserMixin, LogAuditMixin, BitcasterBaseDeleteView):
+    model = Address
+
+    def get_queryset(self):
+        return self.request.user.addresses.unlocked()
+
+    def get_success_url(self):
+        return reverse('user-address', args=[self.selected_organization.slug])
+
+
+class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseListView):
+    template_name = 'bitcaster/user/address/list.html'
     model = Address
     # form_class = AddressForm
     title = _('Addresses')
 
-    def get_object(self, queryset=None):
-        return self.request.user
-
     def get_context_data(self, **kwargs):
-        return super().get_context_data(locked_addresses=self.object.addresses.filter(locked=True).order_by('label'),
+        return super().get_context_data(locked_addresses=self.request.user.addresses.locked().order_by('label'),
                                         **kwargs)
 
     def get_success_url(self):
         return reverse('user-address', args=[self.selected_organization.slug])
 
-    def get_form_class(self):
-        return AddressFormSet
+    # def get_form_class(self):
+    #     return AddressFormSet
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['instance'] = self.request.user
-        return kwargs
+    # def get_form_kwargs(self):
+    #     kwargs = super().get_form_kwargs()
+    #     kwargs['instance'] = self.request.user
+    #     return kwargs
 
-    def form_valid(self, formset):
-        formset.instance = self.request.user
-        formset.save()
-        for a in formset.deleted_objects:
-            self.audit(a, AuditLogEntry.AuditEvent.ADDRESS_DELETED)
-
-        for obj, changed_data in formset.changed_objects:
-            self.audit(obj,
-                       AuditLogEntry.AuditEvent.ADDRESS_UPDATED,
-                       data=changed_data)
-
-        for a in formset.new_objects:
-            self.audit(a, AuditLogEntry.AuditEvent.ADDRESS_CREATED)
-
-        if formset.changed_objects:
-            disabled = self.request.user.subscriptions.check_address()
-            if disabled:
-                self.message_user(_('Some subscription have been disabled. '
-                                    'You must verify the new address before you enable it again'),
-                                  messages.WARNING)
-
-        return super().form_valid(formset)
+    # def form_valid(self, formset):
+    #     formset.instance = self.request.user
+    #     formset.save()
+    #     for a in formset.deleted_objects:
+    #         self.audit(a, AuditLogEntry.AuditEvent.ADDRESS_DELETED)
+    #
+    #     for obj, changed_data in formset.changed_objects:
+    #         self.audit(obj,
+    #                    AuditLogEntry.AuditEvent.ADDRESS_UPDATED,
+    #                    data=changed_data)
+    #
+    #     for a in formset.new_objects:
+    #         self.audit(a, AuditLogEntry.AuditEvent.ADDRESS_CREATED)
+    #
+    #     if formset.changed_objects:
+    #         disabled = self.request.user.subscriptions.check_address()
+    #         if disabled:
+    #             self.message_user(_('Some subscription have been disabled. '
+    #                                 'You must verify the new address before you enable it again'),
+    #                               messages.WARNING)
+    #
+    #     return super().form_valid(formset)
 
 
 class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
-    template_name = 'bitcaster/user/address_verify.html'
+    template_name = 'bitcaster/user/address/verify.html'
     model = AddressAssignment
     mode = ''  # verify or resend
 
@@ -124,52 +224,54 @@ class UserAddressesInfoView(UserMixin, BitcasterBaseDetailView):
         return super().get_context_data(**kwargs)
 
 
-class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
-    template_name = 'bitcaster/user/addresses_assignment.html'
-    model = AddressAssignment
-    form_class = AddressAssignmentFormSet
-    title = _('Address Usage')
+class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterTemplateView):
+    template_name = 'bitcaster/user/address/assignment.html'
+    title = _('addresses verification')
+
+    # model = AddressAssignment
+    # form_class = AddressAssignmentFormSet
+    # title = _('Address Usage')
 
     def get_object(self, queryset=None):
         return self.request.user
 
-    def get_success_url(self):
-        return reverse('user-address-assignment', args=[self.selected_organization.slug])
-
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['instance'] = self.request.user
-        kwargs['organization'] = self.selected_organization
-        return kwargs
-
-    def form_invalid(self, form):
-        self.error_user('Please correct errors below')
-        return super().form_invalid(form)
-
-    def form_valid(self, formset):
-        formset.instance = self.request.user
-        formset.save()
-
-        for a in formset.deleted_objects:
-            self.audit(a, AuditLogEntry.AuditEvent.ASSIGNMENT_DELETED)
-        if formset.new_objects:
-            self.message_user(_('To complete your configuration. Insert codes that you receive to each new address'))
-            for assignment in formset.new_objects:
-                self.audit(assignment, AuditLogEntry.AuditEvent.ASSIGNMENT_CREATED)
-
-        for assignment, changed_data in formset.changed_objects:
-            self.audit(assignment, AuditLogEntry.AuditEvent.ASSIGNMENT_UPDATED,
-                       data=changed_data)
-            disabled = self.request.user.subscriptions.filter(channel=assignment.channel,
-                                                              enabled=True).update(
-                enabled=assignment.address.verified)
-            if disabled:
-                message = ngettext_lazy(
-                    '%s subscription has been disabled.' % disabled,
-                    '%s subscriptions have been disabled.' % disabled,
-                    disabled)
-                self.message_user(message)
-        return super().form_valid(formset)
+    # def get_success_url(self):
+    #     return reverse('user-address-assignment', args=[self.selected_organization.slug])
+    #
+    # def post(self, request, *args, **kwargs):
+    #     return super().post(request, *args, **kwargs)
+    #
+    # def get_form_kwargs(self):
+    #     kwargs = super().get_form_kwargs()
+    #     kwargs['instance'] = self.request.user
+    #     kwargs['organization'] = self.selected_organization
+    #     return kwargs
+    #
+    # def form_invalid(self, form):
+    #     self.error_user('Please correct errors below')
+    #     return super().form_invalid(form)
+    #
+    # def form_valid(self, formset):
+    #     formset.instance = self.request.user
+    #     formset.save()
+    #
+    #     for a in formset.deleted_objects:
+    #         self.audit(a, AuditLogEntry.AuditEvent.ASSIGNMENT_DELETED)
+    #     if formset.new_objects:
+    #         self.message_user(_('To complete your configuration. Insert codes that you receive to each new address'))
+    #         for assignment in formset.new_objects:
+    #             self.audit(assignment, AuditLogEntry.AuditEvent.ASSIGNMENT_CREATED)
+    #
+    #     for assignment, changed_data in formset.changed_objects:
+    #         self.audit(assignment, AuditLogEntry.AuditEvent.ASSIGNMENT_UPDATED,
+    #                    data=changed_data)
+    #         disabled = self.request.user.subscriptions.filter(channel=assignment.channel,
+    #                                                           enabled=True).update(
+    #             enabled=assignment.address.verified)
+    #         if disabled:
+    #             message = ngettext_lazy(
+    #                 '%s subscription has been disabled.' % disabled,
+    #                 '%s subscriptions have been disabled.' % disabled,
+    #                 disabled)
+    #             self.message_user(message)
+    #     return super().form_valid(formset)

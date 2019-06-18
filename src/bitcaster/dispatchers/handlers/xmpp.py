@@ -36,11 +36,6 @@ class Xmpp(CoreDispatcher):
     def name(cls):
         return 'Xmpp'
 
-    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
-    #     ser = XmppSubscription(data=subscription.config)
-    #     if not ser.is_valid():
-    #         raise PluginValidationError(ser.errors)
-
     def _get_connection(self) -> object:
         pass
         # settings = XMPPSettings({

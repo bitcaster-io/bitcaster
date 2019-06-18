@@ -1,0 +1,21 @@
+{% extends "bitcaster/user/base.html" %}{% load bitcaster crispy_forms_filters i18n %}
+{% block page %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.errors }}
+        {{ form|crispy }}
+        <input type="submit" class="btn btn-primary" value="{% trans "Save" %}">
+        <input type="button" class="btn btn-secondary"
+               onclick="history.back();"
+               value="{% trans "Cancel" %}">
+
+    </form>
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $("select").select2({
+            closeOnSelect: false
+        });
+    </script>
+{% endblock %}

@@ -1,5 +1,13 @@
 "use strict";
-import 'bootstrap';
+window.jQuery = window.$ = require('jquery');
+window.select2 = require('select2');
+window.Swal = require('sweetalert2');
+window.Noty = require('noty');
+
+require('bootstrap');
+
+
+// import 'bootstrap';
 import "noty";
 import "noty/lib/noty.css";
 import "noty/lib/themes/bootstrap-v4.css";
@@ -46,11 +54,6 @@ import './images/icons/zulip.png';
 
 // import './images/icons/*.*';
 
-
-window.jQuery = window.$ = require('jquery');
-window.select2 = require('select2');
-window.Swal = require('sweetalert2');
-window.Noty = require('noty');
 
 import 'jquery-datetimepicker/build/jquery.datetimepicker.min.css';
 require('jquery-datetimepicker/build/jquery.datetimepicker.full.min');

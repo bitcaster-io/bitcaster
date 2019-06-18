@@ -43,11 +43,6 @@ You need a valid [Twilio](https://www.twilio.com/) account to use this service.
     options_class = TwilioOptions
     message_class = MessageType
 
-    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
-    #     ser = TwilioSubscription(data=subscription.config)
-    #     if not ser.is_valid():
-    #         raise PluginValidationError(ser.errors)
-
     def _get_connection(self) -> Client:
         return Client(self.config['sid'],
                       self.config['token'])
@@ -55,7 +50,6 @@ You need a valid [Twilio](https://www.twilio.com/) account to use this service.
     def emit(self, address: str, subject: str, message: str,
              connection=None, *args, **kwargs) -> str:
         try:
-            # self.validate_subscription(subscription)
             connection = connection or self._get_connection()
             connection.messages.create(
                 # to=address.encode('utf8'),

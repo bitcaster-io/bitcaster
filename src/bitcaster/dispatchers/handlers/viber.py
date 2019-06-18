@@ -133,9 +133,9 @@ class Viber(CoreDispatcher):
         otp = request.GET.get('otp')
         messages, dt = OtpHandler().validate(otp)
         request.user.store(fqn(self), self.owner.pk, messages[0])
-        address = request.user.assignments.get(channel=self.owner).address
-        address.verified = True
-        address.save()
+        assignment = request.user.assignments.get(channel=self.owner)
+        assignment.verified = True
+        assignment.save()
         return HttpResponseRedirect('/')
 
     def callback(self, request):

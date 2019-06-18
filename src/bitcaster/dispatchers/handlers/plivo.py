@@ -34,11 +34,6 @@ class Plivo(CoreDispatcher):
 
     name = 'SMS (Plivo)'
 
-    # def validate_subscription(self, subscription, *args, **kwargs) -> None:
-    #     ser = self.subscription_class(data=subscription.config)
-    #     if not ser.is_valid():
-    #         raise PluginValidationError(ser.errors)
-
     def _get_connection(self) -> plivo.RestClient:
         return plivo.RestClient(auth_id=self.config['sid'],
                                 auth_token=self.config['token'])

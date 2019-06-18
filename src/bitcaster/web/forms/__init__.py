@@ -17,6 +17,5 @@ from .subscription import SubscriptionForm
 from .system_settings import (SettingsChannelsForm, SettingsEmailForm,
                               SettingsMainForm, SettingsOAuthForm,)
 from .team import ApplicationTeamForm
-from .user import (AddressAssignmentForm, AddressAssignmentFormSet, AddressForm,
-                   AddressFormSet, UserCreationForm, UserInviteRegistrationForm,
+from .user import (AddressForm, UserCreationForm, UserInviteRegistrationForm,
                    UserProfileForm, send_address_verification_email,)

@@ -126,10 +126,6 @@ class Event(ReverseWrapperMixin, AbstractModel):
                                     args=[self.application.organization.slug,
                                           self.application.pk,
                                           self.pk]))
-        # return '%s%s' % (config.SITE_URL, reverse('api:application-event-trigger',
-        #                                           args=[self.application.organization.slug,
-        #                                                 self.application.pk,
-        #                                                 self.pk]))
 
     def __str__(self):
         return self.name
@@ -141,16 +137,3 @@ class Event(ReverseWrapperMixin, AbstractModel):
     @cached_property
     def enabled_channels(self):
         return self.channels.filter(enabled=True)
-
-    # def check_enabled(self):
-    #     original = self.enabled
-    #     if original:
-    #         self.enabled = self.valid_channels.exists()
-    #         if self.enabled != original:
-    #             self.save()
-
-    # def get_message(self, channel):
-    #     return self.messages.get(channels=channel)
-    #
-    # def emit(self, context, fail_silently=True):
-    #     return emit_event.delay(self, context)

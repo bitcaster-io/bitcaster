@@ -4,7 +4,8 @@
 {% block page %}
     {% if not_usable_channels %}
         <div class="box-container alert-warning border-warning p-2">
-            This subscription refers to an event with channels that cannot be used because you don't have any address assigned to
+            This subscription refers to an event with channels that cannot be used because you don't have any address
+            assigned to
             them.
             <div>
                 To add missing assignment go to
@@ -17,14 +18,22 @@
                 {% endfor %}
             </ul>
         </div>
-    {% endif %}        <form method="post">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <input type="submit" class="btn btn-primary" value="{% trans "Save" %}">
-            <input type="button" class="btn btn-secondary"
-                   onclick="history.back();"
-                   value="{% trans "Cancel" %}">
-        </form>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" class="btn btn-primary" value="{% trans "Save" %}">
+        <input type="button" class="btn btn-secondary"
+               onclick="history.back();"
+               value="{% trans "Cancel" %}">
+    </form>
+    {% if subscription %}
+        <div class="container p-3 m-3">
+        {% for s in subscription.siblings.all %}
+            <div>{{ s.address.address }}</div>
+        {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}
 {% block js %}
     <script>

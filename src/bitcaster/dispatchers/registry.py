@@ -1,10 +1,12 @@
 from logging import getLogger
 
-from strategy_field.registry import Registry as Registry
+from strategy_field.registry import Registry
 
 logger = getLogger(__name__)
 
-dispatcher_registry = Registry('bitcaster.dispatchers.base.Dispatcher')
+
+dispatcher_registry = Registry('bitcaster.dispatchers.base.Dispatcher',
+                               label_attribute='label')
 
 #
 # def load_plugins():

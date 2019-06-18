@@ -14,36 +14,6 @@ from bitcaster.state import state
 logger = logging.getLogger(__name__)
 
 
-# class SubscriptionForm(forms.ModelForm):
-#     class Meta:
-#         model = Subscription
-#         exclude = []
-#
-#     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, initial=None, error_class=ErrorList,
-#                  label_suffix=None, empty_permitted=False, instance=None, use_required_attribute=None):
-#         if instance and not initial:
-#             initial = {'config': get_full_config(instance.channel.handler.subscription_class,
-#                                                  instance.config)}
-#         super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
-#                          use_required_attribute)
-#
-#     def clean_config(self):
-#         config = self.cleaned_data['config']
-#         if self.instance:
-#             handler = self.instance.channel.handler
-#             serializer_class = handler.subscription_class
-#             try:
-#                 ser = serializer_class(data=config)
-#                 ser.is_valid(True)
-#                 self.cleaned_data['config'] = ser.data
-#             except serializers.ValidationError as e:
-#                 config = get_full_config(serializer_class, config)
-#                 self.cleaned_data['config'] = config
-#                 self.instance.config = config
-#                 raise ValidationError(str(e))
-#
-#         return self.cleaned_data['config']
-
 class EventSubscriptionCreateForm(forms.Form):
     channel = forms.ModelChoiceField(queryset=Channel.objects.none())
     members = forms.ModelMultipleChoiceField(label='',
@@ -111,6 +81,9 @@ class EventSubscriptionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.event:
             self.fields['channel'].queryset = self.event.enabled_channels.all()
+        if self.instance:
+            self.fields['assignment'].queryset = self.instance.subscriber.assignments.filter(
+                channel=self.instance.channel)
 
     def clean_config(self):
         config = self.cleaned_data['config']
@@ -138,21 +111,10 @@ class EventSubscriptionForm(forms.ModelForm):
 
     class Meta:
         model = Subscription
-        fields = ('subscriber', 'channel', 'event', 'trigger_by')
+        fields = ('subscriber', 'channel', 'event', 'trigger_by', 'assignment')
 
 
 SubscriptionForm = EventSubscriptionForm
-
-
-#
-# class SubscriptionBaseFormSet(BaseInlineFormSet):
-#
-#     def __init__(self, *args, **kwargs):
-#         self.event = kwargs.pop('event')
-#         self.requestor = kwargs.pop('requestor')
-#         super().__init__(*args, **kwargs)
-#         self.form_kwargs['event'] = self.event
-#         self.form_kwargs['requestor'] = self.requestor
 
 
 class InviteForm(forms.ModelForm):
@@ -179,12 +141,6 @@ class InviteBaseFormSet(BaseFormSet):
         self.form_kwargs['requestor'] = self.requestor
 
 
-# SubscriptionFormSet = forms.inlineformset_factory(Event,
-#                                                   Subscription,
-#                                                   form=EventSubscriptionForm,
-#                                                   formset=SubscriptionBaseFormSet,
-#                                                   min_num=1,
-#                                                   extra=0)
 InviteFormSet = forms.inlineformset_factory(Organization,
                                             OrganizationMember,
                                             form=InviteForm,

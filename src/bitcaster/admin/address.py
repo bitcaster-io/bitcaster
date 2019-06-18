@@ -2,7 +2,9 @@ import logging
 
 from django.contrib import admin
 
-from ..models import Address, AddressAssignment
+from bitcaster.models.address import AddressAssignment
+
+from ..models import Address
 from .site import site
 
 logger = logging.getLogger(__name__)
@@ -11,17 +13,15 @@ logger = logging.getLogger(__name__)
 @admin.register(Address, site=site)
 class AddressAdmin(admin.ModelAdmin):
     search_fields = ('label', 'address')
-    list_display = ('user', 'label', 'address', 'verified')
-    list_filter = ('verified',)
+    list_display = ('user', 'label', 'address',)
 
 
 @admin.register(AddressAssignment, site=site)
 class AddressAssignmentAdmin(admin.ModelAdmin):
-    search_fields = ('user__email',)
-    list_display = ('user', 'address', 'channel', 'verified')
-    list_filter = ('channel',)
+    search_fields = ('user__email', 'user__name',)
+    list_display = ('user', 'address', 'channel', 'code', 'locked', 'verified')
+    list_filter = ('verified', 'locked',)
+    actions = ['verify']
 
-    def verified(self, obj):
-        return obj.address.verified
-
-    verified.boolean = True
+    def verify(self, request, qs):
+        qs.update(verified=True)

@@ -30,9 +30,6 @@ class TestDispatcherViber(DispatcherBaseTest):
         # return self.TARGET(Mock(application=application1, config=self.CONFIG))
         return ch.handler
 
-    def test_validate_subscription(self, dispatcher, subscription):
-        assert dispatcher.validate_subscription(self.RECIPIENT)
-
     def test_emit(self, dispatcher, subscription):
         pytest.xfail()
 

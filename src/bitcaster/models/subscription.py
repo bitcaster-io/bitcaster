@@ -1,7 +1,6 @@
 import logging
 from _md5 import md5
 
-from crashlog.middleware import process_exception
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.functional import cached_property
@@ -10,7 +9,7 @@ from model_utils import Choices
 
 from bitcaster.framework.db.fields import EncryptedJSONField
 
-from .address import Address
+from .address import AddressAssignment
 from .base import AbstractModel
 from .channel import Channel
 from .event import Event
@@ -28,7 +27,7 @@ class SubscriptionQuerySet(models.QuerySet):
         # TODO: updated this code when Subscription.address will be used directly
         to_disable = []
         for e in self.only('pk', 'enabled').filter(enabled=True):
-            if not e.recipient:
+            if not e.address or e.address.disabled:
                 to_disable.append(e.pk)
         if to_disable:
             self.filter(id__in=to_disable).update(enabled=False)
@@ -55,15 +54,15 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
                               related_name='subscriptions')
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE,
                                 related_name='linked_subscriptions')
-    address = models.ForeignKey(Address,
-                                related_name='subscriptions',
-                                on_delete=models.CASCADE,
-                                blank=True, null=True)
+    assignment = models.ForeignKey(AddressAssignment,
+                                   related_name='subscriptions',
+                                   on_delete=models.SET_NULL,
+                                   blank=True, null=True)
+
     enabled = models.BooleanField(default=True)
     config = EncryptedJSONField(null=True, blank=True)
     status = models.IntegerField(choices=STATUSES,
                                  default=STATUSES.OWNED)
-    # locked = models.BooleanField(default=False)
     objects = SubscriptionQuerySet.as_manager()
 
     class Meta:
@@ -86,24 +85,19 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     @cached_property
     def recipient(self):
         try:
-            return self.subscriber.assignments.get_address(self.channel.handler).address
+            return self.assignment.address.address
         except ObjectDoesNotExist:
             return None
-        except AttributeError as e:
-            logger.exception(e)
-            process_exception(e)
+        except AttributeError:
             return None
 
     def get_address(self):
-        return self.channel.handler.get_recipient_address(self)
-
-    # @property
-    # def errors(self):
-    #     try:
-    #         return counters.get_buckets('subscription:%s:errors' % self.pk, 'd', 1)[0][1]
-    #     except Exception as e:
-    #         logger.exception(e)
-    #         return 0
+        return self.recipient
+        # return self.channel.handler.get_recipient_address(self)
 
     def get_code(self):
         return md5(f'{self.pk}-{self.channel_id}-{self.event_id}-{self.subscriber.email}'.encode('utf8')).hexdigest()
+
+    def siblings(self):
+        return Subscription.objects.filter(subscriber=self.subscriber,
+                                           event=self.event).exclude(pk=self.pk)

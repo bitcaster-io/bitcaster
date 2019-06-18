@@ -1,0 +1,2 @@
+def compare():
+    pass

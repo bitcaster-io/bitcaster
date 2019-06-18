@@ -1,17 +1,22 @@
 import logging
 
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster.exceptions import AddressNotVerified
-from bitcaster.models import Address, AuditEvent, AuditLogEntry, Subscription
+from bitcaster.models import (Address, AuditEvent, AuditLogEntry,
+                              Event, Subscription,)
 from bitcaster.web import messages
-from bitcaster.web.forms.user import UserSubscriptionEditForm
-from bitcaster.web.views.base import (BitcasterBaseDeleteView,
+from bitcaster.web.forms.user import (UserSubscriptionCreateForm,
+                                      UserSubscriptionEditForm,)
+from bitcaster.web.views.base import (BitcasterBaseCreateView,
+                                      BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
                                       BitcasterBaseToggleView,
                                       BitcasterBaseUpdateView,
                                       HttpResponseRedirectToReferrer,)
+from bitcaster.web.views.organization.mixins import SelectedOrganizationMixin
 
 from .base import LogAuditMixin, UserMixin
 
@@ -41,7 +46,7 @@ class UserSubscriptionToggle(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
         subscription = self.get_object()
         try:
             assignment = request.user.assignments.get(channel=subscription.channel)
-            if assignment and not assignment.address.verified:
+            if assignment and not assignment.verified:
                 raise AddressNotVerified()
 
             subscription.enabled = not subscription.enabled
@@ -91,23 +96,56 @@ class UserSubscriptionRemove(UserSubscriptionMixin, LogAuditMixin, BitcasterBase
         return super().delete(request, *args, **kwargs)
 
 
+class UserSubscriptionCreate(SelectedOrganizationMixin, LogAuditMixin, BitcasterBaseCreateView):
+    template_name = 'bitcaster/user/subscribe.html'
+    title = 'Create subscriptions for %(object)s'
+    form_class = UserSubscriptionCreateForm
+    model = Subscription
+
+    def get_success_url(self):
+        return reverse('user-events', args=[self.selected_organization.slug])
+
+    def get_object(self, queryset=None):
+        self.object = Event.objects.get(id=self.kwargs['pk'])
+        return self.object
+
+    def get_context_data(self, **kwargs):
+        self.event = self.get_object()
+        ret = super().get_context_data(object=self.object, **kwargs)
+        ret['existing_subscriptions'] = self.request.user.subscriptions.filter(event=self.event)
+        ret['not_usable_channels'] = self.event.channels.exclude(assignments__user=self.request.user,
+                                                                 assignments__verified=True)
+        ret['usable_channels'] = self.event.channels.all()
+        return ret
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['event'] = self.get_object()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        selection = form.cleaned_data['addresses']
+        for a in self.request.user.assignments.filter(id__in=selection):
+            obj, __ = Subscription.objects.get_or_create(subscriber=self.request.user,
+                                                         assignment=a,
+                                                         channel=a.channel,
+                                                         event=form.event,
+                                                         defaults={'trigger_by': self.request.user,
+                                                                   'enabled': a.verified,
+                                                                   'status': Subscription.STATUSES.OWNED})
+            self.audit(obj, AuditLogEntry.AuditEvent.SUBSCRIPTION_CREATED)
+
+        return HttpResponseRedirect(self.get_success_url())
+
+
 class UserSubscriptionEdit(UserSubscriptionMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/user/subscriptions/form.html'
     form_class = UserSubscriptionEditForm
-    title = _('Change Subscription Channel')
+    title = _('Change Subscriptions')
 
     def get_success_url(self):
         return reverse('user-subscriptions', args=[self.selected_organization.slug])
 
     def get_object(self, queryset=None):
         return self.get_queryset().get(id=self.kwargs['pk'])
-
-    def get_context_data(self, **kwargs):
-        self.object = self.get_object()
-        # org  =
-        ret = super().get_context_data(object=self.object, **kwargs)
-        ret['not_usable_channels'] = self.object.event.channels.exclude(addresses__user=self.request.user,
-                                                                        addresses__address__verified=True)
-        ret['usable_channels'] = self.object.event.channels.filter(addresses__user=self.request.user,
-                                                                   addresses__address__verified=True)
-        return ret

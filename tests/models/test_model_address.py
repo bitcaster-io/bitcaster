@@ -10,15 +10,6 @@ def test_address_str():
     assert str(addr)
 
 
-def test_address_verified():
-    addr = Address(label='label', address='address')
-    assert not addr.verified
-
-
 def test_address_reset_verified(user1):
-    addr = Address(user=user1, label='label', address='address', verified=True)
+    addr = Address(user=user1, label='label', address='address')
     addr.save()
-    assert addr.verified
-    addr.address = 'new_address'
-    addr.save()
-    assert not addr.verified

@@ -264,8 +264,14 @@ def application_member(application1, organization_member):
 
 @pytest.fixture
 def subscriber1(user1, message1):
+    from bitcaster.utils.tests.factories import AddressAssignmentFactory
     for addr in user1.addresses.all():
-        user1.assignments.create(address=addr, channel=message1.channel)
+        AddressAssignmentFactory(user=user1,
+                                 address=addr,
+                                 channel=message1.channel)
+        # user1.assignments.create(address=addr,
+        #                          verified=
+        #                          channel=message1.channel)
     return user1
 
 

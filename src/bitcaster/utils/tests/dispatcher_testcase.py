@@ -67,9 +67,5 @@ class DispatcherBaseTest:
     def test_validate_address(self, dispatcher, subscription):
         assert dispatcher.validate_address(self.RECIPIENT)
 
-    def test_validate_subscription(self, dispatcher, subscription):
-        assert dispatcher.validate_subscription(subscription)
-        assert dispatcher.validate_subscription(self.RECIPIENT)
-
     def test_validate_message(self, dispatcher):
         assert dispatcher.validate_message(Message(body='message'))

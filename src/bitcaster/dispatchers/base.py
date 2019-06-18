@@ -2,13 +2,9 @@
 import abc
 from logging import getLogger
 
-from django.core.exceptions import ValidationError
-from sentry_sdk import capture_exception
-
 from bitcaster import get_full_version
-from bitcaster.configurable import (ConfigurableMixin,
-                                    ConfigurableOptionsForm, get_full_config,)
-from bitcaster.exceptions import PluginValidationError
+from bitcaster.configurable import ConfigurableMixin, ConfigurableOptionsForm
+from bitcaster.utils.language import classproperty
 
 from . import serializers
 
@@ -39,12 +35,17 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     need_verification = True
     handle_attachments = False
     icon = None
+    verbose_name = None
     __media__ = None
     __help__ = ''
 
     def __init__(self, owner=None):
         super().__init__(owner)
         self.logger = getLogger('bitcaster.plugins.%s' % self.name)
+
+    @classproperty
+    def label(self):
+        return self.verbose_name or self.__name__
 
     @abc.abstractmethod
     def _get_connection(self) -> object:
@@ -95,17 +96,6 @@ class Dispatcher(ConfigurableMixin, metaclass=abc.ABCMeta):
     def validate_address(cls, address, *args, **kwargs) -> bool:
         cls.subscription_class().fields['recipient'].run_validators(address)
         return True
-
-    def validate_subscription(self, subscription, *args, **kwargs) -> bool:
-        if isinstance(subscription, str):
-            return True
-        cfg = get_full_config(self.subscription_class, subscription.config)
-        cfg['recipient'] = self.get_recipient_address(subscription)
-        try:
-            return self.subscription_class(data=cfg).is_valid(True)
-        except (serializers.ValidationError, ValidationError) as e:  # pragma: no cover
-            capture_exception(e)
-            raise PluginValidationError(str(e)) from e
 
     @abc.abstractmethod
     def test_connection(self, raise_exception=False):

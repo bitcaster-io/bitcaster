@@ -24,8 +24,5 @@ class ConsoleDispatcher(CoreDispatcher):
     def validate_address(cls, address, *args, **kwargs):
         return True
 
-    def validate_subscription(self, subscription, *args, **kwargs):
-        return True
-
     def test_connection(self, raise_exception=False):
         return True

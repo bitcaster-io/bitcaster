@@ -9,6 +9,6 @@ def test_user_event(django_app, event1, subscriber1):
     res = django_app.get(url, user=subscriber1)
     assert event1.name in str(res.body)
     res = res.click(href='/%s/subscribe' % event1.id)
-    res.form['channels'] = [str(event1.channels.first().id)]
+    # res.form['addresses'] = [str(event1.channels.first().id)]
     res = res.form.submit('Save')
-    # assert res.status_code == 200
+    assert res.status_code == 200

@@ -1,33 +1,49 @@
 {% extends "bitcaster/user/base.html" %}{% load i18n bitcaster crispy_forms_filters %}
 {% block page %}
     {% if usable_channels %}
-    <div>{% blocktrans %}Choose which channels you want to use to receive messages{% endblocktrans %}</div>
+        <div>{% blocktrans %}Choose which channel/address you want to use to receive messages{% endblocktrans %}</div>
     {% endif %}
     {% if not_usable_channels %}
-        <div class="box-container alert-warning border-warning p-2">
-            This event has channels that cannot be used because you don't have any address assigned to
-            them.
-            <div>
+        <div class="box-container alert-warning border-warning p-2 m-2 border">
+            {% url "user-address-assignment" organization.slug  as aaaa %}
+            {% blocktrans %}
+                This event has channels that cannot be enabled because you don't have any address assigned to
+                them or related addresses are not validated.
+
+
                 To add missing assignment go to
-                <a href="{% url "user-address-assignment" organization.slug %}">Address Assignment page</a>
-                and set an appropriate address for the desired channel.
-            </div>
+                <a href="{{ aaaa }}">address verification page</a>
+                and validate related address or add those channels to an address.
+
+            {% endblocktrans %}
             <ul class="pt-3">
                 {% for ch in not_usable_channels %}
                     <li>{{ ch }}</li>
                 {% endfor %}
             </ul>
+            <div>
+                {% blocktrans %}
+                {% endblocktrans %}
+            </div>
         </div>
     {% endif %}
-    {% if usable_channels %}
-        <form method="post">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <input type="submit" class="btn btn-primary" value="{% trans "Save" %}">
-            <input type="button" class="btn btn-secondary"
-                   onclick="history.back();"
-                   value="{% trans "Cancel" %}">
-        </form>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" class="btn btn-primary" value="{% trans "Save" %}">
+        <input type="button" class="btn btn-secondary"
+               onclick="history.back();"
+               value="{% trans "Cancel" %}">
+    </form>
+    {% if existing_subscriptions %}
+        <div class="box-container p-1 m-3 border border-right">
+        {% for subscription in existing_subscriptions %}
+            <div class="row col-12 m-2">
+            <div class="col-4">{{ subscription.recipient }}</div>
+            <div class="col-4">{{ subscription.channel }}</div>
+            </div>
+        {% endfor %}
+        </div>
     {% endif %}
 {% endblock page %}
 {% block js %}

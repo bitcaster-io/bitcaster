@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "bootstrap-duallistbox": "^3.0.6"
   },
   "devDependencies": {
     "autoprefixer": "^8.6.0",

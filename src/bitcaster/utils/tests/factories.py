@@ -163,7 +163,6 @@ class UserFactory(AutoRegisterModelFactory):
         if addresses:
             for handler, address in addresses.items():
                 user.addresses.create(label=handler,
-                                      verified=True,
                                       address=address)
         if not organization:
             organization = OrganizationFactory(owner=user)
@@ -436,17 +435,20 @@ class SubscriptionFactory(AutoRegisterModelFactory):
     trigger_by = factory.SubFactory(AdminFactory)
     channel = factory.SubFactory(ChannelFactory)
     event = factory.SubFactory(EventFactory)
+
     config = {}
 
     @classmethod
     def _get_or_create(cls, model_class, *args, **kwargs):
         address = kwargs.pop('address', 'a@b.com')
         sub = super()._get_or_create(model_class, *args, **kwargs)
-        AddressAssignmentFactory(channel=sub.channel,
+        a = AddressAssignmentFactory(channel=sub.channel,
                                  user=sub.subscriber,
+                                 verified=True,
                                  address=AddressFactory(user=sub.subscriber,
                                                         address=address))
-
+        sub.assignment = a
+        sub.save()
         return sub
 
 
@@ -458,8 +460,6 @@ class AddressFactory(AutoRegisterModelFactory):
     user = factory.SubFactory(UserFactory)
     label = factory.Sequence(lambda n: 'Label %03d' % n)
     address = factory.Sequence(lambda n: 'Address %03d' % n)
-    verified = True
-    code = '123456'
 
 
 class AddressAssignmentFactory(AutoRegisterModelFactory):
@@ -470,6 +470,7 @@ class AddressAssignmentFactory(AutoRegisterModelFactory):
     user = factory.SubFactory(UserFactory)
     address = factory.SubFactory(AddressFactory)
     channel = factory.SubFactory(ChannelFactory)
+    verified = True
 
 
 class NotificationFactory(AutoRegisterModelFactory):

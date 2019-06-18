@@ -57,7 +57,7 @@ urlpatterns = [
     path('<slug:org>/me/social/', views.UserSocialAuthView.as_view(), name='user-socialauth'),
     path('<slug:org>/me/social/<str:provider>/disconnect/', views.UserSocialAuthDisconnectView.as_view(),
          name='user-socialauth-disconnect'),
-    path('<slug:org>/me/event/<int:pk>/subscribe/', views.UserEventSubcribe.as_view(), name='user-event-subscribe'),
+    path('<slug:org>/me/event/<int:pk>/subscribe/', views.UserSubscriptionCreate.as_view(), name='user-event-subscribe'),
     path('<slug:org>/me/subscriptions/', views.UserSubscriptionListView.as_view(), name='user-subscriptions'),
     path('<slug:org>/me/subscriptions/<int:pk>/toggle/', views.UserSubscriptionToggle.as_view(),
          name='user-subscription-toggle'),
@@ -67,6 +67,11 @@ urlpatterns = [
          name='user-subscription-edit'),
 
     path('<slug:org>/me/profile/', views.UserProfileView.as_view(), name='user-profile'),
+    path('<slug:org>/me/address/add/', views.UserAddressCreate.as_view(), name='user-address-create'),
+    path('<slug:org>/me/address/<int:pk>/edit/', views.UserAddressUpdate.as_view(), name='user-address-edit'),
+    path('<slug:org>/me/address/<int:pk>/delete', views.UserAddressDelete.as_view(), name='user-address-delete'),
+
+
     path('<slug:org>/me/addresses/', views.UserAddressesView.as_view(), name='user-address'),
     path('<slug:org>/me/addresses/<int:pk>/info/', views.UserAddressesInfoView.as_view(), name='user-address-info'),
     path('<slug:org>/me/assignment/<int:pk>/resend/', views.UserAddressesVerifyView.as_view(mode='resend'),
