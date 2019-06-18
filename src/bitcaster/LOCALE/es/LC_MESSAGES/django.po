@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-16 00:56+0200\n"
+"POT-Creation-Date: 2019-06-18 16:31+0200\n"
 "PO-Revision-Date: 2018-03-02 17:53+0000\n"
 "Last-Translator: Domenico Di Nicola <dom.dinicola@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/sax9/teams/84041/es/)\n"
@@ -326,7 +326,7 @@ msgstr ""
 msgid "'%(value)s'is not a valid ratelimit value "
 msgstr ""
 
-#: bitcaster/models/application.py:42 bitcaster/models/channel.py:45
+#: bitcaster/models/application.py:42 bitcaster/models/channel.py:43
 #: bitcaster/models/token.py:27
 #: bitcaster/web/templates/bitcaster/application/team/list.html:15
 #: bitcaster/web/templates/bitcaster/organization/application_list.html:19
@@ -475,31 +475,31 @@ msgstr ""
 msgid "%(actor)s reach max number of allowed events"
 msgstr ""
 
-#: bitcaster/models/channel.py:57 bitcaster/models/token.py:31
+#: bitcaster/models/channel.py:55 bitcaster/models/token.py:31
 #: bitcaster/web/templates/bitcaster/_includes/keys.html:7
 msgid "enabled"
 msgstr ""
 
-#: bitcaster/models/channel.py:59
+#: bitcaster/models/channel.py:57
 #: bitcaster/web/templates/bitcaster/_includes/keys.html:6
 msgid "description"
 msgstr ""
 
-#: bitcaster/models/channel.py:68
+#: bitcaster/models/channel.py:66
 msgid "dispatcher page size"
 msgstr ""
 
-#: bitcaster/models/channel.py:71
+#: bitcaster/models/channel.py:69
 msgid "dispatch rate"
 msgstr ""
 
-#: bitcaster/models/channel.py:77
+#: bitcaster/models/channel.py:75
 #: bitcaster/web/templates/bitcaster/application/subscriptions/list.html:16
 #: bitcaster/web/templates/bitcaster/user/subscriptions/list.html:8
 msgid "Channel"
 msgstr ""
 
-#: bitcaster/models/channel.py:78
+#: bitcaster/models/channel.py:76
 msgid "Channels"
 msgstr ""
 
@@ -553,7 +553,7 @@ msgstr ""
 
 #: bitcaster/models/event.py:106
 #: bitcaster/web/templates/bitcaster/~OLD/users/base.html:59
-#: bitcaster/web/views/user/events.py:15
+#: bitcaster/web/views/user/events.py:10
 msgid "Events"
 msgstr ""
 
@@ -719,24 +719,24 @@ msgstr ""
 msgid "Plugins"
 msgstr ""
 
-#: bitcaster/models/subscription.py:33
+#: bitcaster/models/subscription.py:43
 msgid "Subscription process is not completed"
 msgstr ""
 
-#: bitcaster/models/subscription.py:34
+#: bitcaster/models/subscription.py:44
 msgid "User subscribed to event"
 msgstr ""
 
-#: bitcaster/models/subscription.py:35
+#: bitcaster/models/subscription.py:45
 msgid "Admin subscribed user. Subscription is locked"
 msgstr ""
 
-#: bitcaster/models/subscription.py:62
+#: bitcaster/models/subscription.py:72
 msgid "Subscription"
 msgstr ""
 
-#: bitcaster/models/subscription.py:63
-#: bitcaster/web/views/user/subscriptions.py:23
+#: bitcaster/models/subscription.py:73
+#: bitcaster/web/views/user/subscriptions.py:28
 msgid "Subscriptions"
 msgstr ""
 
@@ -971,30 +971,30 @@ msgstr ""
 msgid "Monitor with this name already exists"
 msgstr ""
 
-#: bitcaster/web/forms/subscription.py:52
+#: bitcaster/web/forms/subscription.py:22
 msgid "Send only invitation. Do not actually subscribe users."
 msgstr ""
 
-#: bitcaster/web/forms/subscription.py:53
+#: bitcaster/web/forms/subscription.py:23
 msgid "Subscribe users but let them freedom to unsubscribe."
 msgstr ""
 
-#: bitcaster/web/forms/subscription.py:54
+#: bitcaster/web/forms/subscription.py:24
 msgid "Subscribe users and lock subscription. Users cannot unsubscribe."
 msgstr ""
 
-#: bitcaster/web/forms/subscription.py:70
+#: bitcaster/web/forms/subscription.py:40
 msgid "Event must have a MANAGED subscription policy to use this option"
 msgstr ""
 
-#: bitcaster/web/forms/subscription.py:86
+#: bitcaster/web/forms/subscription.py:56
 #, python-format
 msgid "%s does not have valid address for this channel"
 msgid_plural "%s do not have valid address for this channel"
 msgstr[0] ""
 msgstr[1] ""
 
-#: bitcaster/web/forms/subscription.py:92
+#: bitcaster/web/forms/subscription.py:62
 #, python-format
 msgid "%s is already subscribed"
 msgid_plural "%s are already subscribed"
@@ -1097,58 +1097,43 @@ msgstr ""
 msgid "Display custom fields in user profile page"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:41 bitcaster/web/views/system_setup.py:25
+#: bitcaster/web/forms/user.py:36 bitcaster/web/views/system_setup.py:25
 msgid "Passwords do not match"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:44
+#: bitcaster/web/forms/user.py:39
 msgid "Set your new password"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:46
+#: bitcaster/web/forms/user.py:41
 msgid "Repeat password"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:76
+#: bitcaster/web/forms/user.py:71
 msgid "Friendly Name"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:77
+#: bitcaster/web/forms/user.py:72
 msgid "Full Name"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:104 bitcaster/web/forms/user.py:151
+#: bitcaster/web/forms/user.py:99 bitcaster/web/forms/user.py:146
 msgid "The two password fields didn't match."
 msgstr ""
 
-#: bitcaster/web/forms/user.py:108 bitcaster/web/forms/user.py:156
+#: bitcaster/web/forms/user.py:103 bitcaster/web/forms/user.py:151
 #: bitcaster/web/views/system_setup.py:32
 msgid "Password"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:115 bitcaster/web/forms/user.py:163
+#: bitcaster/web/forms/user.py:110 bitcaster/web/forms/user.py:158
 #: bitcaster/web/views/system_setup.py:38
 msgid "Password confirmation"
 msgstr ""
 
-#: bitcaster/web/forms/user.py:119 bitcaster/web/forms/user.py:167
+#: bitcaster/web/forms/user.py:114 bitcaster/web/forms/user.py:162
 #: bitcaster/web/views/system_setup.py:41
 msgid "Enter the same password as before, for verification."
-msgstr ""
-
-#: bitcaster/web/forms/user.py:224
-msgid "Address assignment for this Channel already exists."
-msgstr ""
-
-#: bitcaster/web/forms/user.py:334
-#, python-format
-msgid "Channel %(channels)s is already used."
-msgid_plural "Channels %(channels)s are already used."
-msgstr[0] ""
-msgstr[1] ""
-
-#: bitcaster/web/forms/user.py:358
-msgid "This channel is already used."
 msgstr ""
 
 #: bitcaster/web/templates/_rest_framework/table/radio.html:3
@@ -1322,7 +1307,7 @@ msgstr ""
 #: bitcaster/web/templates/admin/bitcaster/monitor/submit_line.html:11
 #: bitcaster/web/templates/admin/pagination.html:11
 #: bitcaster/web/templates/admin/submit_line.html:3
-#: bitcaster/web/templates/bitcaster/application/events/form.html:21
+#: bitcaster/web/templates/bitcaster/application/events/form.html:45
 #: bitcaster/web/templates/bitcaster/application/events/messages.html:81
 #: bitcaster/web/templates/bitcaster/application/events/subscriptions/subscribe.html:25
 #: bitcaster/web/templates/bitcaster/application/events/subscriptions/subscribe2.html:56
@@ -1343,9 +1328,10 @@ msgstr ""
 #: bitcaster/web/templates/bitcaster/organization/groups/create.html:6
 #: bitcaster/web/templates/bitcaster/organization/groups/edit.html:6
 #: bitcaster/web/templates/bitcaster/organization/members/form.html:25
+#: bitcaster/web/templates/bitcaster/user/address/form.html:7
 #: bitcaster/web/templates/bitcaster/user/profile.html:35
-#: bitcaster/web/templates/bitcaster/user/subscribe.html:26
-#: bitcaster/web/templates/bitcaster/user/subscriptions/form.html:23
+#: bitcaster/web/templates/bitcaster/user/subscribe.html:33
+#: bitcaster/web/templates/bitcaster/user/subscriptions/form.html:25
 #: bitcaster/web/templates/bitcaster/~OLD/application/monitors/configure.html:13
 #: bitcaster/web/templates/bitcaster/~OLD/application/monitors/create_wizard_base.html:23
 msgid "Save"
@@ -1624,13 +1610,14 @@ msgstr ""
 #: bitcaster/web/templates/bitcaster/_includes/formset/commands.html:9
 #: bitcaster/web/templates/bitcaster/application/confirm_delete.html:19
 #: bitcaster/web/templates/bitcaster/application/events/batch.html:66
-#: bitcaster/web/templates/bitcaster/application/events/form.html:17
+#: bitcaster/web/templates/bitcaster/application/events/form.html:41
 #: bitcaster/web/templates/bitcaster/application/events/links.html:126
 #: bitcaster/web/templates/bitcaster/application/events/messages.html:77
 #: bitcaster/web/templates/bitcaster/application/events/test.html:68
 #: bitcaster/web/templates/bitcaster/generic/confirm_delete.html:19
-#: bitcaster/web/templates/bitcaster/user/subscribe.html:29
-#: bitcaster/web/templates/bitcaster/user/subscriptions/form.html:26
+#: bitcaster/web/templates/bitcaster/user/address/form.html:10
+#: bitcaster/web/templates/bitcaster/user/subscribe.html:36
+#: bitcaster/web/templates/bitcaster/user/subscriptions/form.html:28
 #: bitcaster/web/templates/bitcaster/~OLD/generic/confirm_delete.html:19
 msgid "Cancel"
 msgstr ""
@@ -1699,7 +1686,7 @@ msgstr ""
 msgid "Developer mode need to be enabled to test event from this interface"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/application/events/form.html:13
+#: bitcaster/web/templates/bitcaster/application/events/form.html:37
 msgid "Save and edit messages"
 msgstr ""
 
@@ -1773,7 +1760,7 @@ msgstr ""
 #. Translators: UserNotificationLogView.filter_fieldmap
 #: bitcaster/web/templates/bitcaster/application/log.html:19
 #: bitcaster/web/templates/bitcaster/organization/log.html:22
-#: bitcaster/web/templates/bitcaster/user/addresses_assignment.html:43
+#: bitcaster/web/templates/bitcaster/user/address/assignment.html:20
 #: bitcaster/web/templates/bitcaster/user/log.html:19
 #: bitcaster/web/views/mixins.py:160
 msgid "channel"
@@ -1823,7 +1810,6 @@ msgid "Reason"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/application/subscriptions/list.html:56
-#: bitcaster/web/templates/bitcaster/user/addresses.html:52
 msgid "Address"
 msgstr ""
 
@@ -2041,80 +2027,63 @@ msgstr ""
 msgid "Agents"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/user/address_verify.html:39
+#: bitcaster/web/templates/bitcaster/user/address/assignment.html:6
+#: bitcaster/web/templates/bitcaster/user/address/list.html:6
+#: bitcaster/web/templates/bitcaster/user/base.html:18
+#: bitcaster/web/templates/bitcaster/user/home.html:46
+msgid "addresses"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/address/assignment.html:10
+msgid "verify addresses"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/address/assignment.html:15
+msgid ""
+"These address/channel pairing need to be validated before they can be used"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/address/assignment.html:21
+#: bitcaster/web/templates/bitcaster/user/address/list.html:29
+msgid "address"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/address/list.html:10
+msgid "verify address"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/address/list.html:16
+msgid "Add here all your addresses."
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/address/list.html:20
+msgid "Add Address"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/address/list.html:28
+msgid "label"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/address/list.html:51
+msgid "System managed addresses"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/address/verify.html:39
 msgid ""
 "Warning: cannot send verification codes as channel is disabled. Ask your "
 "administrator to enable it first"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/user/address_verify.html:62
+#: bitcaster/web/templates/bitcaster/user/address/verify.html:62
 msgid "Send Code"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/user/address_verify.html:68
+#: bitcaster/web/templates/bitcaster/user/address/verify.html:68
 msgid "Verify Address"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/user/address_verify.html:81
+#: bitcaster/web/templates/bitcaster/user/address/verify.html:81
 msgid "Close"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/user/addresses.html:5
-#: bitcaster/web/templates/bitcaster/user/addresses_assignment.html:5
-#: bitcaster/web/templates/bitcaster/~OLD/users/base.html:41
-#: bitcaster/web/views/user/address.py:24
-msgid "Addresses"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/user/addresses.html:9
-#: bitcaster/web/templates/bitcaster/user/addresses_assignment.html:9
-msgid "Assignments"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/user/addresses.html:15
-msgid ""
-"\n"
-"                    Add here all your addresses.\n"
-"                    <b>Note:</b> because each channel has different "
-"requirements, each address can be validated only\n"
-"                    after it has\n"
-"                    been assigned to a Channel.\n"
-"                    For this reason, is possible that you are forced to "
-"insert the same address multiple times.\n"
-"                    i.e SMS channel that uses E.164 and other SMS Channell "
-"that uses a different number format.\n"
-"                "
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/user/addresses.html:25
-msgid "Add Address"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/user/addresses.html:51
-msgid "Label"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/user/addresses.html:83
-msgid "System managed addresses"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/user/addresses.html:109
-msgid ""
-"This address has not been verified. Assign it to a channel and insert the "
-"verification code you receive"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/user/addresses_assignment.html:17
-msgid "Add Assignment"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/user/addresses_assignment.html:44
-msgid "address"
-msgstr ""
-
-#: bitcaster/web/templates/bitcaster/user/base.html:18
-#: bitcaster/web/templates/bitcaster/user/home.html:46
-msgid "addresses"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/user/base.html:65
@@ -2139,6 +2108,10 @@ msgstr ""
 msgid "Check your client "
 msgstr ""
 
+#: bitcaster/web/templates/bitcaster/user/home.html:33
+msgid "check notifications"
+msgstr ""
+
 #: bitcaster/web/templates/bitcaster/user/home.html:36
 msgid "Congratulation you do not have any missed notitification"
 msgstr ""
@@ -2149,6 +2122,10 @@ msgstr ""
 
 #: bitcaster/web/templates/bitcaster/user/home.html:53
 msgid "These addresses cannot be used until not properly validated"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/home.html:61
+msgid "check addresses"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/user/home.html:64
@@ -2163,7 +2140,11 @@ msgstr ""
 msgid "You don't receive any message until you do not enable them"
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/user/home.html:89
+#: bitcaster/web/templates/bitcaster/user/home.html:87
+msgid "check subscriptions"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/home.html:91
 msgid "All subscriptions enabled"
 msgstr ""
 
@@ -2180,7 +2161,30 @@ msgid ""
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/user/subscribe.html:4
-msgid "Choose which channels you want to use to receive messages"
+msgid "Choose which channel/address you want to use to receive messages"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/subscribe.html:9
+#, python-format
+msgid ""
+"\n"
+"                This event has channels that cannot be enabled because you "
+"don't have any address assigned to\n"
+"                them or related addresses are not validated.\n"
+"\n"
+"\n"
+"                To add missing assignment go to\n"
+"                <a href=\"%(aaaa)s\">address verification page</a>\n"
+"                and validate related address or add those channels to an "
+"address.\n"
+"\n"
+"            "
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/user/subscribe.html:25
+msgid ""
+"\n"
+"                "
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/user/subscriptions/list.html:9
@@ -2202,6 +2206,11 @@ msgstr ""
 
 #: bitcaster/web/templates/bitcaster/~OLD/organization/dashboard.html:13
 msgid "Validate Configuration"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/~OLD/users/base.html:41
+#: bitcaster/web/views/user/address.py:128
+msgid "Addresses"
 msgstr ""
 
 #: bitcaster/web/templates/bitcaster/~OLD/users/base.html:47
@@ -2341,21 +2350,16 @@ msgid "Create Event"
 msgstr ""
 
 #: bitcaster/web/views/application/events/event.py:65
-#: bitcaster/web/views/application/events/event.py:76
 msgid "Event created"
 msgstr ""
 
-#: bitcaster/web/views/application/events/event.py:85
-#: bitcaster/web/views/application/events/event.py:108
+#: bitcaster/web/views/application/events/event.py:84
+#: bitcaster/web/views/application/events/event.py:111
 msgid "Save Event"
 msgstr ""
 
-#: bitcaster/web/views/application/events/event.py:100
+#: bitcaster/web/views/application/events/event.py:99
 msgid "Event updated"
-msgstr ""
-
-#: bitcaster/web/views/application/events/event.py:114
-msgid "Event deleted"
 msgstr ""
 
 #: bitcaster/web/views/application/events/messages.py:66
@@ -2638,22 +2642,9 @@ msgstr ""
 msgid "Backup / Restore: %s"
 msgstr ""
 
-#: bitcaster/web/views/user/address.py:123
-msgid "Address Usage"
+#: bitcaster/web/views/user/address.py:229
+msgid "addresses verification"
 msgstr ""
-
-#: bitcaster/web/views/user/address.py:151
-msgid ""
-"To complete your configuration. Insert codes that you receive to each new "
-"address"
-msgstr ""
-
-#: bitcaster/web/views/user/address.py:163
-#, python-format
-msgid "%s subscription has been disabled."
-msgid_plural "%s subscriptions have been disabled."
-msgstr[0] ""
-msgstr[1] ""
 
 #: bitcaster/web/views/user/base.py:46
 msgid "My Profile"
@@ -2667,14 +2658,14 @@ msgstr ""
 msgid "Social login settings"
 msgstr ""
 
-#: bitcaster/web/views/user/subscriptions.py:56
+#: bitcaster/web/views/user/subscriptions.py:61
 msgid "{} #{} cannot be enabled because address has not been verified"
 msgstr ""
 
-#: bitcaster/web/views/user/subscriptions.py:64
+#: bitcaster/web/views/user/subscriptions.py:69
 msgid "{} #{} cannot be enabled because there is no valid address to use"
 msgstr ""
 
-#: bitcaster/web/views/user/subscriptions.py:97
-msgid "Change Subscription Channel"
+#: bitcaster/web/views/user/subscriptions.py:145
+msgid "Change Subscriptions"
 msgstr ""
