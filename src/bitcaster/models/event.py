@@ -95,7 +95,11 @@ class Event(ReverseWrapperMixin, AbstractModel):
                                             validators=[MaxValueValidator(DAY),
                                                         MinValueValidator(1)])
 
-    event_expiration = TTLDBField(default=DAY)
+    event_expiration = TTLDBField(default=DAY,
+                                  help_text=_('Time to wait before any pending notification '
+                                              'will be canceled. '
+                                              'Format: num second|minutes|hour|day. '
+                                              'ie. 1d=1 day - 30m=30 minutes'))
     allow_attachments = models.BooleanField(default=False)
 
     class Meta:

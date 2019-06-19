@@ -2,10 +2,14 @@ from django import forms
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
-from bitcaster.utils.ttl import parse_ttl
+from bitcaster.utils.ttl import encode_ttl, parse_ttl
 
 
 class TTLFormField(forms.CharField):
+
+    def prepare_value(self, value):
+        return encode_ttl(value)
+
     def to_python(self, value):
         """Return a string."""
         if value not in self.empty_values:
