@@ -1,4 +1,4 @@
-{% extends "bitcaster/user/base.html" %}{% load i18n crispy_forms_tags bitcaster %}
+{% extends "bitcaster/user/base.html" %}{% load i18n crispy_forms_tags bitcaster cache %}
 {% block page %}
     <div class="container border border-secondary col-12 p-3" style="min-height: 50px">
         <div class="card">
@@ -37,8 +37,8 @@
                 </div>
             {% endif %}
         </div>
-
     </div>
+    {% cache 500 user_home request.user.pk cache_version %}
     <div class="container mt-2 border border-secondary p-3">
         <div class="row">
             <div class="col-sm mr-1">
@@ -95,8 +95,9 @@
             </div>
         </div>
 
-
     </div>
+    {% endcache %}
+
 
 {% endblock page %}
 {#{% block toggler %}#}

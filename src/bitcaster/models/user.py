@@ -11,6 +11,10 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
+# from social_auth.backends.facebook import FacebookBackend
+# from social_auth.backends import google
+# from social_auth.signals import socialauth_registered
+from django_redis import get_redis_connection
 from timezone_field import TimeZoneField
 
 from bitcaster.file_storage import MediaFileSystemStorage, profile_media_root
@@ -20,12 +24,8 @@ from bitcaster.security import APP_ROLES
 from bitcaster.utils.cache import redis_property
 from bitcaster.utils.http import absolute_uri
 
-# from social_auth.backends.facebook import FacebookBackend
-# from social_auth.backends import google
-# from social_auth.signals import socialauth_registered
-
-
 logger = logging.getLogger(__name__)
+cache = get_redis_connection('default')
 
 
 class UserManager(_UserManager):
@@ -194,3 +194,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             return self.storage[namespace][key]
         except KeyError:  # pragma: no cover
             return None
+
+    def get_cache_version(self, key):
+        return cache.get('user:%s:%s' % (self.pk, key))
+
+    def inc_cache_version(self, key):
+        cache.incr('user:%s:%s' % (self.pk, key))

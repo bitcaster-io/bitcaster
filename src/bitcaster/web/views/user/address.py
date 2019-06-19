@@ -55,6 +55,7 @@ class UserAddressCreate(UserMixin, LogAuditMixin, BitcasterBaseCreateView):
                 verified=False,
                 code=random_string(8, string.digits)
             )
+        self.request.user.inc_cache_version('address')
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -114,7 +115,7 @@ class UserAddressUpdate(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
                     verified=False,
                     code=random_string(8, string.digits)
                 )
-
+        self.request.user.inc_cache_version('address')
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -127,12 +128,17 @@ class UserAddressDelete(UserMixin, LogAuditMixin, BitcasterBaseDeleteView):
     def get_success_url(self):
         return reverse('user-address', args=[self.selected_organization.slug])
 
+    def delete(self, request, *args, **kwargs):
+        self.request.user.inc_cache_version('address')
+        return super().delete(request, *args, **kwargs)
+
 
 class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseListView):
     template_name = 'bitcaster/user/address/list.html'
     model = Address
     # form_class = AddressForm
     title = _('Addresses')
+    paginate_by = None
 
     def get_queryset(self):
         qs = self.request.user.addresses.unlocked()
@@ -142,7 +148,7 @@ class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseListView):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(locked_addresses=self.request.user.addresses.locked().order_by('label'),
-                                        cache_version=2,
+                                        cache_version=self.request.user.get_cache_version('address'),
                                         **kwargs)
 
     def get_success_url(self):
@@ -184,6 +190,7 @@ class UserAddressesVerifyView(UserMixin, LogAuditMixin, BitcasterTemplateView):
         if assignment.code_is_valid(code):
             self.audit(assignment.address,
                        AuditLogEntry.AuditEvent.ADDRESS_VERIFIED)
+            self.request.user.inc_cache_version('address')
             return JsonResponse({'status': 'success',
                                  'message': 'Address Verified'})
 
@@ -214,6 +221,11 @@ class UserAddressesAssignmentView(UserMixin, LogAuditMixin, BitcasterTemplateVie
     # model = AddressAssignment
     # form_class = AddressAssignmentFormSet
     # title = _('Address Usage')
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(
+            cache_version=self.request.user.get_cache_version('address'),
+            **kwargs)
 
     def get_object(self, queryset=None):
         return self.request.user

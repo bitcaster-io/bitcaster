@@ -32,9 +32,10 @@ class UserHome(UserMixin, TemplateView):
     title = _('Home')
 
     def get_context_data(self, **kwargs):
+        kwargs['cache_version'] = self.request.user.get_cache_version('address')
         kwargs['missing'] = self.request.user.notifications.missed().distinct('occurence')
-        kwargs['invalid'] = self.request.user.assignments.unverified()
-        kwargs['disabled'] = self.request.user.subscriptions.filter(enabled=False)
+        kwargs['invalid'] = self.request.user.assignments.unverified().select_related('address', 'channel')
+        kwargs['disabled'] = self.request.user.subscriptions.filter(enabled=False).select_related('event')
         return super().get_context_data(**kwargs)
 
 
