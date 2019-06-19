@@ -45,8 +45,13 @@
                 </tbody>
             </table>
         {% else %}
-            <div class="container text-center p-5 d-block">
-                {% trans "Great, all of your addresses are verified!" %}
+            <div class="container p-5 d-block">
+
+                <div class="alert alert-success" role="alert">
+                    <h4 class="alert-heading">{% trans "Well done!" %}</h4>
+                    <p>{% trans "all of your addresses are verified!" %}</p>
+                    <hr>
+                </div>
             </div>
         {% endif %}
     </div>
