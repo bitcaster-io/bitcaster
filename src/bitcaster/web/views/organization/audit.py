@@ -20,6 +20,7 @@ class OrganizationAuditLogView(FilterQuerysetMixin,
 
     def get_queryset(self):
         qs = AuditLogEntry.objects.filter(organization=self.selected_organization)
+        qs = qs.select_related('actor', 'target_content_type')
         qs = self.filter_queryset(qs)
         return qs.order_by('-timestamp')
 

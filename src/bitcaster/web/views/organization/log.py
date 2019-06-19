@@ -16,6 +16,8 @@ class OrganizationNotificationLogView(NotificationLogMixin,
 
     def get_queryset(self):
         qs = Notification.objects.filter(organization=self.selected_organization)
+        qs = qs.select_related('event', 'channel',
+                               'user', 'subscription', 'application')
         qs = self.filter_queryset(qs)
         return qs.order_by('-timestamp')
 
