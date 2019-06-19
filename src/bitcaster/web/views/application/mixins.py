@@ -23,7 +23,8 @@ class SelectedApplicationMixin(SelectedOrganizationMixin):
             slug = self.kwargs['app']
             try:
                 app = Application.objects.filter(slug=slug,
-                                                 organization__slug=self.kwargs['org']).first()
+                                                 organization__slug=self.kwargs['org']).select_related(
+                    'organization').first()
                 state.debug['application'] = app
                 self.check_perms(self.request, app, True)
             except Application.DoesNotExist:  # pragma: no cover

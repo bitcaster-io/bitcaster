@@ -1,4 +1,4 @@
-{% extends "bitcaster/user/base.html" %}{% load bitcaster crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
+{% extends "bitcaster/user/base.html" %}{% load cache bitcaster crispy_forms_utils crispy_forms_tags crispy_forms_field crispy_forms_filters i18n %}
 {% block page %}
     <ul class="nav nav-tabs">
         <li class="nav-item">
@@ -22,6 +22,9 @@
                 </div>
             </div>
         </div>
+
+    {% cache 500 personal_articles_list request.user.pk %}
+
         <table class="table table-striped table-hover">
             <thead>
             <tr>
@@ -59,5 +62,8 @@
             {% endfor %}
             </tbody>
         </table>
+
+    {% endcache %}
+
     </div> <!-- tab-content -->
 {% endblock %}

@@ -19,6 +19,9 @@
             </ul>
         </div>
     {% endif %}
+    {% if form.instance.pk %}
+        Change address for channel: <strong>{{ form.instance.channel }}</strong>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
         {{ form|crispy }}

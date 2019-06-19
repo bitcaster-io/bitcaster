@@ -17,7 +17,7 @@ class SelectedOrganizationMixin(SidebarMixin, SecuredViewMixin):
         if 'org' not in self.kwargs:
             return None
         try:
-            organization = Organization.objects.get(slug=self.kwargs['org'])
+            organization = Organization.objects.only('id', 'slug', 'name').get(slug=self.kwargs['org'])
             self.check_perms(self.request, organization, True)
         except Organization.DoesNotExist:
             raise Http404

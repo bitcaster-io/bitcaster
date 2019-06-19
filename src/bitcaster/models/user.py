@@ -17,6 +17,7 @@ from bitcaster.file_storage import MediaFileSystemStorage, profile_media_root
 from bitcaster.framework.db.fields import EncryptedJSONField, LanguageField
 from bitcaster.mail import send_mail_async
 from bitcaster.security import APP_ROLES
+from bitcaster.utils.cache import redis_property
 from bitcaster.utils.http import absolute_uri
 
 # from social_auth.backends.facebook import FacebookBackend
@@ -140,7 +141,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def display_name(self):
         return self.friendly_name or self.email
 
-    @property
+    @redis_property
     def is_manager(self):
         # return true is user is a manager of any application
         return bool(self.memberships.filter(applications__role=APP_ROLES.ADMIN).exists())

@@ -1,6 +1,7 @@
 import logging
 import string
 
+from django.core.cache import caches
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -18,6 +19,8 @@ from .base import LogAuditMixin, UserMixin
 logger = logging.getLogger(__name__)
 
 __all__ = ('UserAddressesView', 'UserAddressesInfoView', 'UserAddressesAssignmentView')
+
+cache = caches['default']
 
 
 class UserAddressCreate(UserMixin, LogAuditMixin, BitcasterBaseCreateView):

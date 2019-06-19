@@ -1,3 +1,6 @@
+import time
+
+from django.db.models import Count, Q
 from django.utils.translation import gettext as _
 
 from bitcaster.models import Event
@@ -22,13 +25,17 @@ class UserEventListView(UserMixin, FilterQuerysetMixin, BitcasterBaseListView):
     def get_queryset(self):
         filters = {'core': False,
                    'subscription_policy': Event.POLICIES.FREE}
-        qs = super().get_queryset().filter(**filters).order_by('application__name',
-                                                               'name')
-        qs = self.filter_queryset(qs)
+        qs = Event.objects.filter(**filters)
+        qs = qs.select_related('application')
+        qs = qs.order_by('application__name', 'name')
+        qs = self.filter_queryset(qs).annotate(c=Count('subscriptions',
+                                                       filter=Q(subscriptions__subscriber=self.request.user)
+                                                       ))
         return qs
 
     def get_context_data(self, **kwargs):
-        subscripted_events = self.request.user.subscriptions.values_list('event__pk', flat=True).distinct()
-        data = super().get_context_data(subscripted_events=subscripted_events, **kwargs)
+        # subscripted_events = self.request.user.subscriptions.values_list('event__pk', flat=True).distinct()
+        data = super().get_context_data(**kwargs)
         data['filters'] = get_query_string(self.request, remove=['page'])
+        data['version'] = time.time()
         return data

@@ -28,7 +28,12 @@ class UserSubscriptionMixin(UserMixin):
     title = _('Subscriptions')
 
     def get_queryset(self):
-        return self.request.user.subscriptions.all()
+        qs = self.request.user.subscriptions.select_related('event__application',
+                                                            'assignment',
+                                                            'assignment__address',
+                                                            'channel',
+                                                            'event').all()
+        return qs
 
 
 class UserSubscriptionListView(UserSubscriptionMixin, BitcasterBaseListView):
