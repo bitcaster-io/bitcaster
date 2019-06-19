@@ -118,7 +118,7 @@ class Occurence(models.Model):
             ret = Occurence.objects.filter(pk=self.pk,
                                            processing__isnull=True).update(
                 processing=timezone.now())
-            return len(ret) == 1
+            return ret == 1
         return False
 
     def locked(self):
@@ -127,4 +127,4 @@ class Occurence(models.Model):
     def unlock(self):
         ret = Occurence.objects.filter(pk=self.pk,
                                        processing__isnull=False).update(processing=None)
-        return len(ret) == 1
+        return ret == 1

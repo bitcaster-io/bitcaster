@@ -110,7 +110,8 @@ def _get_message_parts(channel, event, header) -> [Template, Template]:
 
 @app.task()  # noqa: C901
 def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=False):
-    from bitcaster.models import Channel, Notification, Occurence, Address
+    from bitcaster.models import Channel, Notification, Occurence, Address, ErrorEntry
+
     channel = Channel.objects.select_related('organization').get(pk=channel_pk)
     organization = channel.organization
     occurence = Occurence.objects.select_related('event').get(pk=occurence_pk)
@@ -168,6 +169,13 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
                 message = body_template.render(SecureContext(ctx))
                 subject = subject_template.render(SecureContext(ctx))
                 address = subscription.get_address()
+                if not address:
+                    logger.error('No valid address for subscription %s' % subscription.pk)
+                    ErrorEntry.objects.create(
+                        actor=subscription.subscriber,
+                        target=subscription,
+                        message='Invalid address'
+                    ).consolidate()
                 attachments = None
                 if event.attachment and channel.handler.handle_attachments:
                     file_getter = event.attachment

@@ -19,7 +19,7 @@ class CounterAdmin(admin.ModelAdmin):
 class OccurenceAdmin(ExtraUrlMixin, admin.ModelAdmin):
     date_hierarchy = 'timestamp'
     list_display = ('timestamp', 'event', 'expire', 'status', 'id',
-                    'submissions', 'successes', 'failures')
+                    'processing')
     list_filter = ('expire', 'status')
 
     @link()

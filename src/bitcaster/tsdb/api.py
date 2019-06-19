@@ -98,7 +98,7 @@ def log_error_notification(notification: Notification, message='Error', *args, *
     ErrorEntry.objects.create(message=message,
                               application=None,
                               actor=notification,
-                              **kwargs).consolidate()
+                              data=kwargs).consolidate()
     notification.status = Notification.RETRY
     notification.save()
     stats.add('notification', type='error')
