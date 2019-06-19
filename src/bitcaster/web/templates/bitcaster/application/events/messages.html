@@ -99,10 +99,22 @@
                             {{ frm.subject|as_crispy_field }}
                         {% endif %}
                         {{ frm.body|as_crispy_field }}
-                        <a href="#" title="copy text" class="btn btn-small fa fa-copy copyText"
-                           data-target="#{{ frm.body.auto_id }}"></a>
-                        <a href="#" class="btn btn-small fa fa-paste pasteText"
-                           data-target="#{{ frm.body.auto_id }}"></a>
+
+                        <a href="#"
+                           title="{% trans "copy all message text"%}"
+                           data-toggle="tooltip"
+                           class="btn btn-small btn-outline copyText"
+                           data-target="#{{ frm.body.auto_id }}">
+                           <i class="fa fa-copy"></i>
+
+                        </a>
+                        <a href="#"
+                           class="btn btn-small btn-outline pasteText"
+                           title="{% trans "paste (replace) text"%}"
+                           data-toggle="tooltip"
+                           data-target="#{{ frm.body.auto_id }}">
+                           <i class="fa fa-paste "></i>
+                        </a>
                     </div>
 
                 </div>
