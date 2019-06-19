@@ -56,8 +56,8 @@ class Message(AbstractModel):
         return self.body.format(**ctx)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.application = self.event.application
-        assert self.channel.organization == self.application.organization
+        self.application_id = self.event.application_id
+        # assert self.channel.organization_id == self.application.organization_id
         super().save(force_insert, force_update, using, update_fields)
         # if not self.enabled:
         #     self.event.check_enabled()

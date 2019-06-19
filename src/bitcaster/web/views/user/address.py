@@ -2,6 +2,7 @@ import logging
 import string
 
 from django.core.cache import caches
+from django.db.models import Count, Q
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -87,7 +88,8 @@ class UserAddressUpdate(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
 
         # self.object.label = form.cleaned_data['label']
         self.object.save()
-        qs = AddressAssignment.objects.unlocked(user=self.request.user)
+        qs = AddressAssignment.objects.unlocked(user=self.request.user,
+                                                address=self.object)
         # delete removed channels
         qs.exclude(channel__in=form.cleaned_data['channels']).delete()
 
@@ -132,8 +134,15 @@ class UserAddressesView(UserMixin, LogAuditMixin, BitcasterBaseListView):
     # form_class = AddressForm
     title = _('Addresses')
 
+    def get_queryset(self):
+        qs = self.request.user.addresses.unlocked()
+        return qs.annotate(c=Count('assignments',
+                                   filter=Q(assignments__user=self.request.user)
+                                   ))
+
     def get_context_data(self, **kwargs):
         return super().get_context_data(locked_addresses=self.request.user.addresses.locked().order_by('label'),
+                                        cache_version=2,
                                         **kwargs)
 
     def get_success_url(self):

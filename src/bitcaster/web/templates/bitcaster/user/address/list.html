@@ -23,21 +23,23 @@
             </div>
         </div>
 
-    {% cache 500 personal_articles_list request.user.pk %}
+    {% cache 500 personal_articles_list request.user.pk cache_version %}
 
         <table class="table table-striped table-hover">
             <thead>
             <tr>
                 <th>{% trans "label" %}</th>
                 <th>{% trans "address" %}</th>
+                <th>{% trans "channels" %}</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
-            {% for address in user.addresses.unlocked %}
+            {% for address in object_list %}
                 <tr>
                 <td style="width:5%">{{ address.label }}</td>
                 <td style="width:5%">{{ address.address }}</td>
+                <td style="width:5%">{{ address.c }}</td>
                 <td style="width:5%">
                     <a href="{% org-url "user-address-edit" address.pk %}"
                        class="btn btn-outline-secondary remove_line align-top">

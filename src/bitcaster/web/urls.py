@@ -168,11 +168,11 @@ urlpatterns = [
          name='app-event-subscriptions-subscribe'),
 
     # Applications / Messages
-    path('o/<slug:org>/a/<slug:app>/message/', views.MessageList.as_view(), name='app-messages'),
-    path('o/<slug:org>/a/<slug:app>/message/add/', views.MessageCreate.as_view(), name='app-message-create'),
-    path('o/<slug:org>/a/<slug:app>/message/<int:pk>/edit/', views.MessageUpdate.as_view(), name='app-message-edit'),
-    path('o/<slug:org>/a/<slug:app>/message/<int:pk>/delete/', views.MessageDelete.as_view(),
-         name='app-message-delete'),
+    # path('o/<slug:org>/a/<slug:app>/message/', views.MessageList.as_view(), name='app-messages'),
+    # path('o/<slug:org>/a/<slug:app>/message/add/', views.MessageCreate.as_view(), name='app-message-create'),
+    # path('o/<slug:org>/a/<slug:app>/message/<int:pk>/edit/', views.MessageUpdate.as_view(), name='app-message-edit'),
+    # path('o/<slug:org>/a/<slug:app>/message/<int:pk>/delete/', views.MessageDelete.as_view(),
+    #      name='app-message-delete'),
     # Log
     path('o/<slug:org>/a/<slug:app>/log/', views.ApplicationNotificationLog.as_view(), name='app-log'),
 

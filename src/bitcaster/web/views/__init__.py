@@ -4,8 +4,8 @@ from .application.events import (EventBatch, EventBee, EventCreate,
                                  EventDelete, EventDeveloperModeToggle,
                                  EventKeys, EventList, EventMessages,
                                  EventTest, EventToggle, EventUpdate,)
-from .application.events.messages import (MessageCreate, MessageDelete,
-                                          MessageList, MessageUpdate,)
+# from .application.events.messages import (MessageCreate, MessageDelete,
+#                                           MessageList, MessageUpdate,)
 from .application.events.subscription import (EventSubscriptionCreate,
                                               EventSubscriptionDelete,
                                               EventSubscriptionInvite,
