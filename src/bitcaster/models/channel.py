@@ -12,6 +12,7 @@ from bitcaster.models.mixins import ReverseWrapperMixin
 
 from .application import Application
 from .base import AbstractModel
+from .metadata import DispatcherMetaData
 from .organization import Organization
 
 logger = logging.getLogger(__name__)
@@ -56,17 +57,22 @@ class Channel(ReverseWrapperMixin, AbstractModel):
     description = models.TextField(_('description'),
                                    blank=True, null=True)
     handler = DispatcherField(null=True)
+    metadata = models.ForeignKey(DispatcherMetaData,
+                                 on_delete=models.SET_NULL,
+                                 blank=True, null=True)
+
     deprecated = models.BooleanField(default=False)
 
     errors_threshold = models.IntegerField(default=100,
                                            help_text='Number or errors before channel will be automatically disabled')
-    objects = ChannelQuerySet().as_manager()
 
     dispatch_page_size = models.IntegerField(_('dispatcher page size'),
                                              validators=[MinValueValidator(1)],
                                              default=1000)
     dispatch_rate = ThrottleField(_('dispatch rate'),
                                   default='1/s')
+
+    objects = ChannelQuerySet().as_manager()
 
     class Meta:
         app_label = 'bitcaster'
@@ -83,6 +89,10 @@ class Channel(ReverseWrapperMixin, AbstractModel):
 
     def __str__(self):
         return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.metadata = DispatcherMetaData.objects.get_or_create(handler=self.handler)[0]
+        super().save(force_insert, force_update, using, update_fields)
 
     def validate_address(self, address):
         return self.handler.validate_address(address)

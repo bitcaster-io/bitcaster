@@ -129,7 +129,7 @@ MESSAGES = {
 }
 
 
-class AuditLogEntryyManager(models.Manager):
+class AuditLogEntryManager(models.Manager):
     def consolidate(self):
         for e in self.filter(organization__isnull=True):
             e.consolidate(async=False)
@@ -166,7 +166,7 @@ class AuditLogEntry(models.Model):
     data = JSONField(blank=True, null=True)
     timestamp = models.DateTimeField(default=timezone.now)
 
-    objects = AuditLogEntryyManager()
+    objects = AuditLogEntryManager()
 
     def __str__(self):
         if self.event in MESSAGES:

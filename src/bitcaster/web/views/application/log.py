@@ -22,6 +22,7 @@ class ApplicationAuditLog(FilterQuerysetMixin,
 
     def get_queryset(self):
         qs = AuditLogEntry.objects.filter(application=self.selected_application)
+        qs = qs.select_related('actor', 'event', 'subscription')
         qs = self.filter_queryset(qs)
         return qs.order_by('-timestamp')
 
@@ -39,6 +40,7 @@ class ApplicationNotificationLog(NotificationLogMixin,
 
     def get_queryset(self):
         qs = Notification.objects.filter(application=self.selected_application)
+        qs = qs.select_related('event', 'subscription__subscriber', 'channel', 'application')
         qs = self.filter_queryset(qs)
         return qs.order_by('-timestamp')
 

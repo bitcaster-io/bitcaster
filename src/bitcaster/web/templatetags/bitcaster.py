@@ -4,7 +4,6 @@ from django.template import Context, Library
 from django.urls import reverse
 
 from bitcaster.api.renderers import BitcasterHTMLFormRenderer
-from bitcaster.models import DispatcherMetaData
 
 register = Library()
 
@@ -104,16 +103,6 @@ def channel_submit_row(context):
         'show_save': show_save,
     })
     return ctx
-
-
-@register.filter()
-def dispatcher_enabled(dispatcher):
-    if dispatcher is None:
-        return True
-    try:
-        return DispatcherMetaData.objects.get(handler=dispatcher).enabled
-    except DispatcherMetaData.DoesNotExist:
-        return False
 
 
 @register.filter()

@@ -26,7 +26,7 @@
                         {% button channel.urls.delete permissions.edit_channel "far fa-trash-alt" "delete" %}
                     </td>
                 </tr>
-            {% elif channel.handler|dispatcher_enabled or config.SHOW_DISABLED_DISPATCHERS %}
+            {% elif channel.metadata.enabled or SHOW_DISABLED_DISPATCHERS %}
                 <tr>
                     <td>
                         {% if channel.handler %}
@@ -42,7 +42,7 @@
 {#                    </td>#}
                     <td style="width:40%" class="nowrap formset-commands">
                         {% button channel.urls.delete permissions.edit_channel "far fa-trash-alt" "delete" %}
-                        {% if channel.handler|dispatcher_enabled %}
+                        {% if channel.metadata.enabled %}
                             {% button channel.urls.edit permissions.edit_channel "fas fa-wrench" "configure" %}
                             {% button channel.urls.toggle permissions.edit_channel "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" channel.enabled %}
                             {% button channel.urls.deprecate permissions.edit_channel "fas fa-unlink red:fas fa-link green" "Activate:Deprecate" channel.deprecated %}

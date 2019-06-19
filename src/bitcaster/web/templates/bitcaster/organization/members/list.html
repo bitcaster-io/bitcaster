@@ -2,23 +2,10 @@
 {% block page %}
     <div class="container">
         <div class="row col-12 mb-5">
-            <div class="col-7">
-                <form id="search">
-                <input type="text" name="filter" maxlength="50"
-                       value="{{ request.GET.filter }}"
-                       placeholder="insert email to filter"
-                       onfocus="this.placeholder=''"
-                       onblur="this.placeholder='insert email to filter'"
-                       class="textinput textInput form-control">
-                    </form>
+            <div class="col-9">
+                {% include 'bitcaster/_includes/_filter_queryset.html' %}
             </div>
-            <div class="col-1">
-                <input class="btn btn-primary"
-                       onclick="search.submit()"
-                       type="submit" value="{% trans "Search" %}">
-            </div>
-
-            <div class="pull-right col-3">
+            <div class="pull-right col-2">
                 <a class="btn btn-danger pull-right"
                    href="{% url "org-invite" organization.slug %}">{% trans "Invite members" %}</a>
             </div>
@@ -63,7 +50,7 @@
                            href="{% org-url "org-member-delete" membership.pk %}">
                             <i class="far fa-trash-alt"></i>
                         </a>
-                        {% if config.ENABLE_IMPERSONATE %}
+                        {% if ENABLE_IMPERSONATE %}
                         <a class="btn btn-outline-light"
                            data-toggle="tooltip" title="impersonate"
                            href="{% url 'impersonate-start' membership.user.pk %}">
@@ -82,44 +69,44 @@
         {% endif %}
         <!-- end pagination-->
     </div>
-    <div class="container">
-        {% if invitations %}
-            <h4>Pending invitations</h4>
-            <table class="table">
-                <thead>
-                <tr class="d-flex">
-                    <th scope="col" class="col-4">User</th>
-                    <th scope="col" class="col-2">Invited By</th>
-                    <th scope="col" class="col-3">On</th>
-                    <th scope="col" class="col-3"></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for invitation in invitations.all %}
-                    <tr class="d-flex">
-                        <td class="col-4">
-                            {{ invitation.target }}
-                        </td>
-                        <td class="col-2">{{ invitation.invited_by }}</td>
-                        <td class="col-3">{{ invitation.date_created|date:"Y, M d" }}</td>
-                        <td class="text-nowrap col-3 formset-commands">
-                            <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'">
-                            <i class="far fa-trash-alt"></i>
-                            </a>
-                            <form method="post" class="d-inline"
-                                  action="{% org-url "org-invitation-send" invitation.pk %}">
-                                {% csrf_token %}
-                                <button type="submit" title="resend email" class="btn btn-outline-light">
-                                    <i class="far fa-envelope"></i>
-                                </button>
-                            </form>
-
-
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-    </div>
+{#    <div class="container">#}
+{#        {% if invitations %}#}
+{#            <h4>Pending invitations</h4>#}
+{#            <table class="table">#}
+{#                <thead>#}
+{#                <tr class="d-flex">#}
+{#                    <th scope="col" class="col-4">User</th>#}
+{#                    <th scope="col" class="col-2">Invited By</th>#}
+{#                    <th scope="col" class="col-3">On</th>#}
+{#                    <th scope="col" class="col-3"></th>#}
+{#                </tr>#}
+{#                </thead>#}
+{#                <tbody>#}
+{#                {% for invitation in invitations.all %}#}
+{#                    <tr class="d-flex">#}
+{#                        <td class="col-4">#}
+{#                            {{ invitation.target }}#}
+{#                        </td>#}
+{#                        <td class="col-2">{{ invitation.invited_by }}</td>#}
+{#                        <td class="col-3">{{ invitation.date_created|date:"Y, M d" }}</td>#}
+{#                        <td class="text-nowrap col-3 formset-commands">#}
+{#                            <a class="btn btn-outline-light" href='{% org-url "org-invitation-delete" invitation.pk %}'">#}
+{#                            <i class="far fa-trash-alt"></i>#}
+{#                            </a>#}
+{#                            <form method="post" class="d-inline"#}
+{#                                  action="{% org-url "org-invitation-send" invitation.pk %}">#}
+{#                                {% csrf_token %}#}
+{#                                <button type="submit" title="resend email" class="btn btn-outline-light">#}
+{#                                    <i class="far fa-envelope"></i>#}
+{#                                </button>#}
+{#                            </form>#}
+{##}
+{##}
+{#                        </td>#}
+{#                    </tr>#}
+{#                {% endfor %}#}
+{#                </tbody>#}
+{#            </table>#}
+{#        {% endif %}#}
+{#    </div>#}
 {% endblock %}

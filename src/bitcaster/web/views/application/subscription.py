@@ -11,7 +11,7 @@ class ApplicationSubscriptionList(SelectedApplicationMixin, FilterQuerysetMixin,
                                   BitcasterBaseListView):
     model = Subscription
     template_name = 'bitcaster/application/subscriptions/list.html'
-    paginate_by = 5
+    paginate_by = 50
 
     search_fields = ['subscriber__name__istartswith']
     filter_fieldmap = {
@@ -28,5 +28,6 @@ class ApplicationSubscriptionList(SelectedApplicationMixin, FilterQuerysetMixin,
 
     def get_queryset(self):
         qs = Subscription.objects.filter(event__application=self.selected_application)
+        qs = qs.select_related('event__application', 'channel', 'subscriber')
         qs = self.filter_queryset(qs)
         return qs.order_by('event', 'subscriber', 'channel')

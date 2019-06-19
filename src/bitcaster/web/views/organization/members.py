@@ -1,5 +1,6 @@
 import logging
 
+from constance import config
 from crispy_forms.helper import FormHelper
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
@@ -11,6 +12,7 @@ from bitcaster.web.forms import OrganizationMemberForm
 from bitcaster.web.views.base import (BitcasterBaseDeleteView,
                                       BitcasterBaseListView,
                                       BitcasterBaseUpdateView,)
+from bitcaster.web.views.mixins import FilterQuerysetMixin
 
 from .org import OrganizationBaseView
 
@@ -49,18 +51,30 @@ class MemberFormMixin(ModelFormMixin):
         return super().form_valid(form)
 
 
-class OrganizationMembershipList(MemberMixin, BitcasterBaseListView):
+class OrganizationMembershipList(MemberMixin, FilterQuerysetMixin, BitcasterBaseListView):
     template_name = 'bitcaster/organization/members/list.html'
+    search_fields = ['user__name__istartswith']
+    filter_fieldmap = {
+        # Translators: UserNotificationLogView.filter_fieldmap
+        _('email'): 'user__email',
+    }
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        target = self.request.GET.get('filter')
-        if target:
-            qs = qs.filter(user__email__istartswith=target)
+        qs = self.selected_organization.memberships.exclude(user=self.selected_organization.owner)
+        qs = qs.select_related('user')
+        qs = self.filter_queryset(qs)
         return qs.order_by('user__email')
+
+    # def get_queryset(self):
+    #     qs = super().get_queryset()
+    #     target = self.request.GET.get('filter')
+    #     if target:
+    #         qs = qs.filter(user__email__istartswith=target)
+    #     return qs.order_by('user__email')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
+        data['ENABLE_IMPERSONATE'] = config.ENABLE_IMPERSONATE
         data['filters'] = get_query_string(self.request, remove=['page'])
         data['user_role'] = self.request.user.memberships.get(organization=self.selected_organization).role
         data['memberships'] = self.get_queryset()

@@ -1,3 +1,4 @@
+from constance import config
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import Channel
@@ -13,7 +14,9 @@ class ChannelMixin(OrganizationBaseView):
     model = Channel
 
     def get_queryset(self):
-        return self.selected_organization.channels.valid().order_by('name')
+        qs = self.selected_organization.channels.valid()
+        qs = qs.select_related('metadata')
+        return qs.order_by('name')
 
     def get_success_url(self):
         return self.selected_organization.urls.channels
@@ -24,6 +27,10 @@ class ChannelMixin(OrganizationBaseView):
 
 class OrganizationChannels(ChannelMixin, ChannelListView):
     template_name = 'bitcaster/organization/channel/list.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['SHOW_DISABLED_DISPATCHERS'] = config.SHOW_DISABLED_DISPATCHERS
+        return super().get_context_data(**kwargs)
 
 
 class OrganizationChannelUpdate(ChannelMixin, ChannelUpdateView):
