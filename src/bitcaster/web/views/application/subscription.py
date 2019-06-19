@@ -1,9 +1,11 @@
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster.models import Subscription
 from bitcaster.utils.http import get_query_string
 from bitcaster.web.views.application.mixins import SelectedApplicationMixin
-from bitcaster.web.views.base import BitcasterBaseListView
+from bitcaster.web.views.base import (BitcasterBaseListView,
+                                      BitcasterBaseUpdateView,)
 from bitcaster.web.views.mixins import FilterQuerysetMixin
 
 
@@ -31,3 +33,32 @@ class ApplicationSubscriptionList(SelectedApplicationMixin, FilterQuerysetMixin,
         qs = qs.select_related('event__application', 'channel', 'subscriber')
         qs = self.filter_queryset(qs)
         return qs.order_by('event', 'subscriber', 'channel')
+
+
+class ApplicationSubscriptionEdit(SelectedApplicationMixin, BitcasterBaseUpdateView):
+    model = Subscription
+    template_name = 'bitcaster/application/subscriptions/form.html'
+    pk_url_kwarg = 'subscription'
+    fields = ('status', )
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(from_=self.request.GET.get('from'),
+                                        **kwargs)
+
+    def get_success_url(self):
+        _from = self.request.GET.get('from')
+        if _from == 'app':
+            return reverse('app-subscriptions', args=[self.selected_organization.slug,
+                                                      self.selected_application.slug])
+        elif _from == 'event':
+            return reverse('app-event-subscriptions',
+                           args=[self.selected_organization.slug,
+                                 self.selected_application.slug,
+                                 self.object.event.pk]
+                           )
+        return self.request.META.get('HTTP_REFERER')
+
+    def get_queryset(self):
+        qs = Subscription.objects.filter(event__application=self.selected_application)
+        qs = qs.select_related('event__application', 'channel', 'subscriber')
+        return qs

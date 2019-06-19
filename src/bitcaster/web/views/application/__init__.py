@@ -16,7 +16,8 @@ from .monitors import (ApplicationMonitorCreate, ApplicationMonitorList,
                        ApplicationMonitorPoll, ApplicationMonitorRemove,
                        ApplicationMonitorTest, ApplicationMonitorToggle,
                        ApplicationMonitorUpdate, ApplicationMonitorUsage,)
-from .subscription import ApplicationSubscriptionList
+from .subscription import (ApplicationSubscriptionEdit,
+                           ApplicationSubscriptionList,)
 from .teams import (ApplicationTeamCreate, ApplicationTeamDelete,
                     ApplicationTeamList, ApplicationTeamMember,
                     ApplicationTeamMemberRemove, ApplicationTeamUpdate,)

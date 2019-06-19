@@ -155,6 +155,11 @@ urlpatterns = [
 
     path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/', views.EventSubscriptionList.as_view(),
          name='app-event-subscriptions'),
+
+    path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/<int:subscription>/edit/',
+         views.ApplicationSubscriptionEdit.as_view(),
+         name='app-event-subscription-edit'),
+
     path('<slug:org>/a/<slug:app>/event/<int:event>/subscriptions/<int:subscription>/delete/',
          views.EventSubscriptionDelete.as_view(),
          name='app-event-subscription-delete'),

@@ -34,6 +34,12 @@
                     {{ subscription.get_status_display }}
                 </td>
                 <td style="width:10%" class="nowrap">
+                    <a class="btn btn-outline-light"
+                       data-toggle="tooltip"
+                       title="edit"
+                       href="{% app-url 'app-event-subscription-edit' subscription.event.id subscription.id %}?from=event">
+                        <i class="fas fa-edit"></i>
+                    </a>
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="{% if subscription.enabled %}Disable{% else %}Enable{% endif %}"
                        href="{{ subscription.pk }}/toggle/">

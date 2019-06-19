@@ -20,8 +20,8 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_filter = ('event__application',
                    ('channel', RelatedFieldComboFilter),
                    ForeignKeyFieldFilter.factory('subscriber|name|icontains'),
-                   'enabled')
-    search_fields = ('subscriber__username', 'subscriber__last_name')
+                   'enabled', 'status')
+    search_fields = ('subscriber__email', 'subscriber__last_name')
     form = SubscriptionForm
     actions = ('activate',
                deactivator_factory('enabled'))
