@@ -36,13 +36,20 @@
                value="{% trans "Cancel" %}">
     </form>
     {% if existing_subscriptions %}
-        <div class="box-container p-1 m-3 border border-right">
-        {% for subscription in existing_subscriptions %}
-            <div class="row col-12 m-2">
-            <div class="col-4">{{ subscription.recipient }}</div>
-            <div class="col-4">{{ subscription.channel }}</div>
+        <div class="container mt-3">
+            <div>{% trans "You are already subscribed to this event with:" %}</div>
+            <div class="box-container p-1 m-3 border border-right">
+                <div class="row col-12 m-2">
+                    <div class="col-4 text-capitalize">{% trans "address" %}</div>
+                    <div class="col-4 text-capitalize">{% trans "channel" %}</div>
+                </div>
+                {% for subscription in existing_subscriptions %}
+                    <div class="row col-12 m-2">
+                        <div class="col-4">{{ subscription.recipient }}</div>
+                        <div class="col-4">{{ subscription.channel }}</div>
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
         </div>
     {% endif %}
 {% endblock page %}

@@ -29,7 +29,11 @@
                     <a class="btn btn-light"
                        data-toggle="tooltip" title="subscribe"
                        href="{% org-url 'user-event-subscribe' event.pk %}">
-                        <i class="far fa-bookmark"></i>
+                        {% if event.pk in subscripted_events %}
+                            <i class="fas fa-bookmark"></i>
+                        {% else %}
+                            <i class="far fa-bookmark"></i>
+                        {% endif %}
                     </a>
                 </td>
             </tr>
