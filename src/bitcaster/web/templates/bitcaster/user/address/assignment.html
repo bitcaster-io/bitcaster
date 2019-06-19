@@ -11,37 +11,43 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div class="container m-3 d-block">
-            {% trans "These address/channel pairing need to be validated before they can be used" %}
-        </div>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>{% trans "channel" %}</th>
-                <th>{% trans "address" %}</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for assignment in user.assignments.unverified %}
+        {% if user.assignments.unverified %}
+            <div class="container m-3 d-block">
+                {% trans "These address/channel pairing need to be validated before they can be used" %}
+            </div>
+            <table class="table table-striped">
+                <thead>
                 <tr>
-                <td style="width:5%">{{ assignment.channel }}</td>
-                <td style="width:5%">{{ assignment.address }}</td>
-                <td style="width:5%">
-                    {% if not assignment.verified %}
-                        <button rel="modal:open"
-                                data-assignment="{{ assignment.id }}"
-                                class="btn btn-outline-danger"
-                                title="verify"
-                                data-owner="btn-verify-{{ assignment.id }}"
-                                data-remote="{% org-url "user-address-verify" assignment.id %}"
-                                href=".">
-                            VERIFY
-                        </button>
-                    {% endif %}
-                </td>
-            {% endfor %}
-            </tbody>
-        </table>
+                    <th>{% trans "channel" %}</th>
+                    <th>{% trans "address" %}</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for assignment in user.assignments.unverified %}
+                    <tr>
+                    <td style="width:5%">{{ assignment.channel }}</td>
+                    <td style="width:5%">{{ assignment.address }}</td>
+                    <td style="width:5%">
+                        {% if not assignment.verified %}
+                            <button rel="modal:open"
+                                    data-assignment="{{ assignment.id }}"
+                                    class="btn btn-outline-danger"
+                                    title="verify"
+                                    data-owner="btn-verify-{{ assignment.id }}"
+                                    data-remote="{% org-url "user-address-verify" assignment.id %}"
+                                    href=".">
+                                VERIFY
+                            </button>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="container text-center p-5 d-block">
+                {% trans "Great, all of your addresses are verified!" %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
