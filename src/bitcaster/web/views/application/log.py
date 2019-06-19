@@ -36,7 +36,6 @@ class ApplicationNotificationLog(NotificationLogMixin,
     template_name = 'bitcaster/application/log.html'
     model = Notification
     title = _('Notification Log')
-    paginate_by = 50
 
     def get_queryset(self):
         qs = Notification.objects.filter(application=self.selected_application)

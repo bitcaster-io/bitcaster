@@ -1,7 +1,13 @@
+from django.utils.translation import gettext_lazy as _
 
 
 class Dummy(object):
     pass
+
+
+def parse_bool(value):
+    return value.lower() in ['1', 'true', 'yes', 'y', 't', _('true'), _('yes')]
+    # return value.lower() not in ['', '0', 'false', 'f', 'n']
 
 
 def flatten(x):

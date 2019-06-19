@@ -30,6 +30,7 @@ class UserAddressCreate(UserMixin, LogAuditMixin, BitcasterBaseCreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+        kwargs['organization'] = self.selected_organization
         return kwargs
 
     def get_success_url(self):
@@ -61,9 +62,10 @@ class UserAddressUpdate(UserMixin, LogAuditMixin, BitcasterBaseUpdateView):
     def get_queryset(self):
         return self.request.user.addresses.unlocked()
 
-    # def get_form_kwargs(self):
-    #     kwargs = super().get_form_kwargs()
-    #     return kwargs
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['organization'] = self.selected_organization
+        return kwargs
 
     def get_success_url(self):
         return reverse('user-address', args=[self.selected_organization.slug])

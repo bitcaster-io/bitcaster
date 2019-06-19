@@ -5,15 +5,6 @@ from bitcaster.cli import need_setup
 from bitcaster.cli.commands.upgrade import upgrade
 
 
-def parse_bool(value):
-    return value.lower() not in ['', '0', 'false', 'f', 'n']
-
-
-caster = {bool: parse_bool,
-          int: parse_bool,
-          }
-
-
 @click.command()
 @click.pass_context
 @need_setup

@@ -68,7 +68,7 @@ class Address(ReversionMixin, ReverseWrapperMixin, models.Model):
         if self.address != self.__original_address:
             self.assignments.update(verified=False)
             self.__original_address = self.address
-            self.user.subscriptions.filter(assignments__address=self).update(enabled=False)
+            self.user.subscriptions.filter(assignment__address=self).update(enabled=False)
 
 
 class AddressAssignment(ReversionMixin, models.Model):

@@ -1,11 +1,7 @@
 import click
 
 from bitcaster.cli import need_setup
-
-
-def parse_bool(value):
-    return value.lower() not in ['', '0', 'false', 'f', 'n']
-
+from bitcaster.utils.language import parse_bool
 
 caster = {bool: parse_bool,
           int: parse_bool,

@@ -81,10 +81,10 @@ class EmailOptions(EmailAbstractOptions):
     server = serializers.CharField()
     port = serializers.IntegerField()
     tls = serializers.BooleanField(default=False)
-    fieldset_defs = (('Server', ('server', 'port', 'tls', 'username', 'password')),
-                     ('Event', ('event',)),
-                     ('Filtering', ('folder', 'unseen', 'subject_regex', 'sender_regex', 'to_regex')),
-                     ('Policy', ('policy', 'processed_folder')),
+    fieldset_defs = ((_('server'), ('server', 'port', 'tls', 'username', 'password')),
+                     (_('event'), ('event',)),
+                     (_('filtering'), ('folder', 'unseen', 'subject_regex', 'sender_regex', 'to_regex')),
+                     (_('policy'), ('policy', 'processed_folder')),
                      )
 
     def get_agent(self):

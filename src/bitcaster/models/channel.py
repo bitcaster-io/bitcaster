@@ -28,10 +28,9 @@ class ChannelQuerySet(models.QuerySet):
         #         c.save()
         return self.all()
 
-    def selectable(self, application, **kwargs):
-        return self.filter(Q(organization=application.organization) |
-                           Q(system=True) |
-                           Q(application=application)).filter(**kwargs)
+    def selectable(self, organization, **kwargs):
+        return self.filter(Q(organization=organization) |
+                           Q(system=True)).filter(**kwargs)
 
 
 def set_error(value, error):

@@ -1,6 +1,8 @@
 import imaplib
 import logging
 
+from django.utils.translation import gettext as _
+
 from ..registry import agent_registry
 from .imap import EmailAbstractOptions, ImapAgent
 
@@ -8,13 +10,13 @@ logger = logging.getLogger(__name__)
 
 
 class GMailOptions(EmailAbstractOptions):
-    fieldset_defs = (('Credentials', ('username', 'password')),
-                     ('Event', ('event',)),
-                     ('Filtering', ('folder', 'unseen',
+    fieldset_defs = ((_('credentials'), ('username', 'password')),
+                     (_('event'), ('event',)),
+                     (_('filtering'), ('folder', 'unseen',
                                     'subject_regex',
                                     'body_regex',
                                     'sender_regex', 'to_regex')),
-                     ('Policy', ('policy', 'processed_folder')),
+                     (_('policy'), ('policy', 'processed_folder')),
                      )
 
     def get_agent(self):

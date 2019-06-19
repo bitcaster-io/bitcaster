@@ -5,6 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.safestring import mark_safe
 
 import bitcaster as app
+from bitcaster import system
 from bitcaster.config.environ import env
 from bitcaster.web.messages import DEFAULT_LEVELS
 
@@ -30,7 +31,7 @@ def bitcaster(request):
     return {'bitcaster_version': app.get_full_version(settings.DEBUG),
             'bitcaster_copyright': mark_safe('&copy; 2019 OS4D Ltd'),
             'bitcaster_docker': os.environ.get('DOCKER_BUILD', ''),
-            # 'setup_url': setup_url,
+            'system': system.sys,
             'settings': settings,
             'env': EnvWrapper(env),
             'git_status': app.get_git_status()

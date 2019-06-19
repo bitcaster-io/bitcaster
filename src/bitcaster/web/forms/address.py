@@ -13,7 +13,9 @@ class UserAddressForm(forms.ModelForm):
         fields = ('label', 'address', 'channels')
 
     def __init__(self, *args, **kwargs):
-        # self.address = instance
+        self.organization = kwargs.pop('organization')
         # self.user = user
         super().__init__(*args, **kwargs)
-        self.fields['channels'].queryset = Channel.objects.valid()
+        self.fields['channels'].queryset = Channel.objects.selectable(
+            organization=self.organization,
+            enabled=True)

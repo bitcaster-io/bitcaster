@@ -49,6 +49,7 @@ def clean_data():
 def _stats(key, **filter):
     Occurence.objects.filter(expire__lt=timezone.now(),
                              status=Occurence.RUNNING,
+                             processing__isnull=True,
                              **filter).update(status=Occurence.EXPIRED)
 
     Notification.objects.filter(occurence__status=Occurence.EXPIRED,
@@ -57,13 +58,12 @@ def _stats(key, **filter):
 
     # terminate all occurences with no pending notifications
     qs = Occurence.objects.filter(status__in=[Occurence.RUNNING],
+                                  processing__isnull=True,
                                   **filter).exclude(
         notifications__status__in=Notification.RUNNING)
 
     qs.update(status=Occurence.TERMINATED)
-
     # updates queue counters
-
     pending = Occurence.objects.filter(status__in=Notification.RUNNING,
                                        **filter).count()
     stats.set('occurence:running:%s' % key, pending)

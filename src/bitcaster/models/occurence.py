@@ -11,12 +11,20 @@ cache_lock = caches['lock']
 
 
 class OccurenceManager(models.Manager):
-    def active(self):
+    def active(self, *args, **kwargs):
         return Occurence.objects.filter(expire__gt=timezone.now(),
-                                        status__in=[Occurence.RUNNING, Occurence.READY])
+                                        status__in=[Occurence.RUNNING,
+                                                    Occurence.READY],
+                                        *args, **kwargs)
 
     def inactive(self):
         return Occurence.objects.filter(expire__lt=timezone.now())
+
+    def consolidate(self):
+        for entry in self.filter(organization__isnull=True):
+            entry.application = entry.event.application
+            entry.organization = entry.application.organization
+            entry.save()
 
 
 class Occurence(models.Model):
@@ -66,6 +74,9 @@ class Occurence(models.Model):
 
     objects = OccurenceManager()
 
+    processing = models.DateTimeField(blank=True,
+                                      null=True)
+
     class Meta:
         app_label = 'bitcaster'
 
@@ -90,6 +101,9 @@ class Occurence(models.Model):
         obj.consolidate()
         return obj
 
+    def ttl(self):
+        return
+
     def start(self):
         self.status = Occurence.RUNNING
         self.save()
@@ -100,12 +114,17 @@ class Occurence(models.Model):
             self.save()
 
     def lock(self):
-        lock = cache_lock.lock('occurence:%s' % self.pk)
-        return lock.acquire(False)
+        if self.processing is None:
+            ret = Occurence.objects.filter(pk=self.pk,
+                                           processing__isnull=True).update(
+                processing=timezone.now())
+            return len(ret) == 1
+        return False
 
     def locked(self):
-        return cache_lock.get('occurence:%s' % self.pk)
+        return self.processing
 
     def unlock(self):
-        lock = cache_lock.lock('occurence:%s' % self.pk)
-        cache_lock.delete(lock.name)
+        ret = Occurence.objects.filter(pk=self.pk,
+                                       processing__isnull=False).update(processing=None)
+        return len(ret) == 1

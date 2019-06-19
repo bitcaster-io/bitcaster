@@ -4,6 +4,11 @@
     <script src="{% static "bitcaster/charts.js" %}"></script>
 {% endblock head %}
 {% block page %}
+    {% if system.stopped %}
+        <div class="container alert alert-danger border text-uppercase text-center border-secondary p-3 mb-2">
+            <strong>{% trans "System locked. All notifications suspended" %}</strong>
+        </div>
+    {% endif %}
     <div class="container border border-secondary p-3">
         <div style="width:1000px;">
             <div class="h4">Overview</div>
@@ -29,40 +34,56 @@
             <div class="col-sm mr-1">
                 <div class="card">
                     <div class="card-header w-100"><i class="fas fa-lock"></i> Locks</div>
-                    {% if locks %}
-                        <div class="list-group list-group-flush w-100">
-                            {% for n,c in locks.items %}
+                    <div class="card-body text-lightgray">
+                        {% blocktrans %}
+                            Lock happen during event/occurrence notifications sending.
+                            A lock is automatically released at the end of the sending process.
+                        {% endblocktrans %}
+                    </div>
+                    <div class="list-group list-group-flush w-100">
+                        {% if locks %}
+                            {% for n in locks %}
                                 <div class="list-group-item w-100">
-                                    {{ c }}
-                                    <span data-url="{% org-url 'locks-unlock' c %}"
+                                    <div>#{{ n.id }} {{ n.event }}</div>
+                                    <small>{{ n.processing }}</small>
+                                    <span data-url="{% org-url 'locks-unlock' n.id %}"
                                           class="pull-right d-block pointer remove-lock">
                                     <i class="far fa-times-circle"></i>
                                 </span>
                                 </div>
                             {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="card-body">
-                            <i class="far fa-check-circle green"></i> {% trans "No locks found" %}
-                        </div>
-                    {% endif %}
+                        {% else %}
+                            <div class="list-group-item w-100">
+                                <i class="far fa-check-circle green"></i> {% trans "No locks found" %}
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
             <div class="col-sm ml-1">
                 <div class="card">
                     <div class="card-header w-100"><i class="fas fa-stream"></i> Occurences</div>
-                    {% if occurences %}
-                        <div class="list-group list-group-flush w-100">
+                    <div class="card-body text-lightgray">
+                        {% blocktrans %}
+                            Occurences in pending state and/or with notifications waiting for approval
+                            and with failed notifications waiting retry
+                        {% endblocktrans %}
+                    </div>
+                    <div class="list-group list-group-flush w-100">
+                        {% if occurences %}
                             {% for n in occurences %}
-                                <div class="list-group-item w-100">#{{ n.id }} {{ n.event }}</div>
+                                <div class="list-group-item w-100">
+                                    <div>#{{ n.id }} {{ n.event }}</div>
+                                    <small>{{ n.expire }}</small>
+                                </div>
                             {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="card-body">
-                            <i class="far fa-check-circle green"></i> {% trans "No pending occurences" %}
-                        </div>
-                    {% endif %}
+                        {% else %}
+                            <div class="list-group-item w-100">
+                                <i class="far fa-check-circle green"></i> {% trans "No pending occurences" %}
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,7 +92,7 @@
     </div>
 
 
-{% csrf_token %}
+    {% csrf_token %}
 
 {% endblock page %}
 {% block js %}

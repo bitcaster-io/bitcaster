@@ -13,7 +13,6 @@ class OrganizationNotificationLogView(NotificationLogMixin,
     template_name = 'bitcaster/organization/log.html'
     model = Notification
     title = _('Notification Log')
-    paginate_by = 50
 
     def get_queryset(self):
         qs = Notification.objects.filter(organization=self.selected_organization)

@@ -1,5 +1,6 @@
 import logging
 
+from admin_extra_urls.extras import ExtraUrlMixin, link
 from django.contrib import admin
 
 from bitcaster.models import Counter, Occurence
@@ -15,8 +16,12 @@ class CounterAdmin(admin.ModelAdmin):
 
 
 @admin.register(Occurence, site=site)
-class OccurenceAdmin(admin.ModelAdmin):
+class OccurenceAdmin(ExtraUrlMixin, admin.ModelAdmin):
     date_hierarchy = 'timestamp'
     list_display = ('timestamp', 'event', 'expire', 'status', 'id',
                     'submissions', 'successes', 'failures')
     list_filter = ('expire', 'status')
+
+    @link()
+    def consolidate(self, request):
+        Occurence.objects.consolidate()

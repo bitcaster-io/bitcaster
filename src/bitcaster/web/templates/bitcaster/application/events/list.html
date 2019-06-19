@@ -1,13 +1,16 @@
 {% extends "bitcaster/application/base.html" %}{% load i18n bitcaster bc_permissions %}
 {% block page %}
-    <div class="container">
+{#    <div class="container">#}
         <div class="row col-12">
-            <div class="pull-right col-12 p-4">
+            <div class="col-10">
+                {% include 'bitcaster/_includes/_filter_queryset.html' %}
+            </div>
+            <div class="col-2">
                 <a class="btn btn-danger btn-small pull-right"
                    href="{% app-url "app-event-create" %}">{% trans "Add Event" %}</a>
             </div>
         </div>
-    </div>
+{#    </div>#}
     <table class="table table-striped table-hover col-12">
         <thead>
         <tr>

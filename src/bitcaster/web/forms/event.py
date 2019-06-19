@@ -2,6 +2,7 @@ import logging
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from strategy_field.utils import fqn
@@ -39,7 +40,7 @@ class EventForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         enabled_dispatcher = DispatcherMetaData.objects.enabled().values_list('handler',
                                                                               flat=True)
-        self.fields['channels'].queryset = Channel.objects.selectable(self.application,
+        self.fields['channels'].queryset = Channel.objects.selectable(self.application.organization,
                                                                       handler__in=enabled_dispatcher)
 
     def _get_validation_exclusions(self):
@@ -55,7 +56,7 @@ class EventForm(forms.ModelForm):
             qs = self.application.events.filter(name=value)
 
         if qs.exists():
-            raise ValidationError('Event with this Name already exists.')
+            raise ValidationError(_('Event with this Name already exists.'))
         return value
 
     def full_clean(self):

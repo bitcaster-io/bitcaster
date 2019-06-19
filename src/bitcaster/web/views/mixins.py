@@ -12,6 +12,7 @@ from bitcaster.models import Notification
 from bitcaster.models.audit import AuditLogEntry
 from bitcaster.state import state
 from bitcaster.utils.filtering import FilterParser
+from bitcaster.utils.language import parse_bool
 from bitcaster.utils.reflect import fqn
 from bitcaster.utils.wsgi import get_client_ip
 from bitcaster.web import messages
@@ -128,6 +129,9 @@ class FilterQuerysetMixin:
 
     def get_parser(self):
         return FilterParser(self, self.filter_fieldmap, self.search_fields)
+
+    def _parse_bool(self, parser, keyword, value):
+        parser.kwargs[keyword] = parse_bool(value)
 
     def filter_queryset(self, queryset):
         self.active_filter = [], {}

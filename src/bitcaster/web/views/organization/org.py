@@ -10,7 +10,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView
 
 from bitcaster.models import Organization
-from bitcaster.utils.locks import get_all_locks
 from bitcaster.web.forms import OrganizationForm
 from bitcaster.web.forms.organization import OrganizationOptionsForm
 from bitcaster.web.views.mixins import TitleMixin
@@ -44,7 +43,7 @@ class OrganizationDashboard(OrganizationBaseView, BitcasterBaseDetailView):
 
     def get_context_data(self, **kwargs):
         kwargs['occurences'] = self.selected_organization.occurences.active()
-        kwargs['locks'] = get_all_locks()
+        kwargs['locks'] = self.selected_organization.occurences.active(processing__isnull=False)
         return super().get_context_data(**kwargs)
 
 

@@ -1,16 +1,16 @@
-{% load crispy_forms_tags i18n bc_permissions %}
+{% load i18n %}
 <div class="container">
-    <div class="row col-12 mb-5">
-        <div class="col-7">
+    <div class="row col-12 mb-2">
+        <div class="col-10">
             {% trans "type your filters" as placeholder %}
 
             <form id="search">
-                <input type="text" name="filter" maxlength="50"
+                <input type="search" name="filter" maxlength="50"
                        value="{{ request.GET.filter }}"
                        placeholder="{{ placeholder }}"
                        onfocus="this.placeholder=''"
                        onblur="this.placeholder='{{ placeholder }}'"
-                       class="textinput textInput form-control">
+                       class="textinput  textInput form-control">
             </form>
             {% if view.filtering_errors %}
                 {% for err in view.filtering_errors %}
@@ -23,8 +23,16 @@
                    onclick="search.submit()"
                    type="submit" value="{% trans "Search" %}">
         </div>
-
-        <div class="pull-right col-3">
+        <div class="col-1 d-flex  text-center align-middle">
+            &nbsp;{% if request.GET.filter %}
+            <span class="p-2 pointer" id="fa"><i class="fas fa-filter"></i></span>
+        {% endif %}
         </div>
     </div>
 </div>
+<script>
+    $('#fa').click(function () {
+        $('input[name=filter]').val('');
+        $('#search').submit();
+    })    
+</script>

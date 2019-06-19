@@ -25,7 +25,9 @@ class FilterParser:
             field_name, value = token.split(':')
             rule = self.mapping.get(field_name)
             handler = getattr(self.view, str(rule), None)
-            if callable(handler):
+            if callable(rule):
+                rule(self, field_name, value)
+            elif callable(handler):
                 handler(self, field_name, value)
             elif isinstance(rule, str):
                 self.kwargs[rule] = value.strip()
