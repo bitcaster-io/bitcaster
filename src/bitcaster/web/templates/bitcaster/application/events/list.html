@@ -39,5 +39,9 @@
         </tbody>
 
     </table>
+    <!-- pagination-->
+    {% if is_paginated %}
+        {% include "bitcaster/_includes/pagination.html" with page_obj=page_obj %}
+    {% endif %}
 
 {% endblock page %}
