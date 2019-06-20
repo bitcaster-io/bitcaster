@@ -5,7 +5,6 @@ from celery import chord
 from crashlog.middleware import process_exception
 from django.core.cache import caches
 from django.core.exceptions import ObjectDoesNotExist
-from django.template import Template
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -14,6 +13,7 @@ from sentry_sdk import capture_exception
 from bitcaster import system
 from bitcaster.celery import app
 from bitcaster.exceptions import BatchError, LogicError
+from bitcaster.template.django import Template
 from bitcaster.template.secure_context import SecureContext
 from bitcaster.tsdb.api import (log_error_channel, log_error_event,
                                 log_error_notification, log_error_occurence,
@@ -167,6 +167,8 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
                     'today': datetime.datetime.today(),
                 })
                 message = body_template.render(SecureContext(ctx))
+                # TODO: remove me
+                print(111, 'event.py:171', message)
                 subject = subject_template.render(SecureContext(ctx))
                 address = subscription.get_address()
                 if not address:

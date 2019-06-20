@@ -4,7 +4,7 @@ from uuid import uuid4
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import UUIDField
+from django.db.models import Q, UUIDField
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
@@ -141,3 +141,12 @@ class Event(ReverseWrapperMixin, AbstractModel):
     @cached_property
     def enabled_channels(self):
         return self.channels.filter(enabled=True)
+
+    def get_or_create_key(self):
+        created = False
+        key = self.application.keys.filter(Q(events=self,
+                                             all_events=True)).first()
+        if not key:
+            key = self.application.keys.create(name=f'Auto created key for {self}')
+            key.events.add(self)
+        return key, created

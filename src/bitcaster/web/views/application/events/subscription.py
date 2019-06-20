@@ -103,10 +103,12 @@ class EventSubscriptionCreate(SingleEventMixin, MessageUserMixin, FormView):
         for user in form.cleaned_data['members']:
             if user.subscriptions.filter(event=self.selected_event):
                 existing.append(user.display_name)
+            asm = user.assignments.filter(channel=channel).first()
 
             user.subscriptions.create(event=self.selected_event,
                                       status=status,
-                                      enabled=False,
+                                      enabled=bool(asm),
+                                      assignment=asm,
                                       trigger_by=self.request.user,
                                       channel=channel)
 

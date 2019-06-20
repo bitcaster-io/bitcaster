@@ -143,10 +143,8 @@ class EventBee(EventMixin, EventFormMixin, BitcasterBaseDetailView):
 
     def get_context_data(self, **kwargs):
         event = self.get_object()
-        key = self.selected_application.keys.filter(events=event).first()
-        if not key:
-            key = self.selected_application.keys.create(name=f'Auto created key for {event}')
-            key.events.add(event)
+        key, is_new = event.get_or_create_key()
+        if is_new:
             self.message_user('Warning new key has been created', messages.WARNING)
 
         extra = {'serializer': eventform_factory(event),
@@ -166,10 +164,8 @@ class EventBatch(EventMixin, EventFormMixin, BitcasterBaseDetailView):
 
     def get_context_data(self, **kwargs):
         event = self.get_object()
-        key = self.selected_application.keys.filter(events=event).first()
-        if not key:
-            key = self.selected_application.keys.create(name=f'Auto created key for {event}')
-            key.events.add(event)
+        key, is_new = event.get_or_create_key()
+        if is_new:
             self.message_user('Warning new key has been created', messages.WARNING)
 
         extra = {'serializer': eventform_factory(event),
@@ -187,10 +183,8 @@ class EventTest(EventMixin, EventFormMixin, BitcasterBaseDetailView):
 
     def get_context_data(self, **kwargs):
         event = self.get_object()
-        key = self.selected_application.keys.filter(events=event).first()
-        if not key:
-            key = self.selected_application.keys.create(name=f'Auto created key for {event}')
-            key.events.add(event)
+        key, is_new = event.get_or_create_key()
+        if is_new:
             self.message_user('Warning new key has been created', messages.WARNING)
 
         extra = {'serializer': eventform_factory(event),
