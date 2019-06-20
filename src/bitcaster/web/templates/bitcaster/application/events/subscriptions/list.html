@@ -32,7 +32,7 @@
                     {{ subscription.channel }}
                 </td>
                 <td style="width:5%">
-                    {{ subscription.recipient }}
+                    {{ subscription.recipient|default_if_none:"invalid address" }}
                 </td>
                 <td style="width:10%">
                     {{ subscription.get_status_display }}
