@@ -82,7 +82,8 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
     @cached_property
     def recipient(self):
         try:
-            return self.assignment.address.address
+            if self.assignment.verified:
+                return self.assignment.address.address
         except ObjectDoesNotExist:
             return None
         except AttributeError:

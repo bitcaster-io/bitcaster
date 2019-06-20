@@ -159,6 +159,7 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
                     'organization': organization,
                     'subscription': subscription,
                     'today': datetime.datetime.today(),
+                    'now': timezone.now(),
                 })
                 notification_kwargs = {'channel': channel,
                                        'event_id': event.pk,
