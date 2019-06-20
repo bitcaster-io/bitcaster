@@ -22,5 +22,6 @@ DEFAULTS = dict(
     SENTRY_DSN=(str, ''),
     SENTRY_ENABLED=(bool, False),
     STATIC_ROOT=(str, os.path.join(tempfile.gettempdir(), 'bitcaster', 'static')),
+    TIME_ZONE=(str, 'UTC'),
     URL_PREFIX=(str, ''),
 )
