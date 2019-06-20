@@ -33,9 +33,6 @@ class SubscriptionQuerySet(models.QuerySet):
             self.filter(id__in=to_disable).update(enabled=False)
         return to_disable
 
-    def valid(self, *args, **kwargs):
-        return self.filter(enabled=True, channel__enabled=True, *args, **kwargs)
-
 
 class Subscription(ReverseWrapperMixin, AbstractModel):
     """ """

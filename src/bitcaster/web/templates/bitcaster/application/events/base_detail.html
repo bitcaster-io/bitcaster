@@ -6,25 +6,67 @@
             <div class="p-2">
                 <a href="{{ application.urls.events }}">events</a> :
                 {% if event %}
-                <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a>
+                    <a href="{% app-url "app-event-edit" event.pk %}">{{ event }}</a>
                 {% endif %}
             </div>
             {% if event %}
-            <div class="ml-auto p-2">
-                {% button event.urls.edit True "fas fa-wrench" "configure" viewname='EventUpdate'%}
-                {% button event.urls.messages True "fas fa-comment" "messages" viewname='EventMessages'%}
-                {% button event.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" event.enabled %}
-                {% button event.urls.delete True "far fa-trash-alt" "delete" %}
-                {% button event.urls.develop True "fas fa-bug red:fas fa-bug black" "Debug Mode Off:Debug Mode On" event.development_mode %}
-                {% button event.urls.test True "fas fa-terminal" "test" viewname='EventTest' %}
-                {% button event.urls.batch True "fas fa-layer-group" "batch" viewname='EventBatch' %}
-                {% button event.urls.bee True "fas fa-link" "bee" viewname='EventBee' %}
-                {% button event.urls.keys True "fas fa-key" "keys" viewname='EventKeys' %}
-                {% button event.urls.subscriptions True "fas fa-user" "subscriptions" viewname='EventSubscriptionList' %}
-            </div>
-        {% endif %}
+                <div class="ml-auto p-2">
+                    {% button event.urls.edit True "fas fa-wrench" "configure" viewname='EventUpdate' %}
+                    {% button event.urls.messages True "fas fa-comment" "messages" viewname='EventMessages' %}
+                    {% button event.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" event.enabled %}
+                    {% button event.urls.delete True "far fa-trash-alt" "delete" %}
+                    {% button event.urls.develop True "fas fa-bug red:fas fa-bug black" "Debug Mode Off:Debug Mode On" event.development_mode %}
+                    {% button event.urls.test True "fas fa-terminal" "test" viewname='EventTest' %}
+                    {% button event.urls.batch True "fas fa-layer-group" "batch" viewname='EventBatch' %}
+                    {% button event.urls.bee True "fas fa-link" "bee" viewname='EventBee' %}
+                    {% button event.urls.keys True "fas fa-key" "keys" viewname='EventKeys' %}
+                    {% button event.urls.subscriptions True "fas fa-user" "subscriptions" viewname='EventSubscriptionList' %}
+                </div>
+            {% endif %}
         </div>
     {% endblock %}
     {% block detail %}
     {% endblock %}
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $('#{{ event.urls.toggle|slugify }}').click(function (e) {
+            e.preventDefault();
+            var $target = $(e.currentTarget).children('i:first-child');
+            $.get("{{ event.urls.toggle }}")
+                .done(function () {
+                    if ($target.hasClass('red')) {
+                        $target.removeClass('fa-toggle-off red').addClass('fa-toggle-on green');
+                        $(e.currentTarget).tooltip('hide')
+                            .attr('data-original-title', 'Disable')
+                            .tooltip('show');
+                    } else {
+                        $target.removeClass('fa-toggle-on green').addClass('fa-toggle-off red');
+                        $(e.currentTarget).tooltip('hide')
+                            .attr('data-original-title', 'Enable')
+                            .tooltip('show');
+                    }
+                });
+        });
+
+        $('#{{ event.urls.develop|slugify }}').click(function (e) {
+            e.preventDefault();
+            var $target = $(e.currentTarget).children('i:first-child');
+            $.get("{{ event.urls.toggle }}")
+                .done(function () {
+                    if ($target.hasClass('red')) {
+                        $target.removeClass('red');
+                        $(e.currentTarget).tooltip('hide')
+                            .attr('data-original-title', 'Disable')
+                            .tooltip('show');
+                    } else {
+                        $target.addClass('red');
+                        $(e.currentTarget).tooltip('hide')
+                            .attr('data-original-title', 'Enable')
+                            .tooltip('show');
+                    }
+                });
+        });
+    </script>
 {% endblock %}

@@ -97,9 +97,6 @@ class TimeSeries:
             pipe.execute()
 
     def get_data(self, key):
-        # k = '%s:counter' % key
-        # TODO: remove me
-        print(111, 'db.py:102', 1111111, key)
         ret = self.client.get(key)
         return ret or b'0'
 

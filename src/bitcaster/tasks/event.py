@@ -110,7 +110,7 @@ def _get_message_parts(channel, event, header) -> [Template, Template]:
 
 @app.task()  # noqa: C901
 def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=False):
-    from bitcaster.models import Channel, Notification, Occurence, Address, ErrorEntry
+    from bitcaster.models import Channel, Notification, Occurence, Address
 
     channel = Channel.objects.select_related('organization').get(pk=channel_pk)
     organization = channel.organization
@@ -124,27 +124,20 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
         header = ''
 
     logger.debug(f'Processing channel {channel}')
-
-    subject_template, body_template = _get_message_parts(channel, event, header)
-
-    subscription_filter = {'channel': channel}
-    if event.development_mode:
-        subscription_filter['subscriber__in'] = event.application.admins
-    # in batch mode context has a prefixed format
-    # {'filter': 'address',
-    #  'arguments': { 'param1': '**parameter-1**'
-    #               },
-    #  'targets':[address1]
-    #  },
-    if batch:
-        filter_param = context.get('filter', 'subscriber__addresses__address__in')
-        subscription_filter[filter_param] = context.get('targets',
-                                                        context.get('targets'))
-        context = context.get('arguments', {})
     try:
+        subject_template, body_template = _get_message_parts(channel, event, header)
+
+        subscription_filter = {'channel': channel}
+        if event.development_mode:
+            subscription_filter['subscriber__in'] = event.application.admins
+        if batch:
+            filter_param = context.get('filter', 'subscriber__addresses__address__in')
+            subscription_filter[filter_param] = context.get('targets',
+                                                            context.get('targets'))
+            context = context.get('arguments', {})
         partition = 1000
         page = []
-        for subscription in event.subscriptions.valid(**subscription_filter):
+        for subscription in event.subscriptions.filter(**subscription_filter):
             try:
                 logger.debug(f'Processing {subscription}')
                 ctx = dict(context or {})
@@ -166,32 +159,6 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
                     'subscription': subscription,
                     'today': datetime.datetime.today(),
                 })
-                message = body_template.render(SecureContext(ctx))
-                # TODO: remove me
-                print(111, 'event.py:171', message)
-                subject = subject_template.render(SecureContext(ctx))
-                address = subscription.get_address()
-                if not address:
-                    logger.error('No valid address for subscription %s' % subscription.pk)
-                    ErrorEntry.objects.create(
-                        actor=subscription.subscriber,
-                        target=subscription,
-                        message='Invalid address'
-                    ).consolidate()
-                attachments = None
-                if event.attachment and channel.handler.handle_attachments:
-                    file_getter = event.attachment
-                    try:
-                        attachment = file_getter.handler.get(subscription)
-                        attachments = [attachment]
-                    except Exception as e:
-                        log_error_retriever(file_getter, str(e))
-                        if event.attachment_policy == event.ERROR_IGNORE:
-                            attachments = []
-                        elif event.attachment_policy == event.ERROR_HALT:
-                            continue
-                        elif event.attachment_policy == event.ERROR_ABORT:
-                            raise BatchError('Error retrieving attachment for %s' % subscription)
                 notification_kwargs = {'channel': channel,
                                        'event_id': event.pk,
                                        'occurence_id': occurence_pk,
@@ -201,13 +168,42 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
                                        'development_mode': event.development_mode,
                                        'reminders': 0,
                                        'status': occurence.status,
-                                       'attachments': attachments,
                                        'subscription_id': subscription.pk,
-                                       'address': address,
                                        'next_sent': timezone.now(),
-                                       'data': {'subject': subject,
-                                                'message': message}
                                        }
+                attachments = None
+                subject = None
+                message = None
+                if not subscription.enabled:
+                    notification_kwargs['status'] = Notification.STATUSES.SUBSCRIPTION_DISABLED
+                elif not channel.enabled:
+                    notification_kwargs['status'] = Notification.STATUSES.CHANNEL_DISABLED
+                else:
+                    address = subscription.get_address()
+                    if not address:
+                        notification_kwargs['status'] = Notification.STATUSES.WRONG_ADDRESS
+                    else:
+                        message = body_template.render(SecureContext(ctx))
+                        subject = subject_template.render(SecureContext(ctx))
+                        attachments = None
+                        if event.attachment and channel.handler.handle_attachments:
+                            file_getter = event.attachment
+                            try:
+                                attachment = file_getter.handler.get(subscription)
+                                attachments = [attachment]
+                            except Exception as e:
+                                log_error_retriever(file_getter, str(e))
+                                if event.attachment_policy == event.ERROR_IGNORE:
+                                    attachments = []
+                                elif event.attachment_policy == event.ERROR_HALT:
+                                    continue
+                                elif event.attachment_policy == event.ERROR_ABORT:
+                                    raise BatchError('Error retrieving attachment for %s' % subscription)
+                notification_kwargs.update({
+                    'attachments': attachments,
+                    'data': {'subject': subject,
+                             'message': message}
+                })
 
                 page.append(Notification(**notification_kwargs))
 
@@ -232,10 +228,8 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
     except Exception as e:
         logger.exception(e)
         process_exception(e)
+        capture_exception(e)
         raise
-
-    # from .periodic import process_notifications
-    # process_notifications.delay()
     return True
 
 

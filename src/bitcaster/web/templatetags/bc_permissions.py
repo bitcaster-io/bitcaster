@@ -1,4 +1,5 @@
 from django import template
+from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 
 from bitcaster.models import Application, Organization
@@ -71,6 +72,7 @@ def button(context, href, has_perm, icon, label, toggler=None, viewname='', extr
               'icon': icon,
               'css': '',
               'title': label,
+              'id': slugify(href),
               'href': ''}
 
     if classname(view) == viewname:
@@ -83,6 +85,7 @@ def button(context, href, has_perm, icon, label, toggler=None, viewname='', extr
                        })
     return mark_safe('''<a class="btn btn-light %(disabled)s %(css)s "
                            data-toggle="tooltip" title="%(title)s"
+                           id="%(id)s"
                            href="%(href)s">
                             <i class="%(icon)s pointer"></i>
                         </a>''' % params)

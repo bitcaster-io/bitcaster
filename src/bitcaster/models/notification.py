@@ -66,8 +66,12 @@ class Notification(models.Model):
     REMIND = 21  # Reminder scheduled
     WAIT = 22
 
+    # > 90 errors
+    CHANNEL_DISABLED = 96
+    SUBSCRIPTION_DISABLED = 97
     WRONG_ADDRESS = 98
     EXPIRED = 99
+
     CONFIRMED = 101  # confirmation received / or single successful sent with no confirmations
     COMPLETE = 100  # confirmation received / or single successful sent with no confirmations
 
@@ -78,12 +82,15 @@ class Notification(models.Model):
                 (WAIT, _('waiting confirmation')),  # Translators: Notification.STATUSES
 
                 (WRONG_ADDRESS, _('address not confirmed')),  # Translators: Notification.STATUSES
+                (CHANNEL_DISABLED, _('channel disabled')),  # Translators: Notification.STATUSES
+                (SUBSCRIPTION_DISABLED, _('subscription disabled')),  # Translators: Notification.STATUSES
                 (EXPIRED, _('expired')),  # Translators: Notification.STATUSES
                 (COMPLETE, _('completed')),  # Translators: Notification.STATUSES
                 (CONFIRMED, _('confirmed')),  # Translators: Notification.STATUSES
                 )
     RUNNING = [PENDING, RETRY, REMIND, WAIT]
-    NOT_RUNNING = [WRONG_ADDRESS, EXPIRED, CONFIRMED, COMPLETE]
+    NOT_RUNNING = [WRONG_ADDRESS, EXPIRED, CONFIRMED, COMPLETE,
+                   CHANNEL_DISABLED, SUBSCRIPTION_DISABLED]
 
     MESSAGE_NONE = 0
     MESSAGE_TPL = 1
