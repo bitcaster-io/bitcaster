@@ -2,8 +2,7 @@
 from .application import ApplicationCreateForm, ApplicationForm
 from .applicationmember import ApplicationMemberForm
 from .channel import ChannelForm
-from .event import (EventCreateSelectChannel, EventCreateSetupMessage,
-                    EventForm, EventTriggerForm,)
+from .event import EventCreateSelectChannel, EventForm
 from .file_getter import (FileGetterCreate1, FileGetterForm,
                           FileGetterUpdateConfigurationForm,)
 from .invitations import OrganizationInvitationForm

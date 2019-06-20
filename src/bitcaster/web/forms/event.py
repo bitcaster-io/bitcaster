@@ -4,7 +4,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError as DRFValidationError
 from strategy_field.utils import fqn
 
 from bitcaster.models import Channel, DispatcherMetaData, Event
@@ -87,44 +86,3 @@ class EventCreateMessageForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.application = kwargs.pop('application')
         super().__init__(*args, **kwargs)
-
-
-class EventCreateSetupMessage(forms.Form):
-    subject = forms.CharField(max_length=200, required=False)
-    body = forms.CharField(widget=forms.Textarea())
-
-    def __init__(self, *args, **kwargs):
-        self.channels = kwargs.pop('channels', [])
-        self.application = kwargs.pop('application')
-        super().__init__(*args, **kwargs)
-        self.formset_class = forms.formset_factory(EventCreateMessageForm,
-                                                   extra=0)
-        # initial = []
-        # for c in self.channels:
-        #     initial.append({'channel': c})
-        # self.msgForms = self.formset_class(initial=initial)
-
-
-class EventTriggerForm(forms.Form):
-    # arguments = JSONField(widget=JSONEditor, required=False)
-
-    def __init__(self, event, *args, **kwargs):
-        self.event = event
-        super().__init__(*args, **kwargs)
-
-    def clean(self):
-        expected_arguments = self.event.arguments
-        arguments = self.cleaned_data['arguments']
-        errors = []
-        if arguments:
-            for k, v in arguments.items():
-                if k not in expected_arguments.keys():
-                    errors.append('Invalid argument %s' % k)
-
-        if errors:
-            raise DRFValidationError({'arguments': errors})
-
-
-# create wizard
-class EventCreateConfig(forms.Form):
-    pass

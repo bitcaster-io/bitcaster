@@ -274,7 +274,7 @@ def send_page(occurence_pk: int, channel_pk: int, page: list):
             capture_exception(e)
             logger.exception(e)
             log_error_notification(notification,
-                                   'Unable to send notification to %s: %s ' % (notification.suscriber,
+                                   'Unable to send notification to %s: %s ' % (notification.subscriber,
                                                                                str(e)))
     return done
 
