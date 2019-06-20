@@ -83,7 +83,7 @@ class EventViewSet(BaseModelViewSet):
                              'timestamp': timezone.now()}, status=500)
         else:
             return Response({'message': 'Event triggered',
-                             'event': event.pk,
+                             'event': event.name,
                              'development': event.development_mode,
                              'id': occurence.pk,
                              'timestamp': timezone.now()}, status=201)

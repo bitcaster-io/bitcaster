@@ -110,7 +110,7 @@ def _get_message_parts(channel, event, header) -> [Template, Template]:
 
 @app.task()  # noqa: C901
 def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=False):
-    from bitcaster.models import Channel, Notification, Occurence, Address
+    from bitcaster.models import Channel, Notification, Occurence
 
     channel = Channel.objects.select_related('organization').get(pk=channel_pk)
     organization = channel.organization
@@ -137,6 +137,7 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
             context = context.get('arguments', {})
         partition = 1000
         page = []
+        num = 0
         for subscription in event.subscriptions.filter(**subscription_filter):
             try:
                 logger.debug(f'Processing {subscription}')
@@ -161,14 +162,16 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
                 })
                 notification_kwargs = {'channel': channel,
                                        'event_id': event.pk,
+                                       'address': subscription.recipient,
                                        'occurence_id': occurence_pk,
                                        'need_confirmation': event.need_confirmation,
                                        'reminders_timestamps': timezone.now().strftime('%d-%b-%Y %H:%M'),
                                        'max_reminders': event.reminders,
                                        'development_mode': event.development_mode,
                                        'reminders': 0,
-                                       'status': occurence.status,
-                                       'subscription_id': subscription.pk,
+                                       'status': Notification.PENDING,
+                                       # 'status': occurence.status,
+                                       'subscription': subscription,
                                        'next_sent': timezone.now(),
                                        }
                 attachments = None
@@ -199,24 +202,18 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
                                     continue
                                 elif event.attachment_policy == event.ERROR_ABORT:
                                     raise BatchError('Error retrieving attachment for %s' % subscription)
-                notification_kwargs.update({
+                notification_kwargs.update(**{
                     'attachments': attachments,
                     'data': {'subject': subject,
                              'message': message}
                 })
-
                 page.append(Notification(**notification_kwargs))
 
                 if len(page) == partition:
+                    num += len(page)
                     ids = Notification.objects.bulk_create(page)
                     log_new_notifications(channel_pk, len(ids))
                     page = []
-            except Address.DoesNotExist as e:
-                logger.exception(e)
-                log_error_event(event,
-                                'Address not validated: %(target)s',
-                                target=subscription)
-                process_exception(e)
             except Exception as e:
                 logger.exception(e)
                 process_exception(e)
@@ -224,6 +221,7 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
 
         # process incomplete page
         if len(page):
+            num += len(page)
             ids = Notification.objects.bulk_create(page)
             log_new_notifications(channel_pk, len(ids))
     except Exception as e:
@@ -247,7 +245,9 @@ def send_page(occurence_pk: int, channel_pk: int, page: list):
     for notification_id in page:
         try:
             notification = Notification.objects.pending(occurence=occurence_pk).get(id=notification_id)
-        except Notification.DoesNotExist:
+        except Notification.DoesNotExist as e:
+            process_exception(e)
+            capture_exception(e)
             continue
         subject = notification.data['subject']
         message = notification.data['message']
@@ -274,7 +274,7 @@ def send_page(occurence_pk: int, channel_pk: int, page: list):
             capture_exception(e)
             logger.exception(e)
             log_error_notification(notification,
-                                   'Unable to send notification to %s: %s ' % (notification.subscriber,
+                                   'Unable to send notification to %s: %s ' % (notification.subscription.subscriber,
                                                                                str(e)))
     return done
 

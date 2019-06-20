@@ -64,8 +64,7 @@ class Notification(models.Model):
     # WARNING these values asre in sync with Occurence
 
     NEW = Occurence.NEW  # Just created not yet queued
-    QUEUED = Occurence.RUNNING  # Queued no sending happened
-    PENDING = 10  # Queued no sending happened
+    PENDING = Occurence.RUNNING  # Queued no sending happened
     RETRY = 20  # Sent failed retrying
     REMIND = 21  # Reminder scheduled
     WAIT = 22
@@ -92,7 +91,7 @@ class Notification(models.Model):
                 (COMPLETE, _('completed')),  # Translators: Notification.STATUSES
                 (CONFIRMED, _('confirmed')),  # Translators: Notification.STATUSES
                 )
-    RUNNING = [NEW, QUEUED, PENDING, RETRY, REMIND, WAIT]
+    RUNNING = [NEW, PENDING, RETRY, REMIND, WAIT]
     NOT_RUNNING = [WRONG_ADDRESS, CHANNEL_DISABLED,
                    SUBSCRIPTION_DISABLED, EXPIRED, COMPLETE, CONFIRMED]
 

@@ -74,7 +74,7 @@ class Subscription(ReverseWrapperMixin, AbstractModel):
         args = ['event.application.organization.slug', 'event.application.slug', 'event.id', 'id']
 
     def __str__(self):
-        return '#{0.pk} to {0.event} via {0.channel}'.format(self)
+        return '{0.subscriber} to {0.event} via {0.channel}'.format(self)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super().save(force_insert, force_update, using, update_fields)

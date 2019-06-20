@@ -23,7 +23,7 @@ cache_lock = caches['lock']
 logger = logging.getLogger(__name__)
 
 
-@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
+@periodic_task(run_every=timedelta(minutes=10), options={'expires': 60})
 def clean_data():
     today = timezone.now()
     audit_older_than = today - datetime.timedelta(days=config.LOG_RETENTION_AUDIT)
@@ -86,20 +86,20 @@ def all_stats():
         _stats(org.slug, organization=org)
 
 
-@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
+@periodic_task(run_every=timedelta(minutes=10), options={'expires': 60})
 def set_notification_status():
     Notification.objects.filter(occurence__expire__lt=timezone.now(),
                                 status__in=[Notification.PENDING, Notification.RETRY, Notification.REMIND]
                                 ).update(status=Notification.EXPIRED)
 
 
-@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
+@periodic_task(run_every=timedelta(minutes=10), options={'expires': 60})
 def consolidate():
     Notification.objects.consolidate()
     ErrorEntry.objects.consolidate()
 
 
-@periodic_task(run_every=timedelta(minutes=1), options={'expires': 60})
+@periodic_task(run_every=timedelta(minutes=10), options={'expires': 60})
 def check_monitors():
     from .monitor import check_monitor, Monitor
     for monitor in Monitor.objects.scheduled():
@@ -141,10 +141,11 @@ def process_notifications():
 
                 if page:
                     chord_pages.append(send_page.s(occurence.pk, channel.pk, page))
+
+            if chord_pages:
+                chord(chord_pages)(batch_start.s(occurence.pk))
+            else:
+                occurence.terminate()
+
         else:
             print(f'Cannot process {occurence}. Lock found')
-
-        if chord_pages:
-            chord(chord_pages)(batch_start.s(occurence.pk))
-        else:
-            occurence.terminate()

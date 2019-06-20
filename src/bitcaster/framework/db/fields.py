@@ -76,6 +76,8 @@ class EncryptedJSONField(FernetMixin, _JSONField):
     def from_db_value(self, value, expression, connection, context):
         # This is only required in phase 1
         # should be removed before 1.0
+        if value is None:
+            return value
         if list(value.keys()) == ['f']:
             return json.loads(self.fernet.decrypt(value['f'].encode('utf8')))
         return value
