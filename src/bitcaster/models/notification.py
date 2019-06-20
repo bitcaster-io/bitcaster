@@ -88,7 +88,7 @@ class Notification(models.Model):
                 (COMPLETE, _('completed')),  # Translators: Notification.STATUSES
                 (CONFIRMED, _('confirmed')),  # Translators: Notification.STATUSES
                 )
-    RUNNING = [PENDING, RETRY, REMIND, WAIT]
+    RUNNING = [NEW, PENDING, RETRY, REMIND, WAIT]
     NOT_RUNNING = [WRONG_ADDRESS, EXPIRED, CONFIRMED, COMPLETE,
                    CHANNEL_DISABLED, SUBSCRIPTION_DISABLED]
 

@@ -31,39 +31,39 @@
 {% block js %}
     {{ block.super }}
     <script>
-        $('#{{ event.urls.toggle|slugify }}').click(function (e) {
-            e.preventDefault();
-            var $target = $(e.currentTarget).children('i:first-child');
-            $.get("{{ event.urls.toggle }}")
-                .done(function () {
-                    if ($target.hasClass('red')) {
-                        $target.removeClass('fa-toggle-off red').addClass('fa-toggle-on green');
-                        $(e.currentTarget).tooltip('hide')
-                            .attr('data-original-title', 'Disable')
-                            .tooltip('show');
-                    } else {
-                        $target.removeClass('fa-toggle-on green').addClass('fa-toggle-off red');
-                        $(e.currentTarget).tooltip('hide')
-                            .attr('data-original-title', 'Enable')
-                            .tooltip('show');
-                    }
-                });
-        });
+        {# $('#{{ event.urls.toggle|slugify }}').click(function (e) { #}
+        {#    e.preventDefault();#}
+        {#    var $target = $(e.currentTarget).children('i:first-child');#}
+        {#    $.get("{{ event.urls.toggle }}")#}
+        {#        .done(function () {#}
+        {#            if ($target.hasClass('red')) {#}
+        {#                $target.removeClass('fa-toggle-off red').addClass('fa-toggle-on green');#}
+        {#                $(e.currentTarget).tooltip('hide')#}
+        {#                    .attr('data-original-title', 'Disable')#}
+        {#                    .tooltip('show');#}
+        {#            } else {#}
+        {#                $target.removeClass('fa-toggle-on green').addClass('fa-toggle-off red');#}
+        {#                $(e.currentTarget).tooltip('hide')#}
+        {#                    .attr('data-original-title', 'Enable')#}
+        {#                    .tooltip('show');#}
+        {#            }#}
+        {#        });#}
+        {# } );#}
 
         $('#{{ event.urls.develop|slugify }}').click(function (e) {
             e.preventDefault();
             var $target = $(e.currentTarget).children('i:first-child');
-            $.get("{{ event.urls.toggle }}")
+            $.get("{{ event.urls.develop }}")
                 .done(function () {
                     if ($target.hasClass('red')) {
                         $target.removeClass('red');
                         $(e.currentTarget).tooltip('hide')
-                            .attr('data-original-title', 'Disable')
+                            .attr('data-original-title', 'Debug mode ON')
                             .tooltip('show');
                     } else {
                         $target.addClass('red');
                         $(e.currentTarget).tooltip('hide')
-                            .attr('data-original-title', 'Enable')
+                            .attr('data-original-title', 'Debug mode OFF')
                             .tooltip('show');
                     }
                 });
