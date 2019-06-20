@@ -40,7 +40,7 @@ class SubscriptionQuerySet(models.QuerySet):
 class Subscription(ReverseWrapperMixin, AbstractModel):
     """ """
     STATUSES = Choices(
-        (10, 'PENDING', _('Subscription process is not completed')),
+        # (10, 'PENDING', _('Subscription process is not completed')),
         (60, 'OWNED', _('User subscribed to event')),
         (50, 'MANAGED', _('Admin subscribed user. Subscription is locked')),
     )

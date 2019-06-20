@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6723571c31ef60c64ac4ebb32fc05feaa16ec6b33a0063fe19148f90f43e612b"
+            "sha256": "c6cda88ede90f5b30ac51b0463daaf4703d95ced5123b6c9339cb29a80211360"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -333,11 +333,11 @@
         },
         "django-debug-toolbar": {
             "hashes": [
-                "sha256:89d75b60c65db363fb24688d977e5fbf0e73386c67acf562d278402a10fc3736",
-                "sha256:c2b0134119a624f4ac9398b44f8e28a01c7686ac350a12a74793f3dd57a9eea0"
+                "sha256:17c53cd6bf4e7d69902aedf9a1d26c5d3b7369b54c5718744704f27b5a72f35d",
+                "sha256:9a23ada2e43cd989195db3c18710b5d7451134a0d48127ab64c1d2ad81700342"
             ],
             "index": "pypi",
-            "version": "==1.11"
+            "version": "==2.0"
         },
         "django-environ": {
             "hashes": [
@@ -1111,21 +1111,21 @@
         },
         "typing": {
             "hashes": [
-                "sha256:4027c5f6127a6267a435201981ba156de91ad0d1d98e9ddc2aa173453453492d",
-                "sha256:57dcf675a99b74d64dacf6fba08fb17cf7e3d5fdff53d4a30ea2a5e7e52543d4",
-                "sha256:a4c8473ce11a65999c8f59cb093e70686b6c84c98df58c1dae9b3b196089858a"
+                "sha256:38566c558a0a94d6531012c8e917b1b8518a41e418f7f15f00e129cc80162ad3",
+                "sha256:53765ec4f83a2b720214727e319607879fec4acde22c4fbb54fa2604e79e44ce",
+                "sha256:84698954b4e6719e912ef9a42a2431407fe3755590831699debda6fba92aac55"
             ],
             "markers": "python_version < '3.7'",
-            "version": "==3.6.6"
+            "version": "==3.7.4"
         },
         "typing-extensions": {
             "hashes": [
-                "sha256:07b2c978670896022a43c4b915df8958bec4a6b84add7f2c87b2b728bda3ba64",
-                "sha256:f3f0e67e1d42de47b5c67c32c9b26641642e9170fe7e292991793705cd5fef7c",
-                "sha256:fb2cd053238d33a8ec939190f30cfd736c00653a85a2919415cecf7dc3d9da71"
+                "sha256:2ed632b30bb54fc3941c382decfd0ee4148f5c591651c9272473fea2c6397d95",
+                "sha256:b1edbbf0652660e32ae780ac9433f4231e7339c7f9a8057d0f042fcbcea49b87",
+                "sha256:d8179012ec2c620d3791ca6fe2bf7979d979acdbef1fca0bc56b37411db682ed"
             ],
             "markers": "python_version < '3.7'",
-            "version": "==3.7.2"
+            "version": "==3.7.4"
         },
         "uritemplate": {
             "hashes": [
@@ -1363,12 +1363,28 @@
             "index": "pypi",
             "version": "==0.1.6"
         },
+        "django-deprecate-fields": {
+            "hashes": [
+                "sha256:0233a3e22b947c421f893c2b621cd06fd56a7cab0ae121057ff0b0c2e7443b1f",
+                "sha256:5e888dac137c68c9bf302dabe5741f52c49e92e751f18ce6e8d8b465ea1cfc4d"
+            ],
+            "index": "pypi",
+            "version": "==0.0.3"
+        },
         "django-impersonate": {
             "hashes": [
                 "sha256:63b62d06f93b0318698c68f7314c78473914c262d4164eb66ad860bb83e04771"
             ],
             "index": "pypi",
             "version": "==1.4.1"
+        },
+        "django-migration-linter": {
+            "hashes": [
+                "sha256:53522ab0ee63500ebbaca6c62f04ae3285c44e5bc23c1ab399df78db42b2f933",
+                "sha256:b658c57757c1f8356c9626dd59c3877b5ab7604ca29e9ceac4f585888e45e916"
+            ],
+            "index": "pypi",
+            "version": "==1.1.0"
         },
         "django-webtest": {
             "hashes": [
@@ -1873,10 +1889,10 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:0a860bf2683fdbb4812fe539a6c22ea3f1777843ea985cb8c3807db448a0f7ab",
-                "sha256:e288416eecd4df19d12407d0c913cbf77aa8009d7fddb18f632aded3bdbdda6b"
+                "sha256:14a285392c32b6f8222ecfbcd217838f88e11630affe9006cd0e94c7eff3cb61",
+                "sha256:25d4c0ea02a305a688e7e9c2cdc8f862f989ef2a4701ab28ee963295f5b109ab"
             ],
-            "version": "==4.32.1"
+            "version": "==4.32.2"
         },
         "traitlets": {
             "hashes": [

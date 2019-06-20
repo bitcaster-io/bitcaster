@@ -107,6 +107,8 @@ selenium = "*"
 transifex-client = "*"
 pytest-lazy-fixture = "*"
 vcrpy = "*"
+django-migration-linter = "*"
+django-deprecate-fields = "*"
 
 [requires]
 python_version = "3.6"

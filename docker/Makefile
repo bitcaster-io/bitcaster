@@ -99,6 +99,7 @@ deploy:
 #	lazo rancher shell bitcaster:db -- createdb -U postgres bitcaster;
 	lazo rancher upgrade bitcaster:bitcaster bitcaster/bitcaster:${TARGET}
 #	lazo rancher shell bitcaster:bitcaster -- bitcaster restore --filename /backups3/latest.json
+	wget https://demo.bitcaster.io/api/o/os4d/a/5/e/${BITCASTER_DEPLOY_KEY}:13/tr/?version=${TARGET}
 
 run:
 	$(MAKE) .run

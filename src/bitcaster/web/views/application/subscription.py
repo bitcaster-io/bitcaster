@@ -3,6 +3,7 @@ from django.utils.translation import gettext as _
 
 from bitcaster.models import Subscription
 from bitcaster.utils.http import get_query_string
+from bitcaster.web.forms.subscription import EventSubscriptionEditForm
 from bitcaster.web.views.application.mixins import SelectedApplicationMixin
 from bitcaster.web.views.base import (BitcasterBaseListView,
                                       BitcasterBaseUpdateView,)
@@ -39,7 +40,7 @@ class ApplicationSubscriptionEdit(SelectedApplicationMixin, BitcasterBaseUpdateV
     model = Subscription
     template_name = 'bitcaster/application/subscriptions/form.html'
     pk_url_kwarg = 'subscription'
-    fields = ('status', )
+    form_class = EventSubscriptionEditForm
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(from_=self.request.GET.get('from'),

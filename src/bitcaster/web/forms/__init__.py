@@ -13,7 +13,6 @@ from .monitor import MonitorCreate1, MonitorUpdateConfigurationForm
 from .organization import OrganizationForm
 from .organizationgroup import OrganizationGroupForm
 from .organizationmember import OrganizationMemberForm
-from .subscription import SubscriptionForm
 from .system_settings import (SettingsChannelsForm, SettingsEmailForm,
                               SettingsMainForm, SettingsOAuthForm,)
 from .team import ApplicationTeamForm

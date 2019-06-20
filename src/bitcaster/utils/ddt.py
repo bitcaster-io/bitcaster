@@ -24,6 +24,10 @@ class UserInfoPanel(Panel):
     def title(self):
         return _('Bitcaster')
 
+    def process_request(self, request):
+        self.request = request
+        return super().process_request(request)
+
     @property
     def nav_subtitle(self):
         return self.is_authenticated(self.request) and self.request.user
