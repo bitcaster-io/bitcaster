@@ -3,6 +3,7 @@ from django.utils.safestring import mark_safe
 
 from bitcaster.models import Application, Organization
 from bitcaster.security import ALL_PERMISSIONS
+from bitcaster.utils.reflect import classname
 
 register = template.Library()
 
@@ -56,7 +57,8 @@ def check_permissions(parser, token):
 
 
 @register.simple_tag(takes_context=True)
-def button(context, href, has_perm, icon, label, toggler=None):
+def button(context, href, has_perm, icon, label, toggler=None, viewname='', extra_css_if_test='border border-dark'):
+    view = context['view']
     if toggler is not None:
         if toggler:
             label = label.split(':')[0]
@@ -66,18 +68,23 @@ def button(context, href, has_perm, icon, label, toggler=None):
             icon = icon.split(':')[1]
 
     params = {'disabled': 'disabled',
-              'css': icon,
+              'icon': icon,
+              'css': '',
               'title': label,
               'href': ''}
+
+    if classname(view) == viewname:
+        params['css'] = extra_css_if_test
+
     if has_perm:
         params.update({'disabled': '',
                        'title': label,
                        'href': href
                        })
-    return mark_safe('''<a class="btn btn-light %(disabled)s"
+    return mark_safe('''<a class="btn btn-light %(disabled)s %(css)s "
                            data-toggle="tooltip" title="%(title)s"
                            href="%(href)s">
-                            <i class="%(css)s pointer"></i>
+                            <i class="%(icon)s pointer"></i>
                         </a>''' % params)
 # @register.filter
 # def is_admin(user, organization):

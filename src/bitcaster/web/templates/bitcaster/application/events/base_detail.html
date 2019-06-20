@@ -11,36 +11,16 @@
             </div>
             {% if event %}
             <div class="ml-auto p-2">
-                {% if view|classname != 'EventUpdate' %}
-                    {% button event.urls.edit True "fas fa-wrench" "configure" %}
-                {% endif %}
-                {% if view|classname != 'EventMessages' %}
-                    {% button event.urls.messages True "fas fa-comment" "messages" %}
-                {% endif %}
+                {% button event.urls.edit True "fas fa-wrench" "configure" viewname='EventUpdate'%}
+                {% button event.urls.messages True "fas fa-comment" "messages" viewname='EventMessages'%}
                 {% button event.urls.toggle True "fas fa-toggle-on green:fas fa-toggle-off red" "Disable:Enable" event.enabled %}
                 {% button event.urls.delete True "far fa-trash-alt" "delete" %}
-                <div class="border border-secondary d-inline-block">
                 {% button event.urls.develop True "fas fa-bug red:fas fa-bug black" "Debug Mode Off:Debug Mode On" event.development_mode %}
-
-                {% if view|classname != 'EventTest' %}
-                    {% button event.urls.test True "fas fa-terminal" "test" %}
-                {% endif %}
-
-                {% if view|classname != 'EventBatch' %}
-                    {% button event.urls.batch True "fas fa-layer-group" "batch" %}
-                {% endif %}
-                </div>
-                {% if view|classname != 'EventBee' %}
-                    {% button event.urls.bee True "fas fa-link" "bee" %}
-                {% endif %}
-
-                {% if view|classname != 'EventKeys' %}
-                    {% button event.urls.keys True "fas fa-key" "keys" %}
-                {% endif %}
-
-                {% if view|classname != 'EventSubscriptionList' %}
-                    {% button event.urls.subscriptions True "fas fa-user" "subscriptions" %}
-                {% endif %}
+                {% button event.urls.test True "fas fa-terminal" "test" viewname='EventTest' %}
+                {% button event.urls.batch True "fas fa-layer-group" "batch" viewname='EventBatch' %}
+                {% button event.urls.bee True "fas fa-link" "bee" viewname='EventBee' %}
+                {% button event.urls.keys True "fas fa-key" "keys" viewname='EventKeys' %}
+                {% button event.urls.subscriptions True "fas fa-user" "subscriptions" viewname='EventSubscriptionList' %}
             </div>
         {% endif %}
         </div>

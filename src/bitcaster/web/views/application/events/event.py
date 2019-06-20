@@ -1,5 +1,6 @@
 import logging
 
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
@@ -253,3 +254,8 @@ class EventToggle(EventMixin, LogAuditMixin, EventFormMixin, MessageUserMixin, R
 class EventKeys(EventMixin, EventFormMixin, BitcasterBaseUpdateView):
     template_name = 'bitcaster/application/events/keys.html'
     title = 'Keys'
+
+    def get_context_data(self, **kwargs):
+        kwargs['keys'] = self.selected_application.keys.filter(Q(events=self.object,
+                                                                 all_events=True))
+        return super().get_context_data(**kwargs)
