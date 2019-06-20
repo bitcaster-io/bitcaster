@@ -175,13 +175,13 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
                 subject = None
                 message = None
                 if not subscription.enabled:
-                    notification_kwargs['status'] = Notification.STATUSES.SUBSCRIPTION_DISABLED
+                    notification_kwargs['status'] = Notification.SUBSCRIPTION_DISABLED
                 elif not channel.enabled:
-                    notification_kwargs['status'] = Notification.STATUSES.CHANNEL_DISABLED
+                    notification_kwargs['status'] = Notification.CHANNEL_DISABLED
                 else:
                     address = subscription.get_address()
                     if not address:
-                        notification_kwargs['status'] = Notification.STATUSES.WRONG_ADDRESS
+                        notification_kwargs['status'] = Notification.WRONG_ADDRESS
                     else:
                         message = body_template.render(SecureContext(ctx))
                         subject = subject_template.render(SecureContext(ctx))
@@ -220,7 +220,8 @@ def create_notifications_for_channel(occurence_pk, channel_pk, context, batch=Fa
             except Exception as e:
                 logger.exception(e)
                 process_exception(e)
-                raise
+                capture_exception(e)
+
         # process incomplete page
         if len(page):
             ids = Notification.objects.bulk_create(page)
@@ -272,7 +273,9 @@ def send_page(occurence_pk: int, channel_pk: int, page: list):
         except Exception as e:
             capture_exception(e)
             logger.exception(e)
-            log_error_notification(notification, str(e))
+            log_error_notification(notification,
+                                   'Unable to send notification to %s: %s ' % (notification.suscriber,
+                                                                               str(e)))
     return done
 
 

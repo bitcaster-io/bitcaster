@@ -36,6 +36,7 @@ def test_event_trigger_flow(subscription1, monkeypatch):
 
     n = Notification.objects.get(occurence=o, subscription=subscription1)
     assert '**parameter-1**' in n.data['message']
+    assert n.status == Notification.QUEUED
 
     #
     process_notifications()

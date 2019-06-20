@@ -9,6 +9,8 @@ from bitcaster.attachments.base import Attachment
 from bitcaster.framework.db.fields import EncryptedJSONField
 from bitcaster.framework.db.managers import SmartManager
 
+from .occurence import Occurence
+
 
 class NotificationManager(SmartManager):
     def consolidate(self):
@@ -59,9 +61,11 @@ class AttachmentField(EncryptedJSONField):
 
 
 class Notification(models.Model):
-    NEW = -1  # Just created not yet queued
-    QUEUED = 0  # Queued no sending happened
-    PENDING = 0  # Queued no sending happened
+    # WARNING these values asre in sync with Occurence
+
+    NEW = Occurence.NEW  # Just created not yet queued
+    QUEUED = Occurence.RUNNING  # Queued no sending happened
+    PENDING = 10  # Queued no sending happened
     RETRY = 20  # Sent failed retrying
     REMIND = 21  # Reminder scheduled
     WAIT = 22
@@ -88,9 +92,9 @@ class Notification(models.Model):
                 (COMPLETE, _('completed')),  # Translators: Notification.STATUSES
                 (CONFIRMED, _('confirmed')),  # Translators: Notification.STATUSES
                 )
-    RUNNING = [NEW, PENDING, RETRY, REMIND, WAIT]
-    NOT_RUNNING = [WRONG_ADDRESS, EXPIRED, CONFIRMED, COMPLETE,
-                   CHANNEL_DISABLED, SUBSCRIPTION_DISABLED]
+    RUNNING = [NEW, QUEUED, PENDING, RETRY, REMIND, WAIT]
+    NOT_RUNNING = [WRONG_ADDRESS, CHANNEL_DISABLED,
+                   SUBSCRIPTION_DISABLED, EXPIRED, COMPLETE, CONFIRMED]
 
     MESSAGE_NONE = 0
     MESSAGE_TPL = 1

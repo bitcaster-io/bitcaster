@@ -51,6 +51,7 @@ def test_event_batch_flow(subscription1, subscription2, monkeypatch, filter):
 
     n = Notification.objects.get(occurence=o, subscription=subscription1)
     assert not Notification.objects.filter(occurence=o, subscription=subscription2).exists()
+    assert n.status == Notification.QUEUED
 
     process_notifications()
     n.refresh_from_db()

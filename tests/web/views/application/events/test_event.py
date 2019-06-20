@@ -110,9 +110,6 @@ def test_event_test(django_app, event1, user1):
                                           application.slug,
                                           event1.pk])
     res = django_app.get(url, user=user1)
-    assert b'Warning new key has been created' in res.body
-
-    res = django_app.get(url, user=user1)
     assert b'Warning new key has been created' not in res.body
 
 

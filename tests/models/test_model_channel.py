@@ -16,11 +16,6 @@ def test_create(organization1):
     c.save()
     assert c.pk
 
-    c = Channel()
-    c.clean()
-    c.save()
-    assert c.pk
-
 
 @pytest.mark.django_db
 def test_str(channel1):
@@ -92,7 +87,7 @@ def test_valid(channel1):
 
 @pytest.mark.django_db
 def test_selectable(channel1, application1):
-    assert Channel.objects.selectable(application1)
+    assert Channel.objects.selectable(application1.organization)
 
 #
 # @pytest.mark.django_db

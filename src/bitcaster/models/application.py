@@ -106,7 +106,7 @@ class Application(AbstractModel, ReverseWrapperMixin):
     @property
     def channels(self):
         from .channel import Channel
-        return Channel.objects.selectable(self)
+        return Channel.objects.selectable(self.organization)
 
     @property
     def owners(self):

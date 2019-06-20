@@ -11,8 +11,6 @@ pytestmark = pytest.mark.django_db
 def enable_dis(monkeypatch):
     DispatcherMetaData.objects.inspect()
     DispatcherMetaData.objects.enable_valid()
-    monkeypatch.setattr('bitcaster.web.templatetags.bitcaster.dispatcher_enabled',
-                        lambda s: True)
 
 
 def test_create_channel(django_app, organization1, monkeypatch):

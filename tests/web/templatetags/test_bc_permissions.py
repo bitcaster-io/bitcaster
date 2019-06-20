@@ -59,4 +59,6 @@ def test_button(organization1, user, toggler):
           '{{% button "" permissions.edit_channel "ic:ci" "enabled:disabled" {} %}}'.format(toggler)
     request = Mock()
     request.user = user
-    assert render_template(tpl, {'request': request, 'organization': organization1})
+    assert render_template(tpl, {'request': request,
+                                 'view': Mock(),
+                                 'organization': organization1})
