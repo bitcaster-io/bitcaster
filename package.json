@@ -22,7 +22,7 @@
     "jquery-modal": "^0.9.1",
     "js-cookie": "^2.2.0",
     "lscache": "^1.1.0",
-    "node-sass": "^4.11.0",
+    "node-sass": "^4.13.1",
     "noty": "^3.2.0-beta",
     "popper": "^1.0.1",
     "popper.js": "^1.14.7",
