@@ -2,5 +2,9 @@
 ~*
 __pycache__/
 *.py[cod]
+!.dockerignore
+!.flake8
 !.gitignore
 !.gitlab/
+
+site

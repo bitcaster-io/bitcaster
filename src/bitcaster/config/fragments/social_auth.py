@@ -1,6 +1,5 @@
 from ..settings import env  # type: ignore[attr-defined]
 
-
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = [
     "username",
     "first_name",

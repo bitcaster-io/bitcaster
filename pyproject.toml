@@ -13,7 +13,6 @@ dependencies = [
     "django-adminfilters>=2.4.3",
     "django-environ>=0.11.2",
     "django-constance>=3.1.0",
-    "django-social-auth>=0.7.28",
     "django-treebeard>=4.7.1",
     "psycopg2-binary>=2.9.9",
     "responses>=0.25.0",
@@ -62,9 +61,10 @@ dev = [
     "pytest-coverage>=0.0",
     "pytest-django>=4.8.0",
     "pytest-selenium>=4.1.0",
+    "mkdocs>=1.5.3",
+    "mkdocstrings[python]>=0.24.1",
+    "mkdocs-material>=9.5.15",
 ]
-
-
 
 [tool.black]
 line-length = 120

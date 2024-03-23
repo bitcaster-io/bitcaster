@@ -1,0 +1,12 @@
+site_name: Bitcaster Documentation
+site_url: https://example.com/
+
+theme:
+  name: "material"
+
+plugins:
+  - mkdocstrings
+
+nav:
+  - Home: index.md
+  - Glossary: glossary.md

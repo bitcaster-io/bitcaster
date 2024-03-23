@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as UserAdmin_
-from bitcaster import models
 from treebeard.admin import TreeAdmin
+
+from bitcaster import models
 
 
 class UserAdmin(UserAdmin_):

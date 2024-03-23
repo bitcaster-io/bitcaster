@@ -35,7 +35,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: "Any", **options: "Any") -> None:
-        from bitcaster.config import CONFIG, env, EXPLICIT_SET
+        from bitcaster.config import CONFIG, EXPLICIT_SET, env
 
         check_failure = False
         pattern = options["pattern"]

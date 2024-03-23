@@ -1,1 +1,1 @@
-from .auth import Sender, User, Role, Organisation, Application
+from .auth import Application, Organisation, Role, Sender, User

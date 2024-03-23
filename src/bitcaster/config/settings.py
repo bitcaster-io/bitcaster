@@ -177,8 +177,8 @@ LOGGING = {
     },
 }
 
-from .fragments import sentry  # noqa
-from .fragments import social_auth  # noqa
+from .fragments import celery  # noqa
 from .fragments import constance  # noqa
 from .fragments import rest_framework  # noqa
-from .fragments import celery  # noqa
+from .fragments import sentry  # noqa
+from .fragments import social_auth  # noqa

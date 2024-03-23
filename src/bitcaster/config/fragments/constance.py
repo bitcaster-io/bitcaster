@@ -1,5 +1,3 @@
-from ..settings import env
-
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 # CONSTANCE_DATABASE_CACHE_BACKEND = "default"
 
