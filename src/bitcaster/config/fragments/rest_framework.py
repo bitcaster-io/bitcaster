@@ -1,4 +1,6 @@
-REST_FRAMEWORK = {
+from typing import Any, Dict
+
+REST_FRAMEWORK: Dict[str, Any] = {
     # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     # "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
@@ -18,7 +20,7 @@ REST_FRAMEWORK = {
     ],
 }
 
-JWT_AUTH = {
+JWT_AUTH: Dict[str, Any] = {
     # "JWT_VERIFY": False,  # this requires private key
     # "JWT_VERIFY_EXPIRATION": True,
     # "JWT_LEEWAY": 60,

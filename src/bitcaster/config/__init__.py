@@ -1,12 +1,17 @@
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, Tuple, Optional, Union, TypeVar, TypeAlias
 
 from environ import Env
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    ConfigItem: TypeAlias = Union[Tuple[type, Any, str, Any], Tuple[type, Any, str], Tuple[type, Any]]
+
 
 DJANGO_HELP_BASE = "https://docs.djangoproject.com/en/5.0/ref/settings"
 
 
-def setting(anchor):
+def setting(anchor: str) -> str:
     return f"@see {DJANGO_HELP_BASE}#{anchor}"
 
 
@@ -17,8 +22,7 @@ class Group(Enum):
 NOT_SET = "<- not set ->"
 EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY"]
 
-
-CONFIG = {
+CONFIG: Dict[str, ConfigItem] = {
     "ADMIN_EMAIL": (str, "", "Initial user created at first deploy"),
     "ADMIN_PASSWORD": (str, "", "Password for initial user created at first deploy"),
     "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], setting("allowed-hosts")),
@@ -93,19 +97,19 @@ class SmartEnv(Env):
         values = {k: v[:2] for k, v in scheme.items()}
         super().__init__(**values)
 
-    def get_help(self, key) -> str:
-        entry = self.raw.get(key, "")
+    def get_help(self, key: str) -> str:
+        entry: ConfigItem = self.raw.get(key, "")
         if len(entry) > 2:
             return entry[2]
         return ""
 
-    def for_develop(self, key) -> Any:
-        entry = self.raw.get(key, "")
+    def for_develop(self, key: str) -> Any:
+        entry: ConfigItem = self.raw.get(key, "")
         if len(entry) > 3:
             return entry[3]
         return self.get_value(key)
 
-    def get_default(self, var) -> Any:
+    def get_default(self, var: str) -> Any:
         var_name = f"{self.prefix}{var}"
         if var_name in self.scheme:
             var_info = self.scheme[var_name]

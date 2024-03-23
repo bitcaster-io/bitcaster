@@ -1,0 +1,64 @@
+from hashlib import md5
+
+from django.conf import settings
+from django.core.cache import caches
+from user_agents.parsers import UserAgent
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bitcaster.types.http import AnyRequest
+
+USER_AGENTS_CACHE = getattr(settings, "USER_AGENTS_CACHE", "default")
+
+if USER_AGENTS_CACHE:
+    cache = caches[USER_AGENTS_CACHE]
+else:  # pragma: no-cover
+    cache = None
+
+
+class SmartUserAgent(UserAgent):
+    @property
+    def is_ios(self) -> bool:
+        return "iOS" in self.os.family
+
+    @property
+    def support_firebase(self) -> bool:
+        return not ("iOS" in self.os.family or "Safari" in self.browser.family)
+
+    @property
+    def is_safari(self) -> bool:
+        return "Safari" in self.browser.family
+
+
+def parse(user_agent_string: str) -> SmartUserAgent:
+    return SmartUserAgent(user_agent_string)
+
+
+def get_cache_key(ua_string: bytes) -> str:
+    # Some user agent strings are longer than 250 characters so we use its MD5
+    if isinstance(ua_string, str):
+        ua_string = ua_string.encode("utf-8")
+    return "".join(["django_user_agents.", md5(ua_string).hexdigest()])
+
+
+def get_user_agent(request: "AnyRequest") -> UserAgent:
+    # Tries to get UserAgent objects from cache before constructing a UserAgent
+    # from scratch because parsing regexes.yaml/json (ua-parser) is slow
+    # if not hasattr(request, 'META'):
+    #     return None
+
+    ua_string = request.META.get("HTTP_USER_AGENT", "")
+
+    if not isinstance(ua_string, str):
+        ua_string = ua_string.decode("utf-8", "ignore")
+
+    if cache:
+        key = get_cache_key(ua_string)
+        user_agent = cache.get(key)
+        if user_agent is None:
+            user_agent = parse(ua_string)
+            cache.set(key, user_agent)
+    else:
+        user_agent = parse(ua_string)
+    return user_agent

@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 from urllib.parse import urlparse
 
 from . import env
@@ -16,7 +17,7 @@ SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT")
 
 DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: List[str] = []
 
 
 # Application definition
@@ -151,7 +152,7 @@ MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = env("MEDIA_URL")
 STATIC_ROOT = env("STATIC_ROOT")
 STATIC_URL = env("STATIC_URL")
-STATICFILES_DIRS = []
+STATICFILES_DIRS: List[str] = []
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",

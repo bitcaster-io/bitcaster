@@ -6,5 +6,5 @@ class Config(AppConfig):
     name = "bitcaster"
     default_auto_field = "django.db.models.BigAutoField"
 
-    def ready(self):
+    def ready(self) -> None:
         from . import models

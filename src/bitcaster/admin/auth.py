@@ -1,8 +1,12 @@
+import logging
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as UserAdmin_
 from treebeard.admin import TreeAdmin
 
-from bitcaster import models
+from bitcaster.models import Sender, User, Role, Organisation, Application, Section, Project
+
+logger = logging.getLogger(__name__)
 
 
 class UserAdmin(UserAdmin_):
@@ -12,24 +16,32 @@ class UserAdmin(UserAdmin_):
     ordering = ("username",)
 
 
-class SenderAdmin(TreeAdmin):
+class SenderAdmin(TreeAdmin[Sender]):
     pass
 
 
-class RoleAdmin(admin.ModelAdmin):
+class RoleAdmin(admin.ModelAdmin[Role]):
     pass
 
 
-class OrganisationAdmin(admin.ModelAdmin):
+class OrganisationAdmin(admin.ModelAdmin[Organisation]):
     pass
 
 
-class ApplicationAdmin(admin.ModelAdmin):
+class ProjectAdmin(admin.ModelAdmin[Project]):
     pass
 
 
-admin.site.register(models.Sender, SenderAdmin)
-admin.site.register(models.Role, RoleAdmin)
-admin.site.register(models.User, UserAdmin)
-admin.site.register(models.Organisation, OrganisationAdmin)
-admin.site.register(models.Application, ApplicationAdmin)
+class ApplicationAdmin(admin.ModelAdmin[Application]):
+    pass
+
+
+class SectionAdmin(admin.ModelAdmin[Section]):
+    pass
+
+
+admin.site.register(Sender, SenderAdmin)
+admin.site.register(Role, RoleAdmin)
+admin.site.register(User, UserAdmin)
+admin.site.register(Organisation, OrganisationAdmin)
+admin.site.register(Application, ApplicationAdmin)
