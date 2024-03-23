@@ -1,4 +1,5 @@
 from typing import TypeVar
+
 from django.http import HttpRequest, HttpResponseBase
 
 from bitcaster.models import User

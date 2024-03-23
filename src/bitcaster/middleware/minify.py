@@ -1,7 +1,7 @@
 import logging
 import re
 from enum import IntFlag, unique
-from typing import Callable, Optional, Any
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 from constance import config
 from constance.signals import config_updated
@@ -9,10 +9,8 @@ from django.conf import settings
 from django.utils.functional import cached_property
 from htmlmin.main import Minifier
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
-    from bitcaster.types.http import AnyResponse, AnyRequest
+    from bitcaster.types.http import AnyRequest, AnyResponse
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +54,7 @@ class HtmlMinMiddleware:
         if self.ignore_regex:
             return bool(self.ignore_regex.match(path))
 
-    def can_minify(self, request: AnyRequest, response: AnyResponse) -> bool:
+    def can_minify(self, request: "AnyRequest", response: "AnyResponse") -> bool:
         return (
             "Content-Type" in response
             and "text/html" in response["Content-Type"]

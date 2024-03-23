@@ -8,12 +8,12 @@ To start developing:
 
 1. install [pdm](https://github.com/pdm-project/pdm#installation)
 2. $`pdm venv create`
-3. activate you venv (eg. $`$(pdm venv activate)`)
+3. activate your venv (eg. $`$(pdm venv activate)`)
 4. Check your environment
    eg. $`python --version` -> see that it uses Python 3.12.*
    eg. $`which python` -> see that it matches you python executable in the venv you have created: $```echo `pwd`/.venv/bin/python```
 5. Install the package: $`pdm install`
-6. Check your environment: $`./manage.py env check` and configure the missing variables
+6. Check your environment: $`./manage.py env --check` and configure the missing variables
 7. Test using runserver $`./manage.py runserver`
 
 NB: You may want to add the following environment variables to your local development environment:
@@ -26,10 +26,9 @@ Configure environment for .direnv
 
 If yoy want to use [direnv](https://direnv.net/)
 
-    echo '$(pdm venv activate)' > .envrc
-    echo "./manage.py env --develop --config --pattern='export {key}={value}'" >> .envrc
-    echo "./manage.py env --check" >> .envrc
-    echo "./manage.py upgrade" >> .envrc
+    ./manage.py env --develop --config --pattern='export {key}={value}'" >> .envrc
+    ./manage.py env --check
+    ./manage.py upgrade
 
 The first time after you have created or modified the _.envrc_ file you will have to authorize it using $`direnv allow`
 

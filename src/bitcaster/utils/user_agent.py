@@ -1,10 +1,9 @@
 from hashlib import md5
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.core.cache import caches
 from user_agents.parsers import UserAgent
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AnyRequest

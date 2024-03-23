@@ -3,8 +3,9 @@ import logging
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as UserAdmin_
 from treebeard.admin import TreeAdmin
+from treebeard.forms import movenodeform_factory
 
-from bitcaster.models import Sender, User, Role, Organisation, Application, Section, Project
+from bitcaster.models import Application, Organisation, Project, Role, Section, Sender, User
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +17,8 @@ class UserAdmin(UserAdmin_):
     ordering = ("username",)
 
 
-class SenderAdmin(TreeAdmin[Sender]):
-    pass
+class SenderAdmin(TreeAdmin):
+    form = movenodeform_factory(Sender)
 
 
 class RoleAdmin(admin.ModelAdmin[Role]):
@@ -25,23 +26,29 @@ class RoleAdmin(admin.ModelAdmin[Role]):
 
 
 class OrganisationAdmin(admin.ModelAdmin[Organisation]):
-    pass
+    list_display = ("name",)
+    form = movenodeform_factory(Organisation)
 
 
 class ProjectAdmin(admin.ModelAdmin[Project]):
-    pass
+    list_display = ("name",)
+    # form = movenodeform_factory(Project)
 
 
 class ApplicationAdmin(admin.ModelAdmin[Application]):
-    pass
+    list_display = ("name",)
+    # form = movenodeform_factory(Application)
 
 
 class SectionAdmin(admin.ModelAdmin[Section]):
-    pass
+    list_display = ("name",)
+    # form = movenodeform_factory(Section)
 
 
 admin.site.register(Sender, SenderAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(Organisation, OrganisationAdmin)
+admin.site.register(Project, ProjectAdmin)
 admin.site.register(Application, ApplicationAdmin)
+admin.site.register(Section, SectionAdmin)

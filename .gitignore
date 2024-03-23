@@ -6,5 +6,7 @@ __pycache__/
 !.flake8
 !.gitignore
 !.gitlab/
-
+!.mypy.ini
+!.pre-commit-config.yaml
+Makefile
 site

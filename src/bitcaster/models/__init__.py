@@ -1,1 +1,1 @@
-from .auth import Application, Organisation, Role, Sender, User, Section, Project
+from .auth import Application, Organisation, Project, Role, Section, Sender, User  # noqa

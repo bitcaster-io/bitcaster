@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:ae328f5ab65ff6c088c7a27b2a82edea22a845091054552e3f8e07db084aa57b"
+content_hash = "sha256:fb2bf38c9ed85be05b6e68116f55ac1e72f538b7b4696ec16a94005b33fa7304"
 
 [[package]]
 name = "aiohttp"
@@ -650,7 +650,7 @@ name = "django-stubs"
 version = "4.2.7"
 requires_python = ">=3.8"
 summary = "Mypy stubs for Django"
-groups = ["dev"]
+groups = ["default", "dev"]
 dependencies = [
     "django",
     "django-stubs-ext>=4.2.7",
@@ -668,7 +668,7 @@ name = "django-stubs-ext"
 version = "4.2.7"
 requires_python = ">=3.8"
 summary = "Monkey-patching and extensions for django-stubs"
-groups = ["dev"]
+groups = ["default", "dev"]
 dependencies = [
     "django",
     "typing-extensions",
@@ -748,6 +748,15 @@ dependencies = [
 files = [
     {file = "djangorestframework-3.15.1-py3-none-any.whl", hash = "sha256:3ccc0475bce968608cf30d07fb17d8e52d1d7fc8bfe779c905463200750cbca6"},
     {file = "djangorestframework-3.15.1.tar.gz", hash = "sha256:f88fad74183dfc7144b2756d0d2ac716ea5b4c7c9840995ac3bfd8ec034333c1"},
+]
+
+[[package]]
+name = "editorconfig"
+version = "0.12.4"
+summary = "EditorConfig File Locator and Interpreter for Python"
+groups = ["dev"]
+files = [
+    {file = "EditorConfig-0.12.4.tar.gz", hash = "sha256:24857fa1793917dd9ccf0c7810a07e05404ce9b823521c7dce22a4fb5d125f80"},
 ]
 
 [[package]]
@@ -953,6 +962,19 @@ files = [
 ]
 
 [[package]]
+name = "jsbeautifier"
+version = "1.15.1"
+summary = "JavaScript unobfuscator and beautifier."
+groups = ["dev"]
+dependencies = [
+    "editorconfig>=0.12.2",
+    "six>=1.13.0",
+]
+files = [
+    {file = "jsbeautifier-1.15.1.tar.gz", hash = "sha256:ebd733b560704c602d744eafc839db60a1ee9326e30a2a80c4adb8718adc1b24"},
+]
+
+[[package]]
 name = "kombu"
 version = "5.3.5"
 requires_python = ">=3.8"
@@ -1127,6 +1149,25 @@ groups = ["dev"]
 files = [
     {file = "mkdocs_material_extensions-1.3.1-py3-none-any.whl", hash = "sha256:adff8b62700b25cb77b53358dad940f3ef973dd6db797907c49e3c2ef3ab4e31"},
     {file = "mkdocs_material_extensions-1.3.1.tar.gz", hash = "sha256:10c9511cea88f568257f960358a467d12b970e1f7b2c0e5fb2bb48cab1928443"},
+]
+
+[[package]]
+name = "mkdocs-mermaid2-plugin"
+version = "1.1.1"
+requires_python = ">=3.6"
+summary = "A MkDocs plugin for including mermaid graphs in markdown sources"
+groups = ["dev"]
+dependencies = [
+    "beautifulsoup4>=4.6.3",
+    "jsbeautifier",
+    "mkdocs>=1.0.4",
+    "pymdown-extensions>=8.0",
+    "requests",
+    "setuptools>=18.5",
+]
+files = [
+    {file = "mkdocs-mermaid2-plugin-1.1.1.tar.gz", hash = "sha256:bea5f3cbe6cb76bad21b81e49a01e074427ed466666c5d404e62fe8698bc2d7c"},
+    {file = "mkdocs_mermaid2_plugin-1.1.1-py3-none-any.whl", hash = "sha256:4e25876b59d1e151ca33a467207b346404b4a246f4f24af5e44c32408e175882"},
 ]
 
 [[package]]
@@ -1966,7 +2007,7 @@ name = "setuptools"
 version = "69.2.0"
 requires_python = ">=3.8"
 summary = "Easily download, build, install, upgrade, and uninstall Python packages"
-groups = ["default"]
+groups = ["default", "dev"]
 files = [
     {file = "setuptools-69.2.0-py3-none-any.whl", hash = "sha256:c21c49fb1042386df081cb5d86759792ab89efca84cf114889191cd09aacc80c"},
     {file = "setuptools-69.2.0.tar.gz", hash = "sha256:0ff4183f8f42cd8fa3acea16c45205521a4ef28f73c6391d8a25e92893134f2e"},
@@ -2174,7 +2215,7 @@ name = "types-pytz"
 version = "2024.1.0.20240203"
 requires_python = ">=3.8"
 summary = "Typing stubs for pytz"
-groups = ["dev"]
+groups = ["default", "dev"]
 files = [
     {file = "types-pytz-2024.1.0.20240203.tar.gz", hash = "sha256:c93751ee20dfc6e054a0148f8f5227b9a00b79c90a4d3c9f464711a73179c89e"},
     {file = "types_pytz-2024.1.0.20240203-py3-none-any.whl", hash = "sha256:9679eef0365db3af91ef7722c199dbb75ee5c1b67e3c4dd7bfbeb1b8a71c21a3"},
@@ -2185,7 +2226,7 @@ name = "types-pyyaml"
 version = "6.0.12.20240311"
 requires_python = ">=3.8"
 summary = "Typing stubs for PyYAML"
-groups = ["dev"]
+groups = ["default", "dev"]
 files = [
     {file = "types-PyYAML-6.0.12.20240311.tar.gz", hash = "sha256:a9e0f0f88dc835739b0c1ca51ee90d04ca2a897a71af79de9aec5f38cb0a5342"},
     {file = "types_PyYAML-6.0.12.20240311-py3-none-any.whl", hash = "sha256:b845b06a1c7e54b8e5b4c683043de0d9caf205e7434b3edc678ff2411979b8f6"},

@@ -1,0 +1,91 @@
+repos:
+  - repo: local
+    hooks:
+      # Configuration for black exists in pyproject.toml,
+      # but we let pre-commit take care of the file filtering.
+      - id: black
+        name: black
+        args: [ '--check' ]
+        entry: black
+        language: python
+        types: [ python ]
+        require_serial: true
+        additional_dependencies: [black]
+
+      # Configuration for isort exists in pyproject.toml,
+      # but we let pre-commit take care of the file filtering.
+      - id: isort
+        name: isort
+        args: [ '--version']
+#        args: [ '--src', 'src/','--check-only' ]
+        entry: isort
+        language: python
+        types: [ python ]
+        additional_dependencies: [isort]
+      # Configuration for black exists in .flake8,
+      # but we let pre-commit take care of the file filtering.
+      - id: flake8
+        name: flake8
+        args: ["--config", ".flake8"]
+        entry: flake8
+        language: python
+        types: [ python ]
+        additional_dependencies: [flake8]
+      - id: mypy
+        exclude: (^~.*|)
+        args: [ "--config-file", ".mypy.ini" ]
+        name: mypy
+        entry: mypy
+        language: python
+        types: [ python ]
+        stages: [ commit ]
+        additional_dependencies: [mypy]
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: 0.9.1
+    hooks:
+      - id: detect-secrets
+        args: [ '--baseline', '.secrets.baseline' ]
+        exclude: (tests/.*|.*/tenant\.sql|Pipfile\.lock|.*\.js|.gitlab-ci.yml|poetry.lock)
+        stages: [ push ]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.1.0
+    hooks:
+      #      - id: double-quote-string-fixer
+      #        stages: [commit]
+
+      - id: debug-statements
+        stages: [ commit ]
+
+      - id: end-of-file-fixer
+        exclude: .bumpversion.cfg
+        stages: [ commit ]
+
+      - id: check-merge-conflict
+        stages: [ commit ]
+
+      - id: check-case-conflict
+        stages: [ commit ]
+
+  - repo: https://github.com/saxix/pch
+    rev: fc387f4
+    hooks:
+      - id: check-missed-migrations
+        args:
+          - src
+        stages: [ commit ]
+
+      - id: check-untracked
+        args:
+          - src
+          - tests
+        stages: [ push ]
+
+      - id: check-forbidden
+        args:
+          - -p
+          - /\.showbrowser\(/
+          - -p
+          - /print\(111/
+        stages: [ commit ]
+#

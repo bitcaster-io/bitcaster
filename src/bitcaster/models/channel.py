@@ -1,7 +1,9 @@
 from django.db import models
 from strategy_field.fields import StrategyField
-from .auth import Organisation
+
 from bitcaster.dispatchers.base import dispatcherManager
+
+from .auth import Organisation
 
 
 class Channel(models.Model):

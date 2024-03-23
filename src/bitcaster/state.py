@@ -1,11 +1,7 @@
 import json
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 from threading import local
-from typing import Dict, List, Any
-
-from django.http import HttpResponse
-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AnyRequest, AnyResponse

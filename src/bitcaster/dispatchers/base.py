@@ -1,9 +1,8 @@
 import logging
-from typing import TYPE_CHECKING, TypeVar, Optional, NotRequired, cast, Type, Tuple, Dict, Any
+from typing import TYPE_CHECKING, Any, Dict, NotRequired, Tuple, Type, cast
 
 from django.utils.functional import classproperty
 
-from bitcaster.utils.http import get_server_url
 
 if TYPE_CHECKING:
     from typing_extensions import TypedDict

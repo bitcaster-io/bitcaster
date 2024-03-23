@@ -101,14 +101,14 @@ class Command(BaseCommand):
 
         sys.exit(1)
 
-    def handle(self, *args: Any, **options: Any) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
         from bitcaster.models import Sender, User
 
         self.get_options(options)
         if self.verbosity >= 1:
             echo = self.stdout.write
         else:
-            echo = lambda *a, **kw: None
+            echo = lambda *a, **kw: None  # noqa: E731
 
         try:
             extra = {
@@ -137,9 +137,9 @@ class Command(BaseCommand):
             call_command("remove_stale_contenttypes", **extra)
             if not Sender.objects.exists():
                 try:
-                    org, __ = Sender.objects.get_or_create(name="OS4D", depth=1)
-                    app = Sender(name="Bitcaster")
-                    org.add_child(instance=app)
+                    org = Sender.add_root(name="OS4D")
+                    prj = org.add_child(name="Bitcaster")
+                    prj.add_child(name="Core")
                 except TypeError as e:
                     print(e)
 

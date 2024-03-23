@@ -1,7 +1,8 @@
+from typing import TYPE_CHECKING, Callable
+
 from django.utils.functional import SimpleLazyObject
 
 from bitcaster.utils.user_agent import get_user_agent
-from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AnyRequest, AnyResponse

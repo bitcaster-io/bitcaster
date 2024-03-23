@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Dict, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Tuple
 from urllib.parse import urljoin
 
 from constance import config
@@ -7,9 +7,8 @@ from django.conf import settings
 from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse
 
-from .constants import YEAR
 from ..state import state
-from typing import TYPE_CHECKING
+from .constants import YEAR
 
 if TYPE_CHECKING:
     from ..types.http import AnyRequest, AnyResponse
