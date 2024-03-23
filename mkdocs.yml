@@ -1,12 +1,26 @@
 site_name: Bitcaster Documentation
 site_url: https://example.com/
 
+markdown_extensions:
+  - abbr
+  - attr_list
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+
 theme:
   name: "material"
+  features:
+    - content.tooltips
 
 plugins:
+  - search
   - mkdocstrings
+  - mermaid2
 
 nav:
   - Home: index.md
   - Glossary: glossary.md
+  - Examples: examples.md
+  - Terms: terms.md
