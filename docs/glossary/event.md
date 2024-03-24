@@ -1,1 +1,1 @@
-Is a single occurrence of an notification emitted by the client system
+a single occurrence of a notification emitted by the client system

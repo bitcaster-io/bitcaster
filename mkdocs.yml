@@ -5,9 +5,14 @@ markdown_extensions:
   - abbr
   - attr_list
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.snippets:
       auto_append:
         - includes/abbreviations.md
+  - pymdownx.smartsymbols
+  - pymdownx.smartsymbols
+  - pymdownx.blocks.definition
 
 theme:
   name: "material"
@@ -16,11 +21,12 @@ theme:
 
 plugins:
   - search
+  - ezlinks
   - mkdocstrings
   - mermaid2
 
 nav:
   - Home: index.md
-  - Glossary: glossary.md
+  - Glossary: glossary
   - Examples: examples.md
   - Terms: terms.md

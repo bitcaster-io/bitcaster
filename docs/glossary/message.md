@@ -1,0 +1,1 @@
+Is the rendered notification received by a [Recipient](recipient)       

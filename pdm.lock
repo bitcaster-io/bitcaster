@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:fb2bf38c9ed85be05b6e68116f55ac1e72f538b7b4696ec16a94005b33fa7304"
+content_hash = "sha256:b7c4b1ef27824a828455fda1409f71eedb6dc47b3f1807f9e82b916a477447d9"
 
 [[package]]
 name = "aiohttp"
@@ -1117,6 +1117,20 @@ files = [
 ]
 
 [[package]]
+name = "mkdocs-ezlinks-plugin"
+version = "0.1.14"
+requires_python = ">=3.6"
+summary = "A mkdocs plugin that makes linking to other documents easy."
+groups = ["dev"]
+dependencies = [
+    "mkdocs>=1.1.0",
+    "pygtrie==2.*",
+]
+files = [
+    {file = "mkdocs-ezlinks-plugin-0.1.14.tar.gz", hash = "sha256:3e2085c16a850e022393e80194c17612e7b55de87fb45b3ffb618b5dfdb10811"},
+]
+
+[[package]]
 name = "mkdocs-material"
 version = "9.5.15"
 requires_python = ">=3.8"
@@ -1525,6 +1539,16 @@ groups = ["default", "dev"]
 files = [
     {file = "pygments-2.17.2-py3-none-any.whl", hash = "sha256:b27c2826c47d0f3219f29554824c30c5e8945175d888647acd804ddd04af846c"},
     {file = "pygments-2.17.2.tar.gz", hash = "sha256:da46cec9fd2de5be3a8a784f434e4c4ab670b4ff54d605c4c2717e9d49c4c367"},
+]
+
+[[package]]
+name = "pygtrie"
+version = "2.5.0"
+summary = "A pure Python trie data structure implementation."
+groups = ["dev"]
+files = [
+    {file = "pygtrie-2.5.0-py3-none-any.whl", hash = "sha256:8795cda8105493d5ae159a5bef313ff13156c5d4d72feddefacaad59f8c8ce16"},
+    {file = "pygtrie-2.5.0.tar.gz", hash = "sha256:203514ad826eb403dab1d2e2ddd034e0d1534bbe4dbe0213bb0593f66beba4e2"},
 ]
 
 [[package]]
