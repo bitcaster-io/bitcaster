@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "constance",
     #
     "bitcaster.apps.Config",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -53,7 +54,7 @@ MIDDLEWARE = [
     "csp.middleware.CSPMiddleware",
     "bitcaster.middleware.user_agent.UserAgentMiddleware",
     "bitcaster.middleware.state.StateMiddleware",
-    "bitcaster.middleware.minify.HtmlMinMiddleware",
+    # "bitcaster.middleware.minify.HtmlMinMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",

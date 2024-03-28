@@ -1,4 +1,6 @@
 from typing import Any, Dict
+from bitcaster import VERSION
+
 
 REST_FRAMEWORK: Dict[str, Any] = {
     # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
@@ -18,6 +20,7 @@ REST_FRAMEWORK: Dict[str, Any] = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissions",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 JWT_AUTH: Dict[str, Any] = {
@@ -37,4 +40,12 @@ JWT_AUTH: Dict[str, Any] = {
     # 'JWT_PRIVATE_KEY': wallet.get_private(),
     # 'JWT_PRIVATE_KEY': None,
     # "JWT_ALGORITHM": "RS256",
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Bitcaster API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': VERSION,
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
 }

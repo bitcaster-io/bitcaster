@@ -26,7 +26,7 @@ Configure environment for .direnv
 
 If yoy want to use [direnv](https://direnv.net/) and automatic loading of environment variables from a _.env_ file:
     
-    ./manage.py env --develop --config --pattern='export {key}={value}' > .env
+    ./manage.py env --develop --config --pattern='{key}={value}' > .env
     echo "dotenv" > .envrc
     echo 'export PYTHONPATH="$PYTHONPATH:./src"' >> .envrc
     echo 'eval $(pdm venv activate)' >> .envrc
