@@ -1,5 +1,6 @@
 .*
 ~*
+*.sh
 __pycache__/
 *.py[cod]
 !.dockerignore
