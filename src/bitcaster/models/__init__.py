@@ -1,1 +1,3 @@
-from .auth import Application, Organisation, Project, Role, Section, Sender, User  # noqa
+from .auth import Role, User  # noqa
+from .event import EventType  # noqa
+from .org import Application, Organization, Project  # noqa

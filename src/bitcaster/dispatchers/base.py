@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any, Dict, NotRequired, Tuple, Type, cast
 
 from django.utils.functional import classproperty
 
-
 if TYPE_CHECKING:
     from typing_extensions import TypedDict
 

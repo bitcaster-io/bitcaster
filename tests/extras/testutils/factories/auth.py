@@ -2,7 +2,8 @@ from factory import Sequence
 from factory.django import DjangoModelFactory
 
 from bitcaster.config import Group
-from bitcaster.models import User, Role, Sender
+from bitcaster.models import Role, User
+from bitcaster.models.auth import ApiKey
 
 
 class UserFactory(DjangoModelFactory):
@@ -31,9 +32,10 @@ class GroupFactory(DjangoModelFactory):
     name = Sequence(lambda n: "group%03d" % n)
 
 
-class SenderFactory(DjangoModelFactory):
+
+class ApiKeyFactory(DjangoModelFactory):
     class Meta:
-        model = Sender
+        model = ApiKey
         django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "sender%03d" % n)
+    name = Sequence(lambda n: "group%03d" % n)

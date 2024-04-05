@@ -102,7 +102,8 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
-        from bitcaster.models import Sender, User
+        from bitcaster.models import (Application, EventType, Organization,
+                                      Project, User)
 
         self.get_options(options)
         if self.verbosity >= 1:
@@ -135,11 +136,13 @@ class Command(BaseCommand):
 
             echo("Remove stale contenttypes")
             call_command("remove_stale_contenttypes", **extra)
-            if not Sender.objects.exists():
+            if not Organization.objects.exists():
+                echo("Creating initial structure")
                 try:
-                    org = Sender.add_root(name="OS4D")
-                    prj = org.add_child(name="Bitcaster")
-                    prj.add_child(name="Core")
+                    org = Organization.objects.get_or_create(name="OS4D")[0]
+                    prj = Project.objects.get_or_create(name="Bitcaster", organization=org)[0]
+                    app = Application.objects.get_or_create(name="Bitcaster", project=prj)[0]
+                    EventType.objects.get_or_create(name="Bitcaster", application=app)
                 except TypeError as e:
                     print(e)
 
@@ -169,6 +172,7 @@ class Command(BaseCommand):
         except (CommandError, SystemCheckError) as e:
             self.halt(e)
         except Exception as e:
+            raise
             self.stdout.write(str(e), style_func=self.style.ERROR)
             logger.exception(e)
             self.halt(e)

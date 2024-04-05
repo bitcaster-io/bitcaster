@@ -1,6 +1,6 @@
 from typing import Any, Dict
-from bitcaster import VERSION
 
+from bitcaster import VERSION
 
 REST_FRAMEWORK: Dict[str, Any] = {
     # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
@@ -43,9 +43,9 @@ JWT_AUTH: Dict[str, Any] = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Bitcaster API',
-    'DESCRIPTION': 'Your project description',
-    'VERSION': VERSION,
-    'SERVE_INCLUDE_SCHEMA': False,
+    "TITLE": "Bitcaster API",
+    "DESCRIPTION": "Your project description",
+    "VERSION": VERSION,
+    "SERVE_INCLUDE_SCHEMA": False,
     # OTHER SETTINGS
 }

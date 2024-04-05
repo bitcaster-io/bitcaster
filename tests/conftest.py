@@ -5,7 +5,6 @@ from pathlib import Path
 import django
 import pytest
 
-
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))
 sys.path.insert(0, str(here / "extras"))
@@ -64,7 +63,8 @@ def pytest_configure(config):
     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
     os.makedirs(settings.STATIC_ROOT, exist_ok=True)
 
-    from django.core.management import call_command, CommandError
+    from django.core.management import CommandError, call_command
+
     django.setup()
     try:
         call_command("env", check=True)
@@ -105,6 +105,20 @@ def user(db):
 
 @pytest.fixture()
 def organization(db):
-    from testutils.factories import SenderFactory
+    from testutils.factories import OrganizationFactory
 
-    return SenderFactory(name="Afghanistan")
+    return OrganizationFactory(name="OS4D")
+
+
+@pytest.fixture()
+def project(db):
+    from testutils.factories import ProjectFactory
+
+    return ProjectFactory(name="BITCASTER")
+
+
+@pytest.fixture()
+def application(db):
+    from testutils.factories import ApplicationFactory
+
+    return ApplicationFactory(name="Bitcaster", project__name="BITCASTER", project__organization__name="OS4D")

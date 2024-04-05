@@ -1,69 +1,56 @@
 import logging
-from typing import List
+from typing import Any
+from uuid import uuid4
 
+from django import forms
 from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
-from treebeard.mp_tree import MP_Node
+
+from bitcaster.auth.constants import Grant
+
+from .org import Application, Organization
 
 logger = logging.getLogger(__name__)
 
 
-class Sender(MP_Node):
-    name = models.CharField(max_length=255, db_collation="case_insensitive")
-    node_order_by: List[str] = ["name"]
-
-    def __str__(self) -> str:
-        return str(self.name)
-
-
-class OrganisationManager(models.Manager["Organisation"]):
-    def get_queryset(self) -> "QuerySet[Organisation]":
-        return super().get_queryset().filter(depth=1)
+class _TypedMultipleChoiceField(forms.TypedMultipleChoiceField):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        kwargs.pop("base_field", None)
+        kwargs.pop("max_length", None)
+        super().__init__(*args, **kwargs)
 
 
-class ProjectManager(models.Manager["Project"]):
-    def get_queryset(self) -> "QuerySet[Project]":
-        return super().get_queryset().filter(depth=2)
+class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
+    """
+    A field that allows us to store an array of choices.
 
+    Uses Django 4.2's postgres ArrayField
+    and a TypeMultipleChoiceField for its formfield.
 
-class ApplicationManager(models.Manager["Application"]):
-    def get_queryset(self) -> "QuerySet[Application]":
-        return super().get_queryset().filter(depth=3)
+    Usage:
 
+        choices = ChoiceArrayField(
+            models.CharField(max_length=..., choices=(...,)), blank=[...], default=[...]
+        )
+    """
 
-class SectionManager(models.Manager["Section"]):
-    def get_queryset(self) -> "QuerySet[Section]":
-        return super().get_queryset().filter(depth__lt=3)
-
-
-class Project(Sender):
-    objects = ProjectManager()
-
-    class Meta:
-        proxy = True
-
-
-class Organisation(Sender):
-    objects = OrganisationManager()
-
-    class Meta:
-        proxy = True
-
-
-class Section(Sender):
-    objects = SectionManager()
-
-    class Meta:
-        proxy = True
-
-
-class Application(Sender):
-    objects = ApplicationManager()
-
-    class Meta:
-        proxy = True
+    def formfield(
+        self,
+        form_class: type[forms.Field] | None = None,
+        choices_form_class: type[forms.ChoiceField] | None = None,
+        **kwargs: Any,
+    ) -> forms.Field:
+        defaults = {
+            "form_class": _TypedMultipleChoiceField,
+            "choices": self.base_field.choices,
+            "coerce": self.base_field.to_python,
+        }
+        defaults.update(kwargs)
+        # Skip our parent's formfield implementation completely as we don't care for it.
+        # pylint:disable=bad-super-call
+        return super().formfield(**defaults)  # type: ignore[arg-type]
 
 
 class User(AbstractUser):
@@ -77,5 +64,13 @@ class User(AbstractUser):
 class Role(models.Model):
     name = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    sender = models.ForeignKey(Sender, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+
+
+class ApiKey(models.Model):
+    name = models.CharField(max_length=255, db_collation="case_insensitive")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    key = models.UUIDField(unique=True, default=uuid4)
+    grants = ChoiceArrayField(choices=Grant, null=True, blank=True, base_field=models.CharField(max_length=255))
+    application = models.ManyToManyField(Application)

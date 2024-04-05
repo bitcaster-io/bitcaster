@@ -54,7 +54,7 @@ MIDDLEWARE = [
     "csp.middleware.CSPMiddleware",
     "bitcaster.middleware.user_agent.UserAgentMiddleware",
     "bitcaster.middleware.state.StateMiddleware",
-    # "bitcaster.middleware.minify.HtmlMinMiddleware",
+    "bitcaster.middleware.minify.HtmlMinMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -182,8 +182,9 @@ LOGGING = {
     },
 }
 
-from .fragments import celery  # noqa
-from .fragments import constance  # noqa
-from .fragments import rest_framework  # noqa
-from .fragments import sentry  # noqa
-from .fragments import social_auth  # noqa
+from .fragments.celery import *  # noqa
+from .fragments.constance import *  # noqa
+from .fragments.csp import *  # noqa
+from .fragments.rest_framework import *  # noqa
+from .fragments.sentry import *  # noqa
+from .fragments.social_auth import *  # noqa
