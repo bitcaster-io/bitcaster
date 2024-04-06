@@ -1,9 +1,12 @@
+import factory
 from factory import Sequence
 from factory.django import DjangoModelFactory
 
+from bitcaster.auth.constants import Grant
 from bitcaster.config import Group
 from bitcaster.models import Role, User
 from bitcaster.models.auth import ApiKey
+from .org import ApplicationFactory
 
 
 class UserFactory(DjangoModelFactory):
@@ -13,7 +16,7 @@ class UserFactory(DjangoModelFactory):
 
     username = Sequence(lambda n: "user%03d" % n)
     email = Sequence(lambda n: "user%03d@localhost" % n)
-    password = "test"
+    password = "password"
 
 
 class RoleFactory(DjangoModelFactory):
@@ -21,7 +24,7 @@ class RoleFactory(DjangoModelFactory):
         model = Role
         django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "role%03d" % n)
+    name = Sequence(lambda n: "Role-%03d" % n)
 
 
 class GroupFactory(DjangoModelFactory):
@@ -29,7 +32,7 @@ class GroupFactory(DjangoModelFactory):
         model = Group
         django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "group%03d" % n)
+    name = Sequence(lambda n: "Group-%03d" % n)
 
 
 
@@ -38,4 +41,7 @@ class ApiKeyFactory(DjangoModelFactory):
         model = ApiKey
         django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "group%03d" % n)
+    name = Sequence(lambda n: "Key-%03d" % n)
+    application = factory.SubFactory(ApplicationFactory)
+    user = factory.SubFactory(UserFactory)
+    grants = [Grant.EVENT_TRIGGER]

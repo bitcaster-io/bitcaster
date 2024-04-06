@@ -122,3 +122,10 @@ def application(db):
     from testutils.factories import ApplicationFactory
 
     return ApplicationFactory(name="Bitcaster", project__name="BITCASTER", project__organization__name="OS4D")
+
+
+@pytest.fixture()
+def api_key(db):
+    from testutils.factories import ApiKeyFactory
+
+    return ApiKeyFactory()

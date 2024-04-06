@@ -1,11 +1,11 @@
 import logging
 from typing import Any
-from uuid import uuid4
 
 from django import forms
 from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.utils.crypto import RANDOM_STRING_CHARS, get_random_string
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.auth.constants import Grant
@@ -13,6 +13,12 @@ from bitcaster.auth.constants import Grant
 from .org import Application, Organization
 
 logger = logging.getLogger(__name__)
+
+TOKEN_CHARS = f"{RANDOM_STRING_CHARS}-#@^*_+~;<>,."
+
+
+def make_token() -> str:
+    return get_random_string(250, TOKEN_CHARS)
 
 
 class _TypedMultipleChoiceField(forms.TypedMultipleChoiceField):
@@ -71,6 +77,6 @@ class Role(models.Model):
 class ApiKey(models.Model):
     name = models.CharField(max_length=255, db_collation="case_insensitive")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    key = models.UUIDField(unique=True, default=uuid4)
+    token = models.CharField(unique=True, default=make_token)
     grants = ChoiceArrayField(choices=Grant, null=True, blank=True, base_field=models.CharField(max_length=255))
-    application = models.ManyToManyField(Application)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE)

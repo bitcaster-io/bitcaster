@@ -1,12 +1,9 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, NotRequired, Tuple, Type, cast
+from typing import Any, Dict, Tuple, Type, cast
 
 from django.utils.functional import classproperty
 
-if TYPE_CHECKING:
-    from typing_extensions import TypedDict
-
-    Payload = TypedDict("Payload", {"message": str, "subject": NotRequired[str]})
+from bitcaster.types.core import Payload
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +59,9 @@ class DispatcherManager:
             return DispatcherMeta._all[id_or_name]
         except KeyError:
             raise KeyError(f"Unknown dispatcher {id_or_name}")
+
+    def as_choices(self) -> [(str, str)]:
+        return [(ch.slug, ch.verbose_name or ch.__name__) for ch in self.all()]
 
 
 dispatcherManager = DispatcherManager()

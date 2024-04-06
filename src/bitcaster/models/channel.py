@@ -3,10 +3,10 @@ from strategy_field.fields import StrategyField
 
 from bitcaster.dispatchers.base import dispatcherManager
 
-from .auth import Organisation
+from .org import Organization
 
 
 class Channel(models.Model):
-    organization = models.ForeignKey(Organisation, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, db_collation="case_insensitive")
     dispatcher = StrategyField(registry=dispatcherManager)

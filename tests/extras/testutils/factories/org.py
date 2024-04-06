@@ -10,7 +10,7 @@ class OrganizationFactory(DjangoModelFactory):
         model = Organization
         django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "Organization%03d" % n)
+    name = Sequence(lambda n: "Organization-%03d" % n)
 
 
 class ProjectFactory(DjangoModelFactory):
@@ -18,7 +18,7 @@ class ProjectFactory(DjangoModelFactory):
         model = Project
         django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "Project%03d" % n)
+    name = Sequence(lambda n: "Project-%03d" % n)
     organization = factory.SubFactory(OrganizationFactory)
 
 
@@ -27,5 +27,5 @@ class ApplicationFactory(DjangoModelFactory):
         model = Application
         django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "Application%03d" % n)
+    name = Sequence(lambda n: "Application-%03d" % n)
     project = factory.SubFactory(ProjectFactory)
