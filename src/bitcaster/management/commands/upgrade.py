@@ -102,8 +102,7 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
-        from bitcaster.models import (Application, EventType, Organization,
-                                      Project, User)
+        from bitcaster.models import Application, EventType, Organization, Project, User
 
         self.get_options(options)
         if self.verbosity >= 1:

@@ -23,6 +23,7 @@ class Project(models.Model):
 class Application(models.Model):
     name = models.CharField(max_length=255, db_collation="case_insensitive", unique=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
 
     def __str__(self) -> str:
         return self.name

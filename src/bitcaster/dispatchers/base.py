@@ -1,9 +1,11 @@
 import logging
-from typing import Any, Dict, Tuple, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, Tuple, Type, cast
 
+from django.forms import forms
 from django.utils.functional import classproperty
 
-from bitcaster.types.core import Payload
+if TYPE_CHECKING:
+    from bitcaster.models import Channel
 
 logger = logging.getLogger(__name__)
 
@@ -30,16 +32,38 @@ class DispatcherMeta(type["Dispatcher"]):
         return cast(Dispatcher, cls)
 
 
+class Payload:
+    message: str
+    subject: str | None = None
+    html_message: str | None = None
+
+    def __init__(self, **kwargs: Dict[str, Any]):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    def as_dict(self):
+        return self.__dict__
+
+
+class Config(forms.Form):
+    pass
+
+
 class Dispatcher(metaclass=DispatcherMeta):
     id = -1
     slug = "--"
     local = True
-    verbose_name = None
-    text_message = True
-    html = False
+    verbose_name: str = ""
+    text_message: bool = True
+    html_message: bool = False
+    config_class: Type[Config] = Config
+    config: Dict[str, Any] = {}
+    channel: "Channel"
 
-    @classmethod
-    def send_message(cls, address: str, payload: Payload) -> None: ...
+    def __init__(self, channel: "Channel") -> None:
+        self.channel = channel
+
+    def send(self, address: str, payload: Payload) -> None: ...
 
     @classproperty
     def name(cls) -> str:

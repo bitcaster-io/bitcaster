@@ -1,3 +1,16 @@
-from typing import NotRequired, TypedDict
+from typing import TypedDict
 
-Payload = TypedDict("Payload", {"message": str, "subject": NotRequired[str]})
+
+class DispatcherConfig(TypedDict):
+    sender: str
+
+
+#
+# Payload = TypedDict(
+#     "Payload",
+#     {
+#         "message": str,
+#         "subject": NotRequired[str],
+#         "html_message": NotRequired[str],
+#     },
+# )

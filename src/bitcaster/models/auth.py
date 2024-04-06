@@ -1,16 +1,21 @@
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django import forms
 from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import QuerySet
 from django.utils.crypto import RANDOM_STRING_CHARS, get_random_string
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.auth.constants import Grant
 
 from .org import Application, Organization
+
+if TYPE_CHECKING:
+    from .address import Address
+    from .channel import Channel
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +65,8 @@ class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
 
 
 class User(AbstractUser):
+    addresses: "QuerySet[Address]"
+
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")

@@ -2,8 +2,7 @@ import logging
 
 from admin_extra_buttons.decorators import button
 from admin_extra_buttons.mixins import ExtraButtonsMixin
-from adminfilters.autocomplete import (AutoCompleteFilter,
-                                       LinkedAutoCompleteFilter)
+from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
