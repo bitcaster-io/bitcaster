@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Dict, Tuple, Type, cast
 
 from django.forms import forms
 from django.utils.functional import classproperty
+from strategy_field.registry import Registry
 
 if TYPE_CHECKING:
     from bitcaster.models import Channel
@@ -26,9 +27,10 @@ class DispatcherMeta(type["Dispatcher"]):
             raise ValueError(f'{class_name} Invalid Dispatcher.slug {attrs["slug"]}')
 
         cls = super().__new__(mcs, class_name, bases, attrs)
-        if cls not in mcs._dispatchers:
-            mcs._dispatchers.append(cls)
-            mcs._all[cls.slug] = mcs._all[int(cls.id)] = mcs._all[str(cls.id)] = cls
+        if cls not in dispatcherManager:
+            dispatcherManager.register(cls)
+            # mcs._dispatchers.append(cls)
+            # mcs._all[cls.slug] = mcs._all[int(cls.id)] = mcs._all[str(cls.id)] = cls
         return cast(Dispatcher, cls)
 
 
@@ -70,22 +72,23 @@ class Dispatcher(metaclass=DispatcherMeta):
         return cls.verbose_name or cls.__name__.title()
 
 
-class DispatcherManager:
-    def all(self) -> [Dispatcher]:
-        for ch in DispatcherMeta._dispatchers:
-            yield ch
+class DispatcherManager(Registry):
+    ...
+    # def all(self) -> [Dispatcher]:
+    #     for ch in DispatcherMeta._dispatchers:
+    #         yield ch
+    #
+    # def slugs(self) -> [Dispatcher]:
+    #     return [ch.slug for ch in self.all()]
+    #
+    # def get(self, id_or_name: str) -> Dispatcher:
+    #     try:
+    #         return DispatcherMeta._all[id_or_name]
+    #     except KeyError:
+    #         raise KeyError(f"Unknown dispatcher {id_or_name}")
+    #
+    # def as_choices(self) -> [(str, str)]:
+    #     return [(ch.slug, ch.verbose_name or ch.__name__) for ch in self.all()]
 
-    def slugs(self) -> [Dispatcher]:
-        return [ch.slug for ch in self.all()]
 
-    def get(self, id_or_name: str) -> Dispatcher:
-        try:
-            return DispatcherMeta._all[id_or_name]
-        except KeyError:
-            raise KeyError(f"Unknown dispatcher {id_or_name}")
-
-    def as_choices(self) -> [(str, str)]:
-        return [(ch.slug, ch.verbose_name or ch.__name__) for ch in self.all()]
-
-
-dispatcherManager = DispatcherManager()
+dispatcherManager = DispatcherManager(Dispatcher)
