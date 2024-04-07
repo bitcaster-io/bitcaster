@@ -1,1 +1,1 @@
-a single occurrence of a notification emitted by the client system
+the category of the [Event](event)

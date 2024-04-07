@@ -29,4 +29,5 @@ nav:
   - Home: index.md
   - Glossary: glossary
   - Examples: examples.md
-  - Terms: terms.md
+  - Todo: todo.md
+  - ClassDiagram: class-diagram.md
