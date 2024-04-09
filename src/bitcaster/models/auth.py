@@ -15,7 +15,6 @@ from .org import Application, Organization
 
 if TYPE_CHECKING:
     from .address import Address
-    from .channel import Channel
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +75,7 @@ class User(AbstractUser):
 
 class Role(models.Model):
     name = models.CharField(max_length=255)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="roles")
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
 

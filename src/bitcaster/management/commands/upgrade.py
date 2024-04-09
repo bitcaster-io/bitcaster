@@ -8,8 +8,10 @@ from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
 from django.core.validators import validate_email
+from strategy_field.utils import fqn
 
 from bitcaster.config import env
+from bitcaster.models import Channel
 
 if TYPE_CHECKING:
     from argparse import ArgumentParser
@@ -102,7 +104,7 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
-        from bitcaster.models import Application, EventType, Organization, Project, User
+        from bitcaster.models import Application, Organization, Project, User
 
         self.get_options(options)
         if self.verbosity >= 1:
@@ -135,15 +137,19 @@ class Command(BaseCommand):
 
             echo("Remove stale contenttypes")
             call_command("remove_stale_contenttypes", **extra)
-            if not Organization.objects.exists():
-                echo("Creating initial structure")
-                try:
-                    org = Organization.objects.get_or_create(name="OS4D")[0]
-                    prj = Project.objects.get_or_create(name="Bitcaster", organization=org)[0]
-                    app = Application.objects.get_or_create(name="Bitcaster", project=prj)[0]
-                    EventType.objects.get_or_create(name="Bitcaster", application=app)
-                except TypeError as e:
-                    print(e)
+            echo("Creating initial structure")
+            os4d = Organization.objects.get_or_create(name="OS4D")[0]
+            prj = Project.objects.get_or_create(name="Bitcaster", organization=os4d)[0]
+            bitcaster: Application = Application.objects.get_or_create(name="Bitcaster", project=prj)[0]
+
+            from bitcaster.dispatchers.log import BitcasterLogDispatcher
+            Channel.objects.get_or_create(name="BitcasterLog",
+                                          organization=os4d,
+                                          dispatcher=fqn(BitcasterLogDispatcher),
+                                          application=bitcaster)[0]
+
+            for ev in ["application_locked", "application_unlocked"]:
+                bitcaster.register_event(ev)
 
             if self.admin_email:
                 if User.objects.filter(email=self.admin_email).exists():
@@ -164,6 +170,9 @@ class Command(BaseCommand):
                         verbosity=self.verbosity - 1,
                         interactive=False,
                     )
+                    admin: "User" = User.objects.get(email=self.admin_email)
+                    echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
+                    admin.addresses.get_or_create(name="email", value=self.admin_email)
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
         except ValidationError as e:

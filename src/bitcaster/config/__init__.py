@@ -53,6 +53,8 @@ CONFIG: "Dict[str, ConfigItem]" = {
         "",
     ),
     "DEBUG": (bool, False, setting("debug"), True),
+    "GDAL_LIBRARY_PATH": (str, None, setting("gdal-library-path"), True),
+    "GEOS_LIBRARY_PATH": (str, None, setting("geos-library-path"), True),
     # "EMAIL_BACKEND": (str, "anymail.backends.mailjet.EmailBackend", "Do not change in prod"),
     # "EMAIL_HOST": (str, ""),
     # "EMAIL_HOST_PASSWORD": (str, ""),

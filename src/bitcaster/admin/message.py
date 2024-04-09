@@ -1,18 +1,18 @@
 import logging
 
-from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
 from bitcaster.models import Message
 
+from .base import BaseAdmin
+
 logger = logging.getLogger(__name__)
 
 
-class MessageAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin[Message]):
+class MessageAdmin(BaseAdmin, admin.ModelAdmin[Message]):
     search_fields = ("name",)
     list_display = ("name", "channel", "event")
     list_filter = (

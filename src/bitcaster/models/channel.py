@@ -8,11 +8,11 @@ from bitcaster.dispatchers.base import Dispatcher, dispatcherManager
 from .org import Application, Organization
 
 
-class ChannelManager(models.Manager):
-    def active(self):
+class ChannelManager(models.Manager["Channel"]):
+    def active(self) -> models.QuerySet["Channel"]:
         return self.get_queryset().filter(active=True, locked=False)
 
-    def for_application(self, app: "Application"):
+    def for_application(self, app: "Application") -> models.QuerySet["Channel"]:
         return self.get_queryset().filter(organization=app.project.organization, application=app)
 
 

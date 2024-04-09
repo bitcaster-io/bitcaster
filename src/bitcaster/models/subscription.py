@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import jmespath
 import yaml
@@ -14,12 +14,14 @@ from .event import EventType
 if TYPE_CHECKING:
     from .message import Message
 
+JsonPayload = Optional[Dict[str, Any] | str]
+
 logger = logging.getLogger(__name__)
 
 
-class SubscriptionManager(models.Manager):
+class SubscriptionManager(models.Manager["Subscription"]):
 
-    def match(self, payload: Dict[str, Any], rules: Dict[str, Any] | str = None) -> List['Subscription']:
+    def match(self, payload: JsonPayload, rules: Optional[Dict[str, str] | str] = None) -> List['Subscription']:
         for subscription in self.all():
             if subscription.match(payload, rules=rules):
                 yield subscription
@@ -40,21 +42,23 @@ class Subscription(models.Model):
         verbose_name_plural = _("Subscriptions")
 
     def notify(self, context: Dict[str, Any]) -> None:
-        message: "Message"
+        message: Optional["Message"]
         context.update({"subscription": self, "event": self.event})
         for ch in self.channels.active():
-            dispatcher: "Dispatcher" = ch.dispatcher            
-            if addr := self.user.addresses.filter(validated=True, channel=ch).first():
+            dispatcher: "Dispatcher" = ch.dispatcher
+            if addr := self.user.addresses.filter(validations__validated=True, validations__channel=ch).first():
                 if message := self.event.messages.filter(channel=ch).first():
                     context.update({"channel": ch, "address": addr})
                     payload: Payload = Payload(
+                        event=self.event,
+                        channel=ch,
                         user=self.user,
                         message=message.render(context),
                     )
                     dispatcher.send(addr.value, payload)
 
     @staticmethod
-    def match_filter_impl(filter_rules_dict, payload, check_only=False):
+    def match_filter_impl(filter_rules_dict: JsonPayload, payload: JsonPayload, check_only: bool = False) -> bool:
         if not filter_rules_dict:
             return True
 
@@ -78,11 +82,11 @@ class Subscription(models.Model):
             return not not_stm
         return False
 
-    def match_filter(self, payload, rules: Dict[str, Any] | str = None) -> bool:
+    def match_filter(self, payload: JsonPayload, rules: Optional[Dict[str, Any] | str] = None) -> bool:
         """Check if given payload matches rules.
 
         If no rules are specified, it defaults to match rules configured in subscription.
         """
         if not rules:
-            rules = yaml.safe_load(self.payload_filter)
+            rules = yaml.safe_load(self.payload_filter or "")
         return Subscription.match_filter_impl(rules, payload)

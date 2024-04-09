@@ -1,20 +1,25 @@
 from django.contrib import admin
 
 from .. import models
+from .address import AddressAdmin, ValidationAdmin
 from .auth import RoleAdmin, UserAdmin
-from .org import ApplicationAdmin, OrganisationAdmin, ProjectAdmin
-from .message import MessageAdmin
-from .event import EventTypAdmin
 from .channel import ChannelAdmin
+from .event import EventTypAdmin
+from .message import MessageAdmin
+from .org import ApplicationAdmin, OrganisationAdmin, ProjectAdmin
 from .subscription import SubscriptionAdmin
+from .log import LogEntryAdmin
 
 
+admin.site.register(models.Address, AddressAdmin)
 admin.site.register(models.Application, ApplicationAdmin)
 admin.site.register(models.Channel, ChannelAdmin)
 admin.site.register(models.EventType, EventTypAdmin)
+admin.site.register(models.LogEntry, LogEntryAdmin)
 admin.site.register(models.Message, MessageAdmin)
 admin.site.register(models.Organization, OrganisationAdmin)
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.Role, RoleAdmin)
 admin.site.register(models.Subscription, SubscriptionAdmin)
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Validation, ValidationAdmin)

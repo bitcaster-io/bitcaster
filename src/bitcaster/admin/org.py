@@ -1,20 +1,18 @@
 import logging
 
 from admin_extra_buttons.decorators import button
-from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
-from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
 
 from bitcaster.models import Application, Organization, Project
 
+from .base import BaseAdmin
+
 logger = logging.getLogger(__name__)
 
 
-class OrganisationAdmin(
-    AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin[Organization]
-):
+class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     search_fields = ("name",)
     list_display = ("name",)
 
@@ -23,13 +21,14 @@ class OrganisationAdmin(
         return HttpResponse("Projects")
 
 
-class ProjectAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, admin.ModelAdmin[Project]):
+class ProjectAdmin(BaseAdmin, admin.ModelAdmin[Project]):
     search_fields = ("name",)
     list_display = ("name",)
     list_filter = (("organization", AutoCompleteFilter),)
 
 
-class ApplicationAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, admin.ModelAdmin[Application]):
+class ApplicationAdmin(BaseAdmin, admin.ModelAdmin[Application]):
+    search_fields = ("name",)
     list_display = ("name",)
     list_filter = (
         ("project__organization", LinkedAutoCompleteFilter.factory(parent=None)),

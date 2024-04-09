@@ -8,19 +8,20 @@ from django.http import HttpRequest
 from bitcaster.models import EventType
 
 from .base import BaseAdmin
+from ..models.log import LogEntry
 
 logger = logging.getLogger(__name__)
 
 
-class EventTypAdmin(BaseAdmin, admin.ModelAdmin[EventType]):
+class LogEntryAdmin(BaseAdmin, admin.ModelAdmin[LogEntry]):
     search_fields = ("name",)
-    list_display = ("name", "application", "active")
+    list_display = ("created", "level", "application")
     list_filter = (
+        ("level", LinkedAutoCompleteFilter.factory(parent=None)),
         ("application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("application__project", LinkedAutoCompleteFilter.factory(parent="application__project__organization")),
         ("application", LinkedAutoCompleteFilter.factory(parent="application__project")),
-        "active",
     )
 
-    def get_queryset(self, request: HttpRequest) -> QuerySet[EventType]:
-        return super().get_queryset(request).select_related("application__project__organization")
+    def get_queryset(self, request: HttpRequest) -> QuerySet[LogEntry]:
+        return super().get_queryset(request).select_related("application")

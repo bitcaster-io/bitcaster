@@ -1,20 +1,18 @@
 import logging
 
-from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
 from bitcaster.models import Subscription
 
+from .base import BaseAdmin
+
 logger = logging.getLogger(__name__)
 
 
-class SubscriptionAdmin(
-    AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin[Subscription]
-):
+class SubscriptionAdmin(BaseAdmin, admin.ModelAdmin[Subscription]):
     search_fields = ("name",)
     list_display = ("user", "event", "active")
     list_filter = (

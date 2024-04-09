@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class EventType(models.Model):
     name = models.CharField(max_length=255, db_collation="case_insensitive")
-    application = models.ForeignKey(Application, on_delete=models.CASCADE)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="event_types")
     description = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
 

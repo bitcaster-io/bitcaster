@@ -5,3 +5,4 @@ from .event import EventTypeFactory  # noqa
 from .message import MessageFactory  # noqa
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory  # noqa
 from .subscription import SubscriptionFactory  # noqa
+from .validation import ValidationFactory  # noqa

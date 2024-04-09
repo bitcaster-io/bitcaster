@@ -6,7 +6,7 @@ from django.utils.functional import classproperty
 from strategy_field.registry import Registry
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel
+    from bitcaster.models import Channel, EventType, User
 
 logger = logging.getLogger(__name__)
 
@@ -38,12 +38,30 @@ class Payload:
     message: str
     subject: str | None = None
     html_message: str | None = None
+    event: "EventType"
+    channel: "Channel"
+    user: "User"
 
-    def __init__(self, **kwargs: Dict[str, Any]):
+    def __init__(
+        self,
+        message: str,
+        event: "EventType",
+        channel: "Channel",
+        user: "User",
+        subject: str = "",
+        html_message: str = "",
+        **kwargs: Dict[str, Any],
+    ):
+        self.message = message
+        self.event = event
+        self.channel = channel
+        self.subject = subject
+        self.html_message = html_message
+        self.user = user
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def as_dict(self):
+    def as_dict(self) -> Dict[str, Any]:
         return self.__dict__
 
 
@@ -73,22 +91,7 @@ class Dispatcher(metaclass=DispatcherMeta):
 
 
 class DispatcherManager(Registry):
-    ...
-    # def all(self) -> [Dispatcher]:
-    #     for ch in DispatcherMeta._dispatchers:
-    #         yield ch
-    #
-    # def slugs(self) -> [Dispatcher]:
-    #     return [ch.slug for ch in self.all()]
-    #
-    # def get(self, id_or_name: str) -> Dispatcher:
-    #     try:
-    #         return DispatcherMeta._all[id_or_name]
-    #     except KeyError:
-    #         raise KeyError(f"Unknown dispatcher {id_or_name}")
-    #
-    # def as_choices(self) -> [(str, str)]:
-    #     return [(ch.slug, ch.verbose_name or ch.__name__) for ch in self.all()]
+    pass
 
 
 dispatcherManager = DispatcherManager(Dispatcher)

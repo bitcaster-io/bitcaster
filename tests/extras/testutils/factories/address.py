@@ -4,15 +4,22 @@ from factory.django import DjangoModelFactory
 from bitcaster.models import Address
 
 from .auth import UserFactory
-from .channel import ChannelFactory
 
 
 class AddressFactory(DjangoModelFactory):
     class Meta:
         model = Address
-        django_get_or_create = ("user", "value", "channel")
+        django_get_or_create = ("user", "value")
 
     user = factory.SubFactory(UserFactory)
-    channel = factory.SubFactory(ChannelFactory)
     value = "test@examplec.com"
-    validated = True
+
+    @factory.post_generation
+    def channel(self, create, extracted, **kwargs):
+        if not create or not extracted:
+            # Simple build, or nothing to add, do nothing.
+            return
+
+        # Add the iterable of groups using bulk addition
+        self.validate_channel(extracted)  # noqa
+

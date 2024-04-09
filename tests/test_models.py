@@ -1,11 +1,7 @@
 from typing import TYPE_CHECKING, TypedDict
 
-from strategy_field.utils import fqn
-
-from bitcaster.dispatchers.test import TestDispatcher
-
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Application, Channel, EventType, Subscription, User, Address
+    from bitcaster.models import ApiKey, Application, Channel, EventType, Subscription, Address
 
     Context = TypedDict(
         "Context",
@@ -20,25 +16,11 @@ if TYPE_CHECKING:
 
 
 def test_event(db):
-    from testutils.factories import (
-        ApiKeyFactory,
-        ApplicationFactory,
-        ChannelFactory,
-        EventTypeFactory,
-        SubscriptionFactory,
-        UserFactory,
-        AddressFactory,
-    )
-    user: "User" = UserFactory()
-    addr: "Address" = AddressFactory(user=user)
-    app = ApplicationFactory(name="Application-000")
-    evt: EventType = EventTypeFactory(application=app)
-    ch = ChannelFactory(organization=app.project.organization, name="test", dispatcher=fqn(TestDispatcher))
+    from testutils.factories import ValidationFactory
 
-    key = ApiKeyFactory(application=app)
-    user: "User" = key.user
+    v = ValidationFactory()
 
-    sub = SubscriptionFactory(user=user, channels=[ch], event=evt)
+    ch: "Channel" = v.channel
+    addr: "Address" = v.address
 
-    context = {"app": app, "event": evt, "key": key, "channel": ch, "subscription": sub}
-    evt.trigger(context)
+    assert list(addr.channels.all()) == [ch]
