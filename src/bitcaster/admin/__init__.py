@@ -5,11 +5,10 @@ from .address import AddressAdmin, ValidationAdmin
 from .auth import RoleAdmin, UserAdmin
 from .channel import ChannelAdmin
 from .event import EventTypAdmin
+from .log import LogEntryAdmin
 from .message import MessageAdmin
 from .org import ApplicationAdmin, OrganisationAdmin, ProjectAdmin
 from .subscription import SubscriptionAdmin
-from .log import LogEntryAdmin
-
 
 admin.site.register(models.Address, AddressAdmin)
 admin.site.register(models.Application, ApplicationAdmin)

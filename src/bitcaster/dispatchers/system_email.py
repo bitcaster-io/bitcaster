@@ -20,10 +20,9 @@ class SystemEmailDispatcher(Dispatcher):
     config_class = EmailConfig
 
     def send(self, address: str, payload: Payload) -> None:
-        email = EmailMultiAlternatives(subject=payload.subject or "",
-                                       body=payload.message,
-                                       from_email=payload.from_email,
-                                       to=[address])
+        email = EmailMultiAlternatives(
+            subject=payload.subject or "", body=payload.message, from_email=payload.from_email, to=[address]
+        )
         if payload.html_message:
-            email.attach_alternative(payload.html_message, 'text/html')
+            email.attach_alternative(payload.html_message, "text/html")
         email.send()

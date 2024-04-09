@@ -5,10 +5,8 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
-from bitcaster.models import EventType
-
-from .base import BaseAdmin
 from ..models.log import LogEntry
+from .base import BaseAdmin
 
 logger = logging.getLogger(__name__)
 

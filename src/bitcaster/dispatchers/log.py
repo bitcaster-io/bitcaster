@@ -13,5 +13,5 @@ class BitcasterLogDispatcher(Dispatcher):
 
     def send(self, address: str, payload: Payload) -> None:
         from bitcaster.models.log import LogEntry
-        LogEntry.objects.create(level=address,
-                                message=payload.message)
+
+        LogEntry.objects.create(level=address, message=payload.message)

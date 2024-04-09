@@ -32,9 +32,10 @@ class Address(models.Model):
     @cached_property
     def channels(self) -> "QuerySet[Channel]":
         from .channel import Channel
+
         return Channel.objects.filter(validations__address=self)
 
-    def validate_channel(self, ch: "Channel")-> "Validation":
+    def validate_channel(self, ch: "Channel") -> "Validation":
         return Validation.objects.update_or_create(address=self, channel=ch, defaults={"validated": True})[0]
 
 

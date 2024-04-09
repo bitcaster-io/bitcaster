@@ -1,10 +1,9 @@
 import logging
+from typing import TYPE_CHECKING, Any
 
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.text import slugify
-
-from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from bitcaster.models import EventType
@@ -39,11 +38,10 @@ class Application(models.Model):
 
     def register_event(self, name: str, description: str = "", active: bool = True) -> "EventType":
         from bitcaster.models import EventType
-        ev: "EventType" = self.event_types.get_or_create(name=name,
-                                                         description=description,
-                                                         active=active)[0]
+
+        ev: "EventType" = self.event_types.get_or_create(name=name, description=description, active=active)[0]
         return ev
 
-    def save(self, *args:Any, **kwargs: Any) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         self.name = slugify(self.name)
         super().save(*args, **kwargs)

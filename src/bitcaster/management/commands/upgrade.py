@@ -143,10 +143,10 @@ class Command(BaseCommand):
             bitcaster: Application = Application.objects.get_or_create(name="Bitcaster", project=prj)[0]
 
             from bitcaster.dispatchers.log import BitcasterLogDispatcher
-            Channel.objects.get_or_create(name="BitcasterLog",
-                                          organization=os4d,
-                                          dispatcher=fqn(BitcasterLogDispatcher),
-                                          application=bitcaster)[0]
+
+            Channel.objects.get_or_create(
+                name="BitcasterLog", organization=os4d, dispatcher=fqn(BitcasterLogDispatcher), application=bitcaster
+            )[0]
 
             for ev in ["application_locked", "application_unlocked"]:
                 bitcaster.register_event(ev)

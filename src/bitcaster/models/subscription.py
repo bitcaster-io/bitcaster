@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 class SubscriptionManager(models.Manager["Subscription"]):
 
-    def match(self, payload: JsonPayload, rules: Optional[Dict[str, str] | str] = None) -> List['Subscription']:
+    def match(self, payload: JsonPayload, rules: Optional[Dict[str, str] | str] = None) -> List["Subscription"]:
         for subscription in self.all():
             if subscription.match(payload, rules=rules):
                 yield subscription
@@ -70,15 +70,11 @@ class Subscription(models.Model):
                 return bool(jmespath.search(filter_rules_dict, payload))
 
         # it is not a str hence it must be a dict with one of AND, OR, NOT
-        if and_stm := filter_rules_dict.get('AND'):
-            return all(
-                [Subscription.match_filter_impl(rules, payload) for rules in and_stm]
-            )
-        elif or_stm := filter_rules_dict.get('OR'):
-            return any(
-                [Subscription.match_filter_impl(rules, payload) for rules in or_stm]
-            )
-        elif not_stm := filter_rules_dict.get('NOT'):
+        if and_stm := filter_rules_dict.get("AND"):
+            return all([Subscription.match_filter_impl(rules, payload) for rules in and_stm])
+        elif or_stm := filter_rules_dict.get("OR"):
+            return any([Subscription.match_filter_impl(rules, payload) for rules in or_stm])
+        elif not_stm := filter_rules_dict.get("NOT"):
             return not not_stm
         return False
 

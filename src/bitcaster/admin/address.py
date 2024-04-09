@@ -1,14 +1,14 @@
 import logging
+from typing import TYPE_CHECKING, TypeVar
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django.contrib import admin
-from django.db.models import QuerySet, Model
+from django.db.models import QuerySet
 from django.http import HttpRequest
 
 from bitcaster.models import Address, Validation
-from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
     ValidationT = TypeVar("ValidationT", bound=Validation)
