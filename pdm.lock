@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:555dbac27a25fba0951aaa5d88638d51580b53f3b408da8d32ed86607ecd3ea4"
+content_hash = "sha256:0c2be9cf7fbac98a35b50b9be96ca8cbe04e7c62d195fd84e9d31242f4910ca9"
 
 [[package]]
 name = "aiohttp"
@@ -1815,6 +1815,20 @@ dependencies = [
 files = [
     {file = "pytest-django-4.8.0.tar.gz", hash = "sha256:5d054fe011c56f3b10f978f41a8efb2e5adfc7e680ef36fb571ada1f24779d90"},
     {file = "pytest_django-4.8.0-py3-none-any.whl", hash = "sha256:ca1ddd1e0e4c227cf9e3e40a6afc6d106b3e70868fd2ac5798a22501271cd0c7"},
+]
+
+[[package]]
+name = "pytest-echo"
+version = "1.7.3"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+summary = "pytest plugin with mechanisms for echoing environment variables, package version and generic attributes"
+groups = ["dev"]
+dependencies = [
+    "pytest>=2.2",
+]
+files = [
+    {file = "pytest-echo-1.7.3.tar.gz", hash = "sha256:2307af560ebbdc77967579e577f24015467fbcf80cabb9b04d225348bb8d9474"},
+    {file = "pytest_echo-1.7.3-py2.py3-none-any.whl", hash = "sha256:683f4d2fef8dd701aeaf47db834ccc114d43f580abcfea53f3ce2ffe8166c3c0"},
 ]
 
 [[package]]

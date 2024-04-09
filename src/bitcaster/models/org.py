@@ -31,7 +31,7 @@ class Application(models.Model):
     name = models.CharField(max_length=255, db_collation="case_insensitive", unique=True)
     active = models.BooleanField(default=True)
 
-    event_types: "QuerySet[Event]"
+    events: "QuerySet[Event]"
 
     def __str__(self) -> str:
         return self.name
@@ -39,7 +39,7 @@ class Application(models.Model):
     def register_event(self, name: str, description: str = "", active: bool = True) -> "Event":
         from bitcaster.models import Event
 
-        ev: "Event" = self.event_types.get_or_create(name=name, description=description, active=active)[0]
+        ev: "Event" = self.events.get_or_create(name=name, description=description, active=active)[0]
         return ev
 
     def save(self, *args: Any, **kwargs: Any) -> None:

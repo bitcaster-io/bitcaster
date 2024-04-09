@@ -9,5 +9,7 @@ __pycache__/
 !.gitlab/
 !.mypy.ini
 !.pre-commit-config.yaml
+coverage.xml
 Makefile
 site
+

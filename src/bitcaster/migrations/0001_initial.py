@@ -217,7 +217,7 @@ class Migration(migrations.Migration):
                     "application",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="event_types",
+                        related_name="events",
                         to="bitcaster.application",
                     ),
                 ),
