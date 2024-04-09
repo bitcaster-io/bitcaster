@@ -10,9 +10,9 @@ if TYPE_CHECKING:
     from .subscription import Subscription
 
 
-class EventType(models.Model):
+class Event(models.Model):
     name = models.CharField(max_length=255, db_collation="case_insensitive")
-    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="event_types")
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="events")
     description = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
 

@@ -1,11 +1,12 @@
 import factory
 from factory import Sequence
-from factory.django import DjangoModelFactory
 
 from bitcaster.models import Application, Organization, Project
 
+from .base import AutoRegisterModelFactory
 
-class OrganizationFactory(DjangoModelFactory):
+
+class OrganizationFactory(AutoRegisterModelFactory):
     class Meta:
         model = Organization
         django_get_or_create = ("name",)
@@ -13,7 +14,7 @@ class OrganizationFactory(DjangoModelFactory):
     name = Sequence(lambda n: "Organization-%03d" % n)
 
 
-class ProjectFactory(DjangoModelFactory):
+class ProjectFactory(AutoRegisterModelFactory):
     class Meta:
         model = Project
         django_get_or_create = ("name",)
@@ -22,7 +23,7 @@ class ProjectFactory(DjangoModelFactory):
     organization = factory.SubFactory(OrganizationFactory)
 
 
-class ApplicationFactory(DjangoModelFactory):
+class ApplicationFactory(AutoRegisterModelFactory):
     class Meta:
         model = Application
         django_get_or_create = ("name",)

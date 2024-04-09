@@ -1,13 +1,13 @@
 import factory
-from factory.django import DjangoModelFactory
 
 from bitcaster.models.address import Validation
 
 from .address import AddressFactory
+from .base import AutoRegisterModelFactory
 from .channel import ChannelFactory
 
 
-class ValidationFactory(DjangoModelFactory):
+class ValidationFactory(AutoRegisterModelFactory):
     class Meta:
         model = Validation
         django_get_or_create = ("address", "channel", "validated")

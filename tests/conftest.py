@@ -4,6 +4,7 @@ from pathlib import Path
 
 import django
 import pytest
+import responses
 
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))
@@ -94,6 +95,12 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if list(item.iter_markers(name="selenium")):
                 item.add_marker(skip_mymarker)
+
+
+@pytest.fixture()
+def mocked_responses():
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        yield rsps
 
 
 @pytest.fixture

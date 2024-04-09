@@ -1,15 +1,15 @@
 import factory
 from factory import Sequence
-from factory.django import DjangoModelFactory
 from strategy_field.utils import fqn
 
 from bitcaster.dispatchers.test import TestDispatcher
 from bitcaster.models import Channel
 
+from .base import AutoRegisterModelFactory
 from .org import OrganizationFactory
 
 
-class ChannelFactory(DjangoModelFactory):
+class ChannelFactory(AutoRegisterModelFactory):
     class Meta:
         model = Channel
         django_get_or_create = ("name",)

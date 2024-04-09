@@ -1,17 +1,17 @@
 import factory
 from factory import Sequence
-from factory.django import DjangoModelFactory
 
-from bitcaster.models.message import Message
+from bitcaster.models import Message
 
+from .base import AutoRegisterModelFactory
 from .channel import ChannelFactory
-from .event import EventTypeFactory
+from .event import EventFactory
 
 
-class MessageFactory(DjangoModelFactory):
+class MessageFactory(AutoRegisterModelFactory):
     name = Sequence(lambda n: "Message-%03d" % n)
     channel = factory.SubFactory(ChannelFactory)
-    event = factory.SubFactory(EventTypeFactory)
+    event = factory.SubFactory(EventFactory)
     content = "Message for {{ event.name }} on channel {{channel.name}}"
 
     class Meta:

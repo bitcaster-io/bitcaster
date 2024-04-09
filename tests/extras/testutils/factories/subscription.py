@@ -1,20 +1,20 @@
 import factory
-from factory.django import DjangoModelFactory
 
 from bitcaster.models import Subscription
 
 from .auth import UserFactory
+from .base import AutoRegisterModelFactory
 from .channel import ChannelFactory
-from .event import EventTypeFactory
+from .event import EventFactory
 
 
-class SubscriptionFactory(DjangoModelFactory):
+class SubscriptionFactory(AutoRegisterModelFactory):
     class Meta:
         model = Subscription
         django_get_or_create = ("user", "event")
 
     user = factory.SubFactory(UserFactory)
-    event = factory.SubFactory(EventTypeFactory)
+    event = factory.SubFactory(EventFactory)
 
     @factory.post_generation
     def channels(self, create, extracted, **kwargs):

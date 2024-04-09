@@ -6,7 +6,7 @@ from django.utils.functional import classproperty
 from strategy_field.registry import Registry
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, EventType, User
+    from bitcaster.models import Channel, Event, User
 
 logger = logging.getLogger(__name__)
 
@@ -38,14 +38,14 @@ class Payload:
     message: str
     subject: str | None = None
     html_message: str | None = None
-    event: "EventType"
+    event: "Event"
     channel: "Channel"
     user: "User"
 
     def __init__(
         self,
         message: str,
-        event: "EventType",
+        event: "Event",
         channel: "Channel",
         user: "User",
         subject: str = "",

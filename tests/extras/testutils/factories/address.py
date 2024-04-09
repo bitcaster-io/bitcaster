@@ -1,12 +1,12 @@
 import factory
-from factory.django import DjangoModelFactory
 
 from bitcaster.models import Address
 
-from .auth import UserFactory
+from .base import AutoRegisterModelFactory
+from .user import UserFactory
 
 
-class AddressFactory(DjangoModelFactory):
+class AddressFactory(AutoRegisterModelFactory):
     class Meta:
         model = Address
         django_get_or_create = ("user", "value")
@@ -22,4 +22,3 @@ class AddressFactory(DjangoModelFactory):
 
         # Add the iterable of groups using bulk addition
         self.validate_channel(extracted)  # noqa
-

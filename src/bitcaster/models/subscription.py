@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import jmespath
 import yaml
@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from ..dispatchers.base import Dispatcher, Payload
 from .auth import User
 from .channel import Channel
-from .event import EventType
+from .event import Event
 
 if TYPE_CHECKING:
     from .message import Message
@@ -20,16 +20,12 @@ logger = logging.getLogger(__name__)
 
 
 class SubscriptionManager(models.Manager["Subscription"]):
-
-    def match(self, payload: JsonPayload, rules: Optional[Dict[str, str] | str] = None) -> List["Subscription"]:
-        for subscription in self.all():
-            if subscription.match(payload, rules=rules):
-                yield subscription
+    pass
 
 
 class Subscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="subscriptions")
-    event = models.ForeignKey(EventType, on_delete=models.CASCADE, related_name="subscriptions")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="subscriptions")
     channels = models.ManyToManyField(Channel, related_name="subscriptions")
     payload_filter = models.TextField(blank=True, null=True)
 

@@ -13,7 +13,7 @@ from .subscription import SubscriptionAdmin
 admin.site.register(models.Address, AddressAdmin)
 admin.site.register(models.Application, ApplicationAdmin)
 admin.site.register(models.Channel, ChannelAdmin)
-admin.site.register(models.EventType, EventTypAdmin)
+admin.site.register(models.Event, EventTypAdmin)
 admin.site.register(models.LogEntry, LogEntryAdmin)
 admin.site.register(models.Message, MessageAdmin)
 admin.site.register(models.Organization, OrganisationAdmin)
