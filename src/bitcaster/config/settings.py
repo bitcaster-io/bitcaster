@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     #
-    "django_extensions",
     "adminactions",
     "admin_extra_buttons",
     "social_django",
