@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:0c2be9cf7fbac98a35b50b9be96ca8cbe04e7c62d195fd84e9d31242f4910ca9"
+content_hash = "sha256:bb57318d3744f617b42458f8956f6fd26139963e6e72eea775a6d7dabb1beac5"
 
 [[package]]
 name = "aiohttp"
@@ -594,6 +594,20 @@ groups = ["default"]
 files = [
     {file = "django-environ-0.11.2.tar.gz", hash = "sha256:f32a87aa0899894c27d4e1776fa6b477e8164ed7f6b3e410a62a6d72caaf64be"},
     {file = "django_environ-0.11.2-py2.py3-none-any.whl", hash = "sha256:0ff95ab4344bfeff693836aa978e6840abef2e2f1145adff7735892711590c05"},
+]
+
+[[package]]
+name = "django-extensions"
+version = "3.2.3"
+requires_python = ">=3.6"
+summary = "Extensions for Django"
+groups = ["dev"]
+dependencies = [
+    "Django>=3.2",
+]
+files = [
+    {file = "django-extensions-3.2.3.tar.gz", hash = "sha256:44d27919d04e23b3f40231c4ab7af4e61ce832ef46d610cc650d53e68328410a"},
+    {file = "django_extensions-3.2.3-py3-none-any.whl", hash = "sha256:9600b7562f79a92cbf1fde6403c04fee314608fefbb595502e34383ae8203401"},
 ]
 
 [[package]]
