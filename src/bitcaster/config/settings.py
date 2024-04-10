@@ -92,7 +92,6 @@ WSGI_APPLICATION = "bitcaster.config.wsgi.application"
 DATABASES = {
     "default": env.db(),
 }
-DATABASES['default']['OPTIONS'] = {'options': '-c search_path=django,public'}
 
 CACHE_URL = env("CACHE_URL")
 REDIS_URL = urlparse(CACHE_URL).hostname
