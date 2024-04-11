@@ -21,6 +21,7 @@ class EventTypAdmin(BaseAdmin, admin.ModelAdmin[Event]):
         ("application", LinkedAutoCompleteFilter.factory(parent="application__project")),
         "active",
     )
+    autocomplete_fields = ("application",)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
         return super().get_queryset(request).select_related("application__project__organization")

@@ -1,4 +1,4 @@
-from bitcaster.dispatchers.base import Dispatcher, Payload
+from .base import Dispatcher, Payload
 
 MESSAGES = []
 
@@ -12,6 +12,6 @@ class BitcasterLogDispatcher(Dispatcher):
     html_message = True
 
     def send(self, address: str, payload: Payload) -> None:
-        from bitcaster.models.log import LogEntry
+        from bitcaster.models.log import LogMessage
 
-        LogEntry.objects.create(level=address, message=payload.message)
+        LogMessage.objects.create(level=address, message=payload.message)

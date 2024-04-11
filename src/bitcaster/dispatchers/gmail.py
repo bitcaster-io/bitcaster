@@ -1,24 +1,26 @@
-from typing import Type
+from typing import TYPE_CHECKING, Any, Dict
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
+from django.core.mail.backends.smtp import EmailBackend
 from django.forms import PasswordInput
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from .base import Dispatcher, DispatcherConfig, Payload
 
+if TYPE_CHECKING:
+    from bitcaster.types.dispatcher import TDispatcherConfig
 
-class EmailConfig(DispatcherConfig):
-    host = forms.CharField(label=_("Host"))
-    port = forms.CharField(label=_("Port"))
+
+class GMailConfig(DispatcherConfig):
     username = forms.CharField(label=_("Username"))
     password = forms.CharField(label=_("Password"), widget=PasswordInput)
-    use_tls = forms.BooleanField(label=_("TLS"), required=False)
-    use_ssl = forms.BooleanField(label=_("SSL"), required=False)
-    timeout = forms.IntegerField(label=_("Timeout"), required=False)
 
 
-class EmailDispatcher(Dispatcher):
+class GMmailDispatcher(Dispatcher):
+    id = 2
     slug = "email"
     local = True
     verbose_name = "Email"
@@ -26,13 +28,26 @@ class EmailDispatcher(Dispatcher):
     html_message = True
     has_subject = True
 
-    config_class: Type[DispatcherConfig] = EmailConfig
-    backend = "django.core.mail.backends.smtp.EmailBackend"
+    config_class = GMailConfig
+    backend = EmailBackend
+
+    @cached_property
+    def config(self) -> Dict[str, Any]:
+        cfg: "TDispatcherConfig" = self.config_class(data=self.channel.config)
+        if not cfg.is_valid():
+            raise ValidationError(cfg.errors)
+        config = {
+            "host": "smtp.gmail.com",
+            "port": 587,
+            "use_tls": True,
+            **cfg.cleaned_data,
+        }
+        return config
 
     def send(self, address: str, payload: Payload) -> None:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         email = EmailMultiAlternatives(
-            subject=subject or "",
+            subject=subject,
             body=payload.message,
             from_email=self.channel.from_email,
             to=[address],

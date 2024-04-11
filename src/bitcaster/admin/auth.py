@@ -18,4 +18,4 @@ class UserAdmin(BaseAdmin, UserAdmin_):
 
 
 class RoleAdmin(BaseAdmin, admin.ModelAdmin[Role]):
-    pass
+    autocomplete_fields = ("user", "group", "organization")

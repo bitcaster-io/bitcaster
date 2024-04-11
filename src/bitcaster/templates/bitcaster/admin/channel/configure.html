@@ -1,0 +1,10 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% block action-content %}
+    <form method="post" id="config-form">
+        {% csrf_token %}
+        {% for fieldset in admin_form %}
+            {% include "admin/includes/fieldset.html" %}
+        {% endfor %}
+        <input type="submit">
+    </form>
+{% endblock %}

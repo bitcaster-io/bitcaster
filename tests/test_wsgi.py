@@ -10,7 +10,6 @@ def test_wsgi():
         pytest.fail(e)
 
 
-
 def test_asgi():
     try:
         from bitcaster.config.asgi import application

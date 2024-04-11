@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Optional, List
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import jmespath
 import yaml
@@ -19,9 +19,9 @@ JsonPayload = Optional[Dict[str, Any] | str]
 logger = logging.getLogger(__name__)
 
 
-class SubscriptionQuerySet(models.QuerySet):
+class SubscriptionQuerySet(models.QuerySet["Subscription"]):
 
-    def match(self, payload: Dict[str, Any], rules: Dict[str, Any] | str = None) -> List['Subscription']:
+    def match(self, payload: Dict[str, Any], rules: JsonPayload = None) -> List["Subscription"]:
         for subscription in self.all():
             if subscription.match(payload, rules=rules):
                 yield subscription
@@ -51,7 +51,6 @@ class Subscription(models.Model):
                     context.update({"channel": ch, "address": addr})
                     payload: Payload = Payload(
                         event=self.event,
-                        channel=ch,
                         user=self.user,
                         message=message.render(context),
                     )

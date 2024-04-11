@@ -20,6 +20,7 @@ class MessageAdmin(BaseAdmin, admin.ModelAdmin[Message]):
         ("channel", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
         ("event", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
     )
+    autocomplete_fields = ("channel", "event")
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Message]:
         return super().get_queryset(request).select_related()

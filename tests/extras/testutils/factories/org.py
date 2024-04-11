@@ -30,3 +30,4 @@ class ApplicationFactory(AutoRegisterModelFactory):
 
     name = Sequence(lambda n: "Application-%03d" % n)
     project = factory.SubFactory(ProjectFactory)
+    from_email = factory.Faker("email")

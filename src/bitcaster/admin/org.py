@@ -25,6 +25,7 @@ class ProjectAdmin(BaseAdmin, admin.ModelAdmin[Project]):
     search_fields = ("name",)
     list_display = ("name",)
     list_filter = (("organization", AutoCompleteFilter),)
+    autocomplete_fields = ("organization",)
 
 
 class ApplicationAdmin(BaseAdmin, admin.ModelAdmin[Application]):
@@ -34,3 +35,4 @@ class ApplicationAdmin(BaseAdmin, admin.ModelAdmin[Application]):
         ("project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
     )
+    autocomplete_fields = ("project",)

@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from strategy_field.fields import StrategyField
 
@@ -28,13 +29,32 @@ class Channel(models.Model):
 
     objects = ChannelManager()
 
+    class Meta:
+        permissions = (("bitcaster.lock_channels", "Can lock channels"),)
+
     def __str__(self) -> str:
         return self.name
+
+    @cached_property
+    def from_email(self) -> str:
+        if self.application:
+            return self.application.from_email
+        else:
+            return str(self.organization.from_email)
+
+    @cached_property
+    def subject_prefix(self) -> str:
+        if self.application:
+            return str(self.application.subject_prefix)
+        else:
+            return str(self.organization.subject_prefix)
 
     def clean(self) -> None:
         if not self.dispatcher:
             self.dispatcher = dispatcherManager.get_default()
-        if not self.organization and self.application:
-            self.organization = self.application.organization
+        if self.application:
+            self.organization = self.application.project.organization
         if not self.application and not self.organization:
             raise ValidationError(_("Channel must have an application or an organization"))
+        # if self.application.organization != self.organization:
+        #     raise ValidationError(_("Organization and Application mismatch"))

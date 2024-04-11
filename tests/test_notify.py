@@ -34,7 +34,7 @@ def context(db) -> "Context":
         SubscriptionFactory,
     )
 
-    app = ApplicationFactory(name="Application-000")
+    app: "Application" = ApplicationFactory(name="Application-000")
     ch = ChannelFactory(organization=app.project.organization, name="test", dispatcher=fqn(TestDispatcher))
     evt = EventFactory(application=app)
     msg = MessageFactory(channel=ch, event=evt, content="Message for {{ event.name }} on channel {{channel.name}}")

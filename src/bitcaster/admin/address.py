@@ -29,6 +29,8 @@ class AddressAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtons
         ("user__roles__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("user", LinkedAutoCompleteFilter.factory(parent=None)),
     )
+    autocomplete_fields = ("user",)
+
     inlines = [InlineValidation]
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Address]:
@@ -43,3 +45,4 @@ class ValidationAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButt
         ("channel__application__project", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
         ("channel__application", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
     )
+    autocomplete_fields = ("address", "channel")

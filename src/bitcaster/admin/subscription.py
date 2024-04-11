@@ -26,6 +26,8 @@ class SubscriptionAdmin(BaseAdmin, admin.ModelAdmin[Subscription]):
         ("user", LinkedAutoCompleteFilter.factory(parent=None)),
         "active",
     )
+    autocomplete_fields = ("user", "event")
+    filter_horizontal = ("channels",)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Subscription]:
         return super().get_queryset(request).select_related("user", "event__application__project__organization")

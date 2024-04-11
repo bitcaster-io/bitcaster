@@ -1,12 +1,15 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Tuple, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Type, cast
 
+from django.core.exceptions import ValidationError
 from django.forms import forms
-from django.utils.functional import classproperty
+from django.utils.functional import cached_property, classproperty
+from jinja2.utils import import_string
 from strategy_field.registry import Registry
 
 if TYPE_CHECKING:
     from bitcaster.models import Channel, Event, User
+    from bitcaster.types.dispatcher import DispatcherHandler, TDispatcherConfig
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +22,10 @@ class DispatcherMeta(type["Dispatcher"]):
         if attrs["__qualname__"] == "Dispatcher":
             return super().__new__(mcs, class_name, bases, attrs)
 
-        if attrs["id"] in mcs._all:  # pragma: no cache
-            raise ValueError(f'{class_name} Duplicate Dispatcher.id {attrs["id"]}')
-        elif attrs["slug"] in mcs._all:  # pragma: no cache
-            raise ValueError(f'{class_name} Duplicate Dispatcher.slug {attrs["slug"]}')
-        elif attrs["slug"].isnumeric():  # pragma: no cache
+        if attrs["slug"].isnumeric():  # pragma: no cache
             raise ValueError(f'{class_name} Invalid Dispatcher.slug {attrs["slug"]}')
+        if attrs["slug"] in mcs._all:  # pragma: no cache
+            raise ValueError(f'{class_name} Duplicate Dispatcher.slug {attrs["slug"]}')
 
         cls = super().__new__(mcs, class_name, bases, attrs)
         if cls not in dispatcherManager:
@@ -39,22 +40,19 @@ class Payload:
     subject: str | None = None
     html_message: str | None = None
     event: "Event"
-    channel: "Channel"
-    user: "User"
+    user: Optional["User"] = None
 
     def __init__(
         self,
         message: str,
         event: "Event",
-        channel: "Channel",
-        user: "User",
+        user: "Optional[User]" = None,
         subject: str = "",
         html_message: str = "",
         **kwargs: Dict[str, Any],
     ):
         self.message = message
         self.event = event
-        self.channel = channel
         self.subject = subject
         self.html_message = html_message
         self.user = user
@@ -65,23 +63,37 @@ class Payload:
         return self.__dict__
 
 
-class Config(forms.Form):
+class DispatcherConfig(forms.Form):
     pass
 
 
 class Dispatcher(metaclass=DispatcherMeta):
-    id = -1
     slug = "--"
-    local = True
     verbose_name: str = ""
     text_message: bool = True
     html_message: bool = False
-    config_class: Type[Config] = Config
-    config: Dict[str, Any] = {}
+    has_subject: bool = False
+    config_class: "Type[DispatcherConfig]" = DispatcherConfig
+    backend: "Optional[str, DispatcherHandler]" = None
+
     channel: "Channel"
 
     def __init__(self, channel: "Channel") -> None:
         self.channel = channel
+
+    def get_connection(self) -> "DispatcherHandler":
+        if isinstance(self.backend, str):
+            klass = import_string(self.backend)
+        else:
+            klass = self.backend
+        return klass(fail_silently=False, **self.config)
+
+    @cached_property
+    def config(self) -> Dict[str, Any]:
+        cfg: "TDispatcherConfig" = self.config_class(data=self.channel.config)
+        if not cfg.is_valid():
+            raise ValidationError(cfg.errors)
+        return cfg.cleaned_data
 
     def send(self, address: str, payload: Payload) -> None: ...
 

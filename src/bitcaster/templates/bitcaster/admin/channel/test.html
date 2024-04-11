@@ -1,0 +1,37 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n %}
+{% block action-content %}
+    <form method="post" id="config-form">
+        {% csrf_token %}
+
+        <fieldset class="module aligned ">
+            <div class="form-row field-api_key">
+                <div>
+                    <div class="flex-container">
+                        <label class="required" for="id_api_key">{% translate 'Recipient' %}</label>
+                        {{ form.recipient }}
+                    </div>
+                </div>
+            </div>
+            {% if original.dispatcher.has_subject %}
+                <div class="form-row field-sender_domain">
+                    <div>
+                        <div class="flex-container">
+                            <label class="required" for="id_sender_domain">Subject:</label>
+                            {{ form.subject }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="form-row field-sender_domain">
+                <div>
+                    <div class="flex-container">
+                        <label class="required" for="id_sender_domain">Message:</label>
+                        {{ form.message }}
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <input type="submit">
+    </form>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n %}
+{% block action-content %}
+    <form method="post" id="config-form">
+        {% csrf_token %}
+        {% if original.locked %}
+            <div class="module">
+                <h3>{% blocktrans %}Unlocking the channel will start message forwarding{% endblocktrans %}</h3>
+            </div>
+            <input type="submit" style="background-color: green" value="Unlock">
+        {% else %}
+            <div class="module">
+                <h3>{% blocktrans %}Locking the channel will stop any message forwarding{% endblocktrans %}</h3>
+            </div>
+            <input type="submit" style="background-color: #ba2121" value="Lock">
+        {% endif %}
+    </form>
+{% endblock %}

@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:bb57318d3744f617b42458f8956f6fd26139963e6e72eea775a6d7dabb1beac5"
+content_hash = "sha256:b9a9808273e67b5b83e3b958c227b05f1d353449e45df3f4114364c5eb1ad971"
 
 [[package]]
 name = "aiohttp"
@@ -514,6 +514,37 @@ files = [
 ]
 
 [[package]]
+name = "django-anymail"
+version = "10.3"
+requires_python = ">=3.7"
+summary = "Django email backends and webhooks for Amazon SES, Brevo (Sendinblue),     MailerSend, Mailgun, Mailjet, Mandrill, Postal, Postmark, Resend,     SendGrid, SparkPost and Unisender Go"
+groups = ["default"]
+dependencies = [
+    "django>=2.0",
+    "requests>=2.4.3",
+    "urllib3>=1.25.0",
+]
+files = [
+    {file = "django_anymail-10.3-py3-none-any.whl", hash = "sha256:1e72f059e96930d3675d35fe4c61f82b138ae4a7fcb0337be39dcb4823f94a4f"},
+    {file = "django_anymail-10.3.tar.gz", hash = "sha256:35d8ec20b06000af3c1638492e32f416fd1a584f0a572cded03f1bc570169ed0"},
+]
+
+[[package]]
+name = "django-anymail"
+version = "10.3"
+extras = ["all"]
+requires_python = ">=3.7"
+summary = "Django email backends and webhooks for Amazon SES, Brevo (Sendinblue),     MailerSend, Mailgun, Mailjet, Mandrill, Postal, Postmark, Resend,     SendGrid, SparkPost and Unisender Go"
+groups = ["default"]
+dependencies = [
+    "django-anymail==10.3",
+]
+files = [
+    {file = "django_anymail-10.3-py3-none-any.whl", hash = "sha256:1e72f059e96930d3675d35fe4c61f82b138ae4a7fcb0337be39dcb4823f94a4f"},
+    {file = "django_anymail-10.3.tar.gz", hash = "sha256:35d8ec20b06000af3c1638492e32f416fd1a584f0a572cded03f1bc570169ed0"},
+]
+
+[[package]]
 name = "django-bitfield"
 version = "2.2.0"
 summary = "BitField in Django"
@@ -608,6 +639,20 @@ dependencies = [
 files = [
     {file = "django-extensions-3.2.3.tar.gz", hash = "sha256:44d27919d04e23b3f40231c4ab7af4e61ce832ef46d610cc650d53e68328410a"},
     {file = "django_extensions-3.2.3-py3-none-any.whl", hash = "sha256:9600b7562f79a92cbf1fde6403c04fee314608fefbb595502e34383ae8203401"},
+]
+
+[[package]]
+name = "django-filter"
+version = "24.2"
+requires_python = ">=3.8"
+summary = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
+groups = ["default"]
+dependencies = [
+    "Django>=4.2",
+]
+files = [
+    {file = "django-filter-24.2.tar.gz", hash = "sha256:48e5fc1da3ccd6ca0d5f9bb550973518ce977a4edde9d2a8a154a7f4f0b9f96e"},
+    {file = "django_filter-24.2-py3-none-any.whl", hash = "sha256:df2ee9857e18d38bed203c8745f62a803fa0f31688c9fe6f8e868120b1848e48"},
 ]
 
 [[package]]
@@ -777,6 +822,19 @@ dependencies = [
 files = [
     {file = "djangorestframework-3.15.1-py3-none-any.whl", hash = "sha256:3ccc0475bce968608cf30d07fb17d8e52d1d7fc8bfe779c905463200750cbca6"},
     {file = "djangorestframework-3.15.1.tar.gz", hash = "sha256:f88fad74183dfc7144b2756d0d2ac716ea5b4c7c9840995ac3bfd8ec034333c1"},
+]
+
+[[package]]
+name = "drf-extensions"
+version = "0.7.1"
+summary = "Extensions for Django REST Framework"
+groups = ["default"]
+dependencies = [
+    "djangorestframework>=3.9.3",
+]
+files = [
+    {file = "drf-extensions-0.7.1.tar.gz", hash = "sha256:90abfc11a2221e8daf4cd54457e41ed38cd71134678de9622e806193db027db1"},
+    {file = "drf_extensions-0.7.1-py2.py3-none-any.whl", hash = "sha256:007910437e64aa1d5ad6fc47266a4ac4280e31761e6458eb30fcac7494ac7d4e"},
 ]
 
 [[package]]
