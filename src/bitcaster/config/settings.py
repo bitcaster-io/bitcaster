@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "celery",
     "treebeard",
     "rest_framework",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
     "flags",
     "constance",
     "constance.backends.database",
@@ -48,7 +50,6 @@ INSTALLED_APPS = [
     "anymail",
     # "bitcaster.admin_site.AdminConfig",
     "bitcaster.apps.Config",
-    "drf_spectacular",
 ]
 
 MIDDLEWARE = [

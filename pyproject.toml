@@ -47,6 +47,7 @@ dependencies = [
     "django-anymail[all]>=10.3",
     "drf-extensions>=0.7.1",
     "django-filter>=24.2",
+    "drf-spectacular-sidecar>=2024.4.1",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"
