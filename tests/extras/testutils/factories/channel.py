@@ -2,7 +2,7 @@ import factory
 from factory import Sequence
 from strategy_field.utils import fqn
 
-from bitcaster.dispatchers.test import TestDispatcher
+from testutils.dispatcher import TestDispatcher
 from bitcaster.models import Channel
 
 from .base import AutoRegisterModelFactory

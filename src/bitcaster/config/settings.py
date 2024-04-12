@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "adminfilters",
     "debug_toolbar",
+    "django_svelte_jsoneditor",
+    "tinymce",
     #
     "celery",
     "treebeard",
@@ -91,9 +93,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "bitcaster.config.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     "default": env.db(),
@@ -163,11 +162,11 @@ MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = env("MEDIA_URL")
 STATIC_ROOT = env("STATIC_ROOT")
 STATIC_URL = env("STATIC_URL")
-STATICFILES_DIRS: List[str] = []
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-]
+# STATICFILES_DIRS: List[str] = []
+# STATICFILES_FINDERS = [
+#     "django.contrib.staticfiles.finders.FileSystemFinder",
+#     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+# ]
 
 
 SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE")
@@ -188,6 +187,7 @@ LOGGING = {
         "level": env("LOGGING_LEVEL"),
     },
 }
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
@@ -198,3 +198,4 @@ from .fragments.gdal import *  # noqa
 from .fragments.rest_framework import *  # noqa
 from .fragments.sentry import *  # noqa
 from .fragments.social_auth import *  # noqa
+from .fragments.tinymce import *  # noqa

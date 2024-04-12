@@ -17,13 +17,13 @@ logger = logging.getLogger(__name__)
 
 class Message(models.Model):
     name = models.CharField(_("Name"), max_length=255)
-    code = models.CharField(_("Code"), max_length=255, unique=True)
+    code = models.CharField(_("Code"), max_length=255, unique=True, blank=True)
     channel = models.ForeignKey(Channel, null=True, blank=True, on_delete=models.CASCADE, related_name="messages")
     event = models.ForeignKey(Event, null=True, blank=True, on_delete=models.CASCADE, related_name="messages")
 
     subject = models.TextField(_("subject"), blank=True, null=True)
-    content = models.TextField(_("content"))
-    html_content = models.TextField(_("HTML Content"))
+    content = models.TextField(_("content"), blank=True)
+    html_content = models.TextField(_("HTML Content"), blank=True)
 
     class Meta:
         verbose_name = _("Message template")
@@ -56,7 +56,7 @@ class Message(models.Model):
     def instantiate(self, channel: Optional[Channel] = None, event: Optional[Event] = None) -> "Message":
         if not channel and not event:
             raise ValueError("Channel or event must be provided")
-        code = f"{slugify(self.name)}-{grouper(get_random_string(20), 4, '')}"
+        code = f"{slugify(self.name)}-{grouper(get_random_string(10), 4, '')}"
         return Message.objects.get_or_create(
             event=event,
             channel=channel,

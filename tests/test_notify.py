@@ -4,7 +4,7 @@ from _pytest.fixtures import fixture
 from strategy_field.utils import fqn
 from testutils.factories import AddressFactory
 
-from bitcaster.dispatchers.test import MESSAGES, TestDispatcher
+from testutils.dispatcher import MESSAGES, TestDispatcher
 
 if TYPE_CHECKING:
     from bitcaster.models import Address, ApiKey, Application, Channel, Event, Message, Subscription, User

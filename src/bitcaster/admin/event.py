@@ -1,5 +1,7 @@
 import logging
 
+from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
+from django.contrib import admin
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
@@ -14,9 +16,19 @@ from django.utils.translation import gettext as _
 from bitcaster.models import Event, Subscription, Address
 
 from .base import BaseAdmin
+from .message import Message
 from .mixins import LockMixin
 
 logger = logging.getLogger(__name__)
+
+
+class MessageInline(admin.TabularInline[Message, Event]):
+    model = Message
+    extra = 0
+    fields = [
+        "name",
+    ]
+    show_change_link = True
 
 
 class EventSubscribeForm(forms.Form):
@@ -46,11 +58,13 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
         ("application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("application__project", LinkedAutoCompleteFilter.factory(parent="application__project__organization")),
         ("application", LinkedAutoCompleteFilter.factory(parent="application__project")),
+        ("channels", AutoCompleteFilter),
         "active",
         "locked",
     )
     autocomplete_fields = ("application",)
     filter_horizontal = ("channels",)
+    inlines = [MessageInline]
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
         return super().get_queryset(request).select_related("application__project__organization")

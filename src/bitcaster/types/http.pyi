@@ -1,6 +1,6 @@
 from typing import TypeVar
 
-from django.http import HttpRequest, HttpResponseBase
+from django.http import HttpRequest, HttpResponseBase, HttpResponseRedirect
 
 from bitcaster.models import User
 

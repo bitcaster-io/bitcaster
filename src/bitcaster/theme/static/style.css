@@ -6,4 +6,16 @@ div.breadcrumbs {
   background-color: #1616aa;
 }
 
+.module caption {
+  background-color: #1616aa;
+}
+
+a, a:link, a:visited {
+  color: white;
+}
+
+a:hover {
+  color: yellow;
+}
+
 /*# sourceMappingURL=style.css.map */

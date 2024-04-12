@@ -1,4 +1,4 @@
-from .base import Dispatcher, Payload
+from bitcaster.dispatchers.base import Dispatcher, Payload
 
 MESSAGES = []
 

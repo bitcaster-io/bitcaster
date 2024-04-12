@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -7,8 +7,9 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster.models import Channel
@@ -21,6 +22,7 @@ if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
     from bitcaster.types.django import AnyModel
+    from bitcaster.types.http import AnyResponse
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +96,11 @@ class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
     #         self.message_user(request, "{} unlocked".format(obj._meta.verbose_name))
     #         return HttpResponseRedirect("..")
     #     return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
+    @button()
+    def events(self, request: "HttpRequest", pk: str) -> "Union[AnyResponse,HttpResponseRedirect]":
+        base_url = reverse("admin:bitcaster_event_changelist")
+        url = f"{base_url}?channels__exact={pk}"
+        return HttpResponseRedirect(url)
 
     @button()
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":

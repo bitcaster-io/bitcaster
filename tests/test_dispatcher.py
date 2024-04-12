@@ -28,7 +28,7 @@ def mail_payload() -> Payload:
 
 
 def test_registry():
-    from bitcaster.dispatchers.test import TestDispatcher
+    from testutils.dispatcher import TestDispatcher
 
     assert TestDispatcher in dispatcherManager
     assert fqn(TestDispatcher) in dispatcherManager

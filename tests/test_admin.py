@@ -141,7 +141,7 @@ def show_error(res):
     return (f"Form submitting failed: {res.status_code}: {errors}",)
 
 
-@pytest.mark.skip_models("constance.Config", "hope", "advanced_filters.AdvancedFilter")
+@pytest.mark.skip_models("constance.Config", "advanced_filters.AdvancedFilter")
 def test_admin_changeform(app, modeladmin, record):
     opts: Options = modeladmin.model._meta
     url = reverse(admin_urlname(opts, "change"), args=[record.pk])
