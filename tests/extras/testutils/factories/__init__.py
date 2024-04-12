@@ -7,7 +7,8 @@ from .event import EventFactory  # noqa
 from .key import ApiKeyFactory  # noqa
 from .log import LogEntryFactory  # noqa
 from .message import MessageFactory  # noqa
-from .org import ApplicationFactory, OrganizationFactory, ProjectFactory  # noqa
+from .org import (ApplicationFactory, OrganizationFactory,  # noqa
+                  ProjectFactory)
 from .role import RoleFactory  # noqa
 from .subscription import SubscriptionFactory  # noqa
 from .user import SuperUserFactory, UserFactory  # noqa

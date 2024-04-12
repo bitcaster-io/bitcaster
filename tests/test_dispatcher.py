@@ -34,6 +34,7 @@ def test_registry():
     assert fqn(TestDispatcher) in dispatcherManager
 
 
+@requires_env("GMAIL_USER", "GMAIL_PASSWORD", "TEST_EMAIL_RECIPIENT")
 def test_smtp(mocked_responses, monkeypatch, mailoutbox, mail_payload):
     from bitcaster.dispatchers import EmailDispatcher
     from bitcaster.models import Application, Channel
@@ -71,10 +72,6 @@ def test_gmail(mocked_responses, monkeypatch, mailoutbox, mail_payload):
         },
     )
     GMmailDispatcher(ch).send(os.environ["GMAIL_USER"], mail_payload)
-    # msg: EmailMultiAlternatives = mailoutbox[0]
-    # assert msg.to == ["test@example.com"]
-    # assert msg.subject == "[gmail] subject"
-    # assert msg.body == "message"
 
 
 # @requires_env("MAILJET_API_KEY", "MAILJET_SECRET_KEY", "TEST_EMAIL_RECIPIENT")
@@ -85,10 +82,8 @@ def test_mailjet(monkeypatch, mail_payload, mocked_responses):
 
     mocked_responses._add_from_file(file_path=Path(__file__).parent / "mailjet.yaml")
 
-    # mocked_responses.add("POST", "https://api.mailjet.com/v3.1/send", json={"Messages": [{"Status": "success"}]})
-
     ch = Channel(
-        application=Application(from_email=os.environ["GMAIL_USER"], subject_prefix="[mailjet] "),
+        application=Application(from_email=os.environ["TEST_EMAIL_SENDER"], subject_prefix="[mailjet] "),
         config={"api_key": os.environ["MAILJET_API_KEY"], "secret_key": os.environ["MAILJET_SECRET_KEY"]},
     )
 
@@ -106,7 +101,7 @@ def test_mailgun(monkeypatch, mail_payload, mocked_responses):
     # mocked_responses.add("POST", "https://api.mailjet.com/v3.1/send", json={"Messages": [{"Status": "success"}]})
 
     ch = Channel(
-        application=Application(from_email="sax@os4d.org", subject_prefix="[mailgun] "),
+        application=Application(from_email=os.environ["TEST_EMAIL_SENDER"], subject_prefix="[mailgun] "),
         config={"api_key": os.environ["MAILGUN_API_KEY"], "sender_domain": os.environ["MAILGUN_SENDER_DOMAIN"]},
     )
     MailgunDispatcher(ch).send(os.environ["TEST_EMAIL_RECIPIENT"], mail_payload)

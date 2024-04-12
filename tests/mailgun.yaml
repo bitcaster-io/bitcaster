@@ -8,4 +8,4 @@ responses:
     content_type: text/plain
     method: POST
     status: 200
-    url: https://api.mailgun.net/v3/sandbox8fbfe18558f144e9abb6c4b071a8608b.mailgun.org/messages
+    url: https://api.mailgun.net/v3/mailgun.domain/messages

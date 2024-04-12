@@ -7,7 +7,8 @@ from testutils.factories import AddressFactory
 from bitcaster.dispatchers.test import MESSAGES, TestDispatcher
 
 if TYPE_CHECKING:
-    from bitcaster.models import Address, ApiKey, Application, Channel, Event, Message, Subscription, User
+    from bitcaster.models import (Address, ApiKey, Application, Channel, Event,
+                                  Message, Subscription, User)
 
     Context = TypedDict(
         "Context",
@@ -25,14 +26,9 @@ if TYPE_CHECKING:
 
 @fixture
 def context(db) -> "Context":
-    from testutils.factories import (
-        ApiKeyFactory,
-        ApplicationFactory,
-        ChannelFactory,
-        EventFactory,
-        MessageFactory,
-        SubscriptionFactory,
-    )
+    from testutils.factories import (ApiKeyFactory, ApplicationFactory,
+                                     ChannelFactory, EventFactory,
+                                     MessageFactory, SubscriptionFactory)
 
     app: "Application" = ApplicationFactory(name="Application-000")
     ch = ChannelFactory(organization=app.project.organization, name="test", dispatcher=fqn(TestDispatcher))

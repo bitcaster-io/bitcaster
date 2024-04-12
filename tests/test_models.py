@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING, TypedDict
 
 if TYPE_CHECKING:
-    from bitcaster.models import Address, ApiKey, Application, Channel, Event, Subscription, User
+    from bitcaster.models import (Address, ApiKey, Application, Channel, Event,
+                                  Subscription, User)
 
     Context = TypedDict(
         "Context",

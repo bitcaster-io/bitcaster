@@ -48,6 +48,14 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
     os.environ.update(DJANGO_SETTINGS_MODULE="bitcaster.config.settings")
+    os.environ.setdefault("TEST_EMAIL_SENDER", "sender@example.com")
+    os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
+
+    os.environ.setdefault("MAILGUN_API_KEY", "11")
+    os.environ.setdefault("MAILGUN_SENDER_DOMAIN", "mailgun.domain")
+    os.environ.setdefault("MAILJET_API_KEY", "11")
+    os.environ.setdefault("MAILJET_SECRET_KEY", "11")
+
     if not config.option.with_sentry:
         os.environ["SENTRY_DSN"] = ""
     else:
