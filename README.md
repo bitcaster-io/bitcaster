@@ -18,7 +18,17 @@ To start developing:
 8. Check your environment: $`./manage.py env --check` and configure the missing variables.
    You can generate a list for your development environment with the command `./manage.py env --develop --config --pattern='export {key}={value}'`
 9. Once the environment has been set up run the initial migrations `./manage.py migrate`
-10. Test using runserver $`./manage.py runserver`
+10. Make sure to set up environment variables:
+```
+DATABASE_URL=postgres://postgres:oracol0@localhost:5414/bitcaster?options=-c%20search_path=django,public
+ADMIN_EMAIL=<a valid email>
+ADMIN_PASSWORD=<your admin password>
+DATABASE_PORT=<only if different than default 5432>
+SECRET_KEY=--
+CATCH_ALL_EMAIL=<you catch all email>
+SESSION_COOKIE_DOMAIN=localhost
+```
+11. Test using runserver $`./manage.py runserver` and logging in the admin `http://locslhost:8000/admin`
 
 
 Configure environment for .direnv

@@ -73,7 +73,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
     "SENTRY_DSN": (str, "", "Sentry DSN"),
     "SENTRY_ENVIRONMENT": (str, "production", "Sentry Environment"),
     "SENTRY_URL": (str, "", "Sentry server url"),
-    "SESSION_COOKIE_DOMAIN": (str, "bitcaster.org", setting("std-setting-SESSION_COOKIE_DOMAIN"), 1),
+    "SESSION_COOKIE_DOMAIN": (str, "bitcaster.org", setting("std-setting-SESSION_COOKIE_DOMAIN"), "localhost"),
     "SESSION_COOKIE_HTTPONLY": (bool, True, setting("session-cookie-httponly")),
     "SESSION_COOKIE_NAME": (str, "bitcaster_session", setting("session-cookie-name")),
     "SESSION_COOKIE_PATH": (str, "/", setting("session-cookie-path")),
