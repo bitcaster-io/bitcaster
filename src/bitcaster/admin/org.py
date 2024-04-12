@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     search_fields = ("name",)
-    list_display = ("name",)
+    list_display = ("name", "from_email", "subject_prefix")
 
     @button()
     def projects(self, request: HttpRequest, pk: str) -> HttpResponse:
@@ -23,7 +23,7 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
 
 class ProjectAdmin(BaseAdmin, admin.ModelAdmin[Project]):
     search_fields = ("name",)
-    list_display = ("name",)
+    list_display = ("name", "organization")
     list_filter = (("organization", AutoCompleteFilter),)
     autocomplete_fields = ("organization",)
 

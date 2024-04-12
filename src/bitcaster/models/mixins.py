@@ -11,6 +11,9 @@ class SlugMixin(models.Model):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return self.name
+
     def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.slug:
             self.slug = slugify(str(self.name))

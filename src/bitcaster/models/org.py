@@ -30,6 +30,9 @@ class Application(SlugMixin, models.Model):
 
     events: "QuerySet[Event]"
 
+    def __str__(self):
+        return f'{self.project} - {self.name}'
+
     def register_event(self, name: str, description: str = "", active: bool = True) -> "Event":
         from bitcaster.models import Event
 
