@@ -54,5 +54,5 @@ def test_event_subscribe(context: "Context"):
     res = form.submit().follow()
     assert res.status_code == 200, res.location
 
-    subscription = Subscription.objects.get(user=context["address"].user, event=context["event"])
+    subscription = Subscription.objects.get(address=context["address"], event=context["event"])
     assert list(subscription.channels.all()) == [context["channel"]]

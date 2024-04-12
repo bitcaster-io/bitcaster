@@ -43,7 +43,7 @@ def context(db) -> "Context":
     user: "User" = key.user
 
     addr = AddressFactory(user=user, channel=ch)
-    sub = SubscriptionFactory(user=user, event=evt, channels=[ch])
+    sub = SubscriptionFactory(address=addr, event=evt, channels=[ch])
 
     return {"app": app, "event": evt, "key": key, "channel": ch, "subscription": sub, "message": msg, "address": addr}
 

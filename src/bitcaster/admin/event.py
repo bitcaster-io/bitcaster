@@ -11,7 +11,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from bitcaster.models import Event, Subscription
+from bitcaster.models import Event, Subscription, Address
 
 from .base import BaseAdmin
 from .mixins import LockMixin
@@ -25,6 +25,7 @@ class EventSubscribeForm(forms.Form):
     address = forms.ChoiceField(label=_("Address"), choices=(("", "--"),), required=False)
 
     def __init__(self, channel_choices, **kwargs):
+        registered_addresses = kwargs.pop('registered_addresses', [])
         super().__init__(**kwargs)
         self.fields["address"].choices = list(self.fields["address"].choices) + list(channel_choices)
 
@@ -68,8 +69,9 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
                 sub_created = 0
                 url = reverse("admin:bitcaster_event_change", args=[obj.id])
                 for form in formset:
-                    if form.cleaned_data["address"]:
-                        subscription, created = Subscription.objects.get_or_create(user=request.user, event=obj)
+                    if address_id := form.cleaned_data["address"]:
+                        address = Address.objects.get(id=address_id)
+                        subscription, created = Subscription.objects.get_or_create(address=address, event=obj)
                         if created:
                             sub_created += 1
                         channel = form.cleaned_data["channel_id"]
@@ -85,6 +87,10 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
                 )
                 return HttpResponseRedirect(url)
         else:
+            if (subscriptions := Subscription.objects.filter(address__user=request.user, event=obj)).exists():
+                registered_addresses = subscriptions.first().channels.values_list("id", flat=True)
+            else:
+                registered_addresses = []
             context["formset"] = EventSubscribeFormSet(
                 initial=[
                     {
@@ -93,7 +99,7 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
                     }
                     for channel in obj.channels.all()
                 ],
-                form_kwargs={"channel_choices": channel_choices},
+                form_kwargs={"channel_choices": channel_choices, "registered_addresses": registered_addresses},
             )
         return TemplateResponse(request, "bitcaster/admin/event/subscribe_event.html", context)
 
