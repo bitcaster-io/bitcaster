@@ -8,20 +8,23 @@ from django.http import HttpRequest
 from bitcaster.models import Event
 
 from .base import BaseAdmin
+from .mixins import LockMixin
 
 logger = logging.getLogger(__name__)
 
 
-class EventTypAdmin(BaseAdmin, admin.ModelAdmin[Event]):
+class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
     search_fields = ("name",)
-    list_display = ("name", "application", "active")
+    list_display = ("name", "application", "active", "locked")
     list_filter = (
         ("application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("application__project", LinkedAutoCompleteFilter.factory(parent="application__project__organization")),
         ("application", LinkedAutoCompleteFilter.factory(parent="application__project")),
         "active",
+        "locked",
     )
     autocomplete_fields = ("application",)
+    filter_horizontal = ("channels",)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
         return super().get_queryset(request).select_related("application__project__organization")

@@ -11,7 +11,7 @@ class SlugMixin(models.Model):
     class Meta:
         abstract = True
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     def save(self, *args: Any, **kwargs: Any) -> None:

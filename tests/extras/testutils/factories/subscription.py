@@ -2,10 +2,10 @@ import factory
 
 from bitcaster.models import Subscription
 
-from .auth import UserFactory
 from .base import AutoRegisterModelFactory
 from .channel import ChannelFactory
 from .event import EventFactory
+from .key import UserFactory
 
 
 class SubscriptionFactory(AutoRegisterModelFactory):

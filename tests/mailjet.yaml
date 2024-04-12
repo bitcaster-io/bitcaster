@@ -1,0 +1,8 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"Messages":[{"Status":"success","CustomID":"","To":[{"Email":"s.apostolico@gmail.com","MessageUUID":"c5c1e5e9-86ff-48df-b818-81e668432cc4","MessageID":576460775557010493,"MessageHref":"https://api.mailjet.com/v3/REST/message/576460775557010493"}],"Cc":[],"Bcc":[]}]}'
+    content_type: text/plain
+    method: POST
+    status: 200
+    url: https://api.mailjet.com/v3.1/send

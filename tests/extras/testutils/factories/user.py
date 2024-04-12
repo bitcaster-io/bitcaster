@@ -19,11 +19,11 @@ class UserFactory(AutoRegisterModelFactory):
         model = User
         django_get_or_create = ("username",)
 
-    # @classmethod
-    # def _create(cls, model_class, *args, **kwargs):
-    #     ret = super()._create(model_class, *args, **kwargs)
-    #     ret._password = cls._password
-    #     return ret
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        ret = super()._create(model_class, *args, **kwargs)
+        ret._password = cls._password
+        return ret
 
 
 class SuperUserFactory(UserFactory):

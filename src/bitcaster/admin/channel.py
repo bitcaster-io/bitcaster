@@ -7,7 +7,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext as _
 
@@ -15,6 +15,7 @@ from bitcaster.models import Channel
 
 from ..dispatchers.base import Payload
 from .base import BaseAdmin
+from .mixins import LockMixin
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
@@ -43,7 +44,7 @@ class ChannelTestForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
 
 
-class ChannelAdmin(BaseAdmin, admin.ModelAdmin[Channel]):
+class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
     search_fields = ("name",)
     list_display = ("name", "organization", "application", "dispatcher_", "active", "locked")
     list_filter = (
@@ -55,6 +56,9 @@ class ChannelAdmin(BaseAdmin, admin.ModelAdmin[Channel]):
     autocomplete_fields = ("organization", "application")
     form = ChannelChangeForm
     add_form = ChannelAddForm
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Channel]:
+        return super().get_queryset(request).select_related("application__project__organization")
 
     def get_form(
         self, request: "HttpRequest", obj: "Optional[Channel]" = None, change: bool = False, **kwargs: Any
@@ -68,27 +72,28 @@ class ChannelAdmin(BaseAdmin, admin.ModelAdmin[Channel]):
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[AnyModel]" = None) -> "_ListOrTuple[str]":
         return []
 
-    @button(visible=lambda s: not s.context["original"].locked, html_attrs={"style": "background-color:#ba2121"})
-    def lock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
-        context = self.get_common_context(request, pk, title=_("Lock Channel"))
-        if request.method == "POST":
-            obj = self.get_object(request, pk)
-            obj.locked = True
-            obj.save()
-            self.message_user(request, "{} locked".format(obj._meta.verbose_name))
-            return HttpResponseRedirect("..")
-        return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
-
-    @button(visible=lambda s: s.context["original"].locked, html_attrs={"style": "background-color:green"})
-    def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
-        context = self.get_common_context(request, pk, title=_("Unlock Channel"))
-        if request.method == "POST":
-            obj = self.get_object(request, pk)
-            obj.locked = False
-            obj.save()
-            self.message_user(request, "{} unlocked".format(obj._meta.verbose_name))
-            return HttpResponseRedirect("..")
-        return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
+    #
+    # @button(visible=lambda s: not s.context["original"].locked, html_attrs={"style": "background-color:#ba2121"})
+    # def lock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
+    #     context = self.get_common_context(request, pk, title=_("Lock Channel"))
+    #     if request.method == "POST":
+    #         obj = self.get_object(request, pk)
+    #         obj.locked = True
+    #         obj.save()
+    #         self.message_user(request, "{} locked".format(obj._meta.verbose_name))
+    #         return HttpResponseRedirect("..")
+    #     return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
+    #
+    # @button(visible=lambda s: s.context["original"].locked, html_attrs={"style": "background-color:green"})
+    # def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
+    #     context = self.get_common_context(request, pk, title=_("Unlock Channel"))
+    #     if request.method == "POST":
+    #         obj = self.get_object(request, pk)
+    #         obj.locked = False
+    #         obj.save()
+    #         self.message_user(request, "{} unlocked".format(obj._meta.verbose_name))
+    #         return HttpResponseRedirect("..")
+    #     return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
 
     @button()
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
@@ -130,6 +135,3 @@ class ChannelAdmin(BaseAdmin, admin.ModelAdmin[Channel]):
 
     def dispatcher_(self, obj: Channel) -> str:
         return obj.dispatcher.name
-
-    def get_queryset(self, request: HttpRequest) -> QuerySet[Channel]:
-        return super().get_queryset(request).select_related("application__project__organization")

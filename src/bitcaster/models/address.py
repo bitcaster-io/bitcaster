@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import QuerySet
 from django.utils.functional import cached_property
 
-from .auth import User
+from .user import User
 
 if typing.TYPE_CHECKING:
     from .channel import Channel

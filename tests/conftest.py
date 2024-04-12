@@ -110,6 +110,13 @@ def user(db):
     return UserFactory(username="user@example.com", is_active=True)
 
 
+@pytest.fixture
+def superuser(db):
+    from testutils.factories import SuperUserFactory
+
+    return SuperUserFactory(username="superuser@example.com")
+
+
 @pytest.fixture()
 def organization(db):
     from testutils.factories import OrganizationFactory
@@ -129,6 +136,27 @@ def application(db):
     from testutils.factories import ApplicationFactory
 
     return ApplicationFactory(name="Bitcaster", project__name="BITCASTER", project__organization__name="OS4D")
+
+
+@pytest.fixture()
+def event(db):
+    from testutils.factories import EventFactory
+
+    return EventFactory()
+
+
+@pytest.fixture()
+def message(db):
+    from testutils.factories import MessageFactory
+
+    return MessageFactory()
+
+
+@pytest.fixture()
+def channel(db):
+    from testutils.factories import ChannelFactory
+
+    return ChannelFactory()
 
 
 @pytest.fixture()

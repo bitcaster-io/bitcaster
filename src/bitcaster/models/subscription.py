@@ -7,9 +7,9 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ..dispatchers.base import Dispatcher, Payload
-from .auth import User
 from .channel import Channel
 from .event import Event
+from .user import User
 
 if TYPE_CHECKING:
     from .message import Message

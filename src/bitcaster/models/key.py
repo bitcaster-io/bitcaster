@@ -1,20 +1,16 @@
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from django import forms
-from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import QuerySet
 from django.utils.crypto import RANDOM_STRING_CHARS, get_random_string
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.auth.constants import Grant
 
-from .org import Application, Organization
-
-if TYPE_CHECKING:
-    from .address import Address
+from .org import Application
+from .user import User
 
 logger = logging.getLogger(__name__)
 
@@ -63,26 +59,9 @@ class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
         return super().formfield(**defaults)  # type: ignore[arg-type]
 
 
-class User(AbstractUser):
-    addresses: "QuerySet[Address]"
-
-    class Meta:
-        verbose_name = _("user")
-        verbose_name_plural = _("users")
-        app_label = "bitcaster"
-        abstract = False
-
-
-class Role(models.Model):
-    name = models.CharField(max_length=255)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="roles")
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-
-
 class ApiKey(models.Model):
-    name = models.CharField(max_length=255, db_collation="case_insensitive")
+    name = models.CharField(verbose_name=_("Name"), max_length=255, db_collation="case_insensitive")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    token = models.CharField(unique=True, default=make_token)
+    token = models.CharField(verbose_name=_("Token"), unique=True, default=make_token)
     grants = ChoiceArrayField(choices=Grant, null=True, blank=True, base_field=models.CharField(max_length=255))
     application = models.ForeignKey(Application, on_delete=models.CASCADE)

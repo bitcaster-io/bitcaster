@@ -1,0 +1,46 @@
+[run]
+branch = True
+source = src
+source_pkgs = bitcaster
+relative_files = True
+# partial_branches =
+omit =
+    **/~*/*
+    **/~*
+    **/migrations/**
+    **/debug_toolbar.py
+    **/management/commands/demo.py
+    **/management/commands/pq.py
+    **/management/commands/pqr.py
+    **/management/commands/topology.py
+    **/management/commands/inspect_hope.py
+    **/management/commands/vapid.py
+    src/bitcaster/types/*.py
+
+
+[report]
+# Regexes for lines to exclude from consideration
+exclude_lines =
+    pragma: no cover
+    pragma: no-cover
+    def __repr__
+    pass
+    if settings.DEBUG:
+    if DEBUG
+    if SENTRY_ENABLED
+    if typing.TYPE_CHECKING
+    if TYPE_CHECKING
+    if self\.debug
+    if __name__ == .__main__.:
+    except JSONDecodeError
+    except ValidationError
+    except Exception
+    raise AssertionError
+    raise NotImplementedError
+    except ImportError
+    except BaseException as e
+
+ignore_errors = True
+
+[html]
+directory = ./~build/coverage

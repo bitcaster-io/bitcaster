@@ -1,10 +1,14 @@
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, Iterable, Optional
 
 from django.db import models
+from django.db.models import UniqueConstraint
 from django.template import Context, Template
+from django.utils.crypto import get_random_string
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from ..utils.strings import grouper
 from .channel import Channel
 from .event import Event
 
@@ -13,20 +17,51 @@ logger = logging.getLogger(__name__)
 
 class Message(models.Model):
     name = models.CharField(_("Name"), max_length=255)
-    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name="channels")
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="messages")
+    code = models.CharField(_("Code"), max_length=255, unique=True)
+    channel = models.ForeignKey(Channel, null=True, blank=True, on_delete=models.CASCADE, related_name="messages")
+    event = models.ForeignKey(Event, null=True, blank=True, on_delete=models.CASCADE, related_name="messages")
 
     subject = models.TextField(_("subject"), blank=True, null=True)
-    content = models.TextField(_("Content"))
+    content = models.TextField(_("content"))
     html_content = models.TextField(_("HTML Content"))
 
     class Meta:
         verbose_name = _("Message template")
         verbose_name_plural = _("Message templates")
+        constraints = [
+            UniqueConstraint(
+                fields=["channel", "event", "name"],
+                name="unique_message",
+            )
+        ]
 
     def __str__(self) -> str:
         return self.name
 
+    def save(
+        self,
+        force_insert: bool = False,
+        force_update: bool = False,
+        using: Optional[str] = None,
+        update_fields: Optional[Iterable[str]] = None,
+    ) -> None:
+        if not self.code:
+            self.code = f"{slugify(self.name)}-{grouper(get_random_string(20), 4, '')}"
+        super().save(force_insert, force_update, using, update_fields)
+
     def render(self, context: Dict[str, Any]) -> str:
         tpl = Template(self.content)
         return tpl.render(Context(context))
+
+    def instantiate(self, channel: Optional[Channel] = None, event: Optional[Event] = None) -> "Message":
+        if not channel and not event:
+            raise ValueError("Channel or event must be provided")
+        code = f"{slugify(self.name)}-{grouper(get_random_string(20), 4, '')}"
+        return Message.objects.get_or_create(
+            event=event,
+            channel=channel,
+            code=code,
+            content=self.content,
+            html_content=self.html_content,
+            subject=self.subject,
+        )[0]

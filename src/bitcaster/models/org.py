@@ -1,10 +1,12 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django.db import models
 from django.db.models import QuerySet
+from django.utils.translation import gettext as _
 
 from .mixins import SlugMixin
+from .user import User
 
 if TYPE_CHECKING:
     from bitcaster.models import Event
@@ -14,27 +16,39 @@ logger = logging.getLogger(__name__)
 
 class Organization(SlugMixin, models.Model):
     from_email = models.EmailField(blank=True, default="")
-    subject_prefix = models.CharField(max_length=50, default="[Bitcaster] ")
+    subject_prefix = models.CharField(verbose_name=_("Subject Prefix"), max_length=50, default="[Bitcaster] ")
+    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT)
 
 
 class Project(SlugMixin, models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="projects")
+    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self.owner:
+            self.owner = self.organization.owner
+        super().save(*args, **kwargs)
 
 
 class Application(SlugMixin, models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="applications")
+    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
 
     active = models.BooleanField(default=True)
+    locked = models.BooleanField(default=False)
+
     from_email = models.EmailField(blank=True, default="")
     subject_prefix = models.CharField(max_length=50, default="[Bitcaster] ")
 
     events: "QuerySet[Event]"
 
-    def __str__(self):
-        return f'{self.project} - {self.name}'
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self.owner:
+            self.owner = self.project.owner
+        super().save(*args, **kwargs)
 
-    def register_event(self, name: str, description: str = "", active: bool = True) -> "Event":
+    def register_event(self, name: str, description: str = "") -> "Event":
         from bitcaster.models import Event
 
-        ev: "Event" = self.events.get_or_create(name=name, description=description, active=active)[0]
+        ev: "Event" = self.events.get_or_create(name=name, description=description, active=False)[0]
         return ev

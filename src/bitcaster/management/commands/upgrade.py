@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
@@ -104,7 +104,9 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
-        from bitcaster.models import Application, Organization, Project, User
+        from bitcaster.models import Application, Message, Organization, Project, User
+
+        bitcaster: Optional[Application] = None
 
         self.get_options(options)
         if self.verbosity >= 1:
@@ -137,20 +139,6 @@ class Command(BaseCommand):
 
             echo("Remove stale contenttypes")
             call_command("remove_stale_contenttypes", **extra)
-            echo("Creating initial structure")
-            os4d = Organization.objects.get_or_create(name="OS4D")[0]
-            prj = Project.objects.get_or_create(name="Bitcaster", organization=os4d)[0]
-            bitcaster: Application = Application.objects.get_or_create(name="Bitcaster", project=prj)[0]
-
-            from bitcaster.dispatchers.log import BitcasterLogDispatcher
-
-            Channel.objects.get_or_create(
-                name="BitcasterLog", organization=os4d, dispatcher=fqn(BitcasterLogDispatcher), application=bitcaster
-            )[0]
-
-            for ev in ["application_locked", "application_unlocked"]:
-                bitcaster.register_event(ev)
-
             if self.admin_email:
                 if User.objects.filter(email=self.admin_email).exists():
                     echo(
@@ -173,6 +161,33 @@ class Command(BaseCommand):
                     admin: "User" = User.objects.get(email=self.admin_email)
                     echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
                     admin.addresses.get_or_create(name="email", value=self.admin_email)
+                    os4d = Organization.objects.get_or_create(name="OS4D", owner=admin)[0]
+                    echo("Creating initial structure")
+                    prj = Project.objects.get_or_create(name="Bitcaster", organization=os4d, owner=os4d.owner)[0]
+                    bitcaster = Application.objects.get_or_create(name="Bitcaster", project=prj, owner=os4d.owner)[0]
+            if not bitcaster:
+                bitcaster = Application.objects.get(
+                    name="Bitcaster", project__name="Bitcaster", project__organization__name="OS4D"
+                )[0]
+
+            from bitcaster.dispatchers.log import BitcasterLogDispatcher
+
+            Channel.objects.get_or_create(
+                name="BitcasterLog",
+                organization=bitcaster.project.organization,
+                dispatcher=fqn(BitcasterLogDispatcher),
+                application=bitcaster,
+            )
+            Message.objects.get_or_create(
+                name="Abstract Message",
+                code="abstract-message",
+                subject="{{subject}}",
+                content="{{message}}",
+                html_content="{{message}}",
+            )
+
+            for ev in ["application_locked", "application_unlocked"]:
+                bitcaster.register_event(ev)
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
         except ValidationError as e:
