@@ -104,7 +104,7 @@ def record(db, request):
 
 
 @pytest.fixture()
-def app(django_app_factory, mocked_responses, monkeypatch):
+def app(django_app_factory, mocked_responses):
     from testutils.factories import SuperUserFactory
 
     django_app = django_app_factory(csrf_checks=False)

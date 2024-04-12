@@ -193,6 +193,7 @@ from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.csp import *  # noqa
 from .fragments.debug_toolbar import *  # noqa
+from .fragments.flags import *  # noqa
 from .fragments.gdal import *  # noqa
 from .fragments.rest_framework import *  # noqa
 from .fragments.sentry import *  # noqa

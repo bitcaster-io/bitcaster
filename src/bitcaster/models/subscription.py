@@ -37,6 +37,9 @@ class Subscription(models.Model):
 
     objects = SubscriptionQuerySet.as_manager()
 
+    def __str__(self):
+        return f"{self.user} -> {self.event}"
+
     class Meta:
         verbose_name = _("Subscription")
         verbose_name_plural = _("Subscriptions")

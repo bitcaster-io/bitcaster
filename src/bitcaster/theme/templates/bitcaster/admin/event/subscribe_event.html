@@ -1,0 +1,10 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n %}
+{% block action-content %}
+    <form method="post" id="subscribe-form">
+        {% csrf_token %}
+         <table>
+            {{ formset.as_table }}
+         </table>
+        <input type="submit" value="Subscribe">
+    </form>
+{% endblock %}
