@@ -64,7 +64,7 @@ class MessageAdmin(BaseAdmin, admin.ModelAdmin[Message]):
         form = MessageForm(request.POST)
         obj = self.get_object(request, pk)
         if form.is_valid():
-            tpl = Template(form.cleaned_data["html_content"])
+            tpl = Template(form.cleaned_data["content"])
             ctx = {**form.cleaned_data["context"], "event": obj.event, "channel": obj.channel}
             res = tpl.render(Context(ctx))
         else:
@@ -83,4 +83,4 @@ class MessageAdmin(BaseAdmin, admin.ModelAdmin[Message]):
         else:
             form = MessageForm(initial={"context": {"test": "11111"}}, instance=obj)
         context["form"] = form
-        return TemplateResponse(request, "bitcaster/admin/message/edit.html", context)
+        return TemplateResponse(request, "admin/message/edit.html", context)

@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import QuerySet
 from django.utils.functional import cached_property
 
+from ..constants import AddressType
 from .user import User
 
 if typing.TYPE_CHECKING:
@@ -18,6 +19,7 @@ class AddressManager(models.Manager["Address"]):
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
     name = models.CharField(max_length=255, db_collation="case_insensitive")
+    type = models.CharField(max_length=10, choices=AddressType.choices, default=AddressType.GENERIC)
     value = models.CharField(max_length=255)
     validations: "QuerySet[Validation]"
 

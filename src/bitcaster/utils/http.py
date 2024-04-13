@@ -1,10 +1,11 @@
 import datetime
-from typing import TYPE_CHECKING, Any, Dict, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 from urllib.parse import urljoin
 
 from constance import config
 from django.conf import settings
 from django.http import HttpRequest, HttpResponseRedirect
+from django.http.request import split_domain_port
 from django.urls import reverse
 
 from ..state import state
@@ -15,9 +16,16 @@ if TYPE_CHECKING:
 
 
 class HttpResponseRedirectToReferrer(HttpResponseRedirect):
-    def __init__(self, request: AnyRequest, *args: Any, **kwargs: Any):
+    def __init__(self, request: "AnyRequest", *args: Any, **kwargs: Any):
         redirect_to = request.META.get("HTTP_REFERER", "/")
         super().__init__(redirect_to, *args, **kwargs)
+
+
+def get_server_host(request: "Optional[AnyRequest]" = None) -> str:
+    req: HttpRequest | None = request or state.request
+    host = req.get_host()
+    domain, port = split_domain_port(host)
+    return domain
 
 
 def get_server_url() -> str:

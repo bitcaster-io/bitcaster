@@ -1,5 +1,5 @@
 from itertools import zip_longest
-from typing import Optional, Iterable
+from typing import Iterable, Optional
 
 
 def grouper(iterable: Iterable[str], n: int, fillvalue: Optional[str] = None) -> str:

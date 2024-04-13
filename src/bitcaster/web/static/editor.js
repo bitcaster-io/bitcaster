@@ -3,8 +3,11 @@ var $context = $("#id_context");
 var $subject = $("#id_subject");
 var $content = $("#id_content");
 var csrftoken = $("[name=csrfmiddlewaretoken]").val();
-var url = $("#editor-script").data("url");
-var iframeElement = document.getElementById("preview")
+var render_url = $("meta[name='render-url']").attr("content");  ;
+var edit_url = $("meta[name='edit-url']").attr("content");  ;
+var change_url = $("meta[name='change-url']").attr("content");  ;
+var iframeElement = document.getElementById("preview");
+var ACTIVE=null;
 
 function csrfSafeMethod(method) {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -26,13 +29,19 @@ function replaceIframeContent(newHTML) {
 }
 
 function send() {
+    var content = "";
     var context = $context.val();
-    var content = $content.val();
-    var subject = $subject.val();
-    var html_content = tinymce.activeEditor.getContent("id_html_content");
-    django.jQuery.post(url, {
-            "subject": subject,
-            "html_content": html_content,
+    console.log(11111, ACTIVE)
+    if (ACTIVE === "#tab_html"){
+        content = tinymce.activeEditor.getContent("id_html_content");
+    }else if (ACTIVE === "#tab_subject"){
+        content = $subject.val()
+    }else if (ACTIVE === "#tab_content"){
+        content = $content.val()
+    }else{
+        return
+    }
+    django.jQuery.post(render_url, {
             "content": content,
             "context": context
         },
@@ -41,13 +50,25 @@ function send() {
         }
     );
 }
+function gotoParent(){
+    var s1 = window.location.href;
+    // nn = s1.replace(s1.split('/').pop(),'..');
+    nn = s1.split("/").slice(0,-2).join("/")
+    console.log(11111, nn);
+    return nn + "/change/";
+}
 
 $context.on("change", function () {
     send()
 })
+$content.on("keyup", function () {
+    send()
+})
 $(".btn").on("click", function(e){
     $(".tab").hide();
-    $($(this).data("panel")).show()
+    ACTIVE = $(this).data("panel");
+    $(ACTIVE).show();
+    send();
 })
 function setupTinyMCE(ed) {
     var typingTimer;                //timer identifier
@@ -63,3 +84,5 @@ function setupTinyMCE(ed) {
         typingTimer = setTimeout(send, doneTypingInterval);
     })
 }
+
+$("#btn_content").click();

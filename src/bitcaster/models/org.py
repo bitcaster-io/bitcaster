@@ -15,8 +15,13 @@ logger = logging.getLogger(__name__)
 
 
 class Organization(SlugMixin, models.Model):
-    from_email = models.EmailField(blank=True, default="")
-    subject_prefix = models.CharField(verbose_name=_("Subject Prefix"), max_length=50, default="[Bitcaster] ")
+    from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
+    subject_prefix = models.CharField(
+        verbose_name=_("Subject Prefix"),
+        max_length=50,
+        default="[Bitcaster] ",
+        help_text=_("Default prefix for messages supporting subject"),
+    )
     owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT)
 
 
@@ -34,11 +39,15 @@ class Application(SlugMixin, models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="applications")
     owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
 
-    active = models.BooleanField(default=True)
-    locked = models.BooleanField(default=False)
+    active = models.BooleanField(default=True, help_text=_("Whether the application should be active"))
+    locked = models.BooleanField(default=False, help_text=_("Security lock of applications"))
 
-    from_email = models.EmailField(blank=True, default="")
-    subject_prefix = models.CharField(max_length=50, default="[Bitcaster] ")
+    from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
+    subject_prefix = models.CharField(
+        max_length=50,
+        default="[Bitcaster] ",
+        help_text=_("Default prefix for messages supporting subject"),
+    )
 
     events: "QuerySet[Event]"
 

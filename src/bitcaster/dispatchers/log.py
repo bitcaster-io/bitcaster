@@ -10,6 +10,7 @@ class BitcasterLogDispatcher(Dispatcher):
     verbose_name = "Test Dispatcher"
     text_message = True
     html_message = True
+    has_subject = False
 
     def send(self, address: str, payload: Payload) -> None:
         from bitcaster.models.log import LogMessage

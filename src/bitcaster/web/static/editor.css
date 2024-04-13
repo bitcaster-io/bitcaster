@@ -10,6 +10,14 @@ input, textarea {
   width: 100%;
 }
 
+h3.title {
+  padding: 10px;
+}
+
+.menubar {
+  padding: 5px;
+}
+
 .tab {
   display: none;
 }
@@ -20,12 +28,15 @@ input, textarea {
   height: 400px;
 }
 
+.hidden {
+  display: none;
+}
+
 #jsoneditor_id_context {
   width: 100%;
 }
-
-.hidden {
-  display: none;
+#jsoneditor_id_context div.jse-menu.svelte-id9e3c {
+  background-color: var(--bg-primary);
 }
 
 /*# sourceMappingURL=editor.css.map */

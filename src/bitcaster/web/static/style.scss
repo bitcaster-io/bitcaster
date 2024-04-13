@@ -1,0 +1,17 @@
+:root {
+  --bg-primary: #c31919;
+  --bg-secondary: #1616aa;
+  --fg-primary: black;
+  --jse-theme-color: var(--bg-primary);
+}
+
+a {
+  color: var(--fg-primary)
+}
+
+.text-center {
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+  text-align: center;
+}

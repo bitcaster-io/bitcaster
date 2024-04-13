@@ -74,28 +74,6 @@ class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[AnyModel]" = None) -> "_ListOrTuple[str]":
         return []
 
-    #
-    # @button(visible=lambda s: not s.context["original"].locked, html_attrs={"style": "background-color:#ba2121"})
-    # def lock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
-    #     context = self.get_common_context(request, pk, title=_("Lock Channel"))
-    #     if request.method == "POST":
-    #         obj = self.get_object(request, pk)
-    #         obj.locked = True
-    #         obj.save()
-    #         self.message_user(request, "{} locked".format(obj._meta.verbose_name))
-    #         return HttpResponseRedirect("..")
-    #     return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
-    #
-    # @button(visible=lambda s: s.context["original"].locked, html_attrs={"style": "background-color:green"})
-    # def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
-    #     context = self.get_common_context(request, pk, title=_("Unlock Channel"))
-    #     if request.method == "POST":
-    #         obj = self.get_object(request, pk)
-    #         obj.locked = False
-    #         obj.save()
-    #         self.message_user(request, "{} unlocked".format(obj._meta.verbose_name))
-    #         return HttpResponseRedirect("..")
-    #     return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
     @button()
     def events(self, request: "HttpRequest", pk: str) -> "Union[AnyResponse,HttpResponseRedirect]":
         base_url = reverse("admin:bitcaster_event_changelist")
@@ -117,7 +95,7 @@ class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
             config_form = form_class(initial={k: v for k, v in obj.config.items() if k in form_class.declared_fields})
         fs = (("", {"fields": form_class.declared_fields}),)
         context["admin_form"] = AdminForm(config_form, fs, {})  # type: ignore[arg-type]
-        return TemplateResponse(request, "bitcaster/admin/channel/configure.html", context)
+        return TemplateResponse(request, "admin/channel/configure.html", context)
 
     @button()
     def test(self, request: "HttpRequest", pk: str) -> "HttpResponse":
@@ -138,7 +116,7 @@ class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
             config_form = ChannelTestForm(initial=obj.config)  # type: ignore
 
         context["form"] = config_form
-        return TemplateResponse(request, "bitcaster/admin/channel/test.html", context)
+        return TemplateResponse(request, "admin/channel/test.html", context)
 
     def dispatcher_(self, obj: Channel) -> str:
         return obj.dispatcher.name

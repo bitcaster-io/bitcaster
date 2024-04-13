@@ -24,10 +24,11 @@ class InlineValidation(admin.TabularInline["Validation", "AddressAdmin"]):
 
 class AddressAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin[Address]):
     search_fields = ("name",)
-    list_display = ("user", "name", "value")
+    list_display = ("user", "name", "value", "type")
     list_filter = (
         ("user__roles__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("user", LinkedAutoCompleteFilter.factory(parent=None)),
+        "type",
     )
     autocomplete_fields = ("user",)
 

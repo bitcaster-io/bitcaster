@@ -19,11 +19,13 @@ class Message(models.Model):
     name = models.CharField(_("Name"), max_length=255)
     code = models.CharField(_("Code"), max_length=255, unique=True, blank=True)
     channel = models.ForeignKey(Channel, null=True, blank=True, on_delete=models.CASCADE, related_name="messages")
-    event = models.ForeignKey(Event, null=True, blank=True, on_delete=models.CASCADE, related_name="messages")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="messages")
 
-    subject = models.TextField(_("subject"), blank=True, null=True)
-    content = models.TextField(_("content"), blank=True)
-    html_content = models.TextField(_("HTML Content"), blank=True)
+    subject = models.TextField(_("subject"), blank=True, null=True, help_text=_("The subject of the message"))
+    content = models.TextField(_("content"), blank=True, help_text=_("The content of the message"))
+    html_content = models.TextField(
+        _("HTML Content"), blank=True, help_text=_("The HTML formatted content of the message")
+    )
 
     class Meta:
         verbose_name = _("Message template")
@@ -48,6 +50,12 @@ class Message(models.Model):
         if not self.code:
             self.code = f"{slugify(self.name)}-{grouper(get_random_string(20), 4, '')}"
         super().save(force_insert, force_update, using, update_fields)
+
+    def support_subject(self) -> bool:
+        return self.channel is None or self.channel.dispatcher.has_subject
+
+    def support_html(self) -> bool:
+        return self.channel is None or self.channel.dispatcher.html_message
 
     def render(self, context: Dict[str, Any]) -> str:
         tpl = Template(self.content)

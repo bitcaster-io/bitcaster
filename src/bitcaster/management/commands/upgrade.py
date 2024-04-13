@@ -178,17 +178,17 @@ class Command(BaseCommand):
                 dispatcher=fqn(BitcasterLogDispatcher),
                 application=bitcaster,
             )
-            Message.objects.get_or_create(
-                name="Abstract Message",
-                code="abstract-message",
-                subject="{{subject}}",
-                content="{{message}}",
-                html_content="{{message}}",
-            )
 
-            for ev in ["application_locked", "application_unlocked"]:
-                bitcaster.register_event(ev)
-
+            for event_name in ["application_locked", "application_unlocked"]:
+                ev = bitcaster.register_event(event_name)
+                Message.objects.get_or_create(
+                    event=ev,
+                    name="Message for {event_name}".format(event_name=event_name),
+                    code="message-{}".format(event_name),
+                    subject="{{subject}}",
+                    content="{{message}}",
+                    html_content="{{message}}",
+                )
             echo("Upgrade completed", style_func=self.style.SUCCESS)
         except ValidationError as e:
             self.halt(Exception("\n- ".join(["Wrong argument(s):", *e.messages])))

@@ -23,7 +23,7 @@ ALLOWED_HOSTS: List[str] = []
 # Application definition
 
 INSTALLED_APPS = [
-    "bitcaster.theme.apps.Config",
+    "bitcaster.web.apps.Config",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

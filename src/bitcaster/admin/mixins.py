@@ -16,7 +16,7 @@ class LockMixin:
             obj.save()
             self.message_user(request, _("{} locked").format(label))
             return HttpResponseRedirect("..")
-        return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
+        return TemplateResponse(request, "admin/channel/lock.html", context)
 
     @button(visible=lambda s: s.context["original"].locked, html_attrs={"style": "background-color:green"})
     def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
@@ -29,4 +29,4 @@ class LockMixin:
             obj.save()
             self.message_user(request, _("{} unlocked").format(label))
             return HttpResponseRedirect("..")
-        return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
+        return TemplateResponse(request, "admin/channel/lock.html", context)

@@ -1,19 +1,18 @@
 import logging
+from typing import Union
 
-from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
-from django.contrib import admin
 from admin_extra_buttons.decorators import button
-from adminfilters.autocomplete import LinkedAutoCompleteFilter
+from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django import forms
 from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.forms import HiddenInput
-from django.http import HttpRequest, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from bitcaster.models import Event, Subscription, Address
+from bitcaster.models import Address, Event, Subscription
 
 from .base import BaseAdmin
 from .message import Message
@@ -37,7 +36,7 @@ class EventSubscribeForm(forms.Form):
     address = forms.ChoiceField(label=_("Address"), choices=(("", "--"),), required=False)
 
     def __init__(self, channel_choices, **kwargs):
-        registered_addresses = kwargs.pop('registered_addresses', [])
+        # registered_addresses = kwargs.pop("registered_addresses", [])
         super().__init__(**kwargs)
         self.fields["address"].choices = list(self.fields["address"].choices) + list(channel_choices)
 
@@ -70,7 +69,7 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
         return super().get_queryset(request).select_related("application__project__organization")
 
     @button(visible=lambda s: s.context["original"].channels.exists(), html_attrs={"style": "background-color:green"})
-    def subscribe(self, request: HttpRequest, pk: int):
+    def subscribe(self, request: HttpRequest, pk: str) -> Union[HttpResponseRedirect, HttpResponse]:
         obj: Event = self.get_object(request, pk)
         context = self.get_common_context(request, pk, title=_(f"Subscribe to event {obj}"))
         channel_choices = request.user.addresses.values_list("id", "name")
@@ -115,10 +114,10 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
                 ],
                 form_kwargs={"channel_choices": channel_choices, "registered_addresses": registered_addresses},
             )
-        return TemplateResponse(request, "bitcaster/admin/event/subscribe_event.html", context)
+        return TemplateResponse(request, "admin/event/subscribe_event.html", context)
 
     @button(visible=lambda s: s.context["original"].channels.exists(), html_attrs={"style": "background-color:green"})
-    def test_event(self, request: HttpRequest, pk: int):
+    def test_event(self, request: HttpRequest, pk: str) -> "Union[HttpResponseRedirect, HttpResponse]":
         obj = self.get_object(request, pk)
         context = self.get_common_context(request, pk, title=_(f"Test event {obj}"))
         if request.method == "POST":
@@ -127,5 +126,5 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
             messages.success(request, _(f"Test for event {obj} successful"))
             return HttpResponseRedirect(url)
         else:
-            context["test_form"] = EventTestForm()  # type: ignore
-        return TemplateResponse(request, "bitcaster/admin/event/test_event.html", context)
+            context["test_form"] = EventTestForm()
+        return TemplateResponse(request, "admin/event/test_event.html", context)

@@ -1,0 +1,10 @@
+{% extends "bitcaster/base.html" %}{% load static %}
+{% block body %}
+    <div class="text-center">
+        <img style="width: 400px" src="{% static "logos/logo400.png" %}">
+        <img style="width: 400px" src="{% static "logos/name.svg" %}">
+        <div>
+            <a href="{% url "admin:login" %}">Enter</a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,11 +1,13 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, cast
 
 from django.core.exceptions import ValidationError
 from django.forms import forms
 from django.utils.functional import cached_property, classproperty
 from jinja2.utils import import_string
 from strategy_field.registry import Registry
+
+from bitcaster.constants import AddressType
 
 if TYPE_CHECKING:
     from bitcaster.models import Channel, Event, User
@@ -75,7 +77,7 @@ class Dispatcher(metaclass=DispatcherMeta):
     has_subject: bool = False
     config_class: "Type[DispatcherConfig]" = DispatcherConfig
     backend: "Optional[str, DispatcherHandler]" = None
-
+    address_types: List[AddressType] = [AddressType.GENERIC]
     channel: "Channel"
 
     def __init__(self, channel: "Channel") -> None:

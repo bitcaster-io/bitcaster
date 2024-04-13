@@ -6,8 +6,8 @@ import yaml
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from . import Address
 from ..dispatchers.base import Dispatcher, Payload
+from . import Address
 from .channel import Channel
 from .event import Event
 
@@ -37,7 +37,7 @@ class Subscription(models.Model):
 
     objects = SubscriptionQuerySet.as_manager()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.address.user}[{self.address}] -> {self.event}"
 
     class Meta:
