@@ -35,10 +35,10 @@ class EventSubscribeForm(forms.Form):
     channel_name = forms.CharField()
     address = forms.ChoiceField(label=_("Address"), choices=(("", "--"),), required=False)
 
-    def __init__(self, channel_choices, **kwargs):
+    def __init__(self, adress_choices, **kwargs):
         # registered_addresses = kwargs.pop("registered_addresses", [])
         super().__init__(**kwargs)
-        self.fields["address"].choices = list(self.fields["address"].choices) + list(channel_choices)
+        self.fields["address"].choices = list(self.fields["address"].choices) + list(adress_choices)
 
 
 EventSubscribeFormSet = forms.formset_factory(EventSubscribeForm, extra=0)
@@ -72,10 +72,12 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
     def subscribe(self, request: HttpRequest, pk: str) -> Union[HttpResponseRedirect, HttpResponse]:
         obj: Event = self.get_object(request, pk)
         context = self.get_common_context(request, pk, title=_(f"Subscribe to event {obj}"))
-        channel_choices = request.user.addresses.values_list("id", "name")
+        adress_choices = [
+            [id, f"{value} ({name})"] for id, name, value in request.user.addresses.values_list("id", "name", "value")
+        ]
         if request.method == "POST":
             context["formset"] = formset = EventSubscribeFormSet(
-                data=request.POST, form_kwargs={"channel_choices": channel_choices}
+                data=request.POST, form_kwargs={"adress_choices": adress_choices}
             )
             if formset.is_valid():
                 num_created = 0
@@ -112,7 +114,7 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
                     }
                     for channel in obj.channels.all()
                 ],
-                form_kwargs={"channel_choices": channel_choices, "registered_addresses": registered_addresses},
+                form_kwargs={"adress_choices": adress_choices, "registered_addresses": registered_addresses},
             )
         return TemplateResponse(request, "admin/event/subscribe_event.html", context)
 
