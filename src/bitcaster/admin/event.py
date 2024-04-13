@@ -14,7 +14,7 @@ from django.utils.translation import gettext as _
 
 from bitcaster.models import Address, Event, Subscription
 
-from .base import BaseAdmin
+from .base import BUTTON_COLOR_ACTION, BUTTON_COLOR_LINK, BaseAdmin
 from .message import Message
 from .mixins import LockMixin
 
@@ -36,7 +36,7 @@ class EventSubscribeForm(forms.Form):
     address = forms.ChoiceField(label=_("Address"), choices=(("", "--"),), required=False)
 
     def __init__(self, adress_choices, **kwargs):
-        # registered_addresses = kwargs.pop("registered_addresses", [])
+        kwargs.pop("registered_addresses", [])
         super().__init__(**kwargs)
         self.fields["address"].choices = list(self.fields["address"].choices) + list(adress_choices)
 
@@ -68,7 +68,22 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
     def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
         return super().get_queryset(request).select_related("application__project__organization")
 
-    @button(visible=lambda s: s.context["original"].channels.exists(), html_attrs={"style": "background-color:green"})
+    @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_LINK}"})
+    def subscriptions(self, request: "HttpRequest", pk: str) -> "Union[HttpResponseRedirect]":
+        obj: Event = self.get_object(request, pk)
+        base_url = reverse("admin:bitcaster_subscription_changelist")
+        url = (
+            f"{base_url}?event__exact={pk}"
+            f"&event__application__project__organization__exact={obj.application.project.organization.id}"
+            f"&event__application__project__exact={obj.application.project.id}"
+            f"&event__application__exact={obj.application.id}"
+        )
+        return HttpResponseRedirect(url)
+
+    @button(
+        visible=lambda s: s.context["original"].channels.exists(),
+        html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"},
+    )
     def subscribe(self, request: HttpRequest, pk: str) -> Union[HttpResponseRedirect, HttpResponse]:
         obj: Event = self.get_object(request, pk)
         context = self.get_common_context(request, pk, title=_(f"Subscribe to event {obj}"))
@@ -118,7 +133,10 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
             )
         return TemplateResponse(request, "admin/event/subscribe_event.html", context)
 
-    @button(visible=lambda s: s.context["original"].channels.exists(), html_attrs={"style": "background-color:green"})
+    @button(
+        visible=lambda s: s.context["original"].channels.exists(),
+        html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"},
+    )
     def test_event(self, request: HttpRequest, pk: str) -> "Union[HttpResponseRedirect, HttpResponse]":
         obj = self.get_object(request, pk)
         context = self.get_common_context(request, pk, title=_(f"Test event {obj}"))

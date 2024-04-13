@@ -3,10 +3,15 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext as _
 
+from .base import BUTTON_COLOR_LOCK, BUTTON_COLOR_UNLOCK
+
 
 class LockMixin:
 
-    @button(visible=lambda s: not s.context["original"].locked, html_attrs={"style": "background-color:#ba2121"})
+    @button(
+        visible=lambda s: not s.context["original"].locked,
+        html_attrs={"style": f"background-color:{BUTTON_COLOR_LOCK}"},
+    )
     def lock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)
         label = obj._meta.verbose_name
@@ -18,7 +23,9 @@ class LockMixin:
             return HttpResponseRedirect("..")
         return TemplateResponse(request, "admin/channel/lock.html", context)
 
-    @button(visible=lambda s: s.context["original"].locked, html_attrs={"style": "background-color:green"})
+    @button(
+        visible=lambda s: s.context["original"].locked, html_attrs={"style": f"background-color:{BUTTON_COLOR_UNLOCK}"}
+    )
     def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)
         label = obj._meta.verbose_name

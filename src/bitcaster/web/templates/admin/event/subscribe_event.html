@@ -2,9 +2,9 @@
 {% block action-content %}
     <form method="post" id="subscribe-form">
         {% csrf_token %}
-         <table>
-            {{ formset.as_table }}
-         </table>
+         <div style="display: flex">
+            {{ formset.as_p }}
+         </div>
         <input type="submit" value="Subscribe">
     </form>
 {% endblock %}
