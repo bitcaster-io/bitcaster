@@ -39,11 +39,11 @@ class TriggerViewSet(ReadOnlyModelViewSet):
             ApiKeyAuthentication,
         ],
     )
-    def trigger(self, request: "Request") -> Response:
+    def trigger(self, request: "Request", slug: str) -> Response:
         if request.method == "POST":
             ser = ActionSerializer(data=request.data)
             if ser.is_valid():
-                obj: "Event" = Event.objects.get(slug=self.kwargs["slug"])
+                obj: "Event" = Event.objects.get(slug=slug)
                 self.check_object_permissions(self.request, obj)
                 obj.trigger(ser.validated_data["context"])
                 return Response(ser.data)

@@ -46,7 +46,7 @@ def data(admin_user) -> "Context":
 
 def test_trigger_security(client: APIClient, data: "Context") -> None:
     api_key = data["key"]
-    url = f"/api/trigger/{data['event'].slug}/trigger/"
+    url = "/api/trigger/{}/trigger/".format(data["event"].slug)
     res = client.post(url, data={})
     assert res.status_code == status.HTTP_401_UNAUTHORIZED
 
