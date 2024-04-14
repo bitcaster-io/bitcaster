@@ -30,7 +30,9 @@ class Project(SlugMixin, models.Model):
     owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
 
     def save(self, *args: Any, **kwargs: Any) -> None:
-        if not self.owner:
+        try:
+            self.owner
+        except User.DoesNotExist:
             self.owner = self.organization.owner
         super().save(*args, **kwargs)
 
@@ -52,7 +54,9 @@ class Application(SlugMixin, models.Model):
     events: "QuerySet[Event]"
 
     def save(self, *args: Any, **kwargs: Any) -> None:
-        if not self.owner:
+        try:
+            self.owner
+        except User.DoesNotExist:
             self.owner = self.project.owner
         super().save(*args, **kwargs)
 

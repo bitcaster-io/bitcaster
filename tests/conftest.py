@@ -164,6 +164,13 @@ def event(db):
 
 
 @pytest.fixture()
+def address(db):
+    from testutils.factories import AddressFactory
+
+    return AddressFactory()
+
+
+@pytest.fixture()
 def message(db):
     from testutils.factories import MessageFactory
 

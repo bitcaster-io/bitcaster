@@ -13,7 +13,7 @@ if typing.TYPE_CHECKING:
 
 class AddressManager(models.Manager["Address"]):
     def valid(self) -> QuerySet["Address"]:
-        return self.filter(validated=True)
+        return self.filter(validations__validated=True)
 
 
 class Address(models.Model):

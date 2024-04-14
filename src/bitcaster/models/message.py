@@ -61,12 +61,10 @@ class Message(models.Model):
         tpl = Template(self.content)
         return tpl.render(Context(context))
 
-    def instantiate(self, channel: Optional[Channel] = None, event: Optional[Event] = None) -> "Message":
-        if not channel and not event:
-            raise ValueError("Channel or event must be provided")
+    def clone(self, channel: Channel) -> "Message":
         code = f"{slugify(self.name)}-{grouper(get_random_string(10), 4, '')}"
         return Message.objects.get_or_create(
-            event=event,
+            event=self.event,
             channel=channel,
             code=code,
             content=self.content,

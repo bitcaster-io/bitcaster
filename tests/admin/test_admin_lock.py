@@ -42,6 +42,7 @@ def log_submit_error(res):
 
 def pytest_generate_tests(metafunc):
     import django
+
     from bitcaster.admin.mixins import LockMixin
 
     markers = metafunc.definition.own_markers
