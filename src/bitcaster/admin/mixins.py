@@ -9,6 +9,7 @@ from .base import BUTTON_COLOR_LOCK, BUTTON_COLOR_UNLOCK
 class LockMixin:
 
     @button(
+        label=_("Lock"),
         visible=lambda s: not s.context["original"].locked,
         html_attrs={"style": f"background-color:{BUTTON_COLOR_LOCK}"},
     )
@@ -24,7 +25,9 @@ class LockMixin:
         return TemplateResponse(request, "admin/channel/lock.html", context)
 
     @button(
-        visible=lambda s: s.context["original"].locked, html_attrs={"style": f"background-color:{BUTTON_COLOR_UNLOCK}"}
+        label=_("Unlock"),
+        visible=lambda s: s.context["original"].locked,
+        html_attrs={"style": f"background-color:{BUTTON_COLOR_UNLOCK}"},
     )
     def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)

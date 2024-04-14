@@ -1,6 +1,6 @@
 {% extends "admin_extra_buttons/action_page.html" %}{% load i18n %}
 {% block action-content %}
-    <form method="post" id="config-form">
+    <form method="post" id="lock-form">
         {% csrf_token %}
         {% if original.locked %}
             <div class="module">
