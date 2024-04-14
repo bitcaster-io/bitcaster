@@ -2,7 +2,7 @@ from django.db.models import Model
 from django.utils.functional import cached_property
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework.serializers import HyperlinkedModelSerializer, ModelSerializer
 from strategy_field.utils import fqn
 
 from bitcaster.models import Application, Channel, Event, Organization, Project, User
@@ -42,8 +42,14 @@ class OrganizationSerializer(HyperlinkedModelSerializer):
 
 
 class ProjectSerializer(SelecteOrganizationSerializer):
+    co_key = "parent_lookup_organization__slug"
     url = serializers.SerializerMethodField()
     applications = serializers.SerializerMethodField()
+    channels = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Project
+        fields = ("url", "name", "slug", "organization", "applications", "channels")
 
     def get_url(self, obj: "Project") -> str:
         kwargs = self.context["view"].kwargs
@@ -63,20 +69,56 @@ class ProjectSerializer(SelecteOrganizationSerializer):
             )
         )
 
-    class Meta:
-        model = Project
-        fields = ("url", "name", "slug", "organization", "applications")
+    def get_channels(self, obj: "Project") -> str:
+        kwargs = self.context["view"].kwargs
+        return self.context["request"].build_absolute_uri(
+            reverse(
+                "api:channel-list",
+                args=[
+                    kwargs["parent_lookup_organization__slug"],
+                    obj.slug,
+                ],
+            )
+        )
 
 
-class ApplicationSerializer(SelecteOrganizationSerializer, HyperlinkedModelSerializer):
+class ApplicationSerializer(SelecteOrganizationSerializer):
     co_key = "parent_lookup_project__organization__slug"
+    url = serializers.SerializerMethodField()
+    events = serializers.SerializerMethodField()
 
     class Meta:
         model = Application
-        fields = ("name", "organization")
+        fields = ("name", "organization", "url", "events")
+
+    def get_url(self, obj: "Project") -> str:
+        kwargs = self.context["view"].kwargs
+        return self.context["request"].build_absolute_uri(
+            reverse(
+                "api:application-detail",
+                args=[
+                    kwargs["parent_lookup_project__organization__slug"],
+                    kwargs["parent_lookup_project__slug"],
+                    obj.slug,
+                ],
+            )
+        )
+
+    def get_events(self, obj: "Project") -> str:
+        kwargs = self.context["view"].kwargs
+        return self.context["request"].build_absolute_uri(
+            reverse(
+                "api:event-list",
+                args=[
+                    kwargs["parent_lookup_project__organization__slug"],
+                    kwargs["parent_lookup_project__slug"],
+                    obj.slug,
+                ],
+            )
+        )
 
 
-class ChannelSerializer(HyperlinkedModelSerializer):
+class ChannelSerializer(ModelSerializer):
     dispatcher = serializers.SerializerMethodField()
 
     class Meta:
@@ -87,7 +129,7 @@ class ChannelSerializer(HyperlinkedModelSerializer):
         return fqn(obj.dispatcher)
 
 
-class EventSerializer(HyperlinkedModelSerializer):
+class EventSerializer(ModelSerializer):
     class Meta:
         model = Event
         exclude = ()

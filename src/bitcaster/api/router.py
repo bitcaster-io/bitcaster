@@ -35,7 +35,7 @@ e = a.register(
     ],
 )
 
-e = a.register(
+e = p.register(
     r"channels",
     views.ChannelViewSet,
     basename="channel",
