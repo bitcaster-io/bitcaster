@@ -2,7 +2,6 @@ import datetime
 from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 from urllib.parse import urljoin
 
-from constance import config
 from django.conf import settings
 from django.http import HttpRequest, HttpResponseRedirect
 from django.http.request import split_domain_port
@@ -35,8 +34,6 @@ def get_server_url() -> str:
         host = req.build_absolute_uri("/")[:-1]
         if settings.SOCIAL_AUTH_REDIRECT_IS_HTTPS:
             host = host.replace("http://", "https://")
-    elif config.SERVER_URL:
-        host = config.SERVER_URL
     return host
 
 

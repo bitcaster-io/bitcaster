@@ -31,7 +31,6 @@ function replaceIframeContent(newHTML) {
 function send() {
     var content = "";
     var context = $context.val();
-    console.log(11111, ACTIVE)
     if (ACTIVE === "#tab_html"){
         content = tinymce.activeEditor.getContent("id_html_content");
     }else if (ACTIVE === "#tab_subject"){
@@ -64,7 +63,7 @@ $context.on("change", function () {
 $content.on("keyup", function () {
     send()
 })
-$(".btn").on("click", function(e){
+$(".button").on("click", function(e){
     $(".tab").hide();
     ACTIVE = $(this).data("panel");
     $(ACTIVE).show();

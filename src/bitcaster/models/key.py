@@ -62,6 +62,6 @@ class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
 class ApiKey(models.Model):
     name = models.CharField(verbose_name=_("Name"), max_length=255, db_collation="case_insensitive")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    token = models.CharField(verbose_name=_("Token"), unique=True, default=make_token)
+    key = models.CharField(verbose_name=_("Token"), unique=True, default=make_token)
     grants = ChoiceArrayField(choices=Grant, null=True, blank=True, base_field=models.CharField(max_length=255))
     application = models.ForeignKey(Application, on_delete=models.CASCADE)

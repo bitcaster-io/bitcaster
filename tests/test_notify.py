@@ -2,9 +2,8 @@ from typing import TYPE_CHECKING, TypedDict
 
 from _pytest.fixtures import fixture
 from strategy_field.utils import fqn
-from testutils.factories import AddressFactory
-
 from testutils.dispatcher import MESSAGES, TestDispatcher
+from testutils.factories import AddressFactory
 
 if TYPE_CHECKING:
     from bitcaster.models import Address, ApiKey, Application, Channel, Event, Message, Subscription, User
@@ -52,6 +51,6 @@ def test_trigger(context: "Context"):
     addr: Address = context["address"]
     event: Event = context["event"]
     ch: Channel = context["channel"]
-    event.trigger({})
-
+    o = event.trigger({})
+    o.process()
     assert MESSAGES == [(addr.value, f"Message for {event.name} on channel {ch.name}")]

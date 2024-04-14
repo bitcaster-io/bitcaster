@@ -1,5 +1,5 @@
 import logging
-from typing import Union
+from typing import Any, Union
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
@@ -35,7 +35,7 @@ class EventSubscribeForm(forms.Form):
     channel_name = forms.CharField()
     address = forms.ChoiceField(label=_("Address"), choices=(("", "--"),), required=False)
 
-    def __init__(self, adress_choices, **kwargs):
+    def __init__(self, adress_choices: Any, **kwargs: Any):
         kwargs.pop("registered_addresses", [])
         super().__init__(**kwargs)
         self.fields["address"].choices = list(self.fields["address"].choices) + list(adress_choices)
@@ -70,7 +70,7 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
 
     @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_LINK}"})
     def subscriptions(self, request: "HttpRequest", pk: str) -> "Union[HttpResponseRedirect]":
-        obj: Event = self.get_object(request, pk)
+        obj = self.get_object(request, pk)
         base_url = reverse("admin:bitcaster_subscription_changelist")
         url = (
             f"{base_url}?event__exact={pk}"
@@ -85,7 +85,7 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
         html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"},
     )
     def subscribe(self, request: HttpRequest, pk: str) -> Union[HttpResponseRedirect, HttpResponse]:
-        obj: Event = self.get_object(request, pk)
+        obj = self.get_object(request, pk)
         context = self.get_common_context(request, pk, title=_(f"Subscribe to event {obj}"))
         adress_choices = [
             [id, f"{value} ({name})"] for id, name, value in request.user.addresses.values_list("id", "name", "value")

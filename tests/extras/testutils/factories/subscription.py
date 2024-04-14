@@ -1,8 +1,8 @@
 import factory
 
 from bitcaster.models import Subscription
-from . import AddressFactory
 
+from . import AddressFactory
 from .base import AutoRegisterModelFactory
 from .channel import ChannelFactory
 from .event import EventFactory

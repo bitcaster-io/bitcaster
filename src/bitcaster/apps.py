@@ -29,3 +29,5 @@ class Config(AppConfig):
         from bitcaster.admin import register  # noqa
 
         from . import handlers  # noqa
+        from . import tasks  # noqa
+        from .cache import handlers  # type: ignore # noqa

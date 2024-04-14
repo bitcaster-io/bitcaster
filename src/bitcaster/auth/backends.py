@@ -1,7 +1,6 @@
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from bitcaster.models import User
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AnyRequest

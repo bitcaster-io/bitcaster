@@ -1,0 +1,14 @@
+{% extends "bitcaster/base.html" %}{% load static %}
+{% block body %}
+    <div class="text-center">
+        <img style="width: 200px;margin-bottom: 50px" src="{% static "bitcaster/images/logos/logo400.png" %}">
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ form.errors }}
+            {{ form }}
+            <input class="primary" type="submit" value="Login">
+        </form>
+        <a href="{% url "social:begin" "google-oauth2" %}">Google+</a>
+
+    </div>
+{% endblock %}

@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:8848ff2c6795749df719975bce83c16b0ce74bc490301c1c628a1df132fea9d1"
+content_hash = "sha256:2019713cd76858cbd81616be0a7ce1be7b0e1402cf360015d4ccc546571c90dd"
 
 [[package]]
 name = "aiohttp"
@@ -752,6 +752,20 @@ summary = "Fields and utilities to work with regular expression in Django"
 groups = ["default"]
 files = [
     {file = "django-regex-0.5.0.tar.gz", hash = "sha256:6af1add11ae5232f133a42754c9291f9113996b1294b048305d9f1a427bca27c"},
+]
+
+[[package]]
+name = "django-reversion"
+version = "5.0.12"
+requires_python = ">=3.7"
+summary = "An extension to the Django web framework that provides version control for model instances."
+groups = ["default"]
+dependencies = [
+    "django>=3.2",
+]
+files = [
+    {file = "django-reversion-5.0.12.tar.gz", hash = "sha256:c047cc99a9f1ba4aae6db89c3ac243478d6de98ec8a60c7073fcc875d89c5cdb"},
+    {file = "django_reversion-5.0.12-py3-none-any.whl", hash = "sha256:5884e9f77f55c341b3f0a8d3b0af000f060530653776997267c8b1e5349d8fee"},
 ]
 
 [[package]]

@@ -8,9 +8,18 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
-
+.p-5{
+  padding: 5px;
+}
+.m-5{
+  margin: 50px;
+}
 a {
-  color: var(--fg-primary)
+  color: var(--fg-primary);
+
+  &.button {
+    padding: 10px 15px;
+  }
 }
 
 .text-center {

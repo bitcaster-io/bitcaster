@@ -1,10 +1,14 @@
+import contextlib
 import json
+from copy import copy
 from datetime import datetime, timedelta
 from threading import local
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AnyRequest, AnyResponse
+
+not_set = object()
 
 
 class State(local):
@@ -32,6 +36,35 @@ class State(local):
     def set_cookies(self, response: "AnyResponse") -> None:
         for name, args in self.cookies.items():
             response.set_cookie(name, *args)
+
+    @contextlib.contextmanager
+    def configure(self, **kwargs: "Dict[str,Any]") -> "Iterator[None]":
+        pre = copy(self.__dict__)
+        self.reset()
+        with self.set(**kwargs):
+            yield
+        for k, v in pre.items():
+            setattr(self, k, v)
+
+    @contextlib.contextmanager
+    def set(self, **kwargs: "Dict[str,Any]") -> "Iterator[None]":
+        pre = {}
+        for k, v in kwargs.items():
+            if hasattr(self, k):
+                pre[k] = getattr(self, k)
+            else:
+                pre[k] = not_set
+            setattr(self, k, v)
+        yield
+        for k, v in pre.items():
+            if v is not_set:
+                delattr(self, k)
+            else:
+                setattr(self, k, v)
+
+    def reset(self) -> None:
+        self.request = None
+        self.cookies = {}
 
 
 state = State()

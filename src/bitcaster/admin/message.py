@@ -4,12 +4,12 @@ from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
 from django.conf import settings
-from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template import Context, Template
 from django.template.response import TemplateResponse
 from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
+from reversion.admin import VersionAdmin
 from tinymce.widgets import TinyMCE
 
 from bitcaster.models import Message
@@ -46,7 +46,7 @@ class MessageForm(forms.ModelForm[Message]):
         return orig + forms.Media(js=["admin/js/%s" % url for url in js])
 
 
-class MessageAdmin(BaseAdmin, admin.ModelAdmin[Message]):
+class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
     search_fields = ("name",)
     list_display = ("name", "channel", "event")
     list_filter = (

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_svelte_jsoneditor",
     "tinymce",
+    "reversion",
     #
     "celery",
     "treebeard",
@@ -69,6 +70,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
 
 ROOT_URLCONF = "bitcaster.config.urls"
 

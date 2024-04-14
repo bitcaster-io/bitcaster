@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from django.db.models import QuerySet
 
     from .message import Message
+    from .occurence import Occurence
     from .subscription import Subscription
 
 
@@ -29,10 +30,10 @@ class Event(SlugMixin, models.Model):
             ("slug", "application"),
         )
 
-    def trigger(self, context: Dict[str, Any]) -> None:
-        subscription: "Subscription"
-        for subscription in self.subscriptions.all():
-            subscription.notify(context)
+    def trigger(self, context: Dict[str, Any]) -> "Occurence":
+        from .occurence import Occurence
+
+        return Occurence.objects.create(event=self, context=context)
 
     def get_message(self, channel: "Channel") -> "Optional[Message]":
         return self.messages.filter(models.Q(channel=channel) | models.Q(channel=None)).order_by("channel").first()

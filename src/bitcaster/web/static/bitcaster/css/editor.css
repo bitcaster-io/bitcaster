@@ -10,12 +10,23 @@ input, textarea {
   width: 100%;
 }
 
+input[type=submit].default {
+  background-color: var(--bg-primary);
+}
+
 h3.title {
   padding: 10px;
 }
 
 .menubar {
   padding: 5px;
+}
+.menubar button {
+  padding: 10px;
+  background-color: var(--bg-primary);
+}
+.menubar button:active {
+  color: black;
 }
 
 .tab {

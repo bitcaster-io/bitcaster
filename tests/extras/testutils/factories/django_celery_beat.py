@@ -34,7 +34,7 @@ class ClockedScheduleFactory(AutoRegisterModelFactory):
 class PeriodicTaskFactory(AutoRegisterModelFactory):
     name = factory.Sequence(lambda n: "PeriodicTask%03d" % n)
     interval = factory.SubFactory(IntervalScheduleFactory)
-    task = "sos.tasks.notify_failures"
+    task = "bitcaster.tasks.notify_failures"
 
     class Meta:
         model = PeriodicTask

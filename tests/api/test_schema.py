@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework.test import APIClient
 
 pytestmark = [pytest.mark.api, pytest.mark.django_db]

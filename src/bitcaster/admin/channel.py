@@ -15,7 +15,7 @@ from django.utils.translation import gettext as _
 from bitcaster.models import Channel
 
 from ..dispatchers.base import Payload
-from .base import BaseAdmin, BUTTON_COLOR_ACTION
+from .base import BUTTON_COLOR_ACTION, BaseAdmin
 from .mixins import LockMixin
 
 if TYPE_CHECKING:

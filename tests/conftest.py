@@ -56,6 +56,9 @@ def pytest_configure(config):
     os.environ.setdefault("MAILJET_API_KEY", "11")
     os.environ.setdefault("MAILJET_SECRET_KEY", "11")
 
+    os.environ.setdefault("GMAIL_USER", "11")
+    os.environ.setdefault("GMAIL_PASSWORD", "11")
+
     if not config.option.with_sentry:
         os.environ["SENTRY_DSN"] = ""
     else:
@@ -67,6 +70,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "skip_test_if_env(env): this mark skips the tests for the given env")
     from django.conf import settings
 
+    settings.ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
     settings.MEDIA_ROOT = "/tmp/media"
     settings.STATIC_ROOT = "/tmp/static"
     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
@@ -76,6 +80,7 @@ def pytest_configure(config):
 
     django.setup()
     from testutils.dispatcher import TestDispatcher
+
     from bitcaster.dispatchers.base import dispatcherManager
 
     dispatcherManager.register(TestDispatcher)

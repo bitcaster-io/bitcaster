@@ -44,7 +44,7 @@ JWT_AUTH: Dict[str, Any] = {
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Bitcaster API",
-    "DESCRIPTION": "Your project description",
+    "DESCRIPTION": "",
     "VERSION": VERSION,
     "SERVE_INCLUDE_SCHEMA": False,
     # OTHER SETTINGS
