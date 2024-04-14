@@ -39,14 +39,15 @@ class ProjectViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.all().order_by("-pk")
     serializer_class = ProjectSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
-    lookup_field = "slug"
+    # lookup_field = "slug"
+    # lookup_url_kwarg = "slug"
 
 
 class ApplicationViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Application.objects.all().order_by("-pk")
     serializer_class = ApplicationSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
-    lookup_field = "slug"
+    # lookup_field = "slug"
 
 
 class ChannelViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):

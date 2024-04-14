@@ -1,4 +1,7 @@
+from django.db.models import Model
+from django.utils.functional import cached_property
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 from rest_framework.serializers import HyperlinkedModelSerializer
 from strategy_field.utils import fqn
 
@@ -11,11 +14,26 @@ class UserSerializer(HyperlinkedModelSerializer):
         fields = ("username", "email")
 
 
+class SelecteOrganizationSerializer(serializers.ModelSerializer):
+    co_key = "parent_lookup_organization__slug"
+    organization = serializers.SerializerMethodField()
+
+    @cached_property
+    def selected_organization(self) -> Organization:
+        kwargs = self.context["view"].kwargs
+        co_slug: str = kwargs[self.co_key]
+        return Organization.objects.get(slug=co_slug)
+
+    def get_organization(self, obj: Model) -> str:
+        return self.context["request"].build_absolute_uri(
+            reverse("api:organization-detail", args=[self.selected_organization.slug])
+        )
+
+
 class OrganizationSerializer(HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="api:organization-detail", lookup_field="slug", read_only=True)
-
     projects = serializers.HyperlinkedIdentityField(
-        view_name="api:organization:project-list", lookup_field="projects", read_only=True
+        view_name="api:project-list", lookup_field="slug", lookup_url_kwarg="parent_lookup_organization__slug"
     )
 
     class Meta:
@@ -23,16 +41,39 @@ class OrganizationSerializer(HyperlinkedModelSerializer):
         exclude = ("owner",)
 
 
-class ProjectSerializer(HyperlinkedModelSerializer):
+class ProjectSerializer(SelecteOrganizationSerializer):
+    url = serializers.SerializerMethodField()
+    applications = serializers.SerializerMethodField()
+
+    def get_url(self, obj: "Project") -> str:
+        kwargs = self.context["view"].kwargs
+        return self.context["request"].build_absolute_uri(
+            reverse(
+                "api:project-detail",
+                args=[kwargs["parent_lookup_organization__slug"], obj.slug],
+            )
+        )
+
+    def get_applications(self, obj: "Project") -> str:
+        kwargs = self.context["view"].kwargs
+        return self.context["request"].build_absolute_uri(
+            reverse(
+                "api:application-list",
+                args=[kwargs["parent_lookup_organization__slug"], obj.slug],
+            )
+        )
+
     class Meta:
         model = Project
-        exclude = ("owner",)
+        fields = ("url", "name", "slug", "organization", "applications")
 
 
-class ApplicationSerializer(HyperlinkedModelSerializer):
+class ApplicationSerializer(SelecteOrganizationSerializer, HyperlinkedModelSerializer):
+    co_key = "parent_lookup_project__organization__slug"
+
     class Meta:
         model = Application
-        exclude = ()
+        fields = ("name", "organization")
 
 
 class ChannelSerializer(HyperlinkedModelSerializer):

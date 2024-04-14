@@ -15,7 +15,7 @@ from django.utils.translation import gettext as _
 from bitcaster.models import Channel
 
 from ..dispatchers.base import Payload
-from .base import BaseAdmin
+from .base import BaseAdmin, BUTTON_COLOR_ACTION
 from .mixins import LockMixin
 
 if TYPE_CHECKING:
@@ -74,13 +74,13 @@ class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[AnyModel]" = None) -> "_ListOrTuple[str]":
         return []
 
-    @button()
+    @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"})
     def events(self, request: "HttpRequest", pk: str) -> "Union[AnyResponse,HttpResponseRedirect]":
         base_url = reverse("admin:bitcaster_event_changelist")
         url = f"{base_url}?channels__exact={pk}"
         return HttpResponseRedirect(url)
 
-    @button()
+    @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)
         context = self.get_common_context(request, pk, title=_("Configure channel"))

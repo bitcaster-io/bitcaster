@@ -2,6 +2,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_extensions.routers import NestedRouterMixin
 
 from . import views
+from .trigger import TriggerViewSet
 
 
 class SimpleRouterWithNesting(NestedRouterMixin, DefaultRouter):
@@ -13,8 +14,10 @@ router = SimpleRouterWithNesting()
 
 o = router.register(r"organization", views.OrganizationViewSet)
 u = router.register(r"user", views.UserViewSet)
+router.register(r"trigger", TriggerViewSet, basename="trigger")
 
 p = o.register(r"projects", views.ProjectViewSet, basename="project", parents_query_lookups=["organization__slug"])
+
 a = p.register(
     r"applications",
     views.ApplicationViewSet,
@@ -42,3 +45,4 @@ e = a.register(
         "application__slug",
     ],
 )
+#

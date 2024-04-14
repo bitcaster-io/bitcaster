@@ -6,7 +6,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 urlpatterns = [
     path("", include("bitcaster.web.urls")),
     path("admin/", admin.site.urls),
-    path("api/schema/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path("api/schema/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
     path("api/schema/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     path("api/schema/raw/", SpectacularAPIView.as_view(), name="schema"),
     path("api/", include("bitcaster.api.urls", namespace="api")),

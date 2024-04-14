@@ -50,6 +50,7 @@ dependencies = [
     "drf-spectacular-sidecar>=2024.4.1",
     "django-svelte-jsoneditor>=0.4.2",
     "django-tinymce>=4.0.0",
+    "drf-nested-routers>=0.93.5",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"

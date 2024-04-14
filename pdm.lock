@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:85a57d23d181c64e0119cb39fe1a6bf4e6f7982419deb6384bcd792fa338dade"
+content_hash = "sha256:8848ff2c6795749df719975bce83c16b0ce74bc490301c1c628a1df132fea9d1"
 
 [[package]]
 name = "aiohttp"
@@ -927,6 +927,21 @@ dependencies = [
 files = [
     {file = "drf-extensions-0.7.1.tar.gz", hash = "sha256:90abfc11a2221e8daf4cd54457e41ed38cd71134678de9622e806193db027db1"},
     {file = "drf_extensions-0.7.1-py2.py3-none-any.whl", hash = "sha256:007910437e64aa1d5ad6fc47266a4ac4280e31761e6458eb30fcac7494ac7d4e"},
+]
+
+[[package]]
+name = "drf-nested-routers"
+version = "0.93.5"
+requires_python = ">=3.8"
+summary = "Nested resources for the Django Rest Framework"
+groups = ["default"]
+dependencies = [
+    "Django>=3.2",
+    "djangorestframework>=3.14.0",
+]
+files = [
+    {file = "drf-nested-routers-0.93.5.tar.gz", hash = "sha256:1407565abc7bada37c162c7e11bf214ae71625a17fdec6d9a47a17f4a3627d32"},
+    {file = "drf_nested_routers-0.93.5-py2.py3-none-any.whl", hash = "sha256:9a6813554020134a02e62f8c2934b2047717f7da06f8b801752c521e43735c63"},
 ]
 
 [[package]]
