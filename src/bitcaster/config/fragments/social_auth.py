@@ -8,7 +8,8 @@ SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = [
 ]
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_URL_NAMESPACE = "social"
-SOCIAL_AUTH_REQUIRE_POST = True
+# SOCIAL_AUTH_REQUIRE_POST = True
+SOCIAL_AUTH_STRATEGY = "bitcaster.social.strategy.BitcasterStrategy"
 
 SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.social_uid",

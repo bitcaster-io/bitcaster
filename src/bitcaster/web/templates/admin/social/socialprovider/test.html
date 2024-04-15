@@ -1,0 +1,10 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n admin_urls static admin_modify %}
+{% block action-content %}
+
+    {{ original }}
+    <div>
+        <a target="_social" href="{% url "social:begin" original.code %}">{{ original.label }}</a>
+
+    </div>
+
+{% endblock %}

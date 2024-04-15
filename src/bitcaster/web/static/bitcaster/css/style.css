@@ -5,6 +5,22 @@
   --jse-theme-color: var(--bg-primary);
 }
 
+.social-login {
+  width: 400px;
+  border: 1px solid gray;
+  margin-top: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.social-login form {
+  display: inline;
+}
+.social-login form input {
+  background-color: #217dc5;
+  font-weight: bold;
+  width: 200px;
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
 }

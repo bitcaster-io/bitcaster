@@ -1,14 +1,18 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import Any, Optional
+
+from django.contrib.auth.backends import ModelBackend
+from django.http import HttpRequest
 
 from bitcaster.models import User
 
-if TYPE_CHECKING:
-    from bitcaster.types.http import AnyRequest
 
-
-class BitcasterBackend:
+class BitcasterBackend(ModelBackend):
     def authenticate(
-        self, request: "AnyRequest", username: Optional[str] = None, password: Optional[str] = None, **kwargs: Any
+        self,
+        request: HttpRequest | None,
+        username: str | None = None,
+        password: str | None = None,
+        **kwargs: Any,
     ) -> Optional[User]:
         if username is None:
             username = kwargs.get(User.USERNAME_FIELD)

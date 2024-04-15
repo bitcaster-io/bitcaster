@@ -35,6 +35,9 @@ class OrganizationSerializer(HyperlinkedModelSerializer):
     projects = serializers.HyperlinkedIdentityField(
         view_name="api:project-list", lookup_field="slug", lookup_url_kwarg="parent_lookup_organization__slug"
     )
+    channels = serializers.HyperlinkedIdentityField(
+        view_name="api:org-channel-list", lookup_field="slug", lookup_url_kwarg="parent_lookup_organization__slug"
+    )
 
     class Meta:
         model = Organization
@@ -73,7 +76,7 @@ class ProjectSerializer(SelecteOrganizationSerializer):
         kwargs = self.context["view"].kwargs
         return self.context["request"].build_absolute_uri(
             reverse(
-                "api:channel-list",
+                "api:prj-channel-list",
                 args=[
                     kwargs["parent_lookup_organization__slug"],
                     obj.slug,
@@ -130,6 +133,36 @@ class ChannelSerializer(ModelSerializer):
 
 
 class EventSerializer(ModelSerializer):
+    url = serializers.SerializerMethodField()
+
     class Meta:
         model = Event
         exclude = ()
+
+    def get_url(self, obj: "Event") -> str:
+        kwargs = self.context["view"].kwargs
+        return self.context["request"].build_absolute_uri(
+            reverse(
+                "api:event-detail",
+                args=[
+                    kwargs["parent_lookup_application__project__organization__slug"],
+                    kwargs["parent_lookup_application__project__slug"],
+                    kwargs["parent_lookup_application__slug"],
+                    obj.pk,
+                ],
+            )
+        )
+
+    def get_chs(self, obj: "Event") -> str:
+        kwargs = self.context["view"].kwargs
+        return self.context["request"].build_absolute_uri(
+            reverse(
+                "api:evt-channels",
+                args=[
+                    kwargs["parent_lookup_application__project__organization__slug"],
+                    kwargs["parent_lookup_application__project__slug"],
+                    kwargs["parent_lookup_application__slug"],
+                    obj.pk,
+                ],
+            )
+        )

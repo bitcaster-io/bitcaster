@@ -14,39 +14,13 @@ class RegexList(_RegexList):
             self.append(e)
 
 
-GLOBAL_EXCLUDED_MODELS = RegexList(
-    [
-        r"django_celery_beat\.ClockedSchedule",
-        r"contenttypes\.ContentType",
-        "authtoken",
-        "social_django",
-        "depot",
-    ]
-)
-
-GLOBAL_EXCLUDED_BUTTONS = RegexList(
-    [
-        "core.UserAdmin:link_user_data",
-    ]
-)
-
-KWARGS = {}
-
-
-def log_submit_error(res):
-    try:
-        return f"Submit failed with: {repr(res.context['form'].errors)}"
-    except KeyError:
-        return "Submit failed"
-
-
 def pytest_generate_tests(metafunc):
     import django
 
     from bitcaster.admin.mixins import LockMixin
 
     markers = metafunc.definition.own_markers
-    excluded_models = RegexList(GLOBAL_EXCLUDED_MODELS)
+    excluded_models = RegexList()
     if "skip_models" in [m.name for m in markers]:
         skip_rule = list(filter(lambda m: m.name == "skip_models", markers))[0]
         excluded_models.extend(skip_rule.args)
@@ -72,12 +46,12 @@ def record(db, request):
     modeladmin = request.getfixturevalue("modeladmin")
     instance = modeladmin.model.objects.first()
     if not instance:
-        full_name = f"{modeladmin.model._meta.app_label}.{modeladmin.model._meta.object_name}"
+        # full_name = f"{modeladmin.model._meta.app_label}.{modeladmin.model._meta.object_name}"
         factory = get_factory_for_model(modeladmin.model)
         try:
-            instance = factory(**KWARGS.get(full_name, {}))
+            instance = factory()
         except Exception as e:
-            raise Exception(f"Error creating fixture for {factory} using {KWARGS}") from e
+            raise Exception(f"Error creating fixture for {factory}") from e
     return instance
 
 
@@ -90,13 +64,6 @@ def app(django_app_factory, mocked_responses):
     django_app.set_user(admin_user)
     django_app._user = admin_user
     return django_app
-
-
-def show_error(res):
-    errors = []
-    for k, v in dict(res.context["adminform"].form.errors).items():
-        errors.append(f'{k}: {"".join(v)}')
-    return (f"Form submitting failed: {res.status_code}: {errors}",)
 
 
 def test_admin_lock(app, modeladmin, record):

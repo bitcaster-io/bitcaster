@@ -66,6 +66,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "MEDIA_ROOT": (str, "/tmp/media/", setting("media-root")),
     "MEDIA_URL": (str, "/media/", setting("media-url")),
+    "ROOT_TOKEN": (str, "", ""),
     "SECRET_KEY": (str, NOT_SET, setting("secret-key")),
     "SECURE_HSTS_PRELOAD": (bool, True, setting("secure-hsts-preload"), False),
     "SECURE_HSTS_SECONDS": (int, 60, setting("secure-hsts-seconds")),

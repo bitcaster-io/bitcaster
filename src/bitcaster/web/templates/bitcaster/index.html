@@ -12,7 +12,11 @@
                         <a class="button primary" href="/api/">API</a>
                     {% endif %}
                     <a class="button primary" href="/api/schema/">Swagger</a>
-                    <a class="button primary" href="{% url "logout" %}">Logout</a>
+        <form method="post" action="{% url "logout" %}">
+                           {% csrf_token %}
+ 
+                    <a class="submit primary"">Logout</a>
+        </form>
                 </form>
             {% else %}
                 <a class="button primary" href="{% url "login" %}">Enter</a>

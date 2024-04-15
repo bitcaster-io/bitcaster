@@ -1,3 +1,5 @@
+from bitcaster.social.models import SocialProvider  # noqa
+
 from .address import Address, Validation  # noqa
 from .channel import Channel  # noqa
 from .event import Event  # noqa
@@ -7,6 +9,5 @@ from .message import Message  # noqa
 from .occurence import Occurence  # noqa
 from .org import Application, Organization, Project  # noqa
 from .role import Role  # noqa
-from .social_auth import SocialProvider  # noqa
 from .subscription import Subscription  # noqa
 from .user import User  # noqa
