@@ -8,7 +8,14 @@
             {{ form }}
             <input class="primary" type="submit" value="Login">
         </form>
-        <a href="{% url "social:begin" "google-oauth2" %}">Google+</a>
-
+        <div class="social-login">
+            {% for k,v in sso_providers %}
+                <form action="{% url "social:begin" k %}">
+                    <input type="submit" value="{{ v }}"/>
+                </form>
+                <div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

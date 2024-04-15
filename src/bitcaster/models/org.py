@@ -28,6 +28,7 @@ class Organization(SlugMixin, models.Model):
 class Project(SlugMixin, models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="projects")
     owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
+    locked = models.BooleanField(default=False, help_text=_("Security lock of project"))
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         try:

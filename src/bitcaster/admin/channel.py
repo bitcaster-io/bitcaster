@@ -15,6 +15,7 @@ from django.utils.translation import gettext as _
 from bitcaster.models import Channel
 
 from ..dispatchers.base import Payload
+from ..forms.channel import ChannelAddForm, ChannelChangeForm
 from .base import BUTTON_COLOR_ACTION, BaseAdmin
 from .mixins import LockMixin
 
@@ -27,19 +28,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ChannelChangeForm(forms.ModelForm["Channel"]):
-    class Meta:
-        model = Channel
-        # exclude = ('config', 'dispatcher', 'locked')
-        exclude = ("config", "locked")
-
-
-class ChannelAddForm(forms.ModelForm["Channel"]):
-    class Meta:
-        model = Channel
-        exclude = ("config", "locked")
-
-
 class ChannelTestForm(forms.Form):
     recipient = forms.CharField()
     subject = forms.CharField()
@@ -48,10 +36,11 @@ class ChannelTestForm(forms.Form):
 
 class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
     search_fields = ("name",)
-    list_display = ("name", "organization", "application", "dispatcher_", "active", "locked")
+    list_display = ("name", "organization", "project", "application", "dispatcher_", "active", "locked")
     list_filter = (
         ("organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        ("application", LinkedAutoCompleteFilter.factory(parent="organization")),
+        ("project", LinkedAutoCompleteFilter.factory(parent="organization")),
+        ("application", LinkedAutoCompleteFilter.factory(parent="project")),
         "active",
         "locked",
     )

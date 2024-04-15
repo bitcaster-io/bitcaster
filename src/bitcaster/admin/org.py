@@ -1,13 +1,20 @@
 import logging
+from typing import TYPE_CHECKING, Optional
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django.contrib import admin
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
-from bitcaster.models import Application, Organization, Project
+from bitcaster.models import Application, Channel, Organization, Project
 
-from .base import BaseAdmin
+from ..utils.django import url_related
+from .base import BUTTON_COLOR_LINK, BaseAdmin
+from .mixins import LockMixin
+
+if TYPE_CHECKING:
+    from django.utils.datastructures import _ListOrTuple
+
 
 logger = logging.getLogger(__name__)
 
@@ -16,19 +23,32 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     search_fields = ("name",)
     list_display = ("name", "from_email", "subject_prefix")
 
-    @button()
+    @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_LINK}"})
     def projects(self, request: HttpRequest, pk: str) -> HttpResponse:
-        return HttpResponse("Projects")
+        return HttpResponseRedirect(url_related(Project, organization__exact=pk))
+
+    @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_LINK}"})
+    def channels(self, request: HttpRequest, pk: str) -> HttpResponse:
+        return HttpResponseRedirect(url_related(Channel, organization__exact=pk))
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        return False
 
 
-class ProjectAdmin(BaseAdmin, admin.ModelAdmin[Project]):
+class ProjectAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Project]):
     search_fields = ("name",)
     list_display = ("name", "organization")
     list_filter = (("organization", AutoCompleteFilter),)
     autocomplete_fields = ("organization",)
 
+    def get_readonly_fields(self, request: HttpRequest, obj: Optional[Project] = None) -> "_ListOrTuple[str]":
+        base = list(super().get_readonly_fields(request, obj))
+        if obj and obj.name.lower() == "bitcaster":
+            base.extend(["name", "slug", "organization"])
+        return base
 
-class ApplicationAdmin(BaseAdmin, admin.ModelAdmin[Application]):
+
+class ApplicationAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Application]):
     search_fields = ("name",)
     list_display = ("name",)
     list_filter = (
@@ -36,3 +56,10 @@ class ApplicationAdmin(BaseAdmin, admin.ModelAdmin[Application]):
         ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
     )
     autocomplete_fields = ("project",)
+    readonly_fields = ["locked"]
+
+    def get_readonly_fields(self, request: HttpRequest, obj: Optional[Application] = None) -> "_ListOrTuple[str]":
+        base = list(super().get_readonly_fields(request, obj))
+        if obj and obj.name.lower() == "bitcaster":
+            base.extend(["name", "slug", "project", "active"])
+        return base

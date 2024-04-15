@@ -5,15 +5,34 @@
   --jse-theme-color: var(--bg-primary);
 }
 
+.social-login {
+  width: 400px;
+  border: 1px solid gray;
+  margin-top: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  form{
+    input{
+      background-color: #217dc5;
+      font-weight: bold;
+      width: 200px;
+    }
+    display: inline;
+  }
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
-.p-5{
+
+.p-5 {
   padding: 5px;
 }
-.m-5{
+
+.m-5 {
   margin: 50px;
 }
+
 a {
   color: var(--fg-primary);
 

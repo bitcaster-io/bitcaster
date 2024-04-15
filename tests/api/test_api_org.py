@@ -3,11 +3,10 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
-from testutils.factories import ApiKeyFactory, EventFactory
-
+from testutils.factories import ApiKeyFactory, EventFactory, ChannelFactory
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Application, Event, Organization, Project, User
+    from bitcaster.models import ApiKey, Application, Event, Organization, Project, User, Channel
 
     Context = TypedDict(
         "Context",
@@ -18,6 +17,7 @@ if TYPE_CHECKING:
             "event": Event,
             "key": ApiKey,
             "user": User,
+            "ch": Channel,
         },
     )
 
@@ -46,6 +46,7 @@ def data(admin_user) -> "Context":
         application__slug=app_slug,
     )
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
+    ch = ChannelFactory(application=event.application)
     return {
         "org": event.application.project.organization,
         "prj": event.application.project,
@@ -53,6 +54,7 @@ def data(admin_user) -> "Context":
         "event": event,
         "key": key,
         "user": admin_user,
+        "ch": ch,
     }
 
 
@@ -63,7 +65,9 @@ def pytest_generate_tests(metafunc):
             "/api/organization/",
             f"/api/organization/{org_slug}/",
             f"/api/organization/{org_slug}/projects/",
+            f"/api/organization/{org_slug}/channels/",
             f"/api/organization/{org_slug}/projects/{prj_slug}/",
+            f"/api/organization/{org_slug}/projects/{prj_slug}/channels/",
             f"/api/organization/{org_slug}/projects/{prj_slug}/applications/",
             f"/api/organization/{org_slug}/projects/{prj_slug}/applications/{app_slug}/",
             f"/api/organization/{org_slug}/projects/{prj_slug}/applications/{app_slug}/events/",
@@ -72,13 +76,6 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize("url", m, ids=m)
 
 
-def test_security(client: APIClient, data: "Context", url) -> None:
+def test_urls(client: APIClient, data: "Context", url) -> None:
     res = client.get(url, data={})
     assert res.status_code == status.HTTP_200_OK, url
-
-    # client.credentials(HTTP_AUTHORIZATION=f"ApiKey {api_key.key}")
-    # res = client.post(url, data={})
-    # assert res.status_code == status.HTTP_403_FORBIDDEN
-    # with key_grants(api_key, Grant.EVENT_TRIGGER):
-    #     res = client.post(url, data={})
-    #     assert res.status_code == status.HTTP_200_OK

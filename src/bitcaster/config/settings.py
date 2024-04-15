@@ -24,6 +24,7 @@ ALLOWED_HOSTS: List[str] = []
 
 INSTALLED_APPS = [
     "bitcaster.web.apps.Config",
+    "bitcaster.social",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -89,6 +90,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
+                "bitcaster.social.context_processors.available_providers",
             ],
         },
     },
@@ -136,15 +138,18 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
+    # social
     "social_core.backends.google.GoogleOAuth2",
-    "social_core.backends.google.GoogleOAuth2",
+    "social_core.backends.azuread.AzureADOAuth2",
+    "social_core.backends.azuread_tenant.AzureADTenantOAuth2",
+    "social_core.backends.gitlab.GitLabOAuth2",
     "social_core.backends.facebook.FacebookOAuth2",
     "social_core.backends.twitter.TwitterOAuth",
     "social_core.backends.github.GithubOAuth2",
     "social_core.backends.linkedin.LinkedinOAuth2",
-    "social_core.backends.facebook.FacebookOAuth2",
+    # local
     "bitcaster.auth.backends.BitcasterBackend",
+    # "django.contrib.auth.backends.ModelBackend",
 ]
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
