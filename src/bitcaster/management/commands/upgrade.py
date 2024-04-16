@@ -11,6 +11,7 @@ from django.core.validators import validate_email
 from strategy_field.utils import fqn
 
 from bitcaster.config import env
+from bitcaster.dispatchers import EmailDispatcher
 from bitcaster.models import Channel
 
 if TYPE_CHECKING:
@@ -104,9 +105,10 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
-        from bitcaster.models import Application, Message, Organization, Project, User
+        from bitcaster.models import Application, Event, Message, Organization, Project, User
 
         bitcaster: Optional[Application] = None
+        admin: Optional[User] = None
 
         self.get_options(options)
         if self.verbosity >= 1:
@@ -158,29 +160,35 @@ class Command(BaseCommand):
                         verbosity=self.verbosity - 1,
                         interactive=False,
                     )
-                    admin: "User" = User.objects.get(email=self.admin_email)
-                    echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
-                    admin.addresses.get_or_create(name="email", value=self.admin_email)
-                    os4d = Organization.objects.get_or_create(name="OS4D", owner=admin)[0]
-                    echo("Creating initial structure")
-                    prj = Project.objects.get_or_create(name="Bitcaster", organization=os4d, owner=os4d.owner)[0]
-                    bitcaster = Application.objects.get_or_create(name="Bitcaster", project=prj, owner=os4d.owner)[0]
+                admin: "User" = User.objects.get(email=self.admin_email)
+                os4d = Organization.objects.get_or_create(name="OS4D", owner=admin)[0]
+                echo("Creating initial structure")
+                prj = Project.objects.get_or_create(name="Bitcaster", organization=os4d, owner=os4d.owner)[0]
+                bitcaster = Application.objects.get_or_create(name="Bitcaster", project=prj, owner=os4d.owner)[0]
             if not bitcaster:
                 bitcaster = Application.objects.get(
                     name="Bitcaster", project__name="Bitcaster", project__organization__name="OS4D"
                 )[0]
-
             from bitcaster.dispatchers.log import BitcasterLogDispatcher
 
-            Channel.objects.get_or_create(
+            ch_log = Channel.objects.get_or_create(
                 name="BitcasterLog",
                 organization=bitcaster.project.organization,
-                dispatcher=fqn(BitcasterLogDispatcher),
+                project=bitcaster.project,
                 application=bitcaster,
-            )
-
+                dispatcher=fqn(BitcasterLogDispatcher),
+            )[0]
+            ch_mail = Channel.objects.get_or_create(
+                name=Channel.SYSTEM_EMAIL_CHANNEL_NAME,
+                organization=bitcaster.project.organization,
+                project=bitcaster.project,
+                application=bitcaster,
+                dispatcher=fqn(EmailDispatcher),
+            )[0]
             for event_name in ["application_locked", "application_unlocked"]:
-                ev = bitcaster.register_event(event_name)
+                ev: "Event" = bitcaster.register_event(event_name)
+                ev.channels.add(ch_mail)
+                ev.channels.add(ch_log)
                 Message.objects.get_or_create(
                     event=ev,
                     name="Message for {event_name}".format(event_name=event_name),
@@ -189,13 +197,17 @@ class Command(BaseCommand):
                     content="{{message}}",
                     html_content="{{message}}",
                 )
+            if admin:
+                echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
+                admin_email = admin.addresses.get_or_create(name="email", value=self.admin_email)[0]
+                admin_email.validate_channel(ch_mail)
+
             echo("Upgrade completed", style_func=self.style.SUCCESS)
         except ValidationError as e:
             self.halt(Exception("\n- ".join(["Wrong argument(s):", *e.messages])))
         except (CommandError, SystemCheckError) as e:
             self.halt(e)
         except Exception as e:
-            raise
             self.stdout.write(str(e), style_func=self.style.ERROR)
             logger.exception(e)
             self.halt(e)

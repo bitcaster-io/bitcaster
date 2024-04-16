@@ -1,5 +1,6 @@
-from bitcaster.social.models import SocialProvider, Provider
 from testutils.factories.social import SocialProviderFactory
+
+from bitcaster.social.models import Provider, SocialProvider
 
 
 def test_manager(db):

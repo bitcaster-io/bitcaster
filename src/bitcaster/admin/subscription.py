@@ -27,14 +27,15 @@ class SubscriptionAdmin(BaseAdmin, admin.ModelAdmin[Subscription]):
         "active",
     )
     autocomplete_fields = ("event", "validation")
-    filter_horizontal = ("channels",)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Subscription]:
         return (
             super()
             .get_queryset(request)
-            .select_related("address", "address__user", "event__application__project__organization")
+            .select_related(
+                "validation__address__user", "validation__channel", "event__application__project__organization"
+            )
         )
 
     def user(self, obj: Subscription) -> "User":
-        return obj.address.user
+        return obj.validation.address.user

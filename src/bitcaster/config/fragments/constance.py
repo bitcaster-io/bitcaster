@@ -10,9 +10,14 @@ CONSTANCE_ADDITIONAL_FIELDS = {
         "django.forms.EmailField",
         {},
     ],
+    "email_channel": [
+        "bitcaster.utils.constance.EmailChannel",
+        {},
+    ],
 }
 
 CONSTANCE_CONFIG = {
     "MINIFY_RESPONSE": (0, "select yes or no", "html_minify_select"),
     "MINIFY_IGNORE_PATH": (r"", "regex for ignored path", str),
+    "SYSTEM_EMAIL_CHANNEL": ("", "System Email", "email_channel"),
 }

@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -18,10 +18,12 @@ class ChannelManager(models.Manager["Channel"]):
 
 
 class Channel(models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, blank=True, null=True)
+    SYSTEM_EMAIL_CHANNEL_NAME = "System Email Channel"
+
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True)
     application = models.ForeignKey(Application, on_delete=models.CASCADE, blank=True, null=True)
-    name = models.CharField(max_length=255, db_collation="case_insensitive")
+    name = models.CharField(_("Name"), max_length=255, db_collation="case_insensitive")
     dispatcher: "Dispatcher" = StrategyField(registry=dispatcherManager, default="test")
     config = models.JSONField(blank=True, default=dict)
 
@@ -32,6 +34,11 @@ class Channel(models.Model):
 
     class Meta:
         permissions = (("bitcaster.lock_channels", "Can lock channels"),)
+        unique_together = (
+            ("organization", "name"),
+            ("organization", "project", "name"),
+            ("organization", "project", "application", "name"),
+        )
 
     def __str__(self) -> str:
         return self.name
@@ -53,8 +60,18 @@ class Channel(models.Model):
     def clean(self) -> None:
         if not self.dispatcher:
             self.dispatcher = dispatcherManager.get_default()
+        try:
+            if self.application:
+                self.project = self.application.project
+        except ObjectDoesNotExist:
+            pass
+        try:
+            if self.project:
+                self.organization = self.project.organization
+        except ObjectDoesNotExist:
+            pass
 
-        if not self.application and not self.organization:
-            raise ValidationError(_("Channel must have an application or an organization"))
+        # if not self.application and not self.organization:
+        #     raise ValidationError(_("Channel must have an application or an organization"))
         # if self.application.organization != self.organization:
         #     raise ValidationError(_("Organization and Application mismatch"))
