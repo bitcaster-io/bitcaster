@@ -7,6 +7,7 @@ from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models.options import Options
 from django.urls import reverse
 from django_regex.utils import RegexList as _RegexList
+from testutils.factories.user import SuperUserFactory
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
 
@@ -105,7 +106,6 @@ def record(db, request):
 
 @pytest.fixture()
 def app(django_app_factory, mocked_responses):
-    from testutils.factories import SuperUserFactory
 
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")
@@ -178,7 +178,7 @@ def test_admin_delete(app, modeladmin, record, monkeypatch):
         pytest.skip("No 'delete' permission")
 
 
-@pytest.mark.skip_buttons()
+@pytest.mark.skip_buttons("bitcaster.EventAdmin:subscribe")
 def test_admin_buttons(app, modeladmin, button_handler, record, monkeypatch):
     from admin_extra_buttons.handlers import LinkHandler
 

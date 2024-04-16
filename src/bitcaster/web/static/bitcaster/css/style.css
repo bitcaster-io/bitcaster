@@ -5,10 +5,21 @@
   --jse-theme-color: var(--bg-primary);
 }
 
+form.login-form {
+  padding: 5px;
+  background-color: yellow;
+}
+form.login-form input[type=text], form.login-form input[type=password] {
+  width: 300px;
+  padding: 12px !important;
+}
+
 .social-login {
   width: 400px;
   border: 1px solid gray;
   margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
   padding-top: 10px;
   padding-bottom: 10px;
 }

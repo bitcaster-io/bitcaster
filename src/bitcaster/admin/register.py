@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from bitcaster import models
 
-from .address import AddressAdmin, ValidationAdmin
+from .address import AddressAdmin
 from .auth import RoleAdmin, UserAdmin
 from .channel import ChannelAdmin
 from .event import EventAdmin
@@ -10,6 +10,7 @@ from .log import LogMessageAdmin
 from .message import MessageAdmin
 from .org import ApplicationAdmin, OrganisationAdmin, ProjectAdmin
 from .subscription import SubscriptionAdmin
+from .validation import ValidationAdmin
 
 admin.site.register(models.Address, AddressAdmin)
 admin.site.register(models.Application, ApplicationAdmin)

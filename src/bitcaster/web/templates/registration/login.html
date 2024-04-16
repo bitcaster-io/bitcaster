@@ -2,19 +2,17 @@
 {% block body %}
     <div class="text-center">
         <img style="width: 200px;margin-bottom: 50px" src="{% static "bitcaster/images/logos/logo400.png" %}">
-        <form method="post" action=".">
+        <form method="post" action="." class="login-form">
             {% csrf_token %}
-            {{ form.errors }}
             {{ form }}
             <input class="primary" type="submit" value="Login">
         </form>
         <div class="social-login">
+        111
             {% for k,v in sso_providers %}
                 <form action="{% url "social:begin" k %}">
                     <input type="submit" value="{{ v }}"/>
                 </form>
-                <div>
-                </div>
             {% endfor %}
         </div>
     </div>

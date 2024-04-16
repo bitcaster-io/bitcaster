@@ -7,11 +7,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ..dispatchers.base import Dispatcher, Payload
-from . import Address
 from .channel import Channel
 from .event import Event
+from .validation import Validation
 
 if TYPE_CHECKING:
+    from .address import Address
     from .message import Message
 
 JsonPayload = Optional[Dict[str, Any] | str]
@@ -28,9 +29,8 @@ class SubscriptionQuerySet(models.QuerySet["Subscription"]):
 
 
 class Subscription(models.Model):
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="subscriptions")
+    validation = models.ForeignKey(Validation, on_delete=models.CASCADE, related_name="subscriptions")
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="subscriptions")
-    channels = models.ManyToManyField(Channel, related_name="subscriptions")
     payload_filter = models.TextField(blank=True, null=True)
 
     active = models.BooleanField(default=True)
@@ -38,7 +38,7 @@ class Subscription(models.Model):
     objects = SubscriptionQuerySet.as_manager()
 
     def __str__(self) -> str:
-        return f"{self.address.user}[{self.address}] -> {self.event}"
+        return f"{self.validation.address.user}[{self.validation.address}] -> {self.event}"
 
     class Meta:
         verbose_name = _("Subscription")
@@ -47,17 +47,18 @@ class Subscription(models.Model):
     def notify(self, context: Dict[str, Any]) -> None:
         message: Optional["Message"]
         context.update({"subscription": self, "event": self.event})
-        for ch in self.channels.active():
-            dispatcher: "Dispatcher" = ch.dispatcher
-            # if addr := self.user.addresses.filter(validations__validated=True, validations__channel=ch).first():
-            if message := self.event.messages.filter(channel=ch).first():
-                context.update({"channel": ch, "address": self.address})
-                payload: Payload = Payload(
-                    event=self.event,
-                    user=self.address.user,
-                    message=message.render(context),
-                )
-                dispatcher.send(self.address.value, payload)
+        ch: Channel = self.validation.channel
+        addr: "Address" = self.validation.address
+
+        dispatcher: "Dispatcher" = ch.dispatcher
+        if message := self.event.messages.filter(channel=ch).first():
+            context.update({"channel": ch, "address": addr.value})
+            payload: Payload = Payload(
+                event=self.event,
+                user=self.validation.address.user,
+                message=message.render(context),
+            )
+            dispatcher.send(addr.value, payload)
 
     @staticmethod
     def match_filter_impl(filter_rules_dict: JsonPayload, payload: JsonPayload, check_only: bool = False) -> bool:

@@ -1,6 +1,6 @@
 import factory
 
-from bitcaster.models.address import Validation
+from bitcaster.models.validation import Validation
 
 from .address import AddressFactory
 from .base import AutoRegisterModelFactory

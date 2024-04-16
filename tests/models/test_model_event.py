@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from testutils.factories import ChannelFactory, MessageFactory
+from testutils.factories.channel import ChannelFactory
+from testutils.factories.message import MessageFactory
 
 if TYPE_CHECKING:
     from bitcaster.models import Event

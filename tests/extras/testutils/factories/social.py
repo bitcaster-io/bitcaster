@@ -1,6 +1,6 @@
 from factory import fuzzy
 
-from bitcaster.social.models import SocialProvider, Provider
+from bitcaster.social.models import Provider, SocialProvider
 
 from .base import AutoRegisterModelFactory
 

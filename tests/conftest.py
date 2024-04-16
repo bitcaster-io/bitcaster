@@ -51,13 +51,13 @@ def pytest_configure(config):
     os.environ.setdefault("TEST_EMAIL_SENDER", "sender@example.com")
     os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
 
-    os.environ.setdefault("MAILGUN_API_KEY", "11")
-    os.environ.setdefault("MAILGUN_SENDER_DOMAIN", "mailgun.domain")
-    os.environ.setdefault("MAILJET_API_KEY", "11")
-    os.environ.setdefault("MAILJET_SECRET_KEY", "11")
+    os.environ["MAILGUN_API_KEY"] = "11"
+    os.environ["MAILGUN_SENDER_DOMAIN"] = "mailgun.domain"
+    os.environ["MAILJET_API_KEY"] = "11"
+    os.environ["MAILJET_SECRET_KEY"] = "11"
 
-    os.environ.setdefault("GMAIL_USER", "11")
-    os.environ.setdefault("GMAIL_PASSWORD", "11")
+    os.environ["GMAIL_USER"] = "11"
+    os.environ["GMAIL_PASSWORD"] = "11"
 
     if not config.option.with_sentry:
         os.environ["SENTRY_DSN"] = ""
@@ -123,69 +123,88 @@ def mocked_responses():
 
 @pytest.fixture
 def user(db):
-    from testutils.factories import UserFactory
+
+    from testutils.factories.user import UserFactory
 
     return UserFactory(username="user@example.com", is_active=True)
 
 
 @pytest.fixture
 def superuser(db):
-    from testutils.factories import SuperUserFactory
+
+    from testutils.factories.user import SuperUserFactory
 
     return SuperUserFactory(username="superuser@example.com")
 
 
 @pytest.fixture()
 def organization(db):
-    from testutils.factories import OrganizationFactory
+
+    from testutils.factories.org import OrganizationFactory
 
     return OrganizationFactory(name="OS4D")
 
 
 @pytest.fixture()
 def project(db):
-    from testutils.factories import ProjectFactory
+    from testutils.factories.org import ProjectFactory
 
     return ProjectFactory(name="BITCASTER")
 
 
 @pytest.fixture()
 def application(db):
-    from testutils.factories import ApplicationFactory
+    from testutils.factories.org import ApplicationFactory
 
     return ApplicationFactory(name="Bitcaster", project__name="BITCASTER", project__organization__name="OS4D")
 
 
 @pytest.fixture()
 def event(db):
-    from testutils.factories import EventFactory
+    from testutils.factories.event import EventFactory
 
     return EventFactory()
 
 
 @pytest.fixture()
 def address(db):
-    from testutils.factories import AddressFactory
+    from testutils.factories.address import AddressFactory
 
     return AddressFactory()
 
 
 @pytest.fixture()
 def message(db):
-    from testutils.factories import MessageFactory
+    from testutils.factories.message import MessageFactory
 
     return MessageFactory()
 
 
 @pytest.fixture()
 def channel(db):
-    from testutils.factories import ChannelFactory
+    from testutils.factories.channel import ChannelFactory
 
     return ChannelFactory()
 
 
 @pytest.fixture()
 def api_key(db):
-    from testutils.factories import ApiKeyFactory
+    from testutils.factories.key import ApiKeyFactory
 
     return ApiKeyFactory()
+
+
+@pytest.fixture()
+def occurence(db):
+    from testutils.factories import OccurenceFactory
+
+    return OccurenceFactory()
+
+
+@pytest.fixture()
+def messagebox():
+    import testutils.dispatcher
+
+    testutils.dispatcher.MESSAGES = []
+    yield testutils.dispatcher.MESSAGES
+    testutils.dispatcher.MESSAGES = []

@@ -61,6 +61,8 @@ class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
         return super().get_form(request, obj, change, **defaults)
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[AnyModel]" = None) -> "_ListOrTuple[str]":
+        if obj and obj.name == Channel.SYSTEM_EMAIL_CHANNEL_NAME:
+            return ["name", "organization", "project", "application"]
         return []
 
     @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"})

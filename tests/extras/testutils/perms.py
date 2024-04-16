@@ -4,10 +4,9 @@ from unittest.mock import Mock
 
 from django.contrib.auth.models import Permission
 from faker import Faker
+from testutils.factories.django_auth import GroupFactory
 
 from bitcaster.state import state
-
-from .factories import GroupFactory
 
 whitespace = " \t\n\r\v\f"
 lowercase = "abcdefghijklmnopqrstuvwxyz"

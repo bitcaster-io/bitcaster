@@ -30,6 +30,8 @@ class Message(models.Model):
     class Meta:
         verbose_name = _("Message template")
         verbose_name_plural = _("Message templates")
+        ordering = ("name",)
+
         constraints = [
             UniqueConstraint(
                 fields=["channel", "event", "name"],
