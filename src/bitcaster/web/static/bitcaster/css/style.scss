@@ -5,12 +5,21 @@
   --jse-theme-color: var(--bg-primary);
 }
 
-form.login-form {
+div.login-form {
   padding: 5px;
-  background-color: yellow;
+  width: 400px;
+  margin: auto;
+  //margin-right: auto;
+  label{
+    display: inline-flex;
+    width: 220px;
+    margin-top: 10px;
+  }
   input[type=text], input[type=password] {
-    width: 300px;
+    margin:auto;
+    width: 200px;
     padding: 12px !important;
+    display: block;
   }
 }
 
@@ -18,8 +27,6 @@ form.login-form {
   width: 400px;
   border: 1px solid gray;
   margin-top: 10px;
-  margin-left: auto;
-  margin-right: auto;
   padding-top: 10px;
   padding-bottom: 10px;
 

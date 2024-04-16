@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand
 from django.core.management.base import CommandError, SystemCheckError
+from flags.state import enable_flag
 from strategy_field.utils import fqn
 
 from bitcaster.config import env
@@ -116,15 +117,17 @@ class Command(BaseCommand):
             echo("Configuring development environment", style_func=self.style.WARNING)
             bitcaster = Application.objects.get(name="bitcaster")
 
-            if GOOGLE_CLIENT_ID := os.environ.get("GOOGLE_CLIENT_ID") and (
-                GOOGLE_CLIENT_SECRET := os.environ.get("GOOGLE_CLIENT_SECRET")
-            ):
-                sso, __ = SocialProvider.objects.get_or_create(
+            if os.environ.get("GOOGLE_CLIENT_ID") and os.environ.get("GOOGLE_CLIENT_SECRET"):
+                sso, __ = SocialProvider.objects.update_or_create(
                     provider=Provider.GOOGLE_OAUTH2,
                     defaults={
                         "configuration": {
-                            "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": GOOGLE_CLIENT_ID,
-                            "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET": GOOGLE_CLIENT_SECRET,
+                            "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": os.environ.get("GOOGLE_CLIENT_ID"),
+                            "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET": os.environ.get("GOOGLE_CLIENT_SECRET"),
+                            "SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE": [
+                                "https://www.googleapis.com/auth/userinfo.email",
+                                "https://www.googleapis.com/auth/userinfo.profile",
+                            ],
                         }
                     },
                 )
@@ -163,6 +166,8 @@ class Command(BaseCommand):
                     },
                 )
                 echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
+
+            enable_flag("DEVELOP_DEBUG_TOOLBAR")
 
             echo("System configured", style_func=self.style.SUCCESS)
         except ValidationError as e:

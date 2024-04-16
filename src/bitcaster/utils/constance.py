@@ -64,5 +64,8 @@ class EmailsFormField(CharField):
 
 class EmailChannel(ChoiceField):
     def __init__(self, **kwargs: Any) -> None:
-        kwargs["choices"] = zip(Channel.objects.values("name", "dispatcher"))
+        ret = [["", "None"]]
+        for c in Channel.objects.values("pk", "name"):
+            ret.append([c["pk"], c["name"]])
+        kwargs["choices"] = ret
         super().__init__(**kwargs)

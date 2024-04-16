@@ -40,6 +40,7 @@ class ProjectAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Project]):
     list_display = ("name", "organization")
     list_filter = (("organization", AutoCompleteFilter),)
     autocomplete_fields = ("organization",)
+    exclude = ("locked",)
 
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Project] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))

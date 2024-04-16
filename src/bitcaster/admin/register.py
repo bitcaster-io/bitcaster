@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group
 
 from bitcaster import models
 
@@ -6,11 +7,17 @@ from .address import AddressAdmin
 from .auth import RoleAdmin, UserAdmin
 from .channel import ChannelAdmin
 from .event import EventAdmin
+from .group import GroupAdmin
 from .log import LogMessageAdmin
 from .message import MessageAdmin
 from .org import ApplicationAdmin, OrganisationAdmin, ProjectAdmin
 from .subscription import SubscriptionAdmin
 from .validation import ValidationAdmin
+
+#
+admin.site.unregister(Group)
+admin.site.register(Group, GroupAdmin)
+
 
 admin.site.register(models.Address, AddressAdmin)
 admin.site.register(models.Application, ApplicationAdmin)

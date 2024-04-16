@@ -105,6 +105,8 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
+        from django.contrib.auth.models import Group
+
         from bitcaster.models import Application, Event, Message, Organization, Project, User
 
         bitcaster: Optional[Application] = None
@@ -201,6 +203,10 @@ class Command(BaseCommand):
                 echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
                 admin_email = admin.addresses.get_or_create(name="email", value=self.admin_email)[0]
                 admin_email.validate_channel(ch_mail)
+            from bitcaster.auth.constants import DEFAULT_GROUP_NAME
+
+            Group.objects.get_or_create(name="Admins")
+            Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
         except ValidationError as e:

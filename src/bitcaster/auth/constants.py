@@ -1,5 +1,7 @@
 from django.db.models import TextChoices
 
+DEFAULT_GROUP_NAME = "Default"
+
 
 class Grant(TextChoices):
     USER_READ = "USER_READ", "User Read"

@@ -14,11 +14,15 @@ from .org import Application, Organization, Project
 class ChannelManager(models.Manager["Channel"]):
 
     def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[Channel, bool]":
-        if "application" in kwargs:
-            kwargs["project"] = kwargs["application"].project
-            kwargs["organization"] = kwargs["application"].project.organization
-        elif "project" in kwargs:
-            kwargs["organization"] = kwargs["project"].organization
+        targets = [kwargs]
+        if defaults:
+            targets.append(defaults)
+        for target in targets:
+            if "application" in target:
+                target["project"] = target["application"].project
+                target["organization"] = target["application"].project.organization
+            elif "project" in target:
+                target["organization"] = target["project"].organization
 
         return super().get_or_create(defaults, **kwargs)
 

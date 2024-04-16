@@ -37,7 +37,7 @@ class SocialProfileAdmin(ExtraButtonsMixin, admin.ModelAdmin[SocialProvider]):
             )
         return formfield
 
-    @link()
+    @link(html_attrs={"target": "_blank"})
     def test(self, button: Button) -> None:
         if original := button.context.get("original"):
             button.label = f"Login with '{original.label}'"
