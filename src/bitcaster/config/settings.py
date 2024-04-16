@@ -73,6 +73,7 @@ MIDDLEWARE = [
 ]
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
+LOGOUT_URL = "/"
 
 ROOT_URLCONF = "bitcaster.config.urls"
 

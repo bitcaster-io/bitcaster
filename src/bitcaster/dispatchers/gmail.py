@@ -4,7 +4,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends.smtp import EmailBackend
-from django.forms import PasswordInput
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
@@ -16,7 +15,7 @@ if TYPE_CHECKING:
 
 class GMailConfig(DispatcherConfig):
     username = forms.CharField(label=_("Username"))
-    password = forms.CharField(label=_("Password"), widget=PasswordInput)
+    password = forms.CharField(label=_("Password"))
 
 
 class GMmailDispatcher(Dispatcher):

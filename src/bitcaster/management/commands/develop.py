@@ -10,7 +10,7 @@ from flags.state import enable_flag
 from strategy_field.utils import fqn
 
 from bitcaster.config import env
-from bitcaster.dispatchers import GMmailDispatcher
+from bitcaster.dispatchers import GMmailDispatcher, MailgunDispatcher, MailJetDispatcher
 from bitcaster.models import Channel
 
 if TYPE_CHECKING:
@@ -132,37 +132,53 @@ class Command(BaseCommand):
                     },
                 )
                 echo(f"Created/Updated SSO {sso}", style_func=self.style.SUCCESS)
-            if GMAIL_USER := os.environ.get("GMAIL_USER") and (GMAIL_PASSWORD := os.environ.get("GMAIL_PASSWORD")):
-                ch, __ = Channel.objects.get_or_create(
+            if os.environ.get("GITHUB_KEY") and os.environ.get("GITHUB_SECRET"):
+                sso, __ = SocialProvider.objects.update_or_create(
+                    provider=Provider.GITHUB,
+                    defaults={
+                        "configuration": {
+                            "SOCIAL_AUTH_GITHUB_KEY": os.environ.get("GITHUB_KEY"),
+                            "SOCIAL_AUTH_GITHUB_SECRET": os.environ.get("GITHUB_SECRET"),
+                        }
+                    },
+                )
+                echo(f"Created/Updated SSO {sso}", style_func=self.style.SUCCESS)
+            if os.environ.get("GMAIL_USER") and os.environ.get("GMAIL_PASSWORD"):
+                ch, __ = Channel.objects.update_or_create(
                     name="Gmail",
                     defaults={
                         "application": bitcaster,
                         "dispatcher": fqn(GMmailDispatcher),
-                        "config": {"username": GMAIL_USER, "password": GMAIL_PASSWORD},
+                        "config": {
+                            "username": os.environ.get("GMAIL_USER"),
+                            "password": os.environ.get("GMAIL_PASSWORD"),
+                        },
                     },
                 )
                 echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
-            if MAILGUN_SENDER_DOMAIN := os.environ.get("MAILGUN_SENDER_DOMAIN") and (
-                MAILGUN_API_KEY := os.environ.get("MAILGUN_API_KEY")
-            ):
-                ch, __ = Channel.objects.get_or_create(
+            if os.environ.get("MAILGUN_SENDER_DOMAIN") and os.environ.get("MAILGUN_API_KEY"):
+                ch, __ = Channel.objects.update_or_create(
                     name="Mailgun",
                     defaults={
                         "application": bitcaster,
-                        "dispatcher": fqn(GMmailDispatcher),
-                        "config": {"api_key": MAILGUN_API_KEY, "sender_domain": MAILGUN_SENDER_DOMAIN},
+                        "dispatcher": fqn(MailgunDispatcher),
+                        "config": {
+                            "api_key": os.environ.get("MAILGUN_API_KEY"),
+                            "sender_domain": os.environ.get("MAILGUN_SENDER_DOMAIN"),
+                        },
                     },
                 )
                 echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
-            if MAILJET_API_KEY := os.environ.get("MAILJET_API_KEY") and (
-                MAILJET_SECRET_KEY := os.environ.get("MAILJET_SECRET_KEY")
-            ):
-                ch, __ = Channel.objects.get_or_create(
+            if os.environ.get("MAILJET_API_KEY") and os.environ.get("MAILJET_SECRET_KEY"):
+                ch, __ = Channel.objects.update_or_create(
                     name="MailJet",
                     defaults={
                         "application": bitcaster,
-                        "dispatcher": fqn(GMmailDispatcher),
-                        "config": {"api_key": MAILJET_API_KEY, "secret_key": MAILJET_SECRET_KEY},
+                        "dispatcher": fqn(MailJetDispatcher),
+                        "config": {
+                            "api_key": os.environ.get("MAILJET_API_KEY"),
+                            "secret_key": os.environ.get("MAILJET_SECRET_KEY"),
+                        },
                     },
                 )
                 echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
