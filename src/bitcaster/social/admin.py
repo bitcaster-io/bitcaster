@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.buttons import Button
 from admin_extra_buttons.decorators import link
@@ -12,8 +12,6 @@ from django.urls import reverse
 from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
 
 from bitcaster.models import SocialProvider
-from typing import TYPE_CHECKING
-
 from bitcaster.utils.security import is_root
 
 if TYPE_CHECKING:

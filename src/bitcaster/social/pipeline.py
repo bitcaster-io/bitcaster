@@ -1,7 +1,7 @@
 from typing import Any
 
-from django.contrib.auth.models import Group, User
 from constance import config
+from django.contrib.auth.models import Group, User
 from social_core.backends.base import BaseAuth
 
 

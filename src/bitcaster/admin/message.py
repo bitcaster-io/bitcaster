@@ -29,7 +29,7 @@ class MessageForm(forms.ModelForm[Message]):
             mce_attrs={"setup": "setupTinyMCE", "height": "400px"},
         ),
     )
-    context = forms.JSONField(widget=SvelteJSONEditorWidget())
+    context = forms.JSONField(widget=SvelteJSONEditorWidget(), required=False)
 
     class Meta:
         model = Message
@@ -61,6 +61,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
 
     @view()
     def render(self, request: HttpRequest, pk: str) -> "HttpResponse":
+
         form = MessageForm(request.POST)
         obj = self.get_object(request, pk)
         if form.is_valid():

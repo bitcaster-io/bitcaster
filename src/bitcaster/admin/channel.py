@@ -82,6 +82,7 @@ class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
                 obj.config = config_form.cleaned_data
                 obj.save()
                 self.message_user(request, "Configured channel {}".format(obj.name))
+                return HttpResponseRedirect("..")
         else:
             config_form = form_class(initial={k: v for k, v in obj.config.items() if k in form_class.declared_fields})
         fs = (("", {"fields": form_class.declared_fields}),)

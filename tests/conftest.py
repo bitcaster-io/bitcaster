@@ -84,6 +84,11 @@ def pytest_configure(config):
     from bitcaster.dispatchers.base import dispatcherManager
 
     dispatcherManager.register(TestDispatcher)
+    from django.contrib.auth.models import Group
+
+    from bitcaster.auth.constants import DEFAULT_GROUP_NAME
+
+    Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
 
     try:
         call_command("env", check=True)
