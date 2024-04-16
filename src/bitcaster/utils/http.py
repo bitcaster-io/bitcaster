@@ -1,4 +1,3 @@
-import datetime
 from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 from urllib.parse import urljoin
 
@@ -8,10 +7,9 @@ from django.http.request import split_domain_port
 from django.urls import reverse
 
 from ..state import state
-from .constants import YEAR
 
 if TYPE_CHECKING:
-    from ..types.http import AnyRequest, AnyResponse
+    from ..types.http import AnyRequest
 
 
 class HttpResponseRedirectToReferrer(HttpResponseRedirect):
@@ -52,26 +50,3 @@ def absolute_uri(url: str | None = None) -> str:
 
 def absolute_reverse(name: str, args: Tuple[Any] | None = None, kwargs: Dict[str, Any] | None = None) -> str:
     return absolute_uri(reverse(name, args=args, kwargs=kwargs))
-
-
-# def absolute_static(path):
-#     return absolute_uri(static(path))
-
-
-def set_cookie(response: "AnyResponse", key: str, value: str, max_age: int = YEAR) -> None:
-    # if expire is None:
-    #     max_age = 365 * 24 * 60 * 60  # one year
-    # else:
-    #     max_age = days_expire * 24 * 60 * 60
-    expires = datetime.datetime.strftime(
-        datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age),
-        "%a, %d-%b-%Y %H:%M:%S GMT",
-    )
-    response.set_cookie(
-        key,
-        value,
-        max_age=max_age,
-        expires=expires,
-        domain=settings.SESSION_COOKIE_DOMAIN,
-        secure=bool(settings.SESSION_COOKIE_SECURE or None),
-    )

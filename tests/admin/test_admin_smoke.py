@@ -28,11 +28,7 @@ GLOBAL_EXCLUDED_MODELS = RegexList(
     ]
 )
 
-GLOBAL_EXCLUDED_BUTTONS = RegexList(
-    [
-        "core.UserAdmin:link_user_data",
-    ]
-)
+GLOBAL_EXCLUDED_BUTTONS = RegexList([])
 
 KWARGS = {}
 

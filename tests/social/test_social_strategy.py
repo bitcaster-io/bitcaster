@@ -15,3 +15,10 @@ def test_social_strategy_provider_setting(db):
     SocialProviderFactory(provider=Provider.GITHUB, configuration={"SOCIAL_AUTH_GITHUB_KEY": "123"})
     s = BitcasterStrategy(Mock(), Mock())
     assert s.get_setting("SOCIAL_AUTH_GITHUB_KEY") == "123"
+
+
+def test_social_strategy_cache(db):
+    SocialProviderFactory(provider=Provider.GITHUB, configuration={"SOCIAL_AUTH_GITHUB_KEY": "123"})
+    s = BitcasterStrategy(Mock(), Mock())
+    assert s.get_setting("SOCIAL_AUTH_GITHUB_KEY") == "123"
+    assert s.get_setting("SOCIAL_AUTH_GITHUB_KEY") == "123"

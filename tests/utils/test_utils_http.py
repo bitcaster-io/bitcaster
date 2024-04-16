@@ -31,6 +31,8 @@ def test_absolute_uri(settings):
     assert absolute_uri("") == "https://127.0.0.1/"
     with state.configure(request=None):
         assert absolute_uri("") == ""
+    with state.configure(request=None):
+        assert absolute_uri("/test/") == "https://127.0.0.1/test/"
 
 
 def test_get_server_host():
