@@ -214,6 +214,7 @@ from .fragments.debug_toolbar import *  # noqa
 from .fragments.flags import *  # noqa
 from .fragments.gdal import *  # noqa
 from .fragments.rest_framework import *  # noqa
+from .fragments.root import *  # noqa
 from .fragments.sentry import *  # noqa
 from .fragments.social_auth import *  # noqa
 from .fragments.tinymce import *  # noqa

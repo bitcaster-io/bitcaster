@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from django.db import models
+from django.utils.translation import gettext as _
 
 from .channel import Channel
 from .mixins import SlugMixin
@@ -18,7 +19,9 @@ class Event(SlugMixin, models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="events")
     description = models.CharField(max_length=255, blank=True, null=True)
     active = models.BooleanField(default=True)
-    locked = models.BooleanField(default=False)
+    locked = models.BooleanField(default=False, help_text=_("Security lock"))
+    newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
+
     channels = models.ManyToManyField(Channel, blank=True)
 
     subscriptions: "QuerySet[Subscription]"
@@ -29,6 +32,7 @@ class Event(SlugMixin, models.Model):
             ("name", "application"),
             ("slug", "application"),
         )
+        ordering = ("name",)
 
     def trigger(self, context: Dict[str, Any]) -> "Occurence":
         from .occurence import Occurence

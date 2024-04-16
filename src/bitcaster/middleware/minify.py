@@ -44,10 +44,10 @@ class HtmlMinMiddleware:
             return re.compile(config.MINIFY_IGNORE_PATH)
 
     def update_config(self, sender: Any, key: str, old_value: Any, new_value: Any, **kwargs: Any) -> None:
-        if hasattr(self, "config_value"):
+        if hasattr(self, "config_value"):  # pragma: no cover
             del self.config_value
 
-        if hasattr(self, "ignore_regex"):
+        if hasattr(self, "ignore_regex"):  # pragma: no cover
             del self.ignore_regex
 
     def ignore_path(self, path: str) -> bool:

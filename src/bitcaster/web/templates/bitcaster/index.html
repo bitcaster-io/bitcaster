@@ -12,14 +12,13 @@
                         <a class="button primary" href="/api/">API</a>
                     {% endif %}
                     <a class="button primary" href="/api/schema/">Swagger</a>
-        <form method="post" action="{% url "logout" %}">
-                           {% csrf_token %}
- 
-                    <input type="submit" class="submit primary">Logout</a>
-        </form>
+                    <form method="post" action="{% url "logout" %}">
+                        {% csrf_token %}
+                        <input type="submit" class="submit primary" value="{% translate "Logout" %}">
+                    </form>
                 </form>
             {% else %}
-                <a class="button primary" href="{% url "login" %}">Enter</a>
+                <a class="button primary" href="{% url "login" %}">{% translate "Enter" %}</a>
             {% endif %}
         </div>
     </div>

@@ -7,12 +7,13 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ..dispatchers.base import Dispatcher, Payload
-from .validation import Validation
 from .channel import Channel
 from .event import Event
+from .validation import Validation
 
 if TYPE_CHECKING:
     from .message import Message
+    from .address import Address
 
 JsonPayload = Optional[Dict[str, Any] | str]
 
@@ -47,15 +48,17 @@ class Subscription(models.Model):
         message: Optional["Message"]
         context.update({"subscription": self, "event": self.event})
         ch: Channel = self.validation.channel
+        addr: "Address" = self.validation.address
+
         dispatcher: "Dispatcher" = ch.dispatcher
         if message := self.event.messages.filter(channel=ch).first():
-            context.update({"channel": ch, "address": self.validation.address})
+            context.update({"channel": ch, "address": addr.value})
             payload: Payload = Payload(
                 event=self.event,
                 user=self.validation.address.user,
                 message=message.render(context),
             )
-            dispatcher.send(self.validation.address.value, payload)
+            dispatcher.send(addr.value, payload)
 
     @staticmethod
     def match_filter_impl(filter_rules_dict: JsonPayload, payload: JsonPayload, check_only: bool = False) -> bool:

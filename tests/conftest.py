@@ -51,13 +51,13 @@ def pytest_configure(config):
     os.environ.setdefault("TEST_EMAIL_SENDER", "sender@example.com")
     os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
 
-    os.environ.setdefault("MAILGUN_API_KEY", "11")
-    os.environ.setdefault("MAILGUN_SENDER_DOMAIN", "mailgun.domain")
-    os.environ.setdefault("MAILJET_API_KEY", "11")
-    os.environ.setdefault("MAILJET_SECRET_KEY", "11")
+    os.environ["MAILGUN_API_KEY"] = "11"
+    os.environ["MAILGUN_SENDER_DOMAIN"] = "mailgun.domain"
+    os.environ["MAILJET_API_KEY"] = "11"
+    os.environ["MAILJET_SECRET_KEY"] = "11"
 
-    os.environ.setdefault("GMAIL_USER", "11")
-    os.environ.setdefault("GMAIL_PASSWORD", "11")
+    os.environ["GMAIL_USER"] = "11"
+    os.environ["GMAIL_PASSWORD"] = "11"
 
     if not config.option.with_sentry:
         os.environ["SENTRY_DSN"] = ""
@@ -192,3 +192,19 @@ def api_key(db):
     from testutils.factories.key import ApiKeyFactory
 
     return ApiKeyFactory()
+
+
+@pytest.fixture()
+def occurence(db):
+    from testutils.factories import OccurenceFactory
+
+    return OccurenceFactory()
+
+
+@pytest.fixture()
+def messagebox():
+    import testutils.dispatcher
+
+    testutils.dispatcher.MESSAGES = []
+    yield testutils.dispatcher.MESSAGES
+    testutils.dispatcher.MESSAGES = []

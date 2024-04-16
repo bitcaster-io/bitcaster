@@ -28,6 +28,7 @@ class Address(models.Model):
 
     class Meta:
         unique_together = (("user", "name"), ("user", "value"))
+        ordering = ("name",)
 
     def __str__(self) -> str:
         return self.value

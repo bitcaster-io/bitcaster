@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Any, MutableMapping
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.functional import cached_property
@@ -8,8 +10,21 @@ from bitcaster.dispatchers.base import Dispatcher, dispatcherManager
 
 from .org import Application, Organization, Project
 
+if TYPE_CHECKING:
+    from bitcaster.types.django import AnyModel
+
 
 class ChannelManager(models.Manager["Channel"]):
+
+    def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[AnyModel, bool]":
+        if "application" in kwargs:
+            kwargs["project"] = kwargs["application"].project
+            kwargs["organization"] = kwargs["application"].project.organization
+        elif "project" in kwargs:
+            kwargs["organization"] = kwargs["project"].organization
+
+        return super().get_or_create(defaults, **kwargs)
+
     def active(self) -> models.QuerySet["Channel"]:
         return self.get_queryset().filter(active=True, locked=False)
 
@@ -39,6 +54,7 @@ class Channel(models.Model):
             ("organization", "project", "name"),
             ("organization", "project", "application", "name"),
         )
+        ordering = ("name",)
 
     def __str__(self) -> str:
         return self.name

@@ -1,9 +1,8 @@
 from typing import TYPE_CHECKING, TypedDict
 
-from _pytest.fixtures import fixture
+import pytest
 from strategy_field.utils import fqn
-from testutils.dispatcher import MESSAGES, TestDispatcher
-from testutils.factories import AddressFactory, ValidationFactory
+from testutils.dispatcher import TestDispatcher
 
 if TYPE_CHECKING:
     from bitcaster.models import Address, ApiKey, Application, Channel, Event, Message, Subscription, User
@@ -22,15 +21,17 @@ if TYPE_CHECKING:
     )
 
 
-@fixture
+@pytest.fixture
 def context(db) -> "Context":
     from testutils.factories import (
+        AddressFactory,
         ApiKeyFactory,
         ApplicationFactory,
         ChannelFactory,
         EventFactory,
         MessageFactory,
         SubscriptionFactory,
+        ValidationFactory,
     )
 
     app: "Application" = ApplicationFactory(name="Application-000")
@@ -41,17 +42,17 @@ def context(db) -> "Context":
     key: "ApiKey" = ApiKeyFactory(application=app)
     user: "User" = key.user
 
-    addr: Address = AddressFactory(user=user, channel=ch)
+    addr: Address = AddressFactory(user=user)
     v = ValidationFactory(address=addr, channel=ch)
     sub = SubscriptionFactory(validation=v, event=evt)
 
     return {"app": app, "event": evt, "key": key, "channel": ch, "subscription": sub, "message": msg, "address": addr}
 
 
-def test_trigger(context: "Context"):
+def test_trigger(context: "Context", messagebox):
     addr: Address = context["address"]
     event: Event = context["event"]
     ch: Channel = context["channel"]
     o = event.trigger({})
     o.process()
-    assert MESSAGES == [(addr.value, f"Message for {event.name} on channel {ch.name}")]
+    assert messagebox == [(addr.value, f"Message for {event.name} on channel {ch.name}")]

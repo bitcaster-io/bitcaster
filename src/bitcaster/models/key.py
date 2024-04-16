@@ -65,3 +65,7 @@ class ApiKey(models.Model):
     key = models.CharField(verbose_name=_("Token"), unique=True, default=make_token)
     grants = ChoiceArrayField(choices=Grant, null=True, blank=True, base_field=models.CharField(max_length=255))
     application = models.ForeignKey(Application, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ("name",)
+        unique_together = (("name", "user"),)
