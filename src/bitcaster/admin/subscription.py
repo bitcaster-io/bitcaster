@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class SubscriptionAdmin(BaseAdmin, admin.ModelAdmin[Subscription]):
     search_fields = ("name",)
-    list_display = ("address", "user", "event", "active")
+    list_display = ("validation", "user", "event", "active")
     list_filter = (
         ("event__application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         (
@@ -26,7 +26,7 @@ class SubscriptionAdmin(BaseAdmin, admin.ModelAdmin[Subscription]):
         # ("address_user", LinkedAutoCompleteFilter.factory(parent=None)),
         "active",
     )
-    autocomplete_fields = ("event", "address")
+    autocomplete_fields = ("event", "validation")
     filter_horizontal = ("channels",)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Subscription]:

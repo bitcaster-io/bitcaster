@@ -29,7 +29,10 @@ def app(django_app_factory, admin_user):
 
 @pytest.fixture
 def context(django_app_factory, admin_user) -> "Context":
-    from testutils.factories import AddressFactory, ChannelFactory, EventFactory
+    from testutils.factories.address import AddressFactory
+    from testutils.factories.channel import ChannelFactory
+    from testutils.factories.event import EventFactory
+    from testutils.factories.validation import ValidationFactory
 
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
@@ -39,9 +42,10 @@ def context(django_app_factory, admin_user) -> "Context":
     event = EventFactory()
     event.channels.add(channel)
     address = AddressFactory(user=admin_user)
+    validation = ValidationFactory(address=address, channel=channel)
     AddressFactory(user=admin_user)  # other_addr
 
-    return {"app": django_app, "channel": channel, "event": event, "address": address}
+    return {"app": django_app, "channel": channel, "event": event, "validation": validation}
 
 
 def test_event_subscribe(context: "Context"):
@@ -50,9 +54,9 @@ def test_event_subscribe(context: "Context"):
     res = app.get(url)
     assert res.status_code == 200, res.location
     assert (form := res.forms.get("subscribe-form")), "Should have subscribe-form"
-    form["form-0-address"] = context["address"].pk
+    form["form-0-validation"] = context["validation"].pk
     res = form.submit().follow()
     assert res.status_code == 200, res.location
 
-    subscription = Subscription.objects.get(address=context["address"], event=context["event"])
+    subscription = Subscription.objects.get(validation=context["validation"], event=context["event"])
     assert list(subscription.channels.all()) == [context["channel"]]

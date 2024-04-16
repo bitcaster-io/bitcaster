@@ -3,7 +3,9 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
-from testutils.factories import ApiKeyFactory, EventFactory
+
+from testutils.factories.event import EventFactory
+from testutils.factories.key import ApiKeyFactory
 from testutils.perms import key_grants
 
 from bitcaster.auth.constants import Grant

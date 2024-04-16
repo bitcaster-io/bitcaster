@@ -6,8 +6,7 @@ from django.contrib.auth.models import Permission
 from faker import Faker
 
 from bitcaster.state import state
-
-from .factories import GroupFactory
+from testutils.factories.django_auth import GroupFactory
 
 whitespace = " \t\n\r\v\f"
 lowercase = "abcdefghijklmnopqrstuvwxyz"

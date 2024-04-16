@@ -13,4 +13,4 @@ class GoogleConfig(forms.Form):
 
 class SocialProvider(models.Model):
     provider = models.CharField(max_length=30, choices=Provider.choices)
-    credentials = models.JSONField(default={}, blank=True)
+    credentials = models.JSONField(default=dict, blank=True)

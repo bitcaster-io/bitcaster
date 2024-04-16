@@ -7,7 +7,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ..dispatchers.base import Dispatcher, Payload
-from . import Address
 from .channel import Channel
 from .event import Event
 
@@ -28,7 +27,7 @@ class SubscriptionQuerySet(models.QuerySet["Subscription"]):
 
 
 class Subscription(models.Model):
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="subscriptions")
+    validation = models.ForeignKey("Validation", on_delete=models.CASCADE, related_name="subscriptions")
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="subscriptions")
     channels = models.ManyToManyField(Channel, related_name="subscriptions")
     payload_filter = models.TextField(blank=True, null=True)

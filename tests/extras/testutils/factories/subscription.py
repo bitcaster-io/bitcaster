@@ -1,25 +1,26 @@
 import factory
 
 from bitcaster.models import Subscription
-
-from . import AddressFactory
 from .base import AutoRegisterModelFactory
 from .channel import ChannelFactory
-from .event import EventFactory
 
 
 class SubscriptionFactory(AutoRegisterModelFactory):
+    from .event import EventFactory
+    from .validation import ValidationFactory
+
     class Meta:
         model = Subscription
-        django_get_or_create = ("address", "event")
+        django_get_or_create = ("validation", "event")
 
-    address = factory.SubFactory(AddressFactory)
+    validation = factory.SubFactory(ValidationFactory)
     event = factory.SubFactory(EventFactory)
 
     @factory.post_generation
     def channels(self, create, extracted, **kwargs):
         if not extracted:
             # Simple build, or nothing to add, do nothing.
+
             extracted = [ChannelFactory()]
 
         # Add the iterable of groups using bulk addition

@@ -3,7 +3,14 @@ from typing import TYPE_CHECKING, TypedDict
 from _pytest.fixtures import fixture
 from strategy_field.utils import fqn
 from testutils.dispatcher import MESSAGES, TestDispatcher
-from testutils.factories import AddressFactory
+from testutils.factories.address import AddressFactory
+from testutils.factories.channel import ChannelFactory
+from testutils.factories.event import EventFactory
+from testutils.factories.key import ApiKeyFactory
+from testutils.factories.message import MessageFactory
+from testutils.factories.org import ApplicationFactory
+from testutils.factories.subscription import SubscriptionFactory
+from testutils.factories.validation import ValidationFactory
 
 if TYPE_CHECKING:
     from bitcaster.models import Address, ApiKey, Application, Channel, Event, Message, Subscription, User
@@ -24,14 +31,6 @@ if TYPE_CHECKING:
 
 @fixture
 def context(db) -> "Context":
-    from testutils.factories import (
-        ApiKeyFactory,
-        ApplicationFactory,
-        ChannelFactory,
-        EventFactory,
-        MessageFactory,
-        SubscriptionFactory,
-    )
 
     app: "Application" = ApplicationFactory(name="Application-000")
     ch = ChannelFactory(organization=app.project.organization, name="test", dispatcher=fqn(TestDispatcher))
@@ -42,7 +41,8 @@ def context(db) -> "Context":
     user: "User" = key.user
 
     addr = AddressFactory(user=user, channel=ch)
-    sub = SubscriptionFactory(address=addr, event=evt, channels=[ch])
+    validation = ValidationFactory(address=addr, channel=ch)
+    sub = SubscriptionFactory(validation=validation, event=evt, channels=[ch])
 
     return {"app": app, "event": evt, "key": key, "channel": ch, "subscription": sub, "message": msg, "address": addr}
 

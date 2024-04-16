@@ -39,6 +39,7 @@ class AddressAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtons
 
 
 class ValidationAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin[Validation]):
+    search_fields = ("address",)
     list_display = ("address", "channel")
     list_filter = (
         "channel",

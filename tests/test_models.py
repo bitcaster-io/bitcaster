@@ -1,5 +1,10 @@
 from typing import TYPE_CHECKING, TypedDict
 
+from testutils.factories.address import AddressFactory
+from testutils.factories.channel import ChannelFactory
+from testutils.factories.user import UserFactory
+from testutils.factories.validation import ValidationFactory
+
 if TYPE_CHECKING:
     from bitcaster.models import Address, ApiKey, Application, Channel, Event, Subscription, User
 
@@ -16,7 +21,6 @@ if TYPE_CHECKING:
 
 
 def test_address(db):
-    from testutils.factories import AddressFactory, ChannelFactory
 
     addr: "Address" = AddressFactory()
     ch: "Channel" = ChannelFactory()
@@ -26,7 +30,6 @@ def test_address(db):
 
 
 def test_validation(db):
-    from testutils.factories import ValidationFactory
 
     v = ValidationFactory()
 
@@ -37,7 +40,6 @@ def test_validation(db):
 
 
 def test_user(db):
-    from testutils.factories import UserFactory
 
     u: "User" = UserFactory()
     addr: "Address" = u.addresses.create(value="test@example.com")

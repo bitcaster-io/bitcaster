@@ -8,6 +8,8 @@ from django.db.models.options import Options
 from django.urls import reverse
 from django_regex.utils import RegexList as _RegexList
 
+from testutils.factories.user import SuperUserFactory
+
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
 
 
@@ -105,7 +107,6 @@ def record(db, request):
 
 @pytest.fixture()
 def app(django_app_factory, mocked_responses):
-    from testutils.factories import SuperUserFactory
 
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")

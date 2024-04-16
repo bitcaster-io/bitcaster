@@ -4,7 +4,6 @@
         <img style="width: 200px;margin-bottom: 50px" src="{% static "bitcaster/images/logos/logo400.png" %}">
         <form method="post" action=".">
             {% csrf_token %}
-            {{ form.errors }}
             {{ form }}
             <input class="primary" type="submit" value="Login">
         </form>
