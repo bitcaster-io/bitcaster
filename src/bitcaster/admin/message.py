@@ -66,10 +66,14 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
         obj = self.get_object(request, pk)
         if form.is_valid():
             tpl = Template(form.cleaned_data["content"])
-            ctx = {**form.cleaned_data["context"], "event": obj.event, "channel": obj.channel, "user": request.user}
-            res = tpl.render(Context(ctx))
+            try:
+                ctx = {**form.cleaned_data["context"], "event": obj.event, "channel": obj.channel, "user": request.user}
+                res = tpl.render(Context(ctx))
+            except Exception as e:
+                res = f"<!DOCTYPE HTML>{str(e)}"  # type: ignore
         else:
             res = f"<!DOCTYPE HTML>{form.errors.as_text()}"  # type: ignore
+
         return HttpResponse(res)
 
     @button()

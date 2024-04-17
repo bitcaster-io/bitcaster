@@ -152,17 +152,3 @@ class EventSerializer(ModelSerializer):
                 ],
             )
         )
-
-    def get_chs(self, obj: "Event") -> str:
-        kwargs = self.context["view"].kwargs
-        return self.context["request"].build_absolute_uri(
-            reverse(
-                "api:evt-channels",
-                args=[
-                    kwargs["parent_lookup_application__project__organization__slug"],
-                    kwargs["parent_lookup_application__project__slug"],
-                    kwargs["parent_lookup_application__slug"],
-                    obj.pk,
-                ],
-            )
-        )

@@ -27,6 +27,13 @@ def test_render(app: DjangoTestApp, message):
     assert res.content == b"333"
 
 
+def test_render_error(app: DjangoTestApp, message):
+    opts: Options = Message._meta
+    url = reverse(admin_urlname(opts, "render"), args=[message.pk])
+    res = app.post(url, {"content": "{{a}}", "context": json.dumps("11")})
+    assert res.content == b"<!DOCTYPE HTML>'JSONString' object is not a mapping"
+
+
 def test_edit(app: DjangoTestApp, message):
     opts: Options = Message._meta
     url = reverse(admin_urlname(opts, "edit"), args=[message.pk])

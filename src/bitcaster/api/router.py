@@ -46,14 +46,3 @@ e = a.register(
         "application__slug",
     ],
 )
-#
-# e.register(
-#     r"channels",
-#     views.ChannelViewSet,
-#     basename="evt-channel",
-#     parents_query_lookups=[
-#         "application__project__organization__slug",
-#         "application__project__slug",
-#         # "channels__application__slug",
-#     ],
-# )
