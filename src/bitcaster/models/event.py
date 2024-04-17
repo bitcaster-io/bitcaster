@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 from django.db import models
 from django.utils.translation import gettext as _
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from .message import Message
     from .occurence import Occurence
-    from .subscription import Subscription
+    from .channel import Channel
 
 
 class Event(SlugMixin, models.Model):
@@ -41,3 +41,19 @@ class Event(SlugMixin, models.Model):
 
     def get_message(self, channel: "Channel") -> "Optional[Message]":
         return self.messages.filter(models.Q(channel=channel) | models.Q(channel=None)).order_by("channel").first()
+
+    def subscribe(self, address_id: int, channel_id: int) -> None:
+        """Register a subscription to the event."""
+        from .validation import Validation
+
+        validation, _ = Validation.objects.get_or_create(address_id=address_id, channel_id=channel_id)
+        from .subscription import Subscription
+        Subscription.objects.get_or_create(event=self, validation=validation)
+
+    def unsubscribe(self, user: "User", channel_id: int) -> None:
+        """Deregister a subscription to the event."""
+        from .subscription import Subscription
+
+        Subscription.objects.filter(
+            event=self, validation__address__user=user, validation__channel_id=channel_id).delete()
+

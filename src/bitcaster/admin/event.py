@@ -12,7 +12,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from bitcaster.models import Event, Subscription, User, Validation
+from bitcaster.models import Address, Event, Subscription, User, Validation
 
 from .base import BUTTON_COLOR_ACTION, BUTTON_COLOR_LINK, BaseAdmin
 from .message import Message
@@ -33,24 +33,22 @@ class MessageInline(admin.TabularInline[Message, Event]):
 class EventSubscribeForm(forms.Form):
     channel_id = forms.IntegerField(widget=HiddenInput)
     channel_name = forms.CharField()
-    validation = forms.ChoiceField(label=_("Address"), choices=(("", "--"),), required=False)
+    address = forms.ChoiceField(label=_("Address"), choices=(("", "--"),), required=False)
 
     def __init__(self, user: User, event: Event, **kwargs: Any):
-        validation_choices = [
-            [id, f"{address} ({channel})"]
-            for id, address, channel in Validation.objects.filter(address__user=user, validated=True).values_list(
-                "id", "address__name", "channel__name"
-            )
+        address_choices = [
+            [id, value]
+            for id, value in Address.objects.filter(user=user).values_list("id", "value")
         ]
         initial = kwargs.get("initial")
         if initial:
             channel_id = initial["channel_id"]
 
-            validation_address = Subscription.objects.filter(event=event, validation__channel_id=channel_id).first()
-            if validation_address:
-                initial["validation"] = validation_address.id
+            subscription = Subscription.objects.filter(event=event, validation__channel_id=channel_id).first()
+            if subscription:
+                initial["address"] = subscription.validation.address_id
         super().__init__(**kwargs)
-        self.fields["validation"].choices = list(self.fields["validation"].choices) + list(validation_choices)
+        self.fields["address"].choices = list(self.fields["address"].choices) + list(address_choices)
 
 
 EventSubscribeFormSet = forms.formset_factory(EventSubscribeForm, extra=0)
@@ -97,7 +95,7 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
         html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"},
     )
     def subscribe(self, request: HttpRequest, pk: str) -> Union[HttpResponseRedirect, HttpResponse]:
-        obj = self.get_object(request, pk)
+        obj: Event = self.get_object(request, pk)
         context = self.get_common_context(request, pk, title=_(f"Subscribe to event {obj}"))
 
         if request.method == "POST":
@@ -106,19 +104,13 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
                 form_kwargs={"user": request.user, "event": obj},
             )
             if formset.is_valid():
-                sub_created = 0
                 url = reverse("admin:bitcaster_event_change", args=[obj.id])
                 for form in formset:
-                    if validation_id := form.cleaned_data["validation"]:
-                        subscription, created = Subscription.objects.get_or_create(
-                            validation_id=validation_id, event=obj
-                        )
-                        if created:
-                            sub_created += 1
-                messages.success(
-                    request,
-                    _(f"Subscribed to event {obj}. Created {sub_created} subscriptions"),
-                )
+                    if address_id := form.cleaned_data["address"]:
+                        obj.subscribe(int(address_id), form.cleaned_data["channel_id"])
+                    else:
+                        obj.unsubscribe(request.user, form.cleaned_data["channel_id"])
+                messages.success(request, _(f"Subscribed to event {obj}."))
                 return HttpResponseRedirect(url)
         else:
             context["formset"] = EventSubscribeFormSet(
