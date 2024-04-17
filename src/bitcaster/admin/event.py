@@ -12,7 +12,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from bitcaster.models import Address, Event, Subscription, User, Validation
+from bitcaster.models import Address, Event, Subscription, User
 
 from .base import BUTTON_COLOR_ACTION, BUTTON_COLOR_LINK, BaseAdmin
 from .message import Message
@@ -36,10 +36,7 @@ class EventSubscribeForm(forms.Form):
     address = forms.ChoiceField(label=_("Address"), choices=(("", "--"),), required=False)
 
     def __init__(self, user: User, event: Event, **kwargs: Any):
-        address_choices = [
-            [id, value]
-            for id, value in Address.objects.filter(user=user).values_list("id", "value")
-        ]
+        address_choices = [[id, value] for id, value in Address.objects.filter(user=user).values_list("id", "value")]
         initial = kwargs.get("initial")
         if initial:
             channel_id = initial["channel_id"]

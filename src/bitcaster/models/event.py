@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from django.db import models
 from django.utils.translation import gettext as _
@@ -10,9 +10,7 @@ from .org import Application
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from .message import Message
-    from .occurence import Occurence
-    from .channel import Channel
+    from bitcaster.models import Message, Occurence, Subscription, User
 
 
 class Event(SlugMixin, models.Model):
@@ -48,6 +46,7 @@ class Event(SlugMixin, models.Model):
 
         validation, _ = Validation.objects.get_or_create(address_id=address_id, channel_id=channel_id)
         from .subscription import Subscription
+
         Subscription.objects.get_or_create(event=self, validation=validation)
 
     def unsubscribe(self, user: "User", channel_id: int) -> None:
@@ -55,5 +54,5 @@ class Event(SlugMixin, models.Model):
         from .subscription import Subscription
 
         Subscription.objects.filter(
-            event=self, validation__address__user=user, validation__channel_id=channel_id).delete()
-
+            event=self, validation__address__user=user, validation__channel_id=channel_id
+        ).delete()
