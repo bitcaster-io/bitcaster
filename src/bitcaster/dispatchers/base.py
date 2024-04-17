@@ -97,7 +97,7 @@ class Dispatcher(metaclass=DispatcherMeta):
             raise ValidationError(cfg.errors)
         return cfg.cleaned_data
 
-    def send(self, address: str, payload: Payload) -> None: ...
+    def send(self, address: str, payload: Payload) -> Optional[Any]: ...
 
     @classproperty
     def name(cls) -> str:
