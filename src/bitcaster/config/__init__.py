@@ -82,7 +82,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
     "SIGNING_BACKEND": (str, "django.core.signing.TimestampSigner", setting("signing-backend")),
     "SOCIAL_AUTH_LOGIN_URL": (
         str,
-        None,
+        "/login/",
         "https://python-social-auth.readthedocs.io/en/latest/configuration/settings.html#urls-options",
         "",
     ),

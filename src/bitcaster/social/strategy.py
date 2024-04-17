@@ -1,8 +1,6 @@
 from typing import Optional
 
 from django.shortcuts import resolve_url
-from django.utils.encoding import force_str
-from django.utils.functional import Promise
 from social_django.strategy import DjangoStrategy
 
 from bitcaster.social.models import Provider, SocialProvider
@@ -23,11 +21,12 @@ class BitcasterStrategy(DjangoStrategy):
             config_record = SocialProvider.objects.filter(provider=found).first()
             if config_record:
                 configuration = config_record.configuration
+                caches[found] = configuration
+            else:
+                raise ValueError(f"Provider {found} not found")
         if configuration:
             value = configuration[name]
             if name.endswith("_URL"):
-                if isinstance(value, Promise):
-                    value = force_str(value)
                 value = resolve_url(value)
             return value
         else:
