@@ -202,7 +202,6 @@ class Command(BaseCommand):
         except (CommandError, SystemCheckError) as e:
             self.halt(e)
         except Exception as e:
-            raise
             self.stdout.write(str(e), style_func=self.style.ERROR)
             logger.exception(e)
             self.halt(e)
