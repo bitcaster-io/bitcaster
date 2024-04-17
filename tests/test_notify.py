@@ -5,7 +5,16 @@ from strategy_field.utils import fqn
 from testutils.dispatcher import TestDispatcher
 
 if TYPE_CHECKING:
-    from bitcaster.models import Address, ApiKey, Application, Channel, Event, Message, Subscription, User
+    from bitcaster.models import (
+        Address,
+        ApiKey,
+        Application,
+        Channel,
+        Event,
+        Message,
+        Subscription,
+        User,
+    )
 
     Context = TypedDict(
         "Context",

@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="{% static "bitcaster/css/style.css" %}">
     <link rel="stylesheet" href="{% static "bitcaster/css/editor.css" %}">
 </head>
+<form method="post" id="edit-message-form">
 <h3 class="title">Message '{{ original }}' for '{{ original.event|default_if_none:"any" }}' event on
     '{{ original.channel|default_if_none:"any" }}' channel</h3>
-<form method="post">
     {% csrf_token %}
     <div class="menubar">
         <button id="btn_content" class="button" data-panel="#tab_content" type="button">Content</button>

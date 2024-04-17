@@ -66,7 +66,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
         obj = self.get_object(request, pk)
         if form.is_valid():
             tpl = Template(form.cleaned_data["content"])
-            ctx = {**form.cleaned_data["context"], "event": obj.event, "channel": obj.channel}
+            ctx = {**form.cleaned_data["context"], "event": obj.event, "channel": obj.channel, "user": request.user}
             res = tpl.render(Context(ctx))
         else:
             res = f"<!DOCTYPE HTML>{form.errors.as_text()}"  # type: ignore
@@ -82,6 +82,8 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
                 form.save()
                 return HttpResponseRedirect("..")
         else:
-            form = MessageForm(initial={"context": {"test": "11111"}}, instance=obj)
+            form = MessageForm(
+                initial={"context": {"event": "<sys>", "channel": "<sys>", "recipient": "<sys>"}}, instance=obj
+            )
         context["form"] = form
         return TemplateResponse(request, "admin/message/edit.html", context)

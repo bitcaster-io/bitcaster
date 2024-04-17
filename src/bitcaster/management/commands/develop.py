@@ -10,7 +10,12 @@ from flags.state import enable_flag
 from strategy_field.utils import fqn
 
 from bitcaster.config import env
-from bitcaster.dispatchers import GMmailDispatcher, MailgunDispatcher, MailJetDispatcher, SlackDispatcher
+from bitcaster.dispatchers import (
+    GMmailDispatcher,
+    MailgunDispatcher,
+    MailJetDispatcher,
+    SlackDispatcher,
+)
 from bitcaster.models import Channel
 
 if TYPE_CHECKING:

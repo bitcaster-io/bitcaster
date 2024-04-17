@@ -125,24 +125,20 @@ class SmartEnv(Env):
 
     def get_default(self, var: str) -> Any:
         var_name = f"{self.prefix}{var}"
+        value = ""
         if var_name in self.scheme:
             var_info = self.scheme[var_name]
+            value = var_info[1]
+            cast = var_info[0]
+            return cast(value)
+            # prefix = b"$" if isinstance(value, bytes) else "$"
+            # escape = rb"\$" if isinstance(value, bytes) else r"\$"
+            # if hasattr(value, "startswith") and value.startswith(prefix):
+            #     value = value.lstrip(prefix)
+            #     value = self.get_value(value, cast=cast)
 
-            if len(var_info) > 1:
-                value = var_info[1]
-                cast = var_info[0]
-            else:
-                cast = var_info
-                value = ""
-
-            prefix = b"$" if isinstance(value, bytes) else "$"
-            escape = rb"\$" if isinstance(value, bytes) else r"\$"
-            if hasattr(value, "startswith") and value.startswith(prefix):
-                value = value.lstrip(prefix)
-                value = self.get_value(value, cast=cast)
-
-            if self.escape_proxy and hasattr(value, "replace"):
-                value = value.replace(escape, prefix)
+            # if self.escape_proxy and hasattr(value, "replace"):
+            #     value = value.replace(escape, prefix)
 
         return value
 

@@ -1,4 +1,3 @@
-import os
 from typing import TYPE_CHECKING
 from urllib.parse import parse_qsl
 
@@ -11,20 +10,17 @@ pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
 @pytest.fixture()
-def mail_payload() -> "Payload":
+def mail_payload(request) -> "Payload":
+    from testutils.factories import ApplicationFactory
+
     from bitcaster.dispatchers.base import Payload
-    from bitcaster.models import Application, Event
+    from bitcaster.models import Event
 
     return Payload(
         "message",
-        event=Event(
-            application=Application(
-                from_email=os.environ.get("TEST_EMAIL_SENDER"),
-                subject_prefix="[Application] ",
-            )
-        ),
+        event=Event(application=ApplicationFactory()),
         subject="subject",
-        html_message="html_message",
+        html_message=getattr(request, "param", ""),
     )
 
 

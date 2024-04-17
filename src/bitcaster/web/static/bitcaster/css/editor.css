@@ -1,52 +1,51 @@
-table {
+#edit-message-form {
+  padding: 10px;
+}
+#edit-message-form table {
   width: 100%;
 }
-table td {
+#edit-message-form table td {
   vertical-align: top;
   width: 50%;
 }
-
-input, textarea {
+#edit-message-form input, #edit-message-form textarea {
   width: 100%;
 }
-
-input[type=submit].default {
+#edit-message-form input[type=submit].default {
   background-color: var(--bg-primary);
 }
-
-h3.title {
+#edit-message-form h3.title {
   padding: 10px;
 }
-
-.menubar {
+#edit-message-form .menubar {
   padding: 5px;
 }
-.menubar button {
+#edit-message-form .menubar button {
   padding: 10px;
   background-color: var(--bg-primary);
 }
-.menubar button:active {
+#edit-message-form .menubar button:active {
   color: black;
 }
-
-.tab {
+#edit-message-form .tab {
   display: none;
 }
-
-#preview {
+#edit-message-form #preview {
   border: 1px solid gray;
   width: 100%;
   height: 400px;
 }
-
-.hidden {
+#edit-message-form .hidden {
   display: none;
 }
-
-#jsoneditor_id_context {
+#edit-message-form #jsoneditor_id_context {
   width: 100%;
+  height: 400px;
 }
-#jsoneditor_id_context div.jse-menu.svelte-id9e3c {
+#edit-message-form #jsoneditor_id_context .jse-main {
+  height: 100%;
+}
+#edit-message-form #jsoneditor_id_context div.jse-menu.svelte-id9e3c {
   background-color: var(--bg-primary);
 }
 

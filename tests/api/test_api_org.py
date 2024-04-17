@@ -6,7 +6,15 @@ from rest_framework.test import APIClient
 from testutils.factories import ApiKeyFactory, ChannelFactory, EventFactory
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Application, Channel, Event, Organization, Project, User
+    from bitcaster.models import (
+        ApiKey,
+        Application,
+        Channel,
+        Event,
+        Organization,
+        Project,
+        User,
+    )
 
     Context = TypedDict(
         "Context",

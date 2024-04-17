@@ -107,7 +107,14 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
         from django.contrib.auth.models import Group
 
-        from bitcaster.models import Application, Event, Message, Organization, Project, User
+        from bitcaster.models import (
+            Application,
+            Event,
+            Message,
+            Organization,
+            Project,
+            User,
+        )
 
         bitcaster: Optional[Application] = None
         admin: Optional[User] = None

@@ -16,7 +16,8 @@ repos:
       # but we let pre-commit take care of the file filtering.
       - id: isort
         name: isort
-        args: [ '--version']
+#        args: [ '--version']
+        args: ["--profile", "black"]
 #        args: [ '--src', 'src/','--check-only' ]
         entry: isort
         language: python

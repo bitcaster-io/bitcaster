@@ -26,7 +26,12 @@ def app(django_app_factory, admin_user):
 
 @pytest.fixture
 def context(django_app_factory, admin_user) -> "Context":
-    from testutils.factories import AddressFactory, ChannelFactory, EventFactory, ValidationFactory
+    from testutils.factories import (
+        AddressFactory,
+        ChannelFactory,
+        EventFactory,
+        ValidationFactory,
+    )
 
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)

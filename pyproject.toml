@@ -97,6 +97,8 @@ dev = [
     "django-extensions>=3.2.3",
     "pre-commit>=3.7.0",
 ]
+[tool.isort]
+profile = "black"
 
 [tool.black]
 line-length = 120

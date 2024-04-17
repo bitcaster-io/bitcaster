@@ -1,4 +1,9 @@
-from bitcaster.utils.user_agent import SmartUserAgent, get_cache_key, get_user_agent, parse
+from bitcaster.utils.user_agent import (
+    SmartUserAgent,
+    get_cache_key,
+    get_user_agent,
+    parse,
+)
 
 CHROME = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/51.0.2704.103 Safari/537.36"
 OPERA = (

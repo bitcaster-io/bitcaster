@@ -19,13 +19,6 @@ div.breadcrumbs {
   background-color: var(--bg-secondary);
 }
 
-.svelte-jsoneditor-wrapper {
-  width: 100% !important;
-}
-.svelte-jsoneditor-wrapper .jse-menu {
-  background-color: var(--bg-primary) !important;
-}
-
 a, a:link, a:visited {
   color: white;
 }

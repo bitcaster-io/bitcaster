@@ -6,7 +6,7 @@ import pytest
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
-# @_recorder.record(file_path=Path(__file__).parent / "mailgun.yaml")
+@pytest.mark.parametrize("mail_payload", ("", "html_message"), indirect=True)
 def test_mailgun(monkeypatch, mail_payload, mocked_responses):
     from bitcaster.dispatchers import MailgunDispatcher
     from bitcaster.models import Application, Channel

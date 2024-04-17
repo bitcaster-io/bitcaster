@@ -4,7 +4,12 @@ from unittest import mock
 import pytest
 
 from bitcaster.state import state
-from bitcaster.utils.http import absolute_reverse, absolute_uri, get_server_host, get_server_url
+from bitcaster.utils.http import (
+    absolute_reverse,
+    absolute_uri,
+    get_server_host,
+    get_server_url,
+)
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
