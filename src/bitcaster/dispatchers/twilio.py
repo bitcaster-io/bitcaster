@@ -22,6 +22,7 @@ class TwilioConfig(DispatcherConfig):
 class TwilioSMS(Dispatcher):
     id = 500
     slug = "sms"
+    verbose_name = "SMS (Twilio)"
     config_class: Type[DispatcherConfig] = TwilioConfig
 
     def send(self, address: str, payload: Payload) -> MessageInstance:

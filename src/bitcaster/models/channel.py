@@ -26,6 +26,21 @@ class ChannelManager(models.Manager["Channel"]):
 
         return super().get_or_create(defaults, **kwargs)
 
+    def update_or_create(
+        self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any
+    ) -> "tuple[Channel, bool]":
+        targets = [kwargs]
+        if defaults:
+            targets.append(defaults)
+        for target in targets:
+            if "application" in target:
+                target["project"] = target["application"].project
+                target["organization"] = target["application"].project.organization
+            elif "project" in target:
+                target["organization"] = target["project"].organization
+
+        return super().update_or_create(defaults, **kwargs)
+
     def active(self) -> models.QuerySet["Channel"]:
         return self.get_queryset().filter(active=True, locked=False)
 

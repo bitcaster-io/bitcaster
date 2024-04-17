@@ -12,9 +12,7 @@ class MailJetConfig(DispatcherConfig):
 
 
 class MailJetDispatcher(EmailDispatcher):
-    id = 2
-    slug = "mailjet-email"
-    local = True
+    slug = "mailjet"
     verbose_name = "Mailjet Email"
     text_message = True
     html_message = True

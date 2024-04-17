@@ -10,7 +10,7 @@ from flags.state import enable_flag
 from strategy_field.utils import fqn
 
 from bitcaster.config import env
-from bitcaster.dispatchers import GMmailDispatcher, MailgunDispatcher, MailJetDispatcher
+from bitcaster.dispatchers import GMmailDispatcher, MailgunDispatcher, MailJetDispatcher, SlackDispatcher
 from bitcaster.models import Channel
 
 if TYPE_CHECKING:
@@ -179,6 +179,17 @@ class Command(BaseCommand):
                             "api_key": os.environ.get("MAILJET_API_KEY"),
                             "secret_key": os.environ.get("MAILJET_SECRET_KEY"),
                         },
+                    },
+                )
+                echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
+
+            if os.environ.get("SLACK_WEBHOOK"):
+                ch, __ = Channel.objects.update_or_create(
+                    name="Slack",
+                    defaults={
+                        "application": bitcaster,
+                        "dispatcher": fqn(SlackDispatcher),
+                        "config": {"url": os.environ.get("SLACK_WEBHOOK")},
                     },
                 )
                 echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)

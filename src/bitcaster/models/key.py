@@ -4,6 +4,7 @@ from typing import Any
 from django import forms
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.forms.widgets import CheckboxSelectMultiple
 from django.utils.crypto import RANDOM_STRING_CHARS, get_random_string
 from django.utils.translation import gettext_lazy as _
 
@@ -22,6 +23,8 @@ def make_token() -> str:
 
 
 class _TypedMultipleChoiceField(forms.TypedMultipleChoiceField):
+    widget = CheckboxSelectMultiple
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         kwargs.pop("base_field", None)
         kwargs.pop("max_length", None)
@@ -29,18 +32,6 @@ class _TypedMultipleChoiceField(forms.TypedMultipleChoiceField):
 
 
 class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
-    """
-    A field that allows us to store an array of choices.
-
-    Uses Django 4.2's postgres ArrayField
-    and a TypeMultipleChoiceField for its formfield.
-
-    Usage:
-
-        choices = ChoiceArrayField(
-            models.CharField(max_length=..., choices=(...,)), blank=[...], default=[...]
-        )
-    """
 
     def formfield(
         self,
@@ -54,8 +45,6 @@ class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
             "coerce": self.base_field.to_python,
         }
         defaults.update(kwargs)
-        # Skip our parent's formfield implementation completely as we don't care for it.
-        # pylint:disable=bad-super-call
         return super().formfield(**defaults)  # type: ignore[arg-type]
 
 
@@ -63,8 +52,8 @@ class ApiKey(models.Model):
     name = models.CharField(verbose_name=_("Name"), max_length=255, db_collation="case_insensitive")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     key = models.CharField(verbose_name=_("Token"), unique=True, default=make_token)
-    grants = ChoiceArrayField(choices=Grant, null=True, blank=True, base_field=models.CharField(max_length=255))
     application = models.ForeignKey(Application, on_delete=models.CASCADE)
+    grants = ChoiceArrayField(models.CharField(max_length=255, choices=Grant.choices), null=True, blank=True)
 
     class Meta:
         ordering = ("name",)

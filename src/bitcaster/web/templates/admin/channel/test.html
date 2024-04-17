@@ -2,7 +2,6 @@
 {% block action-content %}
     <form method="post" id="config-form">
         {% csrf_token %}
-
         <fieldset class="module aligned ">
             <div class="form-row field-api_key">
                 <div>
@@ -22,6 +21,7 @@
                     </div>
                 </div>
             {% endif %}
+            {% if original.dispatcher.text_message %}
             <div class="form-row field-sender_domain">
                 <div>
                     <div class="flex-container">
@@ -30,6 +30,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         </fieldset>
 
         <input type="submit">

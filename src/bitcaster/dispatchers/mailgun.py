@@ -12,7 +12,7 @@ class MailgunConfig(DispatcherConfig):
 
 
 class MailgunDispatcher(EmailDispatcher):
-    slug = "maiilgun-email"
+    slug = "maiilgun"
     verbose_name = "Mailgun Email"
     config_class = MailgunConfig
     backend = MailgunBackend

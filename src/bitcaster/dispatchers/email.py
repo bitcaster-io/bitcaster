@@ -24,7 +24,6 @@ class EmailConfig(DispatcherConfig):
 
 class EmailDispatcher(Dispatcher):
     slug = "email"
-    local = True
     verbose_name = "Email"
     text_message = True
     html_message = True

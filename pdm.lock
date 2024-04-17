@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:2019713cd76858cbd81616be0a7ce1be7b0e1402cf360015d4ccc546571c90dd"
+content_hash = "sha256:a0488a7434ea7132f23ac2a5200ee62bbfdc13629f9ed56b233ce225c2c3da55"
 
 [[package]]
 name = "aiohttp"
@@ -2601,6 +2601,30 @@ groups = ["default", "dev"]
 files = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
+]
+
+[[package]]
+name = "slack-notifications"
+version = "0.2.2"
+summary = "Send notifications to slack channel with supporting attachments and fields"
+groups = ["default"]
+dependencies = [
+    "requests",
+]
+files = [
+    {file = "slack-notifications-0.2.2.tar.gz", hash = "sha256:cb3930c01f7625b93fa3da239942161a2a9407894314688f4fde6a7634543df2"},
+    {file = "slack_notifications-0.2.2-py3-none-any.whl", hash = "sha256:1a0e2fd382b43ef3a0f9828df35e2a69ce711f84c8fda7f8ab3c159861c75cf1"},
+]
+
+[[package]]
+name = "slack-sdk"
+version = "3.27.1"
+requires_python = ">=3.6"
+summary = "The Slack API Platform SDK for Python"
+groups = ["default"]
+files = [
+    {file = "slack_sdk-3.27.1-py2.py3-none-any.whl", hash = "sha256:c108e509160cf1324c5c8b1f47ca52fb5e287021b8caf9f4ec78ad737ab7b1d9"},
+    {file = "slack_sdk-3.27.1.tar.gz", hash = "sha256:85d86b34d807c26c8bb33c1569ec0985876f06ae4a2692afba765b7a5490d28c"},
 ]
 
 [[package]]

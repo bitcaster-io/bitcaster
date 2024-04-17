@@ -52,6 +52,8 @@ dependencies = [
     "django-tinymce>=4.0.0",
     "drf-nested-routers>=0.93.5",
     "django-reversion>=5.0.12",
+    "slack-sdk>=3.27.1",
+    "slack-notifications>=0.2.2",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"

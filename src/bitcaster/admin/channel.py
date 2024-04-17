@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 class ChannelTestForm(forms.Form):
     recipient = forms.CharField()
-    subject = forms.CharField()
+    subject = forms.CharField(required=False)
     message = forms.CharField(widget=forms.Textarea)
 
 
@@ -102,7 +102,10 @@ class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
                 payload = Payload(
                     config_form.cleaned_data["message"], event=Event(), subject=config_form.cleaned_data["subject"]
                 )
-                obj.dispatcher.send(recipient, payload)
+                try:
+                    obj.dispatcher.send(recipient, payload)
+                except Exception as e:
+                    self.message_error_to_user(request, e)
                 self.message_user(request, "Message sent to {} via {}".format(recipient, obj.name))
         else:
             config_form = ChannelTestForm(initial=obj.config)  # type: ignore
