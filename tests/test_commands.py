@@ -3,7 +3,7 @@ from io import StringIO
 from unittest import mock
 
 import pytest
-from django.core.management import call_command
+from django.core.management import CommandError, call_command
 
 pytestmark = pytest.mark.django_db
 
@@ -53,3 +53,10 @@ def test_env(mocked_responses, verbosity, develop, diff, config, check):
             check=check,
         )
         assert "error" not in str(out.getvalue())
+
+
+def test_env_raise(mocked_responses):
+    environ = {"ADMIN_URL_PREFIX": "test"}
+    with mock.patch.dict(os.environ, environ, clear=True):
+        with pytest.raises(CommandError):
+            call_command("env", ignore_errors=False, check=True)

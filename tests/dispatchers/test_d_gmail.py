@@ -3,6 +3,9 @@ from smtplib import SMTP
 from unittest.mock import ANY, Mock, patch
 
 import pytest
+from django.core.exceptions import ValidationError
+
+from bitcaster.dispatchers import GMmailDispatcher
 
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
@@ -26,3 +29,9 @@ def test_gmail(mocked_responses, monkeypatch, mail_payload):
         s.starttls.assert_called()
         s.sendmail.assert_called()
         s.sendmail.assert_called_with(from_addr=os.environ["GMAIL_USER"], to_addrs=["test@example.com"], msg=ANY)
+
+
+def test_config():
+    d = GMmailDispatcher(Mock(config={}))
+    with pytest.raises(ValidationError):
+        d.config

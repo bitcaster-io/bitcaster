@@ -36,6 +36,7 @@ class Subscription(models.Model):
     active = models.BooleanField(default=True)
 
     objects = SubscriptionQuerySet.as_manager()
+    cache = {}
 
     def __str__(self) -> str:
         return f"{self.validation.address.user}[{self.validation.address}] -> {self.event}"
@@ -51,7 +52,8 @@ class Subscription(models.Model):
         addr: "Address" = self.validation.address
 
         dispatcher: "Dispatcher" = ch.dispatcher
-        if message := self.event.messages.filter(channel=ch).first():
+        # messages.filter(channel=ch).first():
+        if message := self.event.get_message(ch):
             context.update({"channel": ch, "address": addr.value})
             payload: Payload = Payload(
                 event=self.event,

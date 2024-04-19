@@ -30,8 +30,8 @@ def test_render(app: DjangoTestApp, message):
 def test_render_error(app: DjangoTestApp, message):
     opts: Options = Message._meta
     url = reverse(admin_urlname(opts, "render"), args=[message.pk])
-    res = app.post(url, {"content": "{{a}}", "context": json.dumps("11")})
-    assert res.content == b"<!DOCTYPE HTML>'JSONString' object is not a mapping"
+    res = app.post(url, {"content": "{{a}}", "context": "--"})
+    assert res.content == b"<!DOCTYPE HTML>* context\n  * Enter a valid JSON."
 
 
 def test_edit(app: DjangoTestApp, message):
@@ -48,3 +48,15 @@ def test_edit(app: DjangoTestApp, message):
     assert message.subject == "subject"
     assert message.content == "content"
     assert message.html_content == "html_content"
+
+
+def test_edit_error(app: DjangoTestApp, message):
+    opts: Options = Message._meta
+    url = reverse(admin_urlname(opts, "edit"), args=[message.pk])
+    res = app.get(url)
+    assert res.status_code == 200
+    res = app.post(
+        url,
+        {"subject": "subject", "content": "content", "html_content": "html_content", "context": "--"},
+    )
+    assert res.status_code == 200

@@ -18,7 +18,7 @@ class State(local):
     def __repr__(self) -> str:
         return f"<State {id(self)} - {self.timestamp}>"
 
-    def add_cookies(
+    def add_cookie(
         self,
         key: str,
         value: str,

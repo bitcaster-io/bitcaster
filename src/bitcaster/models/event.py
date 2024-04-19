@@ -25,6 +25,10 @@ class Event(SlugMixin, models.Model):
     subscriptions: "QuerySet[Subscription]"
     messages: "QuerySet[Message]"
 
+    def __init__(self, *args, **kwargs):
+        self._cached_messages = {}
+        super().__init__(*args, **kwargs)
+
     class Meta:
         unique_together = (
             ("name", "application"),
@@ -38,7 +42,10 @@ class Event(SlugMixin, models.Model):
         return Occurence.objects.create(event=self, context=context)
 
     def get_message(self, channel: "Channel") -> "Optional[Message]":
-        return self.messages.filter(models.Q(channel=channel) | models.Q(channel=None)).order_by("channel").first()
+        if channel not in self._cached_messages:
+            ret = self.messages.filter(models.Q(channel=channel) | models.Q(channel=None)).order_by("channel").first()
+            self._cached_messages[channel] = ret
+        return self._cached_messages[channel]
 
     def subscribe(self, address_id: int, channel_id: int) -> None:
         """Register a subscription to the event."""

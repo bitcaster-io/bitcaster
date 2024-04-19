@@ -10,7 +10,7 @@ def process_event(pk: int) -> None:
 
     from bitcaster.models import Occurence
 
-    o: Occurence = Occurence.objects.select_related("event").get(id=pk)
+    o: Occurence = Occurence.objects.select_related("event").select_for_update().get(id=pk)
     try:
         o.process()
     except Exception as e:

@@ -31,10 +31,26 @@ def gmail_channel(db):
     return ChannelFactory(dispatcher=fqn(GMmailDispatcher), config={"username": "username", "password": "password"})
 
 
+@pytest.fixture()
+def system_channel(db):
+    from testutils.factories.channel import ChannelFactory
+
+    from bitcaster.dispatchers import GMmailDispatcher
+
+    return ChannelFactory(
+        dispatcher=fqn(GMmailDispatcher),
+        name=Channel.SYSTEM_EMAIL_CHANNEL_NAME,
+        config={"username": "username", "password": "password"},
+    )
+
+
 def test_configure(app: DjangoTestApp, gmail_channel):
     opts: Options = Channel._meta
     url = reverse(admin_urlname(opts, "configure"), args=[gmail_channel.pk])
     res = app.get(url)
+    assert res.status_code == 200
+
+    res = app.post(url, {"username": "", "password": ""})
     assert res.status_code == 200
 
     res = app.post(url, {"username": "username", "password": "password"})
@@ -55,3 +71,18 @@ def test_test(app: DjangoTestApp, gmail_channel):
     s.login.assert_called()
     s.starttls.assert_called()
     s.sendmail.assert_called()
+
+
+def test_get_readonly_if_default(app, system_channel) -> None:
+    url = reverse("admin:bitcaster_channel_change", args=[system_channel.pk])
+    res = app.get(url)
+    frm = res.forms["channel_form"]
+    assert "name" not in frm.fields
+
+
+def test_get_readonly_fields(app, gmail_channel) -> None:
+    url = reverse("admin:bitcaster_channel_change", args=[gmail_channel.pk])
+    res = app.get(url)
+    res.forms["channel_form"]["name"] = "abc"
+    res = res.forms["channel_form"].submit()
+    assert res.status_code == 302
