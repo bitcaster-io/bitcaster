@@ -7,12 +7,12 @@ from testutils.dispatcher import TestDispatcher
 from bitcaster.tasks import process_event
 
 if TYPE_CHECKING:
-    from bitcaster.models import Address, Channel, Event, Occurence, Validation
+    from bitcaster.models import Address, Channel, Event, Occurrence, Validation
 
     Context = TypedDict(
         "Context",
         {
-            "occurrence": Occurence,
+            "occurrence": Occurrence,
             "address": Address,
             "channel": Channel,
         },

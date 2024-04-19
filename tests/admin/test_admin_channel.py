@@ -62,6 +62,10 @@ def test_test(app: DjangoTestApp, gmail_channel):
     url = reverse(admin_urlname(opts, "test"), args=[gmail_channel.pk])
     res = app.get(url)
     assert res.status_code == 200
+
+    app.post(url, {"recipient": "", "subject": "subject", "message": "message"})
+    assert res.status_code == 200
+
     with patch("smtplib.SMTP", autospec=True) as mock:
         res = app.post(url, {"recipient": "recipient", "subject": "subject", "message": "message"})
     assert res.status_code == 200

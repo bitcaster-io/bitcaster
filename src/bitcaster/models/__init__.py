@@ -7,7 +7,7 @@ from .group import Group  # noqa
 from .key import ApiKey  # noqa
 from .log import LogMessage  # noqa
 from .message import Message  # noqa
-from .occurence import Occurence  # noqa
+from .occurrence import Occurrence  # noqa
 from .org import Application, Organization, Project  # noqa
 from .role import Role  # noqa
 from .subscription import Subscription  # noqa

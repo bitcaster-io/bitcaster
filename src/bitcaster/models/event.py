@@ -10,7 +10,7 @@ from .org import Application
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from bitcaster.models import Message, Occurence, Subscription, User
+    from bitcaster.models import Message, Occurrence, Subscription, User
 
 
 class Event(SlugMixin, models.Model):
@@ -36,10 +36,10 @@ class Event(SlugMixin, models.Model):
         )
         ordering = ("name",)
 
-    def trigger(self, context: Dict[str, Any]) -> "Occurence":
-        from .occurence import Occurence
+    def trigger(self, context: Dict[str, Any]) -> "Occurrence":
+        from .occurrence import Occurrence
 
-        return Occurence.objects.create(event=self, context=context)
+        return Occurrence.objects.create(event=self, context=context)
 
     def get_message(self, channel: "Channel") -> "Optional[Message]":
         if channel not in self._cached_messages:

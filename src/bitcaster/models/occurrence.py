@@ -9,7 +9,7 @@ from .subscription import Subscription
 logger = logging.getLogger(__name__)
 
 
-class Occurence(models.Model):
+class Occurrence(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     context = models.JSONField(blank=True, null=True)
