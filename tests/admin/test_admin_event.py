@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, List, TypedDict
 
 import pytest
 from django.urls import reverse
@@ -29,11 +29,7 @@ def app(django_app_factory, admin_user):
 
 @pytest.fixture
 def context(django_app_factory, admin_user) -> "Context":
-    from testutils.factories import (
-        AddressFactory,
-        ChannelFactory,
-        EventFactory
-    )
+    from testutils.factories import AddressFactory, ChannelFactory, EventFactory
 
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
@@ -48,8 +44,12 @@ def context(django_app_factory, admin_user) -> "Context":
     address2 = AddressFactory(user=admin_user)  # other_addr
 
     return {
-        "app": django_app, "channel": channel, "channel2": channel2,
-        "event": event, "address": address, "address2": address2
+        "app": django_app,
+        "channel": channel,
+        "channel2": channel2,
+        "event": event,
+        "address": address,
+        "address2": address2,
     }
 
 
@@ -65,31 +65,32 @@ def test_event_subscribe(app, context: "Context") -> None:
     from bitcaster.models import Subscription
 
     assert Subscription.objects.filter(
-        validation__address=context["address"], event=context["event"], validation__channel=context["channel"]).exists()
+        validation__address=context["address"], event=context["event"], validation__channel=context["channel"]
+    ).exists()
 
 
 @pytest.mark.parametrize(
-    'num_sub, which, result',
+    "num_sub, which, result",
     [
-        pytest.param(0, None, [], id='none'),
-        pytest.param(1, [0], [], id='one'),
-        pytest.param(2, True, [], id='all'),
-        pytest.param(2, [1], [0], id='specific'),
-        pytest.param(2, [2], [], id='all-selected'),
-    ]
+        pytest.param(0, None, [], id="none"),
+        pytest.param(1, [0], [], id="one"),
+        pytest.param(2, True, [], id="all"),
+        pytest.param(2, [1], [0], id="specific"),
+        pytest.param(2, [2], [], id="all-selected"),
+    ],
 )
 def test_event_unsubscribe(app, context: "Context", num_sub: int, which: List[int], result: List[int]) -> None:
-    from bitcaster.models import Validation, Subscription
+    from bitcaster.models import Subscription, Validation
+
     validations = [
-        Validation.objects.create(address=context['address'], channel=context['channel']),
-        Validation.objects.create(address=context['address2'], channel=context['channel2'])
+        Validation.objects.create(address=context["address"], channel=context["channel"]),
+        Validation.objects.create(address=context["address2"], channel=context["channel2"]),
     ]
-    channels = [context['channel'], context['channel2']]
+    channels = [context["channel"], context["channel2"]]
 
     # Creating subscriptions
     subscriptions = [
-        Subscription.objects.create(validation=validations[i], event=context['event'])
-        for i in range(num_sub)
+        Subscription.objects.create(validation=validations[i], event=context["event"]) for i in range(num_sub)
     ]
     expected = [s.id for i, s in enumerate(subscriptions) if i in result]
 
@@ -98,13 +99,12 @@ def test_event_unsubscribe(app, context: "Context", num_sub: int, which: List[in
         pass
     elif which is True:
         # unsubscribing all
-        context['event'].unsubscribe(user=context['address'].user)
+        context["event"].unsubscribe(user=context["address"].user)
     else:
         # unsubscribing from channels in which
-        context['event'].unsubscribe(
-            user=context['address'].user,
-            channel_ids=[c.id for i, c in enumerate(channels) if i in which]
+        context["event"].unsubscribe(
+            user=context["address"].user, channel_ids=[c.id for i, c in enumerate(channels) if i in which]
         )
-    remaining = list(Subscription.objects.values_list('id', flat=True))
+    remaining = list(Subscription.objects.values_list("id", flat=True))
 
     assert remaining == expected, "Should have deleted the subscriptions"

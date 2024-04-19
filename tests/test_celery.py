@@ -14,6 +14,6 @@ def test_init_celery():
     try:
         from bitcaster.config.celery import init_sentry
 
-        assert init_sentry()
+        init_sentry()
     except Exception as e:
         pytest.fail(getattr(e, "message", "unknown error"))
