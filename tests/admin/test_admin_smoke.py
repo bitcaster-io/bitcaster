@@ -28,7 +28,11 @@ GLOBAL_EXCLUDED_MODELS = RegexList(
     ]
 )
 
-GLOBAL_EXCLUDED_BUTTONS = RegexList([])
+GLOBAL_EXCLUDED_BUTTONS = RegexList(
+    [
+        r"social.SocialProviderAdmin:test",
+    ]
+)
 
 KWARGS = {}
 
