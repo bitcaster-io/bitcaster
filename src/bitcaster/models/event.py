@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from django.db import models
 from django.utils.translation import gettext as _
@@ -49,10 +49,13 @@ class Event(SlugMixin, models.Model):
 
         Subscription.objects.get_or_create(event=self, validation=validation)
 
-    def unsubscribe(self, user: "User", channel_id: int) -> None:
+    def unsubscribe(self, user: "User", channel_ids: List[int] = None) -> None:
         """Deregister a subscription to the event."""
         from .subscription import Subscription
 
-        Subscription.objects.filter(
-            event=self, validation__address__user=user, validation__channel_id=channel_id
-        ).delete()
+        qs = Subscription.objects.filter(event=self, validation__address__user=user)
+
+        if channel_ids:
+            qs = qs.filter(validation__channel_id__in=channel_ids)
+
+        qs.delete()

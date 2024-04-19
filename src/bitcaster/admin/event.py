@@ -106,7 +106,7 @@ class EventAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Event]):
                     if address_id := form.cleaned_data["address"]:
                         obj.subscribe(int(address_id), form.cleaned_data["channel_id"])
                     else:
-                        obj.unsubscribe(request.user, form.cleaned_data["channel_id"])
+                        obj.unsubscribe(request.user, [form.cleaned_data["channel_id"]])
                 messages.success(request, _(f"Subscribed to event {obj}."))
                 return HttpResponseRedirect(url)
         else:
