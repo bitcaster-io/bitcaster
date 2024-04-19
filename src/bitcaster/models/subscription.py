@@ -15,16 +15,16 @@ if TYPE_CHECKING:
     from .address import Address
     from .message import Message
 
-JsonPayload = Optional[Dict[str, Any] | str]
+YamlPayload = Optional[Dict[str, Any] | str]
 
 logger = logging.getLogger(__name__)
 
 
 class SubscriptionQuerySet(models.QuerySet["Subscription"]):
 
-    def match(self, payload: Dict[str, Any], rules: JsonPayload = None) -> List["Subscription"]:
+    def match(self, payload: Dict[str, Any], rules: YamlPayload = None) -> List["Subscription"]:
         for subscription in self.all():
-            if subscription.match(payload, rules=rules):
+            if subscription.match_filter(payload, rules=rules):
                 yield subscription
 
 
@@ -63,7 +63,7 @@ class Subscription(models.Model):
             dispatcher.send(addr.value, payload)
 
     @staticmethod
-    def match_filter_impl(filter_rules_dict: JsonPayload, payload: JsonPayload, check_only: bool = False) -> bool:
+    def match_filter_impl(filter_rules_dict: YamlPayload, payload: YamlPayload, check_only: bool = False) -> bool:
         if not filter_rules_dict:
             return True
 
@@ -80,10 +80,10 @@ class Subscription(models.Model):
         elif or_stm := filter_rules_dict.get("OR"):
             return any([Subscription.match_filter_impl(rules, payload) for rules in or_stm])
         elif not_stm := filter_rules_dict.get("NOT"):
-            return not not_stm
+            return not Subscription.match_filter_impl(not_stm, payload)
         return False
 
-    def match_filter(self, payload: JsonPayload, rules: Optional[Dict[str, Any] | str] = None) -> bool:
+    def match_filter(self, payload: YamlPayload, rules: Optional[Dict[str, Any] | str] = None) -> bool:
         """Check if given payload matches rules.
 
         If no rules are specified, it defaults to match rules configured in subscription.
