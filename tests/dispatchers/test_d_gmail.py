@@ -10,6 +10,7 @@ from bitcaster.dispatchers import GMmailDispatcher
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
+@pytest.mark.parametrize("mail_payload", ("", "html_message"), indirect=True)
 def test_gmail(mocked_responses, monkeypatch, mail_payload):
     from bitcaster.dispatchers import GMmailDispatcher
     from bitcaster.models import Application, Channel

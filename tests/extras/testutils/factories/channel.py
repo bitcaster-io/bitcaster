@@ -16,7 +16,7 @@ class ChannelFactory(AutoRegisterModelFactory):
 
     name = Sequence(lambda n: "Channel-%03d" % n)
     organization = factory.SubFactory(OrganizationFactory)
-    application = factory.SubFactory(ApplicationFactory)
     project = factory.SubFactory(ProjectFactory)
+    application = factory.SubFactory(ApplicationFactory)
     dispatcher = fqn(TestDispatcher)
     config = {"foo": "bar"}

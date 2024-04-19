@@ -14,30 +14,34 @@ from .org import Application, Organization, Project
 class ChannelManager(models.Manager["Channel"]):
 
     def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[Channel, bool]":
-        targets = [kwargs]
-        if defaults:
-            targets.append(defaults)
-        for target in targets:
-            if "application" in target:
-                target["project"] = target["application"].project
-                target["organization"] = target["application"].project.organization
-            elif "project" in target:
-                target["organization"] = target["project"].organization
+        if kwargs.get("application"):
+            kwargs["project"] = kwargs["application"].project
+            kwargs["organization"] = kwargs["application"].project.organization
+        elif kwargs.get("project"):
+            kwargs["organization"] = kwargs["project"].organization
+
+        if defaults and defaults.get("application"):
+            defaults["project"] = defaults["application"].project
+            defaults["organization"] = defaults["application"].project.organization
+        elif defaults and defaults.get("project"):
+            defaults["organization"] = defaults["project"].organization
 
         return super().get_or_create(defaults, **kwargs)
 
     def update_or_create(
         self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any
     ) -> "tuple[Channel, bool]":
-        targets = [kwargs]
-        if defaults:
-            targets.append(defaults)
-        for target in targets:
-            if "application" in target:
-                target["project"] = target["application"].project
-                target["organization"] = target["application"].project.organization
-            elif "project" in target:
-                target["organization"] = target["project"].organization
+        if kwargs and kwargs.get("application"):
+            kwargs["project"] = kwargs["application"].project
+            kwargs["organization"] = kwargs["application"].project.organization
+        elif kwargs.get("project"):
+            kwargs["organization"] = kwargs["project"].organization
+
+        if defaults and defaults.get("application"):
+            defaults["project"] = defaults["application"].project
+            defaults["organization"] = defaults["application"].project.organization
+        elif defaults and defaults.get("project"):
+            defaults["organization"] = defaults["project"].organization
 
         return super().update_or_create(defaults, **kwargs)
 
@@ -76,6 +80,8 @@ class Channel(models.Model):
     def from_email(self) -> str:
         if self.application:
             return self.application.from_email
+        elif self.project:
+            return self.project.from_email
         else:
             return str(self.organization.from_email)
 
@@ -83,22 +89,19 @@ class Channel(models.Model):
     def subject_prefix(self) -> str:
         if self.application:
             return str(self.application.subject_prefix)
+        elif self.project:
+            return self.project.subject_prefix
         else:
             return str(self.organization.subject_prefix)
 
     def clean(self) -> None:
-        if not self.dispatcher:
-            self.dispatcher = dispatcherManager.get_default()
         try:
             if self.application:
                 self.project = self.application.project
-        except ObjectDoesNotExist:
+        except ObjectDoesNotExist:  # pragma: no cover
             pass
         try:
             if self.project:
                 self.organization = self.project.organization
-        except ObjectDoesNotExist:
+        except ObjectDoesNotExist:  # pragma: no cover
             pass
-
-        # if not self.application and not self.organization:
-        #     raise ValidationError(_("Channel must have an application or an organization"))

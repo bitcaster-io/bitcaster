@@ -24,16 +24,14 @@ class DispatcherMeta(type["Dispatcher"]):
         if attrs["__qualname__"] == "Dispatcher":
             return super().__new__(mcs, class_name, bases, attrs)
 
-        if attrs["slug"].isnumeric():  # pragma: no cache
+        if attrs["slug"].isnumeric():  # pragma: no cover
             raise ValueError(f'{class_name} Invalid Dispatcher.slug {attrs["slug"]}')
-        if attrs["slug"] in mcs._all:  # pragma: no cache
+        if attrs["slug"] in mcs._all:  # pragma: no cover
             raise ValueError(f'{class_name} Duplicate Dispatcher.slug {attrs["slug"]}')
 
         cls = super().__new__(mcs, class_name, bases, attrs)
-        if cls not in dispatcherManager:
+        if cls not in dispatcherManager:  # pragma: no branch
             dispatcherManager.register(cls)
-            # mcs._dispatchers.append(cls)
-            # mcs._all[cls.slug] = mcs._all[int(cls.id)] = mcs._all[str(cls.id)] = cls
         return cast(Dispatcher, cls)
 
 

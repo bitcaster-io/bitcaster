@@ -148,7 +148,7 @@ class EventSerializer(ModelSerializer):
                     kwargs["parent_lookup_application__project__organization__slug"],
                     kwargs["parent_lookup_application__project__slug"],
                     kwargs["parent_lookup_application__slug"],
-                    obj.pk,
+                    obj.slug,
                 ],
             )
         )

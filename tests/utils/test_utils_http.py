@@ -44,7 +44,10 @@ def test_get_server_host():
     assert get_server_host() == "127.0.0.1"
 
 
-def test_get_server_url():
+def test_get_server_url(settings):
     assert get_server_url() == "http://127.0.0.1"
     with state.configure(request=None):
         assert get_server_url() == ""
+
+    settings.SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+    assert get_server_url() == "https://127.0.0.1"

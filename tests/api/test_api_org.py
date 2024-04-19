@@ -36,6 +36,7 @@ pytestmark = [pytest.mark.api, pytest.mark.django_db]
 org_slug = "org1"
 prj_slug = "prj1"
 app_slug = "app1"
+event_slug = "evt1"
 
 
 @pytest.fixture()
@@ -52,6 +53,7 @@ def data(admin_user) -> "Context":
         application__project__organization__slug=org_slug,
         application__project__slug=prj_slug,
         application__slug=app_slug,
+        slug=event_slug,
     )
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     ch = ChannelFactory(application=event.application)
@@ -79,6 +81,8 @@ def pytest_generate_tests(metafunc):
             f"/api/organization/{org_slug}/projects/{prj_slug}/applications/",
             f"/api/organization/{org_slug}/projects/{prj_slug}/applications/{app_slug}/",
             f"/api/organization/{org_slug}/projects/{prj_slug}/applications/{app_slug}/events/",
+            f"/api/organization/{org_slug}/projects/{prj_slug}/applications/{app_slug}/events/{event_slug}/",
+            f"/api/organization/{org_slug}/projects/{prj_slug}/applications/{app_slug}/events/{event_slug}/channels/",
         ]:
             m.append(url)
         metafunc.parametrize("url", m, ids=m)

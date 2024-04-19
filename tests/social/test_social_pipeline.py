@@ -17,3 +17,4 @@ def group(db):
 def test_save_to_group(group, user):
     save_to_group(Mock(), user, Mock())
     assert user.groups.first().name == "demo"
+    assert save_to_group(Mock(), None, Mock()) == {}

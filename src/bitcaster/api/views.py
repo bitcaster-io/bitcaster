@@ -60,6 +60,7 @@ class EventViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Event.objects.all().order_by("-pk")
     serializer_class = EventSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
+    lookup_field = "slug"
 
     @action(detail=True)
     def channels(self, request: HttpRequest, **kwargs: Any) -> Response:

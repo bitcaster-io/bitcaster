@@ -32,6 +32,13 @@ class Project(SlugMixin, models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="projects")
     owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
     locked = models.BooleanField(default=False, help_text=_("Security lock of project"))
+    from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
+    subject_prefix = models.CharField(
+        verbose_name=_("Subject Prefix"),
+        max_length=50,
+        default="[Bitcaster] ",
+        help_text=_("Default prefix for messages supporting subject"),
+    )
 
     class Meta:
         ordering = ("name",)
