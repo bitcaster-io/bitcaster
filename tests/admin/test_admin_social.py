@@ -6,13 +6,12 @@ from django_webtest import DjangoTestApp
 from webtest.response import TestResponse
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Event
+    from bitcaster.models import SocialProvider
 
     Context = TypedDict(
         "Context",
         {
-            "group1": Channel,
-            "group2": Event,
+            "provider": SocialProvider,
         },
     )
 

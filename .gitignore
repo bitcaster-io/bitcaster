@@ -9,6 +9,7 @@ __pycache__/
 !.gitignore
 !.gitlab/
 !.mypy.ini
+!.gitlab-ci.yml
 !.pre-commit-config.yaml
 coverage.xml
 Makefile

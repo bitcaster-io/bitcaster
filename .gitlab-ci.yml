@@ -1,0 +1,188 @@
+include:
+  - /.gitlab/ci/variables.yml
+
+stages:
+  - base
+  - builder
+  - lint
+  - images
+  - scan
+
+.debug-rule:
+  - when: always
+
+.lint-rules:
+  rules:
+    - !reference [.debug-rule]
+    - if: '$CI_COMMIT_MESSAGE=~ /skip_test/'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE=~ /CI:(retest|force test)/'
+      when: always
+    - changes:
+        - src/**/*
+        - tests/**/*
+        - pyproject.toml
+        - mypy.ini
+
+
+.test-rules:
+  rules:
+    - !reference [.debug-rule]
+    - if: '$CI_COMMIT_MESSAGE=~ /skip_test/'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE=~ /CI:(retest|force test)/'
+      when: always
+    - changes:
+        - src/**/*
+        - tests/**/*
+        - pyproject.toml
+        - pdm.lock
+
+.docker-rules:
+  rules:
+    - !reference [.debug-rule]
+    - if: '$CI_COMMIT_MESSAGE=~ /rebuild/'
+      when: always
+    - changes:
+        - .gitlab-ci.yml
+        - pdm.lock
+        - docker/Dockerfile
+        - docker/bin/*
+        - docker/conf/*
+
+.login: &login
+  - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+
+.build-docker: &build-docker
+  - echo -e "${TXT_WHITE}Building target image ${DOCKER_IMAGE_TAG}${TXT_CLEAR}"
+  - docker pull ${CI_REGISTRY_IMAGE}/builder:${CI_LOCK_SHA} || true
+  - docker pull ${CI_REGISTRY_IMAGE}/builder-test:${CI_LOCK_SHA} || true
+  - docker pull ${CI_REGISTRY_IMAGE}/builder:latest || true
+  - docker build
+    --progress=plain
+    --build-arg BUILDKIT_INLINE_CACHE=1
+    --build-arg VERSION=${CI_VERSION}
+    --build-arg BUILD_DATE="${CI_BUILD_DATE}"
+    --build-arg CHECKSUM="${CI_LOCK_SHA}"
+    --build-arg COMMIT="${CI_COMMIT_SHA}"
+    --cache-from ${CI_REGISTRY_IMAGE}/builder:${CI_LOCK_SHA}
+    --cache-from ${CI_REGISTRY_IMAGE}/builder-test:${CI_LOCK_SHA}
+    --cache-from ${CI_REGISTRY_IMAGE}/builder:latest
+    --target $TARGET
+    -t $DOCKER_IMAGE_TAG
+    -f docker/Dockerfile .
+
+
+.docker_sha: &docker_sha
+    - export CI_CHECKSUM=$(sha1sum pdm.lock docker/Dockerfile docker/bin/* docker/conf/* | sha1sum | awk '{print $1}')
+
+.exports: &exports
+    - *docker_sha
+    - export CI_BUILD_DATE=$(date +"%Y-%m-%d %H:%M")
+    - export CI_LOCK_SHA=$(echo ${CI_CHECKSUM} | cut -c 1-8)
+    - export CI_VERSION=$(cat .bumpversion.cfg | grep '^current_version' | sed 's/.*= //')
+    - export LOCK_SHA=h-${CI_LOCK_SHA}
+    - export COMMIT=c-${CI_COMMIT_SHA}
+    - export VERSION=v-${CI_VERSION}
+
+.build_base:
+  image: "$DOCKER_BUILDER"
+  extends:
+    - .docker-rules
+  services:
+    - docker:24.0.5-dind
+  cache:
+    untracked: true
+  before_script:
+    - *exports
+  script:
+    - *login
+    - *build-docker
+    - echo "Image built $DOCKER_IMAGE"
+    - docker tag "${DOCKER_IMAGE_TAG}" "${DOCKER_IMAGE}:latest"
+    - docker push $DOCKER_IMAGE_TAG
+    - docker push ${DOCKER_IMAGE}:latest
+  allow_failure:
+    exit_codes:
+      - 64
+
+
+docker-builder:
+  stage: builder
+  extends:
+    - .build_base
+  before_script:
+    - *exports
+    - export TARGET=builder
+    - export DOCKER_IMAGE="${CI_REGISTRY_IMAGE}/${TARGET}"
+    - export DOCKER_IMAGE_TAG="${DOCKER_IMAGE}:${CI_LOCK_SHA}"
+
+
+docker-builder-test:
+  stage: builder
+  extends:
+    - .build_base
+  dependencies:
+    - docker-builder
+  before_script:
+    - *exports
+    - export TARGET=builder-test
+    - export DOCKER_IMAGE="${CI_REGISTRY_IMAGE}/${TARGET}"
+    - export DOCKER_IMAGE_TAG="${DOCKER_IMAGE}:${CI_LOCK_SHA}"
+
+
+lint:
+  image: "${CI_REGISTRY_IMAGE}/builder-test:latest"
+  stage: lint
+  extends:
+    - .test-rules
+  before_script:
+    - *exports
+  script:
+    - echo -e "${TXT_HI_WHITE}Using Docker image ${TXT_HI_GREEN}${CI_JOB_IMAGE}${TXT_RESET}"
+    - echo "run lint"
+    - flake8 src/sos --exit-zero --format=html --htmldir flake8/ --statistics --tee
+    - black src/sos --check > black.txt
+    - mkdir -p public/junit
+    - cp -R flake8 public/
+  artifacts:
+    when: always
+    paths:
+      - flake8/
+      - black.txt
+    expire_in: 5 days
+
+
+trivy:
+  image: "$DOCKER_BUILDER"
+  stage: scan
+  extends:
+    - .docker-rules
+  services:
+    - docker:dind
+  cache:
+    paths:
+      - .trivy-cache
+  before_script:
+    - *exports
+    - export DOCKER_IMAGE_TAG="${CI_REGISTRY_IMAGE}/builder:${CI_LOCK_SHA}"
+  script:
+    - *login
+    - echo "Scanning $DOCKER_IMAGE_TAG"
+    - trivy
+      --cache-dir .trivy-cache
+      image
+      --exit-code 0
+      --no-progress
+      --format template
+      --template "@/templates/gitlab.tpl"
+      -o trivy.json
+      ${DOCKER_IMAGE_TAG}
+  artifacts:
+    when: always
+    reports:
+      container_scanning: trivy.json
+      junit: trivy.xml
+    paths:
+      - public
+    expire_in: 4 weeks
