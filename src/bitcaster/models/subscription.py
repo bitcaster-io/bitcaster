@@ -63,16 +63,13 @@ class Subscription(models.Model):
             dispatcher.send(addr.value, payload)
 
     @staticmethod
-    def match_filter_impl(filter_rules_dict: YamlPayload, payload: YamlPayload, check_only: bool = False) -> bool:
+    def match_filter_impl(filter_rules_dict: YamlPayload, payload: YamlPayload) -> bool:
         if not filter_rules_dict:
             return True
 
         if isinstance(filter_rules_dict, str):
             # this is a leaf, apply the filter
-            if check_only:
-                return jmespath.compile(filter_rules_dict)
-            else:
-                return bool(jmespath.search(filter_rules_dict, payload))
+            return bool(jmespath.search(filter_rules_dict, payload))
 
         # it is not a str hence it must be a dict with one of AND, OR, NOT
         if and_stm := filter_rules_dict.get("AND"):
@@ -91,3 +88,7 @@ class Subscription(models.Model):
         if not rules:
             rules = yaml.safe_load(self.payload_filter or "")
         return Subscription.match_filter_impl(rules, payload)
+
+    @staticmethod
+    def check_filter(filter_rules_dict: YamlPayload):
+        return jmespath.compile(filter_rules_dict)
