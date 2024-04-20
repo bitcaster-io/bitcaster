@@ -35,6 +35,7 @@ def context() -> "Context":
 
 def test_get_readonly_if_default(app: DjangoTestApp, context: "Context", settings) -> None:
     settings.ROOT_TOKEN_HEADER = "abc"
+    settings.ROOT_TOKEN = "123"
     url = reverse("admin:social_socialprovider_change", args=[context["provider"].pk])
 
     res: TestResponse = app.get(url)
