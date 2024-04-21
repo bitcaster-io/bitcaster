@@ -299,9 +299,9 @@ deploy-dev:
         - poetry.lock
   environment:
     name: development
-    url: https://dev.sosbob.com
+    url: https://dev.bitcasterbob.com
   variables:
-    WORKER: "bitcaster-ns:sos-dev"
+    WORKER: "bitcaster-ns:bitcaster-dev"
   script:
     - |
       DOCKER_IMAGE=$(cat latest_built_image.txt)
@@ -329,11 +329,11 @@ deploy-staging:
     - if: $CI_COMMIT_BRANCH == "staging"
   environment:
     name: staging
-    url: https://qa.sosbob.com
+    url: https://qa.bitcasterbob.com
   dependencies:
     - build
   variables:
-    WORKER: "bitcaster-ns:sos-test-ci"
+    WORKER: "bitcaster-ns:bitcaster-test-ci"
   script:
     - |
       DOCKER_IMAGE=$(cat latest_built_image.txt)
@@ -361,11 +361,11 @@ deploy-production:
     - if: $CI_COMMIT_BRANCH == "master"
   environment:
     name: production
-    url: https://app.sosbob.com
+    url: https://app.bitcasterbob.com
   dependencies:
     - build
   variables:
-    WORKER: "bitcaster-ns:sos-test-ci"
+    WORKER: "bitcaster-ns:bitcaster-test-ci"
   script:
     - |
       DOCKER_IMAGE=$(cat latest_built_image.txt)

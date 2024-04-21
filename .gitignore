@@ -14,3 +14,5 @@ __pycache__/
 coverage.xml
 Makefile
 site
+black.txt
+flake8

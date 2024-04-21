@@ -141,8 +141,8 @@ lint:
   script:
     - echo -e "${TXT_HI_WHITE}Using Docker image ${TXT_HI_GREEN}${CI_JOB_IMAGE}${TXT_RESET}"
     - echo "run lint"
-    - flake8 src/sos --exit-zero --format=html --htmldir flake8/ --statistics --tee
-    - black src/sos --check > black.txt
+    - flake8 src/bitcaster --exit-zero --format=html --htmldir flake8/ --statistics --tee
+    - black src/bitcaster --check > black.txt
     - mkdir -p public/junit
     - cp -R flake8 public/
   artifacts:
