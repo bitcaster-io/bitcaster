@@ -8,28 +8,50 @@ from django.core.management import CommandError, call_command
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.parametrize(
-    "options",
-    [
-        {},
-        {"admin_email": "user@test.com", "admin_password": 123},
-    ],
-)
+@pytest.fixture()
+def environment():
+    return {"CACHE_URL": "test", "CELERY_BROKER_URL": "", "DATABASE_URL": "", "SECRET_KEY": ""}
+
+
+# @pytest.mark.parametrize(
+#     "options",
+#     [
+#         {},
+#         {"admin_email": "user@test.com", "admin_password": 123},
+#     ],
+# )
 @pytest.mark.parametrize("verbosity", [1, 0], ids=["verbose", ""])
 @pytest.mark.parametrize("migrate", [1, 0], ids=["migrate", ""])
-def test_upgrade(options, verbosity, migrate, monkeypatch):
+def test_upgrade_init(verbosity, migrate, monkeypatch, environment):
     out = StringIO()
-    call_command("upgrade", stdout=out, check=False, verbosity=verbosity, **options)
+    # environ = {"CACHE_URL": "test", "CELERY_BROKER_URL": "", "DATABASE_URL": "", "SECRET_KEY": ""}
+    with mock.patch.dict(os.environ, environment, clear=True):
+        call_command(
+            "upgrade", admin_email="user@test.com", admin_password="123", stdout=out, check=False, verbosity=verbosity
+        )
     assert "error" not in str(out.getvalue())
 
-    # assert "Running upgrade" in str(out.getvalue())
-    # assert "Upgrade completed" in str(out.getvalue())
 
+@pytest.mark.parametrize("verbosity", [1, 0], ids=["verbose", ""])
+@pytest.mark.parametrize("migrate", [1, 0], ids=["migrate", ""])
+def test_upgrade(verbosity, migrate, monkeypatch, environment):
+    from testutils.factories import SuperUserFactory
 
-def test_upgrade_check(mocked_responses):
     out = StringIO()
-    environ = {k: v for k, v in os.environ.items() if k not in ["FERNET_KEYS"]}
-    with mock.patch.dict(os.environ, environ, clear=True):
+    SuperUserFactory()
+    with mock.patch.dict(os.environ, environment, clear=True):
+        call_command("upgrade", stdout=out, check=False, verbosity=verbosity)
+    assert "error" not in str(out.getvalue())
+
+
+def test_upgrade_check(mocked_responses, environment):
+    out = StringIO()
+
+    from testutils.factories import SuperUserFactory
+
+    SuperUserFactory()
+
+    with mock.patch.dict(os.environ, environment, clear=True):
         call_command("upgrade", stdout=out, check=True)
 
 

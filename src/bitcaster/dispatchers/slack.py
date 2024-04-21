@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class SlackConfig(DispatcherConfig):
-    url = forms.URLField(label=_("URL"))
+    url = forms.URLField(label=_("URL"), assume_scheme="https")
 
 
 class SlackDispatcher(Dispatcher):

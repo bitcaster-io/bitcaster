@@ -19,14 +19,17 @@ class Group(Enum):
 
 
 NOT_SET = "<- not set ->"
-EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY"]
+EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY", "CACHE_URL", "CELERY_BROKER_URL"]
 
 CONFIG: "Dict[str, ConfigItem]" = {
     "ADMIN_EMAIL": (str, "", "Initial user created at first deploy"),
     "ADMIN_PASSWORD": (str, "", "Password for initial user created at first deploy"),
     "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], setting("allowed-hosts")),
     "AUTHENTICATION_BACKENDS": (list, [], setting("authentication-backends")),
-    "CACHE_URL": (str, "redis://localhost:6379/0"),
+    "CACHE_URL": (
+        str,
+        "redis://localhost:6379/0",
+    ),
     "CATCH_ALL_EMAIL": (str, "If set all the emails will be sent to this address"),
     "CELERY_BROKER_URL": (str, NOT_SET, "https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html"),
     "CELERY_TASK_ALWAYS_EAGER": (

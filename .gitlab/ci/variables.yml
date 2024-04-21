@@ -2,7 +2,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_BUILDER: "registry.gitlab.com/os4d/docker-builder:2.4"
   CI_DEBUG_TRACE: "false"
-  POSTGRES_DB: "bob"
+  POSTGRES_DB: "bitcaster"
   POSTGRES_PASSWORD: "pwd"
   POSTGRES_USER: "postgres"
   CHROME_VERSION: "114.0.5735.90"

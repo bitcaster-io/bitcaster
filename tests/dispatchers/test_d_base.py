@@ -7,7 +7,7 @@ pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
 def test_registry():
-    from testutils.dispatcher import TestDispatcher
+    from testutils.dispatcher import TDispatcher
 
-    assert TestDispatcher in dispatcherManager
-    assert fqn(TestDispatcher) in dispatcherManager
+    assert TDispatcher in dispatcherManager
+    assert fqn(TDispatcher) in dispatcherManager

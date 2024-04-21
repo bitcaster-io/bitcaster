@@ -169,15 +169,19 @@ class Command(BaseCommand):
                         verbosity=self.verbosity - 1,
                         interactive=False,
                     )
-                admin: "User" = User.objects.get(email=self.admin_email)
+                admin = User.objects.get(email=self.admin_email)
                 os4d = Organization.objects.get_or_create(name="OS4D", owner=admin)[0]
                 echo("Creating initial structure")
                 prj = Project.objects.get_or_create(name="Bitcaster", organization=os4d, owner=os4d.owner)[0]
                 bitcaster = Application.objects.get_or_create(name="Bitcaster", project=prj, owner=os4d.owner)[0]
-            if not bitcaster:
-                bitcaster = Application.objects.get(
-                    name="Bitcaster", project__name="Bitcaster", project__organization__name="OS4D"
-                )[0]
+            if admin := User.objects.filter(is_superuser=True).first():
+                if not bitcaster:
+                    os4d = Organization.objects.get_or_create(name="OS4D", owner=admin)[0]
+                    prj = Project.objects.get_or_create(name="Bitcaster", organization=os4d, owner=os4d.owner)[0]
+                    bitcaster = Application.objects.get_or_create(name="Bitcaster", project=prj, owner=os4d.owner)[0]
+            else:
+                raise CommandError("Create an admin user")
+
             from bitcaster.dispatchers.log import BitcasterLogDispatcher
 
             ch_log = Channel.objects.get_or_create(

@@ -3,9 +3,10 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 from django.urls import reverse
 from django_webtest import DjangoTestApp
-from webtest.response import TestResponse
 
 if TYPE_CHECKING:
+    from webtest.response import TestResponse
+
     from bitcaster.models import SocialProvider
 
     Context = TypedDict(
@@ -34,9 +35,10 @@ def context() -> "Context":
 
 def test_get_readonly_if_default(app: DjangoTestApp, context: "Context", settings) -> None:
     settings.ROOT_TOKEN_HEADER = "abc"
+    settings.ROOT_TOKEN = "123"
     url = reverse("admin:social_socialprovider_change", args=[context["provider"].pk])
 
-    res: TestResponse = app.get(url)
+    res: "TestResponse" = app.get(url)
     frm = res.forms["socialprovider_form"]
     assert "configuration" not in frm.fields
     res = app.get(url, extra_environ={"HTTP_ABC": settings.ROOT_TOKEN})

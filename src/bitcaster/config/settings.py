@@ -107,14 +107,15 @@ DATABASES = {
 CACHE_URL = env("CACHE_URL")
 REDIS_URL = urlparse(CACHE_URL).hostname
 CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": CACHE_URL,
-    },
-    "select2": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": CACHE_URL,
-    },
+    "default": env.cache()
+    #     "default": {
+    #         "BACKEND": "django.core.cache.backends.redis.RedisCache",
+    #         "LOCATION": CACHE_URL,
+    #     },
+    #     "select2": {
+    #         "BACKEND": "django.core.cache.backends.redis.RedisCache",
+    #         "LOCATION": CACHE_URL,
+    #     },
 }
 
 AUTH_USER_MODEL = "bitcaster.user"

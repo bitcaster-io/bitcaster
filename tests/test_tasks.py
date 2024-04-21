@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, TypedDict
 
 import pytest
 from strategy_field.utils import fqn
-from testutils.dispatcher import TestDispatcher
+from testutils.dispatcher import TDispatcher
 
 from bitcaster.tasks import process_event
 
@@ -30,7 +30,7 @@ def context(db) -> "Context":
         ValidationFactory,
     )
 
-    ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(TestDispatcher))
+    ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(TDispatcher))
 
     event: "Event" = EventFactory(application=ch.application)
     event.channels.add(ch)

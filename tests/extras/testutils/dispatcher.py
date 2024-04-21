@@ -3,7 +3,7 @@ from bitcaster.dispatchers.base import Dispatcher, Payload
 MESSAGES = []
 
 
-class TestDispatcher(Dispatcher):
+class TDispatcher(Dispatcher):
     id = 1
     slug = "test"
     local = True

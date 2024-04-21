@@ -2,9 +2,14 @@
 
 
 [![pipeline status](https://gitlab.com/os4d/bitcaster/bitcaster/badges/develop/pipeline.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/commits/develop)
+ [![coverage report](https://gitlab.com/os4d/bitcaster/bitcaster/badges/develop/coverage.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/commits/develop)
+ [![Latest Release](https://gitlab.com/os4d/bitcaster/bitcaster/-/badges/release.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/releases)
 
 
-[![coverage report](https://gitlab.com/os4d/bitcaster/bitcaster/badges/develop/coverage.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/commits/develop)
+Bitcaster is a system-to-user signal-to-message notification system.
 
+Bitcaster will receive signals from any of your applications/systems using a simple RESTful API and will convert them in messages to be distributed to you users via a plethora of channels.
 
-[![Latest Release](https://gitlab.com/os4d/bitcaster/bitcaster/-/badges/release.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/releases)
+Messages content is customised at user/receiver level using a flexible template system.
+
+Your user will be empowered with an easy to use console to choose how to receive the messages configured in Bitcaster.
