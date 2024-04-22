@@ -1,7 +1,7 @@
 import factory
 from factory import Sequence
 from strategy_field.utils import fqn
-from testutils.dispatcher import TestDispatcher
+from testutils.dispatcher import TDispatcher
 
 from bitcaster.models import Channel
 
@@ -18,5 +18,5 @@ class ChannelFactory(AutoRegisterModelFactory):
     organization = factory.SubFactory(OrganizationFactory)
     project = factory.SubFactory(ProjectFactory)
     application = factory.SubFactory(ApplicationFactory)
-    dispatcher = fqn(TestDispatcher)
+    dispatcher = fqn(TDispatcher)
     config = {"foo": "bar"}

@@ -1,0 +1,19 @@
+quiet: false
+debug: false
+format: table
+ignore-policy:
+
+
+severity:
+  - UNKNOWN
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+
+vulnerability:
+  # Same as '--vuln-type'
+  # Default is 'os,library'
+  type:
+    - os
+    - library

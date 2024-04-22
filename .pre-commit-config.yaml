@@ -47,7 +47,7 @@ repos:
     hooks:
       - id: detect-secrets
         args: [ '--baseline', '.secrets.baseline' ]
-        exclude: (tests/.*|.*/tenant\.sql|Pipfile\.lock|.*\.js|.gitlab-ci.yml|poetry.lock)
+        exclude: (tests/.*|.*/tenant\.sql|Pipfile\.lock|.*\.js|~.gitlab-ci.yml|poetry.lock)
         stages: [ push ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.1.0

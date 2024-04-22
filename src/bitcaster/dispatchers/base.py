@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, cast
 from django.core.exceptions import ValidationError
 from django.forms import forms
 from django.utils.functional import cached_property, classproperty
-from jinja2.utils import import_string
+from django.utils.module_loading import import_string
 from strategy_field.registry import Registry
 
 from bitcaster.constants import AddressType

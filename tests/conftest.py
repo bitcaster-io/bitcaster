@@ -81,21 +81,25 @@ def pytest_configure(config):
     from django.core.management import CommandError, call_command
 
     django.setup()
-    from testutils.dispatcher import TestDispatcher
+    from testutils.dispatcher import TDispatcher
 
     from bitcaster.dispatchers.base import dispatcherManager
 
-    dispatcherManager.register(TestDispatcher)
-    from django.contrib.auth.models import Group
-
-    from bitcaster.auth.constants import DEFAULT_GROUP_NAME
-
-    Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
+    dispatcherManager.register(TDispatcher)
 
     try:
         call_command("env", check=True)
     except CommandError:
         pytest.exit("FATAL: Environment variables missing")
+
+
+@pytest.fixture(autouse=True)
+def defaults(db):
+    from django.contrib.auth.models import Group
+
+    from bitcaster.auth.constants import DEFAULT_GROUP_NAME
+
+    Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
 
 
 def pytest_runtest_setup(item):

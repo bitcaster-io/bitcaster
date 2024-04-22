@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 from pytest_django import DjangoAssertNumQueries
 from strategy_field.utils import fqn
-from testutils.dispatcher import TestDispatcher
+from testutils.dispatcher import TDispatcher
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -46,7 +46,7 @@ def context(db) -> "Context":
     )
 
     app: "Application" = ApplicationFactory(name="Application-000")
-    ch = ChannelFactory(organization=app.project.organization, name="test", dispatcher=fqn(TestDispatcher))
+    ch = ChannelFactory(organization=app.project.organization, name="test", dispatcher=fqn(TDispatcher))
     evt = EventFactory(application=app)
     msg = MessageFactory(channel=ch, event=evt, content="Message for {{ event.name }} on channel {{channel.name}}")
 
