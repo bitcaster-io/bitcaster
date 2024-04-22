@@ -20,14 +20,22 @@ class Occurrence(models.Model):
     class Meta:
         ordering = ("timestamp",)
 
+    def get_pending_subscriptions(self):
+        delivered = self.status.get("delivered", [])
+        return (
+            self.event.subscriptions.select_related(
+                "validation__address",
+                "validation__channel",
+            )
+            .filter(active=True)
+            .exclude(id__in=delivered)
+        )
+
     def process(self) -> None:
         subscription: "Subscription"
         delivered = self.status.get("delivered", [])
         recipients = self.status.get("recipients", [])
-        for subscription in self.event.subscriptions.select_related(
-            "validation__address",
-            "validation__channel",
-        ).exclude(active=True, id__in=delivered):
+        for subscription in self.get_pending_subscriptions():
             with transaction.atomic(durable=True):
                 subscription.notify(dict(self.context))
                 delivered.append(subscription.id)
