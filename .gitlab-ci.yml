@@ -299,6 +299,10 @@ build:
 #      when: always
 #      variables:
 #        RELEASE: "nightly"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+      variables:
+        RELEASE: "nightly"
     - if: $CI_COMMIT_REF_NAME =~ /release\/.*/
       when: always
       variables:
