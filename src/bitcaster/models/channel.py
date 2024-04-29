@@ -1,6 +1,5 @@
 from typing import Any, MutableMapping
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -8,7 +7,7 @@ from strategy_field.fields import StrategyField
 
 from bitcaster.dispatchers.base import Dispatcher, dispatcherManager
 
-from .org import Application, Organization, Project
+from .mixins import ScopedMixin
 
 
 class ChannelManager(models.Manager["Channel"]):
@@ -49,12 +48,9 @@ class ChannelManager(models.Manager["Channel"]):
         return self.get_queryset().filter(active=True, locked=False)
 
 
-class Channel(models.Model):
+class Channel(ScopedMixin, models.Model):
     SYSTEM_EMAIL_CHANNEL_NAME = "System Email Channel"
 
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, blank=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True)
-    application = models.ForeignKey(Application, on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(_("Name"), max_length=255, db_collation="case_insensitive")
     dispatcher: "Dispatcher" = StrategyField(registry=dispatcherManager, default="test")
     config = models.JSONField(blank=True, default=dict)
@@ -93,15 +89,3 @@ class Channel(models.Model):
             return self.project.subject_prefix
         else:
             return str(self.organization.subject_prefix)
-
-    def clean(self) -> None:
-        try:
-            if self.application:
-                self.project = self.application.project
-        except ObjectDoesNotExist:  # pragma: no cover
-            pass
-        try:
-            if self.project:
-                self.organization = self.project.organization
-        except ObjectDoesNotExist:  # pragma: no cover
-            pass
