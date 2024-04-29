@@ -1,5 +1,6 @@
 from contextlib import ContextDecorator
 from random import choice
+from typing import TYPE_CHECKING, Union
 from unittest.mock import Mock
 
 from django.contrib.auth.models import Permission
@@ -16,7 +17,18 @@ ascii_lowercase = lowercase
 ascii_uppercase = uppercase
 ascii_letters = ascii_lowercase + ascii_uppercase
 
+
+if TYPE_CHECKING:
+    from bitcaster.models import Application, Organization, Project
+
+
+class Null:
+    def __bool__(self):
+        return False
+
+
 faker = Faker()
+keep_existing = Null()
 
 
 def text(length, choices=ascii_letters):
@@ -112,24 +124,56 @@ class user_grant_permissions(ContextDecorator):  # noqa
 class key_grants(ContextDecorator):  # noqa
     caches = []
 
-    def __init__(self, key, grants=None, add=True):
+    def __init__(
+        self,
+        key,
+        grants=None,
+        add=True,
+        organization: "Union[Null, None, Organization]" = keep_existing,
+        project: "Union[Null, None, Project]" = keep_existing,
+        application: "Union[Null, None, Application]" = keep_existing,
+    ):
         self.key = key
         if not isinstance(grants, (list, tuple)):
             grants = [grants]
-        self.new_grants = grants
+        # self.new_grants = grants
         self.add = add
-        self.existing_grants = self.key.grants
+
+        if application:
+            project = application.project
+        if project:
+            organization = project.organization
+
+        self.state = {
+            "grants": self.key.grants,
+            "organization": self.key.organization,
+            "project": self.key.project,
+            "application": self.key.application,
+        }
+        self.new_state = {
+            "grants": grants,
+            "organization": key.organization if organization is keep_existing else organization,
+            "project": key.project if project is keep_existing else project,
+            "application": key.application if application is keep_existing else application,
+        }
 
     def __enter__(self):
         if self.add:
-            self.key.grants.extend(self.new_grants)
+            self.key.grants.extend(self.new_state["grants"])
         else:
-            self.key.grants = self.new_grants
+            self.key.grants = self.new_state["grants"]
+        self.key.organization = self.new_state["organization"]
+        self.key.project = self.new_state["project"]
+        self.key.application = self.new_state["application"]
+
         self.key.save()
         return self
 
     def __exit__(self, e_typ, e_val, trcbak):
-        self.key.grants = self.existing_grants
+        self.key.grants = self.state["grants"]
+        self.key.organization = self.state["organization"]
+        self.key.project = self.state["project"]
+        self.key.application = self.state["application"]
         self.key.save()
 
         if e_typ:

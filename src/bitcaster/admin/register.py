@@ -7,6 +7,7 @@ from .address import AddressAdmin
 from .api_key import ApiKeyAdmin
 from .auth import RoleAdmin, UserAdmin
 from .channel import ChannelAdmin
+from .distribution import DistributionListAdmin
 from .event import EventAdmin
 from .group import GroupAdmin
 from .log import LogMessageAdmin
@@ -33,3 +34,4 @@ admin.site.register(models.Role, RoleAdmin)
 admin.site.register(models.Subscription, SubscriptionAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Validation, ValidationAdmin)
+admin.site.register(models.DistributionList, DistributionListAdmin)

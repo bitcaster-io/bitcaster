@@ -14,7 +14,5 @@ class MailJetConfig(DispatcherConfig):
 class MailJetDispatcher(EmailDispatcher):
     slug = "mailjet"
     verbose_name = "Mailjet Email"
-    text_message = True
-    html_message = True
     config_class = MailJetConfig
     backend = MailjetBackend

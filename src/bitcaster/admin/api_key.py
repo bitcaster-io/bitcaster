@@ -8,8 +8,6 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
-from bitcaster.utils.security import is_root
-
 if TYPE_CHECKING:
     from django.contrib.admin.options import _FieldGroups, _ListOrTuple
 
@@ -33,13 +31,14 @@ class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsM
 
     def get_fields(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_FieldGroups":
         ret: list = super().get_fields(request, obj)
-        if not is_root(request) and "key" in ret:
-            ret.remove("key")
+        # if not is_root(request) and "key" in ret:
+        #     ret.remove("key")
         return ret
 
-    def get_exclude(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_ListOrTuple[str]":
-        return ["key", "application"]
-
+    # def get_exclude(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_ListOrTuple[str]":
+    #     if obj and obj.pk:
+    #         return ["key", "application"]
+    #
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:
             return ["key", "application"]

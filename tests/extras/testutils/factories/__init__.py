@@ -1,6 +1,7 @@
 from . import base
 from .address import AddressFactory  # noqa
 from .channel import ChannelFactory  # noqa
+from .distribution import DistributionListFactory  # noa
 from .django_auth import GroupFactory, PermissionFactory  # noqa
 from .django_celery_beat import PeriodicTaskFactory  # noqa
 from .event import EventFactory  # noqa

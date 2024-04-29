@@ -7,7 +7,7 @@ from django.forms import PasswordInput
 from django.utils.translation import gettext_lazy as _
 
 from ..exceptions import DispatcherError
-from .base import Dispatcher, DispatcherConfig, Payload
+from .base import Dispatcher, DispatcherConfig, Payload, Protocol
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +25,7 @@ class EmailConfig(DispatcherConfig):
 class EmailDispatcher(Dispatcher):
     slug = "email"
     verbose_name = "Email"
-    text_message = True
-    html_message = True
-    has_subject = True
+    protocol: Protocol = Protocol.EMAIL
 
     config_class: Type[DispatcherConfig] = EmailConfig
     backend = "django.core.mail.backends.smtp.EmailBackend"

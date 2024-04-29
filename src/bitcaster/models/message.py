@@ -8,6 +8,7 @@ from django.utils.crypto import get_random_string
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from ..dispatchers.base import Capability
 from ..utils.strings import grouper
 from .channel import Channel
 from .event import Event
@@ -54,10 +55,13 @@ class Message(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     def support_subject(self) -> bool:
-        return self.channel is None or self.channel.dispatcher.has_subject
+        return self.channel is None or self.channel.dispatcher.protocol.has_capability(Capability.SUBJECT)
 
     def support_html(self) -> bool:
-        return self.channel is None or self.channel.dispatcher.html_message
+        return self.channel is None or self.channel.dispatcher.protocol.has_capability(Capability.HTML)
+
+    def support_text(self) -> bool:
+        return self.channel is None or self.channel.dispatcher.protocol.has_capability(Capability.TEXT)
 
     def render(self, context: Dict[str, Any]) -> str:
         tpl = Template(self.content)

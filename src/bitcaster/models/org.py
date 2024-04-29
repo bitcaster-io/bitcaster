@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 from django.db import models
 from django.db.models import QuerySet
+from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
 from .mixins import SlugMixin
@@ -69,6 +70,10 @@ class Application(SlugMixin, models.Model):
 
     class Meta:
         ordering = ("name",)
+
+    @cached_property
+    def organization(self) -> Organization:
+        return self.project.organization
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         try:

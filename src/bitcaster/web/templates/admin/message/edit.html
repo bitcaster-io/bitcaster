@@ -1,4 +1,4 @@
-{% load static %}<!DOCTYPE HTML>
+{% load static i18n %}<!DOCTYPE HTML>
 <html>
 <head>
     <meta name="change-url" content="{% url "admin:bitcaster_message_change" original.pk %}">
@@ -15,14 +15,14 @@
     '{{ original.channel|default_if_none:"any" }}' channel</h3>
     {% csrf_token %}
     <div class="menubar">
-        <button id="btn_content" class="button" data-panel="#tab_content" type="button">Content</button>
+        <button id="btn_content" class="button" data-panel="#tab_content" type="button">{% translate 'Text' %}</button>
         {% if original.support_subject %}
-            <button id="btn_subject" class="button" data-panel="#tab_subject" type="button">Subject</button>
+            <button id="btn_subject" class="button" data-panel="#tab_subject" type="button">{% translate 'Subject' %}</button>
         {% endif %}
         {% if original.support_html %}
             <button id="btn_html" class="button primary" data-panel="#tab_html" type="button">HTML</button>
         {% endif %}
-        <button id="btn_context" class="button" data-panel="#tab_context" type="button">Context</button>
+        <button id="btn_context" class="button" data-panel="#tab_context" type="button">{% translate 'Context' %}</button>
     </div>
     {{ form.errors }}
     <table>

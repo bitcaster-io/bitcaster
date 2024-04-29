@@ -46,6 +46,19 @@ class MessageForm(forms.ModelForm[Message]):
         return orig + forms.Media(js=["admin/js/%s" % url for url in js])
 
 
+class MessageChangeForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ("name", "channel", "event")
+
+
+class MessageCreationForm(forms.ModelForm):
+
+    class Meta:
+        model = Message
+        fields = ("name", "channel", "event")
+
+
 class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
     search_fields = ("name",)
     list_display = ("name", "channel", "event")
@@ -55,9 +68,19 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
         ("event", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
     )
     autocomplete_fields = ("channel", "event")
+    change_form_template = "admin/message/change_form.html"
+    form = MessageChangeForm
+    add_form = MessageCreationForm
+
+    def get_form(self, request: HttpRequest, obj: "Message" = None, **kwargs):
+        defaults = {}
+        if obj is None:
+            defaults["form"] = self.add_form
+        defaults.update(kwargs)
+        return super().get_form(request, obj, **defaults)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Message]:
-        return super().get_queryset(request).select_related()
+        return super().get_queryset(request).select_related("channel", "event")
 
     @view()
     def render(self, request: HttpRequest, pk: str) -> "HttpResponse":

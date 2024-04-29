@@ -6,6 +6,7 @@ from rest_framework.serializers import HyperlinkedModelSerializer, ModelSerializ
 from strategy_field.utils import fqn
 
 from bitcaster.models import Application, Channel, Event, Organization, Project, User
+from bitcaster.utils.http import absolute_uri
 
 
 class UserSerializer(HyperlinkedModelSerializer):
@@ -15,7 +16,7 @@ class UserSerializer(HyperlinkedModelSerializer):
 
 
 class SelecteOrganizationSerializer(serializers.ModelSerializer):
-    co_key = "parent_lookup_organization__slug"
+    # co_key = "parent_lookup_organization__slug"
     organization = serializers.SerializerMethodField()
 
     @cached_property
@@ -30,59 +31,83 @@ class SelecteOrganizationSerializer(serializers.ModelSerializer):
         )
 
 
-class OrganizationSerializer(HyperlinkedModelSerializer):
+class OrganizationSerializer(serializers.ModelSerializer):
+    owner = serializers.EmailField(source="owner.email", read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="api:organization-detail", lookup_field="slug", read_only=True)
-    projects = serializers.HyperlinkedIdentityField(
-        view_name="api:project-list", lookup_field="slug", lookup_url_kwarg="parent_lookup_organization__slug"
-    )
-    channels = serializers.HyperlinkedIdentityField(
-        view_name="api:org-channel-list", lookup_field="slug", lookup_url_kwarg="parent_lookup_organization__slug"
-    )
+
+    # hyperlinks
+    links = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
-        exclude = ("owner",)
+        fields = ("id", "slug", "owner", "name", "links", "url")
+        # read_only_fields = ("id", "slug", "status", "members", "links")
+
+    def get_links(self, obj):
+        return {
+            # "members": absolute_uri(reverse("api:member-list", args=[obj.slug])),
+            "channels": absolute_uri(reverse("api:org-channel-list", args=[obj.slug])),
+            "projects": absolute_uri(reverse("api:org-project-list", args=[obj.slug])),
+            # "addresses": absolute_uri(reverse("api:address-list", args=[obj.slug])),
+        }
 
 
 class ProjectSerializer(SelecteOrganizationSerializer):
     co_key = "parent_lookup_organization__slug"
     url = serializers.SerializerMethodField()
-    applications = serializers.SerializerMethodField()
-    channels = serializers.SerializerMethodField()
+    links = serializers.SerializerMethodField()
+
+    # applications = serializers.SerializerMethodField()
+    # channels = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
-        fields = ("url", "name", "slug", "organization", "applications", "channels")
+        fields = ("url", "name", "slug", "organization", "links")
 
     def get_url(self, obj: "Project") -> str:
         kwargs = self.context["view"].kwargs
         return self.context["request"].build_absolute_uri(
             reverse(
-                "api:project-detail",
+                "api:org-project-detail",
                 args=[kwargs["parent_lookup_organization__slug"], obj.slug],
             )
         )
 
-    def get_applications(self, obj: "Project") -> str:
+    def get_links(self, obj):
         kwargs = self.context["view"].kwargs
-        return self.context["request"].build_absolute_uri(
-            reverse(
-                "api:application-list",
-                args=[kwargs["parent_lookup_organization__slug"], obj.slug],
-            )
-        )
+        return {
+            # "members": absolute_uri(reverse("api:member-list", args=[obj.slug])),
+            "applications": absolute_uri(
+                reverse("api:prj-application-list", args=[kwargs["parent_lookup_organization__slug"], obj.slug])
+            ),
+            "channels": absolute_uri(
+                reverse("api:prj-channel-list", args=[kwargs["parent_lookup_organization__slug"], obj.slug])
+            ),
+            # "projects": absolute_uri(reverse("api:org-project-list", args=[obj.slug])),
+            # "addresses": absolute_uri(reverse("api:address-list", args=[obj.slug])),
+        }
 
-    def get_channels(self, obj: "Project") -> str:
-        kwargs = self.context["view"].kwargs
-        return self.context["request"].build_absolute_uri(
-            reverse(
-                "api:prj-channel-list",
-                args=[
-                    kwargs["parent_lookup_organization__slug"],
-                    obj.slug,
-                ],
-            )
-        )
+    #
+    # def get_applications(self, obj: "Project") -> str:
+    #     kwargs = self.context["view"].kwargs
+    #     return self.context["request"].build_absolute_uri(
+    #         reverse(
+    #             "api:prj-application-list",
+    #             args=[kwargs["parent_lookup_organization__slug"], obj.slug],
+    #         )
+    #     )
+    #
+    # def get_channels(self, obj: "Project") -> str:
+    #     kwargs = self.context["view"].kwargs
+    #     return self.context["request"].build_absolute_uri(
+    #         reverse(
+    #             "api:prj-channel-list",
+    #             args=[
+    #                 kwargs["parent_lookup_organization__slug"],
+    #                 obj.slug,
+    #             ],
+    #         )
+    #     )
 
 
 class ApplicationSerializer(SelecteOrganizationSerializer):
@@ -92,13 +117,13 @@ class ApplicationSerializer(SelecteOrganizationSerializer):
 
     class Meta:
         model = Application
-        fields = ("name", "organization", "url", "events")
+        fields = ("name", "url", "events")
 
     def get_url(self, obj: "Project") -> str:
         kwargs = self.context["view"].kwargs
         return self.context["request"].build_absolute_uri(
             reverse(
-                "api:application-detail",
+                "api:prj-application-detail",
                 args=[
                     kwargs["parent_lookup_project__organization__slug"],
                     kwargs["parent_lookup_project__slug"],
@@ -111,7 +136,7 @@ class ApplicationSerializer(SelecteOrganizationSerializer):
         kwargs = self.context["view"].kwargs
         return self.context["request"].build_absolute_uri(
             reverse(
-                "api:event-list",
+                "api:app-event-list",
                 args=[
                     kwargs["parent_lookup_project__organization__slug"],
                     kwargs["parent_lookup_project__slug"],
@@ -134,16 +159,37 @@ class ChannelSerializer(ModelSerializer):
 
 class EventSerializer(ModelSerializer):
     url = serializers.SerializerMethodField()
+    channels = serializers.SerializerMethodField()
+    trigger_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
-        exclude = ()
+        exclude = (
+            "id",
+            "application",
+        )
+
+    def get_channels(self, obj: "Event") -> list[str]:
+        return [ch.name for ch in obj.channels.all()]
+
+    def get_trigger_url(self, obj: "Event") -> str:
+        return absolute_uri(
+            reverse(
+                "api:trigger-trigger",
+                args=[
+                    obj.application.project.organization.slug,
+                    obj.application.project.slug,
+                    obj.application.slug,
+                    obj.slug,
+                ],
+            )
+        )
 
     def get_url(self, obj: "Event") -> str:
         kwargs = self.context["view"].kwargs
         return self.context["request"].build_absolute_uri(
             reverse(
-                "api:event-detail",
+                "api:app-event-detail",
                 args=[
                     kwargs["parent_lookup_application__project__organization__slug"],
                     kwargs["parent_lookup_application__project__slug"],

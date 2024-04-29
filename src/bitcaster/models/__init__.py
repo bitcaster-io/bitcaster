@@ -2,6 +2,7 @@ from bitcaster.social.models import SocialProvider  # noqa
 
 from .address import Address  # noqa
 from .channel import Channel  # noqa
+from .distribution import DistributionList  # noqa
 from .event import Event  # noqa
 from .group import Group  # noqa
 from .key import ApiKey  # noqa

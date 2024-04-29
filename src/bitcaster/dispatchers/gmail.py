@@ -20,11 +20,7 @@ class GMailConfig(DispatcherConfig):
 
 class GMmailDispatcher(Dispatcher):
     slug = "gmail"
-    local = True
     verbose_name = "GMmail"
-    text_message = True
-    html_message = True
-    has_subject = True
 
     config_class = GMailConfig
     backend = EmailBackend

@@ -1,3 +1,4 @@
+import enum
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, cast
 
@@ -14,6 +15,29 @@ if TYPE_CHECKING:
     from bitcaster.types.dispatcher import DispatcherHandler, TDispatcherConfig
 
 logger = logging.getLogger(__name__)
+
+
+class Capability(enum.IntEnum):
+    HTML = 1
+    TEXT = 2
+    SUBJECT = 4
+
+
+@enum.unique
+class Protocol(enum.IntEnum):
+    PLAINTEXT = 100
+    SMS = 200
+    EMAIL = 300
+
+    def has_capability(self, capability: Capability):
+        return capability in ProtocolCapabilities[self]
+
+
+ProtocolCapabilities = {
+    Protocol.PLAINTEXT: [Capability.TEXT],
+    Protocol.EMAIL: [Capability.SUBJECT, Capability.HTML, Capability.HTML],
+    Protocol.SMS: [Capability.TEXT],
+}
 
 
 class DispatcherMeta(type["Dispatcher"]):
@@ -70,13 +94,11 @@ class DispatcherConfig(forms.Form):
 class Dispatcher(metaclass=DispatcherMeta):
     slug = "--"
     verbose_name: str = ""
-    text_message: bool = True
-    html_message: bool = False
-    has_subject: bool = False
     config_class: "Type[DispatcherConfig]" = DispatcherConfig
     backend: "Optional[str, DispatcherHandler]" = None
     address_types: List[AddressType] = [AddressType.GENERIC]
     channel: "Channel"
+    protocol: Protocol = Protocol.PLAINTEXT
 
     def __init__(self, channel: "Channel") -> None:
         self.channel = channel

@@ -1,5 +1,4 @@
 import factory
-from factory import Sequence
 
 from bitcaster.models import Application, Organization, Project
 
@@ -12,7 +11,7 @@ class OrganizationFactory(AutoRegisterModelFactory):
         model = Organization
         django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "Organization-%03d" % n)
+    name = factory.Sequence(lambda n: "Organization-%03d" % n)
     owner = factory.SubFactory(UserFactory)
 
 
@@ -21,7 +20,7 @@ class ProjectFactory(AutoRegisterModelFactory):
         model = Project
         django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "Project-%03d" % n)
+    name = factory.Sequence(lambda n: "Project-%03d" % n)
     organization = factory.SubFactory(OrganizationFactory)
     owner = factory.SubFactory(UserFactory)
 
@@ -31,7 +30,7 @@ class ApplicationFactory(AutoRegisterModelFactory):
         model = Application
         django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "Application-%03d" % n)
+    name = factory.Sequence(lambda n: "Application-%03d" % n)
     project = factory.SubFactory(ProjectFactory)
     from_email = factory.Faker("email")
     owner = factory.SubFactory(UserFactory)

@@ -9,11 +9,6 @@ omit =
     **/~*
     **/migrations/**
     **/debug_toolbar.py
-    **/management/commands/demo.py
-    **/management/commands/pq.py
-    **/management/commands/pqr.py
-    **/management/commands/topology.py
-    **/management/commands/inspect_hope.py
     **/management/commands/vapid.py
     src/bitcaster/types/*.py
     src/bitcaster/management/commands/develop.py

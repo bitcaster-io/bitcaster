@@ -29,8 +29,8 @@ def test_edit(app: DjangoTestApp, api_key: "ApiKey"):
     res = app.get(url)
     assert res.status_code == 200
 
-    res.forms["apikey_form"]["grants"] = [Grant.EVENT_TRIGGER, Grant.EVENT_ADMIN]
+    res.forms["apikey_form"]["grants"] = [Grant.EVENT_TRIGGER, Grant.FULL_ACCESS]
     res = res.forms["apikey_form"].submit()
     assert res.status_code == 302
     api_key.refresh_from_db()
-    assert sorted(api_key.grants) == [Grant.EVENT_ADMIN, Grant.EVENT_TRIGGER]
+    assert sorted(api_key.grants) == [Grant.EVENT_TRIGGER, Grant.FULL_ACCESS]

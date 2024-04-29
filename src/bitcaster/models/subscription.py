@@ -3,11 +3,13 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import jmespath
 import yaml
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ..dispatchers.base import Dispatcher, Payload
 from .channel import Channel
+from .distribution import DistributionList
 from .event import Event
 from .validation import Validation
 
@@ -29,11 +31,18 @@ class SubscriptionQuerySet(models.QuerySet["Subscription"]):
 
 
 class Subscription(models.Model):
-    validation = models.ForeignKey(Validation, on_delete=models.CASCADE, related_name="subscriptions")
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="subscriptions")
+    validation = models.ForeignKey(
+        Validation, blank=True, null=True, on_delete=models.CASCADE, related_name="subscriptions"
+    )
+    distribution = models.ForeignKey(
+        DistributionList, blank=True, null=True, on_delete=models.CASCADE, related_name="subscriptions"
+    )
+
     payload_filter = models.TextField(blank=True, null=True)
 
     active = models.BooleanField(default=True)
+    hidden = models.BooleanField(default=False, help_text=_("Do not show this subscription in the informative page"))
 
     objects = SubscriptionQuerySet.as_manager()
     cache = {}
@@ -45,14 +54,20 @@ class Subscription(models.Model):
         verbose_name = _("Subscription")
         verbose_name_plural = _("Subscriptions")
 
-    def notify(self, context: Dict[str, Any]) -> None:
+    def clean(self):
+        if not self.distribution and not self.validation:
+            raise ValidationError(_("You must specify a distribution or validation."))
+
+    def _distribution_notify(self, context: Dict[str, Any]):
+        for validation in self.distribution.recipients.all():
+            self._vadidation_notify(validation, context)
+
+    def _validdation_notify(self, validation: "Validation", context: Dict[str, Any]):
         message: Optional["Message"]
-        context.update({"subscription": self, "event": self.event})
-        ch: Channel = self.validation.channel
-        addr: "Address" = self.validation.address
+        ch: Channel = validation.channel
+        addr: "Address" = validation.address
 
         dispatcher: "Dispatcher" = ch.dispatcher
-        # messages.filter(channel=ch).first():
         if message := self.event.get_message(ch):
             context.update({"channel": ch, "address": addr.value})
             payload: Payload = Payload(
@@ -61,6 +76,14 @@ class Subscription(models.Model):
                 message=message.render(context),
             )
             dispatcher.send(addr.value, payload)
+
+    def notify(self, context: Dict[str, Any]) -> None:
+        if self.validation:
+            context.update({"subscription": self, "event": self.event})
+            self._validdation_notify(self.validation, context)
+        else:
+            context.update({"event": self.event})
+            self._distribution_notify(context)
 
     @staticmethod
     def match_filter_impl(filter_rules_dict: YamlPayload, payload: YamlPayload) -> bool:

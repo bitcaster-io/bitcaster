@@ -8,7 +8,7 @@ from twilio.rest import Client
 from twilio.rest.api.v2010.account.message import MessageInstance
 
 from ..exceptions import DispatcherError
-from .base import Dispatcher, DispatcherConfig, Payload
+from .base import Dispatcher, DispatcherConfig, Payload, Protocol
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,7 @@ class TwilioSMS(Dispatcher):
     slug = "sms"
     verbose_name = "SMS (Twilio)"
     config_class: Type[DispatcherConfig] = TwilioConfig
+    protocol = Protocol.SMS
 
     def send(self, address: str, payload: Payload) -> MessageInstance:
         try:

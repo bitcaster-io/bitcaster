@@ -1,9 +1,13 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
+from django.urls import ResolverMatch, resolve
 from rest_framework import status
 from rest_framework.test import APIClient
 from testutils.factories import ApiKeyFactory, ChannelFactory, EventFactory
+from testutils.perms import key_grants
+
+from bitcaster.auth.constants import Grant
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -40,10 +44,13 @@ event_slug = "evt1"
 
 
 @pytest.fixture()
-def client(admin_user) -> APIClient:
+def client(data) -> APIClient:
     c = APIClient()
-    c.force_authenticate(admin_user)
-    return c
+    g = key_grants(data["key"], Grant.FULL_ACCESS)
+    g.start()
+    c.credentials(HTTP_AUTHORIZATION=f"Key {data['key'].key}")
+    yield c
+    g.stop()
 
 
 @pytest.fixture()
@@ -55,7 +62,9 @@ def data(admin_user) -> "Context":
         application__slug=app_slug,
         slug=event_slug,
     )
-    key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
+    key = ApiKeyFactory(
+        user=admin_user, grants=[], application=None, project=None, organization=event.application.project.organization
+    )
     ch = ChannelFactory(application=event.application)
     return {
         "org": event.application.project.organization,
@@ -71,21 +80,24 @@ def data(admin_user) -> "Context":
 def pytest_generate_tests(metafunc):
     if "url" in metafunc.fixturenames:
         m = []
+        ids = []
         for url in [
-            "/api/organization/",
-            f"/api/organization/{org_slug}/",
-            f"/api/organization/{org_slug}/projects/",
-            f"/api/organization/{org_slug}/channels/",
-            f"/api/organization/{org_slug}/projects/{prj_slug}/",
-            f"/api/organization/{org_slug}/projects/{prj_slug}/channels/",
-            f"/api/organization/{org_slug}/projects/{prj_slug}/applications/",
-            f"/api/organization/{org_slug}/projects/{prj_slug}/applications/{app_slug}/",
-            f"/api/organization/{org_slug}/projects/{prj_slug}/applications/{app_slug}/events/",
-            f"/api/organization/{org_slug}/projects/{prj_slug}/applications/{app_slug}/events/{event_slug}/",
-            f"/api/organization/{org_slug}/projects/{prj_slug}/applications/{app_slug}/events/{event_slug}/channels/",
+            # "/api/o/",
+            # f"/api/o/{org_slug}/",
+            # f"/api/o/{org_slug}/p/",
+            # f"/api/o/{org_slug}/c/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/c/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/a/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/",
+            f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/",
+            f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/c/",
         ]:
             m.append(url)
-        metafunc.parametrize("url", m, ids=m)
+            r: ResolverMatch = resolve(url)
+            ids.append(r.func.__name__)
+        metafunc.parametrize("url", m, ids=ids)
 
 
 def test_urls(client: APIClient, data: "Context", url) -> None:

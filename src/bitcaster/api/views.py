@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from ..models import Application, Channel, Event, Organization, Project, User
+from .base import BaseModelViewSet, SecurityMixin
 from .serializers import (
     ApplicationSerializer,
     ChannelSerializer,
@@ -17,54 +18,59 @@ from .serializers import (
 )
 
 
-class SelectedOrganizationViewSet(viewsets.ReadOnlyModelViewSet):
+class SelectedOrganizationViewSet(SecurityMixin, viewsets.ReadOnlyModelViewSet):
     pass
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(BaseModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.DjangoObjectPermissions]
     lookup_field = "slug"
 
 
-class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
+class OrganizationViewSet(BaseModelViewSet):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
-    permission_classes = [permissions.DjangoObjectPermissions]
     lookup_field = "slug"
 
 
-class ProjectViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class ProjectViewSet(NestedViewSetMixin, BaseModelViewSet):
     queryset = Project.objects.all().order_by("-pk")
     serializer_class = ProjectSerializer
-    permission_classes = [permissions.DjangoObjectPermissions]
     lookup_field = "slug"
     # lookup_url_kwarg = "slug"
 
 
-class ApplicationViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class ApplicationViewSet(NestedViewSetMixin, BaseModelViewSet):
     queryset = Application.objects.all().order_by("-pk")
     serializer_class = ApplicationSerializer
-    permission_classes = [permissions.DjangoObjectPermissions]
     lookup_field = "slug"
 
 
-class ChannelViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class ChannelViewSet(NestedViewSetMixin, BaseModelViewSet):
     queryset = Channel.objects.all().order_by("-pk")
     serializer_class = ChannelSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
 
 
-class EventViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class EventViewSet(NestedViewSetMixin, BaseModelViewSet):
     queryset = Event.objects.all().order_by("-pk")
     serializer_class = EventSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
     lookup_field = "slug"
 
-    @action(detail=True)
+    @action(
+        detail=True,
+        methods=[
+            "GET",
+        ],
+        url_path=r"c",
+    )
     def channels(self, request: HttpRequest, **kwargs: Any) -> Response:
-        obj = self.get_object()
-        qs = obj.channels.all()
-        serializer = ChannelSerializer(qs, many=True)
-        return Response(serializer.data)
+        return Response({})
+
+    # def trigger(self, request: HttpRequest, **kwargs: Any) -> Response:
+    #     obj = self.get_object()
+    #     qs = obj.channels.all()
+    #     serializer = ChannelSerializer(qs, many=True)
+    #     return Response(serializer.data)
