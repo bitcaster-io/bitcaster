@@ -29,7 +29,7 @@ class MessageProtocol(enum.IntEnum):
     SMS = 200
     EMAIL = 300
 
-    def has_capability(self, capability: Capability):
+    def has_capability(self, capability: Capability) -> bool:
         return capability in ProtocolCapabilities[self]
 
 

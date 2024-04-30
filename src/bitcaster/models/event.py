@@ -8,7 +8,7 @@ from .mixins import SlugMixin
 from .org import Application
 
 if TYPE_CHECKING:
-    from django.db.models import Manager, QuerySet
+    from django.db.models import QuerySet
 
     from bitcaster.models import Message, Occurrence
 
@@ -20,7 +20,7 @@ class Event(SlugMixin, models.Model):
     locked = models.BooleanField(default=False, help_text=_("Security lock"))
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
 
-    channels: "Manager[Channel]" = models.ManyToManyField(Channel, blank=True)
+    channels = models.ManyToManyField(Channel, blank=True)
 
     # subscriptions: "QuerySet[Subscription]"
     messages: "QuerySet[Message]"

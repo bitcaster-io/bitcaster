@@ -18,7 +18,7 @@ from ..dispatchers.base import Payload
 from ..forms.channel import ChannelAddForm, ChannelChangeForm
 from ..state import state
 from .base import BUTTON_COLOR_ACTION, BaseAdmin
-from .mixins import LockMixin
+from .mixins import LockMixin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
@@ -35,7 +35,7 @@ class ChannelTestForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
 
 
-class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
+class ChannelAdmin(BaseAdmin, TwoStepCreateMixin, LockMixin, admin.ModelAdmin[Channel]):
     search_fields = ("name",)
     list_display = ("name", "organization", "project", "application", "dispatcher_", "active", "locked")
     list_filter = (

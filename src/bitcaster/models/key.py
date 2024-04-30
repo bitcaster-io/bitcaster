@@ -48,7 +48,7 @@ class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
         return super().formfield(**defaults)  # type: ignore[arg-type]
 
 
-class ApiKeyManager(models.Manager["Channel"]):
+class ApiKeyManager(models.Manager["ApiKey"]):
 
     def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[ApiKey, bool]":
         if kwargs.get("application"):

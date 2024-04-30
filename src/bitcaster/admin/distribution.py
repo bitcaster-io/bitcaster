@@ -8,11 +8,12 @@ from django.http import HttpRequest
 from bitcaster.models import DistributionList
 
 from .base import BaseAdmin
+from .mixins import TwoStepCreateMixin
 
 logger = logging.getLogger(__name__)
 
 
-class DistributionListAdmin(BaseAdmin, admin.ModelAdmin[DistributionList]):
+class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin, admin.ModelAdmin[DistributionList]):
     search_fields = ("name",)
     list_display = ("name",)
     list_filter = (

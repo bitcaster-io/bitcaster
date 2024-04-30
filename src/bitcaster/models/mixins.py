@@ -1,4 +1,4 @@
-from typing import Any, Protocol
+from typing import Any, Iterable, Optional, Protocol
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -47,7 +47,13 @@ class ScopedMixin(models.Model):
             pass
         super().clean()
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None) -> None:
+    def save(
+        self,
+        force_insert: bool = False,
+        force_update: bool = False,
+        using: Optional[str] = None,
+        update_fields: Optional[Iterable[str]] = None,
+    ) -> None:
         try:
             if self.application:
                 self.project = self.application.project

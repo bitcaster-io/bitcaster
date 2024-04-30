@@ -106,8 +106,8 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin, LockMixin, admin.ModelAdmin[Even
         else:
             return ["locked"]
 
-    def get_inlines(self, request, obj=...):
-        return super().get_inlines(request, obj)
+    # def get_inlines(self, request, obj=...):
+    #     return super().get_inlines(request, obj)
 
     #
     # @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_LINK}"})
