@@ -120,7 +120,7 @@ class Command(BaseCommand):
 
         try:
             echo("Configuring development environment", style_func=self.style.WARNING)
-            bitcaster = Application.objects.get(name="bitcaster")
+            bitcaster = Application.objects.get(name__iexact="bitcaster")
 
             if os.environ.get("GOOGLE_CLIENT_ID") and os.environ.get("GOOGLE_CLIENT_SECRET"):
                 sso, __ = SocialProvider.objects.update_or_create(

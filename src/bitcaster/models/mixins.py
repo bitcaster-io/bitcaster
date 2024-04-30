@@ -10,7 +10,7 @@ class Lockable(Protocol):
 
 
 class SlugMixin(models.Model):
-    name = models.CharField(max_length=255, db_collation="case_insensitive")
+    name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255)
 
     class Meta:

@@ -94,3 +94,6 @@ class ApiKey(ScopedMixin, models.Model):
     class Meta:
         ordering = ("name",)
         unique_together = (("name", "user"),)
+
+    def __str__(self) -> str:
+        return self.name

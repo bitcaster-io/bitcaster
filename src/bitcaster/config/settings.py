@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     #
+    "django_select2",
+    #
     "adminactions",
     "admin_extra_buttons",
     "social_django",
@@ -107,7 +109,8 @@ DATABASES = {
 CACHE_URL = env("CACHE_URL")
 REDIS_URL = urlparse(CACHE_URL).hostname
 CACHES = {
-    "default": env.cache()
+    "default": env.cache(),
+    "select2": env.cache(),
     #     "default": {
     #         "BACKEND": "django.core.cache.backends.redis.RedisCache",
     #         "LOCATION": CACHE_URL,

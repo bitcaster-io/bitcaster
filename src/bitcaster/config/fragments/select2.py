@@ -1,0 +1,1 @@
+SELECT2_CACHE_BACKEND = "select2"

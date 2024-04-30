@@ -17,5 +17,6 @@ urlpatterns = [
     path("adminactions/", include("adminactions.urls")),
     path("tinymce/", include("tinymce.urls")),
     path("social/", include("social_django.urls", namespace="social")),
+    path("select2/", include("django_select2.urls")),
     path(r"__debug__/", include(debug_toolbar.urls)),
 ]

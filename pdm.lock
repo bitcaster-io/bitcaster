@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:8f9abb952122df9cf6535f228dc2d6ab0f3a407eb0ead71da02211f39ecd0c4a"
+content_hash = "sha256:dc4f16f206ce169b392bd7a3bf64b39c98116eda4d16c14ea3d5bee48f52812e"
 
 [[package]]
 name = "aiohttp"
@@ -619,6 +619,20 @@ files = [
 ]
 
 [[package]]
+name = "django-appconf"
+version = "1.0.6"
+requires_python = ">=3.7"
+summary = "A helper class for handling configuration defaults of packaged apps gracefully."
+groups = ["default"]
+dependencies = [
+    "django",
+]
+files = [
+    {file = "django-appconf-1.0.6.tar.gz", hash = "sha256:cfe87ea827c4ee04b9a70fab90b86d704cb02f2981f89da8423cb0fabf88efbf"},
+    {file = "django_appconf-1.0.6-py3-none-any.whl", hash = "sha256:c3ae442fba1ff7ec830412c5184b17169a7a1e71cf0864a4c3f93cf4c98a1993"},
+]
+
+[[package]]
 name = "django-bitfield"
 version = "2.2.0"
 summary = "BitField in Django"
@@ -807,6 +821,21 @@ dependencies = [
 files = [
     {file = "django-reversion-5.0.12.tar.gz", hash = "sha256:c047cc99a9f1ba4aae6db89c3ac243478d6de98ec8a60c7073fcc875d89c5cdb"},
     {file = "django_reversion-5.0.12-py3-none-any.whl", hash = "sha256:5884e9f77f55c341b3f0a8d3b0af000f060530653776997267c8b1e5349d8fee"},
+]
+
+[[package]]
+name = "django-select2"
+version = "8.1.2"
+requires_python = ">=3.8"
+summary = "This is a Django_ integration of Select2_."
+groups = ["default"]
+dependencies = [
+    "django-appconf>=0.6.0",
+    "django>=3.2",
+]
+files = [
+    {file = "django_select2-8.1.2-py3-none-any.whl", hash = "sha256:dc09e09299988dd7cc1f31c27582976377f0e1479101be1f3bb0d1f24216477f"},
+    {file = "django_select2-8.1.2.tar.gz", hash = "sha256:f44685ee1c39090aade01e3ebc256702f05620f3c78a3c268440ad9a66070876"},
 ]
 
 [[package]]
