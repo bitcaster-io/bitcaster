@@ -50,13 +50,13 @@ class ApplicationViewSet(NestedViewSetMixin, BaseModelViewSet):
 class ChannelViewSet(NestedViewSetMixin, BaseModelViewSet):
     queryset = Channel.objects.all().order_by("-pk")
     serializer_class = ChannelSerializer
-    permission_classes = [permissions.DjangoObjectPermissions]
+    permission_classes = (permissions.DjangoObjectPermissions,)
 
 
 class EventViewSet(NestedViewSetMixin, BaseModelViewSet):
     queryset = Event.objects.all().order_by("-pk")
     serializer_class = EventSerializer
-    permission_classes = [permissions.DjangoObjectPermissions]
+    permission_classes = (permissions.DjangoObjectPermissions,)
     lookup_field = "slug"
 
     @action(

@@ -25,7 +25,7 @@ class Event(SlugMixin, models.Model):
     # subscriptions: "QuerySet[Subscription]"
     messages: "QuerySet[Message]"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         self._cached_messages = {}
         super().__init__(*args, **kwargs)
 

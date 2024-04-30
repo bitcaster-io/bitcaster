@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ApiKeyForm(ScopedFormMixin, forms.ModelForm):
+class ApiKeyForm(ScopedFormMixin[ApiKey], forms.ModelForm[ApiKey]):
     class Meta:
         model = ApiKey
         fields = "__all__"
@@ -42,7 +42,7 @@ class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsM
         return super().get_queryset(request).select_related("application")
 
     def get_fields(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_FieldGroups":
-        ret: list = super().get_fields(request, obj)
+        ret = list(super().get_fields(request, obj))
         if not is_root(request) and "key" in ret:
             ret.remove("key")
         return ret
@@ -56,7 +56,7 @@ class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsM
             return ["key", "application"]
         return super().get_readonly_fields(request, obj)
 
-    def get_changeform_initial_data(self, request):
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
             "user": request.user.id,
             "name": "Key-1",

@@ -43,7 +43,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         fields = ("id", "slug", "owner", "name", "links", "url")
         # read_only_fields = ("id", "slug", "status", "members", "links")
 
-    def get_links(self, obj):
+    def get_links(self, obj: Organization) -> dict[str, str]:
         return {
             # "members": absolute_uri(reverse("api:member-list", args=[obj.slug])),
             "channels": absolute_uri(reverse("api:org-channel-list", args=[obj.slug])),
@@ -73,7 +73,7 @@ class ProjectSerializer(SelecteOrganizationSerializer):
             )
         )
 
-    def get_links(self, obj):
+    def get_links(self, obj: Project) -> dict[str, str]:
         kwargs = self.context["view"].kwargs
         return {
             # "members": absolute_uri(reverse("api:member-list", args=[obj.slug])),

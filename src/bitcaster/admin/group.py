@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.http import HttpRequest
@@ -18,5 +18,5 @@ class GroupAdmin(BaseGroupAdmin):
             base.append("name")
         return base
 
-    def save_model(self, request, obj, form, change):
+    def save_model(self, request: HttpRequest, obj: "Group", form: Any, change: Any) -> None:
         super().save_model(request, obj, form, change)

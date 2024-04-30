@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from rest_framework import status
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from ..auth.constants import Grant
@@ -13,6 +14,6 @@ if TYPE_CHECKING:
 class PingView(BaseView):
     required_grants = [Grant.SYSTEM_PING]
 
-    def get(self, request, **kwargs):
+    def get(self, request: Request, **kwargs: Any) -> Response:
         key: "ApiKey" = request.auth
         return Response({"token": key.name, "slug": key.application.slug}, status=status.HTTP_200_OK)

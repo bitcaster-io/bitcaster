@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Tuple
 
 from rest_framework import authentication, permissions
 from rest_framework.request import Request
@@ -16,8 +16,8 @@ class ApiKeyAuthentication(authentication.TokenAuthentication):
     keyword = "Key"
     model = ApiKey
 
-    def authenticate(self, request: "ApiRequest") -> "Optional[list[ApiKey, User]]":
-        certs: "Optional[list[ApiKey, User]]" = super().authenticate(request)
+    def authenticate(self, request: "ApiRequest") -> "Optional[Tuple[ApiKey, User]]":
+        certs: "Optional[Tuple[ApiKey, User]]" = super().authenticate(request)
         if certs:
             # request.token = certs[0]
             request.user = certs[1]
@@ -25,7 +25,7 @@ class ApiKeyAuthentication(authentication.TokenAuthentication):
 
 
 class ApiBasePermission(permissions.BasePermission):
-    def _check_valid_scope(self, token: "ApiKey", view: "SecurityMixin"):
+    def _check_valid_scope(self, token: "ApiKey", view: "SecurityMixin") -> bool:
         if Grant.FULL_ACCESS in token.grants:
             return True
         return bool(len({*token.grants} & {*view.grants}))

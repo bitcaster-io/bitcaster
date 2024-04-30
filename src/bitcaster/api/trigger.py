@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import action
 from rest_framework.relations import HyperlinkedIdentityField
 from rest_framework.request import Request
@@ -9,7 +8,7 @@ from bitcaster.models import Event, Occurrence
 
 from ..auth.constants import Grant
 from .base import BaseModelViewSet
-from .permissions import ApiApplicationPermission, ApiKeyAuthentication
+from .permissions import ApiKeyAuthentication
 
 
 class TriggerSerializer(serializers.HyperlinkedModelSerializer):
@@ -28,9 +27,9 @@ class ActionSerializer(serializers.Serializer):
 class TriggerViewSet(BaseModelViewSet):
     queryset = Event.objects.all().order_by("-pk")
     serializer_class = TriggerSerializer
-    permission_classes = [ApiApplicationPermission]
-    authentication_classes = [ApiKeyAuthentication, SessionAuthentication]
-    required_grants = [Grant.EVENT_TRIGGER]
+    # permission_classes = (ApiApplicationPermission,)
+    # authentication_classes = (ApiKeyAuthentication, SessionAuthentication)
+    required_grants = (Grant.EVENT_TRIGGER,)
 
     lookup_field = "slug"
 
@@ -43,7 +42,7 @@ class TriggerViewSet(BaseModelViewSet):
         ],
         url_path=r"o/(?P<org>.+)/p/(?P<prj>.+)/a/(?P<app>.+)/e/(?P<event>.+)",
     )
-    def trigger(self, request: "Request", org, prj, app, event: str) -> Response:
+    def trigger(self, request: "Request", org: str, prj: str, app: str, event: str) -> Response:
         if request.method == "POST":
             ser = ActionSerializer(data=request.data)
             if ser.is_valid():

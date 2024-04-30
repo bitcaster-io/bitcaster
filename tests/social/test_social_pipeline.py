@@ -15,6 +15,6 @@ def group(db):
 
 @override_config(NEW_USER_DEFAULT_GROUP="demo")
 def test_save_to_group(group, user):
-    save_to_group(Mock(), user, Mock())
+    save_to_group(Mock(), user)
     assert user.groups.first().name == "demo"
-    assert save_to_group(Mock(), None, Mock()) == {}
+    assert save_to_group(Mock(), None) == {}

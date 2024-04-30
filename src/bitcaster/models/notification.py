@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from .channel import Channel
 
 
-class NotificationQuerySet(models.QuerySet["Subscription"]):
+class NotificationQuerySet(models.QuerySet["Notification"]):
 
     def match(self, payload: dict[str, Any], rules: "Optional[YamlPayload]" = None) -> list["Notification"]:
         for subscription in self.all():
@@ -74,5 +74,5 @@ class Notification(models.Model):
         return self.match_filter_impl(rules, payload)
 
     @staticmethod
-    def check_filter(filter_rules_dict: "YamlPayload"):
+    def check_filter(filter_rules_dict: "YamlPayload") -> Any:
         return jmespath.compile(filter_rules_dict)

@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 @receiver(post_save, sender=models.Project)
 @receiver(post_save, sender=models.ApiKey)
 @receiver(post_save, sender=models.Organization)
-def save_last_choices(sender, instance, **kwargs):
+def save_last_choices(sender: Any, instance: Any, **kwargs: Any) -> None:
     if getattr(instance, "organization", None):
         state.add_cookie("organization", instance.organization.pk)
     if getattr(instance, "project", None):

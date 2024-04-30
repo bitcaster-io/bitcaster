@@ -1,10 +1,11 @@
 import logging
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Any, Optional, TypeVar
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django.contrib import admin
+from django.contrib.admin.options import InlineModelAdmin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
@@ -13,6 +14,7 @@ from bitcaster.models import Address, Validation
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
+    from bitcaster.types.django import AnyModel
 
     AddressT = TypeVar("AddressT", bound=Address)
 
@@ -37,11 +39,15 @@ class AddressAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtons
     def get_queryset(self, request: HttpRequest) -> QuerySet[Address]:
         return super().get_queryset(request).select_related("user")
 
-    def get_changeform_initial_data(self, request):
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
             "user": request.user.id,
             "name": "Address-1",
         }
 
-    def get_inlines(self, request, obj=None):
+    def get_inlines(
+        self, request: HttpRequest, obj: Optional[Address] = None
+    ) -> "list[type[InlineModelAdmin[Address, AnyModel]]]":
+        if obj is None:
+            return []
         return super().get_inlines(request, obj)

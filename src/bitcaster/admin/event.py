@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Sequence, Union
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
@@ -63,7 +63,7 @@ class EventTestForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
 
 
-class EventAdmin(BaseAdmin, TwoStepCreateMixin, LockMixin, admin.ModelAdmin[Event]):
+class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.ModelAdmin[Event]):
     search_fields = ("name",)
     list_display = ("name", "application", "active", "locked")
     list_filter = (
@@ -86,7 +86,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin, LockMixin, admin.ModelAdmin[Even
     def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
         return super().get_queryset(request).select_related("application__project__organization")
 
-    def get_changeform_initial_data(self, request):
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {"application": state.get_cookie("application")}
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[Event]" = None) -> "_ListOrTuple[str]":
@@ -94,13 +94,13 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin, LockMixin, admin.ModelAdmin[Even
             return ["application", "slug", "name"]
         return ["locked"]
 
-    def get_fields(self, request, obj=...):
+    def get_fields(self, request: HttpRequest, obj: Optional[Event] = None) -> Sequence[str | Sequence[str]]:
         if self.fields:
             return self.fields
         form = self._get_form_for_get_fields(request, obj)
         return [*self.get_readonly_fields(request, obj), *form.base_fields]
 
-    def get_exclude(self, request: "HttpRequest", obj: "Optional[Event]" = None):
+    def get_exclude(self, request: "HttpRequest", obj: "Optional[Event]" = None) -> "_ListOrTuple[str]":
         if obj is None:
             return ["channels", "locked"]
         else:

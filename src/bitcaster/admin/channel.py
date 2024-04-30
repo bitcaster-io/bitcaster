@@ -35,7 +35,7 @@ class ChannelTestForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
 
 
-class ChannelAdmin(BaseAdmin, TwoStepCreateMixin, LockMixin, admin.ModelAdmin[Channel]):
+class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], admin.ModelAdmin[Channel]):
     search_fields = ("name",)
     list_display = ("name", "organization", "project", "application", "dispatcher_", "active", "locked")
     list_filter = (
@@ -66,7 +66,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin, LockMixin, admin.ModelAdmin[Ch
             return ["name", "organization", "project", "application"]
         return []
 
-    def get_changeform_initial_data(self, request):
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
             "user": request.user.id,
             "name": "Channel-1",

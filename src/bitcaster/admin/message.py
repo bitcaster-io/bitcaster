@@ -1,4 +1,5 @@
 import logging
+from typing import Any, Optional
 
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -46,13 +47,13 @@ class MessageForm(forms.ModelForm[Message]):
         return orig + forms.Media(js=["admin/js/%s" % url for url in js])
 
 
-class MessageChangeForm(forms.ModelForm):
+class MessageChangeForm(forms.ModelForm[Message]):
     class Meta:
         model = Message
         fields = ("name", "channel", "event")
 
 
-class MessageCreationForm(forms.ModelForm):
+class MessageCreationForm(forms.ModelForm[Message]):
 
     class Meta:
         model = Message
@@ -72,8 +73,8 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
     form = MessageChangeForm
     add_form = MessageCreationForm
 
-    def get_form(self, request: HttpRequest, obj: "Message" = None, **kwargs):
-        defaults = {}
+    def get_form(self, request: HttpRequest, obj: Optional["Message"] = None, **kwargs: dict[str, Any]) -> forms.Form:
+        defaults: dict[str, Any] = {}
         if obj is None:
             defaults["form"] = self.add_form
         defaults.update(kwargs)

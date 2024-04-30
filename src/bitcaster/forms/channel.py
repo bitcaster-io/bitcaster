@@ -37,13 +37,13 @@ class ChannelBaseForm(forms.ModelForm["Channel"]):
         return self.cleaned_data
 
 
-class ChannelAddForm(ScopedFormMixin, ChannelBaseForm):
+class ChannelAddForm(ScopedFormMixin[Channel], ChannelBaseForm):
     class Meta:
         model = Channel
         exclude = ("config", "locked")
 
 
-class ChannelChangeForm(ScopedFormMixin, ChannelBaseForm):
+class ChannelChangeForm(ScopedFormMixin[Channel], ChannelBaseForm):
 
     class Meta:
         model = Channel

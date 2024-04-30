@@ -11,11 +11,10 @@ from django.utils.translation import gettext as _
 from .base import BUTTON_COLOR_ACTION, BUTTON_COLOR_LOCK, BUTTON_COLOR_UNLOCK
 
 if TYPE_CHECKING:
-    from bitcaster.models.mixins import Lockable
     from bitcaster.types.django import AnyModel
 
 
-class LockMixin(admin.ModelAdmin):
+class LockMixin(admin.ModelAdmin["AnyModel"]):
 
     def render_change_form(
         self,
@@ -24,8 +23,8 @@ class LockMixin(admin.ModelAdmin):
         add: bool = False,
         change: bool = False,
         form_url: str = "",
-        obj: "Optional[Lockable]" = None,
-    ):
+        obj: "Optional[AnyModel]" = None,
+    ) -> HttpResponse:
         if obj and obj.locked:
             self.message_user(request, "Locked", messages.ERROR)
         return super().render_change_form(request, context, add, change, form_url, obj)
@@ -64,24 +63,32 @@ class LockMixin(admin.ModelAdmin):
         return TemplateResponse(request, "admin/channel/lock.html", context)
 
 
-class CloneMixin(admin.ModelAdmin):
+class CloneMixin(admin.ModelAdmin["AnyModel"]):
 
     @button(
         label=_("Clone"),
         html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"},
     )
     def clone(self, request: "HttpRequest", pk: str) -> "HttpResponse":
-        obj: "AnyModel" = self.get_object(request, pk)
+        obj: "AnyModel|None" = self.get_object(request, pk)
         obj.pk = None
         if hasattr(obj, "name"):
             obj.name = f"Clone of {obj.name}"
         obj.save()
-        url = reverse(admin_urlname(obj._meta, "change"), args=(obj.pk,))
+        from django.utils.safestring import SafeString
+
+        url = reverse(admin_urlname(obj._meta, SafeString("change")), args=(obj.pk,))
         return HttpResponseRedirect(url)
 
 
-class TwoStepCreateMixin(admin.ModelAdmin):
-    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+class TwoStepCreateMixin(admin.ModelAdmin["AnyModel"]):
+    def changeform_view(
+        self,
+        request: HttpRequest,
+        object_id: Optional[str] = None,
+        form_url: str = "",
+        extra_context: Optional[dict[str, Any]] = None,
+    ) -> HttpResponse:
         extra_context = extra_context or {}
         extra_context["show_save_and_continue"] = True
         if object_id is None:

@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
@@ -35,19 +35,19 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False
 
-    def get_readonly_fields(self, request: HttpRequest, obj: Optional[Application] = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: HttpRequest, obj: Optional[Organization] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
         if obj and obj.name.lower() == "os4d":
             base.extend(["name", "slug"])
         return base
 
-    def get_changeform_initial_data(self, request):
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
             "owner": request.user.id,
         }
 
 
-class ProjectAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Project]):
+class ProjectAdmin(BaseAdmin, LockMixin[Project], admin.ModelAdmin[Project]):
     search_fields = ("name",)
     list_display = ("name", "organization")
     list_filter = (("organization", AutoCompleteFilter),)
@@ -60,14 +60,14 @@ class ProjectAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Project]):
             base.extend(["name", "slug", "organization"])
         return base
 
-    def get_changeform_initial_data(self, request):
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
             "owner": request.user.id,
             "organization": state.get_cookie("organization"),
         }
 
 
-class ApplicationAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Application]):
+class ApplicationAdmin(BaseAdmin, LockMixin[Application], admin.ModelAdmin[Application]):
     search_fields = ("name",)
     list_display = ("name",)
     list_filter = (
@@ -90,7 +90,7 @@ class ApplicationAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Application]):
             )
         return base
 
-    def get_changeform_initial_data(self, request):
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
             "owner": request.user.id,
             "project": state.get_cookie("project"),

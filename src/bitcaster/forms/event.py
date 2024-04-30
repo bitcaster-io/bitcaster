@@ -8,7 +8,7 @@ from bitcaster.forms.mixins import ScopedFormMixin
 from bitcaster.models import Application, Channel, Event
 
 
-class EventBaseForm(ScopedFormMixin, forms.ModelForm["Channel"]):
+class EventBaseForm(ScopedFormMixin[Event], forms.ModelForm["Channel"]):
     application = forms.ModelChoiceField(
         queryset=Application.objects.all(),
         required=False,

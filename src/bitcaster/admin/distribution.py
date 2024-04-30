@@ -13,7 +13,7 @@ from .mixins import TwoStepCreateMixin
 logger = logging.getLogger(__name__)
 
 
-class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin, admin.ModelAdmin[DistributionList]):
+class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], admin.ModelAdmin[DistributionList]):
     search_fields = ("name",)
     list_display = ("name",)
     list_filter = (
