@@ -8,18 +8,11 @@ from testutils.dispatcher import TDispatcher
 from bitcaster.tasks import process_event
 
 if TYPE_CHECKING:
-    from bitcaster.models import (
-        Address,
-        Channel,
-        Event,
-        Occurrence,
-        Subscription,
-        Validation,
-    )
+    from bitcaster.models import Address, Channel, Notification, Occurrence, Validation
 
     Context = TypedDict(
         "Context",
-        {"occurrence": Occurrence, "address": Address, "channel": Channel, "subscription": Subscription},
+        {"occurrence": Occurrence, "address": Address, "channel": Channel, "validations": list[Validation]},
     )
 
 
@@ -27,62 +20,65 @@ if TYPE_CHECKING:
 def context(db) -> "Context":
     from testutils.factories import (
         ChannelFactory,
-        EventFactory,
         MessageFactory,
+        NotificationFactory,
         OccurenceFactory,
-        SubscriptionFactory,
         ValidationFactory,
     )
 
     ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(TDispatcher))
+    v1: Validation = ValidationFactory(channel=ch)
+    v2: Validation = ValidationFactory(channel=ch)
+    no: Notification = NotificationFactory(event__channels=[ch], distribution__recipients=[v1, v2])
+    # event: "Event" = EventFactory(application=ch.application)
+    # event.channels.add(ch)
+    MessageFactory(channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}")
 
-    event: "Event" = EventFactory(application=ch.application)
-    event.channels.add(ch)
-    MessageFactory(channel=ch, event=event, content="Message for {{ event.name }} on channel {{channel.name}}")
-
-    v: Validation = ValidationFactory(channel=ch)
-    subscription = SubscriptionFactory(validation__channel=ch, event=event)
-    occurrence = OccurenceFactory(event=event)
-    return {"occurrence": occurrence, "address": v.address, "channel": ch, "subscription": subscription}
+    # subscription = SubscriptionFactory(validation__channel=ch, event=event)
+    occurrence = OccurenceFactory(event=no.event)
+    return {"occurrence": occurrence, "address": v1.address, "channel": ch, "validations": [v1, v2]}
 
 
 def test_process_event_single(context: "Context", messagebox):
     occurrence = context["occurrence"]
+    v1, v2 = context["validations"]
+
     addr = context["address"]
     event = occurrence.event
     ch = context["channel"]
     process_event(occurrence.pk)
-    assert messagebox == [(addr.value, f"Message for {event.name} on channel {ch.name}")]
+    assert messagebox == [
+        (addr.value, f"Message for {event.name} on channel {ch.name}"),
+        (v2.address.value, f"Message for {event.name} on channel {ch.name}"),
+    ]
     occurrence.refresh_from_db()
     assert occurrence.processed
     assert occurrence.status == {
-        "delivered": [context["subscription"].id],
-        "recipients": [["test@examplec.com", "test"]],
+        "delivered": [v1.id, v2.id],
+        "recipients": [[v1.address.value, "test"], [v2.address.value, "test"]],
     }
 
 
 def test_process_incomplete_event(context: "Context", messagebox):
     occurrence = context["occurrence"]
+    v1, v2 = context["validations"]
 
-    context["occurrence"].status["delivered"] = [context["subscription"].id]
+    context["occurrence"].status["delivered"] = [v1.id, v2.id]
     context["occurrence"].save()
 
     process_event(occurrence.pk)
     assert messagebox == []
+
     occurrence.refresh_from_db()
     assert occurrence.processed
-    assert occurrence.status == {"delivered": [context["subscription"].id]}
+    assert occurrence.status == {"delivered": [v1.id, v2.id]}
 
 
 def test_process_event_partially(context: "Context", monkeypatch):
-    from testutils.factories import ChannelFactory, SubscriptionFactory
-
-    occurrence = context["occurrence"]
-
-    SubscriptionFactory(validation__channel=ChannelFactory(), event=context["subscription"].event)
+    occurrence: Occurrence = context["occurrence"]
 
     monkeypatch.setattr(
-        "bitcaster.models.subscription.Subscription.notify",
+        "bitcaster.models.occurrence.Occurrence.notify_to_channel",
         mocked_notify := Mock(side_effect=[None, Exception("This is raised after first call")]),
     )
 
@@ -92,22 +88,20 @@ def test_process_event_partially(context: "Context", monkeypatch):
     assert occurrence.processed is False
     assert mocked_notify.call_count == 2
     assert occurrence.status == {
-        "delivered": [context["subscription"].id],
+        "delivered": [context["validations"][0].id],
         "recipients": [["test@examplec.com", "test"]],
     }
 
 
 def test_process_event_resume(context: "Context", monkeypatch):
-    from testutils.factories import ChannelFactory, SubscriptionFactory
 
     occurrence = context["occurrence"]
-    sub1 = context["subscription"]
+    v1, v2 = context["validations"]
 
-    sub2 = SubscriptionFactory(validation__channel=ChannelFactory(), event=sub1.event)
-    occurrence.status = {"delivered": [context["subscription"].id], "recipients": [["test@examplec.com", "test"]]}
+    occurrence.status = {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]]}
     occurrence.save()
 
-    monkeypatch.setattr("bitcaster.models.subscription.Subscription.notify", mocked_notify := Mock())
+    monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.notify_to_channel", mocked_notify := Mock())
 
     process_event(occurrence.pk)
 
@@ -115,6 +109,6 @@ def test_process_event_resume(context: "Context", monkeypatch):
     assert occurrence.processed
     assert mocked_notify.call_count == 1
     assert occurrence.status == {
-        "delivered": [context["subscription"].id, sub2.id],
-        "recipients": [["test@examplec.com", "test"], ["test@examplec.com", sub2.validation.channel.name]],
+        "delivered": [v1.id, v2.id],
+        "recipients": [["test@examplec.com", "test"], ["test@examplec.com", v1.channel.name]],
     }

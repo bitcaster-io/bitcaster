@@ -29,3 +29,4 @@ class User(AbstractUser):
         verbose_name_plural = _("users")
         app_label = "bitcaster"
         abstract = False
+        permissions = (("bitcaster.lock_system", "Can lock system components"),)

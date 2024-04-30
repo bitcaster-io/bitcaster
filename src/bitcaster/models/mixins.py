@@ -1,8 +1,12 @@
-from typing import Any
+from typing import Any, Protocol
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.text import slugify
+
+
+class Lockable(Protocol):
+    locked: bool
 
 
 class SlugMixin(models.Model):
@@ -42,3 +46,16 @@ class ScopedMixin(models.Model):
         except ObjectDoesNotExist:  # pragma: no cover
             pass
         super().clean()
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None) -> None:
+        try:
+            if self.application:
+                self.project = self.application.project
+        except ObjectDoesNotExist:  # pragma: no cover
+            pass
+        try:
+            if self.project:
+                self.organization = self.project.organization
+        except ObjectDoesNotExist:  # pragma: no cover
+            pass
+        super().save(force_insert, force_update, using, update_fields)

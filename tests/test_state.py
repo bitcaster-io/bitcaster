@@ -7,7 +7,9 @@ from bitcaster.state import State
 
 @pytest.fixture
 def state():
-    return State()
+    s = State()
+    s.reset()
+    return s
 
 
 def test_state(state):
@@ -15,6 +17,7 @@ def test_state(state):
 
 
 def test_cookies(state):
+
     assert not state.cookies
 
 

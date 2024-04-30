@@ -16,6 +16,7 @@ from bitcaster.models import Channel
 
 from ..dispatchers.base import Payload
 from ..forms.channel import ChannelAddForm, ChannelChangeForm
+from ..state import state
 from .base import BUTTON_COLOR_ACTION, BaseAdmin
 from .mixins import LockMixin
 
@@ -64,6 +65,15 @@ class ChannelAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Channel]):
         if obj and obj.name == Channel.SYSTEM_EMAIL_CHANNEL_NAME:
             return ["name", "organization", "project", "application"]
         return []
+
+    def get_changeform_initial_data(self, request):
+        return {
+            "user": request.user.id,
+            "name": "Channel-1",
+            "organization": state.get_cookie("organization"),
+            "project": state.get_cookie("project"),
+            "application": state.get_cookie("application"),
+        }
 
     @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"})
     def events(self, request: "HttpRequest", pk: str) -> "Union[AnyResponse,HttpResponseRedirect]":

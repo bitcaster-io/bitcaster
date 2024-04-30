@@ -61,7 +61,6 @@ class Channel(ScopedMixin, models.Model):
     objects = ChannelManager()
 
     class Meta:
-        permissions = (("bitcaster.lock_channels", "Can lock channels"),)
         unique_together = (
             ("organization", "name"),
             ("organization", "project", "name"),

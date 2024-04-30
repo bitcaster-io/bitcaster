@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:1b3c00f2e94ba9ad121c352f34501d16587f5e277e9b04f3e7402cac4fd7148f"
+content_hash = "sha256:8f9abb952122df9cf6535f228dc2d6ab0f3a407eb0ead71da02211f39ecd0c4a"
 
 [[package]]
 name = "aiohttp"
@@ -741,6 +741,20 @@ dependencies = [
 files = [
     {file = "django-flags-5.0.13.tar.gz", hash = "sha256:ff6940cf37e07d6d0c4ac28c5420c8cfc478b62541473dba4aa02d600f7db9fc"},
     {file = "django_flags-5.0.13-py2.py3-none-any.whl", hash = "sha256:52df74b86d93f5cb402190ad26b68a5ba0f127e9e016189f1a6f2e8ba3c06a42"},
+]
+
+[[package]]
+name = "django-formtools"
+version = "2.5.1"
+requires_python = ">=3.8"
+summary = "A set of high-level abstractions for Django forms"
+groups = ["default"]
+dependencies = [
+    "Django>=3.2",
+]
+files = [
+    {file = "django-formtools-2.5.1.tar.gz", hash = "sha256:47cb34552c6efca088863d693284d04fc36eaaf350eb21e1a1d935e0df523c93"},
+    {file = "django_formtools-2.5.1-py3-none-any.whl", hash = "sha256:bce9b64eda52cc1eef6961cc649cf75aacd1a707c2fff08d6c3efcbc8e7e761a"},
 ]
 
 [[package]]

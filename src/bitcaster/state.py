@@ -3,7 +3,7 @@ import json
 from copy import copy
 from datetime import datetime, timedelta
 from threading import local
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AnyRequest, AnyResponse
@@ -32,6 +32,9 @@ class State(local):
     ) -> None:
         value = json.dumps(value)
         self.cookies[key] = [value, max_age, expires, path, domain, secure, httponly, samesite]
+
+    def get_cookie(self, name: str) -> Optional[str]:
+        return self.request.COOKIES.get(name)
 
     def set_cookies(self, response: "AnyResponse") -> None:
         for name, args in self.cookies.items():

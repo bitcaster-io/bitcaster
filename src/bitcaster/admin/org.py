@@ -8,6 +8,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
 from bitcaster.models import Application, Channel, Organization, Project
 
+from ..state import state
 from ..utils.django import url_related
 from .base import BUTTON_COLOR_LINK, BaseAdmin
 from .mixins import LockMixin
@@ -34,6 +35,17 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False
 
+    def get_readonly_fields(self, request: HttpRequest, obj: Optional[Application] = None) -> "_ListOrTuple[str]":
+        base = list(super().get_readonly_fields(request, obj))
+        if obj and obj.name.lower() == "os4d":
+            base.extend(["name", "slug"])
+        return base
+
+    def get_changeform_initial_data(self, request):
+        return {
+            "owner": request.user.id,
+        }
+
 
 class ProjectAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Project]):
     search_fields = ("name",)
@@ -48,6 +60,12 @@ class ProjectAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Project]):
             base.extend(["name", "slug", "organization"])
         return base
 
+    def get_changeform_initial_data(self, request):
+        return {
+            "owner": request.user.id,
+            "organization": state.get_cookie("organization"),
+        }
+
 
 class ApplicationAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Application]):
     search_fields = ("name",)
@@ -56,11 +74,24 @@ class ApplicationAdmin(BaseAdmin, LockMixin, admin.ModelAdmin[Application]):
         ("project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
     )
-    autocomplete_fields = ("project",)
+    autocomplete_fields = ("project", "owner")
     readonly_fields = ["locked"]
 
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Application] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
         if obj and obj.name.lower() == "bitcaster":
-            base.extend(["name", "slug", "project", "active"])
+            base.extend(
+                [
+                    "name",
+                    "slug",
+                    "project",
+                    "active",
+                ]
+            )
         return base
+
+    def get_changeform_initial_data(self, request):
+        return {
+            "owner": request.user.id,
+            "project": state.get_cookie("project"),
+        }

@@ -15,7 +15,7 @@ class DistributionListFactory(AutoRegisterModelFactory):
     project = factory.SubFactory(ProjectFactory)
 
     @factory.post_generation
-    def validations(dist: "DistributionList", create, extracted, **kwargs):
+    def recipients(dist: "DistributionList", create, extracted, **kwargs):
         if not create:
             return
 

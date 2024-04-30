@@ -4,6 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import AutocompleteSelect
 
+from bitcaster.forms.mixins import ScopedFormMixin
 from bitcaster.models import Application, Channel, Organization, Project
 
 
@@ -36,13 +37,13 @@ class ChannelBaseForm(forms.ModelForm["Channel"]):
         return self.cleaned_data
 
 
-class ChannelAddForm(ChannelBaseForm):
+class ChannelAddForm(ScopedFormMixin, ChannelBaseForm):
     class Meta:
         model = Channel
         exclude = ("config", "locked")
 
 
-class ChannelChangeForm(ChannelBaseForm):
+class ChannelChangeForm(ScopedFormMixin, ChannelBaseForm):
 
     class Meta:
         model = Channel

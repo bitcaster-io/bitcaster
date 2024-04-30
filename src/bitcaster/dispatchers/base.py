@@ -24,7 +24,7 @@ class Capability(enum.IntEnum):
 
 
 @enum.unique
-class Protocol(enum.IntEnum):
+class MessageProtocol(enum.IntEnum):
     PLAINTEXT = 100
     SMS = 200
     EMAIL = 300
@@ -34,9 +34,9 @@ class Protocol(enum.IntEnum):
 
 
 ProtocolCapabilities = {
-    Protocol.PLAINTEXT: [Capability.TEXT],
-    Protocol.EMAIL: [Capability.SUBJECT, Capability.HTML, Capability.HTML],
-    Protocol.SMS: [Capability.TEXT],
+    MessageProtocol.PLAINTEXT: [Capability.TEXT],
+    MessageProtocol.EMAIL: [Capability.SUBJECT, Capability.HTML, Capability.HTML],
+    MessageProtocol.SMS: [Capability.TEXT],
 }
 
 
@@ -98,7 +98,7 @@ class Dispatcher(metaclass=DispatcherMeta):
     backend: "Optional[str, DispatcherHandler]" = None
     address_types: List[AddressType] = [AddressType.GENERIC]
     channel: "Channel"
-    protocol: Protocol = Protocol.PLAINTEXT
+    protocol: MessageProtocol = MessageProtocol.PLAINTEXT
 
     def __init__(self, channel: "Channel") -> None:
         self.channel = channel

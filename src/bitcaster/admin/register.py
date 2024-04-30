@@ -13,7 +13,8 @@ from .group import GroupAdmin
 from .log import LogMessageAdmin
 from .message import MessageAdmin
 from .org import ApplicationAdmin, OrganisationAdmin, ProjectAdmin
-from .subscription import SubscriptionAdmin
+
+# from .subscription import SubscriptionAdmin
 from .validation import ValidationAdmin
 
 #
@@ -31,7 +32,7 @@ admin.site.register(models.Message, MessageAdmin)
 admin.site.register(models.Organization, OrganisationAdmin)
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.Role, RoleAdmin)
-admin.site.register(models.Subscription, SubscriptionAdmin)
+# admin.site.register(models.Subscription, SubscriptionAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Validation, ValidationAdmin)
 admin.site.register(models.DistributionList, DistributionListAdmin)

@@ -91,7 +91,6 @@ def pytest_generate_tests(metafunc):
 def record(db, request):
     from testutils.factories import get_factory_for_model
 
-    # TIPS: database access is forbidden in pytest_generate_tests
     modeladmin = request.getfixturevalue("modeladmin")
     instance = modeladmin.model.objects.first()
     if not instance:

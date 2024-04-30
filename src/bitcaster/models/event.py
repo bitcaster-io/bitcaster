@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from django.db import models
 from django.utils.translation import gettext as _
@@ -8,9 +8,9 @@ from .mixins import SlugMixin
 from .org import Application
 
 if TYPE_CHECKING:
-    from django.db.models import QuerySet
+    from django.db.models import Manager, QuerySet
 
-    from bitcaster.models import Message, Occurrence, Subscription, User
+    from bitcaster.models import Message, Occurrence
 
 
 class Event(SlugMixin, models.Model):
@@ -20,9 +20,9 @@ class Event(SlugMixin, models.Model):
     locked = models.BooleanField(default=False, help_text=_("Security lock"))
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
 
-    channels = models.ManyToManyField(Channel, blank=True)
+    channels: "Manager[Channel]" = models.ManyToManyField(Channel, blank=True)
 
-    subscriptions: "QuerySet[Subscription]"
+    # subscriptions: "QuerySet[Subscription]"
     messages: "QuerySet[Message]"
 
     def __init__(self, *args, **kwargs):
@@ -47,22 +47,22 @@ class Event(SlugMixin, models.Model):
             self._cached_messages[channel] = ret
         return self._cached_messages[channel]
 
-    def subscribe(self, address_id: int, channel_id: int) -> None:
-        """Register a subscription to the event."""
-        from .validation import Validation
-
-        validation, _ = Validation.objects.get_or_create(address_id=address_id, channel_id=channel_id)
-        from .subscription import Subscription
-
-        Subscription.objects.get_or_create(event=self, validation=validation)
-
-    def unsubscribe(self, user: "User", channel_ids: List[int] = None) -> None:
-        """Deregister a subscription to the event."""
-        from .subscription import Subscription
-
-        qs = Subscription.objects.filter(event=self, validation__address__user=user)
-
-        if channel_ids:
-            qs = qs.filter(validation__channel_id__in=channel_ids)
-
-        qs.delete()
+    # def subscribe(self, address_id: int, channel_id: int) -> None:
+    #     """Register a subscription to the event."""
+    #     from .validation import Validation
+    #
+    #     validation, _ = Validation.objects.get_or_create(address_id=address_id, channel_id=channel_id)
+    #     from .subscription import Subscription
+    #
+    #     Subscription.objects.get_or_create(event=self, validation=validation)
+    #
+    # def unsubscribe(self, user: "User", channel_ids: List[int] = None) -> None:
+    #     """Deregister a subscription to the event."""
+    #     from .subscription import Subscription
+    #
+    #     qs = Subscription.objects.filter(event=self, validation__address__user=user)
+    #
+    #     if channel_ids:
+    #         qs = qs.filter(validation__channel_id__in=channel_ids)
+    #
+    #     qs.delete()

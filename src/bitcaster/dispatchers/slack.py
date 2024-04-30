@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 from requests import Response
 
 from ..exceptions import DispatcherError
-from .base import Dispatcher, DispatcherConfig, Payload, Protocol
+from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class SlackDispatcher(Dispatcher):
     id = 500
     slug = "slack"
     config_class: Type[DispatcherConfig] = SlackConfig
-    protocol = Protocol.PLAINTEXT
+    protocol = MessageProtocol.PLAINTEXT
 
     def send(self, address: str, payload: Payload) -> "Response":
         try:

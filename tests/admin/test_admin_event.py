@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, List, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 import pytest
-from django.urls import reverse
 
 if TYPE_CHECKING:
     from bitcaster.models import Address, Application, Channel, Event
@@ -53,58 +52,58 @@ def context(django_app_factory, admin_user) -> "Context":
     }
 
 
-def test_event_subscribe(app, context: "Context") -> None:
-    url = reverse("admin:bitcaster_event_subscribe", args=[context["event"].pk])
-    res = app.get(url)
-    assert res.status_code == 200, res.location
-    assert (form := res.forms.get("subscribe-form")), "Should have subscribe-form"
-    form["form-0-address"] = context["address"].pk
-    res = form.submit().follow()
-    assert res.status_code == 200, res.location
+# def test_event_subscribe(app, context: "Context") -> None:
+#     url = reverse("admin:bitcaster_event_subscribe", args=[context["event"].pk])
+#     res = app.get(url)
+#     assert res.status_code == 200, res.location
+#     assert (form := res.forms.get("subscribe-form")), "Should have subscribe-form"
+#     form["form-0-address"] = context["address"].pk
+#     res = form.submit().follow()
+#     assert res.status_code == 200, res.location
+#
+#     from bitcaster.models import Subscription
+#
+#     assert Subscription.objects.filter(
+#         validation__address=context["address"], event=context["event"], validation__channel=context["channel"]
+#     ).exists()
 
-    from bitcaster.models import Subscription
-
-    assert Subscription.objects.filter(
-        validation__address=context["address"], event=context["event"], validation__channel=context["channel"]
-    ).exists()
-
-
-@pytest.mark.parametrize(
-    "num_sub, which, result",
-    [
-        pytest.param(0, None, [], id="none"),
-        pytest.param(1, [0], [], id="one"),
-        pytest.param(2, True, [], id="all"),
-        pytest.param(2, [1], [0], id="specific"),
-        pytest.param(2, [2], [], id="all-selected"),
-    ],
-)
-def test_event_unsubscribe(app, context: "Context", num_sub: int, which: List[int], result: List[int]) -> None:
-    from bitcaster.models import Subscription, Validation
-
-    validations = [
-        Validation.objects.create(address=context["address"], channel=context["channel"]),
-        Validation.objects.create(address=context["address2"], channel=context["channel2"]),
-    ]
-    channels = [context["channel"], context["channel2"]]
-
-    # Creating subscriptions
-    subscriptions = [
-        Subscription.objects.create(validation=validations[i], event=context["event"]) for i in range(num_sub)
-    ]
-    expected = [s.id for i, s in enumerate(subscriptions) if i in result]
-
-    if which is None:
-        # No unsubscription
-        pass
-    elif which is True:
-        # unsubscribing all
-        context["event"].unsubscribe(user=context["address"].user)
-    else:
-        # unsubscribing from channels in which
-        context["event"].unsubscribe(
-            user=context["address"].user, channel_ids=[c.id for i, c in enumerate(channels) if i in which]
-        )
-    remaining = list(Subscription.objects.values_list("id", flat=True))
-
-    assert remaining == expected, "Should have deleted the subscriptions"
+#
+# @pytest.mark.parametrize(
+#     "num_sub, which, result",
+#     [
+#         pytest.param(0, None, [], id="none"),
+#         pytest.param(1, [0], [], id="one"),
+#         pytest.param(2, True, [], id="all"),
+#         pytest.param(2, [1], [0], id="specific"),
+#         pytest.param(2, [2], [], id="all-selected"),
+#     ],
+# )
+# def test_event_unsubscribe(app, context: "Context", num_sub: int, which: List[int], result: List[int]) -> None:
+#     from bitcaster.models import Subscription, Validation
+#
+#     validations = [
+#         Validation.objects.create(address=context["address"], channel=context["channel"]),
+#         Validation.objects.create(address=context["address2"], channel=context["channel2"]),
+#     ]
+#     channels = [context["channel"], context["channel2"]]
+#
+#     # Creating subscriptions
+#     subscriptions = [
+#         Subscription.objects.create(validation=validations[i], event=context["event"]) for i in range(num_sub)
+#     ]
+#     expected = [s.id for i, s in enumerate(subscriptions) if i in result]
+#
+#     if which is None:
+#         # No unsubscription
+#         pass
+#     elif which is True:
+#         # unsubscribing all
+#         context["event"].unsubscribe(user=context["address"].user)
+#     else:
+#         # unsubscribing from channels in which
+#         context["event"].unsubscribe(
+#             user=context["address"].user, channel_ids=[c.id for i, c in enumerate(channels) if i in which]
+#         )
+#     remaining = list(Subscription.objects.values_list("id", flat=True))
+#
+#     assert remaining == expected, "Should have deleted the subscriptions"

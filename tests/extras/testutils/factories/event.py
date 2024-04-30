@@ -14,3 +14,12 @@ class EventFactory(AutoRegisterModelFactory):
 
     name = Sequence(lambda n: "Event-%03d" % n)
     application = factory.SubFactory(ApplicationFactory)
+
+    @factory.post_generation
+    def channels(dist: "Event", create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for ch in extracted:
+                dist.channels.add(ch)
