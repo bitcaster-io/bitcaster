@@ -28,11 +28,10 @@
     <table>
         <tr>
             <td>
-                <div id="tab_subject" class="tab">{{ form.subject }}</div>
-                <div id="tab_content" class="tab">{{ form.content }}</div>
-                <div id="tab_html" class="tab">{{ form.html_content }}</div>
+                <div id="tab_subject" class="tab" data-content-type="text/plain">{{ form.subject }}</div>
+                <div id="tab_content" class="tab" data-content-type="text/plain">{{ form.content }}</div>
+                <div id="tab_html" class="tab" data-content-type="text/html">{{ form.html_content }}</div>
                 <div id="tab_context" class="tab">{{ form.context }}</div>
-                {#                {{ form }}#}
             </td>
             <td>
                 <iframe id="preview"></iframe>

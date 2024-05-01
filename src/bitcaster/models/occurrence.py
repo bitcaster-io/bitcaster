@@ -1,11 +1,9 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from django.db import models, transaction
 from django.utils.translation import gettext as _
 
-from ..dispatchers.base import Dispatcher, Payload
-from . import Address
 from .event import Event
 from .validation import Validation
 
@@ -29,44 +27,35 @@ class Occurrence(models.Model):
     class Meta:
         ordering = ("timestamp",)
 
-    # def get_pending_subscriptions(self):
-    #     delivered = self.status.get("delivered", [])
-    #     return (
-    #         self.event.subscriptions.select_related(
-    #             "validation__address",
-    #             "validation__channel",
-    #         )
-    #         .filter(active=True)
-    #         .exclude(id__in=delivered)
-    #     )
-    def notify_to_channel(self, channel: "Channel", validation: Validation, context: dict[str, Any]) -> str:
-        message: Optional["Message"]
+    def __str__(self) -> str:
+        return f"Occurrence of {self.event.name} on {self.timestamp}"
 
-        dispatcher: "Dispatcher" = channel.dispatcher
-        addr: "Address" = validation.address
-        if message := self.event.get_message(channel):
-            context.update({"channel": channel, "address": addr.value})
-            payload: Payload = Payload(
-                event=self.event,
-                user=addr.user,
-                message=message.render(context),
-            )
-            dispatcher.send(addr.value, payload)
-        return addr.value
+    def __init__(self, *args: Any, **kwargs: Any):
+        self._cached_messages: dict[Channel, Message] = {}
+        super().__init__(*args, **kwargs)
 
-    def process(self) -> None:
+    def get_context(self) -> dict[str, Any]:
+        return {
+            "timestamp": self.timestamp,
+            "event": self.event,
+        }
+
+    def process(self) -> bool:
         validation: "Validation"
         notification: "Notification"
         delivered = self.status.get("delivered", [])
         recipients = self.status.get("recipients", [])
         channels = self.event.channels.active()
+
         for notification in self.event.notifications.all():
-            context = notification.get_context(self.context)
+            context = notification.get_context(self.get_context())
             for channel in channels:
                 for validation in notification.get_pending_subscriptions(delivered, channel):
                     with transaction.atomic(durable=True):
-                        self.notify_to_channel(channel, validation, context)
+                        notification.notify_to_channel(channel, validation, context)
+
                         delivered.append(validation.id)
                         recipients.append([validation.address.value, validation.channel.name])
                         self.status = {"delivered": delivered, "recipients": recipients}
                         self.save()
+        return True

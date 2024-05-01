@@ -213,6 +213,13 @@ def occurence(db):
 
 
 @pytest.fixture()
+def notification(db):
+    from testutils.factories import NotificationFactory
+
+    return NotificationFactory()
+
+
+@pytest.fixture()
 def messagebox():
     import testutils.dispatcher
 

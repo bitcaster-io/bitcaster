@@ -15,7 +15,7 @@ from bitcaster.models import Event
 
 from ..forms.event import EventChangeForm
 from ..state import state
-from .base import BUTTON_COLOR_ACTION, BaseAdmin
+from .base import BaseAdmin, ButtonColor
 from .message import Message
 from .mixins import LockMixin, TwoStepCreateMixin
 
@@ -76,7 +76,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
     )
     autocomplete_fields = ("application",)
     filter_horizontal = ("channels",)
-    inlines = [MessageInline]
+    # inlines = [MessageInline]
     form = EventChangeForm
     # add_form = EventAddForm
     save_as_continue = False
@@ -90,8 +90,8 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
         return {"application": state.get_cookie("application")}
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[Event]" = None) -> "_ListOrTuple[str]":
-        if request.user.has_perm("bitcaster.lock_system"):
-            return ["application", "slug", "name"]
+        #     if request.user.has_perm("bitcaster.lock_system"):
+        #         return ["application", "slug", "name"]
         return ["locked"]
 
     def get_fields(self, request: HttpRequest, obj: Optional[Event] = None) -> Sequence[str | Sequence[str]]:
@@ -159,7 +159,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
 
     @button(
         visible=lambda s: s.context["original"].channels.exists(),
-        html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"},
+        html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
     )
     def test_event(self, request: HttpRequest, pk: str) -> "Union[HttpResponseRedirect, HttpResponse]":
         obj = self.get_object(request, pk)

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], admin.ModelAdmin[DistributionList]):
     search_fields = ("name",)
-    list_display = ("name",)
+    list_display = ("name", "project")
     list_filter = (
         ("project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),

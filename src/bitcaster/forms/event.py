@@ -4,11 +4,10 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import AutocompleteSelect
 
-from bitcaster.forms.mixins import ScopedFormMixin
 from bitcaster.models import Application, Channel, Event
 
 
-class EventBaseForm(ScopedFormMixin[Event], forms.ModelForm["Channel"]):
+class EventBaseForm(forms.ModelForm["Event"]):
     application = forms.ModelChoiceField(
         queryset=Application.objects.all(),
         required=False,

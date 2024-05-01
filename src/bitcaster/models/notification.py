@@ -5,13 +5,14 @@ import yaml
 from django.db import models
 from django.db.models import QuerySet
 
+from ..dispatchers.base import Payload
 from .distribution import DistributionList
 from .validation import Validation
 
 if TYPE_CHECKING:
+    from bitcaster.dispatchers.base import Dispatcher
+    from bitcaster.models import Address, Channel, Message
     from bitcaster.types.core import YamlPayload
-
-    from .channel import Channel
 
 
 class NotificationQuerySet(models.QuerySet["Notification"]):
@@ -23,6 +24,7 @@ class NotificationQuerySet(models.QuerySet["Notification"]):
 
 
 class Notification(models.Model):
+    name = models.CharField(max_length=100)
     event = models.ForeignKey("bitcaster.Event", on_delete=models.CASCADE, related_name="notifications")
     distribution = models.ForeignKey(
         DistributionList, blank=True, null=True, on_delete=models.CASCADE, related_name="notifications"
@@ -32,8 +34,15 @@ class Notification(models.Model):
     extra_context = models.JSONField(default=dict)
     objects = NotificationQuerySet.as_manager()
 
+    def __init__(self, *args: Any, **kwargs: Any):
+        self._cached_messages: dict[Channel, Message | None] = {}
+        super().__init__(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return self.name
+
     def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
-        return {"event": self.event, **ctx}
+        return {**ctx, "notification": self.name}
 
     def get_pending_subscriptions(self, delivered: list[str], channel: "Channel") -> QuerySet[Validation]:
         return (
@@ -45,6 +54,21 @@ class Notification(models.Model):
             .filter(active=True, channel=channel)
             .exclude(id__in=delivered)
         )
+
+    def notify_to_channel(self, channel: "Channel", validation: Validation, context: dict[str, Any]) -> str:
+        message: Optional["Message"]
+
+        dispatcher: "Dispatcher" = channel.dispatcher
+        addr: "Address" = validation.address
+        if message := self.get_message(channel):
+            context.update({"channel": channel, "address": addr.value})
+            payload: Payload = Payload(
+                event=self.event,
+                user=addr.user,
+                message=message.render(context),
+            )
+            dispatcher.send(addr.value, payload)
+        return addr.value
 
     @classmethod
     def match_filter_impl(cls, filter_rules_dict: "YamlPayload", payload: "YamlPayload") -> bool:
@@ -76,3 +100,18 @@ class Notification(models.Model):
     @staticmethod
     def check_filter(filter_rules_dict: "YamlPayload") -> Any:
         return jmespath.compile(filter_rules_dict)
+
+    def get_messages(self, channel: "Channel") -> QuerySet["Message"]:
+        from .message import Message
+
+        return (
+            Message.objects.filter(channel=channel)
+            .filter(models.Q(event=self.event, notification=self) | models.Q(event=self.event, notification=None))
+            .order_by("notification")
+        )
+
+    def get_message(self, channel: "Channel") -> "Optional[Message]":
+        if channel not in self._cached_messages:
+            ret = self.get_messages(channel).first()
+            self._cached_messages[channel] = ret
+        return self._cached_messages[channel]

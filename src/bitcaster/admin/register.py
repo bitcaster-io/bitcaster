@@ -5,6 +5,7 @@ from bitcaster import models
 
 from .address import AddressAdmin
 from .api_key import ApiKeyAdmin
+from .application import ApplicationAdmin
 from .auth import RoleAdmin, UserAdmin
 from .channel import ChannelAdmin
 from .distribution import DistributionListAdmin
@@ -12,9 +13,11 @@ from .event import EventAdmin
 from .group import GroupAdmin
 from .log import LogMessageAdmin
 from .message import MessageAdmin
-from .org import ApplicationAdmin, OrganisationAdmin, ProjectAdmin
 
-# from .subscription import SubscriptionAdmin
+# from .org import ApplicationAdmin, OrganisationAdmin, ProjectAdmin
+from .notification import NotificationAdmin
+from .organization import OrganisationAdmin
+from .project import ProjectAdmin
 from .validation import ValidationAdmin
 
 #
@@ -32,7 +35,7 @@ admin.site.register(models.Message, MessageAdmin)
 admin.site.register(models.Organization, OrganisationAdmin)
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.Role, RoleAdmin)
-# admin.site.register(models.Subscription, SubscriptionAdmin)
+admin.site.register(models.Notification, NotificationAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Validation, ValidationAdmin)
 admin.site.register(models.DistributionList, DistributionListAdmin)

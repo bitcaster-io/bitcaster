@@ -107,10 +107,13 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
         from django.contrib.auth.models import Group
 
+        from bitcaster.dispatchers.log import BitcasterLogDispatcher
         from bitcaster.models import (
             Application,
+            DistributionList,
             Event,
             Message,
+            Notification,
             Organization,
             Project,
             User,
@@ -169,40 +172,66 @@ class Command(BaseCommand):
                         verbosity=self.verbosity - 1,
                         interactive=False,
                     )
+
                 admin = User.objects.get(email=self.admin_email)
                 os4d = Organization.objects.get_or_create(name="OS4D", owner=admin)[0]
                 echo("Creating initial structure")
                 prj = Project.objects.get_or_create(name="Bitcaster", organization=os4d, owner=os4d.owner)[0]
                 bitcaster = Application.objects.get_or_create(name="Bitcaster", project=prj, owner=os4d.owner)[0]
-            if admin := User.objects.filter(is_superuser=True).first():
-                if not bitcaster:
-                    os4d = Organization.objects.get_or_create(name="OS4D", owner=admin)[0]
-                    prj = Project.objects.get_or_create(name="Bitcaster", organization=os4d, owner=os4d.owner)[0]
-                    bitcaster = Application.objects.get_or_create(name="Bitcaster", project=prj, owner=os4d.owner)[0]
             else:
+                admin = User.objects.filter(is_superuser=True).first()
+
+            if not admin:
                 raise CommandError("Create an admin user")
 
-            from bitcaster.dispatchers.log import BitcasterLogDispatcher
+            if not bitcaster:
+                os4d = Organization.objects.get_or_create(name="OS4D", owner=admin)[0]
+                prj = Project.objects.get_or_create(name="Bitcaster", organization=os4d, owner=os4d.owner)[0]
+                bitcaster = Application.objects.get_or_create(name="Bitcaster", project=prj, owner=os4d.owner)[0]
+            else:
+                prj = bitcaster.project
+                os4d = prj.organization
 
             ch_log = Channel.objects.get_or_create(
                 name="BitcasterLog",
-                organization=bitcaster.project.organization,
+                organization=os4d,
                 project=bitcaster.project,
                 application=bitcaster,
                 dispatcher=fqn(BitcasterLogDispatcher),
             )[0]
             ch_mail = Channel.objects.get_or_create(
                 name=Channel.SYSTEM_EMAIL_CHANNEL_NAME,
-                organization=bitcaster.project.organization,
+                organization=os4d,
                 project=bitcaster.project,
                 application=bitcaster,
                 dispatcher=fqn(EmailDispatcher),
             )[0]
+
+            dis: DistributionList = DistributionList.objects.get_or_create(
+                name="Bitcaster Admins", project=bitcaster.project
+            )[0]
+            Message.objects.get_or_create(
+                organization=os4d,
+                project=prj,
+                application=bitcaster,
+                channel=ch_mail,
+                name="Message for channel {name}".format(name=ch_mail.name),
+                code="message-{}".format(ch_mail.name),
+                subject="{{subject}}",
+                content="{{message}}",
+                html_content="{{message}}",
+            )
             for event_name in ["application_locked", "application_unlocked"]:
                 ev: "Event" = bitcaster.register_event(event_name)
                 ev.channels.add(ch_mail)
                 ev.channels.add(ch_log)
+                n = Notification.objects.get_or_create(
+                    name=f"Notification for {event_name}", event=ev, distribution=dis
+                )[0]
                 Message.objects.get_or_create(
+                    organization=os4d,
+                    project=prj,
+                    application=bitcaster,
                     event=ev,
                     name="Message for {event_name}".format(event_name=event_name),
                     code="message-{}".format(event_name),
@@ -210,10 +239,24 @@ class Command(BaseCommand):
                     content="{{message}}",
                     html_content="{{message}}",
                 )
+                Message.objects.get_or_create(
+                    organization=os4d,
+                    project=prj,
+                    application=bitcaster,
+                    notification=n,
+                    name="Message for {}".format(n.name),
+                    code=f"message-{os4d.slug}-{n.name}",
+                    subject="{{subject}}",
+                    content="{{message}}",
+                    html_content="{{message}}",
+                )
+
             if admin:
                 echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
                 admin_email = admin.addresses.get_or_create(name="email", value=self.admin_email)[0]
-                admin_email.validate_channel(ch_mail)
+                v = admin_email.validate_channel(ch_mail)
+                dis.recipients.add(v)
+
             from bitcaster.auth.constants import DEFAULT_GROUP_NAME
 
             Group.objects.get_or_create(name="Admins")

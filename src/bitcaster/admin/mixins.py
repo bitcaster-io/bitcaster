@@ -8,7 +8,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from .base import BUTTON_COLOR_ACTION, BUTTON_COLOR_LOCK, BUTTON_COLOR_UNLOCK
+from .base import ButtonColor
 
 if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel
@@ -32,7 +32,7 @@ class LockMixin(admin.ModelAdmin["AnyModel"]):
     @button(
         label=_("Lock"),
         visible=lambda s: not s.context["original"].locked,
-        html_attrs={"style": f"background-color:{BUTTON_COLOR_LOCK}"},
+        html_attrs={"style": f"background-color:{ButtonColor.LOCK}"},
     )
     def lock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)
@@ -48,7 +48,7 @@ class LockMixin(admin.ModelAdmin["AnyModel"]):
     @button(
         label=_("Unlock"),
         visible=lambda s: s.context["original"].locked,
-        html_attrs={"style": f"background-color:{BUTTON_COLOR_UNLOCK}"},
+        html_attrs={"style": f"background-color:{ButtonColor.UNLOCK}"},
     )
     def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)
@@ -67,7 +67,7 @@ class CloneMixin(admin.ModelAdmin["AnyModel"]):
 
     @button(
         label=_("Clone"),
-        html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"},
+        html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
     )
     def clone(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj: "AnyModel|None" = self.get_object(request, pk)

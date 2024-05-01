@@ -78,7 +78,7 @@ def test_process_event_partially(context: "Context", monkeypatch):
     occurrence: Occurrence = context["occurrence"]
 
     monkeypatch.setattr(
-        "bitcaster.models.occurrence.Occurrence.notify_to_channel",
+        "bitcaster.models.notification.Notification.notify_to_channel",
         mocked_notify := Mock(side_effect=[None, Exception("This is raised after first call")]),
     )
 
@@ -101,7 +101,7 @@ def test_process_event_resume(context: "Context", monkeypatch):
     occurrence.status = {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]]}
     occurrence.save()
 
-    monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.notify_to_channel", mocked_notify := Mock())
+    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", mocked_notify := Mock())
 
     process_event(occurrence.pk)
 

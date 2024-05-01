@@ -27,9 +27,13 @@ class SlugMixin(models.Model):
 
 class ScopedMixin(models.Model):
 
-    organization = models.ForeignKey("Organization", on_delete=models.CASCADE, blank=True)
-    project = models.ForeignKey("Project", on_delete=models.CASCADE, blank=True, null=True)
-    application = models.ForeignKey("Application", on_delete=models.CASCADE, blank=True, null=True)
+    organization = models.ForeignKey("Organization", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True)
+    project = models.ForeignKey(
+        "Project", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True, null=True
+    )
+    application = models.ForeignKey(
+        "Application", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True, null=True
+    )
 
     class Meta:
         abstract = True

@@ -41,6 +41,7 @@ function send() {
         return
     }
     django.jQuery.post(render_url, {
+            "content_type": $(ACTIVE).data("content-type"),
             "content": content,
             "context": context
         },
@@ -51,9 +52,7 @@ function send() {
 }
 function gotoParent(){
     var s1 = window.location.href;
-    // nn = s1.replace(s1.split('/').pop(),'..');
     nn = s1.split("/").slice(0,-2).join("/")
-    console.log(11111, nn);
     return nn + "/change/";
 }
 

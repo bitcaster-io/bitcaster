@@ -1,30 +1,12 @@
 from typing import Any
 
 from django import forms
-from django.contrib import admin
-from django.contrib.admin.widgets import AutocompleteSelect
 
 from bitcaster.forms.mixins import ScopedFormMixin
-from bitcaster.models import Application, Channel, Organization, Project
+from bitcaster.models import Channel
 
 
 class ChannelBaseForm(forms.ModelForm["Channel"]):
-    organization = forms.ModelChoiceField(
-        queryset=Organization.objects.all(),
-        required=False,
-        widget=AutocompleteSelect(Channel._meta.get_field("organization"), admin.site),
-    )
-    project = forms.ModelChoiceField(
-        queryset=Project.objects.all(),
-        required=False,
-        widget=AutocompleteSelect(Channel._meta.get_field("project"), admin.site),
-    )
-    application = forms.ModelChoiceField(
-        queryset=Application.objects.all(),
-        required=False,
-        widget=AutocompleteSelect(Channel._meta.get_field("application"), admin.site),
-    )
-
     class Meta:
         model = Channel
         exclude = ("config", "locked")

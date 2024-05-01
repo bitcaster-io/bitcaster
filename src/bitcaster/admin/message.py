@@ -4,71 +4,30 @@ from typing import Any, Optional
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
-from django.conf import settings
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template import Context, Template
 from django.template.response import TemplateResponse
-from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
+from django.utils import timezone
 from reversion.admin import VersionAdmin
-from tinymce.widgets import TinyMCE
 
-from bitcaster.models import Message
+from bitcaster.models import Message, Notification, Occurrence
 
+from ..forms.message import MessageChangeForm, MessageCreationForm, MessageEditForm
 from .base import BaseAdmin
 
 logger = logging.getLogger(__name__)
 
 
-class MessageForm(forms.ModelForm[Message]):
-    subject = forms.CharField(required=False)
-    content = forms.CharField(widget=forms.Textarea, required=False)
-    html_content = forms.CharField(
-        required=False,
-        widget=TinyMCE(
-            attrs={"class": "aaaa"},
-            mce_attrs={"setup": "setupTinyMCE", "height": "400px"},
-        ),
-    )
-    context = forms.JSONField(widget=SvelteJSONEditorWidget(), required=False)
-
-    class Meta:
-        model = Message
-        fields = ("subject", "content", "html_content", "context")
-
-    @property
-    def media(self) -> forms.Media:
-        orig = super().media
-        extra = "" if settings.DEBUG else ".min"
-        js = [
-            "vendor/jquery/jquery%s.js" % extra,
-            "jquery.init.js",
-        ]
-        return orig + forms.Media(js=["admin/js/%s" % url for url in js])
-
-
-class MessageChangeForm(forms.ModelForm[Message]):
-    class Meta:
-        model = Message
-        fields = ("name", "channel", "event")
-
-
-class MessageCreationForm(forms.ModelForm[Message]):
-
-    class Meta:
-        model = Message
-        fields = ("name", "channel", "event")
-
-
 class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
     search_fields = ("name",)
-    list_display = ("name", "channel", "event")
+    list_display = ("name", "channel", "event", "notification")
     list_filter = (
         ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("channel", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
         ("event", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
     )
-    autocomplete_fields = ("channel", "event")
+    autocomplete_fields = ("channel", "event", "notification")
     change_form_template = "admin/message/change_form.html"
     form = MessageChangeForm
     add_form = MessageCreationForm
@@ -81,37 +40,60 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
         return super().get_form(request, obj, **defaults)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Message]:
-        return super().get_queryset(request).select_related("channel", "event")
+        return super().get_queryset(request).select_related("channel", "event", "notification")
+
+    def get_dummy_source(self, obj: Message) -> tuple[Occurrence, Notification]:
+        from bitcaster.models import Event, Notification, Occurrence
+
+        event = obj.event if obj.event else Event(name="Sample Event")
+        no = Notification(name="Sample Notification", event=event)
+        oc = Occurrence(event=event, timestamp=timezone.now())
+        return oc, no
 
     @view()
     def render(self, request: HttpRequest, pk: str) -> "HttpResponse":
+        form = MessageEditForm(request.POST)
+        msg: Message = self.get_object(request, pk)
+        oc, no = self.get_dummy_source(msg)
+        message_context = no.get_context(oc.get_context())
 
-        form = MessageForm(request.POST)
-        obj = self.get_object(request, pk)
+        ct = "text/html"
         if form.is_valid():
             tpl = Template(form.cleaned_data["content"])
+            ct = form.cleaned_data["content_type"]
             try:
-                ctx = {**form.cleaned_data["context"], "event": obj.event, "channel": obj.channel, "user": request.user}
-                res = tpl.render(Context(ctx))
+                ctx = {**form.cleaned_data["context"], **message_context}
+                res = str(tpl.render(Context(ctx)))
+                if ct != "text/html":
+                    res = f"<pre>{res}</pre>"
             except Exception as e:
-                res = f"<!DOCTYPE HTML>{str(e)}"  # type: ignore
+                res = f"<!DOCTYPE HTML>{str(e)}"
         else:
-            res = f"<!DOCTYPE HTML>{form.errors.as_text()}"  # type: ignore
+            res = f"<!DOCTYPE HTML>{form.errors.as_text()}"
 
-        return HttpResponse(res)
+        return HttpResponse(res, content_type=ct)
 
     @button()
     def edit(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        obj = self.get_object(request, pk)
         context = self.get_common_context(request, pk)
+        obj = context["original"]
+        oc, no = self.get_dummy_source(obj)
+        message_context = no.get_context(oc.get_context())
+
         if request.method == "POST":
-            form = MessageForm(request.POST, instance=obj)
+            form = MessageEditForm(request.POST, instance=obj)
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect("..")
         else:
-            form = MessageForm(
-                initial={"context": {"event": "<sys>", "channel": "<sys>", "recipient": "<sys>"}}, instance=obj
+            form = MessageEditForm(
+                initial={
+                    "context": {k: "<sys>" for k, __ in message_context.items()},
+                    "content": "\n".join([f"{k}: {{{{{k}}}}}" for k in message_context.keys()]),
+                    "html_content": "".join([f"<div>{k}: {{{{{k}}}}}</div>" for k in message_context.keys()]),
+                    "subject": "Subject for {{ event }}",
+                },
+                instance=obj,
             )
         context["form"] = form
         return TemplateResponse(request, "admin/message/edit.html", context)

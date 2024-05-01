@@ -23,14 +23,14 @@ def app(django_app_factory, db):
 def test_render(app: DjangoTestApp, message):
     opts: Options = Message._meta
     url = reverse(admin_urlname(opts, "render"), args=[message.pk])
-    res = app.post(url, {"content": "{{a}}", "context": json.dumps({"a": "333"})})
+    res = app.post(url, {"content": "{{a}}", "content_type": "text/html", "context": json.dumps({"a": "333"})})
     assert res.content == b"333"
 
 
 def test_render_error(app: DjangoTestApp, message):
     opts: Options = Message._meta
     url = reverse(admin_urlname(opts, "render"), args=[message.pk])
-    res = app.post(url, {"content": "{{a}}", "context": "--"})
+    res = app.post(url, {"content": "{{a}}", "content_type": "text/html", "context": "--"})
     assert res.content == b"<!DOCTYPE HTML>* context\n  * Enter a valid JSON."
 
 
@@ -41,7 +41,13 @@ def test_edit(app: DjangoTestApp, message):
     assert res.status_code == 200
     res = app.post(
         url,
-        {"subject": "subject", "content": "content", "html_content": "html_content", "context": "{}"},
+        {
+            "subject": "subject",
+            "content": "content",
+            "html_content": "html_content",
+            "content_type": "text/html",
+            "context": "{}",
+        },
     )
     assert res.status_code == 302
     message.refresh_from_db()

@@ -107,4 +107,4 @@ class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsM
     @button(visible=lambda s: is_root(s.context["request"]))
     def show_key(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
         obj = self.get_object(request, pk)
-        self.message_user(request, obj.key, messages.WARNING)
+        self.message_user(request, str(obj.key), messages.WARNING)

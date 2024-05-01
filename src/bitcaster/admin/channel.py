@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional, Union
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
+from adminfilters.combo import ChoicesFieldComboFilter
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
@@ -17,7 +18,7 @@ from bitcaster.models import Channel
 from ..dispatchers.base import Payload
 from ..forms.channel import ChannelAddForm, ChannelChangeForm
 from ..state import state
-from .base import BUTTON_COLOR_ACTION, BaseAdmin
+from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
@@ -44,13 +45,14 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], a
         ("application", LinkedAutoCompleteFilter.factory(parent="project")),
         "active",
         "locked",
+        ("dispatcher", ChoicesFieldComboFilter),
     )
     autocomplete_fields = ("organization", "application")
     form = ChannelChangeForm
     add_form = ChannelAddForm
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Channel]:
-        return super().get_queryset(request).select_related("application__project__organization")
+        return super().get_queryset(request).select_related("application", "project", "organization")
 
     def get_form(
         self, request: "HttpRequest", obj: "Optional[Channel]" = None, change: bool = False, **kwargs: Any
@@ -75,13 +77,13 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], a
             "application": state.get_cookie("application"),
         }
 
-    @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"})
+    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
     def events(self, request: "HttpRequest", pk: str) -> "Union[AnyResponse,HttpResponseRedirect]":
         base_url = reverse("admin:bitcaster_event_changelist")
         url = f"{base_url}?channels__exact={pk}"
         return HttpResponseRedirect(url)
 
-    @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"})
+    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)
         context = self.get_common_context(request, pk, title=_("Configure channel"))
