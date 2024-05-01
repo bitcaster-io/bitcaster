@@ -9,7 +9,7 @@ from .key import ApiKeyFactory  # noqa
 from .log import LogEntryFactory  # noqa
 from .message import MessageFactory  # noqa
 from .notification import NotificationFactory  # noqa
-from .occurence import OccurenceFactory  # noqa
+from .occurrence import OccurrenceFactory  # noqa
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory  # noqa
 from .role import RoleFactory  # noqa
 from .social import SocialProviderFactory  # noqa

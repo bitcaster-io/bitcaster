@@ -206,10 +206,10 @@ def api_key(db):
 
 
 @pytest.fixture()
-def occurence(db):
-    from testutils.factories import OccurenceFactory
+def occurrence(db):
+    from testutils.factories import OccurrenceFactory
 
-    return OccurenceFactory()
+    return OccurrenceFactory()
 
 
 @pytest.fixture()

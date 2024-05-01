@@ -5,6 +5,7 @@ from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models.options import Options
 from django.urls import reverse
 from django_webtest import DjangoTestApp
+from testutils.factories import ChannelFactory, NotificationFactory
 
 from bitcaster.models import Message
 
@@ -25,6 +26,13 @@ def test_render(app: DjangoTestApp, message):
     url = reverse(admin_urlname(opts, "render"), args=[message.pk])
     res = app.post(url, {"content": "{{a}}", "content_type": "text/html", "context": json.dumps({"a": "333"})})
     assert res.content == b"333"
+
+
+def test_render_text(app: DjangoTestApp, message):
+    opts: Options = Message._meta
+    url = reverse(admin_urlname(opts, "render"), args=[message.pk])
+    res = app.post(url, {"content": "{{a}}", "content_type": "text/plain", "context": json.dumps({"a": "333"})})
+    assert res.content == b"<pre>333</pre>"
 
 
 def test_render_error(app: DjangoTestApp, message):
@@ -66,3 +74,19 @@ def test_edit_error(app: DjangoTestApp, message):
         {"subject": "subject", "content": "content", "html_content": "html_content", "context": "--"},
     )
     assert res.status_code == 200
+
+
+def test_add(app: DjangoTestApp, message):
+    opts: Options = Message._meta
+    url = reverse(admin_urlname(opts, "add"))
+    res = app.get(url)
+    assert res.status_code == 200
+    res = app.post(
+        url,
+        {
+            "channel": ChannelFactory().pk,
+            "notification": NotificationFactory().pk,
+            "name": "name",
+        },
+    )
+    assert res.status_code == 302, res.context["adminform"].form.errors

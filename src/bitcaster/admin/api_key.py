@@ -9,7 +9,6 @@ from django import forms
 from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
-from django_select2 import forms as s2forms
 
 from bitcaster.forms.mixins import ScopedFormMixin
 from bitcaster.models import ApiKey, Application, Organization, Project  # noqa
@@ -23,42 +22,11 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class OrganizationWidget(s2forms.ModelSelect2Widget):
-    search_fields = ["name__istartswith"]
-
-
-class ProjectWidget(s2forms.ModelSelect2Widget):
-    search_fields = ["name__istartswith"]
-    dependent_fields = ({"organization": "organization"},)
-
-
 class ApiKeyForm(ScopedFormMixin[ApiKey], forms.ModelForm[ApiKey]):
 
     class Meta:
         model = ApiKey
         fields = "__all__"
-        # widgets = {
-        #     "organization": OrganizationWidget,
-        #     "": ProjectWidget,
-        # }
-
-
-# class ApiKeyForm1(ScopedFormMixin[ApiKey], forms.ModelForm[ApiKey]):
-#     class Meta:
-#         model = ApiKey
-#         fields = ("organization",)
-#
-#
-# class ApiKeyForm2(ScopedFormMixin[ApiKey], forms.ModelForm[ApiKey]):
-#     class Meta:
-#         model = ApiKey
-#         fields = ("project",)
-#
-#
-# class ApiKeyForm3(ScopedFormMixin[ApiKey], forms.ModelForm[ApiKey]):
-#     class Meta:
-#         model = ApiKey
-#         fields = ("application",)
 
 
 class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin["ApiKey"]):

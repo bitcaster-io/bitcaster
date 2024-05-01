@@ -35,28 +35,6 @@ class MessageInline(admin.TabularInline[Message, Event]):
     show_change_link = True
 
 
-#
-# class EventSubscribeForm(forms.Form):
-#     channel_id = forms.IntegerField(widget=HiddenInput)
-#     channel_name = forms.CharField()
-#     address = forms.ChoiceField(label=_("Address"), choices=(("", "--"),), required=False)
-#
-#     def __init__(self, user: User, event: Event, **kwargs: Any):
-#         address_choices = [[id, value] for id, value in Address.objects.filter(user=user).values_list("id", "value")]
-#         initial = kwargs.get("initial")
-#         if initial:
-#             channel_id = initial["channel_id"]
-#
-#             subscription = Subscription.objects.filter(event=event, validation__channel_id=channel_id).first()
-#             if subscription:
-#                 initial["address"] = subscription.validation.address_id
-#         super().__init__(**kwargs)
-#         self.fields["address"].choices = list(self.fields["address"].choices) + list(address_choices)
-#
-#
-# EventSubscribeFormSet = forms.formset_factory(EventSubscribeForm, extra=0)
-
-
 class EventTestForm(forms.Form):
     recipient = forms.CharField()
     subject = forms.CharField()
@@ -105,57 +83,6 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
             return ["channels", "locked"]
         else:
             return ["locked"]
-
-    # def get_inlines(self, request, obj=...):
-    #     return super().get_inlines(request, obj)
-
-    #
-    # @button(html_attrs={"style": f"background-color:{BUTTON_COLOR_LINK}"})
-    # def subscriptions(self, request: "HttpRequest", pk: str) -> "Union[HttpResponseRedirect]":
-    #     obj = self.get_object(request, pk)
-    #     base_url = reverse("admin:bitcaster_subscription_changelist")
-    #     url = (
-    #         f"{base_url}?event__exact={pk}"
-    #         f"&event__application__project__organization__exact={obj.application.project.organization.id}"
-    #         f"&event__application__project__exact={obj.application.project.id}"
-    #         f"&event__application__exact={obj.application.id}"
-    #     )
-    #     return HttpResponseRedirect(url)
-    #
-    # @button(
-    #     enabled=lambda s: s.context["original"].channels.exists(),
-    #     html_attrs={"style": f"background-color:{BUTTON_COLOR_ACTION}"},
-    # )
-    # def subscribe(self, request: HttpRequest, pk: str) -> Union[HttpResponseRedirect, HttpResponse]:
-    #     obj: Event = self.get_object(request, pk)
-    #     context = self.get_common_context(request, pk, title=_(f"Subscribe to event {obj}"))
-    #
-    #     if request.method == "POST":
-    #         context["formset"] = formset = EventSubscribeFormSet(
-    #             data=request.POST,
-    #             form_kwargs={"user": request.user, "event": obj},
-    #         )
-    #         if formset.is_valid():
-    #             url = reverse("admin:bitcaster_event_change", args=[obj.id])
-    #             for form in formset:
-    #                 if address_id := form.cleaned_data["address"]:
-    #                     obj.subscribe(int(address_id), form.cleaned_data["channel_id"])
-    #                 else:
-    #                     obj.unsubscribe(request.user, [form.cleaned_data["channel_id"]])
-    #             messages.success(request, _(f"Subscribed to event {obj}."))
-    #             return HttpResponseRedirect(url)
-    #     else:
-    #         context["formset"] = EventSubscribeFormSet(
-    #             initial=[
-    #                 {
-    #                     "channel_id": channel.id,
-    #                     "channel_name": channel.name,
-    #                 }
-    #                 for channel in obj.channels.all()
-    #             ],
-    #             form_kwargs={"user": request.user, "event": obj},
-    #         )
-    #     return TemplateResponse(request, "admin/event/subscribe_event.html", context)
 
     @button(
         visible=lambda s: s.context["original"].channels.exists(),

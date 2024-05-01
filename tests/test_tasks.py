@@ -22,7 +22,7 @@ def context(db) -> "Context":
         ChannelFactory,
         MessageFactory,
         NotificationFactory,
-        OccurenceFactory,
+        OccurrenceFactory,
         ValidationFactory,
     )
 
@@ -35,7 +35,7 @@ def context(db) -> "Context":
     MessageFactory(channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}")
 
     # subscription = SubscriptionFactory(validation__channel=ch, event=event)
-    occurrence = OccurenceFactory(event=no.event)
+    occurrence = OccurrenceFactory(event=no.event)
     return {"occurrence": occurrence, "address": v1.address, "channel": ch, "validations": [v1, v2]}
 
 
