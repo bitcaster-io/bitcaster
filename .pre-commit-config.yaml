@@ -90,3 +90,8 @@ repos:
           - /print\(111/
         stages: [ commit ]
 #
+  - repo: https://github.com/PyCQA/bandit
+    rev: '' # Update me!
+    hooks:
+      - id: bandit
+        args: ["-c", "bandit.yaml"]

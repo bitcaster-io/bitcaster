@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, TypedDict
+from unittest import mock
 from unittest.mock import MagicMock
 
 import pytest
@@ -7,25 +8,19 @@ from testutils.factories.event import EventFactory
 from testutils.factories.key import ApiKeyFactory
 from testutils.perms import key_grants
 
-from bitcaster.api.permissions import ApiApplicationPermission
+from bitcaster.api.permissions import ApiApplicationPermission, ApiBasePermission
 from bitcaster.api.views import EventViewSet
 from bitcaster.auth.constants import Grant
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Event, User
+    from bitcaster.models import ApiKey, Event
 
     Context = TypedDict(
         "Context",
-        {
-            "event": Event,
-            "key": ApiKey,
-            "user": User,
-        },
+        {"event": Event, "key": ApiKey, "backend": ApiApplicationPermission, "view": EventViewSet},
     )
 
 pytestmark = [pytest.mark.api, pytest.mark.django_db]
-
-# WE DO NOT USE REVERSE HERE. WE NEED TO CHECK ENDPOINTS CONTRACTS
 
 
 @pytest.fixture()
@@ -35,62 +30,103 @@ def client() -> APIClient:
 
 
 @pytest.fixture()
-def data(admin_user) -> "Context":
+def context(admin_user) -> "Context":
     event: "Event" = EventFactory()
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
-    return {
-        "event": event,
-        "key": key,
-        "user": admin_user,
-    }
+    return {"event": event, "key": key, "backend": ApiApplicationPermission(), "view": MagicMock(spec=EventViewSet)}
 
 
-def test_has_permission(rf, api_key) -> None:
-    p = ApiApplicationPermission()
-    req = rf.get("/api/permissions/")
-    req.auth = None
-    view: "EventViewSet" = MagicMock(spec=EventViewSet)
+@pytest.mark.parametrize("g", [g for g in Grant])
+def test_has_speciic_permission(rf, g, context: "Context") -> None:
+    api_key: ApiKey = context["key"]
+    p: ApiBasePermission = context["backend"]
+    view: "EventViewSet" = context["view"]
+    req = rf.get("/")
+
+    with mock.patch.object(req, "auth", api_key, create=True):
+        with mock.patch.object(view, "grants", [g]):
+            with key_grants(api_key, [g]):
+                assert p.has_permission(req, view)
+
+
+def test_scope(rf, context: "Context") -> None:
+    api_key: ApiKey = context["key"]
+    p: ApiBasePermission = context["backend"]
+    view: "EventViewSet" = context["view"]
+    event: "Event" = context["event"]
+
+    req = rf.get("/")
+
+    view.required_grants = [Grant.SYSTEM_PING]
+
+    with mock.patch.object(req, "auth", api_key, create=True):
+        with key_grants(api_key, [Grant.SYSTEM_PING], application=None):
+            with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
+                assert not p.has_permission(req, view)
+                assert not p.has_object_permission(req, view, event)
+
+
+def test_has_permission(rf, context: "Context") -> None:
+    api_key: ApiKey = context["key"]
+    p: ApiBasePermission = context["backend"]
+    view: "EventViewSet" = context["view"]
+    req = rf.get("/")
 
     assert not p.has_permission(req, MagicMock())
-    req.auth = api_key
 
-    with key_grants(api_key, None):
-        assert not p.has_permission(req, view)
+    with mock.patch.object(req, "auth", None, create=True):
+        assert not p.has_permission(req, MagicMock())
 
-    view.required_grants = [Grant.SYSTEM_PING]
-    with key_grants(api_key, None):
-        assert not p.has_permission(req, view)
+    with mock.patch.object(req, "auth", api_key, create=True):
+        with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
+            with mock.patch.object(view, "required_grants", [Grant.SYSTEM_PING]):
+                with key_grants(api_key, None):
+                    assert not p.has_permission(req, view)
 
-    view.required_grants = [Grant.SYSTEM_PING]
-    view.grants = [Grant.SYSTEM_PING]
-    with key_grants(api_key, Grant.SYSTEM_PING):
-        assert p.has_permission(req, view)
+        with key_grants(api_key, None):
+            assert not p.has_permission(req, view)
+
+        with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
+            with key_grants(api_key, Grant.SYSTEM_PING):
+                assert p.has_permission(req, view)
 
 
-def test_has_object_permission(rf, api_key, event, application) -> None:
-    p = ApiApplicationPermission()
-    req = rf.get("/api/permissions/")
-    req.auth = None
-    view: "EventViewSet" = MagicMock(spec=EventViewSet)
+def test_user_inactive(rf, context: "Context") -> None:
+    from django.contrib.auth.models import AnonymousUser
 
-    assert not p.has_object_permission(req, view, event)
-    req.auth = api_key
+    api_key: ApiKey = context["key"]
+    p: ApiBasePermission = context["backend"]
+    view: "EventViewSet" = context["view"]
+    req = rf.get("/")
 
-    with key_grants(api_key, None):
-        assert not p.has_object_permission(req, view, event)
+    with mock.patch.object(req, "user", AnonymousUser(), create=True):
+        with mock.patch.object(req, "auth", api_key, create=True):
+            with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
+                with mock.patch.object(view, "required_grants", [Grant.SYSTEM_PING]):
+                    with key_grants(api_key, None):
+                        assert not p.has_permission(req, view)
 
-    view.required_grants = [Grant.SYSTEM_PING]
-    with key_grants(api_key, None):
-        assert not p.has_object_permission(req, view, event)
 
-    view.required_grants = [Grant.SYSTEM_PING]
-    view.grants = [Grant.SYSTEM_PING]
+def test_has_object_permission(rf, context: "Context") -> None:
+    api_key: ApiKey = context["key"]
+    p: ApiBasePermission = context["backend"]
+    view: "EventViewSet" = context["view"]
+    event: "Event" = context["event"]
+    req = rf.get("/")
+    assert not p.has_permission(req, MagicMock())
 
-    with key_grants(api_key, Grant.SYSTEM_PING):
-        assert not p.has_object_permission(req, view, event)
+    with mock.patch.object(req, "auth", None, create=True):
+        assert not p.has_object_permission(req, MagicMock(), event)
 
-    with key_grants(api_key, Grant.SYSTEM_PING, application=application):
-        assert not p.has_object_permission(req, view, event)
+    with mock.patch.object(req, "auth", api_key, create=True):
+        with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
+            with mock.patch.object(view, "required_grants", [Grant.SYSTEM_PING]):
+                with key_grants(api_key, None):
+                    assert not p.has_object_permission(req, view, event)
 
-    with key_grants(api_key, Grant.SYSTEM_PING, application=event.application):
-        assert p.has_object_permission(req, view, event)
+        with key_grants(api_key, None):
+            assert not p.has_object_permission(req, view, event)
+
+        with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
+            with key_grants(api_key, Grant.SYSTEM_PING):
+                assert p.has_object_permission(req, view, event)

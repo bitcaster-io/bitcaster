@@ -21,7 +21,7 @@ class Grant(TextChoices):
     #
     # APPLICATION_READ = "APP_READ", "Application Read"
     # APPLICATION_WRITE = "APP_WRITE", "Application Write"
-    APPLICATION_ADMIN = "APP_ADMIN", "Application Admin"
+    APPLICATION_ADMIN = "APPLICATION_ADMIN", "Application Admin"
     # APPLICATION_LOCKOUT = "APP_LOCKOUT", "Application Lockout"
     #
     # EVENT_ADMIN = "EVENT_ADMIN", "Event Admin"

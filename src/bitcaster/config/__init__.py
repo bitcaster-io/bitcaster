@@ -19,7 +19,7 @@ class Group(Enum):
 
 
 NOT_SET = "<- not set ->"
-EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY", "CACHE_URL", "CELERY_BROKER_URL"]
+EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY", "CACHE_URL", "CELERY_BROKER_URL", "MEDIA_ROOT", "STATIC_ROOT"]
 
 CONFIG: "Dict[str, ConfigItem]" = {
     "ADMIN_EMAIL": (str, "", "Initial user created at first deploy"),
@@ -67,7 +67,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
     # "EMAIL_USE_TLS": (str, ""),
     "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level")),
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
-    "MEDIA_ROOT": (str, "/tmp/media/", setting("media-root")),
+    "MEDIA_ROOT": (str, None, setting("media-root")),
     "MEDIA_URL": (str, "/media/", setting("media-url")),
     "ROOT_TOKEN": (str, "", ""),
     "SECRET_KEY": (str, NOT_SET, setting("secret-key")),
@@ -102,7 +102,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
         False,
     ),
     "STATIC_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
-    "STATIC_ROOT": (str, "/tmp/static/", setting("static-root")),
+    "STATIC_ROOT": (str, None, setting("static-root")),
     "STATIC_URL": (str, "/static/", setting("static-url")),
     "TIME_ZONE": (str, "UTC", setting("std-setting-TIME_ZONE")),
 }

@@ -13,6 +13,7 @@ __pycache__/
 !.pre-commit-config.yaml
 !.bumpversion.cfg
 !.trivyignore
+!bandit.yaml
 coverage.xml
 Makefile
 site

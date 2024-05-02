@@ -189,6 +189,29 @@ trivy:
     expire_in: 4 weeks
 
 
+bandit:
+  image: "$DOCKER_BUILDER"
+  stage: scan
+  extends:
+    - .docker-rules
+  services:
+    - docker:dind
+  cache:
+    paths:
+      - .trivy-cache
+  before_script:
+    - *exports
+  script:
+    - *login
+    - echo "Scanning code..."
+    - bandit -c bandit.yaml --format html -o bandit.html -r src/
+  artifacts:
+    when: always
+    paths:
+      - bandit.html
+    expire_in: 4 weeks
+
+
 test:
   stage: test
   image: "${CI_REGISTRY_IMAGE}/builder-test:latest"
