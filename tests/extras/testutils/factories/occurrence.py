@@ -11,5 +11,5 @@ class OccurrenceFactory(AutoRegisterModelFactory):
         model = Occurrence
 
     event = factory.SubFactory(EventFactory)
-    processed = False
+    status = Occurrence.Status.NEW
     context = {}

@@ -2,10 +2,14 @@ import contextlib
 import json
 from copy import copy
 from datetime import datetime, timedelta
+from functools import cached_property
 from threading import local
 from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional
 
+from bitcaster.constants import Bitcaster
+
 if TYPE_CHECKING:
+    from bitcaster.models import Application
     from bitcaster.types.http import AnyRequest, AnyResponse
 
 not_set = object()
@@ -14,6 +18,7 @@ not_set = object()
 class State(local):
     request: "AnyRequest|None" = None
     cookies: Dict[str, List[Any]] = {}
+    # app: "Application" = None
 
     def __repr__(self) -> str:
         return f"<State {id(self)} - {self.timestamp}>"
@@ -32,6 +37,16 @@ class State(local):
     ) -> None:
         value = json.dumps(value)
         self.cookies[key] = [value, max_age, expires, path, domain, secure, httponly, samesite]
+
+    @cached_property
+    def app(self) -> "Application":
+        from bitcaster.models import Application
+
+        return Application.objects.get(
+            name=Bitcaster.APPLICATION,
+            project__name=Bitcaster.PROJECT,
+            project__organization__name=Bitcaster.ORGANIZATION,
+        )
 
     def get_cookie(self, name: str) -> Optional[str]:
         return self.request.COOKIES.get(name)

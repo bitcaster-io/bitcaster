@@ -45,6 +45,7 @@ class TriggerViewSet(BaseModelViewSet):
     def trigger(self, request: "Request", org: str, prj: str, app: str, event: str) -> Response:
         if request.method == "POST":
             ser = ActionSerializer(data=request.data)
+            correlation_id = request.query_params.get("cid", None)
             if ser.is_valid():
                 obj: "Event" = Event.objects.get(
                     application__project__organization__slug=org,
@@ -53,7 +54,7 @@ class TriggerViewSet(BaseModelViewSet):
                     slug=event,
                 )
                 self.check_object_permissions(self.request, obj)
-                o: "Occurrence" = obj.trigger(ser.validated_data["context"])
+                o: "Occurrence" = obj.trigger(ser.validated_data["context"], cid=correlation_id)
                 return Response({"occurrence": o.pk})
             else:
                 return Response(ser.errors, status=400)

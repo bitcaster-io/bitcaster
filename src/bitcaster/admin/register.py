@@ -13,14 +13,12 @@ from .event import EventAdmin
 from .group import GroupAdmin
 from .log import LogMessageAdmin
 from .message import MessageAdmin
-
-# from .org import ApplicationAdmin, OrganisationAdmin, ProjectAdmin
 from .notification import NotificationAdmin
+from .occurrence import OccurrenceAdmin
 from .organization import OrganisationAdmin
 from .project import ProjectAdmin
 from .validation import ValidationAdmin
 
-#
 admin.site.unregister(Group)
 admin.site.register(Group, GroupAdmin)
 
@@ -39,3 +37,4 @@ admin.site.register(models.Notification, NotificationAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Validation, ValidationAdmin)
 admin.site.register(models.DistributionList, DistributionListAdmin)
+admin.site.register(models.Occurrence, OccurrenceAdmin)

@@ -8,6 +8,7 @@ from django.template.response import TemplateResponse
 
 from bitcaster.models import Channel, Organization, Project
 
+from ..constants import Bitcaster
 from ..forms.message import OrgTemplateCreateForm
 from ..utils.django import url_related
 from .base import BaseAdmin, ButtonColor
@@ -54,7 +55,7 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
 
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Organization] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
-        if obj and obj.name.lower() == "os4d":
+        if obj and obj.name.lower() == Bitcaster.ORGANIZATION:
             base.extend(["name", "slug"])
         return base
 

@@ -1,9 +1,11 @@
 import logging
+import uuid
 from typing import TYPE_CHECKING, Any
 
 from django.db import models, transaction
 from django.utils.translation import gettext as _
 
+from ..constants import Bitcaster
 from .event import Event
 from .validation import Validation
 
@@ -16,13 +18,35 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+class OccurrenceQuerySet(models.QuerySet["Occurrence"]):
+
+    def system(self, *args: Any, **kwargs: Any) -> models.QuerySet["Occurrence"]:
+        return self.filter(event__application__name=Bitcaster.APPLICATION).filter(*args, **kwargs)
+
+
 class Occurrence(models.Model):
+    class Status(models.TextChoices):
+        NEW = "NEW", _("New")
+        PROCESSED = "PROCESSED", _("Processed")
+        FAILED = "FAILED", _("Failed")
+
     timestamp = models.DateTimeField(auto_now_add=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     context = models.JSONField(blank=True, null=True)
-    processed = models.BooleanField(default=False)
+    # processed = models.BooleanField(default=False)
+
+    correlation_id = models.UUIDField(default=uuid.uuid4, editable=False, blank=True, null=True)
+    recipients = models.IntegerField(default=0, help_text=_("Total number of recipients"))
+
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
-    status = models.JSONField(default=dict)
+    data = models.JSONField(default=dict)
+    status = models.CharField(
+        choices=Status,
+        default=Status.NEW.value,
+    )
+
+    attempts = models.IntegerField(default=5)
+    objects = OccurrenceQuerySet.as_manager()
 
     class Meta:
         ordering = ("timestamp",)
@@ -43,9 +67,13 @@ class Occurrence(models.Model):
     def process(self) -> bool:
         validation: "Validation"
         notification: "Notification"
-        delivered = self.status.get("delivered", [])
-        recipients = self.status.get("recipients", [])
+
+        delivered = self.data.get("delivered", [])
+        recipients = self.data.get("recipients", [])
         channels = self.event.channels.active()
+
+        # self.status = {"delivered": delivered, "recipients": recipients}
+        # self.save()
 
         for notification in self.event.notifications.all():
             context = notification.get_context(self.get_context())
@@ -56,6 +84,7 @@ class Occurrence(models.Model):
 
                         delivered.append(validation.id)
                         recipients.append([validation.address.value, validation.channel.name])
-                        self.status = {"delivered": delivered, "recipients": recipients}
+
+                        self.data = {"delivered": delivered, "recipients": recipients}
                         self.save()
         return True

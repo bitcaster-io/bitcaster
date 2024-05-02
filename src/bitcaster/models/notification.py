@@ -97,9 +97,9 @@ class Notification(models.Model):
             rules = yaml.safe_load(self.payload_filter or "")
         return self.match_filter_impl(rules, payload)
 
-    @staticmethod
-    def check_filter(filter_rules_dict: "YamlPayload") -> Any:
-        return jmespath.compile(filter_rules_dict)
+    # @staticmethod
+    # def check_filter(filter_rules_dict: "YamlPayload") -> Any:
+    #     return jmespath.compile(filter_rules_dict)
 
     def get_messages(self, channel: "Channel") -> QuerySet["Message"]:
         from .message import Message

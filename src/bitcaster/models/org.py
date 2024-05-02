@@ -52,6 +52,10 @@ class Project(SlugMixin, models.Model):
         super().save(*args, **kwargs)
 
 
+class ApplicationManager(models.Manager["Application"]):
+    pass
+
+
 class Application(SlugMixin, models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="applications")
     owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
@@ -67,6 +71,7 @@ class Application(SlugMixin, models.Model):
     )
 
     events: "QuerySet[Event]"
+    objects = ApplicationManager()
 
     class Meta:
         ordering = ("name",)

@@ -94,7 +94,7 @@ def test_trigger(context: "Context", messagebox, django_assert_num_queries: "Dja
         (v2.address.value, f"Message for {event.name} on channel {ch.name}"),
     ]
     o.refresh_from_db()
-    assert o.status == {
+    assert o.data == {
         "delivered": [v1.pk, v2.pk],
         "recipients": [
             [v1.address.value, v1.channel.name],
