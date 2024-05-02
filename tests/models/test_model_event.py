@@ -11,7 +11,14 @@ def test_event_trigger(event: "Event"):
     assert event.trigger({})
 
 
-@pytest.mark.parametrize("cid", [uuid.uuid4(), uuid.uuid4().hex, str(uuid.uuid4())])
+@pytest.mark.parametrize(
+    "cid",
+    [
+        uuid.UUID("3f430b9b-ca28-43a3-bad0-954d20f35c37"),
+        "cf09bfc574554e3a9619a69021936bcb",
+        "ffe1b3e8-0fcd-42b5-8ccd-7304715b329d",
+    ],
+)
 def test_trigger_correlation_id(event: "Event", cid: str):
     o: "Occurrence" = event.trigger({}, cid)
     assert o.correlation_id == str(cid)

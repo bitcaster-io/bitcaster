@@ -165,7 +165,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("name", models.CharField(max_length=255)),
-                ("slug", models.SlugField(max_length=255)),
+                ("slug", models.SlugField(blank=True, max_length=255)),
                 ("active", models.BooleanField(default=True, help_text="Whether the application should be active")),
                 ("locked", models.BooleanField(default=False, help_text="Security lock of applications")),
                 (
@@ -225,7 +225,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("name", models.CharField(max_length=255)),
-                ("slug", models.SlugField(max_length=255)),
+                ("slug", models.SlugField(blank=True, max_length=255)),
                 ("description", models.CharField(blank=True, max_length=255, null=True)),
                 ("active", models.BooleanField(default=True)),
                 ("locked", models.BooleanField(default=False, help_text="Security lock")),
@@ -334,7 +334,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("name", models.CharField(max_length=255)),
-                ("slug", models.SlugField(max_length=255)),
+                ("slug", models.SlugField(blank=True, max_length=255)),
                 (
                     "from_email",
                     models.EmailField(
@@ -376,7 +376,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("name", models.CharField(max_length=255)),
-                ("slug", models.SlugField(max_length=255)),
+                ("slug", models.SlugField(blank=True, max_length=255)),
                 ("locked", models.BooleanField(default=False, help_text="Security lock of project")),
                 (
                     "from_email",

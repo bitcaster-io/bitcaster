@@ -11,7 +11,7 @@ class Lockable(Protocol):
 
 class SlugMixin(models.Model):
     name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255)
+    slug = models.SlugField(max_length=255, blank=True)
 
     class Meta:
         abstract = True
