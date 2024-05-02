@@ -204,6 +204,7 @@ bandit:
   script:
     - *login
     - echo "Scanning code..."
+    - pip install bandit
     - bandit -c bandit.yaml --format html -o bandit.html -r src/
   artifacts:
     when: always

@@ -1,9 +1,16 @@
-quiet: false
-debug: false
+quiet: true
+debug: true
 format: table
 ignore-policy:
 
 cache-dir: .trivy-cache
+
+fs:
+  skip-files:
+    - .env
+    - .envrc
+scanners:
+  - pippo
 
 severity:
   - UNKNOWN
@@ -12,9 +19,9 @@ severity:
   - HIGH
   - CRITICAL
 
-vulnerability:
-#  # Same as '--vuln-type'
-#  # Default is 'os,library'
-  type:
-    - os
-    - library
+#vulnerability:
+##  # Same as '--vuln-type'
+##  # Default is 'os,library'
+#  type:
+#    - os
+#    - library
