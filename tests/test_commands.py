@@ -10,7 +10,14 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture()
 def environment():
-    return {"CACHE_URL": "test", "CELERY_BROKER_URL": "", "DATABASE_URL": "", "SECRET_KEY": ""}
+    return {
+        "CACHE_URL": "test",
+        "CELERY_BROKER_URL": "",
+        "DATABASE_URL": "",
+        "SECRET_KEY": "",
+        "MEDIA_ROOT": "/tmp/media",
+        "STATIC_ROOT": "/tmp/static",
+    }
 
 
 # @pytest.mark.parametrize(

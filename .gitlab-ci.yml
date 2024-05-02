@@ -73,17 +73,17 @@ stages:
 
 
 .docker_sha: &docker_sha
-    - export CI_CHECKSUM=$(sha1sum pdm.lock docker/Dockerfile docker/bin/* docker/conf/* | sha1sum | awk '{print $1}')
+  - export CI_CHECKSUM=$(sha1sum pdm.lock docker/Dockerfile docker/bin/* docker/conf/* | sha1sum | awk '{print $1}')
 
 .exports: &exports
-    - *docker_sha
-    - | 
-      # export envs
-      export BC_BUILD_DATE=$(date +"%Y-%m-%d %H:%M")
-      export BC_BUILD_TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-      export BC_LOCK_SHA=$(echo ${CI_CHECKSUM} | cut -c 1-8)
-      export BC_VERSION=$(cat .bumpversion.cfg | grep '^current_version' | sed 's/.*= //')
-      export BC_COMMIT_SHA=c-${CI_COMMIT_SHA}
+  - *docker_sha
+  - |
+    # export envs
+    export BC_BUILD_DATE=$(date +"%Y-%m-%d %H:%M")
+    export BC_BUILD_TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+    export BC_LOCK_SHA=$(echo ${CI_CHECKSUM} | cut -c 1-8)
+    export BC_VERSION=$(cat .bumpversion.cfg | grep '^current_version' | sed 's/.*= //')
+    export BC_COMMIT_SHA=c-${CI_COMMIT_SHA}
 
 .build_base:
   image: "$DOCKER_BUILDER"
@@ -155,7 +155,7 @@ lint:
     expire_in: 5 days
 
 
-trivy:
+trivy-docker:
   image: "$DOCKER_BUILDER"
   stage: scan-image
   extends:
@@ -175,16 +175,17 @@ trivy:
       --cache-dir .trivy-cache
       image
       --exit-code 0
+      --vuln-type os
       --no-progress
       --format template
       --template "@/templates/gitlab.tpl"
-      -o trivy.json
+      -o trivy-docker.json
       ${DOCKER_IMAGE_TAG}
   artifacts:
     when: always
     reports:
-      container_scanning: trivy.json
-      junit: trivy.xml
+      container_scanning: trivy-docker.json
+      junit: trivy-docker.xml
     paths:
       - public
     expire_in: 4 weeks
@@ -210,6 +211,40 @@ bandit:
       - bandit.html
     expire_in: 4 weeks
 
+trivy-code:
+  image: "$DOCKER_BUILDER"
+  stage: scan-code
+  extends:
+    - .docker-rules
+  services:
+    - docker:dind
+  cache:
+    paths:
+      - .trivy-cache
+  before_script:
+    - *exports
+    - export DOCKER_IMAGE_TAG="${CI_REGISTRY_IMAGE}/builder:${BC_LOCK_SHA}"
+  script:
+    - *login
+    - echo "Scanning $DOCKER_IMAGE_TAG"
+    - trivy
+      --cache-dir .trivy-cache
+      image
+      --exit-code 0
+      --vuln-type library
+      --no-progress
+      --format template
+      --template "@/templates/gitlab.tpl"
+      -o trivy-code.json
+      ${DOCKER_IMAGE_TAG}
+  artifacts:
+    when: always
+    reports:
+      container_scanning: trivy-code.json
+      junit: trivy-code.xml
+    paths:
+      - public
+    expire_in: 4 weeks
 
 test:
   stage: test
@@ -253,17 +288,17 @@ test:
       echo "Tag      ${DOCKER_IMAGE_TAG}"
       echo "Checksum `cat /CHECKSUM`"
       echo "Tag      ${DOCKER_IMAGE_TAG}"
-    - pytest tests/ 
-            -ra
-            --maxfail 10
-            --migrations
-            --create-db
-            --junitxml=.build/junit/junit.xml
-            --html=.build/junit/report.html
-            --cov
-            --cov-report=html
-            --cov-report=xml
-            --cov-report=term:skip-covered
+    - pytest tests/
+      -ra
+      --maxfail 10
+      --migrations
+      --create-db
+      --junitxml=.build/junit/junit.xml
+      --html=.build/junit/report.html
+      --cov
+      --cov-report=html
+      --cov-report=xml
+      --cov-report=term:skip-covered
   after_script:
     - mkdir -p public
     - cp -R ./.build/* public
@@ -317,10 +352,10 @@ build:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_DRIVER: overlay2
   rules:
-#    - if: $CI_COMMIT_REF_NAME == "develop"
-#      when: always
-#      variables:
-#        RELEASE: "nightly"
+    #    - if: $CI_COMMIT_REF_NAME == "develop"
+    #      when: always
+    #      variables:
+    #        RELEASE: "nightly"
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: always
       variables:

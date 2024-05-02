@@ -2,6 +2,7 @@ quiet: false
 debug: false
 format: table
 ignore-policy:
+
 cache-dir: .trivy-cache
 
 severity:
@@ -11,9 +12,9 @@ severity:
   - HIGH
   - CRITICAL
 
-#vulnerability:
+vulnerability:
 #  # Same as '--vuln-type'
 #  # Default is 'os,library'
-#  type:
-#    - os
-#    - library
+  type:
+    - os
+    - library

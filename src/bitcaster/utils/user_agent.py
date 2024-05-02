@@ -1,4 +1,4 @@
-from hashlib import md5
+import hashlib
 from typing import TYPE_CHECKING
 
 from django.conf import settings
@@ -38,7 +38,9 @@ def get_cache_key(ua_string: bytes) -> str:
     # Some user agent strings are longer than 250 characters so we use its MD5
     if isinstance(ua_string, str):
         ua_string = ua_string.encode("utf-8")
-    return "".join(["django_user_agents.", md5(ua_string).hexdigest()])  # nosec
+    hasher = hashlib.new("sha256")
+    hasher.update(ua_string)
+    return "".join(["django_user_agents.", hasher.hexdigest()])
 
 
 def get_user_agent(request: "AnyRequest") -> UserAgent:
