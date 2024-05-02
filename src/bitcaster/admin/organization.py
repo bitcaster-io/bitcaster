@@ -51,7 +51,7 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
         return TemplateResponse(request, "admin/message/create_message_template.html", ctx, status=status_code)
 
     def has_add_permission(self, request: HttpRequest) -> bool:
-        return False
+        return Organization.objects.count() < 2
 
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Organization] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
