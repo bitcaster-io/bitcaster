@@ -6,8 +6,9 @@ stages:
   - builder
   - lint
   - images
-  - scan
+  - scan-image
   - test
+  - scan-code
   - release
 
 .debug-rule:
@@ -156,7 +157,7 @@ lint:
 
 trivy:
   image: "$DOCKER_BUILDER"
-  stage: scan
+  stage: scan-image
   extends:
     - .docker-rules
   services:
@@ -191,9 +192,7 @@ trivy:
 
 bandit:
   image: "$DOCKER_BUILDER"
-  stage: scan
-  extends:
-    - .docker-rules
+  stage: scan-code
   services:
     - docker:dind
   cache:
