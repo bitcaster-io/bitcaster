@@ -32,4 +32,3 @@ def process_event(occurrence_pk: int) -> int:
             return 0
     except Exception as e:
         logger.exception(e)
-        raise e
