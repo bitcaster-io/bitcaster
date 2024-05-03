@@ -1,16 +1,12 @@
 import logging
 from typing import Any, Dict, Iterable, Optional
 
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import UniqueConstraint
 from django.template import Context, Template
-from django.utils.crypto import get_random_string
-from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from ..dispatchers.base import Capability
-from ..utils.strings import grouper
 from .channel import Channel
 from .event import Event
 from .mixins import ScopedMixin
@@ -21,12 +17,11 @@ logger = logging.getLogger(__name__)
 
 class Message(ScopedMixin, models.Model):
     name = models.CharField(_("Name"), max_length=255)
-    code = models.CharField(_("Code"), max_length=255, unique=True, blank=True)
     channel = models.ForeignKey(
         Channel,
         on_delete=models.CASCADE,
         related_name="messages",
-        help_text=_("If set the message is vaslid only for the selected channel"),
+        help_text=_("Channel for which  the message is valid"),
     )
     event = models.ForeignKey(
         Event,
@@ -67,8 +62,8 @@ class Message(ScopedMixin, models.Model):
 
     def clean(self) -> None:
         super().clean()
-        if self.notification and self.event:
-            raise ValidationError(_("You can't set both notification and event."))
+        if self.notification:
+            self.event = self.notification.event
 
     def save(
         self,
@@ -77,31 +72,27 @@ class Message(ScopedMixin, models.Model):
         using: Optional[str] = None,
         update_fields: Optional[Iterable[str]] = None,
     ) -> None:
-        if not self.code:
-            self.code = f"{slugify(self.name)}-{grouper(get_random_string(20), 4, '')}"
         super().save(force_insert, force_update, using, update_fields)
 
     def support_subject(self) -> bool:
-        return self.channel is None or self.channel.dispatcher.protocol.has_capability(Capability.SUBJECT)
+        return self.channel.dispatcher.protocol.has_capability(Capability.SUBJECT)
 
     def support_html(self) -> bool:
-        return self.channel is None or self.channel.dispatcher.protocol.has_capability(Capability.HTML)
+        return self.channel.dispatcher.protocol.has_capability(Capability.HTML)
 
     def support_text(self) -> bool:
-        return self.channel is None or self.channel.dispatcher.protocol.has_capability(Capability.TEXT)
+        return self.channel.dispatcher.protocol.has_capability(Capability.TEXT)
 
     def render(self, context: Dict[str, Any]) -> str:
         tpl = Template(self.content)
         return tpl.render(Context(context))
 
     def clone(self, channel: Channel) -> "Message":
-        code = f"{slugify(self.name)}-{grouper(get_random_string(10), 4, '')}"
         return Message.objects.get_or_create(
             organization=self.organization,
             event=self.event,
             notification=self.notification,
             channel=channel,
-            code=code,
             content=self.content,
             html_content=self.html_content,
             subject=self.subject,

@@ -44,8 +44,6 @@ class MessageEditForm(forms.ModelForm[Message]):
 
 
 class MessageChangeForm(forms.ModelForm[Message]):
-    notification = forms.ModelChoiceField(queryset=Notification.objects.all(), required=True)
-
     class Meta:
         model = Message
         fields = ("name", "channel", "notification")

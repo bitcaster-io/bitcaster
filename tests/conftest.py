@@ -104,6 +104,23 @@ def defaults(db):
     Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
 
 
+@pytest.fixture(autouse=True)
+def clear_state(db):
+    from bitcaster.state import state
+
+    try:
+        del state.app
+    except AttributeError:
+        pass
+
+
+@pytest.fixture()
+def system_events(admin_user):
+    from bitcaster.constants import Bitcaster
+
+    Bitcaster.initialize(admin_user)
+
+
 def pytest_runtest_setup(item):
     driver = item.config.getoption("--driver") or ""
 

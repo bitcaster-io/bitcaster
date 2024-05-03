@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext as _
 
-from .org import Organization
+from .organization import Organization
 from .user import User
 
 logger = logging.getLogger(__name__)

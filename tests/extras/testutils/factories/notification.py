@@ -12,6 +12,7 @@ class NotificationFactory(AutoRegisterModelFactory):
         model = Notification
         django_get_or_create = ("event", "distribution")
 
+    name = factory.Sequence(lambda n: f"Notification {n}")
     distribution = factory.SubFactory(DistributionListFactory)
     event = factory.SubFactory(EventFactory)
     extra_context = {"extra_field": "extra_value"}

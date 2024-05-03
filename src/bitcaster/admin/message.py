@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -9,9 +9,18 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template import Context, Template
 from django.template.response import TemplateResponse
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from reversion.admin import VersionAdmin
 
-from bitcaster.models import Message, Notification, Occurrence
+from bitcaster.models import (
+    Application,
+    Event,
+    Message,
+    Notification,
+    Occurrence,
+    Organization,
+    Project,
+)
 
 from ..forms.message import MessageChangeForm, MessageCreationForm, MessageEditForm
 from .base import BaseAdmin
@@ -21,16 +30,36 @@ logger = logging.getLogger(__name__)
 
 class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
     search_fields = ("name",)
-    list_display = ("name", "channel", "event", "notification")
+    list_display = ("name", "channel", "scope_level")
     list_filter = (
         ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("channel", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
         ("event", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
+        ("notification", LinkedAutoCompleteFilter.factory(parent="event")),
     )
     autocomplete_fields = ("channel", "event", "notification")
     change_form_template = "admin/message/change_form.html"
     form = MessageChangeForm
     add_form = MessageCreationForm
+
+    def scope_level(self, obj: "Message") -> "Union[Notification, Event, Application, Project, Organization]":
+        if obj.notification:
+            return obj.notification
+        elif obj.event:
+            return obj.event
+        elif obj.application:
+            return obj.application
+        elif obj.project:
+            return obj.project
+        elif obj.organization:
+            return obj.organization
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Message]:
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("channel", "application", "project", "channel__organization", "event", "notification")
+        )
 
     def get_form(self, request: HttpRequest, obj: Optional["Message"] = None, **kwargs: dict[str, Any]) -> forms.Form:
         defaults: dict[str, Any] = {}
@@ -38,9 +67,6 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
             defaults["form"] = self.add_form
         defaults.update(kwargs)
         return super().get_form(request, obj, **defaults)
-
-    def get_queryset(self, request: HttpRequest) -> QuerySet[Message]:
-        return super().get_queryset(request).select_related("channel", "event", "notification")
 
     def get_dummy_source(self, obj: Message) -> tuple[Occurrence, Notification]:
         from bitcaster.models import Event, Notification, Occurrence
@@ -97,3 +123,41 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
             )
         context["form"] = form
         return TemplateResponse(request, "admin/message/edit.html", context)
+
+    @button()
+    def usage(self, request: HttpRequest, pk: str) -> "HttpResponse":
+        context = self.get_common_context(request, pk, title=_("Usage"))
+        msg: "Message" = context["original"]
+        usage = []
+        level = ""
+        if msg.notification:
+            usage.extend([msg.notification])
+            level = str(Notification._meta.verbose_name)
+        elif msg.event:
+            usage.extend(Event.objects.filter(messages=msg))
+            usage.extend(msg.event.notifications.all())
+            level = str(Event._meta.verbose_name)
+        elif msg.application:
+            usage.extend([msg.application])
+            usage.extend(Application.objects.filter(events__messages=msg))
+            usage.extend(Event.objects.filter(application=msg.application))
+            usage.extend(Notification.objects.filter(event__application=msg.application))
+            level = str(Application._meta.verbose_name)
+        elif msg.project:
+            usage.extend([msg.project])
+            usage.extend(Application.objects.filter(events__messages=msg))
+            usage.extend(Event.objects.filter(application=msg.application))
+            usage.extend(Notification.objects.filter(event__application=msg.application))
+
+            level = str(Project._meta.verbose_name)
+        elif msg.organization:
+            usage.extend([msg.organization])
+            usage.extend(Application.objects.filter(events__messages=msg))
+            usage.extend(Event.objects.filter(application=msg.application))
+            usage.extend(Notification.objects.filter(event__application=msg.application))
+
+            level = str(Organization._meta.verbose_name)
+
+        context["usage"] = usage
+        context["level"] = level
+        return TemplateResponse(request, "admin/message/usage.html", context)

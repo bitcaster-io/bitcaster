@@ -1,0 +1,16 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load static i18n %}
+{% block action-content %}
+    <div class="module">
+        <h3>{{ level }}</h3>
+        <table width="100%" id="usage">
+            <tbody>
+            {% for utilizer in usage %}
+                <tr>
+                    <th>{{ utilizer.pk }}</th>
+                    <td><a href="">{{ utilizer }}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -2,6 +2,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from admin_extra_buttons.decorators import button
+from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
@@ -21,11 +22,17 @@ logger = logging.getLogger(__name__)
 
 class NotificationAdmin(BaseAdmin, admin.ModelAdmin[Notification]):
     search_fields = ("name",)
-    list_display = ("name",)
-    # list_filter = (
-    #     ("project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-    #     ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
-    # )
+    list_display = ("name", "event")
+    list_filter = (
+        ("event__application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        (
+            "event__application__project",
+            LinkedAutoCompleteFilter.factory(parent="event__application__project__organization"),
+        ),
+        ("event__application", LinkedAutoCompleteFilter.factory(parent="event__application__project")),
+        ("event", LinkedAutoCompleteFilter.factory(parent="event__application")),
+        # ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
+    )
     autocomplete_fields = ("event", "distribution")
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Notification]:

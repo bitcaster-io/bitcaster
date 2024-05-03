@@ -72,9 +72,6 @@ class Occurrence(models.Model):
         recipients = self.data.get("recipients", [])
         channels = self.event.channels.active()
 
-        # self.status = {"delivered": delivered, "recipients": recipients}
-        # self.save()
-
         for notification in self.event.notifications.all():
             context = notification.get_context(self.get_context())
             for channel in channels:

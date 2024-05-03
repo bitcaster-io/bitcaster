@@ -11,10 +11,10 @@ def test_str(application: "Application"):
 def test_set_owner(project: "Project", user: "User"):
     from bitcaster.models import Application
 
-    a = Application.objects.create(project=project)
+    a = Application.objects.create(name="App1", project=project)
     assert a.owner == project.owner
 
-    a = Application.objects.create(project=project, owner=user)
+    a = Application.objects.create(name="App2", project=project, owner=user)
     assert a.owner == user
 
 

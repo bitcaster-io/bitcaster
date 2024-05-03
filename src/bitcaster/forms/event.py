@@ -1,5 +1,3 @@
-from typing import Any
-
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import AutocompleteSelect
@@ -21,14 +19,14 @@ class EventBaseForm(forms.ModelForm["Event"]):
         model = Event
         exclude = ("config", "locked")
 
-    def clean(self) -> dict[str, Any] | None:
-        super().clean()
-        if not self.instance.pk:
-            if self.cleaned_data.get("application"):
-                self.cleaned_data["project"] = self.cleaned_data["application"].project
-            if self.cleaned_data.get("project"):
-                self.cleaned_data["organization"] = self.cleaned_data["project"].organization
-        return self.cleaned_data
+    # def clean(self) -> dict[str, Any] | None:
+    #     super().clean()
+    # if not self.instance.pk:
+    # if self.cleaned_data.get("application"):
+    #     self.cleaned_data["project"] = self.cleaned_data["application"].project
+    # if self.cleaned_data.get("project"):
+    #     self.cleaned_data["organization"] = self.cleaned_data["project"].organization
+    # return self.cleaned_data
 
 
 class EventAddForm(EventBaseForm):

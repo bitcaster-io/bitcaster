@@ -29,7 +29,6 @@ class Notification(models.Model):
     distribution = models.ForeignKey(
         DistributionList, blank=True, null=True, on_delete=models.CASCADE, related_name="notifications"
     )
-
     payload_filter = models.TextField(blank=True, null=True)
     extra_context = models.JSONField(default=dict)
     objects = NotificationQuerySet.as_manager()
@@ -55,7 +54,7 @@ class Notification(models.Model):
             .exclude(id__in=delivered)
         )
 
-    def notify_to_channel(self, channel: "Channel", validation: Validation, context: dict[str, Any]) -> str:
+    def notify_to_channel(self, channel: "Channel", validation: Validation, context: dict[str, Any]) -> Optional[str]:
         message: Optional["Message"]
 
         dispatcher: "Dispatcher" = channel.dispatcher
@@ -68,7 +67,8 @@ class Notification(models.Model):
                 message=message.render(context),
             )
             dispatcher.send(addr.value, payload)
-        return addr.value
+            return addr.value
+        return None
 
     @classmethod
     def match_filter_impl(cls, filter_rules_dict: "YamlPayload", payload: "YamlPayload") -> bool:
@@ -115,3 +115,15 @@ class Notification(models.Model):
             ret = self.get_messages(channel).first()
             self._cached_messages[channel] = ret
         return self._cached_messages[channel]
+
+    def create_message(self, name: str, channel: "Channel", defaults: Optional[dict[str, Any]] = None) -> "Message":
+        return self.messages.get_or_create(
+            name=name,
+            channel=channel,
+            notification=self,
+            event=self.event,
+            application=self.event.application,
+            project=self.event.application.project,
+            organization=self.event.application.project.organization,
+            defaults=defaults if defaults else {},
+        )[0]

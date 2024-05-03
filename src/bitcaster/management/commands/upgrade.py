@@ -11,7 +11,7 @@ from django.core.validators import validate_email
 from strategy_field.utils import fqn
 
 from bitcaster.config import env
-from bitcaster.constants import Bitcaster, SystemEvent
+from bitcaster.constants import Bitcaster
 from bitcaster.dispatchers import EmailDispatcher
 from bitcaster.models import Channel
 
@@ -95,7 +95,7 @@ class Command(BaseCommand):
         self.admin_email = str(options["admin_email"] or env("ADMIN_EMAIL", ""))
         self.admin_password = str(options["admin_password"] or env("ADMIN_PASSWORD", ""))
 
-    def halt(self, e: Exception) -> None:  # pragma: no cover
+    def halt(self, e: Exception) -> None:
         self.stdout.write(str(e), style_func=self.style.ERROR)
         self.stdout.write("\n\n***", style_func=self.style.ERROR)
         self.stdout.write("SYSTEM HALTED", style_func=self.style.ERROR)
@@ -109,13 +109,7 @@ class Command(BaseCommand):
         from django.contrib.auth.models import Group
 
         from bitcaster.dispatchers.log import BitcasterLogDispatcher
-        from bitcaster.models import (
-            DistributionList,
-            Event,
-            Message,
-            Notification,
-            User,
-        )
+        from bitcaster.models import DistributionList, User
 
         self.get_options(options)
         if self.verbosity >= 1:
@@ -178,6 +172,7 @@ class Command(BaseCommand):
             bitcaster = Bitcaster.initialize(admin)
             prj = bitcaster.project
             os4d = prj.organization
+            dis: DistributionList = prj.distributionlist_set.get(name=DistributionList.ADMINS)
 
             ch_log = Channel.objects.get_or_create(
                 name="BitcasterLog",
@@ -194,58 +189,31 @@ class Command(BaseCommand):
                 dispatcher=fqn(EmailDispatcher),
             )[0]
 
-            dis: DistributionList = DistributionList.objects.get_or_create(
-                name="Bitcaster Admins", project=bitcaster.project
-            )[0]
-            Message.objects.get_or_create(
-                organization=os4d,
-                project=prj,
-                application=bitcaster,
-                channel=ch_mail,
+            bitcaster.create_message(
                 name="Message for channel {name}".format(name=ch_mail.name),
-                code="message-{}".format(ch_mail.name),
-                subject="{{subject}}",
-                content="{{message}}",
-                html_content="{{message}}",
+                channel=ch_mail,
+                defaults={"subject": "{{subject}}", "content": "{{message}}", "html_content": "{{message}}"},
             )
-            for event_name in SystemEvent:
-                ev: "Event" = bitcaster.register_event(event_name.value)
-                ev.channels.add(ch_mail)
-                ev.channels.add(ch_log)
-                n = Notification.objects.get_or_create(
-                    name=f"Notification for {event_name}", event=ev, distribution=dis
-                )[0]
+            for ev in bitcaster.events.all():  # noqa
+                # ev.channels.add(ch_mail)
+                # ev.channels.add(ch_log)
+                n = ev.create_notification(name=f"Notification for {ev.name}", distribution=dis)
                 for ch in [ch_mail, ch_log]:
-                    Message.objects.get_or_create(
-                        organization=os4d,
-                        project=prj,
-                        application=bitcaster,
-                        event=ev,
+                    ev.create_message(
+                        name=f"Message for event {ev.name} using {ch}",
                         channel=ch,
-                        name="Message for event {event_name} using {ch}".format(event_name=event_name, ch=ch.name),
-                        code=f"message-{event_name}-{ch.name}",
-                        subject="{{subject}}",
-                        content="{{message}}",
-                        html_content="{{message}}",
+                        defaults={"subject": "{{subject}}", "content": "{{message}}", "html_content": "{{message}}"},
                     )
-                    Message.objects.get_or_create(
-                        organization=os4d,
-                        project=prj,
-                        application=bitcaster,
-                        notification=n,
+                    n.create_message(
+                        name=f"Message for notification {n.name} using {ch}",
                         channel=ch,
-                        name="Message for notification {} using {}".format(n.name, ch.name),
-                        code=f"message-{os4d.slug}-{n.name}-{ch.name}",
-                        subject="{{subject}}",
-                        content="{{message}}",
-                        html_content="{{message}}",
+                        defaults={"subject": "{{subject}}", "content": "{{message}}", "html_content": "{{message}}"},
                     )
 
-            if admin:
-                echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
-                admin_email = admin.addresses.get_or_create(name="email", value=self.admin_email)[0]
-                v = admin_email.validate_channel(ch_mail)
-                dis.recipients.add(v)
+            echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
+            admin_email = admin.addresses.get_or_create(name="email", defaults={"value": self.admin_email})[0]
+            v = admin_email.validate_channel(ch_mail)
+            dis.recipients.add(v)
 
             from bitcaster.auth.constants import DEFAULT_GROUP_NAME
 

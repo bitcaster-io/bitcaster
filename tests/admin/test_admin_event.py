@@ -52,11 +52,13 @@ def context(django_app_factory, admin_user) -> "Context":
     }
 
 
-# def test_event_subscribe(app, context: "Context") -> None:
-#     url = reverse("admin:bitcaster_event_subscribe", args=[context["event"].pk])
+# def test_event_check(app, context: "Context") -> None:
+#     url = reverse("admin:bitcaster_event_test_event", args=[context["event"].pk])
 #     res = app.get(url)
 #     assert res.status_code == 200, res.location
 #     assert (form := res.forms.get("subscribe-form")), "Should have subscribe-form"
+#
+#
 #     form["form-0-address"] = context["address"].pk
 #     res = form.submit().follow()
 #     assert res.status_code == 200, res.location

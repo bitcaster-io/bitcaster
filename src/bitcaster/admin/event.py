@@ -1,21 +1,17 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, Optional, Sequence
 
-from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django import forms
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.template.response import TemplateResponse
-from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.http import HttpRequest
 
 from bitcaster.models import Event
 
 from ..forms.event import EventChangeForm
 from ..state import state
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin
 from .message import Message
 from .mixins import LockMixin, TwoStepCreateMixin
 
@@ -73,8 +69,6 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
         return ["locked"]
 
     def get_fields(self, request: HttpRequest, obj: Optional[Event] = None) -> Sequence[str | Sequence[str]]:
-        if self.fields:
-            return self.fields
         form = self._get_form_for_get_fields(request, obj)
         return [*self.get_readonly_fields(request, obj), *form.base_fields]
 
@@ -84,18 +78,20 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
         else:
             return ["locked"]
 
-    @button(
-        visible=lambda s: s.context["original"].channels.exists(),
-        html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
-    )
-    def test_event(self, request: HttpRequest, pk: str) -> "Union[HttpResponseRedirect, HttpResponse]":
-        obj = self.get_object(request, pk)
-        context = self.get_common_context(request, pk, title=_(f"Test event {obj}"))
-        if request.method == "POST":
-            context["test_form"] = EventTestForm(request.POST)
-            url = reverse("admin:bitcaster_event_change", args=[obj.id])
-            messages.success(request, _(f"Test for event {obj} successful"))
-            return HttpResponseRedirect(url)
-        else:
-            context["test_form"] = EventTestForm()
-        return TemplateResponse(request, "admin/event/test_event.html", context)
+    # @button(
+    #     visible=lambda s: s.context["original"].channels.exists(),
+    #     html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
+    # )
+    # def test_event(self, request: HttpRequest, pk: str) -> "Union[HttpResponseRedirect, HttpResponse]":
+    #     obj = self.get_object(request, pk)
+    #     context = self.get_common_context(request, pk, title=_(f"Test event {obj}"))
+    #     if request.method == "POST":
+    #         form = EventTestForm(request.POST)
+    #         if form.is_valid():
+    #             url = reverse("admin:bitcaster_event_change", args=[obj.id])
+    #             messages.success(request, _(f"Test for event {obj} successful"))
+    #             return HttpResponseRedirect(url)
+    #     else:
+    #         form = EventTestForm()
+    #     context["test_form"] = form
+    #     return TemplateResponse(request, "admin/event/test_event.html", context)

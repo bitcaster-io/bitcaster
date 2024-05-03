@@ -3,13 +3,14 @@ import logging
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from .org import Project
+from .project import Project
 from .validation import Validation
 
 logger = logging.getLogger(__name__)
 
 
 class DistributionList(models.Model):
+    ADMINS = "Bitcaster Admins"
     name = models.CharField(max_length=255, db_collation="case_insensitive")
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     recipients = models.ManyToManyField(Validation)

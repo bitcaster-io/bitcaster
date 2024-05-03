@@ -11,8 +11,8 @@ def test_str(project: "Project"):
 def test_set_owner(organization: "Organization", user: "User"):
     from bitcaster.models import Project
 
-    p = Project.objects.create(organization=organization)
+    p = Project.objects.create(name="Prj1", organization=organization)
     assert p.owner == organization.owner
 
-    p = Project.objects.create(organization=organization, owner=user)
+    p = Project.objects.create(name="Prj2", organization=organization, owner=user)
     assert p.owner == user

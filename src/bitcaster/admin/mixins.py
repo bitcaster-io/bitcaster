@@ -2,10 +2,8 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.decorators import button
 from django.contrib import admin, messages
-from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from .base import ButtonColor
@@ -63,22 +61,22 @@ class LockMixin(admin.ModelAdmin["AnyModel"]):
         return TemplateResponse(request, "admin/channel/lock.html", context)
 
 
-class CloneMixin(admin.ModelAdmin["AnyModel"]):
-
-    @button(
-        label=_("Clone"),
-        html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
-    )
-    def clone(self, request: "HttpRequest", pk: str) -> "HttpResponse":
-        obj: "AnyModel|None" = self.get_object(request, pk)
-        obj.pk = None
-        if hasattr(obj, "name"):
-            obj.name = f"Clone of {obj.name}"
-        obj.save()
-        from django.utils.safestring import SafeString
-
-        url = reverse(admin_urlname(obj._meta, SafeString("change")), args=(obj.pk,))
-        return HttpResponseRedirect(url)
+# class CloneMixin(admin.ModelAdmin["AnyModel"]):
+#
+#     @button(
+#         label=_("Clone"),
+#         html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
+#     )
+#     def clone(self, request: "HttpRequest", pk: str) -> "HttpResponse":
+#         obj: "AnyModel|None" = self.get_object(request, pk)
+#         obj.pk = None
+#         if hasattr(obj, "name"):
+#             obj.name = f"Clone of {obj.name}"
+#         obj.save()
+#         from django.utils.safestring import SafeString
+#
+#         url = reverse(admin_urlname(obj._meta, SafeString("change")), args=(obj.pk,))
+#         return HttpResponseRedirect(url)
 
 
 class TwoStepCreateMixin(admin.ModelAdmin["AnyModel"]):

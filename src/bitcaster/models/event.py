@@ -3,14 +3,15 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 from django.db import models
 from django.utils.translation import gettext as _
 
+from .application import Application
 from .channel import Channel
 from .mixins import SlugMixin
-from .org import Application
+from .notification import Notification
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from bitcaster.models import Message, Occurrence
+    from bitcaster.models import DistributionList, Message, Occurrence
 
 
 class Event(SlugMixin, models.Model):
@@ -40,3 +41,22 @@ class Event(SlugMixin, models.Model):
         if cid:
             cid = str(cid)
         return Occurrence.objects.create(event=self, context=context, correlation_id=cid)
+
+    def create_message(self, name: str, channel: Channel, defaults: Optional[dict[str, Any]] = None) -> "Message":
+        return self.messages.get_or_create(
+            name=name,
+            channel=channel,
+            notification=None,
+            event=self,
+            application=self.application,
+            project=self.application.project,
+            organization=self.application.project.organization,
+            defaults=defaults if defaults else {},
+        )[0]
+
+    def create_notification(
+        self, name: str, defaults: Optional[dict[str, Any]] = None, distribution: "Optional[DistributionList]" = None
+    ) -> "Notification":
+        return Notification.objects.get_or_create(
+            name=name, event=self, defaults=defaults if defaults else {}, distribution=distribution
+        )[0]

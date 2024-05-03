@@ -1,5 +1,3 @@
-from django.db.models import Model
-from django.utils.functional import cached_property
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.serializers import HyperlinkedModelSerializer, ModelSerializer
@@ -19,16 +17,16 @@ class SelecteOrganizationSerializer(serializers.ModelSerializer):
     # co_key = "parent_lookup_organization__slug"
     organization = serializers.SerializerMethodField()
 
-    @cached_property
-    def selected_organization(self) -> Organization:
-        kwargs = self.context["view"].kwargs
-        co_slug: str = kwargs[self.co_key]
-        return Organization.objects.get(slug=co_slug)
-
-    def get_organization(self, obj: Model) -> str:
-        return self.context["request"].build_absolute_uri(
-            reverse("api:organization-detail", args=[self.selected_organization.slug])
-        )
+    # @cached_property
+    # def selected_organization(self) -> Organization:
+    #     kwargs = self.context["view"].kwargs
+    #     co_slug: str = kwargs[self.co_key]
+    #     return Organization.objects.get(slug=co_slug)
+    #
+    # def get_organization(self, obj: Model) -> str:
+    #     return self.context["request"].build_absolute_uri(
+    #         reverse("api:organization-detail", args=[self.selected_organization.slug])
+    #     )
 
 
 class OrganizationSerializer(serializers.ModelSerializer):

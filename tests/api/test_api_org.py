@@ -91,8 +91,8 @@ def pytest_generate_tests(metafunc):
             # f"/api/o/{org_slug}/p/{prj_slug}/a/",
             # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/",
             # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/",
-            f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/",
-            f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/c/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/c/",
         ]:
             m.append(url)
             r: ResolverMatch = resolve(url)

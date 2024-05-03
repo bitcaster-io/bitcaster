@@ -1,55 +1,20 @@
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
 from .mixins import SlugMixin
+from .project import Project
 from .user import User
 
 if TYPE_CHECKING:
-    from bitcaster.models import Event
+    from bitcaster.models import Channel, Event, Message, Occurrence, Organization
 
 logger = logging.getLogger(__name__)
-
-
-class Organization(SlugMixin, models.Model):
-    from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
-    subject_prefix = models.CharField(
-        verbose_name=_("Subject Prefix"),
-        max_length=50,
-        default="[Bitcaster] ",
-        help_text=_("Default prefix for messages supporting subject"),
-    )
-    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT)
-
-    class Meta:
-        ordering = ("name",)
-
-
-class Project(SlugMixin, models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="projects")
-    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
-    locked = models.BooleanField(default=False, help_text=_("Security lock of project"))
-    from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
-    subject_prefix = models.CharField(
-        verbose_name=_("Subject Prefix"),
-        max_length=50,
-        default="[Bitcaster] ",
-        help_text=_("Default prefix for messages supporting subject"),
-    )
-
-    class Meta:
-        ordering = ("name",)
-
-    def save(self, *args: Any, **kwargs: Any) -> None:
-        try:
-            self.owner
-        except User.DoesNotExist:
-            self.owner = self.organization.owner
-        super().save(*args, **kwargs)
 
 
 class ApplicationManager(models.Manager["Application"]):
@@ -75,9 +40,10 @@ class Application(SlugMixin, models.Model):
 
     class Meta:
         ordering = ("name",)
+        unique_together = (("name", "project"),)
 
     @cached_property
-    def organization(self) -> Organization:
+    def organization(self) -> "Organization":
         return self.project.organization
 
     def save(self, *args: Any, **kwargs: Any) -> None:
@@ -92,3 +58,21 @@ class Application(SlugMixin, models.Model):
 
         ev: "Event" = self.events.get_or_create(name=name, description=description, active=False)[0]
         return ev
+
+    def trigger_event(self, name: str, context: dict[str, Any], correlation_id: Optional[Any] = None) -> "Occurrence":
+        try:
+            return self.events.get(name=name).trigger(context, correlation_id)
+        except ObjectDoesNotExist as e:
+            logger.exception(e)
+
+    def create_message(self, name: str, channel: "Channel", defaults: Optional[dict[str, Any]] = None) -> "Message":
+        return self.message_set.get_or_create(
+            name=name,
+            channel=channel,
+            notification=None,
+            event=None,
+            application=self,
+            project=self.project,
+            organization=self.project.organization,
+            defaults=defaults if defaults else {},
+        )[0]

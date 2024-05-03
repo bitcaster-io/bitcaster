@@ -18,10 +18,9 @@ not_set = object()
 class State(local):
     request: "AnyRequest|None" = None
     cookies: Dict[str, List[Any]] = {}
-    # app: "Application" = None
 
     def __repr__(self) -> str:
-        return f"<State {id(self)} - {self.timestamp}>"
+        return f"<State {id(self)}>"
 
     def add_cookie(
         self,
@@ -42,7 +41,7 @@ class State(local):
     def app(self) -> "Application":
         from bitcaster.models import Application
 
-        return Application.objects.get(
+        return Application.objects.select_related("project__organization", "project").get(
             name=Bitcaster.APPLICATION,
             project__name=Bitcaster.PROJECT,
             project__organization__name=Bitcaster.ORGANIZATION,

@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from unittest.mock import Mock
 
 from testutils.factories import NotificationFactory
 from testutils.factories.channel import ChannelFactory
@@ -35,3 +36,13 @@ def test_get_message_precedence(event: "Event", django_assert_num_queries):
 
         assert n2.get_message(ch1) == m2
         assert n2.get_message(ch1) == m2
+
+
+def test_missing_message(event, monkeypatch):
+    ch1 = ChannelFactory()
+    n1: "Notification" = NotificationFactory(event=event)
+    monkeypatch.setattr(ch1.dispatcher, "send", mocked_notify := Mock())
+
+    ret = n1.notify_to_channel(ch1, Mock(), {})
+    assert ret is None
+    assert mocked_notify.call_count == 0

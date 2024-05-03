@@ -14,7 +14,12 @@ class Bitcaster:
 
     @staticmethod
     def initialize(admin: "User") -> "Application":
-        from bitcaster.models import Application, Organization, Project
+        from bitcaster.models import (
+            Application,
+            DistributionList,
+            Organization,
+            Project,
+        )
 
         os4d = Organization.objects.get_or_create(name=Bitcaster.ORGANIZATION, owner=admin)[0]
         prj = Project.objects.get_or_create(name=Bitcaster.PROJECT, organization=os4d, owner=os4d.owner)[0]
@@ -23,7 +28,19 @@ class Bitcaster:
         for event_name in SystemEvent:
             app.register_event(event_name.value)
 
+        DistributionList.objects.get_or_create(name=DistributionList.ADMINS, project=prj)
         return app
+
+    #
+    #
+    # @classmethod
+    # @property
+    # @functools.cache
+    # def admins(cls: "Type[Bitcaster]") -> "DistributionList":
+    #     from bitcaster.models import DistributionList
+    #     from bitcaster.state import state
+    #
+    #     return DistributionList.objects.get_or_create(name="Bitcaster Admins", project=state.app.project)[0]
 
 
 class AddressType(models.TextChoices):

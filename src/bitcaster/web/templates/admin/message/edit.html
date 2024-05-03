@@ -15,12 +15,12 @@
     '{{ original.channel|default_if_none:"any" }}' channel</h3>
     {% csrf_token %}
     <div class="menubar">
-        <button id="btn_content" class="button" data-panel="#tab_content" type="button">{% translate 'Text' %}</button>
+        <button id="btn_content" class="button" data-content-type="text/plain" data-panel="#tab_content" type="button">{% translate 'Text' %}</button>
         {% if original.support_subject %}
-            <button id="btn_subject" class="button" data-panel="#tab_subject" type="button">{% translate 'Subject' %}</button>
+            <button id="btn_subject" class="button" data-content-type="text/plain" data-panel="#tab_subject" type="button">{% translate 'Subject' %}</button>
         {% endif %}
         {% if original.support_html %}
-            <button id="btn_html" class="button primary" data-panel="#tab_html" type="button">HTML</button>
+            <button id="btn_html" class="button primary" data-content-type="text/html" data-panel="#tab_html" type="button">HTML</button>
         {% endif %}
         <button id="btn_context" class="button" data-panel="#tab_context" type="button">{% translate 'Context' %}</button>
     </div>
@@ -28,9 +28,9 @@
     <table>
         <tr>
             <td>
-                <div id="tab_subject" class="tab" data-content-type="text/plain">{{ form.subject }}</div>
-                <div id="tab_content" class="tab" data-content-type="text/plain">{{ form.content }}</div>
-                <div id="tab_html" class="tab" data-content-type="text/html">{{ form.html_content }}</div>
+                <div id="tab_subject" class="tab">{{ form.subject }}</div>
+                <div id="tab_content" class="tab">{{ form.content }}</div>
+                <div id="tab_html" class="tab" >{{ form.html_content }}</div>
                 <div id="tab_context" class="tab">{{ form.context }}</div>
             </td>
             <td>

@@ -49,7 +49,7 @@ def context(admin_user) -> "Context":
     MessageFactory(channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}")
 
     Bitcaster.initialize(admin_user)
-    occurrence = OccurrenceFactory(event=no.event)
+    occurrence = OccurrenceFactory(event=no.event, attempts=3)
     return {
         "occurrence": occurrence,
         "address": v1.address,
@@ -60,7 +60,7 @@ def context(admin_user) -> "Context":
 
 
 def test_process_event_single(context: "Context", messagebox):
-    from testutils.factories import OccurrenceFactory
+    from bitcaster.models import Occurrence
 
     occurrence = context["occurrence"]
     v1, v2 = context["validations"]
@@ -74,7 +74,7 @@ def test_process_event_single(context: "Context", messagebox):
         (v2.address.value, f"Message for {event.name} on channel {ch.name}"),
     ]
     occurrence.refresh_from_db()
-    assert occurrence.status == OccurrenceFactory._meta.model.Status.PROCESSED
+    assert occurrence.status == Occurrence.Status.PROCESSED
     assert occurrence.data == {
         "delivered": [v1.id, v2.id],
         "recipients": [[v1.address.value, "test"], [v2.address.value, "test"]],
@@ -82,7 +82,7 @@ def test_process_event_single(context: "Context", messagebox):
 
 
 def test_process_incomplete_event(context: "Context", messagebox):
-    from testutils.factories import OccurrenceFactory
+    from bitcaster.models import Occurrence
 
     occurrence = context["occurrence"]
     v1, v2 = context["validations"]
@@ -94,12 +94,12 @@ def test_process_incomplete_event(context: "Context", messagebox):
     assert messagebox == []
 
     occurrence.refresh_from_db()
-    assert occurrence.status == OccurrenceFactory._meta.model.Status.PROCESSED
+    assert occurrence.status == Occurrence.Status.PROCESSED
     assert occurrence.data == {"delivered": [v1.id, v2.id]}
 
 
 def test_process_event_partially(context: "Context", monkeypatch):
-    from testutils.factories import OccurrenceFactory
+    from bitcaster.models import Occurrence
 
     occurrence: Occurrence = context["occurrence"]
 
@@ -111,7 +111,7 @@ def test_process_event_partially(context: "Context", monkeypatch):
     process_event(occurrence.pk)
 
     occurrence.refresh_from_db()
-    assert occurrence.status == OccurrenceFactory._meta.model.Status.NEW
+    assert occurrence.status == Occurrence.Status.NEW
     assert mocked_notify.call_count == 2
     assert occurrence.data == {
         "delivered": [context["validations"][0].id],
@@ -120,7 +120,7 @@ def test_process_event_partially(context: "Context", monkeypatch):
 
 
 def test_process_event_resume(context: "Context", monkeypatch):
-    from testutils.factories import OccurrenceFactory
+    from bitcaster.models import Occurrence
 
     occurrence = context["occurrence"]
     v1, v2 = context["validations"]
@@ -133,7 +133,7 @@ def test_process_event_resume(context: "Context", monkeypatch):
     process_event(occurrence.pk)
 
     occurrence.refresh_from_db()
-    assert occurrence.status == OccurrenceFactory._meta.model.Status.PROCESSED
+    assert occurrence.status == Occurrence.Status.PROCESSED
     assert mocked_notify.call_count == 1
     assert occurrence.data == {
         "delivered": [v1.id, v2.id],
@@ -142,7 +142,7 @@ def test_process_event_resume(context: "Context", monkeypatch):
 
 
 def test_silent_event(context: "Context", monkeypatch):
-    from testutils.factories import OccurrenceFactory
+    from bitcaster.models import Occurrence
 
     cid = uuid.uuid4()
     e = context["silent_event"]
@@ -155,18 +155,58 @@ def test_silent_event(context: "Context", monkeypatch):
     process_event(o.pk)
 
     o.refresh_from_db()
-    assert o.status == OccurrenceFactory._meta.model.Status.PROCESSED
+    assert o.status == Occurrence.Status.PROCESSED
     assert o.data == {}
     assert o.__class__.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
     assert o.__class__.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
 
 
 def test_attempts(context: "Context", monkeypatch):
-    from testutils.factories import OccurrenceFactory
+    from testutils.factories import Occurrence, OccurrenceFactory
 
-    o = OccurrenceFactory(attempts=0, status=OccurrenceFactory._meta.model.Status.PROCESSED)
+    o = OccurrenceFactory(attempts=0, status=Occurrence.Status.PROCESSED)
     process_event(o.pk)
 
     o.refresh_from_db()
-    assert o.status == OccurrenceFactory._meta.model.Status.PROCESSED
+    assert o.status == Occurrence.Status.PROCESSED
     assert o.data == {}
+
+
+def test_retry(context: "Context", monkeypatch, system_events):
+    from testutils.factories import Occurrence
+
+    o = context["occurrence"]
+    v1 = context["validations"][0]
+
+    monkeypatch.setattr(
+        "bitcaster.models.notification.Notification.notify_to_channel",
+        mocked_notify := Mock(side_effect=[None, Exception("This is raised after first call")]),
+    )
+    for a in range(10):
+        process_event(o.pk)
+    o.refresh_from_db()
+    assert o.attempts == 0
+    assert o.status == Occurrence.Status.FAILED
+    assert mocked_notify.call_count == 4
+    assert o.data == {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]]}
+
+
+def test_error(context: "Context", system_events):
+    from testutils.factories import Occurrence, OccurrenceFactory
+
+    o = OccurrenceFactory(attempts=0, status=Occurrence.Status.NEW)
+    process_event(o.pk)
+
+    o.refresh_from_db()
+    assert o.status == Occurrence.Status.FAILED
+    assert o.data == {}
+
+
+def test_processed(context: "Context", monkeypatch, system_events):
+    from testutils.factories import Occurrence, OccurrenceFactory
+
+    monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())
+
+    o = OccurrenceFactory(status=Occurrence.Status.PROCESSED)
+    process_event(o.pk)
+    assert mocked_notify.call_count == 0

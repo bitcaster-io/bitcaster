@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django.contrib import admin
@@ -25,3 +26,8 @@ class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], adm
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[DistributionList]:
         return super().get_queryset(request).select_related("project__organization")
+
+    def has_delete_permission(self, request: HttpRequest, obj: Optional[DistributionList] = None) -> bool:
+        if obj and obj.name == DistributionList.ADMINS:
+            return False
+        return super().has_delete_permission(request, obj)

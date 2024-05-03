@@ -23,10 +23,10 @@ def process_event(occurrence_pk: int) -> None:
                 o.recipients = len(o.data.get("delivered", []))
                 o.save()
                 if o.recipients == 0:
-                    state.app.events.get(name=SystemEvent.OCCURRENCE_SILENCE.value).trigger(o.context, o.correlation_id)
+                    state.app.trigger_event(SystemEvent.OCCURRENCE_SILENCE.value, o.context, o.correlation_id)
             except Exception as e:
                 logger.exception(e)
     elif o.attempts == 0 and o.status == Occurrence.Status.NEW:
         o.status = Occurrence.Status.FAILED
         o.save()
-        state.app.events.get(name=SystemEvent.OCCURRENCE_ERROR.value).trigger(o.context, o.correlation_id)
+        state.app.trigger_event(SystemEvent.OCCURRENCE_ERROR.value, o.context, o.correlation_id)

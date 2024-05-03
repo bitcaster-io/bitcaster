@@ -2,7 +2,9 @@
 {% block action-content %}
     <form method="post" id="test-form">
         {% csrf_token %}
-{#        {{ form }}#}
+        <table>
+            {{ test_form.as_table }}
+        </table>
         <input type="submit" value="Test">
     </form>
 {% endblock %}

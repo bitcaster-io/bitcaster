@@ -29,17 +29,19 @@ function replaceIframeContent(newHTML) {
 }
 
 function send() {
+    var selected = ACTIVE.attr("id");
     var content = "";
     var context = $context.val();
-    if (ACTIVE === "#tab_html"){
+    if (selected === "btn_html"){
         content = tinymce.activeEditor.getContent("id_html_content");
-    }else if (ACTIVE === "#tab_subject"){
+    }else if (selected === "btn_subject"){
         content = $subject.val()
-    }else if (ACTIVE === "#tab_content"){
+    }else if (selected === "btn_content"){
         content = $content.val()
     }else{
         return
     }
+
     django.jQuery.post(render_url, {
             "content_type": $(ACTIVE).data("content-type"),
             "content": content,
@@ -64,8 +66,8 @@ $content.on("keyup", function () {
 })
 $(".button").on("click", function(e){
     $(".tab").hide();
-    ACTIVE = $(this).data("panel");
-    $(ACTIVE).show();
+    ACTIVE = $(this);
+    $($(ACTIVE).data("panel")).show();
     send();
 })
 function setupTinyMCE(ed) {
