@@ -300,7 +300,7 @@ test:
       --cov-report=html
       --cov-report=xml
       --cov-report=term:skip-covered
-    - curl -Os https://cli.codecov.io/latest/linux/codecov
+    - pip install codecov
     - chmod +x codecov
     - ./codecov upload-process -t $CODECOV_TOKEN
   after_script:
