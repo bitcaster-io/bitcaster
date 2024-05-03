@@ -1,3 +1,4 @@
+import os
 import uuid
 from typing import TYPE_CHECKING, TypedDict
 from unittest.mock import Mock
@@ -218,6 +219,7 @@ def celery_config():
 
 
 @pytest.mark.celery()
+@pytest.mark.skipif(os.getenv("GITLAB_CI") is None, reason="Do not run on GitLab CI")
 def test_live(db, context: "Context", monkeypatch, system_events, celery_app, celery_worker):
     o = context["occurrence"]
     assert process_event.delay(o.pk).get(timeout=10) == 2
