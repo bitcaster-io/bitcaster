@@ -53,9 +53,14 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     def has_add_permission(self, request: HttpRequest) -> bool:
         return Organization.objects.count() < 2
 
+    def has_delete_permission(self, request: HttpRequest, obj: Optional[Organization] = None) -> bool:
+        if obj and obj.name == Bitcaster.ORGANIZATION:
+            return False
+        return super().has_delete_permission(request, obj)
+
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Organization] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
-        if obj and obj.name.lower() == Bitcaster.ORGANIZATION:
+        if obj and obj.name == Bitcaster.ORGANIZATION:
             base.extend(["name", "slug"])
         return base
 

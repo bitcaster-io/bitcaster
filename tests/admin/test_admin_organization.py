@@ -2,6 +2,9 @@ from typing import TYPE_CHECKING, TypedDict
 
 import pytest
 from django.urls import reverse
+from testutils.factories import OrganizationFactory
+
+from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
     from bitcaster.models import Channel, Event, Message, Notification, Organization
@@ -78,3 +81,13 @@ def test_avoid_duplicates_template(app, context) -> None:
     assert res.status_code == 400
 
     assert org.message_set.filter(name=message.name).count() == 1
+
+
+def test_protected_org(app) -> None:
+    dl = OrganizationFactory(name=Bitcaster.ORGANIZATION)
+    url = reverse("admin:bitcaster_organization_change", args=[dl.pk])
+    res = app.get(url)
+    frm = res.forms["organization_form"]
+
+    assert "name" not in frm.fields
+    assert not res.pyquery("a.deletelink")
