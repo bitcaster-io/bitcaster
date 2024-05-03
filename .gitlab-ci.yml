@@ -291,7 +291,6 @@ test:
       echo "Tag      ${DOCKER_IMAGE_TAG}"
     - pytest tests/
       -ra
-      -n auto
       --maxfail 10
       --migrations
       --create-db
