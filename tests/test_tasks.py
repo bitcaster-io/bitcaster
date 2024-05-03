@@ -210,3 +210,14 @@ def test_processed(context: "Context", monkeypatch, system_events):
     o = OccurrenceFactory(status=Occurrence.Status.PROCESSED)
     process_event(o.pk)
     assert mocked_notify.call_count == 0
+
+
+@pytest.fixture(scope="session")
+def celery_config():
+    return {"broker_url": "memory://"}
+
+
+@pytest.mark.celery()
+def test_live(db, context: "Context", monkeypatch, system_events, celery_app, celery_worker):
+    o = context["occurrence"]
+    assert process_event.delay(o.pk).get(timeout=10) == 2
