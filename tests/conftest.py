@@ -190,6 +190,13 @@ def application(db):
 
 
 @pytest.fixture()
+def distributionlist(db):
+    from testutils.factories.distribution import DistributionList
+
+    return DistributionList()
+
+
+@pytest.fixture()
 def event(db):
     from testutils.factories.event import EventFactory
 
