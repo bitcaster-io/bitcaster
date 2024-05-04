@@ -8,12 +8,10 @@ from bitcaster.models import Application, Channel, Event
 class EventBaseForm(forms.ModelForm["Event"]):
     application = forms.ModelChoiceField(
         queryset=Application.objects.all(),
-        required=False,
+        required=True,
         widget=AutocompleteSelect(Channel._meta.get_field("application"), admin.site),
     )
-    slug = forms.SlugField(
-        required=False,
-    )
+    slug = forms.SlugField(required=False)
 
     class Meta:
         model = Event

@@ -128,7 +128,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
     def usage(self, request: HttpRequest, pk: str) -> "HttpResponse":
         context = self.get_common_context(request, pk, title=_("Usage"))
         msg: "Message" = context["original"]
-        usage = []
+        usage: list[Any] = []
         level = ""
         if msg.notification:
             usage.extend([msg.notification])

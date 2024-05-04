@@ -7,6 +7,8 @@ from django.http import HttpRequest
 
 from bitcaster.models import Project
 
+from ..constants import Bitcaster
+from ..forms.project import ProjectChangeForm
 from ..state import state
 from .base import BaseAdmin
 from .mixins import LockMixin
@@ -24,12 +26,18 @@ class ProjectAdmin(BaseAdmin, LockMixin[Project], admin.ModelAdmin[Project]):
     list_filter = (("organization", AutoCompleteFilter),)
     autocomplete_fields = ("organization",)
     exclude = ("locked",)
+    form = ProjectChangeForm
 
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Project] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
-        if obj and obj.name.lower() == "bitcaster":
+        if obj and obj.organization.name == Bitcaster.ORGANIZATION:
             base.extend(["name", "slug", "organization"])
         return base
+
+    def has_delete_permission(self, request: HttpRequest, obj: Optional[Project] = None) -> bool:
+        if obj and obj.organization.name == Bitcaster.ORGANIZATION:
+            return False
+        return super().has_delete_permission(request, obj)
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {

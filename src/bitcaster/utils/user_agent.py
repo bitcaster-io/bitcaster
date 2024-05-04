@@ -1,14 +1,15 @@
 import hashlib
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.conf import settings
-from django.core.cache import caches
+from django.core.cache import BaseCache, caches
 from user_agents.parsers import UserAgent
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AnyRequest
 
 USER_AGENTS_CACHE = getattr(settings, "USER_AGENTS_CACHE", "default")
+cache: Optional[BaseCache]
 
 if USER_AGENTS_CACHE:
     cache = caches[USER_AGENTS_CACHE]

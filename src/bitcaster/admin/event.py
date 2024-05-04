@@ -50,12 +50,9 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
     )
     autocomplete_fields = ("application",)
     filter_horizontal = ("channels",)
-    # inlines = [MessageInline]
     form = EventChangeForm
-    # add_form = EventAddForm
     save_as_continue = False
     save_as = False
-    # change_form_template = None
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
         return super().get_queryset(request).select_related("application__project__organization")
@@ -64,9 +61,9 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
         return {"application": state.get_cookie("application")}
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[Event]" = None) -> "_ListOrTuple[str]":
-        #     if request.user.has_perm("bitcaster.lock_system"):
-        #         return ["application", "slug", "name"]
-        return ["locked"]
+        if obj and obj.pk:
+            return ["application", "slug", "name"]
+        return []
 
     def get_fields(self, request: HttpRequest, obj: Optional[Event] = None) -> Sequence[str | Sequence[str]]:
         form = self._get_form_for_get_fields(request, obj)
@@ -77,21 +74,3 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
             return ["channels", "locked"]
         else:
             return ["locked"]
-
-    # @button(
-    #     visible=lambda s: s.context["original"].channels.exists(),
-    #     html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
-    # )
-    # def test_event(self, request: HttpRequest, pk: str) -> "Union[HttpResponseRedirect, HttpResponse]":
-    #     obj = self.get_object(request, pk)
-    #     context = self.get_common_context(request, pk, title=_(f"Test event {obj}"))
-    #     if request.method == "POST":
-    #         form = EventTestForm(request.POST)
-    #         if form.is_valid():
-    #             url = reverse("admin:bitcaster_event_change", args=[obj.id])
-    #             messages.success(request, _(f"Test for event {obj} successful"))
-    #             return HttpResponseRedirect(url)
-    #     else:
-    #         form = EventTestForm()
-    #     context["test_form"] = form
-    #     return TemplateResponse(request, "admin/event/test_event.html", context)

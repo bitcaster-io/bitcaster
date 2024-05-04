@@ -66,7 +66,10 @@ class ApiKeyManager(models.Manager["ApiKey"]):
         return super().get_or_create(defaults, **kwargs)
 
     def update_or_create(
-        self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any
+        self,
+        defaults: MutableMapping[str, Any] | None = None,
+        create_defaults: MutableMapping[str, Any] | None = None,
+        **kwargs: Any,
     ) -> "tuple[ApiKey, bool]":
         if kwargs and kwargs.get("application"):
             kwargs["project"] = kwargs["application"].project

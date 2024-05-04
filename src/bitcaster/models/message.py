@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict
 
 from django.db import models
 from django.db.models import UniqueConstraint
@@ -64,15 +64,6 @@ class Message(ScopedMixin, models.Model):
         super().clean()
         if self.notification:
             self.event = self.notification.event
-
-    def save(
-        self,
-        force_insert: bool = False,
-        force_update: bool = False,
-        using: Optional[str] = None,
-        update_fields: Optional[Iterable[str]] = None,
-    ) -> None:
-        super().save(force_insert, force_update, using, update_fields)
 
     def support_subject(self) -> bool:
         return self.channel.dispatcher.protocol.has_capability(Capability.SUBJECT)

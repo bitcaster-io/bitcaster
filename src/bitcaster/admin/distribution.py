@@ -16,8 +16,6 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
-    from bitcaster.models import Event
-
 
 class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], admin.ModelAdmin[DistributionList]):
     search_fields = ("name",)
@@ -32,7 +30,9 @@ class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], adm
     def get_queryset(self, request: HttpRequest) -> QuerySet[DistributionList]:
         return super().get_queryset(request).select_related("project__organization")
 
-    def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[Event]" = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(
+        self, request: "HttpRequest", obj: "Optional[DistributionList]" = None
+    ) -> "_ListOrTuple[str]":
         if obj and obj.name == DistributionList.ADMINS:
             return ["name", "project"]
         return []

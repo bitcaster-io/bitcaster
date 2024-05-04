@@ -2,6 +2,7 @@ from typing import Any, Iterable, Optional, Protocol
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models.base import ModelBase
 from django.utils.text import slugify
 
 
@@ -53,7 +54,7 @@ class ScopedMixin(models.Model):
 
     def save(
         self,
-        force_insert: bool = False,
+        force_insert: bool | tuple[ModelBase, ...] = False,
         force_update: bool = False,
         using: Optional[str] = None,
         update_fields: Optional[Iterable[str]] = None,

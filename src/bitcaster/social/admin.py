@@ -26,7 +26,7 @@ class SocialProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin[SocialProvider]):
     )
     change_form_template = None
 
-    def formfield_for_dbfield(self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any) -> FormField | None:
+    def formfield_for_dbfield(self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any) -> FormField:
         formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
         if isinstance(db_field, models.JSONField):
             formfield.widget = SvelteJSONEditorWidget(

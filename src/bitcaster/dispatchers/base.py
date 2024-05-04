@@ -99,7 +99,7 @@ class Dispatcher(metaclass=DispatcherMeta):
         self.channel = channel
 
     @cached_property
-    def capabilities(self):
+    def capabilities(self) -> list[Capability]:
         return ProtocolCapabilities[self.protocol]
 
     def get_connection(self) -> "DispatcherHandler":

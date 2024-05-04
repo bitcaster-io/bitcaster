@@ -1,6 +1,8 @@
 import pytest
 from django.urls import reverse
 
+from bitcaster.constants import Bitcaster
+
 
 @pytest.fixture()
 def app(django_app_factory, db):
@@ -24,7 +26,15 @@ def project(db):
 def bitcaster(db):
     from testutils.factories import ProjectFactory
 
-    return ProjectFactory(name="bitcaster")
+    return ProjectFactory(name=Bitcaster.PROJECT, organization__name=Bitcaster.ORGANIZATION)
+
+
+@pytest.fixture()
+def organization(db):
+
+    from testutils.factories.org import OrganizationFactory
+
+    return OrganizationFactory()
 
 
 def test_get_readonly_fields(app, project, bitcaster) -> None:
