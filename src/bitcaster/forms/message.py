@@ -84,3 +84,21 @@ class OrgTemplateCreateForm(forms.Form):
         if self.organization.message_set.filter(name__iexact=name).exists():
             raise ValidationError(_("This name is already in use."))
         return name
+
+
+class NotificationTemplateCreateForm(forms.Form):
+    name = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Name"}))
+    channel = forms.ModelChoiceField(queryset=Channel.objects.all(), label="Channel")
+
+    notification: "Notification"
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        self.notification = kwargs.pop("notification")
+        super().__init__(*args, **kwargs)
+        self.fields["channel"].queryset = self.notification.event.channels.all()
+
+    def clean_name(self) -> str:
+        name = self.cleaned_data["name"]
+        if self.notification.messages.filter(name__iexact=name).exists():
+            raise ValidationError(_("This name is already in use."))
+        return name

@@ -1,9 +1,4 @@
-from typing import Any
-
-from django.http import HttpRequest
 from rest_framework import permissions, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from ..models import Application, Channel, Event, Organization, Project, User
@@ -59,16 +54,16 @@ class EventViewSet(NestedViewSetMixin, BaseModelViewSet):
     permission_classes = (permissions.DjangoObjectPermissions,)
     lookup_field = "slug"
 
-    @action(
-        detail=True,
-        methods=[
-            "GET",
-        ],
-        url_path=r"c",
-    )
-    def channels(self, request: HttpRequest, **kwargs: Any) -> Response:
-        return Response({})
-
+    # @action(
+    #     detail=True,
+    #     methods=[
+    #         "GET",
+    #     ],
+    #     url_path=r"c",
+    # )
+    # def channels(self, request: HttpRequest, **kwargs: Any) -> Response:
+    #     return Response({})
+    #
     # def trigger(self, request: HttpRequest, **kwargs: Any) -> Response:
     #     obj = self.get_object()
     #     qs = obj.channels.all()

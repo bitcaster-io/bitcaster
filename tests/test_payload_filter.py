@@ -60,31 +60,30 @@ def test_queryset_filter(db, payload: Dict, matches: bool):
 @pytest.mark.parametrize(
     "filter, result",
     [
-        pytest.param(
-            {
-                "OR": [
-                    "foo=='doo'",
-                    "foo=='bar'",
-                ]
-            },
-            True,
-            id="or",
-        ),
-        pytest.param(
-            {
-                "AND": [
-                    "foo=='doo'",
-                    "foo=='bar'",
-                ]
-            },
-            False,
-            id="and",
-        ),
+        pytest.param({"OR": ["foo=='doo'", "foo=='bar'"]}, True, id="or"),
+        pytest.param({"AND": ["foo=='doo'", "foo=='bar'"]}, False, id="and"),
         pytest.param({"NOT": "foo=='doo'"}, True, id="not-ok"),
         pytest.param({"NOT": "foo=='bar'"}, False, id="not-nok"),
+        pytest.param({}, True, id="empty"),
     ],
 )
 def test_jmespath_filter(db, filter: Optional[Dict[str, Any] | str], result: bool):
     from bitcaster.models import Notification
 
     assert Notification.match_filter_impl(filter_rules_dict=filter, payload={"foo": "bar"}) is result
+
+
+@pytest.mark.parametrize(
+    "filter, result",
+    [
+        pytest.param({"OR": ["foo=='doo'", "foo=='bar'"]}, True, id="or"),
+        pytest.param({"AND": ["foo=='doo'", "foo=='bar'"]}, False, id="and"),
+        pytest.param({"NOT": "foo=='doo'"}, True, id="not-ok"),
+        pytest.param({"NOT": "foo=='bar'"}, False, id="not-nok"),
+        pytest.param({}, True, id="empty"),
+    ],
+)
+def test_match_filter(db, filter: Optional[Dict[str, Any] | str], result: bool):
+    from bitcaster.models import Notification
+
+    assert Notification().match_filter(rules=filter, payload={"foo": "bar"}) is result

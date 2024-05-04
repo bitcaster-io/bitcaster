@@ -33,6 +33,6 @@ def test_gmail(mocked_responses, monkeypatch, mail_payload):
 
 
 def test_config():
-    d = GMmailDispatcher(Mock(config={}))
+    d: GMmailDispatcher = GMmailDispatcher(Mock(config={}))
     with pytest.raises(ValidationError):
         d.config

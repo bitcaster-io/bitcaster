@@ -50,6 +50,26 @@ def data(admin_user) -> "Context":
     }
 
 
+def test_trigger_invalid(client: APIClient, data: "Context") -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.post(url, data={"context": 22}, format="json")
+        assert res.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_trigger_405(client: APIClient, data: "Context") -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.get(url, data={})
+        assert res.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+
+
 def test_trigger_security(client: APIClient, data: "Context") -> None:
     api_key = data["key"]
     url: str = data["url"]
@@ -70,9 +90,11 @@ def test_trigger_security(client: APIClient, data: "Context") -> None:
 
 
 def test_trigger(client: APIClient, data: "Context") -> None:
+    from bitcaster.models import Occurrence
+
     api_key = data["key"]
     url: str = data["url"]
-
+    event_context = {"key": "value"}
     # no token provided
     res = client.post(url, data={})
     assert res.status_code == status.HTTP_401_UNAUTHORIZED
@@ -84,13 +106,16 @@ def test_trigger(client: APIClient, data: "Context") -> None:
 
     # finally... valid token
     with key_grants(api_key, Grant.EVENT_TRIGGER):
-        res = client.post(url, data={})
+        res = client.post(url, data={"context": event_context}, format="json")
         assert res.status_code == status.HTTP_200_OK, res.json()
         assert res.data["occurrence"]
+        o = Occurrence.objects.get(pk=res.data["occurrence"])
+        assert o.context == event_context
 
 
 def test_trigger_404(client: APIClient, data: "Context") -> None:
     api_key = data["key"]
+    event_context = {"key": "value"}
 
     evt: "Event" = data["event"]
     app: "Application" = evt.application
@@ -100,6 +125,6 @@ def test_trigger_404(client: APIClient, data: "Context") -> None:
 
     url = "/api/trigger/o/{}/p/{}/a/{}/e/missing-event/".format(org.slug, prj.slug, app.slug)
     with key_grants(api_key, Grant.EVENT_TRIGGER):
-        res = client.post(url, data={})
+        res = client.post(url, data={"context": event_context}, format="json")
         assert res.status_code == status.HTTP_404_NOT_FOUND
         assert res.data["error"]

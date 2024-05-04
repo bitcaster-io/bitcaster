@@ -11,9 +11,9 @@ from .message import Message, MessageFactory  # noqa
 from .notification import Notification, NotificationFactory  # noqa
 from .occurrence import Occurrence, OccurrenceFactory  # noqa
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory  # noqa
-from .role import Role, RoleFactory  # noqa
 from .social import SocialProvider, SocialProviderFactory  # noqa
 from .user import SuperUserFactory, User, UserFactory  # noqa
+from .userrole import UserRole, UserRoleFactory  # noqa
 from .validation import Validation, ValidationFactory  # noqa
 
 

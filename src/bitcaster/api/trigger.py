@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.decorators import action
+from rest_framework.parsers import JSONParser
 from rest_framework.relations import HyperlinkedIdentityField
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -27,10 +28,8 @@ class ActionSerializer(serializers.Serializer):
 class TriggerViewSet(BaseModelViewSet):
     queryset = Event.objects.all().order_by("-pk")
     serializer_class = TriggerSerializer
-    # permission_classes = (ApiApplicationPermission,)
-    # authentication_classes = (ApiKeyAuthentication, SessionAuthentication)
     required_grants = (Grant.EVENT_TRIGGER,)
-
+    parser = (JSONParser,)
     lookup_field = "slug"
 
     @action(
@@ -43,23 +42,20 @@ class TriggerViewSet(BaseModelViewSet):
         url_path=r"o/(?P<org>.+)/p/(?P<prj>.+)/a/(?P<app>.+)/e/(?P<event>.+)",
     )
     def trigger(self, request: "Request", org: str, prj: str, app: str, event: str) -> Response:
-        if request.method == "POST":
-            ser = ActionSerializer(data=request.data)
-            correlation_id = request.query_params.get("cid", None)
-            if ser.is_valid():
-                try:
-                    obj: "Event" = Event.objects.get(
-                        application__project__organization__slug=org,
-                        application__project__slug=prj,
-                        application__slug=app,
-                        slug=event,
-                    )
-                    self.check_object_permissions(self.request, obj)
-                    o: "Occurrence" = obj.trigger(ser.validated_data.get("context", {}), cid=correlation_id)
-                    return Response({"occurrence": o.pk})
-                except Event.DoesNotExist:
-                    return Response({"error": "Event not found"}, status=404)
-            else:
-                return Response(ser.errors, status=400)
-
-        return Response({})
+        ser = ActionSerializer(data=request.data)
+        correlation_id = request.query_params.get("cid", None)
+        if ser.is_valid():
+            try:
+                obj: "Event" = Event.objects.get(
+                    application__project__organization__slug=org,
+                    application__project__slug=prj,
+                    application__slug=app,
+                    slug=event,
+                )
+                self.check_object_permissions(self.request, obj)
+                o: "Occurrence" = obj.trigger(ser.validated_data.get("context", {}), cid=correlation_id)
+                return Response({"occurrence": o.pk})
+            except Event.DoesNotExist:
+                return Response({"error": "Event not found"}, status=404)
+        else:
+            return Response(ser.errors, status=400)

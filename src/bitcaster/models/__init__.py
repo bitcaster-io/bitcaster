@@ -13,6 +13,6 @@ from .notification import Notification  # noqa
 from .occurrence import Occurrence  # noqa
 from .organization import Organization  # noqa
 from .project import Project  # noqa
-from .role import Role  # noqa
 from .user import User  # noqa
+from .userrole import UserRole  # noqa
 from .validation import Validation  # noqa

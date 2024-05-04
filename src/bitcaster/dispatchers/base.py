@@ -80,11 +80,6 @@ class Payload:
         self.subject = subject
         self.html_message = html_message
         self.user = user
-        for k, v in kwargs.items():
-            setattr(self, k, v)
-
-    def as_dict(self) -> Dict[str, Any]:
-        return self.__dict__
 
 
 class DispatcherConfig(forms.Form):
@@ -103,7 +98,7 @@ class Dispatcher(metaclass=DispatcherMeta):
     def __init__(self, channel: "Channel") -> None:
         self.channel = channel
 
-    @property
+    @cached_property
     def capabilities(self):
         return ProtocolCapabilities[self.protocol]
 
@@ -114,14 +109,12 @@ class Dispatcher(metaclass=DispatcherMeta):
             klass = self.backend
         return klass(fail_silently=False, **self.config)
 
-    @cached_property
+    @property
     def config(self) -> Dict[str, Any]:
         cfg: "TDispatcherConfig" = self.config_class(data=self.channel.config)
         if not cfg.is_valid():
             raise ValidationError(cfg.errors)
         return cfg.cleaned_data
-
-    def send(self, address: str, payload: Payload) -> Optional[Any]: ...
 
     @classproperty
     def name(cls) -> str:
