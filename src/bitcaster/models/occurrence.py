@@ -72,7 +72,7 @@ class Occurrence(models.Model):
         recipients = self.data.get("recipients", [])
         channels = self.event.channels.active()
 
-        for notification in self.event.notifications.all():
+        for notification in self.event.notifications.match(self.context):
             context = notification.get_context(self.get_context())
             for channel in channels:
                 for validation in notification.get_pending_subscriptions(delivered, channel):

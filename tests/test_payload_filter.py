@@ -21,7 +21,7 @@ def test_simple_filter(statement):
     from bitcaster.models import Notification
 
     # now we test a non-matching filter
-    result = Notification.match_filter_impl(
+    result = Notification.match_line_filter(
         {"{statement}": ["people[?general.id==`999`].general | [0]"]}, EXAMPLE_PAYLOAD
     )
 
@@ -32,7 +32,7 @@ def test_plain_filter():
     # now we test a matching filter
     from bitcaster.models import Notification
 
-    result = Notification.match_filter_impl("status == 'terminated: completed'", {"status": "terminated: completed"})
+    result = Notification.match_line_filter("status == 'terminated: completed'", {"status": "terminated: completed"})
 
     assert result is True
 
@@ -70,7 +70,7 @@ def test_queryset_filter(db, payload: Dict, matches: bool):
 def test_jmespath_filter(db, filter: Optional[Dict[str, Any] | str], result: bool):
     from bitcaster.models import Notification
 
-    assert Notification.match_filter_impl(filter_rules_dict=filter, payload={"foo": "bar"}) is result
+    assert Notification.match_line_filter(filter_rules_dict=filter, payload={"foo": "bar"}) is result
 
 
 @pytest.mark.parametrize(

@@ -71,7 +71,7 @@ class Notification(models.Model):
         return None
 
     @classmethod
-    def match_filter_impl(cls, filter_rules_dict: "YamlPayload", payload: "YamlPayload") -> bool:
+    def match_line_filter(cls, filter_rules_dict: "YamlPayload", payload: "YamlPayload") -> bool:
         if not filter_rules_dict:
             return True
 
@@ -81,11 +81,11 @@ class Notification(models.Model):
 
         # it is not a str hence it must be a dict with one of AND, OR, NOT
         if and_stm := filter_rules_dict.get("AND"):
-            return all([cls.match_filter_impl(rules, payload) for rules in and_stm])
+            return all([cls.match_line_filter(rules, payload) for rules in and_stm])
         elif or_stm := filter_rules_dict.get("OR"):
-            return any([cls.match_filter_impl(rules, payload) for rules in or_stm])
+            return any([cls.match_line_filter(rules, payload) for rules in or_stm])
         elif not_stm := filter_rules_dict.get("NOT"):
-            return not cls.match_filter_impl(not_stm, payload)
+            return not cls.match_line_filter(not_stm, payload)
         return False
 
     def match_filter(self, payload: "YamlPayload", rules: Optional[dict[str, Any] | str] = None) -> bool:
@@ -95,7 +95,7 @@ class Notification(models.Model):
         """
         if not rules:
             rules = yaml.safe_load(self.payload_filter or "")
-        return self.match_filter_impl(rules, payload)
+        return self.match_line_filter(rules, payload)
 
     # @staticmethod
     # def check_filter(filter_rules_dict: "YamlPayload") -> Any:

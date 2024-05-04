@@ -1,6 +1,11 @@
 Setup development environment
 =============================
-This project uses PDM as package manager (see https://github.com/pdm-project/pdm).
+
+Prerequisites:
+- This project uses PDM as package manager (see https://github.com/pdm-project/pdm).
+- A Postgres DB v14+
+- A Redis server
+
 
 To start developing:
 
