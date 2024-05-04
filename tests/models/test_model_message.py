@@ -1,7 +1,27 @@
 from typing import TYPE_CHECKING
 
+import pytest
+from strategy_field.utils import fqn
+
+from bitcaster.dispatchers import EmailDispatcher
+from bitcaster.dispatchers.base import Capability
+
 if TYPE_CHECKING:
     from bitcaster.models import Channel, Message
+
+
+@pytest.fixture()
+def email_channel(db):
+    from testutils.factories.channel import ChannelFactory
+
+    return ChannelFactory(dispatcher=fqn(EmailDispatcher))
+
+
+@pytest.fixture()
+def email_message(email_channel):
+    from testutils.factories import MessageFactory
+
+    return MessageFactory(channel=email_channel)
 
 
 def test_instantiate(message: "Message", channel: "Channel"):
@@ -9,3 +29,10 @@ def test_instantiate(message: "Message", channel: "Channel"):
     assert m.channel == channel
     assert m.event == message.event
     assert m.id != message.id
+
+
+def test_support(email_message: "Message"):
+    assert email_message.channel.dispatcher.capabilities == [Capability.SUBJECT, Capability.HTML, Capability.TEXT]
+    assert email_message.support_subject()
+    assert email_message.support_html()
+    assert email_message.support_text()

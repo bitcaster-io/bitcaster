@@ -35,7 +35,7 @@ class MessageProtocol(enum.IntEnum):
 
 ProtocolCapabilities = {
     MessageProtocol.PLAINTEXT: [Capability.TEXT],
-    MessageProtocol.EMAIL: [Capability.SUBJECT, Capability.HTML, Capability.HTML],
+    MessageProtocol.EMAIL: [Capability.SUBJECT, Capability.HTML, Capability.TEXT],
     MessageProtocol.SMS: [Capability.TEXT],
 }
 
@@ -102,6 +102,10 @@ class Dispatcher(metaclass=DispatcherMeta):
 
     def __init__(self, channel: "Channel") -> None:
         self.channel = channel
+
+    @property
+    def capabilities(self):
+        return ProtocolCapabilities[self.protocol]
 
     def get_connection(self) -> "DispatcherHandler":
         if isinstance(self.backend, str):

@@ -34,3 +34,16 @@ def test_edit(app: DjangoTestApp, api_key: "ApiKey"):
     assert res.status_code == 302
     api_key.refresh_from_db()
     assert sorted(api_key.grants) == [Grant.EVENT_TRIGGER, Grant.FULL_ACCESS]
+
+
+def test_add(app: DjangoTestApp, api_key: "ApiKey"):
+    opts: Options = api_key._meta
+    url = reverse(admin_urlname(opts, "add"))
+    res = app.get(url)
+    assert res.status_code == 200
+
+    res.forms["apikey_form"]["organization"].force_value(api_key.organization.pk)
+    res.forms["apikey_form"]["name"] = "Key-1"
+    res.forms["apikey_form"]["grants"] = [Grant.EVENT_TRIGGER, Grant.FULL_ACCESS]
+    res = res.forms["apikey_form"].submit()
+    assert res.status_code == 302

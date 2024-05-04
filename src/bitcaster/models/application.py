@@ -59,7 +59,9 @@ class Application(SlugMixin, models.Model):
         ev: "Event" = self.events.get_or_create(name=name, description=description, active=False)[0]
         return ev
 
-    def trigger_event(self, name: str, context: dict[str, Any], correlation_id: Optional[Any] = None) -> "Occurrence":
+    def trigger_event(
+        self, name: str, context: dict[str, Any], correlation_id: Optional[Any] = None
+    ) -> "Optional[Occurrence]":
         try:
             return self.events.get(name=name).trigger(context, correlation_id)
         except ObjectDoesNotExist as e:

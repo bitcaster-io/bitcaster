@@ -21,7 +21,7 @@ class TriggerSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ActionSerializer(serializers.Serializer):
-    context = serializers.DictField(required=True)
+    context = serializers.DictField(required=False)
 
 
 class TriggerViewSet(BaseModelViewSet):
@@ -35,7 +35,7 @@ class TriggerViewSet(BaseModelViewSet):
 
     @action(
         detail=False,
-        methods=["GET", "POST"],
+        methods=["POST"],
         serializer_class=ActionSerializer,
         authentication_classes=[
             ApiKeyAuthentication,
@@ -47,15 +47,18 @@ class TriggerViewSet(BaseModelViewSet):
             ser = ActionSerializer(data=request.data)
             correlation_id = request.query_params.get("cid", None)
             if ser.is_valid():
-                obj: "Event" = Event.objects.get(
-                    application__project__organization__slug=org,
-                    application__project__slug=prj,
-                    application__slug=app,
-                    slug=event,
-                )
-                self.check_object_permissions(self.request, obj)
-                o: "Occurrence" = obj.trigger(ser.validated_data["context"], cid=correlation_id)
-                return Response({"occurrence": o.pk})
+                try:
+                    obj: "Event" = Event.objects.get(
+                        application__project__organization__slug=org,
+                        application__project__slug=prj,
+                        application__slug=app,
+                        slug=event,
+                    )
+                    self.check_object_permissions(self.request, obj)
+                    o: "Occurrence" = obj.trigger(ser.validated_data.get("context", {}), cid=correlation_id)
+                    return Response({"occurrence": o.pk})
+                except Event.DoesNotExist:
+                    return Response({"error": "Event not found"}, status=404)
             else:
                 return Response(ser.errors, status=400)
 

@@ -50,6 +50,8 @@ def get_user_agent(request: "AnyRequest") -> UserAgent:
     #     return None
 
     ua_string = request.META.get("HTTP_USER_AGENT", "")
+    if not ua_string:
+        return UserAgent("")
 
     if not isinstance(ua_string, str):
         ua_string = ua_string.decode("utf-8", "ignore")

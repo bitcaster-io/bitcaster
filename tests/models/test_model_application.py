@@ -22,3 +22,8 @@ def test_register_event(application: "Application"):
     ev: "Event" = application.register_event("test_event")
     assert ev.name == "test_event"
     assert ev.application == application
+
+
+def test_trigger_non_existing_event(application: "Application"):
+    o = application.trigger_event("non-existing-event", {})
+    assert o is None

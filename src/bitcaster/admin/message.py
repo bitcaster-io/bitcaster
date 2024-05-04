@@ -51,7 +51,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
             return obj.application
         elif obj.project:
             return obj.project
-        elif obj.organization:
+        else:
             return obj.organization
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Message]:
@@ -150,7 +150,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
             usage.extend(Notification.objects.filter(event__application=msg.application))
 
             level = str(Project._meta.verbose_name)
-        elif msg.organization:
+        else:
             usage.extend([msg.organization])
             usage.extend(Application.objects.filter(events__messages=msg))
             usage.extend(Event.objects.filter(application=msg.application))
