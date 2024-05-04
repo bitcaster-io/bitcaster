@@ -1,30 +1,24 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.admin.widgets import AutocompleteSelect
 
-from bitcaster.models import Application, Channel, Event
+from bitcaster.constants import Bitcaster
+from bitcaster.forms.widgets import AutocompletSelectEnh
+from bitcaster.models import Application, Event
 
 
 class EventBaseForm(forms.ModelForm["Event"]):
     application = forms.ModelChoiceField(
-        queryset=Application.objects.all(),
+        queryset=Application.objects.exclude(name=Bitcaster.APPLICATION),
         required=True,
-        widget=AutocompleteSelect(Channel._meta.get_field("application"), admin.site),
+        widget=AutocompletSelectEnh(
+            Event._meta.get_field("application"), admin.site, exclude={"name": Bitcaster.APPLICATION}
+        ),
     )
     slug = forms.SlugField(required=False)
 
     class Meta:
         model = Event
         exclude = ("config", "locked")
-
-    # def clean(self) -> dict[str, Any] | None:
-    #     super().clean()
-    # if not self.instance.pk:
-    # if self.cleaned_data.get("application"):
-    #     self.cleaned_data["project"] = self.cleaned_data["application"].project
-    # if self.cleaned_data.get("project"):
-    #     self.cleaned_data["organization"] = self.cleaned_data["project"].organization
-    # return self.cleaned_data
 
 
 class EventAddForm(EventBaseForm):
