@@ -8,7 +8,7 @@ from . import env
 SETTINGS_DIR = Path(__file__).parent  # .../src/bitcaster/config
 PACKAGE_DIR = SETTINGS_DIR.parent  # .../src/bitcaster/
 SOURCE_DIR = PACKAGE_DIR.parent.parent  # .../src
-
+LOCALE_PATHS = [str((PACKAGE_DIR / "LOCALE").absolute())]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
