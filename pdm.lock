@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:635fea6c6aa47fe0fe90c1f4ab3b902568ab44e1232d125ddf68b40156da9f93"
+content_hash = "sha256:0a0846d518eef2b8029569e19feb1402922a10b21aa3cd7f3c6a56c69819ff6d"
 
 [[package]]
 name = "aiohttp"
@@ -90,6 +90,19 @@ groups = ["default", "dev"]
 files = [
     {file = "asgiref-3.8.1-py3-none-any.whl", hash = "sha256:3e1e3ecc849832fe52ccf2cb6686b7a55f82bb1d6aee72a58826471390335e47"},
     {file = "asgiref-3.8.1.tar.gz", hash = "sha256:c343bd80a0bec947a9860adb4c432ffa7db769836c64238fc34bdc3fec84d590"},
+]
+
+[[package]]
+name = "asttokens"
+version = "2.4.1"
+summary = "Annotate AST trees with source code positions"
+groups = ["default"]
+dependencies = [
+    "six>=1.12.0",
+]
+files = [
+    {file = "asttokens-2.4.1-py2.py3-none-any.whl", hash = "sha256:051ed49c3dcae8913ea7cd08e46a606dba30b79993209636c4875bc1d637bc24"},
+    {file = "asttokens-2.4.1.tar.gz", hash = "sha256:b03869718ba9a6eb027e134bfdf69f38a236d681c83c160d510768af11254ba0"},
 ]
 
 [[package]]
@@ -1216,6 +1229,17 @@ files = [
 ]
 
 [[package]]
+name = "future"
+version = "1.0.0"
+requires_python = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+summary = "Clean single-source support for Python 3 and 2"
+groups = ["default"]
+files = [
+    {file = "future-1.0.0-py3-none-any.whl", hash = "sha256:929292d34f5872e70396626ef385ec22355a1fae8ad29e1a734c3e43f9fbc216"},
+    {file = "future-1.0.0.tar.gz", hash = "sha256:bd2968309307861edae1458a4f8a4f3598c03be43b97521076aebf5d94c07b05"},
+]
+
+[[package]]
 name = "ghp-import"
 version = "2.1.0"
 summary = "Copy your docs directly to the gh-pages branch."
@@ -1817,6 +1841,19 @@ files = [
 ]
 
 [[package]]
+name = "parsimonious"
+version = "0.10.0"
+summary = "(Soon to be) the fastest pure-Python PEG parser I could muster"
+groups = ["default"]
+dependencies = [
+    "regex>=2022.3.15",
+]
+files = [
+    {file = "parsimonious-0.10.0-py3-none-any.whl", hash = "sha256:982ab435fabe86519b57f6b35610aa4e4e977e9f02a14353edf4bbc75369fc0f"},
+    {file = "parsimonious-0.10.0.tar.gz", hash = "sha256:8281600da180ec8ae35427a4ab4f7b82bfec1e3d1e52f80cb60ea82b9512501c"},
+]
+
+[[package]]
 name = "pathspec"
 version = "0.12.1"
 requires_python = ">=3.8"
@@ -2141,6 +2178,20 @@ summary = "A library for building flexible command line interfaces"
 groups = ["dev"]
 files = [
     {file = "pyrepl-0.9.0.tar.gz", hash = "sha256:292570f34b5502e871bbb966d639474f2b57fbfcd3373c2d6a2f3d56e681a775"},
+]
+
+[[package]]
+name = "pyseeyou"
+version = "1.0.2"
+summary = "A Python Parser for the ICU MessageFormat."
+groups = ["default"]
+dependencies = [
+    "future",
+    "parsimonious",
+    "toolz",
+]
+files = [
+    {file = "pyseeyou-1.0.2.tar.gz", hash = "sha256:5486167db8b431928e8927478bed2b2c9b8360e06dba148c009ce4bb1f2337b9"},
 ]
 
 [[package]]
@@ -2600,7 +2651,7 @@ name = "regex"
 version = "2024.4.28"
 requires_python = ">=3.8"
 summary = "Alternative regular expression module, to replace re."
-groups = ["dev"]
+groups = ["default", "dev"]
 files = [
     {file = "regex-2024.4.28-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:08a1749f04fee2811c7617fdd46d2e46d09106fa8f475c884b65c01326eb15c5"},
     {file = "regex-2024.4.28-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:b8eb28995771c087a73338f695a08c9abfdf723d185e57b97f6175c5051ff1ae"},
@@ -2932,6 +2983,17 @@ files = [
 ]
 
 [[package]]
+name = "toolz"
+version = "0.12.1"
+requires_python = ">=3.7"
+summary = "List processing tools and functional utilities"
+groups = ["default"]
+files = [
+    {file = "toolz-0.12.1-py3-none-any.whl", hash = "sha256:d22731364c07d72eea0a0ad45bafb2c2937ab6fd38a3507bf55eae8744aa7d85"},
+    {file = "toolz-0.12.1.tar.gz", hash = "sha256:ecca342664893f177a13dac0e6b41cbd8ac25a358e5f215316d43e2100224f4d"},
+]
+
+[[package]]
 name = "tornado"
 version = "6.4"
 requires_python = ">= 3.8"
@@ -2949,6 +3011,21 @@ files = [
     {file = "tornado-6.4-cp38-abi3-win32.whl", hash = "sha256:6f8a6c77900f5ae93d8b4ae1196472d0ccc2775cc1dfdc9e7727889145c45052"},
     {file = "tornado-6.4-cp38-abi3-win_amd64.whl", hash = "sha256:10aeaa8006333433da48dec9fe417877f8bcc21f48dda8d661ae79da357b2a63"},
     {file = "tornado-6.4.tar.gz", hash = "sha256:72291fa6e6bc84e626589f1c29d90a5a6d593ef5ae68052ee2ef000dfd273dee"},
+]
+
+[[package]]
+name = "transifex-python"
+version = "3.5.0"
+summary = "Transifex Python Toolkit"
+groups = ["default"]
+dependencies = [
+    "asttokens",
+    "click",
+    "pyseeyou",
+    "requests",
+]
+files = [
+    {file = "transifex-python-3.5.0.tar.gz", hash = "sha256:a60d136774f27142f58f25507d45bef5ff9791554daae8ea7c23b625a917f4ef"},
 ]
 
 [[package]]

@@ -59,6 +59,7 @@ dependencies = [
     "twilio>=9.0.4",
     "user-agents>=2.2.0",
     "uwsgi>=2.0.25.1",
+    "transifex-python>=3.5.0",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"
