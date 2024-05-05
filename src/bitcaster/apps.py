@@ -28,4 +28,4 @@ class Config(AppConfig):
 
         from . import handlers  # noqa
         from . import tasks  # noqa
-        from .cache import handlers  # type: ignore # noqa
+        from .cache import handlers  # noqa

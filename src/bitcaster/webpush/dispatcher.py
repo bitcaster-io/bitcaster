@@ -35,7 +35,8 @@ class WebPushConfig(DispatcherConfig):
 4. Scroll down to the 'Web configuration' section and click 'Generate key pair'.
 5. Copy the Private Key and insert it here
 
-Note: [https://web.dev/articles/push-notifications-web-push-protocol](#)
+Notes:
+- [https://web.dev/articles/push-notifications-web-push-protocol](#)
 
     """
     application_id = forms.CharField(

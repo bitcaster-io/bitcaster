@@ -48,10 +48,11 @@ class Command(BaseCommand):
                     self.stderr.write(self.style.ERROR(f"- Missing env variable: {k}"))
                     check_failure = True
             else:
+                value: Any
                 if options["develop"]:
-                    value: Any = env.for_develop(k)
+                    value = env.for_develop(k)
                 else:
-                    value: Any = env.get_value(k)
+                    value = env.get_value(k)
 
                 line: str = pattern.format(key=k, value=value, help=help, default=default)
                 if options["diff"]:

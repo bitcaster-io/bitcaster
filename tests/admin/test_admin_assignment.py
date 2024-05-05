@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, TypedDict
 from unittest import mock
+from unittest.mock import Mock
 
 import pytest
 from django.contrib.messages import Message
@@ -31,9 +32,17 @@ def test_edit(app: DjangoTestApp, assignment, settings) -> None:
     assert res
 
 
-def test_validate(app: DjangoTestApp, assignment: "Assignment") -> None:
+def test_validate(app: DjangoTestApp, assignment: "Assignment", monkeypatch) -> None:
+
     url = reverse("admin:bitcaster_assignment_validate", args=[assignment.pk])
+    monkeypatch.setattr("bitcaster.admin.assignment.AssignmentAdmin.message_user", collector := Mock())
+
     with mock.patch.object(type(assignment.channel.dispatcher), "need_subscription", True):
-        res: "TestResponse" = app.get(url).follow()
-    messages = list(res.context.get("messages"))
-    assert messages == [Message(level=40, message="Cannot be validated.")]
+        app.get(url).follow()
+    assert collector.call_count == 1
+    assert collector.call_args_list[0].args[1:] == ("Cannot be validated.", 40)
+
+    # with mock.patch.object(type(assignment.channel.dispatcher), "need_subscription", True):
+    #     res: "TestResponse" = app.get(url).follow()
+    # messages = list(res.context.get("messages"))
+    # assert messages == [Message(level=40, message="Cannot be validated.")]

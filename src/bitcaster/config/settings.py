@@ -150,6 +150,7 @@ AUTHENTICATION_BACKENDS = [
     "social_core.backends.twitter.TwitterOAuth",
     "social_core.backends.github.GithubOAuth2",
     "social_core.backends.linkedin.LinkedinOAuth2",
+    "bitcaster.social.backend.wso2.Wso2OAuth2",
     # local
     "bitcaster.auth.backends.BitcasterBackend",
     # "django.contrib.auth.backends.ModelBackend",

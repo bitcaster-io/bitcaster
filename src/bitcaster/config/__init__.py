@@ -51,7 +51,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
     ),
     "CSRF_COOKIE_SECURE": (bool, True, setting("csrf-cookie-secure"), False),
     "CSRF_COOKIE_SAMESITE": (str, "Strict", setting("csrf-cookie-samesite")),
-    "CSRF_TRUSTED_ORIGINS": (list, "Strict", "", ["localhost", "127.0.0.1"]),
+    "CSRF_TRUSTED_ORIGINS": (list, "Strict", "", ["http://localhost", "http://127.0.0.1"]),
     "DATABASE_URL": (
         str,
         "sqlite:///bitcaster.db",

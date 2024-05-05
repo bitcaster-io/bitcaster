@@ -72,6 +72,7 @@ def pytest_configure(config):
     os.environ["GMAIL_PASSWORD"] = "11"
 
     os.environ["TWILIO_SID"] = "abc"
+    os.environ["SESSION_COOKIE_DOMAIN"] = ""
 
     if not config.option.with_sentry:
         os.environ["SENTRY_DSN"] = ""
