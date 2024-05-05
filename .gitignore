@@ -8,6 +8,7 @@ __pycache__/
 !.flake8
 !.gitignore
 !.gitlab/
+!.tx/config
 !.mypy.ini
 !.gitlab-ci.yml
 !.pre-commit-config.yaml
