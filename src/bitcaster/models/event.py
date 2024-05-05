@@ -35,12 +35,14 @@ class Event(SlugMixin, models.Model):
         self._cached_messages: dict[Channel, Message] = {}
         super().__init__(*args, **kwargs)
 
-    def trigger(self, context: Dict[str, Any], cid: Optional[Any] = None) -> "Occurrence":
+    def trigger(
+        self, context: Dict[str, Any], *, options: Optional[Dict[str, str]] = None, cid: Optional[Any] = None
+    ) -> "Occurrence":
         from .occurrence import Occurrence
 
         if cid:
             cid = str(cid)
-        return Occurrence.objects.create(event=self, context=context, correlation_id=cid)
+        return Occurrence.objects.create(event=self, context=context, options=options or {}, correlation_id=cid)
 
     def create_message(self, name: str, channel: Channel, defaults: Optional[dict[str, Any]] = None) -> "Message":
         return self.messages.get_or_create(

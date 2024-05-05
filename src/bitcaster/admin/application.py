@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django.contrib import admin
+from django.db.models import QuerySet
 from django.http import HttpRequest
 
 from bitcaster.forms.application import ApplicationChangeForm
@@ -32,7 +33,7 @@ class ApplicationAdmin(BaseAdmin, LockMixin[Application], admin.ModelAdmin[Appli
     readonly_fields = ["locked"]
     form = ApplicationChangeForm
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Application]:
         return super().get_queryset(request).select_related("project", "project__organization", "owner")
 
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Application] = None) -> "_ListOrTuple[str]":

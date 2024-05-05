@@ -1,8 +1,7 @@
 import logging
 
 from bitcaster.config.celery import app
-from bitcaster.constants import SystemEvent
-from bitcaster.state import state
+from bitcaster.constants import Bitcaster, SystemEvent
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +22,14 @@ def process_event(occurrence_pk: int) -> int:
                 o.recipients = len(o.data.get("delivered", []))
                 o.save()
                 if o.recipients == 0:
-                    state.app.trigger_event(SystemEvent.OCCURRENCE_SILENCE.value, o.context, o.correlation_id)
+                    Bitcaster.trigger_event(
+                        SystemEvent.OCCURRENCE_SILENCE, o.context, options=o.options, correlation_id=o.correlation_id
+                    )
                 return o.recipients
         elif o.attempts == 0 and o.status == Occurrence.Status.NEW:
             o.status = Occurrence.Status.FAILED
             o.save()
-            state.app.trigger_event(SystemEvent.OCCURRENCE_ERROR.value, o.context, o.correlation_id)
+            Bitcaster.trigger_event(SystemEvent.OCCURRENCE_ERROR, options=o.options, correlation_id=o.correlation_id)
             return 0
     except Exception as e:
         logger.exception(e)

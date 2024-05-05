@@ -1,10 +1,14 @@
 import enum
-from typing import TYPE_CHECKING
+import functools
+import logging
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.db import models
 
 if TYPE_CHECKING:
-    from bitcaster.models import Application, User
+    from bitcaster.models import Application, Occurrence, User
+
+logger = logging.getLogger(__name__)
 
 
 class Bitcaster:
@@ -31,16 +35,26 @@ class Bitcaster:
         DistributionList.objects.get_or_create(name=DistributionList.ADMINS, project=prj)
         return app
 
-    #
-    #
-    # @classmethod
-    # @property
-    # @functools.cache
-    # def admins(cls: "Type[Bitcaster]") -> "DistributionList":
-    #     from bitcaster.models import DistributionList
-    #     from bitcaster.state import state
-    #
-    #     return DistributionList.objects.get_or_create(name="Bitcaster Admins", project=state.app.project)[0]
+    @classmethod
+    @property
+    @functools.cache
+    def app(cls) -> "Application":
+        from bitcaster.models import Application
+
+        return Application.objects.get(
+            name=cls.APPLICATION, project__name=cls.PROJECT, project__organization__name=cls.ORGANIZATION
+        )
+
+    @classmethod
+    def trigger_event(
+        cls,
+        evt: "SystemEvent",
+        context: Optional[dict[str, Any]] = None,
+        *,
+        options: Optional[dict[str, str]] = None,
+        correlation_id: Optional[Any] = None,
+    ) -> "Optional[Occurrence]":
+        return cls.app.events.get(name=evt.value).trigger(context or {}, options=options or {}, cid=correlation_id)
 
 
 class AddressType(models.TextChoices):

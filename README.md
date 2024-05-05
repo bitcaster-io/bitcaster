@@ -18,3 +18,10 @@ Your user will be empowered with an easy to use console to choose how to receive
 
 [codecov-badge]: https://codecov.io/gh/os4d:bitcaster/bitcaster/branch/develop/graph/badge.svg
 [codecov-link]: https://app.codecov.io/gl/os4d:bitcaster/bitcaster
+
+
+# Resources
+
+- [Bug Tracker](https://gitlab.com/os4d/bitcaster/bitcaster/-/issues)
+- [Code](https://gitlab.com/os4d/bitcaster/bitcaster)
+- [Transifex](https://explore.transifex.com/os4d/bitcaster/) (Translate Bitcaster\!)

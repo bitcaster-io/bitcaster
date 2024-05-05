@@ -1,7 +1,6 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.functional import cached_property
@@ -12,7 +11,7 @@ from .project import Project
 from .user import User
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Event, Message, Occurrence, Organization
+    from bitcaster.models import Channel, Event, Message, Organization
 
 logger = logging.getLogger(__name__)
 
@@ -58,14 +57,6 @@ class Application(SlugMixin, models.Model):
 
         ev: "Event" = self.events.get_or_create(name=name, description=description, active=False)[0]
         return ev
-
-    def trigger_event(
-        self, name: str, context: dict[str, Any], correlation_id: Optional[Any] = None
-    ) -> "Optional[Occurrence]":
-        try:
-            return self.events.get(name=name).trigger(context, correlation_id)
-        except ObjectDoesNotExist as e:
-            logger.exception(e)
 
     def create_message(self, name: str, channel: "Channel", defaults: Optional[dict[str, Any]] = None) -> "Message":
         return self.message_set.get_or_create(

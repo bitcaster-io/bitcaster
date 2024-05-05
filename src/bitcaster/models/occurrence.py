@@ -30,16 +30,18 @@ class Occurrence(models.Model):
         PROCESSED = "PROCESSED", _("Processed")
         FAILED = "FAILED", _("Failed")
 
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True, help_text=_("Timestamp when occurrence has been created."))
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    context = models.JSONField(blank=True, null=True)
-    # processed = models.BooleanField(default=False)
+    context = models.JSONField(blank=True, default=dict, help_text=_("Context provided by the sender"))
+    options = models.JSONField(
+        blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
+    )
 
     correlation_id = models.UUIDField(default=uuid.uuid4, editable=False, blank=True, null=True)
     recipients = models.IntegerField(default=0, help_text=_("Total number of recipients"))
 
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
-    data = models.JSONField(default=dict)
+    data = models.JSONField(default=dict, help_text=_("Information about the processing (recipients, channels)"))
     status = models.CharField(
         choices=Status,
         default=Status.NEW.value,
@@ -71,7 +73,6 @@ class Occurrence(models.Model):
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
         channels = self.event.channels.active()
-
         for notification in self.event.notifications.match(self.context):
             context = notification.get_context(self.get_context())
             for channel in channels:

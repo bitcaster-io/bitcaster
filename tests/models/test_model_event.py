@@ -20,5 +20,5 @@ def test_event_trigger(event: "Event"):
     ],
 )
 def test_trigger_correlation_id(event: "Event", cid: str):
-    o: "Occurrence" = event.trigger({}, cid)
+    o: "Occurrence" = event.trigger({}, options={}, cid=cid)
     assert o.correlation_id == str(cid)

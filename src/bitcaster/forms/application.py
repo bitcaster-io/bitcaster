@@ -7,7 +7,7 @@ from bitcaster.models import Application, Project
 from .widgets import AutocompletSelectEnh
 
 
-class ApplicationBaseForm(forms.ModelForm["Project"]):
+class ApplicationBaseForm(forms.ModelForm["Application"]):
     project = forms.ModelChoiceField(
         queryset=Project.objects.exclude(name=Bitcaster.PROJECT),
         required=True,
