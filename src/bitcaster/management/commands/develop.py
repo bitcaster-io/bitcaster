@@ -158,13 +158,19 @@ class Command(BaseCommand):
                 o = u.organizations.update_or_create(name=org_name)[0]
                 p = o.projects.update_or_create(name=prj_name, owner=u)[0]
                 a = p.applications.update_or_create(name=app_name, owner=u)[0]
-                ch = o.channel_set.update_or_create(dispatcher=fqn(GMailDispatcher))[0]
+                ch = o.channel_set.update_or_create(name="GMail", defaults={"dispatcher": fqn(GMailDispatcher)})[0]
                 e = a.events.update_or_create(name="Test Event")[0]
                 e.channels.add(ch)
+                e.save()
 
                 if k := os.environ.get("TEST_API_KEY"):
                     u.keys.update_or_create(
-                        name="Key1", defaults={"key": k, "application": a, "grants": [Grant.EVENT_TRIGGER]}
+                        name="Key1",
+                        defaults={
+                            "key": k,
+                            "application": a,
+                            "grants": [Grant.EVENT_TRIGGER, Grant.EVENT_LIST, Grant.SYSTEM_PING],
+                        },
                     )
 
                 echo(f"Created/Updated Organization {org_name}", style_func=self.style.SUCCESS)
@@ -174,8 +180,8 @@ class Command(BaseCommand):
             if os.environ.get("GMAIL_USER") and os.environ.get("GMAIL_PASSWORD"):
                 ch, __ = Channel.objects.update_or_create(
                     name="Gmail",
+                    application=bitcaster,
                     defaults={
-                        "application": bitcaster,
                         "dispatcher": fqn(GMailDispatcher),
                         "config": {
                             "username": os.environ.get("GMAIL_USER"),
@@ -187,8 +193,8 @@ class Command(BaseCommand):
             if os.environ.get("MAILGUN_SENDER_DOMAIN") and os.environ.get("MAILGUN_API_KEY"):
                 ch, __ = Channel.objects.update_or_create(
                     name="Mailgun",
+                    application=bitcaster,
                     defaults={
-                        "application": bitcaster,
                         "dispatcher": fqn(MailgunDispatcher),
                         "config": {
                             "api_key": os.environ.get("MAILGUN_API_KEY"),
