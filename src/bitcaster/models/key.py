@@ -88,7 +88,7 @@ class ApiKeyManager(models.Manager["ApiKey"]):
 
 class ApiKey(ScopedMixin, models.Model):
     name = models.CharField(verbose_name=_("Name"), max_length=255, db_collation="case_insensitive")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="keys")
     key = models.CharField(verbose_name=_("Token"), unique=True, default=make_token)
     grants = ChoiceArrayField(models.CharField(max_length=255, choices=Grant.choices), null=True, blank=True)
 

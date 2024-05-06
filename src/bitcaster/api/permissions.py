@@ -38,7 +38,16 @@ class ApiBasePermission(permissions.BasePermission):
 
 
 class ApiOrgPermission(ApiBasePermission):
-    pass
+    def has_permission(self, request: Request, view: "SecurityMixin") -> bool:
+        # if getattr(request, "auth", None) is None:
+        #     return False
+        # if not request.auth.organization:
+        #     return False
+        # if hasattr(request, "user") and not request.user.is_authenticated:
+        #     return False
+        # if request.auth.organization:
+        return True
+        # return self._check_valid_scope(request.auth, view)
 
 
 class ApiProjectPermission(ApiBasePermission):
@@ -52,6 +61,8 @@ class ApiApplicationPermission(ApiBasePermission):
         if not request.auth.application:
             return False
         if hasattr(request, "user") and not request.user.is_authenticated:
+            return False
+        if request.auth.application.slug != view.kwargs["app"]:
             return False
         return self._check_valid_scope(request.auth, view)
 

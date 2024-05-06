@@ -26,6 +26,10 @@ class ActionSerializer(serializers.Serializer):
     options = serializers.DictField(required=False)
 
 
+class EventViewSet(BaseModelViewSet):
+    pass
+
+
 class TriggerViewSet(BaseModelViewSet):
     queryset = Event.objects.all().order_by("-pk")
     serializer_class = TriggerSerializer

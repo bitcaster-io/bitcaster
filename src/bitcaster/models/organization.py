@@ -21,7 +21,7 @@ class Organization(SlugMixin, models.Model):
         default="[Bitcaster] ",
         help_text=_("Default prefix for messages supporting subject"),
     )
-    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT)
+    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, related_name="organizations")
 
     class Meta:
         ordering = ("name",)

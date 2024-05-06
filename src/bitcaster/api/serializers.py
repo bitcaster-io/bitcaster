@@ -45,8 +45,7 @@ class ChannelSerializer(ModelSerializer):
         exclude = ()
 
 
-class EventSerializer(ModelSerializer):
-
+class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        exclude = ("id", "application")
+        fields = "__all__"

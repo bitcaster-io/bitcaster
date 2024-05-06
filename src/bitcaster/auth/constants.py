@@ -26,7 +26,7 @@ class Grant(TextChoices):
     #
     # EVENT_ADMIN = "EVENT_ADMIN", "Event Admin"
     # EVENT_READ = "EVENT_READ", "Event Read"
-    # EVENT_WRITE = "EVENT_WRITE", "Event Write"
+    EVENT_LIST = "EVENT_LIST", "Event list"
     EVENT_TRIGGER = "EVENT_TRIGGER", "Event Trigger"
     # EVENT_LOCKOUT = "EVENT_LOCKOUT", "Event Lockout"
 

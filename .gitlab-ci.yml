@@ -254,7 +254,7 @@ test:
     - .test-rules
   services:
     - docker:dind
-    - name: redis:5.0.5-alpine
+    - name: redis:7
       alias: redis
       entrypoint: [ "redis-server", "--appendonly", "yes" ]
     - name: postgres:14

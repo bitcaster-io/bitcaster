@@ -10,28 +10,24 @@ from rest_framework.authentication import (
 from rest_framework.permissions import BasePermission
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.serializers import Serializer
+from rest_framework.views import APIView
 
 from ..auth.constants import Grant
-from .permissions import (
-    ApiApplicationPermission,
-    ApiKeyAuthentication,
-    ApiOrgPermission,
-    ApiProjectPermission,
-)
+from .permissions import ApiApplicationPermission, ApiKeyAuthentication
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
 
-class SecurityMixin:
+class SecurityMixin(APIView):
     authentication_classes: "_ListOrTuple[BaseAuthentication]" = (
         BasicAuthentication,
         SessionAuthentication,
         ApiKeyAuthentication,
     )
     permission_classes: "_ListOrTuple[BasePermission]" = (
-        ApiOrgPermission,
-        ApiProjectPermission,
+        # ApiOrgPermission,
+        # ApiProjectPermission,
         ApiApplicationPermission,
     )
     required_grants: "_ListOrTuple[Grant]" = ()

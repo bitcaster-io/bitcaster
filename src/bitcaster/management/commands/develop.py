@@ -9,14 +9,13 @@ from django.core.management.base import CommandError, SystemCheckError
 from flags.state import enable_flag
 from strategy_field.utils import fqn
 
-from bitcaster.config import env
+from bitcaster.auth.constants import Grant
 from bitcaster.dispatchers import (
     GMailDispatcher,
     MailgunDispatcher,
     MailJetDispatcher,
     SlackDispatcher,
 )
-from bitcaster.models import Channel
 
 if TYPE_CHECKING:
     from argparse import ArgumentParser
@@ -29,34 +28,34 @@ class Command(BaseCommand):
     requires_system_checks = []
 
     def add_arguments(self, parser: "ArgumentParser") -> None:
-        parser.add_argument(
-            "--with-check",
-            action="store_true",
-            dest="check",
-            default=False,
-            help="Run checks",
-        )
-        parser.add_argument(
-            "--no-check",
-            action="store_false",
-            dest="check",
-            default=False,
-            help="Do not run checks",
-        )
-        parser.add_argument(
-            "--no-migrate",
-            action="store_false",
-            dest="migrate",
-            default=True,
-            help="Do not run migrations",
-        )
-        parser.add_argument(
-            "--prompt",
-            action="store_true",
-            dest="prompt",
-            default=False,
-            help="Let ask for confirmation",
-        )
+        # parser.add_argument(
+        #     "--with-check",
+        #     action="store_true",
+        #     dest="check",
+        #     default=False,
+        #     help="Run checks",
+        # )
+        # parser.add_argument(
+        #     "--no-check",
+        #     action="store_false",
+        #     dest="check",
+        #     default=False,
+        #     help="Do not run checks",
+        # )
+        # parser.add_argument(
+        #     "--no-migrate",
+        #     action="store_false",
+        #     dest="migrate",
+        #     default=True,
+        #     help="Do not run migrations",
+        # )
+        # parser.add_argument(
+        #     "--prompt",
+        #     action="store_true",
+        #     dest="prompt",
+        #     default=False,
+        #     help="Let ask for confirmation",
+        # )
         parser.add_argument(
             "--debug",
             action="store_true",
@@ -64,39 +63,42 @@ class Command(BaseCommand):
             default=False,
             help="debug mode",
         )
-        parser.add_argument(
-            "--no-static",
-            action="store_false",
-            dest="static",
-            default=True,
-            help="Do not run collectstatic",
-        )
 
-        parser.add_argument(
-            "--admin-email",
-            action="store",
-            dest="admin_email",
-            default="",
-            help="Admin email",
-        )
-        parser.add_argument(
-            "--admin-password",
-            action="store",
-            dest="admin_password",
-            default="",
-            help="Admin password",
-        )
+    # parser.add_argument(
+    #     "--no-static",
+    #     action="store_false",
+    #     dest="static",
+    #     default=True,
+    #     help="Do not run collectstatic",
+    # )
+    #
+    # parser.add_argument(
+    #     "--admin-email",
+    #     action="store",
+    #     dest="admin_email",
+    #     default="",
+    #     help="Admin email",
+    # )
+    # parser.add_argument(
+    #     "--admin-password",
+    #     action="store",
+    #     dest="admin_password",
+    #     default="",
+    #     help="Admin password",
+    # )
 
     def get_options(self, options: dict[str, Any]) -> None:
         self.verbosity = options["verbosity"]
-        self.run_check = options["check"]
-        self.prompt = not options["prompt"]
-        self.static = options["static"]
-        self.migrate = options["migrate"]
+
+        #     self.run_check = options["check"]
+        #     self.prompt = not options["prompt"]
+        #     self.static = options["static"]
+        #     self.migrate = options["migrate"]
         self.debug = options["debug"]
 
-        self.admin_email = str(options["admin_email"] or env("ADMIN_EMAIL", ""))
-        self.admin_password = str(options["admin_password"] or env("ADMIN_PASSWORD", ""))
+    #
+    #     self.admin_email = str(options["admin_email"] or env("ADMIN_EMAIL", ""))
+    #     self.admin_password = str(options["admin_password"] or env("ADMIN_PASSWORD", ""))
 
     def halt(self, e: Exception) -> None:  # pragma: no cover
         self.stdout.write(str(e), style_func=self.style.ERROR)
@@ -109,7 +111,7 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
-        from bitcaster.models import Application
+        from bitcaster.models import Application, Channel, User
         from bitcaster.social.models import Provider, SocialProvider
 
         self.get_options(options)
@@ -148,6 +150,27 @@ class Command(BaseCommand):
                     },
                 )
                 echo(f"Created/Updated SSO {sso}", style_func=self.style.SUCCESS)
+
+            if structure := os.environ.get("TEST_ORG_STRUCTURE", "user@example.com;Org;Project1;Application1"):
+                email, org_name, prj_name, app_name = structure.split(";")
+                u = User.objects.update_or_create(username=email, defaults={"email": email, "is_staff": True})[0]
+                u.set_password("password")
+                o = u.organizations.update_or_create(name=org_name)[0]
+                p = o.projects.update_or_create(name=prj_name, owner=u)[0]
+                a = p.applications.update_or_create(name=app_name, owner=u)[0]
+                ch = o.channel_set.update_or_create(dispatcher=fqn(GMailDispatcher))[0]
+                e = a.events.update_or_create(name="Test Event")[0]
+                e.channels.add(ch)
+
+                if k := os.environ.get("TEST_API_KEY"):
+                    u.keys.update_or_create(
+                        name="Key1", defaults={"key": k, "application": a, "grants": [Grant.EVENT_TRIGGER]}
+                    )
+
+                echo(f"Created/Updated Organization {org_name}", style_func=self.style.SUCCESS)
+                echo(f"Created/Updated Project {prj_name}", style_func=self.style.SUCCESS)
+                echo(f"Created/Updated Application {app_name}", style_func=self.style.SUCCESS)
+
             if os.environ.get("GMAIL_USER") and os.environ.get("GMAIL_PASSWORD"):
                 ch, __ = Channel.objects.update_or_create(
                     name="Gmail",
