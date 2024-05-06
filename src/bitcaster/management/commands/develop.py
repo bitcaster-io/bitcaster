@@ -11,7 +11,7 @@ from strategy_field.utils import fqn
 
 from bitcaster.config import env
 from bitcaster.dispatchers import (
-    GMmailDispatcher,
+    GMailDispatcher,
     MailgunDispatcher,
     MailJetDispatcher,
     SlackDispatcher,
@@ -153,7 +153,7 @@ class Command(BaseCommand):
                     name="Gmail",
                     defaults={
                         "application": bitcaster,
-                        "dispatcher": fqn(GMmailDispatcher),
+                        "dispatcher": fqn(GMailDispatcher),
                         "config": {
                             "username": os.environ.get("GMAIL_USER"),
                             "password": os.environ.get("GMAIL_PASSWORD"),

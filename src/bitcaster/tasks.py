@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 @app.task()
-def process_event(occurrence_pk: int) -> int:
+def process_occurrence(occurrence_pk: int) -> int | Exception:
 
     from bitcaster.models import Occurrence
 
@@ -33,3 +33,4 @@ def process_event(occurrence_pk: int) -> int:
             return 0
     except Exception as e:
         logger.exception(e)
+        return e

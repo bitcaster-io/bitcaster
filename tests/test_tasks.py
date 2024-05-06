@@ -8,7 +8,7 @@ from strategy_field.utils import fqn
 from testutils.dispatcher import TDispatcher
 
 from bitcaster.constants import Bitcaster, SystemEvent
-from bitcaster.tasks import process_event
+from bitcaster.tasks import process_occurrence
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -44,8 +44,8 @@ def setup(admin_user) -> "Context":
     )
 
     ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(TDispatcher))
-    v1: Validation = ValidationFactory(channel=ch)
-    v2: Validation = ValidationFactory(channel=ch)
+    v1: Validation = ValidationFactory(channel=ch, address__value="test1@example.com")
+    v2: Validation = ValidationFactory(channel=ch, address__value="test2@example.com")
     no: Notification = NotificationFactory(event__channels=[ch], distribution__recipients=[v1, v2])
     MessageFactory(channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}")
 
@@ -70,7 +70,7 @@ def test_process_event_single(setup: "Context", messagebox):
     addr = setup["address"]
     event = occurrence.event
     ch = setup["channel"]
-    process_event(occurrence.pk)
+    process_occurrence(occurrence.pk)
     assert messagebox == [
         (addr.value, f"Message for {event.name} on channel {ch.name}"),
         (v2.address.value, f"Message for {event.name} on channel {ch.name}"),
@@ -92,7 +92,7 @@ def test_process_incomplete_event(setup: "Context", messagebox):
     setup["occurrence"].data["delivered"] = [v1.id, v2.id]
     setup["occurrence"].save()
 
-    process_event(occurrence.pk)
+    process_occurrence(occurrence.pk)
     assert messagebox == []
 
     occurrence.refresh_from_db()
@@ -110,14 +110,14 @@ def test_process_event_partially(setup: "Context", monkeypatch):
         mocked_notify := Mock(side_effect=[None, Exception("This is raised after first call")]),
     )
 
-    process_event(occurrence.pk)
+    process_occurrence(occurrence.pk)
 
     occurrence.refresh_from_db()
     assert occurrence.status == Occurrence.Status.NEW
     assert mocked_notify.call_count == 2
     assert occurrence.data == {
         "delivered": [setup["validations"][0].id],
-        "recipients": [["test@examplec.com", "test"]],
+        "recipients": [["test1@example.com", "test"]],
     }
 
 
@@ -133,14 +133,14 @@ def test_process_event_resume(setup: "Context", monkeypatch):
 
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", mocked_notify := Mock())
 
-    process_event(occurrence.pk)
+    process_occurrence(occurrence.pk)
 
     occurrence.refresh_from_db()
     assert occurrence.status == Occurrence.Status.PROCESSED
     assert mocked_notify.call_count == 1
     assert occurrence.data == {
         "delivered": [v1.id, v2.id],
-        "recipients": [["test@examplec.com", "test"], ["test@examplec.com", v1.channel.name]],
+        "recipients": [["test1@example.com", "test"], ["test2@example.com", v1.channel.name]],
     }
 
 
@@ -152,21 +152,21 @@ def test_silent_event(setup: "Context", monkeypatch, system_events):
     o = e.trigger({"key": "value"}, cid=cid)
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
 
-    assert o.__class__.objects.system(correlation_id=cid).count() == 0
-    process_event(o.pk)
+    assert Occurrence.objects.system(correlation_id=cid).count() == 0
+    process_occurrence(o.pk)
 
     o.refresh_from_db()
     assert o.status == Occurrence.Status.PROCESSED
     assert o.data == {}
-    assert o.__class__.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
-    assert o.__class__.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
+    assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
+    assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
 
 
 def test_attempts(setup: "Context", monkeypatch):
     from testutils.factories import Occurrence, OccurrenceFactory
 
     o = OccurrenceFactory(attempts=0, status=Occurrence.Status.PROCESSED)
-    process_event(o.pk)
+    process_occurrence(o.pk)
 
     o.refresh_from_db()
     assert o.status == Occurrence.Status.PROCESSED
@@ -184,7 +184,7 @@ def test_retry(setup: "Context", monkeypatch, system_events):
         mocked_notify := Mock(side_effect=[None, Exception("This is raised after first call")]),
     )
     for a in range(10):
-        process_event(o.pk)
+        process_occurrence(o.pk)
     o.refresh_from_db()
     assert o.attempts == 0
     assert o.status == Occurrence.Status.FAILED
@@ -196,7 +196,7 @@ def test_error(setup: "Context", system_events):
     from testutils.factories import Occurrence, OccurrenceFactory
 
     o = OccurrenceFactory(attempts=0, status=Occurrence.Status.NEW)
-    process_event(o.pk)
+    process_occurrence(o.pk)
 
     o.refresh_from_db()
     assert o.status == Occurrence.Status.FAILED
@@ -209,7 +209,7 @@ def test_processed(setup: "Context", monkeypatch, system_events):
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())
 
     o = OccurrenceFactory(status=Occurrence.Status.PROCESSED)
-    process_event(o.pk)
+    process_occurrence(o.pk)
     assert mocked_notify.call_count == 0
 
 
@@ -222,4 +222,4 @@ def celery_config():
 @pytest.mark.skipif(os.getenv("GITLAB_CI") is not None, reason="Do not run on GitLab CI")
 def test_live(db, setup: "Context", monkeypatch, system_events, celery_app, celery_worker):
     o = setup["occurrence"]
-    assert process_event.delay(o.pk).get(timeout=10) == 2
+    assert process_occurrence.delay(o.pk).get(timeout=10) == 2

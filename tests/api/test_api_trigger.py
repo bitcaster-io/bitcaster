@@ -1,16 +1,25 @@
 from typing import TYPE_CHECKING, TypedDict
+from unittest.mock import Mock
 
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
-from testutils.factories.event import EventFactory
-from testutils.factories.key import ApiKeyFactory
 from testutils.perms import key_grants
 
 from bitcaster.auth.constants import Grant
+from bitcaster.constants import SystemEvent
+from bitcaster.tasks import process_occurrence
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Application, Event, Organization, Project, User
+    from bitcaster.models import (
+        ApiKey,
+        Application,
+        Event,
+        Organization,
+        Project,
+        User,
+        Validation,
+    )
 
     Context = TypedDict(
         "Context",
@@ -34,8 +43,20 @@ def client() -> APIClient:
 
 
 @pytest.fixture()
-def data(admin_user) -> "Context":
-    event: "Event" = EventFactory()
+def data(admin_user, email_channel) -> "Context":
+    from testutils.factories import (
+        ApiKeyFactory,
+        EventFactory,
+        MessageFactory,
+        NotificationFactory,
+        ValidationFactory,
+    )
+
+    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
+    NotificationFactory(
+        distribution__recipients=[ValidationFactory(channel=email_channel) for __ in range(4)], event=event
+    )
+    # event: "Event" = n.event
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     return {
         "event": event,
@@ -128,3 +149,62 @@ def test_trigger_404(client: APIClient, data: "Context") -> None:
         res = client.post(url, data={"context": event_context}, format="json")
         assert res.status_code == status.HTTP_404_NOT_FOUND
         assert res.data["error"]
+
+
+def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypatch) -> None:
+    from bitcaster.models import Occurrence
+
+    api_key = data["key"]
+    event = data["event"]
+    url: str = data["url"]
+    recipients: list[Validation] = list(event.notifications.first().distribution.recipients.all())
+    target: Validation = recipients[0]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.post(
+            url,
+            data={
+                "context": {"key": "value"},
+                "options": {"limit_to": [target.address.value]},
+            },
+            format="json",
+        )
+        assert res.status_code == status.HTTP_200_OK, res.json()
+        assert res.data["occurrence"]
+        o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
+
+    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
+    assert o.options == {"limit_to": [target.address.value]}
+
+    delivered = process_occurrence(o.pk)
+    assert delivered == 1
+    o.refresh_from_db()
+    assert o.data == {"delivered": [target.pk], "recipients": [[target.address.value, target.channel.name]]}
+
+
+def test_trigger_limit_to_with_wrong_receiver(client: APIClient, data: "Context", monkeypatch, system_events) -> None:
+    from bitcaster.models import Occurrence
+
+    api_key = data["key"]
+    url: str = data["url"]
+
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.post(
+            url,
+            data={
+                "context": {"key": "value"},
+                "options": {"limit_to": ["invalid-address"]},
+            },
+            format="json",
+        )
+        assert res.status_code == status.HTTP_200_OK, res.json()
+        assert res.data["occurrence"]
+        o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
+
+    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
+    assert o.options == {"limit_to": ["invalid-address"]}
+
+    delivered = process_occurrence(o.pk)
+    assert delivered == 0
+    assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1

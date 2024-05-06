@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypedDict
 
 from django.db import models, transaction
 from django.utils.translation import gettext as _
@@ -14,7 +14,20 @@ if TYPE_CHECKING:
     from .message import Message
     from .notification import Notification
 
+    OccurrenceData = TypedDict(
+        "OccurrenceData",
+        {
+            "delivered": list[str | int],
+            "recipients": list[tuple[str, str]],
+        },
+    )
 
+    OccurrenceOptions = TypedDict(
+        "OccurrenceOptions",
+        {
+            "limit_to": list[str],
+        },
+    )
 logger = logging.getLogger(__name__)
 
 
@@ -33,7 +46,7 @@ class Occurrence(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, help_text=_("Timestamp when occurrence has been created."))
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     context = models.JSONField(blank=True, default=dict, help_text=_("Context provided by the sender"))
-    options = models.JSONField(
+    options: "OccurrenceOptions" = models.JSONField(  # type: ignore[assignment]
         blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
     )
 
@@ -41,7 +54,9 @@ class Occurrence(models.Model):
     recipients = models.IntegerField(default=0, help_text=_("Total number of recipients"))
 
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
-    data = models.JSONField(default=dict, help_text=_("Information about the processing (recipients, channels)"))
+    data: "OccurrenceData" = models.JSONField(  # type: ignore[assignment]
+        default=dict, help_text=_("Information about the processing (recipients, channels)")
+    )
     status = models.CharField(
         choices=Status,
         default=Status.NEW.value,
@@ -69,19 +84,21 @@ class Occurrence(models.Model):
     def process(self) -> bool:
         validation: "Validation"
         notification: "Notification"
-
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
         channels = self.event.channels.active()
+        extra_filter = {}
+        if limit := self.options.get("limit_to", []):
+            extra_filter = {"address__value__in": limit}
         for notification in self.event.notifications.match(self.context):
             context = notification.get_context(self.get_context())
             for channel in channels:
-                for validation in notification.get_pending_subscriptions(delivered, channel):
+                for validation in notification.get_pending_subscriptions(delivered, channel).filter(**extra_filter):
                     with transaction.atomic(durable=True):
                         notification.notify_to_channel(channel, validation, context)
 
                         delivered.append(validation.id)
-                        recipients.append([validation.address.value, validation.channel.name])
+                        recipients.append((validation.address.value, validation.channel.name))
 
                         self.data = {"delivered": delivered, "recipients": recipients}
                         self.save()

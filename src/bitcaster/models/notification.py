@@ -43,7 +43,7 @@ class Notification(models.Model):
     def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
         return {**ctx, "notification": self.name}
 
-    def get_pending_subscriptions(self, delivered: list[str], channel: "Channel") -> QuerySet[Validation]:
+    def get_pending_subscriptions(self, delivered: list[str | int], channel: "Channel") -> QuerySet[Validation]:
         return (
             self.distribution.recipients.select_related(
                 "address",

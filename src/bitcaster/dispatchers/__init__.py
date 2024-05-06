@@ -1,5 +1,5 @@
 from .email import EmailDispatcher  # noqa
-from .gmail import GMmailDispatcher  # noqa
+from .gmail import GMailDispatcher  # noqa
 from .log import BitcasterLogDispatcher  # noqa
 from .mailgun import MailgunDispatcher  # noqa
 from .mailjet import MailJetDispatcher  # noqa

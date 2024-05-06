@@ -23,3 +23,21 @@ class EventFactory(AutoRegisterModelFactory):
         if extracted:
             for ch in extracted:
                 dist.channels.add(ch)
+
+    @factory.post_generation
+    def messages(dist: "Event", create, extracted, **kwargs):
+        from .message import MessageFactory
+
+        if not create:
+            return
+
+        if extracted:
+            if isinstance(extracted, int):
+                for _ in range(extracted):
+                    msg = MessageFactory()
+                    dist.messages.add(msg)
+                    dist.channels.add(msg.channel)
+            else:
+                for msg in extracted:
+                    dist.messages.add(msg)
+                    dist.channels.add(msg.channel)

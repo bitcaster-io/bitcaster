@@ -23,6 +23,7 @@ class TriggerSerializer(serializers.HyperlinkedModelSerializer):
 
 class ActionSerializer(serializers.Serializer):
     context = serializers.DictField(required=False)
+    options = serializers.DictField(required=False)
 
 
 class TriggerViewSet(BaseModelViewSet):
@@ -53,7 +54,11 @@ class TriggerViewSet(BaseModelViewSet):
                     slug=event,
                 )
                 self.check_object_permissions(self.request, obj)
-                o: "Occurrence" = obj.trigger(ser.validated_data.get("context", {}), cid=correlation_id)
+                o: "Occurrence" = obj.trigger(
+                    ser.validated_data.get("context", {}),
+                    options=ser.validated_data.get("options", {}),
+                    cid=correlation_id,
+                )
                 return Response({"occurrence": o.pk})
             except Event.DoesNotExist:
                 return Response({"error": "Event not found"}, status=404)

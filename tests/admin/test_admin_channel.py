@@ -26,19 +26,19 @@ def app(django_app_factory, db):
 def gmail_channel(db):
     from testutils.factories.channel import ChannelFactory
 
-    from bitcaster.dispatchers import GMmailDispatcher
+    from bitcaster.dispatchers import GMailDispatcher
 
-    return ChannelFactory(dispatcher=fqn(GMmailDispatcher), config={"username": "username", "password": "password"})
+    return ChannelFactory(dispatcher=fqn(GMailDispatcher), config={"username": "username", "password": "password"})
 
 
 @pytest.fixture()
 def system_channel(db):
     from testutils.factories.channel import ChannelFactory
 
-    from bitcaster.dispatchers import GMmailDispatcher
+    from bitcaster.dispatchers import GMailDispatcher
 
     return ChannelFactory(
-        dispatcher=fqn(GMmailDispatcher),
+        dispatcher=fqn(GMailDispatcher),
         name=Channel.SYSTEM_EMAIL_CHANNEL_NAME,
         config={"username": "username", "password": "password"},
     )

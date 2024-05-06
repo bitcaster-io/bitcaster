@@ -18,7 +18,7 @@ class GMailConfig(DispatcherConfig):
     password = forms.CharField(label=_("Password"))
 
 
-class GMmailDispatcher(Dispatcher):
+class GMailDispatcher(Dispatcher):
     slug = "gmail"
     verbose_name = "GMmail"
 

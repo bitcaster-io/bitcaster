@@ -225,6 +225,26 @@ def channel(db):
 
 
 @pytest.fixture()
+def email_channel(db):
+    from strategy_field.utils import fqn
+    from testutils.factories.channel import ChannelFactory
+
+    from bitcaster.dispatchers import GMailDispatcher
+
+    return ChannelFactory(dispatcher=fqn(GMailDispatcher))
+
+
+@pytest.fixture()
+def sms_channel(db):
+    from strategy_field.utils import fqn
+    from testutils.factories.channel import ChannelFactory
+
+    from bitcaster.dispatchers import TwilioSMS
+
+    return ChannelFactory(dispatcher=fqn(TwilioSMS))
+
+
+@pytest.fixture()
 def api_key(db):
     from testutils.factories.key import ApiKeyFactory
 

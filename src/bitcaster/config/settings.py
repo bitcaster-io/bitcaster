@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     #
     "django_select2",
-    "transifex.native.django",
     #
     "adminactions",
     "admin_extra_buttons",
@@ -224,4 +223,3 @@ from .fragments.root import *  # noqa
 from .fragments.sentry import *  # noqa
 from .fragments.social_auth import *  # noqa
 from .fragments.tinymce import *  # noqa
-from .fragments.transifex import *  # noqa

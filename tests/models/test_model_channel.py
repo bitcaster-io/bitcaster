@@ -1,7 +1,7 @@
 import pytest
 from strategy_field.utils import fqn, get_attr
 
-from bitcaster.dispatchers import GMmailDispatcher
+from bitcaster.dispatchers import GMailDispatcher
 from bitcaster.models import Channel
 
 
@@ -22,30 +22,28 @@ def channel(request, db):
 
 
 def test_manager_get_or_create(application):
-    assert Channel.objects.get_or_create(dispatcher=fqn(GMmailDispatcher), application=application)
-    assert Channel.objects.get_or_create(dispatcher=fqn(GMmailDispatcher), project=application.project)
-    assert Channel.objects.get_or_create(
-        dispatcher=fqn(GMmailDispatcher), organization=application.project.organization
-    )
+    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), application=application)
+    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), project=application.project)
+    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), organization=application.project.organization)
 
-    assert Channel.objects.get_or_create(dispatcher=fqn(GMmailDispatcher), defaults={"application": application})
-    assert Channel.objects.get_or_create(dispatcher=fqn(GMmailDispatcher), defaults={"project": application.project})
+    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), defaults={"application": application})
+    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), defaults={"project": application.project})
     assert Channel.objects.get_or_create(
-        dispatcher=fqn(GMmailDispatcher), defaults={"organization": application.project.organization}
+        dispatcher=fqn(GMailDispatcher), defaults={"organization": application.project.organization}
     )
 
 
 def test_manager_update_or_create(application):
-    assert Channel.objects.update_or_create(dispatcher=fqn(GMmailDispatcher), application=application)
-    assert Channel.objects.update_or_create(dispatcher=fqn(GMmailDispatcher), project=application.project)
+    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), application=application)
+    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), project=application.project)
     assert Channel.objects.update_or_create(
-        dispatcher=fqn(GMmailDispatcher), organization=application.project.organization
+        dispatcher=fqn(GMailDispatcher), organization=application.project.organization
     )
 
-    assert Channel.objects.update_or_create(dispatcher=fqn(GMmailDispatcher), defaults={"application": application})
-    assert Channel.objects.update_or_create(dispatcher=fqn(GMmailDispatcher), defaults={"project": application.project})
+    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), defaults={"application": application})
+    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), defaults={"project": application.project})
     assert Channel.objects.update_or_create(
-        dispatcher=fqn(GMmailDispatcher), defaults={"organization": application.project.organization}
+        dispatcher=fqn(GMailDispatcher), defaults={"organization": application.project.organization}
     )
 
 

@@ -7,6 +7,7 @@ from django.db import models
 
 if TYPE_CHECKING:
     from bitcaster.models import Application, Occurrence, User
+    from bitcaster.models.occurrence import OccurrenceOptions
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ class Bitcaster:
         evt: "SystemEvent",
         context: Optional[dict[str, Any]] = None,
         *,
-        options: Optional[dict[str, str]] = None,
+        options: "Optional[OccurrenceOptions]" = None,
         correlation_id: Optional[Any] = None,
     ) -> "Optional[Occurrence]":
         return cls.app.events.get(name=evt.value).trigger(context or {}, options=options or {}, cid=correlation_id)
