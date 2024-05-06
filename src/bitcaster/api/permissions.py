@@ -60,10 +60,10 @@ class ApiApplicationPermission(ApiBasePermission):
             return False
         if not request.auth.application:
             return False
-        if hasattr(request, "user") and not request.user.is_authenticated:
+            # if hasattr(request, "user") and not request.user.is_authenticated:
             return False
-        if request.auth.application.slug != view.kwargs["app"]:
-            return False
+        # if request.auth.application.slug != view.kwargs["app"]:
+        #     return False
         return self._check_valid_scope(request.auth, view)
 
     def has_object_permission(self, request: Request, view: "SecurityMixin", obj: "AnyModel") -> bool:
