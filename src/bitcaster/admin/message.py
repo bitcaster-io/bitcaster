@@ -39,6 +39,9 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
     )
     autocomplete_fields = ("channel", "event", "notification")
     change_form_template = "admin/message/change_form.html"
+    change_list_template = "admin/reversion_change_list.html"
+    object_history_template = "reversion/object_history.html"
+
     form = MessageChangeForm
     add_form = MessageCreationForm
 

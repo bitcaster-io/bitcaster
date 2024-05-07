@@ -1,71 +1,75 @@
-from rest_framework import permissions, viewsets
-from rest_framework_extensions.mixins import NestedViewSetMixin
+from rest_framework import serializers, status
+from rest_framework.generics import GenericAPIView, ListAPIView
+from rest_framework.parsers import JSONParser
+from rest_framework.request import Request
+from rest_framework.response import Response
 
-from ..models import Application, Channel, Event, Organization, Project, User
-from .base import BaseModelViewSet, SecurityMixin
-from .serializers import (
-    ApplicationSerializer,
-    ChannelSerializer,
-    EventSerializer,
-    OrganizationSerializer,
-    ProjectSerializer,
-    UserSerializer,
-)
+from ..auth.constants import Grant
+from ..models import Event, Occurrence
+from .base import SecurityMixin
 
+# from .trigger import ActionSerializer
 
-class SelectedOrganizationViewSet(SecurityMixin, viewsets.ReadOnlyModelViewSet):
-    pass
+app_name = "api"
 
 
-class UserViewSet(BaseModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    lookup_field = "slug"
+class ActionSerializer(serializers.Serializer):
+    context = serializers.DictField(required=False)
+    options = serializers.DictField(required=False)
 
 
-class OrganizationViewSet(BaseModelViewSet):
-    queryset = Organization.objects.all()
-    serializer_class = OrganizationSerializer
-    lookup_field = "slug"
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = "__all__"
 
 
-class ProjectViewSet(NestedViewSetMixin, BaseModelViewSet):
-    queryset = Project.objects.all().order_by("-pk")
-    serializer_class = ProjectSerializer
-    lookup_field = "slug"
-    # lookup_url_kwarg = "slug"
-
-
-class ApplicationViewSet(NestedViewSetMixin, BaseModelViewSet):
-    queryset = Application.objects.all().order_by("-pk")
-    serializer_class = ApplicationSerializer
-    lookup_field = "slug"
-
-
-class ChannelViewSet(NestedViewSetMixin, BaseModelViewSet):
-    queryset = Channel.objects.all().order_by("-pk")
-    serializer_class = ChannelSerializer
-    permission_classes = (permissions.DjangoObjectPermissions,)
-
-
-class EventViewSet(NestedViewSetMixin, BaseModelViewSet):
-    queryset = Event.objects.all().order_by("-pk")
+class EventList(SecurityMixin, ListAPIView):
     serializer_class = EventSerializer
-    permission_classes = (permissions.DjangoObjectPermissions,)
-    lookup_field = "slug"
+    required_grants = [Grant.EVENT_LIST]
 
-    # @action(
-    #     detail=True,
-    #     methods=[
-    #         "GET",
-    #     ],
-    #     url_path=r"c",
-    # )
-    # def channels(self, request: HttpRequest, **kwargs: Any) -> Response:
-    #     return Response({})
-    #
-    # def trigger(self, request: HttpRequest, **kwargs: Any) -> Response:
-    #     obj = self.get_object()
-    #     qs = obj.channels.all()
-    #     serializer = ChannelSerializer(qs, many=True)
-    #     return Response(serializer.data)
+    def get_queryset(self):
+        return Event.objects.filter(
+            application__project__organization__slug=self.kwargs["org"],
+            application__project__slug=self.kwargs["prj"],
+            application__slug=self.kwargs["app"],
+        )
+
+
+class EventTrigger(SecurityMixin, GenericAPIView):
+    serializer_class = EventSerializer
+    required_grants = [Grant.EVENT_TRIGGER]
+    # permission_classes = []
+    parser = (JSONParser,)
+
+    def get_queryset(self):
+        return Event.objects.filter(
+            application__project__organization__slug=self.kwargs["org"],
+            application__project__slug=self.kwargs["prj"],
+            application__slug=self.kwargs["app"],
+        )
+
+    def get(self, request: "Request", *args, **kwargs) -> Response:
+        slug = self.kwargs["evt"]
+        obj: "Event" = self.get_queryset().get(slug=slug)
+        self.check_object_permissions(self.request, obj)
+        return Response("Method GET Not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def post(self, request: "Request", *args, **kwargs) -> Response:
+        ser = ActionSerializer(data=request.data)
+        correlation_id = request.query_params.get("cid", None)
+        if ser.is_valid():
+            slug = self.kwargs["evt"]
+            try:
+                obj: "Event" = self.get_queryset().get(slug=slug)
+                self.check_object_permissions(self.request, obj)
+                o: "Occurrence" = obj.trigger(
+                    ser.validated_data.get("context", {}),
+                    options=ser.validated_data.get("options", {}),
+                    cid=correlation_id,
+                )
+                return Response({"occurrence": o.pk}, status=201)
+            except Event.DoesNotExist:
+                return Response({"error": f"Event not found {self.kwargs}"}, status=404)
+        else:
+            return Response(ser.errors, status=400)

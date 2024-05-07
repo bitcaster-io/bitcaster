@@ -1,11 +1,14 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional, Sequence
 
+from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.http import HttpRequest
+from django.template.response import TemplateResponse
+from django.utils.translation import gettext as _
 
 from bitcaster.models import Event
 
@@ -16,8 +19,8 @@ from .message import Message
 from .mixins import LockMixin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
+    from django.http import HttpResponse
     from django.utils.datastructures import _ListOrTuple
-
 
 logger = logging.getLogger(__name__)
 
@@ -74,3 +77,15 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
             return ["channels", "locked"]
         else:
             return ["locked"]
+
+    @button()
+    def trigger_url(self, request: HttpRequest, pk: str) -> "HttpResponse":
+        obj: Event = self.get_object(request, pk)
+        url = obj.get_trigger_url(request)
+        self.message_user(request, url, messages.SUCCESS)
+
+    @button()
+    def notifications(self, request: HttpRequest, pk: str) -> "HttpResponse":
+        ctx = self.get_common_context(request, pk, title=_("Notifications"))
+        # ctx[""]
+        return TemplateResponse(request, "admin/event/notifications.html", ctx)

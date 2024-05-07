@@ -1,5 +1,4 @@
 import enum
-import functools
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
@@ -16,6 +15,7 @@ class Bitcaster:
     ORGANIZATION = "OS4D"
     PROJECT = "BITCASTER"
     APPLICATION = "Bitcaster"
+    _app = None
 
     @staticmethod
     def initialize(admin: "User") -> "Application":
@@ -34,17 +34,19 @@ class Bitcaster:
             app.register_event(event_name.value)
 
         DistributionList.objects.get_or_create(name=DistributionList.ADMINS, project=prj)
+        Bitcaster._app = None
         return app
 
     @classmethod
     @property
-    @functools.cache
     def app(cls) -> "Application":
         from bitcaster.models import Application
 
-        return Application.objects.get(
-            name=cls.APPLICATION, project__name=cls.PROJECT, project__organization__name=cls.ORGANIZATION
-        )
+        if not cls._app:
+            cls._app = Application.objects.get(
+                name=cls.APPLICATION, project__name=cls.PROJECT, project__organization__name=cls.ORGANIZATION
+            )
+        return cls._app
 
     @classmethod
     def trigger_event(

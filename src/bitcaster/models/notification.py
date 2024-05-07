@@ -2,8 +2,11 @@ from typing import TYPE_CHECKING, Any, Optional
 
 import jmespath
 import yaml
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import QuerySet
+from django.utils.functional import cached_property
+from django.utils.translation import gettext as _
 
 from ..dispatchers.base import Payload
 from .distribution import DistributionList
@@ -11,7 +14,7 @@ from .validation import Validation
 
 if TYPE_CHECKING:
     from bitcaster.dispatchers.base import Dispatcher
-    from bitcaster.models import Address, Channel, Message
+    from bitcaster.models import Address, Application, Channel, Message
     from bitcaster.types.core import YamlPayload
 
 
@@ -30,7 +33,13 @@ class Notification(models.Model):
         DistributionList, blank=True, null=True, on_delete=models.CASCADE, related_name="notifications"
     )
     payload_filter = models.TextField(blank=True, null=True)
-    extra_context = models.JSONField(default=dict)
+    extra_context = models.JSONField(default=dict, blank=True)
+    environments = ArrayField(
+        models.CharField(max_length=20, blank=True, null=True),
+        blank=True,
+        null=True,
+        help_text=_("Environments available for project"),
+    )
     objects = NotificationQuerySet.as_manager()
 
     def __init__(self, *args: Any, **kwargs: Any):
@@ -39,6 +48,10 @@ class Notification(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    @cached_property
+    def application(self) -> "Application":
+        return self.event.application
 
     def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
         return {**ctx, "notification": self.name}

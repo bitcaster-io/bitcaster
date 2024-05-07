@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django_svelte_jsoneditor",
     "tinymce",
     "reversion",
+    "taggit",
     #
     "celery",
     "treebeard",

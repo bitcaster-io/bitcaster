@@ -5,13 +5,13 @@ from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from adminfilters.combo import ChoicesFieldComboFilter
 from django import forms
-from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from reversion.admin import VersionAdmin
 
 from bitcaster.models import Channel
 
@@ -36,7 +36,7 @@ class ChannelTestForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
 
 
-class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], admin.ModelAdmin[Channel]):
+class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], VersionAdmin[Channel]):
     search_fields = ("name",)
     list_display = ("name", "organization", "project", "application", "dispatcher_", "active", "locked")
     list_filter = (
@@ -48,6 +48,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], a
         ("dispatcher", ChoicesFieldComboFilter),
     )
     autocomplete_fields = ("organization", "application")
+    change_list_template = "admin/reversion_change_list.html"
     form = ChannelChangeForm
     add_form = ChannelAddForm
 

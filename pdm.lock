@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:0a0846d518eef2b8029569e19feb1402922a10b21aa3cd7f3c6a56c69819ff6d"
+content_hash = "sha256:3dcc1966bbc0368c562f8709193ac9d9d88c4e9b85d819951a84bd15a6e9dbc1"
 
 [[package]]
 name = "aiohttp"
@@ -908,6 +908,20 @@ dependencies = [
 files = [
     {file = "django_svelte_jsoneditor-0.4.2-py3-none-any.whl", hash = "sha256:bfa715a796e5c8a0c3d0edf5b064b21417c65e101fa131ee4a7beb670bbef53c"},
     {file = "django_svelte_jsoneditor-0.4.2.tar.gz", hash = "sha256:1cc73511297bc6e11d5bbd151543da22a36e67dcc6f652d92943174b88153024"},
+]
+
+[[package]]
+name = "django-taggit"
+version = "5.0.1"
+requires_python = ">=3.8"
+summary = "django-taggit is a reusable Django application for simple tagging."
+groups = ["default"]
+dependencies = [
+    "Django>=4.1",
+]
+files = [
+    {file = "django-taggit-5.0.1.tar.gz", hash = "sha256:edcd7db1e0f35c304e082a2f631ddac2e16ef5296029524eb792af7430cab4cc"},
+    {file = "django_taggit-5.0.1-py3-none-any.whl", hash = "sha256:a0ca8a28b03c4b26c2630fd762cb76ec39b5e41abf727a7b66f897a625c5e647"},
 ]
 
 [[package]]

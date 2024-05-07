@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class PingView(BaseView):
     required_grants = [Grant.SYSTEM_PING]
-    permission_classes = []
+    # permission_classes = []
 
     def get(self, request: Request, **kwargs: Any) -> Response:
         key: "ApiKey" = request.auth

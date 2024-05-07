@@ -7,14 +7,14 @@ from testutils.factories.event import EventFactory
 from testutils.factories.key import ApiKeyFactory
 
 from bitcaster.api.permissions import ApiKeyAuthentication
-from bitcaster.api.views import EventViewSet
+from bitcaster.api.views import EventList
 
 if TYPE_CHECKING:
     from bitcaster.models import ApiKey, Event
 
     Context = TypedDict(
         "Context",
-        {"event": Event, "key": ApiKey, "backend": ApiKeyAuthentication, "view": EventViewSet},
+        {"event": Event, "key": ApiKey, "backend": ApiKeyAuthentication, "view": EventList},
     )
 
 pytestmark = [pytest.mark.api, pytest.mark.django_db]
@@ -30,7 +30,7 @@ def client() -> APIClient:
 def context(admin_user) -> "Context":
     event: "Event" = EventFactory()
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
-    return {"event": event, "key": key, "backend": ApiKeyAuthentication(), "view": MagicMock(spec=EventViewSet)}
+    return {"event": event, "key": key, "backend": ApiKeyAuthentication(), "view": MagicMock(spec=EventList)}
 
 
 def test_authenticate(rf, context: "Context") -> None:

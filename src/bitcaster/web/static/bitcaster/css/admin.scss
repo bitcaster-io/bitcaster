@@ -166,9 +166,15 @@ html[data-theme="dark"] {
     }
   }
 
-  .select2-container {
+  span.select2-container {
+    width: 400px !important;
     background-color: var(--body-bg);
-
+    ul {
+      height: 32px;
+      li.select2-selection__choice {
+        color: black;
+      }
+    }
     .select2-dropdown {
       background-color: var(--body-bg);
     }

@@ -22,8 +22,11 @@ logger = logging.getLogger(__name__)
 
 class ProjectAdmin(BaseAdmin, LockMixin[Project], admin.ModelAdmin[Project]):
     search_fields = ("name",)
-    list_display = ("name", "organization")
-    list_filter = (("organization", AutoCompleteFilter),)
+    list_display = ("name", "organization", "environments")
+    list_filter = (
+        ("organization", AutoCompleteFilter),
+        # ("environments", ChoiceFilter),
+    )
     autocomplete_fields = ("organization",)
     exclude = ("locked",)
     form = ProjectChangeForm

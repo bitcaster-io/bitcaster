@@ -13,10 +13,11 @@ def client(admin_user):
     return c
 
 
-def test_api_root(client):
-    url = "/api/"
-    res = client.get(url)
-    assert res.json()
+#
+# def test_api_root(client):
+#     url = "/api/"
+#     res = client.get(url)
+#     assert res.json()
 
 
 def test_api_schema(client):

@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from django.db import models
+from django.http import HttpRequest
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from .application import Application
@@ -62,3 +64,15 @@ class Event(SlugMixin, models.Model):
         return Notification.objects.get_or_create(
             name=name, event=self, defaults=defaults if defaults else {}, distribution=distribution
         )[0]
+
+    def get_trigger_url(self, request: "HttpRequest") -> str:
+        url = reverse(
+            "api:event-trigger",
+            args=[
+                self.application.project.organization.slug,
+                self.application.project.slug,
+                self.application.slug,
+                self.slug,
+            ],
+        )
+        return request.build_absolute_uri(url)

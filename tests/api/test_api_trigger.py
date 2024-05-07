@@ -62,7 +62,7 @@ def data(admin_user, email_channel) -> "Context":
         "event": event,
         "key": key,
         "user": admin_user,
-        "url": "/api/trigger/o/{}/p/{}/a/{}/e/{}/".format(
+        "url": "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
             event.application.project.organization.slug,
             event.application.project.slug,
             event.application.slug,
@@ -92,22 +92,27 @@ def test_trigger_405(client: APIClient, data: "Context") -> None:
 
 
 def test_trigger_security(client: APIClient, data: "Context") -> None:
-    api_key = data["key"]
     url: str = data["url"]
-    # no token provided
     res = client.post(url, data={})
     assert res.status_code == status.HTTP_401_UNAUTHORIZED
 
-    # token with wrong grants
-    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
-    res = client.post(url, data={})
-    assert res.status_code == status.HTTP_403_FORBIDDEN
 
-    # finally... valid token
-    with key_grants(api_key, Grant.EVENT_TRIGGER):
+@pytest.mark.parametrize(
+    "perm,status_code",
+    [
+        (Grant.EVENT_TRIGGER, status.HTTP_201_CREATED),
+        (Grant.SYSTEM_PING, status.HTTP_403_FORBIDDEN),
+        ([], status.HTTP_403_FORBIDDEN),
+    ],
+)
+def test_trigger_permission(client: APIClient, data: "Context", perm, status_code) -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    # no token provided
+    with key_grants(api_key, perm):
         res = client.post(url, data={})
-        assert res.status_code == status.HTTP_200_OK, res.json()
-        assert res.data["occurrence"], res.json()
+        assert res.status_code == status_code
 
 
 def test_trigger(client: APIClient, data: "Context") -> None:
@@ -128,7 +133,7 @@ def test_trigger(client: APIClient, data: "Context") -> None:
     # finally... valid token
     with key_grants(api_key, Grant.EVENT_TRIGGER):
         res = client.post(url, data={"context": event_context}, format="json")
-        assert res.status_code == status.HTTP_200_OK, res.json()
+        assert res.status_code == status.HTTP_201_CREATED, res.json()
         assert res.data["occurrence"]
         o = Occurrence.objects.get(pk=res.data["occurrence"])
         assert o.context == event_context
@@ -144,7 +149,7 @@ def test_trigger_404(client: APIClient, data: "Context") -> None:
     org: "Organization" = prj.organization
     client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
 
-    url = "/api/trigger/o/{}/p/{}/a/{}/e/missing-event/".format(org.slug, prj.slug, app.slug)
+    url = "/api/o/{}/p/{}/a/{}/e/missing-event/trigger/".format(org.slug, prj.slug, app.slug)
     with key_grants(api_key, Grant.EVENT_TRIGGER):
         res = client.post(url, data={"context": event_context}, format="json")
         assert res.status_code == status.HTTP_404_NOT_FOUND
@@ -169,7 +174,7 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
             },
             format="json",
         )
-        assert res.status_code == status.HTTP_200_OK, res.json()
+        assert res.status_code == status.HTTP_201_CREATED, res.json()
         assert res.data["occurrence"]
         o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
 
@@ -198,7 +203,7 @@ def test_trigger_limit_to_with_wrong_receiver(client: APIClient, data: "Context"
             },
             format="json",
         )
-        assert res.status_code == status.HTTP_200_OK, res.json()
+        assert res.status_code == status.HTTP_201_CREATED, res.json()
         assert res.data["occurrence"]
         o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
 

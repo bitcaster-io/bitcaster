@@ -1,15 +1,13 @@
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import views, viewsets
+from rest_framework import views
 from rest_framework.authentication import (
     BaseAuthentication,
     BasicAuthentication,
     SessionAuthentication,
 )
 from rest_framework.permissions import BasePermission
-from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
-from rest_framework.serializers import Serializer
+from rest_framework.renderers import JSONRenderer
 from rest_framework.views import APIView
 
 from ..auth.constants import Grant
@@ -41,14 +39,15 @@ class BaseView(SecurityMixin, views.APIView):
     renderer_classes = (JSONRenderer,)
 
 
-class BaseViewSet(SecurityMixin, viewsets.ViewSet):
-    renderer_classes = (JSONRenderer,)
-
-
-class BaseModelViewSet(SecurityMixin, viewsets.ReadOnlyModelViewSet):
-    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
-    filter_backends = [DjangoFilterBackend]
-    serializer_classes = {}
-
-    def get_serializer_class(self) -> Type[Serializer]:
-        return self.serializer_classes.get(self.action, self.serializer_class)
+#
+# class BaseViewSet(SecurityMixin, viewsets.ViewSet):
+#     renderer_classes = (JSONRenderer,)
+#
+#
+# class BaseModelViewSet(SecurityMixin, viewsets.ReadOnlyModelViewSet):
+#     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+#     filter_backends = [DjangoFilterBackend]
+#     serializer_classes = {}
+#
+#     def get_serializer_class(self) -> Type[Serializer]:
+#         return self.serializer_classes.get(self.action, self.serializer_class)

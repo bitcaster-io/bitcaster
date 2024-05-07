@@ -1,6 +1,7 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext as _
 
@@ -26,6 +27,12 @@ class Project(SlugMixin, models.Model):
         max_length=50,
         default="[Bitcaster] ",
         help_text=_("Default prefix for messages supporting subject"),
+    )
+    environments = ArrayField(
+        models.CharField(max_length=20, blank=True, null=True),
+        blank=True,
+        null=True,
+        help_text=_("Environments available for project"),
     )
 
     class Meta:

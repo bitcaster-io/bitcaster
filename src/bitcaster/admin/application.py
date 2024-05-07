@@ -1,10 +1,12 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
+from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django.contrib import admin
 from django.db.models import QuerySet
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
+from django.template.response import TemplateResponse
 
 from bitcaster.forms.application import ApplicationChangeForm
 from bitcaster.models import Application
@@ -54,3 +56,9 @@ class ApplicationAdmin(BaseAdmin, LockMixin[Application], admin.ModelAdmin[Appli
             "owner": request.user.id,
             "project": state.get_cookie("project"),
         }
+
+    @button()
+    def events(self, request: HttpRequest, pk: str) -> "HttpResponse":
+        ctx = self.get_common_context(request, pk)
+        # ctx[""]
+        return TemplateResponse(request, "admin/application/events.html", ctx)

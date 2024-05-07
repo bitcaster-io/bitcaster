@@ -100,17 +100,24 @@ html[data-theme=dark] {
 html[data-theme=dark] #header #branding #site-name a, html[data-theme=dark] #header #branding #site-name a:link, html[data-theme=dark] #header #branding #site-name a:visited {
   color: yellow;
 }
-html[data-theme=dark] .select2-container {
+html[data-theme=dark] span.select2-container {
+  width: 400px !important;
   background-color: var(--body-bg);
 }
-html[data-theme=dark] .select2-container .select2-dropdown {
+html[data-theme=dark] span.select2-container ul {
+  height: 32px;
+}
+html[data-theme=dark] span.select2-container ul li.select2-selection__choice {
+  color: black;
+}
+html[data-theme=dark] span.select2-container .select2-dropdown {
   background-color: var(--body-bg);
 }
-html[data-theme=dark] .select2-container .select2-container--default {
+html[data-theme=dark] span.select2-container .select2-container--default {
   border: 1px solid var(--border-color);
   border-radius: 4px;
 }
-html[data-theme=dark] .select2-container .select2-container--default.select2-selection--single {
+html[data-theme=dark] span.select2-container .select2-container--default.select2-selection--single {
   background-color: #121212;
 }
 html[data-theme=dark] div.breadcrumbs {

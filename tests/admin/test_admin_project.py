@@ -52,12 +52,13 @@ def test_get_readonly_fields(app, project, bitcaster) -> None:
     assert "slug" not in frm.fields
 
 
-def test_slugify(app, organization, bitcaster) -> None:
+def test_add(app, organization, bitcaster) -> None:
     url = reverse("admin:bitcaster_project_add")
     res = app.get(url)
     frm = res.forms["project_form"]
     frm["name"] = "dummy"
     frm["organization"].force_value(organization.pk)
     frm["owner"] = organization.owner.pk
+    frm["environments"].force_value("development,production")
     res = frm.submit("Save and continue editing")
     assert res.status_code == 302, res.context["adminform"].errors
