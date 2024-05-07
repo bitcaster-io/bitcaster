@@ -90,7 +90,7 @@ stages:
   extends:
     - .docker-rules
   services:
-    - docker:24.0.5-dind
+    - docker:dind
   cache:
     untracked: true
   before_script:
