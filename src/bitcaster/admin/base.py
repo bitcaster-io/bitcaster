@@ -1,11 +1,13 @@
 import enum
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django.db.models import QuerySet
 from django.http import HttpRequest
+
+from bitcaster.state import state
 
 if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel
@@ -30,3 +32,11 @@ class BaseAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMix
         queryset = queryset.filter(**filters).exclude(**exclude)
         queryset, may_have_duplicates = super().get_search_results(request, queryset, search_term)
         return queryset, may_have_duplicates
+
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
+        return {
+            "user": request.user.id,
+            "organization": state.get_cookie("organization"),
+            "project": state.get_cookie("project"),
+            "application": state.get_cookie("application"),
+        }

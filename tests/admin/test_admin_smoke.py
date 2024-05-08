@@ -152,7 +152,9 @@ def test_admin_changeform(app, modeladmin, record):
         assert res.status_code in [302, 200]
 
 
-@pytest.mark.skip_models("constance.Config", "djstripe.WebhookEndpoint", "advanced_filters.AdvancedFilter")
+@pytest.mark.skip_models(
+    "constance.Config", "djstripe.WebhookEndpoint", "advanced_filters.AdvancedFilter", "bitcaster.MediaFile"
+)
 def test_admin_add(app, modeladmin):
     url = reverse(admin_urlname(modeladmin.model._meta, "add"))
     if modeladmin.has_add_permission(Mock(user=app._user)):

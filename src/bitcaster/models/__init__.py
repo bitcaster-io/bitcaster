@@ -8,6 +8,7 @@ from .event import Event  # noqa
 from .group import Group  # noqa
 from .key import ApiKey  # noqa
 from .log import LogMessage  # noqa
+from .media import MediaFile  # noqa
 from .message import Message  # noqa
 from .notification import Notification  # noqa
 from .occurrence import Occurrence  # noqa

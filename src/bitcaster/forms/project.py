@@ -23,7 +23,7 @@ class ProjectBaseForm(forms.ModelForm["Project"]):
         model = Project
         exclude = ("config", "locked")
 
-    def full_clean(self):
+    def full_clean(self) -> None:
         return super().full_clean()
 
 

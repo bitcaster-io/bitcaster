@@ -7,6 +7,7 @@ from .django_celery_beat import PeriodicTask, PeriodicTaskFactory  # noqa
 from .event import Event, EventFactory  # noqa
 from .key import ApiKey, ApiKeyFactory  # noqa
 from .log import LogEntryFactory, LogMessage  # noqa
+from .media import MediaFile, MediaFileFactory  # noqa
 from .message import Message, MessageFactory  # noqa
 from .notification import Notification, NotificationFactory  # noqa
 from .occurrence import Occurrence, OccurrenceFactory  # noqa

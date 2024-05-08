@@ -213,12 +213,27 @@ LOGGING = {
 }
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
+# STORAGES = {
+#     "default": env.storage("STORAGE_DEFAULT"),
+#     # "staticfiles": env.storage("STORAGE_STATIC") or env.storage("STORAGE_DEFAULT"),
+#     "mediafiles": env.storage("STORAGE_MEDIA") or env.storage("STORAGE_DEFAULT"),
+# }
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+    "mediafiles": env.storage("STORAGE_MEDIA") or env.storage("STORAGE_DEFAULT"),
+}
+# pprint(STORAGES)
 from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.csp import *  # noqa
 from .fragments.debug_toolbar import *  # noqa
 from .fragments.flags import *  # noqa
-from .fragments.gdal import *  # noqa
 from .fragments.rest_framework import *  # noqa
 from .fragments.root import *  # noqa
 from .fragments.sentry import *  # noqa

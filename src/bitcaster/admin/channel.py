@@ -17,7 +17,6 @@ from bitcaster.models import Channel
 
 from ..dispatchers.base import Payload
 from ..forms.channel import ChannelAddForm, ChannelChangeForm
-from ..state import state
 from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixin, TwoStepCreateMixin
 
@@ -71,11 +70,8 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], V
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
-            "user": request.user.id,
             "name": "Channel-1",
-            "organization": state.get_cookie("organization"),
-            "project": state.get_cookie("project"),
-            "application": state.get_cookie("application"),
+            **super().get_changeform_initial_data(request),
         }
 
     @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
