@@ -57,7 +57,7 @@ ENV BUILD_DATE=$BUILD_DATE \
     VERSION=$VERSION \
     PYTHONDONTWRITEBYTECODE=1
 ENV buildDeps="build-essential gcc libjpeg-dev zlib1g-dev libffi-dev libssl-dev libpq-dev "
-ENV runtimeDeps="postgresql-client libmagic"
+ENV runtimeDeps="postgresql-client libmagic1"
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
