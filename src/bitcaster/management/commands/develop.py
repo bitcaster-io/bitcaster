@@ -1,10 +1,12 @@
 import logging
 import os
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from concurrency.api import disable_concurrency
 from django.core.exceptions import ValidationError
-from django.core.management import BaseCommand
+from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
 from flags.state import enable_flag
 from strategy_field.utils import fqn
@@ -28,34 +30,6 @@ class Command(BaseCommand):
     requires_system_checks = []
 
     def add_arguments(self, parser: "ArgumentParser") -> None:
-        # parser.add_argument(
-        #     "--with-check",
-        #     action="store_true",
-        #     dest="check",
-        #     default=False,
-        #     help="Run checks",
-        # )
-        # parser.add_argument(
-        #     "--no-check",
-        #     action="store_false",
-        #     dest="check",
-        #     default=False,
-        #     help="Do not run checks",
-        # )
-        # parser.add_argument(
-        #     "--no-migrate",
-        #     action="store_false",
-        #     dest="migrate",
-        #     default=True,
-        #     help="Do not run migrations",
-        # )
-        # parser.add_argument(
-        #     "--prompt",
-        #     action="store_true",
-        #     dest="prompt",
-        #     default=False,
-        #     help="Let ask for confirmation",
-        # )
         parser.add_argument(
             "--debug",
             action="store_true",
@@ -63,42 +37,18 @@ class Command(BaseCommand):
             default=False,
             help="debug mode",
         )
-
-    # parser.add_argument(
-    #     "--no-static",
-    #     action="store_false",
-    #     dest="static",
-    #     default=True,
-    #     help="Do not run collectstatic",
-    # )
-    #
-    # parser.add_argument(
-    #     "--admin-email",
-    #     action="store",
-    #     dest="admin_email",
-    #     default="",
-    #     help="Admin email",
-    # )
-    # parser.add_argument(
-    #     "--admin-password",
-    #     action="store",
-    #     dest="admin_password",
-    #     default="",
-    #     help="Admin password",
-    # )
+        parser.add_argument(
+            "--snap",
+            action="store_true",
+            dest="snapshot",
+            default=False,
+            help="make a data snapshot",
+        )
 
     def get_options(self, options: dict[str, Any]) -> None:
         self.verbosity = options["verbosity"]
-
-        #     self.run_check = options["check"]
-        #     self.prompt = not options["prompt"]
-        #     self.static = options["static"]
-        #     self.migrate = options["migrate"]
         self.debug = options["debug"]
-
-    #
-    #     self.admin_email = str(options["admin_email"] or env("ADMIN_EMAIL", ""))
-    #     self.admin_password = str(options["admin_password"] or env("ADMIN_PASSWORD", ""))
+        self.snapshot = options["snapshot"]
 
     def halt(self, e: Exception) -> None:  # pragma: no cover
         self.stdout.write(str(e), style_func=self.style.ERROR)
@@ -110,18 +60,42 @@ class Command(BaseCommand):
 
         sys.exit(1)
 
+    @property
+    def echo(self):
+        if self.verbosity >= 1:
+            return self.stdout.write
+        else:
+            return lambda *a, **kw: None  # noqa: E731
+
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
-        from bitcaster.models import Application, Channel, User
+        self.get_options(options)
+
+        if self.snapshot:
+            call_command(
+                "dumpdata",
+                format="json",
+                output=".initial_data.json",
+                use_natural_primary_keys=True,
+                use_natural_foreign_keys=True,
+                use_base_manager=True,
+                verbosity=self.verbosity,
+            )
+
+        else:
+            if Path(".initial_data.json").exists():
+                self.echo("Loading initial data...")
+                with disable_concurrency():
+                    call_command("loaddata", ".initial_data.json", verbosity=self.verbosity)
+            else:
+                self.echo("Creating initial data...")
+                self.setup(*args, **options)
+
+    def setup(self, *args: Any, **options: Any) -> None:  # noqa: C901
+        from bitcaster.models import Application, Channel, Event, User
         from bitcaster.social.models import Provider, SocialProvider
 
-        self.get_options(options)
-        if self.verbosity >= 1:
-            echo = self.stdout.write
-        else:
-            echo = lambda *a, **kw: None  # noqa: E731
-
         try:
-            echo("Configuring development environment", style_func=self.style.WARNING)
+            self.echo("Configuring development environment", style_func=self.style.WARNING)
             bitcaster = Application.objects.get(name__iexact="bitcaster")
 
             if os.environ.get("GOOGLE_CLIENT_ID") and os.environ.get("GOOGLE_CLIENT_SECRET"):
@@ -138,7 +112,7 @@ class Command(BaseCommand):
                         }
                     },
                 )
-                echo(f"Created/Updated SSO {sso}", style_func=self.style.SUCCESS)
+                self.echo(f"Created/Updated SSO {sso}", style_func=self.style.SUCCESS)
             if os.environ.get("GITHUB_KEY") and os.environ.get("GITHUB_SECRET"):
                 sso, __ = SocialProvider.objects.update_or_create(
                     provider=Provider.GITHUB,
@@ -149,7 +123,7 @@ class Command(BaseCommand):
                         }
                     },
                 )
-                echo(f"Created/Updated SSO {sso}", style_func=self.style.SUCCESS)
+                self.echo(f"Created/Updated SSO {sso}", style_func=self.style.SUCCESS)
 
             if structure := os.environ.get("TEST_ORG_STRUCTURE", "user@example.com;Org;Project1;Application1"):
                 email, org_name, prj_name, app_name = structure.split(";")
@@ -159,7 +133,7 @@ class Command(BaseCommand):
                 p = o.projects.update_or_create(name=prj_name, owner=u)[0]
                 a = p.applications.update_or_create(name=app_name, owner=u)[0]
                 ch = o.channel_set.update_or_create(name="GMail", defaults={"dispatcher": fqn(GMailDispatcher)})[0]
-                e = a.events.update_or_create(name="Test Event")[0]
+                e: Event = a.events.update_or_create(name="Test Event")[0]
                 e.channels.add(ch)
                 e.save()
 
@@ -173,9 +147,9 @@ class Command(BaseCommand):
                         },
                     )
 
-                echo(f"Created/Updated Organization {org_name}", style_func=self.style.SUCCESS)
-                echo(f"Created/Updated Project {prj_name}", style_func=self.style.SUCCESS)
-                echo(f"Created/Updated Application {app_name}", style_func=self.style.SUCCESS)
+                self.echo(f"Created/Updated Organization {org_name}", style_func=self.style.SUCCESS)
+                self.echo(f"Created/Updated Project {prj_name}", style_func=self.style.SUCCESS)
+                self.echo(f"Created/Updated Application {app_name}", style_func=self.style.SUCCESS)
 
             if os.environ.get("GMAIL_USER") and os.environ.get("GMAIL_PASSWORD"):
                 ch, __ = Channel.objects.update_or_create(
@@ -189,7 +163,7 @@ class Command(BaseCommand):
                         },
                     },
                 )
-                echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
+                self.echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
             if os.environ.get("MAILGUN_SENDER_DOMAIN") and os.environ.get("MAILGUN_API_KEY"):
                 ch, __ = Channel.objects.update_or_create(
                     name="Mailgun",
@@ -202,7 +176,7 @@ class Command(BaseCommand):
                         },
                     },
                 )
-                echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
+                self.echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
             if os.environ.get("MAILJET_API_KEY") and os.environ.get("MAILJET_SECRET_KEY"):
                 ch, __ = Channel.objects.update_or_create(
                     name="MailJet",
@@ -215,7 +189,7 @@ class Command(BaseCommand):
                         },
                     },
                 )
-                echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
+                self.echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
 
             if os.environ.get("SLACK_WEBHOOK"):
                 ch, __ = Channel.objects.update_or_create(
@@ -226,11 +200,11 @@ class Command(BaseCommand):
                         "config": {"url": os.environ.get("SLACK_WEBHOOK")},
                     },
                 )
-                echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
+                self.echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
 
             enable_flag("DEVELOP_DEBUG_TOOLBAR")
 
-            echo("System configured", style_func=self.style.SUCCESS)
+            self.echo("System configured", style_func=self.style.SUCCESS)
         except ValidationError as e:
             self.halt(Exception("\n- ".join(["Wrong argument(s):", *e.messages])))
         except (CommandError, SystemCheckError) as e:

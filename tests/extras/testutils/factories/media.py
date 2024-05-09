@@ -20,3 +20,14 @@ class MediaFileFactory(AutoRegisterModelFactory):
     image = factory.LazyAttribute(
         lambda _: ContentFile(factory.django.ImageField()._make_data({"width": 1024, "height": 768}), "logo.png")
     )
+
+    @classmethod
+    def create(cls, **kwargs):
+        if kwargs.get("application", None):
+            kwargs["project"] = kwargs["application"].project
+        if kwargs.get("project", None):
+            kwargs["organization"] = kwargs["project"].organization
+        if not kwargs.get("organization", None):
+            kwargs["organization"] = OrganizationFactory()
+
+        return super().create(**kwargs)

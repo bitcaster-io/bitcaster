@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from .channel import Channel
-from .mixins import SlugMixin
+from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMixin
 from .organization import Organization
 from .user import User
 
@@ -17,10 +17,15 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class Project(SlugMixin, models.Model):
+class ProjectManager(BitcasterBaselManager["Project"]):
+
+    def get_by_natural_key(self, slug: str, org: str) -> "Project":
+        return self.get(slug=slug, organization__slug=org)
+
+
+class Project(SlugMixin, LockMixin, BitcasterBaseModel):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="projects")
     owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
-    locked = models.BooleanField(default=False, help_text=_("Security lock of project"))
     from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
     subject_prefix = models.CharField(
         verbose_name=_("Subject Prefix"),
@@ -34,10 +39,19 @@ class Project(SlugMixin, models.Model):
         null=True,
         help_text=_("Environments available for project"),
     )
+    objects = ProjectManager()
 
     class Meta:
+        verbose_name = _("Project")
+        verbose_name_plural = _("Projects")
         ordering = ("name",)
-        unique_together = (("organization", "name"),)
+        unique_together = (
+            ("organization", "name"),
+            ("organization", "slug"),
+        )
+
+    def natural_key(self) -> tuple[str | None, ...]:
+        return self.slug, *self.organization.natural_key()
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         try:

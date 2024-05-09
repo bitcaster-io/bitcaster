@@ -64,6 +64,7 @@ dependencies = [
     "django-storages[azure,dropbox,google,s3]>=1.14.3",
     "apache-libcloud>=3.8.0",
     "python-magic>=0.4.27",
+    "django-concurrency>=2.5",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"

@@ -7,11 +7,11 @@ from testutils.factories import OrganizationFactory
 from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Event, Message, Notification, Organization
+    from bitcaster.models import Channel, Message, Organization
 
     Context = TypedDict(
         "Context",
-        {"notification": Notification, "channel": Channel, "message": Message},
+        {"organization": Organization, "channel": Channel, "message": Message},
     )
 
 
@@ -28,20 +28,15 @@ def app(django_app_factory, db):
 
 @pytest.fixture
 def context() -> "Context":
-    from testutils.factories import (
-        ChannelFactory,
-        EventFactory,
-        MessageFactory,
-        NotificationFactory,
-    )
+    from testutils.factories import ChannelFactory, MessageFactory
 
-    ch = ChannelFactory()
-    event = EventFactory(channels=[ch], application__project__organization=ch.organization)
-    message = MessageFactory(channel=ch, event=event, organization=ch.organization)
+    o = OrganizationFactory()
+    ch: Channel = ChannelFactory(organization=o)
+    o.channel_set.add(ch)
+    message: Message = MessageFactory(channel=ch, organization=o, project=None, application=None)
 
-    notification = NotificationFactory(event=event)
     return {
-        "notification": notification,
+        "organization": o,
         "channel": ch,
         "message": message,
     }
@@ -49,10 +44,7 @@ def context() -> "Context":
 
 def test_create_template(app, context) -> None:
     channel: "Channel" = context["channel"]
-
-    notification: "Notification" = context["notification"]
-    event: "Event" = notification.event
-    org: "Organization" = event.application.project.organization
+    org: "Organization" = context["organization"]
 
     url = reverse("admin:bitcaster_organization_templates", args=[org.pk])
     res = app.get(url)
@@ -67,13 +59,11 @@ def test_create_template(app, context) -> None:
 def test_avoid_duplicates_template(app, context) -> None:
     message: "Message" = context["message"]
     channel: "Channel" = context["channel"]
-
-    notification: "Notification" = context["notification"]
-    event: "Event" = notification.event
-    org: "Organization" = event.application.project.organization
+    org: "Organization" = context["organization"]
 
     url = reverse("admin:bitcaster_organization_templates", args=[org.pk])
     res = app.get(url)
+
     frm = res.forms["messageForm"]
     frm["name"] = message.name
     frm["channel"] = channel.pk

@@ -5,6 +5,7 @@ from django.db.models import QuerySet
 from django.utils.functional import cached_property
 
 from ..constants import AddressType
+from .mixins import BitcasterBaselManager, BitcasterBaseModel
 from .user import User
 
 if typing.TYPE_CHECKING:
@@ -12,12 +13,15 @@ if typing.TYPE_CHECKING:
     from .validation import Validation
 
 
-class AddressManager(models.Manager["Address"]):
+class AddressManager(BitcasterBaselManager["Address"]):
     def valid(self) -> QuerySet["Address"]:
         return self.filter(validations__validated=True)
 
+    def get_by_natural_key(self, user: str, name: str) -> "Address":
+        return self.get(user__username=user, name=name)
 
-class Address(models.Model):
+
+class Address(BitcasterBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
     name = models.CharField(max_length=255, db_collation="case_insensitive")
     type = models.CharField(max_length=10, choices=AddressType.choices, default=AddressType.GENERIC)
@@ -32,6 +36,9 @@ class Address(models.Model):
 
     def __str__(self) -> str:
         return self.value
+
+    def natural_key(self) -> tuple[str, str]:
+        return self.user.username, self.name
 
     @cached_property
     def channels(self) -> "QuerySet[Channel]":

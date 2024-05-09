@@ -36,3 +36,11 @@ def test_support(email_message: "Message"):
     assert email_message.support_subject()
     assert email_message.support_html()
     assert email_message.support_text()
+
+
+@pytest.mark.parametrize("args", [{}, {"application": None}, {"project": None, "application": None}])
+def test_natural_key(args):
+    from testutils.factories import Message, MessageFactory
+
+    msg: Message = MessageFactory(**args)
+    assert Message.objects.get_by_natural_key(*msg.natural_key()) == msg, msg.natural_key()

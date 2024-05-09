@@ -10,9 +10,6 @@ from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
 
 
 class ChannelFactory(AutoRegisterModelFactory):
-    class Meta:
-        model = Channel
-        django_get_or_create = ("name",)
 
     name = Sequence(lambda n: "Channel-%03d" % n)
     organization = factory.SubFactory(OrganizationFactory)
@@ -20,3 +17,18 @@ class ChannelFactory(AutoRegisterModelFactory):
     application = factory.SubFactory(ApplicationFactory)
     dispatcher = fqn(TDispatcher)
     config = {"foo": "bar"}
+
+    class Meta:
+        model = Channel
+        django_get_or_create = ("name", "organization", "project", "application")
+
+    @classmethod
+    def create(cls, **kwargs):
+        if kwargs.get("application", None):
+            kwargs["project"] = kwargs["application"].project
+        if kwargs.get("project", None):
+            kwargs["organization"] = kwargs["project"].organization
+        if not kwargs.get("organization", None):
+            kwargs["organization"] = OrganizationFactory()
+
+        return super().create(**kwargs)

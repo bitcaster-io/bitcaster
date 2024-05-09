@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:be698af188b9340c38bfc7a73f50f8f5e7e2f61065204b78881253ded9eedfa8"
+content_hash = "sha256:4466f34d0a01caee067f0aaa6972541590a4b40c1d449edb3e4d339c0e3d7f2a"
 
 [[package]]
 name = "aiohttp"
@@ -752,6 +752,15 @@ dependencies = [
 ]
 files = [
     {file = "django-celery-beat-2.6.0.tar.gz", hash = "sha256:f75b2d129731f1214be8383e18fae6bfeacdb55dffb2116ce849222c0106f9ad"},
+]
+
+[[package]]
+name = "django-concurrency"
+version = "2.5"
+summary = "Optimistic lock implementation for Django. Prevents users from doing concurrent editing."
+groups = ["default"]
+files = [
+    {file = "django-concurrency-2.5.tar.gz", hash = "sha256:3eb0f17807ee1b967460d298c515018b30fb573413305dec5bbee775915dc979"},
 ]
 
 [[package]]

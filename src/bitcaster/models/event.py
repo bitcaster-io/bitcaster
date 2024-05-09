@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 
 from .application import Application
 from .channel import Channel
-from .mixins import SlugMixin
+from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMixin
 from .notification import Notification
 
 if TYPE_CHECKING:
@@ -16,15 +16,26 @@ if TYPE_CHECKING:
     from bitcaster.models import DistributionList, Message, Occurrence
 
 
-class Event(SlugMixin, models.Model):
+class EventManager(BitcasterBaselManager["Event"]):
+    def get_by_natural_key(self, slug: str, app: str, prj: str, org: str, *args: Any) -> "Event":
+        return self.get(
+            application__project__organization__slug=org,
+            application__project__slug=prj,
+            application__slug=app,
+            slug=slug,
+        )
+
+
+class Event(SlugMixin, LockMixin, BitcasterBaseModel):
+    messages: "QuerySet[Message]"
+
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="events")
     description = models.CharField(max_length=255, blank=True, null=True)
     active = models.BooleanField(default=True)
-    locked = models.BooleanField(default=False, help_text=_("Security lock"))
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
     channels = models.ManyToManyField(Channel, blank=True)
 
-    messages: "QuerySet[Message]"
+    objects = EventManager()
 
     class Meta:
         unique_together = (
@@ -36,6 +47,9 @@ class Event(SlugMixin, models.Model):
     def __init__(self, *args: Any, **kwargs: Any):
         self._cached_messages: dict[Channel, Message] = {}
         super().__init__(*args, **kwargs)
+
+    def natural_key(self) -> tuple[str | None, ...]:
+        return self.slug, *self.application.natural_key()
 
     def trigger(
         self, context: Dict[str, Any], *, options: Optional[Dict[str, str]] = None, cid: Optional[Any] = None

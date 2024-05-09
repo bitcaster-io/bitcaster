@@ -7,6 +7,7 @@ from django.utils.translation import gettext as _
 
 from ..constants import Bitcaster
 from .event import Event
+from .mixins import BitcasterBaselManager, BitcasterBaseModel
 from .validation import Validation
 
 if TYPE_CHECKING:
@@ -31,13 +32,22 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class OccurrenceQuerySet(models.QuerySet["Occurrence"]):
+class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
+
+    def get_by_natural_key(self, timestamp: str, evt: str, app: str, prj: str, org: str) -> "Occurrence":
+        return self.get(
+            timestamp=timestamp,
+            event__application__project__organization__slug=org,
+            event__application__project__slug=prj,
+            event__application__slug=app,
+            event__slug=evt,
+        )
 
     def system(self, *args: Any, **kwargs: Any) -> models.QuerySet["Occurrence"]:
         return self.filter(event__application__name=Bitcaster.APPLICATION).filter(*args, **kwargs)
 
 
-class Occurrence(models.Model):
+class Occurrence(BitcasterBaseModel):
     class Status(models.TextChoices):
         NEW = "NEW", _("New")
         PROCESSED = "PROCESSED", _("Processed")
@@ -49,27 +59,26 @@ class Occurrence(models.Model):
     options: "OccurrenceOptions" = models.JSONField(  # type: ignore[assignment]
         blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
     )
-
     correlation_id = models.UUIDField(default=uuid.uuid4, editable=False, blank=True, null=True)
     recipients = models.IntegerField(default=0, help_text=_("Total number of recipients"))
-
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
     data: "OccurrenceData" = models.JSONField(  # type: ignore[assignment]
         default=dict, help_text=_("Information about the processing (recipients, channels)")
     )
-    status = models.CharField(
-        choices=Status,
-        default=Status.NEW.value,
-    )
-
+    status = models.CharField(choices=Status, default=Status.NEW.value)
     attempts = models.IntegerField(default=5)
-    objects = OccurrenceQuerySet.as_manager()
+
+    objects = OccurrenceManager()
 
     class Meta:
         ordering = ("timestamp",)
+        constraints = [models.UniqueConstraint(fields=("timestamp", "event"), name="occurrence_unique")]
 
     def __str__(self) -> str:
         return f"Occurrence of {self.event.name} on {self.timestamp}"
+
+    def natural_key(self) -> tuple[str | None, ...]:
+        return str(self.timestamp), *self.event.natural_key()
 
     def __init__(self, *args: Any, **kwargs: Any):
         self._cached_messages: dict[Channel, Message] = {}

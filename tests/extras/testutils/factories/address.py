@@ -13,3 +13,4 @@ class AddressFactory(AutoRegisterModelFactory):
 
     user = factory.SubFactory(UserFactory)
     value = factory.Sequence(lambda n: "m%03d@example.com" % n)
+    name = factory.Sequence(lambda n: "Address-#%s" % n)

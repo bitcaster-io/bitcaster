@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 
 from ..dispatchers.base import Payload
 from .distribution import DistributionList
+from .mixins import BitcasterBaselManager, BitcasterBaseModel
 from .validation import Validation
 
 if TYPE_CHECKING:
@@ -18,15 +19,23 @@ if TYPE_CHECKING:
     from bitcaster.types.core import YamlPayload
 
 
-class NotificationQuerySet(models.QuerySet["Notification"]):
-
+class NotificationManager(BitcasterBaselManager["Notification"]):
     def match(self, payload: dict[str, Any], rules: "Optional[YamlPayload]" = None) -> list["Notification"]:
         for subscription in self.all():
             if subscription.match_filter(payload, rules=rules):
                 yield subscription
 
+    def get_by_natural_key(self, name: str, evt: str, app: str, prj: str, org: str, *args: Any) -> "Notification":
+        return self.get(
+            event__application__project__organization__slug=org,
+            event__application__project__slug=prj,
+            event__application__slug=app,
+            event__slug=evt,
+            name=name,
+        )
 
-class Notification(models.Model):
+
+class Notification(BitcasterBaseModel):
     name = models.CharField(max_length=100)
     event = models.ForeignKey("bitcaster.Event", on_delete=models.CASCADE, related_name="notifications")
     distribution = models.ForeignKey(
@@ -40,7 +49,21 @@ class Notification(models.Model):
         null=True,
         help_text=_("Environments available for project"),
     )
-    objects = NotificationQuerySet.as_manager()
+    objects = NotificationManager()
+
+    class Meta:
+        verbose_name = _("Notification")
+        verbose_name_plural = _("Notifications")
+        unique_together = (("event", "name"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=("event", "name"),
+                name="notification_event_name",
+            )
+        ]
+
+    def natural_key(self) -> tuple[str | None, ...]:
+        return self.name, *self.event.natural_key()
 
     def __init__(self, *args: Any, **kwargs: Any):
         self._cached_messages: dict[Channel, Message | None] = {}

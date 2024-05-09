@@ -8,11 +8,7 @@ from bitcaster.models import User
 
 class BitcasterBackend(ModelBackend):
     def authenticate(
-        self,
-        request: HttpRequest | None,
-        username: str | None = None,
-        password: str | None = None,
-        **kwargs: Any,
+        self, request: HttpRequest | None, username: str | None = None, password: str | None = None, **kwargs: Any
     ) -> Optional[User]:
         if username is None:
             username = kwargs.get(User.USERNAME_FIELD)

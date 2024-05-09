@@ -1,4 +1,4 @@
-from typing import Any, MutableMapping
+from typing import TYPE_CHECKING
 
 from django.db import models
 from django.utils.functional import cached_property
@@ -7,59 +7,40 @@ from strategy_field.fields import StrategyField
 
 from bitcaster.dispatchers.base import Dispatcher, dispatcherManager
 
-from .mixins import ScopedMixin
+from .mixins import BitcasterBaseModel, LockMixin, ScopedManager, ScopedMixin
+
+if TYPE_CHECKING:
+    from bitcaster.models import Application
 
 
-class ChannelManager(models.Manager["Channel"]):
-
-    def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[Channel, bool]":
-        if kwargs.get("application"):
-            kwargs["project"] = kwargs["application"].project
-            kwargs["organization"] = kwargs["application"].project.organization
-        elif kwargs.get("project"):
-            kwargs["organization"] = kwargs["project"].organization
-
-        if defaults and defaults.get("application"):
-            defaults["project"] = defaults["application"].project
-            defaults["organization"] = defaults["application"].project.organization
-        elif defaults and defaults.get("project"):
-            defaults["organization"] = defaults["project"].organization
-
-        return super().get_or_create(defaults, **kwargs)
-
-    def update_or_create(
-        self,
-        defaults: MutableMapping[str, Any] | None = None,
-        create_defaults: MutableMapping[str, Any] | None = None,
-        **kwargs: Any,
-    ) -> "tuple[Channel, bool]":
-        if kwargs and kwargs.get("application"):
-            kwargs["project"] = kwargs["application"].project
-            kwargs["organization"] = kwargs["application"].project.organization
-        elif kwargs.get("project"):
-            kwargs["organization"] = kwargs["project"].organization
-
-        if defaults and defaults.get("application"):
-            defaults["project"] = defaults["application"].project
-            defaults["organization"] = defaults["application"].project.organization
-        elif defaults and defaults.get("project"):
-            defaults["organization"] = defaults["project"].organization
-
-        return super().update_or_create(defaults, **kwargs)
-
+class ChannelManager(ScopedManager["Channel"]):
     def active(self) -> models.QuerySet["Channel"]:
         return self.get_queryset().filter(active=True, locked=False)
 
+    def get_by_natural_key(self, name: str, app: str, prj: str, org: str) -> "Channel":
+        filters: dict[str, str | None] = {}
+        if app:
+            filters["application__slug"] = app
+        else:
+            filters["application"] = None
 
-class Channel(ScopedMixin, models.Model):
+        if prj:
+            filters["project__slug"] = prj
+        else:
+            filters["project"] = None
+
+        return self.get(name=name, organization__slug=org, **filters)
+
+
+class Channel(ScopedMixin, LockMixin, BitcasterBaseModel):
     SYSTEM_EMAIL_CHANNEL_NAME = "System Email Channel"
+    application: "Application"
 
     name = models.CharField(_("Name"), max_length=255, db_collation="case_insensitive")
     dispatcher: "Dispatcher" = StrategyField(registry=dispatcherManager, default="test")
     config = models.JSONField(blank=True, default=dict)
 
     active = models.BooleanField(default=True)
-    locked = models.BooleanField(default=False)
 
     objects = ChannelManager()
 
@@ -73,6 +54,14 @@ class Channel(ScopedMixin, models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def natural_key(self) -> tuple[str | None, ...]:
+        if self.application:
+            return self.name, *self.application.natural_key()
+        elif self.project:
+            return self.name, None, *self.project.natural_key()
+        else:
+            return self.name, None, None, *self.organization.natural_key()
 
     @cached_property
     def from_email(self) -> str:
