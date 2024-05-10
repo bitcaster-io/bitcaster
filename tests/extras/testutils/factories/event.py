@@ -8,12 +8,12 @@ from .org import ApplicationFactory
 
 
 class EventFactory(AutoRegisterModelFactory):
+    name = Sequence(lambda n: "Event-%03d" % n)
+    application = factory.SubFactory(ApplicationFactory)
+
     class Meta:
         model = Event
         django_get_or_create = ("name",)
-
-    name = Sequence(lambda n: "Event-%03d" % n)
-    application = factory.SubFactory(ApplicationFactory)
 
     @factory.post_generation
     def channels(dist: "Event", create, extracted, **kwargs):

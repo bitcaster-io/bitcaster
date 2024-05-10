@@ -1,3 +1,6 @@
+from typing import Any
+
+from django.db.models import QuerySet
 from rest_framework import serializers, status
 from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
@@ -28,7 +31,7 @@ class EventList(SecurityMixin, ListAPIView):
     serializer_class = EventSerializer
     required_grants = [Grant.EVENT_LIST]
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Event]:
         return Event.objects.filter(
             application__project__organization__slug=self.kwargs["org"],
             application__project__slug=self.kwargs["prj"],
@@ -42,20 +45,20 @@ class EventTrigger(SecurityMixin, GenericAPIView):
     # permission_classes = []
     parser = (JSONParser,)
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Event]:
         return Event.objects.filter(
             application__project__organization__slug=self.kwargs["org"],
             application__project__slug=self.kwargs["prj"],
             application__slug=self.kwargs["app"],
         )
 
-    def get(self, request: "Request", *args, **kwargs) -> Response:
+    def get(self, request: "Request", *args: Any, **kwargs: Any) -> Response:
         slug = self.kwargs["evt"]
         obj: "Event" = self.get_queryset().get(slug=slug)
         self.check_object_permissions(self.request, obj)
         return Response("Method GET Not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def post(self, request: "Request", *args, **kwargs) -> Response:
+    def post(self, request: "Request", *args: Any, **kwargs: Any) -> Response:
         ser = ActionSerializer(data=request.data)
         correlation_id = request.query_params.get("cid", None)
         if ser.is_valid():

@@ -57,6 +57,9 @@ def pytest_configure(config):
     os.environ["MAILGUN_SENDER_DOMAIN"] = "mailgun.domain"
     os.environ["MAILJET_API_KEY"] = "11"
     os.environ["MAILJET_SECRET_KEY"] = "11"
+    os.environ["STORAGE_DEFAULT"] = "django.core.files.storage.FileSystemStorage"
+    os.environ["STORAGE_MEDIA"] = "django.core.files.storage.FileSystemStorage"
+    os.environ["STORAGE_STTIC"] = "django.core.files.storage.FileSystemStorage"
 
     os.environ["GMAIL_USER"] = "11"
     os.environ["GMAIL_PASSWORD"] = "11"

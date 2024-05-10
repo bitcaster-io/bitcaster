@@ -55,3 +55,9 @@ def test_model_occurrence_no_notifications(occurrence: "Occurrence", monkeypatch
 
 def test_str(occurrence: "Occurrence"):
     assert str(occurrence)
+
+
+def test_natural_key(occurrence: "Occurrence"):
+    from bitcaster.models import Occurrence
+
+    assert Occurrence.objects.get_by_natural_key(*occurrence.natural_key()) == occurrence

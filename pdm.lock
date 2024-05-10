@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:3dcc1966bbc0368c562f8709193ac9d9d88c4e9b85d819951a84bd15a6e9dbc1"
+content_hash = "sha256:4466f34d0a01caee067f0aaa6972541590a4b40c1d449edb3e4d339c0e3d7f2a"
 
 [[package]]
 name = "aiohttp"
@@ -82,6 +82,20 @@ files = [
 ]
 
 [[package]]
+name = "apache-libcloud"
+version = "3.8.0"
+requires_python = ">=3.7"
+summary = "A standard Python library that abstracts away differences among multiple cloud provider APIs. For more information and documentation, please see https://libcloud.apache.org"
+groups = ["default"]
+dependencies = [
+    "requests>=2.26.0",
+]
+files = [
+    {file = "apache-libcloud-3.8.0.tar.gz", hash = "sha256:75bf4c0b123bc225e24ca95fca1c35be30b19e6bb85feea781404d43c4276c91"},
+    {file = "apache_libcloud-3.8.0-py2.py3-none-any.whl", hash = "sha256:de65a8bd946f6532830f20a83f2eae2fa056f05a674fad30afe877cb78df6050"},
+]
+
+[[package]]
 name = "asgiref"
 version = "3.8.1"
 requires_python = ">=3.8"
@@ -114,6 +128,39 @@ groups = ["default", "dev"]
 files = [
     {file = "attrs-23.2.0-py3-none-any.whl", hash = "sha256:99b87a485a5820b23b879f04c2305b44b951b502fd64be915879d77a7e8fc6f1"},
     {file = "attrs-23.2.0.tar.gz", hash = "sha256:935dc3b529c262f6cf76e50877d35a4bd3c1de194fd41f47a2b7ae8f19971f30"},
+]
+
+[[package]]
+name = "azure-core"
+version = "1.30.1"
+requires_python = ">=3.7"
+summary = "Microsoft Azure Core Library for Python"
+groups = ["default"]
+dependencies = [
+    "requests>=2.21.0",
+    "six>=1.11.0",
+    "typing-extensions>=4.6.0",
+]
+files = [
+    {file = "azure-core-1.30.1.tar.gz", hash = "sha256:26273a254131f84269e8ea4464f3560c731f29c0c1f69ac99010845f239c1a8f"},
+    {file = "azure_core-1.30.1-py3-none-any.whl", hash = "sha256:7c5ee397e48f281ec4dd773d67a0a47a0962ed6fa833036057f9ea067f688e74"},
+]
+
+[[package]]
+name = "azure-storage-blob"
+version = "12.19.1"
+requires_python = ">=3.7"
+summary = "Microsoft Azure Blob Storage Client Library for Python"
+groups = ["default"]
+dependencies = [
+    "azure-core<2.0.0,>=1.28.0",
+    "cryptography>=2.1.4",
+    "isodate>=0.6.1",
+    "typing-extensions>=4.3.0",
+]
+files = [
+    {file = "azure-storage-blob-12.19.1.tar.gz", hash = "sha256:13e16ba42fc54ac2c7e8f976062173a5c82b9ec0594728e134aac372965a11b0"},
+    {file = "azure_storage_blob-12.19.1-py3-none-any.whl", hash = "sha256:c5530dc51c21c9564e4eb706cd499befca8819b10dd89716d3fc90d747556243"},
 ]
 
 [[package]]
@@ -172,6 +219,38 @@ files = [
     {file = "black-24.4.2-cp312-cp312-win_amd64.whl", hash = "sha256:415e686e87dbbe6f4cd5ef0fbf764af7b89f9057b97c908742b6008cc554b9c0"},
     {file = "black-24.4.2-py3-none-any.whl", hash = "sha256:d36ed1124bb81b32f8614555b34cc4259c3fbc7eec17870e8ff8ded335b58d8c"},
     {file = "black-24.4.2.tar.gz", hash = "sha256:c872b53057f000085da66a19c55d68f6f8ddcac2642392ad3a355878406fbd4d"},
+]
+
+[[package]]
+name = "boto3"
+version = "1.34.100"
+requires_python = ">=3.8"
+summary = "The AWS SDK for Python"
+groups = ["default"]
+dependencies = [
+    "botocore<1.35.0,>=1.34.100",
+    "jmespath<2.0.0,>=0.7.1",
+    "s3transfer<0.11.0,>=0.10.0",
+]
+files = [
+    {file = "boto3-1.34.100-py3-none-any.whl", hash = "sha256:bbe2bb0dfcd92380da2a2fa2c2f586ba06c118b796380b2d0f3d0ebd103ec28d"},
+    {file = "boto3-1.34.100.tar.gz", hash = "sha256:016f6d66900bb1a835dea2063f1e91fc7057dbf7fb7df8add0706f0da9492631"},
+]
+
+[[package]]
+name = "botocore"
+version = "1.34.100"
+requires_python = ">=3.8"
+summary = "Low-level, data-driven core of boto 3."
+groups = ["default"]
+dependencies = [
+    "jmespath<2.0.0,>=0.7.1",
+    "python-dateutil<3.0.0,>=2.1",
+    "urllib3!=2.2.0,<3,>=1.25.4; python_version >= \"3.10\"",
+]
+files = [
+    {file = "botocore-1.34.100-py3-none-any.whl", hash = "sha256:ee516fb9e9e906d311f2a9921afaf79c594db239a5b4b626e89e6960401aad0b"},
+    {file = "botocore-1.34.100.tar.gz", hash = "sha256:513bea60c6531af8e1ae1fdb2947e3ef99712f39c58f4656b5efef9cb6f75a13"},
 ]
 
 [[package]]
@@ -676,6 +755,15 @@ files = [
 ]
 
 [[package]]
+name = "django-concurrency"
+version = "2.5"
+summary = "Optimistic lock implementation for Django. Prevents users from doing concurrent editing."
+groups = ["default"]
+files = [
+    {file = "django-concurrency-2.5.tar.gz", hash = "sha256:3eb0f17807ee1b967460d298c515018b30fb573413305dec5bbee775915dc979"},
+]
+
+[[package]]
 name = "django-constance"
 version = "3.1.0"
 requires_python = ">=3.7"
@@ -849,6 +937,39 @@ dependencies = [
 files = [
     {file = "django_select2-8.1.2-py3-none-any.whl", hash = "sha256:dc09e09299988dd7cc1f31c27582976377f0e1479101be1f3bb0d1f24216477f"},
     {file = "django_select2-8.1.2.tar.gz", hash = "sha256:f44685ee1c39090aade01e3ebc256702f05620f3c78a3c268440ad9a66070876"},
+]
+
+[[package]]
+name = "django-storages"
+version = "1.14.3"
+requires_python = ">=3.7"
+summary = "Support for many storage backends in Django"
+groups = ["default"]
+dependencies = [
+    "Django>=3.2",
+]
+files = [
+    {file = "django-storages-1.14.3.tar.gz", hash = "sha256:95a12836cd998d4c7a4512347322331c662d9114c4344f932f5e9c0fce000608"},
+    {file = "django_storages-1.14.3-py3-none-any.whl", hash = "sha256:31f263389e95ce3a1b902fb5f739a7ed32895f7d8b80179fe7453ecc0dfe102e"},
+]
+
+[[package]]
+name = "django-storages"
+version = "1.14.3"
+extras = ["azure", "dropbox", "google", "s3"]
+requires_python = ">=3.7"
+summary = "Support for many storage backends in Django"
+groups = ["default"]
+dependencies = [
+    "azure-core>=1.13",
+    "azure-storage-blob>=12",
+    "boto3>=1.4.4",
+    "django-storages==1.14.3",
+    "google-cloud-storage>=1.27",
+]
+files = [
+    {file = "django-storages-1.14.3.tar.gz", hash = "sha256:95a12836cd998d4c7a4512347322331c662d9114c4344f932f5e9c0fce000608"},
+    {file = "django_storages-1.14.3-py3-none-any.whl", hash = "sha256:31f263389e95ce3a1b902fb5f739a7ed32895f7d8b80179fe7453ecc0dfe102e"},
 ]
 
 [[package]]
@@ -1267,6 +1388,127 @@ files = [
 ]
 
 [[package]]
+name = "google-api-core"
+version = "2.19.0"
+requires_python = ">=3.7"
+summary = "Google API client core library"
+groups = ["default"]
+dependencies = [
+    "google-auth<3.0.dev0,>=2.14.1",
+    "googleapis-common-protos<2.0.dev0,>=1.56.2",
+    "proto-plus<2.0.0dev,>=1.22.3",
+    "protobuf!=3.20.0,!=3.20.1,!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<5.0.0.dev0,>=3.19.5",
+    "requests<3.0.0.dev0,>=2.18.0",
+]
+files = [
+    {file = "google-api-core-2.19.0.tar.gz", hash = "sha256:cf1b7c2694047886d2af1128a03ae99e391108a08804f87cfd35970e49c9cd10"},
+    {file = "google_api_core-2.19.0-py3-none-any.whl", hash = "sha256:8661eec4078c35428fd3f69a2c7ee29e342896b70f01d1a1cbcb334372dd6251"},
+]
+
+[[package]]
+name = "google-auth"
+version = "2.29.0"
+requires_python = ">=3.7"
+summary = "Google Authentication Library"
+groups = ["default"]
+dependencies = [
+    "cachetools<6.0,>=2.0.0",
+    "pyasn1-modules>=0.2.1",
+    "rsa<5,>=3.1.4",
+]
+files = [
+    {file = "google-auth-2.29.0.tar.gz", hash = "sha256:672dff332d073227550ffc7457868ac4218d6c500b155fe6cc17d2b13602c360"},
+    {file = "google_auth-2.29.0-py2.py3-none-any.whl", hash = "sha256:d452ad095688cd52bae0ad6fafe027f6a6d6f560e810fec20914e17a09526415"},
+]
+
+[[package]]
+name = "google-cloud-core"
+version = "2.4.1"
+requires_python = ">=3.7"
+summary = "Google Cloud API client core library"
+groups = ["default"]
+dependencies = [
+    "google-api-core!=2.0.*,!=2.1.*,!=2.2.*,!=2.3.0,<3.0.0dev,>=1.31.6",
+    "google-auth<3.0dev,>=1.25.0",
+]
+files = [
+    {file = "google-cloud-core-2.4.1.tar.gz", hash = "sha256:9b7749272a812bde58fff28868d0c5e2f585b82f37e09a1f6ed2d4d10f134073"},
+    {file = "google_cloud_core-2.4.1-py2.py3-none-any.whl", hash = "sha256:a9e6a4422b9ac5c29f79a0ede9485473338e2ce78d91f2370c01e730eab22e61"},
+]
+
+[[package]]
+name = "google-cloud-storage"
+version = "2.16.0"
+requires_python = ">=3.7"
+summary = "Google Cloud Storage API client library"
+groups = ["default"]
+dependencies = [
+    "google-api-core<3.0.0dev,>=2.15.0",
+    "google-auth<3.0dev,>=2.26.1",
+    "google-cloud-core<3.0dev,>=2.3.0",
+    "google-crc32c<2.0dev,>=1.0",
+    "google-resumable-media>=2.6.0",
+    "requests<3.0.0dev,>=2.18.0",
+]
+files = [
+    {file = "google-cloud-storage-2.16.0.tar.gz", hash = "sha256:dda485fa503710a828d01246bd16ce9db0823dc51bbca742ce96a6817d58669f"},
+    {file = "google_cloud_storage-2.16.0-py2.py3-none-any.whl", hash = "sha256:91a06b96fb79cf9cdfb4e759f178ce11ea885c79938f89590344d079305f5852"},
+]
+
+[[package]]
+name = "google-crc32c"
+version = "1.5.0"
+requires_python = ">=3.7"
+summary = "A python wrapper of the C library 'Google CRC32C'"
+groups = ["default"]
+files = [
+    {file = "google-crc32c-1.5.0.tar.gz", hash = "sha256:89284716bc6a5a415d4eaa11b1726d2d60a0cd12aadf5439828353662ede9dd7"},
+    {file = "google_crc32c-1.5.0-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:f314013e7dcd5cf45ab1945d92e713eec788166262ae8deb2cfacd53def27325"},
+    {file = "google_crc32c-1.5.0-pp37-pypy37_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3b747a674c20a67343cb61d43fdd9207ce5da6a99f629c6e2541aa0e89215bcd"},
+    {file = "google_crc32c-1.5.0-pp37-pypy37_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8f24ed114432de109aa9fd317278518a5af2d31ac2ea6b952b2f7782b43da091"},
+    {file = "google_crc32c-1.5.0-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b8667b48e7a7ef66afba2c81e1094ef526388d35b873966d8a9a447974ed9178"},
+    {file = "google_crc32c-1.5.0-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:1c7abdac90433b09bad6c43a43af253e688c9cfc1c86d332aed13f9a7c7f65e2"},
+    {file = "google_crc32c-1.5.0-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:6f998db4e71b645350b9ac28a2167e6632c239963ca9da411523bb439c5c514d"},
+    {file = "google_crc32c-1.5.0-pp38-pypy38_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9c99616c853bb585301df6de07ca2cadad344fd1ada6d62bb30aec05219c45d2"},
+    {file = "google_crc32c-1.5.0-pp38-pypy38_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2ad40e31093a4af319dadf503b2467ccdc8f67c72e4bcba97f8c10cb078207b5"},
+    {file = "google_crc32c-1.5.0-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cd67cf24a553339d5062eff51013780a00d6f97a39ca062781d06b3a73b15462"},
+    {file = "google_crc32c-1.5.0-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:398af5e3ba9cf768787eef45c803ff9614cc3e22a5b2f7d7ae116df8b11e3314"},
+    {file = "google_crc32c-1.5.0-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:b1f8133c9a275df5613a451e73f36c2aea4fe13c5c8997e22cf355ebd7bd0728"},
+    {file = "google_crc32c-1.5.0-pp39-pypy39_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9ba053c5f50430a3fcfd36f75aff9caeba0440b2d076afdb79a318d6ca245f88"},
+    {file = "google_crc32c-1.5.0-pp39-pypy39_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:272d3892a1e1a2dbc39cc5cde96834c236d5327e2122d3aaa19f6614531bb6eb"},
+    {file = "google_crc32c-1.5.0-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:635f5d4dd18758a1fbd1049a8e8d2fee4ffed124462d837d1a02a0e009c3ab31"},
+    {file = "google_crc32c-1.5.0-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:c672d99a345849301784604bfeaeba4db0c7aae50b95be04dd651fd2a7310b93"},
+]
+
+[[package]]
+name = "google-resumable-media"
+version = "2.7.0"
+requires_python = ">= 3.7"
+summary = "Utilities for Google Media Downloads and Resumable Uploads"
+groups = ["default"]
+dependencies = [
+    "google-crc32c<2.0dev,>=1.0",
+]
+files = [
+    {file = "google-resumable-media-2.7.0.tar.gz", hash = "sha256:5f18f5fa9836f4b083162064a1c2c98c17239bfda9ca50ad970ccf905f3e625b"},
+    {file = "google_resumable_media-2.7.0-py2.py3-none-any.whl", hash = "sha256:79543cfe433b63fd81c0844b7803aba1bb8950b47bedf7d980c38fa123937e08"},
+]
+
+[[package]]
+name = "googleapis-common-protos"
+version = "1.63.0"
+requires_python = ">=3.7"
+summary = "Common protobufs used in Google APIs"
+groups = ["default"]
+dependencies = [
+    "protobuf!=3.20.0,!=3.20.1,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<5.0.0.dev0,>=3.19.5",
+]
+files = [
+    {file = "googleapis-common-protos-1.63.0.tar.gz", hash = "sha256:17ad01b11d5f1d0171c06d3ba5c04c54474e883b66b949722b4938ee2694ef4e"},
+    {file = "googleapis_common_protos-1.63.0-py2.py3-none-any.whl", hash = "sha256:ae45f75702f7c08b541f750854a678bd8f534a1a6bace6afe975f1d0a82d6632"},
+]
+
+[[package]]
 name = "griffe"
 version = "0.44.0"
 requires_python = ">=3.8"
@@ -1342,6 +1584,19 @@ groups = ["dev"]
 files = [
     {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
     {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
+]
+
+[[package]]
+name = "isodate"
+version = "0.6.1"
+summary = "An ISO 8601 date/time/duration parser and formatter"
+groups = ["default"]
+dependencies = [
+    "six",
+]
+files = [
+    {file = "isodate-0.6.1-py2.py3-none-any.whl", hash = "sha256:0751eece944162659049d35f4f549ed815792b38793f07cf73381c1c87cbed96"},
+    {file = "isodate-0.6.1.tar.gz", hash = "sha256:48c5881de7e8b0a0d648cb024c8062dc84e7b840ed81e864c7614fd3c127bde9"},
 ]
 
 [[package]]
@@ -2010,6 +2265,36 @@ files = [
 ]
 
 [[package]]
+name = "proto-plus"
+version = "1.23.0"
+requires_python = ">=3.6"
+summary = "Beautiful, Pythonic protocol buffers."
+groups = ["default"]
+dependencies = [
+    "protobuf<5.0.0dev,>=3.19.0",
+]
+files = [
+    {file = "proto-plus-1.23.0.tar.gz", hash = "sha256:89075171ef11988b3fa157f5dbd8b9cf09d65fffee97e29ce403cd8defba19d2"},
+    {file = "proto_plus-1.23.0-py3-none-any.whl", hash = "sha256:a829c79e619e1cf632de091013a4173deed13a55f326ef84f05af6f50ff4c82c"},
+]
+
+[[package]]
+name = "protobuf"
+version = "4.25.3"
+requires_python = ">=3.8"
+summary = ""
+groups = ["default"]
+files = [
+    {file = "protobuf-4.25.3-cp310-abi3-win32.whl", hash = "sha256:d4198877797a83cbfe9bffa3803602bbe1625dc30d8a097365dbc762e5790faa"},
+    {file = "protobuf-4.25.3-cp310-abi3-win_amd64.whl", hash = "sha256:209ba4cc916bab46f64e56b85b090607a676f66b473e6b762e6f1d9d591eb2e8"},
+    {file = "protobuf-4.25.3-cp37-abi3-macosx_10_9_universal2.whl", hash = "sha256:f1279ab38ecbfae7e456a108c5c0681e4956d5b1090027c1de0f934dfdb4b35c"},
+    {file = "protobuf-4.25.3-cp37-abi3-manylinux2014_aarch64.whl", hash = "sha256:e7cb0ae90dd83727f0c0718634ed56837bfeeee29a5f82a7514c03ee1364c019"},
+    {file = "protobuf-4.25.3-cp37-abi3-manylinux2014_x86_64.whl", hash = "sha256:7c8daa26095f82482307bc717364e7c13f4f1c99659be82890dcfc215194554d"},
+    {file = "protobuf-4.25.3-py3-none-any.whl", hash = "sha256:f0700d54bcf45424477e46a9f0944155b46fb0639d69728739c0e47bab83f2b9"},
+    {file = "protobuf-4.25.3.tar.gz", hash = "sha256:25b5d0b42fd000320bd7830b349e3b696435f3b329810427a6bcce6a5492cc5c"},
+]
+
+[[package]]
 name = "psutil"
 version = "5.9.8"
 requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
@@ -2068,6 +2353,31 @@ dependencies = [
 ]
 files = [
     {file = "py-vapid-1.9.0.tar.gz", hash = "sha256:0664ab7899742ef2b287397a4d461ef691ed0cc2f587205128d8cf617ffdb919"},
+]
+
+[[package]]
+name = "pyasn1"
+version = "0.6.0"
+requires_python = ">=3.8"
+summary = "Pure-Python implementation of ASN.1 types and DER/BER/CER codecs (X.208)"
+groups = ["default"]
+files = [
+    {file = "pyasn1-0.6.0-py2.py3-none-any.whl", hash = "sha256:cca4bb0f2df5504f02f6f8a775b6e416ff9b0b3b16f7ee80b5a3153d9b804473"},
+    {file = "pyasn1-0.6.0.tar.gz", hash = "sha256:3a35ab2c4b5ef98e17dfdec8ab074046fbda76e281c5a706ccd82328cfc8f64c"},
+]
+
+[[package]]
+name = "pyasn1-modules"
+version = "0.4.0"
+requires_python = ">=3.8"
+summary = "A collection of ASN.1-based protocols modules"
+groups = ["default"]
+dependencies = [
+    "pyasn1<0.7.0,>=0.4.6",
+]
+files = [
+    {file = "pyasn1_modules-0.4.0-py3-none-any.whl", hash = "sha256:be04f15b66c206eed667e0bb5ab27e2b1855ea54a842e5037738099e8ca4ae0b"},
+    {file = "pyasn1_modules-0.4.0.tar.gz", hash = "sha256:831dbcea1b177b28c9baddf4c6d1013c24c3accd14a1873fffaa6a2e905f17b6"},
 ]
 
 [[package]]
@@ -2493,6 +2803,17 @@ files = [
 ]
 
 [[package]]
+name = "python-magic"
+version = "0.4.27"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+summary = "File type identification using libmagic"
+groups = ["default"]
+files = [
+    {file = "python-magic-0.4.27.tar.gz", hash = "sha256:c1ba14b08e4a5f5c31a302b7721239695b2f0f058d125bd5ce1ee36b9d9d3c3b"},
+    {file = "python_magic-0.4.27-py2.py3-none-any.whl", hash = "sha256:c212960ad306f700aa0d01e5d7a325d20548ff97eb9920dcd29513174f0294d3"},
+]
+
+[[package]]
 name = "python3-openid"
 version = "3.2.0"
 summary = "OpenID support for modern servers and consumers."
@@ -2815,6 +3136,34 @@ files = [
     {file = "rpds_py-0.18.0-pp39-pypy39_pp73-musllinux_1_2_i686.whl", hash = "sha256:bc362ee4e314870a70f4ae88772d72d877246537d9f8cb8f7eacf10884862432"},
     {file = "rpds_py-0.18.0-pp39-pypy39_pp73-musllinux_1_2_x86_64.whl", hash = "sha256:4832d7d380477521a8c1644bbab6588dfedea5e30a7d967b5fb75977c45fd77f"},
     {file = "rpds_py-0.18.0.tar.gz", hash = "sha256:42821446ee7a76f5d9f71f9e33a4fb2ffd724bb3e7f93386150b61a43115788d"},
+]
+
+[[package]]
+name = "rsa"
+version = "4.9"
+requires_python = ">=3.6,<4"
+summary = "Pure-Python RSA implementation"
+groups = ["default"]
+dependencies = [
+    "pyasn1>=0.1.3",
+]
+files = [
+    {file = "rsa-4.9-py3-none-any.whl", hash = "sha256:90260d9058e514786967344d0ef75fa8727eed8a7d2e43ce9f4bcf1b536174f7"},
+    {file = "rsa-4.9.tar.gz", hash = "sha256:e38464a49c6c85d7f1351b0126661487a7e0a14a50f1675ec50eb34d4f20ef21"},
+]
+
+[[package]]
+name = "s3transfer"
+version = "0.10.1"
+requires_python = ">= 3.8"
+summary = "An Amazon S3 Transfer Manager"
+groups = ["default"]
+dependencies = [
+    "botocore<2.0a.0,>=1.33.2",
+]
+files = [
+    {file = "s3transfer-0.10.1-py3-none-any.whl", hash = "sha256:ceb252b11bcf87080fb7850a224fb6e05c8a776bab8f2b64b7f25b969464839d"},
+    {file = "s3transfer-0.10.1.tar.gz", hash = "sha256:5683916b4c724f799e600f41dd9e10a9ff19871bf87623cc8f491cb4f5fa0a19"},
 ]
 
 [[package]]

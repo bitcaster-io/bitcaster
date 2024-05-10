@@ -1,26 +1,25 @@
 import factory
+from django.core.files.base import ContentFile
 from factory import Sequence
-from strategy_field.utils import fqn
-from testutils.dispatcher import TDispatcher
 
-from bitcaster.models import Channel
+from bitcaster.models import MediaFile
 
 from .base import AutoRegisterModelFactory
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
 
 
-class ChannelFactory(AutoRegisterModelFactory):
+class MediaFileFactory(AutoRegisterModelFactory):
+    class Meta:
+        model = MediaFile
+        django_get_or_create = ("name",)
 
-    name = Sequence(lambda n: "Channel-%03d" % n)
+    name = Sequence(lambda n: "file-%03d" % n)
     organization = factory.SubFactory(OrganizationFactory)
     project = factory.SubFactory(ProjectFactory)
     application = factory.SubFactory(ApplicationFactory)
-    dispatcher = fqn(TDispatcher)
-    config = {"foo": "bar"}
-
-    class Meta:
-        model = Channel
-        django_get_or_create = ("name", "organization", "project", "application")
+    image = factory.LazyAttribute(
+        lambda _: ContentFile(factory.django.ImageField()._make_data({"width": 1024, "height": 768}), "logo.png")
+    )
 
     @classmethod
     def create(cls, **kwargs):

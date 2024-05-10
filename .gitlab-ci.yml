@@ -95,8 +95,8 @@ stages:
     untracked: true
   before_script:
     - *exports
-  script:
     - *login
+  script:
     - *build-docker
     - | # -------------------------------       
       echo "Building image: $DOCKER_IMAGE"
@@ -140,6 +140,7 @@ lint:
     - .test-rules
   before_script:
     - *exports
+    - *login
   script:
     - echo -e "${TXT_HI_WHITE}Using Docker image ${TXT_HI_GREEN}${CI_JOB_IMAGE}${TXT_RESET}"
     - echo "run lint"
@@ -167,9 +168,9 @@ trivy-docker:
       - .trivy-cache
   before_script:
     - *exports
+    - *login
     - export DOCKER_IMAGE_TAG="${CI_REGISTRY_IMAGE}/builder:${BC_LOCK_SHA}"
   script:
-    - *login
     - echo "Scanning $DOCKER_IMAGE_TAG"
     - trivy
       --cache-dir .trivy-cache
@@ -201,8 +202,8 @@ bandit:
       - .trivy-cache
   before_script:
     - *exports
-  script:
     - *login
+  script:
     - echo "Scanning code..."
     - pip install bandit
     - bandit -c bandit.yaml --format html -o bandit.html -r src/
@@ -224,9 +225,9 @@ trivy-code:
       - .trivy-cache
   before_script:
     - *exports
+    - *login
     - export DOCKER_IMAGE_TAG="${CI_REGISTRY_IMAGE}/builder:${BC_LOCK_SHA}"
   script:
-    - *login
     - echo "Scanning $DOCKER_IMAGE_TAG"
     - trivy
       --cache-dir .trivy-cache

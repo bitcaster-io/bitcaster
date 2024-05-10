@@ -11,6 +11,7 @@ from .distribution import DistributionListAdmin
 from .event import EventAdmin
 from .group import GroupAdmin
 from .log import LogMessageAdmin
+from .media import MediaAdmin
 from .message import MessageAdmin
 from .notification import NotificationAdmin
 from .occurrence import OccurrenceAdmin
@@ -39,3 +40,4 @@ admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Validation, ValidationAdmin)
 admin.site.register(models.DistributionList, DistributionListAdmin)
 admin.site.register(models.Occurrence, OccurrenceAdmin)
+admin.site.register(models.MediaFile, MediaAdmin)

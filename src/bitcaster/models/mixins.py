@@ -1,13 +1,47 @@
-from typing import Any, Iterable, Optional, Protocol
+from typing import TYPE_CHECKING, Any, Iterable, MutableMapping, Optional
 
+from concurrency.fields import IntegerVersionField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.text import slugify
+from django.utils.translation import gettext as _
+
+if TYPE_CHECKING:
+    from bitcaster.types.django import AnyModel
 
 
-class Lockable(Protocol):
-    locked: bool
+class LockMixin(models.Model):
+    locked = models.BooleanField(default=False, help_text=_("Security lock of project"))
+
+    class Meta:
+        abstract = True
+
+
+class BaseQuerySet(models.QuerySet["AnyModel"]):
+
+    def get(self, *args: Any, **kwargs: Any) -> "AnyModel":
+        try:
+            return super().get(*args, **kwargs)
+        except self.model.DoesNotExist:
+            raise self.model.DoesNotExist(
+                "%s matching query does not exist. Using %s %s" % (self.model._meta.object_name, args, kwargs)
+            )
+
+
+class BitcasterBaselManager(models.Manager["AnyModel"]):
+    _queryset_class = BaseQuerySet
+
+
+class BitcasterBaseModel(models.Model):
+    version = IntegerVersionField()
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+    def natural_key(self) -> tuple[str | None, ...]:
+        raise NotImplementedError
 
 
 class SlugMixin(models.Model):
@@ -24,6 +58,44 @@ class SlugMixin(models.Model):
         if not self.slug:
             self.slug = slugify(str(self.name))
         super().save(*args, **kwargs)
+
+
+class ScopedManager(BitcasterBaselManager["AnyModel"]):
+
+    def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[AnyModel, bool]":
+        if kwargs.get("application"):
+            kwargs["project"] = kwargs["application"].project
+            kwargs["organization"] = kwargs["application"].project.organization
+        elif kwargs.get("project"):
+            kwargs["organization"] = kwargs["project"].organization
+
+        if defaults and defaults.get("application"):
+            defaults["project"] = defaults["application"].project
+            defaults["organization"] = defaults["application"].project.organization
+        elif defaults and defaults.get("project"):
+            defaults["organization"] = defaults["project"].organization
+
+        return super().get_or_create(defaults, **kwargs)
+
+    def update_or_create(
+        self,
+        defaults: MutableMapping[str, Any] | None = None,
+        create_defaults: MutableMapping[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> "tuple[AnyModel, bool]":
+        if kwargs and kwargs.get("application"):
+            kwargs["project"] = kwargs["application"].project
+            kwargs["organization"] = kwargs["application"].project.organization
+        elif kwargs.get("project"):
+            kwargs["organization"] = kwargs["project"].organization
+
+        if defaults and defaults.get("application"):
+            defaults["project"] = defaults["application"].project
+            defaults["organization"] = defaults["application"].project.organization
+        elif defaults and defaults.get("project"):
+            defaults["organization"] = defaults["project"].organization
+
+        return super().update_or_create(defaults, **kwargs)
 
 
 class ScopedMixin(models.Model):

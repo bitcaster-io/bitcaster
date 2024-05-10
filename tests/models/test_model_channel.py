@@ -1,5 +1,6 @@
 import pytest
 from strategy_field.utils import fqn, get_attr
+from testutils.factories import ChannelFactory
 
 from bitcaster.dispatchers import GMailDispatcher
 from bitcaster.models import Channel
@@ -65,3 +66,9 @@ def test_channel_property(channel: "Channel", attr: str):
 @pytest.mark.parametrize("attr", ["from_email", "subject_prefix"])
 def test_clean(channel: "Channel", attr: str):
     channel.clean()
+
+
+@pytest.mark.parametrize("args", [{}, {"application": None}, {"project": None, "application": None}])
+def test_natural_key(args):
+    ch = ChannelFactory(name="ch1", **args)
+    assert Channel.objects.get_by_natural_key(*ch.natural_key()) == ch, ch.natural_key()

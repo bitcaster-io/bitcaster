@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, Tuple, TypeAlias, Union
+from urllib import parse
 
 from environ import Env
 
@@ -56,15 +57,6 @@ CONFIG: "Dict[str, ConfigItem]" = {
         "",
     ),
     "DEBUG": (bool, False, setting("debug"), True),
-    "GDAL_LIBRARY_PATH": (str, None, setting("gdal-library-path"), True),
-    "GEOS_LIBRARY_PATH": (str, None, setting("geos-library-path"), True),
-    # "EMAIL_BACKEND": (str, "anymail.backends.mailjet.EmailBackend", "Do not change in prod"),
-    # "EMAIL_HOST": (str, ""),
-    # "EMAIL_HOST_PASSWORD": (str, ""),
-    # "EMAIL_HOST_USER": (str, ""),
-    # "EMAIL_PORT": (str, ""),
-    # "EMAIL_USE_SSL": (str, ""),
-    # "EMAIL_USE_TLS": (str, ""),
     "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level")),
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "MEDIA_ROOT": (str, None, setting("media-root")),
@@ -77,6 +69,9 @@ CONFIG: "Dict[str, ConfigItem]" = {
     "SENTRY_DSN": (str, "", "Sentry DSN"),
     "SENTRY_ENVIRONMENT": (str, "production", "Sentry Environment"),
     "SENTRY_URL": (str, "", "Sentry server url"),
+    "STORAGE_DEFAULT": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
+    "STORAGE_MEDIA": (str, "", setting("storages")),
+    "STORAGE_STATIC": (str, "", setting("storages")),
     "SESSION_COOKIE_DOMAIN": (str, "bitcaster.org", setting("std-setting-SESSION_COOKIE_DOMAIN"), "localhost"),
     "SESSION_COOKIE_HTTPONLY": (bool, True, setting("session-cookie-httponly")),
     "SESSION_COOKIE_NAME": (str, "bitcaster_session", setting("session-cookie-name")),
@@ -126,6 +121,19 @@ class SmartEnv(Env):
             return entry[3]
         return self.get_value(key)
 
+    def storage(self, value: str) -> dict[str, str | dict[str, Any]] | None:
+        raw_value = self.get_value(value, str)
+        if not raw_value:
+            return None
+        options = {}
+        if "?" in raw_value:
+            value, options = raw_value.split("?", 1)
+            options = dict(parse.parse_qsl(options))
+        else:
+            value = raw_value
+
+        return {"BACKEND": value, "OPTIONS": options}
+
     def get_default(self, var: str) -> Any:
         var_name = f"{self.prefix}{var}"
         value = ""
@@ -134,15 +142,6 @@ class SmartEnv(Env):
             value = var_info[1]
             cast = var_info[0]
             return cast(value)
-            # prefix = b"$" if isinstance(value, bytes) else "$"
-            # escape = rb"\$" if isinstance(value, bytes) else r"\$"
-            # if hasattr(value, "startswith") and value.startswith(prefix):
-            #     value = value.lstrip(prefix)
-            #     value = self.get_value(value, cast=cast)
-
-            # if self.escape_proxy and hasattr(value, "replace"):
-            #     value = value.replace(escape, prefix)
-
         return value
 
 

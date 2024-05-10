@@ -80,7 +80,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.M
 
     @button()
     def trigger_url(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        obj: Event = self.get_object(request, pk)
+        obj: Optional[Event] = self.get_object(request, pk)
         url = obj.get_trigger_url(request)
         self.message_user(request, url, messages.SUCCESS)
 

@@ -48,11 +48,6 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
             )
         )
 
-    def get_changeform_initial_data(self, request):
-        initial = super().get_changeform_initial_data(request)
-        # initial
-        return initial
-
     @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
     def messages(self, request: HttpRequest, pk: str) -> HttpResponse:
         status_code = 200

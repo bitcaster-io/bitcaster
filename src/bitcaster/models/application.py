@@ -6,7 +6,7 @@ from django.db.models import QuerySet
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
-from .mixins import SlugMixin
+from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMixin
 from .project import Project
 from .user import User
 
@@ -16,16 +16,17 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ApplicationManager(models.Manager["Application"]):
-    pass
+class ApplicationManager(BitcasterBaselManager["Application"]):
+
+    def get_by_natural_key(self, slug: str, prj: "str", org: str) -> "Application":
+        return self.get(slug=slug, project__organization__slug=org, project__slug=prj)
 
 
-class Application(SlugMixin, models.Model):
+class Application(SlugMixin, LockMixin, BitcasterBaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="applications")
     owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
 
     active = models.BooleanField(default=True, help_text=_("Whether the application should be active"))
-    locked = models.BooleanField(default=False, help_text=_("Security lock of applications"))
 
     from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
     subject_prefix = models.CharField(
@@ -39,7 +40,10 @@ class Application(SlugMixin, models.Model):
 
     class Meta:
         ordering = ("name",)
-        unique_together = (("name", "project"),)
+        unique_together = (("project", "name"), ("project", "slug"))
+
+    def natural_key(self) -> tuple[str | None, ...]:
+        return self.slug, *self.project.natural_key()
 
     @cached_property
     def organization(self) -> "Organization":
