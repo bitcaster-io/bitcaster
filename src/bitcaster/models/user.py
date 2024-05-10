@@ -4,14 +4,14 @@ from typing import TYPE_CHECKING
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as BaseUserManager
 from django.db import models
-from django.db.models import QuerySet
 from django.utils.crypto import RANDOM_STRING_CHARS
 from django.utils.translation import gettext_lazy as _
 
 from .mixins import BitcasterBaseModel
 
 if TYPE_CHECKING:
-    from .address import Address
+    from bitcaster.dispatchers.base import MessageProtocol
+    from bitcaster.models import Address
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +25,6 @@ class UserManager(BaseUserManager["User"]):
 
 
 class User(BitcasterBaseModel, AbstractUser):
-    addresses: "QuerySet[Address]"
-
     custom_fields = models.JSONField(default=dict, blank=True)
     objects = UserManager()
 
@@ -39,3 +37,6 @@ class User(BitcasterBaseModel, AbstractUser):
 
     def natural_key(self) -> tuple[str]:
         return (self.username,)
+
+    def get_address_for_protocol(self, protocol: "MessageProtocol") -> "Address | None":
+        return self.addresses.filter_for_protocol(protocol).first()

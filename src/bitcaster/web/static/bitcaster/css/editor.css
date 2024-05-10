@@ -11,6 +11,14 @@
 #edit-message-form input, #edit-message-form textarea {
   width: 100%;
 }
+#edit-message-form .address-line {
+  display: inline-flex;
+  float: right;
+}
+#edit-message-form .address-line input#id_recipient {
+  width: 200px;
+  margin-right: 20px;
+}
 #edit-message-form input[type=submit].default {
   background-color: var(--bg-primary);
 }

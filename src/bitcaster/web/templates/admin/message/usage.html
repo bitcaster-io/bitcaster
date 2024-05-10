@@ -1,6 +1,9 @@
 {% extends "admin_extra_buttons/action_page.html" %}{% load static i18n %}
 {% block action-content %}
     <div class="module">
+        {{ original.channel.dispatcher }} - {{ original.channel.dispatcher.protocol }} - {{ original.channel.dispatcher.capabilities }}
+    </div>
+    <div class="module">
         <h3>{{ level }}</h3>
         <table width="100%" id="usage">
             <tbody>

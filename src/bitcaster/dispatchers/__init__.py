@@ -5,4 +5,5 @@ from .mailgun import MailgunDispatcher  # noqa
 from .mailjet import MailJetDispatcher  # noqa
 from .sendgrid import SendGridDispatcher  # noqa
 from .slack import SlackDispatcher  # noqa
+from .sys import SystemDispatcher  # noqa
 from .twilio import TwilioSMS  # noqa

@@ -269,6 +269,13 @@ def notification(db):
 
 
 @pytest.fixture()
+def validation(db):
+    from testutils.factories import ValidationFactory
+
+    return ValidationFactory()
+
+
+@pytest.fixture()
 def messagebox():
     import testutils.dispatcher
 

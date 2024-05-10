@@ -12,7 +12,6 @@ from strategy_field.utils import fqn
 
 from bitcaster.config import env
 from bitcaster.constants import Bitcaster
-from bitcaster.dispatchers import EmailDispatcher
 from bitcaster.models import Channel
 
 if TYPE_CHECKING:
@@ -185,24 +184,10 @@ class Command(BaseCommand):
                 application=bitcaster,
                 dispatcher=fqn(BitcasterLogDispatcher),
             )[0]
-            ch_mail = Channel.objects.get_or_create(
-                name=Channel.SYSTEM_EMAIL_CHANNEL_NAME,
-                organization=os4d,
-                project=bitcaster.project,
-                application=bitcaster,
-                dispatcher=fqn(EmailDispatcher),
-            )[0]
 
-            bitcaster.create_message(
-                name="Message for channel {name}".format(name=ch_mail.name),
-                channel=ch_mail,
-                defaults={"subject": "{{subject}}", "content": "{{message}}", "html_content": "{{message}}"},
-            )
             for ev in bitcaster.events.all():  # noqa
-                # ev.channels.add(ch_mail)
-                # ev.channels.add(ch_log)
                 n = ev.create_notification(name=f"Notification for {ev.name}", distribution=dis)
-                for ch in [ch_mail, ch_log]:
+                for ch in [ch_log]:
                     ev.create_message(
                         name=f"Message for event {ev.name} using {ch}",
                         channel=ch,
@@ -215,9 +200,7 @@ class Command(BaseCommand):
                     )
 
             echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
-            admin_email = admin.addresses.get_or_create(name="email", defaults={"value": self.admin_email})[0]
-            v = admin_email.validate_channel(ch_mail)
-            dis.recipients.add(v)
+            admin.addresses.get_or_create(name="email", defaults={"value": self.admin_email})
 
             from bitcaster.auth.constants import DEFAULT_GROUP_NAME
 

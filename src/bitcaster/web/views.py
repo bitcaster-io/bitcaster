@@ -34,13 +34,12 @@ class LogoutView(BaseLogoutView):
 
 
 class MediaView(View):
-    show_indexes = False
 
     def get(self, request: HttpRequest, path: str) -> HttpResponse | FileResponse:
         path = posixpath.normpath(path).lstrip("/")
         fullpath = Path(safe_join(settings.MEDIA_ROOT, path))
         if fullpath.is_dir():
-            if self.show_indexes:
+            if settings.DEBUG:  # pragma: no cover
                 return directory_index(path, fullpath)
             raise Http404(_("Directory indexes are not allowed here."))
         if not fullpath.exists():
@@ -49,12 +48,12 @@ class MediaView(View):
         statobj = fullpath.stat()
         if not was_modified_since(request.META.get("HTTP_IF_MODIFIED_SINCE"), statobj.st_mtime):
             return HttpResponseNotModified()
-        content_type, encoding = mimetypes.guess_type(str(fullpath))
+        content_type, __ = mimetypes.guess_type(str(fullpath))
         content_type = content_type or "application/octet-stream"
         response = FileResponse(fullpath.open("rb"), content_type=content_type)
         response.headers["Last-Modified"] = http_date(statobj.st_mtime)
-        if encoding:
-            response.headers["Content-Encoding"] = encoding
+        # if encoding:
+        #     response.headers["Content-Encoding"] = encoding
         return response
 
 

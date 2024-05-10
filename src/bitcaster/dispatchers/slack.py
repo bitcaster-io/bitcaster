@@ -22,11 +22,11 @@ class SlackDispatcher(Dispatcher):
     config_class: Type[DispatcherConfig] = SlackConfig
     protocol = MessageProtocol.PLAINTEXT
 
-    def send(self, address: str, payload: Payload) -> "Response":
+    def send(self, address: str, payload: Payload) -> bool:
         try:
             conn = requests.Session()
-            res = conn.post(self.config["url"], json={"text": payload.message})
-            return res
+            res: Response = conn.post(self.config["url"], json={"text": payload.message})
+            return res.status_code == 200
         except Exception as e:
             logger.exception(e)
             raise DispatcherError(e)

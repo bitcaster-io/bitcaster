@@ -4,7 +4,7 @@ var $subject = $("#id_subject");
 var $content = $("#id_content");
 var csrftoken = $("[name=csrfmiddlewaretoken]").val();
 var render_url = $("meta[name='render-url']").attr("content");  ;
-var edit_url = $("meta[name='edit-url']").attr("content");  ;
+var test_url = $("meta[name='test-url']").attr("content");  ;
 var change_url = $("meta[name='change-url']").attr("content");  ;
 var iframeElement = document.getElementById("preview");
 var ACTIVE=null;
@@ -28,6 +28,17 @@ function replaceIframeContent(newHTML) {
     iframeElement.contentWindow.document.close();
 }
 
+function send_message() {
+    django.jQuery.post(test_url, {
+            "content_type": "text/plain",
+            "recipient": $("#id_recipient").val(),
+            "subject": $subject.val(),
+            "content":  $content.val(),
+            "html": tinymce.activeEditor.getContent("id_html_content"),
+            "context": $context.val()
+        },
+    );
+}
 function send() {
     var selected = ACTIVE.attr("id");
     var content = "";
@@ -53,9 +64,9 @@ function send() {
     );
 }
 function gotoParent(){
-    var s1 = window.location.href;
-    nn = s1.split("/").slice(0,-2).join("/")
-    return nn + "/change/";
+    var base = window.location.href;
+    var parent = base.split("/").slice(0,-2).join("/")
+    return parent + "/change/";
 }
 
 $context.on("change", function () {
@@ -64,7 +75,11 @@ $context.on("change", function () {
 $content.on("keyup", function () {
     send()
 })
-$(".button").on("click", function(e){
+$("#btn_test").on("click", function(e){
+    send_message();
+})
+
+$(".button.toggler").on("click", function(e){
     $(".tab").hide();
     ACTIVE = $(this);
     $($(ACTIVE).data("panel")).show();

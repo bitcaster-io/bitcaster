@@ -30,10 +30,14 @@ class EmailDispatcher(Dispatcher):
     config_class: Type[DispatcherConfig] = EmailConfig
     backend = "django.core.mail.backends.smtp.EmailBackend"
 
-    def send(self, address: str, payload: Payload) -> None:
+    def send(self, address: str, payload: Payload) -> bool:
         try:
             subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
             email = EmailMultiAlternatives(
+                # headers={
+                #     "List-Unsubscribe": unsubscribe_url,
+                #     "X-Example-Header": "myapp",
+                # },
                 subject=subject or "",
                 body=payload.message,
                 from_email=self.channel.from_email,
@@ -43,6 +47,7 @@ class EmailDispatcher(Dispatcher):
             if payload.html_message:
                 email.attach_alternative(payload.html_message, "text/html")
             email.send()
+            return True
         except Exception as e:
             logger.exception(e)
             raise DispatcherError(e)

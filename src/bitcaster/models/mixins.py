@@ -63,17 +63,18 @@ class SlugMixin(models.Model):
 class ScopedManager(BitcasterBaselManager["AnyModel"]):
 
     def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[AnyModel, bool]":
-        if kwargs.get("application"):
+        if kwargs.get("application", None):
             kwargs["project"] = kwargs["application"].project
-            kwargs["organization"] = kwargs["application"].project.organization
-        elif kwargs.get("project"):
+
+        if kwargs.get("project", None):
             kwargs["organization"] = kwargs["project"].organization
 
-        if defaults and defaults.get("application"):
-            defaults["project"] = defaults["application"].project
-            defaults["organization"] = defaults["application"].project.organization
-        elif defaults and defaults.get("project"):
-            defaults["organization"] = defaults["project"].organization
+        if defaults:
+            if defaults.get("application", None):
+                defaults["project"] = defaults["application"].project
+
+            if defaults.get("project", None):
+                defaults["organization"] = defaults["project"].organization
 
         return super().get_or_create(defaults, **kwargs)
 
@@ -83,18 +84,18 @@ class ScopedManager(BitcasterBaselManager["AnyModel"]):
         create_defaults: MutableMapping[str, Any] | None = None,
         **kwargs: Any,
     ) -> "tuple[AnyModel, bool]":
-        if kwargs and kwargs.get("application"):
+        if kwargs.get("application", None):
             kwargs["project"] = kwargs["application"].project
-            kwargs["organization"] = kwargs["application"].project.organization
-        elif kwargs.get("project"):
+
+        if kwargs.get("project", None):
             kwargs["organization"] = kwargs["project"].organization
 
-        if defaults and defaults.get("application"):
-            defaults["project"] = defaults["application"].project
-            defaults["organization"] = defaults["application"].project.organization
-        elif defaults and defaults.get("project"):
-            defaults["organization"] = defaults["project"].organization
+        if defaults:
+            if defaults.get("application", None):
+                defaults["project"] = defaults["application"].project
 
+            if defaults.get("project", None):
+                defaults["organization"] = defaults["project"].organization
         return super().update_or_create(defaults, **kwargs)
 
 

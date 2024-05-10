@@ -7,7 +7,7 @@ from django.core.mail.backends.smtp import EmailBackend
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from .base import Dispatcher, DispatcherConfig, Payload
+from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 if TYPE_CHECKING:
     from bitcaster.types.dispatcher import TDispatcherConfig
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 class GMailConfig(DispatcherConfig):
     username = forms.CharField(label=_("Username"))
-    password = forms.CharField(label=_("Password"))
+    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput, required=False)
 
 
 class GMailDispatcher(Dispatcher):
@@ -24,6 +24,7 @@ class GMailDispatcher(Dispatcher):
 
     config_class = GMailConfig
     backend = EmailBackend
+    protocol: MessageProtocol = MessageProtocol.EMAIL
 
     @cached_property
     def config(self) -> Dict[str, Any]:
@@ -38,7 +39,7 @@ class GMailDispatcher(Dispatcher):
         }
         return config
 
-    def send(self, address: str, payload: Payload) -> None:
+    def send(self, address: str, payload: Payload) -> bool:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         email = EmailMultiAlternatives(
             subject=subject,
@@ -49,4 +50,4 @@ class GMailDispatcher(Dispatcher):
         )
         if payload.html_message:
             email.attach_alternative(payload.html_message, "text/html")
-        email.send()
+        return email.send() > 0

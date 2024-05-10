@@ -11,5 +11,6 @@ class TDispatcher(Dispatcher):
     text_message = True
     html_message = True
 
-    def send(self, address: str, payload: Payload) -> None:
+    def send(self, address: str, payload: Payload) -> bool:
         MESSAGES.append((address, payload.message))
+        return True

@@ -9,6 +9,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
 from ..dispatchers.base import Payload
+from ..utils.shortcuts import render_string
 from .distribution import DistributionList
 from .mixins import BitcasterBaselManager, BitcasterBaseModel
 from .validation import Validation
@@ -100,7 +101,10 @@ class Notification(BitcasterBaseModel):
             payload: Payload = Payload(
                 event=self.event,
                 user=addr.user,
-                message=message.render(context),
+                subject=render_string(message.subject, context),
+                message=render_string(message.content, context),
+                html_message=render_string(message.html_content, context),
+                # message=message.render(context),
             )
             dispatcher.send(addr.value, payload)
             return addr.value

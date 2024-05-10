@@ -91,7 +91,7 @@ class Command(BaseCommand):
                 self.setup(*args, **options)
 
     def setup(self, *args: Any, **options: Any) -> None:  # noqa: C901
-        from bitcaster.models import Application, Channel, Event, User
+        from bitcaster.models import Application, Channel, User
         from bitcaster.social.models import Provider, SocialProvider
 
         try:
@@ -126,35 +126,34 @@ class Command(BaseCommand):
                 self.echo(f"Created/Updated SSO {sso}", style_func=self.style.SUCCESS)
 
             if structure := os.environ.get("TEST_ORG_STRUCTURE", "user@example.com;Org;Project1;Application1"):
-                email, org_name, prj_name, app_name = structure.split(";")
+                email, org_name, prj_name, apps = structure.split(";")
                 u = User.objects.update_or_create(username=email, defaults={"email": email, "is_staff": True})[0]
                 u.set_password("password")
                 o = u.organizations.update_or_create(name=org_name)[0]
                 p = o.projects.update_or_create(name=prj_name, owner=u)[0]
-                a = p.applications.update_or_create(name=app_name, owner=u)[0]
-                ch = o.channel_set.update_or_create(name="GMail", defaults={"dispatcher": fqn(GMailDispatcher)})[0]
-                e: Event = a.events.update_or_create(name="Test Event")[0]
-                e.channels.add(ch)
-                e.save()
-
-                if k := os.environ.get("TEST_API_KEY"):
-                    u.keys.update_or_create(
-                        name="Key1",
-                        defaults={
-                            "key": k,
-                            "application": a,
-                            "grants": [Grant.EVENT_TRIGGER, Grant.EVENT_LIST, Grant.SYSTEM_PING],
-                        },
-                    )
-
+                active_project = p
                 self.echo(f"Created/Updated Organization {org_name}", style_func=self.style.SUCCESS)
                 self.echo(f"Created/Updated Project {prj_name}", style_func=self.style.SUCCESS)
-                self.echo(f"Created/Updated Application {app_name}", style_func=self.style.SUCCESS)
-
+                for app_name in apps.split(","):
+                    if app_name.strip():
+                        a = p.applications.update_or_create(name=app_name, owner=u)[0]
+                        a.events.update_or_create(name="Test Event")
+                        if k := os.environ.get("TEST_API_KEY"):
+                            u.keys.update_or_create(
+                                name="Key1",
+                                defaults={
+                                    "key": k,
+                                    "application": a,
+                                    "grants": [Grant.EVENT_TRIGGER, Grant.EVENT_LIST, Grant.SYSTEM_PING],
+                                },
+                            )
+                        self.echo(f"Created/Updated Application {app_name}", style_func=self.style.SUCCESS)
+            else:
+                active_project = bitcaster
             if os.environ.get("GMAIL_USER") and os.environ.get("GMAIL_PASSWORD"):
                 ch, __ = Channel.objects.update_or_create(
                     name="Gmail",
-                    application=bitcaster,
+                    project=active_project,
                     defaults={
                         "dispatcher": fqn(GMailDispatcher),
                         "config": {
@@ -164,10 +163,11 @@ class Command(BaseCommand):
                     },
                 )
                 self.echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
+            self.echo(f"Active Project is {active_project}")
             if os.environ.get("MAILGUN_SENDER_DOMAIN") and os.environ.get("MAILGUN_API_KEY"):
                 ch, __ = Channel.objects.update_or_create(
                     name="Mailgun",
-                    application=bitcaster,
+                    project=active_project,
                     defaults={
                         "dispatcher": fqn(MailgunDispatcher),
                         "config": {
@@ -180,8 +180,8 @@ class Command(BaseCommand):
             if os.environ.get("MAILJET_API_KEY") and os.environ.get("MAILJET_SECRET_KEY"):
                 ch, __ = Channel.objects.update_or_create(
                     name="MailJet",
+                    project=active_project,
                     defaults={
-                        "application": bitcaster,
                         "dispatcher": fqn(MailJetDispatcher),
                         "config": {
                             "api_key": os.environ.get("MAILJET_API_KEY"),
@@ -194,8 +194,8 @@ class Command(BaseCommand):
             if os.environ.get("SLACK_WEBHOOK"):
                 ch, __ = Channel.objects.update_or_create(
                     name="Slack",
+                    project=active_project,
                     defaults={
-                        "application": bitcaster,
                         "dispatcher": fqn(SlackDispatcher),
                         "config": {"url": os.environ.get("SLACK_WEBHOOK")},
                     },
@@ -203,6 +203,10 @@ class Command(BaseCommand):
                 self.echo(f"Created/Updated Channel {ch}", style_func=self.style.SUCCESS)
 
             enable_flag("DEVELOP_DEBUG_TOOLBAR")
+            sys.path.append("/Users/sax/Documents/data/PROGETTI/os4d/bitcaster/tests/extras")
+            from testutils.factories import AddressFactory
+
+            AddressFactory.create_batch(10)
 
             self.echo("System configured", style_func=self.style.SUCCESS)
         except ValidationError as e:

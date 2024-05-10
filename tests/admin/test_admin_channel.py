@@ -2,6 +2,7 @@ from smtplib import SMTP
 from unittest.mock import Mock, patch
 
 import pytest
+from constance.test.unittest import override_config
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models.options import Options
 from django.urls import reverse
@@ -37,11 +38,13 @@ def system_channel(db):
 
     from bitcaster.dispatchers import GMailDispatcher
 
-    return ChannelFactory(
+    ch = ChannelFactory(
         dispatcher=fqn(GMailDispatcher),
-        name=Channel.SYSTEM_EMAIL_CHANNEL_NAME,
+        name="system-channel",
         config={"username": "username", "password": "password"},
     )
+    with override_config(SYSTEM_EMAIL_CHANNEL=ch.pk):
+        yield ch
 
 
 def test_configure(app: DjangoTestApp, gmail_channel):

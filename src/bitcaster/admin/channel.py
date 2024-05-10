@@ -1,9 +1,10 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from adminfilters.combo import ChoicesFieldComboFilter
+from constance import config
 from django import forms
 from django.contrib.admin.helpers import AdminForm
 from django.db.models import QuerySet
@@ -13,9 +14,9 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from reversion.admin import VersionAdmin
 
-from bitcaster.models import Channel
+from bitcaster.models import Channel, User
 
-from ..dispatchers.base import Payload
+from ..dispatchers.base import MessageProtocol, Payload
 from ..forms.channel import ChannelAddForm, ChannelChangeForm
 from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixin, TwoStepCreateMixin
@@ -24,7 +25,7 @@ if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
     from bitcaster.types.django import AnyModel
-    from bitcaster.types.http import AnyResponse
+    from bitcaster.types.http import AnyResponse, AuthHttpRequest
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], V
         return super().get_form(request, obj, change, **defaults)
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[AnyModel]" = None) -> "_ListOrTuple[str]":
-        if obj and obj.name == Channel.SYSTEM_EMAIL_CHANNEL_NAME:
+        if obj and obj.pk == config.SYSTEM_EMAIL_CHANNEL:
             return ["name", "organization", "project", "application"]
         return []
 
@@ -99,10 +100,11 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], V
         return TemplateResponse(request, "admin/channel/configure.html", context)
 
     @button()
-    def test(self, request: "HttpRequest", pk: str) -> "HttpResponse":
+    def test(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
         from bitcaster.models import Event
 
-        obj = self.get_object(request, pk)
+        ch: Channel = cast(Channel, self.get_object(request, pk))
+        user: User = request.user
         context = self.get_common_context(request, pk, title=_("Test channel"))
         if request.method == "POST":
             config_form = ChannelTestForm(request.POST)
@@ -112,13 +114,20 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], V
                     config_form.cleaned_data["message"], event=Event(), subject=config_form.cleaned_data["subject"]
                 )
                 try:
-                    obj.dispatcher.send(recipient, payload)
+                    ch.dispatcher.send(recipient, payload)
                 except Exception as e:
                     self.message_error_to_user(request, e)
-                self.message_user(request, "Message sent to {} via {}".format(recipient, obj.name))
+                self.message_user(request, "Message sent to {} via {}".format(recipient, ch.name))
         else:
-            config_form = ChannelTestForm(initial=obj.config)  # type: ignore
+            config_form = ChannelTestForm(
+                initial={
+                    "recipient": user.get_address_for_protocol(MessageProtocol[ch.protocol]),
+                    "subject": "[TEST] Subject",
+                    "message": "aaa",
+                }
+            )
 
+        context["recipient"] = user.get_address_for_protocol(MessageProtocol[ch.protocol])
         context["form"] = config_form
         return TemplateResponse(request, "admin/channel/test.html", context)
 

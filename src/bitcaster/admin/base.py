@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django.db.models import QuerySet
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
 from bitcaster.state import state
 
@@ -23,6 +23,14 @@ class ButtonColor(enum.Enum):
 
 
 class BaseAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin):
+    def response_add(self, request: HttpRequest, obj: "AnyModel", post_url_continue: str | None = None) -> HttpResponse:
+        ret = super().response_add(request, obj, post_url_continue)
+        # if ret.status_code in [200, 400]:
+        #     return ret
+        if redirect_url := request.GET.get("next", ""):
+            return HttpResponseRedirect(redirect_url)
+        return ret
+
     def get_search_results(
         self, request: HttpRequest, queryset: "QuerySet[AnyModel]", search_term: str
     ) -> "tuple[QuerySet[AnyModel], bool]":

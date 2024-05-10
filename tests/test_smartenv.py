@@ -46,6 +46,7 @@ def test_env():
             "T1": (str, "a@b.com"),
             "T2": (str, "a@b.com", "help"),
             "T3": (str, "a@b.com", "help", "dev@b.com"),
+            "T4": (int, None),
         }
     )
 
@@ -65,3 +66,6 @@ def test_env():
     assert e.get_default("T3") == "a@b.com"
 
     assert e.get_default("cc") == ""
+
+    with pytest.raises(TypeError):
+        assert e.get_default("T4")

@@ -1,10 +1,13 @@
 import json
+from unittest import mock
 
 import pytest
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models.options import Options
 from django.urls import reverse
 from django_webtest import DjangoTestApp
+from strategy_field.utils import fqn
+from testutils.factories import ChannelFactory
 
 from bitcaster.models import Message
 
@@ -21,11 +24,20 @@ def app(django_app_factory, db):
 
 
 @pytest.fixture()
-def messages(django_app_factory, db):
+def messages(db):
     from testutils.factories import MessageFactory, NotificationFactory
 
     n = NotificationFactory()
     MessageFactory(notification=n)
+
+
+@pytest.fixture()
+def email_message(email_channel):
+    from testutils.factories import MessageFactory
+
+    from bitcaster.dispatchers import SystemDispatcher
+
+    return MessageFactory(channel=ChannelFactory(dispatcher=fqn(SystemDispatcher)))
 
 
 def test_render(app: DjangoTestApp, message):
@@ -69,6 +81,49 @@ def test_edit(app: DjangoTestApp, message):
     assert message.subject == "subject"
     assert message.content == "content"
     assert message.html_content == "html_content"
+
+
+def test_send_message(app: DjangoTestApp, email_message, mailoutbox, mocked_responses):
+    opts: Options = Message._meta
+    url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])
+    res = app.get(url)
+    assert res.status_code == 200
+    res = app.post(
+        url,
+        {
+            "recipient": "test@example.com",
+            "subject": "subject",
+            "content": "content",
+            "html_content": "html_content",
+            "content_type": "text/html",
+            "context": "{}",
+        },
+    )
+    assert res.status_code == 200
+    assert res.json == {"success": "message sent"}
+    assert len(mailoutbox) == 1
+
+
+def test_send_message_fail(app: DjangoTestApp, email_message: "Message", mailoutbox, mocked_responses, monkeypatch):
+    opts: Options = Message._meta
+    url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])
+    res = app.get(url)
+    assert res.status_code == 200
+    with mock.patch("bitcaster.dispatchers.SystemDispatcher.send", return_value=False):
+        res = app.post(
+            url,
+            {
+                "recipient": "test",
+                "subject": "subject",
+                "content": "content",
+                "html_content": "html_content",
+                "content_type": "text/html",
+                "context": "{}",
+            },
+        )
+    assert res.status_code == 200
+    assert res.json == {"error": "Failed to send message to test"}
+    assert len(mailoutbox) == 0
 
 
 def test_edit_error(app: DjangoTestApp, message):

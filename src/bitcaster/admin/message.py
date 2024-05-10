@@ -1,11 +1,11 @@
 import logging
-from typing import Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template import Context, Template
 from django.template.response import TemplateResponse
 from django.utils import timezone
@@ -22,10 +22,16 @@ from bitcaster.models import (
     Project,
 )
 
+from ..dispatchers.base import Dispatcher, Payload
 from ..forms.message import MessageChangeForm, MessageCreationForm, MessageEditForm
+from ..utils.shortcuts import render_string
 from .base import BaseAdmin
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from ..types.django import JsonType
+    from ..types.http import AuthHttpRequest
 
 
 class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
@@ -102,6 +108,32 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
 
         return HttpResponse(res, content_type=ct)
 
+    @view()
+    def send_message(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
+        form = MessageEditForm(request.POST)
+        msg: Message = self.get_object(request, pk)
+        dispatcher: Dispatcher = msg.channel.dispatcher
+        # oc, no = self.get_dummy_source(msg)
+        ret: "JsonType"
+        if form.is_valid():
+            ctx = {**form.cleaned_data["context"], "event": msg.event}
+            payload: Payload = Payload(
+                subject=render_string(form.cleaned_data["subject"], ctx),
+                message=render_string(form.cleaned_data["content"], ctx),
+                user=request.user,
+                html_message=render_string(form.cleaned_data["html_content"], ctx),
+                event=Event(name="Sample Event"),
+            )
+            recipient = form.cleaned_data["recipient"]
+            if not dispatcher.send(recipient, payload):
+                ret = {"error": f"Failed to send message to {recipient}"}
+            else:
+                ret = {"success": "message sent"}
+        else:
+            ret = {"error": form.errors}
+
+        return JsonResponse(ret)
+
     @button()
     def edit(self, request: HttpRequest, pk: str) -> "HttpResponse":
         context = self.get_common_context(request, pk)
@@ -117,6 +149,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
         else:
             form = MessageEditForm(
                 initial={
+                    "recipient": request.user.email,
                     "context": {k: "<sys>" for k, __ in message_context.items()},
                     "content": "\n".join([f"{k}: {{{{{k}}}}}" for k in message_context.keys()]),
                     "html_content": "".join([f"<div>{k}: {{{{{k}}}}}</div>" for k in message_context.keys()]),

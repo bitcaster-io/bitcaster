@@ -1,10 +1,4 @@
-from typing import TYPE_CHECKING
-
 from .base import Dispatcher, MessageProtocol, Payload
-
-if TYPE_CHECKING:
-    from bitcaster.models.log import LogMessage
-
 
 MESSAGES = []
 
@@ -16,7 +10,8 @@ class BitcasterLogDispatcher(Dispatcher):
     verbose_name = "Log"
     protocol = MessageProtocol.PLAINTEXT
 
-    def send(self, address: str, payload: Payload) -> "LogMessage":
+    def send(self, address: str, payload: Payload) -> bool:
         from bitcaster.models.log import LogMessage
 
-        return LogMessage.objects.create(level=address, application=payload.event.application, message=payload.message)
+        LogMessage.objects.create(level=address, application=payload.event.application, message=payload.message)
+        return True

@@ -1,14 +1,14 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional, TypeVar
 
-from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django.contrib import admin
 from django.contrib.admin.options import InlineModelAdmin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
+from bitcaster.admin.base import BaseAdmin
+from bitcaster.forms.address import AddressForm
 from bitcaster.models import Address, Validation
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class InlineValidation(admin.TabularInline["Validation", "AddressAdmin"]):
     extra = 0
 
 
-class AddressAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin[Address]):
+class AddressAdmin(BaseAdmin, admin.ModelAdmin[Address]):
     search_fields = ("name",)
     list_display = ("user", "name", "value", "type")
     list_filter = (
@@ -33,15 +33,16 @@ class AddressAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtons
         "type",
     )
     autocomplete_fields = ("user",)
-
+    form = AddressForm
     inlines = [InlineValidation]
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Address]:
         return super().get_queryset(request).select_related("user")
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
+        user_pk = request.GET.get("user", request.user.pk)
         return {
-            "user": request.user.id,
+            "user": user_pk,
             "name": "Address-1",
         }
 

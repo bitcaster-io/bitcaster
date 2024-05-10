@@ -1,11 +1,13 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable, Optional
 
 from django.db import models
+from django.db.models import Q
+from django.db.models.base import ModelBase
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from strategy_field.fields import StrategyField
 
-from bitcaster.dispatchers.base import Dispatcher, dispatcherManager
+from bitcaster.dispatchers.base import Dispatcher, MessageProtocol, dispatcherManager
 
 from .mixins import BitcasterBaseModel, LockMixin, ScopedManager, ScopedMixin
 
@@ -33,13 +35,12 @@ class ChannelManager(ScopedManager["Channel"]):
 
 
 class Channel(ScopedMixin, LockMixin, BitcasterBaseModel):
-    SYSTEM_EMAIL_CHANNEL_NAME = "System Email Channel"
     application: "Application"
 
-    name = models.CharField(_("Name"), max_length=255, db_collation="case_insensitive")
+    name = models.CharField(_("Name"), max_length=255)
     dispatcher: "Dispatcher" = StrategyField(registry=dispatcherManager, default="test")
     config = models.JSONField(blank=True, default=dict)
-
+    protocol = models.CharField(choices=MessageProtocol.choices)
     active = models.BooleanField(default=True)
 
     objects = ChannelManager()
@@ -51,9 +52,35 @@ class Channel(ScopedMixin, LockMixin, BitcasterBaseModel):
             ("organization", "project", "application", "name"),
         )
         ordering = ("name",)
+        constraints = [
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_org_name",
+                fields=("organization", "name"),
+                condition=Q(project__isnull=True, application__isnull=True),
+            ),
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_org_project_name",
+                fields=("organization", "project", "name"),
+                condition=Q(application__isnull=True),
+            ),
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_org_project_app_name",
+                fields=("organization", "project", "application", "name"),
+            ),
+        ]
 
     def __str__(self) -> str:
         return self.name
+
+    def save(
+        self,
+        force_insert: bool | tuple[ModelBase, ...] = False,
+        force_update: bool = False,
+        using: Optional[str] = None,
+        update_fields: Optional[Iterable[str]] = None,
+    ) -> None:
+        self.protocol = self.dispatcher.protocol
+        super().save(force_insert, force_update, using, update_fields)
 
     def natural_key(self) -> tuple[str | None, ...]:
         if self.application:

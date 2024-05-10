@@ -57,6 +57,16 @@ CONFIG: "Dict[str, ConfigItem]" = {
         "",
     ),
     "DEBUG": (bool, False, setting("debug"), True),
+    "EMAIL_BACKEND": (str, "django.core.mail.backends.smtp.EmailBackend", setting("email-backend"), True),
+    "EMAIL_HOST": (str, "localhost", setting("email-host"), True),
+    "EMAIL_HOST_USER": (str, "", setting("email-host-user"), True),
+    "EMAIL_HOST_PASSWORD": (str, "", setting("email-host-password"), True),
+    "EMAIL_PORT": (int, "25", setting("email-port"), True),
+    "EMAIL_SUBJECT_PREFIX": (str, "[Bitcaster]", setting("email-subject-prefix"), True),
+    "EMAIL_USE_LOCALTIME": (bool, False, setting("email-use-localtime"), True),
+    "EMAIL_USE_TLS": (bool, False, setting("email-use-tls"), True),
+    "EMAIL_USE_SSL": (bool, False, setting("email-use-ssl"), True),
+    "EMAIL_TIMEOUT": (str, None, setting("email-timeout"), True),
     "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level")),
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "MEDIA_ROOT": (str, None, setting("media-root")),
@@ -140,8 +150,11 @@ class SmartEnv(Env):
         if var_name in self.scheme:
             var_info = self.scheme[var_name]
             value = var_info[1]
-            cast = var_info[0]
-            return cast(value)
+            try:
+                cast = var_info[0]
+                return cast(value)
+            except TypeError as e:
+                raise TypeError(f"Can't cast {var} to {cast}") from e
         return value
 
 
