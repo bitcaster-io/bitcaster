@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.core.mail import EmailMultiAlternatives, get_connection
 
@@ -6,6 +6,8 @@ from .base import Dispatcher, MessageProtocol, Payload
 
 if TYPE_CHECKING:
     from bitcaster.types.dispatcher import DispatcherHandler
+
+    from ..models import Assignment
 
 
 class SystemDispatcher(Dispatcher):
@@ -18,7 +20,7 @@ class SystemDispatcher(Dispatcher):
     def get_connection(self) -> "DispatcherHandler":
         return get_connection()
 
-    def send(self, address: str, payload: Payload) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         email = EmailMultiAlternatives(
             subject=subject,

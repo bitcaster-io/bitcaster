@@ -12,7 +12,7 @@ from bitcaster.dispatchers.base import Dispatcher, MessageProtocol, dispatcherMa
 from .mixins import BitcasterBaseModel, LockMixin, ScopedManager, ScopedMixin
 
 if TYPE_CHECKING:
-    from bitcaster.models import Application
+    from bitcaster.models import Application, Organization, Project
 
 
 class ChannelManager(ScopedManager["Channel"]):
@@ -81,6 +81,15 @@ class Channel(ScopedMixin, LockMixin, BitcasterBaseModel):
     ) -> None:
         self.protocol = self.dispatcher.protocol
         super().save(force_insert, force_update, using, update_fields)
+
+    @property
+    def owner(self) -> "Application | Project | Organization":
+        if self.application:
+            return self.application
+        elif self.project:
+            return self.project
+        else:
+            return self.organization
 
     def natural_key(self) -> tuple[str | None, ...]:
         if self.application:

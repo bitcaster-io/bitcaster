@@ -11,21 +11,18 @@ from .mixins import BitcasterBaselManager, BitcasterBaseModel
 from .user import User
 
 if TYPE_CHECKING:
+    from .assignment import Assignment
     from .channel import Channel
-    from .validation import Validation
 
 
 class AddressManager(BitcasterBaselManager["Address"]):
     use_for_related_fields = True
 
     def valid(self) -> QuerySet["Address"]:
-        return self.filter(validations__validated=True)
+        return self.filter(assignments__validated=True)
 
     def get_by_natural_key(self, user: str, name: str) -> "Address":
         return self.get(user__username=user, name=name)
-
-    def filter_for_protocol(self, protocol: MessageProtocol, **kwargs: Any) -> "QuerySet[Address]":
-        return self.filter(type=PROTOCOL_TO_ADDRESS[protocol], **kwargs)
 
 
 PROTOCOL_TO_ADDRESS = {
@@ -33,6 +30,7 @@ PROTOCOL_TO_ADDRESS = {
     MessageProtocol.EMAIL: AddressType.EMAIL,
     MessageProtocol.SMS: AddressType.PHONE,
     MessageProtocol.SLACK: AddressType.ACCOUNT,
+    MessageProtocol.WEBPUSH: AddressType.EMAIL,
 }
 
 
@@ -41,7 +39,7 @@ class Address(BitcasterBaseModel):
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=10, choices=AddressType.choices, default=AddressType.GENERIC)
     value = models.CharField(max_length=255)
-    validations: "QuerySet[Validation]"
+    assignments: "QuerySet[Assignment]"
 
     objects = AddressManager()
 
@@ -68,7 +66,7 @@ class Address(BitcasterBaseModel):
     def channels(self) -> "QuerySet[Channel]":
         from .channel import Channel
 
-        return Channel.objects.filter(validations__address=self)
+        return Channel.objects.filter(assignments__address=self)
 
-    def validate_channel(self, ch: "Channel") -> "Validation":
-        return self.validations.update_or_create(channel=ch, defaults={"validated": True})[0]
+    def validate_channel(self, ch: "Channel") -> "Assignment":
+        return self.assignments.update_or_create(channel=ch, defaults={"validated": True})[0]

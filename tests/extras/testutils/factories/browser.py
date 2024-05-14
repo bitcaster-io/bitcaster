@@ -1,15 +1,15 @@
 import factory
 
-from bitcaster.models.validation import Validation
+from bitcaster.webpush.models import Browser
 
 from .address import AddressFactory
 from .base import AutoRegisterModelFactory
 from .channel import ChannelFactory
 
 
-class ValidationFactory(AutoRegisterModelFactory):
+class BrowserFactory(AutoRegisterModelFactory):
     class Meta:
-        model = Validation
+        model = Browser
         django_get_or_create = ("address", "channel", "validated")
 
     address = factory.SubFactory(AddressFactory)

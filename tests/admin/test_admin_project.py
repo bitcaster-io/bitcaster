@@ -58,7 +58,7 @@ def test_add(app, organization, bitcaster) -> None:
     frm = res.forms["project_form"]
     frm["name"] = "dummy"
     frm["organization"].force_value(organization.pk)
-    frm["owner"] = organization.owner.pk
+    frm["owner"].force_value(organization.owner.pk)
     frm["environments"].force_value("development,production")
     res = frm.submit("Save and continue editing")
     assert res.status_code == 302, res.context["adminform"].errors

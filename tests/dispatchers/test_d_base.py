@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import pytest
 from strategy_field.utils import fqn
 
@@ -11,3 +13,9 @@ def test_registry():
 
     assert TDispatcher in dispatcherManager
     assert fqn(TDispatcher) in dispatcherManager
+
+
+def test_methods():
+    from testutils.dispatcher import TDispatcher
+
+    assert TDispatcher(Mock()).subscribe(Mock())

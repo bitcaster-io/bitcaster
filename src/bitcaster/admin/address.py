@@ -9,7 +9,7 @@ from django.http import HttpRequest
 
 from bitcaster.admin.base import BaseAdmin
 from bitcaster.forms.address import AddressForm
-from bitcaster.models import Address, Validation
+from bitcaster.models import Address, Assignment
 
 logger = logging.getLogger(__name__)
 
@@ -19,13 +19,13 @@ if TYPE_CHECKING:
     AddressT = TypeVar("AddressT", bound=Address)
 
 
-class InlineValidation(admin.TabularInline["Validation", "AddressAdmin"]):
-    model = Validation
+class InlineValidation(admin.TabularInline["Assignment", "AddressAdmin"]):
+    model = Assignment
     extra = 0
 
 
 class AddressAdmin(BaseAdmin, admin.ModelAdmin[Address]):
-    search_fields = ("name",)
+    search_fields = ("name", "value")
     list_display = ("user", "name", "value", "type")
     list_filter = (
         ("user__roles__organization", LinkedAutoCompleteFilter.factory(parent=None)),

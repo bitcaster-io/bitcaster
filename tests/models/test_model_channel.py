@@ -57,6 +57,11 @@ def test_str(channel):
 
 
 @pytest.mark.parametrize("channel", ["organization", "project", "application"], indirect=True)
+def test_channel_owner(channel: "Channel"):
+    assert getattr(channel, "owner")
+
+
+@pytest.mark.parametrize("channel", ["organization", "project", "application"], indirect=True)
 @pytest.mark.parametrize("attr", ["from_email", "subject_prefix"])
 def test_channel_property(channel: "Channel", attr: str):
     assert getattr(channel, attr) == get_attr(channel, f"{channel.name}.{attr}")

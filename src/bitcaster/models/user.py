@@ -10,8 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from .mixins import BitcasterBaseModel
 
 if TYPE_CHECKING:
-    from bitcaster.dispatchers.base import MessageProtocol
-    from bitcaster.models import Address
+    from bitcaster.models import Assignment, Channel
 
 logger = logging.getLogger(__name__)
 
@@ -38,5 +37,7 @@ class User(BitcasterBaseModel, AbstractUser):
     def natural_key(self) -> tuple[str]:
         return (self.username,)
 
-    def get_address_for_protocol(self, protocol: "MessageProtocol") -> "Address | None":
-        return self.addresses.filter_for_protocol(protocol).first()
+    def get_assignment_for_channel(self, ch: "Channel") -> "Assignment | None":
+        from bitcaster.models import Assignment
+
+        return Assignment.objects.filter(address__user=self, channel=ch).first()

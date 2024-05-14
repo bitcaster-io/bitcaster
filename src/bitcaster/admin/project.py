@@ -27,7 +27,7 @@ class ProjectAdmin(BaseAdmin, LockMixin[Project], admin.ModelAdmin[Project]):
         ("organization", AutoCompleteFilter),
         # ("environments", ChoiceFilter),
     )
-    autocomplete_fields = ("organization",)
+    autocomplete_fields = ("organization", "owner")
     exclude = ("locked",)
     form = ProjectChangeForm
 
@@ -36,6 +36,9 @@ class ProjectAdmin(BaseAdmin, LockMixin[Project], admin.ModelAdmin[Project]):
         if obj and obj.organization.name == Bitcaster.ORGANIZATION:
             base.extend(["name", "slug", "organization"])
         return base
+
+    def has_add_permission(self, request: HttpRequest, obj: Optional[Project] = None) -> bool:
+        return Project.objects.count() < 2
 
     def has_delete_permission(self, request: HttpRequest, obj: Optional[Project] = None) -> bool:
         if obj and obj.organization.name == Bitcaster.ORGANIZATION:

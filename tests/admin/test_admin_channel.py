@@ -8,6 +8,7 @@ from django.db.models.options import Options
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 from strategy_field.utils import fqn
+from testutils.factories import AssignmentFactory
 
 from bitcaster.models import Channel
 
@@ -60,13 +61,21 @@ def test_configure(app: DjangoTestApp, gmail_channel):
     assert res.status_code == 302
 
 
+def test_test_404(app: DjangoTestApp):
+    opts: Options = Channel._meta
+    url = reverse(admin_urlname(opts, "test"), args=[-1])
+    res = app.get(url, expect_errors=True)
+    assert res.status_code == 404
+
+
 def test_test(app: DjangoTestApp, gmail_channel):
     opts: Options = Channel._meta
     url = reverse(admin_urlname(opts, "test"), args=[gmail_channel.pk])
     res = app.get(url)
     assert res.status_code == 200
+    AssignmentFactory(channel=gmail_channel, address__user=app._user)
 
-    app.post(url, {"recipient": "", "subject": "subject", "message": "message"})
+    app.post(url, {"recipient": "", "subject": "", "": ""})
     assert res.status_code == 200
 
     with patch("smtplib.SMTP", autospec=True) as mock:

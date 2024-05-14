@@ -22,6 +22,7 @@ GLOBAL_EXCLUDED_MODELS = RegexList(
     [
         r"django_celery_beat\.ClockedSchedule",
         r"contenttypes\.ContentType",
+        r"webpush\.BrowserAdmin",
         "authtoken",
         "social_django",
         "depot",
@@ -120,9 +121,7 @@ def test_admin_index(app):
     assert res.status_code == 200
 
 
-@pytest.mark.skip_models(
-    "constance.Config",
-)
+@pytest.mark.skip_models("constance.Config")
 def test_admin_changelist(app, modeladmin, record):
     url = reverse(admin_urlname(modeladmin.model._meta, "changelist"))
     opts: Options = modeladmin.model._meta
@@ -140,7 +139,7 @@ def show_error(res):
     return (f"Form submitting failed: {res.status_code}: {errors}",)
 
 
-@pytest.mark.skip_models("constance.Config", "advanced_filters.AdvancedFilter")
+@pytest.mark.skip_models("constance.Config")
 def test_admin_changeform(app, modeladmin, record):
     opts: Options = modeladmin.model._meta
     url = reverse(admin_urlname(opts, "change"), args=[record.pk])
@@ -152,9 +151,7 @@ def test_admin_changeform(app, modeladmin, record):
         assert res.status_code in [302, 200]
 
 
-@pytest.mark.skip_models(
-    "constance.Config", "djstripe.WebhookEndpoint", "advanced_filters.AdvancedFilter", "bitcaster.MediaFile"
-)
+@pytest.mark.skip_models("constance.Config", "bitcaster.MediaFile")
 def test_admin_add(app, modeladmin):
     url = reverse(admin_urlname(modeladmin.model._meta, "add"))
     if modeladmin.has_add_permission(Mock(user=app._user)):
@@ -165,10 +162,7 @@ def test_admin_add(app, modeladmin):
         pytest.skip("No 'add' permission")
 
 
-@pytest.mark.skip_models(
-    "constance.Config",
-    "hope",
-)
+@pytest.mark.skip_models("constance.Config", "webpush.Browser")
 def test_admin_delete(app, modeladmin, record, monkeypatch):
     url = reverse(admin_urlname(modeladmin.model._meta, "delete"), args=[record.pk])
     if modeladmin.has_delete_permission(Mock(user=app._user)):

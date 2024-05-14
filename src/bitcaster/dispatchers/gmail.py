@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -11,6 +11,8 @@ from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 if TYPE_CHECKING:
     from bitcaster.types.dispatcher import TDispatcherConfig
+
+    from ..models import Assignment
 
 
 class GMailConfig(DispatcherConfig):
@@ -39,7 +41,7 @@ class GMailDispatcher(Dispatcher):
         }
         return config
 
-    def send(self, address: str, payload: Payload) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         email = EmailMultiAlternatives(
             subject=subject,

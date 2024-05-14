@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -14,9 +14,9 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from reversion.admin import VersionAdmin
 
-from bitcaster.models import Channel, User
+from bitcaster.models import Assignment, Channel, User
 
-from ..dispatchers.base import MessageProtocol, Payload
+from ..dispatchers.base import Payload
 from ..forms.channel import ChannelAddForm, ChannelChangeForm
 from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixin, TwoStepCreateMixin
@@ -31,7 +31,6 @@ logger = logging.getLogger(__name__)
 
 
 class ChannelTestForm(forms.Form):
-    recipient = forms.CharField()
     subject = forms.CharField(required=False)
     message = forms.CharField(widget=forms.Textarea)
 
@@ -49,8 +48,12 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], V
     )
     autocomplete_fields = ("organization", "application")
     change_list_template = "admin/reversion_change_list.html"
+    change_form_template = "admin/channel/change_form.html"
     form = ChannelChangeForm
     add_form = ChannelAddForm
+
+    def dispatcher_(self, obj: Channel) -> str:
+        return str(obj.dispatcher)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Channel]:
         return super().get_queryset(request).select_related("application", "project", "organization")
@@ -83,7 +86,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], V
 
     @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
-        obj = self.get_object(request, pk)
+        obj = self.get_object_or_404(request, pk)
         context = self.get_common_context(request, pk, title=_("Configure channel"))
         form_class = obj.dispatcher.config_class
         if request.method == "POST":
@@ -103,33 +106,32 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], V
     def test(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
         from bitcaster.models import Event
 
-        ch: Channel = cast(Channel, self.get_object(request, pk))
+        ch: Channel = self.get_object_or_404(request, pk)
         user: User = request.user
+        assignment: Optional[Assignment] = user.get_assignment_for_channel(ch)
         context = self.get_common_context(request, pk, title=_("Test channel"))
         if request.method == "POST":
             config_form = ChannelTestForm(request.POST)
             if config_form.is_valid():
-                recipient = config_form.cleaned_data["recipient"]
+                recipient = str(assignment.address.value)
                 payload = Payload(
-                    config_form.cleaned_data["message"], event=Event(), subject=config_form.cleaned_data["subject"]
+                    message=config_form.cleaned_data["message"],
+                    event=Event(),
+                    subject=config_form.cleaned_data["subject"],
                 )
                 try:
-                    ch.dispatcher.send(recipient, payload)
+                    ch.dispatcher.send(recipient, payload, assignment=assignment)
+                    self.message_user(request, "Message sent to {} via {}".format(recipient, ch.name))
                 except Exception as e:
+                    logger.exception(e)
                     self.message_error_to_user(request, e)
-                self.message_user(request, "Message sent to {} via {}".format(recipient, ch.name))
         else:
             config_form = ChannelTestForm(
                 initial={
-                    "recipient": user.get_address_for_protocol(MessageProtocol[ch.protocol]),
                     "subject": "[TEST] Subject",
                     "message": "aaa",
                 }
             )
-
-        context["recipient"] = user.get_address_for_protocol(MessageProtocol[ch.protocol])
+        context["assignment"] = assignment
         context["form"] = config_form
         return TemplateResponse(request, "admin/channel/test.html", context)
-
-    def dispatcher_(self, obj: Channel) -> str:
-        return obj.dispatcher.name

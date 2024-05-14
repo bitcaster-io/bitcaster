@@ -4,7 +4,9 @@
   --fg-primary: black;
   --jse-theme-color: var(--bg-primary);
 }
-
+div.center{
+  margin: auto;
+}
 div.login-form {
   padding: 5px;
   width: 400px;

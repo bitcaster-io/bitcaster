@@ -6,9 +6,9 @@ from django.utils.translation import gettext as _
 from .mixins import BitcasterBaselManager, BitcasterBaseModel
 
 
-class ValidationManager(BitcasterBaselManager["Validation"]):
+class AssignmentManager(BitcasterBaselManager["Assignment"]):
 
-    def get_by_natural_key(self, user: str, addr: str, ch: str, app: str, prj: str, org: str) -> "Validation":
+    def get_by_natural_key(self, user: str, addr: str, ch: str, app: str, prj: str, org: str) -> "Assignment":
         filters: dict[str, Any] = {}
         if app:
             filters["channel__application__slug"] = app
@@ -28,17 +28,18 @@ class ValidationManager(BitcasterBaselManager["Validation"]):
         )
 
 
-class Validation(BitcasterBaseModel):
-    address = models.ForeignKey("bitcaster.Address", on_delete=models.CASCADE, related_name="validations")
-    channel = models.ForeignKey("bitcaster.Channel", on_delete=models.CASCADE, related_name="validations")
+class Assignment(BitcasterBaseModel):
+    address = models.ForeignKey("bitcaster.Address", on_delete=models.CASCADE, related_name="assignments")
+    channel = models.ForeignKey("bitcaster.Channel", on_delete=models.CASCADE, related_name="assignments")
     validated = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
+    data = models.JSONField(default=dict, blank=True, null=True)
 
-    objects = ValidationManager()
+    objects = AssignmentManager()
 
     class Meta:
-        verbose_name = _("Validation")
-        verbose_name_plural = _("Validations")
+        verbose_name = _("Assignment")
+        verbose_name_plural = _("Assignments")
         unique_together = (("address", "channel"),)
 
     def natural_key(self) -> tuple[str | None, ...]:

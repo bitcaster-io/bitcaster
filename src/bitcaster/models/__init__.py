@@ -2,6 +2,7 @@ from bitcaster.social.models import SocialProvider  # noqa
 
 from .address import Address  # noqa
 from .application import Application  # noqa
+from .assignment import Assignment  # noqa
 from .channel import Channel  # noqa
 from .distribution import DistributionList  # noqa
 from .event import Event  # noqa
@@ -16,4 +17,3 @@ from .organization import Organization  # noqa
 from .project import Project  # noqa
 from .user import User  # noqa
 from .userrole import UserRole  # noqa
-from .validation import Validation  # noqa

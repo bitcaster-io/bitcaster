@@ -6,9 +6,9 @@ from django.db import models, transaction
 from django.utils.translation import gettext as _
 
 from ..constants import Bitcaster
+from .assignment import Assignment
 from .event import Event
 from .mixins import BitcasterBaselManager, BitcasterBaseModel
-from .validation import Validation
 
 if TYPE_CHECKING:
     from .channel import Channel
@@ -91,7 +91,7 @@ class Occurrence(BitcasterBaseModel):
         }
 
     def process(self) -> bool:
-        validation: "Validation"
+        assignment: "Assignment"
         notification: "Notification"
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
@@ -102,12 +102,12 @@ class Occurrence(BitcasterBaseModel):
         for notification in self.event.notifications.match(self.context):
             context = notification.get_context(self.get_context())
             for channel in channels:
-                for validation in notification.get_pending_subscriptions(delivered, channel).filter(**extra_filter):
+                for assignment in notification.get_pending_subscriptions(delivered, channel).filter(**extra_filter):
                     with transaction.atomic(durable=True):
-                        notification.notify_to_channel(channel, validation, context)
+                        notification.notify_to_channel(channel, assignment, context)
 
-                        delivered.append(validation.id)
-                        recipients.append((validation.address.value, validation.channel.name))
+                        delivered.append(assignment.id)
+                        recipients.append((assignment.address.value, assignment.channel.name))
 
                         self.data = {"delivered": delivered, "recipients": recipients}
                         self.save()

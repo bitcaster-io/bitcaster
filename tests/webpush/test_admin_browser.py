@@ -5,9 +5,7 @@ from django.urls import reverse
 from django_webtest import DjangoTestApp
 
 if TYPE_CHECKING:
-    from webtest.response import TestResponse
-
-    from bitcaster.models import SocialProvider
+    from bitcaster.models import Assignment, SocialProvider
 
     Context = TypedDict("Context", {"provider": SocialProvider})
 
@@ -20,10 +18,8 @@ def app(django_app_factory, admin_user) -> DjangoTestApp:
     return django_app
 
 
-def test_edit(app: DjangoTestApp, validation, settings) -> None:
-    settings.ROOT_TOKEN_HEADER = "abc"
-    settings.ROOT_TOKEN = "123"
-    url = reverse("admin:bitcaster_validation_change", args=[validation.pk])
-
-    res: "TestResponse" = app.get(f"{url}?user={app._user.pk}")
-    assert res
+def test_validate(app: DjangoTestApp, push_assignment: "Assignment") -> None:
+    url = reverse("admin:webpush_browser_validate", args=[push_assignment.pk])
+    app.get(url).follow()
+    push_assignment.refresh_from_db()
+    assert push_assignment.validated

@@ -13,11 +13,11 @@ from bitcaster.tasks import process_occurrence
 if TYPE_CHECKING:
     from bitcaster.models import (
         Address,
+        Assignment,
         Channel,
         Event,
         Notification,
         Occurrence,
-        Validation,
     )
 
     Context = TypedDict(
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
             "occurrence": Occurrence,
             "address": Address,
             "channel": Channel,
-            "validations": list[Validation],
+            "assignments": list[Assignment],
             "silent_event": Event,
         },
     )
@@ -35,17 +35,17 @@ if TYPE_CHECKING:
 @pytest.fixture
 def setup(admin_user) -> "Context":
     from testutils.factories import (
+        AssignmentFactory,
         ChannelFactory,
         EventFactory,
         MessageFactory,
         NotificationFactory,
         OccurrenceFactory,
-        ValidationFactory,
     )
 
     ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(TDispatcher))
-    v1: Validation = ValidationFactory(channel=ch, address__value="test1@example.com")
-    v2: Validation = ValidationFactory(channel=ch, address__value="test2@example.com")
+    v1: Assignment = AssignmentFactory(channel=ch, address__value="test1@example.com")
+    v2: Assignment = AssignmentFactory(channel=ch, address__value="test2@example.com")
     no: Notification = NotificationFactory(event__channels=[ch], distribution__recipients=[v1, v2])
     MessageFactory(channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}")
 
@@ -55,7 +55,7 @@ def setup(admin_user) -> "Context":
         "occurrence": o,
         "address": v1.address,
         "channel": ch,
-        "validations": [v1, v2],
+        "assignments": [v1, v2],
         "silent_event": EventFactory(application__name="External"),
     }
 
@@ -63,8 +63,8 @@ def setup(admin_user) -> "Context":
 def test_process_event_single(setup: "Context", messagebox):
     from bitcaster.models import Occurrence
 
-    v1: Validation = setup["validations"][0]
-    v2: Validation = setup["validations"][1]
+    v1: Assignment = setup["assignments"][0]
+    v2: Assignment = setup["assignments"][1]
     occurrence = setup["occurrence"]
 
     addr = setup["address"]
@@ -87,7 +87,7 @@ def test_process_incomplete_event(setup: "Context", messagebox):
     from bitcaster.models import Occurrence
 
     occurrence = setup["occurrence"]
-    v1, v2 = setup["validations"]
+    v1, v2 = setup["assignments"]
 
     setup["occurrence"].data["delivered"] = [v1.id, v2.id]
     setup["occurrence"].save()
@@ -116,7 +116,7 @@ def test_process_event_partially(setup: "Context", monkeypatch):
     assert occurrence.status == Occurrence.Status.NEW
     assert mocked_notify.call_count == 2
     assert occurrence.data == {
-        "delivered": [setup["validations"][0].id],
+        "delivered": [setup["assignments"][0].id],
         "recipients": [["test1@example.com", "test"]],
     }
 
@@ -124,8 +124,8 @@ def test_process_event_partially(setup: "Context", monkeypatch):
 def test_process_event_resume(setup: "Context", monkeypatch):
     from bitcaster.models import Occurrence
 
-    v1: Validation = setup["validations"][0]
-    v2: Validation = setup["validations"][1]
+    v1: Assignment = setup["assignments"][0]
+    v2: Assignment = setup["assignments"][1]
     occurrence = setup["occurrence"]
 
     occurrence.data = {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]]}
@@ -177,7 +177,7 @@ def test_retry(setup: "Context", monkeypatch, system_events):
     from testutils.factories import Occurrence
 
     o = setup["occurrence"]
-    v1 = setup["validations"][0]
+    v1 = setup["assignments"][0]
 
     monkeypatch.setattr(
         "bitcaster.models.notification.Notification.notify_to_channel",

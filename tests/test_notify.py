@@ -10,12 +10,12 @@ if TYPE_CHECKING:
         Address,
         ApiKey,
         Application,
+        Assignment,
         Channel,
         DistributionList,
         Event,
         Message,
         User,
-        Validation,
     )
 
     Context = TypedDict(
@@ -25,8 +25,8 @@ if TYPE_CHECKING:
             "event": Event,
             "key": ApiKey,
             "channel": Channel,
-            "v1": Validation,
-            "v2": Validation,
+            "v1": Assignment,
+            "v2": Assignment,
             "message": Message,
             "address": Address,
         },
@@ -39,12 +39,12 @@ def context(db) -> "Context":
         AddressFactory,
         ApiKeyFactory,
         ApplicationFactory,
+        AssignmentFactory,
         ChannelFactory,
         DistributionListFactory,
         EventFactory,
         MessageFactory,
         NotificationFactory,
-        ValidationFactory,
     )
 
     app: "Application" = ApplicationFactory(name="Application-000")
@@ -56,8 +56,8 @@ def context(db) -> "Context":
     ch = ChannelFactory(organization=app.project.organization, name="test", dispatcher=fqn(TDispatcher))
     evt = EventFactory(application=app, channels=[ch])
     dis: "DistributionList" = DistributionListFactory()
-    v1: Validation = ValidationFactory(address=addr, channel=ch)
-    v2: Validation = ValidationFactory(address__value="addr2@example.com", channel=ch)
+    v1: Assignment = AssignmentFactory(address=addr, channel=ch)
+    v2: Assignment = AssignmentFactory(address__value="addr2@example.com", channel=ch)
 
     NotificationFactory(event=evt, distribution=dis)
     msg = MessageFactory(channel=ch, event=evt, content="Message for {{ event.name }} on channel {{channel.name}}")
@@ -79,8 +79,8 @@ def context(db) -> "Context":
 
 def test_trigger(context: "Context", messagebox, django_assert_num_queries: "DjangoAssertNumQueries"):
     event: Event = context["event"]
-    v1: Validation = context["v1"]
-    v2: Validation = context["v2"]
+    v1: Assignment = context["v1"]
+    v2: Assignment = context["v2"]
     ch: Channel = context["channel"]
     o = event.trigger({})
     assert event.notifications.exists()

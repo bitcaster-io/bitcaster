@@ -39,13 +39,6 @@ def test_create_template(app, notification: "Notification") -> None:
 
 
 def test_avoid_duplicates_template(app, notification: "Notification") -> None:
-    # message: "Message" = context["message"]
-    # channel: "Channel" = context["channel"]
-    #
-    # notification: "Notification" = context["notification"]
-    # event: "Event" = notification.event
-    # org: "Organization" = event.application.project.organization
-    #
     from testutils.factories import MessageFactory
 
     message: "Message" = MessageFactory(notification=notification, event=notification.event)

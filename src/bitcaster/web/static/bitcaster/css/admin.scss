@@ -165,25 +165,41 @@ html[data-theme="dark"] {
       }
     }
   }
-
+.help_text{
+  a, a:visited, a:link {
+    color: #ff5900;
+  }
+}
   span.select2-container {
     width: 400px !important;
     background-color: var(--body-bg);
+
     ul {
       height: 32px;
+
       li.select2-selection__choice {
         color: black;
       }
     }
+
     .select2-dropdown {
       background-color: var(--body-bg);
     }
 
-    .select2-container--default {
+    &.select2-container--default {
       border: 1px solid var(--border-color);
       border-radius: 4px;
-      &.select2-selection--single {
-        background-color: #121212;
+
+
+      &.select2-container--default {
+        .select2-selection--single {
+          background-color: var(--body-bg);
+        }
+                .select2-selection__rendered{
+          color: var(--body-bg);
+
+        }
+
       }
     }
   }

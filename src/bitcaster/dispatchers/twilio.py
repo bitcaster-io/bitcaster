@@ -1,14 +1,16 @@
 import logging
-from typing import Type
+from typing import TYPE_CHECKING, Any, Optional, Type
 
 from django import forms
 from django.utils.translation import gettext as _
 from twilio.base.exceptions import TwilioRestException
 from twilio.rest import Client
-from twilio.rest.api.v2010.account.message import MessageInstance
 
 from ..exceptions import DispatcherError
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
+
+if TYPE_CHECKING:
+    from ..models import Assignment
 
 logger = logging.getLogger(__name__)
 
@@ -26,15 +28,17 @@ class TwilioSMS(Dispatcher):
     config_class: Type[DispatcherConfig] = TwilioConfig
     protocol = MessageProtocol.SMS
 
-    def send(self, address: str, payload: Payload) -> MessageInstance:
+    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
         try:
             number = self.config.pop("number")
             client = Client(username=self.config["sid"], password=self.config["token"])
-            return client.messages.create(
+            client.messages.create(
                 body=payload.message,
                 from_=number,
                 to=address,
             )
+
+            return True
         except TwilioRestException as e:
             logger.exception(e)
             raise DispatcherError(e)

@@ -1,15 +1,15 @@
 {% extends "admin_extra_buttons/action_page.html" %}{% load i18n protocols %}
 {% block action-content %}
-    {% if not recipient %}
-        {% translate "No addresses or validations found for this channel" %}
+    {% if not assignment %}
+        {% translate "No addresses or assignments found for this channel" %}
         <ul>{% for a in request.user.addresses.all %}
             <li>
                 <a href="{% url "admin:bitcaster_address_change" a.pk %}?next={{ request.path }}">{{ a }}</a>
-                <a href="{% url "admin:bitcaster_validation_add" %}?address={{ a.pk }}&channel={{ original.pk }}&user={{ user.pk }}&next={{ request.path }}">
+                <a href="{% url "admin:bitcaster_assignment_add" %}?address={{ a.pk }}&channel={{ original.pk }}&user={{ user.pk }}&next={{ request.path }}">
                     Add Validation</a>
 
                 <ul>
-                    {% for v in a.validations.all %}
+                    {% for v in a.assignments.all %}
                         <li>{{ v }}</li>
                     {% empty %}
                         <li>00000</li>
@@ -29,7 +29,8 @@
                     <div>
                         <div class="flex-container">
                             <label class="required" for="id_api_key">{% translate 'Recipient' %}</label>
-                            {{ form.recipient }}
+                            {{ validation.address.value }}
+                            &nbsp;<a href="{% url "admin:bitcaster_assignment_change" assignment.pk %}">edit</a>
                         </div>
                     </div>
                 </div>

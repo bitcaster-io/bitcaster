@@ -1,29 +1,31 @@
 import logging
 from typing import TYPE_CHECKING, Any, TypeVar
 
+from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models import ForeignKey
 from django.forms import ModelChoiceField, ModelForm
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
+from django.utils.translation import gettext as _
 
 from bitcaster.admin.base import BaseAdmin
-from bitcaster.forms.validation import ValidationForm
+from bitcaster.forms.assignment import AssignmentForm
 from bitcaster.forms.widgets import AutocompletSelectEnh
-from bitcaster.models import Address, Validation
+from bitcaster.models import Address, Assignment
 
 if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel
 
-    ValidationT = TypeVar("ValidationT", bound=Validation)
+    AssignmentT = TypeVar("AssignmentT", bound=Assignment)
     AddressT = TypeVar("AddressT", bound=Address)
 
 logger = logging.getLogger(__name__)
 
 
-class ValidationAdmin(BaseAdmin, admin.ModelAdmin[Validation]):
+class AssignmentAdmin(BaseAdmin, admin.ModelAdmin[Assignment]):
     search_fields = ("address__name",)
-    list_display = ("address", "channel")
+    list_display = ("address", "channel", "validated", "active")
     list_filter = (
         "channel",
         ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
@@ -31,16 +33,17 @@ class ValidationAdmin(BaseAdmin, admin.ModelAdmin[Validation]):
         ("channel__application", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
     )
     autocomplete_fields = ("address", "channel")
-    form = ValidationForm
+    form = AssignmentForm
+    readonly_fields = ["validated"]
 
     def get_form(
-        self, request: HttpRequest, obj: Validation | None = None, change: bool = False, **kwargs: Any
-    ) -> "type[ModelForm[Validation]]":
+        self, request: HttpRequest, obj: Assignment | None = None, change: bool = False, **kwargs: Any
+    ) -> "type[ModelForm[Assignment]]":
         frm = super().get_form(request, obj, change, **kwargs)
         return frm
 
     def formfield_for_foreignkey(
-        self, db_field: "ForeignKey[Validation, AnyModel]", request: HttpRequest, **kwargs: Any
+        self, db_field: "ForeignKey[Assignment, AnyModel]", request: HttpRequest, **kwargs: Any
     ) -> "ModelChoiceField[AnyModel]":
         form_field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "address":
@@ -50,6 +53,16 @@ class ValidationAdmin(BaseAdmin, admin.ModelAdmin[Validation]):
             form_field.widget = AutocompletSelectEnh(db_field, self.admin_site, filters=filters)
             form_field.queryset = form_field.queryset.filter(**filters)
         return form_field
+
+    @button()
+    def validate(self, request: HttpRequest, pk: str) -> "HttpResponse":
+        v: Assignment = self.get_object_or_404(request, pk)
+        if v.channel.dispatcher.need_subscription:
+            self.message_user(request, _("Cannot be validated."), messages.ERROR)
+        else:
+            v.validated = True
+            v.save()
+            self.message_user(request, _("Validated."))
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         ch_pk = request.GET.get("channel", None)

@@ -1,5 +1,15 @@
-{% extends "admin_extra_buttons/action_page.html" %}
+{% extends "admin_extra_buttons/action_page.html" %}{% load markdown dispatcher %}
 {% block action-content %}
+    <style>
+        input[type=text], input[type=email]{
+            width: 50%;
+        }
+    </style>
+    <h1>{{ original.dispatcher.name }}</h1>
+    <div class="help_text">
+    {{ original.dispatcher|help_doc }}
+    </div>
+    {{ admin_form.form.non_field_errors }}
     <form method="post" id="config-form">
         {% csrf_token %}
         {% for fieldset in admin_form %}

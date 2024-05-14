@@ -14,11 +14,11 @@ if TYPE_CHECKING:
     from bitcaster.models import (
         ApiKey,
         Application,
+        Assignment,
         Event,
         Organization,
         Project,
         User,
-        Validation,
     )
 
     Context = TypedDict(
@@ -46,15 +46,15 @@ def client() -> APIClient:
 def data(admin_user, email_channel) -> "Context":
     from testutils.factories import (
         ApiKeyFactory,
+        AssignmentFactory,
         EventFactory,
         MessageFactory,
         NotificationFactory,
-        ValidationFactory,
     )
 
     event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
     NotificationFactory(
-        distribution__recipients=[ValidationFactory(channel=email_channel) for __ in range(4)], event=event
+        distribution__recipients=[AssignmentFactory(channel=email_channel) for __ in range(4)], event=event
     )
     # event: "Event" = n.event
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
@@ -162,8 +162,8 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
     api_key = data["key"]
     event = data["event"]
     url: str = data["url"]
-    recipients: list[Validation] = list(event.notifications.first().distribution.recipients.all())
-    target: Validation = recipients[0]
+    recipients: list[Assignment] = list(event.notifications.first().distribution.recipients.all())
+    target: Assignment = recipients[0]
     client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
     with key_grants(api_key, Grant.EVENT_TRIGGER):
         res = client.post(

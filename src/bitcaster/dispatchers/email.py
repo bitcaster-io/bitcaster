@@ -1,5 +1,5 @@
 import logging
-from typing import Type
+from typing import TYPE_CHECKING, Any, Optional, Type
 
 from django import forms
 from django.core.mail import EmailMultiAlternatives
@@ -8,6 +8,10 @@ from django.utils.translation import gettext_lazy as _
 
 from ..exceptions import DispatcherError
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
+
+if TYPE_CHECKING:
+    from bitcaster.models import Assignment
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +34,7 @@ class EmailDispatcher(Dispatcher):
     config_class: Type[DispatcherConfig] = EmailConfig
     backend = "django.core.mail.backends.smtp.EmailBackend"
 
-    def send(self, address: str, payload: Payload) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
         try:
             subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
             email = EmailMultiAlternatives(

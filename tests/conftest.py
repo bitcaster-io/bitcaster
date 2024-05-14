@@ -269,10 +269,10 @@ def notification(db):
 
 
 @pytest.fixture()
-def validation(db):
-    from testutils.factories import ValidationFactory
+def assignment(db):
+    from testutils.factories import AssignmentFactory
 
-    return ValidationFactory()
+    return AssignmentFactory()
 
 
 @pytest.fixture()

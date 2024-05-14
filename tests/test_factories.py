@@ -8,14 +8,14 @@ def test_factory_event(email_channel):
 
 def test_factory_notification(email_channel):
     from testutils.factories import (
+        AssignmentFactory,
         MessageFactory,
         Notification,
         NotificationFactory,
-        ValidationFactory,
     )
 
     n: "Notification" = NotificationFactory(
-        distribution__recipients=[ValidationFactory(channel=email_channel) for __ in range(4)],
+        distribution__recipients=[AssignmentFactory(channel=email_channel) for __ in range(4)],
         event__channels=[email_channel],
         event__messages=[MessageFactory(channel=email_channel)],
     )

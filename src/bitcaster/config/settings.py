@@ -17,13 +17,14 @@ SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT")
 
 DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS: List[str] = []
+ALLOWED_HOSTS: List[str] = env("ALLOWED_HOSTS")
 
 
 # Application definition
 
 INSTALLED_APPS = [
     "bitcaster.web.apps.Config",
+    "bitcaster.webpush.apps.Config",
     "bitcaster.social",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -102,6 +103,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "bitcaster.config.wsgi.application"
 
+CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
+CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE")
+CSRF_COOKIE_SAMESITE = "Strict"
 
 DATABASES = {
     "default": env.db(),
@@ -112,14 +116,6 @@ REDIS_URL = urlparse(CACHE_URL).hostname
 CACHES = {
     "default": env.cache(),
     "select2": env.cache(),
-    #     "default": {
-    #         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-    #         "LOCATION": CACHE_URL,
-    #     },
-    #     "select2": {
-    #         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-    #         "LOCATION": CACHE_URL,
-    #     },
 }
 
 AUTH_USER_MODEL = "bitcaster.user"
@@ -235,6 +231,7 @@ from .fragments.constance import *  # noqa
 from .fragments.csp import *  # noqa
 from .fragments.debug_toolbar import *  # noqa
 from .fragments.flags import *  # noqa
+from .fragments.logging import *  # noqa
 from .fragments.rest_framework import *  # noqa
 from .fragments.root import *  # noqa
 from .fragments.sentry import *  # noqa

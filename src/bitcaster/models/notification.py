@@ -10,9 +10,9 @@ from django.utils.translation import gettext as _
 
 from ..dispatchers.base import Payload
 from ..utils.shortcuts import render_string
+from .assignment import Assignment
 from .distribution import DistributionList
 from .mixins import BitcasterBaselManager, BitcasterBaseModel
-from .validation import Validation
 
 if TYPE_CHECKING:
     from bitcaster.dispatchers.base import Dispatcher
@@ -80,7 +80,7 @@ class Notification(BitcasterBaseModel):
     def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
         return {**ctx, "notification": self.name}
 
-    def get_pending_subscriptions(self, delivered: list[str | int], channel: "Channel") -> QuerySet[Validation]:
+    def get_pending_subscriptions(self, delivered: list[str | int], channel: "Channel") -> QuerySet[Assignment]:
         return (
             self.distribution.recipients.select_related(
                 "address",
@@ -91,11 +91,11 @@ class Notification(BitcasterBaseModel):
             .exclude(id__in=delivered)
         )
 
-    def notify_to_channel(self, channel: "Channel", validation: Validation, context: dict[str, Any]) -> Optional[str]:
+    def notify_to_channel(self, channel: "Channel", assignment: Assignment, context: dict[str, Any]) -> Optional[str]:
         message: Optional["Message"]
 
         dispatcher: "Dispatcher" = channel.dispatcher
-        addr: "Address" = validation.address
+        addr: "Address" = assignment.address
         if message := self.get_message(channel):
             context.update({"channel": channel, "address": addr.value})
             payload: Payload = Payload(

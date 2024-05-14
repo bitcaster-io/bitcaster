@@ -1,5 +1,7 @@
 from . import base
 from .address import Address, AddressFactory  # noqa
+from .assignment import Assignment, AssignmentFactory  # noqa
+from .browser import Browser, BrowserFactory  # noqa
 from .channel import Channel, ChannelFactory  # noqa
 from .distribution import DistributionList, DistributionListFactory  # noqa
 from .django_auth import Group, GroupFactory, Permission, PermissionFactory  # noqa
@@ -15,7 +17,6 @@ from .org import ApplicationFactory, OrganizationFactory, ProjectFactory  # noqa
 from .social import SocialProvider, SocialProviderFactory  # noqa
 from .user import SuperUserFactory, User, UserFactory  # noqa
 from .userrole import UserRole, UserRoleFactory  # noqa
-from .validation import Validation, ValidationFactory  # noqa
 
 
 def get_factory_for_model(_model) -> type[base.TAutoRegisterModelFactory]:

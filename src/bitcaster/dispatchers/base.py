@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, cast
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms import forms
+from django.http import HttpResponseRedirect
 from django.utils.functional import cached_property, classproperty
 from django.utils.module_loading import import_string
 from strategy_field.registry import Registry
@@ -12,7 +13,7 @@ from strategy_field.registry import Registry
 from bitcaster.constants import AddressType
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Event, User
+    from bitcaster.models import Assignment, Channel, Event, User
     from bitcaster.types.dispatcher import DispatcherHandler, TDispatcherConfig
 
 logger = logging.getLogger(__name__)
@@ -30,6 +31,7 @@ class MessageProtocol(models.TextChoices):
     SLACK = "SLACK"
     SMS = "SMS"
     EMAIL = "EMAIL"
+    WEBPUSH = "WEBPUSH"
 
     def has_capability(self, capability: Capability) -> bool:
         return capability in ProtocolCapabilities[self]
@@ -39,6 +41,7 @@ ProtocolCapabilities = {
     MessageProtocol.PLAINTEXT: [Capability.TEXT],
     MessageProtocol.EMAIL: [Capability.SUBJECT, Capability.HTML, Capability.TEXT],
     MessageProtocol.SMS: [Capability.TEXT],
+    MessageProtocol.WEBPUSH: [Capability.SUBJECT, Capability.TEXT],
 }
 
 
@@ -100,6 +103,8 @@ class Dispatcher(metaclass=DispatcherMeta):
     address_types: List[AddressType] = [AddressType.GENERIC]
     channel: "Channel"
     protocol: MessageProtocol = MessageProtocol.PLAINTEXT
+    help_text = ""
+    need_subscription = False
 
     def __init__(self, channel: "Channel") -> None:
         self.channel = channel
@@ -108,7 +113,7 @@ class Dispatcher(metaclass=DispatcherMeta):
         return f"<Channel {self.verbose_name}>"
 
     def __str__(self) -> str:
-        return self.verbose_name
+        return self.verbose_name or self.__class__.__name__
 
     @cached_property
     def capabilities(self) -> list[Capability]:
@@ -132,8 +137,11 @@ class Dispatcher(metaclass=DispatcherMeta):
     def name(cls) -> str:
         return cls.verbose_name or cls.__name__.title()
 
-    def send(self, address: str, payload: Payload) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
         raise NotImplementedError
+
+    def subscribe(self, assignment: "Assignment", **kwargs: Any) -> HttpResponseRedirect:
+        return HttpResponseRedirect(".")
 
 
 class DispatcherManager(Registry):

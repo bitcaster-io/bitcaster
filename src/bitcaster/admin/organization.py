@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 
-from bitcaster.models import Channel, Organization, Project
+from bitcaster.models import Channel, Organization
 
 from ..constants import Bitcaster
 from ..forms.message import OrgTemplateCreateForm
@@ -16,17 +16,12 @@ from .base import BaseAdmin, ButtonColor
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
-
 logger = logging.getLogger(__name__)
 
 
 class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     search_fields = ("name",)
     list_display = ("name", "from_email", "subject_prefix")
-
-    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK}"})
-    def projects(self, request: HttpRequest, pk: str) -> HttpResponse:
-        return HttpResponseRedirect(url_related(Project, organization__exact=pk))
 
     @button(html_attrs={"style": f"background-color:{ButtonColor.LINK}"})
     def channels(self, request: HttpRequest, pk: str) -> HttpResponse:

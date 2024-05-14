@@ -4,27 +4,27 @@ from unittest.mock import Mock
 import pytest
 
 if TYPE_CHECKING:
-    from bitcaster.models import Notification, Occurrence
+    from bitcaster.models import Assignment, Notification, Occurrence
 
     Context = TypedDict(
         "Context",
-        {"occurence": Occurrence, "notification": Notification},
+        {"assignment": Assignment, "notification": Notification},
     )
 
 
 @pytest.fixture
 def context(occurrence: "Occurrence", user) -> "Context":
     from testutils.factories import (
+        AssignmentFactory,
         ChannelFactory,
         NotificationFactory,
-        ValidationFactory,
     )
 
-    notification = NotificationFactory(event__channels=[ChannelFactory()], payload_filter="foo=='bar'")
-    validation = ValidationFactory(channel=notification.event.channels.first())
-    notification.distribution.recipients.add(validation)
+    notification: "Notification" = NotificationFactory(event__channels=[ChannelFactory()], payload_filter="foo=='bar'")
+    assignment: "Assignment" = AssignmentFactory(channel=notification.event.channels.first())
+    notification.distribution.recipients.add(assignment)
 
-    return {"validation": validation, "notification": notification}
+    return {"assignment": assignment, "notification": notification}
 
 
 @pytest.mark.parametrize(
@@ -42,8 +42,8 @@ def test_model_occurrence_filter(payload, notified_count, context: "Context", mo
 
     if notified_count == 1:
         assert occurrence.data == {
-            "delivered": [context["validation"].id],
-            "recipients": [[context["validation"].address.value, context["validation"].channel.name]],
+            "delivered": [context["assignment"].id],
+            "recipients": [[context["assignment"].address.value, context["assignment"].channel.name]],
         }
 
 
