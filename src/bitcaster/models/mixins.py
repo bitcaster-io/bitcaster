@@ -99,12 +99,18 @@ class ScopedManager(BitcasterBaselManager["AnyModel"]):
         return super().update_or_create(defaults, **kwargs)
 
 
-class ScopedMixin(models.Model):
+class Scoped2Mixin(models.Model):
 
     organization = models.ForeignKey("Organization", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True)
     project = models.ForeignKey(
         "Project", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True, null=True
     )
+
+    class Meta:
+        abstract = True
+
+
+class Scoped3Mixin(Scoped2Mixin):
     application = models.ForeignKey(
         "Application", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True, null=True
     )

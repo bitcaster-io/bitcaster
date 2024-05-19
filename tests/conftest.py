@@ -61,7 +61,7 @@ def pytest_configure(config):
     os.environ["STORAGE_MEDIA"] = "django.core.files.storage.FileSystemStorage"
     os.environ["STORAGE_STTIC"] = "django.core.files.storage.FileSystemStorage"
 
-    os.environ["GMAIL_USER"] = "11"
+    os.environ["GMAIL_USER"] = "user@example.com"
     os.environ["GMAIL_PASSWORD"] = "11"
 
     os.environ["TWILIO_SID"] = "abc"
@@ -225,6 +225,13 @@ def channel(db):
     from testutils.factories.channel import ChannelFactory
 
     return ChannelFactory()
+
+
+@pytest.fixture()
+def org_channel(db):
+    from testutils.factories.channel import ChannelFactory
+
+    return ChannelFactory(project=None)
 
 
 @pytest.fixture()

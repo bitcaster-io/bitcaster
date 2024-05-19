@@ -29,8 +29,7 @@ class AssignmentAdmin(BaseAdmin, admin.ModelAdmin[Assignment]):
     list_filter = (
         "channel",
         ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        ("channel__application__project", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
-        ("channel__application", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
+        ("channel__project", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
     )
     autocomplete_fields = ("address", "channel")
     form = AssignmentForm

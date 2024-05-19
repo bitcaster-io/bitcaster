@@ -1,9 +1,8 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Optional
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from adminfilters.combo import ChoicesFieldComboFilter
 from constance import config
 from django import forms
 from django.contrib.admin.helpers import AdminForm
@@ -12,12 +11,13 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from formtools.wizard.views import CookieWizardView
 from reversion.admin import VersionAdmin
 
-from bitcaster.models import Assignment, Channel, User
+from bitcaster.models import Assignment, Channel, Organization, Project, User
 
 from ..dispatchers.base import Payload
-from ..forms.channel import ChannelAddForm, ChannelChangeForm
+from ..forms.channel import ChannelChangeForm
 from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixin, TwoStepCreateMixin
 
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
     from bitcaster.types.django import AnyModel
-    from bitcaster.types.http import AnyResponse, AuthHttpRequest
+    from bitcaster.types.http import AuthHttpRequest
 
 logger = logging.getLogger(__name__)
 
@@ -35,54 +35,199 @@ class ChannelTestForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
 
 
+class ChannelOrg(forms.Form):
+    organization = forms.ModelChoiceField(
+        queryset=Organization.objects.all(), help_text=_("Select the organization that this channel belongs to.")
+    )
+
+    @staticmethod
+    def visible(w: "ChannelWizard"):
+        if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
+            return False
+        return True
+
+
+class ChannelProject(forms.Form):
+    project = forms.ModelChoiceField(
+        empty_label=_("All"),
+        required=False,
+        queryset=Project.objects.all(),
+        help_text=_("Select the project that this channel belongs to."),
+    )
+
+    @staticmethod
+    def visible(w: "ChannelWizard"):
+        if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
+            return False
+        return True
+
+
+class ChannelType(forms.Form):
+    operation = forms.ChoiceField(
+        choices=(
+            ("inherit", "Inherit from exiting"),
+            ("new", "Create new channel"),
+        ),
+        widget=forms.RadioSelect,
+        help_text=_("Enable existing upper level channel or create a new one."),
+    )
+
+
+class ChannelSelectParent(forms.ModelForm):
+    parent = forms.ModelChoiceField(queryset=Channel.objects.all(), required=True)
+    project = forms.ModelChoiceField(queryset=Project.objects.all(), required=True)
+
+    class Meta:
+        model = Channel
+        fields = (
+            "parent",
+            "name",
+            "project",
+        )
+
+    @staticmethod
+    def visible(w: "ChannelWizard"):
+        if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
+            return True
+        return False
+
+
+class ChannelData(forms.ModelForm):
+    class Meta:
+        model = Channel
+        fields = ("name", "dispatcher")
+
+    @staticmethod
+    def visible(w: "ChannelWizard"):
+        if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "new":
+            return True
+        return False
+
+
+class ManagementForm(forms.Form):
+    prefix = "mng"
+    current_step = forms.IntegerField()
+
+
+class ChannelWizard(CookieWizardView):
+    form_list = (
+        ("mode", ChannelType),
+        ("org", ChannelOrg),
+        ("prj", ChannelProject),
+        ("parent", ChannelSelectParent),
+        ("data", ChannelData),
+    )
+    condition_dict = {
+        "org": ChannelOrg.visible,
+        "prj": ChannelProject.visible,
+        "parent": ChannelSelectParent.visible,
+        "data": ChannelData.visible,
+    }
+    template_name = "admin/channel/add_view.html"
+
+    def get_form_kwargs(self, step=None):
+        return super().get_form_kwargs(step)
+
+    def get_form(self, step=None, data=None, files=None):
+        form = super().get_form(step, data, files)
+        if step == "org":
+            form.fields["organization"].queryset = Organization.objects.local()
+        elif step == "prj":
+            form.fields["project"].queryset = Project.objects.all()
+
+        return form
+
+    def get(self, request, *args, **kwargs):
+        self.extra_context = kwargs.pop("extra_context")
+        return super().get(request, *args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        self.extra_context = kwargs.pop("extra_context")
+        return super().post(*args, **kwargs)
+
+    def get_context_data(self, form, **kwargs):
+        kwargs.update(**self.extra_context)
+        return super().get_context_data(form, **kwargs)
+
+    def done(self, form_list, **kwargs):
+        data = self.get_all_cleaned_data()
+        if "parent" in data:
+
+            Channel.objects.create(
+                name=data["name"],
+                parent=data["parent"],
+                dispatcher=data["parent"].dispatcher,
+                protocol=data["parent"].protocol,
+                organization=data["parent"].organization,
+                project=data["project"],
+            )
+        else:
+            Channel.objects.create(
+                name=data["name"],
+                dispatcher=data["dispatcher"],
+                organization=data["organization"],
+                project=data["project"],
+            )
+        return HttpResponseRedirect(reverse("admin:bitcaster_channel_changelist"))
+
+
+wizard = ChannelWizard.as_view()
+
+
 class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], VersionAdmin[Channel]):
     search_fields = ("name",)
-    list_display = ("name", "organization", "project", "application", "dispatcher_", "active", "locked")
+    list_display = ("name", "organization", "project", "dispatcher_", "active", "locked", "protocol")
     list_filter = (
         ("organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("project", LinkedAutoCompleteFilter.factory(parent="organization")),
-        ("application", LinkedAutoCompleteFilter.factory(parent="project")),
+        "protocol",
         "active",
         "locked",
-        ("dispatcher", ChoicesFieldComboFilter),
+        # ("dispatcher", ChoicesFieldComboFilter),
     )
-    autocomplete_fields = ("organization", "application")
+    autocomplete_fields = ("organization", "project")
     change_list_template = "admin/reversion_change_list.html"
     change_form_template = "admin/channel/change_form.html"
     form = ChannelChangeForm
-    add_form = ChannelAddForm
+    fieldsets = [
+        (
+            None,
+            {"fields": (("name", "active"),)},
+        ),
+        (
+            None,
+            {"fields": (("dispatcher", "protocol"),)},
+        ),
+        (
+            "Advanced options",
+            {
+                # "classes": ["collapse"],
+                "fields": ["organization", "project"],
+            },
+        ),
+    ]
+
+    # def get_fieldsets(self, request: HttpRequest, obj: "Optional[AnyModel]" = None) -> "_FieldsetSpec":
+    #     return self.fieldsets
+    #     if obj.pk:
+    #         return [(None, {"fields": (("name"),)})]
+    #     else:
+    #         return self.fieldsets
 
     def dispatcher_(self, obj: Channel) -> str:
         return str(obj.dispatcher)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Channel]:
-        return super().get_queryset(request).select_related("application", "project", "organization")
+        return super().get_queryset(request).select_related("project", "organization")
 
-    def get_form(
-        self, request: "HttpRequest", obj: "Optional[Channel]" = None, change: bool = False, **kwargs: Any
-    ) -> "type[forms.ModelForm[Channel]]":
-        defaults = {}
-        if obj is None:
-            defaults["form"] = self.add_form
-        defaults.update(kwargs)
-        return super().get_form(request, obj, change, **defaults)
+    def add_view(self, request, form_url="", extra_context=None):
+        ctx = self.get_common_context(request, add=True, title=_("Add Channel"))
+        return wizard(request, extra_context=ctx)
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[AnyModel]" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk == config.SYSTEM_EMAIL_CHANNEL:
-            return ["name", "organization", "project", "application"]
-        return []
-
-    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
-        return {
-            "name": "Channel-1",
-            **super().get_changeform_initial_data(request),
-        }
-
-    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
-    def events(self, request: "HttpRequest", pk: str) -> "Union[AnyResponse,HttpResponseRedirect]":
-        base_url = reverse("admin:bitcaster_event_changelist")
-        url = f"{base_url}?channels__exact={pk}"
-        return HttpResponseRedirect(url)
+            return ["name", "organization", "project", "parent", "protocol", "locked"]
+        return ["parent", "organization", "protocol", "locked"]
 
     @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":

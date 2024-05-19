@@ -2,8 +2,10 @@ import logging
 from typing import TYPE_CHECKING, Any, Optional
 
 from django.db import models
+from django.db.models import QuerySet
 from django.utils.translation import gettext as _
 
+from ..constants import Bitcaster
 from .mixins import BitcasterBaselManager, BitcasterBaseModel, SlugMixin
 from .user import User
 
@@ -17,6 +19,9 @@ class OrganizationManager(BitcasterBaselManager["Organization"]):
 
     def get_by_natural_key(self, slug: str) -> "Organization":
         return self.get(slug=slug)
+
+    def local(self, **kwargs) -> "QuerySet[Organization]":
+        return self.exclude(slug=Bitcaster.ORGANIZATION).filter(**kwargs)
 
 
 class Organization(SlugMixin, BitcasterBaseModel):

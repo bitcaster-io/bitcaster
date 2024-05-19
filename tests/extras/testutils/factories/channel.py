@@ -6,26 +6,22 @@ from testutils.dispatcher import TDispatcher
 from bitcaster.models import Channel
 
 from .base import AutoRegisterModelFactory
-from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
+from .org import OrganizationFactory, ProjectFactory
 
 
 class ChannelFactory(AutoRegisterModelFactory):
-
     name = Sequence(lambda n: "Channel-%03d" % n)
     organization = factory.SubFactory(OrganizationFactory)
     project = factory.SubFactory(ProjectFactory)
-    application = factory.SubFactory(ApplicationFactory)
     dispatcher = fqn(TDispatcher)
     config = {"foo": "bar"}
 
     class Meta:
         model = Channel
-        django_get_or_create = ("name", "organization", "project", "application")
+        django_get_or_create = ("name", "organization", "project")
 
     @classmethod
     def create(cls, **kwargs):
-        if kwargs.get("application", None):
-            kwargs["project"] = kwargs["application"].project
         if kwargs.get("project", None):
             kwargs["organization"] = kwargs["project"].organization
         if not kwargs.get("organization", None):

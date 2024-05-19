@@ -12,39 +12,29 @@ def channel(request, db):
 
     if hasattr(request, "param"):
         if request.param == "organization":
-            return ChannelFactory(
-                name="organization", project=None, application=None, organization__from_email="from@org"
-            )
+            return ChannelFactory(name="organization", project=None, organization__from_email="from@org")
         elif request.param == "project":
-            return ChannelFactory(name="project", application=None, project__from_email="from@org")
-        elif request.param == "application":
-            return ChannelFactory(name="application", application__from_email="from@app")
+            return ChannelFactory(name="project", project__from_email="from@org")
     return ChannelFactory()
 
 
-def test_manager_get_or_create(application):
-    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), application=application)
-    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), project=application.project)
-    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), organization=application.project.organization)
+def test_manager_get_or_create(project):
+    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), project=project)
+    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), organization=project.organization)
 
-    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), defaults={"application": application})
-    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), defaults={"project": application.project})
+    assert Channel.objects.get_or_create(dispatcher=fqn(GMailDispatcher), defaults={"project": project})
     assert Channel.objects.get_or_create(
-        dispatcher=fqn(GMailDispatcher), defaults={"organization": application.project.organization}
+        dispatcher=fqn(GMailDispatcher), defaults={"organization": project.organization}
     )
 
 
-def test_manager_update_or_create(application):
-    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), application=application)
-    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), project=application.project)
-    assert Channel.objects.update_or_create(
-        dispatcher=fqn(GMailDispatcher), organization=application.project.organization
-    )
+def test_manager_update_or_create(project):
+    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), project=project)
+    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), organization=project.organization)
 
-    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), defaults={"application": application})
-    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), defaults={"project": application.project})
+    assert Channel.objects.update_or_create(dispatcher=fqn(GMailDispatcher), defaults={"project": project})
     assert Channel.objects.update_or_create(
-        dispatcher=fqn(GMailDispatcher), defaults={"organization": application.project.organization}
+        dispatcher=fqn(GMailDispatcher), defaults={"organization": project.organization}
     )
 
 
@@ -56,24 +46,24 @@ def test_str(channel):
     assert str(channel)
 
 
-@pytest.mark.parametrize("channel", ["organization", "project", "application"], indirect=True)
+@pytest.mark.parametrize("channel", ["organization", "project"], indirect=True)
 def test_channel_owner(channel: "Channel"):
     assert getattr(channel, "owner")
 
 
-@pytest.mark.parametrize("channel", ["organization", "project", "application"], indirect=True)
+@pytest.mark.parametrize("channel", ["organization", "project"], indirect=True)
 @pytest.mark.parametrize("attr", ["from_email", "subject_prefix"])
 def test_channel_property(channel: "Channel", attr: str):
     assert getattr(channel, attr) == get_attr(channel, f"{channel.name}.{attr}")
 
 
-@pytest.mark.parametrize("channel", ["organization", "project", "application"], indirect=True)
+@pytest.mark.parametrize("channel", ["organization", "project"], indirect=True)
 @pytest.mark.parametrize("attr", ["from_email", "subject_prefix"])
 def test_clean(channel: "Channel", attr: str):
     channel.clean()
 
 
-@pytest.mark.parametrize("args", [{}, {"application": None}, {"project": None, "application": None}])
+@pytest.mark.parametrize("args", [{}, {"project": None}])
 def test_natural_key(args):
     ch = ChannelFactory(name="ch1", **args)
     assert Channel.objects.get_by_natural_key(*ch.natural_key()) == ch, ch.natural_key()

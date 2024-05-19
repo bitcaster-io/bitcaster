@@ -1,0 +1,39 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n %}
+
+{% block head %}
+    {{ block.super }}
+    {{ wizard.form.media }}
+{% endblock %}
+
+{% block after_field_sets %}{% endblock %}
+{% block object-tools-items %}
+    {{ block.super }}
+{% endblock %}
+{% block action-content %}
+    <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+    <form action="" method="post" id="channel-add">{% csrf_token %}
+        <table>
+            {{ wizard.management_form }}
+            {% if wizard.form.forms %}
+                {{ wizard.form.management_form }}
+                {% for form in wizard.form.forms %}
+                    {{ form.as_table }}
+                {% endfor %}
+            {% else %}
+                {{ wizard.form.as_table }}
+            {% endif %}
+        </table>
+        <div class="submit-row m-5">
+            <input type="submit" value="{% translate "submit" %}"/>
+            {% if wizard.steps.prev %}
+                <div style="float: right">
+                    <button name="wizard_goto_step" class="button" type="submit"
+                            value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
+                    <button name="wizard_goto_step" class="button" type="submit"
+                            value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+
+{% endblock %}

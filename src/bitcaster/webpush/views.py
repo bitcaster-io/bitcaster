@@ -48,7 +48,7 @@ class DataView(SecretMixin, RedirectView):
                 "k": ch.config["APPLICATION_SERVER_KEY"],
                 "s": reverse("webpush:subscribe", args=[secret]),
                 "u": reverse("webpush:unsubscribe", args=[secret]),
-                "w": reverse("webpush:service_worker", args=[assignment.channel.application.slug]),
+                "w": reverse("webpush:service_worker", args=[assignment.channel.project.slug]),
             }
         )
 
@@ -108,7 +108,7 @@ class ConfirmView(SecretMixin, TemplateView):
             "subscribe_url": reverse("webpush:subscribe", args=[secret]),
             "unsubscribe_url": reverse("webpush:unsubscribe", args=[secret]),
             "media": self.media,
-            "sw": reverse("webpush:service_worker", args=[assignment.channel.application.slug]),
+            "sw": reverse("webpush:service_worker", args=[assignment.channel.project.slug]),
         }
 
         return ctx

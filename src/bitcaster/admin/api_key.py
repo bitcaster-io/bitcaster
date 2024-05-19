@@ -10,7 +10,7 @@ from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 
-from bitcaster.forms.mixins import ScopedFormMixin
+from bitcaster.forms.mixins import Scoped3FormMixin
 from bitcaster.models import ApiKey, Application, Organization, Project  # noqa
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ApiKeyForm(ScopedFormMixin[ApiKey], forms.ModelForm[ApiKey]):
+class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
 
     class Meta:
         model = ApiKey

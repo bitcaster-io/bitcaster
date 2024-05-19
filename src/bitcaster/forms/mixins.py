@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from django import forms
-from django.utils.translation import gettext as _
 from django_select2 import forms as s2forms
 
 from bitcaster.models import Application, Organization, Project
@@ -10,7 +9,7 @@ if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel  # noqa
 
 
-class ScopedFormMixin(forms.ModelForm["AnyModel"]):
+class Scoped2FormMixin(forms.ModelForm["AnyModel"]):
     organization = forms.ModelChoiceField(
         queryset=Organization.objects.all(),
         label="Organization",
@@ -31,6 +30,10 @@ class ScopedFormMixin(forms.ModelForm["AnyModel"]):
             max_results=500,
         ),
     )
+
+
+class Scoped3FormMixin(Scoped2FormMixin["AnyModel"]):
+
     application = forms.ModelChoiceField(
         required=False,
         queryset=Application.objects.all(),
@@ -42,9 +45,3 @@ class ScopedFormMixin(forms.ModelForm["AnyModel"]):
             max_results=500,
         ),
     )
-
-    def clean(self) -> dict[str, Any] | None:
-        super().clean()
-        if not self.cleaned_data.get("organization", None):
-            raise forms.ValidationError(_("This field is required."))
-        return self.cleaned_data

@@ -15,8 +15,13 @@
       color: var(--bg-primary);
     }
   }
-
-  #container {
+    div.submit-row {
+      button, input, a{
+        margin: 0;
+        padding: 10px 15px;
+      }
+    }
+  #container, {
     div.breadcrumbs {
       background-color: #951515;
 
@@ -165,11 +170,13 @@ html[data-theme="dark"] {
       }
     }
   }
-.help_text{
-  a, a:visited, a:link {
-    color: #ff5900;
+
+  .help_text {
+    a, a:visited, a:link {
+      color: #ff5900;
+    }
   }
-}
+
   span.select2-container {
     width: 400px !important;
     background-color: var(--body-bg);
@@ -195,7 +202,8 @@ html[data-theme="dark"] {
         .select2-selection--single {
           background-color: var(--body-bg);
         }
-                .select2-selection__rendered{
+
+        .select2-selection__rendered {
           color: var(--body-bg);
 
         }
@@ -236,11 +244,6 @@ html[data-theme="dark"] {
         color: yellow;
       }
     }
-  }
-
-  .button, input[type=submit], input[type=button], .submit-row input, a.button {
-    background-color: var(--button-bg);
-
   }
 
   #header, #changelist-filter h2 {

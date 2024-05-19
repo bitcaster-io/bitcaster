@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .channel import Channel
 from .event import Event
-from .mixins import BitcasterBaselManager, BitcasterBaseModel, ScopedMixin
+from .mixins import BitcasterBaselManager, BitcasterBaseModel, Scoped3Mixin
 from .notification import Notification
 
 if TYPE_CHECKING:
@@ -33,7 +33,7 @@ class MessageManager(BitcasterBaselManager["Message"]):
         return self.get(name=name, organization__slug=org, **filters)
 
 
-class Message(ScopedMixin, BitcasterBaseModel):
+class Message(Scoped3Mixin, BitcasterBaseModel):
     application: "Application"
 
     name = models.CharField(_("Name"), max_length=255)

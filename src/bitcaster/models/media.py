@@ -7,8 +7,8 @@ from django.db.models.base import ModelBase
 
 from bitcaster.models.mixins import (
     BitcasterBaseModel,
+    Scoped3Mixin,
     ScopedManager,
-    ScopedMixin,
     SlugMixin,
 )
 
@@ -31,7 +31,7 @@ class MediaFileManager(ScopedManager["MediaFile"]):
         return self.get(name=name, organization__slug=org, **filters)
 
 
-class MediaFile(ScopedMixin, SlugMixin, BitcasterBaseModel):
+class MediaFile(Scoped3Mixin, SlugMixin, BitcasterBaseModel):
     image = models.ImageField(storage=storages["mediafiles"], width_field="width", height_field="height")
     size = models.PositiveIntegerField(blank=True, default=0)
     width = models.PositiveIntegerField(blank=True, default=0)

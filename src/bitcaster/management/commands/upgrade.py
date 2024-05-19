@@ -181,7 +181,6 @@ class Command(BaseCommand):
                 name="BitcasterLog",
                 organization=os4d,
                 project=bitcaster.project,
-                application=bitcaster,
                 dispatcher=fqn(BitcasterLogDispatcher),
             )[0]
 

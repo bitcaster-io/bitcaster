@@ -8,12 +8,8 @@ from .mixins import BitcasterBaselManager, BitcasterBaseModel
 
 class AssignmentManager(BitcasterBaselManager["Assignment"]):
 
-    def get_by_natural_key(self, user: str, addr: str, ch: str, app: str, prj: str, org: str) -> "Assignment":
+    def get_by_natural_key(self, user: str, addr: str, ch: str, prj: str, org: str) -> "Assignment":
         filters: dict[str, Any] = {}
-        if app:
-            filters["channel__application__slug"] = app
-        else:
-            filters["channel__application"] = None
 
         if prj:
             filters["channel__project__slug"] = prj

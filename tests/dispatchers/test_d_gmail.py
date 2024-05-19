@@ -13,11 +13,11 @@ pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 @pytest.mark.parametrize("mail_payload", ("", "html_message"), indirect=True)
 def test_gmail(mocked_responses, monkeypatch, mail_payload):
     from bitcaster.dispatchers import GMailDispatcher
-    from bitcaster.models import Application, Channel
+    from bitcaster.models import Channel, Project
 
     with patch("smtplib.SMTP", autospec=True) as mock:
         ch = Channel(
-            application=Application(from_email=os.environ["GMAIL_USER"], subject_prefix="[gmail] "),
+            project=Project(from_email=os.environ["GMAIL_USER"], subject_prefix="[gmail] "),
             config={
                 "username": os.environ["GMAIL_USER"],
                 "password": os.environ["GMAIL_PASSWORD"],

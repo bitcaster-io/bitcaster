@@ -17,7 +17,7 @@ def test_assignment(db):
     assert list(addr.channels.all()) == [ch]
 
 
-@pytest.mark.parametrize("args", [{}, {"application": None}, {"project": None, "application": None}])
+@pytest.mark.parametrize("args", [{}, {"project": None}])
 def test_natural_key(args):
     from testutils.factories import Assignment, AssignmentFactory, ChannelFactory
 

@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from bitcaster.auth.constants import Grant
 
-from .mixins import BitcasterBaseModel, ScopedManager, ScopedMixin
+from .mixins import BitcasterBaseModel, Scoped3Mixin, ScopedManager
 from .user import User
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ class ApiKeyManager(ScopedManager["ApiKey"]):
         return self.get(name=name, user__username=user)
 
 
-class ApiKey(ScopedMixin, BitcasterBaseModel):
+class ApiKey(Scoped3Mixin, BitcasterBaseModel):
     name = models.CharField(verbose_name=_("Name"), max_length=255, db_collation="case_insensitive")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="keys")
     key = models.CharField(verbose_name=_("Token"), unique=True, default=make_token)

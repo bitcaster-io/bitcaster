@@ -9,12 +9,12 @@ pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 def test_smtp(mail_payload):
     from bitcaster.dispatchers import EmailDispatcher
-    from bitcaster.models import Application, Channel
+    from bitcaster.models import Channel, Project
 
     with patch("django.core.mail.backends.smtp.smtplib.SMTP", autospec=True) as mock:
         EmailDispatcher(
             Channel(
-                application=Application(from_email=os.environ["GMAIL_USER"], subject_prefix="[smtp] "),
+                project=Project(from_email=os.environ["GMAIL_USER"], subject_prefix="[gmail] "),
                 config={
                     "host": "localhost",
                     "port": 25,
