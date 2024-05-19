@@ -2,10 +2,11 @@ import enum
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
+from constance import config
 from django.db import models
 
 if TYPE_CHECKING:
-    from bitcaster.models import Application, Occurrence, User
+    from bitcaster.models import Application, Group, Occurrence, User
     from bitcaster.models.occurrence import OccurrenceOptions
 
 logger = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ class Bitcaster:
         from bitcaster.models import Application
 
         if not cls._app:
-            cls._app = Application.objects.get(
+            cls._app = Application.objects.select_related("project", "project__organization").get(
                 name=cls.APPLICATION, project__name=cls.PROJECT, project__organization__name=cls.ORGANIZATION
             )
         return cls._app
@@ -58,6 +59,12 @@ class Bitcaster:
         correlation_id: Optional[Any] = None,
     ) -> "Optional[Occurrence]":
         return cls.app.events.get(name=evt.value).trigger(context or {}, options=options or {}, cid=correlation_id)
+
+    @classmethod
+    def get_default_group(cls) -> "Group":
+        from django.contrib.auth.models import Group
+
+        return Group.objects.get(name=config.NEW_USER_DEFAULT_GROUP)
 
 
 class AddressType(models.TextChoices):

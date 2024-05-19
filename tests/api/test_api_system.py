@@ -58,4 +58,4 @@ def test_ping(client: APIClient, data: "Context") -> None:
     with key_grants(api_key, Grant.SYSTEM_PING):
         res = client.get(url, data={})
         assert res.status_code == status.HTTP_200_OK
-        assert res.json() == {"slug": api_key.application.slug, "token": api_key.name}
+        assert res.json() == {"token": api_key.name}

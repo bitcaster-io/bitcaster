@@ -1,10 +1,17 @@
 import os
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import django
 import pytest
 import responses
+
+from bitcaster.constants import Bitcaster
+
+if TYPE_CHECKING:
+    from bitcaster.models import Project
+
 
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))
@@ -98,13 +105,15 @@ def pytest_configure(config):
         pytest.exit("FATAL: Environment variables missing")
 
 
-@pytest.fixture(autouse=True)
-def defaults(db):
+@pytest.fixture()
+def system_objects(admin_user):
     from django.contrib.auth.models import Group
 
     from bitcaster.auth.constants import DEFAULT_GROUP_NAME
+    from bitcaster.constants import Bitcaster
 
     Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
+    Bitcaster.initialize(admin_user)
 
 
 @pytest.fixture(autouse=True)
@@ -115,37 +124,6 @@ def clear_state(db):
         del state.app
     except AttributeError:
         pass
-
-
-@pytest.fixture()
-def system_events(admin_user):
-    from bitcaster.constants import Bitcaster
-
-    Bitcaster.initialize(admin_user)
-
-
-def pytest_runtest_setup(item):
-    driver = item.config.getoption("--driver") or ""
-
-    if driver.lower() == "firefox" and list(item.iter_markers(name="skip_if_firefox")):
-        pytest.skip("Test skipped because Firefox")
-    if driver.lower() == "safari" and list(item.iter_markers(name="skip_if_safari")):
-        pytest.skip("Test skipped because Safari")
-    if driver.lower() == "edge" and list(item.iter_markers(name="skip_if_edge")):
-        pytest.skip("Test skipped because Edge")
-
-    env_names = [mark.args[0] for mark in item.iter_markers(name="skip_test_if_env")]
-    if env_names:
-        if item.config.getoption("--env") in os.environ:
-            pytest.skip(f"Test skipped because env {env_names!r} is present")
-
-
-def pytest_collection_modifyitems(config, items):
-    if not config.option.enable_selenium:
-        skip_mymarker = pytest.mark.skip(reason="selenium not enabled")
-        for item in items:
-            if list(item.iter_markers(name="selenium")):
-                item.add_marker(skip_mymarker)
 
 
 @pytest.fixture()
@@ -171,39 +149,55 @@ def superuser(db):
 
 
 @pytest.fixture()
+def os4d(db):
+    from testutils.factories.org import OrganizationFactory
+
+    return OrganizationFactory(name=Bitcaster.ORGANIZATION, slug="os4d")
+
+
+@pytest.fixture()
+def bitcaster(os4d):
+    from testutils.factories.org import ApplicationFactory
+
+    return ApplicationFactory(
+        name=Bitcaster.APPLICATION, project__organization=os4d, project__name=Bitcaster.PROJECT, slug="bitcaster"
+    )
+
+
+@pytest.fixture()
 def organization(db):
 
     from testutils.factories.org import OrganizationFactory
 
-    return OrganizationFactory(name="OS4D")
+    return OrganizationFactory()
 
 
 @pytest.fixture()
-def project(db):
+def project(organization):
     from testutils.factories.org import ProjectFactory
 
-    return ProjectFactory(name="BITCASTER")
+    return ProjectFactory(organization=organization)
 
 
 @pytest.fixture()
-def application(db):
+def application(project: "Project"):
     from testutils.factories.org import ApplicationFactory
 
-    return ApplicationFactory(name="Bitcaster", project__name="BITCASTER", project__organization__name="OS4D")
+    return ApplicationFactory(project=project)
 
 
 @pytest.fixture()
-def distributionlist(db):
+def distributionlist(project: "Project"):
     from testutils.factories.distribution import DistributionList
 
-    return DistributionList()
+    return DistributionList(project=project)
 
 
 @pytest.fixture()
-def event(db):
+def event(application):
     from testutils.factories.event import EventFactory
 
-    return EventFactory()
+    return EventFactory(application=application)
 
 
 @pytest.fixture()
@@ -221,17 +215,17 @@ def message(db):
 
 
 @pytest.fixture()
-def channel(db):
+def channel(project: "Project"):
     from testutils.factories.channel import ChannelFactory
 
-    return ChannelFactory()
+    return ChannelFactory(project=project, organization=project.organization)
 
 
 @pytest.fixture()
-def org_channel(db):
+def org_channel(organization):
     from testutils.factories.channel import ChannelFactory
 
-    return ChannelFactory(project=None)
+    return ChannelFactory(organization=organization, project=None)
 
 
 @pytest.fixture()

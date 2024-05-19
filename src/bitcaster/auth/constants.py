@@ -3,14 +3,20 @@ from django.db.models import TextChoices
 DEFAULT_GROUP_NAME = "Default"
 
 
+class Scope(TextChoices):
+    ORGANIZATION = "ORGANIZATION", "ORGANIZATION"
+    PROJECT = "PROJECT", "PROJECT"
+    APPLICATION = "APPLICATION", "APPLICATION"
+
+
 class Grant(TextChoices):
     FULL_ACCESS = "FULL_ACCESS", "Full Access"
     SYSTEM_PING = "SYSTEM_PING", "Ping"
-    # USER_READ = "USER_READ", "User Read"
-    # USER_WRITE = "USER_WRITE", "User Write"
+    USER_READ = "USER_READ", "User Read"
+    USER_WRITE = "USER_WRITE", "User Write"
     # USER_ADMIN = "USER_ADMIN", "User Admin"
     #
-    # ORGANIZATION_READ = "ORG_READ", "Organization Read"
+    ORGANIZATION_READ = "ORG_READ", "Organization Read"
     # ORGANIZATION_WRITE = "ORG_WRITE", "Organization Write"
     # ORGANIZATION_ADMIN = "ORG_ADMIN", "Organization Admin"
     #
@@ -28,6 +34,8 @@ class Grant(TextChoices):
     # EVENT_READ = "EVENT_READ", "Event Read"
     EVENT_LIST = "EVENT_LIST", "Event list"
     EVENT_TRIGGER = "EVENT_TRIGGER", "Event Trigger"
+
+    DISTRIBUTION_LIST = "DISTRIBUTION_LIST", "Distribution list"
     # EVENT_LOCKOUT = "EVENT_LOCKOUT", "Event Lockout"
 
     # MESSAGE_READ = "MESSAGE_READ", "Message Read"

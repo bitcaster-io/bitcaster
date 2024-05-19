@@ -21,21 +21,21 @@ def client(admin_user):
 
 
 def test_api_schema(client):
-    url = "/api/schema/raw/"
+    url = "/api/raw/"
     res = client.get(url)
     assert res.status_code == 200
     assert res["Content-Type"] == "application/vnd.oai.openapi; charset=utf-8"
 
 
 def test_api_swagger(client):
-    url = "/api/schema/"
+    url = "/api/"
     res = client.get(url)
     assert res.status_code == 200
     assert res["Content-Type"] == "text/html; charset=utf-8"
 
 
 def test_api_redoc(client):
-    url = "/api/schema/redoc/"
+    url = "/api/redoc/"
     res = client.get(url)
     assert res.status_code == 200
     assert res["Content-Type"] == "text/html; charset=utf-8"

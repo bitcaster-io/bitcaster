@@ -19,15 +19,11 @@ if TYPE_CHECKING:
 
 class SecurityMixin(APIView):
     authentication_classes: "_ListOrTuple[BaseAuthentication]" = (
+        ApiKeyAuthentication,
         BasicAuthentication,
         SessionAuthentication,
-        ApiKeyAuthentication,
     )
-    permission_classes: "_ListOrTuple[BasePermission]" = (
-        # ApiOrgPermission,
-        # ApiProjectPermission,
-        ApiApplicationPermission,
-    )
+    permission_classes: "_ListOrTuple[BasePermission]" = (ApiApplicationPermission,)
     required_grants: "_ListOrTuple[Grant]" = ()
 
     @property
@@ -37,17 +33,3 @@ class SecurityMixin(APIView):
 
 class BaseView(SecurityMixin, views.APIView):
     renderer_classes = (JSONRenderer,)
-
-
-#
-# class BaseViewSet(SecurityMixin, viewsets.ViewSet):
-#     renderer_classes = (JSONRenderer,)
-#
-#
-# class BaseModelViewSet(SecurityMixin, viewsets.ReadOnlyModelViewSet):
-#     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
-#     filter_backends = [DjangoFilterBackend]
-#     serializer_classes = {}
-#
-#     def get_serializer_class(self) -> Type[Serializer]:
-#         return self.serializer_classes.get(self.action, self.serializer_class)

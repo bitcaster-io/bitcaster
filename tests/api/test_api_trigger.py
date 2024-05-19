@@ -187,7 +187,7 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
     assert o.data == {"delivered": [target.pk], "recipients": [[target.address.value, target.channel.name]]}
 
 
-def test_trigger_limit_to_with_wrong_receiver(client: APIClient, data: "Context", monkeypatch, system_events) -> None:
+def test_trigger_limit_to_with_wrong_receiver(client: APIClient, data: "Context", monkeypatch, system_objects) -> None:
     from bitcaster.models import Occurrence
 
     api_key = data["key"]

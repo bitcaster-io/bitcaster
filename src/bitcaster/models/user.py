@@ -4,13 +4,14 @@ from typing import TYPE_CHECKING
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as BaseUserManager
 from django.db import models
+from django.db.models import QuerySet
 from django.utils.crypto import RANDOM_STRING_CHARS
 from django.utils.translation import gettext_lazy as _
 
 from .mixins import BitcasterBaseModel
 
 if TYPE_CHECKING:
-    from bitcaster.models import Assignment, Channel
+    from bitcaster.models import Assignment, Channel, Organization
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,12 @@ class User(BitcasterBaseModel, AbstractUser):
         app_label = "bitcaster"
         abstract = False
         permissions = (("bitcaster.lock_system", "Can lock system components"),)
+
+    @property
+    def organizations(self) -> "QuerySet[Organization]":
+        from bitcaster.models import Organization
+
+        return Organization.objects.filter(userrole__user=self)
 
     def natural_key(self) -> tuple[str]:
         return (self.username,)

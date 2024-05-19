@@ -32,7 +32,9 @@ class Organization(SlugMixin, BitcasterBaseModel):
         default="[Bitcaster] ",
         help_text=_("Default prefix for messages supporting subject"),
     )
-    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, related_name="organizations")
+    owner = models.ForeignKey(
+        User, verbose_name=_("Owner"), on_delete=models.PROTECT, related_name="managed_organizations"
+    )
 
     objects = OrganizationManager()
 
@@ -44,6 +46,10 @@ class Organization(SlugMixin, BitcasterBaseModel):
             models.UniqueConstraint(fields=("slug",), name="org_slug_unique"),
             models.UniqueConstraint(fields=("slug", "owner"), name="owner_slug_unique"),
         ]
+
+    @property
+    def users(self) -> QuerySet["User"]:
+        return User.objects.filter(roles__organization=self)
 
     def natural_key(self) -> tuple[str | None]:
         return (self.slug,)

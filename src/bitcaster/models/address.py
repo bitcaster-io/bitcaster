@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, MutableMapping
 
 from django.db import models
 from django.db.models import QuerySet
@@ -18,11 +18,23 @@ if TYPE_CHECKING:
 class AddressManager(BitcasterBaselManager["Address"]):
     use_for_related_fields = True
 
+    def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[Address, bool]":
+        kwargs["type"] = self.get_type_from_value(kwargs.get("value", ""))
+        return super().get_or_create(defaults=defaults, **kwargs)
+
     def valid(self) -> QuerySet["Address"]:
         return self.filter(assignments__validated=True)
 
     def get_by_natural_key(self, user: str, name: str) -> "Address":
         return self.get(user__username=user, name=name)
+
+    def get_type_from_value(self, value: str) -> AddressType:
+        if is_phonenumber(value):
+            return AddressType.PHONE
+        if is_email(value):
+            return AddressType.EMAIL
+        else:
+            return AddressType.GENERIC
 
 
 PROTOCOL_TO_ADDRESS = {
@@ -51,12 +63,7 @@ class Address(BitcasterBaseModel):
         return self.value
 
     def save(self, *args: Any, **kwargs: Any) -> None:
-        if is_phonenumber(self.value):
-            self.type = AddressType.PHONE
-        if is_email(self.value):
-            self.type = AddressType.EMAIL
-        else:
-            self.type = AddressType.ACCOUNT
+        self.type = Address.objects.get_type_from_value(self.value)
         super().save(*args, **kwargs)
 
     def natural_key(self) -> tuple[str, str]:
