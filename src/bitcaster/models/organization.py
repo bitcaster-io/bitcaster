@@ -32,7 +32,9 @@ class Organization(SlugMixin, BitcasterBaseModel):
         default="[Bitcaster] ",
         help_text=_("Default prefix for messages supporting subject"),
     )
-    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, related_name="organizations")
+    owner = models.ForeignKey(
+        User, verbose_name=_("Owner"), on_delete=models.PROTECT, related_name="managed_organizations"
+    )
 
     objects = OrganizationManager()
 

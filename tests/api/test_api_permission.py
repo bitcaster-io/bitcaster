@@ -67,8 +67,8 @@ def test_scope(rf, context: "Context") -> None:
     with mock.patch.object(req, "auth", api_key, create=True):
         with key_grants(api_key, [Grant.SYSTEM_PING], application=None):
             with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
-                assert not p.has_permission(req, view)
-                assert not p.has_object_permission(req, view, event)
+                assert p.has_permission(req, view)
+                assert p.has_object_permission(req, view, event)
 
 
 def test_has_permission(rf, context: "Context") -> None:

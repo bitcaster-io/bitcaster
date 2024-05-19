@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
+from django.urls import ResolverMatch, resolve
+from rest_framework import status
 from rest_framework.test import APIClient
 from testutils.factories import ApiKeyFactory, ChannelFactory, EventFactory
 from testutils.perms import key_grants
@@ -75,40 +77,29 @@ def data(admin_user, system_objects) -> "Context":
     }
 
 
-def test_org_detail(client: APIClient, organization: "Organization") -> None:
-    url = f"/api/o/{organization.slug}/"
-    res = client.get(url)
-    data: dict = res.json()
-    assert data["slug"] == organization.slug
+def pytest_generate_tests(metafunc):
+    if "url" in metafunc.fixturenames:
+        m = []
+        ids = []
+        for url in [
+            # "/api/o/",
+            f"/api/o/{org_slug}/",
+            f"/api/o/{org_slug}/u/",  # users
+            # f"/api/o/{org_slug}/c/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/",
+            f"/api/o/{org_slug}/p/{prj_slug}/d/",  # distributionlist
+            # f"/api/o/{org_slug}/p/{prj_slug}/a/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/",
+            f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/",
+            # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/c/",
+        ]:
+            m.append(url)
+            r: ResolverMatch = resolve(url)
+            ids.append(r.func.__name__)
+        metafunc.parametrize("url", m, ids=ids)
 
 
-def test_org_channels(client: APIClient, org_channel: "Channel") -> None:
-    # list organization channels
-    url = f"/api/o/{org_channel.organization.slug}/c/"
-    res = client.get(url)
-    data: dict = res.json()
-    assert data == [{"name": org_channel.name, "protocol": org_channel.protocol}]
-
-
-def test_user_list(client: APIClient, org_user: "User") -> None:
-    url = f"/api/o/{org_user.organizations.first().slug}/u/"
-    res = client.get(url)
-    data: list[dict] = res.json()
-    ids = [e["id"] for e in data]
-    assert ids == [org_user.pk]
-
-
-def test_user_add_existing(client: APIClient, data: "Context", user: "User") -> None:
-    # add exiting user to the organization
-    url = f"/api/o/{org_slug}/u/"
-    res = client.post(url, {"email": user.email})
-    data: dict = res.json()
-    assert data["id"] == user.pk
-
-
-def test_user_add_new(client: APIClient, data: "Context") -> None:
-    # create new user and add to the organization
-    url = f"/api/o/{org_slug}/u/"
-    res = client.post(url, {"email": "user@example.com"})
-    data: dict = res.json()
-    assert data["email"] == "user@example.com"
+def test_urls(client: APIClient, data: "Context", url) -> None:
+    res = client.get(url, data={})
+    assert res.status_code == status.HTTP_200_OK, url

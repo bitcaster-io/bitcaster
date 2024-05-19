@@ -144,7 +144,7 @@ def test_process_event_resume(setup: "Context", monkeypatch):
     }
 
 
-def test_silent_event(setup: "Context", monkeypatch, system_events):
+def test_silent_event(setup: "Context", monkeypatch, system_objects):
     from bitcaster.models import Occurrence
 
     cid = uuid.uuid4()
@@ -173,7 +173,7 @@ def test_attempts(setup: "Context", monkeypatch):
     assert o.data == {}
 
 
-def test_retry(setup: "Context", monkeypatch, system_events):
+def test_retry(setup: "Context", monkeypatch, system_objects):
     from testutils.factories import Occurrence
 
     o = setup["occurrence"]
@@ -192,7 +192,7 @@ def test_retry(setup: "Context", monkeypatch, system_events):
     assert o.data == {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]]}
 
 
-def test_error(setup: "Context", system_events):
+def test_error(setup: "Context", system_objects):
     from testutils.factories import Occurrence, OccurrenceFactory
 
     o = OccurrenceFactory(attempts=0, status=Occurrence.Status.NEW)
@@ -203,7 +203,7 @@ def test_error(setup: "Context", system_events):
     assert o.data == {}
 
 
-def test_processed(setup: "Context", monkeypatch, system_events):
+def test_processed(setup: "Context", monkeypatch, system_objects):
     from testutils.factories import Occurrence, OccurrenceFactory
 
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())
@@ -220,6 +220,6 @@ def celery_config():
 
 @pytest.mark.celery()
 @pytest.mark.skipif(os.getenv("GITLAB_CI") is not None, reason="Do not run on GitLab CI")
-def test_live(db, setup: "Context", monkeypatch, system_events, celery_app, celery_worker):
+def test_live(db, setup: "Context", monkeypatch, system_objects, celery_app, celery_worker):
     o = setup["occurrence"]
     assert process_occurrence.delay(o.pk).get(timeout=10) == 2

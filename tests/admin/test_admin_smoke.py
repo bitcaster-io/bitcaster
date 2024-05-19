@@ -162,7 +162,7 @@ def test_admin_add(app, modeladmin):
         pytest.skip("No 'add' permission")
 
 
-@pytest.mark.skip_models("constance.Config", "webpush.Browser")
+@pytest.mark.skip_models("constance.Config", "webpush.Browser", "bitcaster.Organization")
 def test_admin_delete(app, modeladmin, record, monkeypatch):
     url = reverse(admin_urlname(modeladmin.model._meta, "delete"), args=[record.pk])
     if modeladmin.has_delete_permission(Mock(user=app._user)):

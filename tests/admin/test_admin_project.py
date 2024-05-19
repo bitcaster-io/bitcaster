@@ -1,8 +1,6 @@
 import pytest
 from django.urls import reverse
 
-from bitcaster.constants import Bitcaster
-
 
 @pytest.fixture()
 def app(django_app_factory, db):
@@ -15,26 +13,26 @@ def app(django_app_factory, db):
     return django_app
 
 
-@pytest.fixture()
-def project(db):
-    from testutils.factories import ProjectFactory
+# @pytest.fixture()
+# def project(db):
+#     from testutils.factories import ProjectFactory
+#
+#     return ProjectFactory()
+#
 
-    return ProjectFactory()
+# @pytest.fixture()
+# def bitcaster(db):
+#     from testutils.factories import ProjectFactory
+#
+#     return ProjectFactory(name=Bitcaster.PROJECT, organization__name=Bitcaster.ORGANIZATION)
 
-
-@pytest.fixture()
-def bitcaster(db):
-    from testutils.factories import ProjectFactory
-
-    return ProjectFactory(name=Bitcaster.PROJECT, organization__name=Bitcaster.ORGANIZATION)
-
-
-@pytest.fixture()
-def organization(db):
-
-    from testutils.factories.org import OrganizationFactory
-
-    return OrganizationFactory()
+#
+# @pytest.fixture()
+# def organization(db):
+#
+#     from testutils.factories.org import OrganizationFactory
+#
+#     return OrganizationFactory()
 
 
 def test_get_readonly_fields(app, project, bitcaster) -> None:
@@ -44,7 +42,7 @@ def test_get_readonly_fields(app, project, bitcaster) -> None:
     assert "organization" in frm.fields
     assert "name" in frm.fields
 
-    url = reverse("admin:bitcaster_project_change", args=[bitcaster.pk])
+    url = reverse("admin:bitcaster_project_change", args=[bitcaster.project.pk])
     res = app.get(url)
     frm = res.forms["project_form"]
     assert "organization" not in frm.fields

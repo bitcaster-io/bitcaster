@@ -6,8 +6,8 @@ from rest_framework.test import APIClient
 from testutils.factories.event import EventFactory
 from testutils.factories.key import ApiKeyFactory
 
+from bitcaster.api.event import EventList
 from bitcaster.api.permissions import ApiKeyAuthentication
-from bitcaster.api.views import EventList
 
 if TYPE_CHECKING:
     from bitcaster.models import ApiKey, Event
