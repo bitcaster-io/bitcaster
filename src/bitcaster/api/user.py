@@ -6,13 +6,15 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from bitcaster.api.base import SecurityMixin
+from bitcaster.api.serializers import AddressSerializer
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import Bitcaster
-from bitcaster.models import DistributionList, Organization, Project, User, UserRole
+from bitcaster.models import DistributionList, Organization, User, UserRole
 
 
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
+    username = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
@@ -24,17 +26,16 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "groups",
             "user_permissions",
-            "username",
         )
 
     def create(self, validated_data):
         org: Organization = self.context["view"].organization
+        email = validated_data.get("email")
+        if not (user := User.objects.filter(email=email).first()):
+            user = User.objects.create(username=email, email=email)
 
-        if user := User.objects.filter(email=validated_data["email"]).first():
-            UserRole.objects.get_or_create(user=user, organization=org, group=Bitcaster.get_default_group())
-        else:
-            validated_data["username"] = validated_data["email"]
-            user = super().create(validated_data)
+        UserRole.objects.get_or_create(user=user, organization=org, group=Bitcaster.get_default_group())
+        user.addresses.get_or_create(value=email)
 
         return user
 
@@ -44,32 +45,37 @@ class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIVi
     required_grants = [Grant.USER_READ, Grant.USER_WRITE]
 
     @property
-    def organization(self) -> "Project":
+    def organization(self) -> "Organization":
         return Organization.objects.get(slug=self.kwargs["org"])
 
     def get_queryset(self) -> QuerySet[DistributionList]:
-        return User.objects.filter(roles__organization=self.organization)
+        return self.organization.users.all()
 
-    # @action(detail=True, methods=["GET"])
-    # def roles(self, request, pk=None, **kwargs):
-    #     dl: DistributionList = self.get_object()
-    #     try:
-    #         data = json.loads(request.body)
-    #         for entry in data:
-    #             Address.objects.filter()
-    #         return Response({"message": data, "dl": dl.pk})
-    #     except Exception as e:
-    #         return Response({"error": e}, status=status.HTTP_400_BAD_REQUEST)
+    def get_object(self) -> "User":
+        return self.get_queryset().get(username=self.kwargs["username"])
 
     @action(detail=True, methods=["PUT"])
     def update(self, request, pk=None, **kwargs):
-        return Response({"error": "---"}, status=status.HTTP_400_BAD_REQUEST)
+        status_code = status.HTTP_200_OK
+        user = self.get_object()
+        ser = UserSerializer(instance=user, data=request.data, partial=True)
+        if ser.is_valid():
+            ser.save()
+        else:
+            status_code = status.HTTP_400_BAD_REQUEST
+        return Response(ser.data, status=status_code)
 
-    #
-    #
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     headers = self.get_success_headers(serializer.data)
-    # #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    @action(detail=True, methods=["GET", "POST"], serializer_class=AddressSerializer)
+    def address(self, request, org, username, **kwargs):
+        user = self.get_object()
+        status_code = status.HTTP_200_OK
+        if request.method == "GET":
+            ser = AddressSerializer(many=True, instance=user.addresses.all())
+            return Response(ser.data)
+        else:  # request.method == "POST":
+            ser = AddressSerializer(data=request.POST)
+            if ser.is_valid():
+                ser.save(user=user)
+            else:
+                status_code = status.HTTP_400_BAD_REQUEST
+            return Response(ser.data, status=status_code)

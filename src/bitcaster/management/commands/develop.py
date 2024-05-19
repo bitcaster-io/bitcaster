@@ -18,6 +18,7 @@ from bitcaster.dispatchers import (
     MailJetDispatcher,
     SlackDispatcher,
 )
+from bitcaster.models import UserRole
 
 if TYPE_CHECKING:
     from argparse import ArgumentParser
@@ -129,9 +130,13 @@ class Command(BaseCommand):
                 email, org_name, prj_name, apps = structure.split(";")
                 u = User.objects.update_or_create(username=email, defaults={"email": email, "is_staff": True})[0]
                 u.set_password("password")
-                o = u.organizations.update_or_create(name=org_name)[0]
+                o = u.managed_organizations.update_or_create(name=org_name)[0]
                 p = o.projects.update_or_create(name=prj_name, owner=u)[0]
                 active_project = p
+                from bitcaster.constants import Bitcaster
+
+                UserRole.objects.get_or_create(user=u, organization=o, group=Bitcaster.get_default_group())
+
                 self.echo(f"Created/Updated Organization {org_name}", style_func=self.style.SUCCESS)
                 self.echo(f"Created/Updated Project {prj_name}", style_func=self.style.SUCCESS)
                 for app_name in apps.split(","):

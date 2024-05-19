@@ -47,6 +47,10 @@ class Organization(SlugMixin, BitcasterBaseModel):
             models.UniqueConstraint(fields=("slug", "owner"), name="owner_slug_unique"),
         ]
 
+    @property
+    def users(self) -> QuerySet["User"]:
+        return User.objects.filter(roles__organization=self)
+
     def natural_key(self) -> tuple[str | None]:
         return (self.slug,)
 

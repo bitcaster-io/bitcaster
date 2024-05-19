@@ -1,8 +1,15 @@
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, NamedTuple
 
+import factory
 import pytest
 from rest_framework.test import APIClient
-from testutils.factories import ApiKeyFactory, ChannelFactory, EventFactory
+from testutils.factories import (
+    AddressFactory,
+    ApiKeyFactory,
+    ChannelFactory,
+    EventFactory,
+    UserRoleFactory,
+)
 from testutils.perms import key_grants
 
 from bitcaster.auth.constants import Grant
@@ -16,63 +23,66 @@ if TYPE_CHECKING:
         Organization,
         Project,
         User,
+        UserRole,
     )
 
-    Context = TypedDict(
-        "Context",
-        {
-            "org": Organization,
-            "prj": Project,
-            "app": Application,
-            "event": Event,
-            "key": ApiKey,
-            "user": User,
-            "ch": Channel,
-        },
-    )
+
+class SampleData(NamedTuple):
+    org: "Organization"
+    prj: "Project"
+    app: "Application"
+    event: "Event"
+    key: "ApiKey"
+    user: "User"
+    ch: "Channel"
+
+
+faker = factory.Faker._get_faker()
 
 pytestmark = [pytest.mark.api, pytest.mark.django_db]
 
 # WE DO NOT USE REVERSE HERE. WE NEED TO CHECK ENDPOINTS CONTRACTS
 
-org_slug = "org1"
-prj_slug = "prj1"
-app_slug = "app1"
+org_name = "org1"
+prj_name = "prj1"
+app_name = "app1"
 event_slug = "evt1"
 
 
 @pytest.fixture()
-def client(data) -> APIClient:
+def client(data: SampleData) -> APIClient:
     c = APIClient()
-    g = key_grants(data["key"], Grant.FULL_ACCESS)
+    g = key_grants(data.key, Grant.FULL_ACCESS)
     g.start()
-    c.credentials(HTTP_AUTHORIZATION=f"Key {data['key'].key}")
+    c.credentials(HTTP_AUTHORIZATION=f"Key {data.key.key}")
     yield c
     g.stop()
 
 
 @pytest.fixture()
-def data(admin_user, system_objects) -> "Context":
+def data(admin_user, system_objects) -> SampleData:
 
     event: Event = EventFactory(
-        application__project__organization__slug=org_slug,
-        application__project__slug=prj_slug,
-        application__slug=app_slug,
+        application__project__organization__name=org_name,
+        application__project__name=prj_name,
+        application__name=app_name,
         slug=event_slug,
     )
     key = ApiKeyFactory(
         user=admin_user, grants=[], application=None, project=None, organization=event.application.project.organization
     )
     ch = ChannelFactory(project=event.application.project)
-    return {
-        "org": event.application.project.organization,
-        "prj": event.application.project,
-        "app": event.application,
-        "event": event,
-        "key": key,
-        "user": admin_user,
-        "ch": ch,
-    }
+    role: "UserRole" = UserRoleFactory(organization__name=org_name)
+    AddressFactory(user=role.user, value=role.user.email)
+    return SampleData(
+        org=event.application.project.organization,
+        prj=event.application.project,
+        app=event.application,
+        event=event,
+        key=key,
+        user=role.user,
+        ch=ch,
+    )
 
 
 def test_org_detail(client: APIClient, organization: "Organization") -> None:
@@ -98,17 +108,57 @@ def test_user_list(client: APIClient, org_user: "User") -> None:
     assert ids == [org_user.pk]
 
 
-def test_user_add_existing(client: APIClient, data: "Context", user: "User") -> None:
+def test_user_add_existing(client: APIClient, data: SampleData, user: "User") -> None:
     # add exiting user to the organization
-    url = f"/api/o/{org_slug}/u/"
+    url = f"/api/o/{data.org.slug}/u/"
     res = client.post(url, {"email": user.email})
     data: dict = res.json()
     assert data["id"] == user.pk
 
 
-def test_user_add_new(client: APIClient, data: "Context") -> None:
+def test_user_create(client: APIClient, data: SampleData) -> None:
     # create new user and add to the organization
-    url = f"/api/o/{org_slug}/u/"
-    res = client.post(url, {"email": "user@example.com"})
-    data: dict = res.json()
-    assert data["email"] == "user@example.com"
+    email = faker.email()
+    url = f"/api/o/{data.org.slug}/u/"
+    res = client.post(url, {"email": email})
+    assert res.json()["email"] == email
+    assert data.org.users.filter(email=email).exists()
+    # assert User.objects.filter(email=email).exists()
+
+
+def test_user_update(client: APIClient, data: SampleData) -> None:
+    # create new user and add to the organization
+    url = f"/api/o/{data.org.slug}/u/{data.user.username}/"
+    res = client.put(url, {"last_name": "aaaaaa"})
+    assert res.json()["last_name"] == "aaaaaa"
+    assert data.org.users.filter(last_name="aaaaaa").exists()
+
+
+def test_user_update_invalid(client: APIClient, data: SampleData) -> None:
+    # create new user and add to the organization
+    url = f"/api/o/{data.org.slug}/u/{data.user.username}/"
+    res = client.put(url, {"email": "--"})
+    assert res.status_code == 400
+
+
+def test_user_addresses(client: APIClient, data: SampleData) -> None:
+    # list user addresses
+    url = f"/api/o/{data.org.slug}/u/{data.user.username}/address/"
+    res = client.get(url)
+    assert res.json()
+
+
+def test_user_addresses_add(client: APIClient, data: SampleData) -> None:
+    # create new user address
+    new_email = "private@example.com"
+    url = f"/api/o/{data.org.slug}/u/{data.user.username}/address/"
+    res = client.post(url, {"value": new_email, "type": "email", "name": "private email"})
+    assert res.json()
+    assert data.user.addresses.filter(value=new_email).exists()
+
+
+def test_user_addresses_add_invalid(client: APIClient, data: SampleData) -> None:
+    # create new user address
+    url = f"/api/o/{data.org.slug}/u/{data.user.username}/address/"
+    res = client.post(url, {"value": "", "type": "email", "name": "private email"})
+    assert res.status_code == 400

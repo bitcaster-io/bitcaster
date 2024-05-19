@@ -9,7 +9,7 @@ from rest_framework.viewsets import ViewSet
 
 from bitcaster.api.base import SecurityMixin
 from bitcaster.auth.constants import Grant
-from bitcaster.models import Assignment, DistributionList, Organization, Project
+from bitcaster.models import Assignment, DistributionList, Project
 
 
 class DistributionAddSerializer(serializers.Serializer):
@@ -47,9 +47,8 @@ class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, Retri
             organization__slug=self.kwargs["org"], slug=self.kwargs["prj"]
         )
 
-    @property
-    def organization(self) -> "Organization":
-        return self.project.organization
+    def get_object(self):
+        return self.project.distributionlist_set.get(pk=self.kwargs["pk"])
 
     def get_queryset(self) -> QuerySet[DistributionList]:
         return DistributionList.objects.filter(
@@ -57,12 +56,23 @@ class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, Retri
         )
 
     @action(detail=True, methods=["POST"], description="aaaaa")
-    def add(self, request, pk=None, **kwargs):
+    def add_recipient(self, request, pk=None, **kwargs):
         dl: DistributionList = self.get_object()
         try:
             data = json.loads(request.body)
             asms = Assignment.objects.filter(address__value__in=data)
+            expected = len(data)
+            found = len(asms)
+            if found != expected:
+                raise serializers.ValidationError("Invalid addresses")
             dl.recipients.add(*asms)
-            return Response({"message": data, "added": asms.values_list("address__value", flat=True)})
+            return Response(
+                {
+                    "message": data,
+                    "expected": expected,
+                    "found": found,
+                    "added": asms.values_list("address__value", flat=True),
+                }
+            )
         except Exception as e:
-            return Response({"error": e}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
