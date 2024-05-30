@@ -1,4 +1,7 @@
+from typing import Any
+
 from django.db.models import QuerySet
+from django.http import HttpRequest
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
@@ -9,7 +12,7 @@ from bitcaster.api.base import SecurityMixin
 from bitcaster.api.serializers import AddressSerializer
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import Bitcaster
-from bitcaster.models import DistributionList, Organization, User, UserRole
+from bitcaster.models import Organization, User, UserRole
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -28,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
             "user_permissions",
         )
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict[str, Any]) -> User:
         org: Organization = self.context["view"].organization
         email = validated_data.get("email")
         if not (user := User.objects.filter(email=email).first()):
@@ -48,14 +51,14 @@ class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIVi
     def organization(self) -> "Organization":
         return Organization.objects.get(slug=self.kwargs["org"])
 
-    def get_queryset(self) -> QuerySet[DistributionList]:
+    def get_queryset(self) -> QuerySet[User]:
         return self.organization.users.all()
 
     def get_object(self) -> "User":
         return self.get_queryset().get(username=self.kwargs["username"])
 
     @action(detail=True, methods=["PUT"])
-    def update(self, request, pk=None, **kwargs):
+    def update(self, request: HttpRequest, **kwargs: Any) -> Response:
         status_code = status.HTTP_200_OK
         user = self.get_object()
         ser = UserSerializer(instance=user, data=request.data, partial=True)
@@ -66,7 +69,7 @@ class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIVi
         return Response(ser.data, status=status_code)
 
     @action(detail=True, methods=["GET", "POST"], serializer_class=AddressSerializer)
-    def address(self, request, org, username, **kwargs):
+    def address(self, request: HttpRequest, **kwargs: Any) -> Response:
         user = self.get_object()
         status_code = status.HTTP_200_OK
         if request.method == "GET":

@@ -11,14 +11,14 @@ from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
 class MediaFileFactory(AutoRegisterModelFactory):
     class Meta:
         model = MediaFile
-        django_get_or_create = ("name",)
+        django_get_or_create = ["name"]
 
     name = Sequence(lambda n: "file-%03d" % n)
     organization = factory.SubFactory(OrganizationFactory)
     project = factory.SubFactory(ProjectFactory)
     application = factory.SubFactory(ApplicationFactory)
     image = factory.LazyAttribute(
-        lambda _: ContentFile(factory.django.ImageField()._make_data({"width": 1024, "height": 768}), "logo.png")
+        lambda _: ContentFile(factory.django.ImageField()._make_data({"format": "ICO"}), "logo.ico")
     )
 
     @classmethod

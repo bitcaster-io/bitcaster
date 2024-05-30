@@ -1,9 +1,9 @@
-from typing import Iterable, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import magic
-from django.core.files.storage import Storage, storages
+from django.core.files.storage import storages
 from django.db import models
-from django.db.models.base import ModelBase
+from django.db.models.fields.files import ImageFieldFile
 
 from bitcaster.models.mixins import (
     BitcasterBaseModel,
@@ -11,6 +11,9 @@ from bitcaster.models.mixins import (
     ScopedManager,
     SlugMixin,
 )
+
+if TYPE_CHECKING:
+    from bitcaster.types.django import AnyModel
 
 mime = magic.Magic(mime=True)
 
@@ -31,11 +34,65 @@ class MediaFileManager(ScopedManager["MediaFile"]):
         return self.get(name=name, organization__slug=org, **filters)
 
 
+class ImageFieldWithExtra(models.ImageField):
+
+    def __init__(
+        self,
+        verbose_name: Optional[str] = None,
+        name: Optional[str] = None,
+        width_field: Optional[str] = None,
+        height_field: Optional[str] = None,
+        mime_field: Optional[str] = None,
+        size_field: Optional[str] = None,
+        **kwargs: Any,
+    ):
+        self.mime_field = mime_field
+        self.size_field = size_field
+        super().__init__(verbose_name, name, width_field, height_field, **kwargs)
+
+    def _get_mime(self, instance: "AnyModel", file: ImageFieldFile) -> Optional[str]:
+        if not hasattr(instance, "_mime_cache"):
+            file_pos = None
+            close = file.closed
+            if not close:
+                file_pos = file.tell()
+            else:
+                file.open()
+            try:
+                mime_type = mime.from_buffer(file.file.read())
+                instance._mime_cache = mime_type
+            finally:
+                if close:
+                    file.close()
+                else:
+                    file.seek(file_pos)
+        return instance._mime_cache
+
+    def update_dimension_fields(self, instance: "AnyModel", force: bool = False, *args: "Any", **kwargs: "Any") -> None:
+        super().update_dimension_fields(instance, force, *args, **kwargs)
+        if self.mime_field or self.size_field:
+            file: ImageFieldFile = getattr(instance, self.attname)
+            if not file and not force:
+                return
+            if self.mime_field:
+                mime_type = self._get_mime(instance, file)
+                setattr(instance, self.mime_field, mime_type)
+
+            if self.size_field:
+                setattr(instance, self.size_field, file.size)
+
+
 class MediaFile(Scoped3Mixin, SlugMixin, BitcasterBaseModel):
-    image = models.ImageField(storage=storages["mediafiles"], width_field="width", height_field="height")
-    size = models.PositiveIntegerField(blank=True, default=0)
-    width = models.PositiveIntegerField(blank=True, default=0)
-    height = models.PositiveIntegerField(blank=True, default=0)
+    image = ImageFieldWithExtra(
+        storage=storages["mediafiles"],
+        width_field="width",
+        height_field="height",
+        size_field="size",
+        mime_field="mime_type",
+    )
+    size = models.PositiveIntegerField(blank=True, default=0, null=True)
+    width = models.PositiveIntegerField(blank=True, default=0, null=True)
+    height = models.PositiveIntegerField(blank=True, default=0, null=True)
 
     mime_type = models.CharField(max_length=100, blank=True, default="")
     file_type = models.CharField(max_length=100, blank=True, default="")
@@ -57,17 +114,13 @@ class MediaFile(Scoped3Mixin, SlugMixin, BitcasterBaseModel):
         else:
             return self.name, None, None, *self.organization.natural_key()
 
-    def save(
-        self,
-        force_insert: bool | tuple[ModelBase, ...] = False,
-        force_update: bool = False,
-        using: Optional[str] = None,
-        update_fields: Optional[Iterable[str]] = None,
-    ) -> None:
-        if not self.mime_type and not self.pk:
-            storage: Storage = storages["mediafiles"]
-            if self.image and storage.exists(self.image.name):
-                self.mime_type = mime.from_buffer(storage.open(self.image.name).read())
-                self.size = storage.size(self.image.name)
-
-        super().save(force_insert, force_update, using, update_fields)
+    #
+    # def save(
+    #     self,
+    #     force_insert: bool | tuple[ModelBase, ...] = False,
+    #     force_update: bool = False,
+    #     using: Optional[str] = None,
+    #     update_fields: Optional[Iterable[str]] = None,
+    # ) -> None:
+    #     super().save(force_insert, force_update, using, update_fields)
+    #

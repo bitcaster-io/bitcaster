@@ -69,7 +69,7 @@ class Payload:
 
 
 class DispatcherConfig(forms.Form):
-    pass
+    help_text = ""
 
 
 class DispatcherMeta(type["Dispatcher"]):
@@ -103,7 +103,6 @@ class Dispatcher(metaclass=DispatcherMeta):
     address_types: List[AddressType] = [AddressType.GENERIC]
     channel: "Channel"
     protocol: MessageProtocol = MessageProtocol.PLAINTEXT
-    help_text = ""
     need_subscription = False
 
     def __init__(self, channel: "Channel") -> None:

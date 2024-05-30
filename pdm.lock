@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:5ae940a82b35eafbd146f1ef524c014eb97b9bf298d348683ef299be18f80e5d"
+content_hash = "sha256:fa66431ff0c76e36082ab4c67ed67077ea176a335b0adc33f67e44813a8286d2"
 
 [[package]]
 name = "aiohttp"
@@ -2845,6 +2845,20 @@ dependencies = [
 files = [
     {file = "pytest_metadata-3.1.1-py3-none-any.whl", hash = "sha256:c8e0844db684ee1c798cfa38908d20d67d0463ecb6137c72e91f418558dd5f4b"},
     {file = "pytest_metadata-3.1.1.tar.gz", hash = "sha256:d2a29b0355fbc03f168aa96d41ff88b1a3b44a3b02acbe491801c98a048017c8"},
+]
+
+[[package]]
+name = "pytest-repeat"
+version = "0.9.3"
+requires_python = ">=3.7"
+summary = "pytest plugin for repeating tests"
+groups = ["dev"]
+dependencies = [
+    "pytest",
+]
+files = [
+    {file = "pytest_repeat-0.9.3-py3-none-any.whl", hash = "sha256:26ab2df18226af9d5ce441c858f273121e92ff55f5bb311d25755b8d7abdd8ed"},
+    {file = "pytest_repeat-0.9.3.tar.gz", hash = "sha256:ffd3836dfcd67bb270bec648b330e20be37d2966448c4148c4092d1e8aba8185"},
 ]
 
 [[package]]

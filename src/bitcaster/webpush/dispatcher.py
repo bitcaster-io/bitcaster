@@ -15,34 +15,51 @@ from bitcaster.dispatchers.base import (
 )
 from bitcaster.exceptions import DispatcherError
 from bitcaster.models import Assignment
+from bitcaster.state import state
 
 logger = logging.getLogger(__name__)
 
 
-def clean_key(value: str) -> str:
-    return value.replace("\n", "").replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "")
-
-
-class TokenInput(forms.TextInput):
+class TokenInput(forms.HiddenInput):
     pass
 
 
 class WebPushConfig(DispatcherConfig):
-    application_id = forms.CharField(label=_("Sender ID"), help_text=_("Sender ID"), required=False)
-    private_key = forms.CharField(label=_("Private Key"), help_text=_("private key"), required=False)
+
+    help_text = """
+
+1. goto [Firebase Console](https://console.firebase.google.com/u/0/?pli=1){:target="_blank"} and create a new project
+2. After creation, navigate to 'Project Settings'
+3. Goto 'Cloud Messaging' tab'
+3. Get the 'Sender ID' value and inert it in the
+4. Scroll down to the 'Web configuration' section and click 'Generate key pair'.
+5. Copy the Private Key and insert it here
+
+Note: [https://web.dev/articles/push-notifications-web-push-protocol](#)
+
+    """
+    application_id = forms.CharField(
+        label=_("Sender ID"), help_text=_("Firebase Cloud Messaging API (V1) Sender ID"), required=True
+    )
+    private_key = forms.CharField(label=_("Private Key"), help_text=_("private key"), required=True)
     email = forms.EmailField(label=_("Claim Email Key"), help_text=_("JWT contact information"))
 
     APPLICATION_SERVER_KEY = forms.CharField(widget=TokenInput, required=False)
     VAPID = forms.CharField(widget=TokenInput, required=False)
     CLAIMS = forms.CharField(widget=TokenInput, required=False)
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        initial = kwargs.pop("initial", {})
+        if "email" not in initial:
+            initial["email"] = state.request.user.email
+        super().__init__(*args, initial=initial, **kwargs)
+
     def clean(self) -> dict[str, Any] | None:
         super().clean()
         if "email" in self.cleaned_data:
             vapid = Vapid02()
             vapid.generate_keys()
-            if not (private_key := self.cleaned_data.get("private_key")):
-                private_key = clean_key(vapid.private_pem().decode())
+            private_key = self.cleaned_data.get("private_key")
             vapid = Vapid02.from_string(private_key)
             raw_pub = vapid.public_key.public_bytes(
                 serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint
@@ -57,18 +74,6 @@ class WebPushConfig(DispatcherConfig):
 
 
 class WebPushDispatcher(Dispatcher):
-
-    help_text = """
-
-1. goto [Firebase Console](https://console.firebase.google.com/u/0/?pli=1){:target="_blank"} and create a new project
-2. After creation navigate to 'Project Settings'
-3. Under 'Cloud Messaging' tab in the 'Web configuration' section click on 'Generate key pair'
-4. Copy the Private Key and insert here
-
-Note: [https://web.dev/articles/push-notifications-web-push-protocol](#)
-
-"""
-
     config_class: type[DispatcherConfig] = WebPushConfig
     protocol = MessageProtocol.WEBPUSH
     need_subscription = True

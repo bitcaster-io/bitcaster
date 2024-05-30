@@ -1,6 +1,8 @@
 import json
+from typing import Any
 
 from django.db.models import QuerySet
+from django.http import HttpRequest
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
@@ -22,18 +24,18 @@ class DistributionListSerializer(serializers.ModelSerializer):
         model = DistributionList
         fields = ("name", "id")
 
-    def validate_name(self, value):
+    def validate_name(self, value: str) -> str:
         view: DistributionView = self.context["view"]
         if DistributionList.objects.filter(name__exact=value, project=view.project).exists():
             raise serializers.ValidationError("Name already exists!")
         return value
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict[str, Any]) -> DistributionList:
         validated_data["project"] = self.context["view"].project
         return super().create(validated_data)
 
 
-class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIView):
+class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIView[DistributionList]):
     """
     Distribution list
     """
@@ -47,7 +49,7 @@ class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, Retri
             organization__slug=self.kwargs["org"], slug=self.kwargs["prj"]
         )
 
-    def get_object(self):
+    def get_object(self) -> DistributionList:
         return self.project.distributionlist_set.get(pk=self.kwargs["pk"])
 
     def get_queryset(self) -> QuerySet[DistributionList]:
@@ -55,8 +57,8 @@ class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, Retri
             project__organization__slug=self.kwargs["org"], project__slug=self.kwargs["prj"]
         )
 
-    @action(detail=True, methods=["POST"], description="aaaaa")
-    def add_recipient(self, request, pk=None, **kwargs):
+    @action(detail=True, methods=["POST"])
+    def add_recipient(self, request: HttpRequest, **kwargs: Any) -> Response:
         dl: DistributionList = self.get_object()
         try:
             data = json.loads(request.body)

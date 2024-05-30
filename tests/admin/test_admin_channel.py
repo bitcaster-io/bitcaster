@@ -18,6 +18,7 @@ from testutils.factories import (
 )
 
 from bitcaster.models import Channel
+from bitcaster.state import state
 
 register(UserFactory)
 register(OrganizationFactory)
@@ -26,14 +27,17 @@ register(ProjectFactory, "project")
 
 
 @pytest.fixture()
-def app(django_app_factory, db):
+def app(django_app_factory, rf, db):
     from testutils.factories import SuperUserFactory
 
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")
     django_app.set_user(admin_user)
     django_app._user = admin_user
-    return django_app
+    request = rf.get("/")
+    request.user = admin_user
+    with state.configure(request=request):
+        yield django_app
 
 
 @pytest.fixture()

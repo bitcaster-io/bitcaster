@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -16,7 +16,7 @@ from reversion.admin import VersionAdmin
 
 from bitcaster.models import Assignment, Channel, Organization, Project, User
 
-from ..dispatchers.base import Payload
+from ..dispatchers.base import Payload, dispatcherManager
 from ..forms.channel import ChannelChangeForm
 from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixin, TwoStepCreateMixin
@@ -41,7 +41,7 @@ class ChannelOrg(forms.Form):
     )
 
     @staticmethod
-    def visible(w: "ChannelWizard"):
+    def visible(w: "ChannelWizard") -> bool:
         if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
             return False
         return True
@@ -56,7 +56,7 @@ class ChannelProject(forms.Form):
     )
 
     @staticmethod
-    def visible(w: "ChannelWizard"):
+    def visible(w: "ChannelWizard") -> bool:
         if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
             return False
         return True
@@ -73,7 +73,7 @@ class ChannelType(forms.Form):
     )
 
 
-class ChannelSelectParent(forms.ModelForm):
+class ChannelSelectParent(forms.ModelForm[Channel]):
     parent = forms.ModelChoiceField(queryset=Channel.objects.all(), required=True)
     project = forms.ModelChoiceField(queryset=Project.objects.all(), required=True)
 
@@ -86,19 +86,24 @@ class ChannelSelectParent(forms.ModelForm):
         )
 
     @staticmethod
-    def visible(w: "ChannelWizard"):
+    def visible(w: "ChannelWizard") -> bool:
         if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
             return True
         return False
 
 
-class ChannelData(forms.ModelForm):
+class ChannelData(forms.ModelForm[Channel]):
+
     class Meta:
         model = Channel
         fields = ("name", "dispatcher")
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["dispatcher"].choices = dispatcherManager.as_choices()
+
     @staticmethod
-    def visible(w: "ChannelWizard"):
+    def visible(w: "ChannelWizard") -> bool:
         if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "new":
             return True
         return False
@@ -125,31 +130,32 @@ class ChannelWizard(CookieWizardView):
     }
     template_name = "admin/channel/add_view.html"
 
-    def get_form_kwargs(self, step=None):
+    def get_form_kwargs(self, step: Optional[str] = None) -> dict[str, Any]:
         return super().get_form_kwargs(step)
 
-    def get_form(self, step=None, data=None, files=None):
+    def get_form(self, step: Optional[str] = None, data: Any = None, files: Any = None) -> forms.Form:
         form = super().get_form(step, data, files)
         if step == "org":
             form.fields["organization"].queryset = Organization.objects.local()
         elif step == "prj":
-            form.fields["project"].queryset = Project.objects.all()
+            selected_org = self.get_cleaned_data_for_step("org").get("organization")
+            form.fields["project"].queryset = Project.objects.filter(organization=selected_org.pk)
 
         return form
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: "AuthHttpRequest", *args: Any, **kwargs: Any) -> HttpResponse:
         self.extra_context = kwargs.pop("extra_context")
         return super().get(request, *args, **kwargs)
 
-    def post(self, *args, **kwargs):
+    def post(self, *args: Any, **kwargs: Any) -> HttpResponse:
         self.extra_context = kwargs.pop("extra_context")
         return super().post(*args, **kwargs)
 
-    def get_context_data(self, form, **kwargs):
+    def get_context_data(self, form: forms.Form, **kwargs: Any) -> dict[str, Any]:
         kwargs.update(**self.extra_context)
         return super().get_context_data(form, **kwargs)
 
-    def done(self, form_list, **kwargs):
+    def done(self, form_list: list[forms.Form], **kwargs: Any) -> HttpResponse:
         data = self.get_all_cleaned_data()
         if "parent" in data:
 
@@ -217,10 +223,12 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], V
     def dispatcher_(self, obj: Channel) -> str:
         return str(obj.dispatcher)
 
-    def get_queryset(self, request: HttpRequest) -> QuerySet[Channel]:
+    def get_queryset(self, request: "HttpRequest") -> QuerySet[Channel]:
         return super().get_queryset(request).select_related("project", "organization")
 
-    def add_view(self, request, form_url="", extra_context=None):
+    def add_view(
+        self, request: "HttpRequest", form_url: Optional[str] = "", extra_context: Optional[dict[str, Any]] = None
+    ) -> HttpResponse:
         ctx = self.get_common_context(request, add=True, title=_("Add Channel"))
         return wizard(request, extra_context=ctx)
 

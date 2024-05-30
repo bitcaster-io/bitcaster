@@ -20,8 +20,8 @@ class OrganizationManager(BitcasterBaselManager["Organization"]):
     def get_by_natural_key(self, slug: str) -> "Organization":
         return self.get(slug=slug)
 
-    def local(self, **kwargs) -> "QuerySet[Organization]":
-        return self.exclude(slug=Bitcaster.ORGANIZATION).filter(**kwargs)
+    def local(self, **kwargs: Any) -> "QuerySet[Organization]":
+        return self.exclude(name=Bitcaster.ORGANIZATION).filter(**kwargs)
 
 
 class Organization(SlugMixin, BitcasterBaseModel):

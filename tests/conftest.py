@@ -85,8 +85,8 @@ def pytest_configure(config):
     from django.conf import settings
 
     settings.ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-    settings.MEDIA_ROOT = "/tmp/media"
-    settings.STATIC_ROOT = "/tmp/static"
+    settings.MEDIA_ROOT = "~build/tmp/media"
+    settings.STATIC_ROOT = "~build/tmp/static"
     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
     os.makedirs(settings.STATIC_ROOT, exist_ok=True)
 

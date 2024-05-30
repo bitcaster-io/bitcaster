@@ -1,6 +1,6 @@
 import enum
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 from constance import config
 from django.db import models
@@ -62,9 +62,9 @@ class Bitcaster:
 
     @classmethod
     def get_default_group(cls) -> "Group":
-        from django.contrib.auth.models import Group
+        from bitcaster.models.group import Group
 
-        return Group.objects.get(name=config.NEW_USER_DEFAULT_GROUP)
+        return cast(Group, Group.objects.get(name=config.NEW_USER_DEFAULT_GROUP))
 
 
 class AddressType(models.TextChoices):

@@ -1,4 +1,7 @@
+from typing import Any
+
 from django.db.models import QuerySet
+from django.http import HttpRequest
 from django.urls import reverse
 from rest_framework import serializers
 from rest_framework.decorators import action
@@ -21,7 +24,7 @@ class OrgSerializer(serializers.ModelSerializer):
         model = Organization
         fields = ("name", "slug", "users")
 
-    def get_users(self, obj):
+    def get_users(self, obj: Organization) -> str:
         return absolute_uri(reverse("api:user-list", kwargs={"org": obj.slug}))
 
 
@@ -39,7 +42,7 @@ class OrgView(SecurityMixin, ViewSet, RetrieveAPIView):
         return Organization.objects.exclude(id=Bitcaster.app.organization.pk)
 
     @action(detail=True, methods=["GET"], description="Channel list")
-    def channels(self, request, org, **kwargs) -> Response:
+    def channels(self, request: HttpRequest, **kwargs: Any) -> Response:
         org: Organization = self.get_object()
         ser = ChannelSerializer(many=True, instance=org.channel_set.filter(project__isnull=True))
         return Response(ser.data)

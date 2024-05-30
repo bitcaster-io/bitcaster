@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 
 from bitcaster.dispatchers.base import Payload
 from bitcaster.exceptions import DispatcherError
+from bitcaster.state import state
 from bitcaster.webpush.dispatcher import WebPushConfig, WebPushDispatcher
 
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
@@ -42,33 +43,37 @@ def test_webpush_not_subscribed(monkeypatch, payload, mocked_responses, assignme
 
 
 def test_config():
-    d: WebPushDispatcher = WebPushDispatcher(Mock(config={}))
-    with pytest.raises(ValidationError):
-        d.config
+    with state.configure(request=Mock()):
+        d: WebPushDispatcher = WebPushDispatcher(Mock(config={}))
+        with pytest.raises(ValidationError):
+            d.config
 
 
 def test_form():
-    frm = WebPushConfig(data={})
-    assert not frm.is_valid()
+    with state.configure(request=Mock()):
+        frm = WebPushConfig(data={})
+        assert not frm.is_valid()
 
-    frm = WebPushConfig(
-        data={
-            "application_id": "12345678",
-            "private_key": "nFUEzMGtnCgQkAsYJ9iQOjWHquTTfrOwyzvZeUiChgc",
-            "email": "test@example.com",
-        }
-    )
-    assert frm.is_valid(), frm.errors
+        frm = WebPushConfig(
+            data={
+                "private_key": "nFUEzMGtnCgQkAsYJ9iQOjWHquTTfrOwyzvZeUiChgc",
+                "application_id": "12345678",
+                "email": "test@example.com",
+            }
+        )
+        assert frm.is_valid(), frm.errors
 
 
 def test_form2():
-    frm = WebPushConfig(data={})
-    assert not frm.is_valid()
+    with state.configure(request=Mock()):
+        frm = WebPushConfig(data={}, initial={"email": "test@example.com"})
+        assert not frm.is_valid()
 
-    frm = WebPushConfig(
-        data={
-            "application_id": "12345678",
-            "email": "test@example.com",
-        }
-    )
-    assert frm.is_valid(), frm.errors
+        frm = WebPushConfig(
+            data={
+                "private_key": "nFUEzMGtnCgQkAsYJ9iQOjWHquTTfrOwyzvZeUiChgc",
+                "application_id": "12345678",
+                "email": "test@example.com",
+            }
+        )
+        assert frm.is_valid(), frm.errors
