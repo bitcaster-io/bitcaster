@@ -1,0 +1,26 @@
+{% extends "bitcaster/locking/mode.html" %}
+{% load static i18n %}
+
+{% block instructions %}
+  aaa
+{% endblock %}
+
+{% block form_content %}
+    <table>
+        {{ wizard.management_form }}
+        {% if wizard.form.forms %}
+            {{ wizard.form.management_form }}
+        {% for channel in channels %}
+            <tr>
+              <td>{{channel.name}}</td>
+              <td>{{channel.verbose_name}}</td>
+              <td>{{channel.protocol}}</td>
+              <td>{{channel.active}}</td>
+            </tr>
+            {{ form.as_table }}
+        {% endfor %}
+        {% else %}
+
+        {% endif %}
+    </table>
+{% endblock %}

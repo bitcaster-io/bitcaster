@@ -123,6 +123,7 @@ dev = [
     "boto3-stubs>=1.34.105",
     "pytest-factoryboy>=2.7.0",
     "pytest-repeat>=0.9.3",
+    "django-debug-permissions>=1.0.0",
 ]
 [tool.isort]
 profile = "black"

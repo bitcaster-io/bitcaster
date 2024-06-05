@@ -7,6 +7,9 @@
             {% if user.is_authenticated %}
                 <form action="{% url "logout" %}" method="post">
                     {% csrf_token %}
+                    {% if perms.bitcaster.can_lock_system %}
+                        <a class="button primary" href="{% url "locking" %}">Locking</a>
+                    {% endif %}
                     {% if user.is_staff %}
                         <a class="button primary" href="{% url "admin:index" %}">Admin</a>
                         <a class="button primary" href="/api/">API</a>
