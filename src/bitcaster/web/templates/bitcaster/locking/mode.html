@@ -7,16 +7,17 @@
 
 {% block body %}
 <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+    
+<h1>{{ step_header }}</h1>
 
 {% block instructions %}
 {% endblock %}
 
-<h1>{{ step_header }}</h1>
 <form action="" method="post" id="locking">
     {% csrf_token %}
+    {{ wizard.management_form }}
     {% block form_content %}
     <table>
-        {{ wizard.management_form }}
         {% if wizard.form.forms %}
             {{ wizard.form.management_form }}
         {% for form in wizard.form.forms %}

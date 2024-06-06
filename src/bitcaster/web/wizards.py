@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from django import forms
 from django.http import HttpResponse
@@ -6,8 +6,11 @@ from django.shortcuts import render
 from formtools.wizard.views import CookieWizardView
 
 from bitcaster.forms import locking as locking_forms
+from bitcaster.forms.locking import LockingChannelForm
 from bitcaster.models import Channel
-from bitcaster.types.http import AuthHttpRequest
+
+if TYPE_CHECKING:
+    from bitcaster.types.http import AuthHttpRequest
 
 TEMPLATES = {
     "mode": "bitcaster/locking/mode.html",
@@ -54,9 +57,10 @@ class LockingWizard(CookieWizardView):
     def get_context_data(self, form: forms.Form, **kwargs: Any) -> dict[str, Any]:
         ctx = self.extra_context or {}
         ctx["step_header"] = self.form_list[self.steps.current].step_header
-        if self.steps.current == "channel":
-            channels = Channel.objects.filter(parent__isnull=False).all()
-            ctx.update({"channels": channels})
+        # if self.steps.current == "channel":
+        #     ctx.update({"channel_form": LockingChannelForm()})
+        #     channels = Channel.objects.filter(parent__isnull=False).all()
+        #     ctx.update({"channels": channels})
         kwargs.update(**ctx)
         return super().get_context_data(form, **kwargs)
 
