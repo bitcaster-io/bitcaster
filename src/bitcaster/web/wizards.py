@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, List
 
 from django import forms
 from django.http import HttpResponse
@@ -6,15 +6,15 @@ from django.shortcuts import render
 from formtools.wizard.views import CookieWizardView
 
 from bitcaster.forms import locking as locking_forms
-from bitcaster.forms.locking import LockingChannelForm
-from bitcaster.models import Channel
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AuthHttpRequest
 
 TEMPLATES = {
     "mode": "bitcaster/locking/mode.html",
-    "step1C": "bitcaster/locking/step1C.html",
+    "channel": "bitcaster/locking/channel.html",
+    "project": "bitcaster/locking/project.html",
+    "user": "bitcaster/locking/user.html",
     # "paytype": "checkout/paymentmethod.html",
     # "cc": "checkout/creditcard.html",
     # "confirmation": "checkout/confirmation.html"
@@ -25,23 +25,22 @@ class LockingWizard(CookieWizardView):
     form_list = [
         ("mode", locking_forms.ModeChoiceForm),
         ("channel", locking_forms.LockingChannelForm),
-        ("step1P", locking_forms.ModeChoiceForm),
-        ("step1U", locking_forms.ModeChoiceForm),
+        ("project", locking_forms.LockingProjectForm),
+        ("user", locking_forms.LockingUserForm),
         # ("cc", myapp.forms.CreditCardForm),
         # ("confirmation", myapp.forms.OrderForm)
     ]
     condition_dict = {
-        # "org": ChannelOrg.visible,
-        # "prj": ChannelProject.visible,
+        "channel": locking_forms.LockingChannelForm.visible,
+        "project": locking_forms.LockingProjectForm.visible,
+        "user": locking_forms.LockingUserForm.visible,
         # "parent": ChannelSelectParent.visible,
         # "data": ChannelData.visible,
     }
     template_name = "bitcaster/locking/mode.html"
 
     def get_template_names(self) -> str:
-        return {
-            "channel": "bitcaster/locking/channel.html",
-        }.get(self.steps.current, super().get_template_names())
+        return TEMPLATES.get(self.steps.current, super().get_template_names())
 
     def get(self, request: "AuthHttpRequest", *args: Any, **kwargs: Any) -> HttpResponse:
         # self.extra_context = kwargs.pop("extra_context", {})
@@ -56,7 +55,7 @@ class LockingWizard(CookieWizardView):
 
     def get_context_data(self, form: forms.Form, **kwargs: Any) -> dict[str, Any]:
         ctx = self.extra_context or {}
-        ctx["step_header"] = self.form_list[self.steps.current].step_header
+        ctx["step_header"] = getattr(self.form_list[self.steps.current], "step_header", "")
         # if self.steps.current == "channel":
         #     ctx.update({"channel_form": LockingChannelForm()})
         #     channels = Channel.objects.filter(parent__isnull=False).all()
@@ -64,7 +63,7 @@ class LockingWizard(CookieWizardView):
         kwargs.update(**ctx)
         return super().get_context_data(form, **kwargs)
 
-    def done(self, form_list, form_dict, **kwargs):
+    def done(self, form_list, form_dict, **kwargs) -> HttpResponse:
         return render(
             self.request,
             "locking/done.html",

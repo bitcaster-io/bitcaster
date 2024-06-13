@@ -1,37 +1,38 @@
 {% extends "bitcaster/base.html" %}{% load static i18n %}
 
 {% block head %}
-{{ block.super }}
-{{ wizard.form.media }}
+    {{ block.super }}
+    {{ wizard.form.media }}
 {% endblock %}
 
 {% block body %}
-<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
-    
-<h1>{{ step_header }}</h1>
+    <h1>{{ step_header }}</h1>
 
-{% block instructions %}
-{% endblock %}
-
-<form action="" method="post" id="locking">
-    {% csrf_token %}
-    {{ wizard.management_form }}
-    {% block form_content %}
-    <table>
-        {% if wizard.form.forms %}
-            {{ wizard.form.management_form }}
-        {% for form in wizard.form.forms %}
-            {{ form.as_table }}
-        {% endfor %}
-        {% else %}
-            {{ wizard.form.as_table }}
-        {% endif %}
-    </table>
+    {% block instructions %}
+        Only channels configured in a project will be shown here.
     {% endblock %}
-    {% if wizard.steps.prev %}
-    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
-    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
-    {% endif %}
-    <input type="submit" value="Submit">
-</form>
+
+    <form action="" method="post" id="locking">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {% block form_content %}
+            <table>
+                {% if wizard.form.forms %}
+                    {{ wizard.form.management_form }}
+                    {% for form in wizard.form.forms %}
+                        {{ form.as_table }}
+                    {% endfor %}
+                {% else %}
+                    {{ wizard.form.as_table }}
+                {% endif %}
+            </table>
+        {% endblock %}
+        {% if wizard.steps.prev %}
+            <button name="wizard_goto_step" type="submit"
+                    value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
+            <button name="wizard_goto_step" type="submit"
+                    value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
+        {% endif %}
+        <input type="submit" value="Submit">
+    </form>
 {% endblock %}
