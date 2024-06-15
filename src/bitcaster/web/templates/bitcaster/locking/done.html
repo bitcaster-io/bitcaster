@@ -1,4 +1,17 @@
 {% extends "bitcaster/base.html" %}{% load static i18n %}
+
+{% block head %}
+    {{ block.super }}
+    {{ wizard.form.media }}
+{% endblock %}
+
 {% block body %}
-    All done
+    The following {{ title }} have been locked:
+    <ul>
+        {% for obj in objects %}
+            <li>{{ obj }}</li>
+        {% empty %}
+            <i>None selected</i>
+        {% endfor %}
+    </ul>
 {% endblock %}

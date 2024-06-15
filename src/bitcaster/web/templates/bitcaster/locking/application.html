@@ -1,16 +1,17 @@
 {% extends "bitcaster/locking/mode.html" %}
 {% load static i18n %}
 
+
 {% block instructions %}
-    Only channels configured in a project will be shown here.
+    <h1>Select the Application to lock</h1>
 {% endblock %}
 
 {% block form_content %}
-    {% if form.fields.channel.choices %}
+    {% if form.fields.application.choices %}
         <table>
             {{ form.as_table }}
         </table>
     {% else %}
-        <p>There are no channels available to lock.</p>
+        <p>There are no applications available to lock.</p>
     {% endif %}
 {% endblock %}

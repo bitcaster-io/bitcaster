@@ -9,9 +9,9 @@
     <h1>{{ step_header }}</h1>
 
     {% block instructions %}
-        Only channels configured in a project will be shown here.
+       
     {% endblock %}
-
+    <br>
     <form action="" method="post" id="locking">
         {% csrf_token %}
         {{ wizard.management_form }}
@@ -27,12 +27,6 @@
                 {% endif %}
             </table>
         {% endblock %}
-        {% if wizard.steps.prev %}
-            <button name="wizard_goto_step" type="submit"
-                    value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
-            <button name="wizard_goto_step" type="submit"
-                    value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
-        {% endif %}
         <input type="submit" value="Submit">
     </form>
 {% endblock %}
