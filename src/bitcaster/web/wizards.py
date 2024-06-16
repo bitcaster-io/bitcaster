@@ -6,7 +6,7 @@ from django.shortcuts import render
 from formtools.wizard.views import CookieWizardView
 
 from bitcaster.forms import locking as locking_forms
-from bitcaster.models import Application, Channel, Organization, Project, User
+from bitcaster.models import Application, Organization, Project
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AuthHttpRequest
@@ -51,7 +51,8 @@ class LockingWizard(CookieWizardView):
         return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self, step: Optional[str] = None) -> dict[str, Any]:
-        return super().get_form_kwargs(step)
+        kwargs = super().get_form_kwargs(step)
+        return kwargs | {"storage": self.storage.data}
 
     def _get_applications(self, project: Project | None) -> List[Application]:
         if project:
@@ -60,35 +61,13 @@ class LockingWizard(CookieWizardView):
             qs = Application.objects.filter(locked=False, project__organization__in=Organization.objects.local()).all()
         return qs
 
-    def get_form(self, step: Optional[str] = None, data: Any = None, files: Any = None) -> forms.Form:
-        form = super().get_form(step, data, files)
-        match step:
-            case "channel":
-                form.fields["channel"].queryset = Channel.objects.filter(
-                    locked=False, organization__in=Organization.objects.local()
-                ).all()
-            case "project":
-                form.fields["project"].queryset = Project.objects.filter(
-                    locked=False, organization__in=Organization.objects.local()
-                ).all()
-            case "application":
-                project = self.get_cleaned_data_for_step("project")["project"]
-                form.fields["application"].queryset = self._get_applications(project)
-        print(form.__class__)
-
-        return form
-
     def get_context_data(self, form: forms.Form, **kwargs: Any) -> dict[str, Any]:
         ctx = self.extra_context or {}
         ctx["step_header"] = getattr(self.form_list[self.steps.current], "step_header", "")
-        # if self.steps.current == "channel":
-        #     ctx.update({"channel_form": LockingChannelForm()})
-        #     channels = Channel.objects.filter(parent__isnull=False).all()
-        #     ctx.update({"channels": channels})
         kwargs.update(**ctx)
         return super().get_context_data(form, **kwargs)
 
-    def done(self, form_list, form_dict, **kwargs) -> HttpResponse:
+    def done(self, form_list: Any, form_dict: Any, **kwargs: Any) -> HttpResponse:
         data = self.get_all_cleaned_data()
         ctx = {}
         objects = None
@@ -104,6 +83,8 @@ class LockingWizard(CookieWizardView):
             case locking_forms.LockingModeChoice.USER:
                 objects = data["user"]
                 ctx["title"] = "users"
+        if hasattr(objects, "id"):
+            objects = objects.__class__.objects.filter(id=objects.id)
         ctx["objects"] = list(objects)
         objects.update(locked=True)
         return render(self.request, "bitcaster/locking/done.html", ctx)

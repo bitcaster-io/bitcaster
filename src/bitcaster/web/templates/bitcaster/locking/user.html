@@ -1,5 +1,12 @@
-{% extends "bitcaster/base.html" %}{% load static i18n %}
-{% block body %}
-    <h1>Select the User to lock</h1>
-    {{ form }}
+{% extends "bitcaster/locking/mode.html" %}
+{% load static i18n %}
+
+{% block instructions %}
+    <h1>Select the Project to lock</h1>
+{% endblock %}
+
+{% block form_content %}
+    <table>
+        {{ form.as_table }}
+    </table>
 {% endblock %}

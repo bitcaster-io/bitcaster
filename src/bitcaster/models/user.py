@@ -8,7 +8,7 @@ from django.db.models import QuerySet
 from django.utils.crypto import RANDOM_STRING_CHARS
 from django.utils.translation import gettext_lazy as _
 
-from .mixins import BitcasterBaseModel
+from .mixins import BitcasterBaseModel, LockMixin
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment, Channel, Organization
@@ -24,7 +24,7 @@ class UserManager(BaseUserManager["User"]):
         return self.get(username=username)
 
 
-class User(BitcasterBaseModel, AbstractUser):
+class User(LockMixin, BitcasterBaseModel, AbstractUser):
     custom_fields = models.JSONField(default=dict, blank=True)
     objects = UserManager()
 

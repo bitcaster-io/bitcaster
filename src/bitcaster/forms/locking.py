@@ -1,12 +1,14 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django import forms
 from django.db.models import TextChoices
 from django.utils.translation import gettext as _
 
-from bitcaster.models import Application, Channel, Organization, Project
+from bitcaster.models import Application, Channel, Organization, Project, User
 
 if TYPE_CHECKING:
+    from django.forms import Form
+
     from bitcaster.web.wizards import LockingWizard
 
 
@@ -27,6 +29,10 @@ class ModeChoiceForm(forms.Form):
         choices=LockingModeChoice,
     )
 
+    def __init__(self, *args: Any, **kwargs: Any) -> "Form":
+        self.storage = kwargs.pop("storage", None)
+        super().__init__(*args, **kwargs)
+
 
 class LockingChannelForm(forms.Form):
     channel = forms.ModelMultipleChoiceField(
@@ -34,6 +40,13 @@ class LockingChannelForm(forms.Form):
         queryset=Channel.objects.all(),
         help_text=_("Select the Channels to lock."),
     )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> "Form":
+        self.storage = kwargs.pop("storage", None)
+        super().__init__(*args, **kwargs)
+        self.fields["channel"].queryset = Channel.objects.filter(
+            locked=False, organization__in=Organization.objects.local()
+        ).all()
 
     @staticmethod
     def visible(w: "LockingWizard") -> bool:
@@ -43,7 +56,16 @@ class LockingChannelForm(forms.Form):
 
 
 class LockingUserForm(forms.Form):
-    id = forms.CharField()
+    user = forms.ModelChoiceField(
+        empty_label=_("All"),
+        required=False,
+        queryset=User.objects.exclude(locked=True).all(),
+        help_text=_("Select the user you want to lock"),
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> "Form":
+        self.storage = kwargs.pop("storage", None)
+        super().__init__(*args, **kwargs)
 
     @staticmethod
     def visible(w: "LockingWizard") -> bool:
@@ -60,6 +82,13 @@ class LockingProjectForm(forms.Form):
         help_text=_("Select the project you want to lock"),
     )
 
+    def __init__(self, *args: Any, **kwargs: Any) -> forms.Form:
+        self.storage = kwargs.pop("storage", None)
+        super().__init__(*args, **kwargs)
+        self.fields["project"].queryset = Project.objects.filter(
+            locked=False, organization__in=Organization.objects.local()
+        ).all()
+
     @staticmethod
     def visible(w: "LockingWizard") -> bool:
         if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == LockingModeChoice.PROJECT:
@@ -74,6 +103,19 @@ class LockingApplicationForm(forms.Form):
         queryset=Application.objects.all(),
         help_text=_("Select the application you want to lock"),
     )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> forms.Form:
+        self.storage = kwargs.pop("storage", None)
+        super().__init__(*args, **kwargs)
+        project = self.storage["step_data"]["project"]["project-project"][0]
+        if project:
+            self.fields["application"].queryset = Application.objects.exclude(locked=True).filter(
+                project_id=int(project)
+            )
+        else:
+            self.fields["application"].queryset = Application.objects.exclude(locked=True).filter(
+                project__organization__in=Organization.objects.local()
+            )
 
     @staticmethod
     def visible(w: "LockingWizard") -> bool:

@@ -27,6 +27,12 @@
                 {% endif %}
             </table>
         {% endblock %}
+        {% if wizard.steps.prev %}
+            <button name="wizard_goto_step" type="submit"
+                    value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
+            <button name="wizard_goto_step" type="submit"
+                    value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
+        {% endif %}
         <input type="submit" value="Submit">
     </form>
 {% endblock %}
