@@ -1,0 +1,38 @@
+{% extends "bitcaster/base.html" %}{% load static i18n %}
+
+{% block head %}
+    {{ block.super }}
+    {{ wizard.form.media }}
+{% endblock %}
+
+{% block body %}
+    <h1>{{ step_header }}</h1>
+
+    {% block instructions %}
+       
+    {% endblock %}
+    <br>
+    <form action="" method="post" id="locking">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {% block form_content %}
+            <table>
+                {% if wizard.form.forms %}
+                    {{ wizard.form.management_form }}
+                    {% for form in wizard.form.forms %}
+                        {{ form.as_table }}
+                    {% endfor %}
+                {% else %}
+                    {{ wizard.form.as_table }}
+                {% endif %}
+            </table>
+        {% endblock %}
+        {% if wizard.steps.prev %}
+            <button name="wizard_goto_step" type="submit"
+                    value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
+            <button name="wizard_goto_step" type="submit"
+                    value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
+        {% endif %}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:fa66431ff0c76e36082ab4c67ed67077ea176a335b0adc33f67e44813a8286d2"
+content_hash = "sha256:d060c46cda6fe4c1930eb8784cdbf3212c926013f732f56ef90cf0c2efb1d2b0"
 
 [[package]]
 name = "aiohttp"
@@ -848,6 +848,18 @@ dependencies = [
 files = [
     {file = "django_csp-3.8-py3-none-any.whl", hash = "sha256:19b2978b03fcd73517d7d67acbc04fbbcaec0facc3e83baa502965892d1e0719"},
     {file = "django_csp-3.8.tar.gz", hash = "sha256:ef0f1a9f7d8da68ae6e169c02e9ac661c0ecf04db70e0d1d85640512a68471c0"},
+]
+
+[[package]]
+name = "django-debug-permissions"
+version = "1.0.0"
+summary = "Get a list of all user permissions available in the Django system"
+groups = ["dev"]
+dependencies = [
+    "Django",
+]
+files = [
+    {file = "django-debug-permissions-1.0.0.tar.gz", hash = "sha256:be09bb53a162954560629e87a837bb922afcaaa791656bf2dfa5f870318f5aec"},
 ]
 
 [[package]]
