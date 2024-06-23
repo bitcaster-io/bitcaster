@@ -13,6 +13,10 @@ markdown_extensions:
   - pymdownx.smartsymbols
   - pymdownx.smartsymbols
   - pymdownx.blocks.definition
+  - toc:
+      permalink: "#"
+      baselevel: 2
+      separator: "_"
 
 theme:
   name: "material"
@@ -24,10 +28,12 @@ plugins:
   - ezlinks
   - mkdocstrings
   - mermaid2
-
-nav:
-  - Home: index.md
-  - Glossary: glossary
-  - Examples: examples.md
-  - Todo: todo.md
-  - ClassDiagram: class-diagram.md
+  - awesome-pages
+#
+#nav:
+#  - Home: index.md
+#  - Glossary: glossary
+#  - Guidelines: guidelines/index.md
+#  - Todo: todo.md
+#  - ClassDiagram: class-diagram.md
+#  - Release Strategy: release-strategy.md

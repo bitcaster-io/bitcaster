@@ -1,7 +1,7 @@
 {% extends "admin_extra_buttons/action_page.html" %}{% load i18n protocols %}
 {% block action-content %}
     {% if not assignment %}
-        {% translate "No addresses or assignments found for this channel" %}
+        {% translate "No assignments found for this channel" %}
         <ul>{% for a in request.user.addresses.all %}
             <li>
                 <a href="{% url "admin:bitcaster_address_change" a.pk %}?next={{ request.path }}">{{ a }}</a>

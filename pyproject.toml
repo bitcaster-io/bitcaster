@@ -124,6 +124,7 @@ dev = [
     "pytest-factoryboy>=2.7.0",
     "pytest-repeat>=0.9.3",
     "django-debug-permissions>=1.0.0",
+    "mkdocs-awesome-pages-plugin>=2.9.2",
 ]
 [tool.isort]
 profile = "black"
