@@ -14,7 +14,6 @@
                         <a class="button primary" href="{% url "admin:index" %}">Admin</a>
                         <a class="button primary" href="/api/">API</a>
                     {% endif %}
-                    <a class="button primary" href="/api/schema/">Swagger</a>
                     <form method="post" action="{% url "logout" %}" id="logout-form">
                         {% csrf_token %}
                         <input type="submit" class="submit primary" value="{% translate "Logout" %}">
