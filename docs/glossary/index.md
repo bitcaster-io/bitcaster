@@ -7,9 +7,10 @@
  <a id="assignment" href="assignment">Assignment</a>                | defines for which [Channel](channel) an [Address](address) can be used.                                  
  <a id="channel" href="channel">Channel</a>                            | Is the target system that will forward the [Message](#message) to the [Recipient](#recipient)                  
  <a id="dispatcher" href="dispatcher">Dispatcher</a>                   | Is the [Channel's](channel) technical component responsible for sending the [Notification](notification).
+ <a id="distribution-list" href="distribution-list">Distribution List</a>                   | a list of [Recipients](recipient) meant to receive one or more [Notifications](notification).
  <a id="event" href="event">Event</a>                                  | Is the category of the [Occurrence](#occurrence)
  <a id="message" href="message">Message</a>                            | Is the template that is used for the rendering of an [Occurrence](#occurrence) for a specific [Channel](#channel)
- <a id="notification" href="notification">Message</a>                  | Is the rendered text received by a [Recipient](#recipient)                                             
+ <a id="notification" href="notification">Notification</a>             | The configuration of the rules for matching an [Event](event) based on the event name or its payload and the [Distribution list](distribution-list) of the intended [Recipients](recipient).                                             
  <a id="occurrence" href="occurrence">Occurrence</a>                   | Is a single instance of an [Event](#event) emitted by the client system                                         
  <a id="organization" href="organization">Organization</a>             | Is the primary configuration element and authorization domain in Bitcaster                                     
  <a id="project" href="project">Project</a>                            | Is a logical subdivision of the [Organization](#organization) and a collection of [Applications](#application) 

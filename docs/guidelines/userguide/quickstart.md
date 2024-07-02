@@ -32,26 +32,24 @@ You may now want to try some APIs. See examples below.
 
 ```shell
 curl -X 'GET' \
-  'http://<host>:8000/api/system/ping/' \
-  -H 'accept: application/json' \
-  -H 'Authorization: Key <your API key here>'
+  '${SERVER_URL}/api/system/ping/' \
+    -H "accept: application/json" \
+    -H "Authorization: Key ${YOUR_API_KEY}"
 ```
 
 - Get organisation details
 
 ```shell
-curl -X 'GET' \
-  'http://<host>:8000/api/o/<organisation slug here>/' \
-  -H 'accept: application/json' \
-  -H 'Authorization: Key <your API key here>'
+curl -X 'GET' "${SERVER_URL}/api/o/${ORG_SLUG}/" \
+    -H "accept: application/json" \
+    -H "Authorization: Key ${YOUR_API_KEY}"
 ```
 
-- Get organisation details
+- Trigger an event
 
 ```shell
-curl -X 'GET' \
-  'http://<host>:8000/api/o/<organisation slug here>/' \
-  -H 'accept: application/json' \
-  -H 'Authorization: Key <your API key here>'
+curl -X 'POST' "${SERVER_URL}/api/o/${ORG_SLUG}/p/${PROJECT_SLUG}/a/${APP_SLUG}/e/${EVENT_SLUG}/trigger/" \
+    -H "accept: application/json" \
+    -H "Authorization: Key ${YOUR_API_KEY}"
 ```
 
