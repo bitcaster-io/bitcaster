@@ -52,13 +52,20 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
         return self.slug, *self.application.natural_key()
 
     def trigger(
-        self, context: Dict[str, Any], *, options: Optional[Dict[str, str]] = None, cid: Optional[Any] = None
+        self,
+        context: Dict[str, Any],
+        *,
+        options: Optional[Dict[str, str]] = None,
+        cid: Optional[Any] = None,
+        parent: "Optional[Occurrence]" = None,
     ) -> "Occurrence":
         from .occurrence import Occurrence
 
         if cid:
             cid = str(cid)
-        return Occurrence.objects.create(event=self, context=context, options=options or {}, correlation_id=cid)
+        return Occurrence.objects.create(
+            event=self, context=context, options=options or {}, correlation_id=cid, parent=parent
+        )
 
     def create_message(self, name: str, channel: Channel, defaults: Optional[dict[str, Any]] = None) -> "Message":
         return self.messages.get_or_create(
