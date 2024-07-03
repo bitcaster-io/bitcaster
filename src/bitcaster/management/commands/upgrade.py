@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
 from django.core.validators import validate_email
+from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from strategy_field.utils import fqn
 
 from bitcaster.config import env
@@ -205,6 +206,14 @@ class Command(BaseCommand):
 
             Group.objects.get_or_create(name="Admins")
             Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
+
+            # -- Inside the function you want to add task dynamically
+
+            schedule, _ = CrontabSchedule.objects.get_or_create(minute="*/1")
+            PeriodicTask.objects.get_or_create(
+                name="occurence_processor",
+                defaults={"task": "bitcaster.tasks.schedule_occurrences", "crontab": schedule},
+            )
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
         except ValidationError as e:

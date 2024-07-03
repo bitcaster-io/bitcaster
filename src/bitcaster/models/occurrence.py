@@ -59,7 +59,7 @@ class Occurrence(BitcasterBaseModel):
     options: "OccurrenceOptions" = models.JSONField(  # type: ignore[assignment]
         blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
     )
-    correlation_id = models.UUIDField(default=uuid.uuid4, editable=False, blank=True, null=True)
+    correlation_id = models.UUIDField(editable=False, blank=True, null=True)
     recipients = models.IntegerField(default=0, help_text=_("Total number of recipients"))
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
     data: "OccurrenceData" = models.JSONField(  # type: ignore[assignment]
@@ -67,6 +67,7 @@ class Occurrence(BitcasterBaseModel):
     )
     status = models.CharField(choices=Status, default=Status.NEW.value)
     attempts = models.IntegerField(default=5)
+    parent = models.ForeignKey("self", editable=False, blank=True, null=True, on_delete=models.CASCADE)
 
     objects = OccurrenceManager()
 
@@ -103,12 +104,14 @@ class Occurrence(BitcasterBaseModel):
             context = notification.get_context(self.get_context())
             for channel in channels:
                 for assignment in notification.get_pending_subscriptions(delivered, channel).filter(**extra_filter):
-                    with transaction.atomic(durable=True):
+                    try:
                         notification.notify_to_channel(channel, assignment, context)
 
                         delivered.append(assignment.id)
                         recipients.append((assignment.address.value, assignment.channel.name))
 
                         self.data = {"delivered": delivered, "recipients": recipients}
-                        self.save()
+                    except Exception as e:
+                        logger.exception(e)
+                        return False
         return True

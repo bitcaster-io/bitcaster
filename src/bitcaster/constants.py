@@ -7,7 +7,7 @@ from django.db import models
 
 if TYPE_CHECKING:
     from bitcaster.models import Application, Group, Occurrence, User
-    from bitcaster.models.occurrence import OccurrenceOptions
+    from bitcaster.models.occurrence import OccurrenceOptions, Occurrence
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +57,11 @@ class Bitcaster:
         *,
         options: "Optional[OccurrenceOptions]" = None,
         correlation_id: Optional[Any] = None,
+        parent: "Optional[Occurrence]" = None,
     ) -> "Optional[Occurrence]":
-        return cls.app.events.get(name=evt.value).trigger(context or {}, options=options or {}, cid=correlation_id)
+        return cls.app.events.get(name=evt.value).trigger(
+            context or {}, options=options or {}, cid=correlation_id, parent=parent
+        )
 
     @classmethod
     def get_default_group(cls) -> "Group":

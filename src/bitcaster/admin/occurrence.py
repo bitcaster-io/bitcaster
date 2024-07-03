@@ -15,13 +15,14 @@ logger = logging.getLogger(__name__)
 
 class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
     search_fields = ("name",)
-    list_display = ("timestamp", "event", "status", "recipients")
+    list_display = ("timestamp", "event", "status", "attempts", "recipients")
     list_filter = (
         "timestamp",
         ("event", AutoCompleteFilter),
         "status",
         ("recipients", NumberFilter),
     )
+    readonly_fields = ["correlation_id"]
 
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False

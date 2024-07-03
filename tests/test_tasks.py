@@ -8,7 +8,7 @@ from strategy_field.utils import fqn
 from testutils.dispatcher import TDispatcher
 
 from bitcaster.constants import Bitcaster, SystemEvent
-from bitcaster.tasks import process_occurrence
+from bitcaster.tasks import process_occurrence, schedule_occurrences
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -60,7 +60,7 @@ def setup(admin_user) -> "Context":
     }
 
 
-def test_process_event_single(setup: "Context", messagebox):
+def test_process_event_single(transactional_db, setup: "Context", messagebox):
     from bitcaster.models import Occurrence
 
     v1: Assignment = setup["assignments"][0]
@@ -100,7 +100,7 @@ def test_process_incomplete_event(setup: "Context", messagebox):
     assert occurrence.data == {"delivered": [v1.id, v2.id]}
 
 
-def test_process_event_partially(setup: "Context", monkeypatch):
+def test_process_event_partially(transactional_db, setup: "Context", monkeypatch):
     from bitcaster.models import Occurrence
 
     occurrence: Occurrence = setup["occurrence"]
@@ -223,3 +223,14 @@ def celery_config():
 def test_live(db, setup: "Context", monkeypatch, system_objects, celery_app, celery_worker):
     o = setup["occurrence"]
     assert process_occurrence.delay(o.pk).get(timeout=10) == 2
+
+
+def test_schedule_occurrences(transactional_db, setup: "Context", monkeypatch):
+    monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock(return_value=True))
+
+    schedule_occurrences()
+
+    o: Occurrence = setup["occurrence"]
+    o.refresh_from_db()
+    assert mocked_notify.call_count == 1
+    assert o.status == Occurrence.Status.PROCESSED
