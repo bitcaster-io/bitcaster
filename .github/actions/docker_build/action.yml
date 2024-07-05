@@ -1,0 +1,194 @@
+# ref: https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action
+name: 'Docker build'
+description: 'Calculate deps and os hash'
+inputs:
+  image:
+    description: "Image name to build and push"
+    required: true
+    type: string
+    default: ${{ github.repository }}
+  target:
+    description: "Target Dockerfile Stage"
+    type: string
+  username:
+    description: 'DockerHub username '
+    required: false
+  password:
+    description: 'DockerHub password '
+    required: false
+  code_checksum:
+    description: 'Current codde checksum'
+    required: false
+  rebuild:
+    description: 'Always rebuild image, Ignore checksum'
+    required: false
+    default: false
+  dryrun:
+    description: 'Dryrun build'
+    required: false
+    default: 'false'
+
+
+defaults:
+  run:
+    shell: bash
+
+
+outputs:
+  image:
+    description: 'Built image name'
+    value: ${{ steps.image_name.outputs.name }}
+  version:
+    description: 'Built image version'
+    value: ${{ steps.meta.outputs.version }}
+  created:
+    description: 'True if new image has been created'
+    value: ${{ steps.status.outputs.created }}
+  digest:
+    description: 'Built image digest'
+    value: ${{ steps.build_push.outputs.digest }}
+  imageId:
+    description: 'Built image ID'
+    value: ${{ steps.build_push.outputs.imageId }}
+
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Restore cached regclient
+      id: cache-regclient-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: $HOME/.regctl
+        key: ${{ runner.os }}-regclient
+    - name: Install regctl
+      if: steps.cache-regclient.outputs.cache-hit != 'true'
+      uses: regclient/actions/regctl-installer@main
+    - name: Cache regclient
+      id: cache-regclient-save
+      uses: actions/cache/save@v4
+      with:
+        path: $HOME/.regctl
+        key: ${{ runner.os }}-regclient
+
+    - name: DockerHub login
+      uses: docker/login-action@v3
+      with:
+        username: ${{ inputs.username }}
+        password: ${{ inputs.password }}
+    - id: checksum
+      uses: ./.github/actions/checksum
+
+    - shell: bash
+      run: |
+        build_date=$(date +"%Y-%m-%d %H:%M")
+        echo "BUILD_DATE=$build_date" >> $GITHUB_ENV
+        
+        if [[ "${{inputs.target}}" == "dist" ]]; then
+          echo "TAG_PREFIX=" >> $GITHUB_ENV
+        else
+          echo "TAG_PREFIX=test-" >> $GITHUB_ENV
+        fi
+        echo "IMAGE=${{ inputs.image }}" >> $GITHUB_ENV
+    - id: last_commit
+      uses: ./.github/actions/last_commit
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5.5.1
+      with:
+        images: ${{ inputs.image }}
+        flavor: |
+          prefix=${{env.TAG_PREFIX}}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr,prefix=${{env.TAG_PREFIX}}pr
+      env:
+        DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+    - name: "Image Name"
+      shell: bash
+      id: image_name
+      run: |
+          echo "name=${{ inputs.image }}:${{ steps.meta.outputs.version }}" >> $GITHUB_OUTPUT
+          echo "test_name=${{ inputs.image }}:test-${{ steps.meta.outputs.version }}" >> $GITHUB_OUTPUT
+    - name: "Check Image"
+      id: image_status
+      shell: bash
+      run: | 
+        set +e
+        echo "::notice::ℹ Checking checksum for ${{ steps.image_name.outputs.name }}"
+        image_checksum=$(regctl image inspect \
+                          -p linux/amd64 \
+                          --format '{{index .Config.Labels "checksum"}}' \
+                          -v fatal \
+                          ${{ steps.image_name.outputs.name }} 2>/dev/null)
+        code_checksum="${{ inputs.code_checksum }}"
+
+        if [[ -z "$image_checksum"  ]]; then
+          echo "::warning::🤔 No image checksum found"
+          echo "updated=false" >> $GITHUB_OUTPUT
+        elif [[ $image_checksum == $code_checksum ]]; then
+          echo "::notice::😀 Image is updated"
+          echo "updated=true" >> $GITHUB_OUTPUT
+        else
+          echo "::warning::🤬 Checksum: found '${image_checksum}' expected '${code_checksum}'"
+          echo "updated=false" >> $GITHUB_OUTPUT
+        fi
+        if [[ "${{inputs.rebuild}}" == "true" ]]; then 
+            echo "::warning::⚠ Forced build due input parameter"
+        fi
+    - name: Set up Docker BuildX
+      if: steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true'
+      uses: docker/setup-buildx-action@v3.3.0
+      with:
+        platforms: linux/amd64
+        driver: docker-container
+        driver-opts: |
+          image=moby/buildkit:v0.13.2
+          network=host
+    - name: Build and push
+      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun == 'true'
+      shell: bash
+      run: |
+        echo "::notice:: Dryrun build of ${{ steps.meta.outputs.tags }}"
+        echo "Building image ${{ steps.meta.outputs.tags }}"
+        echo "    TAG_PREFIX ${{ env.TAG_PREFIX }}"
+        echo "        target ${{ inputs.target }}"
+        echo "      checksum ${{ inputs.code_checksum }}"
+        echo "       version ${{ steps.meta.outputs.version }}"
+        echo "        commit ${{ steps.last_commit.outputs.last_commit_short_sha }}"
+
+    - name: Build and push
+      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun != 'true'
+      id: build_push
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: "${{ steps.meta.outputs.labels }}\nchecksum=${{ inputs.code_checksum }}\ndistro=${{ inputs.target }}"
+        annotations: "${{ steps.meta.outputs.annotations }}\nchecksum=${{ inputs.code_checksum }}\ndistro=${{ inputs.target }}"
+        target: ${{ inputs.target }}
+        file: ./docker/Dockerfile
+        platforms: linux/amd64
+        push: true
+        sbom: true
+        provenance: true
+        cache-from: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,ref=${{ steps.image_name.outputs.test_name }}-cache
+        cache-to: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,mode=max,image-manifest=true
+        build-args: |
+            GITHUB_SERVER_URL=${{ github.server_url }}
+            GITHUB_REPOSITORY=${{ github.repository }}
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            DISTRO=${{ inputs.target }}
+            CHECKSUM=${{ inputs.code_checksum }}
+            VERSION=${{ steps.meta.outputs.version }}
+            SOURCE_COMMIT=${{ steps.last_commit.outputs.last_commit_short_sha }}
+    - name: Status
+      id: status
+      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun != 'true'
+      shell: bash
+      run: |
+        echo "${{ toJSON(steps.build_push.outputs) }}"        
+        regctl image inspect -p linux/amd64 ${{ steps.image_name.outputs.name }}
+        echo "::notice:: Image ${{ steps.meta.outputs.tags }} successfully built and pushed"
+        echo "created=true" >> $GITHUB_OUTPUT

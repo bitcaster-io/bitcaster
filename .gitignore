@@ -4,6 +4,7 @@
 __pycache__/
 *.py[cod]
 !tests/.coveragerc
+!.github
 !.dockerignore
 !.flake8
 !.gitignore

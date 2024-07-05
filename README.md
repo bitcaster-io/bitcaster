@@ -1,10 +1,13 @@
 # bitcaster
 
 
-[![pipeline status](https://gitlab.com/os4d/bitcaster/bitcaster/badges/develop/pipeline.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/commits/develop)
- [![coverage report](https://gitlab.com/os4d/bitcaster/bitcaster/badges/develop/coverage.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/commits/develop)
- [![Latest Release](https://gitlab.com/os4d/bitcaster/bitcaster/-/badges/release.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/releases)
- [![codecov-badge]][codecov-link]
+[![Test](https://github.com/bitcaster-io/bitcaster/actions/workflows/test.yml/badge.svg)](https://github.com/bitcaster-io/bitcaster/actions/workflows/test.yml)
+[![Lint](https://github.com/bitcaster-io/bitcaster/actions/workflows/lint.yml/badge.svg)](https://github.com/bitcaster-io/bitcaster/actions/workflows/lint.yml)
+[![codecov](https://codecov.io/gh/bitcaster-io/bitcaster/graph/badge.svg?token=kAuZEX5k5o)](https://codecov.io/gh/bitcaster-io/bitcaster)
+![Version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbitcaste.io%2Fbitcaste%2Fdevelop%2Fpyproject.toml&query=%24.project.version&label=version)
+![License](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbitcaste.io%2Fbitcaste%2Fdevelop%2Fpyproject.toml&query=%24.project.license.text&label=license)
+
+
 
 Bitcaster is a system-to-user signal-to-message notification system.
 
