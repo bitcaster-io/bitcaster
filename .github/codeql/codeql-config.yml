@@ -1,0 +1,4 @@
+name: 'App CodeQL Config'
+
+paths-ignore:
+  - '**/tests/**'

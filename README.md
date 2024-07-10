@@ -1,10 +1,13 @@
 # bitcaster
 
 
-[![pipeline status](https://gitlab.com/os4d/bitcaster/bitcaster/badges/develop/pipeline.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/commits/develop)
- [![coverage report](https://gitlab.com/os4d/bitcaster/bitcaster/badges/develop/coverage.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/commits/develop)
- [![Latest Release](https://gitlab.com/os4d/bitcaster/bitcaster/-/badges/release.svg)](https://gitlab.com/os4d/bitcaster/bitcaster/-/releases)
- [![codecov-badge]][codecov-link]
+[![Test](https://github.com/bitcaster-io/bitcaster/actions/workflows/test.yml/badge.svg)](https://github.com/bitcaster-io/bitcaster/actions/workflows/test.yml)
+[![Lint](https://github.com/bitcaster-io/bitcaster/actions/workflows/lint.yml/badge.svg)](https://github.com/bitcaster-io/bitcaster/actions/workflows/lint.yml)
+[![codecov](https://codecov.io/gh/bitcaster-io/bitcaster/graph/badge.svg?token=kAuZEX5k5o)](https://codecov.io/gh/bitcaster-io/bitcaster)
+[![License](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbitcaste.io%2Fbitcaste%2Fdevelop%2Fpyproject.toml&query=%24.project.license.text&label=license)
+[![Docker](https://img.shields.io/docker/v/bitcaster/bitcaster?logo=docker&label=Docker)](https://hub.docker.com/repository/docker/bitcaster/bitcaster/tags)
+
+
 
 Bitcaster is a system-to-user signal-to-message notification system.
 
@@ -22,6 +25,6 @@ Your user will be empowered with an easy to use console to choose how to receive
 
 # Resources
 
-- [Bug Tracker](https://gitlab.com/os4d/bitcaster/bitcaster/-/issues)
-- [Code](https://gitlab.com/os4d/bitcaster/bitcaster)
+- [Bug Tracker](https://github.com/bitcaster-io/bitcaster/issues)
+- [Code](https://github.com/bitcaster-io/bitcaster/)
 - [Transifex](https://explore.transifex.com/os4d/bitcaster/) (Translate Bitcaster\!)

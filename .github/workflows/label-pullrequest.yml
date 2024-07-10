@@ -1,0 +1,38 @@
+# Adds labels to pull requests for the type of change the PR makes
+name: Adds labels
+
+on:
+  pull_request:
+    types: [opened, synchronize, edited, ready_for_review]
+
+jobs:
+  label-pullrequest:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    permissions:
+      contents: read
+      pull-requests: write
+    name: labels pull requests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
+
+      - name: Check for file changes
+        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
+        id: changes
+        with:
+          token: ${{ github.token }}
+          filters: .github/file-filters.yml
+
+      - name: Add Migration label
+        uses: actions-ecosystem/action-add-labels@v1
+        if: steps.changes.outputs.migrations == 'true'
+        with:
+          labels: 'Contains new migration(s)'
+
+      - name: Add Dependencies label
+        uses: actions-ecosystem/action-add-labels@v1
+        if: steps.changes.outputs.dependencies == 'true'
+        with:
+          labels: 'Add/Change dependencies'

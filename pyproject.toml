@@ -1,9 +1,9 @@
 [project]
 name = "bitcaster"
 version = "0.1.0"
-description = "Default template for PDM package"
+description = ""
 authors = [
-    {name = "sax", email = "s.apostolico@gmail.com"},
+    {name = "Bitcaster Team", email = "info@bitcaster.io"},
 ]
 dependencies = [
     "celery>=5.3.6",

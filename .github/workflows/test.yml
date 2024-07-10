@@ -1,0 +1,215 @@
+name: Test
+
+on:
+  create:
+    branches:
+      - releases/*
+  push:
+    branches:
+      - develop
+      - master
+      - staging
+      - release/*
+      - feature/*
+      - bugfix/*
+      - hotfix/*
+#  pull_request:
+#    branches: [ develop, master ]
+#    types: [ synchronize, opened, reopened, ready_for_review ]
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  id-token: write
+  attestations: write
+
+
+jobs:
+  changes:
+    if: (github.event_name != 'pull_request' 
+            || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name) 
+            || github.event_name == 'create'
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      run_tests: ${{ steps.changes.outputs.run_tests }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+      - id: changes
+        name: Check for file changes
+        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
+        with:
+          base: ${{ github.ref }}
+          token: ${{ github.token }}
+          filters: .github/file-filters.yml
+      - name: info
+        shell: bash
+        run: |
+          force_build="${{ contains(github.event.head_commit.message, 'ci:build') || contains(github.event.head_commit.message, 'ci:release')}}"
+          force_scan="${{ contains(github.event.head_commit.message, 'ci:scan') }}"
+          force_test="${{ contains(github.event.head_commit.message, 'ci:test') }}"
+          
+          if [[ $force_build == "true" ]]; then
+            echo "::notice:: Forced build docker due to commit message"
+          elif [[ $force_test == "true" ]]; then
+            echo "::notice:: Forced python tests due to commit message"
+          elif [[ $force_scan == "true" ]]; then
+            echo "::notice:: Forced trivy scan due to commit message"
+          fi
+          if [[ $force_build == "true" || "${{needs.changes.outputs.run_tests}}" == "true" ]]; then 
+              echo "BUILD=true" >> $GITHUB_ENV
+          fi
+
+  build:
+    needs: [ changes ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+      version: ${{ steps.build.outputs.version }}
+      created: ${{ steps.build.outputs.created }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+      - id: checksum
+        uses: ./.github/actions/checksum
+      - name: Build Image
+        id: build
+        uses: ./.github/actions/docker_build
+        with:
+          dryrun: ${{ env.ACT || 'false' }}
+          rebuild: ${{ env.BUILD == 'true'}}
+          image: ${{ vars.DOCKER_IMAGE }}
+          target: 'python_dev_deps'
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          code_checksum: ${{ steps.checksum.outputs.checksum }}
+
+  test:
+    name: Run Test Suite
+    needs: [ changes,build ]
+    if: (needs.changes.outputs.run_tests == 'true' 
+        || contains(github.event.head_commit.message, 'ci:test') 
+        || contains(github.event.head_commit.message, 'ci:all') 
+        || github.event_name == 'create')
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis
+      db:
+        image: postgres:14
+        env:
+          POSTGRES_DATABASE: country_workspace
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USERNAME: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DOCKER_DEFAULT_PLATFORM: linux/amd64
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run tests
+        run: |
+          docker run --rm \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/country_workspace \
+            -e SECRET_KEY=secret_key \
+            -e CACHE_URL=redis://redis:6379/0 \
+            -e CELERY_BROKER_URL=redis://redis:6379/0 \
+            --network host \
+            -v $PWD:/code/app \
+            -w /code/app \
+            -t ${{needs.build.outputs.image}} \
+            pytest tests -v --create-db -v --maxfail=10
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: false
+          name: codecov-${{env.GITHUB_REF_NAME}}
+
+  deployable:
+    if:
+      contains(fromJSON('["refs/heads/develop", "refs/heads/staging", "refs/heads/master", "refs/heads/release"]'), github.ref) 
+      || contains(github.event.head_commit.message, 'ci:release') 
+      || contains(github.event.head_commit.message, 'ci:all') 
+
+    name: "Build deployable Docker"
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+      version: ${{ steps.build.outputs.version }}
+      created: ${{ steps.build.outputs.created }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+      - id: checksum
+        uses: ./.github/actions/checksum
+      - name: Build
+        id: build
+        uses: ./.github/actions/docker_build
+        with:
+          dryrun: ${{ env.ACT || 'false' }}
+          rebuild: ${{ env.BUILD == 'true'}}
+          image: ${{ vars.DOCKER_IMAGE }}
+          target: 'dist'
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          code_checksum: ${{ contains(github.event.head_commit.message, 'ci:build') && steps.checksum.outputs.checksum || '' }}
+      - shell: bash
+        run: |
+          echo "${{ toJSON(steps.build.outputs) }}"
+
+  trivy:
+    name: Check Image with Trivy
+    runs-on: ubuntu-latest
+    needs: [ deployable ]
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+    if: needs.release.outputs.created == 'true' 
+      || contains(github.event.head_commit.message, 'ci:scan') 
+      || contains(github.event.head_commit.message, 'ci:all') 
+      || github.event_name == 'create'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{needs.deployable.outputs.image}}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
