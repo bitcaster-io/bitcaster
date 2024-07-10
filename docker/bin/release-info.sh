@@ -1,5 +1,5 @@
 #!/bin/bash
 
 cat /RELEASE
-uwsgi --version
-django-admin --version
+exho "uwsgi `uwsgi --version`"
+echo "Django `django-admin --version`"

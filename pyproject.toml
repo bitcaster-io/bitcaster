@@ -76,7 +76,7 @@ license = {text = "OS4D"}
 
 
 [tool.pdm]
-distribution = false
+distribution = true
 
 [tool.pdm.dev-dependencies]
 dev = [

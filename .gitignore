@@ -2,6 +2,7 @@
 ~*
 *.sh
 __pycache__/
+dist/
 *.py[cod]
 !tests/.coveragerc
 !.github

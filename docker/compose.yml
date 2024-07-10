@@ -1,0 +1,67 @@
+x-common: &common
+  build:
+    context: ..
+    dockerfile: docker/Dockerfile
+    target: python_prod_deps
+  env_file:
+    - ../.env
+  volumes:
+    - .:/code
+    - /var/run/docker.sock:/var/run/docker.sock
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  app:
+    <<: *common
+    ports:
+      - 8000:8000
+    command: ["docker-entrypoint.sh", "run"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  celery_worker:
+    <<: *common
+    command: ["docker-entrypoint.sh", "worker"]
+
+  celery_beat:
+    <<: *common
+    command: ["docker-entrypoint.sh", "beat"]
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      start_period: 5s
+      start_interval: 1s
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+  redis:
+    image: redis:7.2
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      start_period: 5s
+      start_interval: 1s
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+volumes:
+  postgres_data:

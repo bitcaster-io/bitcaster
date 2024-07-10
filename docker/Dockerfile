@@ -110,7 +110,7 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PATH=${APATH}:${PATH} \
-    PYTHONPATH=${APYTHONPATH}:/code/app/src \
+    PYTHONPATH=${APYTHONPATH}:/code/src \
     PYTHONDONTWRITEBYTCODE=1
 
 
