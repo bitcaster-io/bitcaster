@@ -74,9 +74,16 @@ requires-python = "==3.12.*"
 readme = "README.md"
 license = {text = "OS4D"}
 
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm.build]
+includes = ['src/bitcaster']
 
 [tool.pdm]
 distribution = true
+
 
 [tool.pdm.dev-dependencies]
 dev = [

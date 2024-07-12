@@ -200,7 +200,7 @@ class Command(BaseCommand):
                     )
 
             echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
-            admin.addresses.get_or_create(name="email", defaults={"value": self.admin_email})
+            admin.addresses.get_or_create(name="email", value=self.admin_email)
 
             from bitcaster.auth.constants import DEFAULT_GROUP_NAME
 

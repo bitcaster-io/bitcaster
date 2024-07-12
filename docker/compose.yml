@@ -2,12 +2,28 @@ x-common: &common
   build:
     context: ..
     dockerfile: docker/Dockerfile
-    target: python_prod_deps
+    target: dist
   env_file:
     - ../.env
+  environment:
+    - ADMIN_EMAIL=admin@gmail.com
+    - ADMIN_PASSWORD=123
+    - CACHE_URL=redis://redis:6379/1?client_class=django_redis.client.DefaultClient
+    - CELERY_BROKER_URL=redis://redis:6379/9
+    - CELERY_TASK_ALWAYS_EAGER=False
+    - CSRF_COOKIE_SECURE=False
+    - DATABASE_URL=postgres://postgres:password@db:5432/bitcaster
+    - PYTHONPATH=/code/app/src:/code/__pypackages__/3.12/lib
+    - SECRET_KEY=secret
+    - SECURE_SSL_REDIRECT=False
+    - SESSION_COOKIE_DOMAIN=
+    - SESSION_COOKIE_SECURE=False
+    - SOCIAL_AUTH_REDIRECT_IS_HTTPS=False
+    - STATIC_ROOT=/var/bitcaster/static
   volumes:
-    - .:/code
-    - /var/run/docker.sock:/var/run/docker.sock
+    - ./..:/code/app
+    - ./conf:/conf
+    - ./bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
   restart: unless-stopped
   depends_on:
     db:
@@ -20,38 +36,56 @@ services:
     <<: *common
     ports:
       - 8000:8000
-    command: ["docker-entrypoint.sh", "run"]
+    command: ["run"]
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/healthcheck"]
+      test: ["CMD-SHELL", "curl", "-f", "http://localhost:8000/healthcheck"]
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
 
-  celery_worker:
+  worker:
     <<: *common
-    command: ["docker-entrypoint.sh", "worker"]
-
-  celery_beat:
+    command: ["worker"]
+    depends_on:
+      db:
+        condition: service_healthy
+  beat:
     <<: *common
-    command: ["docker-entrypoint.sh", "beat"]
+    command: ["beat"]
+    depends_on:
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:15
+    user: postgres
     environment:
+      - PGUSER=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=bitcaster
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - ../~build/data:/var/lib/postgresql/data/
     restart: always
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "bitcaster"]
       start_period: 5s
       start_interval: 1s
       interval: 5s
       timeout: 4s
       retries: 5
 
+  pgadmin:
+      image: dpage/pgadmin4
+      container_name: pgadmin4
+      ports:
+          - 3333:80
+      environment:
+          PGADMIN_DEFAULT_EMAIL: bitcaster
+          PGADMIN_DEFAULT_PASSWORD: password
   redis:
     image: redis:7.2
     restart: always
@@ -62,6 +96,3 @@ services:
       interval: 5s
       timeout: 4s
       retries: 5
-
-volumes:
-  postgres_data:
