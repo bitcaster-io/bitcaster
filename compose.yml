@@ -1,10 +1,11 @@
 x-common: &common
   build:
-    context: ..
+    context: .
     dockerfile: docker/Dockerfile
     target: dist
+  platform: linux/amd64
   env_file:
-    - ../.env
+    - .env
   environment:
     - ADMIN_EMAIL=admin@gmail.com
     - ADMIN_PASSWORD=123
@@ -12,7 +13,7 @@ x-common: &common
     - CELERY_BROKER_URL=redis://redis:6379/9
     - CELERY_TASK_ALWAYS_EAGER=False
     - CSRF_COOKIE_SECURE=False
-    - DATABASE_URL=postgres://postgres:password@db:5432/bitcaster
+    - DATABASE_URL=postgres://bitcaster:password@db:5432/bitcaster
     - PYTHONPATH=/code/app/src:/code/__pypackages__/3.12/lib
     - SECRET_KEY=secret
     - SECURE_SSL_REDIRECT=False
@@ -21,9 +22,10 @@ x-common: &common
     - SOCIAL_AUTH_REDIRECT_IS_HTTPS=False
     - STATIC_ROOT=/var/bitcaster/static
   volumes:
-    - ./..:/code/app
-    - ./conf:/conf
-    - ./bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+    - static_storage:/var/bitcaster/static
+#    - .:/code/app
+#    - ./docker/conf:/conf
+#    - ./docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
   restart: unless-stopped
   depends_on:
     db:
@@ -34,6 +36,7 @@ x-common: &common
 services:
   app:
     <<: *common
+    container_name: bitcaster_bitcaster
     ports:
       - 8000:8000
     command: ["run"]
@@ -49,11 +52,13 @@ services:
   worker:
     <<: *common
     command: ["worker"]
+    container_name: bitcaster_worker
     depends_on:
       db:
         condition: service_healthy
   beat:
     <<: *common
+    container_name: bitcaster_beat
     command: ["beat"]
     depends_on:
       db:
@@ -61,14 +66,15 @@ services:
 
   db:
     image: postgres:15
+    container_name: bitcaster_db
     user: postgres
     environment:
-      - PGUSER=postgres
-      - POSTGRES_USER=postgres
+      - PGUSER=bitcaster
+      - POSTGRES_USER=bitcaster
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=bitcaster
     volumes:
-      - ../~build/data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "bitcaster"]
@@ -80,7 +86,7 @@ services:
 
   pgadmin:
       image: dpage/pgadmin4
-      container_name: pgadmin4
+      container_name: bitcaster_pgadmin4
       ports:
           - 3333:80
       environment:
@@ -89,6 +95,7 @@ services:
   redis:
     image: redis:7.2
     restart: always
+    container_name: bitcaster_redis
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       start_period: 5s
@@ -96,3 +103,7 @@ services:
       interval: 5s
       timeout: 4s
       retries: 5
+
+volumes:
+  postgres_data:
+  static_storage:
