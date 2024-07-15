@@ -24,7 +24,8 @@ Remember to keep the key copied somewhere safe as it would be shown only once.
 
 You may now want to try some APIs. See examples below.
 
-
+Remember the [Event](event) [Channel](channel) and the [Assignment](assignment) [Channel](channel) must match to be
+able to receive the [Occurrence](occurrence)
 
 ## example requests
 

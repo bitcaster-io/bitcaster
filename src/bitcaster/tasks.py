@@ -24,7 +24,7 @@ def process_occurrence(occurrence_pk: int) -> int | Exception:
                         o.status = Occurrence.Status.PROCESSED
                     o.recipients = len(o.data.get("delivered", []))
                     o.save()
-                    if success and o.recipients == 0 and o.event != SystemEvent.OCCURRENCE_SILENCE:
+                    if success and o.recipients == 0 and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value:
                         Bitcaster.trigger_event(
                             SystemEvent.OCCURRENCE_SILENCE,
                             o.context,
@@ -33,7 +33,11 @@ def process_occurrence(occurrence_pk: int) -> int | Exception:
                             parent=o,
                         )
                     return o.recipients
-            elif o.attempts == 0 and o.status == Occurrence.Status.NEW:
+            elif (
+                o.attempts == 0
+                and o.status == Occurrence.Status.NEW
+                and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value
+            ):
                 o.status = Occurrence.Status.FAILED
                 o.save()
                 Bitcaster.trigger_event(

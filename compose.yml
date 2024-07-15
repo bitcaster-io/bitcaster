@@ -4,8 +4,6 @@ x-common: &common
     dockerfile: docker/Dockerfile
     target: dist
   platform: linux/amd64
-  env_file:
-    - .env
   environment:
     - ADMIN_EMAIL=admin@gmail.com
     - ADMIN_PASSWORD=123

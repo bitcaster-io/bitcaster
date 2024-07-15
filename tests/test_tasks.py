@@ -24,6 +24,7 @@ if TYPE_CHECKING:
         "Context",
         {
             "occurrence": Occurrence,
+            # "silent_occurrence": Occurrence,
             "address": Address,
             "channel": Channel,
             "assignments": list[Assignment],
@@ -42,6 +43,7 @@ def setup(admin_user) -> "Context":
         NotificationFactory,
         OccurrenceFactory,
     )
+    from bitcaster.models.event import Event
 
     ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(TDispatcher))
     v1: Assignment = AssignmentFactory(channel=ch, address__value="test1@example.com")
@@ -50,9 +52,13 @@ def setup(admin_user) -> "Context":
     MessageFactory(channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}")
 
     Bitcaster.initialize(admin_user)
+    silent_event = Event.objects.get(name=SystemEvent.OCCURRENCE_SILENCE.value)
+
     o = OccurrenceFactory(event=no.event, attempts=3)
+    # so = OccurrenceFactory(event=silent_event, attempts=3)
     return {
         "occurrence": o,
+        # "silent_occurrence": so,
         "address": v1.address,
         "channel": ch,
         "assignments": [v1, v2],
@@ -226,6 +232,8 @@ def test_live(db, setup: "Context", monkeypatch, system_objects, celery_app, cel
 
 
 def test_schedule_occurrences(transactional_db, setup: "Context", monkeypatch):
+    from bitcaster.models import Occurrence
+
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock(return_value=True))
 
     schedule_occurrences()
@@ -234,3 +242,18 @@ def test_schedule_occurrences(transactional_db, setup: "Context", monkeypatch):
     o.refresh_from_db()
     assert mocked_notify.call_count == 1
     assert o.status == Occurrence.Status.PROCESSED
+
+
+def test_process_silent(transactional_db, setup: "Context", monkeypatch):
+    from testutils.factories import Occurrence, OccurrenceFactory
+    from bitcaster.models.event import Event
+
+    monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())
+
+    silent_event = Event.objects.get(name=SystemEvent.OCCURRENCE_SILENCE.value)
+    o = OccurrenceFactory(status=Occurrence.Status.NEW, event=silent_event)
+
+    assert Occurrence.objects.filter(event=silent_event).count() == 1
+    process_occurrence(o.pk)
+    assert Occurrence.objects.filter(event=silent_event).count() == 1
+    assert mocked_notify.call_count == 1
