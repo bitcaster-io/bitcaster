@@ -1,4 +1,3 @@
-import os
 import uuid
 from typing import TYPE_CHECKING, TypedDict
 from unittest.mock import Mock

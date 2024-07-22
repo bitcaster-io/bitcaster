@@ -55,11 +55,13 @@ def test_byuser(app: DjangoTestApp, context):
     res.form["mode-operation"] = LockingModeChoice.USER
     res = res.form.submit()
 
-    assert sorted(res.form.fields["user-user"][0].options) == sorted([
-        ("", True, "All"),
-        (str(context["user"].id), False, context["user"].username),
-        (str(context["admin_user"].id), False, context["admin_user"].username),
-    ])
+    assert sorted(res.form.fields["user-user"][0].options) == sorted(
+        [
+            ("", True, "All"),
+            (str(context["user"].id), False, context["user"].username),
+            (str(context["admin_user"].id), False, context["admin_user"].username),
+        ]
+    )
     res.form.fields["user-user"][0].select(str(context["user"].id))
     res = res.form.submit()
     assert res.status_code == 200

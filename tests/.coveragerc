@@ -36,6 +36,8 @@ exclude_lines =
     except ImportError
     except BaseException as e
 
+fail_under=100
+precision=2
 ignore_errors = True
 
 [html]

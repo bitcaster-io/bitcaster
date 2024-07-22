@@ -146,6 +146,8 @@ class Command(BaseCommand):
 
             echo("Remove stale contenttypes")
             call_command("remove_stale_contenttypes", **extra)
+
+            admin: User | None
             if self.admin_email:
                 if User.objects.filter(email=self.admin_email).exists():
                     echo(
@@ -168,7 +170,7 @@ class Command(BaseCommand):
 
                 admin = User.objects.get(email=self.admin_email)
             else:
-                admin = User.objects.filter(is_superuser=True).first()
+                admin = User.objects.filter(is_superuser=True).get()
 
             if not admin:
                 raise CommandError("Create an admin user")

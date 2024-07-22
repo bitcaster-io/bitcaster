@@ -24,7 +24,9 @@ class ApplicationManager(BitcasterBaselManager["Application"]):
 
 class Application(SlugMixin, LockMixin, BitcasterBaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="applications")
-    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
+    owner = models.ForeignKey(
+        User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True, related_name="applications"
+    )
 
     active = models.BooleanField(default=True, help_text=_("Whether the application should be active"))
 

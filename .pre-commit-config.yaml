@@ -35,6 +35,7 @@ repos:
       - id: mypy
         exclude: (^~.*|^tests/|manage\.py|develop\.py)
         args: [ "--config-file", ".mypy.ini" ]
+        require_serial: true
         name: mypy
         entry: mypy
         language: system
@@ -42,14 +43,14 @@ repos:
         stages: [ commit ]
 
   - repo: https://github.com/Yelp/detect-secrets
-    rev: 0.9.1
+    rev: v1.5.0
     hooks:
       - id: detect-secrets
         args: [ '--baseline', '.secrets.baseline' ]
         exclude: (tests/.*|.*/tenant\.sql|Pipfile\.lock|.*\.js|~.gitlab-ci.yml|poetry.lock)
         stages: [ push ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.1.0
+    rev: v4.6.0
     hooks:
       #      - id: double-quote-string-fixer
       #        stages: [commit]
@@ -68,12 +69,13 @@ repos:
         stages: [ commit ]
 
   - repo: https://github.com/saxix/pch
-    rev: fc387f4
+    rev: '0.1'
     hooks:
       - id: check-missed-migrations
         args:
           - src
         stages: [ commit ]
+        additional_dependencies: [setuptools]
 
       - id: check-untracked
         args:
@@ -88,9 +90,10 @@ repos:
           - -p
           - /print\(111/
         stages: [ commit ]
-#
+        additional_dependencies: [setuptools]
+
   - repo: https://github.com/PyCQA/bandit
-    rev: '' # Update me!
+    rev: '1.7.9' # Update me!
     hooks:
       - id: bandit
         args: ["-c", "bandit.yaml"]

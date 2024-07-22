@@ -104,7 +104,7 @@ class LockingApplicationForm(forms.Form):
         help_text=_("Select the application you want to lock"),
     )
 
-    def __init__(self, *args: Any, **kwargs: Any) -> forms.Form:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.storage = kwargs.pop("storage", None)
         super().__init__(*args, **kwargs)
         project = self.storage["step_data"]["project"]["project-project"][0]

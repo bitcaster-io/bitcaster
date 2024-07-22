@@ -10,7 +10,7 @@ import responses
 from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
-    from bitcaster.models import Project
+    from bitcaster.models import Project, User
 
 
 here = Path(__file__).parent
@@ -107,7 +107,7 @@ def pytest_configure(config):
 
 
 @pytest.fixture()
-def system_objects(admin_user):
+def system_objects(admin_user: "User"):
     from django.contrib.auth.models import Group
 
     from bitcaster.auth.constants import DEFAULT_GROUP_NAME
