@@ -1,8 +1,7 @@
 import logging
-import uuid
 from typing import TYPE_CHECKING, Any, TypedDict
 
-from django.db import models, transaction
+from django.db import models
 from django.utils.translation import gettext as _
 
 from ..constants import Bitcaster
@@ -15,20 +14,9 @@ if TYPE_CHECKING:
     from .message import Message
     from .notification import Notification
 
-    OccurrenceData = TypedDict(
-        "OccurrenceData",
-        {
-            "delivered": list[str | int],
-            "recipients": list[tuple[str, str]],
-        },
-    )
+    OccurrenceData = TypedDict("OccurrenceData", {"delivered": list[str | int], "recipients": list[tuple[str, str]]})
 
-    OccurrenceOptions = TypedDict(
-        "OccurrenceOptions",
-        {
-            "limit_to": list[str],
-        },
-    )
+    OccurrenceOptions = TypedDict("OccurrenceOptions", {"limit_to": list[str]})
 logger = logging.getLogger(__name__)
 
 
@@ -109,9 +97,10 @@ class Occurrence(BitcasterBaseModel):
 
                         delivered.append(assignment.id)
                         recipients.append((assignment.address.value, assignment.channel.name))
-
-                        self.data = {"delivered": delivered, "recipients": recipients}
                     except Exception as e:
                         logger.exception(e)
                         return False
+                    finally:
+                        self.data = {"delivered": delivered, "recipients": recipients}
+                        self.save()
         return True

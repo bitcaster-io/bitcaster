@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
+from django.http import HttpRequest
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 
@@ -25,7 +26,7 @@ def app(django_app_factory, rf, db, admin_user):
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
     django_app._user = admin_user
-    request = rf.get("/")
+    request: HttpRequest = rf.get("/")
     request.user = admin_user
     with state.configure(request=request):
         yield django_app
@@ -38,7 +39,7 @@ def context(django_app_factory, admin_user) -> "Context":
     user = UserFactory()
     locked_user = UserFactory(locked=True)
 
-    return {"user": user, "locked_user": locked_user, "adminuser": admin_user}
+    return {"user": user, "locked_user": locked_user, "admin_user": admin_user}
 
 
 def test_byuser(app: DjangoTestApp, context):
@@ -54,12 +55,11 @@ def test_byuser(app: DjangoTestApp, context):
     res.form["mode-operation"] = LockingModeChoice.USER
     res = res.form.submit()
 
-    assert res.form.fields["user-user"][0].options == [
+    assert sorted(res.form.fields["user-user"][0].options) == sorted([
         ("", True, "All"),
         (str(context["user"].id), False, context["user"].username),
-        (str(context["adminuser"].id), False, context["adminuser"].username),
-    ]
-
+        (str(context["admin_user"].id), False, context["admin_user"].username),
+    ])
     res.form.fields["user-user"][0].select(str(context["user"].id))
     res = res.form.submit()
     assert res.status_code == 200

@@ -31,10 +31,11 @@ def context(occurrence: "Occurrence", user) -> "Context":
     "payload, notified_count",
     [pytest.param({"foo": "bar"}, 1, id="matched"), pytest.param({"foo": "dummy"}, 0, id="unmatched")],
 )
-def test_model_occurrence_filter(payload, notified_count, context: "Context", monkeypatch):
+@pytest.mark.django_db(transaction=True)
+def test_model_occurrence_filter(payload: dict, notified_count, context: "Context", monkeypatch):
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", mock := Mock())
 
-    occurrence = context["notification"].event.trigger(payload)
+    occurrence: Occurrence = context["notification"].event.trigger(payload)
     occurrence.process()
 
     assert mock.call_count == notified_count

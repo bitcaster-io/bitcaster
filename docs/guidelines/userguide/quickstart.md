@@ -53,4 +53,3 @@ curl -X 'POST' "${SERVER_URL}/api/o/${ORG_SLUG}/p/${PROJECT_SLUG}/a/${APP_SLUG}/
     -H "accept: application/json" \
     -H "Authorization: Key ${YOUR_API_KEY}"
 ```
-

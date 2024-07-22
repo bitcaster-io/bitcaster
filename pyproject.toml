@@ -158,3 +158,4 @@ exclude = '''
 
 [tool.pdm.scripts]
 coverage = "pytest tests/ -n auto --create-db -vv --cov"
+lint = "pre-commit run --all-files"

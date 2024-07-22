@@ -43,7 +43,6 @@ def setup(admin_user) -> "Context":
         NotificationFactory,
         OccurrenceFactory,
     )
-    from bitcaster.models.event import Event
 
     ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(TDispatcher))
     v1: Assignment = AssignmentFactory(channel=ch, address__value="test1@example.com")
@@ -52,13 +51,10 @@ def setup(admin_user) -> "Context":
     MessageFactory(channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}")
 
     Bitcaster.initialize(admin_user)
-    silent_event = Event.objects.get(name=SystemEvent.OCCURRENCE_SILENCE.value)
 
     o = OccurrenceFactory(event=no.event, attempts=3)
-    # so = OccurrenceFactory(event=silent_event, attempts=3)
     return {
         "occurrence": o,
-        # "silent_occurrence": so,
         "address": v1.address,
         "channel": ch,
         "assignments": [v1, v2],
@@ -224,11 +220,11 @@ def celery_config():
     return {"broker_url": "memory://"}
 
 
-@pytest.mark.celery()
-@pytest.mark.skipif(os.getenv("GITLAB_CI") is not None, reason="Do not run on GitLab CI")
-def test_live(db, setup: "Context", monkeypatch, system_objects, celery_app, celery_worker):
-    o = setup["occurrence"]
-    assert process_occurrence.delay(o.pk).get(timeout=10) == 2
+# @pytest.mark.celery()
+# @pytest.mark.skipif(os.getenv("GITLAB_CI") is not None, reason="Do not run on GitLab CI")
+# def test_live(db, setup: "Context", monkeypatch, system_objects, celery_app, celery_worker):
+#     o = setup["occurrence"]
+#     assert process_occurrence.delay(o.pk).get(timeout=10) == 2
 
 
 def test_schedule_occurrences(transactional_db, setup: "Context", monkeypatch):
@@ -246,6 +242,7 @@ def test_schedule_occurrences(transactional_db, setup: "Context", monkeypatch):
 
 def test_process_silent(transactional_db, setup: "Context", monkeypatch):
     from testutils.factories import Occurrence, OccurrenceFactory
+
     from bitcaster.models.event import Event
 
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())

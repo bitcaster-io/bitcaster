@@ -3,7 +3,6 @@ from unittest import mock
 from unittest.mock import Mock
 
 import pytest
-from django.contrib.messages import Message
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 

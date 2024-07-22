@@ -1,12 +1,13 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from django import forms
+from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.shortcuts import render
 from formtools.wizard.views import CookieWizardView
 
 from bitcaster.forms import locking as locking_forms
-from bitcaster.models import Application, Organization, Project
+from bitcaster.models import Application, Channel, Organization, Project, User
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AuthHttpRequest
@@ -54,7 +55,7 @@ class LockingWizard(CookieWizardView):
         kwargs = super().get_form_kwargs(step)
         return kwargs | {"storage": self.storage.data}
 
-    def _get_applications(self, project: Project | None) -> List[Application]:
+    def _get_applications(self, project: Project | None) -> QuerySet[Application]:
         if project:
             qs = Application.objects.filter(locked=False, project=project).all()
         else:
@@ -69,8 +70,8 @@ class LockingWizard(CookieWizardView):
 
     def done(self, form_list: Any, form_dict: Any, **kwargs: Any) -> HttpResponse:
         data = self.get_all_cleaned_data()
-        ctx = {}
-        objects = None
+        ctx: dict[str, Any] = {}
+        objects: QuerySet[Channel] | QuerySet[Application] | QuerySet[User] | User
         match data["operation"]:
             case locking_forms.LockingModeChoice.CHANNEL:
                 objects = data["channel"]
@@ -83,6 +84,9 @@ class LockingWizard(CookieWizardView):
             case locking_forms.LockingModeChoice.USER:
                 objects = data["user"]
                 ctx["title"] = "users"
+            case _:
+                raise ValueError("Unexpected operation")
+
         if hasattr(objects, "id"):
             objects = objects.__class__.objects.filter(id=objects.id)
         ctx["objects"] = list(objects)

@@ -7,7 +7,7 @@ from django.db import models
 
 if TYPE_CHECKING:
     from bitcaster.models import Application, Group, Occurrence, User
-    from bitcaster.models.occurrence import OccurrenceOptions, Occurrence
+    from bitcaster.models.occurrence import OccurrenceOptions
 
 logger = logging.getLogger(__name__)
 

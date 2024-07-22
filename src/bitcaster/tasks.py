@@ -53,9 +53,9 @@ def process_occurrence(occurrence_pk: int) -> int | Exception:
 def schedule_occurrences() -> None | Exception:
     from bitcaster.models import Occurrence
 
+    o: Occurrence
     try:
         for o in Occurrence.objects.select_related("event").filter(status=Occurrence.Status.NEW):
-            o: Occurrence
             process_occurrence.delay(o.id)
     except Exception as e:
         logger.exception(e)
