@@ -28,15 +28,11 @@ ADMIN_EMAIL=<a valid email>
 ADMIN_PASSWORD=<your admin password>
 DATABASE_PORT=<only if different than default 5432>
 SECRET_KEY=--
-CATCH_ALL_EMAIL=<email address to catch all email>
-SESSION_COOKIE_DOMAIN=localhost  # <must match the address where you expose the development server>
+CATCH_ALL_EMAIL=<you catch all email>
+SESSION_COOKIE_DOMAIN=localhost
 ```
-<<<<<<< Updated upstream
 10. Run upgrade command to properly initialize the application: `./manage.py upgrade --admin-email ${ADMIN_EMAIL} --admin-password ${ADMIN_PASSWORD}`
     - Django migrate command is automatically included in this step
-1Test using runserver $`./manage.py runserver` and logging in the admin `http://locslhost:8000/admin`
-
-=======
 11. Test using runserver $`./manage.py runserver` and logging in the admin `http://locslhost:8000/admin`
 12. Apply the following Git configurations:
 ```
