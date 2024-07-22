@@ -1,28 +1,29 @@
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 from unittest import mock
 from unittest.mock import Mock
 
 import pytest
 from django.urls import reverse
 from django_webtest import DjangoTestApp
+from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
 if TYPE_CHECKING:
     from webtest.response import TestResponse
 
-    from bitcaster.models import Assignment, SocialProvider
+    from bitcaster.models import Assignment, SocialProvider, User
 
     Context = TypedDict("Context", {"provider": SocialProvider})
 
 
 @pytest.fixture()
-def app(django_app_factory, admin_user) -> DjangoTestApp:
+def app(django_app_factory: MixinWithInstanceVariables, admin_user: "User") -> DjangoTestApp:
     django_app: DjangoTestApp = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
     django_app._user = admin_user
     return django_app
 
 
-def test_edit(app: DjangoTestApp, assignment, settings) -> None:
+def test_edit(app: DjangoTestApp, assignment: "Assignment", settings: Any) -> None:
     settings.ROOT_TOKEN_HEADER = "abc"
     settings.ROOT_TOKEN = "123"
     url = reverse("admin:bitcaster_assignment_change", args=[assignment.pk])
@@ -31,7 +32,7 @@ def test_edit(app: DjangoTestApp, assignment, settings) -> None:
     assert res
 
 
-def test_validate(app: DjangoTestApp, assignment: "Assignment", monkeypatch) -> None:
+def test_validate(app: DjangoTestApp, assignment: "Assignment", monkeypatch: Any) -> None:
 
     url = reverse("admin:bitcaster_assignment_validate", args=[assignment.pk])
     monkeypatch.setattr("bitcaster.admin.assignment.AssignmentAdmin.message_user", collector := Mock())

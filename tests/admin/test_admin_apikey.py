@@ -1,10 +1,12 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models.options import Options
 from django.urls import reverse
+from django.utils.safestring import SafeString
 from django_webtest import DjangoTestApp
+from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
 from bitcaster.auth.constants import Grant
 
@@ -13,7 +15,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture()
-def app(django_app_factory, db):
+def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 
     django_app = django_app_factory(csrf_checks=False)
@@ -23,9 +25,9 @@ def app(django_app_factory, db):
     return django_app
 
 
-def test_edit(app: DjangoTestApp, api_key: "ApiKey"):
-    opts: Options = api_key._meta
-    url = reverse(admin_urlname(opts, "change"), args=[api_key.pk])
+def test_edit(app: DjangoTestApp, api_key: "ApiKey") -> None:
+    opts: Options[ApiKey] = api_key._meta
+    url = reverse(admin_urlname(opts, SafeString("change")), args=[api_key.pk])
     res = app.get(url)
     assert res.status_code == 200
 
@@ -36,9 +38,9 @@ def test_edit(app: DjangoTestApp, api_key: "ApiKey"):
     assert sorted(api_key.grants) == [Grant.EVENT_TRIGGER, Grant.FULL_ACCESS]
 
 
-def test_add(app: DjangoTestApp, api_key: "ApiKey"):
-    opts: Options = api_key._meta
-    url = reverse(admin_urlname(opts, "add"))
+def test_add(app: DjangoTestApp, api_key: "ApiKey") -> None:
+    opts: Options[ApiKey] = api_key._meta
+    url = reverse(admin_urlname(opts, SafeString("add")))
     res = app.get(url)
     assert res.status_code == 200
 

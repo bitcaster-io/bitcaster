@@ -1,12 +1,16 @@
-from smtplib import SMTP
+from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
 from constance.test.unittest import override_config
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models.options import Options
+from django.http import HttpRequest
+from django.test.client import RequestFactory
 from django.urls import reverse
+from django.utils.safestring import SafeString
 from django_webtest import DjangoTestApp
+from django_webtest.pytest_plugin import MixinWithInstanceVariables
 from pytest_factoryboy import LazyFixture, register
 from strategy_field.utils import fqn
 from testutils.factories import (
@@ -27,21 +31,21 @@ register(ProjectFactory, "project")
 
 
 @pytest.fixture()
-def app(django_app_factory, rf, db):
+def app(django_app_factory: MixinWithInstanceVariables, rf: RequestFactory, db: Any) -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")
     django_app.set_user(admin_user)
     django_app._user = admin_user
-    request = rf.get("/")
+    request: HttpRequest = rf.get("/")
     request.user = admin_user
     with state.configure(request=request):
         yield django_app
 
 
 @pytest.fixture()
-def gmail_channel(db):
+def gmail_channel(db: Any) -> Channel:
     from testutils.factories.channel import ChannelFactory
 
     from bitcaster.dispatchers import GMailDispatcher
@@ -50,7 +54,7 @@ def gmail_channel(db):
 
 
 @pytest.fixture()
-def system_channel(db):
+def system_channel(db: Any) -> Channel:
     from testutils.factories.channel import ChannelFactory
 
     from bitcaster.dispatchers import GMailDispatcher
@@ -65,16 +69,16 @@ def system_channel(db):
 
 
 @pytest.mark.parametrize("channel__project", [None, LazyFixture(ProjectFactory)])
-def test_change(app: DjangoTestApp, channel: Channel):
-    url = reverse(admin_urlname(Channel._meta, "change"), args=[channel.pk])
+def test_change(app: DjangoTestApp, channel: Channel) -> None:
+    url = reverse(admin_urlname(Channel._meta, SafeString("change")), args=[channel.pk])
     res = app.get(url)
     res = res.forms["channel_form"].submit()
     assert res.status_code == 302
 
 
-def test_configure(app: DjangoTestApp, gmail_channel):
-    opts: Options = Channel._meta
-    url = reverse(admin_urlname(opts, "configure"), args=[gmail_channel.pk])
+def test_configure(app: DjangoTestApp, gmail_channel: "Channel") -> None:
+    opts: Options[Channel] = Channel._meta
+    url = reverse(admin_urlname(opts, SafeString("configure")), args=[gmail_channel.pk])
     res = app.get(url)
     assert res.status_code == 200
 
@@ -85,16 +89,16 @@ def test_configure(app: DjangoTestApp, gmail_channel):
     assert res.status_code == 302
 
 
-def test_test_404(app: DjangoTestApp):
-    opts: Options = Channel._meta
-    url = reverse(admin_urlname(opts, "test"), args=[-1])
+def test_test_404(app: DjangoTestApp) -> None:
+    opts: Options[Channel] = Channel._meta
+    url = reverse(admin_urlname(opts, SafeString("test")), args=[-1])
     res = app.get(url, expect_errors=True)
     assert res.status_code == 404
 
 
-def test_test(app: DjangoTestApp, gmail_channel):
-    opts: Options = Channel._meta
-    url = reverse(admin_urlname(opts, "test"), args=[gmail_channel.pk])
+def test_test(app: DjangoTestApp, gmail_channel: Channel) -> None:
+    opts: Options[Channel] = Channel._meta
+    url = reverse(admin_urlname(opts, SafeString("test")), args=[gmail_channel.pk])
     res = app.get(url)
     assert res.status_code == 200
     AssignmentFactory(channel=gmail_channel, address__user=app._user)
@@ -107,20 +111,20 @@ def test_test(app: DjangoTestApp, gmail_channel):
     assert res.status_code == 200
 
     mock.assert_called()
-    s: Mock[SMTP] = mock.return_value
+    s: Mock = mock.return_value
     s.login.assert_called()
     s.starttls.assert_called()
     s.sendmail.assert_called()
 
 
-def test_get_readonly_if_default(app, system_channel) -> None:
+def test_get_readonly_if_default(app: DjangoTestApp, system_channel: "Channel") -> None:
     url = reverse("admin:bitcaster_channel_change", args=[system_channel.pk])
     res = app.get(url)
     frm = res.forms["channel_form"]
     assert "name" not in frm.fields
 
 
-def test_get_readonly_fields(app, gmail_channel) -> None:
+def test_get_readonly_fields(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     url = reverse("admin:bitcaster_channel_change", args=[gmail_channel.pk])
     res = app.get(url)
     res.forms["channel_form"]["name"] = "abc"
@@ -128,7 +132,7 @@ def test_get_readonly_fields(app, gmail_channel) -> None:
     assert res.status_code == 302
 
 
-def test_add_new_channel_for_single_project(app, gmail_channel: "Channel") -> None:
+def test_add_new_channel_for_single_project(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     url = reverse("admin:bitcaster_channel_add")
     res = app.get(url)
     # step 1
@@ -151,7 +155,7 @@ def test_add_new_channel_for_single_project(app, gmail_channel: "Channel") -> No
     ).exists()
 
 
-def test_add_new_channel_for_all_projects(app, gmail_channel: "Channel") -> None:
+def test_add_new_channel_for_all_projects(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     url = reverse("admin:bitcaster_channel_add")
     res = app.get(url)
     # step 1
@@ -170,7 +174,7 @@ def test_add_new_channel_for_all_projects(app, gmail_channel: "Channel") -> None
     assert Channel.objects.filter(name="Channel-1", project__isnull=True).exists()
 
 
-def test_add_new_channel_inherit(app, gmail_channel: "Channel") -> None:
+def test_add_new_channel_inherit(app: "DjangoTestApp", gmail_channel: "Channel") -> None:
     url = reverse("admin:bitcaster_channel_add")
     res = app.get(url)
     # step 1

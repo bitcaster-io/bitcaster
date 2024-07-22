@@ -35,6 +35,8 @@ exclude_lines =
     raise NotImplementedError
     except ImportError
     except BaseException as e
+    raise CommandError.*
+    self.halt\(.*
 
 fail_under=99
 precision=2

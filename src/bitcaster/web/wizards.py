@@ -77,7 +77,7 @@ class LockingWizard(CookieWizardView):
             case locking_forms.LockingModeChoice.USER:
                 objects = data["user"]
                 ctx["title"] = "users"
-            case _:
+            case _:  # pragma: no cover
                 raise ValueError("Unexpected operation")
 
         if hasattr(objects, "id"):

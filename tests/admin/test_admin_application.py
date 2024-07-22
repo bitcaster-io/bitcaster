@@ -1,9 +1,15 @@
+from typing import Any
+
 import pytest
 from django.urls import reverse
+from django_webtest import DjangoTestApp
+from django_webtest.pytest_plugin import MixinWithInstanceVariables
+
+from bitcaster.models import Application
 
 
 @pytest.fixture()
-def app(django_app_factory, db):
+def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 
     django_app = django_app_factory(csrf_checks=False)
@@ -14,7 +20,7 @@ def app(django_app_factory, db):
 
 
 @pytest.fixture()
-def application(db):
+def application(db: Any) -> Application:
     from testutils.factories import ApplicationFactory
 
     return ApplicationFactory()

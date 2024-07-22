@@ -3,7 +3,10 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 
 if TYPE_CHECKING:
-    from bitcaster.models import Address, Application, Channel, Event
+    from django_webtest import DjangoTestApp
+    from django_webtest.pytest_plugin import MixinWithInstanceVariables
+
+    from bitcaster.models import Address, Application, Channel, Event, User
 
     Context = TypedDict(
         "Context",
@@ -19,7 +22,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture()
-def app(django_app_factory, admin_user):
+def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> "DjangoTestApp":
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
     django_app._user = admin_user
@@ -27,19 +30,19 @@ def app(django_app_factory, admin_user):
 
 
 @pytest.fixture
-def context(django_app_factory, admin_user) -> "Context":
+def context(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> "Context":
     from testutils.factories import AddressFactory, ChannelFactory, EventFactory
 
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
     django_app._user = admin_user
 
-    channel = ChannelFactory()
+    channel: Channel = ChannelFactory()
     channel2 = ChannelFactory()
-    event = EventFactory()
+    event: Event = EventFactory()
     event.channels.add(channel)
     event.channels.add(channel2)
-    address = AddressFactory(user=admin_user)
+    address: Address = AddressFactory(user=admin_user)
     address2 = AddressFactory(user=admin_user)  # other_addr
 
     return {
