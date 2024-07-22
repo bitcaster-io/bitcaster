@@ -7,7 +7,7 @@ from django.shortcuts import render
 from formtools.wizard.views import CookieWizardView
 
 from bitcaster.forms import locking as locking_forms
-from bitcaster.models import Application, Channel, Organization, Project, User
+from bitcaster.models import Application, Channel, User
 
 if TYPE_CHECKING:
     from bitcaster.types.http import AuthHttpRequest
@@ -55,13 +55,6 @@ class LockingWizard(CookieWizardView):
         kwargs = super().get_form_kwargs(step)
         return kwargs | {"storage": self.storage.data}
 
-    def _get_applications(self, project: Project | None) -> QuerySet[Application]:
-        if project:
-            qs = Application.objects.filter(locked=False, project=project).all()
-        else:
-            qs = Application.objects.filter(locked=False, project__organization__in=Organization.objects.local()).all()
-        return qs
-
     def get_context_data(self, form: forms.Form, **kwargs: Any) -> dict[str, Any]:
         ctx = self.extra_context or {}
         ctx["step_header"] = getattr(self.form_list[self.steps.current], "step_header", "")
@@ -79,7 +72,7 @@ class LockingWizard(CookieWizardView):
             case locking_forms.LockingModeChoice.PROJECT:
                 objects = data["application"]
                 if not objects:
-                    objects = self._get_applications(data["project"])
+                    objects = Application.objects.filter(locked=False, project=data["project"]).all()
                 ctx["title"] = "applications"
             case locking_forms.LockingModeChoice.USER:
                 objects = data["user"]
