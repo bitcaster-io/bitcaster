@@ -23,6 +23,7 @@ class AddressManager(BitcasterBaselManager["Address"]):
         return super().get_or_create(defaults=defaults, **kwargs)
 
     def valid(self) -> QuerySet["Address"]:
+        # FIXME: Notification works also if assignment is not validated, this method is never used
         return self.filter(assignments__validated=True)
 
     def get_by_natural_key(self, user: str, name: str) -> "Address":
