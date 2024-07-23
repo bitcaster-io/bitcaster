@@ -1,6 +1,6 @@
 :root {
   --bg-primary: #c31919;
-  --breadcrumbs-bg: #951515;
+  --breadcrumbs-bg: rgba(99, 92, 15, 0.53);
   --bg-secondary: #951515;
   --button-bg: rgba(207, 34, 34, 0.53);
   --button-hover-bg: rgba(207, 193, 34, 0.53);
@@ -8,6 +8,7 @@
   --default-button-hover-bg: rgba(207, 193, 34, 0.53);
   --header-bg: #c31919;
   --link-fg: black;
+  --object-tools-bg: #333333;
 
   #header {
     .theme-toggle svg.theme-icon-when-auto, .theme-toggle svg.theme-icon-when-dark, .theme-toggle svg.theme-icon-when-light {
@@ -15,12 +16,14 @@
       color: var(--bg-primary);
     }
   }
-    div.submit-row {
-      button, input, a{
-        margin: 0;
-        padding: 10px 15px;
-      }
+
+  div.submit-row {
+    button, input, a {
+      margin: 0;
+      padding: 10px 15px;
     }
+  }
+
   #container, {
     div.breadcrumbs {
       background-color: #951515;
@@ -51,6 +54,26 @@
 
       &:hover {
         color: yellow;
+      }
+    }
+  }
+
+
+  ul#quick-links {
+    margin-left: 0;
+    padding: 10px;
+    width: 80%;
+    line-height: 20px;
+    li {
+      width: 100%;
+      list-style: none;
+      margin-bottom: 5px;
+      a {
+        display: block;
+        width: 100%;
+        background-color: var(--object-tools-bg);
+        padding: 5px 15px;
+
       }
     }
   }

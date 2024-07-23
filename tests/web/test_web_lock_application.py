@@ -22,21 +22,6 @@ if TYPE_CHECKING:
         },
     )
 
-
-@pytest.fixture()
-def app(django_app_factory, rf, db):
-    from testutils.factories import SuperUserFactory
-
-    django_app = django_app_factory(csrf_checks=False)
-    admin_user = SuperUserFactory(username="superuser")
-    django_app.set_user(admin_user)
-    django_app._user = admin_user
-    request = rf.get("/")
-    request.user = admin_user
-    with state.configure(request=request):
-        yield django_app
-
-
 @pytest.fixture
 def context(django_app_factory, admin_user) -> "Context":
     from testutils.factories.org import (

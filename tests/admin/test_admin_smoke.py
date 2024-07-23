@@ -32,6 +32,8 @@ GLOBAL_EXCLUDED_MODELS = RegexList(
 GLOBAL_EXCLUDED_BUTTONS = RegexList(
     [
         r"social.SocialProviderAdmin:test",
+        r"bitcaster.*:lock",
+        r"bitcaster.*:unlock",
     ]
 )
 

@@ -22,6 +22,8 @@
     {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% static "admin/css/responsive_rtl.css" %}">{% endif %}
 {% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+    <link rel="stylesheet" href="{% static "bitcaster/css/admin.css" %}">
+    <link rel="stylesheet" href="{% static "bitcaster/css/style.css" %}">
 </head>
 
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
@@ -62,8 +64,6 @@
                     <button type="submit">{% translate 'Log out' %}</button>
                 </form>
                 {% include "admin/color_theme_toggle.html" %}
-                <a href="/api/">{% translate 'API' %}</a>
-
             {% endblock %}
         </div>
         {% endif %}

@@ -21,9 +21,9 @@ x-common: &common
     - STATIC_ROOT=/var/bitcaster/static
   volumes:
     - static_storage:/var/bitcaster/static
-#    - .:/code/app
-#    - ./docker/conf:/conf
-#    - ./docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+    - .:/code/app
+    - ./docker/conf:/conf
+    - ./docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
   restart: unless-stopped
   depends_on:
     db:

@@ -1,15 +1,19 @@
-{% extends "bitcaster/base.html" %}{% load static i18n %}
+{% extends "admin/base_site.html" %}{% load static i18n %}
 
-{% block head %}
-    {{ block.super }}
-    {{ wizard.form.media }}
+{% block nav-breadcrumbs %}
+    <nav aria-label="{% translate 'Breadcrumbs' %}">
+        <div class="breadcrumbs">
+            <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+            &rsaquo;
+            <a href="{% url "locking" %}">{% translate 'Locking' %}</a>
+        </div>
+    </nav>
 {% endblock %}
-
-{% block body %}
+{% block content %}
     <h1>{{ step_header }}</h1>
 
     {% block instructions %}
-       
+
     {% endblock %}
     <br>
     <form action="" method="post" id="locking">
@@ -27,12 +31,22 @@
                 {% endif %}
             </table>
         {% endblock %}
-        {% if wizard.steps.prev %}
-            <button name="wizard_goto_step" type="submit"
-                    value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
-            <button name="wizard_goto_step" type="submit"
-                    value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
-        {% endif %}
-        <input type="submit" value="Submit">
+        {% block buttons %}
+            {#        {% if wizard.steps.prev %}#}
+            {#            <input type="submit"#}
+            {#                    name="wizard_goto_step" class="button"#}
+            {#                    value="{{ wizard.steps.first }}">#}
+            {#            <input type="submit"#}
+            {#                    name="wizard_goto_step" class="button"#}
+            {#                    value="{{ wizard.steps.prev }}">#}
+
+            {#            <button name="wizard_goto_step" type="submit"#}
+            {#                    value="{{ wizard.steps.first }}">{% translate "first step" %}</button>#}
+            {#            <button name="wizard_goto_step" type="submit"#}
+            {#                    value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>#}
+            {#        {% endif %}#}
+
+            <input type="submit" value="Submit">
+        {% endblock %}
     </form>
 {% endblock %}

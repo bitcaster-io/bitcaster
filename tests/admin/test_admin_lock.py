@@ -56,8 +56,10 @@ def record(db, request):
 
 
 @pytest.fixture()
-def app(django_app_factory, mocked_responses):
+def app(django_app_factory, mocked_responses, settings):
     from testutils.factories import SuperUserFactory
+
+    settings.FLAGS = {"BETA_PREVIEW_LOCKING": [("boolean", True)]}
 
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")

@@ -1,13 +1,11 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
-from django.http import HttpRequest
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 
 from bitcaster.forms.locking import LockingModeChoice
 from bitcaster.models import User
-from bitcaster.state import state
 
 if TYPE_CHECKING:
 
@@ -20,16 +18,6 @@ if TYPE_CHECKING:
         },
     )
 
-
-@pytest.fixture()
-def app(django_app_factory, rf, db, admin_user):
-    django_app = django_app_factory(csrf_checks=False)
-    django_app.set_user(admin_user)
-    django_app._user = admin_user
-    request: HttpRequest = rf.get("/")
-    request.user = admin_user
-    with state.configure(request=request):
-        yield django_app
 
 
 @pytest.fixture
