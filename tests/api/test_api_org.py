@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import factory
 import pytest
@@ -60,7 +60,7 @@ def client(data: SampleData) -> APIClient:
 
 
 @pytest.fixture()
-def data(admin_user, system_objects) -> SampleData:
+def data(admin_user: "User", system_objects: Any) -> SampleData:
 
     event: Event = EventFactory(
         application__project__organization__name=org_name,
@@ -88,7 +88,7 @@ def data(admin_user, system_objects) -> SampleData:
 def test_org_detail(client: APIClient, organization: "Organization") -> None:
     url = f"/api/o/{organization.slug}/"
     res = client.get(url)
-    data: dict = res.json()
+    data: dict[str, str] = res.json()
     assert data["slug"] == organization.slug
 
 
@@ -96,14 +96,14 @@ def test_org_channels(client: APIClient, org_channel: "Channel") -> None:
     # list organization channels
     url = f"/api/o/{org_channel.organization.slug}/c/"
     res = client.get(url)
-    data: dict = res.json()
+    data: list[dict[str, Any]] = res.json()
     assert data == [{"name": org_channel.name, "protocol": org_channel.protocol}]
 
 
 def test_user_list(client: APIClient, org_user: "User") -> None:
     url = f"/api/o/{org_user.organizations.first().slug}/u/"
     res = client.get(url)
-    data: list[dict] = res.json()
+    data: list[dict[str, Any]] = res.json()
     ids = [e["id"] for e in data]
     assert ids == [org_user.pk]
 
@@ -112,8 +112,8 @@ def test_user_add_existing(client: APIClient, data: SampleData, user: "User") ->
     # add exiting user to the organization
     url = f"/api/o/{data.org.slug}/u/"
     res = client.post(url, {"email": user.email})
-    data: dict = res.json()
-    assert data["id"] == user.pk
+    return_value: dict[str, Any] = res.json()
+    assert return_value["id"] == user.pk
 
 
 def test_user_create(client: APIClient, data: SampleData) -> None:

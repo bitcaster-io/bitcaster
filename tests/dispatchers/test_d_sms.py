@@ -1,17 +1,22 @@
+from typing import TYPE_CHECKING, Any
 from unittest import mock
 
 import pytest
 from strategy_field.utils import fqn
 from twilio.base.exceptions import TwilioRestException
 
+from bitcaster.dispatchers.base import Payload
 from bitcaster.dispatchers.twilio import TwilioSMS
 from bitcaster.exceptions import DispatcherError
 from bitcaster.models import Channel
 
+if TYPE_CHECKING:
+    from pytest import MonkeyPatch
+
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
-def test_twilio_error(monkeypatch, smsoutbox):
+def test_twilio_error(monkeypatch: "MonkeyPatch", smsoutbox: list[Any]) -> None:
     ch = Channel(
         dispatcher=fqn(TwilioSMS),
         config={"sid": "__sid__", "token": "__token__", "number": "123456"},
@@ -22,7 +27,7 @@ def test_twilio_error(monkeypatch, smsoutbox):
             assert TwilioSMS(ch).send("123456", "test")
 
 
-def test_twilio_send(mail_payload, smsoutbox, twilio_sid):
+def test_twilio_send(mail_payload: "Payload", smsoutbox: list[Any], twilio_sid: str) -> None:
     ch = Channel(
         dispatcher=fqn(TwilioSMS),
         config={"sid": twilio_sid, "token": "__token__", "number": "123456"},

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from strategy_field.utils import fqn
@@ -10,20 +10,20 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture()
-def email_channel(db):
+def email_channel(db: Any) -> "Channel":
     from testutils.factories.channel import ChannelFactory
 
     return ChannelFactory(dispatcher=fqn(EmailDispatcher))
 
 
 @pytest.fixture()
-def email_message(email_channel):
+def email_message(email_channel: "Channel") -> "Message":
     from testutils.factories import MessageFactory
 
     return MessageFactory(channel=email_channel)
 
 
-def test_instantiate(message: "Message", channel: "Channel"):
+def test_instantiate(message: "Message", channel: "Channel") -> None:
     m = message.clone(channel)
     assert m.channel == channel
     assert m.event == message.event
@@ -38,7 +38,7 @@ def test_instantiate(message: "Message", channel: "Channel"):
 
 
 @pytest.mark.parametrize("args", [{}, {"application": None}, {"project": None, "application": None}])
-def test_natural_key(args):
+def test_natural_key(args: dict[str, Any]) -> None:
     from testutils.factories import Message, MessageFactory
 
     msg: Message = MessageFactory(**args)

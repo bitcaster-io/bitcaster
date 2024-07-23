@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import pytest
 from django.urls import ResolverMatch, resolve
@@ -10,6 +10,8 @@ from testutils.perms import key_grants
 from bitcaster.auth.constants import Grant
 
 if TYPE_CHECKING:
+    from pytest import Metafunc
+
     from bitcaster.models import (
         ApiKey,
         Application,
@@ -44,7 +46,7 @@ event_slug = "evt1"
 
 
 @pytest.fixture()
-def client(data) -> APIClient:
+def client(data: "Context") -> APIClient:
     c = APIClient()
     g = key_grants(data["key"], Grant.FULL_ACCESS)
     g.start()
@@ -54,7 +56,7 @@ def client(data) -> APIClient:
 
 
 @pytest.fixture()
-def data(admin_user, system_objects) -> "Context":
+def data(admin_user: "User", system_objects: Any) -> "Context":
 
     event: Event = EventFactory(
         application__project__organization__slug=org_slug,
@@ -77,7 +79,7 @@ def data(admin_user, system_objects) -> "Context":
     }
 
 
-def pytest_generate_tests(metafunc):
+def pytest_generate_tests(metafunc: "Metafunc") -> None:
     if "url" in metafunc.fixturenames:
         m = []
         ids = []
@@ -100,6 +102,6 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize("url", m, ids=ids)
 
 
-def test_urls(client: APIClient, data: "Context", url) -> None:
+def test_urls(client: APIClient, data: "Context", url: str) -> None:
     res = client.get(url, data={})
     assert res.status_code == status.HTTP_200_OK, url

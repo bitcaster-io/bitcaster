@@ -1,8 +1,10 @@
 import pytest
 
+from bitcaster.models import Assignment
+
 
 @pytest.fixture
-def fcm_url():
+def fcm_url() -> str:
     return (
         "https://fcm.googleapis.com/fcm/send/dV8By98DApY:APA91bEZ-"
         "2soIyz59YPIRFUkGXhvrsDHlqyHCJj3O450hmwr8nee2FRRDPQOVkotnCI_"
@@ -11,7 +13,7 @@ def fcm_url():
 
 
 @pytest.fixture
-def push_assignment(fcm_url):
+def push_assignment(fcm_url: str) -> "Assignment":
     from strategy_field.utils import fqn
     from testutils.factories import AssignmentFactory
 

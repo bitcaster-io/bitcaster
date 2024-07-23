@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from bitcaster.models import Event, Occurrence
 
 
-def test_event_trigger(event: "Event"):
+def test_event_trigger(event: "Event") -> None:
     assert event.trigger({})
 
 
@@ -19,6 +19,6 @@ def test_event_trigger(event: "Event"):
         "ffe1b3e8-0fcd-42b5-8ccd-7304715b329d",
     ],
 )
-def test_trigger_correlation_id(event: "Event", cid: str):
+def test_trigger_correlation_id(event: "Event", cid: str) -> None:
     o: "Occurrence" = event.trigger({}, options={}, cid=cid)
     assert o.correlation_id == str(cid)

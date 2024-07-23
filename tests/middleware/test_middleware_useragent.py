@@ -1,23 +1,27 @@
-from constance.test import override_config
+import pytest
+from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
+from django.test.client import RequestFactory
 from django.utils import timezone
 
+pytestmarker = pytest.mark.django_db
 
-@override_config()
-def test_useragent(db, rf):
+
+def test_useragent(rf: RequestFactory) -> None:
     from bitcaster.middleware.user_agent import UserAgentMiddleware
 
-    request = rf.get("/", headers={"Content_Type": "text/html", "User-Agent": "Test-Agent %s" % timezone.now()})
+    request: "WSGIRequest" = rf.get(
+        "/", headers={"Content_Type": "text/html", "User-Agent": "Test-Agent %s" % timezone.now()}
+    )
     m = UserAgentMiddleware(lambda x: HttpResponse(""))
     m(request)
-    assert request.user_agent
+    assert request.user_agent  # type: ignore[attr-defined]
 
 
-@override_config()
-def test_useragent_missing(db, rf):
+def test_useragent_missing(rf: RequestFactory) -> None:
     from bitcaster.middleware.user_agent import UserAgentMiddleware
 
-    request = rf.get("/", headers={"Content_Type": "text/html", "User-Agent": ""})
+    request: "WSGIRequest" = rf.get("/", headers={"Content_Type": "text/html", "User-Agent": ""})
     m = UserAgentMiddleware(lambda x: HttpResponse(""))
     m(request)
-    assert request.user_agent
+    assert request.user_agent  # type: ignore[attr-defined]

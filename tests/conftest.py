@@ -10,7 +10,7 @@ import responses
 from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
-    from bitcaster.models import Project, User, Application
+    from bitcaster.models import Application, Project, User
 
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))

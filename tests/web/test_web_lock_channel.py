@@ -7,7 +7,6 @@ from strategy_field.utils import fqn
 
 from bitcaster.constants import Bitcaster
 from bitcaster.forms.locking import LockingModeChoice
-from bitcaster.state import state
 
 if TYPE_CHECKING:
     from bitcaster.models import Channel
@@ -19,7 +18,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def context(django_app_factory, admin_user) -> "Context":
+def context() -> "Context":
     from testutils.factories.channel import ChannelFactory, OrganizationFactory
 
     from bitcaster.dispatchers import GMailDispatcher
@@ -54,7 +53,7 @@ def context(django_app_factory, admin_user) -> "Context":
     }
 
 
-def test_bychannel(app: DjangoTestApp, context):
+def test_bychannel(app: DjangoTestApp, context: "Context") -> None:
     from bitcaster.models import Channel
 
     url = reverse("locking")

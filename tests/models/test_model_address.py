@@ -1,16 +1,18 @@
+from typing import Any
+
 import pytest
 
 from bitcaster.constants import AddressType
 from bitcaster.models import Address, Channel
 
 
-def test_manager_valid(address: "Address", channel: "Channel"):
+def test_manager_valid(address: "Address", channel: "Channel") -> None:
     assert not Address.objects.valid()
     address.validate_channel(channel)
     assert Address.objects.valid()
 
 
-def test_address(db):
+def test_address(db: Any) -> None:
     from testutils.factories import AddressFactory, ChannelFactory
 
     addr: "Address" = AddressFactory()
@@ -28,7 +30,7 @@ def test_address(db):
         ("acount", AddressType.ACCOUNT),
     ],
 )
-def test_save(value, type_):
+def test_save(value: str, type_: AddressType) -> None:
     from testutils.factories import AddressFactory, ChannelFactory
 
     addr: "Address" = AddressFactory()

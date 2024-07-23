@@ -1,9 +1,15 @@
+from typing import TYPE_CHECKING, Any, Type
+
 import pytest
+from django.db.models import Model
 
-KWARGS = {}
+if TYPE_CHECKING:
+    from pytest import FixtureRequest, Metafunc
+
+KWARGS: dict[str, str] = {}
 
 
-def pytest_generate_tests(metafunc):
+def pytest_generate_tests(metafunc: "Metafunc") -> None:
     import django
 
     django.setup()
@@ -20,11 +26,11 @@ def pytest_generate_tests(metafunc):
 
 
 @pytest.fixture()
-def record(db, request):
+def record(db: Any, request: "FixtureRequest") -> Model:
     from testutils.factories import get_factory_for_model
 
     model = request.getfixturevalue("model")
-    instance = model.objects.first()
+    instance: Model = model.objects.first()
     if not instance:
         full_name = f"{model._meta.app_label}.{model._meta.object_name}"
         factory = get_factory_for_model(model)
@@ -35,7 +41,7 @@ def record(db, request):
     return instance
 
 
-def test_natural_key(model, record):
-    key = record.natural_key()
+def test_natural_key(model: "Type[Model]", record: Model) -> None:
+    key = record.natural_key()  # type: ignore[attr-defined]
     assert all([isinstance(m, (int | str | None)) for m in key]), key
-    assert model.objects.get_by_natural_key(*key) == record, key
+    assert model.objects.get_by_natural_key(*key) == record, key  # type: ignore[attr-defined]

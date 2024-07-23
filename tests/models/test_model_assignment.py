@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from bitcaster.models import Address, Assignment, Channel
 
 
-def test_assignment(db):
+def test_assignment(db: Any) -> None:
     from testutils.factories import AssignmentFactory
 
     v: "Assignment" = AssignmentFactory()
@@ -18,7 +18,7 @@ def test_assignment(db):
 
 
 @pytest.mark.parametrize("args", [{}, {"project": None}])
-def test_natural_key(args):
+def test_natural_key(args: dict[str, Any]) -> None:
     from testutils.factories import Assignment, AssignmentFactory, ChannelFactory
 
     msg = AssignmentFactory(channel=ChannelFactory(**args))

@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, TypedDict
 from unittest.mock import MagicMock
 
 import pytest
+from django.test.client import RequestFactory
 from rest_framework.test import APIClient
 from testutils.factories.event import EventFactory
 from testutils.factories.key import ApiKeyFactory
@@ -10,7 +11,7 @@ from bitcaster.api.event import EventList
 from bitcaster.api.permissions import ApiKeyAuthentication
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Event
+    from bitcaster.models import ApiKey, Event, User
 
     Context = TypedDict(
         "Context",
@@ -27,13 +28,13 @@ def client() -> APIClient:
 
 
 @pytest.fixture()
-def context(admin_user) -> "Context":
+def context(admin_user: "User") -> "Context":
     event: "Event" = EventFactory()
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     return {"event": event, "key": key, "backend": ApiKeyAuthentication(), "view": MagicMock(spec=EventList)}
 
 
-def test_authenticate(rf, context: "Context") -> None:
+def test_authenticate(rf: "RequestFactory", context: "Context") -> None:
     b: ApiKeyAuthentication = context["backend"]
     api_key: ApiKey = context["key"]
 

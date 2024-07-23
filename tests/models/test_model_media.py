@@ -1,3 +1,4 @@
+from typing import Any
 from unittest import mock
 
 import factory
@@ -5,9 +6,11 @@ import pytest
 from django.core.files.base import ContentFile
 from django.db.models.fields.files import ImageFieldFile
 
+from bitcaster.models import Application
+
 
 @pytest.mark.parametrize("format,mime", [("ICO", "image/vnd.microsoft.icon"), ("JPEG", "image/jpeg")])
-def test_mediafile_success(application, format, mime):
+def test_mediafile_success(application: "Application", format: str, mime: str) -> None:
     from testutils.factories import MediaFile, MediaFileFactory
 
     m: MediaFile = MediaFileFactory.build(
@@ -19,7 +22,7 @@ def test_mediafile_success(application, format, mime):
     assert m.mime_type == mime
 
 
-def test_mediafile_missing(application):
+def test_mediafile_missing(application: "Application") -> None:
     from testutils.factories import MediaFile, MediaFileFactory
 
     m: MediaFile = MediaFileFactory.build(application=application, image=None)
@@ -29,7 +32,7 @@ def test_mediafile_missing(application):
 
 
 @pytest.mark.parametrize("args", [{}, {"application": None}, {"project": None, "application": None}])
-def test_natural_key(args):
+def test_natural_key(args: dict[str, Any]) -> None:
     from testutils.factories import MediaFile, MediaFileFactory
 
     media = MediaFileFactory(name="media", image=None, **args)
@@ -38,7 +41,7 @@ def test_natural_key(args):
 
 @pytest.mark.parametrize("size", ["size", ""])
 @pytest.mark.parametrize("mime", ["mime_type", ""])
-def test_imagefield(application, mime, size):
+def test_imagefield(application: "Application", mime: str, size: str) -> None:
     from testutils.factories import MediaFile, MediaFileFactory
 
     f = MediaFile.image.field
@@ -54,7 +57,7 @@ def test_imagefield(application, mime, size):
             media.image.field.update_dimension_fields(media, force=True)
 
 
-def test_imagefield_cache(application):
+def test_imagefield_cache(application: "Application") -> None:
     from testutils.factories import MediaFile, MediaFileFactory
 
     f = MediaFile.image.field
@@ -69,7 +72,7 @@ def test_imagefield_cache(application):
             media.image.field.update_dimension_fields(media, force=True)
 
 
-def test_imagefield_closed_file(application):
+def test_imagefield_closed_file(application: "Application") -> None:
     from testutils.factories import MediaFileFactory
 
     with mock.patch.object(ImageFieldFile, "closed", True):

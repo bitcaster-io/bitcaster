@@ -174,7 +174,7 @@ def test_add(app: "DjangoTestApp", message: "Message") -> None:
 
 
 @pytest.fixture(params=["notification", "event", "application", "project", "organization"])
-def level(request: FixtureRequest) -> "Channel":
+def level(request: "FixtureRequest") -> "Channel":
     return request.getfixturevalue(request.param)
 
 

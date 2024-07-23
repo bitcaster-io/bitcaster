@@ -6,7 +6,7 @@ from bitcaster.dispatchers.base import dispatcherManager
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
-def test_registry():
+def test_registry() -> None:
     from testutils.dispatcher import TDispatcher
 
     assert TDispatcher in dispatcherManager

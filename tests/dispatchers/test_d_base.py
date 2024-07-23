@@ -8,14 +8,14 @@ from bitcaster.dispatchers.base import dispatcherManager
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
-def test_registry():
+def test_registry() -> None:
     from testutils.dispatcher import TDispatcher
 
     assert TDispatcher in dispatcherManager
     assert fqn(TDispatcher) in dispatcherManager
 
 
-def test_methods():
+def test_methods() -> None:
     from testutils.dispatcher import TDispatcher
 
     assert TDispatcher(Mock()).subscribe(Mock())

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 from unittest.mock import Mock
 
 import pytest
@@ -11,10 +11,13 @@ from bitcaster.constants import SystemEvent
 from bitcaster.tasks import process_occurrence
 
 if TYPE_CHECKING:
+    from pytest import MonkeyPatch
+
     from bitcaster.models import (
         ApiKey,
         Application,
         Assignment,
+        Channel,
         Event,
         Organization,
         Project,
@@ -43,7 +46,7 @@ def client() -> APIClient:
 
 
 @pytest.fixture()
-def data(admin_user, email_channel) -> "Context":
+def data(admin_user: "User", email_channel: "Channel") -> "Context":
     from testutils.factories import (
         ApiKeyFactory,
         AssignmentFactory,
@@ -105,7 +108,7 @@ def test_trigger_security(client: APIClient, data: "Context") -> None:
         ([], status.HTTP_403_FORBIDDEN),
     ],
 )
-def test_trigger_permission(client: APIClient, data: "Context", perm, status_code) -> None:
+def test_trigger_permission(client: APIClient, data: "Context", perm: str, status_code: int) -> None:
     api_key = data["key"]
     url: str = data["url"]
     client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
@@ -156,7 +159,7 @@ def test_trigger_404(client: APIClient, data: "Context") -> None:
         assert res.data["error"]
 
 
-def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypatch) -> None:
+def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypatch: "MonkeyPatch") -> None:
     from bitcaster.models import Occurrence
 
     api_key = data["key"]
@@ -187,7 +190,9 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
     assert o.data == {"delivered": [target.pk], "recipients": [[target.address.value, target.channel.name]]}
 
 
-def test_trigger_limit_to_with_wrong_receiver(client: APIClient, data: "Context", monkeypatch, system_objects) -> None:
+def test_trigger_limit_to_with_wrong_receiver(
+    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+) -> None:
     from bitcaster.models import Occurrence
 
     api_key = data["key"]

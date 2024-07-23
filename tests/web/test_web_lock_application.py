@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 from django.urls import reverse
 from django_webtest import DjangoTestApp
+from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
 from bitcaster.constants import Bitcaster
 from bitcaster.forms.locking import LockingModeChoice
-from bitcaster.models import Application
-from bitcaster.state import state
+from bitcaster.models import Application, User
 
 if TYPE_CHECKING:
 
@@ -22,8 +22,9 @@ if TYPE_CHECKING:
         },
     )
 
+
 @pytest.fixture
-def context(django_app_factory, admin_user) -> "Context":
+def context(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> "Context":
     from testutils.factories.org import (
         ApplicationFactory,
         OrganizationFactory,
@@ -42,7 +43,7 @@ def context(django_app_factory, admin_user) -> "Context":
     return {"app": app1, "other_project": app3, "app2": app2, "bitcaster_app": app4, "app_locked": app_locked}
 
 
-def test_byapplication(app: DjangoTestApp, context):
+def test_byapplication(app: DjangoTestApp, context: "Context") -> None:
     from bitcaster.models import Application
 
     url = reverse("locking")

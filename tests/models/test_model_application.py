@@ -4,11 +4,11 @@ if TYPE_CHECKING:
     from bitcaster.models import Application, Event, Project, User
 
 
-def test_str(application: "Application"):
+def test_str(application: "Application") -> None:
     assert str(application) == application.name
 
 
-def test_set_owner(project: "Project", user: "User"):
+def test_set_owner(project: "Project", user: "User") -> None:
     from bitcaster.models import Application
 
     a = Application.objects.create(name="App1", project=project)
@@ -18,7 +18,7 @@ def test_set_owner(project: "Project", user: "User"):
     assert a.owner == user
 
 
-def test_register_event(application: "Application"):
+def test_register_event(application: "Application") -> None:
     ev: "Event" = application.register_event("test_event")
     assert ev.name == "test_event"
     assert ev.application == application

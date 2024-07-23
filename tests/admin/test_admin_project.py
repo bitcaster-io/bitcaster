@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture()
-def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> DjangoTestApp:
+def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTestApp":
     from testutils.factories import SuperUserFactory
 
     django_app = django_app_factory(csrf_checks=False)

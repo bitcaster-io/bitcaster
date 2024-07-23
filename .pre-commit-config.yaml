@@ -32,8 +32,9 @@ repos:
         language: python
         types: [ python ]
         additional_dependencies: [flake8]
+
       - id: mypy
-        exclude: (^~.*|^tests/|manage\.py|develop\.py)
+        exclude: (^~.*|manage\.py|develop\.py|conftest.py)
         args: [ "--config-file", ".mypy.ini" ]
         require_serial: true
         name: mypy

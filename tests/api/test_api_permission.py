@@ -3,6 +3,7 @@ from unittest import mock
 from unittest.mock import MagicMock
 
 import pytest
+from django.test.client import RequestFactory
 from rest_framework.test import APIClient
 from testutils.factories.event import EventFactory
 from testutils.factories.key import ApiKeyFactory
@@ -13,7 +14,7 @@ from bitcaster.api.urls import EventTrigger
 from bitcaster.auth.constants import Grant
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Event
+    from bitcaster.models import ApiKey, Event, User
 
     Context = TypedDict(
         "Context",
@@ -30,7 +31,7 @@ def client() -> APIClient:
 
 
 @pytest.fixture()
-def context(admin_user) -> "Context":
+def context(admin_user: "User") -> "Context":
     event: "Event" = EventFactory()
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     return {
@@ -42,7 +43,7 @@ def context(admin_user) -> "Context":
 
 
 @pytest.mark.parametrize("g", [g for g in Grant])
-def test_has_specific_permission(rf, g, context: "Context") -> None:
+def test_has_specific_permission(rf: RequestFactory, g: Grant, context: "Context") -> None:
     api_key: ApiKey = context["key"]
     p: ApiBasePermission = context["backend"]
     view: "EventTrigger" = context["view"]
@@ -54,7 +55,7 @@ def test_has_specific_permission(rf, g, context: "Context") -> None:
                 assert p.has_permission(req, view)
 
 
-def test_scope(rf, context: "Context") -> None:
+def test_scope(rf: RequestFactory, context: "Context") -> None:
     api_key: ApiKey = context["key"]
     p: ApiBasePermission = context["backend"]
     view: "EventTrigger" = context["view"]
@@ -71,7 +72,7 @@ def test_scope(rf, context: "Context") -> None:
                 assert p.has_object_permission(req, view, event)
 
 
-def test_has_permission(rf, context: "Context") -> None:
+def test_has_permission(rf: RequestFactory, context: "Context") -> None:
     api_key: ApiKey = context["key"]
     p: ApiBasePermission = context["backend"]
     view: "EventTrigger" = context["view"]
@@ -97,7 +98,7 @@ def test_has_permission(rf, context: "Context") -> None:
                     assert p.has_permission(req, view)
 
 
-def test_user_inactive(rf, context: "Context") -> None:
+def test_user_inactive(rf: RequestFactory, context: "Context") -> None:
     from django.contrib.auth.models import AnonymousUser
 
     api_key: ApiKey = context["key"]
@@ -113,7 +114,7 @@ def test_user_inactive(rf, context: "Context") -> None:
                         assert not p.has_permission(req, view)
 
 
-def test_has_object_permission(rf, context: "Context") -> None:
+def test_has_object_permission(rf: RequestFactory, context: "Context") -> None:
     api_key: ApiKey = context["key"]
     p: ApiBasePermission = context["backend"]
     view: "EventTrigger" = context["view"]

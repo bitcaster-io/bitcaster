@@ -1,5 +1,5 @@
 import json
-from typing import NamedTuple
+from typing import Any, NamedTuple
 
 import factory
 import pytest
@@ -23,6 +23,7 @@ from bitcaster.models import (
     Event,
     Organization,
     Project,
+    User,
     UserRole,
 )
 
@@ -60,7 +61,7 @@ def client(data: SampleData) -> APIClient:
 
 
 @pytest.fixture()
-def data(admin_user, system_objects) -> SampleData:
+def data(admin_user: "User", system_objects: Any) -> SampleData:
 
     event: Event = EventFactory(
         application__project__organization__name=org_name,

@@ -1,17 +1,23 @@
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import Mock
 
 import pytest
 from django.core.exceptions import ValidationError
+from responses import RequestsMock
 
 from bitcaster.dispatchers import MailgunDispatcher
+from bitcaster.dispatchers.base import Payload
+
+if TYPE_CHECKING:
+    from pytest import MonkeyPatch
 
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
 @pytest.mark.parametrize("mail_payload", ("", "html_message"), indirect=True)
-def test_mailgun(monkeypatch, mail_payload, mocked_responses):
+def test_mailgun(monkeypatch: "MonkeyPatch", mail_payload: Payload, mocked_responses: RequestsMock) -> None:
     from bitcaster.dispatchers import MailgunDispatcher
     from bitcaster.models import Channel, Project
 
@@ -24,7 +30,7 @@ def test_mailgun(monkeypatch, mail_payload, mocked_responses):
     MailgunDispatcher(ch).send(os.environ["TEST_EMAIL_RECIPIENT"], mail_payload)
 
 
-def test_config():
+def test_config() -> None:
     d: MailgunDispatcher = MailgunDispatcher(Mock(config={}))
     with pytest.raises(ValidationError):
         d.config

@@ -1,5 +1,6 @@
 from typing import Optional, TypeVar
 
+from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpRequest, HttpResponseBase, HttpResponseRedirect
 from rest_framework.request import Request
 

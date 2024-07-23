@@ -25,13 +25,13 @@ pytestmark = [pytest.mark.api, pytest.mark.django_db]
 
 
 @pytest.fixture()
-def client(admin_user) -> APIClient:
+def client(admin_user: "User") -> APIClient:
     c = APIClient()
     return c
 
 
 @pytest.fixture()
-def data(admin_user) -> "Context":
+def data(admin_user: "User") -> "Context":
     event: "Event" = EventFactory()
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     return {

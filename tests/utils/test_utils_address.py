@@ -4,7 +4,7 @@ from bitcaster.utils.address import is_email, is_phonenumber
 
 
 @pytest.mark.parametrize("value, result", [("user@email.com", True), ("aaa", False), (123, False), ("a@b@", False)])
-def test_is_email(value, result: bool):
+def test_is_email(value: str, result: bool) -> None:
     assert is_email(value) is result
 
 
@@ -17,5 +17,5 @@ def test_is_email(value, result: bool):
         ("+1 (233) 999-6397", True),
     ],
 )
-def test_is_phonenumber(value, result):
+def test_is_phonenumber(value: str, result: bool) -> None:
     assert is_phonenumber(value) is result

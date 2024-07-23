@@ -4,7 +4,9 @@ from unittest.mock import Mock
 import pytest
 
 if TYPE_CHECKING:
-    from bitcaster.models import Assignment, Notification, Occurrence
+    from pytest import MonkeyPatch
+
+    from bitcaster.models import Assignment, Notification, Occurrence, User
 
     Context = TypedDict(
         "Context",
@@ -13,7 +15,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def context(occurrence: "Occurrence", user) -> "Context":
+def context(occurrence: "Occurrence", user: "User") -> "Context":
     from testutils.factories import (
         AssignmentFactory,
         ChannelFactory,
@@ -32,7 +34,9 @@ def context(occurrence: "Occurrence", user) -> "Context":
     [pytest.param({"foo": "bar"}, 1, id="matched"), pytest.param({"foo": "dummy"}, 0, id="unmatched")],
 )
 @pytest.mark.django_db(transaction=True)
-def test_model_occurrence_filter(payload: dict, notified_count, context: "Context", monkeypatch):
+def test_model_occurrence_filter(
+    payload: dict[str, str], notified_count: int, context: "Context", monkeypatch: "MonkeyPatch"
+) -> None:
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", mock := Mock())
 
     occurrence: Occurrence = context["notification"].event.trigger(payload)
@@ -48,17 +52,17 @@ def test_model_occurrence_filter(payload: dict, notified_count, context: "Contex
         }
 
 
-def test_model_occurrence_no_notifications(occurrence: "Occurrence", monkeypatch):
+def test_model_occurrence_no_notifications(occurrence: "Occurrence", monkeypatch: "MonkeyPatch") -> None:
     monkeypatch.setattr("bitcaster.models.notification.Notification.get_context", mock := Mock())
     assert occurrence.process() is True
     assert mock.called is False
 
 
-def test_str(occurrence: "Occurrence"):
+def test_str(occurrence: "Occurrence") -> None:
     assert str(occurrence)
 
 
-def test_natural_key(occurrence: "Occurrence"):
+def test_natural_key(occurrence: "Occurrence") -> None:
     from bitcaster.models import Occurrence
 
     assert Occurrence.objects.get_by_natural_key(*occurrence.natural_key()) == occurrence

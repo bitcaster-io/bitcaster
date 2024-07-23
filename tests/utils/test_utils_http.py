@@ -1,7 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generator
 from unittest import mock
 
 import pytest
+from pytest_django.fixtures import SettingsWrapper
 
 from bitcaster.state import state
 from bitcaster.utils.http import (
@@ -14,10 +15,11 @@ from bitcaster.utils.http import (
 if TYPE_CHECKING:
     from django.http import HttpRequest
     from django.test.client import RequestFactory
+    from pytest import MonkeyPatch
 
 
 @pytest.fixture(autouse=True)
-def r(monkeypatch, rf: "RequestFactory"):
+def r(monkeypatch: "MonkeyPatch", rf: "RequestFactory") -> Generator[None, None, None]:
     req: "HttpRequest" = rf.get("/", HTTP_HOST="127.0.0.1")
     m = mock.patch("bitcaster.state.state.request", req)
     m.start()
@@ -25,11 +27,11 @@ def r(monkeypatch, rf: "RequestFactory"):
     m.stop()
 
 
-def test_absolute_reverse():
+def test_absolute_reverse() -> None:
     assert absolute_reverse("home") == "http://127.0.0.1/"
 
 
-def test_absolute_uri(settings):
+def test_absolute_uri(settings: "SettingsWrapper") -> None:
     assert absolute_uri("aa") == "http://127.0.0.1/aa"
     assert absolute_uri("") == "http://127.0.0.1/"
     settings.SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
@@ -40,11 +42,11 @@ def test_absolute_uri(settings):
         assert absolute_uri("/test/") == "/test/"
 
 
-def test_get_server_host():
+def test_get_server_host() -> None:
     assert get_server_host() == "127.0.0.1"
 
 
-def test_get_server_url(settings):
+def test_get_server_url(settings: "SettingsWrapper") -> None:
     assert get_server_url() == "http://127.0.0.1"
     with state.configure(request=None):
         assert get_server_url() == ""

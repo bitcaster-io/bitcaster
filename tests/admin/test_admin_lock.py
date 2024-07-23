@@ -28,7 +28,7 @@ class RegexList(_RegexList):  # type: ignore[misc]
             self.append(e)
 
 
-def pytest_generate_tests(metafunc: Metafunc) -> None:
+def pytest_generate_tests(metafunc: "Metafunc") -> None:
     import django
 
     from bitcaster.admin.mixins import LockMixinAdmin
