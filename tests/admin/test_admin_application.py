@@ -27,13 +27,13 @@ def application(db: Any) -> Application:
 
 
 @pytest.fixture()
-def bitcaster(db):
+def bitcaster(db: Any) -> "Application":
     from testutils.factories import ApplicationFactory
 
     return ApplicationFactory(name="bitcaster")
 
 
-def test_get_readonly_fields(app, application, bitcaster) -> None:
+def test_get_readonly_fields(app: "DjangoTestApp", application: "Application", bitcaster: "Application") -> None:
     url = reverse("admin:bitcaster_application_change", args=[application.pk])
     res = app.get(url)
     frm = res.forms["application_form"]

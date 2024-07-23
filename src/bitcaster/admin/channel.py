@@ -19,7 +19,7 @@ from bitcaster.models import Assignment, Channel, Organization, Project, User
 from ..dispatchers.base import Payload, dispatcherManager
 from ..forms.channel import ChannelChangeForm
 from .base import BaseAdmin, ButtonColor
-from .mixins import LockMixin, TwoStepCreateMixin
+from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
@@ -180,7 +180,7 @@ class ChannelWizard(CookieWizardView):
 wizard = ChannelWizard.as_view()
 
 
-class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixin[Channel], VersionAdmin[Channel]):
+class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], VersionAdmin[Channel]):
     search_fields = ("name",)
     list_display = ("name", "organization", "project", "dispatcher_", "active", "locked", "protocol")
     list_filter = (

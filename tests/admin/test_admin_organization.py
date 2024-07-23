@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import pytest
 from django.urls import reverse
@@ -7,6 +7,9 @@ from testutils.factories import OrganizationFactory
 from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
+    from django_webtest import DjangoTestApp
+    from django_webtest.pytest_plugin import MixinWithInstanceVariables
+
     from bitcaster.models import Channel, Message, Organization
 
     Context = TypedDict(
@@ -16,7 +19,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture()
-def app(django_app_factory, db):
+def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 
     django_app = django_app_factory(csrf_checks=False)
@@ -42,7 +45,7 @@ def context() -> "Context":
     }
 
 
-def test_create_template(app, context) -> None:
+def test_create_template(app: "DjangoTestApp", context: "Context") -> None:
     channel: "Channel" = context["channel"]
     org: "Organization" = context["organization"]
 
@@ -56,7 +59,7 @@ def test_create_template(app, context) -> None:
     assert org.message_set.filter(name="Test Template").count() == 1
 
 
-def test_avoid_duplicates_template(app, context) -> None:
+def test_avoid_duplicates_template(app: "DjangoTestApp", context: "Context") -> None:
     message: "Message" = context["message"]
     channel: "Channel" = context["channel"]
     org: "Organization" = context["organization"]
@@ -73,7 +76,7 @@ def test_avoid_duplicates_template(app, context) -> None:
     assert org.message_set.filter(name=message.name).count() == 1
 
 
-def test_protected_org(app) -> None:
+def test_protected_org(app: "DjangoTestApp") -> None:
     dl = OrganizationFactory(name=Bitcaster.ORGANIZATION)
     url = reverse("admin:bitcaster_organization_change", args=[dl.pk])
     res = app.get(url)

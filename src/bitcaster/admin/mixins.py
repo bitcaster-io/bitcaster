@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel
 
 
-class LockMixin(admin.ModelAdmin["AnyModel"]):
+class LockMixinAdmin(admin.ModelAdmin["AnyModel"]):
 
     def render_change_form(
         self,

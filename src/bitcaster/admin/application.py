@@ -13,7 +13,7 @@ from bitcaster.models import Application
 
 from ..state import state
 from .base import BaseAdmin
-from .mixins import LockMixin
+from .mixins import LockMixinAdmin
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ApplicationAdmin(BaseAdmin, LockMixin[Application], admin.ModelAdmin[Application]):
+class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[Application]):
     search_fields = ("name",)
     list_display = ("name", "project", "organization", "active", "locked")
     list_filter = (

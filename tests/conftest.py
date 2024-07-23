@@ -10,8 +10,7 @@ import responses
 from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
-    from bitcaster.models import Project, User
-
+    from bitcaster.models import Project, User, Application
 
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))
@@ -157,7 +156,7 @@ def os4d(db):
 
 
 @pytest.fixture()
-def bitcaster(os4d):
+def bitcaster(os4d) -> "Application":
     from testutils.factories.org import ApplicationFactory
 
     return ApplicationFactory(

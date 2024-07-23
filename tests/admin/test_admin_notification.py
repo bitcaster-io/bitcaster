@@ -1,14 +1,17 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from django.urls import reverse
 
 if TYPE_CHECKING:
+    from django_webtest import DjangoTestApp
+    from django_webtest.pytest_plugin import MixinWithInstanceVariables
+
     from bitcaster.models import Message, Notification
 
 
 @pytest.fixture()
-def app(django_app_factory, db):
+def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTestApp":
     from testutils.factories import SuperUserFactory
 
     django_app = django_app_factory(csrf_checks=False)
@@ -19,7 +22,7 @@ def app(django_app_factory, db):
 
 
 @pytest.fixture()
-def notification(django_app_factory, db):
+def notification(django_app_factory: "MixinWithInstanceVariables", db: "Any") -> "Notification":
     from testutils.factories import ChannelFactory, MessageFactory, NotificationFactory
 
     n = NotificationFactory(event__channels=[ChannelFactory()])
@@ -27,7 +30,7 @@ def notification(django_app_factory, db):
     return n
 
 
-def test_create_template(app, notification: "Notification") -> None:
+def test_create_template(app: "DjangoTestApp", notification: "Notification") -> None:
     url = reverse("admin:bitcaster_notification_messages", args=[notification.pk])
     res = app.get(url)
     frm = res.forms["messageForm"]
@@ -38,7 +41,7 @@ def test_create_template(app, notification: "Notification") -> None:
     assert notification.messages.filter(name="Test Template").count() == 1
 
 
-def test_avoid_duplicates_template(app, notification: "Notification") -> None:
+def test_avoid_duplicates_template(app: "DjangoTestApp", notification: "Notification") -> None:
     from testutils.factories import MessageFactory
 
     message: "Message" = MessageFactory(notification=notification, event=notification.event)

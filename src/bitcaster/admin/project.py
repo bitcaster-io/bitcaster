@@ -11,7 +11,7 @@ from ..constants import Bitcaster
 from ..forms.project import ProjectChangeForm
 from ..state import state
 from .base import BaseAdmin
-from .mixins import LockMixin
+from .mixins import LockMixinAdmin
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ProjectAdmin(BaseAdmin, LockMixin[Project], admin.ModelAdmin[Project]):
+class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]):
     search_fields = ("name",)
     list_display = ("name", "organization", "environments")
     list_filter = (

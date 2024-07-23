@@ -16,7 +16,7 @@ from ..forms.event import EventChangeForm
 from ..state import state
 from .base import BaseAdmin
 from .message import Message
-from .mixins import LockMixin, TwoStepCreateMixin
+from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
     from django.http import HttpResponse
@@ -40,7 +40,7 @@ class EventTestForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
 
 
-class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixin[Event], admin.ModelAdmin[Event]):
+class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], admin.ModelAdmin[Event]):
     search_fields = ("name",)
     list_display = ("name", "application", "active", "locked")
     list_filter = (
