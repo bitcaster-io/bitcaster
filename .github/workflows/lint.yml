@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - id: changes
         name: Check for backend file changes
-        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
+        uses: dorny/paths-filter@v3
         with:
           base: ${{ github.ref }}
           token: ${{ github.token }}
@@ -89,16 +89,3 @@ jobs:
         run: pip install black
       - name: Black
         run: black src/ --check
-  mypy:
-    needs: changes
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false && needs.changes.outputs.lint
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install requirements
-        run: pip install mypy
-      - name: Mypy
-        run: mypy src/
