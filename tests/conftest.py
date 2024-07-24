@@ -1,5 +1,6 @@
 import os
 import sys
+import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -96,8 +97,8 @@ def pytest_configure(config):
     from django.conf import settings
 
     settings.ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-    settings.MEDIA_ROOT = "~build/tmp/media"
-    settings.STATIC_ROOT = "~build/tmp/static"
+    settings.MEDIA_ROOT = "%s/media" % tempfile.gettempdir()
+    settings.STATIC_ROOT = "%s/static" % tempfile.gettempdir()
     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
     os.makedirs(settings.STATIC_ROOT, exist_ok=True)
 
