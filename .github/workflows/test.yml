@@ -104,6 +104,8 @@ jobs:
     services:
       redis:
         image: redis
+        ports:
+          - 6379:6379
       db:
         image: postgres:14
         env:
@@ -126,14 +128,13 @@ jobs:
         run: |
           docker run --rm \
             -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/bitcaster \
-            -e SECRET_KEY=secret_key \
-            -e CACHE_URL=redis://redis:6379/0 \
-            -e CELERY_BROKER_URL=redis://redis:6379/0 \
+            -e CACHE_URL=redis://localhost:6379/0 \
+            -e CELERY_BROKER_URL=localhost://redis:6379/0 \
             --network host \
             -v $PWD:/code/app \
             -w /code/app \
             -t ${{needs.build.outputs.image}} \
-            pytest tests -v --create-db -v --maxfail=10
+            pytest tests -v --create-db -n auto --maxfail=10
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:

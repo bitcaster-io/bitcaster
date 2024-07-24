@@ -59,10 +59,21 @@ def pytest_configure(config):
     os.environ.setdefault("TEST_EMAIL_SENDER", "sender@example.com")
     os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
 
+    os.environ["CSRF_COOKIE_SECURE"] = "False"
+    os.environ["CSRF_TRUSTED_ORIGINS"] = "https://close-pro-impala.ngrok-free.app,http://localhost"
+
     os.environ["MAILGUN_API_KEY"] = "11"
     os.environ["MAILGUN_SENDER_DOMAIN"] = "mailgun.domain"
     os.environ["MAILJET_API_KEY"] = "11"
     os.environ["MAILJET_SECRET_KEY"] = "11"
+
+    os.environ["SECRET_KEY"] = "super-secret-key-just-for-testing"
+    os.environ["SECURE_HSTS_PRELOAD"] = "0"
+    os.environ["SECURE_SSL_REDIRECT"] = "False"
+    os.environ["SESSION_COOKIE_DOMAIN"] = ""
+    os.environ["SESSION_COOKIE_SECURE"] = "False"
+    os.environ["SOCIAL_AUTH_REDIRECT_IS_HTTPS"] = "False"
+
     os.environ["STORAGE_DEFAULT"] = "django.core.files.storage.FileSystemStorage"
     os.environ["STORAGE_MEDIA"] = "django.core.files.storage.FileSystemStorage"
     os.environ["STORAGE_STTIC"] = "django.core.files.storage.FileSystemStorage"
