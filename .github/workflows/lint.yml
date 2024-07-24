@@ -94,11 +94,25 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false && needs.changes.outputs.lint
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/checkout@v4
+      - name: Restore cached venv
+        id: cache-venv-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: '__pypackages__'
+          key: ${{ runner.os }}-venv
       - name: Install requirements
-        run: pip install mypy mypy-boto3 mypy-boto3-sns django-stubs
+        if: steps.cache-venv-restore.outputs.cache-hit != 'true'
+        run: |
+          pip install pdm
+          pdm insatall
+      - name: Cache venv
+        uses: actions/cache/save@v4
+        with:
+          path: '__pypackages__'
+          key: ${{ runner.os }}-venv
       - name: Mypy
         run: mypy --install-types --non-interactive src/
