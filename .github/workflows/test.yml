@@ -129,7 +129,7 @@ jobs:
           docker run --rm \
             -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/bitcaster \
             -e CACHE_URL=redis://localhost:6379/0 \
-            -e CELERY_BROKER_URL=localhost://redis:6379/0 \
+            -e CELERY_BROKER_URL=redis://localhost:6379/0 \
             --network host \
             -v $PWD:/code/app \
             -w /code/app \
