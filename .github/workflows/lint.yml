@@ -36,9 +36,8 @@ jobs:
       lint: ${{ steps.changes.outputs.lint }}
       docker: ${{ steps.changes.outputs.docker_base }}
     steps:
-#      - run: git config --global --add safe.directory $(realpath .)
-      - uses: actions/checkout@4
-      - run: ls
+      - run: git config --global --add safe.directory $(realpath .)
+      - uses: actions/checkout@v4
       - id: changes
         name: Check for backend file changes
         uses: dorny/paths-filter@v3
