@@ -205,7 +205,6 @@ ENV GITHUB_SERVER_URL=$GITHUB_SERVER_URL
 ARG GITHUB_REPOSITORY
 ENV GITHUB_REPOSITORY=$GITHUB_REPOSITORY
 
-ENV
 
 WORKDIR /code
 COPY --chown=user:app --from=python_prod_deps /code/__pypackages__ /code/__pypackages__
