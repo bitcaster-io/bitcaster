@@ -115,4 +115,4 @@ jobs:
           path: '__pypackages__'
           key: ${{ runner.os }}-venv
       - name: Mypy
-        run: mypy --install-types --non-interactive src/
+        run: __pypackages__/bin/mypy --install-types --non-interactive src/
