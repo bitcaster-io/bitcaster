@@ -78,7 +78,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
-      - id: checksum
+      - name: Define code checksum
+        id: checksum
         uses: ./.github/actions/checksum
       - name: Build Image
         id: build
@@ -106,7 +107,7 @@ jobs:
       db:
         image: postgres:14
         env:
-          POSTGRES_DATABASE: country_workspace
+          POSTGRES_DATABASE: bitcaster
           POSTGRES_PASSWORD: postgres
           POSTGRES_USERNAME: postgres
         options: >-
@@ -122,7 +123,7 @@ jobs:
       - name: Run tests
         run: |
           docker run --rm \
-            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/country_workspace \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/bitcaster \
             -e SECRET_KEY=secret_key \
             -e CACHE_URL=redis://redis:6379/0 \
             -e CELERY_BROKER_URL=redis://redis:6379/0 \
