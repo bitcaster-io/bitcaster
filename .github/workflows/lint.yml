@@ -98,21 +98,36 @@ jobs:
         with:
           python-version: '3.12'
       - uses: actions/checkout@v4
+
       - name: Restore cached venv
         id: cache-venv-restore
         uses: actions/cache/restore@v4
         with:
-          path: '__pypackages__'
+          path: __pypackages__
           key: ${{ runner.os }}-venv
+      - name: Restore cached pdm
+        id: cache-venv-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: /pdm_cache
+          key: ${{ runner.os }}-pdm
       - name: Install requirements
         if: steps.cache-venv-restore.outputs.cache-hit != 'true'
         run: |
           pip install pdm
+          pdm config python.use_venv false
+          pdm config check_update false
+          pdm config cache_dir /pdm_cache
           pdm sync --no-editable -v --no-self
+      - name: Cache pdm
+        uses: actions/cache/save@v4
+        with:
+          path: /pdm_cache
+          key: ${{ runner.os }}-pdm_cache
       - name: Cache venv
         uses: actions/cache/save@v4
         with:
-          path: '__pypackages__'
+          path: __pypackages__
           key: ${{ runner.os }}-venv
       - name: Mypy
         run: __pypackages__/3.12/bin/mypy --install-types --non-interactive src/

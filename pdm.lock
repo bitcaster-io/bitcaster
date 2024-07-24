@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.2"
-content_hash = "sha256:aafa09de9edbe11c03d189e4b26476b43e755afd934da9e882bd300f9e352c98"
+content_hash = "sha256:8bd9682199b808154ff33bc40f8f77931b9b056bcbf59ff0a4ae9930cfab6e35"
 
 [[package]]
 name = "aiohttp"
@@ -270,17 +270,17 @@ files = [
 
 [[package]]
 name = "boto3-stubs"
-version = "1.34.142"
+version = "1.34.148"
 requires_python = ">=3.8"
-summary = "Type annotations for boto3 1.34.142 generated with mypy-boto3-builder 7.25.0"
+summary = "Type annotations for boto3 1.34.148 generated with mypy-boto3-builder 7.25.0"
 groups = ["dev"]
 dependencies = [
     "botocore-stubs",
     "types-s3transfer",
 ]
 files = [
-    {file = "boto3_stubs-1.34.142-py3-none-any.whl", hash = "sha256:ee6eac801a2526c53bd6db9598006d81f706e9d657e44462c6029599de17719e"},
-    {file = "boto3_stubs-1.34.142.tar.gz", hash = "sha256:95befc163b5cac317f163a6be656c07c062cdddd22f100898f7abf00a9fa5c81"},
+    {file = "boto3_stubs-1.34.148-py3-none-any.whl", hash = "sha256:c0cb6b82fb8c7c123441c077eb3e450fb68f97addfe7239b213cdcc8ab1b562e"},
+    {file = "boto3_stubs-1.34.148.tar.gz", hash = "sha256:d4cb7aa31fb8e782d60a47c23bb7d9545380ff7e5ab5e58775d810cf27169770"},
 ]
 
 [[package]]
@@ -671,17 +671,6 @@ files = [
 ]
 
 [[package]]
-name = "decorator"
-version = "5.1.1"
-requires_python = ">=3.5"
-summary = "Decorators for Humans"
-groups = ["dev"]
-files = [
-    {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
-    {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
-]
-
-[[package]]
 name = "defusedxml"
 version = "0.8.0rc2"
 requires_python = ">=3.6"
@@ -752,9 +741,9 @@ files = [
 
 [[package]]
 name = "django-anymail"
-version = "11.0"
+version = "11.0.1"
 requires_python = ">=3.7"
-summary = "Django email backends and webhooks for Amazon SES, Brevo (Sendinblue),     MailerSend, Mailgun, Mailjet, Mandrill, Postal, Postmark, Resend,     SendGrid, SparkPost and Unisender Go"
+summary = "Django email backends and webhooks for Amazon SES, Brevo,  MailerSend, Mailgun, Mailjet, Mandrill, Postal, Postmark, Resend,  SendGrid, SparkPost and Unisender Go  (EmailBackend, transactional email tracking and inbound email signals)"
 groups = ["default"]
 dependencies = [
     "django>=2.0",
@@ -762,23 +751,23 @@ dependencies = [
     "urllib3>=1.25.0",
 ]
 files = [
-    {file = "django_anymail-11.0-py3-none-any.whl", hash = "sha256:add43d8dc496b559146be112e8088a9986d5a1253fb8fe1fbd225924db64d947"},
-    {file = "django_anymail-11.0.tar.gz", hash = "sha256:f468b5662ca14f0699886ae18d952236cfc682e8e4c1d1c361a0e1099dbb795d"},
+    {file = "django_anymail-11.0.1-py3-none-any.whl", hash = "sha256:d8ebb641d304be873a5dcc3d5a6aa3ca1beb3a35a207d353cf24fd3c10ae57f2"},
+    {file = "django_anymail-11.0.1.tar.gz", hash = "sha256:eaa8a2166d173552607bb837ce3caaee827d1c68031e1245a5516e3b33baee71"},
 ]
 
 [[package]]
 name = "django-anymail"
-version = "11.0"
+version = "11.0.1"
 extras = ["all"]
 requires_python = ">=3.7"
-summary = "Django email backends and webhooks for Amazon SES, Brevo (Sendinblue),     MailerSend, Mailgun, Mailjet, Mandrill, Postal, Postmark, Resend,     SendGrid, SparkPost and Unisender Go"
+summary = "Django email backends and webhooks for Amazon SES, Brevo,  MailerSend, Mailgun, Mailjet, Mandrill, Postal, Postmark, Resend,  SendGrid, SparkPost and Unisender Go  (EmailBackend, transactional email tracking and inbound email signals)"
 groups = ["default"]
 dependencies = [
-    "django-anymail==11.0",
+    "django-anymail==11.0.1",
 ]
 files = [
-    {file = "django_anymail-11.0-py3-none-any.whl", hash = "sha256:add43d8dc496b559146be112e8088a9986d5a1253fb8fe1fbd225924db64d947"},
-    {file = "django_anymail-11.0.tar.gz", hash = "sha256:f468b5662ca14f0699886ae18d952236cfc682e8e4c1d1c361a0e1099dbb795d"},
+    {file = "django_anymail-11.0.1-py3-none-any.whl", hash = "sha256:d8ebb641d304be873a5dcc3d5a6aa3ca1beb3a35a207d353cf24fd3c10ae57f2"},
+    {file = "django_anymail-11.0.1.tar.gz", hash = "sha256:eaa8a2166d173552607bb837ce3caaee827d1c68031e1245a5516e3b33baee71"},
 ]
 
 [[package]]
@@ -852,7 +841,7 @@ files = [
 name = "django-csp"
 version = "3.8"
 summary = "Django Content Security Policy support."
-groups = ["default", "dev"]
+groups = ["default"]
 dependencies = [
     "Django>=3.2",
 ]
@@ -875,7 +864,7 @@ files = [
 
 [[package]]
 name = "django-debug-toolbar"
-version = "4.4.5"
+version = "4.4.6"
 requires_python = ">=3.8"
 summary = "A configurable set of panels that display various debug information about the current request/response."
 groups = ["default"]
@@ -884,8 +873,8 @@ dependencies = [
     "sqlparse>=0.2",
 ]
 files = [
-    {file = "django_debug_toolbar-4.4.5-py3-none-any.whl", hash = "sha256:91425606673ee674d780f7aeedf3595c264eb382dcf41f55c6779577900904c0"},
-    {file = "django_debug_toolbar-4.4.5.tar.gz", hash = "sha256:8298ce966b4c8fc71430082dd4739ef2badb5f867734e1973a413c4ab2ea81b7"},
+    {file = "django_debug_toolbar-4.4.6-py3-none-any.whl", hash = "sha256:3beb671c9ec44ffb817fad2780667f172bd1c067dbcabad6268ce39a81335f45"},
+    {file = "django_debug_toolbar-4.4.6.tar.gz", hash = "sha256:36e421cb908c2f0675e07f9f41e3d1d8618dc386392ec82d23bcfcd5d29c7044"},
 ]
 
 [[package]]
@@ -1101,7 +1090,7 @@ name = "django-stubs"
 version = "5.0.2"
 requires_python = ">=3.8"
 summary = "Mypy stubs for Django"
-groups = ["default", "dev"]
+groups = ["default"]
 dependencies = [
     "asgiref",
     "django",
@@ -1245,19 +1234,18 @@ files = [
 
 [[package]]
 name = "docker"
-version = "7.0.0"
+version = "7.1.0"
 requires_python = ">=3.8"
 summary = "A Python library for the Docker Engine API."
 groups = ["dev"]
 dependencies = [
-    "packaging>=14.0",
     "pywin32>=304; sys_platform == \"win32\"",
     "requests>=2.26.0",
     "urllib3>=1.26.0",
 ]
 files = [
-    {file = "docker-7.0.0-py3-none-any.whl", hash = "sha256:12ba681f2777a0ad28ffbcc846a69c31b4dfd9752b47eb425a274ee269c5e14b"},
-    {file = "docker-7.0.0.tar.gz", hash = "sha256:323736fb92cd9418fc5e7133bc953e11a9da04f4483f828b527db553f1e7e5a3"},
+    {file = "docker-7.1.0-py3-none-any.whl", hash = "sha256:c96b93b7f0a746f9e77d325bcfb87422a3d8bd4f03136ae8a85b37f1898d5fc0"},
+    {file = "docker-7.1.0.tar.gz", hash = "sha256:ad8c70e6e3f8926cb8a92619b832b4ea5299e2831c14284663184e200546fa6c"},
 ]
 
 [[package]]
@@ -2053,7 +2041,7 @@ files = [
 
 [[package]]
 name = "mkdocs-material"
-version = "9.5.28"
+version = "9.5.30"
 requires_python = ">=3.8"
 summary = "Documentation that simply works"
 groups = ["dev"]
@@ -2071,8 +2059,8 @@ dependencies = [
     "requests~=2.26",
 ]
 files = [
-    {file = "mkdocs_material-9.5.28-py3-none-any.whl", hash = "sha256:ff48b11b2a9f705dd210409ec3b418ab443dd36d96915bcba45a41f10ea27bfd"},
-    {file = "mkdocs_material-9.5.28.tar.gz", hash = "sha256:9cba305283ad1600e3d0a67abe72d7a058b54793b47be39930911a588fe0336b"},
+    {file = "mkdocs_material-9.5.30-py3-none-any.whl", hash = "sha256:fc070689c5250a180e9b9d79d8491ef9a3a7acb240db0728728d6c31eeb131d4"},
+    {file = "mkdocs_material-9.5.30.tar.gz", hash = "sha256:3fd417dd42d679e3ba08b9e2d72cd8b8af142cc4a3969676ad6b00993dd182ec"},
 ]
 
 [[package]]
@@ -2185,36 +2173,36 @@ files = [
 
 [[package]]
 name = "mypy"
-version = "1.10.1"
+version = "1.11.0"
 requires_python = ">=3.8"
 summary = "Optional static typing for Python"
 groups = ["dev"]
 dependencies = [
     "mypy-extensions>=1.0.0",
-    "typing-extensions>=4.1.0",
+    "typing-extensions>=4.6.0",
 ]
 files = [
-    {file = "mypy-1.10.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:d8681909f7b44d0b7b86e653ca152d6dff0eb5eb41694e163c6092124f8246d7"},
-    {file = "mypy-1.10.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:378c03f53f10bbdd55ca94e46ec3ba255279706a6aacaecac52ad248f98205d3"},
-    {file = "mypy-1.10.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6bacf8f3a3d7d849f40ca6caea5c055122efe70e81480c8328ad29c55c69e93e"},
-    {file = "mypy-1.10.1-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:701b5f71413f1e9855566a34d6e9d12624e9e0a8818a5704d74d6b0402e66c04"},
-    {file = "mypy-1.10.1-cp312-cp312-win_amd64.whl", hash = "sha256:3c4c2992f6ea46ff7fce0072642cfb62af7a2484efe69017ed8b095f7b39ef31"},
-    {file = "mypy-1.10.1-py3-none-any.whl", hash = "sha256:71d8ac0b906354ebda8ef1673e5fde785936ac1f29ff6987c7483cfbd5a4235a"},
-    {file = "mypy-1.10.1.tar.gz", hash = "sha256:1f8f492d7db9e3593ef42d4f115f04e556130f2819ad33ab84551403e97dd4c0"},
+    {file = "mypy-1.11.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:1d44c1e44a8be986b54b09f15f2c1a66368eb43861b4e82573026e04c48a9e20"},
+    {file = "mypy-1.11.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:cea3d0fb69637944dd321f41bc896e11d0fb0b0aa531d887a6da70f6e7473aba"},
+    {file = "mypy-1.11.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:a83ec98ae12d51c252be61521aa5731f5512231d0b738b4cb2498344f0b840cd"},
+    {file = "mypy-1.11.0-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:c7b73a856522417beb78e0fb6d33ef89474e7a622db2653bc1285af36e2e3e3d"},
+    {file = "mypy-1.11.0-cp312-cp312-win_amd64.whl", hash = "sha256:f2268d9fcd9686b61ab64f077be7ffbc6fbcdfb4103e5dd0cc5eaab53a8886c2"},
+    {file = "mypy-1.11.0-py3-none-any.whl", hash = "sha256:56913ec8c7638b0091ef4da6fcc9136896914a9d60d54670a75880c3e5b99ace"},
+    {file = "mypy-1.11.0.tar.gz", hash = "sha256:93743608c7348772fdc717af4aeee1997293a1ad04bc0ea6efa15bf65385c538"},
 ]
 
 [[package]]
 name = "mypy-boto3"
-version = "1.34.142"
+version = "1.34.148"
 requires_python = ">=3.8"
-summary = "Type annotations for boto3 1.34.142 master module generated with mypy-boto3-builder 7.25.0"
+summary = "Type annotations for boto3 1.34.148 master module generated with mypy-boto3-builder 7.25.0"
 groups = ["dev"]
 dependencies = [
     "boto3",
 ]
 files = [
-    {file = "mypy_boto3-1.34.142-py3-none-any.whl", hash = "sha256:03acf122b311f7dbca5330851bcec99e578defe2b3b785558b5a88afe5ec1fc0"},
-    {file = "mypy_boto3-1.34.142.tar.gz", hash = "sha256:9ba98037e0d51a132fc12f9258b6adb0564f5a102b43f49d686d337ef9765191"},
+    {file = "mypy_boto3-1.34.148-py3-none-any.whl", hash = "sha256:475196f11b76e639d77dfdd4a3d79dda78adea1f8e586cb39f1109ef7e8d686f"},
+    {file = "mypy_boto3-1.34.148.tar.gz", hash = "sha256:5c75d4e0d68f21770b22e4337ff0d260b8734c6cc08d620a036ab480cae9e9bf"},
 ]
 
 [[package]]
@@ -2543,17 +2531,6 @@ files = [
 ]
 
 [[package]]
-name = "py"
-version = "1.11.0"
-requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-summary = "library with cross-python path, ini-parsing, io, code, log facilities"
-groups = ["dev"]
-files = [
-    {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},
-    {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
-]
-
-[[package]]
 name = "py-vapid"
 version = "1.9.1"
 summary = "Simple VAPID header generation library"
@@ -2741,7 +2718,7 @@ files = [
 
 [[package]]
 name = "pytest"
-version = "8.2.2"
+version = "8.3.1"
 requires_python = ">=3.8"
 summary = "pytest: simple powerful testing with Python"
 groups = ["dev"]
@@ -2749,11 +2726,11 @@ dependencies = [
     "colorama; sys_platform == \"win32\"",
     "iniconfig",
     "packaging",
-    "pluggy<2.0,>=1.5",
+    "pluggy<2,>=1.5",
 ]
 files = [
-    {file = "pytest-8.2.2-py3-none-any.whl", hash = "sha256:c434598117762e2bd304e526244f67bf66bbd7b5d6cf22138be51ff661980343"},
-    {file = "pytest-8.2.2.tar.gz", hash = "sha256:de4bb8104e201939ccdc688b27a89a7be2079b22e2bd2b07f806b6ba71117977"},
+    {file = "pytest-8.3.1-py3-none-any.whl", hash = "sha256:e9600ccf4f563976e2c99fa02c7624ab938296551f280835ee6516df8bc4ae8c"},
+    {file = "pytest-8.3.1.tar.gz", hash = "sha256:7e8e5c5abd6e93cb1cc151f23e57adc31fcf8cfd2a3ff2da63e23f732de35db6"},
 ]
 
 [[package]]
@@ -2773,22 +2750,22 @@ files = [
 
 [[package]]
 name = "pytest-celery"
-version = "1.0.0"
+version = "1.0.1"
 requires_python = "<4.0,>=3.8"
 summary = "Pytest plugin for Celery"
 groups = ["dev"]
 dependencies = [
     "celery",
     "debugpy<2.0.0,>=1.8.1",
-    "docker<8.0.0,>=7.0.0",
+    "docker<8.0.0,>=7.1.0",
     "psutil>=5.9.7",
     "pytest-docker-tools>=3.1.3",
-    "retry>=0.9.2",
     "setuptools>=69.1.0",
+    "tenacity>=8.5.0",
 ]
 files = [
-    {file = "pytest_celery-1.0.0-py3-none-any.whl", hash = "sha256:c10bc7d16daa3ae4a5784efcbd1855d610c0e087c21d185e52fa018b3a6c4249"},
-    {file = "pytest_celery-1.0.0.tar.gz", hash = "sha256:17a066b1554d4fa8797d4928e8b8cda1bfb441dae4688ca29fdbde28ffa49ff7"},
+    {file = "pytest_celery-1.0.1-py3-none-any.whl", hash = "sha256:8f0068f0b5deb3123c76ae56327d40ece488c622daee54b3c5ff968c503df841"},
+    {file = "pytest_celery-1.0.1.tar.gz", hash = "sha256:8ab12f2f16946e131c315efce2d71fa3b74a05269077fde04f96a6048b249377"},
 ]
 
 [[package]]
@@ -3045,7 +3022,7 @@ files = [
 
 [[package]]
 name = "python-gitlab"
-version = "4.7.0"
+version = "4.8.0"
 requires_python = ">=3.8.0"
 summary = "A python wrapper for the GitLab API"
 groups = ["default"]
@@ -3054,8 +3031,8 @@ dependencies = [
     "requests>=2.32.0",
 ]
 files = [
-    {file = "python_gitlab-4.7.0-py3-none-any.whl", hash = "sha256:03f194aa9f538087d141eb5ee6a7d95dc06c8c021ca3c7a116abdf9cae656b12"},
-    {file = "python_gitlab-4.7.0.tar.gz", hash = "sha256:b798cddbd9d166b79571e6d6c97542978d0a395de57169c7097d09210a766a6d"},
+    {file = "python_gitlab-4.8.0-py3-none-any.whl", hash = "sha256:89d7e24ff8fcb2b6845f1379350d0e0cdfbdae42b824bc4fa194c5a7a9a774bc"},
+    {file = "python_gitlab-4.8.0.tar.gz", hash = "sha256:c2c4d7b1cd503d905afe5dfc0f3f6619934361f76ae855c6cec9a666864d37cf"},
 ]
 
 [[package]]
@@ -3342,20 +3319,6 @@ files = [
 ]
 
 [[package]]
-name = "retry"
-version = "0.9.2"
-summary = "Easy to use retry decorator."
-groups = ["dev"]
-dependencies = [
-    "decorator>=3.4.2",
-    "py<2.0.0,>=1.4.26",
-]
-files = [
-    {file = "retry-0.9.2-py2.py3-none-any.whl", hash = "sha256:ccddf89761fa2c726ab29391837d4327f819ea14d244c232a1d24c67a2f98606"},
-    {file = "retry-0.9.2.tar.gz", hash = "sha256:f8bfa8b99b69c4506d6f5bd3b0aabf77f98cdb17f3c9fc3f5ca820033336fba4"},
-]
-
-[[package]]
 name = "rpds-py"
 version = "0.18.0"
 requires_python = ">=3.8"
@@ -3441,7 +3404,7 @@ files = [
 
 [[package]]
 name = "selenium"
-version = "4.22.0"
+version = "4.23.1"
 requires_python = ">=3.8"
 summary = "Official Python bindings for Selenium WebDriver"
 groups = ["dev"]
@@ -3449,18 +3412,18 @@ dependencies = [
     "certifi>=2021.10.8",
     "trio-websocket~=0.9",
     "trio~=0.17",
-    "typing-extensions>=4.9.0",
+    "typing-extensions~=4.9",
     "urllib3[socks]<3,>=1.26",
-    "websocket-client>=1.8.0",
+    "websocket-client~=1.8",
 ]
 files = [
-    {file = "selenium-4.22.0-py3-none-any.whl", hash = "sha256:e424991196e9857e19bf04fe5c1c0a4aac076794ff5e74615b1124e729d93104"},
-    {file = "selenium-4.22.0.tar.gz", hash = "sha256:903c8c9d61b3eea6fcc9809dc7d9377e04e2ac87709876542cc8f863e482c4ce"},
+    {file = "selenium-4.23.1-py3-none-any.whl", hash = "sha256:3a8d9f23dc636bd3840dd56f00c2739e32ec0c1e34a821dd553e15babef24477"},
+    {file = "selenium-4.23.1.tar.gz", hash = "sha256:128d099e66284437e7128d2279176ec7a06e6ec7426e167f5d34987166bd8f46"},
 ]
 
 [[package]]
 name = "sentry-sdk"
-version = "2.8.0"
+version = "2.11.0"
 requires_python = ">=3.6"
 summary = "Python client for Sentry (https://sentry.io)"
 groups = ["default"]
@@ -3469,8 +3432,8 @@ dependencies = [
     "urllib3>=1.26.11",
 ]
 files = [
-    {file = "sentry_sdk-2.8.0-py2.py3-none-any.whl", hash = "sha256:6051562d2cfa8087bb8b4b8b79dc44690f8a054762a29c07e22588b1f619bfb5"},
-    {file = "sentry_sdk-2.8.0.tar.gz", hash = "sha256:aa4314f877d9cd9add5a0c9ba18e3f27f99f7de835ce36bd150e48a41c7c646f"},
+    {file = "sentry_sdk-2.11.0-py2.py3-none-any.whl", hash = "sha256:d964710e2dbe015d9dc4ff0ad16225d68c3b36936b742a6fe0504565b760a3b7"},
+    {file = "sentry_sdk-2.11.0.tar.gz", hash = "sha256:4ca16e9f5c7c6bc2fb2d5c956219f4926b148e511fffdbbde711dc94f1e0468f"},
 ]
 
 [[package]]
@@ -3497,15 +3460,15 @@ files = [
 
 [[package]]
 name = "slack-notifications"
-version = "0.2.2"
+version = "1.0.1"
 summary = "Send notifications to slack channel with supporting attachments and fields"
 groups = ["default"]
 dependencies = [
     "requests",
 ]
 files = [
-    {file = "slack-notifications-0.2.2.tar.gz", hash = "sha256:cb3930c01f7625b93fa3da239942161a2a9407894314688f4fde6a7634543df2"},
-    {file = "slack_notifications-0.2.2-py3-none-any.whl", hash = "sha256:1a0e2fd382b43ef3a0f9828df35e2a69ce711f84c8fda7f8ab3c159861c75cf1"},
+    {file = "slack_notifications-1.0.1-py3-none-any.whl", hash = "sha256:9110b890c995a4902c8b2cbdb56a65036aa12ca4e9e567ae7ad4e7fc93dcfbd0"},
+    {file = "slack_notifications-1.0.1.tar.gz", hash = "sha256:83840ff6ba6de22f54285c87213b779d7e1e81b220b1f36fd342d40100745bee"},
 ]
 
 [[package]]
@@ -3532,7 +3495,7 @@ files = [
 
 [[package]]
 name = "social-auth-app-django"
-version = "5.4.1"
+version = "5.4.2"
 requires_python = ">=3.8"
 summary = "Python Social Authentication, Django integration."
 groups = ["default"]
@@ -3541,8 +3504,8 @@ dependencies = [
     "social-auth-core>=4.4.1",
 ]
 files = [
-    {file = "social-auth-app-django-5.4.1.tar.gz", hash = "sha256:2a43cde559dd34fdc7132417b6c52c780fa99ec2332dee9f405b4763f371c367"},
-    {file = "social_auth_app_django-5.4.1-py3-none-any.whl", hash = "sha256:7519f186c63c50f2d364457b236f051338d194bcface55e318a6a705c5213477"},
+    {file = "social-auth-app-django-5.4.2.tar.gz", hash = "sha256:c8832c6cf13da6ad76f5613bcda2647d89ae7cfbc5217fadd13477a3406feaa8"},
+    {file = "social_auth_app_django-5.4.2-py3-none-any.whl", hash = "sha256:0c041a31707921aef9a930f143183c65d8c7b364381364a50f3f7c6fcc9d62f6"},
 ]
 
 [[package]]
@@ -3613,13 +3576,13 @@ files = [
 
 [[package]]
 name = "tenacity"
-version = "8.2.3"
-requires_python = ">=3.7"
+version = "8.5.0"
+requires_python = ">=3.8"
 summary = "Retry code until it succeeds"
 groups = ["dev"]
 files = [
-    {file = "tenacity-8.2.3-py3-none-any.whl", hash = "sha256:ce510e327a630c9e1beaf17d42e6ffacc88185044ad85cf74c0a8887c6a0f88c"},
-    {file = "tenacity-8.2.3.tar.gz", hash = "sha256:5398ef0d78e63f40007c1fb4c0bff96e1911394d2fa8d194f77619c05ff6cc8a"},
+    {file = "tenacity-8.5.0-py3-none-any.whl", hash = "sha256:b594c2a5945830c267ce6b79a166228323ed52718f30302c1359836112346687"},
+    {file = "tenacity-8.5.0.tar.gz", hash = "sha256:8bc6c0c8a09b31e6cad13c47afbed1a567518250a9a171418582ed8d9c20ca78"},
 ]
 
 [[package]]
@@ -3821,7 +3784,7 @@ name = "types-pyyaml"
 version = "6.0.12.20240311"
 requires_python = ">=3.8"
 summary = "Typing stubs for PyYAML"
-groups = ["default", "dev"]
+groups = ["default"]
 files = [
     {file = "types-PyYAML-6.0.12.20240311.tar.gz", hash = "sha256:a9e0f0f88dc835739b0c1ca51ee90d04ca2a897a71af79de9aec5f38cb0a5342"},
     {file = "types_PyYAML-6.0.12.20240311-py3-none-any.whl", hash = "sha256:b845b06a1c7e54b8e5b4c683043de0d9caf205e7434b3edc678ff2411979b8f6"},
@@ -3844,7 +3807,7 @@ files = [
 
 [[package]]
 name = "types-requests"
-version = "2.32.0.20240622"
+version = "2.32.0.20240712"
 requires_python = ">=3.8"
 summary = "Typing stubs for requests"
 groups = ["dev"]
@@ -3852,8 +3815,8 @@ dependencies = [
     "urllib3>=2",
 ]
 files = [
-    {file = "types-requests-2.32.0.20240622.tar.gz", hash = "sha256:ed5e8a412fcc39159d6319385c009d642845f250c63902718f605cd90faade31"},
-    {file = "types_requests-2.32.0.20240622-py3-none-any.whl", hash = "sha256:97bac6b54b5bd4cf91d407e62f0932a74821bc2211f22116d9ee1dd643826caf"},
+    {file = "types-requests-2.32.0.20240712.tar.gz", hash = "sha256:90c079ff05e549f6bf50e02e910210b98b8ff1ebdd18e19c873cd237737c1358"},
+    {file = "types_requests-2.32.0.20240712-py3-none-any.whl", hash = "sha256:f754283e152c752e46e70942fa2a146b5bc70393522257bb85bd1ef7e019dcc3"},
 ]
 
 [[package]]
