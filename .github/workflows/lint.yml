@@ -99,6 +99,6 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install requirements
-        run: pip install mypy
+        run: pip install mypy mypy-boto3 mypy-boto3-sns django-stubs
       - name: Mypy
-        run: mypy src/
+        run: mypy --install-types --non-interactive src/
