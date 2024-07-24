@@ -83,7 +83,9 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_URL = "/"
 
 ROOT_URLCONF = "bitcaster.config.urls"
-
+SILENCED_SYSTEM_CHECKS = [
+    "security.W019",
+]
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

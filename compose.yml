@@ -13,7 +13,7 @@ x-common: &common
     - CSRF_COOKIE_SECURE=False
     - DATABASE_URL=postgres://bitcaster:password@db:5432/bitcaster
     - PYTHONPATH=/code/app/src:/code/__pypackages__/3.12/lib
-    - SECRET_KEY=secret
+    - SECRET_KEY=super_secret_key_just_for_development
     - SECURE_SSL_REDIRECT=False
     - SESSION_COOKIE_DOMAIN=
     - SESSION_COOKIE_SECURE=False
@@ -37,7 +37,7 @@ services:
     container_name: bitcaster_bitcaster
     ports:
       - 8000:8000
-    command: ["run"]
+#    command: ["run"]
     healthcheck:
       test: ["CMD-SHELL", "curl", "-f", "http://localhost:8000/healthcheck"]
       interval: 10s

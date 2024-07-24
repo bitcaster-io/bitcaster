@@ -89,3 +89,16 @@ jobs:
         run: pip install black
       - name: Black
         run: black src/ --check
+  mypy:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false && needs.changes.outputs.lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install requirements
+        run: pip install mypy
+      - name: Mypy
+        run: mypy src/
