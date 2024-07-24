@@ -108,7 +108,7 @@ jobs:
         if: steps.cache-venv-restore.outputs.cache-hit != 'true'
         run: |
           pip install pdm
-          pdm insatall
+          pdm install
       - name: Cache venv
         uses: actions/cache/save@v4
         with:
