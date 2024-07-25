@@ -106,7 +106,7 @@ jobs:
           path: __pypackages__
           key: ${{ runner.os }}-venv
       - name: Restore cached pdm
-        id: cache-venv-restore
+        id: cache-pdm-restore
         uses: actions/cache/restore@v4
         with:
           path: /pdm_cache
