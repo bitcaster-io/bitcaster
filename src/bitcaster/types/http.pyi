@@ -1,4 +1,4 @@
-from typing import Optional, TypeVar, type_check_only, Protocol, Awaitable
+from typing import Awaitable, Optional, Protocol, TypeVar, type_check_only
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpRequest, HttpResponseBase, HttpResponseRedirect
@@ -23,9 +23,9 @@ class UserAgentRequest(HttpRequest):
     user_agent: UserAgent
 
 @type_check_only
-class _GetResponseCallable(Protocol):
+class GetResponseCallable(Protocol):
     def __call__(self, request: HttpRequest, /) -> HttpResponseBase: ...
 
 @type_check_only
-class _AsyncGetResponseCallable(Protocol):
+class AsyncGetResponseCallable(Protocol):
     def __call__(self, request: HttpRequest, /) -> Awaitable[HttpResponseBase]: ...

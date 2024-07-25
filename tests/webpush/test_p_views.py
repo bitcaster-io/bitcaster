@@ -49,7 +49,9 @@ def test_push_subscribe(django_app: DjangoTestApp, push_assignment: "Assignment"
     assert res.status_code == 201
 
 
-def test_push_subscribe_404(django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: "MonkeyPatch") -> None:
+def test_push_subscribe_404(
+    django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: "MonkeyPatch"
+) -> None:
     secret = sign(push_assignment)
     push_assignment.delete()
     url = reverse("webpush:subscribe", args=[secret])

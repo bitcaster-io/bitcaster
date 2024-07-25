@@ -1,7 +1,7 @@
 import logging
 import re
 from enum import IntFlag, unique
-from typing import TYPE_CHECKING, Any, Callable, Optional, reveal_type, Awaitable
+from typing import TYPE_CHECKING, Any, Awaitable, Optional
 
 from constance import config
 from constance.signals import config_updated
@@ -11,7 +11,12 @@ from django.utils.functional import cached_property
 from htmlmin.main import Minifier
 
 if TYPE_CHECKING:
-    from bitcaster.types.http import AnyRequest, AnyResponse, _GetResponseCallable, _AsyncGetResponseCallable
+    from bitcaster.types.http import (
+        AnyRequest,
+        AnyResponse,
+        AsyncGetResponseCallable,
+        GetResponseCallable,
+    )
 
 
 logger = logging.getLogger(__name__)
@@ -25,9 +30,9 @@ class MinifyFlag(IntFlag):
 
 
 class HtmlMinMiddleware:
-    get_response: "_GetResponseCallable | _AsyncGetResponseCallable"
+    get_response: "GetResponseCallable | AsyncGetResponseCallable"
 
-    def __init__(self, get_response: "_GetResponseCallable | _AsyncGetResponseCallable") -> None:
+    def __init__(self, get_response: "GetResponseCallable | AsyncGetResponseCallable") -> None:
         self.get_response = get_response
         self.minifier = Minifier(
             remove_comments=True,
