@@ -129,12 +129,13 @@ jobs:
           docker run --rm \
             -e DATABASE_URL=postgres://postgres:postgres@localhost:15432/bitcaster \
             -e CACHE_URL=redis://localhost:16379/0 \
-            -e CELERY_BROKER_URL=redis://localhost:6379/0 \
+            -e CELERY_BROKER_URL=redis://localhost:16379/0 \
             --network host \
             -v $PWD:/code/app \
             -w /code/app \
             -t ${{needs.build.outputs.image}} \
-            pytest tests -v --create-db -n auto --maxfail=10
+            pytest tests -v --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
+          ls -al
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
