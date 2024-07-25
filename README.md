@@ -4,7 +4,7 @@
 [![Test](https://github.com/bitcaster-io/bitcaster/actions/workflows/test.yml/badge.svg)](https://github.com/bitcaster-io/bitcaster/actions/workflows/test.yml)
 [![Lint](https://github.com/bitcaster-io/bitcaster/actions/workflows/lint.yml/badge.svg)](https://github.com/bitcaster-io/bitcaster/actions/workflows/lint.yml)
 [![codecov](https://codecov.io/gh/bitcaster-io/bitcaster/graph/badge.svg?token=kAuZEX5k5o)](https://codecov.io/gh/bitcaster-io/bitcaster)
-![License](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbitcaster-io%2Fbitcaster%2Fdevelop%2Fpyproject.toml&query=project.license.text&label=license)
+[![License](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbitcaster-io%2Fbitcaster%2Fdevelop%2Fpyproject.toml&query=project.license.text&label=license)](https://github.com/bitcaster-io/bitcaster?tab=License-1-ov-file)
 [![Docker](https://img.shields.io/docker/pulls/bitcaster/bitcaster)](https://hub.docker.com/repository/docker/bitcaster/bitcaster/tags)
 
 
