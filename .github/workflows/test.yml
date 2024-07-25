@@ -105,7 +105,7 @@ jobs:
       redis:
         image: redis
         ports:
-          - 6379:6379
+          - 16379:6379
       db:
         image: postgres:14
         env:
@@ -113,7 +113,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USERNAME: postgres
         ports:
-          - 5432:5432
+          - 15432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -127,8 +127,8 @@ jobs:
       - name: Run tests
         run: |
           docker run --rm \
-            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/bitcaster \
-            -e CACHE_URL=redis://localhost:6379/0 \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:15432/bitcaster \
+            -e CACHE_URL=redis://localhost:16379/0 \
             -e CELERY_BROKER_URL=redis://localhost:6379/0 \
             --network host \
             -v $PWD:/code/app \

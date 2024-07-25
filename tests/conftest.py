@@ -61,7 +61,7 @@ def pytest_configure(config):
     os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
 
     os.environ["CELERY_TASK_ALWAYS_EAGER"] = "True"
-    
+
     os.environ["CSRF_COOKIE_SECURE"] = "False"
     os.environ["CSRF_TRUSTED_ORIGINS"] = "https://close-pro-impala.ngrok-free.app,http://localhost"
 

@@ -109,7 +109,7 @@ jobs:
         id: cache-pdm-restore
         uses: actions/cache/restore@v4
         with:
-          path: $HOME/pdm_cache
+          path: .pdm_cache
           key: ${{ runner.os }}-pdm
       - name: Install requirements
         if: steps.cache-venv-restore.outputs.cache-hit != 'true'
@@ -117,13 +117,12 @@ jobs:
           pip install pdm
           pdm config python.use_venv false
           pdm config check_update false
-          pdm config cache_dir $HOME/pdm_cache
+          pdm config cache_dir .pdm_cache
           pdm sync --no-editable -v --no-self
-          echo 11111, $PATH
       - name: Cache pdm
         uses: actions/cache/save@v4
         with:
-          path: $HOME/pdm_cache
+          path: .pdm_cache
           key: ${{ runner.os }}-pdm_cache
       - name: Cache venv
         uses: actions/cache/save@v4
