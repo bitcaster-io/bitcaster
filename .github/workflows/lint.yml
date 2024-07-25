@@ -119,6 +119,7 @@ jobs:
           pdm config check_update false
           pdm config cache_dir $HOME/pdm_cache
           pdm sync --no-editable -v --no-self
+          echo 11111, $PATH
       - name: Cache pdm
         uses: actions/cache/save@v4
         with:
@@ -130,4 +131,6 @@ jobs:
           path: __pypackages__
           key: ${{ runner.os }}-venv
       - name: Mypy
+        env:
+          PYTHONPATH: __pypackages__/3.12/lib
         run: __pypackages__/3.12/bin/mypy --install-types --non-interactive src/
