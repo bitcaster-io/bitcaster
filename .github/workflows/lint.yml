@@ -109,7 +109,7 @@ jobs:
         id: cache-pdm-restore
         uses: actions/cache/restore@v4
         with:
-          path: /pdm_cache
+          path: $HOME/pdm_cache
           key: ${{ runner.os }}-pdm
       - name: Install requirements
         if: steps.cache-venv-restore.outputs.cache-hit != 'true'
@@ -122,7 +122,7 @@ jobs:
       - name: Cache pdm
         uses: actions/cache/save@v4
         with:
-          path: /pdm_cache
+          path: $HOME/pdm_cache
           key: ${{ runner.os }}-pdm_cache
       - name: Cache venv
         uses: actions/cache/save@v4
