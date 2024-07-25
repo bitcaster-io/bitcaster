@@ -36,6 +36,7 @@ jobs:
         shell: bash
     outputs:
       run_tests: ${{ steps.changes.outputs.run_tests }}
+      build: ${{ steps.changes.outputs.build }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
@@ -68,6 +69,9 @@ jobs:
     needs: [ changes ]
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    if: (needs.changes.outputs.build == 'true' 
+        || contains(github.event.head_commit.message, 'ci:test') 
+        || contains(github.event.head_commit.message, 'ci:all') 
     defaults:
       run:
         shell: bash
