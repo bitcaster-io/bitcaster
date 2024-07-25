@@ -27,7 +27,7 @@ class MinifyFlag(IntFlag):
 class HtmlMinMiddleware:
     get_response: "_GetResponseCallable | _AsyncGetResponseCallable"
 
-    def __init__(self, get_response: _GetResponseCallable | _AsyncGetResponseCallable) -> None:
+    def __init__(self, get_response: "_GetResponseCallable | _AsyncGetResponseCallable") -> None:
         self.get_response = get_response
         self.minifier = Minifier(
             remove_comments=True,

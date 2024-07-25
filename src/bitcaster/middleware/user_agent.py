@@ -10,9 +10,9 @@ if TYPE_CHECKING:
 
 
 class UserAgentMiddleware:
-    def __init__(self, get_response: _GetResponseCallable | _AsyncGetResponseCallable) -> None:
+    def __init__(self, get_response: "_GetResponseCallable | _AsyncGetResponseCallable") -> None:
         self.get_response = get_response
 
-    def __call__(self, request: UserAgentRequest) -> HttpResponseBase | Awaitable[HttpResponseBase]:
+    def __call__(self, request: "UserAgentRequest") -> HttpResponseBase | Awaitable[HttpResponseBase]:
         request.user_agent = SimpleLazyObject(lambda: get_user_agent(request))
         return self.get_response(request)
