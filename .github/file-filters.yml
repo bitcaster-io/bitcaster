@@ -20,7 +20,7 @@ mypy:
   - *python
   - 'mypy.ini'
 
-docker_base:
+build:
   - *docker
   - *dependencies
 
