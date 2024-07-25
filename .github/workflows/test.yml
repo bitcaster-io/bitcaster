@@ -72,6 +72,7 @@ jobs:
     if: (needs.changes.outputs.build == 'true' 
         || contains(github.event.head_commit.message, 'ci:test') 
         || contains(github.event.head_commit.message, 'ci:all') 
+        )
     defaults:
       run:
         shell: bash
