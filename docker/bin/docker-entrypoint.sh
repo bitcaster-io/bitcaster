@@ -10,9 +10,10 @@ if [ -d "${STATIC_ROOT}" ];then
   chown -R user:app ${STATIC_ROOT}
 fi
 
+echo "DJANGO_SETTINGS_MODULE  ${DJANGO_SETTINGS_MODULE}"
 echo "MEDIA_ROOT  ${MEDIA_ROOT}"
 echo "STATIC_ROOT ${STATIC_ROOT}"
-echo "@ $@"
+echo "CMD $@"
 
 case "$1" in
     worker)

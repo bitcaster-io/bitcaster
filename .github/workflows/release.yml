@@ -1,18 +1,12 @@
-name: Test
+name: Publish Release
 
 on:
-  create:
-    branches:
-      - releases/*
-  push:
-    branches:
-      - develop
-      - feature/*
-      - bugfix/*
-      - hotfix/*
+  release:
+#    types: [published]
+
 
 concurrency:
-  group: "${{ github.workflow }}-${{ github.ref }}"
+  group: "${{ github.workflow }}"
   cancel-in-progress: true
 
 defaults:
@@ -25,47 +19,7 @@ permissions:
 
 
 jobs:
-  changes:
-    if: (github.event_name != 'pull_request' 
-            || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name) 
-            || github.event_name == 'create'
-    runs-on: ubuntu-latest
-    timeout-minutes: 1
-    defaults:
-      run:
-        shell: bash
-    outputs:
-      run_tests: ${{ steps.changes.outputs.run_tests }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.7
-      - id: changes
-        name: Check for file changes
-        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
-        with:
-          base: ${{ github.ref }}
-          token: ${{ github.token }}
-          filters: .github/file-filters.yml
-      - name: info
-        shell: bash
-        run: |
-          force_build="${{ contains(github.event.head_commit.message, 'ci:build') || contains(github.event.head_commit.message, 'ci:release')}}"
-          force_scan="${{ contains(github.event.head_commit.message, 'ci:scan') }}"
-          force_test="${{ contains(github.event.head_commit.message, 'ci:test') }}"
-          
-          if [[ $force_build == "true" ]]; then
-            echo "::notice:: Forced build docker due to commit message"
-          elif [[ $force_test == "true" ]]; then
-            echo "::notice:: Forced python tests due to commit message"
-          elif [[ $force_scan == "true" ]]; then
-            echo "::notice:: Forced trivy scan due to commit message"
-          fi
-          if [[ $force_build == "true" || "${{needs.changes.outputs.run_tests}}" == "true" ]]; then 
-              echo "BUILD=true" >> $GITHUB_ENV
-          fi
-
   build:
-    needs: [ changes ]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -78,8 +32,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
-      - name: Define code checksum
-        id: checksum
+      - id: checksum
         uses: ./.github/actions/checksum
       - name: Build Image
         id: build
@@ -95,25 +48,19 @@ jobs:
 
   test:
     name: Run Test Suite
-    needs: [ changes,build ]
-    if: (needs.changes.outputs.run_tests == 'true' 
-        || contains(github.event.head_commit.message, 'ci:test') 
-        || contains(github.event.head_commit.message, 'ci:all') 
-        || github.event_name == 'create')
+    needs: [ build ]
     runs-on: ubuntu-latest
     services:
       redis:
         image: redis
-        ports:
-          - 16379:6379
       db:
         image: postgres:14
         env:
-          POSTGRES_DATABASE: bitcaster
+          POSTGRES_DATABASE: country_workspace
           POSTGRES_PASSWORD: postgres
           POSTGRES_USERNAME: postgres
         ports:
-          - 15432:5432
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -127,15 +74,15 @@ jobs:
       - name: Run tests
         run: |
           docker run --rm \
-            -e DATABASE_URL=postgres://postgres:postgres@localhost:15432/bitcaster \
-            -e CACHE_URL=redis://localhost:16379/0 \
-            -e CELERY_BROKER_URL=redis://localhost:16379/0 \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/country_workspace \
+            -e SECRET_KEY=secret_key \
+            -e CACHE_URL=redis://redis:6379/0 \
+            -e CELERY_BROKER_URL=redis://redis:6379/0 \
             --network host \
             -v $PWD:/code/app \
             -w /code/app \
             -t ${{needs.build.outputs.image}} \
-            pytest tests -v --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
-          ls -al
+            pytest tests -v --create-db -v --maxfail=10
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -147,12 +94,7 @@ jobs:
           name: codecov-${{env.GITHUB_REF_NAME}}
 
   deployable:
-    if:
-      contains(fromJSON('["refs/heads/develop", "refs/heads/staging", "refs/heads/master", "refs/heads/release"]'), github.ref) 
-      || contains(github.event.head_commit.message, 'ci:release') 
-      || contains(github.event.head_commit.message, 'ci:all') 
-
-    name: "Build deployable Docker"
+    name: "Release to Docker"
     needs: [ test ]
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -182,6 +124,12 @@ jobs:
       - shell: bash
         run: |
           echo "${{ toJSON(steps.build.outputs) }}"
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
 
   trivy:
     name: Check Image with Trivy

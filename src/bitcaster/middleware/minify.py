@@ -1,16 +1,23 @@
 import logging
 import re
 from enum import IntFlag, unique
-from typing import TYPE_CHECKING, Any, Callable, Optional
+from typing import TYPE_CHECKING, Any, Awaitable, Optional
 
 from constance import config
 from constance.signals import config_updated
 from django.conf import settings
+from django.http import HttpRequest, HttpResponseBase
 from django.utils.functional import cached_property
 from htmlmin.main import Minifier
 
 if TYPE_CHECKING:
-    from bitcaster.types.http import AnyRequest, AnyResponse
+    from bitcaster.types.http import (
+        AnyRequest,
+        AnyResponse,
+        AsyncGetResponseCallable,
+        GetResponseCallable,
+    )
+
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +30,9 @@ class MinifyFlag(IntFlag):
 
 
 class HtmlMinMiddleware:
-    def __init__(self, get_response: "Callable[[AnyRequest], AnyResponse] | None" = None) -> None:
+    get_response: "GetResponseCallable | AsyncGetResponseCallable"
+
+    def __init__(self, get_response: "GetResponseCallable | AsyncGetResponseCallable") -> None:
         self.get_response = get_response
         self.minifier = Minifier(
             remove_comments=True,
@@ -64,7 +73,7 @@ class HtmlMinMiddleware:
             and not request.headers.get("X-No-Minify")
         )
 
-    def __call__(self, request: "AnyRequest") -> "AnyResponse":
+    def __call__(self, request: HttpRequest) -> "HttpResponseBase | Awaitable[HttpResponseBase]":
         response = self.get_response(request)
         if not response.streaming and len(response.content) < 200:
             return response

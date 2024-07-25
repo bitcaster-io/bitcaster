@@ -63,7 +63,7 @@ runs:
         path: $HOME/.regctl
         key: ${{ runner.os }}-regclient
     - name: Install regctl
-      if: steps.cache-regclient.outputs.cache-hit != 'true'
+      if: steps.cache-regclient-restore.outputs.cache-hit != 'true'
       uses: regclient/actions/regctl-installer@main
     - name: Cache regclient
       id: cache-regclient-save
@@ -123,8 +123,10 @@ runs:
                           -v fatal \
                           ${{ steps.image_name.outputs.name }} 2>/dev/null)
         code_checksum="${{ inputs.code_checksum }}"
-
-        if [[ -z "$image_checksum"  ]]; then
+        if [[ "${{ contains(github.event.head_commit.message, 'ci:all') }}" == "true" ]];then
+          echo "::warning::🤔 Forced rebuild"
+          echo "updated=false" >> $GITHUB_OUTPUT        
+        elif [[ -z "$image_checksum"  ]]; then
           echo "::warning::🤔 No image checksum found"
           echo "updated=false" >> $GITHUB_OUTPUT
         elif [[ $image_checksum == $code_checksum ]]; then

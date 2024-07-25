@@ -37,10 +37,10 @@ jobs:
       docker: ${{ steps.changes.outputs.docker_base }}
     steps:
       - run: git config --global --add safe.directory $(realpath .)
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@v4
       - id: changes
         name: Check for backend file changes
-        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
+        uses: dorny/paths-filter@v3
         with:
           base: ${{ github.ref }}
           token: ${{ github.token }}
@@ -89,3 +89,47 @@ jobs:
         run: pip install black
       - name: Black
         run: black src/ --check
+  mypy:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false && needs.changes.outputs.lint
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/checkout@v4
+
+      - name: Restore cached venv
+        id: cache-venv-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: __pypackages__
+          key: ${{ runner.os }}-venv
+      - name: Restore cached pdm
+        id: cache-pdm-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: .pdm_cache
+          key: ${{ runner.os }}-pdm
+      - name: Install requirements
+        if: steps.cache-venv-restore.outputs.cache-hit != 'true'
+        run: |
+          pip install pdm
+          pdm config python.use_venv false
+          pdm config check_update false
+          pdm config cache_dir .pdm_cache
+          pdm sync --no-editable -v --no-self
+      - name: Cache pdm
+        uses: actions/cache/save@v4
+        with:
+          path: .pdm_cache
+          key: ${{ runner.os }}-pdm_cache
+      - name: Cache venv
+        uses: actions/cache/save@v4
+        with:
+          path: __pypackages__
+          key: ${{ runner.os }}-venv
+      - name: Mypy
+        env:
+          PYTHONPATH: __pypackages__/3.12/lib
+        run: __pypackages__/3.12/bin/mypy --install-types --non-interactive src/
