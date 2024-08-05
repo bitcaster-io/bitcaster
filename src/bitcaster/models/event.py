@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from django.db import models
 from django.http import HttpRequest
 from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from .application import Application
 from .channel import Channel
@@ -34,6 +34,11 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
     active = models.BooleanField(default=True)
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
     channels = models.ManyToManyField(Channel, blank=True)
+    occurrence_retention = models.IntegerField(
+        blank=True, null=True, help_text=_(
+            "Number of days (from last update) after which related Occurrences can be purged. "
+            "If not specified, system default will be used.")
+    )
 
     objects = EventManager()
 
