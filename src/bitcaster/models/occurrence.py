@@ -5,9 +5,9 @@ from datetime import timedelta
 from constance import config
 from django.db import models
 from django.db.models.expressions import F
-from django.utils.translation import gettext as _
-from django.utils import timezone
 from django.db.models.functions import Coalesce
+from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from ..constants import Bitcaster
 from .assignment import Assignment
@@ -43,10 +43,11 @@ class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
 
     def purgeable(self, *args: Any, **kwargs: Any) -> models.QuerySet["Occurrence"]:
         return self.filter(
-            last_updated__lt=timezone.now() - models.ExpressionWrapper(
-                timedelta(days=1) * Coalesce(F("event__occurrence_retention"),
-                                             config.OCCURRENCE_DEFAULT_RETENTION),
-                output_field=models.DurationField()
+            last_updated__lt=timezone.now()
+            - models.ExpressionWrapper(  # type: ignore
+                timedelta(days=1)
+                * Coalesce(F("event__occurrence_retention"), config.OCCURRENCE_DEFAULT_RETENTION),  # type: ignore
+                output_field=models.DurationField(),
             )
         ).filter(*args, **kwargs)
 
@@ -63,8 +64,6 @@ class Occurrence(BitcasterBaseModel):
     options: "OccurrenceOptions" = models.JSONField(  # type: ignore[assignment]
         blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
     )
-    # class OccurrenceOptions(TypedDict):
-    #     limit_to: list[str]
     correlation_id = models.UUIDField(editable=False, blank=True, null=True)
     recipients = models.IntegerField(default=0, help_text=_("Total number of recipients"))
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))

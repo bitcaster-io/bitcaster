@@ -35,9 +35,12 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
     channels = models.ManyToManyField(Channel, blank=True)
     occurrence_retention = models.IntegerField(
-        blank=True, null=True, help_text=_(
+        blank=True,
+        null=True,
+        help_text=_(
             "Number of days (from last update) after which related Occurrences can be purged. "
-            "If not specified, system default will be used.")
+            "If not specified, system default will be used."
+        ),
     )
 
     objects = EventManager()
