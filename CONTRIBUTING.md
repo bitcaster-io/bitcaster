@@ -18,21 +18,32 @@ To start developing:
    eg. $`which python` -> see that it matches you python executable in the venv you have created: $```echo `pwd`/.venv/bin/python```
 6. Install the package: $`pdm install`
 7. Add `export PYTHONPATH="$PYTHONPATH:./src"`
+   - If you plan to use direnv, follow the dedicated section below then jump to point 9
 8. Check your environment: $`./manage.py env --check` and configure the missing variables.
    You can generate a list for your development environment with the command `./manage.py env --develop --config --pattern='export {key}={value}'`
-9. Once the environment has been set up run the initial migrations `./manage.py migrate`
-10. Make sure to set up environment variables:
+9. Make sure to set up environment variables:
 ```
 DATABASE_URL=postgres://postgres:oracol0@localhost:5414/bitcaster?options=-c%20search_path=django,public
 ADMIN_EMAIL=<a valid email>
 ADMIN_PASSWORD=<your admin password>
 DATABASE_PORT=<only if different than default 5432>
 SECRET_KEY=--
-CATCH_ALL_EMAIL=<you catch all email>
-SESSION_COOKIE_DOMAIN=localhost
+CATCH_ALL_EMAIL=<email address to catch all email>
+SESSION_COOKIE_DOMAIN=localhost  # <must match the address where you expose the development server>
 ```
-11. Test using runserver $`./manage.py runserver` and logging in the admin `http://locslhost:8000/admin`
+<<<<<<< Updated upstream
+10. Run upgrade command to properly initialize the application: `./manage.py upgrade --admin-email ${ADMIN_EMAIL} --admin-password ${ADMIN_PASSWORD}`
+    - Django migrate command is automatically included in this step
+1Test using runserver $`./manage.py runserver` and logging in the admin `http://locslhost:8000/admin`
 
+=======
+11. Test using runserver $`./manage.py runserver` and logging in the admin `http://locslhost:8000/admin`
+12. Apply the following Git configurations:
+```
+git config branch.autosetuprebase always
+pdm run pre-commit install
+```
+>>>>>>> Stashed changes
 
 Configure environment for .direnv
 =================================
