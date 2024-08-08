@@ -28,8 +28,8 @@ ADMIN_EMAIL=<a valid email>
 ADMIN_PASSWORD=<your admin password>
 DATABASE_PORT=<only if different than default 5432>
 SECRET_KEY=--
-CATCH_ALL_EMAIL=<you catch all email>
-SESSION_COOKIE_DOMAIN=localhost
+CATCH_ALL_EMAIL=<email address to catch all email>
+SESSION_COOKIE_DOMAIN=localhost  # <must match the address where you expose the development server>
 ```
 10. Run upgrade command to properly initialize the application: `./manage.py upgrade --admin-email ${ADMIN_EMAIL} --admin-password ${ADMIN_PASSWORD}`
     - Django migrate command is automatically included in this step
@@ -39,7 +39,6 @@ SESSION_COOKIE_DOMAIN=localhost
 git config branch.autosetuprebase always
 pdm run pre-commit install
 ```
->>>>>>> Stashed changes
 
 Configure environment for .direnv
 =================================
