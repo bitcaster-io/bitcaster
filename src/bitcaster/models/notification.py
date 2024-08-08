@@ -1,8 +1,8 @@
+import logging
 from typing import TYPE_CHECKING, Any, Optional
 
 import jmespath
 import yaml
-import logging
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import QuerySet
