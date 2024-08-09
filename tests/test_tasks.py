@@ -8,7 +8,7 @@ from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
 
 from bitcaster.constants import Bitcaster, SystemEvent
-from bitcaster.tasks import process_occurrence, schedule_occurrences
+from bitcaster.tasks import process_occurrence, purge_occurrences, schedule_occurrences
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -266,3 +266,16 @@ def test_process_silent(setup: "Context", monkeypatch: MonkeyPatch) -> None:
     process_occurrence(o.pk)
     assert Occurrence.objects.filter(event=silent_event).count() == 1
     assert mocked_notify.call_count == 1
+
+
+def test_purge_occurrences(purgeable_occurrences, non_purgeable_occurrences):
+    from bitcaster.models import Occurrence
+
+    assert Occurrence.objects.count() == len(purgeable_occurrences) + len(non_purgeable_occurrences)  # Sanity check
+
+    purge_occurrences()
+
+    assert Occurrence.objects.count() == len(non_purgeable_occurrences)
+    assert Occurrence.objects.filter(pk__in=[o.pk for o in purgeable_occurrences]).count() == 0
+    assert (Occurrence.objects.filter(pk__in=[o.pk for o in non_purgeable_occurrences]).count()
+            == len(non_purgeable_occurrences))

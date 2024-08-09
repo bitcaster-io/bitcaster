@@ -1,9 +1,5 @@
-from typing import TYPE_CHECKING, TypedDict, List
+from typing import TYPE_CHECKING, List, TypedDict
 from unittest.mock import Mock
-from django.utils import timezone
-from datetime import timedelta
-from constance import config
-from freezegun import freeze_time
 
 import pytest
 
@@ -31,29 +27,6 @@ def context(occurrence: "Occurrence", user: "User") -> "Context":
     notification.distribution.recipients.add(assignment)
 
     return {"assignment": assignment, "notification": notification}
-
-
-@pytest.fixture
-def purgeable_occurrences(db) -> List["Occurrence"]:
-    from testutils.factories import OccurrenceFactory
-
-    with freeze_time(timezone.now() - timedelta(days=config.OCCURRENCE_DEFAULT_RETENTION + 1)):
-        occurrence_default_retention = OccurrenceFactory()
-
-    with freeze_time(timezone.now() - timedelta(days=6)):
-        occurrence_custom_retention = OccurrenceFactory(event__occurrence_retention=5)
-
-    return [occurrence_default_retention, occurrence_custom_retention]
-
-
-@pytest.fixture
-def non_purgeable_occurrences(db) -> List["Occurrence"]:
-    from testutils.factories import OccurrenceFactory
-
-    with freeze_time(timezone.now() - timedelta(days=1)):
-        non_purgeable_occurrence = OccurrenceFactory(event__occurrence_retention=5)
-
-    return [non_purgeable_occurrence]
 
 
 @pytest.mark.parametrize(

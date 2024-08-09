@@ -2,7 +2,7 @@ import os
 import sys
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 import django
 import pytest
@@ -11,7 +11,7 @@ import responses
 from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
-    from bitcaster.models import Application, Project, User
+    from bitcaster.models import Application, Occurrence, Project, User
 
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))
@@ -274,6 +274,38 @@ def occurrence(db):
     from testutils.factories import OccurrenceFactory
 
     return OccurrenceFactory()
+
+
+@pytest.fixture
+def purgeable_occurrences(db) -> List["Occurrence"]:
+    from datetime import timedelta
+
+    from constance import config
+    from django.utils import timezone
+    from freezegun import freeze_time
+    from testutils.factories import OccurrenceFactory
+
+    with freeze_time(timezone.now() - timedelta(days=config.OCCURRENCE_DEFAULT_RETENTION + 1)):
+        occurrence_default_retention = OccurrenceFactory()
+
+    with freeze_time(timezone.now() - timedelta(days=6)):
+        occurrence_custom_retention = OccurrenceFactory(event__occurrence_retention=5)
+
+    return [occurrence_default_retention, occurrence_custom_retention]
+
+
+@pytest.fixture
+def non_purgeable_occurrences(db) -> List["Occurrence"]:
+    from datetime import timedelta
+
+    from django.utils import timezone
+    from freezegun import freeze_time
+    from testutils.factories import OccurrenceFactory
+
+    with freeze_time(timezone.now() - timedelta(days=1)):
+        non_purgeable_occurrence = OccurrenceFactory(event__occurrence_retention=5)
+
+    return [non_purgeable_occurrence]
 
 
 @pytest.fixture()
