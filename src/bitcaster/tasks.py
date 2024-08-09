@@ -60,3 +60,14 @@ def schedule_occurrences() -> None | Exception:
     except Exception as e:
         logger.exception(e)
         return e
+
+
+@app.task()
+def purge_occurrences() -> None | Exception:
+    from bitcaster.models import Occurrence
+
+    try:
+        Occurrence.objects.purgeable().delete()
+    except Exception as e:
+        logger.exception(e)
+        return e
