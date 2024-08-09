@@ -277,5 +277,6 @@ def test_purge_occurrences(purgeable_occurrences, non_purgeable_occurrences):
 
     assert Occurrence.objects.count() == len(non_purgeable_occurrences)
     assert Occurrence.objects.filter(pk__in=[o.pk for o in purgeable_occurrences]).count() == 0
-    assert (Occurrence.objects.filter(pk__in=[o.pk for o in non_purgeable_occurrences]).count()
-            == len(non_purgeable_occurrences))
+    assert Occurrence.objects.filter(pk__in=[o.pk for o in non_purgeable_occurrences]).count() == len(
+        non_purgeable_occurrences
+    )
