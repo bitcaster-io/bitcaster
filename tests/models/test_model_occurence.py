@@ -75,4 +75,4 @@ def test_purgeable(purgeable_occurrences: List["Occurrence"], non_purgeable_occu
 
     purgeable_occurrence_ids = Occurrence.objects.purgeable().order_by("id").values_list("id", flat=True)
 
-    assert (list(purgeable_occurrence_ids) == sorted([o.id for o in purgeable_occurrences]))
+    assert list(purgeable_occurrence_ids) == sorted([o.id for o in purgeable_occurrences])
