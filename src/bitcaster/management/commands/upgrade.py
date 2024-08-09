@@ -213,10 +213,16 @@ class Command(BaseCommand):
 
             # -- Inside the function you want to add task dynamically
 
-            schedule, _ = CrontabSchedule.objects.get_or_create(minute="*/1")
+            schedule_every_minute, _ = CrontabSchedule.objects.get_or_create(minute="*/1")
             PeriodicTask.objects.get_or_create(
                 name="occurence_processor",
-                defaults={"task": "bitcaster.tasks.schedule_occurrences", "crontab": schedule},
+                defaults={"task": "bitcaster.tasks.schedule_occurrences", "crontab": schedule_every_minute},
+            )
+
+            schedule_every_night, _ = CrontabSchedule.objects.get_or_create(hour=3, minute=30)
+            PeriodicTask.objects.get_or_create(
+                name="purge_occurrences",
+                defaults={"task": "bitcaster.tasks.purge_occurrences", "crontab": schedule_every_night},
             )
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
