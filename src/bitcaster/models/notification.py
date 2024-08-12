@@ -112,8 +112,6 @@ class Notification(BitcasterBaseModel):
             )
             dispatcher.send(addr.value, payload)
             return addr.value
-        else:
-            logger.warning(f"[Channel: {channel} - Assignment: {assignment}] Configured without a message")
 
         return None
 
