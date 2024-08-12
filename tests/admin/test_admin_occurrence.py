@@ -5,6 +5,7 @@ import pytest
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
+from testutils.perms import user_grant_permissions
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
@@ -30,20 +31,14 @@ def app_for_admin(django_app_factory: MixinWithInstanceVariables, admin_user: "U
 
 
 def test_purge_occurrence_permission(app: DjangoTestApp, user: "User") -> None:
-    from django.contrib.auth.models import Permission
-    from django.contrib.contenttypes.models import ContentType
-
     url = reverse("admin:bitcaster_occurrence_purge")
 
     res: "TestResponse" = app.get(url, expect_errors=True)
     assert res.status_code == 403
 
-    occ_ct = ContentType.objects.get(app_label="bitcaster", model="occurrence")
-    occ_del_perm = Permission.objects.get(content_type=occ_ct, codename="delete_occurrence")
-    user.user_permissions.add(occ_del_perm)
-    app.set_user(user)
-    res = app.get(url)
-    assert res.status_code == 302
+    with user_grant_permissions(user, "bitcaster.delete_occurrence"):
+        res = app.get(url)
+        assert res.status_code == 302
 
 
 def test_purge_occurrence(app_for_admin: DjangoTestApp, monkeypatch: "MonkeyPatch") -> None:
