@@ -101,15 +101,13 @@ class Occurrence(BitcasterBaseModel):
         notification: "Notification"
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
-        channels = self.event.channels.active()  # List of active channel for the event related to the occurrence
+        channels = self.event.channels.active()
         extra_filter = {}
         if limit := self.options.get("limit_to", []):
             extra_filter = {"address__value__in": limit}
-        # If context doesn't contain any filter, all the notifications/subscriptions are matched
         for notification in self.event.notifications.match(self.context):
             context = notification.get_context(self.get_context())
             for channel in channels:
-                # Here with "pending" we mean "active"
                 for assignment in notification.get_pending_subscriptions(delivered, channel).filter(**extra_filter):
                     try:
                         notification.notify_to_channel(channel, assignment, context)
