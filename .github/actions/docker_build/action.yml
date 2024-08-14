@@ -60,18 +60,20 @@ runs:
       id: cache-regclient-restore
       uses: actions/cache/restore@v4
       with:
-        path: $HOME/.regctl
-        key: ${{ runner.os }}-regclient
+        path: '/home/runner/.regctl/bin'
+        key: ${{ runner.os }}-${{ github.workflow_sha }}-regclient
     - name: Install regctl
-      if: steps.cache-regclient-restore.outputs.cache-hit != 'true'
+#      if: steps.cache-regclient-restore.outputs.cache-hit != 'true'
       uses: regclient/actions/regctl-installer@main
+      with:
+        install-dir: '/home/runner/.regctl/bin'
     - name: Cache regclient
+      if: steps.cache-regclient-restore.outputs.cache-hit != 'true'
       id: cache-regclient-save
       uses: actions/cache/save@v4
       with:
-        path: $HOME/.regctl
-        key: ${{ runner.os }}-regclient
-
+        path: '/home/runner/.regctl/bin'
+        key: ${{ runner.os }}-${{ github.workflow_sha }}-regclient
     - name: DockerHub login
       uses: docker/login-action@v3
       with:
@@ -103,6 +105,8 @@ runs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr,prefix=${{env.TAG_PREFIX}}pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{raw}}
       env:
         DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
     - name: "Image Name"
@@ -124,13 +128,13 @@ runs:
                           ${{ steps.image_name.outputs.name }} 2>/dev/null)
         code_checksum="${{ inputs.code_checksum }}"
         if [[ "${{ contains(github.event.head_commit.message, 'ci:all') }}" == "true" ]];then
-          echo "::warning::🤔 Forced rebuild"
+          echo "::warning::🤔 Forced rebuild. Checksum found is '${image_checksum}'"
           echo "updated=false" >> $GITHUB_OUTPUT        
         elif [[ -z "$image_checksum"  ]]; then
           echo "::warning::🤔 No image checksum found"
           echo "updated=false" >> $GITHUB_OUTPUT
         elif [[ $image_checksum == $code_checksum ]]; then
-          echo "::notice::😀 Image is updated"
+          echo "::notice::😀 Image is updated. Checksum is '${image_checksum}'"
           echo "updated=true" >> $GITHUB_OUTPUT
         else
           echo "::warning::🤬 Checksum: found '${image_checksum}' expected '${code_checksum}'"

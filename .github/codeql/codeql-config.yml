@@ -2,3 +2,4 @@ name: 'App CodeQL Config'
 
 paths-ignore:
   - '**/tests/**'
+  - '**/static/rest_framework/docs/js/highlight.pack.js'

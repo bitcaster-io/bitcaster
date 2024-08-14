@@ -138,11 +138,14 @@ jobs:
             --network host \
             -v $PWD:/code/app \
             -w /code/app \
-            -t ${{needs.build.outputs.image}} \
+            -t ${{ vars.DOCKER_IMAGE }}:${{needs.build.outputs.version}} \
             pytest tests -v --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
           ls -al
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
+        env:
+          token: ${{ secrets.CODECOV_TOKEN }}
+        if: env.token != null
         with:
           env_vars: OS,PYTHON
           fail_ci_if_error: true
@@ -151,67 +154,74 @@ jobs:
           verbose: false
           name: codecov-${{env.GITHUB_REF_NAME}}
 
-  deployable:
-    if:
-      contains(fromJSON('["refs/heads/develop", "refs/heads/staging", "refs/heads/master", "refs/heads/release"]'), github.ref) 
-      || contains(github.event.head_commit.message, 'ci:release') 
-      || contains(github.event.head_commit.message, 'ci:all') 
-
-    name: "Build deployable Docker"
-    needs: [ test ]
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    defaults:
-      run:
-        shell: bash
-    outputs:
-      image: ${{ steps.build.outputs.image }}
-      version: ${{ steps.build.outputs.version }}
-      created: ${{ steps.build.outputs.created }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.7
-      - id: checksum
-        uses: ./.github/actions/checksum
-      - name: Build
-        id: build
-        uses: ./.github/actions/docker_build
-        with:
-          dryrun: ${{ env.ACT || 'false' }}
-          rebuild: ${{ env.BUILD == 'true'}}
-          image: ${{ vars.DOCKER_IMAGE }}
-          target: 'dist'
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          code_checksum: ${{ contains(github.event.head_commit.message, 'ci:build') && steps.checksum.outputs.checksum || '' }}
-      - shell: bash
-        run: |
-          echo "${{ toJSON(steps.build.outputs) }}"
-
-  trivy:
-    name: Check Image with Trivy
-    runs-on: ubuntu-latest
-    needs: [ deployable ]
-    permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
-    if: needs.release.outputs.created == 'true' 
-      || contains(github.event.head_commit.message, 'ci:scan') 
-      || contains(github.event.head_commit.message, 'ci:all') 
-      || github.event_name == 'create'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{needs.deployable.outputs.image}}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
+#
+#  deployable:
+#    if:
+#      contains(github.ref, '/release/')
+#      || endsWith(github.ref, '/develop')
+#      || endsWith(github.ref, '/master')
+#      || endsWith(github.ref, '/staging')
+#      || contains(github.event.head_commit.message, 'ci:release')
+#      || contains(github.event.head_commit.message, 'ci:all')
+#
+#    name: "Build deployable Docker"
+#    needs: [ test ]
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 30
+#    defaults:
+#      run:
+#        shell: bash
+#    outputs:
+#      image: ${{ vars.DOCKER_IMAGE }}:${{needs.build.outputs.version}}
+#      version: ${{ steps.build.outputs.version }}
+#      created: ${{ steps.build.outputs.created }}
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4.1.7
+#      - id: checksum
+#        uses: ./.github/actions/checksum
+#      - name: Build
+#        id: build
+#        uses: ./.github/actions/docker_build
+#        with:
+#          dryrun: ${{ env.ACT || 'false' }}
+#          rebuild: ${{ env.BUILD == 'true'}}
+#          image: ${{ vars.DOCKER_IMAGE }}
+#          target: 'dist'
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#          code_checksum: ${{ steps.checksum.outputs.checksum }}
+#
+#      - shell: bash
+#        run: |
+#          echo "${{ toJSON(steps.build.outputs) }}"
+#
+#  trivy:
+#    name: Check Image with Trivy
+#    runs-on: ubuntu-latest
+#    needs: [ deployable ]
+#    permissions:
+#      contents: read # for actions/checkout to fetch code
+#      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+#      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+#    if: needs.deployable.outputs.created == 'true'
+#      || contains(github.event.head_commit.message, 'ci:scan')
+#      || contains(github.event.head_commit.message, 'ci:all')
+#      || github.event_name == 'create'
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#      - name: Run Trivy vulnerability scanner
+#        uses: aquasecurity/trivy-action@master
+#        with:
+#          image-ref: ${{ vars.DOCKER_IMAGE }}:${{needs.deployable.outputs.version}}
+#          format: 'sarif'
+#          output: 'trivy-results.sarif'
+#          vuln-type: 'os,library'
+#          severity: 'CRITICAL,HIGH'
+#          trivy-config: trivy.yaml
+#
+#      - name: Upload Trivy scan results to GitHub Security tab
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#          sarif_file: 'trivy-results.sarif'

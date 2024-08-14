@@ -1,0 +1,36 @@
+name: Delete Outdated Docker Image
+on: delete
+jobs:
+  delete_branch:
+    if: github.event.ref_type == 'branch' || github.event.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+#      - name: Install regctl
+#        uses: regclient/actions/regctl-installer@main
+#        with:
+#          install-dir: '/home/runner/.regctl'
+#      - name: regctl login
+#        uses: regclient/actions/regctl-login@main
+#        with:
+#          registry: docker.io
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - shell: bash
+        run: |
+          ref="${{github.event.ref}}"
+          tag=$(echo $ref | sed -e "s#refs/heads/##g" | sed -e s#/#-##g)
+          echo "tag1=$tag" >> $GITHUB_ENV
+          echo "tag2=test-${tag}" >> $GITHUB_ENV
+      - uses: ./.github/actions/delete_docker
+        with:
+          image: ${{vars.DOCKER_IMAGE}}
+          tag: ${{ env.tag1 }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: ./.github/actions/delete_docker
+        with:
+          image: ${{vars.DOCKER_IMAGE}}
+          tag: ${{ env.tag2 }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
