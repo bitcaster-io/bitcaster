@@ -177,7 +177,7 @@ LABEL checksum=$CHECKSUM
 LABEL distro="builder-prod"
 
 COPY docker/conf/config.toml /etc/xdg/pdm/config.toml
-#COPY pyproject.toml pdm.lock /README.md /LICENSE ./
+#COPY pyproject.toml pdm.lock /README.md /LICENSE.md ./
 #COPY ./src /code/src
 
 COPY . /code
@@ -208,7 +208,7 @@ ENV GITHUB_REPOSITORY=$GITHUB_REPOSITORY
 
 WORKDIR /code
 COPY --chown=user:app --from=python_prod_deps /code/__pypackages__ /code/__pypackages__
-COPY --chown=user:app --from=python_prod_deps /code/README.md /code/LICENSE /
+COPY --chown=user:app --from=python_prod_deps /code/README.md /code/LICENSE.md /
 
 ENV PATH=${APATH}:${PATH} \
     PYTHONPATH=${APYTHONPATH} \
@@ -236,7 +236,7 @@ LABEL org.opencontainers.image.authors="bitcaster@bitcaster.io"
 LABEL org.opencontainers.image.created="$BUILD_DATE"
 LABEL org.opencontainers.image.description="Bitcaster"
 LABEL org.opencontainers.image.documentation="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
-LABEL org.opencontainers.image.licenses="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${SOURCE_COMMIT:-master}/LICENSE"
+LABEL org.opencontainers.image.licenses="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${SOURCE_COMMIT:-master}/LICENSE.md"
 LABEL org.opencontainers.image.revision=$SOURCE_COMMIT
 LABEL org.opencontainers.image.source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${SOURCE_COMMIT:-master}/"
 LABEL org.opencontainers.image.title="Bitcaster"

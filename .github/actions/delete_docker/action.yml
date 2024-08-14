@@ -1,0 +1,44 @@
+# ref: https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action
+name: 'Delete Docker Image'
+description: 'Delete Docker Image from Registry'
+inputs:
+  image:
+    description: 'Image name to delete'
+    required: true
+  tag:
+    description: 'Tag to delete'
+    required: true
+  username:
+    description: 'Docker Username'
+    required: true
+  password:
+    description: 'Docker Password'
+    required: true
+  registry:
+    description: 'Files to use to calculate the hash'
+    required: false
+    default: "https://registry-1.docker.io"
+
+
+outputs:
+  checksum: # id of output
+    description: 'The time we greeted you'
+    value: ${{ steps.calc.outputs.checksum }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: calc
+      shell: bash
+      run: |
+        registry=${{ inputs.registry }}
+        name=${{ inputs.image }}
+        tag=${{ inputs.tag }}
+        auth='-u ${{ inputs.username }}:${{ inputs.password }}'
+        tag='<tag>'
+        curl $auth -X DELETE -sI -k "https://${registry}/v2/${name}/manifests/$(
+          curl $auth -sI -k \
+            -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+            "https://${registry}/v2/${name}/manifests/${tag}" \
+            | tr -d '\r' | sed -En 's/^Docker-Content-Digest: (.*)/\1/pi'
+        )"
