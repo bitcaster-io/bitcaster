@@ -91,7 +91,7 @@ jobs:
         id: build
         uses: ./.github/actions/docker_build
         with:
-          dryrun: ${{ env.ACT || 'false' }}
+#          dryrun: ${{ env.ACT || 'false' }}
           rebuild: ${{ env.BUILD == 'true'}}
           image: ${{ vars.DOCKER_IMAGE }}
           target: 'python_dev_deps'
