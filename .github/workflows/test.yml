@@ -69,11 +69,11 @@ jobs:
     needs: [ changes ]
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: (needs.changes.outputs.build == 'true'
-        || contains(github.event.head_commit.message, 'ci:test')
-        || contains(github.event.head_commit.message, 'ci:build')
-        || contains(github.event.head_commit.message, 'ci:all')
-        )
+#    if: (needs.changes.outputs.build == 'true'
+#        || contains(github.event.head_commit.message, 'ci:test')
+#        || contains(github.event.head_commit.message, 'ci:build')
+#        || contains(github.event.head_commit.message, 'ci:all')
+#        )
     defaults:
       run:
         shell: bash
@@ -93,7 +93,8 @@ jobs:
         with:
 #          dryrun: ${{ env.ACT || 'false' }}
           rebuild: ${{ env.BUILD == 'true'}}
-          image: ${{ vars.DOCKER_IMAGE }}
+          image: 'ghcr.io/${{ vars.DOCKER_IMAGE }}'
+          push: true
           target: 'python_dev_deps'
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -139,7 +140,7 @@ jobs:
             --network host \
             -v $PWD:/code/app \
             -w /code/app \
-            -t ${{ vars.DOCKER_IMAGE }}:${{needs.build.outputs.version}} \
+            -t ghcr.io/${{ vars.DOCKER_IMAGE }}:${{needs.build.outputs.version}} \
             pytest tests -v --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
           ls -al
       - name: Upload coverage to Codecov
