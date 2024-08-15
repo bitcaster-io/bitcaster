@@ -96,7 +96,7 @@ jobs:
 #          dryrun: ${{ env.ACT || 'false' }}
           rebuild: ${{ env.BUILD == 'true'}}
           registry: https://ghcr.io
-          image: ghcr.io/${{ vars.DOCKER_IMAGE }}
+          image: ${{ vars.DOCKER_IMAGE }}
           push: true
           target: 'python_dev_deps'
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -143,7 +143,7 @@ jobs:
             --network host \
             -v $PWD:/code/app \
             -w /code/app \
-            -t ghcr.io/${{ vars.DOCKER_IMAGE }}:${{needs.build.outputs.version}} \
+            -t ${{ vars.DOCKER_IMAGE }}:${{needs.build.outputs.version}} \
             pytest tests -v --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
           ls -al
       - name: Upload coverage to Codecov
