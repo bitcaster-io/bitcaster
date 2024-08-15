@@ -10,6 +10,10 @@ inputs:
   target:
     description: "Target Dockerfile Stage"
     type: string
+  push:
+    description: "Target Dockerfile Stage"
+    required: false
+    default: 'false'
   username:
     description: 'DockerHub username '
     required: false
@@ -180,7 +184,7 @@ runs:
         target: ${{ inputs.target }}
         file: ./docker/Dockerfile
         platforms: linux/amd64
-        push: true
+        push: ${{ inputs.push }}
         sbom: true
         provenance: true
         cache-from: type=gha

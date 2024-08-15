@@ -132,6 +132,7 @@ jobs:
         uses: ./.github/actions/docker_build
         with:
           dryrun: ${{ env.ACT || 'false' }}
+          push: 'true'
           rebuild: ${{ env.BUILD == 'true'}}
           image: ${{ vars.DOCKER_IMAGE }}
           target: 'dist'
