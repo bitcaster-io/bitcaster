@@ -153,16 +153,20 @@ runs:
           image=moby/buildkit:v0.13.2
           network=host
     - name: Build and push
-      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun == 'true'
+#      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun == 'true'
       shell: bash
       run: |
         echo "::notice:: Dryrun build of ${{ steps.meta.outputs.tags }}"
-        echo "Building image ${{ steps.meta.outputs.tags }}"
-        echo "    TAG_PREFIX ${{ env.TAG_PREFIX }}"
-        echo "        target ${{ inputs.target }}"
-        echo "      checksum ${{ inputs.code_checksum }}"
-        echo "       version ${{ steps.meta.outputs.version }}"
-        echo "        commit ${{ steps.last_commit.outputs.last_commit_short_sha }}"
+        
+        echo " image updated:  ${{ steps.image_status.outputs.updated }}"
+        echo " image rebuild:  ${{ inputs.rebuild }}"
+        echo " "
+        echo "    image tags:  ${{ steps.meta.outputs.tags }}"
+        echo "    TAG_PREFIX:  ${{ env.TAG_PREFIX }}"
+        echo "        target:  ${{ inputs.target }}"
+        echo "      checksum:  ${{ inputs.code_checksum }}"
+        echo "       version:  ${{ steps.meta.outputs.version }}"
+        echo "        commit:  ${{ steps.last_commit.outputs.last_commit_short_sha }}"
 
     - name: Build and push
       if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun != 'true'
