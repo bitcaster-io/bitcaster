@@ -179,8 +179,10 @@ runs:
         push: true
         sbom: true
         provenance: true
-        cache-from: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,ref=${{ steps.image_name.outputs.test_name }}-cache
-        cache-to: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,mode=max,image-manifest=true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+#        cache-from: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,ref=${{ steps.image_name.outputs.test_name }}-cache
+#        cache-to: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,mode=max,image-manifest=true
         build-args: |
             GITHUB_SERVER_URL=${{ github.server_url }}
             GITHUB_REPOSITORY=${{ github.repository }}
