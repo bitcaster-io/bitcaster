@@ -14,6 +14,10 @@ inputs:
     description: "Target Dockerfile Stage"
     required: false
     default: 'true'
+  registry:
+    description: "Docker Registry"
+    required: false
+    default: 'https://registry-1.docker.io'
   username:
     description: 'DockerHub username '
     required: false
@@ -76,6 +80,7 @@ runs:
       id: cache-regclient-save
       uses: actions/cache/save@v4
       with:
+        registry: ${{ inputs.registry }}
         path: '/home/runner/.regctl/bin'
         key: ${{ runner.os }}-${{ github.workflow_sha }}-regclient
     - name: DockerHub login
