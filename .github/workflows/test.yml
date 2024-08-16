@@ -63,7 +63,7 @@ jobs:
             echo "::notice:: Forced trivy scan due to commit message"
           fi
           echo "build=${{needs.changed_files.outputs.build}}" >> $GITHUB_OUTPUT
-          if [[ $force_build == "true" || "${{needs.changed_files.outputs.run_tests}}" == "true" || ]]; then 
+          if [[ $force_build == "true" || "${{needs.changed_files.outputs.run_tests}}" == "true" ]]; then 
               echo "build=true" >> $GITHUB_OUTPUT
           fi
 
