@@ -14,6 +14,7 @@ jobs:
           echo "ref=$ref" >> $GITHUB_ENV
           echo "dist_tag=$tag" >> $GITHUB_ENV
           echo "test_tag=test-${tag}" >> $GITHUB_ENV
+          ls -al ./.github/actions
       - name: Delete distro docker
         uses: ./.github/actions/delete_docker
         if: github.event.ref_type == 'tag'
