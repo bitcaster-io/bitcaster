@@ -80,7 +80,7 @@ jobs:
       run:
         shell: bash
     outputs:
-      image: ${{ steps.build.outputs.image }}
+      metadata: ${{ steps.build.outputs.metadata }}
       version: ${{ steps.build.outputs.version }}
       created: ${{ steps.build.outputs.created }}
     permissions:

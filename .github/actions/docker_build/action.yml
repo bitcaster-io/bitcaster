@@ -59,6 +59,9 @@ outputs:
   imageId:
     description: 'Built image ID'
     value: ${{ steps.build_push.outputs.imageId }}
+  metadata:
+    description: 'Image metadata'
+    value: ${{ steps.build_push.outputs.metadata }}
 
 
 runs:
