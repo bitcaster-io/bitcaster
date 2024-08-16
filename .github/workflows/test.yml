@@ -62,7 +62,9 @@ jobs:
             echo "::notice:: Forced trivy scan due to commit message"
           fi
           if [[ $force_build == "true" || "${{needs.changes.outputs.run_tests}}" == "true" ]]; then 
-              echo "BUILD=true" >> $GITHUB_ENV
+              echo "REBUILD=true" >> $GITHUB_ENV
+          else:
+              echo "REBUILD=false" >> $GITHUB_ENV          
           fi
 
   build:
@@ -94,7 +96,7 @@ jobs:
         uses: ./.github/actions/docker_build
         with:
 #          dryrun: ${{ env.ACT || 'false' }}
-          rebuild: ${{ env.BUILD == 'true'}}
+          rebuild: ${{ env.REBUILD == 'true'}}
           registry: docker.io
           image: ${{ vars.DOCKER_IMAGE }}
           push: true
