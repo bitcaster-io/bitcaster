@@ -63,7 +63,7 @@ jobs:
           fi
           if [[ $force_build == "true" || "${{needs.changes.outputs.run_tests}}" == "true" ]]; then 
               echo "REBUILD=true" >> $GITHUB_ENV
-          else:
+          else;
               echo "REBUILD=false" >> $GITHUB_ENV          
           fi
 
