@@ -95,7 +95,7 @@ jobs:
         with:
 #          dryrun: ${{ env.ACT || 'false' }}
           rebuild: ${{ env.BUILD == 'true'}}
-          registry: hub.docker.io
+          registry: docker.io
           image: ${{ vars.DOCKER_IMAGE }}
           push: true
           target: 'python_dev_deps'
