@@ -96,7 +96,7 @@ jobs:
         uses: ./.github/actions/docker_build
         with:
 #          dryrun: ${{ env.ACT || 'false' }}
-          rebuild: ${{ env.FORCE_BUILD == 'true' }}
+          rebuild: ${{ needs.changes.outputs.build == 'true' }}
           registry: docker.io
           image: ${{ vars.DOCKER_IMAGE }}
           push: true
