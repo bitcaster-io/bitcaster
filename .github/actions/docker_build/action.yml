@@ -14,15 +14,19 @@ inputs:
     description: "Target Dockerfile Stage"
     required: false
     default: 'true'
+  registry:
+    description: "Docker Registry"
+    required: false
+    default: 'hub.docker.io'
   username:
     description: 'DockerHub username '
     required: false
   password:
     description: 'DockerHub password '
     required: false
-  code_checksum:
-    description: 'Current codde checksum'
-    required: false
+#  code_checksum:
+#    description: 'Current codde checksum'
+#    required: false
   rebuild:
     description: 'Always rebuild image, Ignore checksum'
     required: false
@@ -81,6 +85,7 @@ runs:
     - name: DockerHub login
       uses: docker/login-action@v3
       with:
+        registry: ${{ inputs.registry }}
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
     - id: checksum
@@ -130,7 +135,7 @@ runs:
                           --format '{{index .Config.Labels "checksum"}}' \
                           -v fatal \
                           ${{ steps.image_name.outputs.name }} 2>/dev/null)
-        code_checksum="${{ inputs.code_checksum }}"
+        code_checksum="${{ steps.checksum.outputs.checksum }}"
         if [[ "${{ contains(github.event.head_commit.message, 'ci:all') }}" == "true" ]];then
           echo "::warning::🤔 Forced rebuild. Checksum found is '${image_checksum}'"
           echo "updated=false" >> $GITHUB_OUTPUT        
