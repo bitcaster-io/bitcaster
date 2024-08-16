@@ -17,7 +17,7 @@ inputs:
   registry:
     description: "Docker Registry"
     required: false
-    default: 'hub.docker.io'
+    default: 'docker.io'
   username:
     description: 'DockerHub username '
     required: false
