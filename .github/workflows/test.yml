@@ -35,12 +35,12 @@ jobs:
       run:
         shell: bash
     outputs:
-      run_tests: ${{ steps.changes.outputs.run_tests }}
-      build: ${{ steps.changes.outputs.build }}
+      run_tests: ${{ steps.changed_files.outputs.run_tests }}
+      build: ${{ steps.info.outputs.build }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
-      - id: changes
+      - id: changed_files
         name: Check for file changes
         uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
         with:
@@ -48,6 +48,7 @@ jobs:
           token: ${{ github.token }}
           filters: .github/file-filters.yml
       - name: info
+        id: info
         shell: bash
         run: |
           force_build="${{ contains(github.event.head_commit.message, 'ci:build') || contains(github.event.head_commit.message, 'ci:release')}}"
@@ -61,8 +62,9 @@ jobs:
           elif [[ $force_scan == "true" ]]; then
             echo "::notice:: Forced trivy scan due to commit message"
           fi
-          if [[ $force_build == "true" || "${{needs.changes.outputs.run_tests}}" == "true" ]]; then 
-              echo "FORCE_BUILD=true" >> $GITHUB_ENV       
+          echo "build=${{needs.changed_files.outputs.build}}" >> $GITHUB_OUTPUT
+          if [[ $force_build == "true" || "${{needs.changed_files.outputs.run_tests}}" == "true" || ]]; then 
+              echo "build=true" >> $GITHUB_OUTPUT
           fi
 
   build:
