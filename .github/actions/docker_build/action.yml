@@ -14,10 +14,6 @@ inputs:
     description: "Target Dockerfile Stage"
     required: false
     default: 'true'
-  registry:
-    description: "Docker Registry"
-    required: false
-    default: 'https://registry-1.docker.io'
   username:
     description: 'DockerHub username '
     required: false
@@ -80,7 +76,6 @@ runs:
       id: cache-regclient-save
       uses: actions/cache/save@v4
       with:
-        registry: ${{ inputs.registry }}
         path: '/home/runner/.regctl/bin'
         key: ${{ runner.os }}-${{ github.workflow_sha }}-regclient
     - name: DockerHub login
@@ -192,10 +187,8 @@ runs:
         push: ${{ inputs.push }}
         sbom: true
         provenance: true
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-#        cache-from: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,ref=${{ steps.image_name.outputs.test_name }}-cache
-#        cache-to: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,mode=max,image-manifest=true
+        cache-from: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,ref=${{ steps.image_name.outputs.test_name }}-cache
+        cache-to: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,mode=max,image-manifest=true
         build-args: |
             GITHUB_SERVER_URL=${{ github.server_url }}
             GITHUB_REPOSITORY=${{ github.repository }}
