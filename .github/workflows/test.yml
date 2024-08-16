@@ -62,10 +62,7 @@ jobs:
             echo "::notice:: Forced trivy scan due to commit message"
           fi
           if [[ $force_build == "true" || "${{needs.changes.outputs.run_tests}}" == "true" ]]; then 
-              echo "REBUILD=true" >> $GITHUB_ENV
-              echo "::notice:: Forced rebuild"
-          else
-              echo "REBUILD=false" >> $GITHUB_ENV          
+              echo "REBUILD=true" >> $GITHUB_ENV       
           fi
 
   build:

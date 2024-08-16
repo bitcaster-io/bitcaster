@@ -137,6 +137,10 @@ runs:
                           -v fatal \
                           ${{ steps.image_name.outputs.name }} 2>/dev/null)
         code_checksum="${{ steps.checksum.outputs.checksum }}"
+        
+        echo "::notice:: INPUTS: rebuild  ${{ inputs.rebuild }}"
+        echo "::notice:: INPUTS: registry ${{ inputs.registry }}"
+        
         if [[ "${{ contains(github.event.head_commit.message, 'ci:all') }}" == "true" ]];then
           echo "::warning::🤔 Forced rebuild. Checksum found is '${image_checksum}'"
           echo "updated=false" >> $GITHUB_OUTPUT        
