@@ -43,9 +43,10 @@ defaults:
 
 
 outputs:
-  image:
-    description: 'Built image name'
-    value: ${{ steps.image_name.outputs.name }}
+#  removed due to Error: Skip output 'image' since it may contain secret.
+#  image:
+#    description: 'Built image name'
+#    value: ${{ steps.image_name.outputs.name }}
   version:
     description: 'Built image version'
     value: ${{ steps.meta.outputs.version }}
@@ -164,12 +165,11 @@ runs:
     - name: Build and push
 #      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun == 'true'
       shell: bash
-      run: |
-        echo "::notice:: Dryrun build of ${{ steps.meta.outputs.tags }}"
-        
+      run: |        
         echo " image updated:  ${{ steps.image_status.outputs.updated }}"
-        echo " image rebuild:  ${{ inputs.rebuild }}"
+        echo " inputs rebuild:  ${{ inputs.rebuild }}"
         echo " "
+        echo "      dry_run:  ${{ inputs.registry }}"
         echo "      registry:  ${{ inputs.registry }}"
         echo "    image tags:  ${{ steps.meta.outputs.tags }}"
         echo "    TAG_PREFIX:  ${{ env.TAG_PREFIX }}"
@@ -179,7 +179,7 @@ runs:
         echo "        commit:  ${{ steps.last_commit.outputs.last_commit_short_sha }}"
 
     - name: Build and push
-      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun != 'true'
+      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true')
       id: build_push
       uses: docker/build-push-action@v6
       with:
