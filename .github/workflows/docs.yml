@@ -2,9 +2,15 @@ name: "Documentation"
 
 on:
   push:
-    branches: [ "develop", "master" ]
+    branches:
+      - develop
+      - feature/*
+      - bugfix/*
+      - hotfix/*
   pull_request:
-    branches: [ "develop", "master" ]
+    branches:
+      - develop
+      - master
   schedule:
     - cron: '37 23 * * 2'
 
