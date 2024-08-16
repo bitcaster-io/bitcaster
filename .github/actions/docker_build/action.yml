@@ -169,7 +169,7 @@ runs:
         echo " image updated:  ${{ steps.image_status.outputs.updated }}"
         echo " inputs rebuild:  ${{ inputs.rebuild }}"
         echo " "
-        echo "      dry_run:  ${{ inputs.registry }}"
+        echo "      dry_run:   ${{ inputs.dry_run }}"
         echo "      registry:  ${{ inputs.registry }}"
         echo "    image tags:  ${{ steps.meta.outputs.tags }}"
         echo "    TAG_PREFIX:  ${{ env.TAG_PREFIX }}"

@@ -63,6 +63,7 @@ jobs:
           fi
           if [[ $force_build == "true" || "${{needs.changes.outputs.run_tests}}" == "true" ]]; then 
               echo "REBUILD=true" >> $GITHUB_ENV
+              echo "::notice:: Forced rebuild"
           else
               echo "REBUILD=false" >> $GITHUB_ENV          
           fi
@@ -96,7 +97,7 @@ jobs:
         uses: ./.github/actions/docker_build
         with:
 #          dryrun: ${{ env.ACT || 'false' }}
-          rebuild: ${{ env.REBUILD == 'true'}}
+          rebuild: ${{ env.REBUILD }}
           registry: docker.io
           image: ${{ vars.DOCKER_IMAGE }}
           push: true
