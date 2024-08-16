@@ -14,7 +14,8 @@ jobs:
           echo "ref=$ref" >> $GITHUB_ENV
           echo "dist_tag=$tag" >> $GITHUB_ENV
           echo "test_tag=test-${tag}" >> $GITHUB_ENV
-      - uses: ./.github/actions/delete_docker
+      - name: Delete distro docker
+        uses: ./.github/actions/delete_docker
         if: github.event.ref_type == 'tag'
         with:
           image: ${{vars.DOCKER_IMAGE}}
@@ -22,7 +23,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - uses: ./.github/actions/delete_docker
+      - name: Delete test docker
+        uses: ./.github/actions/delete_docker
         with:
           image: ${{vars.DOCKER_IMAGE}}
           tag: ${{ env.test_tag }}
