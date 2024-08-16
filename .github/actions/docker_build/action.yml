@@ -173,7 +173,7 @@ runs:
         echo "    image tags:  ${{ steps.meta.outputs.tags }}"
         echo "    TAG_PREFIX:  ${{ env.TAG_PREFIX }}"
         echo "        target:  ${{ inputs.target }}"
-        echo "      checksum:  ${{ inputs.code_checksum }}"
+        echo "      checksum:  ${{ steps.checksum.outputs.checksum }}"
         echo "       version:  ${{ steps.meta.outputs.version }}"
         echo "        commit:  ${{ steps.last_commit.outputs.last_commit_short_sha }}"
 
