@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Iterable
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional
 from urllib.parse import urljoin
 
 from django.conf import settings

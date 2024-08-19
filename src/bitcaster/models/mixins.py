@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 
 if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel
+
     from .application import Application
     from .organization import Organization
 

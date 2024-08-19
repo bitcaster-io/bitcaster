@@ -21,7 +21,7 @@ class DistributionList(BitcasterBaseModel):
     ADMINS = "Bitcaster Admins"
     name = models.CharField(max_length=255, db_collation="case_insensitive")
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    recipients = models.ManyToManyField(Assignment)
+    recipients = models.ManyToManyField(Assignment, blank=True)
 
     objects = DistributionListManager()
 

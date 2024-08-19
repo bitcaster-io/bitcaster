@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from django.urls import reverse
 from rest_framework import serializers
 from rest_framework.decorators import action
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
@@ -28,7 +28,7 @@ class OrgSerializer(serializers.ModelSerializer):
         return absolute_uri(reverse("api:user-list", kwargs={"org": obj.slug}))
 
 
-class ProjectView(SecurityMixin, ViewSet, RetrieveAPIView):
+class ProjectView(SecurityMixin, ViewSet, ListAPIView, RetrieveAPIView):
     """
     Project details
     """
@@ -49,8 +49,8 @@ class ProjectView(SecurityMixin, ViewSet, RetrieveAPIView):
         ser = ApplicationSerializer(many=True, instance=prj.applications.all())
         return Response(ser.data)
 
-    # @action(detail=True, methods=["GET"], description="Channel list")
-    # def projects(self, request: HttpRequest, **kwargs: Any) -> Response:
-    #     org: Organization = self.get_object()
-    #     ser = ProjectSerializer(many=True, instance=org.projects.filter())
-    #     return Response(ser.data)
+    @action(detail=True, methods=["GET"], description="Channel list")
+    def projects(self, request: HttpRequest, **kwargs: Any) -> Response:
+        org: Organization = self.get_object()
+        ser = ProjectSerializer(many=True, instance=org.projects.filter())
+        return Response(ser.data)

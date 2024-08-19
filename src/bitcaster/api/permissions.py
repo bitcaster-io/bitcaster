@@ -29,20 +29,22 @@ class ApiKeyAuthentication(authentication.TokenAuthentication):
 
 class ApiBasePermission(permissions.BasePermission):
     def _check_valid_scope(self, token: "ApiKey", view: "SecurityMixin") -> bool:
+
         ret = True
         if "org" in view.kwargs and view.kwargs["org"] != token.organization.slug:
             raise InvalidGrantError(f"Invalid organization for {token}")
         if "prj" in view.kwargs:
             if not token.project:
-                raise InvalidGrantError(f"Key not enabled form project scope")
+                raise InvalidGrantError("Key not enabled form project scope")
             elif view.kwargs["prj"] != token.project.slug:
                 raise InvalidGrantError(f"Invalid project for {token}")
 
         if "app" in view.kwargs:
             if not token.application:
-                raise InvalidGrantError(f"Key not enabled form application scope")
+                raise InvalidGrantError("Key not enabled form application scope")
             elif view.kwargs["app"] != token.application.slug:
                 raise InvalidGrantError(f"Invalid application for {token}")
+
         if ret:
             if Grant.FULL_ACCESS in token.grants:
                 return True
@@ -55,11 +57,17 @@ class ApiBasePermission(permissions.BasePermission):
 class ApiApplicationPermission(ApiBasePermission):
 
     def has_permission(self, request: Request, view: "SecurityMixin") -> bool:
+        # if getattr(request, "user", None) is not None:
+        #     if request.user.is_authenticated and request.user.is_superuser:
+        #         return True
         if getattr(request, "auth", None) is None:
             return False
         return self._check_valid_scope(request.auth, view)
 
     def has_object_permission(self, request: Request, view: "SecurityMixin", obj: "AnyModel") -> bool:
+        # if getattr(request, "user", None) is not None:
+        #     if request.user.is_authenticated and request.user.is_superuser:
+        #         return True
         if getattr(request, "auth", None) is None:
             return False
         return self._check_valid_scope(request.auth, view)

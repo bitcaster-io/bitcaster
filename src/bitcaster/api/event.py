@@ -48,7 +48,6 @@ class EventTrigger(SecurityMixin, GenericAPIView):
 
     serializer_class = EventSerializer
     required_grants = [Grant.EVENT_TRIGGER]
-    # permission_classes = []
     parser = (JSONParser,)
     http_method_names = ["post"]
 
