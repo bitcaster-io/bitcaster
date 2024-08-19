@@ -9,6 +9,8 @@ from django.utils.translation import gettext as _
 
 if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel
+    from .application import Application
+    from .organization import Organization
 
 
 class LockMixin(models.Model):
@@ -52,7 +54,7 @@ class SlugMixin(models.Model):
         abstract = True
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.slug:
@@ -100,7 +102,7 @@ class ScopedManager(BitcasterBaselManager["AnyModel"]):
 
 
 class Scoped2Mixin(models.Model):
-
+    organization: "Organization"
     organization = models.ForeignKey("Organization", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True)
     project = models.ForeignKey(
         "Project", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True, null=True
@@ -111,6 +113,7 @@ class Scoped2Mixin(models.Model):
 
 
 class Scoped3Mixin(Scoped2Mixin):
+    application: "Application"
     application = models.ForeignKey(
         "Application", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True, null=True
     )
