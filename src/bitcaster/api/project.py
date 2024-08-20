@@ -38,7 +38,7 @@ class ProjectView(SecurityMixin, ViewSet, ListAPIView, RetrieveAPIView):
     lookup_url_kwarg = "prj"
     lookup_field = "slug"
 
-    def get_queryset(self) -> QuerySet[Organization]:
+    def get_queryset(self) -> QuerySet[Project]:
         return Project.objects.exclude(organization_id=Bitcaster.app.organization.pk).filter(
             organization__slug=self.kwargs["org"],
         )

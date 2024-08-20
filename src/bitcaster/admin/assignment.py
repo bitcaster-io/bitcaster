@@ -15,8 +15,11 @@ from bitcaster.forms.widgets import AutocompletSelectEnh
 from bitcaster.models import Address, Assignment
 
 if TYPE_CHECKING:
+    from django.db.models.fields.related import _ST
+
     from bitcaster.types.django import AnyModel
 
+    # _ST = TypeVar("_ST")
     AssignmentT = TypeVar("AssignmentT", bound=Assignment)
     AddressT = TypeVar("AddressT", bound=Address)
 
@@ -42,7 +45,7 @@ class AssignmentAdmin(BaseAdmin, admin.ModelAdmin[Assignment]):
         return frm
 
     def formfield_for_foreignkey(
-        self, db_field: "ForeignKey[Assignment, AnyModel]", request: HttpRequest, **kwargs: Any
+        self, db_field: "ForeignKey[Assignment, _ST]", request: HttpRequest, **kwargs: Any
     ) -> "ModelChoiceField[AnyModel]":
         form_field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "address":

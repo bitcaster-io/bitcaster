@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Iterable, MutableMapping, Optional
+from typing import TYPE_CHECKING, Any, Iterable, Mapping, Optional
 
 from concurrency.fields import IntegerVersionField
 from django.core.exceptions import ObjectDoesNotExist
@@ -65,41 +65,43 @@ class SlugMixin(models.Model):
 
 class ScopedManager(BitcasterBaselManager["AnyModel"]):
 
-    def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[AnyModel, bool]":
+    def get_or_create(self, defaults: Mapping[str, Any] | None = None, **kwargs: Any) -> "tuple[AnyModel, bool]":
+        values = dict(**(defaults or {}))
         if kwargs.get("application", None):
             kwargs["project"] = kwargs["application"].project
 
         if kwargs.get("project", None):
             kwargs["organization"] = kwargs["project"].organization
 
-        if defaults:
-            if defaults.get("application", None):
-                defaults["project"] = defaults["application"].project
+        if values:
+            if values.get("application", None):
+                values["project"] = values["application"].project
 
-            if defaults.get("project", None):
-                defaults["organization"] = defaults["project"].organization
+            if values.get("project", None):
+                values["organization"] = values["project"].organization
 
-        return super().get_or_create(defaults, **kwargs)
+        return super().get_or_create(values, **kwargs)
 
     def update_or_create(
         self,
-        defaults: MutableMapping[str, Any] | None = None,
-        create_defaults: MutableMapping[str, Any] | None = None,
+        defaults: Mapping[str, Any] | None = None,
+        create_defaults: Mapping[str, Any] | None = None,
         **kwargs: Any,
     ) -> "tuple[AnyModel, bool]":
+        values = dict(**(defaults or {}))
         if kwargs.get("application", None):
             kwargs["project"] = kwargs["application"].project
 
         if kwargs.get("project", None):
             kwargs["organization"] = kwargs["project"].organization
 
-        if defaults:
-            if defaults.get("application", None):
-                defaults["project"] = defaults["application"].project
+        if values:
+            if values.get("application", None):
+                values["project"] = values["application"].project
 
-            if defaults.get("project", None):
-                defaults["organization"] = defaults["project"].organization
-        return super().update_or_create(defaults, **kwargs)
+            if values.get("project", None):
+                values["organization"] = values["project"].organization
+        return super().update_or_create(values, **kwargs)
 
 
 class Scoped2Mixin(models.Model):

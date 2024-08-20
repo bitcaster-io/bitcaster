@@ -24,10 +24,10 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ("name", "slug", "applications", "lists")
 
-    def get_applications(self, obj: Project):
+    def get_applications(self, obj: Project) -> str:
         return absolute_reverse("api:project-application-list", args=[obj.organization.slug, obj.slug])
 
-    def get_lists(self, obj: Project):
+    def get_lists(self, obj: Project) -> str:
         return absolute_reverse("api:distribution-list", args=[obj.organization.slug, obj.slug])
 
 
@@ -38,7 +38,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
         model = Application
         fields = ("name", "slug", "events")
 
-    def get_events(self, obj: Application):
+    def get_events(self, obj: Application) -> str:
         return absolute_reverse("api:events-list", args=[obj.project.organization.slug, obj.project.slug, obj.slug])
 
 

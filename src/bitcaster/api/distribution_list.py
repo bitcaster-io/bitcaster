@@ -36,7 +36,7 @@ class DistributionListSerializer(serializers.ModelSerializer):
         model = DistributionList
         fields = ("name", "id", "members")
 
-    def get_members(self, obj: Project):
+    def get_members(self, obj: Project) -> str:
         return absolute_reverse("api:members-list", args=[obj.project.organization.slug, obj.project.slug, obj.id])
 
     def validate_name(self, value: str) -> str:
@@ -95,7 +95,7 @@ class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, Retri
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIView[DistributionList]):
+class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView):
     """
     Distribution list
     """
@@ -109,10 +109,10 @@ class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView
             organization__slug=self.kwargs["org"], slug=self.kwargs["prj"]
         )
 
-    def get_object(self) -> DistributionList:
+    def get_object(self) -> Assignment:
         return self.get_queryset().get(pk=self.kwargs["pk"])
 
-    def get_queryset(self) -> QuerySet[DistributionList]:
+    def get_queryset(self) -> QuerySet[Assignment]:
         return Assignment.objects.filter(
             distributionlist__id=self.kwargs["pk"], distributionlist__project__slug=self.kwargs["prj"]
         )

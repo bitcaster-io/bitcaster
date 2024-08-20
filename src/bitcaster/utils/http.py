@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -42,5 +42,5 @@ def absolute_uri(url: str | None = None) -> str:
     return uri
 
 
-def absolute_reverse(name: str, args: Iterable[Any] | None = None, kwargs: Dict[str, Any] | None = None) -> str:
+def absolute_reverse(name: str, args: Sequence[Any] | None = None, kwargs: Dict[str, Any] | None = None) -> str:
     return absolute_uri(reverse(name, args=args, kwargs=kwargs))

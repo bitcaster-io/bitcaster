@@ -32,7 +32,7 @@ class SecurityMixin(APIView):
     def grants(self) -> "_ListOrTuple[Grant]":
         return self.required_grants
 
-    def handle_exception(self, exc):
+    def handle_exception(self, exc: Exception) -> Response:
         if isinstance(exc, (InvalidGrantError,)):
             response = Response({"detail": str(exc)}, status=403)
             return response

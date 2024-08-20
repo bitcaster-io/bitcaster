@@ -139,7 +139,7 @@ jobs:
           PYTHONPATH: __pypackages__/3.12/lib
         run: |
             __pypackages__/3.12/bin/mypy \
-                  --python-executable __pypackages__/3.12/bin/python \
+                  --python-executable /opt/hostedtoolcache/Python/3.12.5/x64/bin/python \
                   --config-file .mypy.ini \
                   --install-types \
                   --non-interactive \
