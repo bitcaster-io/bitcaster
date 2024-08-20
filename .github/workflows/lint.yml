@@ -137,4 +137,10 @@ jobs:
       - name: Mypy
         env:
           PYTHONPATH: __pypackages__/3.12/lib
-        run: __pypackages__/3.12/bin/mypy --config-file .mypy.ini --install-types --non-interactive src/
+        run: |
+            __pypackages__/3.12/bin/mypy \
+                  --python-executable __pypackages__/3.12/bin/python \
+                  --config-file .mypy.ini \
+                  --install-types \
+                  --non-interactive \
+                  src/
