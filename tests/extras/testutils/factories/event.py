@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Any
+
 import factory
 from factory import Sequence
 
@@ -6,8 +8,11 @@ from bitcaster.models import Event
 from .base import AutoRegisterModelFactory
 from .org import ApplicationFactory
 
+if TYPE_CHECKING:
+    from bitcaster.models import Channel
 
-class EventFactory(AutoRegisterModelFactory):
+
+class EventFactory(AutoRegisterModelFactory[Event]):
     name = Sequence(lambda n: "Event-%03d" % n)
     application = factory.SubFactory(ApplicationFactory)
 
@@ -16,16 +21,16 @@ class EventFactory(AutoRegisterModelFactory):
         django_get_or_create = ("name",)
 
     @factory.post_generation
-    def channels(dist: "Event", create, extracted, **kwargs):
+    def channels(self: "Event", create: bool, extracted: "list[Channel]", **kwargs):
         if not create:
             return
 
         if extracted:
             for ch in extracted:
-                dist.channels.add(ch)
+                self.channels.add(ch)
 
     @factory.post_generation
-    def messages(dist: "Event", create, extracted, **kwargs):
+    def messages(self: "Event", create: bool, extracted: Any, **kwargs: Any) -> None:
         from .message import MessageFactory
 
         if not create:
@@ -35,9 +40,9 @@ class EventFactory(AutoRegisterModelFactory):
             if isinstance(extracted, int):
                 for _ in range(extracted):
                     msg = MessageFactory()
-                    dist.messages.add(msg)
-                    dist.channels.add(msg.channel)
+                    self.messages.add(msg)
+                    self.channels.add(msg.channel)
             else:
                 for msg in extracted:
-                    dist.messages.add(msg)
-                    dist.channels.add(msg.channel)
+                    self.messages.add(msg)
+                    self.channels.add(msg.channel)

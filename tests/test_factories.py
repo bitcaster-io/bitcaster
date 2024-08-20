@@ -1,16 +1,21 @@
-def test_factory_event(email_channel):
-    from testutils.factories import Event, EventFactory, MessageFactory
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bitcaster.models import Channel, Event, Notification
+
+
+def test_factory_event(email_channel: "Channel") -> None:
+    from testutils.factories import EventFactory, MessageFactory
 
     e: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
     assert e.channels.filter(pk=email_channel.pk).exists()
     assert e.messages.filter(channel__pk=email_channel.pk).exists()
 
 
-def test_factory_notification(email_channel):
+def test_factory_notification(email_channel: "Channel") -> None:
     from testutils.factories import (
         AssignmentFactory,
         MessageFactory,
-        Notification,
         NotificationFactory,
     )
 

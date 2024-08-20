@@ -19,6 +19,7 @@ class AddressSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     applications = serializers.SerializerMethodField()
     lists = serializers.SerializerMethodField()
+
     class Meta:
         model = Project
         fields = ("name", "slug", "applications", "lists")

@@ -1,3 +1,5 @@
+from typing import Any
+
 import factory
 from factory import Sequence
 
@@ -9,7 +11,7 @@ from .event import EventFactory
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
 
 
-class MessageFactory(AutoRegisterModelFactory):
+class MessageFactory(AutoRegisterModelFactory[Message]):
     name = Sequence(lambda n: "Message-%03d" % n)
     content = "Message for {{ event.name }} on channel {{channel.name}}"
 
@@ -24,7 +26,7 @@ class MessageFactory(AutoRegisterModelFactory):
         django_get_or_create = ("name", "organization", "channel", "event")
 
     @classmethod
-    def create(cls, **kwargs):
+    def create(cls, **kwargs: Any) -> Message:
         if kwargs.get("event", None):
             kwargs["organization"] = kwargs["event"].application.project.organization
 

@@ -7,7 +7,7 @@ from .base import AutoRegisterModelFactory
 from .channel import ChannelFactory
 
 
-class BrowserFactory(AutoRegisterModelFactory):
+class BrowserFactory(AutoRegisterModelFactory[Browser]):
     class Meta:
         model = Browser
         django_get_or_create = ("address", "channel", "validated")

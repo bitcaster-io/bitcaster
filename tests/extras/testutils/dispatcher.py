@@ -1,4 +1,9 @@
+from typing import TYPE_CHECKING, Any, Optional
+
 from bitcaster.dispatchers.base import Dispatcher, Payload
+
+if TYPE_CHECKING:
+    from bitcaster.models import Assignment
 
 MESSAGES = []
 
@@ -11,6 +16,6 @@ class TDispatcher(Dispatcher):
     text_message = True
     html_message = True
 
-    def send(self, address: str, payload: Payload) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
         MESSAGES.append((address, payload.message))
         return True

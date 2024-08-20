@@ -1,8 +1,9 @@
 import uuid
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Any, Tuple, TypedDict
 from unittest.mock import Mock
 
 import pytest
+from pytest import MonkeyPatch
 from strategy_field.utils import fqn
 from testutils.dispatcher import TDispatcher
 
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
         Event,
         Notification,
         Occurrence,
+        User,
     )
 
     Context = TypedDict(
@@ -33,7 +35,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def setup(admin_user) -> "Context":
+def setup(admin_user: "User") -> "Context":
     from testutils.factories import (
         AssignmentFactory,
         ChannelFactory,
@@ -61,7 +63,8 @@ def setup(admin_user) -> "Context":
     }
 
 
-def test_process_event_single(transactional_db, setup: "Context", messagebox):
+@pytest.mark.django_db(transaction=True)
+def test_process_event_single(setup: "Context", messagebox: list[Tuple[str, str]]) -> None:
     from bitcaster.models import Occurrence
 
     v1: Assignment = setup["assignments"][0]
@@ -84,7 +87,7 @@ def test_process_event_single(transactional_db, setup: "Context", messagebox):
     }
 
 
-def test_process_incomplete_event(setup: "Context", messagebox):
+def test_process_incomplete_event(setup: "Context", messagebox: list[Tuple[str, str]]) -> None:
     from bitcaster.models import Occurrence
 
     occurrence = setup["occurrence"]
@@ -101,7 +104,8 @@ def test_process_incomplete_event(setup: "Context", messagebox):
     assert occurrence.data == {"delivered": [v1.id, v2.id]}
 
 
-def test_process_event_partially(transactional_db, setup: "Context", monkeypatch):
+@pytest.mark.django_db(transaction=True)
+def test_process_event_partially(setup: "Context", monkeypatch: MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     occurrence: Occurrence = setup["occurrence"]
@@ -122,7 +126,7 @@ def test_process_event_partially(transactional_db, setup: "Context", monkeypatch
     }
 
 
-def test_process_event_resume(setup: "Context", monkeypatch):
+def test_process_event_resume(setup: "Context", monkeypatch: MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     v1: Assignment = setup["assignments"][0]
@@ -145,7 +149,7 @@ def test_process_event_resume(setup: "Context", monkeypatch):
     }
 
 
-def test_silent_event(setup: "Context", monkeypatch, system_objects):
+def test_silent_event(setup: "Context", monkeypatch: MonkeyPatch, system_objects: Any) -> None:
     from bitcaster.models import Occurrence
 
     cid = uuid.uuid4()
@@ -163,8 +167,10 @@ def test_silent_event(setup: "Context", monkeypatch, system_objects):
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
 
 
-def test_attempts(setup: "Context", monkeypatch):
-    from testutils.factories import Occurrence, OccurrenceFactory
+def test_attempts(setup: "Context", monkeypatch: MonkeyPatch) -> None:
+    from testutils.factories import OccurrenceFactory
+
+    from bitcaster.models import Occurrence
 
     o = OccurrenceFactory(attempts=0, status=Occurrence.Status.PROCESSED)
     process_occurrence(o.pk)
@@ -174,8 +180,8 @@ def test_attempts(setup: "Context", monkeypatch):
     assert o.data == {}
 
 
-def test_retry(setup: "Context", monkeypatch, system_objects):
-    from testutils.factories import Occurrence
+def test_retry(setup: "Context", monkeypatch: MonkeyPatch, system_objects: Any) -> None:
+    from bitcaster.models import Occurrence
 
     o = setup["occurrence"]
     v1 = setup["assignments"][0]
@@ -193,8 +199,10 @@ def test_retry(setup: "Context", monkeypatch, system_objects):
     assert o.data == {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]]}
 
 
-def test_error(setup: "Context", system_objects):
-    from testutils.factories import Occurrence, OccurrenceFactory
+def test_error(setup: "Context", system_objects: Any) -> None:
+    from testutils.factories import OccurrenceFactory
+
+    from bitcaster.models import Occurrence
 
     o = OccurrenceFactory(attempts=0, status=Occurrence.Status.NEW)
     process_occurrence(o.pk)
@@ -204,8 +212,10 @@ def test_error(setup: "Context", system_objects):
     assert o.data == {}
 
 
-def test_processed(setup: "Context", monkeypatch, system_objects):
-    from testutils.factories import Occurrence, OccurrenceFactory
+def test_processed(setup: "Context", monkeypatch: MonkeyPatch, system_objects: Any) -> None:
+    from testutils.factories import OccurrenceFactory
+
+    from bitcaster.models import Occurrence
 
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())
 
@@ -215,7 +225,7 @@ def test_processed(setup: "Context", monkeypatch, system_objects):
 
 
 @pytest.fixture(scope="session")
-def celery_config():
+def celery_config() -> dict[str, str]:
     return {"broker_url": "memory://"}
 
 
@@ -226,7 +236,8 @@ def celery_config():
 #     assert process_occurrence.delay(o.pk).get(timeout=10) == 2
 
 
-def test_schedule_occurrences(transactional_db, setup: "Context", monkeypatch):
+@pytest.mark.django_db(transaction=True)
+def test_schedule_occurrences(setup: "Context", monkeypatch: MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock(return_value=True))
@@ -239,10 +250,11 @@ def test_schedule_occurrences(transactional_db, setup: "Context", monkeypatch):
     assert o.status == Occurrence.Status.PROCESSED
 
 
-def test_process_silent(transactional_db, setup: "Context", monkeypatch):
-    from testutils.factories import Occurrence, OccurrenceFactory
+@pytest.mark.django_db(transaction=True)
+def test_process_silent(setup: "Context", monkeypatch: MonkeyPatch) -> None:
+    from testutils.factories import OccurrenceFactory
 
-    from bitcaster.models.event import Event
+    from bitcaster.models import Event, Occurrence
 
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())
 

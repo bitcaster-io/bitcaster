@@ -120,7 +120,7 @@ def pytest_configure(config):
 
 
 @pytest.fixture()
-def system_objects(admin_user: "User"):
+def system_objects(admin_user: "User") -> None:
     from django.contrib.auth.models import Group
 
     from bitcaster.auth.constants import DEFAULT_GROUP_NAME
@@ -291,7 +291,7 @@ def assignment(db):
 
 
 @pytest.fixture()
-def messagebox():
+def messagebox() -> list:
     import testutils.dispatcher
 
     testutils.dispatcher.MESSAGES = []

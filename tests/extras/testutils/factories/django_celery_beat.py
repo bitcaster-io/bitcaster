@@ -12,7 +12,7 @@ from factory.fuzzy import FuzzyChoice
 from .base import AutoRegisterModelFactory
 
 
-class IntervalScheduleFactory(AutoRegisterModelFactory):
+class IntervalScheduleFactory(AutoRegisterModelFactory[IntervalSchedule]):
     every = 1
     period = IntervalSchedule.HOURS
 
@@ -20,7 +20,7 @@ class IntervalScheduleFactory(AutoRegisterModelFactory):
         model = IntervalSchedule
 
 
-class SolarScheduleFactory(AutoRegisterModelFactory):
+class SolarScheduleFactory(AutoRegisterModelFactory[SolarSchedule]):
     event = FuzzyChoice([x[0] for x in SOLAR_SCHEDULES])
 
     latitude = 10.1
@@ -30,14 +30,14 @@ class SolarScheduleFactory(AutoRegisterModelFactory):
         model = SolarSchedule
 
 
-class ClockedScheduleFactory(AutoRegisterModelFactory):
+class ClockedScheduleFactory(AutoRegisterModelFactory[ClockedSchedule]):
     clocked_time = timezone.now()
 
     class Meta:
         model = ClockedSchedule
 
 
-class PeriodicTaskFactory(AutoRegisterModelFactory):
+class PeriodicTaskFactory(AutoRegisterModelFactory[PeriodicTask]):
     name = factory.Sequence(lambda n: "PeriodicTask%03d" % n)
     interval = factory.SubFactory(IntervalScheduleFactory)
     task = "bitcaster.tasks.notify_failures"

@@ -1,7 +1,7 @@
 import pytest
 
 
-def test_celery():
+def test_celery() -> None:
     try:
         from bitcaster.config.celery import app
 
@@ -10,7 +10,7 @@ def test_celery():
         pytest.fail(getattr(e, "message", "unknown error"))
 
 
-def test_init_celery():
+def test_init_celery() -> None:
     try:
         from bitcaster.config.celery import init_sentry
 

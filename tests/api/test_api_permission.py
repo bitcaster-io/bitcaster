@@ -5,8 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 from django.test.client import RequestFactory
 from rest_framework.test import APIClient
-
-from bitcaster.exceptions import InvalidGrantError
+from testutils.factories import ProjectFactory
 from testutils.factories.event import EventFactory
 from testutils.factories.key import ApiKeyFactory
 from testutils.perms import key_grants
@@ -14,14 +13,14 @@ from testutils.perms import key_grants
 from bitcaster.api.permissions import ApiApplicationPermission, ApiBasePermission
 from bitcaster.api.urls import EventTrigger
 from bitcaster.auth.constants import Grant
-from testutils.factories import ApplicationFactory, ProjectFactory
+from bitcaster.exceptions import InvalidGrantError
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Event, User, Application
+    from bitcaster.models import ApiKey, Event, User
 
     Context = TypedDict(
         "Context",
-        {"event": Event, "key": ApiKey,  "key2": ApiKey, "backend": ApiApplicationPermission, "view": EventTrigger},
+        {"event": Event, "key": ApiKey, "key2": ApiKey, "backend": ApiApplicationPermission, "view": EventTrigger},
     )
 
 pytestmark = [pytest.mark.api, pytest.mark.django_db]
@@ -71,10 +70,11 @@ def test_scope(rf: RequestFactory, context: "Context") -> None:
     req = rf.get("/")
 
     view.required_grants = [Grant.SYSTEM_PING]
-    view.kwargs = {"org": event.application.organization.slug,
-                   "prj": event.application.project.slug,
-                   "app": event.application.slug,
-                   }
+    view.kwargs = {
+        "org": event.application.organization.slug,
+        "prj": event.application.project.slug,
+        "app": event.application.slug,
+    }
     assert api_key.application.slug == event.application.slug
     with mock.patch.object(req, "auth", api_key, create=True):
         with key_grants(api_key, [Grant.SYSTEM_PING]):
@@ -92,10 +92,11 @@ def test_invalid_scope(rf: RequestFactory, context: "Context") -> None:
     req = rf.get("/")
 
     view.required_grants = [Grant.SYSTEM_PING]
-    view.kwargs = {"org": event.application.organization.slug,
-                   "prj": event.application.project.slug,
-                   "app": event.application.slug,
-                   }
+    view.kwargs = {
+        "org": event.application.organization.slug,
+        "prj": event.application.project.slug,
+        "app": event.application.slug,
+    }
     with mock.patch.object(req, "auth", api_key, create=True):
         with key_grants(api_key, [Grant.SYSTEM_PING], application=None):
             with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):

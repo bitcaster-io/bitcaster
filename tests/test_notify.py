@@ -77,7 +77,7 @@ def context(db) -> "Context":
     }
 
 
-def test_trigger(context: "Context", messagebox, django_assert_num_queries: "DjangoAssertNumQueries"):
+def test_trigger(context: "Context", messagebox, django_assert_num_queries: "DjangoAssertNumQueries") -> None:
     event: Event = context["event"]
     v1: Assignment = context["v1"]
     v2: Assignment = context["v2"]

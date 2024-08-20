@@ -11,8 +11,6 @@ from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMi
 from .notification import Notification
 
 if TYPE_CHECKING:
-    from django.db.models import QuerySet
-
     from bitcaster.models import DistributionList, Message, Occurrence
 
 
@@ -27,7 +25,7 @@ class EventManager(BitcasterBaselManager["Event"]):
 
 
 class Event(SlugMixin, LockMixin, BitcasterBaseModel):
-    messages: "QuerySet[Message]"
+    # messages: "QuerySet[Message]"
 
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="events")
     description = models.CharField(max_length=255, blank=True, null=True)

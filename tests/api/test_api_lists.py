@@ -1,6 +1,5 @@
 import json
 from typing import Any, NamedTuple
-from unittest import mock
 
 import factory
 import pytest
@@ -93,9 +92,11 @@ def test_distribution_list(client: APIClient, data: SampleData) -> None:
     with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
         res = client.get(url)
         assert res.json() == [
-            {"id": data.dl.pk, "name": data.dl.name,
-             "members": f"http://testserver/api/o/{data.org.slug}/p/{data.prj.slug}/d/{data.dl.pk}/m/",
-             }
+            {
+                "id": data.dl.pk,
+                "name": data.dl.name,
+                "members": f"http://testserver/api/o/{data.org.slug}/p/{data.prj.slug}/d/{data.dl.pk}/m/",
+            }
         ]
 
 

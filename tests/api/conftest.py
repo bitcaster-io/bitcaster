@@ -3,14 +3,14 @@ from typing import TYPE_CHECKING
 import pytest
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Organization, User
+    from bitcaster.models import Channel, Organization, User, UserRole
 
 
 @pytest.fixture
 def org_user(organization: "Organization") -> "User":
-    from testutils.factories import UserRole, UserRoleFactory
+    from testutils.factories import UserRoleFactory
 
-    r: UserRole = UserRoleFactory(organization=organization)
+    r: "UserRole" = UserRoleFactory(organization=organization)
     return r.user
 
 

@@ -39,7 +39,9 @@ def test_instantiate(message: "Message", channel: "Channel") -> None:
 
 @pytest.mark.parametrize("args", [{}, {"application": None}, {"project": None, "application": None}])
 def test_natural_key(args: dict[str, Any]) -> None:
-    from testutils.factories import Message, MessageFactory
+    from testutils.factories import MessageFactory
 
-    msg: Message = MessageFactory(**args)
+    from bitcaster.models import Message
+
+    msg: "Message" = MessageFactory(**args)
     assert Message.objects.get_by_natural_key(*msg.natural_key()) == msg, msg.natural_key()
