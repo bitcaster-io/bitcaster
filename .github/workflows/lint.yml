@@ -100,19 +100,22 @@ jobs:
         with:
           python-version: '3.12'
       - uses: actions/checkout@v4
+      - name: Define code checksum
+        id: checksum
+        uses: ./.github/actions/checksum
 
       - name: Restore cached venv
         id: cache-venv-restore
         uses: actions/cache/restore@v4
         with:
           path: __pypackages__
-          key: ${{ runner.os }}-venv
+          key: ${{ runner.os }}-${{steps.checksum.outputs.checksum}}-venv
       - name: Restore cached pdm
         id: cache-pdm-restore
         uses: actions/cache/restore@v4
         with:
           path: .pdm_cache
-          key: ${{ runner.os }}-pdm
+          key: ${{ runner.os }}-${{steps.checksum.outputs.checksum}}-pdm
       - name: Install requirements
         if: steps.cache-venv-restore.outputs.cache-hit != 'true'
         run: |
@@ -125,12 +128,12 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .pdm_cache
-          key: ${{ runner.os }}-pdm_cache
+          key: ${{ runner.os }}-${{steps.checksum.outputs.checksum}}-pdm
       - name: Cache venv
         uses: actions/cache/save@v4
         with:
           path: __pypackages__
-          key: ${{ runner.os }}-venv
+          key: ${{ runner.os }}-${{steps.checksum.outputs.checksum}}-venv
       - name: Mypy
         env:
           PYTHONPATH: __pypackages__/3.12/lib
