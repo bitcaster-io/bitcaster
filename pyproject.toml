@@ -130,6 +130,7 @@ dev = [
     "types-redis>=4.6.0.20240311",
     "types-requests>=2.31.0.20240311",
     "types-s3transfer>=0.10.1",
+    "mkdocs-ezglossary-plugin>=1.6.10",
 ]
 [tool.isort]
 profile = "black"

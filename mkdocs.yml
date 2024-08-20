@@ -18,10 +18,10 @@ markdown_extensions:
       baselevel: 2
       separator: "_"
 
-theme:
-  name: "material"
-  features:
-    - content.tooltips
+#theme:
+#  name: "material"
+#  features:
+#    - content.tooltips
 
 plugins:
   - search
@@ -29,6 +29,8 @@ plugins:
   - mkdocstrings
   - mermaid2
   - awesome-pages
+  - ezglossary
+
 #
 #nav:
 #  - Home: index.md

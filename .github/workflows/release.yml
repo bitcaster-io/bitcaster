@@ -132,6 +132,7 @@ jobs:
         uses: ./.github/actions/docker_build
         with:
           dryrun: ${{ env.ACT || 'false' }}
+          push: 'true'
           rebuild: ${{ env.BUILD == 'true'}}
           image: ${{ vars.DOCKER_IMAGE }}
           target: 'dist'
@@ -148,6 +149,13 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ vars.DOCKER_IMAGE }}:${{ steps.build.outputs.version }}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
+
+      - uses: ./.github/actions/delete_docker
+        with:
+          image: ${{vars.DOCKER_IMAGE}}
+          tag: test-${{ steps.build.outputs.version }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   trivy:
     name: Check Release with Trivy

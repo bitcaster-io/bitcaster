@@ -12,17 +12,32 @@ from rest_framework.viewsets import ViewSet
 from bitcaster.api.base import SecurityMixin
 from bitcaster.auth.constants import Grant
 from bitcaster.models import Assignment, DistributionList, Project
+from bitcaster.utils.http import absolute_reverse
 
 
 class DistributionAddSerializer(serializers.Serializer):
     address = serializers.CharField()
 
 
+class DistributionMemberSerializer(serializers.ModelSerializer):
+    address = serializers.CharField(read_only=True, source="address.value")
+    user = serializers.CharField(read_only=True, source="address.user.username")
+    channel = serializers.CharField(read_only=True, source="channel.name")
+
+    class Meta:
+        model = Assignment
+        fields = ("id", "address", "user", "channel", "active")
+
+
 class DistributionListSerializer(serializers.ModelSerializer):
+    members = serializers.SerializerMethodField()
 
     class Meta:
         model = DistributionList
-        fields = ("name", "id")
+        fields = ("name", "id", "members")
+
+    def get_members(self, obj: Project):
+        return absolute_reverse("api:members-list", args=[obj.project.organization.slug, obj.project.slug, obj.id])
 
     def validate_name(self, value: str) -> str:
         view: DistributionView = self.context["view"]
@@ -78,3 +93,26 @@ class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, Retri
             )
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIView[DistributionList]):
+    """
+    Distribution list
+    """
+
+    serializer_class = DistributionMemberSerializer
+    required_grants = [Grant.DISTRIBUTION_LIST]
+
+    @property
+    def project(self) -> "Project":
+        return Project.objects.select_related("organization").get(
+            organization__slug=self.kwargs["org"], slug=self.kwargs["prj"]
+        )
+
+    def get_object(self) -> DistributionList:
+        return self.get_queryset().get(pk=self.kwargs["pk"])
+
+    def get_queryset(self) -> QuerySet[DistributionList]:
+        return Assignment.objects.filter(
+            distributionlist__id=self.kwargs["pk"], distributionlist__project__slug=self.kwargs["prj"]
+        )

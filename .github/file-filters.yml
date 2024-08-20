@@ -1,4 +1,7 @@
 # This is used by the action https://github.com/dorny/paths-filter
+pipelines: &pipelines
+  - added|modified: './.github/*'
+
 docker: &docker
   - added|modified: './docker/**/*'
   - added|modified: './docker/*'
@@ -28,12 +31,14 @@ run_tests:
   - *python
   - *docker
   - *dependencies
+  - *pipelines
   - 'pytest.ini'
 
 migrations:
   - added|modified: 'src/**/migrations/*'
 
 lint:
-  -  *python
+  - *pipelines
+  - *python
   - '.flake8'
   - 'pyproject.toml'

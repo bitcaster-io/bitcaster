@@ -1,5 +1,6 @@
 import json
 from typing import Any, NamedTuple
+from unittest import mock
 
 import factory
 import pytest
@@ -89,26 +90,34 @@ def data(admin_user: "User", system_objects: Any) -> SampleData:
 
 def test_distribution_list(client: APIClient, data: SampleData) -> None:
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/"
-    res = client.get(url)
-    assert res.json() == [{"id": data.dl.pk, "name": data.dl.name}]
+    with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
+        res = client.get(url)
+        assert res.json() == [
+            {"id": data.dl.pk, "name": data.dl.name,
+             "members": f"http://testserver/api/o/{data.org.slug}/p/{data.prj.slug}/d/{data.dl.pk}/m/",
+             }
+        ]
 
 
 def test_distribution_create(client: APIClient, data: SampleData) -> None:
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/"
-    res = client.post(url, {"name": "Sample List #1"})
+    with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
+        res = client.post(url, {"name": "Sample List #1"})
     assert res.status_code == 201
     assert DistributionList.objects.filter(name="Sample List #1").exists()
 
 
 def test_distribution_create_duplicate(client: APIClient, data: SampleData) -> None:
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/"
-    res = client.post(url, {"name": data.dl.name})
+    with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
+        res = client.post(url, {"name": data.dl.name})
     assert res.status_code == 400
 
 
 def test_distribution_add_recipient(client: APIClient, data: SampleData) -> None:
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/{data.dl.pk}/add/"
-    res = client.post(url, [data.asm.address.value], format="json")
+    with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
+        res = client.post(url, [data.asm.address.value], format="json")
     assert res.status_code == 200, res.json()
     data.dl.refresh_from_db()
     assert data.dl.recipients.filter(address__value=data.asm.address.value).exists()
@@ -116,5 +125,6 @@ def test_distribution_add_recipient(client: APIClient, data: SampleData) -> None
 
 def test_distribution_add_recipient_error(client: APIClient, data: SampleData) -> None:
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/{data.dl.pk}/add/"
-    res = client.post(url, json.dumps(["not-existent"]), format="json")
+    with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
+        res = client.post(url, json.dumps(["not-existent"]), format="json")
     assert res.status_code == 400

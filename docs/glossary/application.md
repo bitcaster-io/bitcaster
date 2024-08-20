@@ -1,5 +1,5 @@
 # Application
 
-a deployment artifact and a logical subdivision of the [Project](project)
+a deployment artefact, part of a [Project](project)
 
-More to go here
+The application represents the origin of [events](event). It is usually a system that needs to send messages to users

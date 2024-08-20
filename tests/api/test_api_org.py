@@ -54,6 +54,7 @@ def client(data: SampleData) -> APIClient:
     c = APIClient()
     g = key_grants(data.key, Grant.FULL_ACCESS)
     g.start()
+    c._key = data.key
     c.credentials(HTTP_AUTHORIZATION=f"Key {data.key.key}")
     yield c
     g.stop()
@@ -85,24 +86,29 @@ def data(admin_user: "User", system_objects: Any) -> SampleData:
     )
 
 
-def test_org_detail(client: APIClient, organization: "Organization") -> None:
-    url = f"/api/o/{organization.slug}/"
+def test_org_detail(client: APIClient) -> None:
+    url = f"/api/o/{client._key.organization.slug}/"
     res = client.get(url)
     data: dict[str, str] = res.json()
-    assert data["slug"] == organization.slug
+    with key_grants(client._key, [Grant.ORGANIZATION_READ]):
+        client._key.refresh_from_db()
+        assert data["slug"] == client._key.organization.slug
 
 
 def test_org_channels(client: APIClient, org_channel: "Channel") -> None:
     # list organization channels
     url = f"/api/o/{org_channel.organization.slug}/c/"
-    res = client.get(url)
+    with key_grants(client._key, [Grant.ORGANIZATION_READ], organization=org_channel.organization):
+        res = client.get(url)
     data: list[dict[str, Any]] = res.json()
     assert data == [{"name": org_channel.name, "protocol": org_channel.protocol}]
 
 
 def test_user_list(client: APIClient, org_user: "User") -> None:
-    url = f"/api/o/{org_user.organizations.first().slug}/u/"
-    res = client.get(url)
+    org: Organization = org_user.organizations.first()
+    url = f"/api/o/{org.slug}/u/"
+    with key_grants(client._key, [Grant.ORGANIZATION_READ], organization=org):
+        res = client.get(url)
     data: list[dict[str, Any]] = res.json()
     ids = [e["id"] for e in data]
     assert ids == [org_user.pk]

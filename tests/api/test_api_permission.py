@@ -5,6 +5,8 @@ from unittest.mock import MagicMock
 import pytest
 from django.test.client import RequestFactory
 from rest_framework.test import APIClient
+
+from bitcaster.exceptions import InvalidGrantError
 from testutils.factories.event import EventFactory
 from testutils.factories.key import ApiKeyFactory
 from testutils.perms import key_grants
@@ -12,13 +14,14 @@ from testutils.perms import key_grants
 from bitcaster.api.permissions import ApiApplicationPermission, ApiBasePermission
 from bitcaster.api.urls import EventTrigger
 from bitcaster.auth.constants import Grant
+from testutils.factories import ApplicationFactory, ProjectFactory
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Event, User
+    from bitcaster.models import ApiKey, Event, User, Application
 
     Context = TypedDict(
         "Context",
-        {"event": Event, "key": ApiKey, "backend": ApiApplicationPermission, "view": EventTrigger},
+        {"event": Event, "key": ApiKey,  "key2": ApiKey, "backend": ApiApplicationPermission, "view": EventTrigger},
     )
 
 pytestmark = [pytest.mark.api, pytest.mark.django_db]
@@ -33,10 +36,14 @@ def client() -> APIClient:
 @pytest.fixture()
 def context(admin_user: "User") -> "Context":
     event: "Event" = EventFactory()
-    key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
+    # app2: "Application" = ApplicationFactory()
+    key: ApiKey = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
+    key2: ApiKey = ApiKeyFactory(user=admin_user, grants=[], application__project=ProjectFactory())
+    assert key.organization.slug != key2.organization.slug
     return {
         "event": event,
         "key": key,
+        "key2": key2,
         "backend": ApiApplicationPermission(),
         "view": MagicMock(specs=EventTrigger.as_view()),
     }
@@ -64,12 +71,38 @@ def test_scope(rf: RequestFactory, context: "Context") -> None:
     req = rf.get("/")
 
     view.required_grants = [Grant.SYSTEM_PING]
-
+    view.kwargs = {"org": event.application.organization.slug,
+                   "prj": event.application.project.slug,
+                   "app": event.application.slug,
+                   }
+    assert api_key.application.slug == event.application.slug
     with mock.patch.object(req, "auth", api_key, create=True):
-        with key_grants(api_key, [Grant.SYSTEM_PING], application=None):
+        with key_grants(api_key, [Grant.SYSTEM_PING]):
             with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
                 assert p.has_permission(req, view)
                 assert p.has_object_permission(req, view, event)
+
+
+def test_invalid_scope(rf: RequestFactory, context: "Context") -> None:
+    api_key: ApiKey = context["key2"]
+    p: ApiBasePermission = context["backend"]
+    view: "EventTrigger" = context["view"]
+    event: "Event" = context["event"]
+
+    req = rf.get("/")
+
+    view.required_grants = [Grant.SYSTEM_PING]
+    view.kwargs = {"org": event.application.organization.slug,
+                   "prj": event.application.project.slug,
+                   "app": event.application.slug,
+                   }
+    with mock.patch.object(req, "auth", api_key, create=True):
+        with key_grants(api_key, [Grant.SYSTEM_PING], application=None):
+            with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
+                with pytest.raises(InvalidGrantError):
+                    p.has_permission(req, view)
+                with pytest.raises(InvalidGrantError):
+                    p.has_object_permission(req, view, event)
 
 
 def test_has_permission(rf: RequestFactory, context: "Context") -> None:

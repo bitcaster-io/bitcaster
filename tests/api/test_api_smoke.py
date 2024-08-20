@@ -50,6 +50,7 @@ def client(data: "Context") -> APIClient:
     c = APIClient()
     g = key_grants(data["key"], Grant.FULL_ACCESS)
     g.start()
+    c._key = data["key"]
     c.credentials(HTTP_AUTHORIZATION=f"Key {data['key'].key}")
     yield c
     g.stop()
@@ -103,5 +104,6 @@ def pytest_generate_tests(metafunc: "Metafunc") -> None:
 
 
 def test_urls(client: APIClient, data: "Context", url: str) -> None:
-    res = client.get(url, data={})
-    assert res.status_code == status.HTTP_200_OK, url
+    with key_grants(client._key, [], organization=data["org"], project=data["prj"], application=data["app"]):
+        res = client.get(url, data={})
+        assert res.status_code == status.HTTP_200_OK, url

@@ -31,11 +31,11 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
 
 class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin["ApiKey"]):
     search_fields = ("name",)
-    list_display = ("name", "user", "application")
+    list_display = ("name", "user", "organization", "project", "application")
     list_filter = (
-        ("application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        ("application__project", LinkedAutoCompleteFilter.factory(parent="application__project__organization")),
-        ("application", LinkedAutoCompleteFilter.factory(parent="application__project")),
+        ("organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("project", LinkedAutoCompleteFilter.factory(parent="organization")),
+        ("application", LinkedAutoCompleteFilter.factory(parent="project")),
     )
     autocomplete_fields = ("user", "application", "organization", "project")
     form = ApiKeyForm

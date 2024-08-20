@@ -10,15 +10,23 @@ inputs:
   target:
     description: "Target Dockerfile Stage"
     type: string
+  push:
+    description: "Target Dockerfile Stage"
+    required: false
+    default: 'true'
+  registry:
+    description: "Docker Registry"
+    required: false
+    default: 'docker.io'
   username:
     description: 'DockerHub username '
     required: false
   password:
     description: 'DockerHub password '
     required: false
-  code_checksum:
-    description: 'Current codde checksum'
-    required: false
+#  code_checksum:
+#    description: 'Current codde checksum'
+#    required: false
   rebuild:
     description: 'Always rebuild image, Ignore checksum'
     required: false
@@ -35,9 +43,10 @@ defaults:
 
 
 outputs:
-  image:
-    description: 'Built image name'
-    value: ${{ steps.image_name.outputs.name }}
+#  removed due to Error: Skip output 'image' since it may contain secret.
+#  image:
+#    description: 'Built image name'
+#    value: ${{ steps.image_name.outputs.name }}
   version:
     description: 'Built image version'
     value: ${{ steps.meta.outputs.version }}
@@ -50,6 +59,9 @@ outputs:
   imageId:
     description: 'Built image ID'
     value: ${{ steps.build_push.outputs.imageId }}
+  metadata:
+    description: 'Image metadata'
+    value: ${{ steps.build_push.outputs.metadata }}
 
 
 runs:
@@ -63,7 +75,7 @@ runs:
         path: '/home/runner/.regctl/bin'
         key: ${{ runner.os }}-${{ github.workflow_sha }}-regclient
     - name: Install regctl
-#      if: steps.cache-regclient-restore.outputs.cache-hit != 'true'
+      if: steps.cache-regclient-restore.outputs.cache-hit != 'true'
       uses: regclient/actions/regctl-installer@main
       with:
         install-dir: '/home/runner/.regctl/bin'
@@ -77,6 +89,7 @@ runs:
     - name: DockerHub login
       uses: docker/login-action@v3
       with:
+        registry: ${{ inputs.registry }}
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
     - id: checksum
@@ -126,7 +139,11 @@ runs:
                           --format '{{index .Config.Labels "checksum"}}' \
                           -v fatal \
                           ${{ steps.image_name.outputs.name }} 2>/dev/null)
-        code_checksum="${{ inputs.code_checksum }}"
+        code_checksum="${{ steps.checksum.outputs.checksum }}"
+        
+        echo "::notice:: INPUTS: rebuild  ${{ inputs.rebuild }}"
+        echo "::notice:: INPUTS: registry ${{ inputs.registry }}"
+        
         if [[ "${{ contains(github.event.head_commit.message, 'ci:all') }}" == "true" ]];then
           echo "::warning::🤔 Forced rebuild. Checksum found is '${image_checksum}'"
           echo "updated=false" >> $GITHUB_OUTPUT        
@@ -153,19 +170,23 @@ runs:
           image=moby/buildkit:v0.13.2
           network=host
     - name: Build and push
-      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun == 'true'
+#      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun == 'true'
       shell: bash
-      run: |
-        echo "::notice:: Dryrun build of ${{ steps.meta.outputs.tags }}"
-        echo "Building image ${{ steps.meta.outputs.tags }}"
-        echo "    TAG_PREFIX ${{ env.TAG_PREFIX }}"
-        echo "        target ${{ inputs.target }}"
-        echo "      checksum ${{ inputs.code_checksum }}"
-        echo "       version ${{ steps.meta.outputs.version }}"
-        echo "        commit ${{ steps.last_commit.outputs.last_commit_short_sha }}"
+      run: |        
+        echo " image updated:  ${{ steps.image_status.outputs.updated }}"
+        echo " inputs rebuild:  ${{ inputs.rebuild }}"
+        echo " "
+        echo "      dry_run:   ${{ inputs.dry_run }}"
+        echo "      registry:  ${{ inputs.registry }}"
+        echo "    image tags:  ${{ steps.meta.outputs.tags }}"
+        echo "    TAG_PREFIX:  ${{ env.TAG_PREFIX }}"
+        echo "        target:  ${{ inputs.target }}"
+        echo "      checksum:  ${{ steps.checksum.outputs.checksum }}"
+        echo "       version:  ${{ steps.meta.outputs.version }}"
+        echo "        commit:  ${{ steps.last_commit.outputs.last_commit_short_sha }}"
 
     - name: Build and push
-      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true') && inputs.dryrun != 'true'
+      if: (steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true')
       id: build_push
       uses: docker/build-push-action@v6
       with:
@@ -176,7 +197,7 @@ runs:
         target: ${{ inputs.target }}
         file: ./docker/Dockerfile
         platforms: linux/amd64
-        push: true
+        push: ${{ inputs.push }}
         sbom: true
         provenance: true
         cache-from: type=registry,ref=${{ steps.image_name.outputs.name }}-cache,ref=${{ steps.image_name.outputs.test_name }}-cache
