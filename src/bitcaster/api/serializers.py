@@ -18,13 +18,16 @@ class AddressSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     applications = serializers.SerializerMethodField()
-
+    lists = serializers.SerializerMethodField()
     class Meta:
         model = Project
-        fields = ("name", "slug", "applications")
+        fields = ("name", "slug", "applications", "lists")
 
     def get_applications(self, obj: Project):
         return absolute_reverse("api:project-application-list", args=[obj.organization.slug, obj.slug])
+
+    def get_lists(self, obj: Project):
+        return absolute_reverse("api:distribution-list", args=[obj.organization.slug, obj.slug])
 
 
 class ApplicationSerializer(serializers.ModelSerializer):

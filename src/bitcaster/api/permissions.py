@@ -57,17 +57,17 @@ class ApiBasePermission(permissions.BasePermission):
 class ApiApplicationPermission(ApiBasePermission):
 
     def has_permission(self, request: Request, view: "SecurityMixin") -> bool:
-        # if getattr(request, "user", None) is not None:
-        #     if request.user.is_authenticated and request.user.is_superuser:
-        #         return True
         if getattr(request, "auth", None) is None:
+            if getattr(request, "user", None) is not None:
+                if request.user.is_authenticated and request.user.is_superuser:
+                    return True
             return False
         return self._check_valid_scope(request.auth, view)
 
     def has_object_permission(self, request: Request, view: "SecurityMixin", obj: "AnyModel") -> bool:
-        # if getattr(request, "user", None) is not None:
-        #     if request.user.is_authenticated and request.user.is_superuser:
-        #         return True
         if getattr(request, "auth", None) is None:
+            if getattr(request, "user", None) is not None:
+                if request.user.is_authenticated and request.user.is_superuser:
+                    return True
             return False
         return self._check_valid_scope(request.auth, view)

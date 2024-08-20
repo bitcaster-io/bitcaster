@@ -48,9 +48,9 @@ class ProjectView(SecurityMixin, ViewSet, ListAPIView, RetrieveAPIView):
         prj: Project = self.get_object()
         ser = ApplicationSerializer(many=True, instance=prj.applications.all())
         return Response(ser.data)
-
-    @action(detail=True, methods=["GET"], description="Channel list")
-    def projects(self, request: HttpRequest, **kwargs: Any) -> Response:
-        org: Organization = self.get_object()
-        ser = ProjectSerializer(many=True, instance=org.projects.filter())
-        return Response(ser.data)
+    #
+    # @action(detail=True, methods=["GET"], description="Channel list")
+    # def projects(self, request: HttpRequest, **kwargs: Any) -> Response:
+    #     org: Organization = self.get_object()
+    #     ser = ProjectSerializer(many=True, instance=org.projects.filter())
+    #     return Response(ser.data)
