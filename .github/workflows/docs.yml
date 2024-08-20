@@ -38,7 +38,8 @@ jobs:
               mkdocs-ezlinks-plugin \
               mkdocs-mermaid2-plugin \
               mkdocstrings[python] \
-              mkdocs-material
+              mkdocs-material \
+              mkdocs-ezglossary-plugin
           
           mkdocs build
       - name: Upload artifact
