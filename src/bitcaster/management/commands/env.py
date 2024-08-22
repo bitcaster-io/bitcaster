@@ -22,7 +22,7 @@ class Command(BaseCommand):
             action="store",
             dest="pattern",
             default="{key}={value}  # {help}",
-            help="Check env for variable availability (default: '{key}={value}  # {help}')",
+            help="Pattern to use to print variables (default: '{key}={value}{space}# {help}')",
         )
         parser.add_argument("--develop", action="store_true", help="Display development values")
         parser.add_argument("--config", action="store_true", help="Only list changed values")
@@ -54,7 +54,7 @@ class Command(BaseCommand):
                 else:
                     value = env.get_value(k)
 
-                line: str = pattern.format(key=k, value=value, help=help, default=default)
+                line: str = pattern.format(key=k, value=str(value or ""), help=help, default=default, space=" ")
                 if options["diff"]:
                     if value != default:
                         line = self.style.SUCCESS(line)

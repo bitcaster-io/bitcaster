@@ -83,7 +83,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
     "SENTRY_URL": (str, "", "Sentry server url"),
     "STORAGE_DEFAULT": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "STORAGE_MEDIA": (str, "", setting("storages")),
-    "STORAGE_STATIC": (str, "", setting("storages")),
+    "STORAGE_STATIC": (str, "django.contrib.staticfiles.storage.StaticFilesStorage", setting("storages")),
     "SESSION_COOKIE_DOMAIN": (str, "bitcaster.io", setting("std-setting-SESSION_COOKIE_DOMAIN"), ""),
     "SESSION_COOKIE_HTTPONLY": (bool, True, setting("session-cookie-httponly"), False),
     "SESSION_COOKIE_NAME": (str, "bitcaster_session", setting("session-cookie-name")),

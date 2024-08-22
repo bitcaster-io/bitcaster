@@ -1,4 +1,4 @@
-# Detailed PRocess Flow
+# Detailed Process Flow
 
 
 

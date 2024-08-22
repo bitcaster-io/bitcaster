@@ -1,3 +1,7 @@
+---
+description:  ""
+template: term.html
+---
 # Application
 
 a deployment artefact, part of a [Project](project)

@@ -2,10 +2,10 @@
 # It is not intended for manual editing.
 
 [metadata]
-groups = ["default", "dev"]
+groups = ["default", "dev", "docs"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:3338ca1732186996a3acb535f291c34a4ec2177a2498b9eaf368499fc262ca2f"
+content_hash = "sha256:da63ced5b0b94bc7461cb5a63631ce936009a9e701f45b762010e175980c2e9b"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -388,6 +388,38 @@ files = [
 ]
 
 [[package]]
+name = "cairocffi"
+version = "1.7.1"
+requires_python = ">=3.8"
+summary = "cffi-based cairo bindings for Python"
+groups = ["dev", "docs"]
+dependencies = [
+    "cffi>=1.1.0",
+]
+files = [
+    {file = "cairocffi-1.7.1-py3-none-any.whl", hash = "sha256:9803a0e11f6c962f3b0ae2ec8ba6ae45e957a146a004697a1ac1bbf16b073b3f"},
+    {file = "cairocffi-1.7.1.tar.gz", hash = "sha256:2e48ee864884ec4a3a34bfa8c9ab9999f688286eb714a15a43ec9d068c36557b"},
+]
+
+[[package]]
+name = "cairosvg"
+version = "2.7.1"
+requires_python = ">=3.5"
+summary = "A Simple SVG Converter based on Cairo"
+groups = ["dev", "docs"]
+dependencies = [
+    "cairocffi",
+    "cssselect2",
+    "defusedxml",
+    "pillow",
+    "tinycss2",
+]
+files = [
+    {file = "CairoSVG-2.7.1-py3-none-any.whl", hash = "sha256:8a5222d4e6c3f86f1f7046b63246877a63b49923a1cd202184c3a634ef546b3b"},
+    {file = "CairoSVG-2.7.1.tar.gz", hash = "sha256:432531d72347291b9a9ebfb6777026b607563fd8719c46ee742db0aef7271ba0"},
+]
+
+[[package]]
 name = "celery"
 version = "5.4.0"
 requires_python = ">=3.8"
@@ -427,8 +459,7 @@ name = "cffi"
 version = "1.17.0"
 requires_python = ">=3.8"
 summary = "Foreign Function Interface for Python calling C code."
-groups = ["default", "dev"]
-marker = "platform_python_implementation != \"PyPy\" or implementation_name == \"pypy\" or os_name == \"nt\""
+groups = ["default", "dev", "docs"]
 dependencies = [
     "pycparser",
 ]
@@ -505,7 +536,7 @@ name = "click"
 version = "8.1.7"
 requires_python = ">=3.7"
 summary = "Composable command line interface toolkit"
-groups = ["default", "dev"]
+groups = ["default", "dev", "docs"]
 dependencies = [
     "colorama; platform_system == \"Windows\"",
     "importlib-metadata; python_version < \"3.8\"",
@@ -562,7 +593,7 @@ name = "colorama"
 version = "0.4.6"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 summary = "Cross-platform colored terminal text."
-groups = ["default", "dev"]
+groups = ["default", "dev", "docs"]
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
@@ -666,6 +697,21 @@ files = [
 ]
 
 [[package]]
+name = "cssselect2"
+version = "0.7.0"
+requires_python = ">=3.7"
+summary = "CSS selectors for Python ElementTree"
+groups = ["dev", "docs"]
+dependencies = [
+    "tinycss2",
+    "webencodings",
+]
+files = [
+    {file = "cssselect2-0.7.0-py3-none-any.whl", hash = "sha256:fd23a65bfd444595913f02fc71f6b286c29261e354c41d722ca7a261a49b5969"},
+    {file = "cssselect2-0.7.0.tar.gz", hash = "sha256:1ccd984dab89fc68955043aca4e1b03e0cf29cad9880f6e28e3ba7a74b14aa5a"},
+]
+
+[[package]]
 name = "cssutils"
 version = "2.11.1"
 requires_python = ">=3.8"
@@ -699,7 +745,7 @@ name = "defusedxml"
 version = "0.8.0rc2"
 requires_python = ">=3.6"
 summary = "XML bomb protection for Python stdlib modules"
-groups = ["default"]
+groups = ["default", "dev", "docs"]
 files = [
     {file = "defusedxml-0.8.0rc2-py2.py3-none-any.whl", hash = "sha256:1c812964311154c3bf4aaf3bc1443b31ee13530b7f255eaaa062c0553c76103d"},
     {file = "defusedxml-0.8.0rc2.tar.gz", hash = "sha256:138c7d540a78775182206c7c97fe65b246a2f40b29471e1a2f1b0da76e7a3942"},
@@ -1528,7 +1574,7 @@ files = [
 name = "ghp-import"
 version = "2.1.0"
 summary = "Copy your docs directly to the gh-pages branch."
-groups = ["dev"]
+groups = ["dev", "docs"]
 dependencies = [
     "python-dateutil>=2.8.1",
 ]
@@ -1776,7 +1822,7 @@ name = "jinja2"
 version = "3.1.4"
 requires_python = ">=3.7"
 summary = "A very fast and expressive template engine."
-groups = ["dev"]
+groups = ["dev", "docs"]
 dependencies = [
     "MarkupSafe>=2.0",
 ]
@@ -1905,7 +1951,7 @@ name = "markdown"
 version = "3.7"
 requires_python = ">=3.8"
 summary = "Python implementation of John Gruber's Markdown."
-groups = ["default", "dev"]
+groups = ["default", "dev", "docs"]
 dependencies = [
     "importlib-metadata>=4.4; python_version < \"3.10\"",
 ]
@@ -1919,7 +1965,7 @@ name = "markupsafe"
 version = "2.1.5"
 requires_python = ">=3.7"
 summary = "Safely add untrusted strings to HTML/XML markup."
-groups = ["dev"]
+groups = ["dev", "docs"]
 files = [
     {file = "MarkupSafe-2.1.5-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:8dec4936e9c3100156f8a2dc89c4b88d5c435175ff03413b443469c7c8c5f4d1"},
     {file = "MarkupSafe-2.1.5-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:3c6b973f22eb18a789b1460b4b91bf04ae3f0c4234a0a6aa6b0a92f6f7b951d4"},
@@ -1946,11 +1992,24 @@ files = [
 ]
 
 [[package]]
+name = "mdx-gh-links"
+version = "0.4"
+summary = "An extension to Python-Markdown which adds support for shorthand links to GitHub users, repositories, issues and commits."
+groups = ["dev"]
+dependencies = [
+    "markdown>=3.0.0",
+]
+files = [
+    {file = "mdx_gh_links-0.4-py3-none-any.whl", hash = "sha256:9057bca1fa5280bf1fcbf354381e46c9261cc32c2d5c0407801f8a910be5f099"},
+    {file = "mdx_gh_links-0.4.tar.gz", hash = "sha256:41d5aac2ab201425aa0a19373c4095b79e5e015fdacfe83c398199fe55ca3686"},
+]
+
+[[package]]
 name = "mergedeep"
 version = "1.3.4"
 requires_python = ">=3.6"
 summary = "A deep merge function for 🐍."
-groups = ["dev"]
+groups = ["dev", "docs"]
 files = [
     {file = "mergedeep-1.3.4-py3-none-any.whl", hash = "sha256:70775750742b25c0d8f36c55aed03d24c3384d17c951b3175d898bd778ef0307"},
     {file = "mergedeep-1.3.4.tar.gz", hash = "sha256:0096d52e9dad9939c3d975a774666af186eda617e6ca84df4c94dec30004f2a8"},
@@ -1961,7 +2020,7 @@ name = "mkdocs"
 version = "1.6.0"
 requires_python = ">=3.8"
 summary = "Project documentation with Markdown."
-groups = ["dev"]
+groups = ["dev", "docs"]
 dependencies = [
     "click>=7.0",
     "colorama>=0.4; platform_system == \"Windows\"",
@@ -1981,6 +2040,20 @@ dependencies = [
 files = [
     {file = "mkdocs-1.6.0-py3-none-any.whl", hash = "sha256:1eb5cb7676b7d89323e62b56235010216319217d4af5ddc543a91beb8d125ea7"},
     {file = "mkdocs-1.6.0.tar.gz", hash = "sha256:a73f735824ef83a4f3bcb7a231dcab23f5a838f88b7efc54a0eef5fbdbc3c512"},
+]
+
+[[package]]
+name = "mkdocs-autolinks-plugin"
+version = "0.7.1"
+requires_python = ">=3.4"
+summary = "An MkDocs plugin"
+groups = ["docs"]
+dependencies = [
+    "mkdocs>=1.2.3",
+]
+files = [
+    {file = "mkdocs-autolinks-plugin-0.7.1.tar.gz", hash = "sha256:445ddb9b417b7795856c30801bb430773186c1daf210bdeecf8305f55a47d151"},
+    {file = "mkdocs_autolinks_plugin-0.7.1-py3-none-any.whl", hash = "sha256:5c6c17f6649b68e79a9ef0b2648d59f3072e18002b90ee1586a64c505f11ab12"},
 ]
 
 [[package]]
@@ -2016,6 +2089,21 @@ files = [
 ]
 
 [[package]]
+name = "mkdocs-click"
+version = "0.8.1"
+requires_python = ">=3.7"
+summary = "An MkDocs extension to generate documentation for Click command line applications"
+groups = ["dev"]
+dependencies = [
+    "click>=8.1",
+    "markdown>=3.3",
+]
+files = [
+    {file = "mkdocs_click-0.8.1-py3-none-any.whl", hash = "sha256:a100ff938be63911f86465a1c21d29a669a7c51932b700fdb3daa90d13b61ee4"},
+    {file = "mkdocs_click-0.8.1.tar.gz", hash = "sha256:0a88cce04870c5d70ff63138e2418219c3c4119cc928a59c66b76eb5214edba6"},
+]
+
+[[package]]
 name = "mkdocs-ezglossary-plugin"
 version = "1.6.10"
 summary = "manage multiple glossaries in mkdocs"
@@ -2045,11 +2133,25 @@ files = [
 ]
 
 [[package]]
+name = "mkdocs-gen-files"
+version = "0.5.0"
+requires_python = ">=3.7"
+summary = "MkDocs plugin to programmatically generate documentation pages during the build"
+groups = ["docs"]
+dependencies = [
+    "mkdocs>=1.0.3",
+]
+files = [
+    {file = "mkdocs_gen_files-0.5.0-py3-none-any.whl", hash = "sha256:7ac060096f3f40bd19039e7277dd3050be9a453c8ac578645844d4d91d7978ea"},
+    {file = "mkdocs_gen_files-0.5.0.tar.gz", hash = "sha256:4c7cf256b5d67062a788f6b1d035e157fc1a9498c2399be9af5257d4ff4d19bc"},
+]
+
+[[package]]
 name = "mkdocs-get-deps"
 version = "0.2.0"
 requires_python = ">=3.8"
 summary = "MkDocs extension that lists all dependencies according to a mkdocs.yml file"
-groups = ["dev"]
+groups = ["dev", "docs"]
 dependencies = [
     "importlib-metadata>=4.3; python_version < \"3.10\"",
     "mergedeep>=1.3.4",
@@ -2059,6 +2161,39 @@ dependencies = [
 files = [
     {file = "mkdocs_get_deps-0.2.0-py3-none-any.whl", hash = "sha256:2bf11d0b133e77a0dd036abeeb06dec8775e46efa526dc70667d8863eefc6134"},
     {file = "mkdocs_get_deps-0.2.0.tar.gz", hash = "sha256:162b3d129c7fad9b19abfdcb9c1458a651628e4b1dea628ac68790fb3061c60c"},
+]
+
+[[package]]
+name = "mkdocs-link-marker"
+version = "0.1.3"
+requires_python = ">=3.4"
+summary = "MkDocs plugin for marking external or mail links in your documentation."
+groups = ["docs"]
+dependencies = [
+    "jinja2",
+    "mkdocs>=1.0",
+]
+files = [
+    {file = "mkdocs-link-marker-0.1.3.tar.gz", hash = "sha256:6d8760c819a376650675f02c7de82f5fbc0a992e7ed3239955cc01021a1af779"},
+    {file = "mkdocs_link_marker-0.1.3-py3-none-any.whl", hash = "sha256:798a6bfbb059ce49a81f724e84306bec8f1d5241aace89e54ae7d9088beeab5b"},
+]
+
+[[package]]
+name = "mkdocs-macros-plugin"
+version = "1.0.5"
+requires_python = ">=3.8"
+summary = "Unleash the power of MkDocs with macros and variables"
+groups = ["docs"]
+dependencies = [
+    "jinja2",
+    "mkdocs>=0.17",
+    "python-dateutil",
+    "pyyaml",
+    "termcolor",
+]
+files = [
+    {file = "mkdocs-macros-plugin-1.0.5.tar.gz", hash = "sha256:fe348d75f01c911f362b6d998c57b3d85b505876dde69db924f2c512c395c328"},
+    {file = "mkdocs_macros_plugin-1.0.5-py3-none-any.whl", hash = "sha256:f60e26f711f5a830ddf1e7980865bf5c0f1180db56109803cdd280073c1a050a"},
 ]
 
 [[package]]
@@ -2113,6 +2248,19 @@ dependencies = [
 files = [
     {file = "mkdocs-mermaid2-plugin-1.1.1.tar.gz", hash = "sha256:bea5f3cbe6cb76bad21b81e49a01e074427ed466666c5d404e62fe8698bc2d7c"},
     {file = "mkdocs_mermaid2_plugin-1.1.1-py3-none-any.whl", hash = "sha256:4e25876b59d1e151ca33a467207b346404b4a246f4f24af5e44c32408e175882"},
+]
+
+[[package]]
+name = "mkdocs-simple-hooks"
+version = "0.1.5"
+summary = "Define your own hooks for mkdocs, without having to create a new package."
+groups = ["dev"]
+dependencies = [
+    "mkdocs>=1.2",
+]
+files = [
+    {file = "mkdocs-simple-hooks-0.1.5.tar.gz", hash = "sha256:dddbdf151a18723c9302a133e5cf79538be8eb9d274e8e07d2ac3ac34890837c"},
+    {file = "mkdocs_simple_hooks-0.1.5-py3-none-any.whl", hash = "sha256:efeabdbb98b0850a909adee285f3404535117159d5cb3a34f541d6eaa644d50a"},
 ]
 
 [[package]]
@@ -2319,7 +2467,7 @@ name = "packaging"
 version = "24.1"
 requires_python = ">=3.8"
 summary = "Core utilities for Python packages"
-groups = ["dev"]
+groups = ["dev", "docs"]
 files = [
     {file = "packaging-24.1-py3-none-any.whl", hash = "sha256:5b8f2217dbdbd2f7f384c41c628544e6d52f2d0f53c6d0c3ea61aa5d1d7ff124"},
     {file = "packaging-24.1.tar.gz", hash = "sha256:026ed72c8ed3fcce5bf8950572258698927fd1dbda10a5e981cdf0ac37f4f002"},
@@ -2352,7 +2500,7 @@ name = "pathspec"
 version = "0.12.1"
 requires_python = ">=3.8"
 summary = "Utility library for gitignore style pattern matching of file paths."
-groups = ["dev"]
+groups = ["dev", "docs"]
 files = [
     {file = "pathspec-0.12.1-py3-none-any.whl", hash = "sha256:a0d503e138a4c123b27490a4f7beda6a01c6f288df0e4a8b79c7eb0dc7b4cc08"},
     {file = "pathspec-0.12.1.tar.gz", hash = "sha256:a482d51503a1ab33b1c67a6c3813a26953dbdc71c31dacaef9a838c4e29f5712"},
@@ -2388,7 +2536,7 @@ name = "pillow"
 version = "10.4.0"
 requires_python = ">=3.8"
 summary = "Python Imaging Library (Fork)"
-groups = ["default"]
+groups = ["default", "dev", "docs"]
 files = [
     {file = "pillow-10.4.0-cp312-cp312-macosx_10_10_x86_64.whl", hash = "sha256:673655af3eadf4df6b5457033f086e90299fdd7a47983a13827acf7459c15d94"},
     {file = "pillow-10.4.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:866b6942a92f56300012f5fbac71f2d610312ee65e22f1aa2609e491284e5597"},
@@ -2409,7 +2557,7 @@ name = "platformdirs"
 version = "4.2.2"
 requires_python = ">=3.8"
 summary = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
-groups = ["dev"]
+groups = ["dev", "docs"]
 files = [
     {file = "platformdirs-4.2.2-py3-none-any.whl", hash = "sha256:2d7a1657e36a80ea911db832a8a6ece5ee53d8de21edd5cc5879af6530b1bfee"},
     {file = "platformdirs-4.2.2.tar.gz", hash = "sha256:38b7b51f512eed9e84a22788b4bce1de17c0adb134d6becb09836e37d8654cd3"},
@@ -2607,8 +2755,7 @@ name = "pycparser"
 version = "2.22"
 requires_python = ">=3.8"
 summary = "C parser in Python"
-groups = ["default", "dev"]
-marker = "platform_python_implementation != \"PyPy\" or implementation_name == \"pypy\" or os_name == \"nt\""
+groups = ["default", "dev", "docs"]
 files = [
     {file = "pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc"},
     {file = "pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6"},
@@ -3037,7 +3184,7 @@ name = "python-dateutil"
 version = "2.9.0.post0"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 summary = "Extensions to the standard Python datetime module"
-groups = ["default", "dev"]
+groups = ["default", "dev", "docs"]
 dependencies = [
     "six>=1.5",
 ]
@@ -3143,7 +3290,7 @@ name = "pyyaml"
 version = "6.0.2"
 requires_python = ">=3.8"
 summary = "YAML parser and emitter for Python"
-groups = ["default", "dev"]
+groups = ["default", "dev", "docs"]
 files = [
     {file = "PyYAML-6.0.2-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:c70c95198c015b85feafc136515252a261a84561b7b1d51e3384e0655ddf25ab"},
     {file = "PyYAML-6.0.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:ce826d6ef20b1bc864f0a68340c8b3287705cae2f8b4b1d932177dcc76721725"},
@@ -3162,7 +3309,7 @@ name = "pyyaml-env-tag"
 version = "0.1"
 requires_python = ">=3.6"
 summary = "A custom YAML tag for referencing environment variables in YAML files. "
-groups = ["dev"]
+groups = ["dev", "docs"]
 dependencies = [
     "pyyaml",
 ]
@@ -3431,7 +3578,7 @@ name = "six"
 version = "1.16.0"
 requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 summary = "Python 2 and 3 compatibility utilities"
-groups = ["default", "dev"]
+groups = ["default", "dev", "docs"]
 files = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
@@ -3565,11 +3712,22 @@ files = [
 ]
 
 [[package]]
+name = "termcolor"
+version = "2.4.0"
+requires_python = ">=3.8"
+summary = "ANSI color formatting for output in terminal"
+groups = ["docs"]
+files = [
+    {file = "termcolor-2.4.0-py3-none-any.whl", hash = "sha256:9297c0df9c99445c2412e832e882a7884038a25617c60cea2ad69488d4040d63"},
+    {file = "termcolor-2.4.0.tar.gz", hash = "sha256:aab9e56047c8ac41ed798fa36d892a37aca6b3e9159f3e0c24bc64a9b3ac7b7a"},
+]
+
+[[package]]
 name = "tinycss2"
 version = "1.2.1"
 requires_python = ">=3.7"
 summary = "A tiny CSS parser"
-groups = ["default"]
+groups = ["default", "dev", "docs"]
 dependencies = [
     "webencodings>=0.4",
 ]
@@ -3958,7 +4116,7 @@ name = "watchdog"
 version = "4.0.2"
 requires_python = ">=3.8"
 summary = "Filesystem events monitoring"
-groups = ["dev"]
+groups = ["dev", "docs"]
 files = [
     {file = "watchdog-4.0.2-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:1cdcfd8142f604630deef34722d695fb455d04ab7cfe9963055df1fc69e6727a"},
     {file = "watchdog-4.0.2-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:d7ab624ff2f663f98cd03c8b7eedc09375a911794dfea6bf2a359fcc266bff29"},
@@ -4007,7 +4165,7 @@ files = [
 name = "webencodings"
 version = "0.5.1"
 summary = "Character encoding aliases for legacy web content"
-groups = ["default"]
+groups = ["default", "dev", "docs"]
 files = [
     {file = "webencodings-0.5.1-py2.py3-none-any.whl", hash = "sha256:a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"},
     {file = "webencodings-0.5.1.tar.gz", hash = "sha256:b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923"},

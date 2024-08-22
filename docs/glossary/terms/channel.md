@@ -1,7 +1,11 @@
+---
+description:  ""
+template: term.html
+---
 # Channel
 
-it represents a way of communicating with users sending custom  [Message](message) t
-o [Distribution List](distribution-list)
+it represents a way of communicating with users sending custom  [Message](message) 
+to [Distribution List](distribution-list)
 
 Channel can be created at Organisation or Project level.
 

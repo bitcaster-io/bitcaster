@@ -1,3 +1,7 @@
+---
+description: User destination address where to send notifications
+template: term.html
+---
 # Assignment
 
 defines for which [Channel](channel) an [Address](address) can be used.

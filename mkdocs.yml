@@ -1,41 +1,125 @@
 site_name: Bitcaster Documentation
-site_url: https://example.com/
+site_url: https://bitcaster-io.github.io/bitcaster/
+site_description:
+site_author:
+#docs_dir: docs
+site_dir: ./~build/docs
+copyright: Copyright &copy; 2020-2024 OS4D ltd.
+repo_url: https://github.com/bitcaster-io/bitcaster
 
+draft_docs: |
+  drafts/
+
+#markdown_extensions:
+#  - abbr
+#  - attr_list
+#  - pymdownx.superfences
+#  - pymdownx.tabbed:
+#      alternate_style: true
+#  - pymdownx.snippets:
+#      auto_append:
+#        - .includes/abbreviations.md
+#  - pymdownx.smartsymbols
+#  - pymdownx.smartsymbols
+#  - pymdownx.blocks.definition
+#  - smarty
+#  - toc:
+#      permalink: "#"
+#      baselevel: 2
+#      separator: "_"
 markdown_extensions:
-  - abbr
+  - admonition
   - attr_list
+  - def_list
+  - mdx_gh_links:
+      user: mkdocs
+      repo: mkdocs
+  - mkdocs-click
+  - pymdownx.snippets
   - pymdownx.superfences
-  - pymdownx.tabbed:
-      alternate_style: true
-  - pymdownx.snippets:
-      auto_append:
-        - includes/abbreviations.md
-  - pymdownx.smartsymbols
-  - pymdownx.smartsymbols
-  - pymdownx.blocks.definition
+  - pymdownx.highlight:
+      use_pygments: false
+  - smarty
+  - tables
   - toc:
-      permalink: "#"
-      baselevel: 2
-      separator: "_"
+      permalink: #
+      baselevel: 1
 
-#theme:
-#  name: "material"
-#  features:
-#    - content.tooltips
+
+extra:
+  consent:
+    title: Cookie consent
+    description: >- 
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+
+theme:
+  name: "material"
+  custom_dir: docs/_overrides
+  color_mode: auto
+  logo: img/favicon.ico
+  favicon: img/favicon.ico
+  user_color_mode_toggle: true
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - django
+  features:
+    - header.autohide
+    - content.tooltips
+    - navigation.instant
+    - navigation.indexes
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+#    - navigation.footer
 
 plugins:
-  - search
-  - ezlinks
-  - mkdocstrings
-  - mermaid2
+  - autorefs
   - awesome-pages
   - ezglossary
+  - ezlinks:
+      wikilinks: true
+  - link-marker
+  - mermaid2
+  - mkdocstrings
+  - privacy
+  - search
+  - social
+  - autolinks
+  - blog:
+      blog_dir: howto
+      blog_toc: true
+      post_dir: "{blog}/posts"
+      post_date_format: ""
+      post_url_max_categories: 1
+#      post_excerpt: optional
+      post_readtime: false
+      archive: false
+      categories: false
+      authors: false
+      pagination: false
+      draft: false
+  - tags:
+      tags_file: tags.md
+  - gen-files:
+      scripts:
+        - docs/_scripts/build_glossary.py
+hooks:
+  - docs/_hooks/hooks.py
 
-#
-#nav:
-#  - Home: index.md
-#  - Glossary: glossary
-#  - Guidelines: guidelines/index.md
-#  - Todo: todo.md
-#  - ClassDiagram: class-diagram.md
-#  - Release Strategy: release-strategy.md
+nav:
+  - Home: index.md
+  - Run: run.md
+  - Configuration: configuration.md
+  - Administration Guide: adm-guide/
+#  - Quick start: quick_start.md
+#  - Glossary: glossary/
+#  - Glossary: tags.md
+  - Glossary:
+      - 'glossary/index.md'
+  - Links:
+    - 'Public web site':  'https:///bitcaster.io/'
+    - 'Source code': 'https://github.com/bitcaster-io/bitcaster'
+    - 'Issues': 'https://github.com/bitcaster-io/bitcaster/issues'

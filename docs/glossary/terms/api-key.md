@@ -1,3 +1,7 @@
+---
+description: REST API Authorization Token
+template: term.html
+---
 # API Key
 
 the token used by an [Application](application) when sending an [Event](event)

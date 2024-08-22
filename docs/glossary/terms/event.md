@@ -1,3 +1,7 @@
+---
+description:  ""
+template: term.html
+---
 # Event
 
 Something happening in an Application that could be notified to users.
