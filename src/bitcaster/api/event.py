@@ -64,9 +64,9 @@ class EventTrigger(SecurityMixin, GenericAPIView):
         if ser.is_valid():
             slug = self.kwargs["evt"]
             try:
-                obj: "Event" = self.get_queryset().get(slug=slug)
-                self.check_object_permissions(self.request, obj)
-                o: "Occurrence" = obj.trigger(
+                evt: "Event" = self.get_queryset().get(slug=slug)
+                self.check_object_permissions(self.request, evt)
+                o: "Occurrence" = evt.trigger(
                     ser.validated_data.get("context", {}),
                     options=ser.validated_data.get("options", {}),
                     cid=correlation_id,

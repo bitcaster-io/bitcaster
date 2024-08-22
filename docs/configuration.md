@@ -61,13 +61,6 @@ Default: `/media/`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#media-url>
 
 
-
-### MEDIA_ROOT  
-Default: `/var/run/app/media`
-
-Read more at <https://docs.djangoproject.com/en/5.1/ref/settings/#media-root
-
-
 ### SECRET_KEY
 Default: `<- not set ->`  
 
@@ -76,16 +69,18 @@ see <https://docs.djangoproject.com/en/5.0/ref/settings#secret-key>
 ### SECURE_HSTS_PRELOAD
 Default: `True`  
 
-see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-hsts-preload
+see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-hsts-preload>
 
 ### SECURE_HSTS_SECONDS
 Default: `60`  
 
-see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-hsts-seconds
+see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-hsts-seconds>
+
+
 ### SECURE_SSL_REDIRECT
 Default: `True`  
 
-see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-ssl-redirect
+see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-ssl-redirect>
 
 ### SENTRY_DSN
 Default: ``

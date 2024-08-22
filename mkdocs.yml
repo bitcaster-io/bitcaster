@@ -1,11 +1,12 @@
-site_name: Bitcaster Documentation
+site_name: Bitcaster
 site_url: https://bitcaster-io.github.io/bitcaster/
-site_description:
-site_author:
+site_description: "The multichannel broker for managing corporate messaging"
+site_author: Bitcaster Team
 #docs_dir: docs
 site_dir: ./~build/docs
 copyright: Copyright &copy; 2020-2024 OS4D ltd.
 repo_url: https://github.com/bitcaster-io/bitcaster
+edit_uri: 'blob/develop/docs/'
 
 draft_docs: |
   drafts/
@@ -32,8 +33,8 @@ markdown_extensions:
   - attr_list
   - def_list
   - mdx_gh_links:
-      user: mkdocs
-      repo: mkdocs
+      user: bitcaster
+      repo: bitcaster
   - mkdocs-click
   - pymdownx.snippets
   - pymdownx.superfences
@@ -69,6 +70,7 @@ theme:
   features:
     - header.autohide
     - content.tooltips
+    - content.action.edit
     - navigation.instant
     - navigation.indexes
     - navigation.instant.prefetch

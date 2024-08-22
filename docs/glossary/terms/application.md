@@ -1,5 +1,5 @@
 ---
-description:  ""
+description:  Is a deployment artifact and a logical subdivision of the [Project](project)
 template: term.html
 ---
 # Application

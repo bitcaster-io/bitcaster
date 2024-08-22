@@ -14,6 +14,8 @@ terms_dir = Path(docs_dir) / f"{glossary_dir}/terms"
 index = "glossary/index.md"
 
 TABLE = []
+TABLE.append("# Glossary")
+TABLE.append("")
 TABLE.append("Term | Definition")
 TABLE.append("-----|-----------")
 
