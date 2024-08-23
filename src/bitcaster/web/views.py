@@ -33,6 +33,12 @@ class LogoutView(BaseLogoutView):
         return "/"
 
 
+class HealthCheckView(View):
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        return HttpResponse("Ok")
+
+
 class MediaView(View):
 
     def get(self, request: HttpRequest, path: str) -> HttpResponse | FileResponse:

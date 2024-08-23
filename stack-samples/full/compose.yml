@@ -1,0 +1,201 @@
+x-common: &common
+  image: bitcaster/bitcaster:latest
+  platform: linux/amd64
+  environment:
+    - ADMIN_EMAIL=bitcaster@example.com
+    - ADMIN_PASSWORD=123
+    - ALLOWED_HOSTS=app,localhost,127.0.0.1
+    - CACHE_URL=redis://redis:6379/1?client_class=django_redis.client.DefaultClient
+    - CELERY_BROKER_URL=redis://redis:6379/9
+    - CSRF_COOKIE_SECURE=False
+    - CSRF_TRUSTED_ORIGINS=http://localhost,https://localhost:1443
+    - DATABASE_URL=postgres://bitcaster:password@db:5432/bitcaster
+    - DEBUG=True
+    - MEDIA_ROOT=/var/storage/media/
+    - SECRET_KEY=super_secret_key_just_for_development_that_needs_to_be_more_than_fifty_characters
+    - SECURE_HSTS_PRELOAD=0
+    - SECURE_SSL_REDIRECT=False
+    - SESSION_COOKIE_DOMAIN=
+    - SESSION_COOKIE_SECURE=False
+    - SOCIAL_AUTH_REDIRECT_IS_HTTPS=False
+    - STORAGE_STATIC=django.core.files.storage.FileSystemStorage
+    - STORAGE_MEDIA=django.core.files.storage.FileSystemStorage
+    - STORAGE_DEFAULT=django.core.files.storage.FileSystemStorage
+    - STATIC_ROOT=/var/storage/static/
+    - STATIC_URL=/static/
+  volumes:
+    - storage_volume:/var/storage
+#    - ../..:/code/app
+#    - ../docker/conf:/conf
+#    - ../docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+
+services:
+  proxy:
+    image: nginx:1.19.10-alpine
+#    container_name: bitcaster_proxy
+    ports:
+      - 1180:80
+      - 1443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./certs:/etc/nginx/certs
+    depends_on:
+      app:
+        condition: service_healthy
+
+  upgrade:
+    <<: *common
+    command: upgrade
+#    container_name: bitcaster_upgrade
+    restart: no
+    depends_on:
+      azurite:
+          condition: service_healthy
+      db:
+          condition: service_healthy
+
+  app:
+    <<: *common
+#    container_name: bitcaster_app
+    ports:
+      - 8000:8000
+    healthcheck:
+#      test: curl --fail http://127.0.0.1:8000/healthcheck/ || exit 1
+#      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8000/healthcheck/"
+      test: "echo 1"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      upgrade:
+          condition: service_completed_successfully
+          restart: false
+      db:
+          condition: service_healthy
+      azurite:
+          condition: service_healthy
+
+  worker:
+    <<: *common
+    command: ["worker"]
+#    container_name: bitcaster_worker
+    depends_on:
+      db:
+        condition: service_healthy
+
+  beat:
+    <<: *common
+#    container_name: bitcaster_beat
+    command: ["beat"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  flower:
+      <<: *common
+#      container_name: bitcaster_flower
+      command: ["flower"]
+      depends_on:
+        db:
+          condition: service_healthy
+
+  db:
+    image: postgres:15
+#    container_name: bitcaster_db
+    user: postgres
+    environment:
+      - PGUSER=bitcaster
+      - POSTGRES_USER=bitcaster
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=bitcaster
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "bitcaster"]
+      start_period: 5s
+      start_interval: 1s
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+  pgadmin:
+      image: dpage/pgadmin4
+      platform: linux/amd64
+#      container_name: bitcaster_pgadmin4
+      ports:
+          - 3333:80
+      environment:
+          PGADMIN_DEFAULT_EMAIL: bitcaster@example.com
+          PGADMIN_DEFAULT_PASSWORD: password
+
+  redis:
+    image: redis:7.2
+    restart: always
+#    container_name: bitcaster_redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      start_period: 5s
+      start_interval: 1s
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+#
+#  sentry:
+#    image: saxix/sentry-localdev
+#    container_name: gundam-sentry
+#    environment:
+#      - SENTRY_SECRET_KEY=abc
+#      - SENTRY_REDIS_HOST=redis
+#      - SENTRY_DB_NAME=sentry
+#      - SENTRY_POSTGRES_HOST=db
+#      - SENTRY_ADMIN_USERNAME=bitcaster
+#      - SENTRY_ADMIN_PASSWORD=password
+#      - C_FORCE_ROOT=1 # never in production
+#    ports:
+#      - 9000:9000
+#    volumes:
+#      - sentry:/conf
+#    restart: unless-stopped
+#    depends_on:
+#      - db
+#      - redis
+#
+#  azurite-container:
+#    image: mcr.microsoft.com/azure-cli
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+#    container_name: bitcaster_azurite
+#    command: "az storage  container create -n static --connection-string 'DefaultEndpointsProtocol=http;AccountName=acc1;AccountKey=key1;BlobEndpoint=http://localhost:10000/acc1'"
+    command: "azurite -l /workspace -d /workspace/debug.log --blobHost 0.0.0.0 --loose --silent"
+    restart: always
+    environment:
+      AZURITE_ACCOUNTS: "acc1:key1"
+    volumes:
+      - azurite_data:/workspace
+#    ports:
+#      - "10000:10000"
+    healthcheck:
+        test: nc 127.0.0.1 10000 -z
+        interval: 1s
+        retries: 30
+    extra_hosts:
+        - "acc1.blob.azurite:127.0.0.1"
+        - "acc1.queue.azurite:127.0.0.1"
+        - "acc1.table.azurite:127.0.0.1"
+
+volumes:
+  postgres_data:
+  storage_volume:
+  azurite_data:
+  sentry:

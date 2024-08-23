@@ -210,7 +210,8 @@ WORKDIR /code
 COPY --chown=user:app --from=python_prod_deps /code/__pypackages__ /code/__pypackages__
 COPY --chown=user:app --from=python_prod_deps /code/README.md /code/LICENSE.md /
 
-ENV PATH=${APATH}:${PATH} \
+ENV DJANGO_SETTINGS_MODULE="bitcaster.config.settings" \
+    PATH=${APATH}:${PATH} \
     PYTHONPATH=${APYTHONPATH} \
     PYTHONDBUFFERED=1 \
     PYTHONDONTWRITEBYTCODE=1

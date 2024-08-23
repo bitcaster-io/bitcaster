@@ -1,29 +1,37 @@
 x-common: &common
   build:
-    context: .
+    context: ../..
     dockerfile: docker/Dockerfile
     target: dist
   platform: linux/amd64
   environment:
-    - ADMIN_EMAIL=admin@gmail.com
+    - ADMIN_EMAIL=bitcaster@example.com
     - ADMIN_PASSWORD=123
+    - ALLOWED_HOSTS=localhost,127.0.0.1
     - CACHE_URL=redis://redis:6379/1?client_class=django_redis.client.DefaultClient
     - CELERY_BROKER_URL=redis://redis:6379/9
-    - CELERY_TASK_ALWAYS_EAGER=False
     - CSRF_COOKIE_SECURE=False
+    - CSRF_TRUSTED_ORIGINS=http://localhost
     - DATABASE_URL=postgres://bitcaster:password@db:5432/bitcaster
-    - PYTHONPATH=/code/app/src:/code/__pypackages__/3.12/lib
-    - SECRET_KEY=super_secret_key_just_for_development
+    - DEBUG=True
+    - MEDIA_ROOT=/var/storage/media/
+    - SECRET_KEY=super_secret_key_just_for_development_that_needs_to_be_more_than_fifty_characters
+    - SECURE_HSTS_PRELOAD=0
     - SECURE_SSL_REDIRECT=False
     - SESSION_COOKIE_DOMAIN=
     - SESSION_COOKIE_SECURE=False
     - SOCIAL_AUTH_REDIRECT_IS_HTTPS=False
-    - STATIC_ROOT=/var/bitcaster/static
+    - STORAGE_STATIC=django.core.files.storage.FileSystemStorage
+    - STORAGE_MEDIA=django.core.files.storage.FileSystemStorage
+    - STORAGE_DEFAULT=django.core.files.storage.FileSystemStorage
+    - STATIC_ROOT=/var/storage/static/
+    - STATIC_URL=/static/
   volumes:
-    - static_storage:/var/bitcaster/static
-    - .:/code/app
-    - ./docker/conf:/conf
-    - ./docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+    - storage_volume:/var/storage
+    - $PWD:/code/app
+    - $PWD/docker/conf:/conf
+    - $PWD/docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+    - $PWD/src/bitcaster:/code/__pypackages__/3.12/lib/bitcaster
   restart: unless-stopped
   depends_on:
     db:
@@ -31,40 +39,47 @@ x-common: &common
     redis:
       condition: service_healthy
 
+
 services:
   app:
     <<: *common
-    container_name: bitcaster_bitcaster
     ports:
       - 8000:8000
-#    command: ["run"]
     healthcheck:
-      test: ["CMD-SHELL", "curl", "-f", "http://localhost:8000/healthcheck"]
+      test: curl --fail http://127.0.0.1:8000/healthcheck/ || exit 1
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 60s
     depends_on:
       db:
-        condition: service_healthy
+          condition: service_healthy
 
   worker:
     <<: *common
     command: ["worker"]
-    container_name: bitcaster_worker
     depends_on:
       db:
         condition: service_healthy
+
   beat:
     <<: *common
-    container_name: bitcaster_beat
     command: ["beat"]
     depends_on:
       db:
         condition: service_healthy
 
+  flower:
+      <<: *common
+      command: ["flower"]
+      ports:
+        - 5555:5555
+      depends_on:
+        db:
+          condition: service_healthy
+
   db:
     image: postgres:15
-    container_name: bitcaster_db
     user: postgres
     environment:
       - PGUSER=bitcaster
@@ -82,18 +97,9 @@ services:
       timeout: 4s
       retries: 5
 
-  pgadmin:
-      image: dpage/pgadmin4
-      container_name: bitcaster_pgadmin4
-      ports:
-          - 3333:80
-      environment:
-          PGADMIN_DEFAULT_EMAIL: bitcaster
-          PGADMIN_DEFAULT_PASSWORD: password
   redis:
     image: redis:7.2
     restart: always
-    container_name: bitcaster_redis
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       start_period: 5s
@@ -104,4 +110,4 @@ services:
 
 volumes:
   postgres_data:
-  static_storage:
+  storage_volume:

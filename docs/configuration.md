@@ -1,17 +1,39 @@
 # Environment Variables
 
-## General 
+!!! NOTE ""
 
+    **Bitcaster uses "security-first" approach**
+
+    All the settings have the safest default value (es. `DEBUG=False` or `SESSION_COOKIE_SECURE=True`); 
+    this could create some issues in some environments (es. staging or development). 
+    Keep this in consideration when you configure your installation.
+
+    run `docker run -t bitcaster/bitcaster:latest config` or `django-admin env` to check your configuration
+
+
+## General 
 
 ### ADMIN_EMAIL
 Default: ``
 
-Username/Email of the initial user. Created at first deploy
+Username and Email of the initial user. Created at first deploy
+
+!!! warning
+
+    This variable has effect only the first tine Bitcaster starts. Any attempt to change it later will produce a startup error
+
+
 
 ### ADMIN_PASSWORD
 Default: ``
 
 Password for initial user created at first deploy. It is ignored if `ADMIN_EMAIL` exists
+
+!!! warning
+
+    This variable has effect only the first tine Bitcaster starts. Any attempt to change it later will produce a startup error
+
+
 
 ### ALLOWED_HOSTS
 Default: "127.0.0.1,localhost"  
@@ -28,6 +50,9 @@ Redis URL to use as cache backend.
 
 Es: `redis://192.168.66.66:6379/1?client_class=django_redis.client.DefaultClient`
 
+!!! note
+
+    Do not change client_class if you are not sure, use `django_redis.client.DefaultClient`
 
 see <https://docs.djangoproject.com/en/5.1/topics/cache/>
 
@@ -105,15 +130,19 @@ see <https://docs.djangoproject.com/en/5.0/ref/settings#std-setting-SESSION_COOK
 ### SESSION_COOKIE_HTTPONLY
 Default: `True`  
 see <https://docs.djangoproject.com/en/5.0/ref/settings#session-cookie-httponly>
+
 ### SESSION_COOKIE_NAME
 Default: `bitcaster_session`  
 see <https://docs.djangoproject.com/en/5.0/ref/settings#session-cookie-name>
+
 ### SESSION_COOKIE_PATH
 Default: `/`  
 see <https://docs.djangoproject.com/en/5.0/ref/settings#session-cookie-path>
+
 ### SESSION_COOKIE_SECURE
 Default: `True`  
 see <https://docs.djangoproject.com/en/5.0/ref/settings#session-cookie-secure>
+
 ### SOCIAL_AUTH_REDIRECT_IS_HTTPS
 Default: `True`  
 see <https://python-social-auth.readthedocs.io/en/latest/configuration/settings.html>

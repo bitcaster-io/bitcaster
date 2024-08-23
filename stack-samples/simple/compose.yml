@@ -1,0 +1,103 @@
+x-common: &common
+  image: bitcaster/bitcaster:latest
+  platform: linux/amd64
+  environment:
+    - ADMIN_EMAIL=bitcaster@example.com
+    - ADMIN_PASSWORD=123
+    - ALLOWED_HOSTS=app,localhost,127.0.0.1
+    - CACHE_URL=redis://redis:6379/1?client_class=django_redis.client.DefaultClient
+    - CELERY_BROKER_URL=redis://redis:6379/9
+    - CSRF_COOKIE_SECURE=False
+    - CSRF_TRUSTED_ORIGINS=http://localhost,https://localhost:1443
+    - DATABASE_URL=postgres://bitcaster:password@db:5432/bitcaster
+    - MEDIA_ROOT=/var/storage/media/
+    - SECRET_KEY=super_secret_key_just_for_development_that_needs_to_be_more_than_fifty_characters
+    - SECURE_HSTS_PRELOAD=0
+    - SECURE_SSL_REDIRECT=False
+    - SESSION_COOKIE_DOMAIN=
+    - SESSION_COOKIE_SECURE=False
+    - SOCIAL_AUTH_REDIRECT_IS_HTTPS=False
+    - STORAGE_STATIC=django.core.files.storage.FileSystemStorage
+    - STORAGE_MEDIA=django.core.files.storage.FileSystemStorage
+    - STORAGE_DEFAULT=django.core.files.storage.FileSystemStorage
+    - STATIC_ROOT=/var/storage/static/
+    - STATIC_URL=/static/
+  volumes:
+    - storage_volume:/var/storage
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+
+services:
+  app:
+    <<: *common
+    ports:
+      - 8000:8000
+    healthcheck:
+      test: curl --fail http://127.0.0.1:8000/healthcheck/ || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      db:
+          condition: service_healthy
+
+  worker:
+    <<: *common
+    command: ["worker"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  beat:
+    <<: *common
+    command: ["beat"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  flower:
+      <<: *common
+      command: ["flower"]
+      depends_on:
+        db:
+          condition: service_healthy
+
+  db:
+    image: postgres:15
+    user: postgres
+    environment:
+      - PGUSER=bitcaster
+      - POSTGRES_USER=bitcaster
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=bitcaster
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "bitcaster"]
+      start_period: 5s
+      start_interval: 1s
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+  redis:
+    image: redis:7.2
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      start_period: 5s
+      start_interval: 1s
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+volumes:
+  postgres_data:
+  storage_volume:

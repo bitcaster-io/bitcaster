@@ -1,33 +1,16 @@
+copyright: Copyright &copy; 2020-2024 OS4D ltd.
+dev_addr: 127.0.0.1:8001
+docs_dir: docs
+edit_uri: 'blob/develop/docs/'
+repo_url: https://github.com/bitcaster-io/bitcaster
+site_author: Bitcaster Team
+site_description: "The multichannel broker for managing corporate messaging"
+site_dir: ./~build/docs
 site_name: Bitcaster
 site_url: https://bitcaster-io.github.io/bitcaster/
-site_description: "The multichannel broker for managing corporate messaging"
-site_author: Bitcaster Team
-#docs_dir: docs
-site_dir: ./~build/docs
-copyright: Copyright &copy; 2020-2024 OS4D ltd.
-repo_url: https://github.com/bitcaster-io/bitcaster
-edit_uri: 'blob/develop/docs/'
+extra_css:
+  - _theme/css/style.css
 
-draft_docs: |
-  drafts/
-
-#markdown_extensions:
-#  - abbr
-#  - attr_list
-#  - pymdownx.superfences
-#  - pymdownx.tabbed:
-#      alternate_style: true
-#  - pymdownx.snippets:
-#      auto_append:
-#        - .includes/abbreviations.md
-#  - pymdownx.smartsymbols
-#  - pymdownx.smartsymbols
-#  - pymdownx.blocks.definition
-#  - smarty
-#  - toc:
-#      permalink: "#"
-#      baselevel: 2
-#      separator: "_"
 markdown_extensions:
   - admonition
   - attr_list
@@ -37,7 +20,15 @@ markdown_extensions:
       repo: bitcaster
   - mkdocs-click
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.details
+  - pymdownx.snippets:
+      base_path: '.'
+      check_paths: true
   - pymdownx.highlight:
       use_pygments: false
   - smarty
@@ -58,34 +49,47 @@ extra:
 
 theme:
   name: "material"
-  custom_dir: docs/_overrides
+  custom_dir: docs/_theme/overrides
+  logo: _theme/img/favicon.ico
+  favicon: _theme/img/favicon.ico
   color_mode: auto
-  logo: img/favicon.ico
-  favicon: img/favicon.ico
   user_color_mode_toggle: true
   highlightjs: true
   hljs_languages:
     - yaml
     - django
   features:
-    - header.autohide
-    - content.tooltips
     - content.action.edit
-    - navigation.instant
+    - content.tooltips
+    - header.autohide
+    - navigation.footer
     - navigation.indexes
+    - navigation.instant
     - navigation.instant.prefetch
     - navigation.instant.progress
-#    - navigation.footer
 
 plugins:
+  - gen-files:
+      scripts:
+        - docs/_scripts/build_glossary.py
   - autorefs
   - awesome-pages
-  - ezglossary
+#  - ezglossary
   - ezlinks:
       wikilinks: true
   - link-marker
-  - mermaid2
-  - mkdocstrings
+#  - mkdocstrings
+  - include-markdown:
+      encoding: ascii
+      preserve_includer_indent: false
+      dedent: false
+      trailing_newlines: true
+      comments: false
+      rewrite_relative_urls: true
+      heading_offset: 0
+#      start: <!--start-->
+#      end: <!--end-->
+      recursive: true
   - privacy
   - search
   - social
@@ -103,25 +107,25 @@ plugins:
       authors: false
       pagination: false
       draft: false
-  - tags:
-      tags_file: tags.md
-  - gen-files:
-      scripts:
-        - docs/_scripts/build_glossary.py
+#  - tags:
+#      tags_file: tags.md
+#  - mermaid2
+
+
 hooks:
   - docs/_hooks/hooks.py
 
-nav:
-  - Home: index.md
-  - Run: run.md
-  - Configuration: configuration.md
-  - Administration Guide: adm-guide/
-#  - Quick start: quick_start.md
-#  - Glossary: glossary/
-#  - Glossary: tags.md
-  - Glossary:
-      - 'glossary/index.md'
-  - Links:
-    - 'Public web site':  'https:///bitcaster.io/'
-    - 'Source code': 'https://github.com/bitcaster-io/bitcaster'
-    - 'Issues': 'https://github.com/bitcaster-io/bitcaster/issues'
+#nav:
+#  - Home: index.md
+#  - Run: run.md
+#  - Configuration: configuration.md
+#  - Administration Guide: adm-guide/
+##  - Quick start: quick_start.md
+##  - Glossary: glossary/
+##  - Glossary: tags.md
+#  - Glossary:
+#      - 'glossary/index.md'
+#  - Links:
+#    - 'Public web site':  'https:///bitcaster.io/'
+#    - 'Source code': 'https://github.com/bitcaster-io/bitcaster'
+#    - 'Issues': 'https://github.com/bitcaster-io/bitcaster/issues'

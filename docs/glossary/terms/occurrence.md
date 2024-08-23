@@ -1,7 +1,9 @@
 ---
-description:  ""
+description:  "created when an Event is triggered"
 template: term.html
 ---
 # Occurrence
 
-a single occurrence of a notification emitted by the client system
+Bitcaster creates an (Event's) Occurrence. each time an [Application](application) triggers an [Event](event).
+
+Occurrences are processed in background. 

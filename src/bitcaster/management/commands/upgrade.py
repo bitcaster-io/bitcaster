@@ -123,13 +123,15 @@ class Command(BaseCommand):
                 "verbosity": self.verbosity - 1,
                 "stdout": self.stdout,
             }
+            from django.conf import settings
+
             echo("Running upgrade", style_func=self.style.WARNING)
             call_command("env", check=True)
 
             if self.run_check:
                 call_command("check", deploy=True, verbosity=self.verbosity - 1)
             if self.static:
-                static_root = Path(env("STATIC_ROOT"))
+                static_root = Path(settings.STATIC_ROOT)
                 echo(f"Run collectstatic to: '{static_root}' - '{static_root.absolute()}")
                 if not static_root.exists():
                     static_root.mkdir(parents=True)

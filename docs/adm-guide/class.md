@@ -2,7 +2,7 @@
 title: Diagram
 ---
 
-# Diagram
+# Class
 
 ```mermaid
 

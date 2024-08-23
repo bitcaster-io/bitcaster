@@ -2,9 +2,9 @@
 title: Diagram
 ---
 
-# Diagram
+# Flow
 
-### Trigger Event Flow
+### Trigger Event
 
 ```mermaid
 sequenceDiagram
@@ -16,7 +16,7 @@ sequenceDiagram
     
 ```
 
-### Process Occurrence Flow
+### Process Occurrence
 
 ```mermaid
 sequenceDiagram

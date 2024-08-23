@@ -61,8 +61,8 @@ INSTALLED_APPS = [
     "bitcaster.apps.Config",
 ]
 
-if DEBUG:
-    INSTALLED_APPS += ["debug_permissions", "django_extensions"]
+# if DEBUG:
+#     INSTALLED_APPS += ["debug_permissions", "django_extensions"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -222,16 +222,7 @@ STORAGES = {
     "mediafiles": env.storage("STORAGE_MEDIA") or env.storage("STORAGE_DEFAULT"),
 }
 
-# STORAGES = {
-#     "default": {
-#         "BACKEND": "django.core.files.storage.FileSystemStorage",
-#     },
-#     "staticfiles": {
-#         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-#     },
-#     "mediafiles": env.storage("STORAGE_MEDIA") or env.storage("STORAGE_DEFAULT"),
-# }
-# pprint(STORAGES)
+
 from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.csp import *  # noqa

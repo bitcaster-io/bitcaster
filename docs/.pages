@@ -1,0 +1,10 @@
+nav:
+  - Home: index.md
+  - Run: run.md
+  - Examples: stacks
+  - Configuration: configuration.md
+  - Administration Guide: adm-guide
+  - Glossary: glossary/
+##  - Glossary: tags.md
+#  - Glossary: glossary/
+  - Links: links
