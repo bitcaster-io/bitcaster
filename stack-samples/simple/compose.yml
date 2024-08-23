@@ -61,13 +61,6 @@ services:
       db:
         condition: service_healthy
 
-  flower:
-      <<: *common
-      command: ["flower"]
-      depends_on:
-        db:
-          condition: service_healthy
-
   db:
     image: postgres:15
     user: postgres

@@ -25,9 +25,6 @@ x-common: &common
     - STATIC_URL=/static/
   volumes:
     - storage_volume:/var/storage
-#    - ../..:/code/app
-#    - ../docker/conf:/conf
-#    - ../docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
   restart: unless-stopped
   depends_on:
     db:
@@ -53,7 +50,6 @@ services:
   upgrade:
     <<: *common
     command: upgrade
-#    container_name: bitcaster_upgrade
     restart: no
     depends_on:
       azurite:
@@ -63,7 +59,6 @@ services:
 
   app:
     <<: *common
-#    container_name: bitcaster_app
     ports:
       - 8000:8000
     healthcheck:
@@ -86,14 +81,12 @@ services:
   worker:
     <<: *common
     command: ["worker"]
-#    container_name: bitcaster_worker
     depends_on:
       db:
         condition: service_healthy
 
   beat:
     <<: *common
-#    container_name: bitcaster_beat
     command: ["beat"]
     depends_on:
       db:
@@ -101,7 +94,6 @@ services:
 
   flower:
       <<: *common
-#      container_name: bitcaster_flower
       command: ["flower"]
       depends_on:
         db:
@@ -109,7 +101,6 @@ services:
 
   db:
     image: postgres:15
-#    container_name: bitcaster_db
     user: postgres
     environment:
       - PGUSER=bitcaster
@@ -130,7 +121,6 @@ services:
   pgadmin:
       image: dpage/pgadmin4
       platform: linux/amd64
-#      container_name: bitcaster_pgadmin4
       ports:
           - 3333:80
       environment:
@@ -140,7 +130,6 @@ services:
   redis:
     image: redis:7.2
     restart: always
-#    container_name: bitcaster_redis
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       start_period: 5s
