@@ -12,7 +12,15 @@ Navigate to [SERVER_ADDRESS]/admin/bitcaster/organization/ to add your [Organiza
 
 ![Image title](_screenshots/add_org.png)
 
+Now you can create your first Project.  
 
+Click on the `Create Project` button on the top right.
+![Image title](_screenshots/btn_create_project.png){align: right } 
+
+![Image title](_screenshots/add_prj.png)
+
+Click on the `Add Application` button on the top right.
+![Image title](_screenshots/btn_add_application.png){align: right } 
 
 - [Organization](organization)
       - [Project](project)

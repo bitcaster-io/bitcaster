@@ -7,10 +7,12 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
+from django.utils.translation import gettext as _
 
 from bitcaster.forms.application import ApplicationChangeForm
 from bitcaster.models import Application
 
+from ..constants import Bitcaster
 from ..state import state
 from ..utils.django import url_related
 from .base import BaseAdmin, ButtonColor
@@ -34,6 +36,11 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
     autocomplete_fields = ("project", "owner")
     readonly_fields = ["locked"]
     form = ApplicationChangeForm
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        from bitcaster.models import Project
+
+        return super().has_add_permission(request) and Project.objects.local().count() > 0
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Application]:
         return super().get_queryset(request).select_related("project", "project__organization", "owner")
@@ -60,11 +67,13 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
 
     @button()
     def events(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        ctx = self.get_common_context(request, pk)
-        # ctx[""]
+        ctx = self.get_common_context(request, pk, title=_("Events"))
         return TemplateResponse(request, "admin/application/events.html", ctx)
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK}"})
+    @button(
+        visible=lambda s: s.context["original"].project.organization.name != Bitcaster.ORGANIZATION,
+        html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"},
+    )
     def add_event(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Event
 

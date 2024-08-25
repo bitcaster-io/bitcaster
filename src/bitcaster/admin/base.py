@@ -1,6 +1,6 @@
 import enum
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
@@ -47,10 +47,27 @@ class BaseAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMix
         return queryset, may_have_duplicates
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
+        from bitcaster.models import Organization
+
         initial = super().get_changeform_initial_data(request)
         initial.setdefault("user", request.user.id)
         initial.setdefault("owner", request.user.id)
-        initial.setdefault("organization", state.get_cookie("organization"))
-        initial.setdefault("project", state.get_cookie("organization"))
-        initial.setdefault("application", state.get_cookie("organization"))
+        initial.setdefault("organization", state.get_cookie("organization") or Organization.objects.local().first())
+        initial.setdefault("project", state.get_cookie("project"))
+        initial.setdefault("application", state.get_cookie("application"))
         return initial
+
+    def changeform_view(
+        self,
+        request: HttpRequest,
+        object_id: Optional[str] = None,
+        form_url: str = "",
+        extra_context: Optional[dict[str, Any]] = None,
+    ) -> HttpResponse:
+        extra_context = extra_context or {}
+
+        # extra_context["show_save"] = True
+        extra_context["show_save_and_add_another"] = False
+        # extra_context["show_save_and_continue"] = False
+
+        return super().changeform_view(request, object_id, form_url, extra_context)

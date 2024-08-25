@@ -3,8 +3,10 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import QuerySet
 from django.utils.translation import gettext as _
 
+from ..constants import Bitcaster
 from .channel import Channel
 from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMixin
 from .organization import Organization
@@ -21,6 +23,9 @@ class ProjectManager(BitcasterBaselManager["Project"]):
 
     def get_by_natural_key(self, slug: str, org: str) -> "Project":
         return self.get(slug=slug, organization__slug=org)
+
+    def local(self, **kwargs: Any) -> "QuerySet[Project]":
+        return self.exclude(organization__name=Bitcaster.ORGANIZATION).filter(**kwargs)
 
 
 class Project(SlugMixin, LockMixin, BitcasterBaseModel):

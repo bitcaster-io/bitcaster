@@ -34,17 +34,17 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     ) -> HttpResponse:
         extra_context = extra_context or {}
 
-        extra_context["show_save"] = True
+        extra_context["show_save"] = bool(object_id)
         extra_context["show_save_and_add_another"] = False
-        extra_context["show_save_and_continue"] = False
+        extra_context["show_save_and_continue"] = not object_id
 
         return super().changeform_view(request, object_id, form_url, extra_context)
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK}"})
+    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"})
     def channels(self, request: HttpRequest, pk: str) -> HttpResponse:
         return HttpResponseRedirect(url_related(Channel, organization__exact=pk))
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK}"})
+    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"})
     def create_project(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Project
 
@@ -52,16 +52,16 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
         state.add_cookie("wizard_channel_wizard", {"step": "prj", "step_data": {"mode": "new"}})
         return HttpResponseRedirect(url_related(Project, op="add", organization=pk))
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK}"})
+    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"})
     def create_channel(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Channel
 
         return HttpResponseRedirect(url_related(Channel, op="add", organization=pk))
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
+    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION.value}"})
     def templates(self, request: HttpRequest, pk: str) -> HttpResponse:
         status_code = 200
-        ctx = self.get_common_context(request, pk)
+        ctx = self.get_common_context(request, pk, title="Edit/Create Template")
         org = ctx["original"]
         if request.method == "POST":
             form = OrgTemplateCreateForm(request.POST, organization=org)

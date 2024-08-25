@@ -25,7 +25,7 @@ from bitcaster.models import (
 from ..dispatchers.base import Dispatcher, Payload
 from ..forms.message import MessageChangeForm, MessageCreationForm, MessageEditForm
 from ..utils.shortcuts import render_string
-from .base import BaseAdmin
+from .base import BaseAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +134,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
 
         return JsonResponse(ret)
 
-    @button()
+    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION.value}"})
     def edit(self, request: HttpRequest, pk: str) -> "HttpResponse":
         context = self.get_common_context(request, pk)
         obj = context["original"]
@@ -160,7 +160,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
         context["form"] = form
         return TemplateResponse(request, "admin/message/edit.html", context)
 
-    @button()
+    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"})
     def usage(self, request: HttpRequest, pk: str) -> "HttpResponse":
         context = self.get_common_context(request, pk, title=_("Usage"))
         msg: "Message" = context["original"]

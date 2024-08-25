@@ -2,7 +2,7 @@
 title: Documentation
 ---
 <div class="align-center">
-<img src="https://avatars.githubusercontent.com/u/36620826?s=100">
+<img src="https://www.bitcaster.io/wp-content/uploads/2024/06/bitcaster-logo-h2.svg">
 </div>
 
 # Welcome to Bitcaster Documentation

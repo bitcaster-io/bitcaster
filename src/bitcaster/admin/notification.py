@@ -48,7 +48,7 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
             )
         )
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
+    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION.value}"})
     def messages(self, request: HttpRequest, pk: str) -> HttpResponse:
         status_code = 200
         ctx = self.get_common_context(request, pk)

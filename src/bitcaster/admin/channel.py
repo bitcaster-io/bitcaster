@@ -260,7 +260,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
             return ["name", "organization", "project", "parent", "protocol", "locked"]
         return ["parent", "organization", "protocol", "locked"]
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
+    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION.value}"})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object_or_404(request, pk)
         context = self.get_common_context(request, pk, title=_("Configure channel"))

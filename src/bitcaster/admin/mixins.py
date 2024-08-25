@@ -32,7 +32,7 @@ class LockMixinAdmin(admin.ModelAdmin["AnyModel"]):
         label=_("Lock"),
         visible=lambda s: flag_enabled("BETA_PREVIEW_LOCKING"),
         enabled=lambda s: not s.context["original"].locked,
-        html_attrs={"style": f"background-color:{ButtonColor.LOCK}"},
+        html_attrs={"style": f"background-color:{ButtonColor.LOCK.value}"},
     )
     def lock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)
@@ -49,7 +49,7 @@ class LockMixinAdmin(admin.ModelAdmin["AnyModel"]):
         label=_("Unlock"),
         visible=lambda s: flag_enabled("BETA_PREVIEW_LOCKING"),
         enabled=lambda s: s.context["original"].locked,
-        html_attrs={"style": f"background-color:{ButtonColor.UNLOCK}"},
+        html_attrs={"style": f"background-color:{ButtonColor.UNLOCK.value}"},
     )
     def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)

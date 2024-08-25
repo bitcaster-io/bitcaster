@@ -11,7 +11,6 @@ from bitcaster.models import Project
 
 from ..constants import Bitcaster
 from ..forms.project import ProjectChangeForm
-from ..state import state
 from ..utils.django import url_related
 from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixinAdmin
@@ -34,10 +33,25 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
     exclude = ("locked",)
     form = ProjectChangeForm
 
-    # def add_view(self, request, form_url="", extra_context=None):
-    #     return super().add_view(request, form_url, extra_context)
+    def changeform_view(
+        self,
+        request: HttpRequest,
+        object_id: Optional[str] = None,
+        form_url: str = "",
+        extra_context: Optional[dict[str, Any]] = None,
+    ) -> HttpResponse:
+        extra_context = extra_context or {}
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK}"})
+        extra_context["show_save"] = bool(object_id)
+        extra_context["show_save_and_add_another"] = False
+        extra_context["show_save_and_continue"] = not object_id
+
+        return super().changeform_view(request, object_id, form_url, extra_context)
+
+    @button(
+        html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"},
+        visible=lambda s: s.context["original"].name != Bitcaster.PROJECT,
+    )
     def add_application(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Application
 
@@ -60,6 +74,5 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         initial = super().get_changeform_initial_data(request)
         initial.setdefault("owner", request.user.id)
-        initial.setdefault("organization", state.get_cookie("organization"))
         initial.setdefault("from_email", request.user.email)
         return initial

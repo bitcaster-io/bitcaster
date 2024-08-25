@@ -32,7 +32,7 @@ class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
         return False
 
     @button(
-        html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
+        html_attrs={"style": f"background-color:{ButtonColor.ACTION.value}"},
         visible=lambda btn: btn.original.status == btn.original.Status.NEW,
     )
     def process(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa

@@ -1,8 +1,13 @@
 {% extends "admin_extra_buttons/action_page.html" %}
 {% block action-content %}
     <table>
+            <tr>
+            <th>Event</th>
+            <th>Notifications</th>
+            </tr>
         {% for e in original.events.all %}
-            <td>
+            
+            <tr>
             <td><a href="{% url 'admin:bitcaster_event_change' e.pk %}">{{ e }}</a></td>
             <td>
                 <ul>
