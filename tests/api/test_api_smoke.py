@@ -4,7 +4,13 @@ import pytest
 from django.urls import ResolverMatch, resolve
 from rest_framework import status
 from rest_framework.test import APIClient
-from testutils.factories import ApiKeyFactory, ChannelFactory, EventFactory
+from testutils.factories import (
+    ApiKeyFactory,
+    AssignmentFactory,
+    ChannelFactory,
+    DistributionListFactory,
+    EventFactory,
+)
 from testutils.perms import key_grants
 
 from bitcaster.auth.constants import Grant
@@ -16,6 +22,7 @@ if TYPE_CHECKING:
         ApiKey,
         Application,
         Channel,
+        DistributionList,
         Event,
         Organization,
         Project,
@@ -29,6 +36,7 @@ if TYPE_CHECKING:
             "prj": Project,
             "app": Application,
             "event": Event,
+            "dl": DistributionList,
             "key": ApiKey,
             "user": User,
             "ch": Channel,
@@ -43,6 +51,7 @@ org_slug = "org1"
 prj_slug = "prj1"
 app_slug = "app1"
 event_slug = "evt1"
+dl_pk = 999
 
 
 @pytest.fixture()
@@ -69,11 +78,13 @@ def data(admin_user: "User", system_objects: Any) -> "Context":
         user=admin_user, grants=[], application=None, project=None, organization=event.application.project.organization
     )
     ch = ChannelFactory(project=event.application.project)
+    dl = DistributionListFactory(id=dl_pk, project=event.application.project, recipients=[AssignmentFactory()])
     return {
         "org": event.application.project.organization,
         "prj": event.application.project,
         "app": event.application,
         "event": event,
+        "dl": dl,
         "key": key,
         "user": admin_user,
         "ch": ch,
@@ -89,9 +100,11 @@ def pytest_generate_tests(metafunc: "Metafunc") -> None:
             f"/api/o/{org_slug}/",
             f"/api/o/{org_slug}/u/",  # users
             # f"/api/o/{org_slug}/c/",
-            # f"/api/o/{org_slug}/p/{prj_slug}/",
+            f"/api/o/{org_slug}/p/{prj_slug}/",
             f"/api/o/{org_slug}/p/{prj_slug}/d/",  # distributionlist
-            # f"/api/o/{org_slug}/p/{prj_slug}/a/",
+            f"/api/o/{org_slug}/p/{prj_slug}/d/{dl_pk}/m/",  # distributionlist members
+            f"/api/o/{org_slug}/p/{prj_slug}/a/",  # applications
+            f"/api/o/{org_slug}/p/{prj_slug}/c/",  # channels
             # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/",
             f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/",
             # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/",

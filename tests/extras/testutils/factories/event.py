@@ -20,8 +20,8 @@ class EventFactory(AutoRegisterModelFactory[Event]):
         model = Event
         django_get_or_create = ("name",)
 
-    @factory.post_generation
-    def channels(self: "Event", create: bool, extracted: "list[Channel]", **kwargs):
+    @factory.post_generation  # type: ignore[misc]
+    def channels(self: "Event", create: bool, extracted: "list[Channel]", **kwargs: Any) -> None:
         if not create:
             return
 
@@ -29,7 +29,7 @@ class EventFactory(AutoRegisterModelFactory[Event]):
             for ch in extracted:
                 self.channels.add(ch)
 
-    @factory.post_generation
+    @factory.post_generation  # type: ignore[misc]
     def messages(self: "Event", create: bool, extracted: Any, **kwargs: Any) -> None:
         from .message import MessageFactory
 

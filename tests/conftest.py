@@ -107,11 +107,11 @@ def pytest_configure(config):
     from django.core.management import CommandError, call_command
 
     django.setup()
-    from testutils.dispatcher import TDispatcher
+    from testutils.dispatcher import XDispatcher
 
     from bitcaster.dispatchers.base import dispatcherManager
 
-    dispatcherManager.register(TDispatcher)
+    dispatcherManager.register(XDispatcher)
 
     try:
         call_command("env", check=True)

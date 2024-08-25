@@ -5,19 +5,19 @@ from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django.contrib import admin
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 
 from bitcaster.forms.application import ApplicationChangeForm
 from bitcaster.models import Application
 
 from ..state import state
-from .base import BaseAdmin
+from ..utils.django import url_related
+from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixinAdmin
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
-
 
 logger = logging.getLogger(__name__)
 
@@ -52,13 +52,20 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
         return base
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
-        return {
-            "owner": request.user.id,
-            "project": state.get_cookie("project"),
-        }
+        initial = super().get_changeform_initial_data(request)
+        initial.setdefault("owner", request.user.id)
+        initial.setdefault("organization", state.get_cookie("organization"))
+        initial.setdefault("from_email", request.user.email)
+        return initial
 
     @button()
     def events(self, request: HttpRequest, pk: str) -> "HttpResponse":
         ctx = self.get_common_context(request, pk)
         # ctx[""]
         return TemplateResponse(request, "admin/application/events.html", ctx)
+
+    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK}"})
+    def add_event(self, request: HttpRequest, pk: str) -> HttpResponse:
+        from bitcaster.models import Event
+
+        return HttpResponseRedirect(url_related(Event, op="add", application=pk))

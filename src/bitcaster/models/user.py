@@ -39,6 +39,8 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
     def organizations(self) -> "QuerySet[Organization]":
         from bitcaster.models import Organization
 
+        if self.is_superuser:
+            return Organization.objects.all()
         return Organization.objects.filter(userrole__user=self)
 
     def natural_key(self) -> tuple[str]:

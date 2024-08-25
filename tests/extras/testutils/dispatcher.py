@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 MESSAGES = []
 
 
-class TDispatcher(Dispatcher):
+class XDispatcher(Dispatcher):  # type: ignore[misc]
     id = 1
     slug = "test"
     local = True

@@ -9,13 +9,13 @@ pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
 def test_registry() -> None:
-    from testutils.dispatcher import TDispatcher
+    from testutils.dispatcher import XDispatcher
 
-    assert TDispatcher in dispatcherManager
-    assert fqn(TDispatcher) in dispatcherManager
+    assert XDispatcher in dispatcherManager
+    assert fqn(XDispatcher) in dispatcherManager
 
 
 def test_methods() -> None:
-    from testutils.dispatcher import TDispatcher
+    from testutils.dispatcher import XDispatcher
 
-    assert TDispatcher(Mock()).subscribe(Mock())
+    assert XDispatcher(Mock()).subscribe(Mock())

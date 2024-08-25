@@ -7,7 +7,7 @@ from .base import AutoRegisterModelFactory
 from .user import UserFactory
 
 
-class AddressFactory(AutoRegisterModelFactory):
+class AddressFactory(AutoRegisterModelFactory[Address]):
     class Meta:
         model = Address
         django_get_or_create = ("user", "value")

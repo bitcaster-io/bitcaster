@@ -1,4 +1,4 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from unittest.mock import Mock, patch
 
 import pytest
@@ -23,6 +23,9 @@ from testutils.factories import (
 
 from bitcaster.models import Channel
 from bitcaster.state import state
+
+if TYPE_CHECKING:
+    from bitcaster.models import Organization, Project
 
 register(UserFactory)
 register(OrganizationFactory)
@@ -187,3 +190,63 @@ def test_add_new_channel_inherit(app: "DjangoTestApp", gmail_channel: "Channel")
     res = res.forms["channel-add"].submit()
     assert res.status_code == 302
     assert Channel.objects.filter(name="Channel-2", project=gmail_channel.project).exists()
+
+
+def test_add_new_channel_for_specific_organization(app: DjangoTestApp, gmail_channel: "Channel") -> None:
+    url = reverse("admin:bitcaster_channel_add")
+    res = app.get(f"{url}?organization={gmail_channel.organization.pk}")
+
+    res.forms["channel-add"]["prj-project"] = gmail_channel.project.pk
+    res = res.forms["channel-add"].submit()
+    res.forms["channel-add"]["data-name"] = "Channel-1"
+    res = res.forms["channel-add"].submit()
+    assert res.status_code == 302
+    assert Channel.objects.filter(
+        name="Channel-1",
+        organization=gmail_channel.organization,
+        project=gmail_channel.project,
+    ).exists()
+
+
+def test_add_new_channel_for_specific_project(app: DjangoTestApp, gmail_channel: "Channel") -> None:
+    url = reverse("admin:bitcaster_channel_add")
+    res = app.get(f"{url}?project={gmail_channel.project.pk}")
+    # step 1
+    res.forms["channel-add"]["mode-operation"] = "new"
+    res = res.forms["channel-add"].submit()
+    # step 2
+    assert res.forms["channel-add"]["org-organization"].value == str(gmail_channel.project.organization.pk)
+    res = res.forms["channel-add"].submit()
+    # step 3
+    assert res.forms["channel-add"]["prj-project"].value == str(gmail_channel.project.pk)
+    res = res.forms["channel-add"].submit()
+    # res.forms["channel-add"]["prj-project"] = gmail_channel.project.pk
+    # res = res.forms["channel-add"].submit()
+    # step 4
+    res.forms["channel-add"]["data-name"] = "Channel-1"
+    res = res.forms["channel-add"].submit()
+    assert res.status_code == 302
+    assert Channel.objects.filter(
+        name="Channel-1",
+        organization=gmail_channel.organization,
+        project=gmail_channel.project,
+    ).exists()
+
+
+def test_add_new_channel_with_invalid_organization(app: DjangoTestApp, gmail_channel: "Channel") -> None:
+    organization: "Organization" = OrganizationFactory(owner__is_staff=True)
+    url = reverse("admin:bitcaster_channel_add")
+    app.set_user(organization.owner)
+
+    res = app.get(f"{url}?organization={gmail_channel.organization.pk}", expect_errors=True)
+    assert res.status_code == 403
+
+
+def test_add_new_channel_with_invalid_project(app: DjangoTestApp, gmail_channel: "Channel") -> None:
+    organization: "Organization" = OrganizationFactory(owner__is_staff=True)
+    project: "Project" = ProjectFactory(organization=organization, owner=organization.owner)
+    url = reverse("admin:bitcaster_channel_add")
+    app.set_user(project.organization.owner)
+
+    res = app.get(f"{url}?project={gmail_channel.project.pk}", expect_errors=True)
+    assert res.status_code == 403

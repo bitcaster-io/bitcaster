@@ -61,7 +61,11 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
         return super().get_queryset(request).select_related("application__project__organization")
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
-        return {"application": state.get_cookie("application")}
+        initial = super().get_changeform_initial_data(request)
+        initial.setdefault("owner", request.user.id)
+        initial.setdefault("organization", state.get_cookie("organization"))
+        initial.setdefault("from_email", request.user.email)
+        return initial
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[Event]" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:

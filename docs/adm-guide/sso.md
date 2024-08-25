@@ -1,0 +1,3 @@
+## Google
+## Azure
+## Generic OAuth

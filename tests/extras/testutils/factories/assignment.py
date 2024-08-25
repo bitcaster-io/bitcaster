@@ -7,7 +7,7 @@ from .base import AutoRegisterModelFactory
 from .channel import ChannelFactory
 
 
-class AssignmentFactory(AutoRegisterModelFactory[Assignment]):
+class AssignmentFactory(AutoRegisterModelFactory["Assignment"]):
     class Meta:
         model = Assignment
         django_get_or_create = ("address", "channel", "validated")

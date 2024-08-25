@@ -12,7 +12,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..auth.constants import Grant
-from ..exceptions import InvalidGrantError
 from .permissions import ApiApplicationPermission, ApiKeyAuthentication
 
 if TYPE_CHECKING:
@@ -33,10 +32,9 @@ class SecurityMixin(APIView):
         return self.required_grants
 
     def handle_exception(self, exc: Exception) -> Response:
-        if isinstance(exc, (InvalidGrantError,)):
-            response = Response({"detail": str(exc)}, status=403)
-            return response
-
+        # if isinstance(exc, (InvalidGrantError,)):
+        #     response = Response({"detail": str(exc)}, status=403)
+        #     return response
         return super().handle_exception(exc)
 
 

@@ -47,9 +47,10 @@ class BaseAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMix
         return queryset, may_have_duplicates
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
-        return {
-            "user": request.user.id,
-            "organization": state.get_cookie("organization"),
-            "project": state.get_cookie("project"),
-            "application": state.get_cookie("application"),
-        }
+        initial = super().get_changeform_initial_data(request)
+        initial.setdefault("user", request.user.id)
+        initial.setdefault("owner", request.user.id)
+        initial.setdefault("organization", state.get_cookie("organization"))
+        initial.setdefault("project", state.get_cookie("organization"))
+        initial.setdefault("application", state.get_cookie("organization"))
+        return initial

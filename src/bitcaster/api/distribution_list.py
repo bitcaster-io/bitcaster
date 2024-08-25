@@ -103,14 +103,14 @@ class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView):
     serializer_class = DistributionMemberSerializer
     required_grants = [Grant.DISTRIBUTION_LIST]
 
-    @property
-    def project(self) -> "Project":
-        return Project.objects.select_related("organization").get(
-            organization__slug=self.kwargs["org"], slug=self.kwargs["prj"]
-        )
-
-    def get_object(self) -> Assignment:
-        return self.get_queryset().get(pk=self.kwargs["pk"])
+    # @property
+    # def project(self) -> "Project":
+    #     return Project.objects.select_related("organization").get(
+    #         organization__slug=self.kwargs["org"], slug=self.kwargs["prj"]
+    #     )
+    #
+    # def get_object(self) -> Assignment:
+    #     return self.get_queryset().get(pk=self.kwargs["pk"])
 
     def get_queryset(self) -> QuerySet[Assignment]:
         return Assignment.objects.filter(

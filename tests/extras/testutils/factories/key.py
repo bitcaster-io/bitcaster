@@ -9,7 +9,7 @@ from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
 from .user import UserFactory
 
 
-class ApiKeyFactory(AutoRegisterModelFactory):
+class ApiKeyFactory(AutoRegisterModelFactory[ApiKey]):
     class Meta:
         model = ApiKey
         django_get_or_create = ("name",)

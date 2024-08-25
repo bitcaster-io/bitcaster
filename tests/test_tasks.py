@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import pytest
 from pytest import MonkeyPatch
 from strategy_field.utils import fqn
-from testutils.dispatcher import TDispatcher
+from testutils.dispatcher import XDispatcher
 
 from bitcaster.constants import Bitcaster, SystemEvent
 from bitcaster.tasks import process_occurrence, schedule_occurrences
@@ -45,7 +45,7 @@ def setup(admin_user: "User") -> "Context":
         OccurrenceFactory,
     )
 
-    ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(TDispatcher))
+    ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(XDispatcher))
     v1: Assignment = AssignmentFactory(channel=ch, address__value="test1@example.com")
     v2: Assignment = AssignmentFactory(channel=ch, address__value="test2@example.com")
     no: Notification = NotificationFactory(event__channels=[ch], distribution__recipients=[v1, v2])

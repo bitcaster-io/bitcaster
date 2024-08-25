@@ -1,6 +1,8 @@
 from django.db.models import Model
 
 from . import base
+
+# from . import base
 from .address import AddressFactory  # noqa
 from .assignment import AssignmentFactory  # noqa
 from .browser import BrowserFactory  # noqa

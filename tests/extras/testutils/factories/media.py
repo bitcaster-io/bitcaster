@@ -1,3 +1,5 @@
+from typing import Any
+
 import factory
 from django.core.files.base import ContentFile
 from factory import Sequence
@@ -8,7 +10,7 @@ from .base import AutoRegisterModelFactory
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
 
 
-class MediaFileFactory(AutoRegisterModelFactory):
+class MediaFileFactory(AutoRegisterModelFactory[MediaFile]):
     class Meta:
         model = MediaFile
         django_get_or_create = ["name"]
@@ -22,11 +24,11 @@ class MediaFileFactory(AutoRegisterModelFactory):
     )
 
     @classmethod
-    def create(cls, **kwargs):
+    def create(cls, **kwargs: dict[str, Any]) -> "MediaFile":
         if kwargs.get("application", None):
-            kwargs["project"] = kwargs["application"].project
+            kwargs["project"] = kwargs["application"].project  # type: ignore
         if kwargs.get("project", None):
-            kwargs["organization"] = kwargs["project"].organization
+            kwargs["organization"] = kwargs["project"].organization  # type: ignore
         if not kwargs.get("organization", None):
             kwargs["organization"] = OrganizationFactory()
 

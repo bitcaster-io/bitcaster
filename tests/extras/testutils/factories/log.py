@@ -6,7 +6,7 @@ from .base import AutoRegisterModelFactory
 from .org import ApplicationFactory
 
 
-class LogEntryFactory(AutoRegisterModelFactory):
+class LogEntryFactory(AutoRegisterModelFactory[LogMessage]):
     level = "INFO"
     application = factory.SubFactory(ApplicationFactory)
     message = "Message for {{ event.name }} on channel {{channel.name}}"

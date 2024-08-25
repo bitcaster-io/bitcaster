@@ -1,4 +1,4 @@
-# Environment Variables
+# Settings
 
 !!! NOTE ""
 
@@ -87,7 +87,7 @@ see <https://docs.djangoproject.com/en/5.0/ref/settings#media-url>
 
 
 ### SECRET_KEY
-Default: `<- not set ->`  
+Default: ``  
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#secret-key>
 
@@ -110,7 +110,7 @@ see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-ssl-redirect>
 ### SENTRY_DSN
 Default: ``
 
-Sentry DSN
+[Sentry](https://sentry.io) DSN
 
 ### SENTRY_ENVIRONMENT
 Default: `production`  

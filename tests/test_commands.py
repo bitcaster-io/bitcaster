@@ -1,4 +1,5 @@
 import os
+import random
 from io import StringIO
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -11,6 +12,8 @@ from responses import RequestsMock
 from testutils.factories import SuperUserFactory
 
 if TYPE_CHECKING:
+    from pytest_django.fixtures import SettingsWrapper
+
     from bitcaster.models import User
 
 pytestmark = pytest.mark.django_db
@@ -42,9 +45,16 @@ def test_upgrade_init(
     static: bool,
     static_root: str,
     tmp_path: Path,
+    settings: "SettingsWrapper",
 ) -> None:
-    static_root_path = tmp_path / static_root
+    if static_root:
+        static_root_path = tmp_path / static_root
+        static_root_path.mkdir()
+    else:
+        static_root_path = tmp_path / str(random.randint(1, 10000))
+        assert not Path(static_root_path).exists()
     out = StringIO()
+    settings.STATIC_ROOT = str(static_root_path.absolute())
     with mock.patch.dict(os.environ, {**environment, "STATIC_ROOT": str(static_root_path.absolute())}, clear=True):
         call_command(
             "upgrade",

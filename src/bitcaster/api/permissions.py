@@ -45,12 +45,11 @@ class ApiBasePermission(permissions.BasePermission):
             elif view.kwargs["app"] != token.application.slug:
                 raise InvalidGrantError(f"Invalid application for {token}")
 
-        if ret:
-            if Grant.FULL_ACCESS in token.grants:
-                return True
-            ret = bool(len({*token.grants} & {*view.grants}))
-            if not ret:
-                logger.error(f"{view.grants} not in {token.grants}")
+        if Grant.FULL_ACCESS in token.grants:
+            return True
+        ret = bool(len({*token.grants} & {*view.grants}))
+        if not ret:
+            logger.error(f"{view.grants} not in {token.grants}")
         return ret
 
 

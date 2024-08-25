@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, NamedTuple
 import factory
 import pytest
 from rest_framework.test import APIClient
+from strategy_field.utils import fqn
 from testutils.factories import (
     AddressFactory,
     ApiKeyFactory,
@@ -62,7 +63,6 @@ def client(data: SampleData) -> APIClient:
 
 @pytest.fixture()
 def data(admin_user: "User", system_objects: Any) -> SampleData:
-
     event: Event = EventFactory(
         application__project__organization__name=org_name,
         application__project__name=prj_name,
@@ -101,7 +101,14 @@ def test_org_channels(client: APIClient, org_channel: "Channel") -> None:
     with key_grants(client._key, [Grant.ORGANIZATION_READ], organization=org_channel.organization):
         res = client.get(url)
     data: list[dict[str, Any]] = res.json()
-    assert data == [{"name": org_channel.name, "protocol": org_channel.protocol}]
+    assert data == [
+        {
+            "name": org_channel.name,
+            "dispatcher": fqn(org_channel.dispatcher),
+            "locked": False,
+            "protocol": org_channel.protocol,
+        }
+    ]
 
 
 def test_user_list(client: APIClient, org_user: "User") -> None:

@@ -6,11 +6,13 @@ from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from django import forms
 from django.contrib.admin.helpers import AdminForm
+from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from formtools.wizard.storage.session import SessionStorage
 from formtools.wizard.views import CookieWizardView
 from reversion.admin import VersionAdmin
 
@@ -93,7 +95,6 @@ class ChannelSelectParent(forms.ModelForm[Channel]):
 
 
 class ChannelData(forms.ModelForm[Channel]):
-
     class Meta:
         model = Channel
         fields = ("name", "dispatcher")
@@ -138,14 +139,36 @@ class ChannelWizard(CookieWizardView):
         if step == "org":
             form.fields["organization"].queryset = Organization.objects.local()
         elif step == "prj":
-            selected_org = self.get_cleaned_data_for_step("org").get("organization")
-            form.fields["project"].queryset = Project.objects.filter(organization=selected_org.pk)
-
+            # data = self.get_cleaned_data_for_step("org")
+            # selected_org = self.get_cleaned_data_for_step("org").get("org-organization")
+            selected_org = self.storage.get_step_data("org").get("org-organization")
+            form.fields["project"].queryset = Project.objects.filter(organization=selected_org)
         return form
 
     def get(self, request: "AuthHttpRequest", *args: Any, **kwargs: Any) -> HttpResponse:
         self.extra_context = kwargs.pop("extra_context")
-        return super().get(request, *args, **kwargs)
+        s: SessionStorage = self.storage
+        s.reset()
+        s.current_step = self.steps.first
+
+        if "project" in request.GET:
+            if not (
+                prj := Project.objects.filter(
+                    pk=request.GET["project"], organization__in=request.user.organizations
+                ).first()
+            ):
+                raise PermissionDenied()
+            s.set_step_data("org", {"org-organization": [prj.organization.pk]})
+            s.set_step_data("prj", {"prj-project": [prj.pk]})
+        elif "organization" in request.GET:
+            if not request.user.organizations.filter(pk=request.GET["organization"]).exists():
+                raise PermissionDenied()
+            s.current_step = "prj"
+            s.set_step_data("mode", {"mode-operation": ["new"]})
+            s.set_step_data("org", {"org-organization": [request.GET.get("organization")]})
+
+        return self.render(self.get_form(s.current_step))
+        # return super().get(request, *args, **kwargs)
 
     def post(self, *args: Any, **kwargs: Any) -> HttpResponse:
         self.extra_context = kwargs.pop("extra_context")
