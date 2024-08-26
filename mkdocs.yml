@@ -94,7 +94,7 @@ plugins:
   - ezlinks:
       wikilinks: true
   - link-marker
-#  - mkdocstrings
+  - mkdocstrings
   - include-markdown:
       encoding: ascii
       preserve_includer_indent: false
