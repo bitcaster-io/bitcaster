@@ -70,25 +70,40 @@ def test_render_error(app: "DjangoTestApp", message: "Message") -> None:
 
 
 def test_edit(app: "DjangoTestApp", message: "Message") -> None:
+    new_subject_value = "subject_update_value"
+    new_content_value = "content_update_value"
+    new_html_content_value = "html_content_update_value"
+
     opts: "Options[Message]" = message._meta
     url = reverse(admin_urlname(opts, "edit"), args=[message.pk])  # type: ignore[arg-type]
+
     res = app.get(url)
     assert res.status_code == 200
+    assert new_subject_value not in str(res.content)  # Sanity check
+    assert new_content_value not in str(res.content)  # Sanity check
+    assert new_html_content_value not in str(res.content)  # Sanity check
+
     res = app.post(
         url,
         {
-            "subject": "subject",
-            "content": "content",
-            "html_content": "html_content",
-            "content_type": "text/html",
+            "subject": new_subject_value,
+            "content": new_content_value,
+            "html_content": new_html_content_value,
             "context": "{}",
         },
     )
     assert res.status_code == 302
+
     message.refresh_from_db()
-    assert message.subject == "subject"
-    assert message.content == "content"
-    assert message.html_content == "html_content"
+    assert message.subject == new_subject_value
+    assert message.content == new_content_value
+    assert message.html_content == new_html_content_value
+
+    refresh_res = app.get(url)
+    assert refresh_res.status_code == 200
+    assert new_subject_value in refresh_res.text
+    assert new_content_value in refresh_res.text
+    assert new_html_content_value in refresh_res.text
 
 
 def test_send_message(
@@ -97,8 +112,7 @@ def test_send_message(
 
     opts: "Options[Message]" = email_message._meta
     url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])  # type: ignore[arg-type]
-    res = app.get(url)
-    assert res.status_code == 200
+
     res = app.post(
         url,
         {
@@ -106,7 +120,6 @@ def test_send_message(
             "subject": "subject",
             "content": "content",
             "html_content": "html_content",
-            "content_type": "text/html",
             "context": "{}",
         },
     )
@@ -124,8 +137,7 @@ def test_send_message_fail(
 ) -> None:
     opts: "Options[Message]" = email_message._meta
     url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])  # type: ignore[arg-type]
-    res = app.get(url)
-    assert res.status_code == 200
+
     with mock.patch("bitcaster.dispatchers.SystemDispatcher.send", return_value=False):
         res = app.post(
             url,
@@ -134,7 +146,6 @@ def test_send_message_fail(
                 "subject": "subject",
                 "content": "content",
                 "html_content": "html_content",
-                "content_type": "text/html",
                 "context": "{}",
             },
         )

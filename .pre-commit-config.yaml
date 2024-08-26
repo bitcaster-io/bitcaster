@@ -5,7 +5,7 @@ repos:
       # but we let pre-commit take care of the file filtering.
       - id: black
         name: black
-        args: [ '--check' ]
+#        args: [ '--check' ]
         entry: black
         language: python
         types: [ python ]
