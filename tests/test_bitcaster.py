@@ -1,6 +1,9 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from bitcaster.constants import Bitcaster, SystemEvent
+
+if TYPE_CHECKING:
+    from bitcaster.models import Application
 
 
 def test_trigger_event(system_objects: Any) -> None:
@@ -9,6 +12,7 @@ def test_trigger_event(system_objects: Any) -> None:
 
 
 def test_app(system_objects: Any, django_assert_num_queries: Any) -> None:
+    a: "Application"
     with django_assert_num_queries(1):
         assert (a := Bitcaster.app)
     assert a.name == Bitcaster.APPLICATION

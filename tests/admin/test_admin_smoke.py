@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Iterable, Optional
+from typing import TYPE_CHECKING, Any, Iterable, Mapping, Optional
 from unittest.mock import Mock
 
 import pytest
@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django_regex.utils import RegexList as _RegexList
 from responses import RequestsMock
+from testutils.factories.base import AutoRegisterModelFactory
 from testutils.factories.user import SuperUserFactory
 
 if TYPE_CHECKING:
@@ -48,7 +49,7 @@ GLOBAL_EXCLUDED_BUTTONS = RegexList(
     ]
 )
 
-KWARGS: dict[str, str] = {}
+KWARGS: Mapping[str, Any] = {}
 
 
 def reverse_model_admin(model_admin: "ModelAdmin[Model]", op: str, args: Optional[list[Any]] = None) -> str:
@@ -118,7 +119,7 @@ def record(db: Any, request: "FixtureRequest") -> Model:
     instance: Model = model_admin.model.objects.first()
     if not instance:
         full_name = f"{model_admin.model._meta.app_label}.{model_admin.model._meta.object_name}"
-        factory = get_factory_for_model(model_admin.model)
+        factory: type[AutoRegisterModelFactory[Any]] = get_factory_for_model(model_admin.model)
         try:
             instance = factory(**KWARGS.get(full_name, {}))
         except Exception as e:

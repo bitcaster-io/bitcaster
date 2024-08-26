@@ -8,6 +8,7 @@ from faker import Faker
 from testutils.factories.django_auth import GroupFactory
 
 from bitcaster.auth.constants import Grant
+from bitcaster.models import ApiKey, Application, Organization, Project, User
 from bitcaster.state import state
 
 whitespace = " \t\n\r\v\f"
@@ -19,7 +20,7 @@ ascii_uppercase = uppercase
 ascii_letters = ascii_lowercase + ascii_uppercase
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Application, Group, Organization, Project, User
+    from django.contrib.auth.models import Group
 
 
 class Null:
@@ -43,7 +44,7 @@ def text(length: int, choices: str = ascii_letters) -> str:
     return "".join(choice(choices) for x in range(length))
 
 
-def get_group(name: Optional[str] = None, permissions: Optional[list[str]] = None) -> Group:
+def get_group(name: Optional[str] = None, permissions: Optional[list[str]] = None) -> "Group":
     group = GroupFactory(name=(name or text(5)))
     permission_names = permissions or []
     for permission_name in permission_names:
@@ -127,7 +128,7 @@ class key_grants(ContextDecorator):  # noqa
     def __init__(
         self,
         key: "ApiKey",
-        grants: Optional[list[Grant]] = None,
+        grants: Optional[Grant | list[Grant | None] | None] = None,
         add: bool = True,
         organization: "Union[Null, None, Organization]" = keep_existing,
         project: "Union[Null, None, Project]" = keep_existing,
@@ -146,7 +147,7 @@ class key_grants(ContextDecorator):  # noqa
         if application and isinstance(application, Application):
             project = application.project
         if project and project != keep_existing:
-            organization = project.organization
+            organization = project.organization  # type: ignore[union-attr]
 
         self.state = {
             "grants": self.key.grants,

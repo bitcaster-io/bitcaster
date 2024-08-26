@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 import factory
 from django.core.files.base import ContentFile
@@ -32,4 +32,4 @@ class MediaFileFactory(AutoRegisterModelFactory[MediaFile]):
         if not kwargs.get("organization", None):
             kwargs["organization"] = OrganizationFactory()
 
-        return super().create(**kwargs)
+        return cast(MediaFile, super().create(**kwargs))

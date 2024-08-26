@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
 from django.db import models
 from django.utils.translation import gettext as _
@@ -16,7 +16,10 @@ if TYPE_CHECKING:
 
     OccurrenceData = TypedDict("OccurrenceData", {"delivered": list[str | int], "recipients": list[tuple[str, str]]})
 
-    OccurrenceOptions = TypedDict("OccurrenceOptions", {"limit_to": list[str]})
+    # class OccurrenceOptions(TypedDict):
+    #     limit_to: list[str]
+
+    OccurrenceOptions = TypedDict("OccurrenceOptions", {"limit_to": NotRequired[list[str]]})
 logger = logging.getLogger(__name__)
 
 
@@ -66,7 +69,7 @@ class Occurrence(BitcasterBaseModel):
     def __str__(self) -> str:
         return f"Occurrence of {self.event.name} on {self.timestamp}"
 
-    def natural_key(self) -> tuple[str | None, ...]:
+    def natural_key(self) -> tuple[str, ...]:
         return str(self.timestamp), *self.event.natural_key()
 
     def __init__(self, *args: Any, **kwargs: Any):

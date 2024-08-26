@@ -80,7 +80,7 @@ class Message(Scoped3Mixin, BitcasterBaseModel):
     def __str__(self) -> str:
         return self.name
 
-    def natural_key(self) -> tuple[str | None, ...]:
+    def natural_key(self) -> tuple[str, str, str, str] | tuple[str, None, str, str] | tuple[str, None, None, str]:
         if self.application:
             return self.name, *self.application.natural_key()
         elif self.project:

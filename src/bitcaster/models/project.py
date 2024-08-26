@@ -15,7 +15,6 @@ from .user import User
 if TYPE_CHECKING:
     from bitcaster.models import Message
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -55,7 +54,7 @@ class Project(SlugMixin, LockMixin, BitcasterBaseModel):
             ("organization", "slug"),
         )
 
-    def natural_key(self) -> tuple[str | None, ...]:
+    def natural_key(self) -> tuple[str, str]:
         return self.slug, *self.organization.natural_key()
 
     def save(self, *args: Any, **kwargs: Any) -> None:

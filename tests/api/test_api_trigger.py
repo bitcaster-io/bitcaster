@@ -19,6 +19,7 @@ if TYPE_CHECKING:
         Assignment,
         Channel,
         Event,
+        Notification,
         Organization,
         Project,
         User,
@@ -108,12 +109,12 @@ def test_trigger_security(client: APIClient, data: "Context") -> None:
         ([], status.HTTP_403_FORBIDDEN),
     ],
 )
-def test_trigger_permission(client: APIClient, data: "Context", perm: str, status_code: int) -> None:
+def test_trigger_permission(client: APIClient, data: "Context", perm: Grant, status_code: int) -> None:
     api_key = data["key"]
     url: str = data["url"]
     client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
     # no token provided
-    with key_grants(api_key, perm):
+    with key_grants(api_key, [perm]):
         res = client.post(url, data={})
         assert res.status_code == status_code
 
@@ -165,7 +166,8 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
     api_key = data["key"]
     event = data["event"]
     url: str = data["url"]
-    recipients: list[Assignment] = list(event.notifications.first().distribution.recipients.all())
+    n: "Notification" = event.notifications.first()
+    recipients: list[Assignment] = list(n.distribution.recipients.all())
     target: Assignment = recipients[0]
     client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
     with key_grants(api_key, Grant.EVENT_TRIGGER):

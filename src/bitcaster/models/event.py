@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.db import models
 from django.http import HttpRequest
@@ -12,6 +12,8 @@ from .notification import Notification
 
 if TYPE_CHECKING:
     from bitcaster.models import DistributionList, Message, Occurrence
+
+    from .occurrence import OccurrenceOptions
 
 
 class EventManager(BitcasterBaselManager["Event"]):
@@ -46,14 +48,14 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
         self._cached_messages: dict[Channel, Message] = {}
         super().__init__(*args, **kwargs)
 
-    def natural_key(self) -> tuple[str | None, ...]:
+    def natural_key(self) -> tuple[str, ...]:
         return self.slug, *self.application.natural_key()
 
     def trigger(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         *,
-        options: Optional[Dict[str, str]] = None,
+        options: "Optional[OccurrenceOptions]" = None,
         cid: Optional[Any] = None,
         parent: "Optional[Occurrence]" = None,
     ) -> "Occurrence":

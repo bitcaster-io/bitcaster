@@ -94,6 +94,7 @@ def test_process_incomplete_event(setup: "Context", messagebox: list[Tuple[str, 
     v1, v2 = setup["assignments"]
 
     setup["occurrence"].data["delivered"] = [v1.id, v2.id]
+    setup["occurrence"].data["recipients"] = []
     setup["occurrence"].save()
 
     process_occurrence(occurrence.pk)
@@ -101,7 +102,7 @@ def test_process_incomplete_event(setup: "Context", messagebox: list[Tuple[str, 
 
     occurrence.refresh_from_db()
     assert occurrence.status == Occurrence.Status.PROCESSED
-    assert occurrence.data == {"delivered": [v1.id, v2.id]}
+    assert occurrence.data == {"delivered": [v1.id, v2.id], "recipients": []}
 
 
 @pytest.mark.django_db(transaction=True)
@@ -133,7 +134,7 @@ def test_process_event_resume(setup: "Context", monkeypatch: MonkeyPatch) -> Non
     v2: Assignment = setup["assignments"][1]
     occurrence = setup["occurrence"]
 
-    occurrence.data = {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]]}
+    occurrence.data = {"delivered": [v1.id], "recipients": [(v1.address.value, "test")]}
     occurrence.save()
 
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", mocked_notify := Mock())
@@ -162,7 +163,7 @@ def test_silent_event(setup: "Context", monkeypatch: MonkeyPatch, system_objects
 
     o.refresh_from_db()
     assert o.status == Occurrence.Status.PROCESSED
-    assert o.data == {}
+    assert o.data == {}  # type: ignore[comparison-overlap]
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
 

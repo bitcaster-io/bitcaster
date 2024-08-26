@@ -1,11 +1,17 @@
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, Tuple, TypeAlias, Union
+from typing import TYPE_CHECKING, Any, Mapping, TypeAlias, Union
 from urllib import parse
 
 from environ import Env
 
 if TYPE_CHECKING:
-    ConfigItem: TypeAlias = Union[Tuple[type, Any, str, Any], Tuple[type, Any, str], Tuple[type, Any]]
+    # ConfigItem: TypeAlias = Union[Tuple[type, Any, str, Any], Tuple[type, Any, str], Tuple[type, Any]]
+    ItemValue: TypeAlias = Union[str, bool, int, list[str], None]
+    ConfigItem: TypeAlias = Union[
+        tuple[type, ItemValue],  # type, value
+        tuple[type, ItemValue, str],  # type, value, help,
+        tuple[type, ItemValue, str, Any],  # type, value, hell, develop_value
+    ]
 
 
 DJANGO_HELP_BASE = "https://docs.djangoproject.com/en/5.0/ref/settings"
@@ -22,7 +28,7 @@ class Group(Enum):
 NOT_SET = "<- not set ->"
 EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY", "CACHE_URL", "CELERY_BROKER_URL", "MEDIA_ROOT", "STATIC_ROOT"]
 
-CONFIG: "Dict[str, ConfigItem]" = {
+CONFIG: "Mapping[str, ConfigItem]" = {
     "ADMIN_EMAIL": (str, "", "Initial user created at first deploy"),
     "ADMIN_PASSWORD": (str, "", "Password for initial user created at first deploy"),
     "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], setting("allowed-hosts")),
@@ -56,7 +62,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
         str,
         "sqlite:///bitcaster.db",
         "https://django-environ.readthedocs.io/en/latest/types.html#environ-env-db-url",
-        "",
+        False,
     ),
     "DEBUG": (bool, False, setting("debug"), True),
     "EMAIL_BACKEND": (str, "django.core.mail.backends.smtp.EmailBackend", setting("email-backend"), True),
@@ -84,7 +90,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
     "STORAGE_DEFAULT": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "STORAGE_MEDIA": (str, "", setting("storages")),
     "STORAGE_STATIC": (str, "django.contrib.staticfiles.storage.StaticFilesStorage", setting("storages")),
-    "SESSION_COOKIE_DOMAIN": (str, "bitcaster.io", setting("std-setting-SESSION_COOKIE_DOMAIN"), ""),
+    "SESSION_COOKIE_DOMAIN": (str, "bitcaster.io", setting("std-setting-SESSION_COOKIE_DOMAIN"), False),
     "SESSION_COOKIE_HTTPONLY": (bool, True, setting("session-cookie-httponly"), False),
     "SESSION_COOKIE_NAME": (str, "bitcaster_session", setting("session-cookie-name")),
     "SESSION_COOKIE_PATH": (str, "/", setting("session-cookie-path")),
@@ -94,7 +100,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
         str,
         "/login/",
         "https://python-social-auth.readthedocs.io/en/latest/configuration/settings.html#urls-options",
-        "",
+        False,
     ),
     "SOCIAL_AUTH_RAISE_EXCEPTIONS": (
         bool,
@@ -115,25 +121,26 @@ CONFIG: "Dict[str, ConfigItem]" = {
 }
 
 
+# x
 class SmartEnv(Env):
-    def __init__(self, **scheme):  # type: ignore[no-untyped-def]
-        self.raw = scheme
+    def __init__(self, **scheme: "ConfigItem") -> None:
+        self.raw: "dict[str, ConfigItem]" = scheme
         values = {k: v[:2] for k, v in scheme.items()}
         super().__init__(**values)
 
     def get_help(self, key: str) -> str:
-        entry: "ConfigItem" = self.raw.get(key, "")
+        entry: "ConfigItem | str" = self.raw.get(key, "")
         if len(entry) > 2:
             return entry[2]
         return ""
 
     def for_develop(self, key: str) -> Any:
-        entry: ConfigItem = self.raw.get(key, "")
+        entry: "ConfigItem | str" = self.raw.get(key, "")
         if len(entry) > 3:
             return entry[3]
         return self.get_value(key)
 
-    def storage(self, value: str) -> dict[str, str | dict[str, Any]] | None:
+    def storage(self, value: str) -> dict[str, Union[str, Any]] | None:
         raw_value = self.get_value(value, str)
         if not raw_value:
             return None
@@ -160,4 +167,4 @@ class SmartEnv(Env):
         return value
 
 
-env = SmartEnv(**CONFIG)  # type: ignore[no-untyped-call]
+env = SmartEnv(**CONFIG)

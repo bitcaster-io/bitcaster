@@ -1,3 +1,4 @@
+# mypy: disable-error-code="union-attr"
 from unittest.mock import Mock
 
 import pytest

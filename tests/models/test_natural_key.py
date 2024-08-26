@@ -1,12 +1,13 @@
-from typing import TYPE_CHECKING, Any, Type
+from typing import TYPE_CHECKING, Any, Mapping, Type
 
 import pytest
 from django.db.models import Model
+from testutils.factories.base import AutoRegisterModelFactory
 
 if TYPE_CHECKING:
     from pytest import FixtureRequest, Metafunc
 
-KWARGS: dict[str, str] = {}
+KWARGS: Mapping[str, Any] = {}
 
 
 def pytest_generate_tests(metafunc: "Metafunc") -> None:
@@ -33,7 +34,7 @@ def record(db: Any, request: "FixtureRequest") -> Model:
     instance: Model = model.objects.first()
     if not instance:
         full_name = f"{model._meta.app_label}.{model._meta.object_name}"
-        factory = get_factory_for_model(model)
+        factory: type[AutoRegisterModelFactory[Any]] = get_factory_for_model(model)
         try:
             instance = factory(**KWARGS.get(full_name, {}))
         except Exception as e:

@@ -15,9 +15,11 @@ EXAMPLE_PAYLOAD = {
     ]
 }
 
+pytestmark = [pytest.mark.django_db]
+
 
 @pytest.mark.parametrize("statement", ["AND", "OR"])
-def test_simple_filter(statement):
+def test_simple_filter(statement: str) -> None:
     from bitcaster.models import Notification
 
     # now we test a non-matching filter
@@ -28,7 +30,7 @@ def test_simple_filter(statement):
     assert result is False
 
 
-def test_plain_filter():
+def test_plain_filter() -> None:
     # now we test a matching filter
     from bitcaster.models import Notification
 
@@ -45,7 +47,7 @@ def test_plain_filter():
         pytest.param({"foo": "bar"}, True, id="ok"),
     ],
 )
-def test_queryset_filter(db, payload: Dict, matches: bool):
+def test_queryset_filter(payload: Dict[str, str], matches: bool) -> None:
     from testutils.factories import NotificationFactory
 
     from bitcaster.models import Notification
@@ -67,14 +69,14 @@ def test_queryset_filter(db, payload: Dict, matches: bool):
         pytest.param({}, True, id="empty"),
     ],
 )
-def test_jmespath_filter(db, filter: Optional[Dict[str, Any] | str], result: bool):
+def test_jmespath_filter(filter: Optional[Dict[str, Any] | str], result: bool) -> None:
     from bitcaster.models import Notification
 
     assert Notification.match_line_filter(filter_rules_dict=filter, payload={"foo": "bar"}) is result
 
 
 @pytest.mark.parametrize(
-    "filter, result",
+    "filters, result",
     [
         pytest.param({"OR": ["foo=='doo'", "foo=='bar'"]}, True, id="or"),
         pytest.param({"AND": ["foo=='doo'", "foo=='bar'"]}, False, id="and"),
@@ -83,7 +85,7 @@ def test_jmespath_filter(db, filter: Optional[Dict[str, Any] | str], result: boo
         pytest.param({}, True, id="empty"),
     ],
 )
-def test_match_filter(db, filter: Optional[Dict[str, Any] | str], result: bool):
+def test_match_filter(filters: Optional[Dict[str, Any] | str], result: bool) -> None:
     from bitcaster.models import Notification
 
-    assert Notification().match_filter(rules=filter, payload={"foo": "bar"}) is result
+    assert Notification().match_filter(rules=filters, payload={"foo": "bar"}) is result

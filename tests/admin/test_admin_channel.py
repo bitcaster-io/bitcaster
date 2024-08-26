@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any
+# mypy: disable-error-code="union-attr"
+from typing import TYPE_CHECKING, Any, Generator
 from unittest.mock import Mock, patch
 
 import pytest
@@ -57,12 +58,12 @@ def gmail_channel(db: Any) -> Channel:
 
 
 @pytest.fixture()
-def system_channel(db: Any) -> Channel:
+def system_channel(db: Any) -> Generator[Channel, None, None]:
     from testutils.factories.channel import ChannelFactory
 
     from bitcaster.dispatchers import GMailDispatcher
 
-    ch = ChannelFactory(
+    ch: Channel = ChannelFactory(
         dispatcher=fqn(GMailDispatcher),
         name="system-channel",
         config={"username": "username", "password": "password"},

@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def context(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> "Context":
-    from testutils.factories.org import UserFactory
+    from testutils.factories import UserFactory
 
     user = UserFactory()
     locked_user = UserFactory(locked=True)

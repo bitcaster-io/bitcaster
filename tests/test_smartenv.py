@@ -7,7 +7,7 @@ from bitcaster.config import SmartEnv
 
 
 @pytest.fixture()
-def env():
+def env() -> SmartEnv:
     return SmartEnv(STORAGE_DEFAULT=(str, ""))
 
 
@@ -19,31 +19,31 @@ def env():
         "Name=devstoreaccount1;AccountKey=ke1==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;",
     ],
 )
-def test_storage_options(storage, env):
+def test_storage_options(storage: str, env: SmartEnv) -> None:
     with mock.patch.dict(os.environ, {"STORAGE_DEFAULT": storage}, clear=True):
         ret = env.storage("STORAGE_DEFAULT")
 
-    assert ret["BACKEND"] == "storage.SampleStorage"
-    assert sorted(ret["OPTIONS"].keys()) == ["bucket", "connection_string", "option"]
+    assert ret["BACKEND"] == "storage.SampleStorage"  # type: ignore[index]
+    assert sorted(ret["OPTIONS"].keys()) == ["bucket", "connection_string", "option"]  # type: ignore[union-attr,index]
 
 
 @pytest.mark.parametrize("storage", ["storage.SampleStorage"])
-def test_storage(storage, env):
+def test_storage(storage: str, env: SmartEnv) -> None:
     with mock.patch.dict(os.environ, {"STORAGE_DEFAULT": storage}, clear=True):
         ret = env.storage("STORAGE_DEFAULT")
 
-    assert ret["BACKEND"] == "storage.SampleStorage"
+    assert ret["BACKEND"] == "storage.SampleStorage"  # type: ignore[index]
 
 
-def test_storage_empty(env):
+def test_storage_empty(env: SmartEnv) -> None:
     with mock.patch.dict(os.environ, {}, clear=True):
         assert not env.storage("STORAGE_DEFAULT")
 
 
-def test_env():
+def test_env() -> None:
     e = SmartEnv(
         **{
-            "T1": (str, "a@b.com"),
+            "T1": (str, "a@b.com"),  # type: ignore
             "T2": (str, "a@b.com", "help"),
             "T3": (str, "a@b.com", "help", "dev@b.com"),
             "T4": (int, None),

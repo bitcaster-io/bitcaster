@@ -9,6 +9,7 @@ from django.db.models.options import Options
 from django.urls import reverse
 from django_regex.utils import RegexList as _RegexList
 from django_webtest import DjangoTestApp
+from testutils.factories.base import AutoRegisterModelFactory
 
 from bitcaster.models.mixins import LockMixin
 
@@ -61,7 +62,7 @@ def record(db: Any, request: "FixtureRequest") -> Model:
     instance: Model = model_admin.model.objects.first()
     if not instance:
         # full_name = f"{model_admin.model._meta.app_label}.{model_admin.model._meta.object_name}"
-        factory = get_factory_for_model(model_admin.model)
+        factory: type[AutoRegisterModelFactory[Any]] = get_factory_for_model(model_admin.model)
         try:
             instance = factory()
         except Exception as e:

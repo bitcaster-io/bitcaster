@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 import factory
 from factory import Sequence
@@ -29,4 +29,4 @@ class ChannelFactory(AutoRegisterModelFactory[Channel]):
         if not kwargs.get("organization", None):
             kwargs["organization"] = OrganizationFactory()
 
-        return super().create(**kwargs)
+        return cast(Channel, super().create(**kwargs))

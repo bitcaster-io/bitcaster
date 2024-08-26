@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def context() -> "Context":
-    from testutils.factories.channel import ChannelFactory, OrganizationFactory
+    from testutils.factories import ChannelFactory, OrganizationFactory
 
     from bitcaster.dispatchers import GMailDispatcher
 

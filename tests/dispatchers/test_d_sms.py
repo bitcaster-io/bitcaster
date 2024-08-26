@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Any
 from unittest import mock
+from unittest.mock import Mock
 
 import pytest
 from strategy_field.utils import fqn
@@ -24,7 +25,7 @@ def test_twilio_error(monkeypatch: "MonkeyPatch", smsoutbox: list[Any]) -> None:
     with mock.patch("twilio.rest.api.Api") as m:
         m.side_effect = TwilioRestException("", "")
         with pytest.raises(DispatcherError):
-            assert TwilioSMS(ch).send("123456", "test")
+            assert TwilioSMS(ch).send("123456", Payload(message="test", event=Mock()))
 
 
 def test_twilio_send(mail_payload: "Payload", smsoutbox: list[Any], twilio_sid: str) -> None:

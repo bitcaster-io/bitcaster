@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, TypedDict, cast
 from unittest.mock import MagicMock
 
 import pytest
@@ -12,6 +12,7 @@ from bitcaster.api.permissions import ApiKeyAuthentication
 
 if TYPE_CHECKING:
     from bitcaster.models import ApiKey, Event, User
+    from bitcaster.types.http import ApiRequest
 
     Context = TypedDict(
         "Context",
@@ -38,8 +39,8 @@ def test_authenticate(rf: "RequestFactory", context: "Context") -> None:
     b: ApiKeyAuthentication = context["backend"]
     api_key: ApiKey = context["key"]
 
-    req = rf.get("/", {"HTTP_AUTHORIZATION": "Key 123"})
-    assert not b.authenticate(req)
+    req1 = cast("ApiRequest", rf.get("/", {"HTTP_AUTHORIZATION": "Key 123"}))
+    assert not b.authenticate(req1)
 
-    req = rf.get("/", headers={"AUTHORIZATION": "Key %s" % api_key.key})
-    assert b.authenticate(req)
+    req2 = cast("ApiRequest", rf.get("/", headers={"AUTHORIZATION": "Key %s" % api_key.key}))
+    assert b.authenticate(req2)

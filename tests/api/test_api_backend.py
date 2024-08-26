@@ -8,8 +8,8 @@ from rest_framework.test import APIClient
 from testutils.factories import ApiKeyFactory, EventFactory, ProjectFactory, UserFactory
 from testutils.perms import key_grants
 
+from bitcaster.api.event import EventTrigger
 from bitcaster.api.permissions import ApiApplicationPermission, ApiBasePermission
-from bitcaster.api.urls import EventTrigger
 from bitcaster.auth.constants import Grant
 from bitcaster.exceptions import InvalidGrantError
 
@@ -136,7 +136,7 @@ def test_has_permission(rf: RequestFactory, context: "Context") -> None:
 
         with mock.patch.object(view, "grants", [Grant.SYSTEM_PING], create=True):
             with mock.patch.object(view, "required_grants", [Grant.SYSTEM_PING], create=True):
-                with key_grants(api_key, Grant.SYSTEM_PING):
+                with key_grants(api_key, [Grant.SYSTEM_PING]):
                     assert p.has_permission(req, view)
 
 
@@ -201,7 +201,7 @@ def test_valid_scope(rf: RequestFactory, context: "Context") -> None:
     view: "EventTrigger" = context["view"]
     event: "Event" = context["event"]
     req = rf.get("/")
-    exc: ExceptionInfo
+    exc: ExceptionInfo[Exception]
     assert not p.has_permission(req, MagicMock())
 
     with mock.patch.object(req, "auth", api_key, create=True):

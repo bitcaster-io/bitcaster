@@ -32,9 +32,11 @@ if TYPE_CHECKING:
         },
     )
 
+pytestmark = pytest.mark.django_db
+
 
 @pytest.fixture
-def context(db) -> "Context":
+def context() -> "Context":
     from testutils.factories import (
         AddressFactory,
         ApiKeyFactory,
@@ -77,7 +79,9 @@ def context(db) -> "Context":
     }
 
 
-def test_trigger(context: "Context", messagebox, django_assert_num_queries: "DjangoAssertNumQueries") -> None:
+def test_trigger(
+    context: "Context", messagebox: list[tuple[str, str]], django_assert_num_queries: "DjangoAssertNumQueries"
+) -> None:
     event: Event = context["event"]
     v1: Assignment = context["v1"]
     v2: Assignment = context["v2"]

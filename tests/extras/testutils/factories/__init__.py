@@ -1,8 +1,6 @@
 from django.db.models import Model
 
 from . import base
-
-# from . import base
 from .address import AddressFactory  # noqa
 from .assignment import AssignmentFactory  # noqa
 from .browser import BrowserFactory  # noqa
@@ -22,8 +20,36 @@ from .social import SocialProviderFactory  # noqa
 from .user import SuperUserFactory, UserFactory  # noqa
 from .userrole import UserRoleFactory  # noqa
 
+__all__ = [
+    "AddressFactory",
+    "ApiKeyFactory",
+    "ApplicationFactory",
+    "AssignmentFactory",
+    "BrowserFactory",
+    "BrowserFactory",
+    "ChannelFactory",
+    "DistributionListFactory",
+    "EventFactory",
+    "GroupFactory",
+    "GroupFactory",
+    "LogEntryFactory",
+    "MediaFileFactory",
+    "MessageFactory",
+    "NotificationFactory",
+    "OccurrenceFactory",
+    "OrganizationFactory",
+    "PeriodicTaskFactory",
+    "PermissionFactory",
+    "ProjectFactory",
+    "ProjectFactory",
+    "SocialProviderFactory",
+    "SuperUserFactory",
+    "UserFactory",
+    "UserRoleFactory",
+]
 
-def get_factory_for_model(_model: Model) -> type[base.TAutoRegisterModelFactory]:
+
+def get_factory_for_model(_model: Model) -> "type[base.TAutoRegisterModelFactory]":
     class Meta:
         model = _model
 

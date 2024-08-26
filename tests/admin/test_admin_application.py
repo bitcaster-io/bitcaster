@@ -5,7 +5,7 @@ from django.urls import reverse
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-from bitcaster.models import Application
+from bitcaster.models import Application, Project
 
 
 @pytest.fixture()
@@ -46,3 +46,13 @@ def test_get_readonly_fields(app: "DjangoTestApp", application: "Application", b
     assert "project" not in frm.fields
     assert "name" not in frm.fields
     assert "slug" not in frm.fields
+
+
+def test_add(app: "DjangoTestApp", project: "Project", bitcaster: "Application") -> None:
+    url = reverse("admin:bitcaster_application_add")
+    res = app.get(url)
+    frm = res.forms["application_form"]
+    frm["name"] = "App #1"
+    frm["project"].force_value(project.pk)
+    res = frm.submit()
+    assert res.status_code == 302

@@ -5,8 +5,10 @@ from typing import TYPE_CHECKING, Any, Optional, cast
 from constance import config
 from django.db import models
 
+from bitcaster.utils.language import class_property
+
 if TYPE_CHECKING:
-    from bitcaster.models import Application, Group, Occurrence, User
+    from bitcaster.models import Application, Event, Group, Occurrence, User
     from bitcaster.models.occurrence import OccurrenceOptions
 
 logger = logging.getLogger(__name__)
@@ -16,7 +18,7 @@ class Bitcaster:
     ORGANIZATION = "OS4D"
     PROJECT = "BITCASTER"
     APPLICATION = "Bitcaster"
-    _app = None
+    _app: "Optional[Application]" = None
 
     @staticmethod
     def initialize(admin: "User") -> "Application":
@@ -38,8 +40,9 @@ class Bitcaster:
         Bitcaster._app = None
         return app
 
-    @classmethod
-    @property
+    # @classmethod
+    # @property
+    @class_property
     def app(cls) -> "Application":
         from bitcaster.models import Application
 
@@ -47,7 +50,7 @@ class Bitcaster:
             cls._app = Application.objects.select_related("project", "project__organization").get(
                 name=cls.APPLICATION, project__name=cls.PROJECT, project__organization__name=cls.ORGANIZATION
             )
-        return cls._app
+        return cls._app  # type: ignore[return-value]
 
     @classmethod
     def trigger_event(
@@ -58,10 +61,9 @@ class Bitcaster:
         options: "Optional[OccurrenceOptions]" = None,
         correlation_id: Optional[Any] = None,
         parent: "Optional[Occurrence]" = None,
-    ) -> "Optional[Occurrence]":
-        return cls.app.events.get(name=evt.value).trigger(
-            context or {}, options=options or {}, cid=correlation_id, parent=parent
-        )
+    ) -> "Occurrence":
+        e: "Event" = cls.app.events.get(name=evt.value)
+        return e.trigger(context or {}, options=options or {}, cid=correlation_id, parent=parent)
 
     @classmethod
     def get_default_group(cls) -> "Group":

@@ -51,7 +51,7 @@ class Organization(SlugMixin, BitcasterBaseModel):
     def users(self) -> QuerySet["User"]:
         return User.objects.filter(roles__organization=self)
 
-    def natural_key(self) -> tuple[str | None]:
+    def natural_key(self) -> tuple[str]:
         return (self.slug,)
 
     def create_message(self, name: str, channel: "Channel", defaults: "Optional[dict[str, Any]]" = None) -> "Message":

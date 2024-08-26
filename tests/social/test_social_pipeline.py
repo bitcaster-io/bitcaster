@@ -3,8 +3,9 @@ from unittest.mock import Mock
 
 import pytest
 from constance.test.unittest import override_config
+from django.contrib.auth.models import Group
 
-from bitcaster.models import Group, User
+from bitcaster.models import User
 from bitcaster.social.pipeline import save_to_group
 
 

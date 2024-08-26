@@ -9,7 +9,7 @@ from testutils.factories.message import MessageFactory
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
 
-    from bitcaster.models import Event, Notification
+    from bitcaster.models import Event, Message, Notification
 
 
 def test_get_message_cache(notification: "Notification", django_assert_num_queries: DjangoAssertNumQueries) -> None:
@@ -27,8 +27,8 @@ def test_get_message_precedence(event: "Event", django_assert_num_queries: Djang
     n1: "Notification" = NotificationFactory(event=event)
     n2: "Notification" = NotificationFactory(event=event)
 
-    m1: "Notification" = MessageFactory(name="m1", channel=ch1, event=n1.event, notification=None)
-    m2: "Notification" = MessageFactory(name="m2", channel=ch1, event=n1.event, notification=n2)
+    m1: "Message" = MessageFactory(name="m1", channel=ch1, event=n1.event, notification=None)
+    m2: "Message" = MessageFactory(name="m2", channel=ch1, event=n1.event, notification=n2)
 
     assert list(n1.get_messages(ch1)) == [m1]
     assert list(n2.get_messages(ch1)) == [m2, m1]

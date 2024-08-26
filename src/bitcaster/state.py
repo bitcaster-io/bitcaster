@@ -3,9 +3,10 @@ import json
 from copy import copy
 from datetime import datetime, timedelta
 from threading import local
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Mapping, Optional
 
 if TYPE_CHECKING:
+    from bitcaster.types.django import JsonType
     from bitcaster.types.http import AnyRequest, AnyResponse
 
 not_set = object()
@@ -21,7 +22,7 @@ class State(local):
     def add_cookie(
         self,
         key: str,
-        value: str,
+        value: "JsonType",
         max_age: [int | float, timedelta] = None,
         expires: [str | datetime] = None,
         path: str = "/",
@@ -41,7 +42,7 @@ class State(local):
             response.set_cookie(name, *args)
 
     @contextlib.contextmanager
-    def configure(self, **kwargs: "Dict[str,Any]") -> "Iterator[None]":
+    def configure(self, **kwargs: Any) -> "Iterator[None]":
         pre = copy(self.__dict__)
         self.reset()
         with self.set(**kwargs):
@@ -50,7 +51,7 @@ class State(local):
             setattr(self, k, v)
 
     @contextlib.contextmanager
-    def set(self, **kwargs: "Dict[str,Any]") -> "Iterator[None]":
+    def set(self, **kwargs: "Mapping[str,Any]") -> "Iterator[None]":
         pre = {}
         for k, v in kwargs.items():
             if hasattr(self, k):
