@@ -40,8 +40,6 @@ class Bitcaster:
         Bitcaster._app = None
         return app
 
-    # @classmethod
-    # @property
     @class_property
     def app(cls) -> "Application":
         from bitcaster.models import Application
@@ -50,7 +48,7 @@ class Bitcaster:
             cls._app = Application.objects.select_related("project", "project__organization").get(
                 name=cls.APPLICATION, project__name=cls.PROJECT, project__organization__name=cls.ORGANIZATION
             )
-        return cls._app  # type: ignore[return-value]
+        return cls._app
 
     @classmethod
     def trigger_event(
