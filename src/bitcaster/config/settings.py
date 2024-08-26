@@ -147,14 +147,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = [
     # social
-    "social_core.backends.google.GoogleOAuth2",
     "social_core.backends.azuread.AzureADOAuth2",
     "social_core.backends.azuread_tenant.AzureADTenantOAuth2",
-    "social_core.backends.gitlab.GitLabOAuth2",
     "social_core.backends.facebook.FacebookOAuth2",
-    "social_core.backends.twitter.TwitterOAuth",
     "social_core.backends.github.GithubOAuth2",
+    "social_core.backends.gitlab.GitLabOAuth2",
+    "social_core.backends.google.GoogleOAuth2",
     "social_core.backends.linkedin.LinkedinOAuth2",
+    "social_core.backends.twitter.TwitterOAuth",
     "bitcaster.social.backend.wso2.Wso2OAuth2",
     # local
     "bitcaster.auth.backends.BitcasterBackend",

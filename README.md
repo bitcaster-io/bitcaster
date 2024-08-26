@@ -26,6 +26,7 @@ Your user will be empowered with an easy to use console to choose how to receive
 # Resources
 
 - [Home](https://www.bitcaster.io/)
+- [Documentation](https://bitcaster-io.github.io/bitcaster/)
 - [Bug Tracker](https://github.com/bitcaster-io/bitcaster/issues)
 - [Code](https://github.com/bitcaster-io/bitcaster/)
 - [Transifex](https://explore.transifex.com/bitcaster/bitcaster/) (Translate Bitcaster\!)
