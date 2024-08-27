@@ -1,4 +1,4 @@
-{% extends "admin_extra_buttons/action_page.html" %}{% load i18n %}
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n markdown dispatcher %}
 
 {% block head %}
     {{ block.super }}
@@ -10,7 +10,18 @@
     {{ block.super }}
 {% endblock %}
 {% block action-content %}
-    <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+    {{ cleaned_data }}
+    <table>
+        <tr><th>Mode</th><td>{{ cleaned_data.mode.operation }}</td></tr>
+        <tr><th>Organization</th><td>{{ cleaned_data.org.organization }}</td></tr>
+        {% if cleaned_data.prj %}
+        <tr><th>Project</th><td>{{ cleaned_data.prj.project|default_if_none:"All" }}</td></tr>
+        {% endif %}
+    </table>
+    <div class="m-1">
+<div class="mb-1">Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</div>
+{{ wizard.form|help_doc }}
+    </div>
     <form action="" method="post" id="channel-add">{% csrf_token %}
         <table>
             {{ wizard.management_form }}
@@ -25,6 +36,7 @@
         </table>
         <div class="submit-row m-5">
             <input type="submit" value="{% translate "submit" %}"/>
+            <a href="{{ back_url }}" class="button cancel">{% translate "Cancel" %}</a>
             {% if wizard.steps.prev %}
                 <div style="float: right">
                     <button name="wizard_goto_step" class="button" type="submit"

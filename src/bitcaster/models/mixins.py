@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class LockMixin(models.Model):
-    locked = models.BooleanField(default=False, help_text=_("Security lock of project"))
+    locked = models.BooleanField(default=False, help_text=_("If checked any notification is ignored and not forwarded"))
 
     class Meta:
         abstract = True

@@ -55,7 +55,16 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
     def add_application(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Application
 
-        return HttpResponseRedirect(url_related(Application, op="add", projecc=pk))
+        return HttpResponseRedirect(url_related(Application, op="add", project=pk))
+
+    @button(
+        html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"},
+        visible=lambda s: s.context["original"].name != Bitcaster.PROJECT,
+    )
+    def add_channel(self, request: HttpRequest, pk: str) -> HttpResponse:
+        from bitcaster.models import Channel
+
+        return HttpResponseRedirect(url_related(Channel, op="add", project=pk))
 
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Project] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))

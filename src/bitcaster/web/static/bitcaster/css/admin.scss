@@ -17,14 +17,21 @@
     }
   }
 
-  div.submit-row {
-    button, input, a {
-      margin: 0;
-      padding: 10px 15px;
+  #container {
+    div.submit-row {
+      button, input, a {
+        margin: 0;
+        padding: 10px 15px;
+      }
+      a.cancel{
+        background-color: #96aa86;
+      }
+      button.button.cancel {
+        background-color: #3e8f3e;
+      }
     }
   }
-
-  #container, {
+  #container {
     div.breadcrumbs {
       background-color: #951515;
 
@@ -64,10 +71,12 @@
     padding: 10px;
     width: 80%;
     line-height: 20px;
+
     li {
       width: 100%;
       list-style: none;
       margin-bottom: 5px;
+
       a {
         display: block;
         width: 100%;
@@ -109,12 +118,6 @@ html[data-theme="light"] {
       color: black;
       line-height: 28px;
     }
-
-    //.submit-row {
-    //  input.default {
-    //    background-color: var(--default-button-bg);
-    //  }
-    //}
   }
 
 
