@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, List, TypedDict
 from unittest.mock import Mock
 
 import pytest
@@ -66,3 +66,13 @@ def test_natural_key(occurrence: "Occurrence") -> None:
     from bitcaster.models import Occurrence
 
     assert Occurrence.objects.get_by_natural_key(*occurrence.natural_key()) == occurrence
+
+
+def test_purgeable(purgeable_occurrences: List["Occurrence"], non_purgeable_occurrences: List["Occurrence"]) -> None:
+    from bitcaster.models import Occurrence
+
+    assert Occurrence.objects.count() == len(purgeable_occurrences) + len(non_purgeable_occurrences)  # Sanity check
+
+    purgeable_occurrence_ids = Occurrence.objects.purgeable().order_by("id").values_list("id", flat=True)
+
+    assert list(purgeable_occurrence_ids) == sorted([o.id for o in purgeable_occurrences])
