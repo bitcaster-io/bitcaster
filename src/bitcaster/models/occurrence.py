@@ -1,6 +1,6 @@
 import logging
-from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 from datetime import timedelta
+from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
 from constance import config
 from django.db import models
