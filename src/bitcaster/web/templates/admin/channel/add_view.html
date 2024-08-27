@@ -10,7 +10,6 @@
     {{ block.super }}
 {% endblock %}
 {% block action-content %}
-    {{ cleaned_data }}
     <table>
         <tr><th>Mode</th><td>{{ cleaned_data.mode.operation }}</td></tr>
         <tr><th>Organization</th><td>{{ cleaned_data.org.organization }}</td></tr>

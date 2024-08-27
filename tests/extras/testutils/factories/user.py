@@ -15,6 +15,8 @@ class UserFactory(AutoRegisterModelFactory[User]):
     username = factory.Sequence(lambda n: "m%03d@example.com" % n)
     password = factory.django.Password(_password)
     email = factory.Sequence(lambda n: "m%03d@example.com" % n)
+    is_active = True
+    is_staff = True
 
     class Meta:
         model = User

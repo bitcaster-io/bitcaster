@@ -5,6 +5,7 @@ from admin_extra_buttons.decorators import button
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
+from django.urls import reverse
 
 from bitcaster.models import Channel, Organization
 
@@ -56,7 +57,17 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     def create_channel(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Channel
 
-        return HttpResponseRedirect(url_related(Channel, op="add", organization=pk))
+        from .channel import ChannelType
+
+        return HttpResponseRedirect(
+            url_related(
+                Channel,
+                op="add",
+                organization=pk,
+                mode=ChannelType.MODE_TEMPLATE,
+                _from=reverse("admin:bitcaster_organization_change", args=[pk]),
+            )
+        )
 
     @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION.value}"})
     def templates(self, request: HttpRequest, pk: str) -> HttpResponse:
