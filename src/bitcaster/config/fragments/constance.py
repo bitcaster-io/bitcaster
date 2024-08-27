@@ -24,4 +24,5 @@ CONSTANCE_CONFIG = {
     "SYSTEM_EMAIL_CHANNEL": ("", "System Email", "email_channel"),
     "NEW_USER_IS_STAFF": (False, "Set any new user as staff", bool),
     "NEW_USER_DEFAULT_GROUP": (DEFAULT_GROUP_NAME, "Group to assign to any new user", str),
+    "OCCURRENCE_DEFAULT_RETENTION": (30, "Number of days of Occurrences retention", int),
 }

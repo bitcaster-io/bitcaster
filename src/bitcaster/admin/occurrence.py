@@ -4,10 +4,12 @@ from typing import Optional
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.numbers import NumberFilter
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.http import HttpRequest, HttpResponse
+from django.utils.translation import gettext as _
 
 from bitcaster.models import Occurrence
+from bitcaster.tasks import purge_occurrences
 
 from .base import BaseAdmin, ButtonColor
 
@@ -38,3 +40,11 @@ class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
     def process(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
         obj = self.get_object(request, pk)
         obj.process()
+
+    @button(
+        html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
+        permission="bitcaster.delete_occurrence",
+    )
+    def purge(self, request: HttpRequest) -> HttpResponse:  # noqa
+        purge_occurrences.delay()
+        self.message_user(request, _("Occurrence purge has been successfully triggered"), messages.INFO)
