@@ -1,3 +1,4 @@
+import logging
 from typing import TYPE_CHECKING, Any, Optional
 
 import jmespath
@@ -18,6 +19,9 @@ if TYPE_CHECKING:
     from bitcaster.dispatchers.base import Dispatcher
     from bitcaster.models import Address, Application, Channel, Message
     from bitcaster.types.core import YamlPayload
+
+
+logger = logging.getLogger(__name__)
 
 
 class NotificationManager(BitcasterBaselManager["Notification"]):
@@ -93,9 +97,9 @@ class Notification(BitcasterBaseModel):
 
     def notify_to_channel(self, channel: "Channel", assignment: Assignment, context: dict[str, Any]) -> Optional[str]:
         message: Optional["Message"]
-
         dispatcher: "Dispatcher" = channel.dispatcher
         addr: "Address" = assignment.address
+
         if message := self.get_message(channel):
             context.update({"channel": channel, "address": addr.value})
             payload: Payload = Payload(
@@ -108,6 +112,7 @@ class Notification(BitcasterBaseModel):
             )
             dispatcher.send(addr.value, payload)
             return addr.value
+
         return None
 
     @classmethod
