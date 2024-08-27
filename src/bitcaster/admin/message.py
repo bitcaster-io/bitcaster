@@ -23,7 +23,12 @@ from bitcaster.models import (
 )
 
 from ..dispatchers.base import Dispatcher, Payload
-from ..forms.message import MessageChangeForm, MessageCreationForm, MessageEditForm
+from ..forms.message import (
+    MessageChangeForm,
+    MessageCreationForm,
+    MessageEditForm,
+    MessageRenderForm,
+)
 from ..utils.shortcuts import render_string
 from .base import BaseAdmin, ButtonColor
 
@@ -87,7 +92,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
 
     @view()
     def render(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        form = MessageEditForm(request.POST)
+        form = MessageRenderForm(request.POST)
         msg: Message = self.get_object(request, pk)
         oc, no = self.get_dummy_source(msg)
         message_context = no.get_context(oc.get_context())
@@ -145,15 +150,22 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
             form = MessageEditForm(request.POST, instance=obj)
             if form.is_valid():
                 form.save()
+                self.message_user(request, _("Message Template updated successfully "))
                 return HttpResponseRedirect("..")
         else:
             form = MessageEditForm(
                 initial={
                     "recipient": request.user.email,
                     "context": {k: "<sys>" for k, __ in message_context.items()},
-                    "content": "\n".join([f"{k}: {{{{{k}}}}}" for k in message_context.keys()]),
-                    "html_content": "".join([f"<div>{k}: {{{{{k}}}}}</div>" for k in message_context.keys()]),
-                    "subject": "Subject for {{ event }}",
+                    "subject": obj.subject if obj.subject else "Subject for {{ event }}",
+                    "content": (
+                        obj.content if obj.content else "\n".join([f"{k}: {{{{{k}}}}}" for k in message_context.keys()])
+                    ),
+                    "html_content": (
+                        obj.html_content
+                        if obj.html_content
+                        else "".join([f"<div>{k}: {{{{{k}}}}}</div>" for k in message_context.keys()])
+                    ),
                 },
                 instance=obj,
             )
