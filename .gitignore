@@ -19,6 +19,7 @@ dist/
 !.trivyignore
 !*/.pages
 !bandit.yaml
+bitcaster.db
 coverage.xml
 Makefile
 site

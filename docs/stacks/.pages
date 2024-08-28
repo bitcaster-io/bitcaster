@@ -1,0 +1,6 @@
+title: Examples
+
+nav:
+    - Simple: simple.md
+    - Full: full.md
+    - Development: develop.md

@@ -10,6 +10,11 @@ site_name: Bitcaster
 site_url: https://bitcaster-io.github.io/bitcaster/
 extra_css:
   - _theme/css/style.css
+extra_javascript:
+  - _theme/js/js.cookie.js
+  - path: _theme/js/address.js
+    defer: true
+
 
 markdown_extensions:
   - admonition
@@ -19,7 +24,7 @@ markdown_extensions:
   - mdx_gh_links:
       user: bitcaster
       repo: bitcaster
-  - mkdocs-click
+#  - mkdocs-click
   - pymdownx.snippets
   - pymdownx.superfences:
       custom_fences:
@@ -31,11 +36,12 @@ markdown_extensions:
       base_path: '.'
       check_paths: true
   - pymdownx.highlight:
-      use_pygments: false
+      use_pygments: true
   - smarty
   - tables
   - toc:
       permalink: #
+      separator: "_______"
       baselevel: 1
 
 
@@ -76,13 +82,14 @@ theme:
         name: Switch to light mode
   features:
     - content.action.edit
+    - content.code.copy
     - content.tooltips
     - header.autohide
     - navigation.footer
     - navigation.indexes
-    - navigation.instant
-    - navigation.instant.prefetch
-    - navigation.instant.progress
+#    - navigation.instant
+#    - navigation.instant.prefetch
+#    - navigation.instant.progress
 
 plugins:
   - gen-files:
@@ -91,8 +98,8 @@ plugins:
   - autorefs
   - awesome-pages
 #  - ezglossary
-  - ezlinks:
-      wikilinks: true
+#  - ezlinks:
+#      wikilinks: true
   - link-marker
   - mkdocstrings
   - include-markdown:

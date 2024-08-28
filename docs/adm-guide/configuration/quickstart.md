@@ -42,7 +42,7 @@ You may now want to try some APIs. See examples below.
 
 ```shell
 curl -X 'GET' \
-  "${SERVER_URL}/api/system/ping/" \
+  "[SERVER_ADDRESS]/api/system/ping/" \
     -H "accept: application/json" \
     -H "Authorization: Key ${YOUR_API_KEY}"
 ```
@@ -50,7 +50,7 @@ curl -X 'GET' \
 - Get organization details
 
 ```shell
-curl -X 'GET' "${SERVER_URL}/api/o/${ORG_SLUG}/" \
+curl -X 'GET' "[SERVER_ADDRESS]/api/o/${ORG_SLUG}/" \
     -H "accept: application/json" \
     -H "Authorization: Key ${YOUR_API_KEY}"
 ```
@@ -58,7 +58,7 @@ curl -X 'GET' "${SERVER_URL}/api/o/${ORG_SLUG}/" \
 - Trigger an event
 
 ```shell
-curl -X 'POST' "${SERVER_URL}/api/o/${ORG_SLUG}/p/${PROJECT_SLUG}/a/${APP_SLUG}/e/${EVENT_SLUG}/trigger/" \
+curl -X 'POST' "[SERVER_ADDRESS]/api/o/${ORG_SLUG}/p/${PROJECT_SLUG}/a/${APP_SLUG}/e/${EVENT_SLUG}/trigger/" \
     -H "accept: application/json" \
     -H "Authorization: Key ${YOUR_API_KEY}"
 ```

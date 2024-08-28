@@ -1,0 +1,4 @@
+nav:
+  - Quick Start: quickstart.md
+  - Create Initial Structure: structure.md
+  - Configure Application: app.md

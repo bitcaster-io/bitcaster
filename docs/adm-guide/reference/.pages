@@ -1,0 +1,4 @@
+nav:
+  - Dispatchers: dispatchers.md
+  - Social Logins: sso.md
+  - Diagrams: diagrams
