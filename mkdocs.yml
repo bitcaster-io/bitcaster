@@ -12,40 +12,59 @@ extra_css:
   - _theme/css/style.css
 extra_javascript:
   - _theme/js/js.cookie.js
-  - path: _theme/js/address.js
-    defer: true
-
+  - _theme/js/address.js
+exclude_docs: |
+  ~*
+  .m_templates
+  .templates
+  _scripts
+  -screenshots
 
 markdown_extensions:
+  - abbr
   - admonition
   - attr_list
   - def_list
+  - footnotes
   - md_in_html
   - mdx_gh_links:
       user: bitcaster
       repo: bitcaster
-#  - mkdocs-click
+  - mkdocs-click
+  - pymdownx.details
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.inlinehilite
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      use_pygments: true
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.snippets
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.details
   - pymdownx.snippets:
       base_path: '.'
       check_paths: true
-  - pymdownx.highlight:
-      use_pygments: true
+  - pymdownx.tabbed:
   - smarty
   - tables
   - toc:
       permalink: #
-      separator: "_______"
       baselevel: 1
 
 
 extra:
+  generator: true
   consent:
     title: Cookie consent
     description: >- 
@@ -54,54 +73,78 @@ extra:
       find what they're searching for. With your consent, you're helping us to
       make our documentation better.
 
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bitcaster-io
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/bitcaster/bitcaster
+
 theme:
   name: "material"
-  custom_dir: docs/_theme/overrides
-  logo: _theme/img/favicon.ico
-  favicon: _theme/img/favicon.ico
   color_mode: auto
-  user_color_mode_toggle: true
+  custom_dir: docs/_theme/overrides
+  favicon: _theme/img/favicon.ico
   highlightjs: true
   hljs_languages:
     - yaml
     - django
-  palette:
-
-    # Palette toggle for light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to dark mode
-
-    # Palette toggle for dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      toggle:
-        icon: material/weather-night
-        name: Switch to light mode
+  logo: _theme/img/favicon.ico
+  user_color_mode_toggle: true
   features:
     - content.action.edit
+    - content.code.annotate
     - content.code.copy
     - content.tooltips
     - header.autohide
     - navigation.footer
     - navigation.indexes
-#    - navigation.instant
-#    - navigation.instant.prefetch
-#    - navigation.instant.progress
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: red
+      media: "(prefers-color-scheme: light)"
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: red
+      media: "(prefers-color-scheme: dark)"
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
 
 plugins:
-  - gen-files:
-      scripts:
-        - docs/_scripts/build_glossary.py
+#  - gen-files:
+#      scripts:
+#        - docs/_scripts/build_glossary.py
   - autorefs
   - awesome-pages
-#  - ezglossary
-#  - ezlinks:
-#      wikilinks: true
+  - ezglossary:
+      templates: docs/_theme/glossary
+      inline_refs: short
+      list_definitions: true
+      list_references: true
+  - ezlinks:
+      wikilinks: true
   - link-marker
   - mkdocstrings
+#  - minify:
+#      minify_html: true
+#      minify_js: true
+#      minify_css: true
+#      htmlmin_opts:
+#        remove_comments: true
+#      cache_safe: true
+#      js_files:
+#        - _theme/js/address.js
+#      css_files:
+#        - _theme/css/style.css
   - include-markdown:
       encoding: ascii
       preserve_includer_indent: false

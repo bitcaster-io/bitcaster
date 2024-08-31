@@ -21,17 +21,17 @@ Remember to keep the key copied somewhere safe as it would be shown only once.
 [//]: # (TODO: Assignment Validation feature documention: seams not used... the only part of the code where Assignment.validated is used, AddressManager.valid, is never referenced)
 
 Remember the [Event](event)-[Channel](channel) and the [Assignment](assignment)-[Channel](channel) must match to be
-able to receive the [Occurrence](occurrence)
+able to receive the <glossary:occurrence>
 
-Configure the [Distribution List](distributionlist) for your [Project](project) by selecting the previously configured [Assignment](assignment)
+Configure the <glossary:Distribution List> for your [Project](project) by selecting the previously configured [Assignment](assignment)
 
-Now it's time to connect all the dots configuring the [Notification](notification) connecting the [Event](event) with the [Distribution List](distributionlist)
+Now it's time to connect all the dots configuring the [Notification](notification) connecting the [Event](event) with the <glossary:Distribution List>
 
 Last but not least, configure a [Message Template](message) for your [Notification](notification).
 After first save, you will be able to modify your template using an enhanced editor by clicking the *Edit* button 
 
-Celery Beat process must be up and running in order for the [Occurrence](occurence) to be processed.
-Hint: CELERY_TASK_ALWAYS_EAGER is not considered here since the [Occurrence](occurence) processor is scheduled (apply_async() and Task.delay() are not used)
+Celery Beat process must be up and running in order for the <glossary:occurrence> to be processed.
+Hint: CELERY_TASK_ALWAYS_EAGER is not considered here since the <glossary:occurrence> processor is scheduled (apply_async() and Task.delay() are not used)
 Here an example of how to start it: $`celery -A bitcaster.config.celery worker -E -B --loglevel=DEBUG --concurrency=4`
 
 You may now want to try some APIs. See examples below.

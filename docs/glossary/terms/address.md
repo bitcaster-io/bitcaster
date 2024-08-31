@@ -1,8 +1,9 @@
 ---
 description:  "unique address identity for a User"
 template: term.html
+terms:
+  - glossary: 
+    - Address
 ---
-# Address
 
-
-the User configured target for a [Notification](notification).
+the User configured target for a <glossary:Notification>. 

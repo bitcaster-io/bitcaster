@@ -1,6 +1,10 @@
 ---
 description:  a list of Recipients meant to receive one or more Notification.
 template: term.html
+terms:
+  - glossary:
+      - Distribution List
+      - distributionlist
 ---
 # Distribution List
 

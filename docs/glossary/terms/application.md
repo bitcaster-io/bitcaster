@@ -1,8 +1,10 @@
 ---
 description:  Is a deployment artifact and a logical subdivision of the [Project](project)
 template: term.html
+terms:
+  - glossary: 
+    - Application
 ---
-# Application
 
 a deployment artefact, part of a [Project](project)
 
