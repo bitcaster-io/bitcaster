@@ -1,0 +1,9 @@
+/LICENSE.md                                              @bitcaster-io/admins
+
+## Migrations
+/src/bitcaster/migrations/                               @bitcaster-io/admins
+
+## Dev
+/.github/                                                @getsentry/core
+.pre-commit-config.yaml                                  @getsentry/core
+.github/labels.yml                                       @getsentry/core
