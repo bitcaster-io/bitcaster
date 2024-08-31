@@ -16,7 +16,6 @@
                     {% endif %}
                     {% if user.is_staff %}
                         <a class="button primary" href="{% url "admin:index" %}">Admin</a>
-                        <a class="button primary" href="/api/">API</a>
                     {% endif %}
                     <form method="post" action="{% url "logout" %}" id="logout-form">
                         {% csrf_token %}
@@ -24,8 +23,13 @@
                     </form>
                 </form>
             {% else %}
-                <a class="button primary" href="{% url "login" %}">{% translate "Enter" %}</a>
+                <a class="button primary" href="https://bitcaster-io.github.io/bitcaster/">Documentation</a>
+                <a class="button primary" href="/api/">API</a>
+                <a class="button primary" href="{% url "login" %}">{% translate "Configure" %}</a>
             {% endif %}
         </div>
+    </div>
+    <div>
+    
     </div>
 {% endblock %}

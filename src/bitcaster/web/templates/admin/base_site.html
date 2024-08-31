@@ -3,10 +3,23 @@
 {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ _('Bitcaster') }}{% endblock %}
 
 {% block branding %}
-<div id="site-name"><a href="{% url 'admin:index' %}">{{ _('Bitcaster') }}</a></div>
-{% if user.is_anonymous %}
-  {% include "admin/color_theme_toggle.html" %}
-{% endif %}
+    <div id="site-name"><a href="{% url 'admin:index' %}">{{ _('Bitcaster') }}</a></div>
+    {% if user.is_anonymous %}
+        {% include "admin/color_theme_toggle.html" %}
+    {% endif %}
 {% endblock %}
 
 {% block nav-global %}{% endblock %}
+
+
+{% block footer %}
+    <div id="footer">
+
+        <div class="footer w-100">
+            <div class="text-center">
+                Version {{ bitcaster.version }}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
