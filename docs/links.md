@@ -1,9 +1,8 @@
 # Links
 
 
-- Official Web Site: <https:///bitcaster.io/>{:target="_extra"}
+- Official Web Site: <https://bitcaster.io/>{:target="_extra"}
 - Documentation: <https://bitcaster-io.github.io/bitcaster/>{:target="_extra"}
-- License: <https://github.com/bitcaster-io/bitcaster?tab=License-1-ov-file>{:target="_extra"}
 
 
 ### Technical Resources

@@ -134,17 +134,22 @@ plugins:
       wikilinks: true
   - link-marker
   - mkdocstrings
-#  - minify:
-#      minify_html: true
-#      minify_js: true
-#      minify_css: true
-#      htmlmin_opts:
-#        remove_comments: true
-#      cache_safe: true
-#      js_files:
-#        - _theme/js/address.js
-#      css_files:
-#        - _theme/css/style.css
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+      cache_safe: true
+      js_files:
+        - _theme/js/address.js
+      css_files:
+        - _theme/css/style.css
+  - redirects:
+      redirect_maps:
+        'old.md': 'new.md'
+        'old/file.md': 'new/file.md'
+        'some_file.md': 'http://external.url.com/foobar'
   - include-markdown:
       encoding: ascii
       preserve_includer_indent: false

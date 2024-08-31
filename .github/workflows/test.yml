@@ -51,9 +51,10 @@ jobs:
         id: info
         shell: bash
         run: |
-          force_build="${{ contains(github.event.head_commit.message, 'ci:build') || contains(github.event.head_commit.message, 'ci:release')}}"
+          force_build="${{ contains(github.event.head_commit.message, 'ci:build') || contains(github.event.head_commit.message, 'ci:release') || contains(github.ref, 'refs/heads/release') }}
           force_scan="${{ contains(github.event.head_commit.message, 'ci:scan') }}"
           force_test="${{ contains(github.event.head_commit.message, 'ci:test') }}"
+          if: github.ref == 'refs/heads/master'
           
           if [[ $force_build == "true" ]]; then
             echo "::notice:: Forced build docker due to commit message"
