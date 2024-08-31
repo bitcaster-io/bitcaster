@@ -1,13 +1,17 @@
-{% extends "bitcaster/base.html" %}{% load static %}
+{% extends "bitcaster/base.html" %}{% load static feature_flags %}
 {% block body %}
+    {% flag_enabled 'LOCAL_LOGIN' as LOCAL_LOGIN %}
+    
     <div class="text-center">
         <img style="width: 200px;margin-bottom: 50px" src="{% static "bitcaster/images/logos/logo400.png" %}">
         <div class="login-form">
+            {%  if LOCAL_LOGIN %}
             <form method="post" action="." >
                 {% csrf_token %}
                 {{ form }}
                 <input class="primary" type="submit" value="Login">
             </form>
+            {% endif %}
             <div class="social-login">
                 {% for k,v in sso_providers %}
                     <form action="{% url "social:begin" k %}">

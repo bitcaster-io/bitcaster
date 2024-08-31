@@ -26,6 +26,9 @@
                 <li>
                     <a href="/api/">{% translate 'API' %}</a>
                 </li>
+                <li>
+                    <a href="https://bitcaster-io.github.io/bitcaster/">{% translate 'Documentation' %}</a>
+                </li>
                 {% if BETA_PREVIEW_LOCKING %}
                     {% if perms.bitcaster.can_lock_system %}
                         <li><a href="{% url "locking" %}">Locking</a></li>
