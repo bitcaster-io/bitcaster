@@ -7,6 +7,7 @@
                 {% csrf_token %}
                 {{ form }}
                 <input class="primary" type="submit" value="Login">
+                <a href=".." class="button secondary">Cancel</a>
             </form>
             <div class="social-login">
                 {% for k,v in sso_providers %}
