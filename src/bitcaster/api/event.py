@@ -43,7 +43,7 @@ class EventList(SecurityMixin, ListAPIView):
 
 class EventTrigger(SecurityMixin, GenericAPIView):
     """
-    Trigger event
+    Trigger application's event
     """
 
     serializer_class = EventSerializer

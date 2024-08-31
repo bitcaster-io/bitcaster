@@ -2,6 +2,8 @@ from typing import Any
 
 from django.db.models import QuerySet
 from django.http import HttpRequest
+from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
@@ -57,6 +59,18 @@ class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIVi
     def get_object(self) -> "User":
         return self.get_queryset().get(username=self.kwargs["username"])
 
+    @extend_schema(description=_("List Organization's users"))
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> Response:
+        return super().get(request, *args, **kwargs)
+
+    @extend_schema(description=_("Creat an Organization's user"))
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> Response:
+        return super().post(request, *args, **kwargs)
+
+    @extend_schema(
+        request=UserSerializer,
+        description=_("Update an Organization's user"),
+    )
     @action(detail=True, methods=["PUT"])
     def update(self, request: HttpRequest, **kwargs: Any) -> Response:
         status_code = status.HTTP_200_OK
@@ -68,17 +82,21 @@ class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIVi
             status_code = status.HTTP_400_BAD_REQUEST
         return Response(ser.data, status=status_code)
 
-    @action(detail=True, methods=["GET", "POST"], serializer_class=AddressSerializer)
-    def address(self, request: HttpRequest, **kwargs: Any) -> Response:
+    @extend_schema(request=AddressSerializer, responses=AddressSerializer, description=_("List User's addresses"))
+    @action(detail=False, methods=["GET"], serializer_class=AddressSerializer)
+    def list_address(self, request: HttpRequest, **kwargs: Any) -> Response:
+        user = self.get_object()
+        ser = AddressSerializer(many=True, instance=user.addresses.all())
+        return Response(ser.data)
+
+    @extend_schema(request=AddressSerializer, responses=AddressSerializer, description=_("Add an User's address"))
+    @action(detail=True, methods=["POST"], serializer_class=AddressSerializer)
+    def add_address(self, request: HttpRequest, **kwargs: Any) -> Response:
         user = self.get_object()
         status_code = status.HTTP_200_OK
-        if request.method == "GET":
-            ser = AddressSerializer(many=True, instance=user.addresses.all())
-            return Response(ser.data)
-        else:  # request.method == "POST":
-            ser = AddressSerializer(data=request.POST)
-            if ser.is_valid():
-                ser.save(user=user)
-            else:
-                status_code = status.HTTP_400_BAD_REQUEST
-            return Response(ser.data, status=status_code)
+        ser = AddressSerializer(data=request.POST)
+        if ser.is_valid():
+            ser.save(user=user)
+        else:
+            status_code = status.HTTP_400_BAD_REQUEST
+        return Response(ser.data, status=status_code)

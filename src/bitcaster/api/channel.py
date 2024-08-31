@@ -12,7 +12,7 @@ app_name = "api"
 
 class ChannelView(SecurityMixin, ViewSet, ListAPIView, RetrieveAPIView):
     """
-    List application events
+    List Organization channels.
     """
 
     serializer_class = ChannelSerializer

@@ -101,6 +101,7 @@ TEMPLATES = [
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
                 "bitcaster.social.context_processors.available_providers",
+                "bitcaster.web.context_processors.version",
             ],
         },
     },
