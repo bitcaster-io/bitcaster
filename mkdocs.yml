@@ -145,11 +145,11 @@ plugins:
         - _theme/js/address.js
       css_files:
         - _theme/css/style.css
-  - redirects:
-      redirect_maps:
-        'old.md': 'new.md'
-        'old/file.md': 'new/file.md'
-        'some_file.md': 'http://external.url.com/foobar'
+#  - redirects:
+#      redirect_maps:
+#        'old.md': 'new.md'
+#        'old/file.md': 'new/file.md'
+#        'some_file.md': 'http://external.url.com/foobar'
   - include-markdown:
       encoding: ascii
       preserve_includer_indent: false

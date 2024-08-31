@@ -1,8 +1,8 @@
 # Social Login
 
-Social Login can be configured at `[SERVER_ADDRESS]/admin/social/socialprovider/`
+Social Login can be configured at <https://SERVER_ADDRESS/admin/social/socialprovider/>
 
-1. Click om `Add Social Provider`
+1. Navigate to <https://SERVER_ADDRESS/admin/social/socialprovider/add/>
 2. Select one of the supported provider and add related configuration as
    per [Python Social Auth](https://python-social-auth.readthedocs.io/).
 3. Be sure `enabled` is checked before saving the form

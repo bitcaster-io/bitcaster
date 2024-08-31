@@ -1,8 +1,11 @@
 # Links
 
 
+### Public Resources
+
 - Official Web Site: <https://bitcaster.io/>{:target="_extra"}
 - Documentation: <https://bitcaster-io.github.io/bitcaster/>{:target="_extra"}
+- Slack Channel: <https://bitcaster-io.slack.com/>{:target="_extra"}
 
 
 ### Technical Resources

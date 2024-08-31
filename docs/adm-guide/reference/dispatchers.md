@@ -1,6 +1,6 @@
 # Dispatchers
 
-## Email
+## Email 
 ### SMTP
 
 Support Standard SMTP Email Servers
@@ -22,6 +22,7 @@ Use GMail server to send emails
 <https://sendgrid.com/en-us>
 
 ## Chat
+
 ### Slack
 
 <https://slack.com/>

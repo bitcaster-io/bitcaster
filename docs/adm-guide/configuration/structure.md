@@ -3,7 +3,7 @@ Before we can start triggering events in Bitcaster we need to create the initial
 
 
 
-Navigate to `[SERVER_ADDRESS]/admin/bitcaster/organization/`{: class='pippo' } to add your [Organization](organization).
+Navigate to <https://SERVER_ADDRESS/admin/bitcaster/organization/>{: class='pippo' } to add your [Organization](organization).
 
 !!! note
 
