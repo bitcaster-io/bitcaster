@@ -1,3 +1,7 @@
+TOKEN1='[SERVER_ADDRESS]'
+TOKEN2='https:\/\/SERVER_ADDRESS'
+var regEx = new RegExp(TOKEN2, "ig");
+
 const clickHandler = function () {
     let currentAddr = Cookies.get('address') || "https://127.0.0.1/";
     let addr = prompt("Set your bitcaster server address", currentAddr);
@@ -7,10 +11,14 @@ const clickHandler = function () {
 const setAddress = function () {
     let cookieAddr = Cookies.get('address');
     if (!cookieAddr) {
-        cookieAddr = "[SERVER_ADDRESS]"
+        cookieAddr = TOKEN
     }
     for (const cell of document.getElementsByTagName('code')) {
-        cell.innerHTML = cell.innerHTML.replace('[SERVER_ADDRESS]', cookieAddr);
+        cell.innerHTML = cell.innerHTML.replace(TOKEN1, cookieAddr);
+    }
+    for (const cell of document.getElementsByTagName('a')) {
+        cell.href = cell.href.replace(regEx, cookieAddr);
+        cell.innerHTML = cell.innerHTML.replace(regEx, cookieAddr);
     }
 };
 
