@@ -1,9 +1,0 @@
-/LICENSE.md                                              @bitcaster-io/Core
-
-## Migrations
-/src/bitcaster/migrations/                               @bitcaster-io/Core
-
-## Dev
-/.github/                                                @bitcaster-io/Core
-.pre-commit-config.yaml                                  @bitcaster-io/Core
-.github/labels.yml                                       @bitcaster-io/Core
