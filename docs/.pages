@@ -6,3 +6,5 @@ nav:
   - Glossary: glossary/
   - Examples: stacks
   - Links: links
+  - License: license
+  - Security: security

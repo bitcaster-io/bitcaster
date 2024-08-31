@@ -1,6 +1,6 @@
 
 Docker compose file to be use in development environment
-B
+
 !!! note "Mounted local sources to enable local development:"
     
     - src/

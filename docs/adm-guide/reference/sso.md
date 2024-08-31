@@ -1,6 +1,6 @@
 # Social Login
 
-Social Login can be configured at `/admin/social/socialprovider/`
+Social Login can be configured at `[SERVER_ADDRESS]/admin/social/socialprovider/`
 
 1. Click om `Add Social Provider`
 2. Select one of the supported provider and add related configuration as

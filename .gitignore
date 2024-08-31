@@ -4,6 +4,7 @@
 __pycache__/
 dist/
 *.py[cod]
+*.patch
 *.egg-info
 !.git
 !tests/.coveragerc
