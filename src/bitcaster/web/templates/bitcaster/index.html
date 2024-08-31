@@ -1,35 +1,32 @@
 {% extends "bitcaster/base.html" %}{% load static i18n feature_flags %}
 
 {% block body %}
-{% flag_enabled 'BETA_PREVIEW_LOCKING' as BETA_PREVIEW_LOCKING %}
+    {% flag_enabled 'BETA_PREVIEW_LOCKING' as BETA_PREVIEW_LOCKING %}
     <div class="text-center">
         <img style="width: 400px" src="{% static "bitcaster/images/logos/logo400.png" %}">
         <img style="width: 400px" src="{% static "bitcaster/images/logos/name.svg" %}">
         <div class="container module m-5 ">
             {% if user.is_authenticated %}
-                <form action="{% url "logout" %}" method="post">
+                {% if BETA_PREVIEW_LOCKING %}
+                    {% if perms.bitcaster.can_lock_system %}
+                        <a class="button primary" href="{% url "locking" %}">Locking</a>
+                    {% endif %}
+                {% endif %}
+                {% if user.is_staff %}
+                    <a class="button primary" href="{% url "admin:index" %}">Admin</a>
+                {% endif %}
+                <form method="post" action="{% url "logout" %}" id="logout-form">
                     {% csrf_token %}
-                    {% if BETA_PREVIEW_LOCKING %}
-                        {% if perms.bitcaster.can_lock_system %}
-                            <a class="button primary" href="{% url "locking" %}">Locking</a>
-                        {% endif %}
-                    {% endif %}
-                    {% if user.is_staff %}
-                        <a class="button primary" href="{% url "admin:index" %}">Admin</a>
-                    {% endif %}
-                    <form method="post" action="{% url "logout" %}" id="logout-form">
-                        {% csrf_token %}
-                        <input type="submit" class="submit primary" value="{% translate "Logout" %}">
-                    </form>
+                    <input type="submit" class="submit primary" value="{% translate "Logout" %}">
                 </form>
             {% else %}
-                <a class="button primary" href="https://bitcaster-io.github.io/bitcaster/">Documentation</a>
-                <a class="button primary" href="/api/">API</a>
-                <a class="button primary" href="{% url "login" %}">{% translate "Configure" %}</a>
+                <a class="button primary" href="{% url "login" %}">{% translate "Login" %}</a>
             {% endif %}
+            <a class="button primary" href="https://bitcaster-io.github.io/bitcaster/">Documentation</a>
+            <a class="button primary" href="/api/">API</a>
         </div>
     </div>
     <div>
-    
+
     </div>
 {% endblock %}
