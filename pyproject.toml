@@ -145,8 +145,9 @@ docs = [
     "pymdown-extensions>=10.7.1",
     "mkdocs-embed-external-markdown>=3.0.2",
     "mkdocs-include-markdown-plugin>=6.2.2",
+    "mkdocs-redirects>=1.2.1",
+    "mkdocs-minify-plugin>=0.8.0",
 ]
-mkdocs-redirects = []
 
 [tool.isort]
 profile = "black"
