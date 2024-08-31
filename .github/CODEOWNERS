@@ -4,6 +4,6 @@
 /src/bitcaster/migrations/                               @bitcaster-io/admins
 
 ## Dev
-/.github/                                                @getsentry/core
-.pre-commit-config.yaml                                  @getsentry/core
-.github/labels.yml                                       @getsentry/core
+/.github/                                                @bitcaster-io/core
+.pre-commit-config.yaml                                  @bitcaster-io/core
+.github/labels.yml                                       @bitcaster-io/core
