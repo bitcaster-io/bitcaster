@@ -8,7 +8,6 @@ from . import views, wizards
 
 urlpatterns = [
     path("", views.index, name="home"),
-    # path("lock/", wizards.LockingWizard.as_view(), name="locking"),
     flagged_path("BETA_PREVIEW_LOCKING", "lock/", wizards.LockingWizard.as_view(), name="locking", state=True),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),

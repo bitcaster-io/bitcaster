@@ -1,5 +1,11 @@
+from typing import Any
+
 from django.db.models import QuerySet
+from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from bitcaster.api.base import SecurityMixin
@@ -25,14 +31,6 @@ class ApplicationView(SecurityMixin, ViewSet, RetrieveAPIView, ListAPIView):
             project__slug=self.kwargs["prj"],
         )
 
-    # @action(detail=True, methods=["GET"], description="Events list", __doc__="aaaaaaa")
-    # def events(self, request: HttpRequest, **kwargs: Any) -> Response:
-    #     app: Application = self.get_object()
-    #     ser = EventSerializer(many=True, instance=app.events.all())
-    #     return Response(ser.data)
-
-    # @action(detail=True, methods=["GET"], description="Channel list")
-    # def projects(self, request: HttpRequest, **kwargs: Any) -> Response:
-    #     org: Organization = self.get_object()
-    #     ser = ProjectSerializer(many=True, instance=org.projects.filter())
-    #     return Response(ser.data)
+    @extend_schema(description=_("List Project applications"))
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().retrieve(request, *args, **kwargs)

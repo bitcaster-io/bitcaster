@@ -42,15 +42,3 @@ class OrgView(SecurityMixin, ViewSet, RetrieveAPIView):
 
     def get_queryset(self) -> QuerySet[Organization]:
         return Organization.objects.exclude(id=Bitcaster.app.organization.pk)
-
-    # @action(detail=True, methods=["GET"], description="Channel list")
-    # def channels(self, request: HttpRequest, **kwargs: Any) -> Response:
-    #     org: Organization = self.get_object()
-    #     ser = ChannelSerializer(many=True, instance=org.channel_set.filter(project__isnull=True))
-    #     return Response(ser.data)
-    #
-    # @action(detail=True, methods=["GET"], description="Channel list")
-    # def projects(self, request: HttpRequest, **kwargs: Any) -> Response:
-    #     org: Organization = self.get_object()
-    #     ser = ProjectSerializer(many=True, instance=org.projects.filter())
-    #     return Response(ser.data)

@@ -3,6 +3,8 @@ from typing import Any
 
 from django.db.models import QuerySet
 from django.http import HttpRequest
+from django.utils.translation import gettext as _
+from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
@@ -52,7 +54,7 @@ class DistributionListSerializer(serializers.ModelSerializer):
 
 class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIView[DistributionList]):
     """
-    Distribution list
+    List Project's DistributionList
     """
 
     serializer_class = DistributionListSerializer
@@ -72,6 +74,16 @@ class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, Retri
             project__organization__slug=self.kwargs["org"], project__slug=self.kwargs["prj"]
         )
 
+    @extend_schema(
+        description=_("Add recipient to a DistributionList"),
+        examples=[
+            OpenApiExample(
+                "Add users",
+                description="Add users to a DistributionList adding any of his addresses",
+                value=["user1@example.com", "user2@example.com"],
+            ),
+        ],
+    )
     @action(detail=True, methods=["POST"])
     def add_recipient(self, request: HttpRequest, **kwargs: Any) -> Response:
         dl: DistributionList = self.get_object()
@@ -102,15 +114,6 @@ class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView):
 
     serializer_class = DistributionMemberSerializer
     required_grants = [Grant.DISTRIBUTION_LIST]
-
-    # @property
-    # def project(self) -> "Project":
-    #     return Project.objects.select_related("organization").get(
-    #         organization__slug=self.kwargs["org"], slug=self.kwargs["prj"]
-    #     )
-    #
-    # def get_object(self) -> Assignment:
-    #     return self.get_queryset().get(pk=self.kwargs["pk"])
 
     def get_queryset(self) -> QuerySet[Assignment]:
         return Assignment.objects.filter(
