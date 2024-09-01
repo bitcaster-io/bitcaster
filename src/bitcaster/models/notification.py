@@ -13,18 +13,17 @@ from ..dispatchers.base import Payload
 from ..utils.shortcuts import render_string
 from .assignment import Assignment
 from .distribution import DistributionList
-from .mixins import BitcasterBaselManager, BitcasterBaseModel
+from .mixins import BaseQuerySet, BitcasterBaseModel
 
 if TYPE_CHECKING:
     from bitcaster.dispatchers.base import Dispatcher
     from bitcaster.models import Address, Application, Channel, Message
     from bitcaster.types.core import YamlPayload
 
-
 logger = logging.getLogger(__name__)
 
 
-class NotificationManager(BitcasterBaselManager["Notification"]):
+class NotificationQuerySet(BaseQuerySet["Notification"]):
     def match(self, payload: dict[str, Any], rules: "Optional[YamlPayload]" = None) -> list["Notification"]:
         for subscription in self.all():
             if subscription.match_filter(payload, rules=rules):
@@ -40,6 +39,19 @@ class NotificationManager(BitcasterBaselManager["Notification"]):
         )
 
 
+# class NotificationManager(BitcasterBaselManager["Notification"]):
+#     _queryset_class = NotificationQuerySet
+#
+#     def get_by_natural_key(self, name: str, evt: str, app: str, prj: str, org: str, *args: Any) -> "Notification":
+#         return self.get(
+#             event__application__project__organization__slug=org,
+#             event__application__project__slug=prj,
+#             event__application__slug=app,
+#             event__slug=evt,
+#             name=name,
+#         )
+
+
 class Notification(BitcasterBaseModel):
     name = models.CharField(max_length=100)
     event = models.ForeignKey("bitcaster.Event", on_delete=models.CASCADE, related_name="notifications")
@@ -52,9 +64,10 @@ class Notification(BitcasterBaseModel):
         models.CharField(max_length=20, blank=True, null=True),
         blank=True,
         null=True,
-        help_text=_("Environments available for project"),
+        help_text=_("Allow notification only for these environments"),
     )
-    objects = NotificationManager()
+    # objects = NotificationManager()
+    objects = NotificationQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Notification")

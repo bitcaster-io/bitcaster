@@ -31,7 +31,7 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
 
 class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin["ApiKey"]):
     search_fields = ("name",)
-    list_display = ("name", "user", "organization", "project", "application")
+    list_display = ("name", "user", "organization", "project", "application", "environments")
     list_filter = (
         ("organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("project", LinkedAutoCompleteFilter.factory(parent="organization")),

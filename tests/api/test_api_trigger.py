@@ -31,6 +31,8 @@ if TYPE_CHECKING:
             "event": Event,
             "key": ApiKey,
             "user": User,
+            "channel": Channel,
+            "notification": Notification,
             "url": str,
         },
     )
@@ -57,7 +59,7 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
     )
 
     event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
-    NotificationFactory(
+    n = NotificationFactory(
         distribution__recipients=[AssignmentFactory(channel=email_channel) for __ in range(4)], event=event
     )
     # event: "Event" = n.event
@@ -66,6 +68,8 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
         "event": event,
         "key": key,
         "user": admin_user,
+        "channel": email_channel,
+        "notification": n,
         "url": "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
             event.application.project.organization.slug,
             event.application.project.slug,
@@ -220,3 +224,83 @@ def test_trigger_limit_to_with_wrong_receiver(
     delivered = process_occurrence(o.pk)
     assert delivered == 0
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
+
+
+# Environment
+
+
+def test_trigger_invalid_options(
+    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+) -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.post(url, data={"context": {}, "options": {"missing": ["invalid"]}}, format="json")
+        assert res.status_code == status.HTTP_400_BAD_REQUEST, res.json()
+
+
+def test_trigger_selected_environment(
+    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+) -> None:
+    from testutils.factories import AssignmentFactory, NotificationFactory
+
+    from bitcaster.models import Occurrence
+
+    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
+    NotificationFactory(
+        environments=["develop"],
+        distribution__recipients=[AssignmentFactory(channel=data["channel"]) for __ in range(3)],
+        event=data["event"],
+    )
+    api_key = data["key"]
+    url: str = data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    # finally... valid token
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.post(url, data={"context": {}}, format="json")
+        o = Occurrence.objects.get(pk=res.data["occurrence"])
+        delivered = process_occurrence(o.pk)
+        assert delivered == 7
+
+        res = client.post(url, data={"context": {}, "options": {"environs": ["develop"]}}, format="json")
+        o = Occurrence.objects.get(pk=res.data["occurrence"])
+        delivered = process_occurrence(o.pk)
+        assert delivered == 3
+        # silent event because missing env
+        res = client.post(url, data={"context": {}, "options": {"environs": ["missing"]}}, format="json")
+        o = Occurrence.objects.get(pk=res.data["occurrence"])
+        delivered = process_occurrence(o.pk)
+        assert delivered == 0
+        assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
+
+
+def test_trigger_environment_by_key(
+    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+) -> None:
+    from testutils.factories import AssignmentFactory, NotificationFactory
+
+    from bitcaster.models import Occurrence
+
+    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
+    NotificationFactory(
+        environments=["develop"],
+        distribution__recipients=[AssignmentFactory(channel=data["channel"]) for __ in range(3)],
+        event=data["event"],
+    )
+    api_key = data["key"]
+    url: str = data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    # finally... valid token
+    with key_grants(api_key, Grant.EVENT_TRIGGER, environments=["develop"]):
+        res = client.post(url, data={"context": {}}, format="json")
+        o = Occurrence.objects.get(pk=res.data["occurrence"])
+        delivered = process_occurrence(o.pk)
+        assert delivered == 3
+
+        res = client.post(url, data={"context": {}, "options": {"environs": ["develop"]}}, format="json")
+        o = Occurrence.objects.get(pk=res.data["occurrence"])
+        delivered = process_occurrence(o.pk)
+        assert delivered == 3

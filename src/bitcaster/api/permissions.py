@@ -29,8 +29,6 @@ class ApiKeyAuthentication(authentication.TokenAuthentication):
 
 class ApiBasePermission(permissions.BasePermission):
     def _check_valid_scope(self, token: "ApiKey", view: "SecurityMixin") -> bool:
-
-        ret = True
         if "org" in view.kwargs and view.kwargs["org"] != token.organization.slug:
             raise InvalidGrantError(f"Invalid organization for {token}")
         if "prj" in view.kwargs:

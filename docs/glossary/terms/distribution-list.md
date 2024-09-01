@@ -4,7 +4,6 @@ template: term.html
 terms:
   - glossary:
       - Distribution List
-      - distributionlist
 ---
 # Distribution List
 

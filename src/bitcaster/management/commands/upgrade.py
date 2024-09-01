@@ -9,6 +9,7 @@ from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
 from django.core.validators import validate_email
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
+from flags.state import enable_flag
 from strategy_field.utils import fqn
 
 from bitcaster.config import env
@@ -131,7 +132,7 @@ class Command(BaseCommand):
             if self.run_check:
                 call_command("check", deploy=True, verbosity=self.verbosity - 1)
             if self.static:
-                static_root = Path(settings.STATIC_ROOT)
+                static_root = Path(str(settings.STATIC_ROOT))
                 echo(f"Run collectstatic to: '{static_root}' - '{static_root.absolute()}")
                 if not static_root.exists():
                     static_root.mkdir(parents=True)
@@ -157,6 +158,7 @@ class Command(BaseCommand):
                         style_func=self.style.WARNING,
                     )
                 else:
+                    enable_flag("LOCAL_LOGIN")
                     echo(f"Creating superuser: {self.admin_email}", style_func=self.style.WARNING)
                     validate_email(self.admin_email)
                     os.environ["DJANGO_SUPERUSER_USERNAME"] = self.admin_email

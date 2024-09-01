@@ -59,7 +59,12 @@ class ApiKey(Scoped3Mixin, BitcasterBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="keys")
     key = models.CharField(verbose_name=_("Token"), unique=True, default=make_token)
     grants = ChoiceArrayField(models.CharField(max_length=255, choices=Grant.choices), null=True, blank=True)
-
+    environments = ArrayField(
+        models.CharField(max_length=20, blank=True, null=True),
+        blank=True,
+        null=True,
+        help_text=_("Limit validity to these environments. If empty the key will be valid for any environment"),
+    )
     objects = ApiKeyManager()
 
     class Meta:

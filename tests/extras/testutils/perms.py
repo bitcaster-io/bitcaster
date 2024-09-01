@@ -1,6 +1,6 @@
 from contextlib import ContextDecorator
 from random import choice
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Iterable, Optional, Union
 from unittest.mock import Mock
 
 from django.contrib.auth.models import Permission
@@ -133,6 +133,7 @@ class key_grants(ContextDecorator):  # noqa
         organization: "Union[Null, None, Organization]" = keep_existing,
         project: "Union[Null, None, Project]" = keep_existing,
         application: "Union[Null, None, Application]" = keep_existing,
+        environments: "Union[Null, Iterable[str]]" = keep_existing,
     ):
         self.key = key
         if not isinstance(grants, (list, tuple)):
@@ -147,19 +148,21 @@ class key_grants(ContextDecorator):  # noqa
         if application and isinstance(application, Application):
             project = application.project
         if project and project != keep_existing:
-            organization = project.organization  # type: ignore[union-attr]
+            organization = project.organization
 
         self.state = {
             "grants": self.key.grants,
             "organization": self.key.organization,
             "project": self.key.project,
             "application": self.key.application,
+            "environments": self.key.environments,
         }
         self.new_state = {
             "grants": grants,
             "organization": key.organization if organization is keep_existing else organization,
             "project": key.project if project is keep_existing else project,
             "application": key.application if application is keep_existing else application,
+            "environments": key.environments if environments is keep_existing else environments,
         }
 
     def __enter__(self) -> "key_grants":
@@ -170,6 +173,7 @@ class key_grants(ContextDecorator):  # noqa
         self.key.organization = self.new_state["organization"]
         self.key.project = self.new_state["project"]
         self.key.application = self.new_state["application"]
+        self.key.environments = self.new_state["environments"]
 
         self.key.save()
         return self
@@ -179,6 +183,7 @@ class key_grants(ContextDecorator):  # noqa
         self.key.organization = self.state["organization"]
         self.key.project = self.state["project"]
         self.key.application = self.state["application"]
+        self.key.environments = self.state["environments"]
         self.key.save()
 
         if e_val:
