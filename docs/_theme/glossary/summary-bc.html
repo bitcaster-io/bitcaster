@@ -9,17 +9,17 @@
         {{ term }}
         {% endif %}
     </dt>
-    <dd>
-        <p>
-            11.def - {{ glossary.definition(section, term) | safe }}
-        </p>
-        <ul>
-            {% for entry in glossary.get(section, term, 'refs') %}
-                <li>
-                    22.ref - <a href="{{ root }}{{ entry.page.url }}#{{ entry.target }}">{{ entry.page.title }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </dd>
+{#    <dd>#}
+{#        <p>#}
+{#            11.def - {{ glossary.definition(section, term) | safe }}#}
+{#        </p>#}
+{#        <ul>#}
+{#            {% for entry in glossary.get(section, term, 'refs') %}#}
+{#                <li>#}
+{#                    22.ref - <a href="{{ root }}{{ entry.page.url }}#{{ entry.target }}">{{ entry.page.title }}</a>#}
+{#                </li>#}
+{#            {% endfor %}#}
+{#        </ul>#}
+{#    </dd>#}
     {% endfor %}
 </dl>

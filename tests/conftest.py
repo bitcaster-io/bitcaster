@@ -60,10 +60,14 @@ def pytest_configure(config):
     os.environ.setdefault("TEST_EMAIL_SENDER", "sender@example.com")
     os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
 
+    os.environ["BITCASTER_LOGGING_LEVEL"] = "CRITICAL"
+    os.environ["DJANGO_LOGGING_LEVEL"] = "CRITICAL"
     os.environ["CELERY_TASK_ALWAYS_EAGER"] = "True"
 
     os.environ["CSRF_COOKIE_SECURE"] = "False"
     os.environ["CSRF_TRUSTED_ORIGINS"] = "https://close-pro-impala.ngrok-free.app,http://localhost"
+
+    os.environ["LOGGING_LEVEL"] = "CRITICAL"
 
     os.environ["MAILGUN_API_KEY"] = "11"
     os.environ["MAILGUN_SENDER_DOMAIN"] = "mailgun.domain"
@@ -85,7 +89,6 @@ def pytest_configure(config):
     os.environ["GMAIL_PASSWORD"] = "11"
 
     os.environ["TWILIO_SID"] = "abc"
-    os.environ["SESSION_COOKIE_DOMAIN"] = ""
 
     if not config.option.with_sentry:
         os.environ["SENTRY_DSN"] = ""
@@ -209,9 +212,9 @@ def distributionlist(project: "Project"):
 
 @pytest.fixture()
 def event(application):
-    from testutils.factories.event import EventFactory
+    from testutils.factories import ChannelFactory, EventFactory
 
-    return EventFactory(application=application)
+    return EventFactory(application=application, channels=[ChannelFactory()])
 
 
 @pytest.fixture()
