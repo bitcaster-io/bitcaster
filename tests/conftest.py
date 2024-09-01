@@ -61,6 +61,7 @@ def pytest_configure(config):
     os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
 
     os.environ["BITCASTER_LOGGING_LEVEL"] = "CRITICAL"
+    os.environ["REDIS_LOGGING_LEVEL"] = "CRITICAL"
     os.environ["DJANGO_LOGGING_LEVEL"] = "CRITICAL"
     os.environ["CELERY_TASK_ALWAYS_EAGER"] = "True"
 

@@ -31,25 +31,6 @@ LOGGING = {
         "level": "ERROR",
     },
     "loggers": {
-        "djstripe": {
-            "handlers": [
-                "console",
-            ],
-            "level": "ERROR",
-            "propagate": False,
-        },
-        "stripe": {
-            "handlers": [
-                "console",
-            ],
-            "level": "ERROR",
-            "propagate": False,
-        },
-        "analytical": {
-            "handlers": ["console"],
-            "level": get_logging_level("analytical"),
-            "propagate": False,
-        },
         "environ": {
             "handlers": ["console"],
             "level": get_logging_level("environ"),
@@ -73,11 +54,6 @@ LOGGING = {
         "social_core": {
             "handlers": ["console"],
             "level": get_logging_level("social_core"),
-            "propagate": False,
-        },
-        "two_factor": {
-            "handlers": ["console"],
-            "level": get_logging_level("two_factor"),
             "propagate": False,
         },
         "redis": {
