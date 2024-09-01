@@ -1,8 +1,11 @@
 ---
 description:  ""
 template: term.html
+terms:
+  - glossary: 
+    - Project
 ---
-# Proiect
+# Project
 
 
 A collection of [Applications](application). 

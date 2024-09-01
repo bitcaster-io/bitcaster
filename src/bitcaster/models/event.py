@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Optional
 
 from django.db import models
+from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -42,6 +43,7 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
             "If not specified, system default will be used."
         ),
     )
+    notifications: "QuerySet[Notification]"
 
     objects = EventManager()
 

@@ -9,14 +9,26 @@ from rest_framework.response import Response
 
 from ..auth.constants import Grant
 from ..models import Event, Occurrence
+from ..models.occurrence import OccurrenceOptions
 from .base import SecurityMixin
 
 app_name = "api"
 
 
+class OptionSerializer(serializers.Serializer):
+    limit_to = serializers.ListField(child=serializers.CharField(), required=False)
+    environs = serializers.ListField(child=serializers.CharField(), required=False)
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        unknown = set(self.parent.initial_data["options"]) - set(self.fields)
+        if unknown:
+            raise serializers.ValidationError("Unknown field(s): {}".format(", ".join(unknown)))
+        return attrs
+
+
 class ActionSerializer(serializers.Serializer):
     context = serializers.DictField(required=False)
-    options = serializers.DictField(required=False)
+    options = OptionSerializer(required=False)
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -66,9 +78,16 @@ class EventTrigger(SecurityMixin, GenericAPIView):
             try:
                 evt: "Event" = self.get_queryset().get(slug=slug)
                 self.check_object_permissions(self.request, evt)
+                opts: OccurrenceOptions = ser.validated_data.get("options", {})
+                if request.auth.environments:
+                    if "environs" in opts:
+                        opts["environs"] = list(set(opts["environs"]).intersection(request.auth.environments))
+                    else:
+                        opts["environs"] = request.auth.environments
+
                 o: "Occurrence" = evt.trigger(
                     ser.validated_data.get("context", {}),
-                    options=ser.validated_data.get("options", {}),
+                    options=opts,
                     cid=correlation_id,
                 )
                 return Response({"occurrence": o.pk}, status=201)

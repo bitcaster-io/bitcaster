@@ -21,10 +21,10 @@ if TYPE_CHECKING:
 
     OccurrenceData = TypedDict("OccurrenceData", {"delivered": list[str | int], "recipients": list[tuple[str, str]]})
 
-    OccurrenceOptions = TypedDict("OccurrenceOptions", {"limit_to": NotRequired[list[str]]})
-
-
 logger = logging.getLogger(__name__)
+OccurrenceOptions = TypedDict(
+    "OccurrenceOptions", {"limit_to": NotRequired[list[str]], "environs": NotRequired[list[str]]}
+)
 
 
 class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
@@ -102,13 +102,20 @@ class Occurrence(BitcasterBaseModel):
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
         channels = self.event.channels.active()
-        extra_filter = {}
+        assignment_filter = {}
+        notification_filter = {}
         if limit := self.options.get("limit_to", []):
-            extra_filter = {"address__value__in": limit}
-        for notification in self.event.notifications.match(self.context):
+            assignment_filter = {"address__value__in": limit}
+
+        if environs := self.options.get("environs", []):
+            notification_filter["environments__overlap"] = environs
+
+        for notification in self.event.notifications.filter(**notification_filter).match(self.context):
             context = notification.get_context(self.get_context())
             for channel in channels:
-                for assignment in notification.get_pending_subscriptions(delivered, channel).filter(**extra_filter):
+                for assignment in notification.get_pending_subscriptions(delivered, channel).filter(
+                    **assignment_filter
+                ):
                     try:
                         notification.notify_to_channel(channel, assignment, context)
 

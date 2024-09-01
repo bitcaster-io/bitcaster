@@ -1,6 +1,15 @@
-import logging
+import os
 
-import cssutils
+from .. import env
+
+
+def get_logging_level(logger: str) -> str:
+    key = f"{logger.upper()}_LOGGING_LEVEL"
+    if key in os.environ:
+        return os.environ[key]
+    else:
+        return "CRITICAL"
+
 
 LOGGING = {
     "version": 1,
@@ -38,48 +47,48 @@ LOGGING = {
         },
         "analytical": {
             "handlers": ["console"],
-            "level": "CRITICAL",
+            "level": get_logging_level("analytical"),
             "propagate": False,
         },
         "environ": {
             "handlers": ["console"],
-            "level": "ERROR",
+            "level": get_logging_level("environ"),
             "propagate": False,
         },
         "django": {
             "handlers": ["console"],
-            "level": "INFO",
+            "level": get_logging_level("django"),
             "propagate": False,
         },
         "parso": {
             "handlers": ["null"],
-            "level": "WARNING",
+            "level": get_logging_level("parso"),
             "propagate": False,
         },
         "cssutils": {
             "handlers": ["console"],
-            "level": "ERROR",
+            "level": get_logging_level("cssutils"),
             "propagate": False,
         },
         "social_core": {
             "handlers": ["console"],
-            "level": "ERROR",
+            "level": get_logging_level("social_core"),
             "propagate": False,
         },
         "two_factor": {
             "handlers": ["console"],
-            "level": "ERROR",
+            "level": get_logging_level("two_factor"),
             "propagate": False,
         },
         "redis": {
             "handlers": ["console"],
-            "level": "ERROR",
+            "level": get_logging_level("redis"),
         },
         "bitcaster": {
             "handlers": ["console"],
-            "level": "ERROR",
+            "level": env("LOGGING_LEVEL"),
             "propagate": False,
         },
     },
 }
-cssutils.log.setLevel(logging.CRITICAL)
+# cssutils.log.setLevel(logging.CRITICAL)
