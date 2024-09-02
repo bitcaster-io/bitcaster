@@ -13,7 +13,7 @@ from ..dispatchers.base import Payload
 from ..utils.shortcuts import render_string
 from .assignment import Assignment
 from .distribution import DistributionList
-from .mixins import BaseQuerySet, BitcasterBaseModel
+from .mixins import BaseQuerySet, BitcasterBaselManager, BitcasterBaseModel
 
 if TYPE_CHECKING:
     from bitcaster.dispatchers.base import Dispatcher
@@ -39,17 +39,8 @@ class NotificationQuerySet(BaseQuerySet["Notification"]):
         )
 
 
-# class NotificationManager(BitcasterBaselManager["Notification"]):
-#     _queryset_class = NotificationQuerySet
-#
-#     def get_by_natural_key(self, name: str, evt: str, app: str, prj: str, org: str, *args: Any) -> "Notification":
-#         return self.get(
-#             event__application__project__organization__slug=org,
-#             event__application__project__slug=prj,
-#             event__application__slug=app,
-#             event__slug=evt,
-#             name=name,
-#         )
+class NotificationManager(BitcasterBaselManager.from_queryset(NotificationQuerySet)):
+    _queryset_class = NotificationQuerySet
 
 
 class Notification(BitcasterBaseModel):
@@ -66,8 +57,8 @@ class Notification(BitcasterBaseModel):
         null=True,
         help_text=_("Allow notification only for these environments"),
     )
-    # objects = NotificationManager()
-    objects = NotificationQuerySet.as_manager()
+    objects = NotificationManager()
+    # objects = NotificationQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Notification")
