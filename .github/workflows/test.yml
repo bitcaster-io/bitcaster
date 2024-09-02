@@ -1,11 +1,9 @@
 name: Test
 
 on:
-  create:
-    branches:
-      - releases/*
   push:
     branches:
+      - releases/*
       - develop
       - feature/*
       - bugfix/*
