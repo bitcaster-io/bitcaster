@@ -183,10 +183,10 @@ class ChannelWizard(CookieWizardView):
         s: SessionStorage = self.storage
         s.reset()
         s.current_step = self.steps.first
-        filled = []
+        configured_steps = []
         if "mode" in request.GET:
             s.set_step_data("mode", {"mode-operation": [request.GET.get("mode")]})
-            filled.append("mode")
+            configured_steps.append("mode")
 
         if "organization" in request.GET:
             if not request.user.organizations.filter(pk=request.GET["organization"]).exists():
@@ -194,7 +194,7 @@ class ChannelWizard(CookieWizardView):
             # s.current_step = "prj"
             # s.set_step_data("mode", {"mode-operation": ["new"]})
             s.set_step_data("org", {"org-organization": [request.GET.get("organization")]})
-            filled.append("org")
+            configured_steps.append("org")
         if "project" in request.GET:
             if not (
                 prj := Project.objects.filter(
@@ -204,12 +204,12 @@ class ChannelWizard(CookieWizardView):
                 raise PermissionDenied()
             s.set_step_data("org", {"org-organization": [prj.organization.pk]})
             s.set_step_data("prj", {"prj-project": [prj.pk]})
-            filled.append("org")
-            filled.append("prj")
+            configured_steps.append("org")
+            configured_steps.append("prj")
 
-        if filled:
-            for step, frm in self.__class__.form_list:
-                if frm.visible(self) and step not in filled:
+        if configured_steps:
+            for step, frm in self.__class__.form_list:  # pragma: no branch
+                if frm.visible(self) and step not in configured_steps:
                     s.current_step = step
                     break
         return self.render(self.get_form(s.current_step))
@@ -258,7 +258,7 @@ class ChannelWizard(CookieWizardView):
                 organization=data["parent"].organization,
                 project=data["project"],
             )
-        else:
+        else:  # pragma: no cover
             raise ValueError(self.get_selected_mode())
         return HttpResponseRedirect(reverse("admin:bitcaster_channel_changelist"))
 

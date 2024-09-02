@@ -61,7 +61,7 @@ class LockingWizard(CookieWizardView):
         kwargs.update(**ctx)
         return super().get_context_data(form, **kwargs)
 
-    def done(self, form_list: Any, form_dict: Any, **kwargs: Any) -> HttpResponse:
+    def done(self, form_list: Any, **kwargs: Any) -> HttpResponse:
         data = self.get_all_cleaned_data()
         ctx: dict[str, Any] = {}
         objects: QuerySet[Channel] | QuerySet[Application] | QuerySet[User] | User

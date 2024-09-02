@@ -143,6 +143,7 @@ jobs:
             -e DATABASE_URL=postgres://postgres:postgres@localhost:15432/bitcaster \
             -e CACHE_URL=redis://localhost:16379/0 \
             -e CELERY_BROKER_URL=redis://localhost:16379/0 \
+            -e DJANGO_SETTINGS_MODULE=\
             --network host \
             -v $PWD:/code/app \
             -w /code/app \

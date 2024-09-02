@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
+from pytest_django.fixtures import SettingsWrapper
 
 from bitcaster.forms.locking import LockingModeChoice
 from bitcaster.models import User
@@ -30,8 +31,10 @@ def context(django_app_factory: "MixinWithInstanceVariables", admin_user: "User"
     return {"user": user, "locked_user": locked_user, "admin_user": admin_user}
 
 
-def test_byuser(app: DjangoTestApp, context: "Context") -> None:
+def test_byuser(app: DjangoTestApp, context: "Context", settings: SettingsWrapper) -> None:
     from bitcaster.models import User
+
+    settings.FLAGS = {"BETA_PREVIEW_LOCKING": [("boolean", True)]}
 
     url = reverse("locking")
     res = app.get(url)

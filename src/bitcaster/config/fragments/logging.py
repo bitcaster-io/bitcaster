@@ -5,10 +5,7 @@ from .. import env
 
 def get_logging_level(logger: str) -> str:
     key = f"{logger.upper()}_LOGGING_LEVEL"
-    if key in os.environ:
-        return os.environ[key]
-    else:
-        return "CRITICAL"
+    return os.environ.get(key, "CRITICAL")
 
 
 LOGGING = {

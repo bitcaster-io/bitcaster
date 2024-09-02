@@ -3,12 +3,14 @@ from unittest.mock import MagicMock
 
 import pytest
 from django.test.client import RequestFactory
+from rest_framework import status
 from rest_framework.test import APIClient
 from testutils.factories.event import EventFactory
 from testutils.factories.key import ApiKeyFactory
 
 from bitcaster.api.event import EventList
 from bitcaster.api.permissions import ApiKeyAuthentication
+from bitcaster.auth.constants import Grant
 
 if TYPE_CHECKING:
     from bitcaster.models import ApiKey, Event, User
@@ -29,6 +31,11 @@ def client() -> APIClient:
 
 
 @pytest.fixture()
+def key() -> APIClient:
+    return ApiKeyFactory(application=None, project=None, grants=[Grant.FULL_ACCESS])
+
+
+@pytest.fixture()
 def context(admin_user: "User") -> "Context":
     event: "Event" = EventFactory()
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
@@ -44,3 +51,11 @@ def test_authenticate(rf: "RequestFactory", context: "Context") -> None:
 
     req2 = cast("ApiRequest", rf.get("/", headers={"AUTHORIZATION": "Key %s" % api_key.key}))
     assert b.authenticate(req2)
+
+
+def test_handle_permission_error(client: APIClient, key: "ApiKey") -> None:
+    url = f"/api/o/{key.organization.slug}/p/any-slug/"
+    client.credentials(HTTP_AUTHORIZATION=f"Key {key.key}")
+
+    res = client.get(url, data={})
+    assert res.status_code == status.HTTP_403_FORBIDDEN

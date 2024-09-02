@@ -3,6 +3,7 @@ nav:
   - Run: run.md
   - Configuration: configuration.md
   - Administration Guide: adm-guide
+  - Development Guide: dev-guide
   - Glossary: glossary/
   - Examples: stacks
   - Links: links

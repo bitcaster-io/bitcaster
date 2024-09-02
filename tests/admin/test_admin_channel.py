@@ -249,3 +249,11 @@ def test_add_channel_permission(app: DjangoTestApp, gmail_channel: "Channel") ->
 
     res = app.get(f"{url}?mode=template&project={gmail_channel.project.pk}", expect_errors=True)
     assert res.status_code == 403
+
+
+def test_add_channel_tampered_with(app: DjangoTestApp, gmail_channel: "Channel") -> None:
+    url = reverse("admin:bitcaster_channel_add")
+    res = app.get(url)
+    res.forms["channel-add"]["mode-operation"].force_value("missing")
+    res = res.forms["channel-add"].submit()
+    assert res.status_code == 200

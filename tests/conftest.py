@@ -4,11 +4,8 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, List
 
-import django
 import pytest
 import responses
-
-from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
     from bitcaster.models import Application, Occurrence, Project, User
@@ -108,6 +105,7 @@ def pytest_configure(config):
     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
     os.makedirs(settings.STATIC_ROOT, exist_ok=True)
 
+    import django
     from django.core.management import CommandError, call_command
 
     django.setup()
@@ -152,7 +150,6 @@ def mocked_responses():
 
 @pytest.fixture
 def user(db):
-
     from testutils.factories.user import UserFactory
 
     return UserFactory(username="user@example.com", is_active=True)
@@ -160,7 +157,6 @@ def user(db):
 
 @pytest.fixture
 def superuser(db):
-
     from testutils.factories.user import SuperUserFactory
 
     return SuperUserFactory(username="superuser@example.com")
@@ -170,12 +166,16 @@ def superuser(db):
 def os4d(db):
     from testutils.factories.org import OrganizationFactory
 
+    from bitcaster.constants import Bitcaster
+
     return OrganizationFactory(name=Bitcaster.ORGANIZATION, slug="os4d")
 
 
 @pytest.fixture()
 def bitcaster(os4d) -> "Application":
     from testutils.factories.org import ApplicationFactory
+
+    from bitcaster.constants import Bitcaster
 
     return ApplicationFactory(
         name=Bitcaster.APPLICATION, project__organization=os4d, project__name=Bitcaster.PROJECT, slug="bitcaster"
@@ -184,7 +184,6 @@ def bitcaster(os4d) -> "Application":
 
 @pytest.fixture()
 def organization(db):
-
     from testutils.factories.org import OrganizationFactory
 
     return OrganizationFactory()

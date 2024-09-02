@@ -109,7 +109,6 @@ def test_edit(app: "DjangoTestApp", message: "Message") -> None:
 def test_send_message(
     app: "DjangoTestApp", email_message: "Message", mailoutbox: list[Any], mocked_responses: "RequestsMock"
 ) -> None:
-
     opts: "Options[Message]" = email_message._meta
     url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])  # type: ignore[arg-type]
 
@@ -151,6 +150,32 @@ def test_send_message_fail(
         )
     assert res.status_code == 200
     assert res.json == {"error": "Failed to send message to test"}
+    assert len(mailoutbox) == 0
+
+
+def test_send_message_invalid(
+    app: "DjangoTestApp",
+    email_message: "Message",
+    mailoutbox: list[Any],
+    mocked_responses: "RequestsMock",
+    monkeypatch: "MonkeyPatch",
+) -> None:
+    opts: "Options[Message]" = email_message._meta
+    url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])  # type: ignore[arg-type]
+
+    with mock.patch("bitcaster.dispatchers.SystemDispatcher.send", return_value=False):
+        res = app.post(
+            url,
+            {
+                "recipient": "xx",
+                "subject": "",
+                "content": "",
+                "html_content": "",
+                "context": "--",
+            },
+        )
+    assert res.status_code == 200
+    assert res.json == {"error": {"context": ["Enter a valid JSON."]}}
     assert len(mailoutbox) == 0
 
 
