@@ -1,16 +1,46 @@
-{% extends "admin_extra_buttons/action_page.html" %}{% load static i18n %}
+{% extends "admin_extra_buttons/action_page.html" %}{% load static i18n usage %}
 {% block action-content %}
     <div class="module">
-        {{ original.channel.dispatcher }} - {{ original.channel.dispatcher.protocol }} - {{ original.channel.dispatcher.capabilities }}
+        <table>
+            <tr>
+                <th>Message</th>
+                <td>{{ original }} </td>
+            </tr>
+            <tr>
+                <th>Channel</th>
+                <td>{{ original.channel }} </td>
+            </tr>
+            <tr>
+                <th>Dispatcher</th>
+                <td>{{ original.channel.dispatcher }} </td>
+            </tr>
+            <tr>
+                <th>Protocol</th>
+                <td>{{ original.channel.protocol }} </td>
+            </tr>            
+            <tr>
+                <th>Capabilities</th>
+                <td>{% for s in original.channel.dispatcher.capabilities %}{{ s }}{% if not forloop.last %} ; {% endif %} {% endfor %}</td>
+            </tr>
+        </table>
     </div>
+
     <div class="module">
-        <h3>{{ level }}</h3>
         <table width="100%" id="usage">
+            <thead>
+            <tr>
+                <th>Used By</th>
+                <th>Type</th>
+                <th>Id</th>
+            </tr>
+            </thead>
             <tbody>
             {% for utilizer in usage %}
+                {% usage utilizer as info %}
                 <tr>
+                    <td><a href="{{ info.url }}">{{ utilizer }}</a></td>
+                    <th>{{ info.type }}</th>
                     <th>{{ utilizer.pk }}</th>
-                    <td><a href="">{{ utilizer }}</a></td>
                 </tr>
             {% endfor %}
             </tbody>

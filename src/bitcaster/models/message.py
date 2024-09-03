@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
+from ..dispatchers.base import Capability
 from .channel import Channel
 from .event import Event
 from .mixins import BitcasterBaselManager, BitcasterBaseModel, Scoped3Mixin
@@ -93,15 +94,16 @@ class Message(Scoped3Mixin, BitcasterBaseModel):
         if self.notification:
             self.event = self.notification.event
 
-    # def support_subject(self) -> bool:
-    #     return self.channel.dispatcher.protocol.has_capability(Capability.SUBJECT)
-    #
-    # def support_html(self) -> bool:
-    #     return self.channel.dispatcher.protocol.has_capability(Capability.HTML)
-    #
-    # def support_text(self) -> bool:
-    #     return self.channel.dispatcher.protocol.has_capability(Capability.TEXT)
+    def support_subject(self) -> bool:
+        return self.channel.dispatcher.protocol.has_capability(Capability.SUBJECT)
 
+    def support_html(self) -> bool:
+        return self.channel.dispatcher.protocol.has_capability(Capability.HTML)
+
+    def support_text(self) -> bool:
+        return self.channel.dispatcher.protocol.has_capability(Capability.TEXT)
+
+    #
     # def render(self, context: Dict[str, Any]) -> str:
     #     tpl = Template(self.content)
     #     return tpl.render(Context(context))

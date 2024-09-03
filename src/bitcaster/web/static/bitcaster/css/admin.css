@@ -32,6 +32,9 @@
 :root a.deletelink, html[data-theme=light] a.deletelink, html[data-theme=dark] a.deletelink {
   border: 1px solid bisque;
 }
+:root .select2-search--dropdown, html[data-theme=light] .select2-search--dropdown, html[data-theme=dark] .select2-search--dropdown {
+  padding: 0;
+}
 :root .select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected], html[data-theme=light] .select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected], html[data-theme=dark] .select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected] {
   background-color: var(--bg-secondary);
   color: #fff;
@@ -41,6 +44,7 @@
 }
 :root ul.object-tools li a.link, html[data-theme=light] ul.object-tools li a.link, html[data-theme=dark] ul.object-tools li a.link {
   background-color: #dfd953;
+  color: black;
 }
 :root ul.object-tools li a.lock, html[data-theme=light] ul.object-tools li a.lock, html[data-theme=dark] ul.object-tools li a.lock {
   background-color: #951515;
