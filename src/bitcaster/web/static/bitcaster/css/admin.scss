@@ -56,10 +56,16 @@
   a.deletelink {
     border: 1px solid bisque;
   }
-.select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected] {
+
+  .select2-search--dropdown {
+    padding: 0;
+  }
+
+  .select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected] {
     background-color: var(--bg-secondary);
     color: #fff;
-}
+  }
+
   ul.object-tools {
     li {
       a.action {
@@ -68,6 +74,7 @@
 
       a.link {
         background-color: #dfd953;
+        color: black;
       }
 
       a.lock {
@@ -81,7 +88,7 @@
 
         &.disabled {
           background-color: #808080;
-        color: #cccccc;
+          color: #cccccc;
         }
       }
     }
@@ -213,7 +220,8 @@ ul#quick-links {
       background-color: var(--button-bg);
       padding: 5px 15px;
       color: var(--button-fg);
-      &:hover{
+
+      &:hover {
         background-color: var(--button-hover-bg);
         color: var(--button-hover-fg);
       }

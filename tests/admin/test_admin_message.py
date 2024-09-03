@@ -32,11 +32,17 @@ def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTes
 
 
 @pytest.fixture()
-def messages(db: Any) -> None:
+def message(db: Any) -> "Message":
     from testutils.factories import MessageFactory, NotificationFactory
 
+    from bitcaster.dispatchers import EmailDispatcher
+
     n = NotificationFactory()
-    MessageFactory(notification=n)
+    m: Message = MessageFactory(notification=n, channel__dispatcher=fqn(EmailDispatcher))
+    assert m.support_html()
+    assert m.support_text()
+    assert m.support_subject()
+    return m
 
 
 @pytest.fixture()
@@ -82,6 +88,11 @@ def test_edit(app: "DjangoTestApp", message: "Message") -> None:
     assert new_subject_value not in str(res.content)  # Sanity check
     assert new_content_value not in str(res.content)  # Sanity check
     assert new_html_content_value not in str(res.content)  # Sanity check
+    # WebTest does not find buttons using res.click(linkid="btn_content") or res.clickbutton(buttonid="btn_content")
+    assert res.pyquery("#btn_subject")
+    assert res.pyquery("#btn_context")
+    assert res.pyquery("#btn_html")
+    assert res.pyquery("#btn_content")
 
     res = app.post(
         url,
