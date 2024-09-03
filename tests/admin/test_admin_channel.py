@@ -208,6 +208,22 @@ def test_add_new_channel_for_project(app: DjangoTestApp, gmail_channel: "Channel
     ).exists()
 
 
+def test_add_new_channel_abort(app: DjangoTestApp, gmail_channel: "Channel") -> None:
+    url = reverse("admin:bitcaster_channel_add")
+    res = app.get(url)
+    res.forms["channel-add"]["mode-operation"] = "new"
+    res = res.forms["channel-add"].submit()
+    res.forms["channel-add"]["org-organization"] = gmail_channel.organization.pk
+    res = res.forms["channel-add"].submit()
+    res.forms["channel-add"]["prj-project"] = gmail_channel.project.pk
+    res = res.forms["channel-add"].submit()
+    res.forms["channel-add"]["data-name"] = "Channel-1"
+    res = res.forms["channel-add"].submit("wizard_cancel")
+    assert res.status_code == 302
+    assert res.location == reverse("admin:bitcaster_channel_changelist")
+    assert not Channel.objects.filter(name="Channel-1").exists()
+
+
 def test_add_new_channel_for_project_with_defaults(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     url = reverse("admin:bitcaster_channel_add")
     res = app.get(f"{url}?mode=new&project={gmail_channel.project.pk}")

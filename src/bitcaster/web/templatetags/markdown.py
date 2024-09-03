@@ -2,6 +2,8 @@ import markdown
 from django import template
 from django.template.defaultfilters import stringfilter
 
+from bitcaster.utils.markdown import BitcasterDocSiteExtension
+
 register = template.Library()
 
 
@@ -11,9 +13,10 @@ def md(value: str) -> str:
     return markdown.markdown(
         value,
         extensions=[
+            BitcasterDocSiteExtension(),
             # "markdown.extensions.fenced_code",
-            "markdown.extensions.md_in_html",
-            "markdown.extensions.wikilinks",
-            "markdown.extensions.extra",
+            # "markdown.extensions.meta",
+            # "markdown.extensions.md_in_html",
+            # "markdown.extensions.extra",
         ],
     )

@@ -9,7 +9,7 @@ from django.forms import ModelChoiceField, ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import gettext as _
 
-from bitcaster.admin.base import BaseAdmin
+from bitcaster.admin.base import BaseAdmin, ButtonColor
 from bitcaster.forms.assignment import AssignmentForm
 from bitcaster.forms.widgets import AutocompletSelectEnh
 from bitcaster.models import Address, Assignment
@@ -56,7 +56,7 @@ class AssignmentAdmin(BaseAdmin, admin.ModelAdmin[Assignment]):
             form_field.queryset = form_field.queryset.filter(**filters)
         return form_field
 
-    @button()
+    @button(html_attrs={"class": ButtonColor.ACTION.value})
     def validate(self, request: HttpRequest, pk: str) -> "HttpResponse":
         v: Assignment = self.get_object_or_404(request, pk)
         if v.channel.dispatcher.need_subscription:

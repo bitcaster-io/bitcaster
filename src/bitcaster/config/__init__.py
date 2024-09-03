@@ -33,6 +33,11 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "ADMIN_PASSWORD": (str, "", "Password for initial user created at first deploy"),
     "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], setting("allowed-hosts")),
     "AUTHENTICATION_BACKENDS": (list, [], setting("authentication-backends")),
+    "BITCASTER_DOC_SITE": (
+        str,
+        "https://bitcaster-io.github.io/bitcaster",
+        "Bitcaster documentation site. (no trailing slash)",
+    ),
     "CACHE_URL": (
         str,
         "redis://localhost:6379/0",

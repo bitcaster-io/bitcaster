@@ -1,189 +1,129 @@
-:root {
-  --bg-primary: #c31919;
-  --breadcrumbs-bg: rgba(99, 92, 15, 0.53);
-  --bg-secondary: #951515;
-  --button-bg: rgba(207, 34, 34, 0.53);
-  --button-hover-bg: rgba(207, 193, 34, 0.53);
-  --default-button-bg: rgba(207, 34, 34, 0.33);
-  --default-button-hover-bg: rgba(207, 193, 34, 0.53);
-  --header-bg: #c31919;
-  --link-fg: black;
-  --object-tools-bg: #333333;
+* {
+  --primary: #e53734;
+  --secondary: #e53734;
+  --bg-primary: #e53734;
+  --bg-secondary: #ef5552;
+  --breadcrumbs-bg: #ef5552;
+  --button-bg: var(--bg-secondary);
+  --button-hover-bg: rgba(223, 207, 75, 0.63);
+  --default-button-bg: #980404FF;
+  --header-bg: #e53734;
+  --link-fg: #e53734;
+  --link-hover-color: rgba(223, 207, 75, 0.63);
+  --wizard-summary-bg-color: #f8f8f8;
+  --darkened-bg: rgba(161, 161, 161, 0.2);
 }
-:root #header .theme-toggle svg.theme-icon-when-auto, :root #header .theme-toggle svg.theme-icon-when-dark, :root #header .theme-toggle svg.theme-icon-when-light {
-  fill: var(--header-link-color);
-  color: var(--bg-primary);
+
+@media (prefers-color-scheme: light) {
+  :root, html[data-theme=light] {
+    --link-hover-color: #951515;
+    --button-fg: black;
+    --button-hover-fg: black;
+  }
 }
-:root #container div.submit-row button, :root #container div.submit-row input, :root #container div.submit-row a {
-  margin: 0;
-  padding: 10px 15px;
+@media (prefers-color-scheme: dark) {
+  :root, html[data-theme=dark] {
+    --md-hue: 225deg;
+    --body-bg: hsla(var(--md-hue), 15%, 14%, 1);
+    --link-hover-color: #951515;
+    --button-hover-fg: black;
+  }
 }
-:root #container div.submit-row a.cancel {
-  background-color: #96aa86;
+:root a.deletelink, html[data-theme=light] a.deletelink, html[data-theme=dark] a.deletelink {
+  border: 1px solid bisque;
 }
-:root #container div.submit-row button.button.cancel {
+:root .select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected], html[data-theme=light] .select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected], html[data-theme=dark] .select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected] {
+  background-color: var(--bg-secondary);
+  color: #fff;
+}
+:root ul.object-tools li a.action, html[data-theme=light] ul.object-tools li a.action, html[data-theme=dark] ul.object-tools li a.action {
   background-color: #3e8f3e;
 }
-:root #container div.breadcrumbs {
+:root ul.object-tools li a.link, html[data-theme=light] ul.object-tools li a.link, html[data-theme=dark] ul.object-tools li a.link {
+  background-color: #dfd953;
+}
+:root ul.object-tools li a.lock, html[data-theme=light] ul.object-tools li a.lock, html[data-theme=dark] ul.object-tools li a.lock {
   background-color: #951515;
-}
-:root #container div.breadcrumbs a, :root #container div.breadcrumbs a:link, :root #container div.breadcrumbs a:visited {
   color: white;
 }
-:root #container .select2-container--default .select2-selection--single .select2-selection__rendered {
-  color: white;
-  line-height: 28px;
+:root ul.object-tools li a.unlock, html[data-theme=light] ul.object-tools li a.unlock, html[data-theme=dark] ul.object-tools li a.unlock {
+  background-color: #86df53;
+  color: black;
 }
-:root a:link, :root a:visited {
-  color: white;
+:root ul.object-tools li a.unlock.disabled, html[data-theme=light] ul.object-tools li a.unlock.disabled, html[data-theme=dark] ul.object-tools li a.unlock.disabled {
+  background-color: #808080;
+  color: #cccccc;
 }
-:root a:link:hover, :root a:visited:hover {
-  color: grey;
+:root #channel-add input[type=radio], html[data-theme=light] #channel-add input[type=radio], html[data-theme=dark] #channel-add input[type=radio] {
+  height: 30px;
 }
-:root a.section {
-  color: white;
+:root .channel-wizard-help, html[data-theme=light] .channel-wizard-help, html[data-theme=dark] .channel-wizard-help {
+  display: inline-flex;
+  justify-content: space-between;
+  width: 100%;
+  border: 1px solid var(--secondary);
+  margin-top: 20px;
+  padding: 7px;
+  min-height: 100px;
 }
-:root a.section:hover {
-  color: yellow;
+:root .wizard-summary, html[data-theme=light] .wizard-summary, html[data-theme=dark] .wizard-summary {
+  width: 400px;
+  background-color: var(--wizard-summary-bg-color);
+  color: black;
 }
-:root ul#quick-links {
+:root .wizard-summary tr, html[data-theme=light] .wizard-summary tr, html[data-theme=dark] .wizard-summary tr {
+  padding: 0;
+  margin: 0;
+  border-bottom: 0;
+}
+:root .wizard-summary th, html[data-theme=light] .wizard-summary th, html[data-theme=dark] .wizard-summary th {
+  width: 10%;
+  background-color: var(--wizard-summary-bg-color);
+  border-bottom: 0;
+}
+:root .wizard-summary td, html[data-theme=light] .wizard-summary td, html[data-theme=dark] .wizard-summary td {
+  width: 90%;
+  background-color: var(--wizard-summary-bg-color);
+  border-bottom: 0;
+}
+
+.w-400 {
+  width: 400px;
+}
+
+#container div.wizard-submit-row {
+  display: flex;
+}
+#container div.wizard-submit-row button {
+  padding: 10px 15px;
+  color: black;
+}
+#container div.wizard-submit-row button.cancel {
+  float: right;
+  margin-left: auto;
+}
+
+ul#quick-links {
   margin-left: 0;
   padding: 10px;
   width: 80%;
   line-height: 20px;
 }
-:root ul#quick-links li {
+ul#quick-links li {
   width: 100%;
   list-style: none;
   margin-bottom: 5px;
 }
-:root ul#quick-links li a {
+ul#quick-links li a {
   display: block;
   width: 100%;
-  background-color: var(--object-tools-bg);
+  background-color: var(--button-bg);
   padding: 5px 15px;
+  color: var(--button-fg);
 }
-
-html[data-theme=light] {
-  --bg-primary: #c31919;
-  --bg-secondary: #951515;
-  --breadcrumbs-bg: #951515;
-  --button-bg: var(--bg-secondary);
-  --button-hover-bg: rgba(223, 207, 75, 0.63);
-  --default-button-bg: var(--bg-primary);
-  --default-button-hover-bg: rgba(223, 207, 75, 0.63);
-  --header-bg: #c31919;
-  --fg-primary: white;
-  --jse-theme-color: var(--bg-primary);
-}
-html[data-theme=light] #header #branding #site-name a, html[data-theme=light] #header #branding #site-name a:link, html[data-theme=light] #header #branding #site-name a:visited {
-  color: yellow;
-}
-html[data-theme=light] #container .select2-container--default .select2-selection--single .select2-selection__rendered {
-  color: black;
-  line-height: 28px;
-}
-html[data-theme=light] div.breadcrumbs {
-  background-color: var(--breadcrumbs-bg);
-}
-html[data-theme=light] div.breadcrumbs a, html[data-theme=light] div.breadcrumbs a:link, html[data-theme=light] div.breadcrumbs a:visited {
-  color: white;
-}
-html[data-theme=light] a:link, html[data-theme=light] a:visited {
-  color: black;
-}
-html[data-theme=light] a:link:hover, html[data-theme=light] a:visited:hover {
-  color: grey;
-}
-html[data-theme=light] a.section {
-  color: white;
-}
-html[data-theme=light] a.section:hover {
-  color: yellow;
-}
-html[data-theme=light] #header, html[data-theme=light] #changelist-filter h2 {
-  background-color: var(--bg-primary);
-}
-html[data-theme=light] #content-main .object-tools a.addlink {
-  color: white;
-}
-html[data-theme=light] #content-main .module h2, html[data-theme=light] #content-main .module caption {
-  background-color: var(--bg-secondary);
-}
-
-html[data-theme=dark] {
-  --bg-primary: #c31919;
-  --bg-secondary: #951515;
-  --breadcrumbs-bg: #951515;
-  --body-bg: #121212;
-  --button-bg: var(--bg-secondary);
-  --button-hover-bg: rgba(223, 207, 75, 0.63);
-  --border-color: #353535;
-  --default-button-bg: var(--bg-primary);
-  --default-button-hover-bg: rgba(223, 207, 75, 0.63);
-  --header-bg: #c31919;
-  --fg-primary: white;
-  --jse-theme-color: var(--bg-primary);
-}
-html[data-theme=dark] #header #branding #site-name a, html[data-theme=dark] #header #branding #site-name a:link, html[data-theme=dark] #header #branding #site-name a:visited {
-  color: yellow;
-}
-html[data-theme=dark] .help_text a, html[data-theme=dark] .help_text a:visited, html[data-theme=dark] .help_text a:link {
-  color: #ff5900;
-}
-html[data-theme=dark] span.select2-container {
-  width: 400px !important;
-  background-color: var(--body-bg);
-}
-html[data-theme=dark] span.select2-container ul {
-  height: 32px;
-}
-html[data-theme=dark] span.select2-container ul li.select2-selection__choice {
-  color: black;
-}
-html[data-theme=dark] span.select2-container .select2-dropdown {
-  background-color: var(--body-bg);
-}
-html[data-theme=dark] span.select2-container.select2-container--default {
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-}
-html[data-theme=dark] span.select2-container.select2-container--default.select2-container--default .select2-selection--single {
-  background-color: var(--body-bg);
-}
-html[data-theme=dark] span.select2-container.select2-container--default.select2-container--default .select2-selection__rendered {
-  color: var(--body-bg);
-}
-html[data-theme=dark] div.breadcrumbs {
-  background-color: var(--breadcrumbs-bg);
-}
-html[data-theme=dark] div.breadcrumbs a, html[data-theme=dark] div.breadcrumbs a:link, html[data-theme=dark] div.breadcrumbs a:visited {
-  color: white;
-}
-html[data-theme=dark] a:link, html[data-theme=dark] a:visited {
-  color: white;
-}
-html[data-theme=dark] a:link:hover, html[data-theme=dark] a:visited:hover {
-  color: grey;
-}
-html[data-theme=dark] a.section {
-  color: white;
-}
-html[data-theme=dark] a.section:hover {
-  color: yellow;
-}
-html[data-theme=dark] #header, html[data-theme=dark] #changelist-filter h2 {
-  background-color: var(--bg-primary);
-}
-html[data-theme=dark] #content-main .object-tools a.addlink {
-  color: white;
-}
-html[data-theme=dark] #content-main .module h2, html[data-theme=dark] #content-main .module caption {
-  background-color: var(--bg-secondary);
-}
-html[data-theme=dark] .theme-toggle svg.theme-icon-when-auto, html[data-theme=dark] .theme-toggle svg.theme-icon-when-dark, html[data-theme=dark] .theme-toggle svg.theme-icon-when-light {
-  fill: var(--header-link-color);
-  color: var(--header-bg);
+ul#quick-links li a:hover {
+  background-color: var(--button-hover-bg);
+  color: var(--button-hover-fg);
 }
 
 /*# sourceMappingURL=admin.css.map */

@@ -145,9 +145,9 @@ plugins:
         - _theme/js/address.js
       css_files:
         - _theme/css/style.css
-#  - redirects:
-#      redirect_maps:
-#        'old.md': 'new.md'
+  - redirects:
+      redirect_maps:
+        'help/channel.md': 'glossary/terms/channel.md'
 #        'old/file.md': 'new/file.md'
 #        'some_file.md': 'http://external.url.com/foobar'
   - include-markdown:

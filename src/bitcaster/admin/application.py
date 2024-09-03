@@ -65,14 +65,14 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
         initial.setdefault("from_email", request.user.email)
         return initial
 
-    @button()
+    @button(html_attrs={"class": ButtonColor.LINK.value})
     def events(self, request: HttpRequest, pk: str) -> "HttpResponse":
         ctx = self.get_common_context(request, pk, title=_("Events"))
         return TemplateResponse(request, "admin/application/events.html", ctx)
 
     @button(
         visible=lambda s: s.context["original"].project.organization.name != Bitcaster.ORGANIZATION,
-        html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"},
+        html_attrs={"class": ButtonColor.ACTION.value},
     )
     def add_event(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Event

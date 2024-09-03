@@ -11,7 +11,7 @@ const clickHandler = function () {
 const setAddress = function () {
     let cookieAddr = Cookies.get('address');
     if (!cookieAddr) {
-        cookieAddr = TOKEN
+        cookieAddr = TOKEN1;
     }
     for (const cell of document.getElementsByTagName('code')) {
         cell.innerHTML = cell.innerHTML.replace(TOKEN1, cookieAddr);

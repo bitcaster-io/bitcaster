@@ -41,11 +41,11 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
 
         return super().changeform_view(request, object_id, form_url, extra_context)
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"})
+    @button(html_attrs={"class": ButtonColor.LINK.value})
     def channels(self, request: HttpRequest, pk: str) -> HttpResponse:
         return HttpResponseRedirect(url_related(Channel, organization__exact=pk))
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"})
+    @button(html_attrs={"class": ButtonColor.LINK.value})
     def create_project(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Project
 
@@ -53,7 +53,7 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
         state.add_cookie("wizard_channel_wizard", {"step": "prj", "step_data": {"mode": "new"}})
         return HttpResponseRedirect(url_related(Project, op="add", organization=pk))
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"})
+    @button(html_attrs={"class": ButtonColor.LINK.value})
     def create_channel(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Channel
 
@@ -69,7 +69,7 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
             )
         )
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION.value}"})
+    @button(html_attrs={"class": ButtonColor.ACTION.value})
     def templates(self, request: HttpRequest, pk: str) -> HttpResponse:
         status_code = 200
         ctx = self.get_common_context(request, pk, title="Edit/Create Template")

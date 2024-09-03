@@ -40,7 +40,7 @@ class ChannelTestForm(forms.Form):
 class ChannelOrg(forms.Form):
     help_text = _(
         """
-    Select the organization that this channel belongs to.
+Select the organization that this channel belongs to.
     """
     )
     organization = forms.ModelChoiceField(queryset=Organization.objects.all())
@@ -55,10 +55,10 @@ class ChannelOrg(forms.Form):
 class ChannelProject(forms.Form):
     help_text = _(
         """
-    Choose the specific project that this channel belongs to, or select `All` to create a Channel Template.
+Choose the specific project that this channel belongs to.
     """
     )
-    project = forms.ModelChoiceField(empty_label=_("All"), required=False, queryset=Project.objects.all())
+    project = forms.ModelChoiceField(required=True, queryset=Project.objects.all())
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
@@ -73,7 +73,7 @@ class ChannelType(forms.Form):
     MODE_TEMPLATE = "template"
     help_text = _(
         """
-    Enable existing upper level channel or create a new one.
+Select the type of channel you want to create. see [[doc:help/channel:Channel]]
     """
     )
     operation = forms.ChoiceField(
@@ -118,6 +118,7 @@ class ChannelSelectParent(forms.ModelForm[Channel]):
 class ChannelData(forms.ModelForm[Channel]):
     help_text = _(
         """
+Provide a name for this channel and the Dispatcher to use. You will be asked for specific information after this step.
     """
     )
 
@@ -216,12 +217,15 @@ class ChannelWizard(CookieWizardView):
 
     def post(self, *args: Any, **kwargs: Any) -> HttpResponse:
         self.extra_context = kwargs.pop("extra_context")
+        wizard_cancel = self.request.POST.get("wizard_cancel", -1)
+        if wizard_cancel != -1:
+            return HttpResponseRedirect(wizard_cancel or reverse("admin:bitcaster_channel_changelist"))
         return super().post(*args, **kwargs)
 
     def get_context_data(self, form: forms.Form, **kwargs: Any) -> dict[str, Any]:
         kwargs.update(**self.extra_context)
         kwargs["data"] = self.storage.data
-        kwargs["back_url"] = self.request.GET.get("_from", ".")
+        kwargs["back_url"] = self.request.GET.get("_from", "")
         kwargs["cleaned_data"] = {
             form_key: self.get_cleaned_data_for_step(form_key)
             for form_key in self.get_form_list()
@@ -234,7 +238,7 @@ class ChannelWizard(CookieWizardView):
     def done(self, form_list: list[forms.Form], **kwargs: Any) -> HttpResponse:
         data = self.get_all_cleaned_data()
         if self.get_selected_mode() == ChannelType.MODE_TEMPLATE:
-            Channel.objects.create(
+            ch = Channel.objects.create(
                 name=data["name"],
                 dispatcher=data["dispatcher"],
                 organization=data["organization"],
@@ -242,7 +246,7 @@ class ChannelWizard(CookieWizardView):
                 project=None,
             )
         elif self.get_selected_mode() == ChannelType.MODE_NEW:
-            Channel.objects.create(
+            ch = Channel.objects.create(
                 name=data["name"],
                 dispatcher=data["dispatcher"],
                 organization=data["organization"],
@@ -250,7 +254,7 @@ class ChannelWizard(CookieWizardView):
                 project=data["project"],
             )
         elif self.get_selected_mode() == ChannelType.MODE_INHERIT:
-            Channel.objects.create(
+            ch = Channel.objects.create(
                 name=data["name"],
                 parent=data["parent"],
                 dispatcher=data["parent"].dispatcher,
@@ -260,7 +264,7 @@ class ChannelWizard(CookieWizardView):
             )
         else:  # pragma: no cover
             raise ValueError(self.get_selected_mode())
-        return HttpResponseRedirect(reverse("admin:bitcaster_channel_changelist"))
+        return HttpResponseRedirect(reverse("admin:bitcaster_channel_configure", args=[ch.id]))
 
 
 wizard = ChannelWizard.as_view()
@@ -321,9 +325,9 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
     def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[AnyModel]" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk == config.SYSTEM_EMAIL_CHANNEL:
             return ["name", "organization", "project", "parent", "protocol", "locked"]
-        return ["parent", "organization", "protocol", "locked"]
+        return ["parent", "organization", "protocol", "locked", "project"]
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION.value}"})
+    @button(html_attrs={"class": ButtonColor.ACTION.value})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object_or_404(request, pk)
         context = self.get_common_context(request, pk, title=_("Configure channel"))
