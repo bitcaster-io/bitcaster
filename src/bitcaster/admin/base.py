@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 class ButtonColor(enum.Enum):
-    LINK = "#96AA86"
-    ACTION = "#2B44D6"
-    LOCK = "#ba2121"
-    UNLOCK = "green"
+    LINK = "link"
+    ACTION = "action"
+    LOCK = "lock"
+    UNLOCK = "unlock"
 
 
 class BaseAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin):

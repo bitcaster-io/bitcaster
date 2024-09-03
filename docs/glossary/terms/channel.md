@@ -1,6 +1,9 @@
 ---
 description:  Is the target system that will forward the Message to the Recipient
 template: term.html
+terms:
+    - glossary:
+      - channel
 ---
 # Channel
 

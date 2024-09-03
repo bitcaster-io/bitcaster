@@ -34,7 +34,7 @@ class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
         return False
 
     @button(
-        html_attrs={"style": f"background-color:{ButtonColor.ACTION.value}"},
+        html_attrs={"class": ButtonColor.ACTION.value},
         visible=lambda btn: btn.original.status == btn.original.Status.NEW,
     )
     def process(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
@@ -42,7 +42,7 @@ class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
         obj.process()
 
     @button(
-        html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
+        html_attrs={"class": ButtonColor.ACTION.value},
         permission="bitcaster.delete_occurrence",
     )
     def purge(self, request: HttpRequest) -> HttpResponse:  # noqa

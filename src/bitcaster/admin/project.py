@@ -49,7 +49,7 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
         return super().changeform_view(request, object_id, form_url, extra_context)
 
     @button(
-        html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"},
+        html_attrs={"class": ButtonColor.ACTION.value},
         visible=lambda s: s.context["original"].name != Bitcaster.PROJECT,
     )
     def add_application(self, request: HttpRequest, pk: str) -> HttpResponse:
@@ -58,7 +58,7 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
         return HttpResponseRedirect(url_related(Application, op="add", project=pk))
 
     @button(
-        html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"},
+        html_attrs={"class": ButtonColor.ACTION.value},
         visible=lambda s: s.context["original"].name != Bitcaster.PROJECT,
     )
     def add_channel(self, request: HttpRequest, pk: str) -> HttpResponse:

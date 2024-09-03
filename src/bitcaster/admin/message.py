@@ -139,7 +139,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
 
         return JsonResponse(ret)
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION.value}"})
+    @button(html_attrs={"class": ButtonColor.ACTION.value})
     def edit(self, request: HttpRequest, pk: str) -> "HttpResponse":
         context = self.get_common_context(request, pk)
         obj = context["original"]
@@ -172,7 +172,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
         context["form"] = form
         return TemplateResponse(request, "admin/message/edit.html", context)
 
-    @button(html_attrs={"style": f"background-color:{ButtonColor.LINK.value}"})
+    @button(html_attrs={"class": ButtonColor.LINK.value})
     def usage(self, request: HttpRequest, pk: str) -> "HttpResponse":
         context = self.get_common_context(request, pk, title=_("Usage"))
         msg: "Message" = context["original"]
