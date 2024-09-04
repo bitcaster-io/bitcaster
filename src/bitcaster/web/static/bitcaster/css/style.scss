@@ -1,28 +1,37 @@
-:root {
-  --bg-primary: #980404;
-  --bg-secondary: #1616aa;
-  --fg-primary: black;
-  --jse-theme-color: var(--bg-primary);
+@import "colors";
+
+.footer {
+  color: var(--fg-primary);
 }
-div.center{
+
+div.center {
   margin: auto;
 }
+
 div.login-form {
   padding: 5px;
   width: 400px;
   margin: auto;
-  //margin-right: auto;
-  label{
-    display: inline-flex;
-    width: 220px;
-    margin-top: 10px;
+  form {
+    label {
+      display: inline-flex;
+      color: var(--fg-primary);
+      width: 220px;
+      margin-top: 10px;
+    }
+
+    input[type=text], input[type=password] {
+      margin: auto;
+      width: 200px;
+      padding: 12px !important;
+      display: block;
+    }
+    .container {
+      padding-top: 20px;
+    }
   }
-  input[type=text], input[type=password] {
-    margin:auto;
-    width: 200px;
-    padding: 12px !important;
-    display: block;
-  }
+
+
 }
 
 .social-login {
@@ -34,7 +43,7 @@ div.login-form {
 
   form {
     input {
-      background-color: #217dc5;
+      background-color: var(--button-bg);
       font-weight: bold;
       width: 200px;
     }

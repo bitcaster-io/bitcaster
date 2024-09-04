@@ -39,6 +39,7 @@ if TYPE_CHECKING:
 
 pytestmark = [pytest.mark.api, pytest.mark.django_db]
 
+
 # WE DO NOT USE REVERSE HERE. WE NEED TO CHECK ENDPOINTS CONTRACTS
 
 
@@ -194,6 +195,36 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
     assert delivered == 1
     o.refresh_from_db()
     assert o.data == {"delivered": [target.pk], "recipients": [[target.address.value, target.channel.name]]}
+
+
+def test_trigger_limit_by_channel(client: APIClient, data: "Context", monkeypatch: "MonkeyPatch") -> None:
+    from bitcaster.models import Occurrence
+
+    api_key = data["key"]
+    event = data["event"]
+    url: str = data["url"]
+    n: "Notification" = event.notifications.first()
+    recipients: list[Assignment] = list(n.distribution.recipients.all())
+    target: Assignment = recipients[0]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.post(
+            url,
+            data={
+                "context": {"key": "value"},
+                "options": {"channels": [target.channel.id]},
+            },
+            format="json",
+        )
+        assert res.status_code == status.HTTP_201_CREATED, res.json()
+        assert res.data["occurrence"]
+        o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
+
+    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
+    assert o.options == {"channels": [str(target.channel.id)]}
+    process_occurrence(o.pk)
+    o.refresh_from_db()
+    assert list(set([x[1] for x in o.data["recipients"]]))[0] == target.channel.name
 
 
 def test_trigger_limit_to_with_wrong_receiver(

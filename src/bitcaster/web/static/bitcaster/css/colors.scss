@@ -1,0 +1,72 @@
+@mixin ccc {
+  --primary: #e53734;
+  --secondary: rgba(168, 0, 0, 0.82);
+  --light: #ef5552;
+  --white: rgba(248, 248, 248, 0.93);
+  --black: rgba(32, 33, 36, 0.82);
+
+  --bg-primary: var(--primary);
+  --bg-secondary: var(--secondary);
+
+  --button-bg: var(--bg-secondary);
+  --button-fg: var(--white);
+  --button-hover-bg: var(--light);
+  --button-hover-fg: var(--white);
+
+  --default-button-bg: rgba(200, 0, 0, 1);
+  --default-button-hover-bg: var(--light);
+
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+
+  --link-fg: var(--secondary);
+  --link-hover-color: var(--primary);
+
+  --frame-bg-color: lightgray;
+  --frame-fg-color: var(--black);
+}
+
+@mixin light {
+  --body-bg: var(--white);
+  --body-fg: #333;
+  --link-fg: var(--secondary);
+  --link-hover-color: var(--primary);
+
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+}
+
+@mixin dark {
+  --body-bg: var(--black);
+  --body-fg: #eeeeee;
+  --fg-primary: var(--white);
+  --link-fg: var(--primary);
+  --link-hover-color: var(--secondary);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    @include ccc;
+    @include light;
+    color-scheme: light;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    @include ccc;
+    @include dark;
+    color-scheme: dark;
+  }
+}
+
+html[data-theme="dark"] {
+  @include ccc;
+  @include dark;
+}
+
+html[data-theme="light"] {
+  @include ccc;
+  @include light;
+}

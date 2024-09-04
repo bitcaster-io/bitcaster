@@ -17,6 +17,7 @@ app_name = "api"
 
 class OptionSerializer(serializers.Serializer):
     limit_to = serializers.ListField(child=serializers.CharField(), required=False)
+    channels = serializers.ListField(child=serializers.CharField(), required=False)
     environs = serializers.ListField(child=serializers.CharField(), required=False)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
@@ -86,7 +87,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                         opts["environs"] = request.auth.environments
 
                 o: "Occurrence" = evt.trigger(
-                    ser.validated_data.get("context", {}),
+                    context=ser.validated_data.get("context", {}),
                     options=opts,
                     cid=correlation_id,
                 )

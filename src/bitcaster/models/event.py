@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from django.db import models
 from django.db.models import QuerySet
-from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -63,8 +62,8 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
 
     def trigger(
         self,
-        context: dict[str, Any],
         *,
+        context: dict[str, Any],
         options: "Optional[OccurrenceOptions]" = None,
         cid: Optional[Any] = None,
         parent: "Optional[Occurrence]" = None,
@@ -96,7 +95,7 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
             name=name, event=self, defaults=defaults if defaults else {}, distribution=distribution
         )[0]
 
-    def get_trigger_url(self, request: "HttpRequest") -> str:
+    def get_trigger_url(self) -> str:
         url = reverse(
             "api:event-trigger",
             args=[
@@ -106,4 +105,4 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
                 self.slug,
             ],
         )
-        return request.build_absolute_uri(url)
+        return url

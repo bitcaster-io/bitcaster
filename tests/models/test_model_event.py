@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 def test_event_trigger(event: "Event") -> None:
-    assert event.trigger({})
+    assert event.trigger(context={})
 
 
 @pytest.mark.parametrize(
@@ -20,8 +20,12 @@ def test_event_trigger(event: "Event") -> None:
     ],
 )
 def test_trigger_correlation_id(event: "Event", cid: str) -> None:
-    o: "Occurrence" = event.trigger({}, options={}, cid=cid)
+    o: "Occurrence" = event.trigger(context={}, options={}, cid=cid)
     assert o.correlation_id == str(cid)
+
+
+def test_get_trigger_url(event: "Event") -> None:
+    assert event.get_trigger_url()
 
 
 def test_event_notifications(event: "Event") -> None:

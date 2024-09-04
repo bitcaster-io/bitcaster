@@ -109,7 +109,7 @@ class Dispatcher(metaclass=DispatcherMeta):
         self.channel = channel
 
     def __repr__(self) -> str:
-        return f"<Channel {self.verbose_name}>"
+        return f"<Dispatcher {self.verbose_name}>"
 
     def __str__(self) -> str:
         return self.verbose_name or self.__class__.__name__

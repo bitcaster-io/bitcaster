@@ -6,11 +6,11 @@ from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilt
 from django import forms
 from django.contrib import admin, messages
 from django.db.models import QuerySet
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext as _
 
-from bitcaster.models import Event
+from bitcaster.models import Assignment, Event
 
 from ..forms.event import EventChangeForm
 from ..state import state
@@ -35,9 +35,7 @@ class MessageInline(admin.TabularInline[Message, Event]):
 
 
 class EventTestForm(forms.Form):
-    recipient = forms.CharField()
-    subject = forms.CharField()
-    message = forms.CharField(widget=forms.Textarea)
+    assignment = forms.ModelChoiceField(queryset=Assignment.objects.none())
 
 
 class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], admin.ModelAdmin[Event]):
@@ -84,9 +82,43 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
 
     @button()
     def trigger_event(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        obj: Optional[Event] = self.get_object(request, pk)
-        url = obj.get_trigger_url(request)
-        self.message_user(request, url, messages.SUCCESS)
+        from bitcaster.models import Occurrence
+
+        def get_form(*args: Any, **kwargs: Any) -> EventTestForm:
+            frm = EventTestForm(*args, **kwargs)
+            frm.fields["assignment"].queryset = Assignment.objects.filter(
+                distributionlist__recipients__address__user=request.user
+            ).distinct()
+            return frm
+
+        context = self.get_common_context(request, pk, title=_("Trigger Event"))
+        evt: Optional[Event] = self.get_object(request, pk)
+        if request.method == "POST":
+            config_form = get_form(request.POST)
+            if config_form.is_valid():
+                try:
+                    o: Occurrence = evt.trigger(
+                        context={},
+                        options={
+                            "limit_to": [config_form.cleaned_data["assignment"].address.value],
+                            "channels": [config_form.cleaned_data["assignment"].channel.pk],
+                        },
+                    )
+                    o.process()
+                    self.message_user(request, f"Sent {o.data}", messages.SUCCESS)
+                    return HttpResponseRedirect(".")
+                except Exception as e:
+                    logger.exception(e)
+                    self.message_error_to_user(request, e)
+        else:
+            config_form = get_form(
+                initial={
+                    "subject": "[TEST] Subject",
+                    "message": "aaa",
+                }
+            )
+        context["form"] = config_form
+        return TemplateResponse(request, "admin/event/test_event.html", context)
 
     @button()
     def notifications(self, request: HttpRequest, pk: str) -> "HttpResponse":

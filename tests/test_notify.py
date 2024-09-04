@@ -86,7 +86,7 @@ def test_trigger(
     v1: Assignment = context["v1"]
     v2: Assignment = context["v2"]
     ch: Channel = context["channel"]
-    o = event.trigger({})
+    o = event.trigger(context={})
     assert event.notifications.exists()
     # with django_assert_num_queries(10) as captured:
     o.process()

@@ -1,22 +1,23 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
+from django.contrib.messages import SUCCESS, Message  # type: ignore[attr-defined]
+from django.db.models.options import Options
+from django.urls import reverse
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-    from bitcaster.models import Address, Application, Channel, Event, User
+    from bitcaster.models import Assignment, Channel, Event, Notification, User
 
     Context = TypedDict(
         "Context",
         {
-            "app": Application,
             "channel": Channel,
-            "channel2": Channel,
             "event": Event,
-            "address": Address,
-            "address2": Address,
+            "assignment": Assignment,
         },
     )
 
@@ -30,26 +31,31 @@ def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") ->
 
 
 @pytest.fixture
-def context(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> "Context":
-    from testutils.factories import AddressFactory, ChannelFactory, EventFactory
+def context(app: "DjangoTestApp") -> "Context":
+    from testutils.factories import AssignmentFactory, NotificationFactory
 
-    django_app = django_app_factory(csrf_checks=False)
-    django_app.set_user(admin_user)
-    django_app._user = admin_user
-
-    channel: Channel = ChannelFactory()
-    channel2 = ChannelFactory()
-    event: Event = EventFactory()
-    event.channels.add(channel)
-    event.channels.add(channel2)
-    address: Address = AddressFactory(user=admin_user)
-    address2 = AddressFactory(user=admin_user)  # other_addr
+    asm: "Assignment" = AssignmentFactory(address__user=app._user)
+    n: "Notification" = NotificationFactory(distribution__recipients=[asm], event__channels=[asm.channel])
 
     return {
-        "app": django_app,
-        "channel": channel,
-        "channel2": channel2,
-        "event": event,
-        "address": address,
-        "address2": address2,
+        "channel": asm.channel,
+        "assignment": asm,
+        "event": n.event,
     }
+
+
+def test_trigger_event(app: "DjangoTestApp", context: "Context") -> None:
+    event: Event = context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "trigger_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.post(url, {})
+    assert res.status_code == 200
+
+    res = app.get(url)
+    assert res.status_code == 200
+    res.forms["test-form"]["assignment"] = context["assignment"].pk
+    res = res.forms["test-form"].submit().follow()
+
+    assert len(res.context["messages"]) == 1
+    msg: Message = list(res.context["messages"])[0]
+    assert msg.level == SUCCESS

@@ -61,7 +61,7 @@ class Bitcaster:
         parent: "Optional[Occurrence]" = None,
     ) -> "Occurrence":
         e: "Event" = cls.app.events.get(name=evt.value)
-        return e.trigger(context or {}, options=options or {}, cid=correlation_id, parent=parent)
+        return e.trigger(context=(context or {}), options=options or {}, cid=correlation_id, parent=parent)
 
     @classmethod
     def get_default_group(cls) -> "Group":
