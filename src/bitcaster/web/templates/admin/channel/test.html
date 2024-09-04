@@ -21,6 +21,7 @@
         </ul>
         <a href="{% url "admin:bitcaster_address_add" %}?user={{ user.pk }}">Add Address</a>
     {% else %}
+        
         <form method="post" id="config-form">
         {{ form.errors }}
         {% csrf_token %}         
@@ -29,7 +30,7 @@
                     <div>
                         <div class="flex-container">
                             <label class="required" for="id_api_key">{% translate 'Recipient' %}</label>
-                            {{ validation.address.value }}
+                            {{ assignment.address.value }}
                             &nbsp;<a href="{% url "admin:bitcaster_assignment_change" assignment.pk %}">edit</a>
                         </div>
                     </div>

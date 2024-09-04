@@ -23,7 +23,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 OccurrenceOptions = TypedDict(
-    "OccurrenceOptions", {"limit_to": NotRequired[list[str]], "environs": NotRequired[list[str]]}
+    "OccurrenceOptions",
+    {"limit_to": NotRequired[list[str]], "channels": NotRequired[list[str]], "environs": NotRequired[list[str]]},
 )
 
 
@@ -101,18 +102,20 @@ class Occurrence(BitcasterBaseModel):
         notification: "Notification"
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
-        channels = self.event.channels.active()
         assignment_filter = {}
         notification_filter = {}
+        channel_filter = {}
         if limit := self.options.get("limit_to", []):
-            assignment_filter = {"address__value__in": limit}
+            assignment_filter["address__value__in"] = limit
 
+        if channels := self.options.get("channels", []):
+            channel_filter["pk__in"] = channels
         if environs := self.options.get("environs", []):
             notification_filter["environments__overlap"] = environs
 
         for notification in self.event.notifications.filter(**notification_filter).match(self.context):
             context = notification.get_context(self.get_context())
-            for channel in channels:
+            for channel in self.event.channels.filter(**channel_filter):
                 for assignment in notification.get_pending_subscriptions(delivered, channel).filter(
                     **assignment_filter
                 ):

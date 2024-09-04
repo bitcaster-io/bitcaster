@@ -155,7 +155,7 @@ def test_silent_event(setup: "Context", monkeypatch: MonkeyPatch, system_objects
 
     cid = uuid.uuid4()
     e = setup["silent_event"]
-    o = e.trigger({"key": "value"}, cid=cid)
+    o = e.trigger(context={"key": "value"}, cid=cid)
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
 
     assert Occurrence.objects.system(correlation_id=cid).count() == 0
@@ -163,7 +163,7 @@ def test_silent_event(setup: "Context", monkeypatch: MonkeyPatch, system_objects
 
     o.refresh_from_db()
     assert o.status == Occurrence.Status.PROCESSED
-    assert o.data == {}  # type: ignore[comparison-overlap]
+    assert o.data == {}
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
 
@@ -268,7 +268,9 @@ def test_process_silent(setup: "Context", monkeypatch: MonkeyPatch) -> None:
     assert mocked_notify.call_count == 1
 
 
-def test_purge_occurrences(purgeable_occurrences, non_purgeable_occurrences):
+def test_purge_occurrences(
+    purgeable_occurrences: list["Occurrence"], non_purgeable_occurrences: list["Occurrence"]
+) -> None:
     from bitcaster.models import Occurrence
 
     assert Occurrence.objects.count() == len(purgeable_occurrences) + len(non_purgeable_occurrences)  # Sanity check

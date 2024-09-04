@@ -102,6 +102,8 @@ def pytest_configure(config):
     settings.ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
     settings.MEDIA_ROOT = "%s/media" % tempfile.gettempdir()
     settings.STATIC_ROOT = "%s/static" % tempfile.gettempdir()
+    settings.MESSAGE_STORAGE = "testutils.messages.PlainCookieStorage"
+
     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
     os.makedirs(settings.STATIC_ROOT, exist_ok=True)
 

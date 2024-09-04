@@ -1,36 +1,122 @@
-* {
-  --primary: #e53734;
-  --secondary: #e53734;
-  --bg-primary: #e53734;
-  --bg-secondary: #ef5552;
-  --breadcrumbs-bg: #ef5552;
-  --button-bg: var(--bg-secondary);
-  --button-hover-bg: rgba(223, 207, 75, 0.63);
-  --default-button-bg: #980404FF;
-  --header-bg: #e53734;
-  --link-fg: #e53734;
-  --link-hover-color: rgba(223, 207, 75, 0.63);
-  --wizard-summary-bg-color: #f8f8f8;
-  --darkened-bg: rgba(161, 161, 161, 0.2);
-}
-
 @media (prefers-color-scheme: light) {
-  :root, html[data-theme=light] {
-    --link-hover-color: #951515;
-    --button-fg: black;
-    --button-hover-fg: black;
+  :root {
+    --primary: #e53734;
+    --secondary: rgba(168, 0, 0, 0.82);
+    --light: #ef5552;
+    --white: rgba(248, 248, 248, 0.93);
+    --black: rgba(32, 33, 36, 0.82);
+    --bg-primary: var(--primary);
+    --bg-secondary: var(--secondary);
+    --button-bg: var(--bg-secondary);
+    --button-fg: var(--white);
+    --button-hover-bg: var(--light);
+    --button-hover-fg: var(--white);
+    --default-button-bg: rgba(200, 0, 0, 1);
+    --default-button-hover-bg: var(--light);
+    --header-bg: var(--primary);
+    --breadcrumbs-bg: var(--secondary);
+    --link-fg: var(--secondary);
+    --link-hover-color: var(--primary);
+    --frame-bg-color: lightgray;
+    --frame-fg-color: var(--black);
+    --body-bg: var(--white);
+    --body-fg: #333;
+    --link-fg: var(--secondary);
+    --link-hover-color: var(--primary);
+    --header-bg: var(--primary);
+    --breadcrumbs-bg: var(--secondary);
+    color-scheme: light;
   }
 }
 @media (prefers-color-scheme: dark) {
-  :root, html[data-theme=dark] {
-    --md-hue: 225deg;
-    --body-bg: hsla(var(--md-hue), 15%, 14%, 1);
-    --link-hover-color: #951515;
-    --button-hover-fg: black;
+  :root {
+    --primary: #e53734;
+    --secondary: rgba(168, 0, 0, 0.82);
+    --light: #ef5552;
+    --white: rgba(248, 248, 248, 0.93);
+    --black: rgba(32, 33, 36, 0.82);
+    --bg-primary: var(--primary);
+    --bg-secondary: var(--secondary);
+    --button-bg: var(--bg-secondary);
+    --button-fg: var(--white);
+    --button-hover-bg: var(--light);
+    --button-hover-fg: var(--white);
+    --default-button-bg: rgba(200, 0, 0, 1);
+    --default-button-hover-bg: var(--light);
+    --header-bg: var(--primary);
+    --breadcrumbs-bg: var(--secondary);
+    --link-fg: var(--secondary);
+    --link-hover-color: var(--primary);
+    --frame-bg-color: lightgray;
+    --frame-fg-color: var(--black);
+    --body-bg: var(--black);
+    --body-fg: #eeeeee;
+    --fg-primary: var(--white);
+    --link-fg: var(--primary);
+    --link-hover-color: var(--secondary);
+    color-scheme: dark;
+    color-scheme: dark;
   }
 }
+html[data-theme=dark] {
+  --primary: #e53734;
+  --secondary: rgba(168, 0, 0, 0.82);
+  --light: #ef5552;
+  --white: rgba(248, 248, 248, 0.93);
+  --black: rgba(32, 33, 36, 0.82);
+  --bg-primary: var(--primary);
+  --bg-secondary: var(--secondary);
+  --button-bg: var(--bg-secondary);
+  --button-fg: var(--white);
+  --button-hover-bg: var(--light);
+  --button-hover-fg: var(--white);
+  --default-button-bg: rgba(200, 0, 0, 1);
+  --default-button-hover-bg: var(--light);
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+  --link-fg: var(--secondary);
+  --link-hover-color: var(--primary);
+  --frame-bg-color: lightgray;
+  --frame-fg-color: var(--black);
+  --body-bg: var(--black);
+  --body-fg: #eeeeee;
+  --fg-primary: var(--white);
+  --link-fg: var(--primary);
+  --link-hover-color: var(--secondary);
+  color-scheme: dark;
+}
+
+html[data-theme=light] {
+  --primary: #e53734;
+  --secondary: rgba(168, 0, 0, 0.82);
+  --light: #ef5552;
+  --white: rgba(248, 248, 248, 0.93);
+  --black: rgba(32, 33, 36, 0.82);
+  --bg-primary: var(--primary);
+  --bg-secondary: var(--secondary);
+  --button-bg: var(--bg-secondary);
+  --button-fg: var(--white);
+  --button-hover-bg: var(--light);
+  --button-hover-fg: var(--white);
+  --default-button-bg: rgba(200, 0, 0, 1);
+  --default-button-hover-bg: var(--light);
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+  --link-fg: var(--secondary);
+  --link-hover-color: var(--primary);
+  --frame-bg-color: lightgray;
+  --frame-fg-color: var(--black);
+  --body-bg: var(--white);
+  --body-fg: #333;
+  --link-fg: var(--secondary);
+  --link-hover-color: var(--primary);
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+}
+
 :root a.deletelink, html[data-theme=light] a.deletelink, html[data-theme=dark] a.deletelink {
-  border: 1px solid bisque;
+  color: var(--delete-button-fg);
+  background-color: var(--delete-button-bg);
 }
 :root .select2-search--dropdown, html[data-theme=light] .select2-search--dropdown, html[data-theme=dark] .select2-search--dropdown {
   padding: 0;
@@ -72,8 +158,9 @@
 }
 :root .wizard-summary, html[data-theme=light] .wizard-summary, html[data-theme=dark] .wizard-summary {
   width: 400px;
-  background-color: var(--wizard-summary-bg-color);
-  color: black;
+  background-color: var(--frame-bg-color);
+  color: var(--frame-fg-color);
+  border: 1px solid var(--frame-border-color);
 }
 :root .wizard-summary tr, html[data-theme=light] .wizard-summary tr, html[data-theme=dark] .wizard-summary tr {
   padding: 0;
@@ -82,12 +169,12 @@
 }
 :root .wizard-summary th, html[data-theme=light] .wizard-summary th, html[data-theme=dark] .wizard-summary th {
   width: 10%;
-  background-color: var(--wizard-summary-bg-color);
+  background-color: var(--frame-bg-color);
   border-bottom: 0;
 }
 :root .wizard-summary td, html[data-theme=light] .wizard-summary td, html[data-theme=dark] .wizard-summary td {
   width: 90%;
-  background-color: var(--wizard-summary-bg-color);
+  background-color: var(--frame-bg-color);
   border-bottom: 0;
 }
 
@@ -100,11 +187,27 @@
 }
 #container div.wizard-submit-row button {
   padding: 10px 15px;
-  color: black;
 }
 #container div.wizard-submit-row button.cancel {
   float: right;
   margin-left: auto;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: black;
+  line-height: 28px;
+}
+
+.select2-selection__choice {
+  color: black;
+}
+
+.select2-container .select2-selection--multiple {
+  background-color: var(--body-bg);
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: var(--button-hover-bg);
 }
 
 ul#quick-links {

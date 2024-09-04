@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Iterable, Optional
+from typing import TYPE_CHECKING, Any, Iterable, Optional
 
 from django.db import models
 from django.db.models import Q
@@ -63,6 +63,7 @@ class Channel(LockMixin, BitcasterBaseModel):
 
     def save(
         self,
+        *args: Any,
         force_insert: bool | tuple[ModelBase, ...] = False,
         force_update: bool = False,
         using: Optional[str] = None,

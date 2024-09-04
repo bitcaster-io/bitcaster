@@ -10,23 +10,25 @@ from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 
+from bitcaster.forms.fields import Select2TagField
 from bitcaster.forms.mixins import Scoped3FormMixin
 from bitcaster.models import ApiKey, Application, Organization, Project  # noqa
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
 
 if TYPE_CHECKING:
-    from django.contrib.admin.options import _FieldGroups, _ListOrTuple
+    from django.contrib.admin.options import _ListOrTuple
 
 
 logger = logging.getLogger(__name__)
 
 
 class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
+    environments = Select2TagField(required=False)
 
     class Meta:
         model = ApiKey
-        fields = "__all__"
+        exclude = ("token",)
 
 
 class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin["ApiKey"]):
@@ -43,15 +45,21 @@ class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsM
     def get_queryset(self, request: "HttpRequest") -> "QuerySet[ApiKey]":
         return super().get_queryset(request).select_related("application")
 
-    def get_fields(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_FieldGroups":
-        ret = list(super().get_fields(request, obj))
-        if not is_root(request) and "key" in ret:
-            ret.remove("key")
-        return ret
+    def get_readonly_fields(
+        self, request: HttpRequest, obj: Optional[ApiKey] = None
+    ) -> list[str] | tuple[str, ...] | tuple[()]:
+        if obj and obj.pk:
+            return ["application", "organization", "project"]
+        return self.readonly_fields
+
+    # def get_fields(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_FieldGroups":
+    #     ret = list(super().get_fields(request, obj))
+    #     if not is_root(request) and "key" in ret:
+    #         ret.remove("key")
+    #     return ret
 
     def get_exclude(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_ListOrTuple[str]":
-        if obj and obj.pk:
-            return ["key"]
+        return ["key"]
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {

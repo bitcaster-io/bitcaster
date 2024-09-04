@@ -39,7 +39,7 @@ def test_model_occurrence_filter(
 ) -> None:
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", mock := Mock())
 
-    occurrence: Occurrence = context["notification"].event.trigger(payload)
+    occurrence: Occurrence = context["notification"].event.trigger(context=payload)
     occurrence.process()
 
     assert mock.call_count == notified_count

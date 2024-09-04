@@ -345,7 +345,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
         context["admin_form"] = AdminForm(config_form, fs, {})  # type: ignore[arg-type]
         return TemplateResponse(request, "admin/channel/configure.html", context)
 
-    @button()
+    @button(html_attrs={"class": ButtonColor.ACTION.value})
     def test(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
         from bitcaster.models import Event
 
