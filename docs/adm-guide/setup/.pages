@@ -3,3 +3,8 @@ nav:
   - Create Initial Structure: structure.md
   - Create Channel: channel.md
   - Configure Application: app.md
+  - Register Events: events.md
+  - Create Message: message.md
+  - Create Distribution List: dl.md
+  - Create Notification Rule: notification.md
+  - Trigger Event: trigger.md
