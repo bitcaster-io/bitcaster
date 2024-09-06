@@ -4,4 +4,4 @@ template: term.html
 ---
 # Recipient Group
 
-Is a collection of [Recipients](recipient)
+Is a collection of <glossary:Recipient>

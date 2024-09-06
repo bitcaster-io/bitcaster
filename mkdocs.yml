@@ -8,6 +8,7 @@ site_description: "The multichannel broker for managing corporate messaging"
 site_dir: ./~build/docs
 site_name: Bitcaster
 site_url: https://bitcaster-io.github.io/bitcaster/
+strict: false
 extra_css:
   - _theme/css/style.css
 extra_javascript:
@@ -21,32 +22,31 @@ exclude_docs: |
   -screenshots
 
 markdown_extensions:
-  - abbr
+#  - abbr
   - admonition
   - attr_list
   - def_list
-  - footnotes
+#  - footnotes
   - md_in_html
-  - mdx_gh_links:
-      user: bitcaster
-      repo: bitcaster
-  - mkdocs-click
-  - pymdownx.details
-  - pymdownx.critic
-  - pymdownx.caret
-  - pymdownx.keys
-  - pymdownx.mark
-  - pymdownx.tilde
-  - pymdownx.inlinehilite
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - pymdownx.highlight:
-      use_pygments: true
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.snippets
+#  - mdx_gh_links:
+#      user: bitcaster
+#      repo: bitcaster
+#  - mkdocs-click
+#  - pymdownx.details
+#  - pymdownx.critic
+#  - pymdownx.caret
+#  - pymdownx.keys
+#  - pymdownx.mark
+#  - pymdownx.tilde
+#  - pymdownx.inlinehilite
+#  - pymdownx.emoji:
+#      emoji_index: !!python/name:material.extensions.emoji.twemoji
+#      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+#  - pymdownx.highlight:
+#      use_pygments: true
+#      anchor_linenums: true
+#      line_spans: __span
+#      pygments_lang_class: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -55,9 +55,9 @@ markdown_extensions:
   - pymdownx.snippets:
       base_path: '.'
       check_paths: true
-  - pymdownx.tabbed:
-  - smarty
-  - tables
+#  - pymdownx.tabbed:
+#  - smarty
+#  - tables
   - toc:
       permalink: #
       baselevel: 1
@@ -84,20 +84,20 @@ theme:
   color_mode: auto
   custom_dir: docs/_theme/overrides
   favicon: _theme/img/favicon.ico
-  highlightjs: true
-  hljs_languages:
-    - yaml
-    - django
+#  highlightjs: true
+#  hljs_languages:
+#    - yaml
+#    - django
   logo: _theme/img/favicon.ico
   user_color_mode_toggle: true
   features:
-    - content.action.edit
-    - content.code.annotate
-    - content.code.copy
-    - content.tooltips
-    - header.autohide
-    - navigation.footer
-    - navigation.indexes
+#    - content.action.edit
+#    - content.code.annotate
+#    - content.code.copy
+#    - content.tooltips
+#    - header.autohide
+#    - navigation.footer
+#    - navigation.indexes
     - navigation.instant
     - navigation.instant.prefetch
     - navigation.instant.progress
@@ -130,10 +130,10 @@ plugins:
       inline_refs: short
       list_definitions: true
       list_references: true
-  - ezlinks:
-      wikilinks: true
+#  - ezlinks:
+#      wikilinks: true
   - link-marker
-  - mkdocstrings
+#  - mkdocstrings
   - minify:
       minify_html: true
       minify_js: true
@@ -148,7 +148,6 @@ plugins:
   - redirects:
       redirect_maps:
         'help/channel.md': 'glossary/terms/channel.md'
-#        'old/file.md': 'new/file.md'
 #        'some_file.md': 'http://external.url.com/foobar'
   - include-markdown:
       encoding: ascii
@@ -158,26 +157,24 @@ plugins:
       comments: false
       rewrite_relative_urls: true
       heading_offset: 0
-#      start: <!--start-->
-#      end: <!--end-->
       recursive: true
   - privacy
   - search
   - social
-  - autolinks
-  - blog:
-      blog_dir: howto
-      blog_toc: true
-      post_dir: "{blog}/posts"
-      post_date_format: ""
-      post_url_max_categories: 1
-#      post_excerpt: optional
-      post_readtime: false
-      archive: false
-      categories: false
-      authors: false
-      pagination: false
-      draft: false
+#  - autolinks
+#  - blog:
+#      blog_dir: howto
+#      blog_toc: true
+#      post_dir: "{blog}/posts"
+#      post_date_format: ""
+#      post_url_max_categories: 1
+##      post_excerpt: optional
+#      post_readtime: false
+#      archive: false
+#      categories: false
+#      authors: false
+#      pagination: false
+#      draft: false
   - tags:
       tags_file: tags.md
 

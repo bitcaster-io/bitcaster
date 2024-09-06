@@ -118,6 +118,10 @@ html[data-theme=light] {
   color: var(--fg-primary);
 }
 
+#logout-form {
+  display: inline-flex;
+}
+
 div.center {
   margin: auto;
 }

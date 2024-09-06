@@ -1,6 +1,10 @@
 ---
 description:  ""
 template: term.html
+terms:
+  - glossary: 
+    - Organization
+
 ---
 # Organization
 

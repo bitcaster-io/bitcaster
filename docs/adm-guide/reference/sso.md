@@ -31,7 +31,7 @@ see <https://python-social-auth.readthedocs.io/en/latest/backends/gitlab.html>
 
 see <https://python-social-auth.readthedocs.io/en/latest/backends/github.html#github-for-organizations>
 
-![Image title](_screenshots/sso_github.png)
+![Image title](../_screenshots/sso_github.png)
 
 ### Google
 
@@ -39,7 +39,7 @@ see <https://python-social-auth.readthedocs.io/en/latest/backends/google.html#go
 
 Sample Configuration:
 
-![Image title](_screenshots/sso_google.png)
+![Image title](../_screenshots/sso_google.png)
 
 
 ### Twitter

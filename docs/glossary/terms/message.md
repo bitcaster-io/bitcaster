@@ -7,4 +7,5 @@ terms:
     - Message
 ---
 
-the template that is used for the rendering of an [Event](event)'s <glossary:Occurrence> for a specific [Channel](channel)
+the template that is used for the rendering of an <glossary:Event>'s <glossary:Occurrence> 
+for a specific <glossary:Channel>

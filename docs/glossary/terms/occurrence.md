@@ -6,6 +6,6 @@ terms:
     - Occurrence
 ---
 
-Bitcaster creates an (Event's) Occurrence. each time an [Application](application) triggers an [Event](event).
+Bitcaster creates an (Event's) Occurrence. each time an <glossary:Application> triggers an <glossary:Event>.
 
 Occurrences are processed in background. 

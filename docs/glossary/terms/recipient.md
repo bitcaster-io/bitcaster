@@ -1,7 +1,10 @@
 ---
 description:  ""
 template: term.html
+terms:
+  - glossary: 
+    - Recipient
 ---
 # Recipient
 
-Is the user receiving the [Message](message) via the [Channel](channel)         
+Is the user receiving the <glossary:Message> via the <glossary:Channel>.         
