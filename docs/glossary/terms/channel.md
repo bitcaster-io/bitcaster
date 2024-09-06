@@ -3,15 +3,15 @@ description:  Is the target system that will forward the Message to the Recipien
 template: term.html
 terms:
     - glossary:
-      - channel
+      - Channel
 ---
 # Channel
 
-it represents a way of communicating with users sending custom  [Message](message) 
-to [Distribution List](distribution-list)
+it represents a way of communicating with users sending custom  <glossary:Message> 
+to <glossary:"Distribution List">
 
 Channel can be created at Organization or Project level.
 
-Only project-level Channels can be used to send [Notifications](notification).
+Only project-level Channels can be used to send <glossary:Notification>.
 
 In order to use an organization-level Channel you must "enable" the Channel in a project.

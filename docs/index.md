@@ -32,19 +32,18 @@ Your user will be empowered with an easy to use console to choose how to receive
 Bitcaster structure allows to manage simple and complex environment, it is organised as follow:
 
 
-- [Organization](organization) (your company)
+- <glossary:Organization> (your company)
 
-    - [Project](project) (your business domain)
+    - <glossary:Project> (your business domain)
 
-        - [Application](application) (the source of your messages)
+        - <glossary:Application> (the source of your messages)
 
-            - [Event](event) (something that happen in your [Application](application) that you want to notify to the users)
+            - <glossary:Event> (something that happen in your <glossary:Application> that you want to notify to the users)
 
 
 
-Each [Event](event) can have different [Channels](channel) enabled to forward [Notifications](notification) 
-
-the destination [Distribution List](distribution-list) 
+Each <glossary:Event> can have different <glossary:Channel>s enabled to forward <glossary:Notification>s 
+the destination <glossary:Distribution List> 
 
 
 

@@ -1,9 +1,7 @@
 ---
-description:  "unique address identity for a User"
+description:  Is a deployment artifact and a logical subdivision of the <glossary:Project>
 template: term.html
 terms:
   - glossary: 
     - Address
 ---
-
-the User configured target for a <glossary:Notification>. 

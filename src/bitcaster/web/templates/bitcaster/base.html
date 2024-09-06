@@ -11,10 +11,6 @@
 </head>
 <body>
 {% block body %}{% endblock %}
-<div class="footer w-100">
-    <div class="text-center">
-        Version {{ bitcaster.version }}
-    </div>
-</div>
+{% include "fragments/footer.html" %}
 </body>
 </html>

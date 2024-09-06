@@ -6,5 +6,5 @@ terms:
       - Assignment
 ---
 
-defines for which [Channel](channel) an [Address](address) can be used.
-NB: The assignment must be validated before the address can receive [Notifications](notification).
+defines for which <glossary:Channel> an <glossary:Address> can be used.
+NB: The assignment must be validated before the address can receive <glossary:Notification>.

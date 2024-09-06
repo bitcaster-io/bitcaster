@@ -7,5 +7,5 @@ terms:
 ---
 # Notification
 
-The configuration of the rules for matching an [Event](event) based on the event name or its payload and the
-[Distribution list](distribution-list) of the intended [Recipients](recipient).
+The configuration of the rules for matching an <glossary:Event> based on the event name or its payload and the
+<glossary:Distribution List> of the intended <glossary:Recipient>.

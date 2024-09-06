@@ -10,8 +10,8 @@ terms:
 
 
 
-When a business operation succeeds or fails, the originated application will send an [Event](event) to Bitcaster with the
+When a business operation succeeds or fails, the originated application will send an <glossary:Event> to Bitcaster with the
 related context.
 
-Bitcaster will search all [Notifications](notification) that could match to the [Event](event)
-(depending on the [Notification](notification) _payload_filter_)
+Bitcaster will search all <glossary:Notification> that could match to the <glossary:Event>
+(depending on the <glossary:Notification> _payload_filter_)
