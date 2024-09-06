@@ -9,11 +9,11 @@
             {% if user.is_authenticated %}
                 {% if BETA_PREVIEW_LOCKING %}
                     {% if perms.bitcaster.can_lock_system %}
-                        <a class="button primary" href="{% url "locking" %}">Locking</a>
+                        <a class="button" href="{% url "locking" %}">Locking</a>
                     {% endif %}
                 {% endif %}
                 {% if user.is_staff %}
-                    <a class="button primary" href="{% url "admin:index" %}">Admin</a>
+                    <a class="button default primary" href="{% url "admin:index" %}">Admin</a>
                 {% endif %}
                 <form method="post" action="{% url "logout" %}" id="logout-form">
                     {% csrf_token %}
@@ -22,8 +22,7 @@
             {% else %}
                 <a class="button primary" href="{% url "login" %}">{% translate "Login" %}</a>
             {% endif %}
-            <a class="button primary" href="https://bitcaster-io.github.io/bitcaster/">Documentation</a>
-            <a class="button primary" href="/api/">API</a>
+            
         </div>
     </div>
     <div>

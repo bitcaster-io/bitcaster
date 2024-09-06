@@ -10,3 +10,12 @@
 .md-typeset__table table:not([class]) {
   display: table
 }
+
+.md-header__button.md-logo img, .md-header__button.md-logo svg {
+    //filter: invert(1);
+    filter: brightness(10);
+    fill: currentcolor;
+    display: block;
+    height: 1.2rem;
+    width: auto;
+}
