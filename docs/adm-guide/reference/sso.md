@@ -1,3 +1,8 @@
+---
+tags:
+   - SSO
+---
+
 # Social Login
 
 Social Login can be configured at <https://SERVER_ADDRESS/admin/social/socialprovider/>
