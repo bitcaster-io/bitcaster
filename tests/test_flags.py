@@ -29,7 +29,7 @@ def test_server_address(rf: RequestFactory, ip: str, settings: "SettingsWrapper"
     "subnet, ip, result",
     [
         ("192.168.1.0/24", "192.168.1.1", True),
-        ("192.168.1.0/32", "192.168.1.1", True),
+        ("192.168.1.1/32", "192.168.1.1", True),
         ("192.168.1.1", "192.168.1.1", True),
         ("192.168.1.0/24", "192.168.66.1", False),
         ("192.168.0.0/16", "192.168.1.1", True),
