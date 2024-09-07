@@ -14,9 +14,9 @@ Navigate to <https://SERVER_ADDRESS/admin/bitcaster/organization/>{: target='lin
 
 Now you can create your first Project.  
 
-Click on the `Create Project` button on the top right 
-![Image](_screenshots/btn_create_project.png){align: right } 
-or navigate to <https://SERVER_ADDRESS/admin/bitcaster/project/add/>{: target='link' }
+Click on the 
+[Create Project](https://SERVER_ADDRESS/admin/bitcaster/organization/current/){ target='link' .md-button .md-button--primary }
+ button on the top right corner or your Organization's page
 
 !!! warning
 

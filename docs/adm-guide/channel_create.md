@@ -1,8 +1,8 @@
-# Create Channel Template
+# Create Abstract Channel
 
 
-From the [Organization page](https://SERVER_ADDRESS/admin/bitcaster/organization/current/){:target=_bc}  click on `Create Channel`
-
+From the [Organization page](https://SERVER_ADDRESS/admin/bitcaster/organization/current/){:target=_bc} click on `Create Channel`
+[Create Channel](https://SERVER_ADDRESS/admin/bitcaster/organization/current/){ target='link' .md-button .md-button--primary }
 
 ![Image](_screenshots/channels/template_create.png)
 
