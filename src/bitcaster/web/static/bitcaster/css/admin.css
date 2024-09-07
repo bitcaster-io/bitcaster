@@ -4,7 +4,7 @@
     --secondary: rgba(168, 0, 0, 0.82);
     --light: #ef5552;
     --white: rgba(248, 248, 248, 0.93);
-    --black: rgba(32, 33, 36, 0.82);
+    --black: rgba(32, 33, 36, 1);
     --bg-primary: var(--primary);
     --bg-secondary: var(--secondary);
     --button-bg: var(--bg-secondary);
@@ -21,6 +21,7 @@
     --frame-fg-color: var(--black);
     --body-bg: var(--white);
     --body-fg: #333;
+    --fg-primary: var(--black);
     --link-fg: var(--secondary);
     --link-hover-color: var(--primary);
     --header-bg: var(--primary);
@@ -34,7 +35,7 @@
     --secondary: rgba(168, 0, 0, 0.82);
     --light: #ef5552;
     --white: rgba(248, 248, 248, 0.93);
-    --black: rgba(32, 33, 36, 0.82);
+    --black: rgba(32, 33, 36, 1);
     --bg-primary: var(--primary);
     --bg-secondary: var(--secondary);
     --button-bg: var(--bg-secondary);
@@ -63,7 +64,7 @@ html[data-theme=dark] {
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
   --white: rgba(248, 248, 248, 0.93);
-  --black: rgba(32, 33, 36, 0.82);
+  --black: rgba(32, 33, 36, 1);
   --bg-primary: var(--primary);
   --bg-secondary: var(--secondary);
   --button-bg: var(--bg-secondary);
@@ -91,7 +92,7 @@ html[data-theme=light] {
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
   --white: rgba(248, 248, 248, 0.93);
-  --black: rgba(32, 33, 36, 0.82);
+  --black: rgba(32, 33, 36, 1);
   --bg-primary: var(--primary);
   --bg-secondary: var(--secondary);
   --button-bg: var(--bg-secondary);
@@ -108,6 +109,7 @@ html[data-theme=light] {
   --frame-fg-color: var(--black);
   --body-bg: var(--white);
   --body-fg: #333;
+  --fg-primary: var(--black);
   --link-fg: var(--secondary);
   --link-hover-color: var(--primary);
   --header-bg: var(--primary);
@@ -164,7 +166,7 @@ html[data-theme=light] {
 :root .channel-wizard-help, html[data-theme=light] .channel-wizard-help, html[data-theme=dark] .channel-wizard-help {
   display: inline-flex;
   justify-content: space-between;
-  width: 100%;
+  width: 90%;
   border: 1px solid var(--secondary);
   margin-top: 20px;
   padding: 7px;

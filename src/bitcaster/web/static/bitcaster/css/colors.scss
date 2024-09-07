@@ -3,7 +3,7 @@
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
   --white: rgba(248, 248, 248, 0.93);
-  --black: rgba(32, 33, 36, 0.82);
+  --black: rgba(32, 33, 36, 1);
 
   --bg-primary: var(--primary);
   --bg-secondary: var(--secondary);
@@ -29,6 +29,7 @@
 @mixin light {
   --body-bg: var(--white);
   --body-fg: #333;
+  --fg-primary: var(--black);
   --link-fg: var(--secondary);
   --link-hover-color: var(--primary);
 

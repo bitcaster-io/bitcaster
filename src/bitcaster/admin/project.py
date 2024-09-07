@@ -1,11 +1,12 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
-from admin_extra_buttons.decorators import button
+from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import AutoCompleteFilter
 from django.contrib import admin
 from django.http import HttpRequest
 from django.http.response import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 
 from bitcaster.models import Project
 
@@ -17,7 +18,6 @@ from .mixins import LockMixinAdmin
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
-
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,11 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
     autocomplete_fields = ("organization", "owner")
     exclude = ("locked",)
     form = ProjectChangeForm
+
+    @view()
+    def current(self, request: HttpRequest) -> HttpResponse:
+        current: Project = Project.objects.local().first()
+        return HttpResponseRedirect(reverse("admin:bitcaster_project_change", args=[current.pk]))
 
     def changeform_view(
         self,

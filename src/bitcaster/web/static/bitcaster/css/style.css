@@ -4,7 +4,7 @@
     --secondary: rgba(168, 0, 0, 0.82);
     --light: #ef5552;
     --white: rgba(248, 248, 248, 0.93);
-    --black: rgba(32, 33, 36, 0.82);
+    --black: rgba(32, 33, 36, 1);
     --bg-primary: var(--primary);
     --bg-secondary: var(--secondary);
     --button-bg: var(--bg-secondary);
@@ -21,6 +21,7 @@
     --frame-fg-color: var(--black);
     --body-bg: var(--white);
     --body-fg: #333;
+    --fg-primary: var(--black);
     --link-fg: var(--secondary);
     --link-hover-color: var(--primary);
     --header-bg: var(--primary);
@@ -34,7 +35,7 @@
     --secondary: rgba(168, 0, 0, 0.82);
     --light: #ef5552;
     --white: rgba(248, 248, 248, 0.93);
-    --black: rgba(32, 33, 36, 0.82);
+    --black: rgba(32, 33, 36, 1);
     --bg-primary: var(--primary);
     --bg-secondary: var(--secondary);
     --button-bg: var(--bg-secondary);
@@ -63,7 +64,7 @@ html[data-theme=dark] {
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
   --white: rgba(248, 248, 248, 0.93);
-  --black: rgba(32, 33, 36, 0.82);
+  --black: rgba(32, 33, 36, 1);
   --bg-primary: var(--primary);
   --bg-secondary: var(--secondary);
   --button-bg: var(--bg-secondary);
@@ -91,7 +92,7 @@ html[data-theme=light] {
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
   --white: rgba(248, 248, 248, 0.93);
-  --black: rgba(32, 33, 36, 0.82);
+  --black: rgba(32, 33, 36, 1);
   --bg-primary: var(--primary);
   --bg-secondary: var(--secondary);
   --button-bg: var(--bg-secondary);
@@ -108,14 +109,11 @@ html[data-theme=light] {
   --frame-fg-color: var(--black);
   --body-bg: var(--white);
   --body-fg: #333;
+  --fg-primary: var(--black);
   --link-fg: var(--secondary);
   --link-hover-color: var(--primary);
   --header-bg: var(--primary);
   --breadcrumbs-bg: var(--secondary);
-}
-
-.footer {
-  color: var(--fg-primary);
 }
 
 #logout-form {
@@ -199,6 +197,14 @@ a.button {
   width: 50%;
   padding: 10px;
   text-align: center;
+}
+
+html[data-theme=dark] .footer {
+  color: var(--fg-primary);
+}
+
+html[data-theme=light] .footer {
+  color: var(--fg-primary);
 }
 
 /*# sourceMappingURL=style.css.map */

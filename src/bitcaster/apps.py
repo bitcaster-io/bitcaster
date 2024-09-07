@@ -26,7 +26,7 @@ def server_address(value: str, **kwargs: Any) -> bool:
 
 @conditions.register("User IP")
 def client_ip(value: str, **kwargs: Any) -> bool:
-    remote = get_client_ip(state.request)
+    remote = get_client_ip()
     pyt.insert(value, "")
     return remote in pyt
 

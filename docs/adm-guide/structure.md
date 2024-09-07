@@ -24,13 +24,3 @@ or navigate to <https://SERVER_ADDRESS/admin/bitcaster/project/add/>{: target='l
 
 
 ![Image](_screenshots/add_prj.png)
-
-Click on the `Add Application` button on the top right to create your first <glossary:Application>
-![Image](_screenshots/btn_add_application.png){align: right } 
-
-or navigate to <https://SERVER_ADDRESS/admin/bitcaster/application/add/>{: target='link' }
-
-![Image](_screenshots/add_application.png)
-
-Now you are ready to [configure your Application](app.md) 
-adding <glossary:Event>, <glossary:Notification> and <glossary:Distribution List>

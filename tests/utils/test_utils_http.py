@@ -59,4 +59,5 @@ def test_get_server_url(settings: "SettingsWrapper") -> None:
 @pytest.mark.parametrize("key", ["HTTP_X_FORWARDED_FOR", "HTTP_X_REAL_IP", "REMOTE_ADDR"])
 def test_get_client_ip(rf: "RequestFactory", key: str) -> None:
     req = rf.get("/", **{key: "1.1.1.1   "})  # type: ignore
-    assert get_client_ip(req) == "1.1.1.1"
+    with state.configure(request=req):
+        assert get_client_ip() == "1.1.1.1"

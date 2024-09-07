@@ -16,7 +16,7 @@ from .media import MediaAdmin
 from .message import MessageAdmin
 from .notification import NotificationAdmin
 from .occurrence import OccurrenceAdmin
-from .organization import OrganisationAdmin
+from .organization import OrganizationAdmin
 from .project import ProjectAdmin
 from .user import UserAdmin
 from .userrole import UserRoleAdmin
@@ -37,7 +37,7 @@ admin.site.register(models.MediaFile, MediaAdmin)
 admin.site.register(models.Message, MessageAdmin)
 admin.site.register(models.Notification, NotificationAdmin)
 admin.site.register(models.Occurrence, OccurrenceAdmin)
-admin.site.register(models.Organization, OrganisationAdmin)
+admin.site.register(models.Organization, OrganizationAdmin)
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.UserRole, UserRoleAdmin)

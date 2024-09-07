@@ -1,6 +1,6 @@
 ---
-title: Glossary
+title: Tags
 ---
-# Glossary
+# Tags
 
 ---

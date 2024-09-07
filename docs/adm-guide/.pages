@@ -1,7 +1,8 @@
 nav:
   - Quick Start: quickstart.md
   - Create Initial Structure: structure.md
-  - Create Channel: channel.md
+  - Create Channel: channel_create.md
+  - Enable Channel: channel_enable.md
   - Configure Application: app.md
   - Register Events: events.md
   - Create Message: message.md

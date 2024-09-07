@@ -1,11 +1,14 @@
 # Configure Application
 
-To allow Bitcaster to process [events][event], those need to be listed and configured.
 
-![Image](_screenshots/add_event.png)
+Now that your Organization and Project have been configured, you can start adding all the Applications that you want to be served by Bitcaster.
 
-After the Event has been successfully created, you can choose which <glossary:Channel>s 
-you want make available for this 
+Click on the `Add Application` button on the top right of the 
+[Project page](https://SERVER_ADDRESS/admin/bitcaster/project/current/){:target=_bc}  
 
+or navigate to <https://SERVER_ADDRESS/admin/bitcaster/application/add/>{: target='link' }
 
-![Image](_screenshots/add_event.png)
+![Image](_screenshots/add_application.png)
+
+Now you are ready to [configure your Application](app.md) 
+adding <glossary:Event>, <glossary:Notification> and <glossary:Distribution List>

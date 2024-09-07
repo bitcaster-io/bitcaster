@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
-from admin_extra_buttons.decorators import button
+from admin_extra_buttons.decorators import button, view
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
+class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     search_fields = ("name",)
     list_display = ("name", "from_email", "subject_prefix")
     autocomplete_fields = ("owner",)
@@ -40,6 +40,11 @@ class OrganisationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
         extra_context["show_save_and_continue"] = not object_id
 
         return super().changeform_view(request, object_id, form_url, extra_context)
+
+    @view()
+    def current(self, request: HttpRequest) -> HttpResponse:
+        current: Organization = Organization.objects.local().first()
+        return HttpResponseRedirect(reverse("admin:bitcaster_organization_change", args=[current.pk]))
 
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def channels(self, request: HttpRequest, pk: str) -> HttpResponse:

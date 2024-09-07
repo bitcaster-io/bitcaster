@@ -5,8 +5,11 @@ var regEx = new RegExp(TOKEN2, "ig");
 const clickHandler = function () {
     let currentAddr = Cookies.get('address') || "https://127.0.0.1/";
     let addr = prompt("Set your bitcaster server address", currentAddr);
-    Cookies.set('address', addr, currentAddr);
-    location.reload();
+    if (addr != null && addr.startsWith('http') || addr === '') {
+        addr = addr.replace(/\/+$/, "");
+        Cookies.set('address', addr, currentAddr);
+        location.reload();
+    }
 };
 const setAddress = function () {
     let cookieAddr = Cookies.get('address');
