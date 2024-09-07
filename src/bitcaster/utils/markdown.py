@@ -36,7 +36,7 @@ class LinksInlineProcessor(InlineProcessor):
 class BitcasterDocSiteExtension(Extension):
     def __init__(self, **kwargs: Any):
         self.config = {
-            "base_url": [env("BITCASTER_DOC_SITE"), ""],
+            "base_url": [env("BITCASTER_DOCUMENTATION_SITE_URL"), ""],
         }
         super().__init__(**kwargs)
 

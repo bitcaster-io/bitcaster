@@ -44,3 +44,16 @@ def absolute_uri(url: str | None = None) -> str:
 
 def absolute_reverse(name: str, args: Sequence[Any] | None = None, kwargs: Dict[str, Any] | None = None) -> str:
     return absolute_uri(reverse(name, args=args, kwargs=kwargs))
+
+
+def get_client_ip(request: HttpRequest) -> str:
+    # This uses the first item in X-Forwarded-For, It does not work on Heroku:
+    # @see https://stackoverflow.com/questions/18264304/get-clients-real-ip-address-on-heroku#answer-18517550
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(",")[0]
+    elif real := request.META.get("HTTP_X_REAL_IP"):
+        ip = real
+    else:
+        ip = request.META.get("REMOTE_ADDR")
+    return ip.strip()

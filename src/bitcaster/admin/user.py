@@ -31,3 +31,4 @@ class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
     filter_horizontal = ()
+    change_user_password_template = "admin/auth/user/change_password2.html"  # nosec

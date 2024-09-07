@@ -118,6 +118,20 @@ html[data-theme=light] {
   color: var(--delete-button-fg);
   background-color: var(--delete-button-bg);
 }
+:root .admonition, html[data-theme=light] .admonition, html[data-theme=dark] .admonition {
+  width: 100%;
+  display: inline-flex;
+}
+:root .admonition div, html[data-theme=light] .admonition div, html[data-theme=dark] .admonition div {
+  width: 100%;
+  padding: 10px;
+}
+:root .admonition div.success, html[data-theme=light] .admonition div.success, html[data-theme=dark] .admonition div.success {
+  background-color: var(--message-success-bg);
+}
+:root .admonition div.fail, html[data-theme=light] .admonition div.fail, html[data-theme=dark] .admonition div.fail {
+  background-color: var(--message-error-bg);
+}
 :root .select2-search--dropdown, html[data-theme=light] .select2-search--dropdown, html[data-theme=dark] .select2-search--dropdown {
   padding: 0;
 }

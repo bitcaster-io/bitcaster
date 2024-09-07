@@ -5,7 +5,7 @@
 groups = ["default", "dev", "docs"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:a8ea7ce10a7849d8f2c1bf8bb7008b7f7318449ff77c8f23ebd48c383827e5ae"
+content_hash = "sha256:6d9883ebf45e6a58c8a8a5cf486cdf2766461a5e70737e910d1bb0e76881b781"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -3304,6 +3304,15 @@ dependencies = [
 files = [
     {file = "python3-openid-3.2.0.tar.gz", hash = "sha256:33fbf6928f401e0b790151ed2b5290b02545e8775f982485205a066f874aaeaf"},
     {file = "python3_openid-3.2.0-py3-none-any.whl", hash = "sha256:6626f771e0417486701e0b4daff762e7212e820ca5b29fcc0d05f6f8736dfa6b"},
+]
+
+[[package]]
+name = "pytricia"
+version = "1.0.2"
+summary = "An efficient IP address storage and lookup module for Python."
+groups = ["default"]
+files = [
+    {file = "pytricia-1.0.2.tar.gz", hash = "sha256:7f6c0afdce55a1b7651a1a56d8b621c228a211dd23f3f8c5c1fdec3af2c19b15"},
 ]
 
 [[package]]

@@ -8,6 +8,7 @@ from bitcaster.state import state
 from bitcaster.utils.http import (
     absolute_reverse,
     absolute_uri,
+    get_client_ip,
     get_server_host,
     get_server_url,
 )
@@ -53,3 +54,9 @@ def test_get_server_url(settings: "SettingsWrapper") -> None:
 
     settings.SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
     assert get_server_url() == "https://127.0.0.1"
+
+
+@pytest.mark.parametrize("key", ["HTTP_X_FORWARDED_FOR", "HTTP_X_REAL_IP", "REMOTE_ADDR"])
+def test_get_client_ip(rf: "RequestFactory", key: str) -> None:
+    req = rf.get("/", **{key: "1.1.1.1   "})  # type: ignore
+    assert get_client_ip(req) == "1.1.1.1"

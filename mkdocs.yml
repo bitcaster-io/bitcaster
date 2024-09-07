@@ -19,7 +19,8 @@ exclude_docs: |
   .m_templates
   .templates
   _scripts
-  -screenshots
+  _guidelines
+  
 
 markdown_extensions:
 #  - abbr

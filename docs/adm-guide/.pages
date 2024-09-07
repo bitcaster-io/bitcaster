@@ -1,9 +1,14 @@
 nav:
-  - Setup: setup
-  - Reference: reference
-#  - Quick Start: quickstart.md
-#  - Create Initial Structure: structure.md
-#  - Dispatchers: dispatchers.md
-#  - Channels: channels.md
-#  - Social Logins: sso.md
-#  - Diagrams: diagrams
+  - Quick Start: quickstart.md
+  - Create Initial Structure: structure.md
+  - Create Channel: channel.md
+  - Configure Application: app.md
+  - Register Events: events.md
+  - Create Message: message.md
+  - Create Distribution List: dl.md
+  - Create Notification Rule: notification.md
+  - Trigger Event: trigger.md
+  - Login:
+    - login.md
+    - sso.md
+  - ...

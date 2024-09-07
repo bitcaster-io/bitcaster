@@ -1,4 +1,4 @@
-{% load i18n static %}<!DOCTYPE html>
+{% load i18n static feature_flags %}<!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
 <head>
@@ -56,7 +56,8 @@
                         <a href="{{ docsroot }}">{% translate 'Documentation' %}</a> /
                     {% endif %}
                 {% endif %}
-                {% if user.has_usable_password %}
+                {% flag_enabled 'LOCAL_LOGIN' as LOCAL_LOGIN %}
+                {% if LOCAL_LOGIN and user.has_usable_password %}
                 <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a> /
                 {% endif %}
                 <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
