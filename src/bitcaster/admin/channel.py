@@ -270,18 +270,21 @@ class ChannelWizard(CookieWizardView):
         except Exception:
             ret["project"] = None
 
-        try:
-            ret["name"] = self.storage.get_step_data("data").get("data-name")
-        except Exception:
-            ret["name"] = None
-        try:
-            ret["parent"] = Channel.objects.get(
-                pk=self.storage.get_step_data("parent").get("parent-parent"), organization__id=ret["organization"].pk
-            )
-            ret["name"] = self.storage.get_step_data("parent").get("parent-name")
-        except Exception:
-            ret["parent"] = None
-            ret["name"] = None
+        if ret["mode"] == ChannelType.MODE_INHERIT:
+            try:
+                ret["parent"] = Channel.objects.get(
+                    pk=self.storage.get_step_data("parent").get("parent-parent"),
+                    organization__id=ret["organization"].pk,
+                )
+                ret["name"] = self.storage.get_step_data("parent").get("parent-name")
+            except Exception:
+                ret["parent"] = None
+                ret["name"] = None
+        else:
+            try:
+                ret["name"] = self.storage.get_step_data("data").get("data-name")
+            except Exception:
+                ret["name"] = None
 
         try:
             ret["dispatcher"] = self.storage.get_step_data("data").get("data-dispatcher")
