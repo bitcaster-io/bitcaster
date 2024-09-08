@@ -26,36 +26,12 @@ Messages content is customised at user/receiver level using a flexible template 
 Your user will be empowered with an easy to use console to choose how to receive the messages configured in Bitcaster.
 
 
-### Structure
-
-
-Bitcaster structure allows to manage simple and complex environment, it is organised as follow:
-
-
-- <glossary:Organization> (your company)
-
-    - <glossary:Project> (your business domain)
-
-        - <glossary:Application> (the source of your messages)
-
-            - <glossary:Event> (something that happen in your <glossary:Application> that you want to notify to the users)
-
-
-
-Each <glossary:Event> can have different <glossary:Channel>s enabled to forward <glossary:Notification>s 
-the destination <glossary:Distribution List> 
-
-
 
 See the [Glossary](./glossary/index.md) for a list of common Bitcaster terminology
 
-[//]: # ()
-[//]: # (---)
+!!! note
 
-[//]: # (<div class="text-center">)
+    To help you to novigate this documentation use the `Set Address` link on the header.
+    All the links to in the pages will reflect your server address for a better user experience.
 
-[//]: # (<a href="getting-started/" class="btn btn-primary" role="button">Getting Started</a>)
-
-[//]: # (<a href="user-guide/" class="btn btn-primary" role="button">User Guide</a>)
-
-[//]: # (</div>)
+    **No data are sent outside your Browser**

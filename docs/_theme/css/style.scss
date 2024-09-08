@@ -23,6 +23,28 @@
   width: auto;
 }
 
+dl#glossary {
+  dt {
+    margin: 5px;
+    ;
+  }
+}
+
+.md-typeset {
+  a {
+    color: var(--link-fg);
+
+    &:hover {
+      color: var(--link-hover-color);
+    }
+
+    &:visited {
+      color: var(--link-fg);
+    }
+  }
+
+}
+
 code.bc-button {
   border: none;
   font-weight: 400;
@@ -41,10 +63,12 @@ a.bc-button, code.bc-tool-button {
     background-color: #3e8f3e;;
     color: white;
   }
+
   &.link {
     background-color: #dfd953;
     color: black;
   }
+
   background-color: #747474;
   background-clip: border-box;
   border-radius: 15px;

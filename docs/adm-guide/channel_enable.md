@@ -18,5 +18,6 @@ Here you can enable an Organization's <glossary:Abstract Channel> or create a ne
 
 ## Enable Abstract Channel
 
+If you have previously [created any Abstract Channel](abstract_channel_create.md) you can enable for the Project
 
 ![Image](_screenshots/channels/3.png)
