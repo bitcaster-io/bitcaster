@@ -1,4 +1,7 @@
-@mixin ccc {
+@mixin base {
+  --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
   --primary: #e53734;
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
@@ -27,6 +30,7 @@
 }
 
 @mixin light {
+  @include base;
   --body-bg: var(--white);
   --body-fg: #333;
   --fg-primary: var(--black);
@@ -38,6 +42,7 @@
 }
 
 @mixin dark {
+  @include base;
   --body-bg: var(--black);
   --body-fg: #eeeeee;
   --fg-primary: var(--white);
@@ -48,7 +53,7 @@
 
 @media (prefers-color-scheme: light) {
   :root {
-    @include ccc;
+    //@include base;
     @include light;
     color-scheme: light;
   }
@@ -56,18 +61,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    @include ccc;
+    //@include base;
     @include dark;
     color-scheme: dark;
   }
 }
 
 html[data-theme="dark"] {
-  @include ccc;
+  //@include base;
   @include dark;
 }
 
 html[data-theme="light"] {
-  @include ccc;
+  //@include base;
   @include light;
 }

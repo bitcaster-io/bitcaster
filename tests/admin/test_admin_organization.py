@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-    from bitcaster.models import Channel, Message, Organization
+    from bitcaster.models import Channel, Message, Organization, Project
 
     Context = TypedDict(
         "Context",
@@ -84,3 +84,26 @@ def test_protected_org(app: "DjangoTestApp") -> None:
 
     assert "name" not in frm.fields
     assert not res.pyquery("a.deletelink")
+
+
+def test_current(app: "DjangoTestApp", organization: "Organization") -> None:
+    url = reverse("admin:bitcaster_organization_current")
+    res = app.get(url)
+    assert res.status_code == 302
+    assert res.location == reverse("admin:bitcaster_organization_change", args=[organization.pk])
+
+
+def test_create_project_if_does_not_exists(app: "DjangoTestApp", organization: "Organization") -> None:
+    url = reverse("admin:bitcaster_organization_change", args=[organization.pk])
+    res = app.get(url)
+    res = res.click("Project", linkid="btn-project")
+    assert res.status_code == 302
+    assert res.location == f"{reverse('admin:bitcaster_project_add')}?organization={organization.pk}"
+
+
+def test_goto_project_if_exists(app: "DjangoTestApp", project: "Project") -> None:
+    url = reverse("admin:bitcaster_organization_change", args=[project.organization.pk])
+    res = app.get(url)
+    res = res.click("Project", linkid="btn-project")
+    assert res.status_code == 302
+    assert res.location == reverse("admin:bitcaster_project_change", args=[project.pk])

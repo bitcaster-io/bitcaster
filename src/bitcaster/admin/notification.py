@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -14,7 +14,6 @@ from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:
     from bitcaster.models import Notification
-
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +34,9 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
     autocomplete_fields = ("event", "distribution")
     change_form = NotificationForm
 
+    def get_exclude(self, request: HttpRequest, obj: "Optional[Notification]" = None) -> tuple[str, ...]:
+        return ("payload_filter", "extra_context")
+
     def get_queryset(self, request: HttpRequest) -> QuerySet["Notification"]:
         return (
             super()
@@ -48,7 +50,7 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
             )
         )
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
+    @button(html_attrs={"class": ButtonColor.LINK.value})
     def messages(self, request: HttpRequest, pk: str) -> HttpResponse:
         status_code = 200
         ctx = self.get_common_context(request, pk)

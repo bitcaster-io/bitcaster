@@ -46,3 +46,10 @@ def test_add(app: "DjangoTestApp", organization: "Organization", bitcaster: "App
     frm["environments"].force_value("development,production")
     res = frm.submit("Save and continue editing")
     assert res.status_code == 302, res.context["adminform"].errors
+
+
+def test_current(app: "DjangoTestApp", project: "Project") -> None:
+    url = reverse("admin:bitcaster_project_current")
+    res = app.get(url)
+    assert res.status_code == 302
+    assert res.location == reverse("admin:bitcaster_project_change", args=[project.pk])

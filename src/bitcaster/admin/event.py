@@ -14,11 +14,12 @@ from bitcaster.models import Assignment, Event
 
 from ..forms.event import EventChangeForm
 from ..state import state
-from .base import BaseAdmin
+from .base import BaseAdmin, ButtonColor
 from .message import Message
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
+    from django.contrib.admin.options import _FieldsetSpec
     from django.http import HttpResponse
     from django.utils.datastructures import _ListOrTuple
 
@@ -54,6 +55,30 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
     form = EventChangeForm
     save_as_continue = False
     save_as = False
+    _fieldsets: "_FieldsetSpec" = [
+        (
+            None,
+            {
+                "fields": (
+                    ("name", "slug"),
+                    ("description",),
+                    ("active", "newsletter", "occurrence_retention"),
+                    # ("channels",)
+                )
+            },
+        ),
+        (
+            "Channels",
+            {
+                "fields": ["channels"],
+            },
+        ),
+    ]
+
+    def get_fieldsets(self, request: HttpRequest, obj: Optional[Event] = None) -> "_FieldsetSpec":
+        if obj:
+            return self._fieldsets
+        return [(None, {"fields": self.get_fields(request, obj)})]
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
         return super().get_queryset(request).select_related("application__project__organization")
@@ -80,7 +105,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
         else:
             return ["locked"]
 
-    @button()
+    @button(html_attrs={"class": ButtonColor.ACTION.value})
     def trigger_event(self, request: HttpRequest, pk: str) -> "HttpResponse":
         from bitcaster.models import Occurrence
 
@@ -120,7 +145,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
         context["form"] = config_form
         return TemplateResponse(request, "admin/event/test_event.html", context)
 
-    @button()
+    @button(html_attrs={"class": ButtonColor.LINK.value})
     def notifications(self, request: HttpRequest, pk: str) -> "HttpResponse":
         ctx = self.get_common_context(request, pk, title=_("Notifications"))
         # ctx[""]

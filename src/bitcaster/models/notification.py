@@ -49,16 +49,16 @@ class Notification(BitcasterBaseModel):
     distribution = models.ForeignKey(
         DistributionList, blank=True, null=True, on_delete=models.CASCADE, related_name="notifications"
     )
-    payload_filter = models.TextField(blank=True, null=True)
-    extra_context = models.JSONField(default=dict, blank=True)
     environments = ArrayField(
         models.CharField(max_length=20, blank=True, null=True),
         blank=True,
         null=True,
         help_text=_("Allow notification only for these environments"),
     )
+    payload_filter = models.TextField(blank=True, null=True)
+    extra_context = models.JSONField(default=dict, blank=True)
+
     objects = NotificationManager()
-    # objects = NotificationQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Notification")

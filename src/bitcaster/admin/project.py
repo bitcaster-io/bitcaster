@@ -66,6 +66,15 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
         html_attrs={"class": ButtonColor.ACTION.value},
         visible=lambda s: s.context["original"].name != Bitcaster.PROJECT,
     )
+    def add_distribution_list(self, request: HttpRequest, pk: str) -> HttpResponse:
+        from bitcaster.models import DistributionList
+
+        return HttpResponseRedirect(url_related(DistributionList, op="add", project=pk))
+
+    @button(
+        html_attrs={"class": ButtonColor.ACTION.value},
+        visible=lambda s: s.context["original"].name != Bitcaster.PROJECT,
+    )
     def add_channel(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Channel
 

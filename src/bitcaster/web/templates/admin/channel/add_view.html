@@ -11,7 +11,6 @@
 
 {% endblock %}
 {% block action-content %}
-
     <div class="channel-wizard-help">
         <div>
         {{ wizard.form|help_doc }}
@@ -19,18 +18,16 @@
         <table class="wizard-summary">
         <tr>
             <th>Mode</th>
-            <td>{{ cleaned_data.mode.operation }}</td>
+            <td>{{ selection.operation }}</td>
         </tr>
         <tr>
             <th>Organization</th>
-            <td>{{ cleaned_data.org.organization }}</td>
+            <td>{{ selection.organization|default_if_none:"" }}</td>
         </tr>
-        {% if cleaned_data.prj %}
             <tr>
                 <th>Project</th>
-                <td>{{ cleaned_data.prj.project|default_if_none:"All" }}</td>
+                <td>{{ selection.project|default_if_none:"N/A" }}</td>
             </tr>
-        {% endif %}
     </table>
     
     </div>
@@ -54,12 +51,13 @@
                         class="button clear-required" type="submit">{% translate "< Prev step" %}</button>
 
             {% endif %}
-            {% if wizard.steps.next %}
-                <button class="button" type="submit">{% translate "Next step >" %}</button>
+            {% if wizard.steps.next or selection.operation is None %}
+                <button class="button" value="next" type="submit" id="btn-next">{% translate "Next step >" %}</button>
             {% else %}
-                <button class="button" type="submit">{% translate "Finish" %}</button>
+                <button class="button" value="finish" type="submit" id="btn-finish" >{% translate "Finish" %}</button>
             {% endif %}
-            <button name="wizard_cancel" id="btn-cancel"
+            <button name="wizard_cancel" 
+                    id="btn-cancel"
                     value="{{ back_url }}"
                     class="button cancel clear-required" type="submit">{% translate "Cancel" %}</button>
         </div>

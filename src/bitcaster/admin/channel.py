@@ -5,6 +5,8 @@ from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from django import forms
+from django.contrib.admin import ModelAdmin
+from django.contrib.admin.filters import SimpleListFilter
 from django.contrib.admin.helpers import AdminForm
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
@@ -37,7 +39,14 @@ class ChannelTestForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
 
 
-class ChannelOrg(forms.Form):
+class WizardForm(forms.Form):
+
+    def __init__(self, request: HttpRequest, **kwargs: Any) -> None:
+        self.request = request
+        super().__init__(**kwargs)
+
+
+class ChannelOrg(WizardForm):
     help_text = _(
         """
 Select the organization that this channel belongs to.
@@ -47,12 +56,13 @@ Select the organization that this channel belongs to.
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
-        # if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
-        #     return False
+        if w.request and ("organization" in w.request.GET or "project" in w.request.GET):
+            # if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
+            return False
         return True
 
 
-class ChannelProject(forms.Form):
+class ChannelProject(WizardForm):
     help_text = _(
         """
 Choose the specific project that this channel belongs to.
@@ -62,28 +72,42 @@ Choose the specific project that this channel belongs to.
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
+        if w.request and "project" in w.request.GET:
+            return False
         if w.get_selected_mode() in ["inherit", "new"]:
             return True
         return False
 
 
-class ChannelType(forms.Form):
+class ChannelType(WizardForm):
     MODE_NEW = "new"
     MODE_INHERIT = "inherit"
     MODE_TEMPLATE = "template"
+    MODE_CHOICES = (
+        (MODE_NEW, _("Create New Project Channel")),
+        (MODE_INHERIT, _("Enable Abstract Channel")),
+        (MODE_TEMPLATE, _("Create Abstract Channel")),
+    )
     help_text = _(
         """
 Select the type of channel you want to create. see [[doc:help/channel:Channel]]
     """
     )
     operation = forms.ChoiceField(
-        choices=(
-            (MODE_NEW, _("Create New Project Channel")),
-            (MODE_INHERIT, _("Enable Organization Channel")),
-            (MODE_TEMPLATE, _("Create Organization ChannelTemplate")),
-        ),
+        choices=MODE_CHOICES,
         widget=forms.RadioSelect,
     )
+
+    def __init__(self, request: HttpRequest, **kwargs: Any) -> None:
+        super().__init__(request, **kwargs)
+        if "project" in request.GET:
+            self.fields["operation"].choices = [
+                c for c in self.fields["operation"].choices if c[0] != ChannelType.MODE_TEMPLATE
+            ]
+        elif "organization" in request.GET:
+            self.fields["operation"].choices = [
+                c for c in self.fields["operation"].choices if c[0] == ChannelType.MODE_TEMPLATE
+            ]
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
@@ -92,12 +116,13 @@ Select the type of channel you want to create. see [[doc:help/channel:Channel]]
         return True
 
 
-class ChannelSelectParent(forms.ModelForm[Channel]):
+class ChannelSelectParent(WizardForm, forms.ModelForm[Channel]):
     help_text = _(
         """
+Select the abstract channel that you want to make available for this project.
     """
     )
-    parent = forms.ModelChoiceField(queryset=Channel.objects.all(), required=True)
+    parent = forms.ModelChoiceField(label=_("Abstract"), queryset=Channel.objects.all(), required=True)
 
     class Meta:
         model = Channel
@@ -115,7 +140,7 @@ class ChannelSelectParent(forms.ModelForm[Channel]):
         return False
 
 
-class ChannelData(forms.ModelForm[Channel]):
+class ChannelData(WizardForm, forms.ModelForm[Channel]):
     help_text = _(
         """
 Provide a name for this channel and the Dispatcher to use. You will be asked for specific information after this step.
@@ -153,6 +178,7 @@ class ChannelWizard(CookieWizardView):
     )
     condition_dict = {
         # "mode": ChannelType.visible,
+        "org": ChannelOrg.visible,
         "prj": ChannelProject.visible,
         "parent": ChannelSelectParent.visible,
         "data": ChannelData.visible,
@@ -165,7 +191,9 @@ class ChannelWizard(CookieWizardView):
         return None
 
     def get_form_kwargs(self, step: Optional[str] = None) -> dict[str, Any]:
-        return super().get_form_kwargs(step)
+        ret = super().get_form_kwargs(step)
+        ret["request"] = self.request
+        return ret
 
     def get_form(self, step: Optional[str] = None, data: Any = None, files: Any = None) -> forms.Form:
         form = super().get_form(step, data, files)
@@ -222,10 +250,51 @@ class ChannelWizard(CookieWizardView):
             return HttpResponseRedirect(wizard_cancel or reverse("admin:bitcaster_channel_changelist"))
         return super().post(*args, **kwargs)
 
+    def get_current_selection(self) -> dict[str, Any]:  # noqa
+        ret = {}
+        try:
+            ret["mode"]: str = self.storage.get_step_data("mode").get("mode-operation")
+            ret["operation"] = dict(ChannelType.MODE_CHOICES)[ret["mode"]]
+        except Exception:
+            ret["mode"] = None
+            ret["operation"] = None
+        try:
+            ret["organization"] = Organization.objects.get(pk=self.storage.get_step_data("org").get("org-organization"))
+        except Exception:
+            ret["organization"] = None
+
+        try:
+            ret["project"] = Project.objects.get(
+                pk=self.storage.get_step_data("prj").get("prj-project"), organization__id=ret["organization"].pk
+            )
+        except Exception:
+            ret["project"] = None
+
+        try:
+            ret["name"] = self.storage.get_step_data("data").get("data-name")
+        except Exception:
+            ret["name"] = None
+        try:
+            ret["parent"] = Channel.objects.get(
+                pk=self.storage.get_step_data("parent").get("parent-parent"), organization__id=ret["organization"].pk
+            )
+            ret["name"] = self.storage.get_step_data("parent").get("parent-name")
+        except Exception:
+            ret["parent"] = None
+            ret["name"] = None
+
+        try:
+            ret["dispatcher"] = self.storage.get_step_data("data").get("data-dispatcher")
+        except Exception:
+            ret["dispatcher"] = None
+
+        return ret
+
     def get_context_data(self, form: forms.Form, **kwargs: Any) -> dict[str, Any]:
         kwargs.update(**self.extra_context)
         kwargs["data"] = self.storage.data
         kwargs["back_url"] = self.request.GET.get("_from", "")
+        kwargs["selection"] = self.get_current_selection()
         kwargs["cleaned_data"] = {
             form_key: self.get_cleaned_data_for_step(form_key)
             for form_key in self.get_form_list()
@@ -236,8 +305,9 @@ class ChannelWizard(CookieWizardView):
         return super().get_context_data(form, **kwargs)
 
     def done(self, form_list: list[forms.Form], **kwargs: Any) -> HttpResponse:
-        data = self.get_all_cleaned_data()
-        if self.get_selected_mode() == ChannelType.MODE_TEMPLATE:
+        # data = self.get_all_cleaned_data()
+        data = self.get_current_selection()
+        if data["mode"] == ChannelType.MODE_TEMPLATE:
             ch = Channel.objects.create(
                 name=data["name"],
                 dispatcher=data["dispatcher"],
@@ -245,7 +315,7 @@ class ChannelWizard(CookieWizardView):
                 parent=None,
                 project=None,
             )
-        elif self.get_selected_mode() == ChannelType.MODE_NEW:
+        elif data["mode"] == ChannelType.MODE_NEW:
             ch = Channel.objects.create(
                 name=data["name"],
                 dispatcher=data["dispatcher"],
@@ -253,7 +323,7 @@ class ChannelWizard(CookieWizardView):
                 parent=None,
                 project=data["project"],
             )
-        elif self.get_selected_mode() == ChannelType.MODE_INHERIT:
+        elif data["mode"] == ChannelType.MODE_INHERIT:
             ch = Channel.objects.create(
                 name=data["name"],
                 parent=data["parent"],
@@ -263,17 +333,38 @@ class ChannelWizard(CookieWizardView):
                 project=data["project"],
             )
         else:  # pragma: no cover
-            raise ValueError(self.get_selected_mode())
+            raise ValueError(data["mode"])
         return HttpResponseRedirect(reverse("admin:bitcaster_channel_configure", args=[ch.id]))
 
 
 wizard = ChannelWizard.as_view()
 
 
+class ChannelTypeFilter(SimpleListFilter):
+    parameter_name = "type"
+    title = "Type"
+    prefixes = (
+        ("abstract", _("Abstract")),
+        ("project", _("Project")),
+    )
+
+    def lookups(self, request: HttpRequest, model_admin: ModelAdmin[Channel]) -> tuple[tuple[str, str], ...]:
+        return self.prefixes
+
+    def queryset(self, request: HttpRequest, queryset: QuerySet[Channel]) -> QuerySet[Channel]:
+        if self.value() == "abstract":
+            return queryset.filter(organization__isnull=False, project__isnull=True)
+        elif self.value() == "project":
+            return queryset.filter(organization__isnull=False, project__isnull=False)
+        else:
+            return queryset.all()
+
+
 class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], VersionAdmin[Channel]):
     search_fields = ("name",)
     list_display = ("name", "organization", "project", "dispatcher_", "active", "locked", "protocol")
     list_filter = (
+        ChannelTypeFilter,
         ("organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("project", LinkedAutoCompleteFilter.factory(parent="organization")),
         "protocol",

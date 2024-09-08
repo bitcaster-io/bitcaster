@@ -50,15 +50,18 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     def channels(self, request: HttpRequest, pk: str) -> HttpResponse:
         return HttpResponseRedirect(url_related(Channel, organization__exact=pk))
 
-    @button(html_attrs={"class": ButtonColor.LINK.value})
-    def create_project(self, request: HttpRequest, pk: str) -> HttpResponse:
+    @button(html_attrs={"class": ButtonColor.ACTION.value})
+    def project(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Project
 
-        # "{\"step\":\"org\"\054\"step_data\":{\"mode\":{\"csrfmiddlewaretoken\":[\"0UafnqMrhvEt6PLBEywxatmYvsOKGpVtOYe1fu17rY5wH2Wyi3wkNoeM15wOCstZ\"]\054\"channel_wizard-current_step\":[\"mode\"]\054\"mode-operation\":[\"new\"]}}\054\"step_files\":{\"mode\":{}}\054\"extra_data\":{}}:1shv4A:w6bsHlrfLKgjTqN7vSUjRKVPen0uAq9dY9BjloqXyRY"
+        if prj := Project.objects.filter(organization_id=pk).first():
+            url = reverse("admin:bitcaster_project_change", args=[prj.pk])
+        else:
+            url = url_related(Project, op="add", organization=pk)
         state.add_cookie("wizard_channel_wizard", {"step": "prj", "step_data": {"mode": "new"}})
-        return HttpResponseRedirect(url_related(Project, op="add", organization=pk))
+        return HttpResponseRedirect(url)
 
-    @button(html_attrs={"class": ButtonColor.LINK.value})
+    @button(html_attrs={"class": ButtonColor.ACTION.value})
     def create_channel(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Channel
 
@@ -74,7 +77,7 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
             )
         )
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
+    @button(html_attrs={"class": ButtonColor.LINK.value})
     def templates(self, request: HttpRequest, pk: str) -> HttpResponse:
         status_code = 200
         ctx = self.get_common_context(request, pk, title="Edit/Create Template")
