@@ -8,6 +8,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from ..auth.constants import Grant
+from ..exceptions import LockError
 from ..models import Event, Occurrence
 from ..models.occurrence import OccurrenceOptions
 from .base import SecurityMixin
@@ -65,7 +66,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
     http_method_names = ["post"]
 
     def get_queryset(self) -> QuerySet[Event]:
-        return Event.objects.filter(
+        return Event.objects.select_related("application__project__organization").filter(
             application__project__organization__slug=self.kwargs["org"],
             application__project__slug=self.kwargs["prj"],
             application__slug=self.kwargs["app"],
@@ -78,6 +79,12 @@ class EventTrigger(SecurityMixin, GenericAPIView):
             slug = self.kwargs["evt"]
             try:
                 evt: "Event" = self.get_queryset().get(slug=slug)
+                if evt.locked:
+                    raise LockError(evt)
+                if evt.application.locked:
+                    raise LockError(evt.application)
+                if evt.application.project.locked:
+                    raise LockError(evt.application.project)
                 self.check_object_permissions(self.request, evt)
                 opts: OccurrenceOptions = ser.validated_data.get("options", {})
                 if request.auth.environments:
@@ -85,13 +92,14 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                         opts["environs"] = list(set(opts["environs"]).intersection(request.auth.environments))
                     else:
                         opts["environs"] = request.auth.environments
-
                 o: "Occurrence" = evt.trigger(
                     context=ser.validated_data.get("context", {}),
                     options=opts,
                     cid=correlation_id,
                 )
                 return Response({"occurrence": o.pk}, status=201)
+            except LockError as e:
+                return Response({"error": str(e)}, status=400)
             except Event.DoesNotExist:
                 return Response({"error": f"Event not found {self.kwargs}"}, status=404)
         else:

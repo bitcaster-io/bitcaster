@@ -11,6 +11,7 @@ from django.db.models.options import Options
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django_regex.utils import RegexList as _RegexList
+from pytest_django.fixtures import SettingsWrapper
 from responses import RequestsMock
 from testutils.factories.base import AutoRegisterModelFactory
 from testutils.factories.user import SuperUserFactory
@@ -136,7 +137,10 @@ def app(django_app_factory: "MixinWithInstanceVariables", mocked_responses: "Req
     return django_app
 
 
-def test_admin_index(app: "DjangoTestApp") -> None:
+@pytest.mark.parametrize("ui", [True, False])
+def test_admin_index(app: "DjangoTestApp", ui: bool, settings: SettingsWrapper) -> None:
+    settings.FLAGS = {"OLD_STYLE_UI": [("boolean", ui)]}
+
     url = reverse("admin:index")
 
     res = app.get(url)

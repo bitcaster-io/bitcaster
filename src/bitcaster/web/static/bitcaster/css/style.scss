@@ -96,12 +96,14 @@ a {
 
 html[data-theme="dark"] {
   .footer {
+    margin-bottom:0 !important;
     color: var(--fg-primary);
   }
 }
 
 html[data-theme="light"] {
   .footer {
+    margin-bottom:0 !important;
     color: var(--fg-primary);
   }
 }

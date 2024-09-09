@@ -12,16 +12,16 @@ from bitcaster.models import Application, Channel, User
 if TYPE_CHECKING:
     from bitcaster.types.http import AuthHttpRequest
 
-TEMPLATES = {
-    "mode": "bitcaster/locking/mode.html",
-    "channel": "bitcaster/locking/channel.html",
-    "project": "bitcaster/locking/project.html",
-    "application": "bitcaster/locking/application.html",
-    "user": "bitcaster/locking/user.html",
-    # "paytype": "checkout/paymentmethod.html",
-    # "cc": "checkout/creditcard.html",
-    # "confirmation": "checkout/confirmation.html"
-}
+# TEMPLATES = {
+#     "mode": "bitcaster/locking/mode.html",
+#     "channel": "bitcaster/locking/channel.html",
+#     "project": "bitcaster/locking/project.html",
+#     "application": "bitcaster/locking/application.html",
+#     "user": "bitcaster/locking/user.html",
+#     # "paytype": "checkout/paymentmethod.html",
+#     # "cc": "checkout/creditcard.html",
+#     # "confirmation": "checkout/confirmation.html"
+# }
 
 
 class LockingWizard(CookieWizardView):
@@ -42,10 +42,10 @@ class LockingWizard(CookieWizardView):
         # "parent": ChannelSelectParent.visible,
         # "data": ChannelData.visible,
     }
-    template_name = "bitcaster/locking/mode.html"
+    template_name = "bitcaster/locking/lock.html"
 
-    def get_template_names(self) -> str:
-        return TEMPLATES.get(self.steps.current, super().get_template_names())
+    # def get_template_names(self) -> str:
+    #     return TEMPLATES.get(self.steps.current, super().get_template_names())
 
     def get(self, request: "AuthHttpRequest", *args: Any, **kwargs: Any) -> HttpResponse:
         # self.extra_context = kwargs.pop("extra_context", {})

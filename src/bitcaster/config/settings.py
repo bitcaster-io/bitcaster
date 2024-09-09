@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     "bitcaster.web.apps.Config",
     "bitcaster.webpush.apps.Config",
     "bitcaster.social",
-    "django.contrib.admin",
+    "bitcaster.admin_site.BitcasterAdminConfig",
+    # "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -57,7 +58,6 @@ INSTALLED_APPS = [
     "constance.backends.database",
     #
     "anymail",
-    # "bitcaster.admin_site.AdminConfig",
     "bitcaster.apps.Config",
 ]
 

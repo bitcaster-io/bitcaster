@@ -1,6 +1,7 @@
+import contextlib
 from contextlib import ContextDecorator
 from random import choice
-from typing import TYPE_CHECKING, Any, Iterable, Optional, Union
+from typing import TYPE_CHECKING, Any, Generator, Iterable, Optional, Union
 from unittest.mock import Mock
 
 from django.contrib.auth.models import Permission
@@ -21,6 +22,8 @@ ascii_letters = ascii_lowercase + ascii_uppercase
 
 if TYPE_CHECKING:
     from django.contrib.auth.models import Group
+
+    from bitcaster.models.mixins import LockMixin
 
 
 class Null:
@@ -120,6 +123,18 @@ class user_grant_permissions(ContextDecorator):  # noqa
     def stop(self) -> None:
         """Stop an active patch."""
         return self.__exit__(None, None, None)
+
+
+@contextlib.contextmanager
+def lock(target: "LockMixin") -> "Generator[None, None, None]":
+    value: bool = target.locked
+    if not value:
+        target.locked = True
+        target.save()
+    yield
+    if not value:
+        target.locked = False
+        target.save()
 
 
 class key_grants(ContextDecorator):  # noqa

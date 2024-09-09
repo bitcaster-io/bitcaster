@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
-from testutils.perms import key_grants
+from testutils.perms import key_grants, lock
 
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import SystemEvent
@@ -335,3 +335,58 @@ def test_trigger_environment_by_key(
         o = Occurrence.objects.get(pk=res.data["occurrence"])
         delivered = process_occurrence(o.pk)
         assert delivered == 3
+
+
+def test_trigger_locked_project(
+    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+) -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    prj: Project = data["event"].application.project
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        with lock(prj):
+            res = client.post(url, data={"context": {}, "options": {}}, format="json")
+            assert res.status_code == status.HTTP_400_BAD_REQUEST, res.json()
+            assert res.json() == {"error": "Unable to process this event. Project locked"}
+
+
+def test_trigger_locked_application(
+    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+) -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    app: Application = data["event"].application
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        with lock(app):
+            res = client.post(url, data={"context": {}, "options": {}}, format="json")
+            assert res.status_code == status.HTTP_400_BAD_REQUEST, res.json()
+            assert res.json() == {"error": "Unable to process this event. Application locked"}
+
+
+def test_trigger_locked_channel(
+    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+) -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    ch: Channel = data["channel"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        with lock(ch):
+            res = client.post(url, data={"context": {}, "options": {}}, format="json")
+            assert res.status_code == status.HTTP_201_CREATED, res.json()
+
+
+def test_trigger_locked_event(
+    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+) -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    evt: Event = data["event"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        with lock(evt):
+            res = client.post(url, data={"context": {}, "options": {}}, format="json")
+            assert res.status_code == status.HTTP_400_BAD_REQUEST, res.json()
+            assert res.json() == {"error": "Unable to process this event. Event locked"}

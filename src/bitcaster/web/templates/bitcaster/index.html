@@ -3,8 +3,14 @@
 {% block body %}
     {% flag_enabled 'BETA_PREVIEW_LOCKING' as BETA_PREVIEW_LOCKING %}
     <div class="text-center">
-        <img style="width: 400px" src="{% static "bitcaster/images/logos/logo400.png" %}">
-        <img style="width: 400px" src="{% static "bitcaster/images/logos/name.svg" %}">
+        <div>
+            <div class="container m-5">
+                <img style="width: 400px" src="{% static "bitcaster/images/logos/logo400.png" %}">
+            </div>
+            <div class="container">
+                <img style="width: 400px" src="{% static "bitcaster/images/logos/name.svg" %}">
+            </div>
+        </div>
         <div class="container m-5 ">
             {% if user.is_authenticated %}
                 {% if BETA_PREVIEW_LOCKING %}
@@ -22,7 +28,7 @@
             {% else %}
                 <a class="button primary" href="{% url "login" %}">{% translate "Login" %}</a>
             {% endif %}
-            
+
         </div>
     </div>
     <div>
