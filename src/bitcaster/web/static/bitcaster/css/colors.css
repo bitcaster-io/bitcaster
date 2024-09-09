@@ -1,0 +1,17 @@
+* {
+  --primary: #e53734;
+  --secondary: #e53734;
+  --bg-primary: #e53734;
+  --bg-secondary: #ef5552;
+  --breadcrumbs-bg: #ef5552;
+  --button-bg: var(--bg-secondary);
+  --button-hover-bg: rgba(223, 207, 75, 0.63);
+  --default-button-bg: #980404FF;
+  --header-bg: #e53734;
+  --link-fg: #e53734;
+  --link-hover-color: rgba(223, 207, 75, 0.63);
+  --wizard-summary-bg-color: #f8f8f8;
+  --darkened-bg: rgba(161, 161, 161, 0.2);
+}
+
+/*# sourceMappingURL=colors.css.map */
