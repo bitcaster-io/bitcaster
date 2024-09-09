@@ -23,15 +23,24 @@ class BitcasterAdminSite(AdminSite):
     index_template = None
 
     def _get_sections(self) -> dict[str, Any]:
-        from constance import models as c
+        from constance.admin import Config
         from django.contrib.auth import models as auth_models
         from flags.models import FlagState
 
         from bitcaster import models as m
 
         return {
-            "system": [m.Event, m.Project, m.Application, m.Message, m.MediaFile, m.Organization, m.Channel],
-            "configuration": [FlagState, c.Constance, m.SocialProvider],
+            "system": [
+                m.Event,
+                m.Project,
+                m.Application,
+                m.Message,
+                m.MediaFile,
+                m.DistributionList,
+                m.Organization,
+                m.Channel,
+            ],
+            "configuration": [FlagState, Config, m.SocialProvider],
             "security": [m.User, auth_models.Group, m.UserRole, auth_models.Permission],
         }
 

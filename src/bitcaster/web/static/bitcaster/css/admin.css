@@ -1,3 +1,11 @@
+body.edit-message-body #edit-message-form input[type=text], body.edit-message-body #edit-message-form textarea {
+  color: black;
+  background-color: white;
+}
+body.edit-message-body iframe {
+  background-color: white;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";

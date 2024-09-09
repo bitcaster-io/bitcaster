@@ -51,6 +51,18 @@
   color-scheme: dark;
 }
 
+body.edit-message-body {
+  #edit-message-form {
+    input[type=text], textarea {
+      color: black;
+      background-color: white;
+    }
+  }
+  iframe{
+    background-color: white;
+  }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     //@include base;
