@@ -7,6 +7,7 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.template.response import TemplateResponse
+from django.utils.translation import gettext as _
 
 from ..forms.message import NotificationTemplateCreateForm
 from ..forms.notification import NotificationForm
@@ -53,7 +54,7 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def messages(self, request: HttpRequest, pk: str) -> HttpResponse:
         status_code = 200
-        ctx = self.get_common_context(request, pk)
+        ctx = self.get_common_context(request, pk, title=_("Messages"))
         notification: "Notification" = ctx["original"]
         if request.method == "POST":
             form = NotificationTemplateCreateForm(request.POST, notification=notification)
@@ -64,6 +65,6 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
                 status_code = 400
         else:
             form = NotificationTemplateCreateForm(notification=notification)
-        ctx["message_templates"] = notification.messages.filter(project=None)
+        ctx["message_templates"] = notification.messages.filter()
         ctx["form"] = form
-        return TemplateResponse(request, "admin/message/create_message_template.html", ctx, status=status_code)
+        return TemplateResponse(request, "admin/notification/messages.html", ctx, status=status_code)

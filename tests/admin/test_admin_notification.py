@@ -26,20 +26,20 @@ def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTes
 def notification(django_app_factory: "MixinWithInstanceVariables", db: "Any") -> "Notification":
     from testutils.factories import ChannelFactory, MessageFactory, NotificationFactory
 
-    n = NotificationFactory(event__channels=[ChannelFactory()])
+    n = NotificationFactory(event__channels=[ChannelFactory(), ChannelFactory()])
     MessageFactory(notification=n, event=n.event, channel=n.event.channels.first())
     return n
 
 
-def test_create_template(app: "DjangoTestApp", notification: "Notification") -> None:
+def test_create_notification_template(app: "DjangoTestApp", notification: "Notification") -> None:
     url = reverse("admin:bitcaster_notification_messages", args=[notification.pk])
     res = app.get(url)
     frm = res.forms["messageForm"]
-    frm["name"] = "Test Template"
-    frm["channel"] = notification.event.channels.first().pk
+    frm["name"] = "Test Notification Template"
+    frm["channel"] = notification.event.channels.last().pk
     frm.submit()
 
-    assert notification.messages.filter(name="Test Template").count() == 1
+    assert notification.messages.filter(name="Test Notification Template").count() == 1
 
 
 def test_avoid_duplicates_template(app: "DjangoTestApp", notification: "Notification") -> None:

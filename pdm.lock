@@ -5,7 +5,7 @@
 groups = ["default", "dev", "docs"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:6d9883ebf45e6a58c8a8a5cf486cdf2766461a5e70737e910d1bb0e76881b781"
+content_hash = "sha256:61921300e08f80134d0134b7a5d863bdab0111db4e15a15785d79113c0ddb605"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -3100,6 +3100,20 @@ files = [
 ]
 
 [[package]]
+name = "pytest-ekstazi"
+version = "1.0.0"
+requires_python = ">=3.7"
+summary = "Pytest plugin to select test using Ekstazi algorithm"
+groups = ["dev"]
+dependencies = [
+    "pytest",
+]
+files = [
+    {file = "pytest-ekstazi-1.0.0.tar.gz", hash = "sha256:8dfe6aa36889dd696cf267e18005e2480f3c593e87ac7a956bc7f445ec3330fd"},
+    {file = "pytest_ekstazi-1.0.0-py3-none-any.whl", hash = "sha256:6583de075851404673f3bcdcfabd944252e8b4722ed538adeec5b0f8ad201985"},
+]
+
+[[package]]
 name = "pytest-factoryboy"
 version = "2.7.0"
 requires_python = ">=3.8"
@@ -3193,6 +3207,21 @@ dependencies = [
 files = [
     {file = "pytest_socket-0.7.0-py3-none-any.whl", hash = "sha256:7e0f4642177d55d317bbd58fc68c6bd9048d6eadb2d46a89307fa9221336ce45"},
     {file = "pytest_socket-0.7.0.tar.gz", hash = "sha256:71ab048cbbcb085c15a4423b73b619a8b35d6a307f46f78ea46be51b1b7e11b3"},
+]
+
+[[package]]
+name = "pytest-testmon"
+version = "2.1.1"
+requires_python = ">=3.8"
+summary = "selects tests affected by changed files and methods"
+groups = ["dev"]
+dependencies = [
+    "coverage<8,>=6",
+    "pytest<9,>=5",
+]
+files = [
+    {file = "pytest-testmon-2.1.1.tar.gz", hash = "sha256:8ebe2c3de42d99306ee54cd4536fed0fc48346a954420da904b18e8d59b5da98"},
+    {file = "pytest_testmon-2.1.1-py3-none-any.whl", hash = "sha256:8271ca47bc8c80760c4fc7fd7895ea786b111bbb31f13eeea879a6fd11fe2226"},
 ]
 
 [[package]]

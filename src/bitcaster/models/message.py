@@ -73,9 +73,10 @@ class Message(Scoped3Mixin, BitcasterBaseModel):
         ordering = ("name",)
 
         constraints = [
-            UniqueConstraint(fields=["organization", "project", "application", "name"], name="unique_message_org"),
+            UniqueConstraint(fields=["notification", "channel"], name="unique_message_for_notification"),
             UniqueConstraint(fields=["organization", "project", "name"], name="unique_message_prj"),
-            UniqueConstraint(fields=["organization", "name"], name="unique_message_app"),
+            UniqueConstraint(fields=["organization", "project", "application", "name"], name="unique_message_app"),
+            UniqueConstraint(fields=["organization", "name"], name="unique_message_org"),
         ]
 
     def __str__(self) -> str:

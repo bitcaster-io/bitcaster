@@ -12,17 +12,6 @@ from bitcaster.models import Application, Channel, User
 if TYPE_CHECKING:
     from bitcaster.types.http import AuthHttpRequest
 
-# TEMPLATES = {
-#     "mode": "bitcaster/locking/mode.html",
-#     "channel": "bitcaster/locking/channel.html",
-#     "project": "bitcaster/locking/project.html",
-#     "application": "bitcaster/locking/application.html",
-#     "user": "bitcaster/locking/user.html",
-#     # "paytype": "checkout/paymentmethod.html",
-#     # "cc": "checkout/creditcard.html",
-#     # "confirmation": "checkout/confirmation.html"
-# }
-
 
 class LockingWizard(CookieWizardView):
     form_list = [

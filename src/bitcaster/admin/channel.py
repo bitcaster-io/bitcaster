@@ -46,7 +46,7 @@ class WizardForm(forms.Form):
         super().__init__(**kwargs)
 
 
-class ChannelOrg(WizardForm):
+class SelectOrganizationForm(WizardForm):
     help_text = _(
         """
 Select the organization that this channel belongs to.
@@ -171,14 +171,14 @@ class ManagementForm(forms.Form):
 class ChannelWizard(CookieWizardView):
     form_list = (
         ("mode", ChannelType),
-        ("org", ChannelOrg),
+        ("org", SelectOrganizationForm),
         ("prj", ChannelProject),
         ("parent", ChannelSelectParent),
         ("data", ChannelData),
     )
     condition_dict = {
         # "mode": ChannelType.visible,
-        "org": ChannelOrg.visible,
+        "org": SelectOrganizationForm.visible,
         "prj": ChannelProject.visible,
         "parent": ChannelSelectParent.visible,
         "data": ChannelData.visible,

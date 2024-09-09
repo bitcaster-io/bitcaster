@@ -125,6 +125,8 @@ dev = [
     "types-redis>=4.6.0.20240311",
     "types-requests>=2.31.0.20240311",
     "types-s3transfer>=0.10.1",
+    "pytest-ekstazi>=1.0.0",
+    "pytest-testmon>=2.1.1",
 ]
 docs = [
     "cairosvg>=2.7.1",

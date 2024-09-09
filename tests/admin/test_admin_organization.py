@@ -45,18 +45,18 @@ def context() -> "Context":
     }
 
 
-def test_create_template(app: "DjangoTestApp", context: "Context") -> None:
+def test_create_organization_template(app: "DjangoTestApp", context: "Context") -> None:
     channel: "Channel" = context["channel"]
     org: "Organization" = context["organization"]
 
     url = reverse("admin:bitcaster_organization_templates", args=[org.pk])
     res = app.get(url)
     frm = res.forms["messageForm"]
-    frm["name"] = "Test Template"
+    frm["name"] = "Test Organization Template"
     frm["channel"] = channel.pk
     frm.submit()
 
-    assert org.message_set.filter(name="Test Template").count() == 1
+    assert org.message_set.filter(name="Test Organization Template").count() == 1
 
 
 def test_avoid_duplicates_template(app: "DjangoTestApp", context: "Context") -> None:

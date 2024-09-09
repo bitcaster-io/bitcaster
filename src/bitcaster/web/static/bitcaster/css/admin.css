@@ -132,6 +132,10 @@ html[data-theme=light] {
   --breadcrumbs-bg: var(--secondary);
 }
 
+:root, html[data-theme=light], html[data-theme=dark] {
+  font-size: 20px;
+  font-weight: 100;
+}
 :root a.deletelink, html[data-theme=light] a.deletelink, html[data-theme=dark] a.deletelink {
   color: var(--delete-button-fg);
   background-color: var(--delete-button-bg);

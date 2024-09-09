@@ -40,7 +40,11 @@ def app(
 @pytest.mark.parametrize("can_change", [True, False], ids=("can_change", ""))
 @pytest.mark.parametrize("can_add", [True, False], ids=("can_add", ""))
 def test_admin_index(app: "DjangoTestApp", app_label: str, app_model: Model, can_change: bool, can_add: bool) -> None:
-    perms = [f"{app_model._meta.app_label}.add_{app_model._meta.model_name}"]
+    perms = []
+    if can_change:
+        perms.append(f"{app_model._meta.app_label}.change_{app_model._meta.model_name}")
+    if can_add:
+        perms.append(f"{app_model._meta.app_label}.add_{app_model._meta.model_name}")
     with user_grant_permissions(app._user, perms, ignore_missing=True):
         url = reverse("admin:index")
         res = app.get(url)

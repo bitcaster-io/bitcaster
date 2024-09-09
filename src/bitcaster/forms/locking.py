@@ -16,15 +16,18 @@ if TYPE_CHECKING:
 
 
 class LockingModeChoice(TextChoices):
-    CHANNEL = "CHANNEL", "by Channel"
-    PROJECT = "PROJECT", "by Project"
-    USER = "USER", "by User"
+    APPLICATION = "APPLICATION", "Application"
+    EVENT = "EVENT", "Event"
+    CHANNEL = "CHANNEL", "Channel"
+    PROJECT = "PROJECT", "Project"
+    USER = "USER", "User"
 
 
 class ModeChoiceForm(forms.Form):
     step_header = "Select the criteria for locking"
 
     operation = forms.ChoiceField(
+        label=_("Component"),
         widget=forms.RadioSelect,
         choices=LockingModeChoice,
     )

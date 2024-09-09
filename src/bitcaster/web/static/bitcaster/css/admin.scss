@@ -2,6 +2,8 @@
 @import "colors";
 
 :root, html[data-theme="light"], html[data-theme="dark"] {
+  font-size: 20px;
+  font-weight: 100;
   a.deletelink {
     color: var(--delete-button-fg);
     background-color: var(--delete-button-bg);

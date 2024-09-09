@@ -36,6 +36,7 @@ class BitcasterAdminSite(AdminSite):
                 m.Application,
                 m.Message,
                 m.MediaFile,
+                m.Notification,
                 m.DistributionList,
                 m.Organization,
                 m.Channel,
