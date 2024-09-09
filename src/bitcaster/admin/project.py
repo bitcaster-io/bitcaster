@@ -87,12 +87,12 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
         return base
 
     def has_add_permission(self, request: HttpRequest, obj: Optional[Project] = None) -> bool:
-        return Project.objects.count() < 2
+        return super().has_add_permission(request) and Project.objects.count() < 2
 
     def has_delete_permission(self, request: HttpRequest, obj: Optional[Project] = None) -> bool:
         if obj and obj.organization.name == Bitcaster.ORGANIZATION:
             return False
-        return super().has_delete_permission(request, obj)
+        return super().has_delete_permission(request) and super().has_delete_permission(request, obj)
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         initial = super().get_changeform_initial_data(request)

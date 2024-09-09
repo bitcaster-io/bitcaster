@@ -57,6 +57,9 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
         self._cached_messages: dict[Channel, Message] = {}
         super().__init__(*args, **kwargs)
 
+    def __str__(self) -> str:
+        return self.name
+
     def natural_key(self) -> tuple[str, ...]:
         return self.slug, *self.application.natural_key()
 

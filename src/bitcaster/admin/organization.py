@@ -96,12 +96,12 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
         return TemplateResponse(request, "admin/message/create_message_template.html", ctx, status=status_code)
 
     def has_add_permission(self, request: HttpRequest) -> bool:
-        return Organization.objects.count() < 2
+        return super().has_add_permission(request) and Organization.objects.count() < 2
 
     def has_delete_permission(self, request: HttpRequest, obj: Optional[Organization] = None) -> bool:
         if obj and obj.name == Bitcaster.ORGANIZATION:
             return False
-        return super().has_delete_permission(request, obj)
+        return super().has_delete_permission(request) and super().has_delete_permission(request, obj)
 
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Organization] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))

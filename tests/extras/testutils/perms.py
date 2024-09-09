@@ -47,7 +47,9 @@ def text(length: int, choices: str = ascii_letters) -> str:
     return "".join(choice(choices) for x in range(length))
 
 
-def get_group(name: Optional[str] = None, permissions: Optional[list[str]] = None) -> "Group":
+def get_group(
+    name: Optional[str] = None, permissions: Optional[list[str]] = None, raise_if_missing: bool = True
+) -> "Group":
     group = GroupFactory(name=(name or text(5)))
     permission_names = permissions or []
     for permission_name in permission_names:
@@ -58,9 +60,12 @@ def get_group(name: Optional[str] = None, permissions: Optional[list[str]] = Non
         try:
             permission = Permission.objects.get(content_type__app_label=app_label, codename=codename)
         except Permission.DoesNotExist:
-            raise Permission.DoesNotExist("Permission `{0}` does not exists", permission_name)
-
-        group.permissions.add(permission)
+            if raise_if_missing:
+                raise Permission.DoesNotExist("Permission `{0}` does not exists", permission_name)
+            else:
+                permission = None
+        if permission:
+            group.permissions.add(permission)
     return group
 
 
@@ -90,20 +95,31 @@ class user_grant_permissions(ContextDecorator):  # noqa
         "_dss_acl_cache",
     ]
 
-    def __init__(self, user: "User", permissions: Optional[list[str]] = None, group_name: Optional[str | None] = None):
+    def __init__(
+        self,
+        user: "User",
+        permissions: Optional[list[str]] = None,
+        group_name: Optional[str | None] = None,
+        ignore_missing: bool = False,
+    ) -> None:
         self.user = user
         if permissions and not isinstance(permissions, (list, tuple)):
             permissions = [permissions]
         self.permissions = permissions
         self.group_name = group_name
         self.group: "Optional[Group]" = None
+        self.ignore_missing = ignore_missing
+        self._groups = user.groups.all()
 
     def __enter__(self) -> "user_grant_permissions":
         for cache in self.caches:
             if hasattr(self.user, cache):
                 delattr(self.user, cache)
 
-        self.group = get_group(name=self.group_name, permissions=self.permissions or [])
+        self.group = get_group(
+            name=self.group_name, permissions=self.permissions or [], raise_if_missing=not self.ignore_missing
+        )
+        self.user.groups.clear()
         self.user.groups.add(self.group)
         return self
 
@@ -111,6 +127,8 @@ class user_grant_permissions(ContextDecorator):  # noqa
         if self.group:
             self.user.groups.remove(self.group)
             self.group.delete()
+        for g in self._groups:
+            self.user.groups.add(g)
 
         if e_val:
             raise e_val.with_traceback(trcbak)

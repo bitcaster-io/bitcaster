@@ -67,7 +67,7 @@ def log_submit_error(res: "DjangoWebtestResponse") -> str:
         return "Submit failed"
 
 
-def pytest_generate_tests(metafunc: "Metafunc") -> None:
+def pytest_generate_tests(metafunc: "Metafunc") -> None:  # noqa
     import django
 
     ids: list[str]
@@ -100,6 +100,11 @@ def pytest_generate_tests(metafunc: "Metafunc") -> None:
                             m1.append((admin, btn))
                             ids.append(tid)
         metafunc.parametrize("model_admin,button_handler", m1, ids=ids)
+    elif "app_label" in metafunc.fixturenames:
+        m: dict[str, int] = {}
+        for model, admin in site._registry.items():
+            m[model._meta.app_label] = 1
+        metafunc.parametrize("app_label", m.keys(), ids=m.keys())
     elif "model_admin" in metafunc.fixturenames:
         m2: list[ModelAdmin[Model]] = []
         ids = []
@@ -129,7 +134,10 @@ def record(db: Any, request: "FixtureRequest") -> Model:
 
 
 @pytest.fixture()
-def app(django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock") -> "DjangoTestApp":
+def app(
+    django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: SettingsWrapper
+) -> "DjangoTestApp":
+    settings.FLAGS = {"OLD_STYLE_UI": [("boolean", True)]}
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")
     django_app.set_user(admin_user)
@@ -137,12 +145,14 @@ def app(django_app_factory: "MixinWithInstanceVariables", mocked_responses: "Req
     return django_app
 
 
-@pytest.mark.parametrize("ui", [True, False])
-def test_admin_index(app: "DjangoTestApp", ui: bool, settings: SettingsWrapper) -> None:
-    settings.FLAGS = {"OLD_STYLE_UI": [("boolean", ui)]}
-
+def test_admin_index(app: "DjangoTestApp") -> None:
     url = reverse("admin:index")
+    res = app.get(url)
+    assert res.status_code == 200
 
+
+def test_app_list(app: "DjangoTestApp", app_label: str) -> None:
+    url = reverse("admin:app_list", args=[app_label])
     res = app.get(url)
     assert res.status_code == 200
 
