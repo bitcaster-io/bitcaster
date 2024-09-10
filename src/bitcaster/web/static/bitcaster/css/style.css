@@ -10,7 +10,8 @@ body.edit-message-body iframe {
   :root {
     --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --primary: #e53734;
+    --font-size: 18px;
+    --primary: rgba(229, 55, 52, 0.83);
     --secondary: rgba(168, 0, 0, 0.82);
     --light: #ef5552;
     --white: rgba(248, 248, 248, 0.93);
@@ -23,13 +24,19 @@ body.edit-message-body iframe {
     --button-hover-fg: var(--white);
     --default-button-bg: rgba(200, 0, 0, 1);
     --default-button-hover-bg: var(--light);
+    --delete-button-fg: white;
+    --delete-button-bg: rgba(43, 68, 214, 0.6);
+    --delete-button-hover-bg: #217DC5FF;
     --header-bg: var(--primary);
     --breadcrumbs-bg: var(--secondary);
     --link-fg: var(--secondary);
     --link-hover-color: var(--primary);
     --frame-bg-color: lightgray;
     --frame-fg-color: var(--black);
+    --sidebar-bg-color: lightgray;
     --body-bg: var(--white);
+    --body-bg-secondary: rgb(224, 224, 228);
+    --darkened-bg: var(--body-bg-secondary);
     --body-fg: #333;
     --fg-primary: var(--black);
     --link-fg: var(--secondary);
@@ -43,7 +50,8 @@ body.edit-message-body iframe {
   :root {
     --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --primary: #e53734;
+    --font-size: 18px;
+    --primary: rgba(229, 55, 52, 0.83);
     --secondary: rgba(168, 0, 0, 0.82);
     --light: #ef5552;
     --white: rgba(248, 248, 248, 0.93);
@@ -56,25 +64,37 @@ body.edit-message-body iframe {
     --button-hover-fg: var(--white);
     --default-button-bg: rgba(200, 0, 0, 1);
     --default-button-hover-bg: var(--light);
+    --delete-button-fg: white;
+    --delete-button-bg: rgba(43, 68, 214, 0.6);
+    --delete-button-hover-bg: #217DC5FF;
     --header-bg: var(--primary);
     --breadcrumbs-bg: var(--secondary);
     --link-fg: var(--secondary);
     --link-hover-color: var(--primary);
     --frame-bg-color: lightgray;
     --frame-fg-color: var(--black);
-    --body-bg: var(--black);
+    --sidebar-bg-color: lightgray;
+    --body-bg: rgb(42, 42, 48);
+    --body-bg-secondary: var(--darkened-bg);
     --body-fg: #eeeeee;
-    --fg-primary: var(--white);
-    --link-fg: var(--primary);
-    --link-hover-color: var(--secondary);
+    --fg-primary: #bbbbbb;
+    --link-fg: var(--fg-primary);
+    --link-hover-color: var(--white);
     color-scheme: dark;
     color-scheme: dark;
+  }
+  :root a {
+    color: var(--link-fg);
+  }
+  :root a:hover {
+    color: var(--white);
   }
 }
 html[data-theme=dark] {
   --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --primary: #e53734;
+  --font-size: 18px;
+  --primary: rgba(229, 55, 52, 0.83);
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
   --white: rgba(248, 248, 248, 0.93);
@@ -87,24 +107,36 @@ html[data-theme=dark] {
   --button-hover-fg: var(--white);
   --default-button-bg: rgba(200, 0, 0, 1);
   --default-button-hover-bg: var(--light);
+  --delete-button-fg: white;
+  --delete-button-bg: rgba(43, 68, 214, 0.6);
+  --delete-button-hover-bg: #217DC5FF;
   --header-bg: var(--primary);
   --breadcrumbs-bg: var(--secondary);
   --link-fg: var(--secondary);
   --link-hover-color: var(--primary);
   --frame-bg-color: lightgray;
   --frame-fg-color: var(--black);
-  --body-bg: var(--black);
+  --sidebar-bg-color: lightgray;
+  --body-bg: rgb(42, 42, 48);
+  --body-bg-secondary: var(--darkened-bg);
   --body-fg: #eeeeee;
-  --fg-primary: var(--white);
-  --link-fg: var(--primary);
-  --link-hover-color: var(--secondary);
+  --fg-primary: #bbbbbb;
+  --link-fg: var(--fg-primary);
+  --link-hover-color: var(--white);
   color-scheme: dark;
+}
+html[data-theme=dark] a {
+  color: var(--link-fg);
+}
+html[data-theme=dark] a:hover {
+  color: var(--white);
 }
 
 html[data-theme=light] {
   --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --primary: #e53734;
+  --font-size: 18px;
+  --primary: rgba(229, 55, 52, 0.83);
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
   --white: rgba(248, 248, 248, 0.93);
@@ -117,13 +149,19 @@ html[data-theme=light] {
   --button-hover-fg: var(--white);
   --default-button-bg: rgba(200, 0, 0, 1);
   --default-button-hover-bg: var(--light);
+  --delete-button-fg: white;
+  --delete-button-bg: rgba(43, 68, 214, 0.6);
+  --delete-button-hover-bg: #217DC5FF;
   --header-bg: var(--primary);
   --breadcrumbs-bg: var(--secondary);
   --link-fg: var(--secondary);
   --link-hover-color: var(--primary);
   --frame-bg-color: lightgray;
   --frame-fg-color: var(--black);
+  --sidebar-bg-color: lightgray;
   --body-bg: var(--white);
+  --body-bg-secondary: rgb(224, 224, 228);
+  --darkened-bg: var(--body-bg-secondary);
   --body-fg: #333;
   --fg-primary: var(--black);
   --link-fg: var(--secondary);

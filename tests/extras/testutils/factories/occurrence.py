@@ -1,6 +1,7 @@
 from typing import Any
 
 import factory
+from django.utils import timezone
 
 from bitcaster.models import Occurrence
 
@@ -9,6 +10,8 @@ from .event import EventFactory
 
 
 class OccurrenceFactory(AutoRegisterModelFactory[Occurrence]):
+    timestamp = factory.Faker("date_time", tzinfo=timezone.get_current_timezone())
+
     class Meta:
         model = Occurrence
 

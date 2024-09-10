@@ -14,6 +14,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+class CacheKey:
+    DASHBOARDS_EVENTS = "dashboard_events"
+
+
 class Bitcaster:
     ORGANIZATION = "OS4D"
     PROJECT = "BITCASTER"

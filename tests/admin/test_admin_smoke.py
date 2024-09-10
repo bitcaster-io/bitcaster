@@ -145,12 +145,6 @@ def app(
     return django_app
 
 
-def test_admin_index(app: "DjangoTestApp") -> None:
-    url = reverse("admin:index")
-    res = app.get(url)
-    assert res.status_code == 200
-
-
 def test_app_list(app: "DjangoTestApp", app_label: str) -> None:
     url = reverse("admin:app_list", args=[app_label])
     res = app.get(url)

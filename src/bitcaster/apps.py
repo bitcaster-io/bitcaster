@@ -64,7 +64,7 @@ class Config(AppConfig):
 
         from . import handlers  # noqa
         from . import tasks  # noqa
-        from .cache import handlers as cache_handlers  # noqa
+        from .cache import handlers  # noqa
 
         for cond in ["parameter", "path matches", "after date", "before date", "anonymous"]:
             if cond in _conditions:  # pragma: no branch

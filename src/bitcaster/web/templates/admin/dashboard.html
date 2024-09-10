@@ -1,0 +1,56 @@
+{% load i18n %}
+<div id="dashboard">
+    <div class="left">
+        <table class="last_events">
+            <caption>
+                {% trans "Last 24h Events" %}
+            </caption>
+            {% for evt in last_events %}
+                <tr>
+                    <a href="#">
+                        <td>{{ evt.timestamp.date.day }}</td>
+                        <td>{{ evt.timestamp|date:"H:m:s" }}</td>
+                        <td>{{ evt.event__name }}</td>
+                        <td>{{ evt.application }}</td>
+                        <td>{{ evt.status }}</td>
+                    </a>
+                </tr>
+{#                {% ifchanged evt.timestamp.date.day %}#}
+{#                    <tr><td colspan="4"><hr/>----</td></tr>#}
+{#                {% endifchanged %}#}
+            {% endfor %}
+        </table>
+    </div>
+    <div class="right">
+        {% load log %}
+        {% get_admin_log 10 as admin_log for_user user %}
+        <table lass="actionlist">
+            <caption>
+                {% trans "Action log" %}
+            </caption>
+            {% for entry in admin_log %}
+                <tr>
+                    <td>
+                        {% if entry.is_addition %}#}
+                            {% translate 'Added:' %}{% elif entry.is_change %}
+                            {% translate 'Changed:' %}{% elif entry.is_deletion %}
+                            {% translate 'Deleted:' %}{% endif %}
+                        {% if entry.is_deletion or not entry.get_admin_url %}#}
+                            {{ entry.object_repr }}
+                        {% else %}
+                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                        {% endif %}
+                        <br>
+                        {% if entry.content_type %}
+                            <span class="mini quiet">{% filter capfirst %}
+                                {{ entry.content_type.name }}{% endfilter %}</span>
+                        {% else %}
+                            <span class="mini quiet">{% translate 'Unknown content' %}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>

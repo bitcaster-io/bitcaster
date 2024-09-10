@@ -1,13 +1,18 @@
+from datetime import datetime, timedelta
 from typing import Any, Optional
 
 from django.contrib.admin import apps
 from django.contrib.admin.sites import AdminSite
+from django.db.models import F
 from django.http import HttpRequest
 from django.template.response import TemplateResponse
 from django.urls import NoReverseMatch, reverse
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy
 from flags.state import flag_enabled
+
+from bitcaster.cache.storage import qs_get_or_store
+from bitcaster.constants import CacheKey
 
 
 class BitcasterAdminConfig(apps.AdminConfig):
@@ -31,18 +36,18 @@ class BitcasterAdminSite(AdminSite):
 
         return {
             "system": [
-                m.Event,
+                m.Organization,
                 m.Project,
+                m.Channel,
+                m.DistributionList,
                 m.Application,
+                m.Event,
+                m.Notification,
                 m.Message,
                 m.MediaFile,
-                m.Notification,
-                m.DistributionList,
-                m.Organization,
-                m.Channel,
             ],
             "configuration": [FlagState, Config, m.SocialProvider],
-            "security": [m.User, auth_models.Group, m.UserRole, auth_models.Permission],
+            "security": [m.User, auth_models.Group, m.UserRole, auth_models.Permission, m.ApiKey],
         }
 
     def _build_sections_dict(self, request: HttpRequest) -> dict[str, Any]:
@@ -89,13 +94,37 @@ class BitcasterAdminSite(AdminSite):
                         "models": [model_dict],
                     }
 
-        for __, app in app_dict.items():
-            app["models"].sort(key=lambda x: x["name"])
+        # for __, app in app_dict.items():
+        #     app["models"].sort(key=lambda x: x["name"])
 
         return app_dict
 
+    def get_app_list(self, request: HttpRequest, app_label: Optional[str] = None) -> list[str]:
+        if flag_enabled("OLD_STYLE_UI"):
+            return super().get_app_list(request, app_label)
+        else:
+            return list(self._build_sections_dict(request).values())
+
+    def get_last_events(self) -> list[dict[str, Any]]:
+        from bitcaster.models import Occurrence
+
+        offset = datetime.now() - timedelta(hours=24)
+        qs = (
+            Occurrence.objects.filter(timestamp__gte=offset)
+            .values("timestamp", "id", application=F("event__application__name"), event__name=F("event__name"))
+            .order_by("-timestamp")
+        )
+        return qs_get_or_store(qs, key=CacheKey.DASHBOARDS_EVENTS)
+
     def index(self, request: HttpRequest, extra_context: Optional[dict[str, Any]] = None) -> TemplateResponse:
-        if not flag_enabled("OLD_STYLE_UI"):
-            extra_context = {"sections": list(self._build_sections_dict(request).values())}
+        django_ui = flag_enabled("OLD_STYLE_UI")
+        extra_context = {"django_ui": django_ui}
+        if not django_ui:
+            extra_context.update(
+                {
+                    "sections": list(self._build_sections_dict(request).values()),
+                    "last_events": self.get_last_events(),
+                }
+            )
 
         return super().index(request, extra_context)

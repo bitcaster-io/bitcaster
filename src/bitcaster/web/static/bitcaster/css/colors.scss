@@ -1,8 +1,9 @@
 @mixin base {
   --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-size: 18px;
 
-  --primary: #e53734;
+  --primary: rgba(229, 55, 52, 0.83);
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
   --white: rgba(248, 248, 248, 0.93);
@@ -18,6 +19,9 @@
 
   --default-button-bg: rgba(200, 0, 0, 1);
   --default-button-hover-bg: var(--light);
+  --delete-button-fg: white;
+  --delete-button-bg: rgba(43, 68, 214, 0.6);
+  --delete-button-hover-bg: #217DC5FF;
 
   --header-bg: var(--primary);
   --breadcrumbs-bg: var(--secondary);
@@ -27,11 +31,14 @@
 
   --frame-bg-color: lightgray;
   --frame-fg-color: var(--black);
+  --sidebar-bg-color: lightgray;
 }
 
 @mixin light {
   @include base;
   --body-bg: var(--white);
+  --body-bg-secondary: rgb(224, 224, 228);
+  --darkened-bg: var(--body-bg-secondary);
   --body-fg: #333;
   --fg-primary: var(--black);
   --link-fg: var(--secondary);
@@ -43,12 +50,21 @@
 
 @mixin dark {
   @include base;
-  --body-bg: var(--black);
+  --body-bg: rgb(42, 42, 48);
+  //--body-bg-secondary: rgb(119, 119, 122);
+  --body-bg-secondary: var(--darkened-bg);
   --body-fg: #eeeeee;
-  --fg-primary: var(--white);
-  --link-fg: var(--primary);
-  --link-hover-color: var(--secondary);
+  --fg-primary: #bbbbbb;
+  --link-fg: var(--fg-primary);
+  --link-hover-color: var(--white);
   color-scheme: dark;
+  a{
+    color: var(--link-fg);
+    &:hover{
+      color: var(--white);
+
+    }
+  }
 }
 
 body.edit-message-body {
@@ -65,7 +81,6 @@ body.edit-message-body {
 
 @media (prefers-color-scheme: light) {
   :root {
-    //@include base;
     @include light;
     color-scheme: light;
   }
@@ -73,18 +88,16 @@ body.edit-message-body {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    //@include base;
     @include dark;
     color-scheme: dark;
   }
+
 }
 
 html[data-theme="dark"] {
-  //@include base;
   @include dark;
 }
 
 html[data-theme="light"] {
-  //@include base;
   @include light;
 }

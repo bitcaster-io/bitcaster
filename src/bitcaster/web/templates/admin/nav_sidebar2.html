@@ -1,0 +1,28 @@
+{% load i18n %}
+<button class="hidden" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}"></button>
+<nav class="sticky" id="bc-sidebar" aria-label="{% translate 'Sidebar' %}">
+    {% if available_apps %}
+        {% for app in available_apps %}
+            <div class="app-{{ app.app_label }} module{% if app.app_url in request.path|urlencode %} current-app{% endif %}">
+                <div class="nav-title">
+                    {{ app.name }}
+                </div>
+                {% for model in app.models %}
+                    <a href="{{ model.admin_url }}"{% if model.admin_url in request.path|urlencode %}
+                       aria-current="page"{% endif %}>
+                        <div class="nav-item model-
+                                {{ model.object_name|lower }}{% if model.admin_url in request.path|urlencode %} current-model{% endif %}">
+                            {{ model.name }}
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>{% translate 'You don’t have permission to view or edit anything.' %}</p>
+    {% endif %}
+</nav>
+<script>
+    localStorage.setItem("django.admin.navSidebarIsOpen", "true");
+    {#document.getElementsById("toggle-nav-sidebar").click();#}
+</script>
