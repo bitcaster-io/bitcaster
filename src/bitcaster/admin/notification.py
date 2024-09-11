@@ -33,7 +33,7 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
         # ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
     )
     autocomplete_fields = ("event", "distribution")
-    change_form = NotificationForm
+    form = NotificationForm
 
     def get_exclude(self, request: HttpRequest, obj: "Optional[Notification]" = None) -> tuple[str, ...]:
         return ("payload_filter", "extra_context")

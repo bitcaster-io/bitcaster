@@ -6,7 +6,12 @@ from django.core.cache import cache
 from pytest_django import DjangoAssertNumQueries
 from pytest_django.fixtures import SettingsWrapper
 
-from bitcaster.cache.storage import qs_from_cache, qs_get_or_store, qs_to_cache
+from bitcaster.cache.storage import (
+    qs_del_cache,
+    qs_from_cache,
+    qs_get_or_store,
+    qs_to_cache,
+)
 from bitcaster.models import Occurrence
 
 
@@ -65,3 +70,13 @@ def test_qs_get_or_store(data: Any, django_assert_num_queries: DjangoAssertNumQu
 
     with django_assert_num_queries(1):
         assert qs_get_or_store(qs, key=key)
+
+
+@pytest.mark.parametrize("key", ["key-1", None])
+def test_qs_delete(data: Any, django_assert_num_queries: DjangoAssertNumQueries, key: Optional[None]) -> None:
+    if key:
+        key = f"{key}-{os.environ.get('PYTEST_XDIST_WORKER', '')}"
+    qs = Occurrence.objects.filter()[:1]
+    qs_to_cache(qs, key=key)
+    with django_assert_num_queries(0):
+        assert qs_del_cache(qs, key=key)

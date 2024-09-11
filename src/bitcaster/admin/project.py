@@ -83,7 +83,7 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Project] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
         if obj and obj.organization.name == Bitcaster.ORGANIZATION:
-            base.extend(["name", "slug", "organization"])
+            base.extend(["name", "slug", "organization", "subject_prefix"])
         return base
 
     def has_add_permission(self, request: HttpRequest, obj: Optional[Project] = None) -> bool:

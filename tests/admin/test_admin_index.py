@@ -26,7 +26,7 @@ def data() -> None:
 def app(
     django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: SettingsWrapper
 ) -> "DjangoTestApp":
-    settings.FLAGS = {"OLD_STYLE_UI": [("boolean", False)]}
+    settings.FLAGS = {"OLD_STYLE_UI": [("boolean", True)]}
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")
     django_app.set_user(admin_user)
@@ -36,10 +36,10 @@ def app(
 
 def test_admin_index(app: "DjangoTestApp", data: Any, django_assert_num_queries: DjangoAssertNumQueries) -> None:
     url = reverse("admin:index")
-    with django_assert_num_queries(22):
+    with django_assert_num_queries(16):
         res = app.get(url)
         assert res.status_code == 200
     state.reset()
-    with django_assert_num_queries(18):
+    with django_assert_num_queries(14):
         res = app.get(url)
         assert res.status_code == 200

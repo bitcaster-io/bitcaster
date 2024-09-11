@@ -25,6 +25,13 @@ def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestAp
     return django_app
 
 
+@pytest.fixture()
+def api_key(db: Any) -> "ApiKey":
+    from testutils.factories.key import ApiKeyFactory
+
+    return ApiKeyFactory(application__project__environments=["development"])
+
+
 def test_edit(app: DjangoTestApp, api_key: "ApiKey") -> None:
     opts: Options[ApiKey] = api_key._meta
     url = reverse(admin_urlname(opts, SafeString("change")), args=[api_key.pk])
@@ -49,6 +56,8 @@ def test_add(app: DjangoTestApp, api_key: "ApiKey") -> None:
     res.forms["apikey_form"]["grants"] = [Grant.FULL_ACCESS]
     res = res.forms["apikey_form"].submit()
     assert res.status_code == 302
+    res = res.follow()
+    assert res.status_code == 200
 
 
 def test_add_trigger_required_app(app: DjangoTestApp, api_key: "ApiKey") -> None:
@@ -63,3 +72,43 @@ def test_add_trigger_required_app(app: DjangoTestApp, api_key: "ApiKey") -> None
     res = res.forms["apikey_form"].submit()
     assert res.status_code == 200
     res.forms["apikey_form"]["name"] = "Key-1"
+
+
+def test_edit_check_environments(app: "DjangoTestApp", api_key: "ApiKey") -> None:
+    url = reverse("admin:bitcaster_apikey_change", args=[api_key.pk])
+    res = app.get(url)
+    frm = res.forms["apikey_form"]
+    frm["environments"].force_value(["test"])
+    res = frm.submit(expect_errors=True)
+    assert res.status_code == 200
+    assert res.context["adminform"].form.errors == {
+        "environments": ["One or more values are not available in the project"]
+    }
+
+
+def test_add_check_environments(app: "DjangoTestApp", api_key: "ApiKey") -> None:
+    url = reverse("admin:bitcaster_apikey_add")
+    res = app.get(url)
+    frm = res.forms["apikey_form"]
+    frm["name"] = "Not2"
+    frm["environments"].force_value(["test"])
+    res = frm.submit(expect_errors=True)
+    assert res.status_code == 200
+    assert res.context["adminform"].form.errors == {"organization": ["This field is required."]}
+    # add missing fields
+    res = app.get(url)
+    frm = res.forms["apikey_form"]
+    frm["application"].force_value(api_key.application.pk)
+    frm["environments"].force_value(["test"])
+    res = frm.submit(expect_errors=True)
+    assert res.status_code == 200
+    assert res.context["adminform"].form.errors == {
+        "environments": ["One or more values are not available in the project"]
+    }
+
+    res = app.get(url)
+    frm = res.forms["apikey_form"]
+    frm["application"].force_value(api_key.application.pk)
+    frm["environments"].force_value(["development"])
+    res = frm.submit()
+    assert res.status_code == 302

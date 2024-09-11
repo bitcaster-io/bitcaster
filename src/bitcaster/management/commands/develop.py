@@ -127,11 +127,12 @@ class Command(BaseCommand):
                 self.echo(f"Created/Updated SSO {sso}", style_func=self.style.SUCCESS)
 
             if structure := os.environ.get("TEST_ORG_STRUCTURE", "user@example.com;Org;Project1;Application1"):
+                envs = ["develop", "staging", "production"]
                 email, org_name, prj_name, apps = structure.split(";")
                 u = User.objects.update_or_create(username=email, defaults={"email": email, "is_staff": True})[0]
                 u.set_password("password")
                 o = u.managed_organizations.update_or_create(name=org_name)[0]
-                p = o.projects.update_or_create(name=prj_name, owner=u)[0]
+                p = o.projects.update_or_create(name=prj_name, owner=u, defaults={"environments": envs})[0]
                 active_project = p
                 from bitcaster.constants import Bitcaster
 

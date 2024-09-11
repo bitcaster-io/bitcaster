@@ -19,7 +19,8 @@ from django.utils.translation import gettext as _
 from bitcaster.auth.constants import Grant
 from bitcaster.forms.fields import Select2TagField
 from bitcaster.forms.mixins import Scoped3FormMixin
-from bitcaster.models import ApiKey, Application, Organization, Project  # noqa
+from bitcaster.forms.widgets import AutocompletSelectEnh
+from bitcaster.models import ApiKey, Application, Event, Organization, Project  # noqa
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
 
@@ -31,16 +32,42 @@ logger = logging.getLogger(__name__)
 
 class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
     environments = Select2TagField(required=False)
+    organization = forms.ModelChoiceField(
+        queryset=Organization.objects.all(),
+        required=True,
+        widget=AutocompletSelectEnh(ApiKey._meta.get_field("organization"), admin.site),
+    )
 
     class Meta:
         model = ApiKey
         exclude = ("token",)
 
     def clean(self) -> dict[str, Any]:
+        prj: Project
+        prj_envs: list[str] = []
+        envs: list[str] = []
+        super().clean()
         if self.instance.pk is None and (g := self.cleaned_data.get("grants")):
             a = self.cleaned_data.get("application")
             if Grant.EVENT_TRIGGER in g and not a:
                 raise ValidationError(_("Application must be set if EVENT_TRIGGER is granted"))
+        if self.instance.pk and self.instance.project:
+            prj_envs = self.instance.project.environments or []
+            envs = self.cleaned_data.get("environments", [])
+        elif prj := self.cleaned_data.get("project"):
+            prj_envs = prj.environments or []
+            envs = self.cleaned_data.get("environments", [])
+        if not set(envs).issubset(prj_envs):
+            raise ValidationError({"environments": "One or more values are not available in the project"})
+        #
+        # if envs and not prj_envs:
+        #     raise ValidationError({"environments": "There are no environments set for this project"})
+        # elif envs:
+        #     for env in envs:
+        #         if env not in prj_envs:
+        #             raise ValidationError(
+        #                 {"environments": "Environment '{}' is not available in the selected project".format(env)}
+        #             )
         return self.cleaned_data
 
 
