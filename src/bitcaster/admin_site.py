@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Any, Optional
 
 from django.contrib.admin import apps
@@ -7,6 +7,7 @@ from django.db.models import F
 from django.http import HttpRequest
 from django.template.response import TemplateResponse
 from django.urls import NoReverseMatch, reverse
+from django.utils import timezone
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy
 from flags.state import flag_enabled
@@ -108,13 +109,18 @@ class BitcasterAdminSite(AdminSite):
     def get_last_events(self) -> list[dict[str, Any]]:
         from bitcaster.models import Occurrence
 
-        offset = datetime.now() - timedelta(hours=24)
+        offset = timezone.now() - timedelta(hours=24)
         qs = (
             Occurrence.objects.filter(timestamp__gte=offset)
             .values("timestamp", "id", application=F("event__application__name"), event__name=F("event__name"))
             .order_by("-timestamp")
         )
         return qs_get_or_store(qs, key=CacheKey.DASHBOARDS_EVENTS)
+
+    def each_context(self, request: HttpRequest) -> dict[str, Any]:
+        ret = super().each_context(request)
+        ret["django_ui"] = flag_enabled("OLD_STYLE_UI")
+        return ret
 
     def index(self, request: HttpRequest, extra_context: Optional[dict[str, Any]] = None) -> TemplateResponse:
         django_ui = flag_enabled("OLD_STYLE_UI")

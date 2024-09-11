@@ -17,7 +17,7 @@ from .message import MessageAdmin
 from .notification import NotificationAdmin
 from .occurrence import OccurrenceAdmin
 from .organization import OrganizationAdmin
-from .overrides import Config, ConstanceAdmin
+from .overrides import Config, ConstanceAdmin, FlagState, FlagStateAdmin
 from .project import ProjectAdmin
 from .user import UserAdmin
 from .userrole import UserRoleAdmin
@@ -27,6 +27,9 @@ admin.site.register(Group, GroupAdmin)
 
 admin.site.unregister([Config])
 admin.site.register([Config], ConstanceAdmin)
+
+admin.site.unregister(FlagState)
+admin.site.register(FlagState, FlagStateAdmin)
 
 
 admin.site.register(models.Address, AddressAdmin)

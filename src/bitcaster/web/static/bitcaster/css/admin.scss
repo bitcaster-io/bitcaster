@@ -165,10 +165,11 @@
 //.float-end{
 //  float: right;
 //}
-#content {
-  min-height: 600px;
+.dashboard, .main {
+  #content {
+    min-height: 600px;
+  }
 }
-
 .w-400 {
   width: 400px;
 }

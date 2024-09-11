@@ -20,13 +20,19 @@ def data(settings: SettingsWrapper) -> None:
     OccurrenceFactory()
 
 
-#
-#
-# @pytest.mark.parametrize("key", ["key-1", None])
-# def test_flag_disable(settings: SettingsWrapper, key: str):
-#     settings.FLAGS = {"DISABLE_CACHE": [{"boolean": True}]}
-#     qs = Occurrence.objects.all()
-#     assert qs_from_cache(qs, key=key) is None
+@pytest.mark.parametrize("key", ["key-1", None])
+def test_flag_disable(
+    data: Any, settings: SettingsWrapper, django_assert_num_queries: DjangoAssertNumQueries, key: str
+) -> None:
+    settings.FLAGS = {"DISABLE_CACHE": [("boolean", True)]}
+    qs = Occurrence.objects.all()
+    assert qs_from_cache(qs, key=key) is None
+    with django_assert_num_queries(2):
+        assert qs_from_cache(qs, key=key) is None
+        assert qs_from_cache(qs, key=key) is None
+    with django_assert_num_queries(4):
+        assert qs_get_or_store(qs, key=key)
+        assert qs_get_or_store(qs, key=key)
 
 
 @pytest.mark.parametrize("key", ["key-1", None])

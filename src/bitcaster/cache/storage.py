@@ -28,6 +28,8 @@ def qs_del_cache(qs: QuerySet[Model], key: Optional[str] = None) -> int:
 
 
 def qs_get_or_store(qs: QuerySet[Model], key: Optional[str] = None) -> list[Any]:
+    if flag_enabled("DISABLE_CACHE"):
+        return list(qs.values())
     if not (value := qs_from_cache(qs, key=key)):
         value = qs_to_cache(qs, key=key)
     return value

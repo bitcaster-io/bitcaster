@@ -202,7 +202,7 @@ SESSION_COOKIE_PATH = env("SESSION_COOKIE_PATH")
 SESSION_COOKIE_DOMAIN = env("SESSION_COOKIE_DOMAIN")
 # SESSION_COOKIE_HTTPONLY = env("SESSION_COOKIE_HTTPONLY")
 SESSION_COOKIE_NAME = env("SESSION_COOKIE_NAME")
-# SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 LOGGING = {
     "version": 1,

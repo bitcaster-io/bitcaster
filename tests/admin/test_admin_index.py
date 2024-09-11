@@ -2,9 +2,11 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 from django.urls import reverse
-from pytest_django.fixtures import SettingsWrapper
+from pytest_django.fixtures import DjangoAssertNumQueries, SettingsWrapper
 from responses import RequestsMock
 from testutils.factories.user import SuperUserFactory
+
+from bitcaster.state import state
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
@@ -32,7 +34,12 @@ def app(
     return django_app
 
 
-def test_admin_index(app: "DjangoTestApp", data: Any) -> None:
+def test_admin_index(app: "DjangoTestApp", data: Any, django_assert_num_queries: DjangoAssertNumQueries) -> None:
     url = reverse("admin:index")
-    res = app.get(url)
-    assert res.status_code == 200
+    with django_assert_num_queries(23):
+        res = app.get(url)
+        assert res.status_code == 200
+    state.reset()
+    with django_assert_num_queries(19):
+        res = app.get(url)
+        assert res.status_code == 200
