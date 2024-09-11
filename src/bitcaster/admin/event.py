@@ -74,6 +74,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
             },
         ),
     ]
+    change_form_template = None
 
     def get_fieldsets(self, request: HttpRequest, obj: Optional[Event] = None) -> "_FieldsetSpec":
         if obj:
@@ -143,10 +144,10 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
                 }
             )
         context["form"] = config_form
-        return TemplateResponse(request, "admin/event/test_event.html", context)
+        return TemplateResponse(request, "admin/bitcaster/event/test_event.html", context)
 
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def notifications(self, request: HttpRequest, pk: str) -> "HttpResponse":
         ctx = self.get_common_context(request, pk, title=_("Notifications"))
         # ctx[""]
-        return TemplateResponse(request, "admin/event/notifications.html", ctx)
+        return TemplateResponse(request, "admin/bitcaster/event/notifications.html", ctx)

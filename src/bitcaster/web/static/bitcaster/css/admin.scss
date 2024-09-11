@@ -16,6 +16,19 @@
   position: relative;
   float: right;
 }
+
+.highlight{
+  background-color: #ffffd5;
+  color: black;
+}
+.frame {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 15px;
+  text-wrap: nowrap;
+  border: 1px solid var(--body-fg);
+}
+
 :root, html[data-theme="light"], html[data-theme="dark"] {
   font-size: var(--font-size);
 
@@ -23,7 +36,8 @@
     background-color: var(--body-bg-secondary);
     box-shadow: 2px 0 var(--body-bg-secondary);
     width: 200px;
-    .nav-title{
+
+    .nav-title {
       text-transform: uppercase;
       text-align: left;
       padding-top: 10px;
@@ -31,19 +45,23 @@
       padding-left: 10px;
 
     }
-    a{
+
+    a {
       text-decoration: none;
       color: var(--color-fg);
     }
+
     div.nav-item {
-    background-color: var(--body-bg-secondary);
+      background-color: var(--body-bg-secondary);
       padding: 10px;
       padding-left: 25px;
-      &:hover{
+
+      &:hover {
         background-color: var(--button-hover-bg);
         color: var(--button-hover-fg);
       }
-      &.current-model{
+
+      &.current-model {
         background-color: var(--default-button-bg);
         color: var(--button-hover-fg);
       }
@@ -156,20 +174,13 @@
   }
 }
 
-//#header {
-//  .theme-toggle svg.theme-icon-when-auto, .theme-toggle svg.theme-icon-when-dark, .theme-toggle svg.theme-icon-when-light {
-//    fill: var(--header-link-color);
-//    color: var(--bg-primary);
-//  }
-//}
-//.float-end{
-//  float: right;
-//}
+
 .dashboard, .main {
   #content {
     min-height: 600px;
   }
 }
+
 .w-400 {
   width: 400px;
 }
@@ -189,27 +200,38 @@
     }
   }
 }
-#dashboard{
-    min-width: 100%;
-    padding: 5px;
-  .last_events{
+
+#dashboard {
+  min-width: 100%;
+  padding: 5px;
+
+  .last_events {
     width: 350px;
   }
-  caption{
-    background-color: var(--button-bg);
+  .actiontable{
+    width: 100%;
+  }
+  caption {
+    background-color: var(--header-bg);
+    color: var(--button-fg);
     width: 100%;
     padding: 10px;
   }
+
   div {
     display: inline-flex;
-    &.left{
+
+    &.left {
       float: left;
     }
-    &.right{
+
+    &.right {
       float: right;
+      min-width: 400px;
     }
   }
 }
+
 //
 //#container {
 //  div.breadcrumbs {

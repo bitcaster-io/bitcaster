@@ -1,12 +1,14 @@
 nav:
   - Home: index.md
-  - Run: run.md
+  - Run:
+      - Docker: run.md
+      - Compose: stacks
   - Configuration: configuration.md
   - Administration Guide: adm-guide
   - Development Guide: dev-guide
   - Glossary: glossary/
-  - Examples: stacks
   - Links: links
   - License: license
   - Security: security
+  - HowTos: howto
   - tags.md

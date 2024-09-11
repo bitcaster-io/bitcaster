@@ -39,6 +39,7 @@ class BitcasterBaselManager(models.Manager["AnyModel"]):
 class BitcasterBaseModel(models.Model):
     version = IntegerVersionField()
     last_updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         abstract = True

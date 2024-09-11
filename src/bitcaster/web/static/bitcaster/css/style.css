@@ -22,6 +22,9 @@ body.edit-message-body iframe {
     --button-fg: var(--white);
     --button-hover-bg: var(--light);
     --button-hover-fg: var(--white);
+    --object-tools-fg: var(--white);
+    --object-tools-bg: #666666;
+    --object-tools-hover-bg: #444444;
     --default-button-bg: rgba(200, 0, 0, 1);
     --default-button-hover-bg: var(--light);
     --delete-button-fg: white;
@@ -29,8 +32,6 @@ body.edit-message-body iframe {
     --delete-button-hover-bg: #217DC5FF;
     --header-bg: var(--primary);
     --breadcrumbs-bg: var(--secondary);
-    --link-fg: var(--secondary);
-    --link-hover-color: var(--primary);
     --frame-bg-color: lightgray;
     --frame-fg-color: var(--black);
     --sidebar-bg-color: lightgray;
@@ -62,6 +63,9 @@ body.edit-message-body iframe {
     --button-fg: var(--white);
     --button-hover-bg: var(--light);
     --button-hover-fg: var(--white);
+    --object-tools-fg: var(--white);
+    --object-tools-bg: #666666;
+    --object-tools-hover-bg: #444444;
     --default-button-bg: rgba(200, 0, 0, 1);
     --default-button-hover-bg: var(--light);
     --delete-button-fg: white;
@@ -69,8 +73,6 @@ body.edit-message-body iframe {
     --delete-button-hover-bg: #217DC5FF;
     --header-bg: var(--primary);
     --breadcrumbs-bg: var(--secondary);
-    --link-fg: var(--secondary);
-    --link-hover-color: var(--primary);
     --frame-bg-color: lightgray;
     --frame-fg-color: var(--black);
     --sidebar-bg-color: lightgray;
@@ -78,16 +80,10 @@ body.edit-message-body iframe {
     --body-bg-secondary: var(--darkened-bg);
     --body-fg: #eeeeee;
     --fg-primary: #bbbbbb;
-    --link-fg: var(--fg-primary);
-    --link-hover-color: var(--white);
+    --link-fg: var(--white);
+    --link-hover-color: var(--light);
     color-scheme: dark;
     color-scheme: dark;
-  }
-  :root a {
-    color: var(--link-fg);
-  }
-  :root a:hover {
-    color: var(--white);
   }
 }
 html[data-theme=dark] {
@@ -105,6 +101,9 @@ html[data-theme=dark] {
   --button-fg: var(--white);
   --button-hover-bg: var(--light);
   --button-hover-fg: var(--white);
+  --object-tools-fg: var(--white);
+  --object-tools-bg: #666666;
+  --object-tools-hover-bg: #444444;
   --default-button-bg: rgba(200, 0, 0, 1);
   --default-button-hover-bg: var(--light);
   --delete-button-fg: white;
@@ -112,8 +111,6 @@ html[data-theme=dark] {
   --delete-button-hover-bg: #217DC5FF;
   --header-bg: var(--primary);
   --breadcrumbs-bg: var(--secondary);
-  --link-fg: var(--secondary);
-  --link-hover-color: var(--primary);
   --frame-bg-color: lightgray;
   --frame-fg-color: var(--black);
   --sidebar-bg-color: lightgray;
@@ -121,15 +118,9 @@ html[data-theme=dark] {
   --body-bg-secondary: var(--darkened-bg);
   --body-fg: #eeeeee;
   --fg-primary: #bbbbbb;
-  --link-fg: var(--fg-primary);
-  --link-hover-color: var(--white);
+  --link-fg: var(--white);
+  --link-hover-color: var(--light);
   color-scheme: dark;
-}
-html[data-theme=dark] a {
-  color: var(--link-fg);
-}
-html[data-theme=dark] a:hover {
-  color: var(--white);
 }
 
 html[data-theme=light] {
@@ -147,6 +138,9 @@ html[data-theme=light] {
   --button-fg: var(--white);
   --button-hover-bg: var(--light);
   --button-hover-fg: var(--white);
+  --object-tools-fg: var(--white);
+  --object-tools-bg: #666666;
+  --object-tools-hover-bg: #444444;
   --default-button-bg: rgba(200, 0, 0, 1);
   --default-button-hover-bg: var(--light);
   --delete-button-fg: white;
@@ -154,8 +148,6 @@ html[data-theme=light] {
   --delete-button-hover-bg: #217DC5FF;
   --header-bg: var(--primary);
   --breadcrumbs-bg: var(--secondary);
-  --link-fg: var(--secondary);
-  --link-hover-color: var(--primary);
   --frame-bg-color: lightgray;
   --frame-fg-color: var(--black);
   --sidebar-bg-color: lightgray;

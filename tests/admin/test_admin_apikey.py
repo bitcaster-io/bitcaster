@@ -46,6 +46,20 @@ def test_add(app: DjangoTestApp, api_key: "ApiKey") -> None:
 
     res.forms["apikey_form"]["organization"].force_value(api_key.organization.pk)
     res.forms["apikey_form"]["name"] = "Key-1"
-    res.forms["apikey_form"]["grants"] = [Grant.EVENT_TRIGGER, Grant.FULL_ACCESS]
+    res.forms["apikey_form"]["grants"] = [Grant.FULL_ACCESS]
     res = res.forms["apikey_form"].submit()
     assert res.status_code == 302
+
+
+def test_add_trigger_required_app(app: DjangoTestApp, api_key: "ApiKey") -> None:
+    opts: Options[ApiKey] = api_key._meta
+    url = reverse(admin_urlname(opts, SafeString("add")))
+    res = app.get(url)
+    assert res.status_code == 200
+
+    res.forms["apikey_form"]["organization"].force_value(api_key.organization.pk)
+    res.forms["apikey_form"]["name"] = "Key-1"
+    res.forms["apikey_form"]["grants"] = [Grant.EVENT_TRIGGER]
+    res = res.forms["apikey_form"].submit()
+    assert res.status_code == 200
+    res.forms["apikey_form"]["name"] = "Key-1"

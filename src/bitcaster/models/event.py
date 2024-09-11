@@ -2,9 +2,9 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from django.db import models
 from django.db.models import QuerySet
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from ..utils.http import absolute_reverse
 from .application import Application
 from .channel import Channel
 from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMixin
@@ -99,7 +99,7 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
         )[0]
 
     def get_trigger_url(self) -> str:
-        url = reverse(
+        url = absolute_reverse(
             "api:event-trigger",
             args=[
                 self.application.project.organization.slug,

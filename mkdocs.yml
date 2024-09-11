@@ -98,7 +98,7 @@ theme:
 #    - content.tooltips
 #    - header.autohide
 #    - navigation.footer
-#    - navigation.indexes
+    - navigation.indexes
     - navigation.instant
     - navigation.instant.prefetch
     - navigation.instant.progress
@@ -179,6 +179,8 @@ plugins:
   - tags:
       tags_file: tags.md
 
+watch:
+  - docs/
 
 hooks:
   - docs/_hooks/hooks.py

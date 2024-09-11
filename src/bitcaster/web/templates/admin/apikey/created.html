@@ -1,0 +1,17 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+
+{% block content %}
+
+    {% if expired %}
+        <div>Grace period expired</div>
+    {% else %}
+        <h1>Key {{ original.name }} successfully created</h1>
+        <code class="box highlight">
+            {{ original.key }}
+        </code>
+        <div>
+This is the only time this key will be displayed. Copy it and pu in a safe place.
+        </div>
+    {% endif %}
+
+{% endblock %}

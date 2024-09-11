@@ -16,6 +16,10 @@
   --button-fg: var(--white);
   --button-hover-bg: var(--light);
   --button-hover-fg: var(--white);
+  // object-tools
+  --object-tools-fg: var(--white);
+  --object-tools-bg: #666666;
+  --object-tools-hover-bg: #444444;
 
   --default-button-bg: rgba(200, 0, 0, 1);
   --default-button-hover-bg: var(--light);
@@ -26,8 +30,8 @@
   --header-bg: var(--primary);
   --breadcrumbs-bg: var(--secondary);
 
-  --link-fg: var(--secondary);
-  --link-hover-color: var(--primary);
+  //--link-fg: var(--secondary);
+  //--link-hover-color: var(--primary);
 
   --frame-bg-color: lightgray;
   --frame-fg-color: var(--black);
@@ -55,16 +59,16 @@
   --body-bg-secondary: var(--darkened-bg);
   --body-fg: #eeeeee;
   --fg-primary: #bbbbbb;
-  --link-fg: var(--fg-primary);
-  --link-hover-color: var(--white);
+  --link-fg: var(--white);
+  --link-hover-color: var(--light);
   color-scheme: dark;
-  a{
-    color: var(--link-fg);
-    &:hover{
-      color: var(--white);
-
-    }
-  }
+  //a{
+  //  color: var(--link-fg);
+  //  &:hover{
+  //    color: var(--black);
+  //
+  //  }
+  //}
 }
 
 body.edit-message-body {

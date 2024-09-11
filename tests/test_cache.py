@@ -30,8 +30,8 @@ def test_flag_disable(
     with django_assert_num_queries(2):
         assert qs_from_cache(qs, key=key) is None
         assert qs_from_cache(qs, key=key) is None
-    with django_assert_num_queries(4):
-        assert qs_get_or_store(qs, key=key)
+
+    with django_assert_num_queries(3):
         assert qs_get_or_store(qs, key=key)
 
 

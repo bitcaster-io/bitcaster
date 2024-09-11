@@ -47,19 +47,21 @@
                     {% if has_permission %}
                         <div id="user-tools">
                             {% block welcome-msg %}
-                                {% translate 'Welcome,' %}
+{#                                {% translate 'Welcome,' %}#}
                                 <strong>{% firstof user.get_short_name user.get_username %}</strong>.
                             {% endblock %}
                             {% block userlinks %}
-                                {% if site_url %}
-                                    <a href="{{ site_url }}">{% translate 'View site' %}</a> /
-                                {% endif %}
-                                {% if user.is_active and user.is_staff %}
-                                    {% url 'django-admindocs-docroot' as docsroot %}
-                                    {% if docsroot %}
-                                        <a href="{{ docsroot }}">{% translate 'Documentation' %}</a> /
-                                    {% endif %}
-                                {% endif %}
+                                <a href="{{ bitcaster.doc_site }}/help/{{ title }}/">Help</a>
+                                
+{#                                {% if site_url %}#}
+{#                                    <a href="{{ site_url }}">{% translate 'View site' %}</a> /#}
+{#                                {% endif %}#}
+{#                                {% if user.is_active and user.is_staff %}#}
+{#                                    {% url 'django-admindocs-docroot' as docsroot %}#}
+{#                                    {% if docsroot %}#}
+{#                                        <a href="{{ docsroot }}">{% translate 'Documentation' %}</a> /#}
+{#                                    {% endif %}#}
+{#                                {% endif %}#}
                                 {% flag_enabled 'LOCAL_LOGIN' as LOCAL_LOGIN %}
                                 {% if LOCAL_LOGIN and user.has_usable_password %}
                                     <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a> /
@@ -95,7 +97,7 @@
             {% if OLD_STYLE_UI %}
             {% if not is_popup and is_nav_sidebar_enabled %}
             {% include "admin/nav_sidebar.html" %}
-            {% endif %}            
+            {% endif %}
             {% else %}
             {% include "admin/bc_sidebar.html" %}
             {% endif %}
