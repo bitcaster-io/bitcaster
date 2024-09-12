@@ -3,7 +3,7 @@ Before we can start triggering events in Bitcaster we need to create the initial
 
 
 
-Navigate to <https://SERVER_ADDRESS/admin/bitcaster/organization/>{: target='_app' } to add your <glossary:Organization>.
+Navigate to <https://SERVER_ADDRESS/admin/bitcaster/organization/current/>{: target='_app' } to add your <glossary:Organization>.
 
 !!! note
 
@@ -15,7 +15,7 @@ Navigate to <https://SERVER_ADDRESS/admin/bitcaster/organization/>{: target='_ap
 Now you can create your first Project.  
 
 Click on the 
-[Create Project](https://SERVER_ADDRESS/admin/bitcaster/organization/current/){ target='_app' .bc-button .object-tools }
+[Project](https://SERVER_ADDRESS/admin/bitcaster/organization/current/){ target='_app' .bc-button .object-tools }
  button on the top right corner or your [Project's page](https://SERVER_ADDRESS/admin/bitcaster/organization/current/)
 
 !!! warning

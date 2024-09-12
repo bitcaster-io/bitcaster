@@ -35,20 +35,38 @@ class BitcasterAdminSite(AdminSite):
 
         from bitcaster import models as m
 
+        structure = []
+        if org := m.Organization.objects.local().first():
+            org_url = reverse("admin:bitcaster_organization_change", args=(org.id,))
+            structure.append((m.Organization, org_url))
+        else:
+            org_url = reverse("admin:bitcaster_organization_add")
+            structure.append((m.Organization, org_url))
+            return {"structure": structure}
+
+        if prj := m.Project.objects.local().first():
+            prj_url = reverse("admin:bitcaster_project_change", args=(prj.id,))
+            structure.append((m.Project, prj_url))
+        else:
+            prj_url = f"{reverse('admin:bitcaster_project_add')}?organization={org.pk}"
+            structure.append((m.Project, prj_url))
+            return {"structure": structure}
+
         return {
             "system": [
-                m.Organization,
-                m.Project,
+                # (m.Organization, org_url),
+                # (m.Project, prj_url),
                 m.Channel,
                 m.DistributionList,
                 m.Application,
                 m.Event,
-                m.Notification,
+                # m.Notification,
                 m.Message,
                 m.MediaFile,
             ],
             "configuration": [FlagState, Config, m.SocialProvider],
             "security": [m.User, auth_models.Group, m.UserRole, auth_models.Permission, m.ApiKey],
+            "structure": structure,
         }
 
     def _build_sections_dict(self, request: HttpRequest) -> dict[str, Any]:
@@ -58,6 +76,9 @@ class BitcasterAdminSite(AdminSite):
 
         for section_name, models in sections.items():
             for model in models:
+                admin_url = None
+                if isinstance(model, (tuple, list)):
+                    model, admin_url = model
                 if model not in self._registry:
                     continue
                 model_admin = self._registry[model]
@@ -69,20 +90,20 @@ class BitcasterAdminSite(AdminSite):
                     "name": capfirst(model._meta.verbose_name_plural),
                     "object_name": model._meta.object_name,
                     "perms": perms,
-                    "admin_url": None,
-                    "add_url": None,
+                    "admin_url": admin_url,
                 }
-                if perms.get("change") or perms.get("view"):
-                    model_dict["view_only"] = not perms.get("change")
-                    try:
-                        model_dict["admin_url"] = reverse("admin:%s_%s_changelist" % info, current_app=self.name)
-                    except NoReverseMatch:  # pragma: no cover
-                        pass  # nosec
-                if perms.get("add"):
-                    try:
-                        model_dict["add_url"] = reverse("admin:%s_%s_add" % info, current_app=self.name)
-                    except NoReverseMatch:  # pragma: no cover
-                        pass  # nosec
+                if admin_url is None:
+                    if perms.get("change") or perms.get("view"):
+                        model_dict["view_only"] = not perms.get("change")
+                        try:
+                            model_dict["admin_url"] = reverse("admin:%s_%s_changelist" % info, current_app=self.name)
+                        except NoReverseMatch:  # pragma: no cover
+                            pass  # nosec
+                # if perms.get("add"):
+                #     try:
+                #         model_dict["add_url"] = reverse("admin:%s_%s_add" % info, current_app=self.name)
+                #     except NoReverseMatch:  # pragma: no cover
+                #         pass  # nosec
                 if section_name in app_dict:
                     app_dict[section_name]["models"].append(model_dict)
                 else:
@@ -90,7 +111,7 @@ class BitcasterAdminSite(AdminSite):
                         "name": section_name,
                         # "name": apps.get_app_config(app_label).verbose_name,
                         "app_label": section_name,
-                        "app_url": "#",
+                        # "app_url": "#",
                         # "has_module_perms": has_module_perms,
                         "models": [model_dict],
                     }

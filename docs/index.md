@@ -29,7 +29,7 @@ Your user will be empowered with an easy to use console to choose how to receive
 
 See the [Glossary](./glossary/index.md) for a list of common Bitcaster terminology
 
-!!! note
+!!! hint
 
     To help you to novigate this documentation use the `Set Address` link on the header.
     All the links to in the pages will reflect your server address for a better user experience.

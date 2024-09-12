@@ -17,10 +17,11 @@
   float: right;
 }
 
-.highlight{
+.highlight {
   background-color: #ffffd5;
   color: black;
 }
+
 .frame {
   display: inline-block;
   margin-top: 30px;
@@ -184,10 +185,23 @@
   background-color: var(--button-hover-bg);
 
 }
-.select2-results__option{
+
+.select2-results__option {
   background-color: var(--body-bg);
 
 }
+
+
+input:not([type]),
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=url], input[type=number], input[type=tel], textarea, select, .vTextField,
+.select2-container--admin-autocomplete .select2-selection--single .select2-selection__rendered {
+  background-color: var(--input-bg);
+  color: var(--input-fg);
+}
+
 @import "dashboard";
 
 //}
@@ -237,6 +251,20 @@ ul#quick-links {
         color: var(--button-hover-fg);
       }
     }
+  }
+}
+
+.clipboard {
+  cursor: pointer;
+
+  &.clear {
+    background-color: var(--body-bg);
+    color: var(--body-fg);
+  }
+
+  &.copied {
+    background-color: #ffffd5;
+    color: black;
   }
 }
 

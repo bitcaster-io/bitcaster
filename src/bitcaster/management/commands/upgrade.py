@@ -110,7 +110,7 @@ class Command(BaseCommand):
         from django.contrib.auth.models import Group
 
         from bitcaster.dispatchers.log import BitcasterLogDispatcher
-        from bitcaster.models import DistributionList, User
+        from bitcaster.models import DistributionList, Organization, Project, User
 
         self.get_options(options)
         if self.verbosity >= 1:
@@ -226,6 +226,11 @@ class Command(BaseCommand):
                 name="purge_occurrences",
                 defaults={"task": "bitcaster.tasks.purge_occurrences", "crontab": schedule_every_night},
             )
+            if not (org := Organization.objects.local().first()):
+                org = Organization.objects.create(name="Organization", owner=admin)
+
+            if not (prj := Project.objects.local().first()):
+                Project.objects.create(name="Project", owner=admin, organization=org)
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
         except ValidationError as e:

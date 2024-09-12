@@ -33,7 +33,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
         "active",
         "locked",
     )
-    autocomplete_fields = ("project", "owner")
+    # autocomplete_fields = ("project", "owner")
     readonly_fields = ["locked"]
     form = ApplicationChangeForm
 
@@ -47,7 +47,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
 
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Application] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
-        if obj and obj.name.lower() == "bitcaster":
+        if obj and obj.organization.name == Bitcaster.ORGANIZATION:
             base.extend(
                 [
                     "name",
@@ -59,9 +59,12 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
         return base
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
+        from bitcaster.models import Project
+
         initial = super().get_changeform_initial_data(request)
         initial.setdefault("owner", request.user.id)
-        initial.setdefault("organization", state.get_cookie("organization"))
+        initial.setdefault("project", state.get_cookie("project"))
+        initial["project"] = Project.objects.filter(pk=state.get_cookie("project")).first()
         initial.setdefault("from_email", request.user.email)
         return initial
 

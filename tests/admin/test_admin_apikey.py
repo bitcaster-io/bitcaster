@@ -1,3 +1,4 @@
+import os
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -11,7 +12,7 @@ from django_webtest.pytest_plugin import MixinWithInstanceVariables
 from bitcaster.auth.constants import Grant
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey
+    from bitcaster.models import ApiKey, Application
 
 
 @pytest.fixture()
@@ -27,9 +28,12 @@ def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestAp
 
 @pytest.fixture()
 def api_key(db: Any) -> "ApiKey":
-    from testutils.factories.key import ApiKeyFactory
+    from testutils.factories.key import ApiKeyFactory, ApplicationFactory
 
-    return ApiKeyFactory(application__project__environments=["development"])
+    a: "Application" = ApplicationFactory(
+        project__environments=["development"], project__name=f"Project {os.environ.get('PYTEST_XDIST_WORKER', '')}"
+    )
+    return ApiKeyFactory(application=a, project=a.project, organization=a.project.organization)
 
 
 def test_edit(app: DjangoTestApp, api_key: "ApiKey") -> None:
@@ -108,7 +112,8 @@ def test_add_check_environments(app: "DjangoTestApp", api_key: "ApiKey") -> None
 
     res = app.get(url)
     frm = res.forms["apikey_form"]
+    frm["organization"].force_value(api_key.application.project.organization.pk)
     frm["application"].force_value(api_key.application.pk)
     frm["environments"].force_value(["development"])
     res = frm.submit()
-    assert res.status_code == 302
+    assert res.status_code == 302, res.context["adminform"].form.errors

@@ -30,7 +30,11 @@ def application(db: Any) -> Application:
 def bitcaster(db: Any) -> "Application":
     from testutils.factories import ApplicationFactory
 
-    return ApplicationFactory(name="bitcaster")
+    from bitcaster.constants import Bitcaster
+
+    return ApplicationFactory(
+        name=Bitcaster.APPLICATION, project__name=Bitcaster.PROJECT, project__organization__name=Bitcaster.ORGANIZATION
+    )
 
 
 def test_get_readonly_fields(app: "DjangoTestApp", application: "Application", bitcaster: "Application") -> None:

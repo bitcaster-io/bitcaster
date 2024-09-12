@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django.contrib import admin
@@ -41,3 +41,10 @@ class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], adm
         if obj and obj.name == DistributionList.ADMINS:
             return False
         return super().has_delete_permission(request, obj)
+
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
+        initial = super().get_changeform_initial_data(request)
+        from bitcaster.models import Project
+
+        initial["project"] = Project.objects.local().first()
+        return initial

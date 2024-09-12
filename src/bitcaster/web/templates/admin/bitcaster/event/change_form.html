@@ -4,5 +4,5 @@
 {% endblock messages %}
 {% block object-tools %}
     {{ block.super }}
-    <div>Trigger URL: <code>{{ original.get_trigger_url }}</code></div>
+    <div><code class="clipboard">{{ original.get_trigger_url }}</code></div>
 {% endblock  %}

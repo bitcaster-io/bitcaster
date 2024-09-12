@@ -9,7 +9,7 @@ import pytest
 from django.core.management import CommandError, call_command
 from pytest import MonkeyPatch
 from responses import RequestsMock
-from testutils.factories import SuperUserFactory
+from testutils.factories import ProjectFactory, SuperUserFactory
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper
@@ -78,6 +78,14 @@ def test_upgrade(verbosity: int, migrate: int, monkeypatch: MonkeyPatch, environ
     SuperUserFactory()
     with mock.patch.dict(os.environ, environment, clear=True):
         call_command("upgrade", stdout=out, check=False, verbosity=verbosity)
+    assert "error" not in str(out.getvalue())
+
+
+def test_upgrade_next(mocked_responses: RequestsMock) -> None:
+    SuperUserFactory()
+    ProjectFactory()
+    out = StringIO()
+    call_command("upgrade", stdout=out, check=False)
     assert "error" not in str(out.getvalue())
 
 
