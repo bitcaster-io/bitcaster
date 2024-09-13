@@ -160,6 +160,7 @@ runs:
         if [[ "${{inputs.rebuild}}" == "true" ]]; then 
             echo "::warning::⚠ Forced build due input parameter"
         fi
+
     - name: Set up Docker BuildX
       if: steps.image_status.outputs.updated != 'true' || inputs.rebuild == 'true'
       uses: docker/setup-buildx-action@v3.3.0
@@ -207,7 +208,7 @@ runs:
             GITHUB_REPOSITORY=${{ github.repository }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             DISTRO=${{ inputs.target }}
-            CHECKSUM=${{ inputs.code_checksum }}
+            CHECKSUM=${{ steps.checksum.outputs.checksum }}
             VERSION=${{ steps.meta.outputs.version }}
             SOURCE_COMMIT=${{ steps.last_commit.outputs.last_commit_short_sha }}
     - name: Status
