@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class CacheKey:
-    DASHBOARDS_EVENTS = "dashboard_events"
+    DASHBOARDS_EVENTS: str = "dashboard_events"
 
 
 class Bitcaster:

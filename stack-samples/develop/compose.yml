@@ -28,7 +28,7 @@ x-common: &common
     - STATIC_URL=/static/
   volumes:
     - storage_volume:/var/storage
-    - $PWD:/code/app
+#    - $PWD:/code/app
     - $PWD/docker/conf:/conf
     - $PWD/docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
     - $PWD/src/bitcaster:/code/__pypackages__/3.12/lib/bitcaster

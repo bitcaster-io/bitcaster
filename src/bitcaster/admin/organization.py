@@ -45,10 +45,10 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     @login_required
     @view()
     def current(self, request: HttpRequest) -> HttpResponse:
-        current: Organization = Organization.objects.local().first()
-        if current is None:
-            return HttpResponseRedirect(reverse("admin:bitcaster_organization_add"))
-        return HttpResponseRedirect(reverse("admin:bitcaster_organization_change", args=[current.pk]))
+
+        if current := Organization.objects.local().first():
+            return HttpResponseRedirect(reverse("admin:bitcaster_organization_change", args=[current.pk]))
+        return HttpResponseRedirect(reverse("admin:bitcaster_organization_add"))
 
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def channels(self, request: HttpRequest, pk: str) -> HttpResponse:

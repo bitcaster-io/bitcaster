@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 from django.contrib.admin import apps
 from django.contrib.admin.sites import AdminSite
-from django.db.models import F
+from django.db.models import F, Model
 from django.http import HttpRequest
 from django.template.response import TemplateResponse
 from django.urls import NoReverseMatch, reverse
@@ -35,7 +35,7 @@ class BitcasterAdminSite(AdminSite):
 
         from bitcaster import models as m
 
-        structure = []
+        structure: list[tuple[type[Model], str]] = []
         if org := m.Organization.objects.local().first():
             org_url = reverse("admin:bitcaster_organization_change", args=(org.id,))
             structure.append((m.Organization, org_url))

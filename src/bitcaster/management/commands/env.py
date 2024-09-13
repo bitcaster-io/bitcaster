@@ -22,7 +22,7 @@ class Command(BaseCommand):
             action="store",
             dest="pattern",
             default="{key}={value}  # {help}",
-            help="Pattern to use to print variables (default: '{key}={value}{space}# {help}')",
+            help="Pattern to use to print variables (default: '{key}={value}{space}",
         )
         parser.add_argument("--develop", action="store_true", help="Display development values")
         parser.add_argument("--config", action="store_true", help="Only list changed values")

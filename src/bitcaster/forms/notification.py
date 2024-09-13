@@ -1,3 +1,4 @@
+# mypy: disable-error-code="assignment"
 from typing import Any
 
 from django import forms

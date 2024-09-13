@@ -62,9 +62,9 @@ class Config(AppConfig):
     def ready(self) -> None:
         from bitcaster.admin import register  # noqa
 
-        from . import handlers  # noqa
+        from . import handlers as global_handlers  # noqa
         from . import tasks  # noqa
-        from .cache import handlers  # noqa
+        from .cache import handlers as cache_handlers  # noqa
 
         for cond in ["parameter", "path matches", "after date", "before date", "anonymous"]:
             if cond in _conditions:  # pragma: no branch
