@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.decorators import button, view
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -41,6 +42,7 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
 
         return super().changeform_view(request, object_id, form_url, extra_context)
 
+    @login_required
     @view()
     def current(self, request: HttpRequest) -> HttpResponse:
         current: Organization = Organization.objects.local().first()

@@ -1,0 +1,31 @@
+#bc-sidebar {
+  background-color: var(--body-bg-secondary);
+  box-shadow: 2px 0 var(--body-bg-secondary);
+  width: 200px;
+}
+#bc-sidebar .nav-title {
+  text-transform: uppercase;
+  text-align: left;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+}
+#bc-sidebar a {
+  text-decoration: none;
+  color: var(--color-fg);
+}
+#bc-sidebar div.nav-item {
+  background-color: var(--body-bg-secondary);
+  padding: 10px;
+  padding-left: 25px;
+}
+#bc-sidebar div.nav-item:hover {
+  background-color: var(--button-hover-bg);
+  color: var(--button-hover-fg);
+}
+#bc-sidebar div.nav-item.current-model {
+  background-color: var(--default-button-bg);
+  color: var(--button-hover-fg);
+}
+
+/*# sourceMappingURL=sidebar.css.map */

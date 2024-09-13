@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import AutoCompleteFilter
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -33,6 +34,7 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
     exclude = ("locked",)
     form = ProjectChangeForm
 
+    @login_required
     @view()
     def current(self, request: HttpRequest) -> HttpResponse:
         current: Project = Project.objects.local().first()

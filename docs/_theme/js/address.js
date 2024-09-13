@@ -4,14 +4,14 @@ var regEx = new RegExp(TOKEN2, "ig");
 
 const clickHandler = function () {
     let currentAddr = Cookies.get('address') || "";
-    let addr = prompt("Set your bitcaster server address", currentAddr);
+    let addr = prompt("To have a better experience, set your Bitcaster server address", currentAddr);
     if (addr != null && addr.startsWith('http') || addr === '') {
         addr = addr.replace(/\/+$/, "");
         Cookies.set('address', addr, currentAddr);
         location.reload();
     }
     if (addr === '') {
-        clearHref()
+        // clearHref()
         location.reload();
     }
 };
@@ -23,7 +23,7 @@ const clearHref = function () {
     }
     for (const cell of document.getElementsByTagName('a')) {
         if (regEx.test(cell.href)){
-            cell.href = "#";
+            cell.href = "javascript:clickHandler()";
             cell.removeAttribute('target');
         }
         cell.innerHTML = cell.innerHTML.replace(regEx, cookieAddr);
