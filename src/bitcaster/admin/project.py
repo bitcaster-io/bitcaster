@@ -37,7 +37,7 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
     @login_required
     @view()
     def current(self, request: HttpRequest) -> HttpResponse:
-        current: Project = Project.objects.local().first()
+        current: Project = Project.objects.local().first()  # type: ignore[assignment]
         return HttpResponseRedirect(reverse("admin:bitcaster_project_change", args=[current.pk]))
 
     def changeform_view(

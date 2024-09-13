@@ -43,7 +43,7 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
         exclude = ("token",)
 
     def clean(self) -> dict[str, Any]:
-        prj: Project
+        prj: Optional[Project]
         prj_envs: list[str] = []
         envs: list[str] = []
         super().clean()
@@ -59,15 +59,7 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
             envs = self.cleaned_data.get("environments", [])
         if not set(envs).issubset(prj_envs):
             raise ValidationError({"environments": "One or more values are not available in the project"})
-        #
-        # if envs and not prj_envs:
-        #     raise ValidationError({"environments": "There are no environments set for this project"})
-        # elif envs:
-        #     for env in envs:
-        #         if env not in prj_envs:
-        #             raise ValidationError(
-        #                 {"environments": "Environment '{}' is not available in the selected project".format(env)}
-        #             )
+
         return self.cleaned_data
 
 
@@ -115,7 +107,7 @@ class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsM
 
     @view()
     def created(self, request: HttpRequest, pk: str) -> HttpResponse:
-        obj: ApiKey = self.get_object(request, pk)
+        obj: ApiKey = self.get_object(request, pk)  # type: ignore[assignment]
         expires = obj.created + timedelta(seconds=10)
         expired = timezone.now() > expires
         ctx = self.get_common_context(request, pk, expires=expires, expired=expired, title=_("Info"))
@@ -123,5 +115,5 @@ class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsM
 
     @button(visible=lambda s: is_root(s.context["request"]))
     def show_key(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj = self.get_object(request, pk)
+        obj: ApiKey = self.get_object(request, pk)  # type: ignore[assignment]
         self.message_user(request, str(obj.key), messages.WARNING)
