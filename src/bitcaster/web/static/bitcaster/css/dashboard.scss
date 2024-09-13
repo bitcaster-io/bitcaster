@@ -1,4 +1,10 @@
 
+.dashboard, .main {
+  #content {
+    min-height: 600px;
+  }
+}
+
 #dashboard {
   min-width: 100%;
   padding: 5px;
@@ -6,9 +12,11 @@
   .last_events {
     width: 350px;
   }
-  .actiontable{
+
+  .actiontable {
     width: 100%;
   }
+
   caption {
     background-color: var(--header-bg);
     color: var(--button-fg);

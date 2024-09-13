@@ -10,7 +10,7 @@ body.edit-message-body iframe {
   :root {
     --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --font-size: 18px;
+    --font-size: 1rem;
     --primary: rgba(229, 55, 52);
     --secondary: rgba(168, 0, 0, 0.82);
     --light: #ef5552;
@@ -53,7 +53,7 @@ body.edit-message-body iframe {
   :root {
     --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --font-size: 18px;
+    --font-size: 1rem;
     --primary: rgba(229, 55, 52);
     --secondary: rgba(168, 0, 0, 0.82);
     --light: #ef5552;
@@ -95,7 +95,7 @@ body.edit-message-body iframe {
 html[data-theme=dark] {
   --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-size: 18px;
+  --font-size: 1rem;
   --primary: rgba(229, 55, 52);
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
@@ -136,7 +136,7 @@ html[data-theme=dark] {
 html[data-theme=light] {
   --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-size: 18px;
+  --font-size: 1rem;
   --primary: rgba(229, 55, 52);
   --secondary: rgba(168, 0, 0, 0.82);
   --light: #ef5552;
@@ -204,38 +204,6 @@ html[data-theme=light] {
 
 :root, html[data-theme=light], html[data-theme=dark] {
   font-size: var(--font-size);
-}
-:root #bc-sidebar, html[data-theme=light] #bc-sidebar, html[data-theme=dark] #bc-sidebar {
-  background-color: var(--body-bg-secondary);
-  box-shadow: 2px 0 var(--body-bg-secondary);
-  width: 200px;
-}
-:root #bc-sidebar .module, html[data-theme=light] #bc-sidebar .module, html[data-theme=dark] #bc-sidebar .module {
-  margin-bottom: 0;
-}
-:root #bc-sidebar .nav-title, html[data-theme=light] #bc-sidebar .nav-title, html[data-theme=dark] #bc-sidebar .nav-title {
-  text-transform: uppercase;
-  text-align: left;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 10px;
-}
-:root #bc-sidebar a, html[data-theme=light] #bc-sidebar a, html[data-theme=dark] #bc-sidebar a {
-  text-decoration: none;
-  color: var(--color-fg);
-}
-:root #bc-sidebar div.nav-item, html[data-theme=light] #bc-sidebar div.nav-item, html[data-theme=dark] #bc-sidebar div.nav-item {
-  background-color: var(--body-bg-secondary);
-  padding: 10px;
-  padding-left: 25px;
-}
-:root #bc-sidebar div.nav-item:hover, html[data-theme=light] #bc-sidebar div.nav-item:hover, html[data-theme=dark] #bc-sidebar div.nav-item:hover {
-  background-color: var(--button-hover-bg);
-  color: var(--button-hover-fg);
-}
-:root #bc-sidebar div.nav-item.current-model, html[data-theme=light] #bc-sidebar div.nav-item.current-model, html[data-theme=dark] #bc-sidebar div.nav-item.current-model {
-  background-color: var(--default-button-bg);
-  color: var(--button-hover-fg);
 }
 :root .last-created-item, html[data-theme=light] .last-created-item, html[data-theme=dark] .last-created-item {
   background-color: darkgray;
@@ -307,10 +275,6 @@ html[data-theme=light] {
   border-bottom: 0;
 }
 
-.dashboard #content, .main #content {
-  min-height: 600px;
-}
-
 .w-400 {
   width: 400px;
 }
@@ -357,33 +321,6 @@ input[type=url], input[type=number], input[type=tel], textarea, select, .vTextFi
   color: var(--input-fg);
 }
 
-#dashboard {
-  min-width: 100%;
-  padding: 5px;
-}
-#dashboard .last_events {
-  width: 350px;
-}
-#dashboard .actiontable {
-  width: 100%;
-}
-#dashboard caption {
-  background-color: var(--header-bg);
-  color: var(--button-fg);
-  width: 100%;
-  padding: 10px;
-}
-#dashboard div {
-  display: inline-flex;
-}
-#dashboard div.left {
-  float: left;
-}
-#dashboard div.right {
-  float: right;
-  min-width: 400px;
-}
-
 #footer {
   padding-top: 50px;
   margin-bottom: 0 !important;
@@ -422,6 +359,70 @@ ul#quick-links li a:hover {
 .clipboard.copied {
   background-color: #ffffd5;
   color: black;
+}
+
+.dashboard #content, .main #content {
+  min-height: 600px;
+}
+
+#dashboard {
+  min-width: 100%;
+  padding: 5px;
+}
+#dashboard .last_events {
+  width: 350px;
+}
+#dashboard .actiontable {
+  width: 100%;
+}
+#dashboard caption {
+  background-color: var(--header-bg);
+  color: var(--button-fg);
+  width: 100%;
+  padding: 10px;
+}
+#dashboard div {
+  display: inline-flex;
+}
+#dashboard div.left {
+  float: left;
+}
+#dashboard div.right {
+  float: right;
+  min-width: 400px;
+}
+
+#bc-sidebar {
+  background-color: var(--body-bg-secondary);
+  box-shadow: 2px 0 var(--body-bg-secondary);
+  width: 200px;
+}
+#bc-sidebar .module {
+  margin-bottom: 0;
+}
+#bc-sidebar .nav-title {
+  text-transform: uppercase;
+  text-align: left;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+}
+#bc-sidebar a {
+  text-decoration: none;
+  color: var(--color-fg);
+}
+#bc-sidebar div.nav-item {
+  background-color: var(--body-bg-secondary);
+  padding: 10px;
+  padding-left: 25px;
+}
+#bc-sidebar div.nav-item:hover {
+  background-color: var(--button-hover-bg);
+  color: var(--button-hover-fg);
+}
+#bc-sidebar div.nav-item.current-model {
+  background-color: var(--default-button-bg);
+  color: var(--button-hover-fg);
 }
 
 /*# sourceMappingURL=admin.css.map */
