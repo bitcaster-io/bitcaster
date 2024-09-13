@@ -5,11 +5,9 @@ inputs:
   image:
     description: "Image name to build and push"
     required: true
-    type: string
     default: ${{ github.repository }}
   target:
     description: "Target Dockerfile Stage"
-    type: string
   push:
     description: "Target Dockerfile Stage"
     required: false
@@ -24,23 +22,14 @@ inputs:
   password:
     description: 'DockerHub password '
     required: false
-#  code_checksum:
-#    description: 'Current codde checksum'
-#    required: false
   rebuild:
     description: 'Always rebuild image, Ignore checksum'
     required: false
-    default: false
+    default: 'false'
   dryrun:
     description: 'Dryrun build'
     required: false
     default: 'false'
-
-
-defaults:
-  run:
-    shell: bash
-
 
 outputs:
 #  removed due to Error: Skip output 'image' since it may contain secret.
