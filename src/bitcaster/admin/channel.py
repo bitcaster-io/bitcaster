@@ -1,7 +1,8 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
-from admin_extra_buttons.decorators import button
+from admin_extra_buttons.buttons import Button
+from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from django import forms
@@ -420,6 +421,12 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
         if obj and obj.pk == config.SYSTEM_EMAIL_CHANNEL:
             return ["name", "organization", "project", "parent", "protocol", "locked"]
         return ["parent", "organization", "protocol", "locked", "project"]
+
+    @link(change_form=True, change_list=False)
+    def events(self, button: Button) -> None:
+        url = reverse("admin:bitcaster_event_changelist")
+        ch: Channel = button.context["original"]
+        button.href = f"{url}?channels__exact={ch.pk}"
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":

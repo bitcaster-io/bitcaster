@@ -2,7 +2,7 @@ import logging
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from admin_extra_buttons.decorators import button
-from adminfilters.autocomplete import LinkedAutoCompleteFilter
+from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django.contrib import admin, messages
 from django.db.models import ForeignKey
 from django.forms import ModelChoiceField, ModelForm
@@ -31,8 +31,10 @@ class AssignmentAdmin(BaseAdmin, admin.ModelAdmin[Assignment]):
     list_display = ("address", "channel", "validated", "active")
     list_filter = (
         "channel",
-        ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        ("channel__project", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
+        # ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("channel__project", AutoCompleteFilter),
+        ("address__user", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("address", LinkedAutoCompleteFilter.factory(parent="address__user")),
     )
     autocomplete_fields = ("address", "channel")
     form = AssignmentForm

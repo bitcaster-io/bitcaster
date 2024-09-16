@@ -2,24 +2,45 @@ import logging
 from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.decorators import button, view
+from django import forms
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
-from bitcaster.models import Channel, Organization
+from bitcaster.models import Channel, Group, Organization
 
 from ..constants import Bitcaster
 from ..forms.message import OrgTemplateCreateForm
 from ..state import state
 from ..utils.django import url_related
+from ..utils.importer import import_users_to_org
 from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
 logger = logging.getLogger(__name__)
+
+
+class ImportFromFileForm(forms.Form):
+    help_text = _(
+        """
+File must be a .csv file, comma separated `,` with 3 columns
+
+_Headers must be provided and named: last_name, first_name, email. Order can be customised_
+
+Es:
+
+```
+last_name,first_name,email
+Joe,Doe,j.doe@example.com
+```
+"""
+    )
+    file = forms.FileField(help_text=_(".CSV file"))
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), help_text=_("Add imported users to this Group"))
 
 
 class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
@@ -42,8 +63,7 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
 
         return super().changeform_view(request, object_id, form_url, extra_context)
 
-    @login_required
-    @view()
+    @view(login_required=True)
     def current(self, request: HttpRequest) -> HttpResponse:
 
         if current := Organization.objects.local().first():
@@ -117,3 +137,22 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
         return {
             "owner": request.user.id,
         }
+
+    @button(label="Import Users")
+    def import_from_file(self, request: HttpRequest, pk: str) -> HttpResponse:
+        ctx = self.get_common_context(request, pk)
+        org: Organization = ctx["original"]
+        if request.method == "POST":
+            form = ImportFromFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                try:
+                    import_users_to_org(form.cleaned_data["file"], org, form.cleaned_data["group"], {})
+                    return HttpResponseRedirect(reverse("admin:bitcaster_distributionlist_change", args=[org.pk]))
+                except Exception as e:
+                    logger.exception(e)
+                    self.message_error_to_user(request, e)
+
+        else:
+            form = ImportFromFileForm()
+        ctx["form"] = form
+        return TemplateResponse(request, "admin/bitcaster/organization/import.html", ctx)

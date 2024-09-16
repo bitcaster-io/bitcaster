@@ -80,13 +80,13 @@ body.edit-message-body iframe {
     --frame-bg-color: lightgray;
     --frame-fg-color: var(--black);
     --sidebar-bg-color: lightgray;
-    --body-bg: rgba(42, 42, 48, 0.1);
+    --body-bg: rgba(42, 42, 48);
     --body-bg-secondary: var(--darkened-bg);
     --body-fg: #eeeeee;
     --fg-primary: #bbbbbb;
     --link-fg: var(--white);
     --link-hover-color: var(--light);
-    --input-bg: #2e2d2d;
+    --input-bg: rgb(67, 67, 67);
     --input-fg: var(--white);
     color-scheme: dark;
     color-scheme: dark;
@@ -122,13 +122,13 @@ html[data-theme=dark] {
   --frame-bg-color: lightgray;
   --frame-fg-color: var(--black);
   --sidebar-bg-color: lightgray;
-  --body-bg: rgba(42, 42, 48, 0.1);
+  --body-bg: rgba(42, 42, 48);
   --body-bg-secondary: var(--darkened-bg);
   --body-fg: #eeeeee;
   --fg-primary: #bbbbbb;
   --link-fg: var(--white);
   --link-hover-color: var(--light);
-  --input-bg: #2e2d2d;
+  --input-bg: rgb(67, 67, 67);
   --input-fg: var(--white);
   color-scheme: dark;
 }
@@ -233,6 +233,9 @@ html[data-theme=light] {
   background-color: var(--bg-secondary);
   color: #fff;
 }
+:root .select2-dropdown, :root .select2-search__field, html[data-theme=light] .select2-dropdown, html[data-theme=light] .select2-search__field, html[data-theme=dark] .select2-dropdown, html[data-theme=dark] .select2-search__field {
+  background-color: var(--body-bg);
+}
 :root ul.object-tools li a.unlock, html[data-theme=light] ul.object-tools li a.unlock, html[data-theme=dark] ul.object-tools li a.unlock {
   background-color: #86df53;
   color: black;
@@ -311,6 +314,10 @@ html[data-theme=light] {
   background-color: var(--body-bg);
 }
 
+#toolbar #searchbar {
+  border: 1px solid grey;
+}
+
 input:not([type]),
 input[type=text],
 input[type=password],
@@ -319,6 +326,7 @@ input[type=url], input[type=number], input[type=tel], textarea, select, .vTextFi
 .select2-container--admin-autocomplete .select2-selection--single .select2-selection__rendered {
   background-color: var(--input-bg);
   color: var(--input-fg);
+  border: 1px solid grey;
 }
 
 #footer {
@@ -378,7 +386,6 @@ ul#quick-links li a:hover {
 #dashboard caption {
   background-color: var(--header-bg);
   color: var(--button-fg);
-  width: 100%;
   padding: 10px;
 }
 #dashboard div {

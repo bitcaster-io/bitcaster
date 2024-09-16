@@ -31,14 +31,14 @@
             {% for entry in admin_log %}
                 <tr>
                     <td>
-                        {% if entry.is_addition %}#}
+                        {% if entry.is_addition %}
                             {% translate 'Added:' %}{% elif entry.is_change %}
                             {% translate 'Changed:' %}{% elif entry.is_deletion %}
                             {% translate 'Deleted:' %}{% endif %}
                         {% if entry.is_deletion or not entry.get_admin_url %}#}
-                            {{ entry.object_repr }}
+                            {{ entry.object_repr|truncatechars:20 }}
                         {% else %}
-                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr|truncatechars:30 }}</a>
                         {% endif %}
                         <br>
                         {% if entry.content_type %}

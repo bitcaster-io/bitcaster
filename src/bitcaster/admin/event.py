@@ -1,13 +1,15 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional, Sequence
 
-from admin_extra_buttons.decorators import button
+from admin_extra_buttons.buttons import Button
+from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django import forms
 from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponseRedirect
 from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster.models import Assignment, Event
@@ -43,10 +45,12 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
     search_fields = ("name",)
     list_display = ("name", "application", "active", "locked")
     list_filter = (
-        ("application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        ("application__project", LinkedAutoCompleteFilter.factory(parent="application__project__organization")),
+        # ("application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("application__project", LinkedAutoCompleteFilter.factory(parent=None)),
         ("application", LinkedAutoCompleteFilter.factory(parent="application__project")),
         ("channels", AutoCompleteFilter),
+        ("notifications__distribution", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("notifications__distribution__recipients__address__user", LinkedAutoCompleteFilter.factory(parent=None)),
         "active",
         "locked",
     )
@@ -146,8 +150,15 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
         context["form"] = config_form
         return TemplateResponse(request, "admin/bitcaster/event/test_event.html", context)
 
-    @button(html_attrs={"class": ButtonColor.LINK.value})
-    def notifications(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        ctx = self.get_common_context(request, pk, title=_("Notifications"))
-        # ctx[""]
-        return TemplateResponse(request, "admin/bitcaster/event/notifications.html", ctx)
+    #
+    # @button(html_attrs={"class": ButtonColor.LINK.value})
+    # def notifications(self, request: HttpRequest, pk: str) -> "HttpResponse":
+    #     ctx = self.get_common_context(request, pk, title=_("Notifications"))
+    #     # ctx[""]
+    #     return TemplateResponse(request, "admin/bitcaster/event/notifications.html", ctx)
+
+    @link(change_form=True, change_list=False)
+    def notifications(self, button: Button) -> None:
+        url = reverse("admin:bitcaster_notification_changelist")
+        event: Event = button.context["original"]
+        button.href = f"{url}?event__exact={event.pk}&event__application__exact={event.application.pk}"

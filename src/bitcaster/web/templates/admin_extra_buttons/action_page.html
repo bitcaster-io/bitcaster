@@ -18,3 +18,4 @@
         {% endblock %}
     </div>
 {% endblock %}
+{% block content_title %}{% if title %}<h1>{{ title|default_if_none:"" }}&nbsp</h1>{% endif %}{% endblock %}

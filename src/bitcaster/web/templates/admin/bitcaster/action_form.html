@@ -1,0 +1,30 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load markdown i18n %}
+{% block content %}
+    {% if form.help_text %}<div class="frame">{{ form|help_doc }}</div>{% endif %}
+
+    <form method="post" id="action-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+        <div>
+            <fieldset class="module aligned">
+                {% for field in form.visible_fields %}
+                    <div class="form-row">
+                        {{ field.errors }}
+                        <div>
+                            <div class="flex-container">
+                                <label class="required" for="id_name">{{ field.label_tag }}</label>
+                                {{ field }}
+                            </div>
+                        </div>
+                        {% if field.help_text %}
+                            <p class="help" id="{{ field.auto_id }}_helptext">
+                                {{ field.help_text|safe }}
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </fieldset>
+        </div>
+        <input type="submit" id="apply" name="apply" value="{% trans "Confirm" %}">
+    </form>
+{% endblock %}

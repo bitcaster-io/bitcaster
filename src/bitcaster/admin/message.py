@@ -43,10 +43,10 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
     search_fields = ("name",)
     list_display = ("name", "channel", "scope_level")
     list_filter = (
-        ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        ("channel", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
-        ("event", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
-        ("notification", LinkedAutoCompleteFilter.factory(parent="event")),
+        # ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("channel", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("event", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("notification", LinkedAutoCompleteFilter.factory()),
     )
     autocomplete_fields = ("channel", "event", "notification")
     change_form_template = "admin/message/change_form.html"

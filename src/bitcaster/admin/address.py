@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional, TypeVar
 
-from adminfilters.autocomplete import LinkedAutoCompleteFilter
+from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django.contrib import admin
 from django.contrib.admin.options import InlineModelAdmin
 from django.db.models import QuerySet
@@ -22,19 +22,27 @@ if TYPE_CHECKING:
 class InlineValidation(admin.TabularInline["Assignment", "AddressAdmin"]):
     model = Assignment
     extra = 0
+    fields = ["channel", "validated", "active"]
 
 
 class AddressAdmin(BaseAdmin, admin.ModelAdmin[Address]):
     search_fields = ("name", "value")
     list_display = ("user", "name", "value", "type")
     list_filter = (
-        ("user__roles__organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        # ("user__roles__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("user", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("assignments__channel", AutoCompleteFilter),
+        ("assignments__distributionlist__notifications__event", AutoCompleteFilter),
         "type",
     )
     autocomplete_fields = ("user",)
     form = AddressForm
     inlines = [InlineValidation]
+
+    def get_readonly_fields(self, request: HttpRequest, obj: Optional[Address] = None) -> tuple[str, ...] | list[str]:
+        if obj is None:
+            return super().get_readonly_fields(request, obj)
+        return "user", "type"
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Address]:
         return super().get_queryset(request).select_related("user")

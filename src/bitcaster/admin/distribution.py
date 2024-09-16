@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
-from adminfilters.autocomplete import LinkedAutoCompleteFilter
+from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
@@ -21,8 +21,10 @@ class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], adm
     search_fields = ("name",)
     list_display = ("name", "project")
     list_filter = (
-        ("project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
+        # ("project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        # ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
+        ("project", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("recipients__address__user", AutoCompleteFilter.factory()),
     )
     autocomplete_fields = ("project",)
     filter_horizontal = ("recipients",)

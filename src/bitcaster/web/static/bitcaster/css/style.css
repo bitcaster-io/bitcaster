@@ -80,13 +80,13 @@ body.edit-message-body iframe {
     --frame-bg-color: lightgray;
     --frame-fg-color: var(--black);
     --sidebar-bg-color: lightgray;
-    --body-bg: rgba(42, 42, 48, 0.1);
+    --body-bg: rgba(42, 42, 48);
     --body-bg-secondary: var(--darkened-bg);
     --body-fg: #eeeeee;
     --fg-primary: #bbbbbb;
     --link-fg: var(--white);
     --link-hover-color: var(--light);
-    --input-bg: #2e2d2d;
+    --input-bg: rgb(67, 67, 67);
     --input-fg: var(--white);
     color-scheme: dark;
     color-scheme: dark;
@@ -122,13 +122,13 @@ html[data-theme=dark] {
   --frame-bg-color: lightgray;
   --frame-fg-color: var(--black);
   --sidebar-bg-color: lightgray;
-  --body-bg: rgba(42, 42, 48, 0.1);
+  --body-bg: rgba(42, 42, 48);
   --body-bg-secondary: var(--darkened-bg);
   --body-fg: #eeeeee;
   --fg-primary: #bbbbbb;
   --link-fg: var(--white);
   --link-hover-color: var(--light);
-  --input-bg: #2e2d2d;
+  --input-bg: rgb(67, 67, 67);
   --input-fg: var(--white);
   color-scheme: dark;
 }

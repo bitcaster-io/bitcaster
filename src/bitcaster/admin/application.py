@@ -1,13 +1,13 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
-from admin_extra_buttons.decorators import button
+from admin_extra_buttons.buttons import Button
+from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.template.response import TemplateResponse
-from django.utils.translation import gettext as _
+from django.urls import reverse
 
 from bitcaster.forms.application import ApplicationChangeForm
 from bitcaster.models import Application
@@ -68,10 +68,19 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
         initial.setdefault("from_email", request.user.email)
         return initial
 
-    @button(html_attrs={"class": ButtonColor.LINK.value})
-    def events(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        ctx = self.get_common_context(request, pk, title=_("Events"))
-        return TemplateResponse(request, "admin/application/events.html", ctx)
+    @link(change_form=True, change_list=False)
+    def events(self, button: Button) -> None:
+        url = reverse("admin:bitcaster_event_changelist")
+        application: Application = button.context["original"]
+        button.href = (
+            f"{url}?application__exact={application.pk}&application__organization__exact={application.organization.pk}"
+        )
+
+    @link(change_form=True, change_list=False)
+    def notifications(self, button: Button) -> None:
+        url = reverse("admin:bitcaster_notification_changelist")
+        application: Application = button.context["original"]
+        button.href = f"{url}?event__application__exact={application.pk}"
 
     @button(
         visible=lambda s: s.context["original"].project.organization.name != Bitcaster.ORGANIZATION,

@@ -23,14 +23,14 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
     search_fields = ("name",)
     list_display = ("name", "event", "application")
     list_filter = (
-        ("event__application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        (
-            "event__application__project",
-            LinkedAutoCompleteFilter.factory(parent="event__application__project__organization"),
-        ),
-        ("event__application", LinkedAutoCompleteFilter.factory(parent="event__application__project")),
+        # ("event__application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        # (
+        #     "event__application__project",
+        #     LinkedAutoCompleteFilter.factory(parent="event__application__project__organization"),
+        # ),
+        ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent="event__application")),
-        # ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
+        ("distribution__recipients__address__user", LinkedAutoCompleteFilter.factory(parent=None)),
     )
     autocomplete_fields = ("event", "distribution")
     form = NotificationForm

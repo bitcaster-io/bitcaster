@@ -207,9 +207,9 @@ def application(project: "Project"):
 
 @pytest.fixture()
 def distributionlist(project: "Project"):
-    from testutils.factories.distribution import DistributionList
+    from testutils.factories.distribution import DistributionListFactory
 
-    return DistributionList(project=project)
+    return DistributionListFactory(project=project)
 
 
 @pytest.fixture()
