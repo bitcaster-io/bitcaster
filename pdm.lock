@@ -5,7 +5,7 @@
 groups = ["default", "dev", "docs"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:d458c3e4b3b2ba091fcde57650f0bc145162cb65d2272acb9b3ab13bc2877365"
+content_hash = "sha256:09246d7e080bbfa94afd7b08f3e457603331b8db4e9a1f656c5b9f0dabaece6a"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -2855,6 +2855,17 @@ groups = ["default", "dev", "docs"]
 files = [
     {file = "pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc"},
     {file = "pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6"},
+]
+
+[[package]]
+name = "pyfakefs"
+version = "5.6.0"
+requires_python = ">=3.7"
+summary = "pyfakefs implements a fake file system that mocks the Python file system modules."
+groups = ["dev"]
+files = [
+    {file = "pyfakefs-5.6.0-py3-none-any.whl", hash = "sha256:1a45bba8615323ec29d65929d32dc66d7b59a1e60a02109950440edb0486c539"},
+    {file = "pyfakefs-5.6.0.tar.gz", hash = "sha256:7a549b32865aa97d8ba6538285a93816941d9b7359be2954ac60ec36b277e879"},
 ]
 
 [[package]]

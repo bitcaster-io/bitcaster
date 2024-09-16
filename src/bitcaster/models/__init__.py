@@ -11,6 +11,7 @@ from .key import ApiKey  # noqa
 from .log import LogMessage  # noqa
 from .media import MediaFile  # noqa
 from .message import Message  # noqa
+from .monitor import Monitor  # noqa
 from .notification import Notification  # noqa
 from .occurrence import Occurrence  # noqa
 from .organization import Organization  # noqa
@@ -29,6 +30,7 @@ __all__ = [
     "LogMessage",
     "MediaFile",
     "Message",
+    "Monitor",
     "Notification",
     "Occurrence",
     "Organization",

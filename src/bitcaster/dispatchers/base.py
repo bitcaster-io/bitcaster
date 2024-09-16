@@ -83,12 +83,6 @@ class DispatcherMeta(type["Dispatcher"]):
     def __new__(mcs: Type["Dispatcher"], class_name: str, bases: Tuple[Any], attrs: Dict[str, Any]) -> "Dispatcher":
         if attrs["__qualname__"] == "Dispatcher":
             return super().__new__(mcs, class_name, bases, attrs)
-
-        # if attrs["slug"].isnumeric():  # pragma: no cover
-        #     raise ValueError(f'{class_name} Invalid Dispatcher.slug {attrs["slug"]}')
-        # if attrs["slug"] in mcs._all:  # pragma: no cover
-        #     raise ValueError(f'{class_name} Duplicate Dispatcher.slug {attrs["slug"]}')
-
         cls = super().__new__(mcs, class_name, bases, attrs)
         if cls not in dispatcherManager:  # pragma: no branch
             dispatcherManager.register(cls)
