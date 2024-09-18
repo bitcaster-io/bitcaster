@@ -6,16 +6,15 @@ from django.core.exceptions import ValidationError
 from strategy_field.registry import Registry
 
 if TYPE_CHECKING:
-    from bitcaster.models import Event, Monitor
+    from bitcaster.models import Monitor
 
 
 class AgentMeta(type["Agent"]):
     _all = {}
-    # _dispatchers = []
     verbose_name: str = ""
 
     def __repr__(cls) -> str:
-        return cls.verbose_name
+        return cls.verbose_name or cls.__name__
 
     def __new__(mcs: type["Agent"], class_name: str, bases: tuple[Any], attrs: dict[str, Any]) -> "Agent":
         if attrs["__qualname__"] == "Agent":
@@ -28,21 +27,17 @@ class AgentMeta(type["Agent"]):
 
 class AgentConfig(forms.Form):
     help_text = ""
-    event = forms.ModelChoiceField(queryset=None)
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self.fields["event"].queryset = Event.objects.all()
 
 
 class Agent(metaclass=AgentMeta):
     config_class: "type[AgentConfig] | None" = AgentConfig
+    verbose_name = ""
 
     def __init__(self, monitor: "Monitor") -> None:
-        self.monitor = monitor
+        self.monitor: "Monitor" = monitor
 
-    def __repr__(cls) -> str:
-        return cls.__name__
+    def __repr__(self) -> str:
+        return self.verbose_name or self.__class__.__name__
 
     @property
     def config(self) -> dict[str, Any]:
@@ -52,7 +47,7 @@ class Agent(metaclass=AgentMeta):
         return cfg.cleaned_data
 
     @abc.abstractmethod
-    def check(self) -> None: ...
+    def check(self, notify: bool = True, update: bool = True) -> None: ...
 
     @abc.abstractmethod
     def notify(self) -> None: ...

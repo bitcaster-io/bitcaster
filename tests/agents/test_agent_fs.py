@@ -1,35 +1,48 @@
+from pathlib import Path
 from unittest import mock
 from unittest.mock import Mock
 
 import pytest
+from django.core.exceptions import ValidationError
 from pyfakefs.fake_filesystem import FakeFile, FakeFilesystem
+from pytest_django.fixtures import SettingsWrapper
 
-from bitcaster.agents.fs import AgentFileSystem
+from bitcaster.agents.fs import AgentFileSystem, validate_path
 from bitcaster.models import Event, Monitor
 
 
 @pytest.fixture()
 def monit_path(event: "Event", fs: FakeFilesystem) -> AgentFileSystem:
     fs.reset()
-    return AgentFileSystem(Mock(spec=Monitor, config={"event": event.pk, "path": fs.root.path}, data={}))
+    fs.create_file("dir1/file1.txt")
+    fs.create_file("dir1/file2.txt")
+    fs.create_file("dir1/file3.txt")
+    return AgentFileSystem(
+        Mock(
+            spec=Monitor,
+            event=event,
+            config={"recursive": True, "path": fs.root.path, "add": True, "delete": True, "change": True},
+            data={},
+        )
+    )
 
 
 @pytest.fixture()
 def monit_file(event: "Event", fs: FakeFilesystem) -> AgentFileSystem:
     fs.reset()
-    ff: FakeFile = fs.create_file("dir1/file.txt")
-    return AgentFileSystem(Mock(spec=Monitor, config={"event": event.pk, "path": ff.path}, data={}))
+    ff: FakeFile = fs.create_file("dir1/file1.txt")
+    return AgentFileSystem(
+        Mock(
+            spec=Monitor,
+            event=event,
+            config={"recursive": True, "path": ff.path, "add": True, "delete": True, "change": True},
+            data={},
+        )
+    )
 
 
 def test_agent_fs_config(monit_path: AgentFileSystem) -> None:
-    assert list(monit_path.config.keys()) == [
-        "event",
-        "path",
-        "monitor_add",
-        "monitor_change",
-        "monitor_deletion",
-        "skip_first_run",
-    ]
+    assert list(monit_path.config.keys()) == ["path", "recursive", "add", "change", "delete"]
 
 
 def test_agent_fs_check_dir(monit_path: AgentFileSystem, fs: FakeFilesystem) -> None:
@@ -38,17 +51,22 @@ def test_agent_fs_check_dir(monit_path: AgentFileSystem, fs: FakeFilesystem) -> 
     with mock.patch("bitcaster.models.event.Event.trigger") as notify:
         monit_path.check()
         assert not notify.called
-        assert monit_path.monitor.data
+        assert monit_path.monitor.data["diff"] == {"added": [], "changed": [], "deleted": []}
     with mock.patch.object(monit_path, "initialize") as initialize:
         with mock.patch("bitcaster.models.event.Event.trigger") as notify:
             monit_path.check()
             assert not notify.called
             assert not initialize.called
+            assert monit_path.monitor.data["diff"] == {"added": [], "changed": [], "deleted": []}
+
+    fs.utime("dir1/file1.txt", (0, 0))
     fs.create_file("aaa/bbb/new_file1.txt")
     with mock.patch("bitcaster.models.event.Event.trigger") as notify:
         monit_path.check()
         assert notify.called
-    assert "/aaa/bbb/new_file1.txt" in monit_path.monitor.data["diff"]
+        assert monit_path.monitor.data["diff"]["deleted"] == []
+        assert monit_path.monitor.data["diff"]["changed"] == ["/dir1/file1.txt"]
+        assert monit_path.monitor.data["diff"]["added"] == ["/aaa/bbb/new_file1.txt"]
 
 
 def test_agent_fs_check_file(monit_file: AgentFileSystem, fs: FakeFilesystem) -> None:
@@ -62,17 +80,68 @@ def test_agent_fs_check_file(monit_file: AgentFileSystem, fs: FakeFilesystem) ->
             monit_file.check()
             assert not notify.called
             assert not initialize.called
-    fs.utime("dir1/file.txt", (0, 0))
+
+    fs.utime("dir1/file1.txt", (0, 0))
     with mock.patch("bitcaster.models.event.Event.trigger") as notify:
         monit_file.check()
+        assert monit_file.monitor.data["diff"]["deleted"] == []
+        assert monit_file.monitor.data["diff"]["changed"] == ["/dir1/file1.txt"]
+        assert monit_file.monitor.data["diff"]["added"] == []
         assert notify.called
-        assert "/dir1/file.txt" in monit_file.monitor.data["diff"]
 
 
 def test_agent_fs_delete_file(monit_file: AgentFileSystem, fs: FakeFilesystem) -> None:
     monit_file.initialize()
-    fs.remove_object("dir1/file.txt")
+    fs.remove_object("dir1/file1.txt")
     with mock.patch("bitcaster.models.event.Event.trigger") as notify:
         monit_file.check()
         assert notify.called
-        assert "/dir1/file.txt" in monit_file.monitor.data["diff"]
+        assert monit_file.monitor.data["diff"]["deleted"] == ["/dir1/file1.txt"]
+        assert monit_file.monitor.data["diff"]["changed"] == []
+        assert monit_file.monitor.data["diff"]["added"] == []
+
+
+def test_agent_fs_test(monit_file: AgentFileSystem, fs: FakeFilesystem) -> None:
+    monit_file.initialize()
+    with mock.patch("bitcaster.models.event.Event.trigger") as notify:
+        monit_file.check(notify=False)
+        assert not notify.called
+
+
+def test_agent_fs_no_update(monit_file: AgentFileSystem, fs: FakeFilesystem) -> None:
+    monit_file.initialize()
+    with mock.patch("bitcaster.models.monitor.Monitor.save") as save:
+        monit_file.check(update=False)
+        assert not save.called
+
+
+def test_agent_validate_config(monit_file: AgentFileSystem, fs: FakeFilesystem, settings: "SettingsWrapper") -> None:
+    settings.AGENT_FILESYSTEM_VALIDATOR = lambda s: 1 / 0
+    agent: AgentFileSystem = AgentFileSystem(
+        Mock(
+            spec=Monitor,
+            event=Mock(),
+            config={"path": fs.root.path, "add": True, "delete": True, "change": True},
+            data={},
+        )
+    )
+    with pytest.raises(ValidationError):
+        assert agent.config
+    settings.AGENT_FILESYSTEM_VALIDATOR = lambda s: True
+    assert agent.config
+
+    settings.AGENT_FILESYSTEM_VALIDATOR = "bitcaster.agents.fs.validate_path"
+    assert agent.config
+
+
+@pytest.mark.parametrize(
+    "path", [__file__, str(Path(__file__).parent), str(Path(__file__)), f"{Path(__file__).parent}/"]
+)
+def test_validate_path(path: str) -> None:
+    validate_path(path)
+
+
+@pytest.mark.parametrize("path", ["===", "---/bbb", "/aaa/"])
+def test_validate_path_error(path: str) -> None:
+    with pytest.raises(ValidationError):
+        validate_path(path)

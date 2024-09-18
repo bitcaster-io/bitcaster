@@ -1,9 +1,12 @@
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, Optional
 
 from concurrency.fields import IntegerVersionField
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.base import ModelBase
+from django.urls import reverse
+from django.utils.safestring import SafeString
 from django.utils.text import slugify
 from django.utils.translation import gettext as _
 
@@ -19,6 +22,14 @@ class LockMixin(models.Model):
 
     class Meta:
         abstract = True
+
+
+class AdminReversable(models.Model):
+    class Meta:
+        abstract = True
+
+    def get_admin_change(self) -> str:
+        return reverse(admin_urlname(self._meta, SafeString("change")), args=[self.pk])
 
 
 class BaseQuerySet(models.QuerySet["AnyModel"]):

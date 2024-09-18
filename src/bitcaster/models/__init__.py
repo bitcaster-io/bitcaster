@@ -27,6 +27,7 @@ __all__ = [
     "Channel",
     "DistributionList",
     "Event",
+    "Group",
     "LogMessage",
     "MediaFile",
     "Message",

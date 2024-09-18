@@ -1,0 +1,23 @@
+{% extends "admin_extra_buttons/change_form.html" %}
+{% block field_sets %}
+    {% if original.pk and original.schedule and  original.schedule.crontab %}
+        <div class="frame float-right">
+            <fieldset>
+                <div class="form-row">
+                    <div>Refresh:</div>
+                    <div><a href="{% url "admin:bitcaster_monitor_schedule" original.pk %}">{{ original.schedule.crontab.human_readable }}</a></div>
+                    <div><a href="{% url "admin:django_celery_beat_periodictask_change" original.schedule.pk %}">Periodic Task</a></div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <div class="form-row">
+                    <div>Last Run:</div>
+                    {{ original.schedule.last_run_at|default_if_none:"Never" }}
+                </div>
+            </fieldset>
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+{% block after_field_sets %}
+{% endblock %}

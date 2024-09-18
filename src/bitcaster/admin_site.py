@@ -62,6 +62,7 @@ class BitcasterAdminSite(AdminSite):
                 m.Event,
                 m.Message,
                 m.MediaFile,
+                m.Monitor,
                 # m.Notification,
                 # m.Address,
                 # m.Assignment,

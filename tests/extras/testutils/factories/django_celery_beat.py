@@ -3,6 +3,7 @@ from django.utils import timezone
 from django_celery_beat.models import (
     SOLAR_SCHEDULES,
     ClockedSchedule,
+    CrontabSchedule,
     IntervalSchedule,
     PeriodicTask,
     SolarSchedule,
@@ -37,10 +38,16 @@ class ClockedScheduleFactory(AutoRegisterModelFactory[ClockedSchedule]):
         model = ClockedSchedule
 
 
+class CrontabScheduleFactory(AutoRegisterModelFactory[CrontabSchedule]):
+    class Meta:
+        model = CrontabSchedule
+
+
 class PeriodicTaskFactory(AutoRegisterModelFactory[PeriodicTask]):
     name = factory.Sequence(lambda n: "PeriodicTask%03d" % n)
-    interval = factory.SubFactory(IntervalScheduleFactory)
-    task = "bitcaster.tasks.notify_failures"
+    # interval = factory.SubFactory(IntervalScheduleFactory)
+    crontab = factory.SubFactory(CrontabScheduleFactory)
+    task = "bitcaster.tasks.purge_occurrences"
 
     class Meta:
         model = PeriodicTask

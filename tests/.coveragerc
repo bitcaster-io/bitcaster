@@ -37,6 +37,9 @@ exclude_lines =
     except BaseException as e
     raise CommandError.*
     self.halt\(.*
+    @abc.abstractmethod
+    @abstractmethod
+
 
 fail_under=99
 precision=2

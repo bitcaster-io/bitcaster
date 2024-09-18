@@ -31,6 +31,12 @@ EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY", "CACHE_URL", "CELERY_BROKER_URL", 
 CONFIG: "Mapping[str, ConfigItem]" = {
     "ADMIN_EMAIL": (str, "", "Initial user created at first deploy"),
     "ADMIN_PASSWORD": (str, "", "Password for initial user created at first deploy"),
+    "AGENT_FILESYSTEM_VALIDATOR": (
+        str,
+        "bitcaster.agents.fs.validate_path",
+        "Callable to validate agent filesystem path",
+    ),
+    "AGENT_FILESYSTEM_ROOT": (str, "", "AgentFilesystem root directory"),
     "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], setting("allowed-hosts")),
     "AUTHENTICATION_BACKENDS": (list, [], setting("authentication-backends")),
     "BITCASTER_DOCUMENTATION_SITE_URL": (

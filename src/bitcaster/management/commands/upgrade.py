@@ -151,6 +151,7 @@ class Command(BaseCommand):
             call_command("remove_stale_contenttypes", **extra)
 
             admin: User | None
+            User.objects.get_or_create(username="__SYSTEM__")
             if self.admin_email:
                 if User.objects.filter(email=self.admin_email).exists():
                     echo(

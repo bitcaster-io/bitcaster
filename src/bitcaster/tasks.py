@@ -1,9 +1,11 @@
 import logging
 
+from django.contrib.admin.models import LogEntry
 from django.db import transaction
 
 from bitcaster.config.celery import app
 from bitcaster.constants import Bitcaster, SystemEvent
+from bitcaster.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -71,3 +73,25 @@ def purge_occurrences() -> None | Exception:
     except Exception as e:
         logger.exception(e)
         return e
+
+
+@app.task()
+def monitor_run(pk: str) -> None | Exception:
+    from django.contrib.contenttypes.models import ContentType
+
+    from bitcaster.models import Monitor
+
+    try:
+        monitor: "Monitor" = Monitor.objects.get(pk=pk)
+        LogEntry.objects.create(
+            content_type=ContentType.objects.get_for_model(Monitor),
+            object_id=pk,
+            action_flag=100,
+            user=User.objects.get(username="__SYSTEM__"),
+            object_repr=str(monitor),
+            change_message="Monitor started",
+        )
+        monitor.agent.check()
+    except Exception as e:
+        logger.exception(e)
+        raise

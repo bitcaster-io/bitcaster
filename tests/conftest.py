@@ -8,7 +8,7 @@ import pytest
 import responses
 
 if TYPE_CHECKING:
-    from bitcaster.models import Application, Occurrence, Project, User
+    from bitcaster.models import Application, Event, Occurrence, Project, User
 
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))
@@ -158,6 +158,13 @@ def user(db):
 
 
 @pytest.fixture
+def system_user(db):
+    from testutils.factories.user import UserFactory
+
+    return UserFactory(username="__SYSTEM__")
+
+
+@pytest.fixture
 def superuser(db):
     from testutils.factories.user import SuperUserFactory
 
@@ -213,10 +220,10 @@ def distributionlist(project: "Project"):
 
 
 @pytest.fixture()
-def event(application):
+def event(application) -> "Event":
     from testutils.factories import ChannelFactory, EventFactory
 
-    return EventFactory(application=application, channels=[ChannelFactory()])
+    return EventFactory(application=application, channels=[ChannelFactory()], active=True)
 
 
 @pytest.fixture()
@@ -334,3 +341,10 @@ def messagebox() -> list:
     testutils.dispatcher.MESSAGES = []
     yield testutils.dispatcher.MESSAGES
     testutils.dispatcher.MESSAGES = []
+
+
+@pytest.fixture()
+def monitor() -> list:
+    from testutils.factories import MonitorFactory
+
+    return MonitorFactory()

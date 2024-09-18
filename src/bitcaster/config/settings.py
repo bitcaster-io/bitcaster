@@ -224,6 +224,7 @@ STORAGES = {
 }
 
 
+from .fragments.agents import *  # noqa
 from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.csp import *  # noqa

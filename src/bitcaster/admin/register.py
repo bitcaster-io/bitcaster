@@ -14,10 +14,18 @@ from .group import GroupAdmin
 from .log import LogMessageAdmin
 from .media import MediaAdmin
 from .message import MessageAdmin
+from .monitor import MonitorAdmin
 from .notification import NotificationAdmin
 from .occurrence import OccurrenceAdmin
 from .organization import OrganizationAdmin
-from .overrides import Config, ConstanceAdmin, FlagState, FlagStateAdmin
+from .overrides import (
+    Config,
+    ConstanceAdmin,
+    FlagState,
+    FlagStateAdmin,
+    PeriodicTask,
+    PeriodicTaskAdmin,
+)
 from .project import ProjectAdmin
 from .user import UserAdmin
 from .userrole import UserRoleAdmin
@@ -30,6 +38,9 @@ admin.site.register([Config], ConstanceAdmin)
 
 admin.site.unregister(FlagState)
 admin.site.register(FlagState, FlagStateAdmin)
+
+admin.site.unregister(PeriodicTask)
+admin.site.register(PeriodicTask, PeriodicTaskAdmin)
 
 
 admin.site.register(models.Address, AddressAdmin)
@@ -48,3 +59,4 @@ admin.site.register(models.Organization, OrganizationAdmin)
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.UserRole, UserRoleAdmin)
+admin.site.register(models.Monitor, MonitorAdmin)

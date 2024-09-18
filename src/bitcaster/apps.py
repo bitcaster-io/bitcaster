@@ -5,6 +5,7 @@ from typing import Any
 import pytricia
 from django.apps import AppConfig
 from django.conf import settings
+from django.utils.translation import gettext as _
 from flags import conditions
 from flags.conditions.registry import _conditions
 
@@ -60,11 +61,20 @@ class Config(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
 
     def ready(self) -> None:
+        from django.contrib.admin import models as admin_models
+
         from bitcaster.admin import register  # noqa
 
-        from . import handlers as global_handlers  # noqa
+        from . import checks  # noqa
         from . import tasks  # noqa
+        from . import handlers as global_handlers  # noqa
         from .cache import handlers as cache_handlers  # noqa
+
+        admin_models.ACTION_FLAG_OTHER = 100
+        admin_models.ACTION_FLAG_CHOICES.append(
+            (admin_models.ACTION_FLAG_OTHER, _("Other")),
+        )
+        admin_models.LogEntry._meta.get_field("action_flag").choices = admin_models.ACTION_FLAG_CHOICES
 
         for cond in ["parameter", "path matches", "after date", "before date", "anonymous"]:
             if cond in _conditions:  # pragma: no branch

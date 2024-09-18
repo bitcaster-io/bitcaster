@@ -7,11 +7,26 @@
     margin: 0;
   }
 }
+.container{
+  display: inline-block;
+
+}
+.w-100{
+  width: 100%;
+}
+
+.float-right{
+  float: right;
+}
 
 .submit-row {
   top: 0;
   position: relative;
   float: right;
+}
+
+.admin-autocomplete.select2-hidden-accessible {
+  border: none;
 }
 
 .highlight {
@@ -65,9 +80,11 @@
     background-color: var(--bg-secondary);
     color: #fff;
   }
+
   .select2-dropdown, .select2-search__field {
     background-color: var(--body-bg);
   }
+
   ul.object-tools {
     li {
       //a.action {
@@ -182,7 +199,8 @@
   background-color: var(--body-bg);
 
 }
-#toolbar #searchbar{
+
+#toolbar #searchbar {
   border: 1px solid grey;
 
 }
@@ -191,11 +209,27 @@ input:not([type]),
 input[type=text],
 input[type=password],
 input[type=email],
-input[type=url], input[type=number], input[type=tel], textarea, select, .vTextField,
-.select2-container--admin-autocomplete .select2-selection--single .select2-selection__rendered {
+input[type=url], input[type=number], input[type=tel], textarea, select, .vTextField {
   background-color: var(--input-bg);
   color: var(--input-fg);
   border: 1px solid grey;
+}
+
+.select2-container {
+  border-radius: 4px;
+  border: 1px solid grey;
+
+}
+
+.select2-container--admin-autocomplete .select2-selection--single {
+  background-color: var(--input-bg);
+  border-radius: 4px;
+  border: 1px solid grey;
+
+  .select2-selection__rendered {
+    color: var(--body-fg);
+    line-height: 27px;
+  }
 }
 
 //}
