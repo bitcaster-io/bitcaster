@@ -37,6 +37,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         "Callable to validate agent filesystem path",
     ),
     "AGENT_FILESYSTEM_ROOT": (str, "", "AgentFilesystem root directory"),
+    "AGENT_FILESYSTEM_DISALLOWED": (list, "", "AgentFilesystem disallowed directories"),
     "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], setting("allowed-hosts")),
     "AUTHENTICATION_BACKENDS": (list, [], setting("authentication-backends")),
     "BITCASTER_DOCUMENTATION_SITE_URL": (

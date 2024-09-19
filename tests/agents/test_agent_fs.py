@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from pyfakefs.fake_filesystem import FakeFile, FakeFilesystem
 from pytest_django.fixtures import SettingsWrapper
 
-from bitcaster.agents.fs import AgentFileSystem, validate_path
+from bitcaster.agents.fs import AgentFileSystem, resolve_path, validate_path
 from bitcaster.models import Event, Monitor
 
 
@@ -135,13 +135,66 @@ def test_agent_validate_config(monit_file: AgentFileSystem, fs: FakeFilesystem, 
 
 
 @pytest.mark.parametrize(
-    "path", [__file__, str(Path(__file__).parent), str(Path(__file__)), f"{Path(__file__).parent}/"]
+    "path,expected",
+    [
+        ("b.txt", "/root/b.txt"),
+        ("a/b.txt", "/root/a/b.txt"),
+        ("/a/b.txt", "/root/a/b.txt"),
+        ("/a/b/../../b.txt", "/root/b.txt"),
+        ("/", "/root"),
+        ("a/", "/root/a"),
+    ],
 )
-def test_validate_path(path: str) -> None:
+def test_resolve_path_root(path: str, expected: str, settings: "SettingsWrapper") -> None:
+    settings.AGENT_FILESYSTEM_ROOT = "/root"
+    assert resolve_path(path) == expected
+
+
+@pytest.mark.parametrize(
+    "path,expected",
+    [
+        ("/root/b.txt", "/root/b.txt"),
+        ("/root/a/b.txt", "/root/a/b.txt"),
+        ("/root/a/b.txt", "/root/a/b.txt"),
+        ("/root/a/b/../../b.txt", "/root/b.txt"),
+    ],
+)
+def test_resolve_path_no_root(path: str, expected: str, settings: "SettingsWrapper") -> None:
+    settings.AGENT_FILESYSTEM_ROOT = ""
+    assert resolve_path(path) == expected
+
+
+@pytest.mark.parametrize("path", [__file__, str(Path(__file__).parent), f"{Path(__file__).parent}/"])
+def test_validate_path_no_root(path: str, settings: "SettingsWrapper") -> None:
+    settings.AGENT_FILESYSTEM_ROOT = None
     validate_path(path)
 
 
-@pytest.mark.parametrize("path", ["===", "---/bbb", "/aaa/"])
-def test_validate_path_error(path: str) -> None:
+@pytest.mark.parametrize("path", [__file__, str(Path(__file__).parent), f"{Path(__file__).parent}/"])
+def test_validate_path_root(path: str, settings: "SettingsWrapper") -> None:
+    settings.AGENT_FILESYSTEM_ROOT = str(Path(__file__).parent)
+    validate_path(path)
+
+
+@pytest.mark.parametrize("path", ["../../"])
+def test_validate_path_error(path: str, settings: "SettingsWrapper") -> None:
+    settings.AGENT_FILESYSTEM_ROOT = str(Path(__file__).parent)
     with pytest.raises(ValidationError):
         validate_path(path)
+
+
+#
+#
+# @pytest.mark.parametrize("path", ["a.txt", "a/b.txt"])
+# def test_validate_parents_success(path, settings: "SettingsWrapper", fs: FakeFilesystem) -> None:
+#     settings.AGENT_FILESYSTEM_ROOT = str(fs.root)
+#     fs.reset()
+#     fs.create_file(path)
+#     validate_path(path)
+#
+#
+# @pytest.mark.parametrize("path", ["..", "/a.txt"])
+# def test_validate_parents_fail(path, settings: "SettingsWrapper", fs: "FakeFilesystem") -> None:
+#     settings.AGENT_FILESYSTEM_ROOT = str(fs.root)
+#     with pytest.raises(ValidationError):
+#         validate_path(path)

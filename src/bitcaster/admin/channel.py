@@ -248,7 +248,7 @@ class ChannelWizard(CookieWizardView):
         self.extra_context = kwargs.pop("extra_context")
         wizard_cancel = self.request.POST.get("wizard_cancel", -1)
         if wizard_cancel != -1:
-            return HttpResponseRedirect(wizard_cancel or reverse("admin:bitcaster_channel_changelist"))
+            return HttpResponseRedirect(wizard_cancel or Channel.get_admin_changelist())
         return super().post(*args, **kwargs)
 
     def get_current_selection(self) -> dict[str, Any]:  # noqa

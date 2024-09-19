@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
-from ..models.log import LogMessage
+from ..models.internal import LogMessage
 from .base import BaseAdmin
 
 logger = logging.getLogger(__name__)

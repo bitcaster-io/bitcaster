@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 MESSAGES = []
 
 
-class BitcasterLogDispatcher(Dispatcher):
+class BitcasterSysDispatcher(Dispatcher):
     id = 1
     slug = "test"
     local = True
@@ -19,7 +19,7 @@ class BitcasterLogDispatcher(Dispatcher):
     protocol = MessageProtocol.PLAINTEXT
 
     def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
-        from bitcaster.models.log import LogMessage
+        from bitcaster.models.internal import LogMessage
 
         LogMessage.objects.create(level=address, application=payload.event.application, message=payload.message)
         return True

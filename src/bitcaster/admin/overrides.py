@@ -43,4 +43,4 @@ class PeriodicTaskAdmin(ExtraButtonsMixin, _PeriodicTaskAdmin):
         task = self.celery_app.tasks.get(pt.task)
         if task:  # pragma: no branch
             task.apply_async(args=loads(pt.args), kwargs=loads(pt.kwargs), queue=pt.queue, periodic_task_name=pt.name)
-            self.message_user(request, _("{0} task was successfully run").format(pt.name))
+            self.message_user(request, _("{0} task was successfully queued").format(pt.name))

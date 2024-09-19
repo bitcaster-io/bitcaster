@@ -117,9 +117,6 @@ def test_monitor_test(app: DjangoTestApp, monitor: "Monitor") -> None:
     assert monitor.data == {}
     res = app.get(url)
     assert res.status_code == 200
-    # msg = list(res.context["messages"])[0]
-    # assert msg.level == SUCCESS
-    # assert msg.message == "Success. No changes detected"
 
     res = app.post(url)
     assert res.status_code == 200
@@ -134,5 +131,5 @@ def test_monitor_test(app: DjangoTestApp, monitor: "Monitor") -> None:
     res = app.post(url)
     assert res.status_code == 200
     msg = list(res.context["messages"])[0]
-    assert msg.level == WARNING
+    assert msg.level == WARNING, str(f"{msg.level}: {msg.message}")
     assert msg.message == "Success. Changes detected"

@@ -1,12 +1,10 @@
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, Optional
 
 from concurrency.fields import IntegerVersionField
-from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.base import ModelBase
 from django.urls import reverse
-from django.utils.safestring import SafeString
 from django.utils.text import slugify
 from django.utils.translation import gettext as _
 
@@ -29,7 +27,15 @@ class AdminReversable(models.Model):
         abstract = True
 
     def get_admin_change(self) -> str:
-        return reverse(admin_urlname(self._meta, SafeString("change")), args=[self.pk])
+        return reverse("admin:%s_%s_change" % (self._meta.app_label, self._meta.model_name), args=(self.pk,))
+
+    @classmethod
+    def get_admin_changelist(cls) -> str:
+        return reverse("admin:%s_%s_changelist" % (cls._meta.app_label, cls._meta.model_name))
+
+    @classmethod
+    def get_admin_add(cls) -> str:
+        return reverse("admin:%s_%s_add" % (cls._meta.app_label, cls._meta.model_name))
 
 
 class BaseQuerySet(models.QuerySet["AnyModel"]):
@@ -47,7 +53,7 @@ class BitcasterBaselManager(models.Manager["AnyModel"]):
     _queryset_class = BaseQuerySet
 
 
-class BitcasterBaseModel(models.Model):
+class BitcasterBaseModel(AdminReversable, models.Model):
     version = IntegerVersionField()
     last_updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)

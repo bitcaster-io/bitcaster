@@ -11,7 +11,7 @@ from .channel import ChannelAdmin
 from .distribution import DistributionListAdmin
 from .event import EventAdmin
 from .group import GroupAdmin
-from .log import LogMessageAdmin
+from .internal import LogMessageAdmin
 from .media import MediaAdmin
 from .message import MessageAdmin
 from .monitor import MonitorAdmin

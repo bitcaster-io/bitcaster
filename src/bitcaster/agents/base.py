@@ -52,6 +52,9 @@ class Agent(metaclass=AgentMeta):
     @abc.abstractmethod
     def notify(self) -> None: ...
 
+    @abc.abstractmethod
+    def changes_detected(self) -> bool: ...
+
 
 class AgentManager(Registry):
     pass

@@ -79,7 +79,11 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]
             config_form = form_class(request.POST)
             if config_form.is_valid():
                 monitor.config = config_form.cleaned_data
+                monitor.data = {}
+                monitor.result = {}
+                monitor.schedule.last_run_at = None
                 monitor.save()
+                monitor.schedule.save()
                 self.message_user(request, "Configured Monitor {}".format(monitor.name))
                 return HttpResponseRedirect(monitor.get_admin_change())
         else:

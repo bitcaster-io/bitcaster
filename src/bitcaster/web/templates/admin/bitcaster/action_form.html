@@ -1,6 +1,6 @@
 {% extends "admin_extra_buttons/action_page.html" %}{% load markdown i18n %}
 {% block content %}
-    {% block header %}{% endblock %}
+{#    {% block header %}{% endblock %}#}
     {% if form.help_text %}
         <div class="frame">{{ form|help_doc }}</div>{% endif %}
     {% block form %}

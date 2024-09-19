@@ -1,6 +1,6 @@
 from .email import EmailDispatcher  # noqa
 from .gmail import GMailDispatcher  # noqa
-from .log import BitcasterLogDispatcher  # noqa
+from .log import BitcasterSysDispatcher  # noqa
 from .mailgun import MailgunDispatcher  # noqa
 from .mailjet import MailJetDispatcher  # noqa
 from .sendgrid import SendGridDispatcher  # noqa
@@ -9,7 +9,7 @@ from .sys import SystemDispatcher  # noqa
 from .twilio import TwilioSMS  # noqa
 
 __all__ = [
-    "BitcasterLogDispatcher",
+    "BitcasterSysDispatcher",
     "EmailDispatcher",
     "GMailDispatcher",
     "MailJetDispatcher",

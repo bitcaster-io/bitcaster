@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
 
-from bitcaster.agents.base import Agent, AgentConfig
+from .base import Agent, AgentConfig
 
 
 def _validate_path(path: str) -> None:
@@ -25,14 +25,25 @@ def _validate_path(path: str) -> None:
         raise ValidationError("Invalid Path")
 
 
-def validate_path(path: str) -> None:
-    p = Path(path)
-    if path.endswith("/") and path != "/":
-        if not p.is_dir():
-            raise ValidationError(_("Invalid Path: '%(path)s'" % dict(path=path)))
-    if not (p.is_dir() or p.is_file()):
-        if str(p.parent) == "." or not p.parent.exists():
-            raise ValidationError(_("Invalid Path: '%(path)s'" % dict(path=path)))
+def resolve_path(path: str) -> str:
+    if not path.startswith("/"):
+        path = "/" + path
+    if settings.AGENT_FILESYSTEM_ROOT and not path.startswith(settings.AGENT_FILESYSTEM_ROOT):
+        path = settings.AGENT_FILESYSTEM_ROOT + path
+    return str(Path(path).resolve().absolute())
+
+
+def validate_path(path: str) -> bool:
+    p = Path(resolve_path(path))
+    if settings.AGENT_FILESYSTEM_ROOT:
+        if Path(settings.AGENT_FILESYSTEM_ROOT) not in p.parents and Path(settings.AGENT_FILESYSTEM_ROOT) != p:
+            raise ValidationError(
+                _(
+                    "Path '%(path)s' is outside allowed root: '%(root)s'"
+                    % dict(path=p, root=settings.AGENT_FILESYSTEM_ROOT)
+                )
+            )
+    return True
 
 
 class AgentFileSystemConfig(AgentConfig):
@@ -54,9 +65,8 @@ class AgentFiles(Agent):
         entries = self.scan()
         self.monitor.data = {
             "entries": entries,
-            "timestamp": timezone.now().strftime("%Y%m%d%H%M%S"),
+            "timestamp": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
             "diff": {"changed": [], "added": [], "deleted": []},
-            "changed": False,
         }
         self.monitor.save()
 
@@ -76,18 +86,20 @@ class AgentFiles(Agent):
                 ret["deleted"].append(key)
         return ret
 
+    def scan(self) -> dict[str, Any]:
+        raise NotImplementedError
+
     def check(self, notify: bool = True, update: bool = True) -> None:
         if not self.monitor.data:
             self.initialize()
             return
-        status = self.monitor.data["entries"]
+        status = self.monitor.data.get("entries", [])
         current = self.scan()
         diff = self.diff(status, current)
         self.monitor.data = {
             "entries": current,
             "timestamp": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
             "diff": diff,
-            "changed": diff["changed"] or diff["added"] or diff["deleted"],
         }
         if update:
             self.monitor.save()
@@ -98,6 +110,12 @@ class AgentFiles(Agent):
             or (self.config["add"] and self.monitor.data["diff"]["added"])
         ):
             self.notify()
+
+    def changes_detected(self) -> bool:
+        for k in ["changed", "added", "deleted"]:
+            if self.monitor.data["diff"][k]:
+                return True
+        return False
 
     def notify(self) -> None:
         self.monitor.event.trigger(context=self.monitor.data)

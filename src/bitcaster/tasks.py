@@ -1,11 +1,11 @@
 import logging
 
-from django.contrib.admin.models import LogEntry
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
 from bitcaster.config.celery import app
 from bitcaster.constants import Bitcaster, SystemEvent
-from bitcaster.models import User
+from bitcaster.models import LogEntry, User
 
 logger = logging.getLogger(__name__)
 
@@ -76,22 +76,35 @@ def purge_occurrences() -> None | Exception:
 
 
 @app.task()
-def monitor_run(pk: str) -> None | Exception:
+def monitor_run(pk: str) -> str:
     from django.contrib.contenttypes.models import ContentType
 
     from bitcaster.models import Monitor
 
     try:
         monitor: "Monitor" = Monitor.objects.get(pk=pk)
-        LogEntry.objects.create(
-            content_type=ContentType.objects.get_for_model(Monitor),
-            object_id=pk,
-            action_flag=100,
-            user=User.objects.get(username="__SYSTEM__"),
-            object_repr=str(monitor),
-            change_message="Monitor started",
-        )
-        monitor.agent.check()
-    except Exception as e:
+    except ObjectDoesNotExist as e:
         logger.exception(e)
         raise
+
+    try:
+        if monitor.active:
+            LogEntry.objects.create(
+                content_type=ContentType.objects.get_for_model(Monitor),
+                object_id=pk,
+                action_flag=100,
+                user=User.objects.get(username="__SYSTEM__"),
+                object_repr=str(monitor),
+                change_message="Monitor started",
+            )
+            monitor.agent.check()
+            monitor.result = {"message": "Success", "changes": monitor.agent.changes_detected()}
+            return "done"
+        return "inactive"
+    except Exception as e:
+        logger.exception(e)
+        monitor.active = False
+        monitor.result = {"error": str(e)}
+        raise
+    finally:
+        monitor.save()

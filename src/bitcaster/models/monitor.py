@@ -26,6 +26,8 @@ class Monitor(AdminReversable, models.Model):
     active = models.BooleanField(default=True)
     config = models.JSONField(blank=True, default=dict, editable=False)
     data = models.JSONField(blank=True, default=dict, editable=False)
+    result = models.JSONField(blank=True, default=dict, editable=False)
+    async_result = models.CharField(blank=True, default="", editable=False, max_length=255)
 
     schedule = models.ForeignKey(
         PeriodicTask,
@@ -67,4 +69,4 @@ class Monitor(AdminReversable, models.Model):
         return (self.name,)
 
     def has_changes(self) -> bool:
-        return self.data["changed"]
+        return self.agent.changes_detected()
