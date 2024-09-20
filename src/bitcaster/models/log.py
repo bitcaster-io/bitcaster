@@ -27,6 +27,11 @@ class LogEntry(_LogEntry):
     ]
     objects = LogEntryManager()  # type: ignore
 
+    class Meta:
+        app_label = "bitcaster"
+        verbose_name = _("log entry")
+        verbose_name_plural = _("log entries")
+
     def natural_key(self) -> tuple[str | None, ...]:
         return (str(self.pk),)
 

@@ -1,0 +1,470 @@
+body.edit-message-body #edit-message-form input[type=text], body.edit-message-body #edit-message-form textarea {
+  color: black;
+  background-color: white;
+}
+body.edit-message-body iframe {
+  background-color: white;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-size: 1rem;
+    --primary: rgba(229, 55, 52);
+    --secondary: rgba(168, 0, 0, 0.82);
+    --light: #ef5552;
+    --white: rgba(248, 248, 248, 0.93);
+    --black: rgba(32, 33, 36, 1);
+    --bg-primary: var(--primary);
+    --bg-secondary: var(--secondary);
+    --input-bg: var(--white);
+    --input-fg: var(--black);
+    --button-bg: var(--bg-secondary);
+    --button-fg: var(--white);
+    --button-hover-bg: var(--light);
+    --button-hover-fg: var(--white);
+    --object-tools-fg: var(--white);
+    --object-tools-bg: #666666;
+    --object-tools-hover-bg: #444444;
+    --default-button-bg: rgba(200, 0, 0, 1);
+    --default-button-hover-bg: var(--light);
+    --delete-button-fg: white;
+    --delete-button-bg: rgba(43, 68, 214, 0.6);
+    --delete-button-hover-bg: #217DC5FF;
+    --header-bg: var(--primary);
+    --breadcrumbs-bg: var(--secondary);
+    --frame-bg-color: lightgray;
+    --frame-fg-color: var(--black);
+    --sidebar-bg-color: lightgray;
+    --body-bg: var(--white);
+    --body-bg-secondary: rgb(224, 224, 228);
+    --darkened-bg: var(--body-bg-secondary);
+    --body-fg: #333;
+    --fg-primary: var(--black);
+    --link-fg: var(--secondary);
+    --link-hover-color: var(--primary);
+    --header-bg: var(--primary);
+    --breadcrumbs-bg: var(--secondary);
+    color-scheme: light;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-size: 1rem;
+    --primary: rgba(229, 55, 52);
+    --secondary: rgba(168, 0, 0, 0.82);
+    --light: #ef5552;
+    --white: rgba(248, 248, 248, 0.93);
+    --black: rgba(32, 33, 36, 1);
+    --bg-primary: var(--primary);
+    --bg-secondary: var(--secondary);
+    --input-bg: var(--white);
+    --input-fg: var(--black);
+    --button-bg: var(--bg-secondary);
+    --button-fg: var(--white);
+    --button-hover-bg: var(--light);
+    --button-hover-fg: var(--white);
+    --object-tools-fg: var(--white);
+    --object-tools-bg: #666666;
+    --object-tools-hover-bg: #444444;
+    --default-button-bg: rgba(200, 0, 0, 1);
+    --default-button-hover-bg: var(--light);
+    --delete-button-fg: white;
+    --delete-button-bg: rgba(43, 68, 214, 0.6);
+    --delete-button-hover-bg: #217DC5FF;
+    --header-bg: var(--primary);
+    --breadcrumbs-bg: var(--secondary);
+    --frame-bg-color: lightgray;
+    --frame-fg-color: var(--black);
+    --sidebar-bg-color: lightgray;
+    --body-bg: rgba(42, 42, 48);
+    --body-bg-secondary: var(--darkened-bg);
+    --body-fg: #eeeeee;
+    --fg-primary: #bbbbbb;
+    --link-fg: var(--white);
+    --link-hover-color: var(--light);
+    --input-bg: rgb(67, 67, 67);
+    --input-fg: var(--white);
+    color-scheme: dark;
+    color-scheme: dark;
+  }
+}
+html[data-theme=dark] {
+  --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-size: 1rem;
+  --primary: rgba(229, 55, 52);
+  --secondary: rgba(168, 0, 0, 0.82);
+  --light: #ef5552;
+  --white: rgba(248, 248, 248, 0.93);
+  --black: rgba(32, 33, 36, 1);
+  --bg-primary: var(--primary);
+  --bg-secondary: var(--secondary);
+  --input-bg: var(--white);
+  --input-fg: var(--black);
+  --button-bg: var(--bg-secondary);
+  --button-fg: var(--white);
+  --button-hover-bg: var(--light);
+  --button-hover-fg: var(--white);
+  --object-tools-fg: var(--white);
+  --object-tools-bg: #666666;
+  --object-tools-hover-bg: #444444;
+  --default-button-bg: rgba(200, 0, 0, 1);
+  --default-button-hover-bg: var(--light);
+  --delete-button-fg: white;
+  --delete-button-bg: rgba(43, 68, 214, 0.6);
+  --delete-button-hover-bg: #217DC5FF;
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+  --frame-bg-color: lightgray;
+  --frame-fg-color: var(--black);
+  --sidebar-bg-color: lightgray;
+  --body-bg: rgba(42, 42, 48);
+  --body-bg-secondary: var(--darkened-bg);
+  --body-fg: #eeeeee;
+  --fg-primary: #bbbbbb;
+  --link-fg: var(--white);
+  --link-hover-color: var(--light);
+  --input-bg: rgb(67, 67, 67);
+  --input-fg: var(--white);
+  color-scheme: dark;
+}
+
+html[data-theme=light] {
+  --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-size: 1rem;
+  --primary: rgba(229, 55, 52);
+  --secondary: rgba(168, 0, 0, 0.82);
+  --light: #ef5552;
+  --white: rgba(248, 248, 248, 0.93);
+  --black: rgba(32, 33, 36, 1);
+  --bg-primary: var(--primary);
+  --bg-secondary: var(--secondary);
+  --input-bg: var(--white);
+  --input-fg: var(--black);
+  --button-bg: var(--bg-secondary);
+  --button-fg: var(--white);
+  --button-hover-bg: var(--light);
+  --button-hover-fg: var(--white);
+  --object-tools-fg: var(--white);
+  --object-tools-bg: #666666;
+  --object-tools-hover-bg: #444444;
+  --default-button-bg: rgba(200, 0, 0, 1);
+  --default-button-hover-bg: var(--light);
+  --delete-button-fg: white;
+  --delete-button-bg: rgba(43, 68, 214, 0.6);
+  --delete-button-hover-bg: #217DC5FF;
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+  --frame-bg-color: lightgray;
+  --frame-fg-color: var(--black);
+  --sidebar-bg-color: lightgray;
+  --body-bg: var(--white);
+  --body-bg-secondary: rgb(224, 224, 228);
+  --darkened-bg: var(--body-bg-secondary);
+  --body-fg: #333;
+  --fg-primary: var(--black);
+  --link-fg: var(--secondary);
+  --link-hover-color: var(--primary);
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+}
+
+.object-tools {
+  position: absolute;
+  right: 20px;
+}
+.object-tools a:link, .object-tools .object-tools a:visited {
+  border-radius: 0;
+  margin: 0;
+}
+
+.container {
+  display: inline-block;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.float-right {
+  float: right;
+}
+
+.submit-row {
+  top: 0;
+  position: relative;
+  float: right;
+}
+
+.admin-autocomplete.select2-hidden-accessible {
+  border: none;
+}
+
+.highlight {
+  background-color: #ffffd5;
+  color: black;
+}
+
+.boxed {
+  border: 1px solid var(--body-fg);
+}
+
+.frame {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 15px;
+  text-wrap: nowrap;
+  border: 1px solid var(--body-fg);
+}
+
+:root, html[data-theme=light], html[data-theme=dark] {
+  font-size: var(--font-size);
+}
+:root .last-created-item, html[data-theme=light] .last-created-item, html[data-theme=dark] .last-created-item {
+  background-color: darkgray;
+}
+:root a.deletelink, html[data-theme=light] a.deletelink, html[data-theme=dark] a.deletelink {
+  color: var(--delete-button-fg);
+  background-color: var(--delete-button-bg);
+}
+:root .admonition, html[data-theme=light] .admonition, html[data-theme=dark] .admonition {
+  width: 100%;
+  display: inline-flex;
+}
+:root .admonition div, html[data-theme=light] .admonition div, html[data-theme=dark] .admonition div {
+  width: 100%;
+  padding: 10px;
+}
+:root .admonition div.success, html[data-theme=light] .admonition div.success, html[data-theme=dark] .admonition div.success {
+  background-color: var(--message-success-bg);
+}
+:root .admonition div.fail, html[data-theme=light] .admonition div.fail, html[data-theme=dark] .admonition div.fail {
+  background-color: var(--message-error-bg);
+}
+:root .select2-search--dropdown, html[data-theme=light] .select2-search--dropdown, html[data-theme=dark] .select2-search--dropdown {
+  padding: 0;
+}
+:root .select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected], html[data-theme=light] .select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected], html[data-theme=dark] .select2-container--filter-autocomplete .select2-results__option--highlighted[aria-selected] {
+  background-color: var(--bg-secondary);
+  color: #fff;
+}
+:root .select2-dropdown, :root .select2-search__field, html[data-theme=light] .select2-dropdown, html[data-theme=light] .select2-search__field, html[data-theme=dark] .select2-dropdown, html[data-theme=dark] .select2-search__field {
+  background-color: var(--body-bg);
+}
+:root ul.object-tools li a.unlock, html[data-theme=light] ul.object-tools li a.unlock, html[data-theme=dark] ul.object-tools li a.unlock {
+  background-color: #86df53;
+  color: black;
+}
+:root ul.object-tools li a.unlock.disabled, html[data-theme=light] ul.object-tools li a.unlock.disabled, html[data-theme=dark] ul.object-tools li a.unlock.disabled {
+  background-color: #808080;
+  color: #cccccc;
+}
+:root #channel-add input[type=radio], html[data-theme=light] #channel-add input[type=radio], html[data-theme=dark] #channel-add input[type=radio] {
+  height: 30px;
+}
+:root .channel-wizard-help, html[data-theme=light] .channel-wizard-help, html[data-theme=dark] .channel-wizard-help {
+  display: inline-flex;
+  justify-content: space-between;
+  width: 90%;
+  border: 1px solid var(--secondary);
+  margin-top: 20px;
+  padding: 7px;
+  min-height: 100px;
+}
+:root .wizard-summary, html[data-theme=light] .wizard-summary, html[data-theme=dark] .wizard-summary {
+  width: 400px;
+  background-color: var(--frame-bg-color);
+  color: var(--frame-fg-color);
+  border: 1px solid var(--frame-border-color);
+}
+:root .wizard-summary tr, html[data-theme=light] .wizard-summary tr, html[data-theme=dark] .wizard-summary tr {
+  padding: 0;
+  margin: 0;
+  border-bottom: 0;
+}
+:root .wizard-summary th, html[data-theme=light] .wizard-summary th, html[data-theme=dark] .wizard-summary th {
+  width: 10%;
+  background-color: var(--frame-bg-color);
+  border-bottom: 0;
+}
+:root .wizard-summary td, html[data-theme=light] .wizard-summary td, html[data-theme=dark] .wizard-summary td {
+  width: 90%;
+  background-color: var(--frame-bg-color);
+  border-bottom: 0;
+}
+
+.w-400 {
+  width: 400px;
+}
+
+#container div.wizard-submit-row {
+  display: flex;
+}
+#container div.wizard-submit-row button {
+  padding: 10px 15px;
+}
+#container div.wizard-submit-row button.cancel {
+  float: right;
+  margin-left: auto;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  background-color: var(--input-bg);
+  color: var(--input-fg);
+  line-height: 27px;
+}
+
+.select2-selection__choice {
+  color: black;
+}
+
+.select2-container .select2-selection--multiple {
+  background-color: var(--body-bg);
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: var(--button-hover-bg);
+}
+
+.select2-results__option {
+  background-color: var(--body-bg);
+}
+
+#toolbar #searchbar {
+  border: 1px solid grey;
+}
+
+input:not([type]),
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=url], input[type=number], input[type=tel], textarea, select, .vTextField {
+  background-color: var(--input-bg);
+  color: var(--input-fg);
+  border: 1px solid grey;
+}
+
+.select2-container {
+  border-radius: 4px;
+  border: 1px solid grey;
+}
+
+.select2-container--admin-autocomplete .select2-selection--single {
+  background-color: var(--input-bg);
+  border-radius: 4px;
+  border: 1px solid grey;
+}
+.select2-container--admin-autocomplete .select2-selection--single .select2-selection__rendered {
+  color: var(--body-fg);
+  line-height: 27px;
+}
+
+#footer {
+  padding-top: 50px;
+  margin-bottom: 0 !important;
+}
+
+ul#quick-links {
+  margin-left: 0;
+  padding: 10px;
+  width: 80%;
+  line-height: 20px;
+}
+ul#quick-links li {
+  width: 100%;
+  list-style: none;
+  margin-bottom: 5px;
+}
+ul#quick-links li a {
+  display: block;
+  width: 100%;
+  background-color: var(--button-bg);
+  padding: 5px 15px;
+  color: var(--button-fg);
+}
+ul#quick-links li a:hover {
+  background-color: var(--button-hover-bg);
+  color: var(--button-hover-fg);
+}
+
+.clipboard {
+  cursor: pointer;
+}
+.clipboard.clear {
+  background-color: var(--body-bg);
+  color: var(--body-fg);
+}
+.clipboard.copied {
+  background-color: #ffffd5;
+  color: black;
+}
+
+.dashboard #content, .main #content {
+  min-height: 600px;
+}
+
+#dashboard {
+  min-width: 100%;
+  padding: 5px;
+}
+#dashboard .last_events {
+  width: 350px;
+}
+#dashboard .actiontable {
+  width: 100%;
+}
+#dashboard caption {
+  background-color: var(--header-bg);
+  color: var(--button-fg);
+  padding: 10px;
+}
+#dashboard div {
+  display: inline-flex;
+}
+#dashboard div.left {
+  float: left;
+}
+#dashboard div.right {
+  float: right;
+  min-width: 400px;
+}
+
+#bc-sidebar {
+  background-color: var(--body-bg-secondary);
+  box-shadow: 2px 0 var(--body-bg-secondary);
+  width: 200px;
+}
+#bc-sidebar .module {
+  margin-bottom: 0;
+}
+#bc-sidebar .nav-title {
+  text-transform: uppercase;
+  text-align: left;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+}
+#bc-sidebar a {
+  text-decoration: none;
+  color: var(--color-fg);
+}
+#bc-sidebar div.nav-item {
+  background-color: var(--body-bg-secondary);
+  padding: 10px;
+  padding-left: 25px;
+}
+#bc-sidebar div.nav-item:hover {
+  background-color: var(--button-hover-bg);
+  color: var(--button-hover-fg);
+}
+#bc-sidebar div.nav-item.current-model {
+  background-color: var(--default-button-bg);
+  color: var(--button-hover-fg);
+}
+
+/*# sourceMappingURL=admin.css.map */

@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "taggit",
     #
     "celery",
-    "treebeard",
+    # "treebeard",
     "rest_framework",
     "drf_spectacular",
     "drf_spectacular_sidecar",

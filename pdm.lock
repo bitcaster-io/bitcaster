@@ -5,10 +5,10 @@
 groups = ["default", "dev", "docs"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:6ade49c525a1c5cecd4a2ca28486165d729f54292da2de89021e79d9f48d3f1c"
+content_hash = "sha256:4c878ebfafaf2f4c8f2034b499a940ad3a18f1ce9038f2c1f812bbbc337ade0c"
 
 [[metadata.targets]]
-requires_python = "==3.12.*"
+requires_python = "==3.12.2"
 
 [[package]]
 name = "aiohappyeyeballs"
@@ -171,19 +171,19 @@ files = [
 
 [[package]]
 name = "azure-storage-blob"
-version = "12.22.0"
+version = "12.23.0"
 requires_python = ">=3.8"
 summary = "Microsoft Azure Blob Storage Client Library for Python"
 groups = ["default"]
 dependencies = [
-    "azure-core>=1.28.0",
+    "azure-core>=1.30.0",
     "cryptography>=2.1.4",
     "isodate>=0.6.1",
     "typing-extensions>=4.6.0",
 ]
 files = [
-    {file = "azure-storage-blob-12.22.0.tar.gz", hash = "sha256:b3804bb4fe8ab1c32771fa464053da772a682c2737b19da438a3f4e5e3b3736e"},
-    {file = "azure_storage_blob-12.22.0-py3-none-any.whl", hash = "sha256:bb7d2d824ce3f11f14a27ee7d9281289f7e072ac8311c52e3652672455b7d5e8"},
+    {file = "azure_storage_blob-12.23.0-py3-none-any.whl", hash = "sha256:8ac4b34624ed075eda1e38f0c6dadb601e1b199e27a09aa63edc429bf4a23329"},
+    {file = "azure_storage_blob-12.23.0.tar.gz", hash = "sha256:2fadbceda1d99c4a72dfd32e0122d7bca8b5e8d2563f5c624d634aeaff49c9df"},
 ]
 
 [[package]]
@@ -282,25 +282,25 @@ files = [
 
 [[package]]
 name = "boto3"
-version = "1.35.18"
+version = "1.35.23"
 requires_python = ">=3.8"
 summary = "The AWS SDK for Python"
 groups = ["default", "dev"]
 dependencies = [
-    "botocore<1.36.0,>=1.35.18",
+    "botocore<1.36.0,>=1.35.23",
     "jmespath<2.0.0,>=0.7.1",
     "s3transfer<0.11.0,>=0.10.0",
 ]
 files = [
-    {file = "boto3-1.35.18-py3-none-any.whl", hash = "sha256:71e237d3997cf93425947854d7b121c577944f391ba633afb0659e1015364704"},
-    {file = "boto3-1.35.18.tar.gz", hash = "sha256:fd130308f1f49d748a5fc63de92de79a995b51c79af3947ddde8815fcf0684fe"},
+    {file = "boto3-1.35.23-py3-none-any.whl", hash = "sha256:ecba4362f82e23ef775c72b3e6fdef3ef68443629b79e88886d5088302ffc050"},
+    {file = "boto3-1.35.23.tar.gz", hash = "sha256:3fbf1d5b749c92ed43aa190650979dff9f83790a42522e1e9eefa54c8e44bc4b"},
 ]
 
 [[package]]
 name = "boto3-stubs"
-version = "1.35.18"
+version = "1.35.23"
 requires_python = ">=3.8"
-summary = "Type annotations for boto3 1.35.18 generated with mypy-boto3-builder 8.0.1"
+summary = "Type annotations for boto3 1.35.23 generated with mypy-boto3-builder 8.1.1"
 groups = ["dev"]
 dependencies = [
     "botocore-stubs",
@@ -308,13 +308,13 @@ dependencies = [
     "typing-extensions>=4.1.0; python_version < \"3.12\"",
 ]
 files = [
-    {file = "boto3_stubs-1.35.18-py3-none-any.whl", hash = "sha256:60238c6664cef9fb1cc2d202f0b41df339f993787777abdbc31b590f22fbecd3"},
-    {file = "boto3_stubs-1.35.18.tar.gz", hash = "sha256:da1c449efaf685b720c54a5c5bdfbe668451e2b6764aa704dcfe3f69226173f0"},
+    {file = "boto3_stubs-1.35.23-py3-none-any.whl", hash = "sha256:15e0825f0338dfd6f8623ecce44bd2369aabae7aeea3f706772c9172b6f3cff6"},
+    {file = "boto3_stubs-1.35.23.tar.gz", hash = "sha256:78d96e7135e2ed2743211000b7a592c90ea1caf6c2a203f4778af527da7353c1"},
 ]
 
 [[package]]
 name = "botocore"
-version = "1.35.18"
+version = "1.35.23"
 requires_python = ">=3.8"
 summary = "Low-level, data-driven core of boto 3."
 groups = ["default", "dev"]
@@ -325,13 +325,13 @@ dependencies = [
     "urllib3<1.27,>=1.25.4; python_version < \"3.10\"",
 ]
 files = [
-    {file = "botocore-1.35.18-py3-none-any.whl", hash = "sha256:1027083aeb1fe74057273410fd768e018e22f85adfbd717b5a69f578f7812b80"},
-    {file = "botocore-1.35.18.tar.gz", hash = "sha256:e59da8b91ab06683d2725b6cbbb0383b30c68a241c3c63363f4c5bff59b3c0c0"},
+    {file = "botocore-1.35.23-py3-none-any.whl", hash = "sha256:cab9ec4e0367b9f33f0bc02c5a29f587b0119ecffd6d125bacee085dcbc8817d"},
+    {file = "botocore-1.35.23.tar.gz", hash = "sha256:25b17a9ccba6ad32bb5bf7ba4f52656aa03c1cb29f6b4e438050ee4ad1967a3b"},
 ]
 
 [[package]]
 name = "botocore-stubs"
-version = "1.35.18"
+version = "1.35.23"
 requires_python = ">=3.8"
 summary = "Type annotations and code completion for botocore"
 groups = ["dev"]
@@ -340,8 +340,8 @@ dependencies = [
     "typing-extensions>=4.1.0; python_version < \"3.9\"",
 ]
 files = [
-    {file = "botocore_stubs-1.35.18-py3-none-any.whl", hash = "sha256:9f8cd580b2c9781f21d43bc5b3bf421a502270c81fd5ff235e655e92e91dc248"},
-    {file = "botocore_stubs-1.35.18.tar.gz", hash = "sha256:2a994c2baf81f28f6baf67e976b9c4c11bb738a64b8633eee46752644a8caac9"},
+    {file = "botocore_stubs-1.35.23-py3-none-any.whl", hash = "sha256:8b9d554b5adcc070e30d9089d36cb82a4a2286df684274654ad74e5f354b8491"},
+    {file = "botocore_stubs-1.35.23.tar.gz", hash = "sha256:3a335e6898d7ca0dc79292f15693e2743ec394f9d08d36f94e7a61df3bb9a14e"},
 ]
 
 [[package]]
@@ -364,16 +364,6 @@ groups = ["dev"]
 files = [
     {file = "bump2version-1.0.1-py2.py3-none-any.whl", hash = "sha256:37f927ea17cde7ae2d7baf832f8e80ce3777624554a653006c9144f8017fe410"},
     {file = "bump2version-1.0.1.tar.gz", hash = "sha256:762cb2bfad61f4ec8e2bdf452c7c267416f8c70dd9ecb1653fd0bbb01fa936e6"},
-]
-
-[[package]]
-name = "cached-property"
-version = "1.5.2"
-summary = "A decorator for caching properties in classes."
-groups = ["default"]
-files = [
-    {file = "cached-property-1.5.2.tar.gz", hash = "sha256:9fa5755838eecbb2d234c3aa390bd80fbd3ac6b6869109bfc1b499f7bd89a130"},
-    {file = "cached_property-1.5.2-py2.py3-none-any.whl", hash = "sha256:df4f613cf7ad9a588cc381aaf4a512d26265ecebd5eb9e1ba12f1319eb85a6a0"},
 ]
 
 [[package]]
@@ -1255,37 +1245,6 @@ files = [
 ]
 
 [[package]]
-name = "django-treebeard"
-version = "4.7.1"
-requires_python = ">=3.8"
-summary = "Efficient tree implementations for Django"
-groups = ["default"]
-dependencies = [
-    "Django>=3.2",
-]
-files = [
-    {file = "django-treebeard-4.7.1.tar.gz", hash = "sha256:846e462904b437155f76e04907ba4e48480716855f88b898df4122bdcfbd6e98"},
-    {file = "django_treebeard-4.7.1-py3-none-any.whl", hash = "sha256:995c7120153ab999898fe3043bbdcd8a0fc77cc106eb94de7350e9d02c885135"},
-]
-
-[[package]]
-name = "django-url-filter"
-version = "0.3.15"
-summary = "Django URL Filter provides a safe way to filter data via human-friendly URLs."
-groups = ["default"]
-dependencies = [
-    "Django>=1.8",
-    "cached-property",
-    "enum-compat",
-    "setuptools",
-    "six",
-]
-files = [
-    {file = "django-url-filter-0.3.15.tar.gz", hash = "sha256:12d66e4ff0150e10fd4efd1ec292a06a2cec6311ec2e4bd1fc99b2fea18e2a7b"},
-    {file = "django_url_filter-0.3.15-py2.py3-none-any.whl", hash = "sha256:fdc882d45c72546d07657ef1074ad7a5490807d990b1618eae1873bfd0b4c4d1"},
-]
-
-[[package]]
 name = "django-webtest"
 version = "1.9.12"
 summary = "Instant integration of Ian Bicking's WebTest (http://docs.pylonsproject.org/projects/webtest/) with Django's testing framework."
@@ -1407,19 +1366,6 @@ files = [
 ]
 
 [[package]]
-name = "enum-compat"
-version = "0.0.3"
-summary = "enum/enum34 compatibility package"
-groups = ["default"]
-dependencies = [
-    "enum34; python_version < \"3.4\"",
-]
-files = [
-    {file = "enum-compat-0.0.3.tar.gz", hash = "sha256:3677daabed56a6f724451d585662253d8fb4e5569845aafa8bb0da36b1a8751e"},
-    {file = "enum_compat-0.0.3-py3-none-any.whl", hash = "sha256:88091b617c7fc3bbbceae50db5958023c48dc40b50520005aa3bf27f8f7ea157"},
-]
-
-[[package]]
 name = "execnet"
 version = "2.1.1"
 requires_python = ">=3.8"
@@ -1446,7 +1392,7 @@ files = [
 
 [[package]]
 name = "faker"
-version = "28.4.1"
+version = "29.0.0"
 requires_python = ">=3.8"
 summary = "Faker is a Python package that generates fake data for you."
 groups = ["dev"]
@@ -1454,8 +1400,8 @@ dependencies = [
     "python-dateutil>=2.4",
 ]
 files = [
-    {file = "Faker-28.4.1-py3-none-any.whl", hash = "sha256:e59c01d1e8b8e20a83255ab8232c143cb2af3b4f5ab6a3f5ce495f385ad8ab4c"},
-    {file = "faker-28.4.1.tar.gz", hash = "sha256:4294d169255a045990720d6f3fa4134b764a4cdf46ef0d3c7553d2506f1adaa1"},
+    {file = "Faker-29.0.0-py3-none-any.whl", hash = "sha256:32d0ee7d42925ff06e4a7d906ee7efbf34f5052a41a2a1eb8bb174a422a5498f"},
+    {file = "faker-29.0.0.tar.gz", hash = "sha256:34e89aec594cad9773431ca479ee95c7ce03dd9f22fda2524e2373b880a2fa77"},
 ]
 
 [[package]]
@@ -1474,13 +1420,13 @@ files = [
 
 [[package]]
 name = "filelock"
-version = "3.16.0"
+version = "3.16.1"
 requires_python = ">=3.8"
 summary = "A platform independent file lock."
 groups = ["dev"]
 files = [
-    {file = "filelock-3.16.0-py3-none-any.whl", hash = "sha256:f6ed4c963184f4c84dd5557ce8fece759a3724b37b80c6c4f20a2f63a4dc6609"},
-    {file = "filelock-3.16.0.tar.gz", hash = "sha256:81de9eb8453c769b63369f87f11131a7ab04e367f8d97ad39dc230daa07e3bec"},
+    {file = "filelock-3.16.1-py3-none-any.whl", hash = "sha256:2082e5703d51fbf98ea75855d9d5527e33d8ff23099bec374a134febee6946b0"},
+    {file = "filelock-3.16.1.tar.gz", hash = "sha256:c249fbfcd5db47e5e2d6d62198e565475ee65e4831e2561c8e313fa7eb961435"},
 ]
 
 [[package]]
@@ -1599,7 +1545,7 @@ files = [
 
 [[package]]
 name = "google-api-core"
-version = "2.19.2"
+version = "2.20.0"
 requires_python = ">=3.7"
 summary = "Google API client core library"
 groups = ["default"]
@@ -1611,13 +1557,13 @@ dependencies = [
     "requests<3.0.0.dev0,>=2.18.0",
 ]
 files = [
-    {file = "google_api_core-2.19.2-py3-none-any.whl", hash = "sha256:53ec0258f2837dd53bbd3d3df50f5359281b3cc13f800c941dd15a9b5a415af4"},
-    {file = "google_api_core-2.19.2.tar.gz", hash = "sha256:ca07de7e8aa1c98a8bfca9321890ad2340ef7f2eb136e558cee68f24b94b0a8f"},
+    {file = "google_api_core-2.20.0-py3-none-any.whl", hash = "sha256:ef0591ef03c30bb83f79b3d0575c3f31219001fc9c5cf37024d08310aeffed8a"},
+    {file = "google_api_core-2.20.0.tar.gz", hash = "sha256:f74dff1889ba291a4b76c5079df0711810e2d9da81abfdc99957bc961c1eb28f"},
 ]
 
 [[package]]
 name = "google-auth"
-version = "2.34.0"
+version = "2.35.0"
 requires_python = ">=3.7"
 summary = "Google Authentication Library"
 groups = ["default"]
@@ -1627,8 +1573,8 @@ dependencies = [
     "rsa<5,>=3.1.4",
 ]
 files = [
-    {file = "google_auth-2.34.0-py2.py3-none-any.whl", hash = "sha256:72fd4733b80b6d777dcde515628a9eb4a577339437012874ea286bca7261ee65"},
-    {file = "google_auth-2.34.0.tar.gz", hash = "sha256:8eb87396435c19b20d32abd2f984e31c191a15284af72eb922f10e5bde9c04cc"},
+    {file = "google_auth-2.35.0-py2.py3-none-any.whl", hash = "sha256:25df55f327ef021de8be50bad0dfd4a916ad0de96da86cd05661c9297723ad3f"},
+    {file = "google_auth-2.35.0.tar.gz", hash = "sha256:f4c64ed4e01e8e8b646ef34c018f8bf3338df0c8e37d8b3bba40e7f574a3278a"},
 ]
 
 [[package]]
@@ -1793,24 +1739,24 @@ files = [
 
 [[package]]
 name = "identify"
-version = "2.6.0"
+version = "2.6.1"
 requires_python = ">=3.8"
 summary = "File identification library for Python"
 groups = ["dev"]
 files = [
-    {file = "identify-2.6.0-py2.py3-none-any.whl", hash = "sha256:e79ae4406387a9d300332b5fd366d8994f1525e8414984e1a59e058b2eda2dd0"},
-    {file = "identify-2.6.0.tar.gz", hash = "sha256:cb171c685bdc31bcc4c1734698736a7d5b6c8bf2e0c15117f4d469c8640ae5cf"},
+    {file = "identify-2.6.1-py2.py3-none-any.whl", hash = "sha256:53863bcac7caf8d2ed85bd20312ea5dcfc22226800f6d6881f232d861db5a8f0"},
+    {file = "identify-2.6.1.tar.gz", hash = "sha256:91478c5fb7c3aac5ff7bf9b4344f803843dc586832d5f110d672b19aa1984c98"},
 ]
 
 [[package]]
 name = "idna"
-version = "3.8"
+version = "3.10"
 requires_python = ">=3.6"
 summary = "Internationalized Domain Names in Applications (IDNA)"
 groups = ["default", "dev", "docs"]
 files = [
-    {file = "idna-3.8-py3-none-any.whl", hash = "sha256:050b4e5baadcd44d760cedbd2b8e639f2ff89bbc7a5730fcc662954303377aac"},
-    {file = "idna-3.8.tar.gz", hash = "sha256:d838c2c0ed6fced7693d5e8ab8e734d5f8fda53a039c0164afb0b82e771e3603"},
+    {file = "idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"},
+    {file = "idna-3.10.tar.gz", hash = "sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9"},
 ]
 
 [[package]]
@@ -1929,7 +1875,7 @@ files = [
 
 [[package]]
 name = "kombu"
-version = "5.4.1"
+version = "5.4.2"
 requires_python = ">=3.8"
 summary = "Messaging library for Python."
 groups = ["default", "dev"]
@@ -1937,11 +1883,12 @@ dependencies = [
     "amqp<6.0.0,>=5.1.1",
     "backports-zoneinfo[tzdata]>=0.2.1; python_version < \"3.9\"",
     "typing-extensions==4.12.2; python_version < \"3.10\"",
+    "tzdata; python_version >= \"3.9\"",
     "vine==5.1.0",
 ]
 files = [
-    {file = "kombu-5.4.1-py3-none-any.whl", hash = "sha256:621d365f234e4c089596f3a2510f1ade07026efc28caca426161d8f458786cab"},
-    {file = "kombu-5.4.1.tar.gz", hash = "sha256:1c05178826dab811f8cab5b0a154d42a7a33d8bcdde9fa3d7b4582e43c3c03db"},
+    {file = "kombu-5.4.2-py3-none-any.whl", hash = "sha256:14212f5ccf022fc0a70453bb025a1dcc32782a588c49ea866884047d66e14763"},
+    {file = "kombu-5.4.2.tar.gz", hash = "sha256:eef572dd2fd9fc614b37580e3caeafdd5af46c1eff31e7fba89138cdb406f2cf"},
 ]
 
 [[package]]
@@ -2248,25 +2195,26 @@ files = [
 
 [[package]]
 name = "mkdocs-macros-plugin"
-version = "1.0.5"
+version = "1.2.0"
 requires_python = ">=3.8"
 summary = "Unleash the power of MkDocs with macros and variables"
 groups = ["docs"]
 dependencies = [
     "jinja2",
     "mkdocs>=0.17",
+    "packaging",
     "python-dateutil",
     "pyyaml",
     "termcolor",
 ]
 files = [
-    {file = "mkdocs-macros-plugin-1.0.5.tar.gz", hash = "sha256:fe348d75f01c911f362b6d998c57b3d85b505876dde69db924f2c512c395c328"},
-    {file = "mkdocs_macros_plugin-1.0.5-py3-none-any.whl", hash = "sha256:f60e26f711f5a830ddf1e7980865bf5c0f1180db56109803cdd280073c1a050a"},
+    {file = "mkdocs-macros-plugin-1.2.0.tar.gz", hash = "sha256:7603b85cb336d669e29a8a9cc3af8b90767ffdf6021b3e023d5ec2e0a1f927a7"},
+    {file = "mkdocs_macros_plugin-1.2.0-py3-none-any.whl", hash = "sha256:3e442f8f37aa69710a69b5389e6b6cd0f54f4fcaee354aa57a61735ba8f97d27"},
 ]
 
 [[package]]
 name = "mkdocs-material"
-version = "9.5.34"
+version = "9.5.35"
 requires_python = ">=3.8"
 summary = "Documentation that simply works"
 groups = ["docs"]
@@ -2284,8 +2232,8 @@ dependencies = [
     "requests~=2.26",
 ]
 files = [
-    {file = "mkdocs_material-9.5.34-py3-none-any.whl", hash = "sha256:54caa8be708de2b75167fd4d3b9f3d949579294f49cb242515d4653dbee9227e"},
-    {file = "mkdocs_material-9.5.34.tar.gz", hash = "sha256:1e60ddf716cfb5679dfd65900b8a25d277064ed82d9a53cd5190e3f894df7840"},
+    {file = "mkdocs_material-9.5.35-py3-none-any.whl", hash = "sha256:44e069d87732d29f4a2533ae0748fa0e67e270043270c71f04d0fba11a357b24"},
+    {file = "mkdocs_material-9.5.35.tar.gz", hash = "sha256:0d233d7db067ac896bf22ee7950eebf2b1eaf26c155bb27382bf4174021cc117"},
 ]
 
 [[package]]
@@ -2461,17 +2409,17 @@ files = [
 
 [[package]]
 name = "mypy-boto3"
-version = "1.35.18"
+version = "1.35.23"
 requires_python = ">=3.8"
-summary = "Type annotations for boto3 1.35.18 master module generated with mypy-boto3-builder 8.0.1"
+summary = "Type annotations for boto3 1.35.23 master module generated with mypy-boto3-builder 8.1.1"
 groups = ["dev"]
 dependencies = [
     "boto3",
     "typing-extensions>=4.1.0; python_version < \"3.12\"",
 ]
 files = [
-    {file = "mypy_boto3-1.35.18-py3-none-any.whl", hash = "sha256:f63804ee6b0886867a53be8fcee95ed0c411328855d838aeb272d222d287251b"},
-    {file = "mypy_boto3-1.35.18.tar.gz", hash = "sha256:1cfb0c49265eb248b5a99223cfb96afd9f8ecb212af8f2b2132d30fe91f95fff"},
+    {file = "mypy_boto3-1.35.23-py3-none-any.whl", hash = "sha256:2c16e95b1f77fbb61793782c8b111124ae2bf9d44837abb54d167efd1ca4b0b3"},
+    {file = "mypy_boto3-1.35.23.tar.gz", hash = "sha256:d88b7f0c83cb53b71c13344e931b6e796798e268ade25dd46a8bd5ddfabd7a93"},
 ]
 
 [[package]]
@@ -2639,13 +2587,13 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "4.3.2"
+version = "4.3.6"
 requires_python = ">=3.8"
 summary = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
 groups = ["dev", "docs"]
 files = [
-    {file = "platformdirs-4.3.2-py3-none-any.whl", hash = "sha256:eb1c8582560b34ed4ba105009a4badf7f6f85768b30126f351328507b2beb617"},
-    {file = "platformdirs-4.3.2.tar.gz", hash = "sha256:9e5e27a08aa095dd127b9f2e764d74254f482fef22b0970773bfba79d091ab8c"},
+    {file = "platformdirs-4.3.6-py3-none-any.whl", hash = "sha256:73e575e1408ab8103900836b97580d5307456908a03e92031bab39e4554cc3fb"},
+    {file = "platformdirs-4.3.6.tar.gz", hash = "sha256:357fb2acbc885b0419afd3ce3ed34564c13c9b95c89360cd9563f73aa5e2b907"},
 ]
 
 [[package]]
@@ -2706,13 +2654,13 @@ files = [
 
 [[package]]
 name = "prometheus-client"
-version = "0.20.0"
+version = "0.21.0"
 requires_python = ">=3.8"
 summary = "Python client for the Prometheus monitoring system."
 groups = ["default"]
 files = [
-    {file = "prometheus_client-0.20.0-py3-none-any.whl", hash = "sha256:cde524a85bce83ca359cc837f28b8c0db5cac7aa653a588fd7e84ba061c329e7"},
-    {file = "prometheus_client-0.20.0.tar.gz", hash = "sha256:287629d00b147a32dcb2be0b9df905da599b2d82f80377083ec8463309a4bb89"},
+    {file = "prometheus_client-0.21.0-py3-none-any.whl", hash = "sha256:4fa6b4dd0ac16d58bb587c04b1caae65b8c5043e85f778f42f5f632f6af2e166"},
+    {file = "prometheus_client-0.21.0.tar.gz", hash = "sha256:96c83c606b71ff2b0a433c98889d275f51ffec6c5e267de37c7a2b5c9aa9233e"},
 ]
 
 [[package]]
@@ -2745,18 +2693,18 @@ files = [
 
 [[package]]
 name = "protobuf"
-version = "5.28.1"
+version = "5.28.2"
 requires_python = ">=3.8"
 summary = ""
 groups = ["default"]
 files = [
-    {file = "protobuf-5.28.1-cp310-abi3-win32.whl", hash = "sha256:fc063acaf7a3d9ca13146fefb5b42ac94ab943ec6e978f543cd5637da2d57957"},
-    {file = "protobuf-5.28.1-cp310-abi3-win_amd64.whl", hash = "sha256:4c7f5cb38c640919791c9f74ea80c5b82314c69a8409ea36f2599617d03989af"},
-    {file = "protobuf-5.28.1-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:4304e4fceb823d91699e924a1fdf95cde0e066f3b1c28edb665bda762ecde10f"},
-    {file = "protobuf-5.28.1-cp38-abi3-manylinux2014_aarch64.whl", hash = "sha256:0dfd86d2b5edf03d91ec2a7c15b4e950258150f14f9af5f51c17fa224ee1931f"},
-    {file = "protobuf-5.28.1-cp38-abi3-manylinux2014_x86_64.whl", hash = "sha256:51f09caab818707ab91cf09cc5c156026599cf05a4520779ccbf53c1b352fb25"},
-    {file = "protobuf-5.28.1-py3-none-any.whl", hash = "sha256:c529535e5c0effcf417682563719e5d8ac8d2b93de07a56108b4c2d436d7a29a"},
-    {file = "protobuf-5.28.1.tar.gz", hash = "sha256:42597e938f83bb7f3e4b35f03aa45208d49ae8d5bcb4bc10b9fc825e0ab5e423"},
+    {file = "protobuf-5.28.2-cp310-abi3-win32.whl", hash = "sha256:eeea10f3dc0ac7e6b4933d32db20662902b4ab81bf28df12218aa389e9c2102d"},
+    {file = "protobuf-5.28.2-cp310-abi3-win_amd64.whl", hash = "sha256:2c69461a7fcc8e24be697624c09a839976d82ae75062b11a0972e41fd2cd9132"},
+    {file = "protobuf-5.28.2-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:a8b9403fc70764b08d2f593ce44f1d2920c5077bf7d311fefec999f8c40f78b7"},
+    {file = "protobuf-5.28.2-cp38-abi3-manylinux2014_aarch64.whl", hash = "sha256:35cfcb15f213449af7ff6198d6eb5f739c37d7e4f1c09b5d0641babf2cc0c68f"},
+    {file = "protobuf-5.28.2-cp38-abi3-manylinux2014_x86_64.whl", hash = "sha256:5e8a95246d581eef20471b5d5ba010d55f66740942b95ba9b872d918c459452f"},
+    {file = "protobuf-5.28.2-py3-none-any.whl", hash = "sha256:52235802093bd8a2811abbe8bf0ab9c5f54cca0a751fdd3f6ac2a21438bffece"},
+    {file = "protobuf-5.28.2.tar.gz", hash = "sha256:59379674ff119717404f7454647913787034f03fe7049cbef1d74a97bb4593f0"},
 ]
 
 [[package]]
@@ -2990,7 +2938,7 @@ files = [
 
 [[package]]
 name = "pyproject-api"
-version = "1.7.1"
+version = "1.8.0"
 requires_python = ">=3.8"
 summary = "API to interact with the python pyproject.toml based projects"
 groups = ["dev"]
@@ -2999,8 +2947,8 @@ dependencies = [
     "tomli>=2.0.1; python_version < \"3.11\"",
 ]
 files = [
-    {file = "pyproject_api-1.7.1-py3-none-any.whl", hash = "sha256:2dc1654062c2b27733d8fd4cdda672b22fe8741ef1dde8e3a998a9547b071eeb"},
-    {file = "pyproject_api-1.7.1.tar.gz", hash = "sha256:7ebc6cd10710f89f4cf2a2731710a98abce37ebff19427116ff2174c9236a827"},
+    {file = "pyproject_api-1.8.0-py3-none-any.whl", hash = "sha256:3d7d347a047afe796fd5d1885b1e391ba29be7169bd2f102fcd378f04273d228"},
+    {file = "pyproject_api-1.8.0.tar.gz", hash = "sha256:77b8049f2feb5d33eefcc21b57f1e279636277a8ac8ad6b5871037b243778496"},
 ]
 
 [[package]]
@@ -3097,7 +3045,7 @@ files = [
 
 [[package]]
 name = "pytest-celery"
-version = "1.1.1"
+version = "1.1.3"
 requires_python = "<4.0,>=3.8"
 summary = "Pytest plugin for Celery"
 groups = ["dev"]
@@ -3107,12 +3055,12 @@ dependencies = [
     "docker<8.0.0,>=7.1.0",
     "psutil>=6.0.0",
     "pytest-docker-tools>=3.1.3",
-    "setuptools>=72.1.0",
+    "setuptools>=75.1.0",
     "tenacity>=9.0.0",
 ]
 files = [
-    {file = "pytest_celery-1.1.1-py3-none-any.whl", hash = "sha256:0b441f2a1caea29a34d87880b967a853fd36e65e44ce81ffe7f5af1bfe80768d"},
-    {file = "pytest_celery-1.1.1.tar.gz", hash = "sha256:21e89e191a6a2713c76b4d3307a2fea9751a7b71c22ca09c531873034d2b92e8"},
+    {file = "pytest_celery-1.1.3-py3-none-any.whl", hash = "sha256:4cdb5f658dc472509e8be71f745d26bcb8246397661534f5709d2a55edc43286"},
+    {file = "pytest_celery-1.1.3.tar.gz", hash = "sha256:ac7eee546b4d9fb5c742eaaece98187f1f5e5f5622fbaa8e7729bb46923c54fc"},
 ]
 
 [[package]]
@@ -3757,7 +3705,7 @@ files = [
 
 [[package]]
 name = "selenium"
-version = "4.24.0"
+version = "4.25.0"
 requires_python = ">=3.8"
 summary = "Official Python bindings for Selenium WebDriver"
 groups = ["dev"]
@@ -3770,8 +3718,8 @@ dependencies = [
     "websocket-client~=1.8",
 ]
 files = [
-    {file = "selenium-4.24.0-py3-none-any.whl", hash = "sha256:42c23f60753d5415b261b236cecbd69bd4eb5271e1563915f546b443cb6b71c6"},
-    {file = "selenium-4.24.0.tar.gz", hash = "sha256:88281e5b5b90fe231868905d5ea745b9ee5e30db280b33498cc73fb0fa06d571"},
+    {file = "selenium-4.25.0-py3-none-any.whl", hash = "sha256:3798d2d12b4a570bc5790163ba57fef10b2afee958bf1d80f2a3cf07c4141f33"},
+    {file = "selenium-4.25.0.tar.gz", hash = "sha256:95d08d3b82fb353f3c474895154516604c7f0e6a9a565ae6498ef36c9bac6921"},
 ]
 
 [[package]]
@@ -3826,13 +3774,13 @@ files = [
 
 [[package]]
 name = "slack-sdk"
-version = "3.32.0"
+version = "3.33.1"
 requires_python = ">=3.6"
 summary = "The Slack API Platform SDK for Python"
 groups = ["default"]
 files = [
-    {file = "slack_sdk-3.32.0-py2.py3-none-any.whl", hash = "sha256:f35e85f2847e6c25cf7c2d1df206ca0ad75556263fb592457bf03cca68ef64bb"},
-    {file = "slack_sdk-3.32.0.tar.gz", hash = "sha256:af8fc4ef1d1cbcecd28d01acf6955a3bb5b13d56f0a43a1b1c7e3b212cc5ec5b"},
+    {file = "slack_sdk-3.33.1-py2.py3-none-any.whl", hash = "sha256:ef93beec3ce9c8f64da02fd487598a05ec4bc9c92ceed58f122dbe632691cbe2"},
+    {file = "slack_sdk-3.33.1.tar.gz", hash = "sha256:e328bb661d95db5f66b993b1d64288ac7c72201a745b4c7cf8848dafb7b74e40"},
 ]
 
 [[package]]
@@ -4007,7 +3955,7 @@ files = [
 
 [[package]]
 name = "tox"
-version = "4.18.1"
+version = "4.20.0"
 requires_python = ">=3.8"
 summary = "tox is a generic virtualenv management and test command line tool"
 groups = ["dev"]
@@ -4024,8 +3972,8 @@ dependencies = [
     "virtualenv>=20.26.3",
 ]
 files = [
-    {file = "tox-4.18.1-py3-none-any.whl", hash = "sha256:35d472032ee1f73fe20c3e0e73d7073a4e85075c86ff02c576f9fc7c6a15a578"},
-    {file = "tox-4.18.1.tar.gz", hash = "sha256:3c0c96bc3a568a5c7e66387a4cfcf8c875b52e09f4d47c9f7a277ec82f1a0b11"},
+    {file = "tox-4.20.0-py3-none-any.whl", hash = "sha256:21a8005e3d3fe5658a8e36b8ca3ed13a4230429063c5cc2a2fdac6ee5aa0de34"},
+    {file = "tox-4.20.0.tar.gz", hash = "sha256:5b78a49b6eaaeab3ae4186415e7c97d524f762ae967c63562687c3e5f0ec23d5"},
 ]
 
 [[package]]
@@ -4096,7 +4044,7 @@ files = [
 
 [[package]]
 name = "twilio"
-version = "9.3.0"
+version = "9.3.1"
 requires_python = ">=3.7.0"
 summary = "Twilio API client and TwiML generator"
 groups = ["default"]
@@ -4107,8 +4055,8 @@ dependencies = [
     "requests>=2.0.0",
 ]
 files = [
-    {file = "twilio-9.3.0-py2.py3-none-any.whl", hash = "sha256:01e6cbc6d7eaf02918250918140cc764866d62b048a5732c097b12ab5ed4560e"},
-    {file = "twilio-9.3.0.tar.gz", hash = "sha256:538b260ab464cdfd8e7dc890337ef581fd59ceac92de9f58a678db93474323f4"},
+    {file = "twilio-9.3.1-py2.py3-none-any.whl", hash = "sha256:48c714e5a1340a3d9001d6c9ccd107434c340ff94a5bc1bfb2473d3dc33f5051"},
+    {file = "twilio-9.3.1.tar.gz", hash = "sha256:bd754371353855438a8cf0c38f54580d474afe9655af2d81edb6dbabd8d785c4"},
 ]
 
 [[package]]
@@ -4185,13 +4133,13 @@ files = [
 
 [[package]]
 name = "types-pyyaml"
-version = "6.0.12.20240808"
+version = "6.0.12.20240917"
 requires_python = ">=3.8"
 summary = "Typing stubs for PyYAML"
 groups = ["default"]
 files = [
-    {file = "types-PyYAML-6.0.12.20240808.tar.gz", hash = "sha256:b8f76ddbd7f65440a8bda5526a9607e4c7a322dc2f8e1a8c405644f9a6f4b9af"},
-    {file = "types_PyYAML-6.0.12.20240808-py3-none-any.whl", hash = "sha256:deda34c5c655265fc517b546c902aa6eed2ef8d3e921e4765fe606fe2afe8d35"},
+    {file = "types-PyYAML-6.0.12.20240917.tar.gz", hash = "sha256:d1405a86f9576682234ef83bcb4e6fff7c9305c8b1fbad5e0bcd4f7dbdc9c587"},
+    {file = "types_PyYAML-6.0.12.20240917-py3-none-any.whl", hash = "sha256:392b267f1c0fe6022952462bf5d6523f31e37f6cea49b14cee7ad634b6301570"},
 ]
 
 [[package]]
@@ -4211,7 +4159,7 @@ files = [
 
 [[package]]
 name = "types-requests"
-version = "2.32.0.20240907"
+version = "2.32.0.20240914"
 requires_python = ">=3.8"
 summary = "Typing stubs for requests"
 groups = ["dev"]
@@ -4219,8 +4167,8 @@ dependencies = [
     "urllib3>=2",
 ]
 files = [
-    {file = "types-requests-2.32.0.20240907.tar.gz", hash = "sha256:ff33935f061b5e81ec87997e91050f7b4af4f82027a7a7a9d9aaea04a963fdf8"},
-    {file = "types_requests-2.32.0.20240907-py3-none-any.whl", hash = "sha256:1d1e79faeaf9d42def77f3c304893dea17a97cae98168ac69f3cb465516ee8da"},
+    {file = "types-requests-2.32.0.20240914.tar.gz", hash = "sha256:2850e178db3919d9bf809e434eef65ba49d0e7e33ac92d588f4a5e295fffd405"},
+    {file = "types_requests-2.32.0.20240914-py3-none-any.whl", hash = "sha256:59c2f673eb55f32a99b2894faf6020e1a9f4a402ad0f192bfee0b64469054310"},
 ]
 
 [[package]]
@@ -4236,13 +4184,13 @@ files = [
 
 [[package]]
 name = "types-setuptools"
-version = "74.1.0.20240907"
+version = "75.1.0.20240917"
 requires_python = ">=3.8"
 summary = "Typing stubs for setuptools"
 groups = ["dev"]
 files = [
-    {file = "types-setuptools-74.1.0.20240907.tar.gz", hash = "sha256:0abdb082552ca966c1e5fc244e4853adc62971f6cd724fb1d8a3713b580e5a65"},
-    {file = "types_setuptools-74.1.0.20240907-py3-none-any.whl", hash = "sha256:15b38c8e63ca34f42f6063ff4b1dd662ea20086166d5ad6a102e670a52574120"},
+    {file = "types-setuptools-75.1.0.20240917.tar.gz", hash = "sha256:12f12a165e7ed383f31def705e5c0fa1c26215dd466b0af34bd042f7d5331f55"},
+    {file = "types_setuptools-75.1.0.20240917-py3-none-any.whl", hash = "sha256:06f78307e68d1bbde6938072c57b81cf8a99bc84bd6dc7e4c5014730b097dc0c"},
 ]
 
 [[package]]
@@ -4350,7 +4298,7 @@ files = [
 
 [[package]]
 name = "virtualenv"
-version = "20.26.4"
+version = "20.26.5"
 requires_python = ">=3.7"
 summary = "Virtual Python Environment builder"
 groups = ["dev"]
@@ -4361,8 +4309,8 @@ dependencies = [
     "platformdirs<5,>=3.9.1",
 ]
 files = [
-    {file = "virtualenv-20.26.4-py3-none-any.whl", hash = "sha256:48f2695d9809277003f30776d155615ffc11328e6a0a8c1f0ec80188d7874a55"},
-    {file = "virtualenv-20.26.4.tar.gz", hash = "sha256:c17f4e0f3e6036e9f26700446f85c76ab11df65ff6d8a9cbfad9f71aabfcf23c"},
+    {file = "virtualenv-20.26.5-py3-none-any.whl", hash = "sha256:4f3ac17b81fba3ce3bd6f4ead2749a72da5929c01774948e243db9ba41df4ff6"},
+    {file = "virtualenv-20.26.5.tar.gz", hash = "sha256:ce489cac131aa58f4b25e321d6d186171f78e6cb13fafbf32a840cee67733ff4"},
 ]
 
 [[package]]
