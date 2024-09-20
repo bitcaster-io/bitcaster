@@ -139,6 +139,7 @@ jobs:
         env:
           PYTHONPATH: __pypackages__/3.12/lib
         run: |
+            mkdir .mypy_cache
             __pypackages__/3.12/bin/mypy \
                   --python-executable /opt/hostedtoolcache/Python/3.12.5/x64/bin/python \
                   --config-file .mypy.ini \
