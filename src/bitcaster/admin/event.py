@@ -80,6 +80,9 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
     ]
     change_form_template = None
 
+    class Media:
+        js = ["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"]
+
     def get_fieldsets(self, request: HttpRequest, obj: Optional[Event] = None) -> "_FieldsetSpec":
         if obj:
             return self._fieldsets

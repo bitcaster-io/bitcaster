@@ -6,8 +6,6 @@ from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from django import forms
-from django.contrib.admin import ModelAdmin
-from django.contrib.admin.filters import SimpleListFilter
 from django.contrib.admin.helpers import AdminForm
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
@@ -24,6 +22,7 @@ from bitcaster.models import Assignment, Channel, Organization, Project, User
 from ..dispatchers.base import Payload, dispatcherManager
 from ..forms.channel import ChannelChangeForm
 from .base import BaseAdmin, ButtonColor
+from .filters import ChannelTypeFilter
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
@@ -342,26 +341,6 @@ class ChannelWizard(CookieWizardView):
 
 
 wizard = ChannelWizard.as_view()
-
-
-class ChannelTypeFilter(SimpleListFilter):
-    parameter_name = "type"
-    title = "Type"
-    prefixes = (
-        ("abstract", _("Abstract")),
-        ("project", _("Project")),
-    )
-
-    def lookups(self, request: HttpRequest, model_admin: ModelAdmin[Channel]) -> tuple[tuple[str, str], ...]:
-        return self.prefixes
-
-    def queryset(self, request: HttpRequest, queryset: QuerySet[Channel]) -> QuerySet[Channel]:
-        if self.value() == "abstract":
-            return queryset.filter(organization__isnull=False, project__isnull=True)
-        elif self.value() == "project":
-            return queryset.filter(organization__isnull=False, project__isnull=False)
-        else:
-            return queryset.all()
 
 
 class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], VersionAdmin[Channel]):

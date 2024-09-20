@@ -177,8 +177,9 @@
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-  color: var(--body-fg);
-  line-height: 28px;
+  background-color: var(--input-bg);
+  color: var(--input-fg);
+  line-height: 27px;
 }
 
 .select2-selection__choice {

@@ -5,6 +5,8 @@ from bitcaster.models import Application, Organization, Project
 from .base import AutoRegisterModelFactory
 from .user import UserFactory
 
+__all__ = ["OrganizationFactory", "ApplicationFactory", "ProjectFactory"]
+
 
 class OrganizationFactory(AutoRegisterModelFactory[Organization]):
     name = factory.Sequence(lambda n: "Organization-%03d" % n)
@@ -21,6 +23,7 @@ class ProjectFactory(AutoRegisterModelFactory[Project]):
     slug = factory.Sequence(lambda n: "project-%03d" % n)
     organization = factory.SubFactory(OrganizationFactory)
     owner = factory.SubFactory(UserFactory)
+    environments: list[str] = []
 
     class Meta:
         model = Project

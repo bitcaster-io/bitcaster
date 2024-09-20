@@ -68,6 +68,6 @@ class BaseAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMix
 
         # extra_context["show_save"] = True
         extra_context["show_save_and_add_another"] = False
-        # extra_context["show_save_and_continue"] = False
+        extra_context["show_save_and_continue"] = self.save_as_continue
 
         return super().changeform_view(request, object_id, form_url, extra_context)

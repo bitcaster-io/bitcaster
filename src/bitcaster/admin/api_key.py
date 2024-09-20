@@ -3,23 +3,23 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.decorators import button, view
-from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django import forms
-from django.contrib import admin, messages
+from django.contrib import messages
+from django.contrib.admin.options import ModelAdmin
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
+from django.forms import Media
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from bitcaster.admin.base import BaseAdmin
+from bitcaster.admin.filters import EnvironmentFilter
 from bitcaster.auth.constants import Grant
-from bitcaster.forms.fields import Select2TagField
 from bitcaster.forms.mixins import Scoped3FormMixin
-from bitcaster.forms.widgets import AutocompletSelectEnh
 from bitcaster.models import ApiKey, Application, Event, Organization, Project  # noqa
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
@@ -31,48 +31,60 @@ logger = logging.getLogger(__name__)
 
 
 class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
-    environments = Select2TagField(required=False)
+    # environments = forms.MultipleChoiceField(choices=[], widget=forms.CheckboxSelectMultiple)
     organization = forms.ModelChoiceField(
-        queryset=Organization.objects.all(),
+        queryset=Organization.objects.local(),
         required=True,
-        widget=AutocompletSelectEnh(ApiKey._meta.get_field("organization"), admin.site),
+        # widget=AutocompletSelectEnh(ApiKey._meta.get_field("organization"), admin.site),
     )
 
     class Meta:
         model = ApiKey
         exclude = ("token",)
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            choices = [(k, k) for k in self.instance.project.environments]
+            self.fields["environments"] = forms.MultipleChoiceField(
+                choices=choices,
+                widget=forms.CheckboxSelectMultiple,
+                required=False,
+            )
+
     def clean(self) -> dict[str, Any]:
-        prj: Optional[Project]
-        prj_envs: list[str] = []
-        envs: list[str] = []
+        # prj: Optional[Project]
+        # prj_envs: list[str] = []
+        # envs: list[str] = []
         super().clean()
         if self.instance.pk is None and (g := self.cleaned_data.get("grants")):
             a = self.cleaned_data.get("application")
             if Grant.EVENT_TRIGGER in g and not a:
                 raise ValidationError(_("Application must be set if EVENT_TRIGGER is granted"))
-        if self.instance.pk and self.instance.project:
-            prj_envs = self.instance.project.environments or []
-            envs = self.cleaned_data.get("environments", [])
-        elif prj := self.cleaned_data.get("project"):
-            prj_envs = prj.environments or []
-            envs = self.cleaned_data.get("environments", [])
-        if not set(envs).issubset(prj_envs):
-            raise ValidationError({"environments": "One or more values are not available in the project"})
+        # if self.instance.pk and self.instance.project:
+        #     prj_envs = self.instance.project.environments or []
+        #     envs = self.cleaned_data.get("environments", [])
+        # elif prj := self.cleaned_data.get("project"):
+        #     prj_envs = prj.environments or []
+        #     envs = self.cleaned_data.get("environments", [])
+        # if not set(envs).issubset(prj_envs):
+        #     raise ValidationError({"environments": "One or more values are not available in the project"})
 
         return self.cleaned_data
 
 
-class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin["ApiKey"]):
+class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
     search_fields = ("name",)
     list_display = ("name", "user", "organization", "project", "application", "environments")
     list_filter = (
         ("organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("project", LinkedAutoCompleteFilter.factory(parent="organization")),
         ("application", LinkedAutoCompleteFilter.factory(parent="project")),
+        EnvironmentFilter,
     )
     autocomplete_fields = ("user", "application", "organization", "project")
     form = ApiKeyForm
+    save_as_continue = False
 
     def get_queryset(self, request: "HttpRequest") -> "QuerySet[ApiKey]":
         return super().get_queryset(request).select_related("application")
@@ -91,7 +103,9 @@ class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsM
     #     return ret
 
     def get_exclude(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_ListOrTuple[str]":
-        return ["key"]
+        if obj and obj.pk:
+            return ["key"]
+        return ["key", "environments"]
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
@@ -107,13 +121,14 @@ class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsM
 
     @view()
     def created(self, request: HttpRequest, pk: str) -> HttpResponse:
-        obj: ApiKey = self.get_object(request, pk)  # type: ignore[assignment]
+        obj: ApiKey = self.get_object(request, pk)
         expires = obj.created + timedelta(seconds=10)
         expired = timezone.now() > expires
-        ctx = self.get_common_context(request, pk, expires=expires, expired=expired, title=_("Info"))
+        media = Media(js=["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"])
+        ctx = self.get_common_context(request, pk, media=media, expires=expires, expired=expired, title=_("Info"))
         return TemplateResponse(request, "admin/apikey/created.html", ctx)
 
     @button(visible=lambda s: is_root(s.context["request"]))
     def show_key(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj: ApiKey = self.get_object(request, pk)  # type: ignore[assignment]
+        obj: ApiKey = self.get_object(request, pk)
         self.message_user(request, str(obj.key), messages.WARNING)

@@ -1,7 +1,7 @@
 from bitcaster.agents.base import Agent
 
 
-class XAgent(Agent):
+class XAgent(Agent):  # type: ignore
 
     def notify(self) -> None:
         pass
