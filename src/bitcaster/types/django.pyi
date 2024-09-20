@@ -5,7 +5,9 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models import Model
 from django.forms.utils import ErrorDict
 
-AnyModel = TypeVar("AnyModel", bound=Model, covariant=True)
+from bitcaster.models.mixins import BitcasterBaseModel
+
+AnyModel = TypeVar("AnyModel", bound=Union[Model,BitcasterBaseModel], covariant=True)
 # _ModelT = TypeVar("_ModelT", bound=Model)
 
 AnyUser: TypeAlias = AbstractBaseUser | AnonymousUser
