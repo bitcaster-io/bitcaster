@@ -70,6 +70,11 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]
         ch: Channel = button.context["original"]
         button.href = f"{url}?channels__exact={ch.pk}"
 
+    def response_add(self, request: HttpRequest, obj: Monitor, post_url_continue: str | None = None) -> HttpResponse:
+        base_url = reverse("admin:bitcaster_monitor_configure", args=[obj.pk])
+        schedule_url = reverse("admin:bitcaster_monitor_schedule", args=[obj.pk])
+        return HttpResponseRedirect(f"{base_url}?next={schedule_url}")
+
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         monitor: Monitor = self.get_object_or_404(request, pk)
@@ -85,6 +90,8 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]
                 monitor.save()
                 monitor.schedule.save()
                 self.message_user(request, "Configured Monitor {}".format(monitor.name))
+                if "next" in request.GET:
+                    return HttpResponseRedirect(request.GET["next"])
                 return HttpResponseRedirect(monitor.get_admin_change())
         else:
             config_form = form_class(
