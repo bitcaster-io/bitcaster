@@ -7,8 +7,7 @@ from django.forms.utils import ErrorDict
 
 from bitcaster.models.mixins import BitcasterBaseModel
 
-AnyModel = TypeVar("AnyModel", bound=Union[Model,BitcasterBaseModel], covariant=True)
-# _ModelT = TypeVar("_ModelT", bound=Model)
+AnyModel = TypeVar("AnyModel", bound=Union[Model, BitcasterBaseModel], covariant=True)
 
 AnyUser: TypeAlias = AbstractBaseUser | AnonymousUser
 JsonType = Union[None, int, str, bool, list[JsonType], dict[str, JsonType], ErrorDict]

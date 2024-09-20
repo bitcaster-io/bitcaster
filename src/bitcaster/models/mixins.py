@@ -53,7 +53,7 @@ class BitcasterBaselManager(models.Manager["AnyModel"]):
     _queryset_class = BaseQuerySet
 
 
-class BitcasterBaseModel(AdminReversable, models.Model):
+class BitcasterBaseModel(AdminReversable):
     version = IntegerVersionField()
     last_updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)

@@ -121,7 +121,7 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
 
     @view()
     def created(self, request: HttpRequest, pk: str) -> HttpResponse:
-        obj: ApiKey = self.get_object(request, pk)
+        obj: Optional[ApiKey] = self.get_object(request, pk)
         expires = obj.created + timedelta(seconds=10)
         expired = timezone.now() > expires
         media = Media(js=["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"])
@@ -130,5 +130,5 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
 
     @button(visible=lambda s: is_root(s.context["request"]))
     def show_key(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj: ApiKey = self.get_object(request, pk)
+        obj: Optional[ApiKey] = self.get_object(request, pk)
         self.message_user(request, str(obj.key), messages.WARNING)
