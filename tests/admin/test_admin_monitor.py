@@ -75,6 +75,19 @@ def test_add(app: DjangoTestApp, event: "Event") -> None:
     res.forms["monitor_form"]["agent"] = fqn(AgentFileSystem)
     res = res.forms["monitor_form"].submit()
     assert res.status_code == 302
+    # configure
+    res = res.follow()
+    monitor: Monitor = res.context["original"]
+    res.forms["config-form"]["path"] = "tests"
+    res.forms["config-form"]["recursive"] = True
+    res.forms["config-form"]["add"] = True
+    res = res.forms["config-form"].submit()
+    assert res.status_code == 302
+    # schedule
+    res = res.follow()
+    res = res.forms["action-form"].submit()
+    assert res.status_code == 302
+    assert res.location == monitor.get_admin_change()
 
 
 def test_change(app: DjangoTestApp, monitor: Monitor) -> None:
