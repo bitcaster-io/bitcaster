@@ -5,7 +5,6 @@ from django.contrib import admin, messages
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext as _
-from flags.state import flag_enabled
 
 from .base import ButtonColor
 
@@ -30,7 +29,6 @@ class LockMixinAdmin(admin.ModelAdmin["AnyModel"]):
 
     @button(
         label=_("Lock"),
-        visible=lambda s: flag_enabled("BETA_PREVIEW_LOCKING"),
         enabled=lambda s: not s.context["original"].locked,
         html_attrs={"class": ButtonColor.LOCK.value},
     )
@@ -47,7 +45,6 @@ class LockMixinAdmin(admin.ModelAdmin["AnyModel"]):
 
     @button(
         label=_("Unlock"),
-        visible=lambda s: flag_enabled("BETA_PREVIEW_LOCKING"),
         enabled=lambda s: s.context["original"].locked,
         html_attrs={"class": ButtonColor.UNLOCK.value},
     )

@@ -1,17 +1,17 @@
-{% extends "admin_extra_buttons/change_form.html" %}
+{% extends "admin_extra_buttons/change_form.html" %}{% load usage %}
 {% block field_sets %}
-    <div class="content" style="display: inline;">
-        <div {% if original.pk %}style="display: inline-block" {% endif %}>
+    <div class="content">
+        <div {% if original.pk %}style="display: inline-flex;flex:max-content" {% endif %}>
             {{ block.super }}
         </div>
-        <div style="display: inline-block">
+        <div style="display: inline-flex; flex:min-content">
             {% if original.pk and original.schedule and  original.schedule.crontab %}
-                <div class="frame loat-right">
+                <div class="boxed">
                     <fieldset>
                         <div class="form-row">
-                            <div>Refresh:</div>
-                            <div>
-                                <a href="{% url "admin:bitcaster_monitor_schedule" original.pk %}">{{ original.schedule.crontab.human_readable }}</a>
+                            <h3>Refresh:</h3>
+                            <div style="text-wrap: nowrap;">
+                                <a href="{% url "admin:bitcaster_monitor_schedule" original.pk %}">{{ original.schedule.crontab|cron_human_readable }}</a>
                             </div>
                             <div>
                                 <a href="{% url "admin:django_celery_beat_periodictask_change" original.schedule.pk %}">Periodic
@@ -20,13 +20,13 @@
                     </fieldset>
                     <fieldset>
                         <div class="form-row">
-                            <div>Last Run:</div>
+                            <h3>Last Run:</h3>
                             {{ original.schedule.last_run_at|default_if_none:"Never" }}
                         </div>
                     </fieldset>
                     <fieldset>
                         <div class="form-row">
-                            <div>Last Status:</div>
+                            <h3>Last Status:</h3>
                             {{ original.result }}
                         </div>
                     </fieldset>

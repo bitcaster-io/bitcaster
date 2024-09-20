@@ -31,7 +31,6 @@
 {% endblock %}
 
 {% block sidebar %}
-{% flag_enabled 'BETA_PREVIEW_LOCKING' as BETA_PREVIEW_LOCKING %}
     {% if django_ui %}
 
     <div id="content-related">
@@ -43,11 +42,6 @@
                 <li>
                     <a href="https://bitcaster-io.github.io/bitcaster/">{% translate 'Documentation' %}</a>
                 </li>
-                {% if BETA_PREVIEW_LOCKING %}
-                    {% if perms.bitcaster.can_lock_system %}
-                        <li><a href="{% url "locking" %}">Locking</a></li>
-                    {% endif %}
-                {% endif %}
             </ul>
         </div>
 

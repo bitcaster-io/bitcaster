@@ -1,7 +1,6 @@
 {% extends "bitcaster/base.html" %}{% load static i18n feature_flags %}
 
 {% block body %}
-    {% flag_enabled 'BETA_PREVIEW_LOCKING' as BETA_PREVIEW_LOCKING %}
     <div class="text-center">
         <div>
             <div class="container m-5">
@@ -13,11 +12,6 @@
         </div>
         <div class="container m-5 ">
             {% if user.is_authenticated %}
-                {% if BETA_PREVIEW_LOCKING %}
-                    {% if perms.bitcaster.can_lock_system %}
-                        <a class="button" href="{% url "locking" %}">Locking</a>
-                    {% endif %}
-                {% endif %}
                 {% if user.is_staff %}
                     <a class="button default primary" href="{% url "admin:index" %}">Admin</a>
                 {% endif %}
