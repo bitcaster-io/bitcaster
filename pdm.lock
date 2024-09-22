@@ -3,12 +3,12 @@
 
 [metadata]
 groups = ["default", "dev", "docs"]
-strategy = ["cross_platform", "inherit_metadata"]
+strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:4c878ebfafaf2f4c8f2034b499a940ad3a18f1ce9038f2c1f812bbbc337ade0c"
+content_hash = "sha256:81b2d377e5fb09243bd6cb96727dda0c6b0206aa6a51a539ee8a7797331a7658"
 
 [[metadata.targets]]
-requires_python = "==3.12.2"
+requires_python = "==3.12.6"
 
 [[package]]
 name = "aiohappyeyeballs"
@@ -216,13 +216,13 @@ files = [
 
 [[package]]
 name = "billiard"
-version = "4.2.0"
+version = "4.2.1"
 requires_python = ">=3.7"
 summary = "Python multiprocessing fork with improvements and bugfixes"
 groups = ["default", "dev"]
 files = [
-    {file = "billiard-4.2.0-py3-none-any.whl", hash = "sha256:07aa978b308f334ff8282bd4a746e681b3513db5c9a514cbdd810cbbdc19714d"},
-    {file = "billiard-4.2.0.tar.gz", hash = "sha256:9a3c3184cb275aa17a732f93f65b20c525d3d9f253722d26a82194803ade5a2c"},
+    {file = "billiard-4.2.1-py3-none-any.whl", hash = "sha256:40b59a4ac8806ba2c2369ea98d876bc6108b051c227baffd928c644d15d8f3cb"},
+    {file = "billiard-4.2.1.tar.gz", hash = "sha256:12b641b0c539073fc8d3f5b8b7be998956665c4233c7c1fcd66a7e677c4fb36f"},
 ]
 
 [[package]]
@@ -281,26 +281,36 @@ files = [
 ]
 
 [[package]]
+name = "boolean-py"
+version = "4.0"
+summary = "Define boolean algebras, create and parse boolean expressions and create custom boolean DSL."
+groups = ["dev"]
+files = [
+    {file = "boolean.py-4.0-py3-none-any.whl", hash = "sha256:2876f2051d7d6394a531d82dc6eb407faa0b01a0a0b3083817ccd7323b8d96bd"},
+    {file = "boolean.py-4.0.tar.gz", hash = "sha256:17b9a181630e43dde1851d42bef546d616d5d9b4480357514597e78b203d06e4"},
+]
+
+[[package]]
 name = "boto3"
-version = "1.35.23"
+version = "1.35.24"
 requires_python = ">=3.8"
 summary = "The AWS SDK for Python"
 groups = ["default", "dev"]
 dependencies = [
-    "botocore<1.36.0,>=1.35.23",
+    "botocore<1.36.0,>=1.35.24",
     "jmespath<2.0.0,>=0.7.1",
     "s3transfer<0.11.0,>=0.10.0",
 ]
 files = [
-    {file = "boto3-1.35.23-py3-none-any.whl", hash = "sha256:ecba4362f82e23ef775c72b3e6fdef3ef68443629b79e88886d5088302ffc050"},
-    {file = "boto3-1.35.23.tar.gz", hash = "sha256:3fbf1d5b749c92ed43aa190650979dff9f83790a42522e1e9eefa54c8e44bc4b"},
+    {file = "boto3-1.35.24-py3-none-any.whl", hash = "sha256:97fcc1a14cbc759e4ba9535ced703a99fcf652c9c4b8dfcd06f292c80551684b"},
+    {file = "boto3-1.35.24.tar.gz", hash = "sha256:be7807f30f26d6c0057e45cfd09dad5968e664488bf4f9138d0bb7a0f6d8ed40"},
 ]
 
 [[package]]
 name = "boto3-stubs"
-version = "1.35.23"
+version = "1.35.24"
 requires_python = ">=3.8"
-summary = "Type annotations for boto3 1.35.23 generated with mypy-boto3-builder 8.1.1"
+summary = "Type annotations for boto3 1.35.24 generated with mypy-boto3-builder 8.1.1"
 groups = ["dev"]
 dependencies = [
     "botocore-stubs",
@@ -308,13 +318,13 @@ dependencies = [
     "typing-extensions>=4.1.0; python_version < \"3.12\"",
 ]
 files = [
-    {file = "boto3_stubs-1.35.23-py3-none-any.whl", hash = "sha256:15e0825f0338dfd6f8623ecce44bd2369aabae7aeea3f706772c9172b6f3cff6"},
-    {file = "boto3_stubs-1.35.23.tar.gz", hash = "sha256:78d96e7135e2ed2743211000b7a592c90ea1caf6c2a203f4778af527da7353c1"},
+    {file = "boto3_stubs-1.35.24-py3-none-any.whl", hash = "sha256:f96c814f26f2ab8fcd42811b7208105f43657fe15ffa82be2cdc7734160e28c4"},
+    {file = "boto3_stubs-1.35.24.tar.gz", hash = "sha256:329a9944a75bedd9b343230b03d37c94158e60e7b7a9553e03be9a8f327cd41c"},
 ]
 
 [[package]]
 name = "botocore"
-version = "1.35.23"
+version = "1.35.24"
 requires_python = ">=3.8"
 summary = "Low-level, data-driven core of boto 3."
 groups = ["default", "dev"]
@@ -325,13 +335,13 @@ dependencies = [
     "urllib3<1.27,>=1.25.4; python_version < \"3.10\"",
 ]
 files = [
-    {file = "botocore-1.35.23-py3-none-any.whl", hash = "sha256:cab9ec4e0367b9f33f0bc02c5a29f587b0119ecffd6d125bacee085dcbc8817d"},
-    {file = "botocore-1.35.23.tar.gz", hash = "sha256:25b17a9ccba6ad32bb5bf7ba4f52656aa03c1cb29f6b4e438050ee4ad1967a3b"},
+    {file = "botocore-1.35.24-py3-none-any.whl", hash = "sha256:eb9ccc068255cc3d24c36693fda6aec7786db05ae6c2b13bcba66dce6a13e2e3"},
+    {file = "botocore-1.35.24.tar.gz", hash = "sha256:1e59b0f14f4890c4f70bd6a58a634b9464bed1c4c6171f87c8795d974ade614b"},
 ]
 
 [[package]]
 name = "botocore-stubs"
-version = "1.35.23"
+version = "1.35.24"
 requires_python = ">=3.8"
 summary = "Type annotations and code completion for botocore"
 groups = ["dev"]
@@ -340,8 +350,8 @@ dependencies = [
     "typing-extensions>=4.1.0; python_version < \"3.9\"",
 ]
 files = [
-    {file = "botocore_stubs-1.35.23-py3-none-any.whl", hash = "sha256:8b9d554b5adcc070e30d9089d36cb82a4a2286df684274654ad74e5f354b8491"},
-    {file = "botocore_stubs-1.35.23.tar.gz", hash = "sha256:3a335e6898d7ca0dc79292f15693e2743ec394f9d08d36f94e7a61df3bb9a14e"},
+    {file = "botocore_stubs-1.35.24-py3-none-any.whl", hash = "sha256:052eead5808ef138988089b6de6786f6271fc7f395ee0d4395e96e06ab04573c"},
+    {file = "botocore_stubs-1.35.24.tar.gz", hash = "sha256:20ca0d0c77215b599ab79e365f2bf5f909a49f4c5440bbbbb08175971a3de442"},
 ]
 
 [[package]]
@@ -364,6 +374,37 @@ groups = ["dev"]
 files = [
     {file = "bump2version-1.0.1-py2.py3-none-any.whl", hash = "sha256:37f927ea17cde7ae2d7baf832f8e80ce3777624554a653006c9144f8017fe410"},
     {file = "bump2version-1.0.1.tar.gz", hash = "sha256:762cb2bfad61f4ec8e2bdf452c7c267416f8c70dd9ecb1653fd0bbb01fa936e6"},
+]
+
+[[package]]
+name = "cachecontrol"
+version = "0.14.0"
+requires_python = ">=3.7"
+summary = "httplib2 caching for requests"
+groups = ["dev"]
+dependencies = [
+    "msgpack<2.0.0,>=0.5.2",
+    "requests>=2.16.0",
+]
+files = [
+    {file = "cachecontrol-0.14.0-py3-none-any.whl", hash = "sha256:f5bf3f0620c38db2e5122c0726bdebb0d16869de966ea6a2befe92470b740ea0"},
+    {file = "cachecontrol-0.14.0.tar.gz", hash = "sha256:7db1195b41c81f8274a7bbd97c956f44e8348265a1bc7641c37dfebc39f0c938"},
+]
+
+[[package]]
+name = "cachecontrol"
+version = "0.14.0"
+extras = ["filecache"]
+requires_python = ">=3.7"
+summary = "httplib2 caching for requests"
+groups = ["dev"]
+dependencies = [
+    "CacheControl==0.14.0",
+    "filelock>=3.8.0",
+]
+files = [
+    {file = "cachecontrol-0.14.0-py3-none-any.whl", hash = "sha256:f5bf3f0620c38db2e5122c0726bdebb0d16869de966ea6a2befe92470b740ea0"},
+    {file = "cachecontrol-0.14.0.tar.gz", hash = "sha256:7db1195b41c81f8274a7bbd97c956f44e8348265a1bc7641c37dfebc39f0c938"},
 ]
 
 [[package]]
@@ -736,6 +777,23 @@ files = [
 ]
 
 [[package]]
+name = "cyclonedx-python-lib"
+version = "7.6.1"
+requires_python = "<4.0,>=3.8"
+summary = "Python library for CycloneDX"
+groups = ["dev"]
+dependencies = [
+    "license-expression<31,>=30",
+    "packageurl-python<2,>=0.11",
+    "py-serializable<2.0.0,>=1.1.0",
+    "sortedcontainers<3.0.0,>=2.4.0",
+]
+files = [
+    {file = "cyclonedx_python_lib-7.6.1-py3-none-any.whl", hash = "sha256:6570f14ad191c4c2a87032f4fb0fc913e5c37a43a577898daeb42a3079e52126"},
+    {file = "cyclonedx_python_lib-7.6.1.tar.gz", hash = "sha256:42e510e957c2ce9c71dd33020e43ce53fe6d0c854cfdc3c56e854e9461e846eb"},
+]
+
+[[package]]
 name = "debugpy"
 version = "1.8.5"
 requires_python = ">=3.8"
@@ -752,13 +810,13 @@ files = [
 
 [[package]]
 name = "defusedxml"
-version = "0.8.0rc2"
-requires_python = ">=3.6"
+version = "0.7.1"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 summary = "XML bomb protection for Python stdlib modules"
-groups = ["default", "docs"]
+groups = ["default", "dev", "docs"]
 files = [
-    {file = "defusedxml-0.8.0rc2-py2.py3-none-any.whl", hash = "sha256:1c812964311154c3bf4aaf3bc1443b31ee13530b7f255eaaa062c0553c76103d"},
-    {file = "defusedxml-0.8.0rc2.tar.gz", hash = "sha256:138c7d540a78775182206c7c97fe65b246a2f40b29471e1a2f1b0da76e7a3942"},
+    {file = "defusedxml-0.7.1-py2.py3-none-any.whl", hash = "sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"},
+    {file = "defusedxml-0.7.1.tar.gz", hash = "sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69"},
 ]
 
 [[package]]
@@ -909,13 +967,13 @@ files = [
 
 [[package]]
 name = "django-constance"
-version = "4.1.1"
+version = "4.1.2"
 requires_python = ">=3.8"
 summary = "Django live settings with pluggable backends, including Redis."
 groups = ["default"]
 files = [
-    {file = "django_constance-4.1.1-py3-none-any.whl", hash = "sha256:ff92bade3d059885aa2fe36c3e8ec4f60d8dee5d1a76b763b24e725a562bfa09"},
-    {file = "django_constance-4.1.1.tar.gz", hash = "sha256:068d8e2c8f647264aa4093f721a6ee5df7fde2c96fff2dd6272b5a38f939307e"},
+    {file = "django_constance-4.1.2-py3-none-any.whl", hash = "sha256:bd8e847a5a6225cfc69da9d87de909dbb765e4150507eb3f555327ba32ac6fd6"},
+    {file = "django_constance-4.1.2.tar.gz", hash = "sha256:52163529d4b1be4404d4f8568c6742f76f4d4fc90dc31355849ea2c1e0c525d7"},
 ]
 
 [[package]]
@@ -1688,6 +1746,21 @@ files = [
 ]
 
 [[package]]
+name = "html5lib"
+version = "1.1"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+summary = "HTML parser based on the WHATWG HTML specification"
+groups = ["dev"]
+dependencies = [
+    "six>=1.9",
+    "webencodings",
+]
+files = [
+    {file = "html5lib-1.1-py2.py3-none-any.whl", hash = "sha256:0d78f8fde1c230e99fe37986a60526d7049ed4bf8a9fadbad5f00e22e58e041d"},
+    {file = "html5lib-1.1.tar.gz", hash = "sha256:b2e5b40261e20f354d198eae92afc10d750afb487ed5e50f9c4eaf07c184146f"},
+]
+
+[[package]]
 name = "htmlmin"
 version = "0.1.12"
 summary = "An HTML Minifier"
@@ -1892,6 +1965,20 @@ files = [
 ]
 
 [[package]]
+name = "license-expression"
+version = "30.3.1"
+requires_python = ">=3.8"
+summary = "license-expression is a comprehensive utility library to parse, compare, simplify and normalize license expressions (such as SPDX license expressions) using boolean logic."
+groups = ["dev"]
+dependencies = [
+    "boolean-py>=4.0",
+]
+files = [
+    {file = "license_expression-30.3.1-py3-none-any.whl", hash = "sha256:97904b9185c7bbb1e98799606fa7424191c375e70ba63a524b6f7100e42ddc46"},
+    {file = "license_expression-30.3.1.tar.gz", hash = "sha256:60d5bec1f3364c256a92b9a08583d7ea933c7aa272c8d36d04144a89a3858c01"},
+]
+
+[[package]]
 name = "lxml"
 version = "5.3.0"
 requires_python = ">=3.6"
@@ -1946,6 +2033,20 @@ files = [
 ]
 
 [[package]]
+name = "markdown-it-py"
+version = "3.0.0"
+requires_python = ">=3.8"
+summary = "Python port of markdown-it. Markdown parsing, done right!"
+groups = ["dev"]
+dependencies = [
+    "mdurl~=0.1",
+]
+files = [
+    {file = "markdown-it-py-3.0.0.tar.gz", hash = "sha256:e3f60a94fa066dc52ec76661e37c851cb232d92f9886b15cb560aaada2df8feb"},
+    {file = "markdown_it_py-3.0.0-py3-none-any.whl", hash = "sha256:355216845c60bd96232cd8d8c40e8f9765cc86f46880e43a8fd22dc1a1a8cab1"},
+]
+
+[[package]]
 name = "markupsafe"
 version = "2.1.5"
 requires_python = ">=3.7"
@@ -1974,6 +2075,17 @@ groups = ["dev"]
 files = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
+]
+
+[[package]]
+name = "mdurl"
+version = "0.1.2"
+requires_python = ">=3.7"
+summary = "Markdown URL utilities"
+groups = ["dev"]
+files = [
+    {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
+    {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
 ]
 
 [[package]]
@@ -2214,7 +2326,7 @@ files = [
 
 [[package]]
 name = "mkdocs-material"
-version = "9.5.35"
+version = "9.5.36"
 requires_python = ">=3.8"
 summary = "Documentation that simply works"
 groups = ["docs"]
@@ -2232,8 +2344,8 @@ dependencies = [
     "requests~=2.26",
 ]
 files = [
-    {file = "mkdocs_material-9.5.35-py3-none-any.whl", hash = "sha256:44e069d87732d29f4a2533ae0748fa0e67e270043270c71f04d0fba11a357b24"},
-    {file = "mkdocs_material-9.5.35.tar.gz", hash = "sha256:0d233d7db067ac896bf22ee7950eebf2b1eaf26c155bb27382bf4174021cc117"},
+    {file = "mkdocs_material-9.5.36-py3-none-any.whl", hash = "sha256:36734c1fd9404bea74236242ba3359b267fc930c7233b9fd086b0898825d0ac9"},
+    {file = "mkdocs_material-9.5.36.tar.gz", hash = "sha256:140456f761320f72b399effc073fa3f8aac744c77b0970797c201cae2f6c967f"},
 ]
 
 [[package]]
@@ -2358,6 +2470,27 @@ files = [
 ]
 
 [[package]]
+name = "msgpack"
+version = "1.1.0"
+requires_python = ">=3.8"
+summary = "MessagePack serializer"
+groups = ["dev"]
+files = [
+    {file = "msgpack-1.1.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:d46cf9e3705ea9485687aa4001a76e44748b609d260af21c4ceea7f2212a501d"},
+    {file = "msgpack-1.1.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:5dbad74103df937e1325cc4bfeaf57713be0b4f15e1c2da43ccdd836393e2ea2"},
+    {file = "msgpack-1.1.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:58dfc47f8b102da61e8949708b3eafc3504509a5728f8b4ddef84bd9e16ad420"},
+    {file = "msgpack-1.1.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4676e5be1b472909b2ee6356ff425ebedf5142427842aa06b4dfd5117d1ca8a2"},
+    {file = "msgpack-1.1.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:17fb65dd0bec285907f68b15734a993ad3fc94332b5bb21b0435846228de1f39"},
+    {file = "msgpack-1.1.0-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a51abd48c6d8ac89e0cfd4fe177c61481aca2d5e7ba42044fd218cfd8ea9899f"},
+    {file = "msgpack-1.1.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:2137773500afa5494a61b1208619e3871f75f27b03bcfca7b3a7023284140247"},
+    {file = "msgpack-1.1.0-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:398b713459fea610861c8a7b62a6fec1882759f308ae0795b5413ff6a160cf3c"},
+    {file = "msgpack-1.1.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:06f5fd2f6bb2a7914922d935d3b8bb4a7fff3a9a91cfce6d06c13bc42bec975b"},
+    {file = "msgpack-1.1.0-cp312-cp312-win32.whl", hash = "sha256:ad33e8400e4ec17ba782f7b9cf868977d867ed784a1f5f2ab46e7ba53b6e1e1b"},
+    {file = "msgpack-1.1.0-cp312-cp312-win_amd64.whl", hash = "sha256:115a7af8ee9e8cddc10f87636767857e7e3717b7a2e97379dc2054712693e90f"},
+    {file = "msgpack-1.1.0.tar.gz", hash = "sha256:dd432ccc2c72b914e4cb77afce64aab761c1137cc698be3984eee260bcb2896e"},
+]
+
+[[package]]
 name = "multidict"
 version = "6.1.0"
 requires_python = ">=3.8"
@@ -2409,17 +2542,17 @@ files = [
 
 [[package]]
 name = "mypy-boto3"
-version = "1.35.23"
+version = "1.35.24"
 requires_python = ">=3.8"
-summary = "Type annotations for boto3 1.35.23 master module generated with mypy-boto3-builder 8.1.1"
+summary = "Type annotations for boto3 1.35.24 master module generated with mypy-boto3-builder 8.1.1"
 groups = ["dev"]
 dependencies = [
     "boto3",
     "typing-extensions>=4.1.0; python_version < \"3.12\"",
 ]
 files = [
-    {file = "mypy_boto3-1.35.23-py3-none-any.whl", hash = "sha256:2c16e95b1f77fbb61793782c8b111124ae2bf9d44837abb54d167efd1ca4b0b3"},
-    {file = "mypy_boto3-1.35.23.tar.gz", hash = "sha256:d88b7f0c83cb53b71c13344e931b6e796798e268ade25dd46a8bd5ddfabd7a93"},
+    {file = "mypy_boto3-1.35.24-py3-none-any.whl", hash = "sha256:d6fc959cb825d401c17751e59589256089465fc54c042da8b33fd3818eef3f77"},
+    {file = "mypy_boto3-1.35.24.tar.gz", hash = "sha256:13c0df17141a4a7b849b4bbc2ec5f45474d27032d9b0b489a02abe7fffafb13e"},
 ]
 
 [[package]]
@@ -2492,6 +2625,17 @@ dependencies = [
 files = [
     {file = "outcome-1.3.0.post0-py2.py3-none-any.whl", hash = "sha256:e771c5ce06d1415e356078d3bdd68523f284b4ce5419828922b6871e65eda82b"},
     {file = "outcome-1.3.0.post0.tar.gz", hash = "sha256:9dcf02e65f2971b80047b377468e72a268e15c0af3cf1238e6ff14f7f91143b8"},
+]
+
+[[package]]
+name = "packageurl-python"
+version = "0.15.6"
+requires_python = ">=3.7"
+summary = "A purl aka. Package URL parser and builder"
+groups = ["dev"]
+files = [
+    {file = "packageurl_python-0.15.6-py3-none-any.whl", hash = "sha256:a40210652c89022772a6c8340d6066f7d5dc67132141e5284a4db7a27d0a8ab0"},
+    {file = "packageurl_python-0.15.6.tar.gz", hash = "sha256:cbc89afd15d5f4d05db4f1b61297e5b97a43f61f28799f6d282aff467ed2ee96"},
 ]
 
 [[package]]
@@ -2583,6 +2727,68 @@ files = [
     {file = "pillow-10.4.0-cp312-cp312-win_amd64.whl", hash = "sha256:1d846aea995ad352d4bdcc847535bd56e0fd88d36829d2c90be880ef1ee4668a"},
     {file = "pillow-10.4.0-cp312-cp312-win_arm64.whl", hash = "sha256:e553cad5179a66ba15bb18b353a19020e73a7921296a7979c4a2b7f6a5cd57f9"},
     {file = "pillow-10.4.0.tar.gz", hash = "sha256:166c1cd4d24309b30d61f79f4a9114b7b2313d7450912277855ff5dfd7cd4a06"},
+]
+
+[[package]]
+name = "pip"
+version = "24.2"
+requires_python = ">=3.8"
+summary = "The PyPA recommended tool for installing Python packages."
+groups = ["dev"]
+files = [
+    {file = "pip-24.2-py3-none-any.whl", hash = "sha256:2cd581cf58ab7fcfca4ce8efa6dcacd0de5bf8d0a3eb9ec927e07405f4d9e2a2"},
+    {file = "pip-24.2.tar.gz", hash = "sha256:5b5e490b5e9cb275c879595064adce9ebd31b854e3e803740b72f9ccf34a45b8"},
+]
+
+[[package]]
+name = "pip-api"
+version = "0.0.34"
+requires_python = ">=3.8"
+summary = "An unofficial, importable pip API"
+groups = ["dev"]
+dependencies = [
+    "pip",
+]
+files = [
+    {file = "pip_api-0.0.34-py3-none-any.whl", hash = "sha256:8b2d7d7c37f2447373aa2cf8b1f60a2f2b27a84e1e9e0294a3f6ef10eb3ba6bb"},
+    {file = "pip_api-0.0.34.tar.gz", hash = "sha256:9b75e958f14c5a2614bae415f2adf7eeb54d50a2cfbe7e24fd4826471bac3625"},
+]
+
+[[package]]
+name = "pip-audit"
+version = "2.7.3"
+requires_python = ">=3.8"
+summary = "A tool for scanning Python environments for known vulnerabilities"
+groups = ["dev"]
+dependencies = [
+    "CacheControl[filecache]>=0.13.0",
+    "cyclonedx-python-lib<8,>=5",
+    "html5lib>=1.1",
+    "packaging>=23.0.0",
+    "pip-api>=0.0.28",
+    "pip-requirements-parser>=32.0.0",
+    "requests>=2.31.0",
+    "rich>=12.4",
+    "toml>=0.10",
+]
+files = [
+    {file = "pip_audit-2.7.3-py3-none-any.whl", hash = "sha256:46a11faee3323f76adf7987de8171daeb660e8f57d8088cc27fb1c1e5c7747b0"},
+    {file = "pip_audit-2.7.3.tar.gz", hash = "sha256:08891bbf179bffe478521f150818112bae998424f58bf9285c0078965aef38bc"},
+]
+
+[[package]]
+name = "pip-requirements-parser"
+version = "32.0.1"
+requires_python = ">=3.6.0"
+summary = "pip requirements parser - a mostly correct pip requirements parsing library because it uses pip's own code."
+groups = ["dev"]
+dependencies = [
+    "packaging",
+    "pyparsing",
+]
+files = [
+    {file = "pip-requirements-parser-32.0.1.tar.gz", hash = "sha256:b4fa3a7a0be38243123cf9d1f3518da10c51bdb165a2b2985566247f9155a7d3"},
+    {file = "pip_requirements_parser-32.0.1-py3-none-any.whl", hash = "sha256:4659bc2a667783e7a15d190f6fccf8b2486685b6dba4c19c3876314769c57526"},
 ]
 
 [[package]]
@@ -2747,6 +2953,20 @@ files = [
 ]
 
 [[package]]
+name = "py-serializable"
+version = "1.1.1"
+requires_python = "<4.0,>=3.8"
+summary = "Library for serializing and deserializing Python Objects to and from JSON and XML."
+groups = ["dev"]
+dependencies = [
+    "defusedxml<0.8.0,>=0.7.1",
+]
+files = [
+    {file = "py_serializable-1.1.1-py3-none-any.whl", hash = "sha256:008cf879c8a227851e745e307c1a1c9b58bc22ab87f3794a3750513b6c9e8713"},
+    {file = "py_serializable-1.1.1.tar.gz", hash = "sha256:f268db3afc42c8786da6dc64a8a36e33a82cf65cdcff22d1188b0927f6d4cfa9"},
+]
+
+[[package]]
 name = "py-vapid"
 version = "1.9.1"
 summary = "Simple VAPID header generation library"
@@ -2899,7 +3119,7 @@ files = [
 
 [[package]]
 name = "pymdown-extensions"
-version = "10.9"
+version = "10.10"
 requires_python = ">=3.8"
 summary = "Extension pack for Python Markdown."
 groups = ["docs"]
@@ -2908,8 +3128,8 @@ dependencies = [
     "pyyaml",
 ]
 files = [
-    {file = "pymdown_extensions-10.9-py3-none-any.whl", hash = "sha256:d323f7e90d83c86113ee78f3fe62fc9dee5f56b54d912660703ea1816fed5626"},
-    {file = "pymdown_extensions-10.9.tar.gz", hash = "sha256:6ff740bcd99ec4172a938970d42b96128bdc9d4b9bcad72494f29921dc69b753"},
+    {file = "pymdown_extensions-10.10-py3-none-any.whl", hash = "sha256:5593c49032dc674c30c8382591324de92049520e6c3dd332bfba7f696d55ec34"},
+    {file = "pymdown_extensions-10.10.tar.gz", hash = "sha256:13899c05c2d3cd486e9f57963f7154d2fed2c57530c50a7774fc13041610e82a"},
 ]
 
 [[package]]
@@ -2924,6 +3144,17 @@ dependencies = [
 files = [
     {file = "pyOpenSSL-24.2.1-py3-none-any.whl", hash = "sha256:967d5719b12b243588573f39b0c677637145c7a1ffedcd495a487e58177fbb8d"},
     {file = "pyopenssl-24.2.1.tar.gz", hash = "sha256:4247f0dbe3748d560dcbb2ff3ea01af0f9a1a001ef5f7c4c647956ed8cbf0e95"},
+]
+
+[[package]]
+name = "pyparsing"
+version = "3.1.4"
+requires_python = ">=3.6.8"
+summary = "pyparsing module - Classes and methods to define and execute parsing grammars"
+groups = ["dev"]
+files = [
+    {file = "pyparsing-3.1.4-py3-none-any.whl", hash = "sha256:a6a7ee4235a3f944aa1fa2249307708f893fe5717dc603503c6c7969c070fb7c"},
+    {file = "pyparsing-3.1.4.tar.gz", hash = "sha256:f86ec8d1a83f11977c9a6ea7598e8c27fc5cddfa5b07ea2241edbbde1d7bc032"},
 ]
 
 [[package]]
@@ -3653,6 +3884,22 @@ files = [
 ]
 
 [[package]]
+name = "rich"
+version = "13.8.1"
+requires_python = ">=3.7.0"
+summary = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
+groups = ["dev"]
+dependencies = [
+    "markdown-it-py>=2.2.0",
+    "pygments<3.0.0,>=2.13.0",
+    "typing-extensions<5.0,>=4.0.0; python_version < \"3.9\"",
+]
+files = [
+    {file = "rich-13.8.1-py3-none-any.whl", hash = "sha256:1760a3c0848469b97b558fc61c85233e3dafb69c7a071b4d60c38099d3cd4c06"},
+    {file = "rich-13.8.1.tar.gz", hash = "sha256:8260cda28e3db6bf04d2d1ef4dbc03ba80a824c88b0e7668a0f23126a424844a"},
+]
+
+[[package]]
 name = "rpds-py"
 version = "0.20.0"
 requires_python = ">=3.8"
@@ -3720,6 +3967,17 @@ dependencies = [
 files = [
     {file = "selenium-4.25.0-py3-none-any.whl", hash = "sha256:3798d2d12b4a570bc5790163ba57fef10b2afee958bf1d80f2a3cf07c4141f33"},
     {file = "selenium-4.25.0.tar.gz", hash = "sha256:95d08d3b82fb353f3c474895154516604c7f0e6a9a565ae6498ef36c9bac6921"},
+]
+
+[[package]]
+name = "semantic-version"
+version = "2.10.0"
+requires_python = ">=2.7"
+summary = "A library implementing the 'SemVer' scheme."
+groups = ["dev"]
+files = [
+    {file = "semantic_version-2.10.0-py2.py3-none-any.whl", hash = "sha256:de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177"},
+    {file = "semantic_version-2.10.0.tar.gz", hash = "sha256:bdabb6d336998cbb378d4b9db3a4b56a1e3235701dc05ea2690d9a997ed5041c"},
 ]
 
 [[package]]
@@ -3920,6 +4178,17 @@ groups = ["dev"]
 files = [
     {file = "tokenize_rt-6.0.0-py2.py3-none-any.whl", hash = "sha256:d4ff7ded2873512938b4f8cbb98c9b07118f01d30ac585a30d7a88353ca36d22"},
     {file = "tokenize_rt-6.0.0.tar.gz", hash = "sha256:b9711bdfc51210211137499b5e355d3de5ec88a85d2025c520cbb921b5194367"},
+]
+
+[[package]]
+name = "toml"
+version = "0.10.2"
+requires_python = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+summary = "Python Library for Tom's Obvious, Minimal Language"
+groups = ["dev"]
+files = [
+    {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
+    {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
 ]
 
 [[package]]
@@ -4378,7 +4647,7 @@ files = [
 name = "webencodings"
 version = "0.5.1"
 summary = "Character encoding aliases for legacy web content"
-groups = ["default", "docs"]
+groups = ["default", "dev", "docs"]
 files = [
     {file = "webencodings-0.5.1-py2.py3-none-any.whl", hash = "sha256:a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"},
     {file = "webencodings-0.5.1.tar.gz", hash = "sha256:b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923"},

@@ -38,7 +38,7 @@ class Channel(LockMixin, BitcasterBaseModel):
     name = models.CharField(_("Name"), max_length=255)
     dispatcher: "Dispatcher" = StrategyField(registry=dispatcherManager, default="test")
     config = models.JSONField(blank=True, default=dict)
-    protocol = models.CharField(choices=MessageProtocol.choices)
+    protocol = models.CharField(choices=MessageProtocol.choices, max_length=50)
     active = models.BooleanField(default=True)
     parent = models.ForeignKey("self", blank=True, null=True, related_name="children", on_delete=models.CASCADE)
 

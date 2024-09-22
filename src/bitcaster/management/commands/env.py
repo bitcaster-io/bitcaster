@@ -21,7 +21,7 @@ class Command(BaseCommand):
             "--pattern",
             action="store",
             dest="pattern",
-            default="{key}={value}  # {help}",
+            default="{key}={value}",
             help="Pattern to use to print variables (default: '{key}={value}{space}",
         )
         parser.add_argument("--develop", action="store_true", help="Display development values")
