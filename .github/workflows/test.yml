@@ -145,7 +145,7 @@ jobs:
             -v $PWD:/code/app \
             -w /code/app \
             -t ${{ vars.DOCKER_IMAGE }}:${{needs.build.outputs.version}} \
-            pytest tests -v --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
+            pytest tests -vv --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
           ls -al
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
