@@ -65,11 +65,12 @@ jobs:
               echo "build=true" >> $GITHUB_OUTPUT
           fi
           LOG=$(cat << EOF
-            force_build   $force_build"
-            force_scan    $force_scan"
-            force_test    $force_test"
-            build         ${{needs.changed_files.outputs.build}}"          
-          EOF          
+            force_build   $force_build
+            force_scan    $force_scan
+            force_test    $force_test
+            build         ${{needs.changed_files.outputs.build}}
+          EOF
+          )
           LOG="${LOG//'%'/'%25'}"
           LOG="${LOG//$'\n'/'%0A'}"
           LOG="${LOG//$'\r'/'%0D'}"
