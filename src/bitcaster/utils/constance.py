@@ -11,10 +11,11 @@ logger = logging.getLogger(__name__)
 
 class EmailChannel(ChoiceField):
     def __init__(self, **kwargs: Any) -> None:
-        ret: list[tuple[str | int, str]] = [("", "None")]
-        for c in Channel.objects.values("pk", "name", "protocol"):
-            if c["protocol"] == MessageProtocol.EMAIL:
-                ret.append((c["pk"], c["name"]))
+        ret = [
+            (c["pk"], c["name"])
+            for c in Channel.objects.values("pk", "name", "protocol")
+            if c["protocol"] == MessageProtocol.EMAIL
+        ]
         kwargs["choices"] = ret
         super().__init__(**kwargs)
 

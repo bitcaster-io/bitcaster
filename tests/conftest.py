@@ -8,7 +8,15 @@ import pytest
 import responses
 
 if TYPE_CHECKING:
-    from bitcaster.models import Application, Event, Occurrence, Project, User
+    from bitcaster.models import (
+        Application,
+        Event,
+        Group,
+        Monitor,
+        Occurrence,
+        Project,
+        User,
+    )
 
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))
@@ -344,7 +352,14 @@ def messagebox() -> list:
 
 
 @pytest.fixture()
-def monitor() -> list:
+def monitor() -> "Monitor":
     from testutils.factories import MonitorFactory
 
     return MonitorFactory()
+
+
+@pytest.fixture()
+def group() -> "Group":
+    from testutils.factories import GroupFactory
+
+    return GroupFactory()

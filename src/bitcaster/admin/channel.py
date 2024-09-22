@@ -251,7 +251,7 @@ class ChannelWizard(CookieWizardView):
             if url_has_allowed_host_and_scheme(wizard_cancel, allowed_hosts=None):
                 return HttpResponseRedirect(wizard_cancel)
             else:
-                return HttpResponseRedirect(wizard_cancel or Channel.get_admin_changelist())
+                return HttpResponseRedirect(Channel.get_admin_changelist())
         return super().post(*args, **kwargs)
 
     def get_current_selection(self) -> dict[str, Any]:  # noqa

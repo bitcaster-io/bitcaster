@@ -1,18 +1,6 @@
-from typing import TYPE_CHECKING
-
 from bitcaster.auth.constants import DEFAULT_GROUP_NAME
 
-if TYPE_CHECKING:
-    from django.contrib.auth.models import Group
-    from django.db.models import Manager
-
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
-
-
-def list_groups() -> "Manager[Group]":
-    from django.contrib.auth.models import Group
-
-    return Group.objects
 
 
 CONSTANCE_ADDITIONAL_FIELDS = {
