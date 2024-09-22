@@ -66,10 +66,10 @@ jobs:
           fi
           LOG=$(cat << EOF
 
-            force_build   $force_build
-            force_scan    $force_scan
-            force_test    $force_test
-            build         ${{needs.changed_files.outputs.build}}
+            force_build='$force_build'
+            force_scan='$force_scan'
+            force_test='$force_test'
+            build='${{needs.changed_files.outputs.build}}'
           EOF
           )
           LOG="${LOG//'%'/'%25'}"
