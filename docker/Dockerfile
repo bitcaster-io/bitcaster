@@ -229,32 +229,7 @@ ARG GITHUB_REPOSITORY
 ENV GITHUB_REPOSITORY=$GITHUB_REPOSITORY
 
 
-WORKDIR /app
 COPY --chown=user:app --from=python_prod_deps /app/ /app
-#RUN apt-get remove -y \
-#    libc-dev-bin \
-#    libc6-dev \
-#    libcrypt-dev \
-#    libjpeg-dev \
-#    libjpeg62-turbo-dev \
-#    libnsl-dev \
-#    libopenblas-pthread-dev \
-#    libtirpc-dev \
-#    libwebp-dev \
-#    libx11-6 \
-#    linux-libc-dev \
-#    dpkg \
-#    libc-dev-bin \
-#    libcrypt-dev \
-#    libgif-dev \
-#    wget
-#COPY --chown=user:app --from=python_prod_deps /conf/ /conf
-#COPY --chown=user:app --from=python_prod_deps /code/README.md /code/LICENSE.md /
-
-#ENV DJANGO_SETTINGS_MODULE="bitcaster.config.settings" \
-#    PATH=${APATH}:${PATH} \
-#    PYTHONDBUFFERED=1 \
-#    PYTHONDONTWRITEBYTCODE=1
 
 RUN <<EOF cat> /RELEASE
 {"version": "$VERSION",
@@ -266,6 +241,7 @@ RUN <<EOF cat> /RELEASE
 }
 EOF
 
+WORKDIR /app
 VOLUME /var/run/app/
 EXPOSE 8000
 CMD ["run"]
@@ -273,6 +249,8 @@ ENTRYPOINT exec docker-entrypoint.sh "$0" "$@"
 
 LABEL distro="final"
 LABEL maintainer="bitcaster@bitcaster.io"
+LABEL cheksum="$CHECKSUM"
+
 LABEL org.opencontainers.image.authors="bitcaster@bitcaster.io"
 LABEL org.opencontainers.image.created="$BUILD_DATE"
 LABEL org.opencontainers.image.description="Bitcaster"

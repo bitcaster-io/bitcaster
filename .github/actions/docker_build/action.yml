@@ -130,6 +130,9 @@ runs:
                           ${{ steps.image_name.outputs.name }} 2>/dev/null)
         code_checksum="${{ steps.checksum.outputs.checksum }}"
         
+        echo "::notice:: code_checksum:  '$code_checksum'"
+        echo "::notice:: image_checksum: '$image_checksum'"
+        
         echo "::notice:: INPUTS: rebuild  ${{ inputs.rebuild }}"
         echo "::notice:: INPUTS: registry ${{ inputs.registry }}"
         
