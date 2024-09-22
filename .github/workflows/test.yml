@@ -65,7 +65,7 @@ jobs:
               echo "build=true" >> $GITHUB_OUTPUT
           fi
           LOG=$(cat << EOF
-          
+
             force_build   $force_build
             force_scan    $force_scan
             force_test    $force_test
