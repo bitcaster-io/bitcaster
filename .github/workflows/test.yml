@@ -64,6 +64,17 @@ jobs:
           if [[ $force_build == "true" || "${{needs.changed_files.outputs.run_tests}}" == "true" ]]; then 
               echo "build=true" >> $GITHUB_OUTPUT
           fi
+          LOG=$(cat << EOF
+            force_build   $force_build"
+            force_scan    $force_scan"
+            force_test    $force_test"
+            build         ${{needs.changed_files.outputs.build}}"          
+          EOF          
+          LOG="${LOG//'%'/'%25'}"
+          LOG="${LOG//$'\n'/'%0A'}"
+          LOG="${LOG//$'\r'/'%0D'}"
+          
+          echo "::notice:: $LOG"
           
           echo "::notice:: force_build   $force_build"
           echo "::notice:: force_scan    $force_scan"
