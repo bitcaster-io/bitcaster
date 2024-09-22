@@ -86,11 +86,6 @@ includes = ['src/bitcaster']
 
 [tool.pdm]
 distribution = true
-#plugins = [
-#    "pdm-sbom",
-#]
-
-[tools.pdm.audit_plugin.hook_verbose]
 
 [tool.pdm.dev-dependencies]
 dev = [
