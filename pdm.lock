@@ -2,10 +2,10 @@
 # It is not intended for manual editing.
 
 [metadata]
-groups = ["default", "dev", "docs"]
+groups = ["default", "dev", "docs", "lint"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:81b2d377e5fb09243bd6cb96727dda0c6b0206aa6a51a539ee8a7797331a7658"
+content_hash = "sha256:53db89c1fb371f10b5c89ded024e0ad90a577025f13d522077ba050492770de3"
 
 [[metadata.targets]]
 requires_python = "==3.12.6"
@@ -116,7 +116,7 @@ name = "asgiref"
 version = "3.8.1"
 requires_python = ">=3.8"
 summary = "ASGI specs, helper code, and adapters"
-groups = ["default", "dev"]
+groups = ["default", "dev", "lint"]
 dependencies = [
     "typing-extensions>=4; python_version < \"3.11\"",
 ]
@@ -230,7 +230,7 @@ name = "black"
 version = "24.8.0"
 requires_python = ">=3.8"
 summary = "The uncompromising code formatter."
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "click>=8.0.0",
     "mypy-extensions>=0.4.3",
@@ -295,7 +295,7 @@ name = "boto3"
 version = "1.35.24"
 requires_python = ">=3.8"
 summary = "The AWS SDK for Python"
-groups = ["default", "dev"]
+groups = ["default", "lint"]
 dependencies = [
     "botocore<1.36.0,>=1.35.24",
     "jmespath<2.0.0,>=0.7.1",
@@ -311,7 +311,7 @@ name = "boto3-stubs"
 version = "1.35.24"
 requires_python = ">=3.8"
 summary = "Type annotations for boto3 1.35.24 generated with mypy-boto3-builder 8.1.1"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "botocore-stubs",
     "types-s3transfer",
@@ -327,7 +327,7 @@ name = "botocore"
 version = "1.35.24"
 requires_python = ">=3.8"
 summary = "Low-level, data-driven core of boto 3."
-groups = ["default", "dev"]
+groups = ["default", "lint"]
 dependencies = [
     "jmespath<2.0.0,>=0.7.1",
     "python-dateutil<3.0.0,>=2.1",
@@ -344,7 +344,7 @@ name = "botocore-stubs"
 version = "1.35.24"
 requires_python = ">=3.8"
 summary = "Type annotations and code completion for botocore"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "types-awscrt",
     "typing-extensions>=4.1.0; python_version < \"3.9\"",
@@ -490,7 +490,7 @@ name = "cffi"
 version = "1.17.1"
 requires_python = ">=3.8"
 summary = "Foreign Function Interface for Python calling C code."
-groups = ["default", "dev", "docs"]
+groups = ["default", "dev", "docs", "lint"]
 dependencies = [
     "pycparser",
 ]
@@ -578,7 +578,7 @@ name = "click"
 version = "8.1.7"
 requires_python = ">=3.7"
 summary = "Composable command line interface toolkit"
-groups = ["default", "dev", "docs"]
+groups = ["default", "dev", "docs", "lint"]
 dependencies = [
     "colorama; platform_system == \"Windows\"",
     "importlib-metadata; python_version < \"3.8\"",
@@ -635,7 +635,7 @@ name = "colorama"
 version = "0.4.6"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 summary = "Cross-platform colored terminal text."
-groups = ["default", "dev", "docs"]
+groups = ["default", "dev", "docs", "lint"]
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
@@ -701,7 +701,7 @@ name = "cryptography"
 version = "43.0.1"
 requires_python = ">=3.7"
 summary = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
-groups = ["default", "dev"]
+groups = ["default", "dev", "lint"]
 dependencies = [
     "cffi>=1.12; platform_python_implementation != \"PyPy\"",
 ]
@@ -834,7 +834,7 @@ name = "django"
 version = "5.1.1"
 requires_python = ">=3.10"
 summary = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
-groups = ["default", "dev"]
+groups = ["default", "dev", "lint"]
 dependencies = [
     "asgiref<4,>=3.8.1",
     "sqlparse>=0.3.1",
@@ -1234,7 +1234,7 @@ name = "django-stubs-ext"
 version = "5.0.4"
 requires_python = ">=3.8"
 summary = "Monkey-patching and extensions for django-stubs"
-groups = ["default", "dev"]
+groups = ["default", "lint"]
 dependencies = [
     "django",
     "typing-extensions",
@@ -1492,7 +1492,7 @@ name = "flake8"
 version = "7.1.1"
 requires_python = ">=3.8.1"
 summary = "the modular source code checker: pep8 pyflakes and co"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "mccabe<0.8.0,>=0.7.0",
     "pycodestyle<2.13.0,>=2.12.0",
@@ -1507,7 +1507,7 @@ files = [
 name = "flake8-html"
 version = "0.4.3"
 summary = "Generate HTML reports of flake8 violations"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "flake8>=3.3.0",
     "importlib-metadata; python_version < \"3.8\"",
@@ -1872,7 +1872,7 @@ name = "isort"
 version = "5.13.2"
 requires_python = ">=3.8.0"
 summary = "A Python utility / library to sort Python imports."
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "isort-5.13.2-py3-none-any.whl", hash = "sha256:8ca5e72a8d85860d5a3fa69b8745237f2939afe12dbf656afbcb47fe72d947a6"},
     {file = "isort-5.13.2.tar.gz", hash = "sha256:48fdfcb9face5d58a4f6dde2e72a1fb8dcaf8ab26f95ab49fab84c2ddefb0109"},
@@ -1883,7 +1883,7 @@ name = "jinja2"
 version = "3.1.4"
 requires_python = ">=3.7"
 summary = "A very fast and expressive template engine."
-groups = ["dev", "docs"]
+groups = ["dev", "docs", "lint"]
 dependencies = [
     "MarkupSafe>=2.0",
 ]
@@ -1897,7 +1897,7 @@ name = "jmespath"
 version = "1.0.1"
 requires_python = ">=3.7"
 summary = "JSON Matching Expressions"
-groups = ["default", "dev"]
+groups = ["default", "lint"]
 files = [
     {file = "jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980"},
     {file = "jmespath-1.0.1.tar.gz", hash = "sha256:90261b206d6defd58fdd5e85f478bf633a2901798906be2ad389150c5c60edbe"},
@@ -2051,7 +2051,7 @@ name = "markupsafe"
 version = "2.1.5"
 requires_python = ">=3.7"
 summary = "Safely add untrusted strings to HTML/XML markup."
-groups = ["dev", "docs"]
+groups = ["dev", "docs", "lint"]
 files = [
     {file = "MarkupSafe-2.1.5-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:8dec4936e9c3100156f8a2dc89c4b88d5c435175ff03413b443469c7c8c5f4d1"},
     {file = "MarkupSafe-2.1.5-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:3c6b973f22eb18a789b1460b4b91bf04ae3f0c4234a0a6aa6b0a92f6f7b951d4"},
@@ -2071,7 +2071,7 @@ name = "mccabe"
 version = "0.7.0"
 requires_python = ">=3.6"
 summary = "McCabe checker, plugin for flake8"
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
@@ -2524,7 +2524,7 @@ name = "mypy"
 version = "1.11.2"
 requires_python = ">=3.8"
 summary = "Optional static typing for Python"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "mypy-extensions>=1.0.0",
     "tomli>=1.1.0; python_version < \"3.11\"",
@@ -2545,7 +2545,7 @@ name = "mypy-boto3"
 version = "1.35.24"
 requires_python = ">=3.8"
 summary = "Type annotations for boto3 1.35.24 master module generated with mypy-boto3-builder 8.1.1"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "boto3",
     "typing-extensions>=4.1.0; python_version < \"3.12\"",
@@ -2560,7 +2560,7 @@ name = "mypy-boto3-sns"
 version = "1.35.0"
 requires_python = ">=3.8"
 summary = "Type annotations for boto3.SNS 1.35.0 service generated with mypy-boto3-builder 7.26.0"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "typing-extensions>=4.1.0; python_version < \"3.12\"",
 ]
@@ -2574,7 +2574,7 @@ name = "mypy-extensions"
 version = "1.0.0"
 requires_python = ">=3.5"
 summary = "Type system extensions for programs checked with the mypy type checker."
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "mypy_extensions-1.0.0-py3-none-any.whl", hash = "sha256:4392f6c0eb8a5668a69e23d168ffa70f0be9ccfd32b5cc2d26a34ae5b844552d"},
     {file = "mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782"},
@@ -2643,7 +2643,7 @@ name = "packaging"
 version = "24.1"
 requires_python = ">=3.8"
 summary = "Core utilities for Python packages"
-groups = ["dev", "docs"]
+groups = ["dev", "docs", "lint"]
 files = [
     {file = "packaging-24.1-py3-none-any.whl", hash = "sha256:5b8f2217dbdbd2f7f384c41c628544e6d52f2d0f53c6d0c3ea61aa5d1d7ff124"},
     {file = "packaging-24.1.tar.gz", hash = "sha256:026ed72c8ed3fcce5bf8950572258698927fd1dbda10a5e981cdf0ac37f4f002"},
@@ -2677,7 +2677,7 @@ name = "pathspec"
 version = "0.12.1"
 requires_python = ">=3.8"
 summary = "Utility library for gitignore style pattern matching of file paths."
-groups = ["dev", "docs"]
+groups = ["docs", "lint"]
 files = [
     {file = "pathspec-0.12.1-py3-none-any.whl", hash = "sha256:a0d503e138a4c123b27490a4f7beda6a01c6f288df0e4a8b79c7eb0dc7b4cc08"},
     {file = "pathspec-0.12.1.tar.gz", hash = "sha256:a482d51503a1ab33b1c67a6c3813a26953dbdc71c31dacaef9a838c4e29f5712"},
@@ -2796,7 +2796,7 @@ name = "platformdirs"
 version = "4.3.6"
 requires_python = ">=3.8"
 summary = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
-groups = ["dev", "docs"]
+groups = ["dev", "docs", "lint"]
 files = [
     {file = "platformdirs-4.3.6-py3-none-any.whl", hash = "sha256:73e575e1408ab8103900836b97580d5307456908a03e92031bab39e4554cc3fb"},
     {file = "platformdirs-4.3.6.tar.gz", hash = "sha256:357fb2acbc885b0419afd3ce3ed34564c13c9b95c89360cd9563f73aa5e2b907"},
@@ -3033,7 +3033,7 @@ name = "pycodestyle"
 version = "2.12.1"
 requires_python = ">=3.8"
 summary = "Python style guide checker"
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "pycodestyle-2.12.1-py2.py3-none-any.whl", hash = "sha256:46f0fb92069a7c28ab7bb558f05bfc0110dac69a0cd23c61ea0040283a9d78b3"},
     {file = "pycodestyle-2.12.1.tar.gz", hash = "sha256:6838eae08bbce4f6accd5d5572075c63626a15ee3e6f842df996bf62f6d73521"},
@@ -3044,7 +3044,7 @@ name = "pycparser"
 version = "2.22"
 requires_python = ">=3.8"
 summary = "C parser in Python"
-groups = ["default", "dev", "docs"]
+groups = ["default", "dev", "docs", "lint"]
 files = [
     {file = "pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc"},
     {file = "pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6"},
@@ -3066,7 +3066,7 @@ name = "pyflakes"
 version = "3.2.0"
 requires_python = ">=3.8"
 summary = "passive checker of Python programs"
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "pyflakes-3.2.0-py2.py3-none-any.whl", hash = "sha256:84b5be138a2dfbb40689ca07e2152deb896a65c3a3e24c251c5c62489568074a"},
     {file = "pyflakes-3.2.0.tar.gz", hash = "sha256:1c61603ff154621fb2a9172037d84dca3500def8c8b630657d1701f026f8af3f"},
@@ -3090,7 +3090,7 @@ name = "pygments"
 version = "2.18.0"
 requires_python = ">=3.8"
 summary = "Pygments is a syntax highlighting package written in Python."
-groups = ["default", "dev", "docs"]
+groups = ["default", "dev", "docs", "lint"]
 files = [
     {file = "pygments-2.18.0-py3-none-any.whl", hash = "sha256:b8e6aca0523f3ab76fee51799c488e38782ac06eafcf95e7ba832985c8e7b13a"},
     {file = "pygments-2.18.0.tar.gz", hash = "sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199"},
@@ -3581,7 +3581,7 @@ name = "python-dateutil"
 version = "2.9.0.post0"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 summary = "Extensions to the standard Python datetime module"
-groups = ["default", "dev", "docs"]
+groups = ["default", "dev", "docs", "lint"]
 dependencies = [
     "six>=1.5",
 ]
@@ -3941,7 +3941,7 @@ name = "s3transfer"
 version = "0.10.2"
 requires_python = ">=3.8"
 summary = "An Amazon S3 Transfer Manager"
-groups = ["default", "dev"]
+groups = ["default", "lint"]
 dependencies = [
     "botocore<2.0a.0,>=1.33.2",
 ]
@@ -3967,17 +3967,6 @@ dependencies = [
 files = [
     {file = "selenium-4.25.0-py3-none-any.whl", hash = "sha256:3798d2d12b4a570bc5790163ba57fef10b2afee958bf1d80f2a3cf07c4141f33"},
     {file = "selenium-4.25.0.tar.gz", hash = "sha256:95d08d3b82fb353f3c474895154516604c7f0e6a9a565ae6498ef36c9bac6921"},
-]
-
-[[package]]
-name = "semantic-version"
-version = "2.10.0"
-requires_python = ">=2.7"
-summary = "A library implementing the 'SemVer' scheme."
-groups = ["dev"]
-files = [
-    {file = "semantic_version-2.10.0-py2.py3-none-any.whl", hash = "sha256:de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177"},
-    {file = "semantic_version-2.10.0.tar.gz", hash = "sha256:bdabb6d336998cbb378d4b9db3a4b56a1e3235701dc05ea2690d9a997ed5041c"},
 ]
 
 [[package]]
@@ -4011,7 +4000,7 @@ name = "six"
 version = "1.16.0"
 requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 summary = "Python 2 and 3 compatibility utilities"
-groups = ["default", "dev", "docs"]
+groups = ["default", "dev", "docs", "lint"]
 files = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
@@ -4113,7 +4102,7 @@ name = "sqlparse"
 version = "0.5.1"
 requires_python = ">=3.8"
 summary = "A non-validating SQL parser."
-groups = ["default", "dev"]
+groups = ["default", "dev", "lint"]
 files = [
     {file = "sqlparse-0.5.1-py3-none-any.whl", hash = "sha256:773dcbf9a5ab44a090f3441e2180efe2560220203dc2f8c0b0fa141e18b505e4"},
     {file = "sqlparse-0.5.1.tar.gz", hash = "sha256:bb6b4df465655ef332548e24f08e205afc81b9ab86cb1c45657a7ff173a3a00e"},
@@ -4333,7 +4322,7 @@ name = "types-awscrt"
 version = "0.21.5"
 requires_python = ">=3.8"
 summary = "Type annotations and code completion for awscrt"
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "types_awscrt-0.21.5-py3-none-any.whl", hash = "sha256:117ff2b1bb657f09d01b7e0ce3fe3fa6e039be12d30b826896182725c9ce85b1"},
     {file = "types_awscrt-0.21.5.tar.gz", hash = "sha256:9f7f47de68799cb2bcb9e486f48d77b9f58962b92fba43cb8860da70b3c57d1b"},
@@ -4344,7 +4333,7 @@ name = "types-cffi"
 version = "1.16.0.20240331"
 requires_python = ">=3.8"
 summary = "Typing stubs for cffi"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "types-setuptools",
 ]
@@ -4357,7 +4346,7 @@ files = [
 name = "types-freezegun"
 version = "1.1.10"
 summary = "Typing stubs for freezegun"
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "types-freezegun-1.1.10.tar.gz", hash = "sha256:cb3a2d2eee950eacbaac0673ab50499823365ceb8c655babb1544a41446409ec"},
     {file = "types_freezegun-1.1.10-py3-none-any.whl", hash = "sha256:fadebe72213e0674036153366205038e1f95c8ca96deb4ef9b71ddc15413543e"},
@@ -4368,7 +4357,7 @@ name = "types-markdown"
 version = "3.7.0.20240822"
 requires_python = ">=3.8"
 summary = "Typing stubs for Markdown"
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "types-Markdown-3.7.0.20240822.tar.gz", hash = "sha256:183557c9f4f865bdefd8f5f96a38145c31819271cde111d35557c3bd2069e78d"},
     {file = "types_Markdown-3.7.0.20240822-py3-none-any.whl", hash = "sha256:bec91c410aaf2470ffdb103e38438fbcc53689b00133f19e64869eb138432ad7"},
@@ -4379,7 +4368,7 @@ name = "types-pyopenssl"
 version = "24.1.0.20240722"
 requires_python = ">=3.8"
 summary = "Typing stubs for pyOpenSSL"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "cryptography>=35.0.0",
     "types-cffi",
@@ -4394,7 +4383,7 @@ name = "types-python-dateutil"
 version = "2.9.0.20240906"
 requires_python = ">=3.8"
 summary = "Typing stubs for python-dateutil"
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "types-python-dateutil-2.9.0.20240906.tar.gz", hash = "sha256:9706c3b68284c25adffc47319ecc7947e5bb86b3773f843c73906fd598bc176e"},
     {file = "types_python_dateutil-2.9.0.20240906-py3-none-any.whl", hash = "sha256:27c8cc2d058ccb14946eebcaaa503088f4f6dbc4fb6093d3d456a49aef2753f6"},
@@ -4416,7 +4405,7 @@ name = "types-redis"
 version = "4.6.0.20240903"
 requires_python = ">=3.8"
 summary = "Typing stubs for redis"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "cryptography>=35.0.0",
     "types-pyOpenSSL",
@@ -4431,7 +4420,7 @@ name = "types-requests"
 version = "2.32.0.20240914"
 requires_python = ">=3.8"
 summary = "Typing stubs for requests"
-groups = ["dev"]
+groups = ["lint"]
 dependencies = [
     "urllib3>=2",
 ]
@@ -4445,7 +4434,7 @@ name = "types-s3transfer"
 version = "0.10.2"
 requires_python = ">=3.8"
 summary = "Type annotations and code completion for s3transfer"
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "types_s3transfer-0.10.2-py3-none-any.whl", hash = "sha256:7a3fec8cd632e2b5efb665a355ef93c2a87fdd5a45b74a949f95a9e628a86356"},
     {file = "types_s3transfer-0.10.2.tar.gz", hash = "sha256:60167a3bfb5c536ec6cdb5818f7f9a28edca9dc3e0b5ff85ae374526fc5e576e"},
@@ -4456,7 +4445,7 @@ name = "types-setuptools"
 version = "75.1.0.20240917"
 requires_python = ">=3.8"
 summary = "Typing stubs for setuptools"
-groups = ["dev"]
+groups = ["lint"]
 files = [
     {file = "types-setuptools-75.1.0.20240917.tar.gz", hash = "sha256:12f12a165e7ed383f31def705e5c0fa1c26215dd466b0af34bd042f7d5331f55"},
     {file = "types_setuptools-75.1.0.20240917-py3-none-any.whl", hash = "sha256:06f78307e68d1bbde6938072c57b81cf8a99bc84bd6dc7e4c5014730b097dc0c"},
@@ -4467,7 +4456,7 @@ name = "typing-extensions"
 version = "4.12.2"
 requires_python = ">=3.8"
 summary = "Backported and Experimental Type Hints for Python 3.8+"
-groups = ["default", "dev"]
+groups = ["default", "dev", "lint"]
 files = [
     {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
     {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
@@ -4478,7 +4467,7 @@ name = "tzdata"
 version = "2024.1"
 requires_python = ">=2"
 summary = "Provider of IANA time zone data"
-groups = ["default", "dev"]
+groups = ["default", "dev", "lint"]
 files = [
     {file = "tzdata-2024.1-py2.py3-none-any.whl", hash = "sha256:9068bc196136463f5245e51efda838afa15aaeca9903f49050dfa2679db4d252"},
     {file = "tzdata-2024.1.tar.gz", hash = "sha256:2674120f8d891909751c38abcdfd386ac0a5a1127954fbc332af6b5ceae07efd"},
@@ -4510,7 +4499,7 @@ name = "urllib3"
 version = "2.2.3"
 requires_python = ">=3.8"
 summary = "HTTP library with thread-safe connection pooling, file post, and more."
-groups = ["default", "dev", "docs"]
+groups = ["default", "dev", "docs", "lint"]
 files = [
     {file = "urllib3-2.2.3-py3-none-any.whl", hash = "sha256:ca899ca043dcb1bafa3e262d73aa25c465bfb49e0bd9dd5d59f1d0acba2f8fac"},
     {file = "urllib3-2.2.3.tar.gz", hash = "sha256:e7d814a81dad81e6caf2ec9fdedb284ecc9c73076b62654547cc64ccdcae26e9"},
