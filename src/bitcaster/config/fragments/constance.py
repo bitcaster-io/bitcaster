@@ -9,9 +9,6 @@ if TYPE_CHECKING:
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 
 
-# CONSTANCE_DATABASE_CACHE_BACKEND = "default"
-
-
 def list_groups() -> "Manager[Group]":
     from django.contrib.auth.models import Group
 

@@ -56,17 +56,12 @@ RUN \
     --mount=type=cache,target=/var/cache/apt \
     apt-get install -y --no-install-recommends  \
       libffi8 \
-      libgif-dev \
       libgl1  \
       libglib2.0-0 \
-      libjpeg-dev \
       libmagic1 \
-      libopenblas-dev \
       libpng16-16  \
-      libwebp-dev \
       libxml2  \
       mime-support  \
-      postgresql-client \
       postgresql-client
 
 RUN groupadd --gid 1024 app \
@@ -191,18 +186,7 @@ RUN set -x \
     && rm -fr src pyproject.toml pdm.lock
 
 WORKDIR /app
-apt-get remove -y \
-        libx11-6 \
-        libc6-dev \
-        libc-dev-bin \
-        libcrypt-dev \
-        libjpeg-dev \
-        libjpeg62-turbo-dev \
-        libnsl-dev \
-        libopenblas-pthread-dev \
-        libtirpc-dev \
-        libwebp-dev \
-        linux-libc-dev
+
 
 #COPY docker/conf/config.toml /etc/xdg/pdm/config.toml
 #COPY . /app
@@ -247,6 +231,23 @@ ENV GITHUB_REPOSITORY=$GITHUB_REPOSITORY
 
 WORKDIR /app
 COPY --chown=user:app --from=python_prod_deps /app/ /app
+#RUN apt-get remove -y \
+#    libc-dev-bin \
+#    libc6-dev \
+#    libcrypt-dev \
+#    libjpeg-dev \
+#    libjpeg62-turbo-dev \
+#    libnsl-dev \
+#    libopenblas-pthread-dev \
+#    libtirpc-dev \
+#    libwebp-dev \
+#    libx11-6 \
+#    linux-libc-dev \
+#    dpkg \
+#    libc-dev-bin \
+#    libcrypt-dev \
+#    libgif-dev \
+#    wget
 #COPY --chown=user:app --from=python_prod_deps /conf/ /conf
 #COPY --chown=user:app --from=python_prod_deps /code/README.md /code/LICENSE.md /
 
