@@ -12,6 +12,7 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from formtools.wizard.storage.session import SessionStorage
 from formtools.wizard.views import CookieWizardView
@@ -247,7 +248,10 @@ class ChannelWizard(CookieWizardView):
         self.extra_context = kwargs.pop("extra_context")
         wizard_cancel = self.request.POST.get("wizard_cancel", -1)
         if wizard_cancel != -1:
-            return HttpResponseRedirect(wizard_cancel or Channel.get_admin_changelist())
+            if url_has_allowed_host_and_scheme(wizard_cancel, allowed_hosts=None):
+                return HttpResponseRedirect(wizard_cancel)
+            else:
+                return HttpResponseRedirect(wizard_cancel or Channel.get_admin_changelist())
         return super().post(*args, **kwargs)
 
     def get_current_selection(self) -> dict[str, Any]:  # noqa
