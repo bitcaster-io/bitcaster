@@ -73,7 +73,7 @@ jobs:
           EOF
           )
           
-          echo "::notice:: $LOG"
+          echo "::notice title=Info:: $LOG"
           
 #          echo "::notice:: force_build   $force_build"
 #          echo "::notice:: force_scan    $force_scan"
