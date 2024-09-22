@@ -68,4 +68,4 @@ def test_agent_ftp_check(agent: AgentFTP, server: PytestLocalFTPServer) -> None:
     with mock.patch("bitcaster.models.event.Event.trigger") as notify:
         agent.check()
         assert notify.called
-    assert agent.monitor.data["diff"]["deleted"] == ["file2.txt", "file3.txt", "file1.txt", "file4.txt"]
+    assert sorted(agent.monitor.data["diff"]["deleted"]) == ["file1.txt", "file2.txt", "file3.txt", "file4.txt"]

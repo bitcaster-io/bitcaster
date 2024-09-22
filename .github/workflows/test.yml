@@ -64,6 +64,12 @@ jobs:
           if [[ $force_build == "true" || "${{needs.changed_files.outputs.run_tests}}" == "true" ]]; then 
               echo "build=true" >> $GITHUB_OUTPUT
           fi
+          
+          echo "::notice:: force_build   $force_build"
+          echo "::notice:: force_build   $force_build"
+          echo "::notice:: force_scan    $force_scan"
+          echo "::notice:: force_test    $force_test"
+          echo "::notice:: changed_files       ${{needs.changed_files.outputs.build}}"
 
   build:
     needs: [ changes ]
