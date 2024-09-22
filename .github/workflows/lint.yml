@@ -141,7 +141,7 @@ jobs:
         run: |
             mkdir .mypy_cache
             __pypackages__/3.12/bin/mypy \
-                  --python-executable /opt/hostedtoolcache/Python/3.12.2/x64/bin/python \
+                  --python-executable /opt/hostedtoolcache/Python/3.12.6/x64/bin/python \
                   --config-file .mypy.ini \
                   --install-types \
                   --non-interactive \
