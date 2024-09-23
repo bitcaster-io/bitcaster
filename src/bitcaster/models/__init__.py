@@ -7,10 +7,12 @@ from .channel import Channel  # noqa
 from .distribution import DistributionList  # noqa
 from .event import Event  # noqa
 from .group import Group  # noqa
+from .internal import LogMessage  # noqa
 from .key import ApiKey  # noqa
-from .log import LogMessage  # noqa
+from .log import LogEntry  # noqa
 from .media import MediaFile  # noqa
 from .message import Message  # noqa
+from .monitor import Monitor  # noqa
 from .notification import Notification  # noqa
 from .occurrence import Occurrence  # noqa
 from .organization import Organization  # noqa
@@ -26,9 +28,12 @@ __all__ = [
     "Channel",
     "DistributionList",
     "Event",
+    "Group",
+    "LogEntry",
     "LogMessage",
     "MediaFile",
     "Message",
+    "Monitor",
     "Notification",
     "Occurrence",
     "Organization",

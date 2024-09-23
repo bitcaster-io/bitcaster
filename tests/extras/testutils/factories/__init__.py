@@ -9,10 +9,12 @@ from .distribution import DistributionListFactory  # noqa
 from .django_auth import GroupFactory, PermissionFactory  # noqa
 from .django_celery_beat import PeriodicTaskFactory  # noqa
 from .event import EventFactory  # noqa
+from .internal import LogMessageFactory  # noqa
 from .key import ApiKeyFactory  # noqa
 from .log import LogEntryFactory  # noqa
 from .media import MediaFileFactory  # noqa
 from .message import MessageFactory  # noqa
+from .monitor import MonitorFactory  # noqa
 from .notification import NotificationFactory  # noqa
 from .occurrence import OccurrenceFactory  # noqa
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory  # noqa

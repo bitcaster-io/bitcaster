@@ -6,14 +6,13 @@ from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from django import forms
-from django.contrib.admin import ModelAdmin
-from django.contrib.admin.filters import SimpleListFilter
 from django.contrib.admin.helpers import AdminForm
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from formtools.wizard.storage.session import SessionStorage
 from formtools.wizard.views import CookieWizardView
@@ -24,6 +23,7 @@ from bitcaster.models import Assignment, Channel, Organization, Project, User
 from ..dispatchers.base import Payload, dispatcherManager
 from ..forms.channel import ChannelChangeForm
 from .base import BaseAdmin, ButtonColor
+from .filters import ChannelTypeFilter
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
@@ -248,7 +248,10 @@ class ChannelWizard(CookieWizardView):
         self.extra_context = kwargs.pop("extra_context")
         wizard_cancel = self.request.POST.get("wizard_cancel", -1)
         if wizard_cancel != -1:
-            return HttpResponseRedirect(wizard_cancel or reverse("admin:bitcaster_channel_changelist"))
+            if url_has_allowed_host_and_scheme(wizard_cancel, allowed_hosts=None):
+                return HttpResponseRedirect(wizard_cancel)
+            else:
+                return HttpResponseRedirect(Channel.get_admin_changelist())
         return super().post(*args, **kwargs)
 
     def get_current_selection(self) -> dict[str, Any]:  # noqa
@@ -342,26 +345,6 @@ class ChannelWizard(CookieWizardView):
 
 
 wizard = ChannelWizard.as_view()
-
-
-class ChannelTypeFilter(SimpleListFilter):
-    parameter_name = "type"
-    title = "Type"
-    prefixes = (
-        ("abstract", _("Abstract")),
-        ("project", _("Project")),
-    )
-
-    def lookups(self, request: HttpRequest, model_admin: ModelAdmin[Channel]) -> tuple[tuple[str, str], ...]:
-        return self.prefixes
-
-    def queryset(self, request: HttpRequest, queryset: QuerySet[Channel]) -> QuerySet[Channel]:
-        if self.value() == "abstract":
-            return queryset.filter(organization__isnull=False, project__isnull=True)
-        elif self.value() == "project":
-            return queryset.filter(organization__isnull=False, project__isnull=False)
-        else:
-            return queryset.all()
 
 
 class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], VersionAdmin[Channel]):

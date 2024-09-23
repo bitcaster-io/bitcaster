@@ -1,15 +1,16 @@
 import factory
 
-from bitcaster.models import LogMessage
+from bitcaster.models import LogEntry
 
 from .base import AutoRegisterModelFactory
-from .org import ApplicationFactory
+from .contenttypes import ContentTypeFactory
+from .user import UserFactory
 
 
-class LogEntryFactory(AutoRegisterModelFactory[LogMessage]):
-    level = "INFO"
-    application = factory.SubFactory(ApplicationFactory)
-    message = "Message for {{ event.name }} on channel {{channel.name}}"
+class LogEntryFactory(AutoRegisterModelFactory[LogEntry]):
+    action_flag = LogEntry.ADDITION
+    user = factory.SubFactory(UserFactory)
+    content_type = factory.SubFactory(ContentTypeFactory)
 
     class Meta:
-        model = LogMessage
+        model = LogEntry

@@ -1,11 +1,17 @@
 from typing import TYPE_CHECKING
 
+from bitcaster.models import Application
+
 if TYPE_CHECKING:
-    from bitcaster.models import Application, Event, Project, User
+    from bitcaster.models import Event, Project, User
 
 
 def test_str(application: "Application") -> None:
     assert str(application) == application.name
+
+
+def test_manager(application: "Application") -> None:
+    assert Application.objects.local()
 
 
 def test_set_owner(project: "Project", user: "User") -> None:

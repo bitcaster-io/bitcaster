@@ -109,7 +109,7 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
         from django.contrib.auth.models import Group
 
-        from bitcaster.dispatchers.log import BitcasterLogDispatcher
+        from bitcaster.dispatchers.log import BitcasterSysDispatcher
         from bitcaster.models import DistributionList, Organization, Project, User
 
         self.get_options(options)
@@ -151,6 +151,7 @@ class Command(BaseCommand):
             call_command("remove_stale_contenttypes", **extra)
 
             admin: User | None
+            User.objects.get_or_create(username="__SYSTEM__")
             if self.admin_email:
                 if User.objects.filter(email=self.admin_email).exists():
                     echo(
@@ -188,7 +189,7 @@ class Command(BaseCommand):
                 name="BitcasterLog",
                 organization=os4d,
                 project=bitcaster.project,
-                dispatcher=fqn(BitcasterLogDispatcher),
+                dispatcher=fqn(BitcasterSysDispatcher),
             )[0]
 
             for ev in bitcaster.events.all():  # noqa

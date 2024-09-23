@@ -3,12 +3,18 @@ from typing import TYPE_CHECKING, Any, Tuple, TypedDict
 from unittest.mock import Mock
 
 import pytest
+from django.core.exceptions import ObjectDoesNotExist
 from pytest import MonkeyPatch
 from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
 
 from bitcaster.constants import Bitcaster, SystemEvent
-from bitcaster.tasks import process_occurrence, purge_occurrences, schedule_occurrences
+from bitcaster.tasks import (
+    monitor_run,
+    process_occurrence,
+    purge_occurrences,
+    schedule_occurrences,
+)
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -282,3 +288,17 @@ def test_purge_occurrences(
     assert Occurrence.objects.filter(pk__in=[o.pk for o in non_purgeable_occurrences]).count() == len(
         non_purgeable_occurrences
     )
+
+
+def test_monitor_run(system_user: "User") -> None:
+    from testutils.factories.monitor import MonitorFactory
+
+    monitor = MonitorFactory()
+    assert monitor_run(monitor.pk) == "done"
+
+    with pytest.raises(ObjectDoesNotExist):
+        monitor_run("-1")
+
+    monitor.active = False
+    monitor.save()
+    assert monitor_run(monitor.pk) == "inactive"

@@ -5,7 +5,6 @@ FLAGS = {
     "LOCAL_LOGIN": [],
     "DISABLE_CACHE": [],
     "DEVELOP_DEBUG_TOOLBAR": [],
-    "BETA_PREVIEW_LOCKING": [],
     "FLAG_CONDITION_TEST": [],
     "OLD_STYLE_UI": [],
 }

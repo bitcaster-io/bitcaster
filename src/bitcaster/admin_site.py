@@ -37,18 +37,18 @@ class BitcasterAdminSite(AdminSite):
 
         structure: list[tuple[type[Model], str]] = []
         if org := m.Organization.objects.local().first():
-            org_url = reverse("admin:bitcaster_organization_change", args=(org.id,))
+            org_url = org.get_admin_change()
             structure.append((m.Organization, org_url))
         else:
-            org_url = reverse("admin:bitcaster_organization_add")
+            org_url = m.Organization.get_admin_add()
             structure.append((m.Organization, org_url))
             return {"structure": structure}
 
         if prj := m.Project.objects.local().first():
-            prj_url = reverse("admin:bitcaster_project_change", args=(prj.id,))
+            prj_url = prj.get_admin_change()
             structure.append((m.Project, prj_url))
         else:
-            prj_url = f"{reverse('admin:bitcaster_project_add')}?organization={org.pk}"
+            prj_url = f"{m.Project.get_admin_add()}?organization={org.pk}"
             structure.append((m.Project, prj_url))
             return {"structure": structure}
 
@@ -62,6 +62,7 @@ class BitcasterAdminSite(AdminSite):
                 m.Event,
                 m.Message,
                 m.MediaFile,
+                m.Monitor,
                 # m.Notification,
                 # m.Address,
                 # m.Assignment,

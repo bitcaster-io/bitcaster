@@ -258,9 +258,17 @@ def test_add_new_channel(app: DjangoTestApp, gmail_channel: "Channel") -> None:
 
 
 @pytest.mark.wizard
-def test_add_new_channel_abort(app: DjangoTestApp, gmail_channel: "Channel") -> None:
+@pytest.mark.parametrize(
+    "back_url,expected",
+    [
+        ("/admin/bitcaster/user/", "/admin/bitcaster/user/"),
+        ("http://url/", reverse("admin:bitcaster_channel_changelist")),
+        ("", reverse("admin:bitcaster_channel_changelist")),
+    ],
+)
+def test_add_new_channel_abort(app: DjangoTestApp, gmail_channel: "Channel", back_url: str, expected: str) -> None:
     url = reverse("admin:bitcaster_channel_add")
-    res = app.get(url)
+    res = app.get(f"{url}?_from={back_url}")
     res.forms["channel-add"]["mode-operation"] = ChannelType.MODE_NEW
     res = res.forms["channel-add"].submit()
     res.forms["channel-add"]["org-organization"] = gmail_channel.organization.pk
@@ -270,7 +278,7 @@ def test_add_new_channel_abort(app: DjangoTestApp, gmail_channel: "Channel") -> 
     res.forms["channel-add"]["data-name"] = "Channel-1"
     res = res.forms["channel-add"].submit("wizard_cancel")
     assert res.status_code == 302
-    assert res.location == reverse("admin:bitcaster_channel_changelist")
+    assert res.location == expected
     assert not Channel.objects.filter(name="Channel-1").exists()
 
 

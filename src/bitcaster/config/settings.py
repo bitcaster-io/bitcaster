@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "taggit",
     #
     "celery",
-    "treebeard",
+    # "treebeard",
     "rest_framework",
     "drf_spectacular",
     "drf_spectacular_sidecar",
@@ -224,6 +224,7 @@ STORAGES = {
 }
 
 
+from .fragments.agents import *  # noqa
 from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.csp import *  # noqa

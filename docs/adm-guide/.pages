@@ -9,6 +9,7 @@ nav:
   - Create Notification Rule: notification.md
   - Create Message: message.md
   - Trigger Event: trigger.md
+  - Configure Monitors: monitor.md
   - Login:
     - login.md
     - sso.md

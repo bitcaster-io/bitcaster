@@ -34,6 +34,12 @@ Password for initial user created at first deploy. It is ignored if `ADMIN_EMAIL
     This variable has effect only the first tine Bitcaster starts. Any attempt to change it later will produce a startup error
 
 
+### AGENT_FILESYSTEM_ROOT
+Default: ``
+
+Base path allowed by the [local filestem agent](/bitcaster/adm-guide/agents/)
+
+
 
 ### ALLOWED_HOSTS
 Default: "127.0.0.1,localhost"  

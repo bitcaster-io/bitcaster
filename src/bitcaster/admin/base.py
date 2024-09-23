@@ -1,6 +1,6 @@
 import enum
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Generic, Optional
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
@@ -28,7 +28,9 @@ class BaseAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMix
             raise Http404
         return ret
 
-    def response_add(self, request: HttpRequest, obj: "AnyModel", post_url_continue: str | None = None) -> HttpResponse:
+    def response_add(
+        self, request: HttpRequest, obj: "Generic[AnyModel]", post_url_continue: str | None = None
+    ) -> HttpResponse:
         ret = super().response_add(request, obj, post_url_continue)
         # if ret.status_code in [200, 400]:
         #     return ret
@@ -68,6 +70,6 @@ class BaseAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMix
 
         # extra_context["show_save"] = True
         extra_context["show_save_and_add_another"] = False
-        # extra_context["show_save_and_continue"] = False
+        extra_context["show_save_and_continue"] = self.save_as_continue
 
         return super().changeform_view(request, object_id, form_url, extra_context)

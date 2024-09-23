@@ -49,9 +49,9 @@ jobs:
         id: info
         shell: bash
         run: |
-          force_build="${{ contains(github.event.head_commit.message, 'ci:build') || contains(github.event.head_commit.message, 'ci:release') || contains(github.ref, 'refs/heads/release') }}"
-          force_scan="${{ contains(github.event.head_commit.message, 'ci:scan') }}"
-          force_test="${{ contains(github.event.head_commit.message, 'ci:test') }}"
+          force_build="${{ contains(github.event.head_commit.message, 'ci:build') || contains(github.event.head_commit.message, 'ci:release') || contains(github.ref, 'refs/heads/release') || contains(github.event.head_commit.message, 'ci:all') }} "
+          force_scan="${{ contains(github.event.head_commit.message, 'ci:scan') || contains(github.event.head_commit.message, 'ci:all') }}"
+          force_test="${{ contains(github.event.head_commit.message, 'ci:test') || contains(github.event.head_commit.message, 'ci:all') }}"
           
           if [[ $force_build == "true" ]]; then
             echo "::notice:: Forced build docker due to commit message"
@@ -60,10 +60,28 @@ jobs:
           elif [[ $force_scan == "true" ]]; then
             echo "::notice:: Forced trivy scan due to commit message"
           fi
-          echo "build=${{needs.changed_files.outputs.build}}" >> $GITHUB_OUTPUT
+          echo "build=${{needs.changed_files.outputs.build=='true'}}" >> $GITHUB_OUTPUT
           if [[ $force_build == "true" || "${{needs.changed_files.outputs.run_tests}}" == "true" ]]; then 
               echo "build=true" >> $GITHUB_OUTPUT
           fi
+          LOG=$(cat << EOF
+
+            force_build='$force_build'
+            force_scan='$force_scan'
+            force_test='$force_test'
+            build='${{needs.changed_files.outputs.build}}'
+          EOF
+          )
+          LOG="${LOG//'%'/'%25'}"
+          LOG="${LOG//$'\n'/'%0A'}"
+          LOG="${LOG//$'\r'/'%0D'}"
+
+          echo "::notice title=Info:: $LOG"
+          
+#          echo "::notice:: force_build   $force_build"
+#          echo "::notice:: force_scan    $force_scan"
+#          echo "::notice:: force_test    $force_test"
+#          echo "::notice:: build  ${{needs.changed_files.outputs.build}}"
 
   build:
     needs: [ changes ]
@@ -85,11 +103,11 @@ jobs:
         id: checksum
         uses: ./.github/actions/checksum
       - name: Build Image
-#        if: (needs.changes.outputs.build == 'true'
-#            || contains(github.event.head_commit.message, 'ci:test')
-#            || contains(github.event.head_commit.message, 'ci:build')
-#            || contains(github.event.head_commit.message, 'ci:all')
-#            )
+        if: (needs.changes.outputs.build == 'true'
+            || contains(github.event.head_commit.message, 'ci:test')
+            || contains(github.event.head_commit.message, 'ci:build')
+            || contains(github.event.head_commit.message, 'ci:all')
+            )
         id: build
         uses: ./.github/actions/docker_build
         with:
@@ -107,6 +125,7 @@ jobs:
     name: Run Test Suite
     needs: [ changes,build ]
     if: (needs.changes.outputs.run_tests == 'true' 
+        || needs.changes.outputs.build == 'true'
         || contains(github.event.head_commit.message, 'ci:test') 
         || contains(github.event.head_commit.message, 'ci:all') 
         || github.event_name == 'create')
@@ -145,7 +164,7 @@ jobs:
             -v $PWD:/code/app \
             -w /code/app \
             -t ${{ vars.DOCKER_IMAGE }}:${{needs.build.outputs.version}} \
-            pytest tests -v --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
+            pytest tests -vv --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
           ls -al
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

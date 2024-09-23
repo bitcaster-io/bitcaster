@@ -71,7 +71,7 @@ class Occurrence(BitcasterBaseModel):
     data: "OccurrenceData" = models.JSONField(  # type: ignore[assignment]
         default=dict, help_text=_("Information about the processing (recipients, channels)")
     )
-    status = models.CharField(choices=Status, default=Status.NEW.value)
+    status = models.CharField(choices=Status, default=Status.NEW.value, max_length=20)
     attempts = models.IntegerField(default=5)
     parent = models.ForeignKey("self", editable=False, blank=True, null=True, on_delete=models.CASCADE)
 

@@ -57,7 +57,7 @@ class ApiKeyManager(ScopedManager["ApiKey"]):
 class ApiKey(Scoped3Mixin, BitcasterBaseModel):
     name = models.CharField(verbose_name=_("Name"), max_length=255, db_collation="case_insensitive")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="keys")
-    key = models.CharField(verbose_name=_("Token"), unique=True, default=make_token)
+    key = models.CharField(verbose_name=_("Token"), max_length=255, unique=True, default=make_token)
     grants = ChoiceArrayField(models.CharField(max_length=255, choices=Grant.choices), null=True, blank=True)
     environments = ArrayField(
         models.CharField(max_length=20, blank=True, null=True),

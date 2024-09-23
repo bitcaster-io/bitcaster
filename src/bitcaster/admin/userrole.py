@@ -17,7 +17,11 @@ class UserRoleAdmin(BaseAdmin, admin.ModelAdmin[UserRole]):
         "organization",
         "group",
     )
-    list_filter = (("user", AutoCompleteFilter), ("organization", AutoCompleteFilter), ("group", AutoCompleteFilter))
+    list_filter = (
+        ("user", AutoCompleteFilter),
+        # ("organization", AutoCompleteFilter),
+        ("group", AutoCompleteFilter),
+    )
     search_fields = ("user__username",)
     ordering = ("user__username",)
     autocomplete_fields = ("user", "organization", "group")

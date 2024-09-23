@@ -6,6 +6,7 @@ from django.db.models import QuerySet
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
+from ..constants import Bitcaster
 from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMixin
 from .project import Project
 from .user import User
@@ -21,8 +22,8 @@ class ApplicationManager(BitcasterBaselManager["Application"]):
     def get_by_natural_key(self, slug: str, prj: "str", org: str) -> "Application":
         return self.get(slug=slug, project__organization__slug=org, project__slug=prj)
 
-    # def local(self, **kwargs: Any) -> "QuerySet[Application]":
-    #     return self.exclude(project__organization__name=Bitcaster.ORGANIZATION).filter(**kwargs)
+    def local(self, **kwargs: Any) -> "QuerySet[Application]":
+        return self.exclude(project__organization__name=Bitcaster.ORGANIZATION).filter(**kwargs)
 
 
 class Application(SlugMixin, LockMixin, BitcasterBaseModel):

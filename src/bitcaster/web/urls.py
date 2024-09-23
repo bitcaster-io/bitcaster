@@ -2,13 +2,11 @@ import re
 
 from django.conf import settings
 from django.urls import path, re_path
-from flags.urls import flagged_path
 
-from . import views, wizards
+from . import views
 
 urlpatterns = [
     path("", views.index, name="home"),
-    flagged_path("BETA_PREVIEW_LOCKING", "lock/", wizards.LockingWizard.as_view(), name="locking", state=True),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     path("admin/logout/", views.LogoutView.as_view(), name="logout"),
