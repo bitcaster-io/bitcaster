@@ -121,9 +121,6 @@ theme:
 
 
 plugins:
-#  - gen-files:
-#      scripts:
-#        - docs/_scripts/build_glossary.py
   - autorefs
   - awesome-pages
   - ezglossary:
