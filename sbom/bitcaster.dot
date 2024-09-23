@@ -1,0 +1,1470 @@
+strict digraph sbom {
+	size="8,10.5"; ratio=fill;
+	"amqp" [shape=box, style=filled, fontcolor=white, fillcolor=royalblue label="amqp
+BSD-3-Clause"];
+	"amqp" -> "vine";
+	"mailjet-rest" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mailjet-rest
+MIT"];
+	"requests" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="requests
+Apache-2.0"];
+	"mailjet-rest" -> "requests";
+	"premailer" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="premailer
+Python-2.0"];
+	"cachetools" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cachetools
+MIT"];
+	"premailer" -> "cachetools";
+	"cssselect" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cssselect
+BSD-3-Clause"];
+	"premailer" -> "cssselect";
+	"cssutils" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cssutils
+NOASSERTION"];
+	"premailer" -> "cssutils";
+	"lxml" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="lxml
+BSD-3-Clause"];
+	"premailer" -> "lxml";
+	"premailer" -> "requests";
+	"more-itertools" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="more-itertools
+NOASSERTION"];
+	"cssutils" -> "more-itertools";
+	"py-vapid" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="py-vapid
+NOASSERTION"];
+	"cryptography" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cryptography
+Apache-2.0 OR BSD-3-Clause"];
+	"py-vapid" -> "cryptography";
+	"python-gitlab" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="python-gitlab
+LGPL-3.0-or-later"];
+	"requests-toolbelt" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="requests-toolbelt
+Apache-2.0"];
+	"python-gitlab" -> "requests-toolbelt";
+	"python-gitlab" -> "requests";
+	"requests-toolbelt" -> "requests";
+	"apache-libcloud" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="apache-libcloud
+Apache License (2.0)"];
+	"apache-libcloud" -> "requests";
+	"pywebpush" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pywebpush
+NOASSERTION"];
+	"pywebpush" -> "py-vapid";
+	"http-ece" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="http-ece
+MIT"];
+	"pywebpush" -> "http-ece";
+	"pywebpush" -> "requests";
+	"six" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="six
+MIT"];
+	"pywebpush" -> "six";
+	"aiohttp" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="aiohttp
+Apache-2.0"];
+	"pywebpush" -> "aiohttp";
+	"pywebpush" -> "cryptography";
+	"http-ece" -> "cryptography";
+	"qrcode" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="qrcode
+BSD-3-Clause"];
+	"pypng" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pypng
+MIT"];
+	"qrcode" -> "pypng";
+	"typing-extensions" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="typing-extensions
+NOASSERTION"];
+	"qrcode" -> "typing-extensions";
+	"responses" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="responses
+Apache-2.0"];
+	"responses" -> "requests";
+	"urllib3" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="urllib3
+NOASSERTION"];
+	"responses" -> "urllib3";
+	"pyyaml" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyyaml
+MIT"];
+	"responses" -> "pyyaml";
+	"sentry-sdk" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="sentry-sdk
+MIT"];
+	"certifi" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="certifi
+MPL-2.0"];
+	"sentry-sdk" -> "certifi";
+	"sentry-sdk" -> "urllib3";
+	"slack-notifications" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="slack-notifications
+NOASSERTION"];
+	"slack-notifications" -> "requests";
+	"requests" -> "certifi";
+	"charset-normalizer" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="charset-normalizer
+MIT"];
+	"requests" -> "charset-normalizer";
+	"requests" -> "urllib3";
+	"idna" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="idna
+NOASSERTION"];
+	"requests" -> "idna";
+	"social-auth-app-django" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="social-auth-app-django
+BSD-3-Clause"];
+	"social-auth-core" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="social-auth-core
+BSD-3-Clause"];
+	"social-auth-app-django" -> "social-auth-core";
+	"django" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django
+BSD-3-Clause"];
+	"social-auth-app-django" -> "django";
+	"social-auth-core" -> "requests";
+	"defusedxml" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="defusedxml
+PSF-2.0"];
+	"social-auth-core" -> "defusedxml";
+	"oauthlib" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="oauthlib
+BSD-3-Clause"];
+	"social-auth-core" -> "oauthlib";
+	"pyjwt" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyjwt
+MIT"];
+	"social-auth-core" -> "pyjwt";
+	"python3-openid" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="python3-openid
+NOASSERTION"];
+	"social-auth-core" -> "python3-openid";
+	"requests-oauthlib" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="requests-oauthlib
+ISC"];
+	"social-auth-core" -> "requests-oauthlib";
+	"social-auth-core" -> "cryptography";
+	"python3-openid" -> "defusedxml";
+	"requests-oauthlib" -> "requests";
+	"requests-oauthlib" -> "oauthlib";
+	"transifex-python" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="transifex-python
+NOASSERTION"];
+	"transifex-python" -> "requests";
+	"pyseeyou" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyseeyou
+NOASSERTION"];
+	"transifex-python" -> "pyseeyou";
+	"asttokens" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="asttokens
+Apache-2.0"];
+	"transifex-python" -> "asttokens";
+	"click" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="click
+BSD-3-Clause"];
+	"transifex-python" -> "click";
+	"future" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="future
+MIT"];
+	"pyseeyou" -> "future";
+	"parsimonious" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="parsimonious
+MIT"];
+	"pyseeyou" -> "parsimonious";
+	"toolz" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="toolz
+BSD-3-Clause"];
+	"pyseeyou" -> "toolz";
+	"regex" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="regex
+Apache-2.0"];
+	"parsimonious" -> "regex";
+	"twilio" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="twilio
+MIT"];
+	"twilio" -> "requests";
+	"twilio" -> "pyjwt";
+	"twilio" -> "aiohttp";
+	"aiohttp-retry" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="aiohttp-retry
+MIT"];
+	"twilio" -> "aiohttp-retry";
+	"user-agents" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="user-agents
+MIT"];
+	"ua-parser" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="ua-parser
+Apache-2.0"];
+	"user-agents" -> "ua-parser";
+	"black" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="black
+MIT"];
+	"mypy-extensions" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mypy-extensions
+MIT"];
+	"black" -> "mypy-extensions";
+	"packaging" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="packaging
+NOASSERTION"];
+	"black" -> "packaging";
+	"pathspec" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pathspec
+NOASSERTION"];
+	"black" -> "pathspec";
+	"platformdirs" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="platformdirs
+NOASSERTION"];
+	"black" -> "platformdirs";
+	"black" -> "click";
+	"boto3" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="boto3
+Apache-2.0"];
+	"jmespath" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="jmespath
+MIT"];
+	"boto3" -> "jmespath";
+	"botocore" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="botocore
+Apache-2.0"];
+	"boto3" -> "botocore";
+	"s3transfer" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="s3transfer
+Apache-2.0"];
+	"boto3" -> "s3transfer";
+	"botocore" -> "jmespath";
+	"botocore" -> "urllib3";
+	"python-dateutil" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="python-dateutil
+NOASSERTION"];
+	"botocore" -> "python-dateutil";
+	"s3transfer" -> "botocore";
+	"boto3-stubs" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="boto3-stubs
+MIT"];
+	"botocore-stubs" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="botocore-stubs
+MIT"];
+	"boto3-stubs" -> "botocore-stubs";
+	"types-s3transfer" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-s3transfer
+MIT"];
+	"boto3-stubs" -> "types-s3transfer";
+	"types-awscrt" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-awscrt
+MIT"];
+	"botocore-stubs" -> "types-awscrt";
+	"cachecontrol" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cachecontrol
+NOASSERTION"];
+	"cachecontrol" -> "requests";
+	"msgpack" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="msgpack
+Apache-2.0"];
+	"cachecontrol" -> "msgpack";
+	"cairocffi" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cairocffi
+NOASSERTION"];
+	"cffi" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cffi
+MIT"];
+	"cairocffi" -> "cffi";
+	"cairosvg" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cairosvg
+LGPL-3.0-or-later"];
+	"pillow" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pillow
+HPND"];
+	"cairosvg" -> "pillow";
+	"cairosvg" -> "defusedxml";
+	"cairosvg" -> "cairocffi";
+	"cssselect2" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cssselect2
+NOASSERTION"];
+	"cairosvg" -> "cssselect2";
+	"tinycss2" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="tinycss2
+NOASSERTION"];
+	"cairosvg" -> "tinycss2";
+	"cssselect2" -> "tinycss2";
+	"webencodings" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="webencodings
+BSD-3-Clause"];
+	"cssselect2" -> "webencodings";
+	"tinycss2" -> "webencodings";
+	"cyclonedx-python-lib" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cyclonedx-python-lib
+Apache-2.0"];
+	"license-expression" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="license-expression
+Apache-2.0"];
+	"cyclonedx-python-lib" -> "license-expression";
+	"packageurl-python" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="packageurl-python
+MIT"];
+	"cyclonedx-python-lib" -> "packageurl-python";
+	"py-serializable" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="py-serializable
+Apache-2.0"];
+	"cyclonedx-python-lib" -> "py-serializable";
+	"sortedcontainers" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="sortedcontainers
+Apache-2.0"];
+	"cyclonedx-python-lib" -> "sortedcontainers";
+	"boolean.py" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="boolean.py
+BSD-2-Clause"];
+	"license-expression" -> "boolean.py";
+	"py-serializable" -> "defusedxml";
+	"asttokens" -> "six";
+	"django-debug-permissions" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-debug-permissions
+BSD-3-Clause"];
+	"django-debug-permissions" -> "django";
+	"django-extensions" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-extensions
+MIT"];
+	"django-extensions" -> "django";
+	"django-webtest" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-webtest
+MIT"];
+	"webtest" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="webtest
+MIT"];
+	"django-webtest" -> "webtest";
+	"waitress" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="waitress
+NOASSERTION"];
+	"webtest" -> "waitress";
+	"webob" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="webob
+MIT"];
+	"webtest" -> "webob";
+	"beautifulsoup4" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="beautifulsoup4
+MIT"];
+	"webtest" -> "beautifulsoup4";
+	"docker" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="docker
+NOASSERTION"];
+	"docker" -> "requests";
+	"docker" -> "urllib3";
+	"dropbox" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="dropbox
+MIT"];
+	"dropbox" -> "requests";
+	"stone" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="stone
+MIT"];
+	"dropbox" -> "stone";
+	"dropbox" -> "six";
+	"ply" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="ply
+BSD-3-Clause"];
+	"stone" -> "ply";
+	"stone" -> "six";
+	"faker" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="faker
+MIT"];
+	"faker" -> "python-dateutil";
+	"fancycompleter" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="fancycompleter
+BSD-3-Clause"];
+	"pyrepl" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyrepl
+NOASSERTION"];
+	"fancycompleter" -> "pyrepl";
+	"flake8" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="flake8
+MIT"];
+	"mccabe" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mccabe
+NOASSERTION"];
+	"flake8" -> "mccabe";
+	"pycodestyle" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pycodestyle
+MIT"];
+	"flake8" -> "pycodestyle";
+	"pyflakes" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyflakes
+MIT"];
+	"flake8" -> "pyflakes";
+	"aiohappyeyeballs" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="aiohappyeyeballs
+Python-2.0.1"];
+	"aiohttp" -> "aiohappyeyeballs";
+	"aiosignal" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="aiosignal
+Apache-2.0"];
+	"aiohttp" -> "aiosignal";
+	"frozenlist" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="frozenlist
+Apache-2.0"];
+	"aiohttp" -> "frozenlist";
+	"attrs" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="attrs
+NOASSERTION"];
+	"aiohttp" -> "attrs";
+	"multidict" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="multidict
+Apache-2.0"];
+	"aiohttp" -> "multidict";
+	"yarl" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="yarl
+Apache-2.0"];
+	"aiohttp" -> "yarl";
+	"azure-core" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="azure-core
+MIT"];
+	"azure-core" -> "requests";
+	"azure-core" -> "six";
+	"azure-core" -> "typing-extensions";
+	"flake8-html" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="flake8-html
+NOASSERTION"];
+	"pygments" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pygments
+BSD-2-Clause"];
+	"flake8-html" -> "pygments";
+	"flake8-html" -> "flake8";
+	"jinja2" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="jinja2
+NOASSERTION"];
+	"flake8-html" -> "jinja2";
+	"markupsafe" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="markupsafe
+BSD-3-Clause"];
+	"jinja2" -> "markupsafe";
+	"freezegun" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="freezegun
+Apache-2.0"];
+	"freezegun" -> "python-dateutil";
+	"ghp-import" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="ghp-import
+Apache-2.0"];
+	"ghp-import" -> "python-dateutil";
+	"google-api-core" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="google-api-core
+Apache-2.0"];
+	"google-api-core" -> "requests";
+	"google-auth" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="google-auth
+Apache-2.0"];
+	"google-api-core" -> "google-auth";
+	"googleapis-common-protos" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="googleapis-common-protos
+Apache-2.0"];
+	"google-api-core" -> "googleapis-common-protos";
+	"protobuf" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="protobuf
+NOASSERTION"];
+	"google-api-core" -> "protobuf";
+	"proto-plus" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="proto-plus
+Apache-2.0"];
+	"google-api-core" -> "proto-plus";
+	"google-auth" -> "cachetools";
+	"pyasn1-modules" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyasn1-modules
+BSD-3-Clause"];
+	"google-auth" -> "pyasn1-modules";
+	"rsa" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="rsa
+Apache-2.0"];
+	"google-auth" -> "rsa";
+	"pyasn1" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyasn1
+BSD-2-Clause"];
+	"pyasn1-modules" -> "pyasn1";
+	"rsa" -> "pyasn1";
+	"googleapis-common-protos" -> "protobuf";
+	"proto-plus" -> "protobuf";
+	"google-cloud-core" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="google-cloud-core
+Apache-2.0"];
+	"google-cloud-core" -> "google-api-core";
+	"google-cloud-core" -> "google-auth";
+	"google-cloud-storage" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="google-cloud-storage
+Apache-2.0"];
+	"google-cloud-storage" -> "requests";
+	"google-cloud-storage" -> "google-api-core";
+	"google-cloud-storage" -> "google-auth";
+	"google-cloud-storage" -> "google-cloud-core";
+	"google-crc32c" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="google-crc32c
+Apache-2.0"];
+	"google-cloud-storage" -> "google-crc32c";
+	"google-resumable-media" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="google-resumable-media
+Apache-2.0"];
+	"google-cloud-storage" -> "google-resumable-media";
+	"google-resumable-media" -> "google-crc32c";
+	"griffe" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="griffe
+ISC"];
+	"colorama" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="colorama
+NOASSERTION"];
+	"griffe" -> "colorama";
+	"html5lib" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="html5lib
+MIT"];
+	"html5lib" -> "six";
+	"html5lib" -> "webencodings";
+	"azure-storage-blob" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="azure-storage-blob
+MIT"];
+	"azure-storage-blob" -> "azure-core";
+	"azure-storage-blob" -> "typing-extensions";
+	"azure-storage-blob" -> "cryptography";
+	"isodate" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="isodate
+BSD-3-Clause"];
+	"azure-storage-blob" -> "isodate";
+	"lib4sbom" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="lib4sbom
+Apache-2.0"];
+	"lib4sbom" -> "defusedxml";
+	"semantic-version" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="semantic-version
+BSD-3-Clause"];
+	"lib4sbom" -> "semantic-version";
+	"lib4sbom" -> "pyyaml";
+	"markdown-it-py" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="markdown-it-py
+NOASSERTION"];
+	"mdurl" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mdurl
+NOASSERTION"];
+	"markdown-it-py" -> "mdurl";
+	"mdx-gh-links" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mdx-gh-links
+NOASSERTION"];
+	"markdown" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="markdown
+NOASSERTION"];
+	"mdx-gh-links" -> "markdown";
+	"cryptography" -> "cffi";
+	"mkdocs" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs
+NOASSERTION"];
+	"mkdocs" -> "packaging";
+	"mkdocs" -> "pathspec";
+	"mkdocs" -> "jinja2";
+	"mkdocs" -> "markupsafe";
+	"mkdocs" -> "ghp-import";
+	"mergedeep" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mergedeep
+NOASSERTION"];
+	"mkdocs" -> "mergedeep";
+	"mkdocs-get-deps" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-get-deps
+NOASSERTION"];
+	"mkdocs" -> "mkdocs-get-deps";
+	"pyyaml-env-tag" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyyaml-env-tag
+NOASSERTION"];
+	"mkdocs" -> "pyyaml-env-tag";
+	"watchdog" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="watchdog
+Apache-2.0"];
+	"mkdocs" -> "watchdog";
+	"mkdocs" -> "click";
+	"mkdocs" -> "markdown";
+	"mkdocs" -> "pyyaml";
+	"mkdocs-get-deps" -> "platformdirs";
+	"mkdocs-get-deps" -> "mergedeep";
+	"mkdocs-get-deps" -> "pyyaml";
+	"pyyaml-env-tag" -> "pyyaml";
+	"mkdocs-autolinks-plugin" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-autolinks-plugin
+MIT"];
+	"mkdocs-autolinks-plugin" -> "mkdocs";
+	"mkdocs-autorefs" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-autorefs
+ISC"];
+	"mkdocs-autorefs" -> "markupsafe";
+	"mkdocs-autorefs" -> "mkdocs";
+	"mkdocs-autorefs" -> "markdown";
+	"mkdocs-awesome-pages-plugin" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-awesome-pages-plugin
+MIT"];
+	"mkdocs-awesome-pages-plugin" -> "mkdocs";
+	"natsort" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="natsort
+MIT"];
+	"mkdocs-awesome-pages-plugin" -> "natsort";
+	"wcmatch" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="wcmatch
+NOASSERTION"];
+	"mkdocs-awesome-pages-plugin" -> "wcmatch";
+	"bracex" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="bracex
+NOASSERTION"];
+	"wcmatch" -> "bracex";
+	"pycparser" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pycparser
+BSD-3-Clause"];
+	"cffi" -> "pycparser";
+	"mkdocs-click" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-click
+NOASSERTION"];
+	"mkdocs-click" -> "click";
+	"mkdocs-click" -> "markdown";
+	"mkdocs-embed-external-markdown" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-embed-external-markdown
+MIT"];
+	"mkdocs-embed-external-markdown" -> "requests";
+	"mkdocs-embed-external-markdown" -> "jinja2";
+	"mkdocs-ezglossary-plugin" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-ezglossary-plugin
+NOASSERTION"];
+	"mkdocs-ezglossary-plugin" -> "jinja2";
+	"mkdocs-ezglossary-plugin" -> "mkdocs";
+	"mkdocs-ezlinks-plugin" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-ezlinks-plugin
+MIT"];
+	"mkdocs-ezlinks-plugin" -> "mkdocs";
+	"pygtrie" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pygtrie
+Apache-2.0"];
+	"mkdocs-ezlinks-plugin" -> "pygtrie";
+	"mkdocs-gen-files" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-gen-files
+NOASSERTION"];
+	"mkdocs-gen-files" -> "mkdocs";
+	"mkdocs-include-markdown-plugin" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-include-markdown-plugin
+NOASSERTION"];
+	"mkdocs-include-markdown-plugin" -> "mkdocs";
+	"mkdocs-include-markdown-plugin" -> "wcmatch";
+	"mkdocs-link-marker" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-link-marker
+MIT"];
+	"mkdocs-link-marker" -> "jinja2";
+	"mkdocs-link-marker" -> "mkdocs";
+	"mkdocs-macros-plugin" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-macros-plugin
+MIT"];
+	"mkdocs-macros-plugin" -> "packaging";
+	"mkdocs-macros-plugin" -> "jinja2";
+	"mkdocs-macros-plugin" -> "mkdocs";
+	"termcolor" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="termcolor
+MIT"];
+	"mkdocs-macros-plugin" -> "termcolor";
+	"mkdocs-macros-plugin" -> "python-dateutil";
+	"mkdocs-macros-plugin" -> "pyyaml";
+	"mkdocs-material" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-material
+NOASSERTION"];
+	"mkdocs-material" -> "pygments";
+	"mkdocs-material" -> "requests";
+	"mkdocs-material" -> "regex";
+	"mkdocs-material" -> "colorama";
+	"mkdocs-material" -> "jinja2";
+	"mkdocs-material" -> "mkdocs";
+	"mkdocs-material-extensions" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-material-extensions
+NOASSERTION"];
+	"mkdocs-material" -> "mkdocs-material-extensions";
+	"paginate" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="paginate
+MIT"];
+	"mkdocs-material" -> "paginate";
+	"pymdown-extensions" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pymdown-extensions
+NOASSERTION"];
+	"mkdocs-material" -> "pymdown-extensions";
+	"babel" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="babel
+BSD-3-Clause"];
+	"mkdocs-material" -> "babel";
+	"mkdocs-material" -> "markdown";
+	"pymdown-extensions" -> "markdown";
+	"pymdown-extensions" -> "pyyaml";
+	"mkdocs-minify-plugin" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-minify-plugin
+MIT"];
+	"csscompressor" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="csscompressor
+BSD-3-Clause"];
+	"mkdocs-minify-plugin" -> "csscompressor";
+	"htmlmin2" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="htmlmin2
+BSD-3-Clause"];
+	"mkdocs-minify-plugin" -> "htmlmin2";
+	"jsmin" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="jsmin
+MIT"];
+	"mkdocs-minify-plugin" -> "jsmin";
+	"mkdocs-minify-plugin" -> "mkdocs";
+	"mkdocs-redirects" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-redirects
+MIT"];
+	"mkdocs-redirects" -> "mkdocs";
+	"mkdocs-simple-hooks" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocs-simple-hooks
+MIT"];
+	"mkdocs-simple-hooks" -> "mkdocs";
+	"mkdocstrings" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocstrings
+ISC"];
+	"mkdocstrings" -> "platformdirs";
+	"mkdocstrings" -> "jinja2";
+	"mkdocstrings" -> "markupsafe";
+	"mkdocstrings" -> "mkdocs";
+	"mkdocstrings" -> "mkdocs-autorefs";
+	"mkdocstrings" -> "pymdown-extensions";
+	"mkdocstrings" -> "click";
+	"mkdocstrings" -> "markdown";
+	"mkdocstrings-python" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mkdocstrings-python
+ISC"];
+	"mkdocstrings-python" -> "griffe";
+	"mkdocstrings-python" -> "mkdocs-autorefs";
+	"mkdocstrings-python" -> "mkdocstrings";
+	"mypy" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mypy
+MIT"];
+	"mypy" -> "mypy-extensions";
+	"mypy" -> "typing-extensions";
+	"isodate" -> "six";
+	"mypy-boto3" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mypy-boto3
+MIT"];
+	"mypy-boto3" -> "boto3";
+	"outcome" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="outcome
+MIT OR Apache-2.0"];
+	"outcome" -> "attrs";
+	"pdbpp" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pdbpp
+BSD-3-Clause"];
+	"pdbpp" -> "pygments";
+	"pdbpp" -> "fancycompleter";
+	"wmctrl" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="wmctrl
+MIT"];
+	"pdbpp" -> "wmctrl";
+	"wmctrl" -> "attrs";
+	"pip-api" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pip-api
+NOASSERTION"];
+	"pip" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pip
+MIT"];
+	"pip-api" -> "pip";
+	"pip-requirements-parser" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pip-requirements-parser
+MIT"];
+	"pip-requirements-parser" -> "packaging";
+	"pyparsing" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyparsing
+NOASSERTION"];
+	"pip-requirements-parser" -> "pyparsing";
+	"rich" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="rich
+MIT"];
+	"rich" -> "pygments";
+	"rich" -> "markdown-it-py";
+	"pre-commit" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pre-commit
+MIT"];
+	"cfgv" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cfgv
+MIT"];
+	"pre-commit" -> "cfgv";
+	"identify" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="identify
+MIT"];
+	"pre-commit" -> "identify";
+	"nodeenv" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="nodeenv
+BSD-3-Clause"];
+	"pre-commit" -> "nodeenv";
+	"virtualenv" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="virtualenv
+NOASSERTION"];
+	"pre-commit" -> "virtualenv";
+	"pre-commit" -> "pyyaml";
+	"virtualenv" -> "platformdirs";
+	"distlib" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="distlib
+PSF-2.0"];
+	"virtualenv" -> "distlib";
+	"filelock" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="filelock
+NOASSERTION"];
+	"virtualenv" -> "filelock";
+	"pyasynchat" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyasynchat
+NOASSERTION"];
+	"pyasyncore" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyasyncore
+NOASSERTION"];
+	"pyasynchat" -> "pyasyncore";
+	"pyftpdlib" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyftpdlib
+MIT"];
+	"pyftpdlib" -> "pyasynchat";
+	"pyftpdlib" -> "pyasyncore";
+	"soupsieve" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="soupsieve
+NOASSERTION"];
+	"beautifulsoup4" -> "soupsieve";
+	"pyopenssl" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyopenssl
+Apache-2.0"];
+	"pyopenssl" -> "cryptography";
+	"pyproject-api" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyproject-api
+NOASSERTION"];
+	"pyproject-api" -> "packaging";
+	"pyquery" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyquery
+BSD-3-Clause"];
+	"pyquery" -> "cssselect";
+	"pyquery" -> "lxml";
+	"pytest" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest
+MIT"];
+	"pytest" -> "packaging";
+	"iniconfig" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="iniconfig
+NOASSERTION"];
+	"pytest" -> "iniconfig";
+	"pluggy" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pluggy
+MIT"];
+	"pytest" -> "pluggy";
+	"pytest-base-url" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-base-url
+NOASSERTION"];
+	"pytest-base-url" -> "requests";
+	"pytest-base-url" -> "pytest";
+	"pytest-celery" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-celery
+BSD-3-Clause"];
+	"setuptools" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="setuptools
+NOASSERTION"];
+	"pytest-celery" -> "setuptools";
+	"debugpy" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="debugpy
+MIT"];
+	"pytest-celery" -> "debugpy";
+	"pytest-celery" -> "docker";
+	"pytest-docker-tools" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-docker-tools
+Apache-2.0"];
+	"pytest-celery" -> "pytest-docker-tools";
+	"tenacity" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="tenacity
+Apache-2.0"];
+	"pytest-celery" -> "tenacity";
+	"celery" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="celery
+BSD-3-Clause"];
+	"pytest-celery" -> "celery";
+	"psutil" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="psutil
+BSD-3-Clause"];
+	"pytest-celery" -> "psutil";
+	"pytest-docker-tools" -> "docker";
+	"pytest-docker-tools" -> "pytest";
+	"pytest-cov" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-cov
+MIT"];
+	"coverage" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="coverage
+Apache-2.0"];
+	"pytest-cov" -> "coverage";
+	"pytest-cov" -> "pytest";
+	"pytest-cover" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-cover
+MIT"];
+	"pytest-cover" -> "pytest-cov";
+	"pytest-coverage" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-coverage
+NOASSERTION"];
+	"pytest-coverage" -> "pytest-cover";
+	"pytest-django" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-django
+NOASSERTION"];
+	"pytest-django" -> "pytest";
+	"pytest-echo" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-echo
+MIT"];
+	"pytest-echo" -> "pytest";
+	"pytest-ekstazi" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-ekstazi
+NOASSERTION"];
+	"pytest-ekstazi" -> "pytest";
+	"pytest-factoryboy" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-factoryboy
+MIT"];
+	"pytest-factoryboy" -> "packaging";
+	"factory-boy" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="factory-boy
+MIT"];
+	"pytest-factoryboy" -> "factory-boy";
+	"pytest-factoryboy" -> "typing-extensions";
+	"pytest-factoryboy" -> "pytest";
+	"inflection" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="inflection
+MIT"];
+	"pytest-factoryboy" -> "inflection";
+	"pytest-html" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-html
+NOASSERTION"];
+	"pytest-html" -> "jinja2";
+	"pytest-html" -> "pytest";
+	"pytest-metadata" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-metadata
+NOASSERTION"];
+	"pytest-html" -> "pytest-metadata";
+	"pytest-metadata" -> "pytest";
+	"pytest-repeat" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-repeat
+NOASSERTION"];
+	"pytest-repeat" -> "pytest";
+	"aiosignal" -> "frozenlist";
+	"pytest-selenium" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-selenium
+NOASSERTION"];
+	"pytest-selenium" -> "requests";
+	"pytest-selenium" -> "pytest";
+	"pytest-selenium" -> "pytest-base-url";
+	"pytest-selenium" -> "tenacity";
+	"pytest-selenium" -> "pytest-html";
+	"pytest-variables" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-variables
+NOASSERTION"];
+	"pytest-selenium" -> "pytest-variables";
+	"selenium" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="selenium
+Apache-2.0"];
+	"pytest-selenium" -> "selenium";
+	"pytest-variables" -> "pytest";
+	"selenium" -> "certifi";
+	"selenium" -> "urllib3";
+	"selenium" -> "typing-extensions";
+	"trio" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="trio
+MIT OR Apache-2.0"];
+	"selenium" -> "trio";
+	"trio-websocket" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="trio-websocket
+NOASSERTION"];
+	"selenium" -> "trio-websocket";
+	"websocket-client" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="websocket-client
+Apache-2.0"];
+	"selenium" -> "websocket-client";
+	"trio" -> "sortedcontainers";
+	"trio" -> "outcome";
+	"sniffio" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="sniffio
+MIT OR Apache-2.0"];
+	"trio" -> "sniffio";
+	"trio" -> "attrs";
+	"trio" -> "idna";
+	"trio-websocket" -> "trio";
+	"wsproto" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="wsproto
+MIT"];
+	"trio-websocket" -> "wsproto";
+	"h11" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="h11
+MIT"];
+	"wsproto" -> "h11";
+	"pytest-socket" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-socket
+MIT"];
+	"pytest-socket" -> "pytest";
+	"pytest-testmon" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-testmon
+MIT"];
+	"pytest-testmon" -> "coverage";
+	"pytest-testmon" -> "pytest";
+	"bitcaster" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="bitcaster
+NOASSERTION"];
+	"htmlmin" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="htmlmin
+BSD-3-Clause"];
+	"bitcaster" -> "htmlmin";
+	"httpagentparser" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="httpagentparser
+NOASSERTION"];
+	"bitcaster" -> "httpagentparser";
+	"bitcaster" -> "jmespath";
+	"bitcaster" -> "mailjet-rest";
+	"phonenumbers" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="phonenumbers
+Apache-2.0"];
+	"bitcaster" -> "phonenumbers";
+	"bitcaster" -> "pillow";
+	"bitcaster" -> "premailer";
+	"psycopg2-binary" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="psycopg2-binary
+NOASSERTION"];
+	"bitcaster" -> "psycopg2-binary";
+	"bitcaster" -> "py-vapid";
+	"bitcaster" -> "pygments";
+	"bitcaster" -> "python-gitlab";
+	"python-magic" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="python-magic
+MIT"];
+	"bitcaster" -> "python-magic";
+	"bitcaster" -> "apache-libcloud";
+	"pytricia" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytricia
+NOASSERTION"];
+	"bitcaster" -> "pytricia";
+	"bitcaster" -> "pywebpush";
+	"bitcaster" -> "qrcode";
+	"bitcaster" -> "responses";
+	"bitcaster" -> "sentry-sdk";
+	"bitcaster" -> "setuptools";
+	"bitcaster" -> "slack-notifications";
+	"slack-sdk" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="slack-sdk
+MIT"];
+	"bitcaster" -> "slack-sdk";
+	"bitcaster" -> "requests";
+	"bitcaster" -> "social-auth-app-django";
+	"bitcaster" -> "social-auth-core";
+	"bitcaster" -> "transifex-python";
+	"bitcaster" -> "twilio";
+	"bitcaster" -> "user-agents";
+	"uwsgi" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="uwsgi
+GPL-2.0-or-later"];
+	"bitcaster" -> "uwsgi";
+	"bitcaster" -> "celery";
+	"circus" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="circus
+NOASSERTION"];
+	"bitcaster" -> "circus";
+	"bitcaster" -> "django";
+	"django-admin-extra-buttons" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-admin-extra-buttons
+NOASSERTION"];
+	"bitcaster" -> "django-admin-extra-buttons";
+	"django-adminactions" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-adminactions
+MIT"];
+	"bitcaster" -> "django-adminactions";
+	"django-adminfilters" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-adminfilters
+MIT"];
+	"bitcaster" -> "django-adminfilters";
+	"django-anymail" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-anymail
+NOASSERTION"];
+	"bitcaster" -> "django-anymail";
+	"django-bitfield" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-bitfield
+NOASSERTION"];
+	"bitcaster" -> "django-bitfield";
+	"django-celery-beat" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-celery-beat
+BSD-3-Clause"];
+	"bitcaster" -> "django-celery-beat";
+	"django-timezone-field" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-timezone-field
+BSD-2-Clause"];
+	"bitcaster" -> "django-timezone-field";
+	"django-concurrency" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-concurrency
+MIT"];
+	"bitcaster" -> "django-concurrency";
+	"django-constance" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-constance
+BSD-3-Clause"];
+	"bitcaster" -> "django-constance";
+	"django-csp" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-csp
+BSD-3-Clause"];
+	"bitcaster" -> "django-csp";
+	"django-debug-toolbar" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-debug-toolbar
+BSD-3-Clause"];
+	"bitcaster" -> "django-debug-toolbar";
+	"django-environ" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-environ
+MIT"];
+	"bitcaster" -> "django-environ";
+	"django-filter" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-filter
+NOASSERTION"];
+	"bitcaster" -> "django-filter";
+	"django-flags" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-flags
+CC0-1.0"];
+	"bitcaster" -> "django-flags";
+	"django-formtools" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-formtools
+BSD-3-Clause"];
+	"bitcaster" -> "django-formtools";
+	"django-markdownify" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-markdownify
+MIT"];
+	"bitcaster" -> "django-markdownify";
+	"django-push-notifications" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-push-notifications
+NOASSERTION"];
+	"bitcaster" -> "django-push-notifications";
+	"django-redis" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-redis
+BSD-3-Clause"];
+	"bitcaster" -> "django-redis";
+	"django-regex" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-regex
+MIT"];
+	"bitcaster" -> "django-regex";
+	"django-reversion" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-reversion
+BSD-3-Clause"];
+	"bitcaster" -> "django-reversion";
+	"django-select2" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-select2
+NOASSERTION"];
+	"bitcaster" -> "django-select2";
+	"django-storages" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-storages
+BSD-3-Clause"];
+	"bitcaster" -> "django-storages";
+	"django-strategy-field" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-strategy-field
+MIT"];
+	"bitcaster" -> "django-strategy-field";
+	"django-stubs" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-stubs
+MIT"];
+	"bitcaster" -> "django-stubs";
+	"django-svelte-jsoneditor" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-svelte-jsoneditor
+MIT"];
+	"bitcaster" -> "django-svelte-jsoneditor";
+	"django-taggit" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-taggit
+BSD-3-Clause"];
+	"bitcaster" -> "django-taggit";
+	"django-tinymce" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-tinymce
+MIT"];
+	"bitcaster" -> "django-tinymce";
+	"djangorestframework" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="djangorestframework
+BSD-3-Clause"];
+	"bitcaster" -> "djangorestframework";
+	"drf-extensions" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="drf-extensions
+BSD-3-Clause"];
+	"bitcaster" -> "drf-extensions";
+	"drf-nested-routers" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="drf-nested-routers
+Apache-2.0"];
+	"bitcaster" -> "drf-nested-routers";
+	"drf-spectacular" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="drf-spectacular
+BSD-3-Clause"];
+	"bitcaster" -> "drf-spectacular";
+	"drf-spectacular-sidecar" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="drf-spectacular-sidecar
+BSD-3-Clause"];
+	"bitcaster" -> "drf-spectacular-sidecar";
+	"flower" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="flower
+BSD-3-Clause"];
+	"bitcaster" -> "flower";
+	"pytest-xdist" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-xdist
+MIT"];
+	"execnet" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="execnet
+NOASSERTION"];
+	"pytest-xdist" -> "execnet";
+	"pytest-xdist" -> "pytest";
+	"pyupgrade" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyupgrade
+MIT"];
+	"tokenize-rt" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="tokenize-rt
+MIT"];
+	"pyupgrade" -> "tokenize-rt";
+	"sbomdiff" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="sbomdiff
+Apache-2.0"];
+	"sbomdiff" -> "defusedxml";
+	"sbomdiff" -> "lib4sbom";
+	"sbomdiff" -> "pyyaml";
+	"tox" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="tox
+NOASSERTION"];
+	"tox" -> "cachetools";
+	"tox" -> "packaging";
+	"tox" -> "platformdirs";
+	"chardet" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="chardet
+LGPL-2.0-or-later"];
+	"tox" -> "chardet";
+	"tox" -> "colorama";
+	"tox" -> "filelock";
+	"tox" -> "pluggy";
+	"tox" -> "virtualenv";
+	"tox" -> "pyproject-api";
+	"tox-pdm" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="tox-pdm
+MIT"];
+	"tox-pdm" -> "tox";
+	"types-cffi" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-cffi
+NOASSERTION"];
+	"types-setuptools" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-setuptools
+Apache-2.0"];
+	"types-cffi" -> "types-setuptools";
+	"celery" -> "vine";
+	"billiard" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="billiard
+BSD-3-Clause"];
+	"celery" -> "billiard";
+	"celery" -> "click";
+	"click-didyoumean" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="click-didyoumean
+MIT"];
+	"celery" -> "click-didyoumean";
+	"click-plugins" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="click-plugins
+NOASSERTION"];
+	"celery" -> "click-plugins";
+	"click-repl" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="click-repl
+MIT"];
+	"celery" -> "click-repl";
+	"kombu" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="kombu
+BSD-3-Clause"];
+	"celery" -> "kombu";
+	"tzdata" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="tzdata
+Apache-2.0"];
+	"celery" -> "tzdata";
+	"celery" -> "python-dateutil";
+	"types-pyopenssl" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-pyopenssl
+NOASSERTION"];
+	"types-pyopenssl" -> "cryptography";
+	"types-pyopenssl" -> "types-cffi";
+	"types-redis" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-redis
+Apache-2.0"];
+	"types-redis" -> "cryptography";
+	"types-redis" -> "types-pyopenssl";
+	"types-requests" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-requests
+Apache-2.0"];
+	"types-requests" -> "urllib3";
+	"click-didyoumean" -> "click";
+	"click-plugins" -> "click";
+	"click-repl" -> "click";
+	"prompt-toolkit" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="prompt-toolkit
+NOASSERTION"];
+	"click-repl" -> "prompt-toolkit";
+	"wcwidth" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="wcwidth
+MIT"];
+	"prompt-toolkit" -> "wcwidth";
+	"kombu" -> "amqp";
+	"kombu" -> "vine";
+	"kombu" -> "tzdata";
+	"python-dateutil" -> "six";
+	"circus" -> "psutil";
+	"pyzmq" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyzmq
+NOASSERTION"];
+	"circus" -> "pyzmq";
+	"tornado" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="tornado
+Apache-2.0"];
+	"circus" -> "tornado";
+	"asgiref" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="asgiref
+BSD-3-Clause"];
+	"django" -> "asgiref";
+	"sqlparse" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="sqlparse
+NOASSERTION"];
+	"django" -> "sqlparse";
+	"pytz" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytz
+MIT"];
+	"django-adminactions" -> "pytz";
+	"xlrd" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="xlrd
+BSD-3-Clause"];
+	"django-adminactions" -> "xlrd";
+	"xlwt" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="xlwt
+BSD-3-Clause"];
+	"django-adminactions" -> "xlwt";
+	"django-anymail" -> "requests";
+	"django-anymail" -> "urllib3";
+	"django-anymail" -> "django";
+	"django-bitfield" -> "six";
+	"django-bitfield" -> "django";
+	"django-celery-beat" -> "celery";
+	"django-celery-beat" -> "tzdata";
+	"django-celery-beat" -> "django";
+	"cron-descriptor" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="cron-descriptor
+NOASSERTION"];
+	"django-celery-beat" -> "cron-descriptor";
+	"django-celery-beat" -> "django-timezone-field";
+	"python-crontab" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="python-crontab
+LGPL-3.0-only"];
+	"django-celery-beat" -> "python-crontab";
+	"django-timezone-field" -> "django";
+	"python-crontab" -> "python-dateutil";
+	"django-csp" -> "django";
+	"django-debug-toolbar" -> "django";
+	"django-debug-toolbar" -> "sqlparse";
+	"django-filter" -> "django";
+	"django-flags" -> "django";
+	"django-formtools" -> "django";
+	"django-markdownify" -> "django";
+	"bleach" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="bleach
+Apache-2.0"];
+	"django-markdownify" -> "bleach";
+	"django-markdownify" -> "markdown";
+	"bleach" -> "six";
+	"bleach" -> "webencodings";
+	"yarl" -> "multidict";
+	"yarl" -> "idna";
+	"django-push-notifications" -> "django";
+	"django-redis" -> "django";
+	"redis" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="redis
+MIT"];
+	"django-redis" -> "redis";
+	"django-reversion" -> "django";
+	"django-select2" -> "django";
+	"django-appconf" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-appconf
+BSD-3-Clause"];
+	"django-select2" -> "django-appconf";
+	"django-appconf" -> "django";
+	"django-storages" -> "django";
+	"django-strategy-field" -> "pytz";
+	"django-stubs" -> "asgiref";
+	"django-stubs" -> "typing-extensions";
+	"django-stubs" -> "django";
+	"django-stubs-ext" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="django-stubs-ext
+MIT"];
+	"django-stubs" -> "django-stubs-ext";
+	"types-pyyaml" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-pyyaml
+Apache-2.0"];
+	"django-stubs" -> "types-pyyaml";
+	"django-stubs-ext" -> "typing-extensions";
+	"django-stubs-ext" -> "django";
+	"django-svelte-jsoneditor" -> "django";
+	"django-taggit" -> "django";
+	"django-tinymce" -> "django";
+	"djangorestframework" -> "django";
+	"drf-extensions" -> "djangorestframework";
+	"drf-nested-routers" -> "django";
+	"drf-nested-routers" -> "djangorestframework";
+	"aiohttp-retry" -> "aiohttp";
+	"drf-spectacular" -> "django";
+	"drf-spectacular" -> "djangorestframework";
+	"drf-spectacular" -> "inflection";
+	"jsonschema" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="jsonschema
+MIT"];
+	"drf-spectacular" -> "jsonschema";
+	"drf-spectacular" -> "pyyaml";
+	"uritemplate" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="uritemplate
+NOASSERTION"];
+	"drf-spectacular" -> "uritemplate";
+	"jsonschema" -> "attrs";
+	"jsonschema-specifications" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="jsonschema-specifications
+MIT"];
+	"jsonschema" -> "jsonschema-specifications";
+	"referencing" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="referencing
+NOASSERTION"];
+	"jsonschema" -> "referencing";
+	"rpds-py" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="rpds-py
+MIT"];
+	"jsonschema" -> "rpds-py";
+	"jsonschema-specifications" -> "referencing";
+	"referencing" -> "attrs";
+	"referencing" -> "rpds-py";
+	"drf-spectacular-sidecar" -> "django";
+	"humanize" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="humanize
+MIT"];
+	"flower" -> "humanize";
+	"prometheus-client" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="prometheus-client
+NOASSERTION"];
+	"flower" -> "prometheus-client";
+	"flower" -> "celery";
+	"flower" -> "tornado";
+	"flower" -> "pytz";
+	"Python-system" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="Python-system"];
+	"Python-system" -> "aiohappyeyeballs";
+	"Python-system" -> "amqp";
+	"Python-system" -> "humanize";
+	"Python-system" -> "prometheus-client";
+	"Python-system" -> "htmlmin";
+	"Python-system" -> "httpagentparser";
+	"Python-system" -> "jmespath";
+	"Python-system" -> "mailjet-rest";
+	"Python-system" -> "phonenumbers";
+	"Python-system" -> "pillow";
+	"Python-system" -> "premailer";
+	"Python-system" -> "cachetools";
+	"Python-system" -> "vine";
+	"Python-system" -> "cssselect";
+	"Python-system" -> "cssutils";
+	"Python-system" -> "more-itertools";
+	"Python-system" -> "lxml";
+	"Python-system" -> "psycopg2-binary";
+	"Python-system" -> "py-vapid";
+	"Python-system" -> "pygments";
+	"Python-system" -> "python-gitlab";
+	"Python-system" -> "requests-toolbelt";
+	"Python-system" -> "python-magic";
+	"Python-system" -> "apache-libcloud";
+	"Python-system" -> "pytricia";
+	"Python-system" -> "pywebpush";
+	"Python-system" -> "http-ece";
+	"Python-system" -> "qrcode";
+	"Python-system" -> "pypng";
+	"Python-system" -> "responses";
+	"Python-system" -> "sentry-sdk";
+	"Python-system" -> "setuptools";
+	"Python-system" -> "slack-notifications";
+	"Python-system" -> "slack-sdk";
+	"Python-system" -> "requests";
+	"Python-system" -> "social-auth-app-django";
+	"Python-system" -> "social-auth-core";
+	"Python-system" -> "defusedxml";
+	"Python-system" -> "oauthlib";
+	"Python-system" -> "pyjwt";
+	"Python-system" -> "python3-openid";
+	"Python-system" -> "requests-oauthlib";
+	"Python-system" -> "transifex-python";
+	"Python-system" -> "pyseeyou";
+	"Python-system" -> "future";
+	"Python-system" -> "certifi";
+	"Python-system" -> "parsimonious";
+	"Python-system" -> "regex";
+	"Python-system" -> "toolz";
+	"Python-system" -> "twilio";
+	"Python-system" -> "user-agents";
+	"Python-system" -> "ua-parser";
+	"Python-system" -> "uwsgi";
+	"Python-system" -> "black";
+	"Python-system" -> "mypy-extensions";
+	"Python-system" -> "packaging";
+	"Python-system" -> "charset-normalizer";
+	"Python-system" -> "pathspec";
+	"Python-system" -> "platformdirs";
+	"Python-system" -> "boolean.py";
+	"Python-system" -> "boto3";
+	"Python-system" -> "botocore";
+	"Python-system" -> "s3transfer";
+	"Python-system" -> "boto3-stubs";
+	"Python-system" -> "botocore-stubs";
+	"Python-system" -> "types-awscrt";
+	"Python-system" -> "types-s3transfer";
+	"Python-system" -> "urllib3";
+	"Python-system" -> "bracex";
+	"bump2version" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="bump2version
+MIT"];
+	"Python-system" -> "bump2version";
+	"Python-system" -> "cachecontrol";
+	"Python-system" -> "msgpack";
+	"Python-system" -> "cairocffi";
+	"Python-system" -> "cairosvg";
+	"Python-system" -> "cssselect2";
+	"Python-system" -> "tinycss2";
+	"Python-system" -> "cfgv";
+	"Python-system" -> "chardet";
+	"Python-system" -> "asgiref";
+	"Python-system" -> "colorama";
+	"Python-system" -> "coverage";
+	"Python-system" -> "csscompressor";
+	"Python-system" -> "cyclonedx-python-lib";
+	"Python-system" -> "license-expression";
+	"Python-system" -> "packageurl-python";
+	"Python-system" -> "py-serializable";
+	"Python-system" -> "sortedcontainers";
+	"Python-system" -> "debugpy";
+	"Python-system" -> "distlib";
+	"Python-system" -> "asttokens";
+	"Python-system" -> "django-debug-permissions";
+	"Python-system" -> "django-extensions";
+	"Python-system" -> "django-webtest";
+	"Python-system" -> "webtest";
+	"Python-system" -> "waitress";
+	"Python-system" -> "webob";
+	"Python-system" -> "docker";
+	"Python-system" -> "dropbox";
+	"Python-system" -> "stone";
+	"Python-system" -> "ply";
+	"Python-system" -> "six";
+	"Python-system" -> "execnet";
+	"Python-system" -> "factory-boy";
+	"Python-system" -> "faker";
+	"Python-system" -> "fancycompleter";
+	"Python-system" -> "pyrepl";
+	"Python-system" -> "filelock";
+	"Python-system" -> "flake8";
+	"Python-system" -> "mccabe";
+	"Python-system" -> "pycodestyle";
+	"Python-system" -> "pyflakes";
+	"Python-system" -> "aiohttp";
+	"Python-system" -> "azure-core";
+	"Python-system" -> "flake8-html";
+	"Python-system" -> "jinja2";
+	"Python-system" -> "markupsafe";
+	"Python-system" -> "freezegun";
+	"Python-system" -> "ghp-import";
+	"Python-system" -> "google-api-core";
+	"Python-system" -> "google-auth";
+	"Python-system" -> "pyasn1-modules";
+	"Python-system" -> "pyasn1";
+	"Python-system" -> "rsa";
+	"Python-system" -> "typing-extensions";
+	"Python-system" -> "googleapis-common-protos";
+	"Python-system" -> "protobuf";
+	"Python-system" -> "proto-plus";
+	"Python-system" -> "google-cloud-core";
+	"Python-system" -> "google-cloud-storage";
+	"Python-system" -> "google-crc32c";
+	"Python-system" -> "google-resumable-media";
+	"Python-system" -> "griffe";
+	"Python-system" -> "h11";
+	"Python-system" -> "html5lib";
+	"Python-system" -> "azure-storage-blob";
+	"Python-system" -> "htmlmin2";
+	"Python-system" -> "identify";
+	"Python-system" -> "iniconfig";
+	"isort" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="isort
+MIT"];
+	"Python-system" -> "isort";
+	"Python-system" -> "jsmin";
+	"Python-system" -> "lib4sbom";
+	"Python-system" -> "semantic-version";
+	"Python-system" -> "markdown-it-py";
+	"Python-system" -> "mdurl";
+	"Python-system" -> "mdx-gh-links";
+	"Python-system" -> "cryptography";
+	"Python-system" -> "mergedeep";
+	"Python-system" -> "mkdocs";
+	"Python-system" -> "mkdocs-get-deps";
+	"Python-system" -> "pyyaml-env-tag";
+	"Python-system" -> "watchdog";
+	"Python-system" -> "mkdocs-autolinks-plugin";
+	"Python-system" -> "mkdocs-autorefs";
+	"Python-system" -> "mkdocs-awesome-pages-plugin";
+	"Python-system" -> "natsort";
+	"Python-system" -> "wcmatch";
+	"Python-system" -> "cffi";
+	"Python-system" -> "mkdocs-click";
+	"Python-system" -> "mkdocs-embed-external-markdown";
+	"Python-system" -> "mkdocs-ezglossary-plugin";
+	"Python-system" -> "mkdocs-ezlinks-plugin";
+	"Python-system" -> "pygtrie";
+	"Python-system" -> "mkdocs-gen-files";
+	"Python-system" -> "mkdocs-include-markdown-plugin";
+	"Python-system" -> "mkdocs-link-marker";
+	"Python-system" -> "mkdocs-macros-plugin";
+	"Python-system" -> "termcolor";
+	"Python-system" -> "pycparser";
+	"Python-system" -> "mkdocs-material";
+	"Python-system" -> "mkdocs-material-extensions";
+	"Python-system" -> "paginate";
+	"Python-system" -> "pymdown-extensions";
+	"Python-system" -> "mkdocs-minify-plugin";
+	"Python-system" -> "mkdocs-redirects";
+	"Python-system" -> "mkdocs-simple-hooks";
+	"Python-system" -> "mkdocstrings";
+	"Python-system" -> "mkdocstrings-python";
+	"Python-system" -> "mypy";
+	"Python-system" -> "isodate";
+	"Python-system" -> "mypy-boto3";
+	"mypy-boto3-sns" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="mypy-boto3-sns
+MIT"];
+	"Python-system" -> "mypy-boto3-sns";
+	"Python-system" -> "nodeenv";
+	"Python-system" -> "outcome";
+	"Python-system" -> "pdbpp";
+	"Python-system" -> "wmctrl";
+	"Python-system" -> "pip";
+	"Python-system" -> "pip-api";
+	"pip-audit" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pip-audit
+NOASSERTION"];
+	"Python-system" -> "pip-audit";
+	"Python-system" -> "pip-requirements-parser";
+	"Python-system" -> "babel";
+	"Python-system" -> "pyparsing";
+	"Python-system" -> "rich";
+	"toml" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="toml
+MIT"];
+	"Python-system" -> "toml";
+	"Python-system" -> "pluggy";
+	"Python-system" -> "pre-commit";
+	"Python-system" -> "virtualenv";
+	"Python-system" -> "pyasynchat";
+	"Python-system" -> "pyasyncore";
+	"pyfakefs" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pyfakefs
+NOASSERTION"];
+	"Python-system" -> "pyfakefs";
+	"Python-system" -> "pyftpdlib";
+	"Python-system" -> "beautifulsoup4";
+	"Python-system" -> "pyopenssl";
+	"Python-system" -> "pyproject-api";
+	"Python-system" -> "pyquery";
+	"pysocks" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pysocks
+BSD-3-Clause"];
+	"Python-system" -> "pysocks";
+	"Python-system" -> "pytest";
+	"Python-system" -> "pytest-base-url";
+	"Python-system" -> "pytest-celery";
+	"Python-system" -> "pytest-docker-tools";
+	"Python-system" -> "tenacity";
+	"Python-system" -> "pytest-cov";
+	"Python-system" -> "soupsieve";
+	"Python-system" -> "pytest-cover";
+	"Python-system" -> "pytest-coverage";
+	"Python-system" -> "pytest-django";
+	"Python-system" -> "pytest-echo";
+	"Python-system" -> "pytest-ekstazi";
+	"Python-system" -> "pytest-factoryboy";
+	"Python-system" -> "pytest-html";
+	"Python-system" -> "pytest-metadata";
+	"pytest-localftpserver" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="pytest-localftpserver
+NOASSERTION"];
+	"Python-system" -> "pytest-localftpserver";
+	"Python-system" -> "pytest-repeat";
+	"Python-system" -> "aiosignal";
+	"Python-system" -> "billiard";
+	"Python-system" -> "pytest-selenium";
+	"Python-system" -> "pytest-variables";
+	"Python-system" -> "selenium";
+	"Python-system" -> "trio";
+	"Python-system" -> "sniffio";
+	"Python-system" -> "trio-websocket";
+	"Python-system" -> "wsproto";
+	"Python-system" -> "websocket-client";
+	"Python-system" -> "pytest-socket";
+	"Python-system" -> "pytest-testmon";
+	"Python-system" -> "bitcaster";
+	"Python-system" -> "pytest-xdist";
+	"Python-system" -> "pyupgrade";
+	"Python-system" -> "tokenize-rt";
+	"Python-system" -> "sbomdiff";
+	"Python-system" -> "tox";
+	"Python-system" -> "tox-pdm";
+	"Python-system" -> "types-cffi";
+	"Python-system" -> "types-setuptools";
+	"types-freezegun" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-freezegun
+NOASSERTION"];
+	"Python-system" -> "types-freezegun";
+	"types-markdown" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-markdown
+Apache-2.0"];
+	"Python-system" -> "types-markdown";
+	"Python-system" -> "celery";
+	"Python-system" -> "types-pyopenssl";
+	"types-python-dateutil" [shape=box, style=filled, fontcolor=white, fillcolor=darkgreen label="types-python-dateutil
+Apache-2.0"];
+	"Python-system" -> "types-python-dateutil";
+	"Python-system" -> "types-redis";
+	"Python-system" -> "types-requests";
+	"Python-system" -> "click";
+	"Python-system" -> "click-didyoumean";
+	"Python-system" -> "click-plugins";
+	"Python-system" -> "click-repl";
+	"Python-system" -> "prompt-toolkit";
+	"Python-system" -> "wcwidth";
+	"Python-system" -> "kombu";
+	"Python-system" -> "frozenlist";
+	"Python-system" -> "tzdata";
+	"Python-system" -> "python-dateutil";
+	"Python-system" -> "circus";
+	"Python-system" -> "psutil";
+	"Python-system" -> "pyzmq";
+	"Python-system" -> "tornado";
+	"Python-system" -> "django";
+	"Python-system" -> "sqlparse";
+	"Python-system" -> "django-admin-extra-buttons";
+	"Python-system" -> "django-adminactions";
+	"Python-system" -> "attrs";
+	"Python-system" -> "pytz";
+	"Python-system" -> "xlrd";
+	"Python-system" -> "xlwt";
+	"Python-system" -> "django-adminfilters";
+	"Python-system" -> "django-anymail";
+	"Python-system" -> "django-bitfield";
+	"Python-system" -> "django-celery-beat";
+	"Python-system" -> "cron-descriptor";
+	"Python-system" -> "django-timezone-field";
+	"Python-system" -> "python-crontab";
+	"Python-system" -> "multidict";
+	"Python-system" -> "django-concurrency";
+	"Python-system" -> "django-constance";
+	"Python-system" -> "django-csp";
+	"Python-system" -> "django-debug-toolbar";
+	"Python-system" -> "django-environ";
+	"Python-system" -> "django-filter";
+	"Python-system" -> "django-flags";
+	"Python-system" -> "django-formtools";
+	"Python-system" -> "django-markdownify";
+	"Python-system" -> "bleach";
+	"Python-system" -> "yarl";
+	"Python-system" -> "webencodings";
+	"Python-system" -> "markdown";
+	"Python-system" -> "django-push-notifications";
+	"Python-system" -> "django-redis";
+	"Python-system" -> "redis";
+	"Python-system" -> "django-regex";
+	"Python-system" -> "django-reversion";
+	"Python-system" -> "django-select2";
+	"Python-system" -> "django-appconf";
+	"Python-system" -> "django-storages";
+	"Python-system" -> "idna";
+	"Python-system" -> "django-strategy-field";
+	"Python-system" -> "django-stubs";
+	"Python-system" -> "django-stubs-ext";
+	"Python-system" -> "types-pyyaml";
+	"Python-system" -> "django-svelte-jsoneditor";
+	"Python-system" -> "django-taggit";
+	"Python-system" -> "django-tinymce";
+	"Python-system" -> "djangorestframework";
+	"Python-system" -> "drf-extensions";
+	"Python-system" -> "drf-nested-routers";
+	"Python-system" -> "aiohttp-retry";
+	"Python-system" -> "drf-spectacular";
+	"Python-system" -> "inflection";
+	"Python-system" -> "jsonschema";
+	"Python-system" -> "jsonschema-specifications";
+	"Python-system" -> "referencing";
+	"Python-system" -> "rpds-py";
+	"Python-system" -> "pyyaml";
+	"Python-system" -> "uritemplate";
+	"Python-system" -> "drf-spectacular-sidecar";
+	"Python-system" -> "flower";
+}
