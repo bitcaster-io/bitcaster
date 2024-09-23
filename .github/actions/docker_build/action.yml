@@ -107,6 +107,7 @@ runs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr,prefix=${{env.TAG_PREFIX}}pr
+          type=ref,event=tag,prefix=${{env.TAG_PREFIX}}rc
           type=semver,pattern={{version}}
           type=semver,pattern={{raw}}
       env:

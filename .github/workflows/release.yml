@@ -52,11 +52,11 @@ jobs:
         id: build
         uses: ./.github/actions/docker_build
         with:
+          rebuild: true
           image: ${{ vars.DOCKER_IMAGE }}
           target: 'python_dev_deps'
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          code_checksum: ${{ steps.checksum.outputs.checksum }}
 
   test:
     name: Run Pre-Release Test
@@ -138,7 +138,6 @@ jobs:
           target: 'dist'
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          code_checksum: ${{ steps.checksum.outputs.checksum }}
       - shell: bash
         run: |
           echo "${{ toJSON(steps.build.outputs) }}"

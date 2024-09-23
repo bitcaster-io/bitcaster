@@ -58,7 +58,7 @@ markdown_extensions:
       check_paths: true
 #  - pymdownx.tabbed:
 #  - smarty
-#  - tables
+  - tables
   - toc:
       permalink: #
       baselevel: 1
