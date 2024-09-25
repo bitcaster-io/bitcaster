@@ -6,10 +6,8 @@ $(document).ready(function () {
         var copyText = sender.text();
         navigator.clipboard.writeText(copyText);
         sender.addClass('copied');
-        sender.text(" Copied.")
         setTimeout(function () {
-            sender.removeClass("copied");
-            sender.text(copyText)
+            sender.text(" Copied.")
         }, 400)
     });
 })

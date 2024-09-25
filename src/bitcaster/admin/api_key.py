@@ -122,8 +122,12 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
     @view()
     def created(self, request: HttpRequest, pk: str) -> HttpResponse:
         obj: Optional[ApiKey] = self.get_object(request, pk)
-        expires = obj.created + timedelta(seconds=10)
-        expired = timezone.now() > expires
+        if is_root(request):
+            expires = None
+            expired = False
+        else:
+            expires = obj.created + timedelta(seconds=10)
+            expired = timezone.now() > expires
         media = Media(js=["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"])
         ctx = self.get_common_context(request, pk, media=media, expires=expires, expired=expired, title=_("Info"))
         return TemplateResponse(request, "admin/apikey/created.html", ctx)
