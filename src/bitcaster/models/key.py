@@ -15,7 +15,7 @@ from .user import User
 
 logger = logging.getLogger(__name__)
 
-TOKEN_CHARS = f"{RANDOM_STRING_CHARS}-@*_+~,."
+TOKEN_CHARS = f"{RANDOM_STRING_CHARS}-_~."
 
 
 def make_token() -> str:
