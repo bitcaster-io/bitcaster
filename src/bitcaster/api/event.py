@@ -1,5 +1,3 @@
-import uuid
-
 from typing import Any
 
 from django.db.models import QuerySet
