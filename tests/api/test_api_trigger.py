@@ -1,3 +1,5 @@
+import uuid
+
 from typing import TYPE_CHECKING, Any, TypedDict
 from unittest.mock import Mock
 
@@ -145,6 +147,34 @@ def test_trigger(client: APIClient, data: "Context") -> None:
         assert res.status_code == status.HTTP_201_CREATED, res.json()
         assert res.data["occurrence"]
         o = Occurrence.objects.get(pk=res.data["occurrence"])
+        assert o.context == event_context
+
+
+def test_cid(client: APIClient, data: "Context") -> None:
+    from bitcaster.models import Occurrence
+
+    api_key = data["key"]
+    url: str = data["url"]
+    event_context = {"key": "value"}
+    cid = uuid.uuid4()
+
+    # token with wrong grants
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    # finally... valid token
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+
+        # no cid provided
+        res = client.post(url, data={"context": event_context}, format="json")
+        assert res.status_code == status.HTTP_201_CREATED, res.json()
+        assert res.data["occurrence"]
+        o = Occurrence.objects.get(pk=res.data["occurrence"], correlation_id__isnull=True)
+
+        # cid provided
+        res = client.post(f"{url}?cid={cid}", data={"context": event_context}, format="json")
+        assert res.status_code == status.HTTP_201_CREATED, res.json()
+        assert res.data["occurrence"]
+        o = Occurrence.objects.get(pk=res.data["occurrence"], correlation_id=cid)
         assert o.context == event_context
 
 

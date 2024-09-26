@@ -65,7 +65,7 @@ class Occurrence(BitcasterBaseModel):
     options: "OccurrenceOptions" = models.JSONField(  # type: ignore[assignment]
         blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
     )
-    correlation_id = models.UUIDField(editable=False, blank=True, null=True)
+    correlation_id = models.CharField(max_length=255, editable=False, blank=True, null=True)
     recipients = models.IntegerField(default=0, help_text=_("Total number of recipients"))
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
     data: "OccurrenceData" = models.JSONField(  # type: ignore[assignment]

@@ -26,3 +26,10 @@ Trigger url is compose as:
 ```
 [SERVER_ADDRESS]/o/[organization]/p/[project]/a/[application]/e/[event]/trigger
 ```
+
+Optionally you can provide a _cid_ (correlation id) as query parameter string to correlate different
+events from same or other clients.
+
+```
+[SERVER_ADDRESS]/o/[organization]/p/[project]/a/[application]/e/[event]/trigger?cid=<correlation id>
+```
