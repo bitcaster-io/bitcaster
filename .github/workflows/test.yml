@@ -103,12 +103,12 @@ jobs:
         id: checksum
         uses: ./.github/actions/checksum
       - name: Build Image
-        if: (needs.changes.outputs.build == 'true'
-            || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
-            || contains(github.event.head_commit.message, 'ci:test')
-            || contains(github.event.head_commit.message, 'ci:build')
-            || contains(github.event.head_commit.message, 'ci:all')
-            )
+#        if: (needs.changes.outputs.build == 'true'
+#            || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
+#            || contains(github.event.head_commit.message, 'ci:test')
+#            || contains(github.event.head_commit.message, 'ci:build')
+#            || contains(github.event.head_commit.message, 'ci:all')
+#            )
         id: build
         uses: ./.github/actions/docker_build
         with:
