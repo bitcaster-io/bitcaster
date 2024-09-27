@@ -26,6 +26,7 @@ mypy:
 build:
   - *docker
   - *dependencies
+  - '.github/workflows/test.yml'
 
 run_tests:
   - *python
@@ -33,6 +34,7 @@ run_tests:
   - *dependencies
   - *pipelines
   - 'pytest.ini'
+  - '.github/workflows/test.yml'
 
 migrations:
   - added|modified: 'src/**/migrations/*'

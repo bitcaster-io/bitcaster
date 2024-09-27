@@ -125,7 +125,7 @@ jobs:
   test:
     name: Run Test Suite
     needs: [ changes,build ]
-    if: (needs.changes.outputs.run_tests == 'true' 
+    if: (needs.changes.outputs.run_tests == 'true'
         || needs.changes.outputs.build == 'true'
         || contains(github.event.head_commit.message, 'ci:test') 
         || contains(github.event.head_commit.message, 'ci:all') 
