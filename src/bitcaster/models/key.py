@@ -45,7 +45,7 @@ class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
             "coerce": self.base_field.to_python,
         }
         defaults.update(kwargs)
-        return super().formfield(**defaults)  # type: ignore[arg-type]
+        return super().formfield(**defaults)
 
 
 class ApiKeyManager(ScopedManager["ApiKey"]):

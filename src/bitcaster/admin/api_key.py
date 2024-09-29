@@ -105,8 +105,8 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
             expires = None
             expired = False
         else:
-            expires = obj.created + timedelta(seconds=10)  # type: ignore[operator]
-            expired = timezone.now() > expires  # type: ignore[operator]
+            expires = obj.created + timedelta(seconds=10)
+            expired = timezone.now() > expires
         media = Media(js=["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"])
         ctx = self.get_common_context(request, pk, media=media, expires=expires, expired=expired, title=_("Info"))
         return TemplateResponse(request, "admin/apikey/created.html", ctx)
