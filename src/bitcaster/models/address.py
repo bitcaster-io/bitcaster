@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Mapping
+from typing import TYPE_CHECKING, Any, MutableMapping
 
 from django.db import models
 from django.db.models import QuerySet
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class AddressManager(BitcasterBaselManager["Address"]):
     use_for_related_fields = True
 
-    def get_or_create(self, defaults: Mapping[str, Any] | None = None, **kwargs: Any) -> "tuple[Address, bool]":
+    def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[Address, bool]":
         kwargs["type"] = self.get_type_from_value(kwargs.get("value", ""))
         return super().get_or_create(defaults=defaults, **kwargs)
 

@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 
+from ..constants import Bitcaster
 from ..utils.http import absolute_reverse
 from .application import Application
 from .channel import Channel
@@ -24,6 +25,9 @@ class EventManager(BitcasterBaselManager["Event"]):
             application__slug=app,
             slug=slug,
         )
+
+    def get_queryset(self) -> "QuerySet[Event]":
+        return super().get_queryset().select_related("application__project", "application__project__organization")
 
 
 class Event(SlugMixin, LockMixin, BitcasterBaseModel):
@@ -62,6 +66,11 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
 
     def natural_key(self) -> tuple[str, ...]:
         return self.slug, *self.application.natural_key()
+
+    def delete(self, using: Optional[str] = None, keep_parents: bool = False) -> tuple[int, dict[str, Any]]:
+        if self.application.project.organization.name == Bitcaster.ORGANIZATION:
+            return 0, {}
+        return super().delete(using, keep_parents)
 
     def trigger(
         self,

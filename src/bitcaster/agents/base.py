@@ -20,7 +20,7 @@ class AgentMeta(type["Agent"]):
         if attrs["__qualname__"] == "Agent":
             return super().__new__(mcs, class_name, bases, attrs)
         cls = super().__new__(mcs, class_name, bases, attrs)
-        if cls not in agentManager:  # pragma: no branch
+        if cls not in agentManager and "abstract" not in attrs:  # pragma: no branch
             agentManager.register(cls)
         return cast(Agent, cls)
 

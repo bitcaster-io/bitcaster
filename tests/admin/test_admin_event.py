@@ -5,6 +5,9 @@ from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.messages import SUCCESS, Message  # type: ignore[attr-defined]
 from django.db.models.options import Options
 from django.urls import reverse
+from testutils.factories import EventFactory
+
+from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
@@ -59,3 +62,54 @@ def test_trigger_event(app: "DjangoTestApp", context: "Context") -> None:
     assert len(res.context["messages"]) == 1
     msg: Message = list(res.context["messages"])[0]
     assert msg.level == SUCCESS
+
+
+def test_delete_event(app: "DjangoTestApp", context: "Context") -> None:
+    from bitcaster.models import Event
+
+    event: "Event" = context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "change"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url, {})
+    res = res.click("Delete")
+    res.forms[1].submit().follow()
+    assert not Event.objects.filter(pk=event.pk).exists()
+
+
+def test_delete_event_protect_internal(app: "DjangoTestApp", context: "Context") -> None:
+    from bitcaster.models import Event
+
+    internal_event: Event = EventFactory(
+        application__name=Bitcaster.APPLICATION,
+        application__project__name=Bitcaster.PROJECT,
+        application__project__organization__name=Bitcaster.ORGANIZATION,
+    )
+    url = reverse("admin:bitcaster_event_change", args=[internal_event.pk])  # type: ignore[arg-type]
+    res = app.get(url, {})
+    res = res.click("Delete")
+    res.forms[0].submit().follow()
+    assert "Cannot delete event" in res.text
+    assert Event.objects.filter(pk=internal_event.pk).exists()
+
+
+def test_delete_action(app: "DjangoTestApp", context: "Context") -> None:
+    from bitcaster.models import Event
+
+    event: "Event" = context["event"]
+    internal_event: Event = EventFactory(
+        application__name=Bitcaster.APPLICATION,
+        application__project__name=Bitcaster.PROJECT,
+        application__project__organization__name=Bitcaster.ORGANIZATION,
+    )
+    url = reverse("admin:bitcaster_event_changelist")  # type: ignore[arg-type]
+    res = app.get(url, {})
+    frm = res.forms["changelist-form"]
+    frm.get("_selected_action", index=0).checked = True
+    frm.get("_selected_action", index=1).checked = True
+    frm.get("action").value = "delete_selected"
+
+    res = frm.submit()
+    assert "Are you sure?" in res.text
+    res.forms[1].submit().follow()
+    assert not Event.objects.filter(pk=event.pk).exists()
+    assert Event.objects.filter(pk=internal_event.pk).exists()

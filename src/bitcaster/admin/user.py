@@ -17,7 +17,7 @@ from .base import BaseAdmin
 logger = logging.getLogger(__name__)
 
 
-class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):
+class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):  # type: ignore[type-arg]
     list_display = ("username", "email", "first_name", "last_name", "is_staff")
     list_filter = ("is_staff", "is_superuser", "groups")
     search_fields = ("username", "first_name", "last_name", "email")

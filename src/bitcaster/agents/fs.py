@@ -60,6 +60,7 @@ class AgentFileSystemConfig(AgentConfig):
 
 class AgentFiles(Agent):
     config_class: type[AgentConfig] = AgentFileSystemConfig
+    abstract = True
 
     def initialize(self) -> None:
         entries = self.scan()

@@ -89,7 +89,7 @@ def monitor_run(pk: str) -> str:
 
     try:
         if monitor.active:
-            LogEntry.objects.create(
+            LogEntry.objects.create(  # type: ignore[has-type]
                 content_type=ContentType.objects.get_for_model(Monitor),
                 object_id=pk,
                 action_flag=100,

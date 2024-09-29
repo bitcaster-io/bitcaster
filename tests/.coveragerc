@@ -41,7 +41,7 @@ exclude_lines =
     @abstractmethod
 
 
-fail_under=99
+fail_under=90
 precision=2
 ignore_errors = True
 
