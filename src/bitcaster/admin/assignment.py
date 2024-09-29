@@ -56,7 +56,7 @@ class AssignmentAdmin(BaseAdmin, admin.ModelAdmin[Assignment]):
                 filters = {"user": user}
             form_field.widget = AutocompletSelectEnh(db_field, self.admin_site, filters=filters)
             form_field.queryset = form_field.queryset.filter(**filters)
-        return form_field
+        return form_field  # type: ignore[return-value]
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def validate(self, request: HttpRequest, pk: str) -> "HttpResponse":
