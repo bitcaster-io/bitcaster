@@ -29,7 +29,7 @@ class Assignment(BitcasterBaseModel):
     channel = models.ForeignKey("bitcaster.Channel", on_delete=models.CASCADE, related_name="assignments")
     validated = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
-    data = models.JSONField(default=dict, blank=True, null=True)
+    data = models.JSONField(default=dict, blank=True, null=False)
 
     objects = AssignmentManager()
 

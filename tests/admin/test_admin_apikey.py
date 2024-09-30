@@ -1,13 +1,16 @@
 import os
 from typing import TYPE_CHECKING, Any
+from unittest import mock
 
 import pytest
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models.options import Options
 from django.urls import reverse
 from django.utils.safestring import SafeString
-from django_webtest import DjangoTestApp
+from django_webtest import DjangoTestApp, DjangoWebtestResponse
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
+from freezegun import freeze_time
+from testutils.factories import ApiKeyFactory
 
 from bitcaster.auth.constants import Grant
 
@@ -78,18 +81,6 @@ def test_add_trigger_required_app(app: DjangoTestApp, api_key: "ApiKey") -> None
     res.forms["apikey_form"]["name"] = "Key-1"
 
 
-# def test_edit_check_environments(app: "DjangoTestApp", api_key: "ApiKey") -> None:
-#     url = reverse("admin:bitcaster_apikey_change", args=[api_key.pk])
-#     res = app.get(url)
-#     frm = res.forms["apikey_form"]
-#     frm["environments"].force_value(["test"])
-#     res = frm.submit(expect_errors=True)
-#     assert res.status_code == 200,
-#     assert res.context["adminform"].form.errors == {
-#         "environments": ["One or more values are not available in the project"]
-#     }
-
-
 def test_add_check_environments(app: "DjangoTestApp", api_key: "ApiKey") -> None:
     url = reverse("admin:bitcaster_apikey_add")
     res = app.get(url)
@@ -118,3 +109,13 @@ def test_add_channel_filter_by_type(app: DjangoTestApp, api_key: "ApiKey", flt: 
     url = reverse("admin:bitcaster_apikey_changelist")
     res = app.get(f"{url}?env={flt}")
     assert res.status_code == 200
+
+
+@pytest.mark.parametrize("root", [True, False])
+def test_show_key(app: DjangoTestApp, root: bool) -> None:
+    with freeze_time("2012-01-14"):
+        api_key: "ApiKey" = ApiKeyFactory()
+    url = reverse("admin:bitcaster_apikey_show_key", args=[api_key.pk])
+    with mock.patch("bitcaster.admin.api_key.is_root", lambda s: root):
+        res: DjangoWebtestResponse = app.get(url)
+        assert (api_key.key in res.text) is root

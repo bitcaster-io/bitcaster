@@ -139,7 +139,7 @@ class BitcasterAdminSite(AdminSite):
             .values("timestamp", "id", application=F("event__application__name"), event__name=F("event__name"))
             .order_by("-timestamp")
         )
-        return qs_get_or_store(qs, key=CacheKey.DASHBOARDS_EVENTS)
+        return qs_get_or_store(qs, key=CacheKey.DASHBOARDS_EVENTS)  # type: ignore[arg-type]
 
     def each_context(self, request: HttpRequest) -> dict[str, Any]:
         ret = super().each_context(request)

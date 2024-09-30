@@ -2,6 +2,9 @@ import uuid
 from typing import TYPE_CHECKING
 
 import pytest
+from testutils.factories import EventFactory
+
+from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
     from bitcaster.models import Channel, Event, Occurrence
@@ -39,3 +42,19 @@ def test_event_notifications(event: "Event") -> None:
     )
     n2 = NotificationFactory(distribution__recipients=[AssignmentFactory(channel=ch) for __ in range(2)], event=event)
     assert list(event.notifications.match({})) == [n1, n2]
+
+
+def test_delete_event_protect_internal() -> None:
+    from bitcaster.models import Event
+
+    event: Event = EventFactory()
+    internal_event: Event = EventFactory(
+        application__name=Bitcaster.APPLICATION,
+        application__project__name=Bitcaster.PROJECT,
+        application__project__organization__name=Bitcaster.ORGANIZATION,
+    )
+    event.delete()
+    internal_event.delete()
+
+    assert not Event.objects.filter(pk=event.pk).exists()
+    assert Event.objects.filter(pk=internal_event.pk).exists()

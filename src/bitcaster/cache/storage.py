@@ -27,7 +27,7 @@ def qs_del_cache(qs: QuerySet[Model], key: Optional[str] = None) -> int:
     return cache.delete(key)
 
 
-def qs_get_or_store(qs: QuerySet[Model, Any], key: Optional[str] = None) -> list[Any]:
+def qs_get_or_store(qs: QuerySet[Model, Model], key: Optional[str] = None) -> list[Any]:
     if not (value := qs_from_cache(qs, key=key)):
         value = qs_to_cache(qs, key=key)
     return value

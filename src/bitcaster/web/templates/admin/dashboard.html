@@ -1,13 +1,13 @@
 {% load i18n %}
 <div id="dashboard">
-    <div class="left">
-        <table class="last_events">
+    <div class="left" style="height: 200px;">
+        <table class="last_events" style="border: 1px solid red; height: 100%; border-collapse:unset;overflow: scroll;">
             <caption>
                 {% trans "Last 24h Events" %}
             </caption>
             {% for evt in last_events %}
                 <tr>
-                    <a href="#">
+{#                    <a href="#">#}
                         <td>{{ evt.timestamp.date.day }}</td>
                         <td>{{ evt.timestamp|date:"H:m:s" }}</td>
                         <td>{{ evt.event__name }}</td>
@@ -15,10 +15,15 @@
                         <td>{{ evt.status }}</td>
                     </a>
                 </tr>
-{#                {% ifchanged evt.timestamp.date.day %}#}
-{#                    <tr><td colspan="4"><hr/>----</td></tr>#}
-{#                {% endifchanged %}#}
+                {#                {% ifchanged evt.timestamp.date.day %}#}
+                {#                    <tr><td colspan="4"><hr/>----</td></tr>#}
+                {#                {% endifchanged %}#}
             {% endfor %}
+            <tfoot>
+            <tr>
+                <th  colspan="4"><a href="{% url "admin:bitcaster_occurrence_changelist" %}">See all</a></th>
+            </tr>
+            </tfoot>
         </table>
     </div>
     <div class="right">

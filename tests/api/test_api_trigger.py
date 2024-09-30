@@ -1,5 +1,4 @@
 import uuid
-
 from typing import TYPE_CHECKING, Any, TypedDict
 from unittest.mock import Mock
 

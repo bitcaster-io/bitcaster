@@ -2,10 +2,9 @@ import logging
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any, Optional
 
-from admin_extra_buttons.decorators import button, view
+from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
-from django.contrib import messages
 from django.contrib.admin.options import ModelAdmin
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
@@ -31,11 +30,9 @@ logger = logging.getLogger(__name__)
 
 
 class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
-    # environments = forms.MultipleChoiceField(choices=[], widget=forms.CheckboxSelectMultiple)
     organization = forms.ModelChoiceField(
         queryset=Organization.objects.local(),
         required=True,
-        # widget=AutocompletSelectEnh(ApiKey._meta.get_field("organization"), admin.site),
     )
 
     class Meta:
@@ -53,23 +50,11 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
             )
 
     def clean(self) -> dict[str, Any]:
-        # prj: Optional[Project]
-        # prj_envs: list[str] = []
-        # envs: list[str] = []
         super().clean()
         if self.instance.pk is None and (g := self.cleaned_data.get("grants")):
             a = self.cleaned_data.get("application")
             if Grant.EVENT_TRIGGER in g and not a:
                 raise ValidationError(_("Application must be set if EVENT_TRIGGER is granted"))
-        # if self.instance.pk and self.instance.project:
-        #     prj_envs = self.instance.project.environments or []
-        #     envs = self.cleaned_data.get("environments", [])
-        # elif prj := self.cleaned_data.get("project"):
-        #     prj_envs = prj.environments or []
-        #     envs = self.cleaned_data.get("environments", [])
-        # if not set(envs).issubset(prj_envs):
-        #     raise ValidationError({"environments": "One or more values are not available in the project"})
-
         return self.cleaned_data
 
 
@@ -96,12 +81,6 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
             return ["application", "organization", "project"]
         return self.readonly_fields
 
-    # def get_fields(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_FieldGroups":
-    #     ret = list(super().get_fields(request, obj))
-    #     if not is_root(request) and "key" in ret:
-    #         ret.remove("key")
-    #     return ret
-
     def get_exclude(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:
             return ["key"]
@@ -117,10 +96,10 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
         }
 
     def response_add(self, request: HttpRequest, obj: ApiKey, post_url_continue: str | None = None) -> HttpResponse:
-        return HttpResponseRedirect(reverse("admin:bitcaster_apikey_created", args=[obj.pk]))
+        return HttpResponseRedirect(reverse("admin:bitcaster_apikey_show_key", args=[obj.pk]))
 
-    @view()
-    def created(self, request: HttpRequest, pk: str) -> HttpResponse:
+    @button()
+    def show_key(self, request: HttpRequest, pk: str) -> HttpResponse:
         obj: Optional[ApiKey] = self.get_object(request, pk)
         if is_root(request):
             expires = None
@@ -131,8 +110,3 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
         media = Media(js=["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"])
         ctx = self.get_common_context(request, pk, media=media, expires=expires, expired=expired, title=_("Info"))
         return TemplateResponse(request, "admin/apikey/created.html", ctx)
-
-    @button(visible=lambda s: is_root(s.context["request"]))
-    def show_key(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj: Optional[ApiKey] = self.get_object(request, pk)
-        self.message_user(request, str(obj.key), messages.WARNING)

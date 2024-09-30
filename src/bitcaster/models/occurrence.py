@@ -15,6 +15,7 @@ from .event import Event
 from .mixins import BitcasterBaselManager, BitcasterBaseModel
 
 if TYPE_CHECKING:
+    from .application import Application
     from .channel import Channel
     from .message import Message
     from .notification import Notification
@@ -96,6 +97,10 @@ class Occurrence(BitcasterBaseModel):
             "timestamp": self.timestamp,
             "event": self.event,
         }
+
+    @property
+    def application(self) -> "Application":
+        return self.event.application
 
     def process(self) -> bool:
         assignment: "Assignment"
