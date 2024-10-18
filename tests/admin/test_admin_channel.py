@@ -62,7 +62,7 @@ def gmail_channel(db: Any) -> Channel:
 
     return ChannelFactory(
         dispatcher=fqn(GMailDispatcher),
-        config={"username": "username", "password": "password"},
+        config={"username": "username", "password": "password", "timeout": 3},
     )
 
 
@@ -112,7 +112,7 @@ def test_configure(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     res = app.post(url, {"username": "", "password": ""})
     assert res.status_code == 200
 
-    res = app.post(url, {"username": "username", "password": "password"})
+    res = app.post(url, {"username": "username", "password": "password", "timeout": 3})
     assert res.status_code == 302
 
 
