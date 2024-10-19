@@ -93,7 +93,7 @@ class Occurrence(BitcasterBaseModel):
         super().__init__(*args, **kwargs)
 
     def get_context(self) -> dict[str, Any]:
-        return {
+        return self.context | {
             "timestamp": self.timestamp,
             "event": self.event,
         }
@@ -120,6 +120,7 @@ class Occurrence(BitcasterBaseModel):
 
         for notification in self.event.notifications.filter(**notification_filter).match(self.context):
             context = notification.get_context(self.get_context())
+            logger.debug(f"Processing occurrence {self.id} , context: {context}")
             for channel in self.event.channels.filter(**channel_filter):
                 for assignment in notification.get_pending_subscriptions(delivered, channel).filter(
                     **assignment_filter
