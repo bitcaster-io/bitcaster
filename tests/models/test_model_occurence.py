@@ -1,7 +1,12 @@
-from typing import TYPE_CHECKING, List, TypedDict
+# mypy: disable-error-code="attr-defined"
+import datetime
+from typing import TYPE_CHECKING, Any, List, TypedDict
 from unittest.mock import Mock
 
 import pytest
+from freezegun import freeze_time
+from freezegun.api import FakeDatetime
+from testutils.factories import OccurrenceFactory
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
@@ -76,3 +81,24 @@ def test_purgeable(purgeable_occurrences: List["Occurrence"], non_purgeable_occu
     purgeable_occurrence_ids = Occurrence.objects.purgeable().order_by("id").values_list("id", flat=True)
 
     assert list(purgeable_occurrence_ids) == sorted([o.id for o in purgeable_occurrences])
+
+
+@freeze_time("2001-01-02T01:02:33Z")
+@pytest.mark.parametrize(
+    "ctx, expected",
+    [
+        pytest.param({}, {}, id="all-empty"),
+        pytest.param({"new": 123}, {"new": 123}, id="contribute"),
+        pytest.param({"a": 1, "timestamp": 33, "c": 3}, {"a": 1, "c": 3}, id="override"),
+    ],
+)
+def test_get_context(ctx: dict[str, str], expected: dict[str, Any]) -> None:
+    occurrence = OccurrenceFactory()
+    occurrence.context = ctx
+
+    expected = expected | {
+        "timestamp": FakeDatetime(2001, 1, 2, 1, 2, 33, tzinfo=datetime.timezone.utc),
+        "event": occurrence.event,
+    }
+
+    assert occurrence.get_context() == expected

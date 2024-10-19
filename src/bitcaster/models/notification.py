@@ -86,7 +86,7 @@ class Notification(BitcasterBaseModel):
         return self.event.application
 
     def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
-        return {**ctx, "notification": self.name}
+        return {**ctx, "notification": self.name} | self.extra_context
 
     def get_pending_subscriptions(self, delivered: list[str | int], channel: "Channel") -> QuerySet[Assignment]:
         return (
@@ -104,7 +104,9 @@ class Notification(BitcasterBaseModel):
         dispatcher: "Dispatcher" = channel.dispatcher
         addr: "Address" = assignment.address
 
+        logger.debug(f"channel: {channel} , assignment: {assignment} , context: {context}")
         if message := self.get_message(channel):
+            logger.debug(f"message: {message}")
             context.update({"channel": channel, "address": addr.value})
             payload: Payload = Payload(
                 event=self.event,
