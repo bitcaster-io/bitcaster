@@ -1,0 +1,15 @@
+nav:
+  - Home: index.md
+  - Run:
+      - Docker: run.md
+      - Compose: stacks
+  - Configuration: configuration.md
+  - Administration Guide: adm-guide
+  - Development Guide: dev-guide
+  - Glossary: glossary/
+  - Links: links
+  - License: license
+  - Security: security
+  - SBOM: sbom
+  - HowTos: howto
+  - tags.md

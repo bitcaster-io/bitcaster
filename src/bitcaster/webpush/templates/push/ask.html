@@ -1,0 +1,55 @@
+{% extends "bitcaster/base.html" %}{% load static i18n %}
+{% block head %}
+    <meta name="s" content="{{ secret }}">
+{#    <meta name="u" content="{{ unsubscribe_url }}">#}
+{#    <meta name="k"  content="{{ private_key }}">#}
+{#    <meta name="w"  content="{{ sw }}">#}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "webpush/webpush.css" %}">
+    {{ media }}
+{% endblock %}
+{% block body %}
+    <div class="webpush">
+        <div class="frame center mt-5">
+            <div class="center logo">
+                <img src="{% static "bitcaster/images/logos/bitcaster.svg" %}">
+            </div>
+            <div id="supported" style="display: none">
+                <div class="center subscribe">
+                    <h1>{{ owner }}</h1>
+                </div>
+                <div class="p-5">
+                    {% if assignment.data.status == "denied" %}
+                        <h2>{% translate 'you have already denied the authorization' %}</h2>
+                        <div class="center w-100 ">
+                            <input class="button green" type="button" id="subscribe" value="{% trans "Allow" %}">
+                        </div>
+                    {% elif assignment.data.webpush %}
+                        <h2>{% translate 'Already subscribed' %}</h2>
+                        <div class="center w-100 ">
+                            <input class="button green" type="button" id="subscribe"
+                                   value="{% trans "Refresh exiting subscription" %}">
+                            <input class="button " type="button" id="deny"
+                                   value="{% trans "Cancel exiting subscription" %}">
+                        </div>
+                    {% else %}
+                        <h2>{% translate 'wants to send you push notifications' %}</h2>
+                        <div class="center w-100 ">
+                            <input class="button green" type="button" id="subscribe" value="{% trans "Allow" %}">
+                            <input type="button" id="deny" value="{% trans "Deny" %}">
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div id="unsupported" class="p-1" style="display: none">
+                <h1>{% trans "We are sorry this browser does not support notifications" %}</h1>
+            </div>
+
+            <div id="permissionDenied" class="p-1" style="display: none">
+                <h1>{% trans "we cannot send you web notifications, because your settings do not allow that" %}</h1>
+            </div>
+
+        </div>
+    </div>
+    <script src="{% static "webpush/webpush.min.js" %}"></script>
+{% endblock %}

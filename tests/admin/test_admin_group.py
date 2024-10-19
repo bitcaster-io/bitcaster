@@ -6,7 +6,10 @@ from django.urls import reverse
 from bitcaster.auth.constants import DEFAULT_GROUP_NAME
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Event
+    from django_webtest import DjangoTestApp
+    from django_webtest.pytest_plugin import MixinWithInstanceVariables
+
+    from bitcaster.models import Channel, Event, User
 
     Context = TypedDict(
         "Context",
@@ -18,7 +21,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture()
-def app(django_app_factory, admin_user):
+def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> "DjangoTestApp":
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
     django_app._user = admin_user
@@ -26,7 +29,7 @@ def app(django_app_factory, admin_user):
 
 
 @pytest.fixture
-def context(django_app_factory, admin_user) -> "Context":
+def context(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> "Context":
     from testutils.factories import GroupFactory
 
     django_app = django_app_factory(csrf_checks=False)
@@ -39,14 +42,14 @@ def context(django_app_factory, admin_user) -> "Context":
     return {"group1": group1, "group2": group2}
 
 
-def test_get_readonly_if_default(app, context: "Context") -> None:
+def test_get_readonly_if_default(app: "DjangoTestApp", context: "Context") -> None:
     url = reverse("admin:auth_group_change", args=[context["group1"].pk])
     res = app.get(url)
     frm = res.forms["group_form"]
     assert "name" not in frm.fields
 
 
-def test_get_readonly_fields(app, context: "Context") -> None:
+def test_get_readonly_fields(app: "DjangoTestApp", context: "Context") -> None:
     url = reverse("admin:auth_group_change", args=[context["group2"].pk])
     res = app.get(url)
     res.forms["group_form"]["name"] = "abc"

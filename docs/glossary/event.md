@@ -1,1 +1,0 @@
-the category of the [Event](event)

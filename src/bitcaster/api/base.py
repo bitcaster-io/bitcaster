@@ -1,58 +1,43 @@
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import views, viewsets
+from rest_framework import views
 from rest_framework.authentication import (
     BaseAuthentication,
     BasicAuthentication,
     SessionAuthentication,
 )
 from rest_framework.permissions import BasePermission
-from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
-from rest_framework.serializers import Serializer
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from ..auth.constants import Grant
-from .permissions import (
-    ApiApplicationPermission,
-    ApiKeyAuthentication,
-    ApiOrgPermission,
-    ApiProjectPermission,
-)
+from ..exceptions import InvalidGrantError
+from .permissions import ApiApplicationPermission, ApiKeyAuthentication
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
 
-class SecurityMixin:
+class SecurityMixin(APIView):
     authentication_classes: "_ListOrTuple[BaseAuthentication]" = (
+        ApiKeyAuthentication,
         BasicAuthentication,
         SessionAuthentication,
-        ApiKeyAuthentication,
     )
-    permission_classes: "_ListOrTuple[BasePermission]" = (
-        ApiOrgPermission,
-        ApiProjectPermission,
-        ApiApplicationPermission,
-    )
+    permission_classes: "_ListOrTuple[BasePermission]" = (ApiApplicationPermission,)
     required_grants: "_ListOrTuple[Grant]" = ()
 
     @property
     def grants(self) -> "_ListOrTuple[Grant]":
         return self.required_grants
 
+    def handle_exception(self, exc: Exception) -> Response:
+        if isinstance(exc, (InvalidGrantError,)):
+            response = Response({"detail": str(exc)}, status=403)
+            return response
+        return super().handle_exception(exc)
+
 
 class BaseView(SecurityMixin, views.APIView):
     renderer_classes = (JSONRenderer,)
-
-
-class BaseViewSet(SecurityMixin, viewsets.ViewSet):
-    renderer_classes = (JSONRenderer,)
-
-
-class BaseModelViewSet(SecurityMixin, viewsets.ReadOnlyModelViewSet):
-    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
-    filter_backends = [DjangoFilterBackend]
-    serializer_classes = {}
-
-    def get_serializer_class(self) -> Type[Serializer]:
-        return self.serializer_classes.get(self.action, self.serializer_class)

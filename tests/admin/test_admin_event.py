@@ -1,25 +1,32 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
+from django.contrib.messages import SUCCESS, Message  # type: ignore[attr-defined]
+from django.db.models.options import Options
+from django.urls import reverse
+from testutils.factories import EventFactory
+
+from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
-    from bitcaster.models import Address, Application, Channel, Event
+    from django_webtest import DjangoTestApp
+    from django_webtest.pytest_plugin import MixinWithInstanceVariables
+
+    from bitcaster.models import Assignment, Channel, Event, Notification, User
 
     Context = TypedDict(
         "Context",
         {
-            "app": Application,
             "channel": Channel,
-            "channel2": Channel,
             "event": Event,
-            "address": Address,
-            "address2": Address,
+            "assignment": Assignment,
         },
     )
 
 
 @pytest.fixture()
-def app(django_app_factory, admin_user):
+def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> "DjangoTestApp":
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
     django_app._user = admin_user
@@ -27,85 +34,82 @@ def app(django_app_factory, admin_user):
 
 
 @pytest.fixture
-def context(django_app_factory, admin_user) -> "Context":
-    from testutils.factories import AddressFactory, ChannelFactory, EventFactory
+def context(app: "DjangoTestApp") -> "Context":
+    from testutils.factories import AssignmentFactory, NotificationFactory
 
-    django_app = django_app_factory(csrf_checks=False)
-    django_app.set_user(admin_user)
-    django_app._user = admin_user
-
-    channel = ChannelFactory()
-    channel2 = ChannelFactory()
-    event = EventFactory()
-    event.channels.add(channel)
-    event.channels.add(channel2)
-    address = AddressFactory(user=admin_user)
-    address2 = AddressFactory(user=admin_user)  # other_addr
+    asm: "Assignment" = AssignmentFactory(address__user=app._user)
+    n: "Notification" = NotificationFactory(distribution__recipients=[asm], event__channels=[asm.channel])
 
     return {
-        "app": django_app,
-        "channel": channel,
-        "channel2": channel2,
-        "event": event,
-        "address": address,
-        "address2": address2,
+        "channel": asm.channel,
+        "assignment": asm,
+        "event": n.event,
     }
 
 
-# def test_event_check(app, context: "Context") -> None:
-#     url = reverse("admin:bitcaster_event_test_event", args=[context["event"].pk])
-#     res = app.get(url)
-#     assert res.status_code == 200, res.location
-#     assert (form := res.forms.get("subscribe-form")), "Should have subscribe-form"
-#
-#
-#     form["form-0-address"] = context["address"].pk
-#     res = form.submit().follow()
-#     assert res.status_code == 200, res.location
-#
-#     from bitcaster.models import Subscription
-#
-#     assert Subscription.objects.filter(
-#         validation__address=context["address"], event=context["event"], validation__channel=context["channel"]
-#     ).exists()
+def test_trigger_event(app: "DjangoTestApp", context: "Context") -> None:
+    event: Event = context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "trigger_event"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.post(url, {})
+    assert res.status_code == 200
 
-#
-# @pytest.mark.parametrize(
-#     "num_sub, which, result",
-#     [
-#         pytest.param(0, None, [], id="none"),
-#         pytest.param(1, [0], [], id="one"),
-#         pytest.param(2, True, [], id="all"),
-#         pytest.param(2, [1], [0], id="specific"),
-#         pytest.param(2, [2], [], id="all-selected"),
-#     ],
-# )
-# def test_event_unsubscribe(app, context: "Context", num_sub: int, which: List[int], result: List[int]) -> None:
-#     from bitcaster.models import Subscription, Validation
-#
-#     validations = [
-#         Validation.objects.create(address=context["address"], channel=context["channel"]),
-#         Validation.objects.create(address=context["address2"], channel=context["channel2"]),
-#     ]
-#     channels = [context["channel"], context["channel2"]]
-#
-#     # Creating subscriptions
-#     subscriptions = [
-#         Subscription.objects.create(validation=validations[i], event=context["event"]) for i in range(num_sub)
-#     ]
-#     expected = [s.id for i, s in enumerate(subscriptions) if i in result]
-#
-#     if which is None:
-#         # No unsubscription
-#         pass
-#     elif which is True:
-#         # unsubscribing all
-#         context["event"].unsubscribe(user=context["address"].user)
-#     else:
-#         # unsubscribing from channels in which
-#         context["event"].unsubscribe(
-#             user=context["address"].user, channel_ids=[c.id for i, c in enumerate(channels) if i in which]
-#         )
-#     remaining = list(Subscription.objects.values_list("id", flat=True))
-#
-#     assert remaining == expected, "Should have deleted the subscriptions"
+    res = app.get(url)
+    assert res.status_code == 200
+    res.forms["test-form"]["assignment"] = context["assignment"].pk
+    res = res.forms["test-form"].submit().follow()
+
+    assert len(res.context["messages"]) == 1
+    msg: Message = list(res.context["messages"])[0]
+    assert msg.level == SUCCESS
+
+
+def test_delete_event(app: "DjangoTestApp", context: "Context") -> None:
+    from bitcaster.models import Event
+
+    event: "Event" = context["event"]
+    opts: "Options[Event]" = event._meta
+    url = reverse(admin_urlname(opts, "change"), args=[event.pk])  # type: ignore[arg-type]
+    res = app.get(url, {})
+    res = res.click("Delete")
+    res.forms[1].submit().follow()
+    assert not Event.objects.filter(pk=event.pk).exists()
+
+
+def test_delete_event_protect_internal(app: "DjangoTestApp", context: "Context") -> None:
+    from bitcaster.models import Event
+
+    internal_event: Event = EventFactory(
+        application__name=Bitcaster.APPLICATION,
+        application__project__name=Bitcaster.PROJECT,
+        application__project__organization__name=Bitcaster.ORGANIZATION,
+    )
+    url = reverse("admin:bitcaster_event_change", args=[internal_event.pk])  # type: ignore[arg-type]
+    res = app.get(url, {})
+    res = res.click("Delete")
+    res.forms[0].submit().follow()
+    assert "Cannot delete event" in res.text
+    assert Event.objects.filter(pk=internal_event.pk).exists()
+
+
+def test_delete_action(app: "DjangoTestApp", context: "Context") -> None:
+    from bitcaster.models import Event
+
+    event: "Event" = context["event"]
+    internal_event: Event = EventFactory(
+        application__name=Bitcaster.APPLICATION,
+        application__project__name=Bitcaster.PROJECT,
+        application__project__organization__name=Bitcaster.ORGANIZATION,
+    )
+    url = reverse("admin:bitcaster_event_changelist")  # type: ignore[arg-type]
+    res = app.get(url, {})
+    frm = res.forms["changelist-form"]
+    frm.get("_selected_action", index=0).checked = True
+    frm.get("_selected_action", index=1).checked = True
+    frm.get("action").value = "delete_selected"
+
+    res = frm.submit()
+    assert "Are you sure?" in res.text
+    res.forms[1].submit().follow()
+    assert not Event.objects.filter(pk=event.pk).exists()
+    assert Event.objects.filter(pk=internal_event.pk).exists()

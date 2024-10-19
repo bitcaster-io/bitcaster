@@ -1,5 +1,5 @@
 import logging
-from typing import Any, MutableMapping
+from typing import Any
 
 from django import forms
 from django.contrib.postgres.fields import ArrayField
@@ -10,12 +10,12 @@ from django.utils.translation import gettext_lazy as _
 
 from bitcaster.auth.constants import Grant
 
-from .mixins import ScopedMixin
+from .mixins import BitcasterBaseModel, Scoped3Mixin, ScopedManager
 from .user import User
 
 logger = logging.getLogger(__name__)
 
-TOKEN_CHARS = f"{RANDOM_STRING_CHARS}-@*_+~,."
+TOKEN_CHARS = f"{RANDOM_STRING_CHARS}-_~."
 
 
 def make_token() -> str:
@@ -45,58 +45,34 @@ class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
             "coerce": self.base_field.to_python,
         }
         defaults.update(kwargs)
-        return super().formfield(**defaults)  # type: ignore[arg-type]
+        return super().formfield(**defaults)  # type: ignore[return-value, arg-type]
 
 
-class ApiKeyManager(models.Manager["ApiKey"]):
+class ApiKeyManager(ScopedManager["ApiKey"]):
 
-    def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> "tuple[ApiKey, bool]":
-        if kwargs.get("application"):
-            kwargs["project"] = kwargs["application"].project
-            kwargs["organization"] = kwargs["application"].project.organization
-        elif kwargs.get("project"):
-            kwargs["organization"] = kwargs["project"].organization
-
-        if defaults and defaults.get("application"):
-            defaults["project"] = defaults["application"].project
-            defaults["organization"] = defaults["application"].project.organization
-        elif defaults and defaults.get("project"):
-            defaults["organization"] = defaults["project"].organization
-
-        return super().get_or_create(defaults, **kwargs)
-
-    def update_or_create(
-        self,
-        defaults: MutableMapping[str, Any] | None = None,
-        create_defaults: MutableMapping[str, Any] | None = None,
-        **kwargs: Any,
-    ) -> "tuple[ApiKey, bool]":
-        if kwargs and kwargs.get("application"):
-            kwargs["project"] = kwargs["application"].project
-            kwargs["organization"] = kwargs["application"].project.organization
-        elif kwargs.get("project"):
-            kwargs["organization"] = kwargs["project"].organization
-
-        if defaults and defaults.get("application"):
-            defaults["project"] = defaults["application"].project
-            defaults["organization"] = defaults["application"].project.organization
-        elif defaults and defaults.get("project"):
-            defaults["organization"] = defaults["project"].organization
-
-        return super().update_or_create(defaults, **kwargs)
+    def get_by_natural_key(self, name: "str", user: "str", *args: Any) -> "ApiKey":
+        return self.get(name=name, user__username=user)
 
 
-class ApiKey(ScopedMixin, models.Model):
+class ApiKey(Scoped3Mixin, BitcasterBaseModel):
     name = models.CharField(verbose_name=_("Name"), max_length=255, db_collation="case_insensitive")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    key = models.CharField(verbose_name=_("Token"), unique=True, default=make_token)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="keys")
+    key = models.CharField(verbose_name=_("Token"), max_length=255, unique=True, default=make_token)
     grants = ChoiceArrayField(models.CharField(max_length=255, choices=Grant.choices), null=True, blank=True)
-
+    environments = ArrayField(
+        models.CharField(max_length=20, blank=True, null=True),
+        blank=True,
+        null=True,
+        help_text=_("Limit validity to these environments. If empty the key will be valid for any environment"),
+    )
     objects = ApiKeyManager()
 
     class Meta:
         ordering = ("name",)
         unique_together = (("name", "user"),)
+
+    def natural_key(self) -> tuple[str, ...]:
+        return self.name, self.user.username
 
     def __str__(self) -> str:
         return self.name

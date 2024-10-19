@@ -1,50 +1,51 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
-alias env='env|sort'
+export MEDIA_ROOT="${MEDIA_ROOT:-/var/run/app/media}"
+export STATIC_ROOT="${STATIC_ROOT:-/var/run/app/static}"
+export UWSGI_PROCESSES="${UWSGI_PROCESSES:-"4"}"
+export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-"bitcaster.config.settings"}"
+mkdir -p "${MEDIA_ROOT}" "${STATIC_ROOT}" || echo "Cannot create dirs ${MEDIA_ROOT} ${STATIC_ROOT}"
 
-MEDIA_ROOT="${MEDIA_ROOT:-/var/media}"
-STATIC_ROOT="${STATIC_ROOT:-/var/static}"
+echo $STATIC_ROOT
+echo $MEDIA_ROOT
 
-
-mkdir -p /var/run "${MEDIA_ROOT}" "${STATIC_ROOT}"
-
-echo "Executing '$1'..."
-echo "INIT_RUN_UPGRADE         '$INIT_RUN_UPGRADE'"
-echo "  INIT_RUN_CHECK         '$INIT_RUN_CHECK'"
-echo "  INIT_RUN_COLLECTSTATIC '$INIT_RUN_COLLECTSTATIC'"
-echo "  INIT_RUN_MIGRATATIONS  '$INIT_RUN_MIGRATATIONS'"
-echo "INIT_START_BOB         '$INIT_START_BOB'"
-echo "INIT_START_DAPHNE      '$INIT_START_DAPHNE'"
-echo "INIT_START_CELERY      '$INIT_START_CELERY'"
-echo "INIT_START_BEAT        '$INIT_START_BEAT'"
-echo "INIT_START_FLOWER      '$INIT_START_FLOWER'"
+if [ -d "${STATIC_ROOT}" ];then
+  chown -R user:app ${STATIC_ROOT}
+fi
+if [ -d "${MEDIA_ROOT}" ];then
+  chown -R user:app ${MEDIA_ROOT}
+fi
 
 case "$1" in
+    upgrade)
+      django-admin check --deploy
+	    set -- tini -- "$@"
+      set -- gosu user:app django-admin upgrade
+      ;;
+    config)
+      echo "CMD $@"
+      django-admin env
+      exit 0
+      ;;
+    flower)
+	    set -- tini -- "$@"
+      set -- gosu user:app celery -A bitcaster.config.celery flower
+      ;;
+    worker)
+	    set -- tini -- "$@"
+      set -- gosu user:app celery -A bitcaster.config.celery worker -E --loglevel=ERROR --concurrency=4
+      ;;
+    beat)
+	    set -- tini -- "$@"
+      set -- gosu user:app celery -A bitcaster.config.celery beat --loglevel=ERROR --scheduler django_celery_beat.schedulers:DatabaseScheduler
+      ;;
     run)
-      if [ "$INIT_RUN_CHECK" = "1" ];then
-        django-admin check --deploy
-      fi
-      OPTS="--no-check -v 1"
-      if [ "$INIT_RUN_UPGRADE" = "1" ];then
-        if [ "$INIT_RUN_COLLECTSTATIC" != "1" ];then
-          OPTS="$OPTS --no-static"
-        fi
-        if [ "$INIT_RUN_MIGRATATIONS" != "1" ];then
-          OPTS="$OPTS --no-migrate"
-        fi
-        echo "Running 'upgrade $OPTS'"
-        django-admin upgrade $OPTS
-      fi
-      exec circusd /conf/circus.conf
-      ;;
-    dev)
-      until pg_isready -h db -p 5432;
-        do echo "waiting for database"; sleep 2; done;
-      django-admin collectstatic --no-input
-      django-admin migrate
-      django-admin runserver 0.0.0.0:8000
-      ;;
-    *)
-      exec "$@"
-      ;;
+      django-admin check --deploy
+      django-admin upgrade
+      chown -R user:app ${STATIC_ROOT}
+	    set -- tini -- "$@"
+  		set -- gosu user:app uwsgi --ini /conf/uwsgi.ini
+	    ;;
 esac
+
+exec "$@"

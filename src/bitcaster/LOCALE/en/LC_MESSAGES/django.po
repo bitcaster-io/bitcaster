@@ -1,0 +1,502 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-05 11:40+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: bitcaster/admin/channel.py:89
+msgid "Configure channel"
+msgstr ""
+
+#: bitcaster/admin/channel.py:109
+msgid "Test channel"
+msgstr ""
+
+#: bitcaster/admin/message.py:129
+msgid "Usage"
+msgstr ""
+
+#: bitcaster/admin/mixins.py:31
+msgid "Lock"
+msgstr ""
+
+#: bitcaster/admin/mixins.py:38
+msgid "Lock {}"
+msgstr ""
+
+#: bitcaster/admin/mixins.py:42
+msgid "{} locked"
+msgstr ""
+
+#: bitcaster/admin/mixins.py:47
+msgid "Unlock"
+msgstr ""
+
+#: bitcaster/admin/mixins.py:54
+msgid "Unlock {}"
+msgstr ""
+
+#: bitcaster/admin/mixins.py:59
+msgid "{} unlocked"
+msgstr ""
+
+#: bitcaster/admin/user.py:19
+msgid "Personal info"
+msgstr ""
+
+#: bitcaster/admin/user.py:21
+msgid "Permissions"
+msgstr ""
+
+#: bitcaster/admin/user.py:30
+msgid "Important dates"
+msgstr ""
+
+#: bitcaster/config/settings.py:166
+msgid "Spanish"
+msgstr ""
+
+#: bitcaster/config/settings.py:167
+msgid "French"
+msgstr ""
+
+#: bitcaster/config/settings.py:168
+msgid "English"
+msgstr ""
+
+#: bitcaster/config/settings.py:169
+msgid "Arabic"
+msgstr ""
+
+#: bitcaster/dispatchers/email.py:16
+msgid "Host"
+msgstr ""
+
+#: bitcaster/dispatchers/email.py:17
+msgid "Port"
+msgstr ""
+
+#: bitcaster/dispatchers/email.py:18 bitcaster/dispatchers/gmail.py:17
+msgid "Username"
+msgstr ""
+
+#: bitcaster/dispatchers/email.py:19 bitcaster/dispatchers/gmail.py:18
+msgid "Password"
+msgstr ""
+
+#: bitcaster/dispatchers/email.py:20
+msgid "TLS"
+msgstr ""
+
+#: bitcaster/dispatchers/email.py:21
+msgid "SSL"
+msgstr ""
+
+#: bitcaster/dispatchers/email.py:22
+msgid "Timeout"
+msgstr ""
+
+#: bitcaster/dispatchers/mailgun.py:10 bitcaster/dispatchers/mailjet.py:10
+#: bitcaster/dispatchers/sendgrid.py:10
+msgid "API Key"
+msgstr ""
+
+#: bitcaster/dispatchers/mailgun.py:11
+msgid "Sender Domain"
+msgstr ""
+
+#: bitcaster/dispatchers/mailjet.py:11
+msgid "API Secret"
+msgstr ""
+
+#: bitcaster/dispatchers/slack.py:16
+msgid "URL"
+msgstr ""
+
+#: bitcaster/dispatchers/twilio.py:17
+msgid "SID"
+msgstr ""
+
+#: bitcaster/dispatchers/twilio.py:18 bitcaster/models/key.py:92
+msgid "Token"
+msgstr ""
+
+#: bitcaster/dispatchers/twilio.py:19
+msgid "Number"
+msgstr ""
+
+#: bitcaster/forms/message.py:85 bitcaster/forms/message.py:103
+msgid "This name is already in use."
+msgstr ""
+
+#: bitcaster/forms/mixins.py:49
+msgid "This field is required."
+msgstr ""
+
+#: bitcaster/models/application.py:25 bitcaster/models/organization.py:24
+#: bitcaster/models/project.py:21
+msgid "Owner"
+msgstr ""
+
+#: bitcaster/models/application.py:27
+msgid "Whether the application should be active"
+msgstr ""
+
+#: bitcaster/models/application.py:28
+msgid "Security lock of applications"
+msgstr ""
+
+#: bitcaster/models/application.py:30 bitcaster/models/organization.py:17
+#: bitcaster/models/project.py:23
+msgid "default from address for emails"
+msgstr ""
+
+#: bitcaster/models/application.py:34 bitcaster/models/organization.py:22
+#: bitcaster/models/project.py:28
+msgid "Default prefix for messages supporting subject"
+msgstr ""
+
+#: bitcaster/models/channel.py:57 bitcaster/models/key.py:90
+#: bitcaster/models/message.py:19
+msgid "Name"
+msgstr ""
+
+#: bitcaster/models/distribution.py:22
+msgid "Distribution List"
+msgstr ""
+
+#: bitcaster/models/distribution.py:23
+msgid "Distribution Lists"
+msgstr ""
+
+#: bitcaster/models/event.py:21
+msgid "Security lock"
+msgstr ""
+
+#: bitcaster/models/event.py:22 bitcaster/models/occurrence.py:43
+msgid "Do not customise notifications per single user"
+msgstr ""
+
+#: bitcaster/models/log.py:20
+msgid "Log Message"
+msgstr ""
+
+#: bitcaster/models/log.py:21
+msgid "Log Messages"
+msgstr ""
+
+#: bitcaster/models/message.py:24
+msgid "Channel for which  the message is valid"
+msgstr ""
+
+#: bitcaster/models/message.py:32
+msgid "Event to which this message belongs"
+msgstr ""
+
+#: bitcaster/models/message.py:40
+msgid "Notification to which this message belongs"
+msgstr ""
+
+#: bitcaster/models/message.py:42
+msgid "subject"
+msgstr ""
+
+#: bitcaster/models/message.py:42
+msgid "The subject of the message"
+msgstr ""
+
+#: bitcaster/models/message.py:43
+#: bitcaster/web/templates/rest_framework/base.html:75
+msgid "content"
+msgstr ""
+
+#: bitcaster/models/message.py:43
+msgid "The content of the message"
+msgstr ""
+
+#: bitcaster/models/message.py:45
+msgid "HTML Content"
+msgstr ""
+
+#: bitcaster/models/message.py:45
+msgid "The HTML formatted content of the message"
+msgstr ""
+
+#: bitcaster/models/message.py:49
+msgid "Message template"
+msgstr ""
+
+#: bitcaster/models/message.py:50
+msgid "Message templates"
+msgstr ""
+
+#: bitcaster/models/occurrence.py:29
+msgid "New"
+msgstr ""
+
+#: bitcaster/models/occurrence.py:30
+msgid "Processed"
+msgstr ""
+
+#: bitcaster/models/occurrence.py:31
+msgid "Failed"
+msgstr ""
+
+#: bitcaster/models/occurrence.py:33
+msgid "Timestamp when occurrence has been created."
+msgstr ""
+
+#: bitcaster/models/occurrence.py:35
+msgid "Context provided by the sender"
+msgstr ""
+
+#: bitcaster/models/occurrence.py:37
+msgid "Options provided by the sender to route linked notifications"
+msgstr ""
+
+#: bitcaster/models/occurrence.py:41
+msgid "Total number of recipients"
+msgstr ""
+
+#: bitcaster/models/occurrence.py:44
+msgid "Information about the processing (recipients, channels)"
+msgstr ""
+
+#: bitcaster/models/organization.py:19 bitcaster/models/project.py:25
+msgid "Subject Prefix"
+msgstr ""
+
+#: bitcaster/models/project.py:22
+msgid "Security lock of project"
+msgstr ""
+
+#: bitcaster/models/user.py:28
+msgid "user"
+msgstr ""
+
+#: bitcaster/models/user.py:29
+msgid "users"
+msgstr ""
+
+#: bitcaster/social/models.py:32
+msgid "Social Login provider"
+msgstr ""
+
+#: bitcaster/social/models.py:36
+msgid "Configuration as per Python Social Auth"
+msgstr ""
+
+#: bitcaster/web/templates/admin/404.html:4
+#: bitcaster/web/templates/admin/404.html:8
+msgid "Page not found"
+msgstr ""
+
+#: bitcaster/web/templates/admin/404.html:10
+msgid "We’re sorry, but the requested page could not be found."
+msgstr ""
+
+#: bitcaster/web/templates/admin/500.html:6
+#: bitcaster/web/templates/admin/app_index.html:10
+#: bitcaster/web/templates/admin/base.html:79
+#: bitcaster/web/templates/admin/social/socialprovider/change_form.html:18
+msgid "Home"
+msgstr ""
+
+#: bitcaster/web/templates/admin/500.html:7
+msgid "Server error"
+msgstr ""
+
+#: bitcaster/web/templates/admin/500.html:11
+msgid "Server error (500)"
+msgstr ""
+
+#: bitcaster/web/templates/admin/500.html:14
+msgid "Server Error <em>(500)</em>"
+msgstr ""
+
+#: bitcaster/web/templates/admin/500.html:15
+msgid ""
+"There’s been an error. It’s been reported to the site administrators via "
+"email and should be fixed shortly. Thanks for your patience."
+msgstr ""
+
+#: bitcaster/web/templates/admin/app_index.html:8
+#: bitcaster/web/templates/admin/base.html:76
+msgid "Breadcrumbs"
+msgstr ""
+
+#: bitcaster/web/templates/admin/app_list.html:8
+#, python-format
+msgid "Models in the %(name)s application"
+msgstr ""
+
+#: bitcaster/web/templates/admin/app_list.html:19
+msgid "Add"
+msgstr ""
+
+#: bitcaster/web/templates/admin/app_list.html:26
+msgid "View"
+msgstr ""
+
+#: bitcaster/web/templates/admin/app_list.html:28
+msgid "Change"
+msgstr ""
+
+#: bitcaster/web/templates/admin/app_list.html:39
+msgid "You don’t have permission to view or edit anything."
+msgstr ""
+
+#: bitcaster/web/templates/admin/base.html:29
+msgid "Skip to main content"
+msgstr ""
+
+#: bitcaster/web/templates/admin/base.html:44
+msgid "Welcome,"
+msgstr ""
+
+#: bitcaster/web/templates/admin/base.html:49
+msgid "View site"
+msgstr ""
+
+#: bitcaster/web/templates/admin/base.html:54
+msgid "Documentation"
+msgstr ""
+
+#: bitcaster/web/templates/admin/base.html:58
+msgid "Change password"
+msgstr ""
+
+#: bitcaster/web/templates/admin/base.html:62
+msgid "Log out"
+msgstr ""
+
+#: bitcaster/web/templates/admin/base.html:65
+msgid "API"
+msgstr ""
+
+#: bitcaster/web/templates/admin/base_site.html:3
+#: bitcaster/web/templates/admin/base_site.html:6
+msgid "Bitcaster"
+msgstr ""
+
+#: bitcaster/web/templates/admin/channel/lock.html:7
+#, python-format
+msgid "Unlocking the %(target)s will start message forwarding"
+msgstr ""
+
+#: bitcaster/web/templates/admin/channel/lock.html:12
+#, python-format
+msgid "Locking the %(target)s will stop any message forwarding"
+msgstr ""
+
+#: bitcaster/web/templates/admin/channel/test.html:9
+msgid "Recipient"
+msgstr ""
+
+#: bitcaster/web/templates/admin/message/create_message_template.html:6
+msgid "Message Template"
+msgstr ""
+
+#: bitcaster/web/templates/admin/message/create_message_template.html:7
+msgid "Channel"
+msgstr ""
+
+#: bitcaster/web/templates/admin/message/create_message_template.html:25
+msgid "Create"
+msgstr ""
+
+#: bitcaster/web/templates/admin/message/edit.html:18
+msgid "Text"
+msgstr ""
+
+#: bitcaster/web/templates/admin/message/edit.html:20
+msgid "Subject"
+msgstr ""
+
+#: bitcaster/web/templates/admin/message/edit.html:25
+msgid "Context"
+msgstr ""
+
+#: bitcaster/web/templates/admin/social/socialprovider/change_form.html:21
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
+
+#: bitcaster/web/templates/admin/social/socialprovider/change_form.html:45
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+
+#: bitcaster/web/templates/bitcaster/index.html:17
+msgid "Logout"
+msgstr ""
+
+#: bitcaster/web/templates/bitcaster/index.html:21
+msgid "Enter"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/admin.html:116
+#: bitcaster/web/templates/rest_framework/base.html:155
+msgid "Extra Actions"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/admin.html:130
+#: bitcaster/web/templates/rest_framework/base.html:170
+msgid "Filters"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/base.html:38
+msgid "navbar"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/base.html:78
+msgid "request form"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/base.html:177
+msgid "main content"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/base.html:193
+msgid "request info"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/base.html:197
+msgid "response info"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/filters/search.html:2
+#: bitcaster/web/templates/rest_framework/filters/search.html:8
+msgid "Search"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/horizontal/radio.html:4
+#: bitcaster/web/templates/rest_framework/inline/radio.html:3
+#: bitcaster/web/templates/rest_framework/vertical/radio.html:3
+msgid "None"
+msgstr ""
+
+#: bitcaster/web/templates/rest_framework/horizontal/select_multiple.html:4
+#: bitcaster/web/templates/rest_framework/inline/select_multiple.html:3
+#: bitcaster/web/templates/rest_framework/vertical/select_multiple.html:3
+msgid "No items to select."
+msgstr ""

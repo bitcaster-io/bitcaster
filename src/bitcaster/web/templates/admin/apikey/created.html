@@ -1,0 +1,17 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n %}
+<script src="/static/admin/js/vendor/jquery/jquery.js"></script>
+{% block content %}
+    {% if expired %}
+        <div>Grace period expired</div>
+    {% else %}
+        <h1>Key {{ original.name }} successfully created</h1>
+        <code class="frame highlight clipboard">{{ original.key }}</code>
+        <div>
+{% blocktranslate %}
+This is the only time this key will be displayed. Copy it and put in a safe place.	
+{% endblocktranslate %}
+        </div>
+    {% endif %}
+
+{% endblock %}
+{% block endbody %}{{ media }}{% endblock %}

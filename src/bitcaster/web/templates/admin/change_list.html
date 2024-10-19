@@ -1,0 +1,16 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls feature_flags %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+{% flag_enabled 'OLD_STYLE_UI' as OLD_STYLE_UI %}
+    {% if OLD_STYLE_UI %}
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+        
+    &rsaquo; <a href="{% url 'admin:app_list' app_label=cl.opts.app_label %}">{{ cl.opts.app_config.verbose_name }}</a>
+        {% else %}
+        <a href="{% url 'admin:index' %}">{% translate 'Dashboard' %}</a>
+    {% endif %}
+&rsaquo; {{ cl.opts.verbose_name_plural|capfirst }}
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-echo "uwsgi" `uwsgi --version`
-echo "circusd" `circusd --version`
-django-admin env
+cat /RELEASE
+exho "uwsgi `uwsgi --version`"
+echo "Django `django-admin --version`"

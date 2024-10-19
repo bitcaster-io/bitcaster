@@ -16,6 +16,7 @@ class Provider(models.TextChoices):
     GOOGLE_OAUTH2 = "GOOGLE_OAUTH2", "Google"
     LINKEDIN_OAUTH2 = "LINKEDIN_OAUTH2", "Linkedin"
     TWITTER = "TWITTER", "Twitter"
+    OAUTH2 = "OAUTH2", "oauth2"
 
 
 class SocialProviderManager(models.Manager["SocialProvider"]):

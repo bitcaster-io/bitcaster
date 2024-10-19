@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel
 
 
-def url_related(m: type[Model], **kwargs: Optional[Any]) -> str:
+def url_related(m: type[Model], op: str = "changelist", **kwargs: Optional[Any]) -> str:
     opts: "Options[AnyModel]" = m._meta
-    base_url = reverse(f"admin:{opts.app_label}_{opts.model_name}_changelist")
+    base_url = reverse(f"admin:{opts.app_label}_{opts.model_name}_{op}")
     return f"{base_url}?{urllib.parse.urlencode(kwargs)}"

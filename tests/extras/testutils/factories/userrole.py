@@ -8,7 +8,7 @@ from .org import OrganizationFactory
 from .user import UserFactory
 
 
-class UserRoleFactory(AutoRegisterModelFactory):
+class UserRoleFactory(AutoRegisterModelFactory[UserRole]):
     class Meta:
         model = UserRole
         django_get_or_create = ("user", "group", "organization")

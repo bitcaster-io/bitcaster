@@ -4,11 +4,11 @@ if TYPE_CHECKING:
     from bitcaster.models import Organization, Project, User
 
 
-def test_str(project: "Project"):
+def test_str(project: "Project") -> None:
     assert str(project) == project.name
 
 
-def test_set_owner(organization: "Organization", user: "User"):
+def test_set_owner(organization: "Organization", user: "User") -> None:
     from bitcaster.models import Project
 
     p = Project.objects.create(name="Prj1", organization=organization)

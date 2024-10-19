@@ -1,25 +1,31 @@
-{% extends "bitcaster/base.html" %}{% load static i18n %}
+{% extends "bitcaster/base.html" %}{% load static i18n feature_flags %}
+
 {% block body %}
     <div class="text-center">
-        <img style="width: 400px" src="{% static "bitcaster/images/logos/logo400.png" %}">
-        <img style="width: 400px" src="{% static "bitcaster/images/logos/name.svg" %}">
-        <div class="container module m-5 ">
+        <div>
+            <div class="container m-5">
+                <img style="width: 400px" src="{% static "bitcaster/images/logos/logo400.png" %}">
+            </div>
+            <div class="container">
+                <img style="width: 400px" src="{% static "bitcaster/images/logos/name.svg" %}">
+            </div>
+        </div>
+        <div class="container m-5 ">
             {% if user.is_authenticated %}
-                <form action="{% url "logout" %}" method="post">
+                {% if user.is_staff %}
+                    <a class="button default primary" href="{% url "admin:index" %}">Admin</a>
+                {% endif %}
+                <form method="post" action="{% url "logout" %}" id="logout-form">
                     {% csrf_token %}
-                    {% if user.is_staff %}
-                        <a class="button primary" href="{% url "admin:index" %}">Admin</a>
-                        <a class="button primary" href="/api/">API</a>
-                    {% endif %}
-                    <a class="button primary" href="/api/schema/">Swagger</a>
-                    <form method="post" action="{% url "logout" %}" id="logout-form">
-                        {% csrf_token %}
-                        <input type="submit" class="submit primary" value="{% translate "Logout" %}">
-                    </form>
+                    <input type="submit" class="submit primary" value="{% translate "Logout" %}">
                 </form>
             {% else %}
-                <a class="button primary" href="{% url "login" %}">{% translate "Enter" %}</a>
+                <a class="button primary" href="{% url "login" %}">{% translate "Login" %}</a>
             {% endif %}
+
         </div>
+    </div>
+    <div>
+
     </div>
 {% endblock %}

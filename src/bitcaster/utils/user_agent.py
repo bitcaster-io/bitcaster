@@ -35,7 +35,7 @@ def parse(user_agent_string: str) -> SmartUserAgent:
     return SmartUserAgent(user_agent_string)
 
 
-def get_cache_key(ua_string: bytes) -> str:
+def get_cache_key(ua_string: bytes | str) -> str:
     # Some user agent strings are longer than 250 characters so we use its MD5
     if isinstance(ua_string, str):
         ua_string = ua_string.encode("utf-8")

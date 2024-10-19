@@ -6,8 +6,10 @@ from .base import AutoRegisterModelFactory
 from .distribution import DistributionListFactory
 from .event import EventFactory
 
+__all__ = ["NotificationFactory", "Notification"]
 
-class NotificationFactory(AutoRegisterModelFactory):
+
+class NotificationFactory(AutoRegisterModelFactory[Notification]):
     class Meta:
         model = Notification
         django_get_or_create = ("event", "distribution")

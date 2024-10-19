@@ -1,87 +1,139 @@
 import logging
-import uuid
-from typing import TYPE_CHECKING, Any
+from datetime import timedelta
+from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
-from django.db import models, transaction
+from constance import config
+from django.db import models
+from django.db.models.expressions import F
+from django.db.models.functions import Coalesce
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from ..constants import Bitcaster
+from .assignment import Assignment
 from .event import Event
-from .validation import Validation
+from .mixins import BitcasterBaselManager, BitcasterBaseModel
 
 if TYPE_CHECKING:
+    from .application import Application
     from .channel import Channel
     from .message import Message
     from .notification import Notification
 
+    OccurrenceData = TypedDict("OccurrenceData", {"delivered": list[str | int], "recipients": list[tuple[str, str]]})
 
 logger = logging.getLogger(__name__)
+OccurrenceOptions = TypedDict(
+    "OccurrenceOptions",
+    {"limit_to": NotRequired[list[str]], "channels": NotRequired[list[str]], "environs": NotRequired[list[str]]},
+)
 
 
-class OccurrenceQuerySet(models.QuerySet["Occurrence"]):
+class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
+
+    def get_by_natural_key(self, timestamp: str, evt: str, app: str, prj: str, org: str) -> "Occurrence":
+        return self.get(
+            timestamp=timestamp,
+            event__application__project__organization__slug=org,
+            event__application__project__slug=prj,
+            event__application__slug=app,
+            event__slug=evt,
+        )
 
     def system(self, *args: Any, **kwargs: Any) -> models.QuerySet["Occurrence"]:
         return self.filter(event__application__name=Bitcaster.APPLICATION).filter(*args, **kwargs)
 
+    def purgeable(self, *args: Any, **kwargs: Any) -> models.QuerySet["Occurrence"]:
+        return self.filter(
+            last_updated__lt=timezone.now()
+            - models.ExpressionWrapper(  # type: ignore
+                timedelta(days=1)
+                * Coalesce(F("event__occurrence_retention"), config.OCCURRENCE_DEFAULT_RETENTION),  # type: ignore
+                output_field=models.DurationField(),
+            )
+        ).filter(*args, **kwargs)
 
-class Occurrence(models.Model):
+
+class Occurrence(BitcasterBaseModel):
     class Status(models.TextChoices):
         NEW = "NEW", _("New")
         PROCESSED = "PROCESSED", _("Processed")
         FAILED = "FAILED", _("Failed")
 
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True, help_text=_("Timestamp when occurrence has been created."))
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    context = models.JSONField(blank=True, null=True)
-    # processed = models.BooleanField(default=False)
-
-    correlation_id = models.UUIDField(default=uuid.uuid4, editable=False, blank=True, null=True)
-    recipients = models.IntegerField(default=0, help_text=_("Total number of recipients"))
-
-    newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
-    data = models.JSONField(default=dict)
-    status = models.CharField(
-        choices=Status,
-        default=Status.NEW.value,
+    context = models.JSONField(blank=True, default=dict, help_text=_("Context provided by the sender"))
+    options: "OccurrenceOptions" = models.JSONField(  # type: ignore[assignment]
+        blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
     )
-
+    correlation_id = models.CharField(max_length=255, editable=False, blank=True, null=True)
+    recipients = models.IntegerField(default=0, help_text=_("Total number of recipients"))
+    newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
+    data: "OccurrenceData" = models.JSONField(  # type: ignore[assignment]
+        default=dict, help_text=_("Information about the processing (recipients, channels)")
+    )
+    status = models.CharField(choices=Status, default=Status.NEW.value, max_length=20)
     attempts = models.IntegerField(default=5)
-    objects = OccurrenceQuerySet.as_manager()
+    parent = models.ForeignKey("self", editable=False, blank=True, null=True, on_delete=models.CASCADE)
+
+    objects = OccurrenceManager()
 
     class Meta:
         ordering = ("timestamp",)
+        constraints = [models.UniqueConstraint(fields=("timestamp", "event"), name="occurrence_unique")]
 
     def __str__(self) -> str:
         return f"Occurrence of {self.event.name} on {self.timestamp}"
+
+    def natural_key(self) -> tuple[str, ...]:
+        return str(self.timestamp), *self.event.natural_key()
 
     def __init__(self, *args: Any, **kwargs: Any):
         self._cached_messages: dict[Channel, Message] = {}
         super().__init__(*args, **kwargs)
 
     def get_context(self) -> dict[str, Any]:
-        return {
+        return self.context | {
             "timestamp": self.timestamp,
             "event": self.event,
         }
 
-    def process(self) -> bool:
-        validation: "Validation"
-        notification: "Notification"
+    @property
+    def application(self) -> "Application":
+        return self.event.application
 
+    def process(self) -> bool:
+        assignment: "Assignment"
+        notification: "Notification"
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
-        channels = self.event.channels.active()
+        assignment_filter = {}
+        notification_filter = {}
+        channel_filter = {}
+        if limit := self.options.get("limit_to", []):
+            assignment_filter["address__value__in"] = limit
 
-        for notification in self.event.notifications.match(self.context):
+        if channels := self.options.get("channels", []):
+            channel_filter["pk__in"] = channels
+        if environs := self.options.get("environs", []):
+            notification_filter["environments__overlap"] = environs
+
+        for notification in self.event.notifications.filter(**notification_filter).match(self.context):
             context = notification.get_context(self.get_context())
-            for channel in channels:
-                for validation in notification.get_pending_subscriptions(delivered, channel):
-                    with transaction.atomic(durable=True):
-                        notification.notify_to_channel(channel, validation, context)
+            logger.debug(f"Processing occurrence {self.id} , context: {context}")
+            for channel in self.event.channels.filter(**channel_filter):
+                for assignment in notification.get_pending_subscriptions(delivered, channel).filter(
+                    **assignment_filter
+                ):
+                    try:
+                        notification.notify_to_channel(channel, assignment, context)
 
-                        delivered.append(validation.id)
-                        recipients.append([validation.address.value, validation.channel.name])
-
+                        delivered.append(assignment.id)
+                        recipients.append((assignment.address.value, assignment.channel.name))
+                    except Exception as e:
+                        logger.exception(e)
+                        return False
+                    finally:
                         self.data = {"delivered": delivered, "recipients": recipients}
                         self.save()
         return True

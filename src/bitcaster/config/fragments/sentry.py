@@ -2,7 +2,7 @@ import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from .. import env
+from bitcaster.config import env
 
 SENTRY_DSN = env("SENTRY_DSN")
 SENTRY_URL = env("SENTRY_URL")

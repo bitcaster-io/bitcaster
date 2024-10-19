@@ -6,22 +6,22 @@ from bitcaster.state import State
 
 
 @pytest.fixture
-def state():
+def state() -> State:
     s = State()
     s.reset()
     return s
 
 
-def test_state(state):
+def test_state(state: State) -> None:
     assert not state.request
 
 
-def test_cookies(state):
+def test_cookies(state: State) -> None:
 
     assert not state.cookies
 
 
-def test_configure(state):
+def test_configure(state: State) -> None:
     with state.configure(a=1):
         assert state.a == 1
         with state.configure(request=1, not_set=2):
@@ -33,7 +33,7 @@ def test_configure(state):
 
 
 @freeze_time("2000-01-01T00:00:00Z")
-def test_add_cookies(state):
+def test_add_cookies(state: State) -> None:
     state.add_cookie("test", 22, 3600, None, "/path/", "domain.example.com", True, True, "lax")
     r: HttpResponse = HttpResponse()
     state.set_cookies(r)

@@ -21,8 +21,8 @@ class Command(BaseCommand):
             "--pattern",
             action="store",
             dest="pattern",
-            default="{key}={value}  # {help}",
-            help="Check env for variable availability (default: '{key}={value}  # {help}')",
+            default="{key}={value}",
+            help="Pattern to use to print variables (default: '{key}={value}{space}",
         )
         parser.add_argument("--develop", action="store_true", help="Display development values")
         parser.add_argument("--config", action="store_true", help="Only list changed values")
@@ -48,12 +48,13 @@ class Command(BaseCommand):
                     self.stderr.write(self.style.ERROR(f"- Missing env variable: {k}"))
                     check_failure = True
             else:
+                value: Any
                 if options["develop"]:
-                    value: Any = env.for_develop(k)
+                    value = env.for_develop(k)
                 else:
-                    value: Any = env.get_value(k)
+                    value = env.get_value(k)
 
-                line: str = pattern.format(key=k, value=value, help=help, default=default)
+                line: str = pattern.format(key=k, value=str(value or ""), help=help, default=default, space=" ")
                 if options["diff"]:
                     if value != default:
                         line = self.style.SUCCESS(line)

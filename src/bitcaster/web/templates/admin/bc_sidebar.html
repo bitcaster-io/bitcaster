@@ -1,0 +1,7 @@
+{% load i18n static feature_flags %}
+{% flag_enabled 'OLD_STYLE_UI' as OLD_STYLE_UI %}
+{% if OLD_STYLE_UI %}
+    {% include "admin/nav_sidebar.html" %}
+{% else %}
+    {% include "admin/nav_sidebar2.html" %}
+{% endif %}

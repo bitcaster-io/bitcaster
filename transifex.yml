@@ -4,6 +4,6 @@ git:
       file_format: PO
       source_file_extension: po
       source_language: en
-      source_file_dir: locale/en/LC_MESSAGES
+      source_file_dir: src/bitcaster/LOCALE/en/LC_MESSAGES
       # path expression to translation files, must contain <lang> placeholder
-      translation_files_expression: 'locale/<lang>/LC_MESSAGES'
+      translation_files_expression: 'src/bitcaster/LOCALE/<lang>/LC_MESSAGES'

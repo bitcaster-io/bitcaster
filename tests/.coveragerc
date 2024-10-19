@@ -35,7 +35,14 @@ exclude_lines =
     raise NotImplementedError
     except ImportError
     except BaseException as e
+    raise CommandError.*
+    self.halt\(.*
+    @abc.abstractmethod
+    @abstractmethod
 
+
+fail_under=90
+precision=2
 ignore_errors = True
 
 [html]

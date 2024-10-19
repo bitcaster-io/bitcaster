@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -7,49 +7,54 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.template.response import TemplateResponse
+from django.utils.translation import gettext as _
 
 from ..forms.message import NotificationTemplateCreateForm
+from ..forms.notification import NotificationForm
 from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:
     from bitcaster.models import Notification
-
 
 logger = logging.getLogger(__name__)
 
 
 class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
     search_fields = ("name",)
-    list_display = ("name", "event")
+    list_display = ("name", "event", "application")
     list_filter = (
-        ("event__application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        (
-            "event__application__project",
-            LinkedAutoCompleteFilter.factory(parent="event__application__project__organization"),
-        ),
-        ("event__application", LinkedAutoCompleteFilter.factory(parent="event__application__project")),
+        # ("event__application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        # (
+        #     "event__application__project",
+        #     LinkedAutoCompleteFilter.factory(parent="event__application__project__organization"),
+        # ),
+        ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent="event__application")),
-        # ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
+        ("distribution__recipients__address__user", LinkedAutoCompleteFilter.factory(parent=None)),
     )
     autocomplete_fields = ("event", "distribution")
+    form = NotificationForm
+
+    def get_exclude(self, request: HttpRequest, obj: "Optional[Notification]" = None) -> tuple[str, ...]:
+        return ("payload_filter", "extra_context")
 
     def get_queryset(self, request: HttpRequest) -> QuerySet["Notification"]:
-        return super().get_queryset(request).select_related("event", "distribution")
+        return (
+            super()
+            .get_queryset(request)
+            .select_related(
+                "event",
+                "event__application",
+                "event__application__project",
+                "event__application__project__organization",
+                "distribution",
+            )
+        )
 
-    # @button()
-    # def messages(self, request: HttpRequest, pk: str) -> HttpResponse:
-    #     ctx = self.get_common_context(request, pk, title=_("Message resolution order"))
-    #     obj: Notification = ctx["original"]
-    #     messages: "dict[Channel, QuerySet[Message]]" = {}
-    #     for ch in obj.event.channels.all():
-    #         messages[ch] = obj.get_messages(ch)
-    #     ctx["message_templates"] = messages
-    #     return TemplateResponse(request, "admin/notification/messages.html", ctx)
-
-    @button(html_attrs={"style": f"background-color:{ButtonColor.ACTION}"})
+    @button(html_attrs={"class": ButtonColor.LINK.value})
     def messages(self, request: HttpRequest, pk: str) -> HttpResponse:
         status_code = 200
-        ctx = self.get_common_context(request, pk)
+        ctx = self.get_common_context(request, pk, title=_("Messages"))
         notification: "Notification" = ctx["original"]
         if request.method == "POST":
             form = NotificationTemplateCreateForm(request.POST, notification=notification)
@@ -60,6 +65,6 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
                 status_code = 400
         else:
             form = NotificationTemplateCreateForm(notification=notification)
-        ctx["message_templates"] = notification.messages.filter(project=None)
+        ctx["message_templates"] = notification.messages.filter()
         ctx["form"] = form
-        return TemplateResponse(request, "admin/message/create_message_template.html", ctx, status=status_code)
+        return TemplateResponse(request, "admin/notification/messages.html", ctx, status=status_code)

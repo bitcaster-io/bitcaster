@@ -4,6 +4,7 @@ from django.contrib import admin
 from bitcaster.constants import Bitcaster
 from bitcaster.models import Organization, Project
 
+from .fields import Select2TagField
 from .widgets import AutocompletSelectEnh
 
 
@@ -16,10 +17,14 @@ class ProjectBaseForm(forms.ModelForm["Project"]):
         ),
     )
     slug = forms.SlugField(required=False)
+    environments = Select2TagField(required=False)
 
     class Meta:
         model = Project
         exclude = ("config", "locked")
+
+    def full_clean(self) -> None:
+        return super().full_clean()
 
 
 class ProjectAddForm(ProjectBaseForm):

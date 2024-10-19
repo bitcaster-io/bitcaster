@@ -1,0 +1,33 @@
+name: Delete Outdated Docker Image
+on: delete
+jobs:
+  delete_branch:
+    if: github.event.ref_type == 'branch' || github.event.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+      - shell: bash
+        run: |
+          ref="${{github.ref}}"
+          tag=$(echo $ref | sed -e "s#refs/heads/##g" | sed -e s#/#-##g)
+          echo "ref=$ref" >> $GITHUB_ENV
+          echo "dist_tag=$tag" >> $GITHUB_ENV
+          echo "test_tag=test-${tag}" >> $GITHUB_ENV
+          ls -al ./.github/actions
+      - name: Delete distro docker
+        uses: ./.github/actions/delete_docker
+        if: github.event.ref_type == 'tag'
+        with:
+          image: ${{vars.DOCKER_IMAGE}}
+          tag: ${{ env.dist_tag }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Delete test docker
+        uses: ./.github/actions/delete_docker
+        with:
+          image: ${{vars.DOCKER_IMAGE}}
+          tag: ${{ env.test_tag }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}

@@ -1,25 +1,30 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
+from admin_extra_buttons.buttons import Button
+from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django.contrib import admin
-from django.http import HttpRequest
+from django.db.models import QuerySet
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 
 from bitcaster.forms.application import ApplicationChangeForm
 from bitcaster.models import Application
 
+from ..constants import Bitcaster
 from ..state import state
-from .base import BaseAdmin
-from .mixins import LockMixin
+from ..utils.django import url_related
+from .base import BaseAdmin, ButtonColor
+from .mixins import LockMixinAdmin
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
-
 logger = logging.getLogger(__name__)
 
 
-class ApplicationAdmin(BaseAdmin, LockMixin[Application], admin.ModelAdmin[Application]):
+class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[Application]):
     search_fields = ("name",)
     list_display = ("name", "project", "organization", "active", "locked")
     list_filter = (
@@ -28,16 +33,21 @@ class ApplicationAdmin(BaseAdmin, LockMixin[Application], admin.ModelAdmin[Appli
         "active",
         "locked",
     )
-    autocomplete_fields = ("project", "owner")
+    # autocomplete_fields = ("project", "owner")
     readonly_fields = ["locked"]
     form = ApplicationChangeForm
 
-    def get_queryset(self, request):
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        from bitcaster.models import Project
+
+        return super().has_add_permission(request) and Project.objects.local().count() > 0
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Application]:
         return super().get_queryset(request).select_related("project", "project__organization", "owner")
 
     def get_readonly_fields(self, request: HttpRequest, obj: Optional[Application] = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
-        if obj and obj.name.lower() == "bitcaster":
+        if obj and obj.organization.name == Bitcaster.ORGANIZATION:
             base.extend(
                 [
                     "name",
@@ -49,7 +59,34 @@ class ApplicationAdmin(BaseAdmin, LockMixin[Application], admin.ModelAdmin[Appli
         return base
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
-        return {
-            "owner": request.user.id,
-            "project": state.get_cookie("project"),
-        }
+        from bitcaster.models import Project
+
+        initial = super().get_changeform_initial_data(request)
+        initial.setdefault("owner", request.user.id)
+        initial.setdefault("project", state.get_cookie("project"))
+        initial["project"] = Project.objects.filter(pk=state.get_cookie("project")).first()
+        initial.setdefault("from_email", request.user.email)
+        return initial
+
+    @link(change_form=True, change_list=False)
+    def events(self, button: Button) -> None:
+        url = reverse("admin:bitcaster_event_changelist")
+        application: Application = button.context["original"]
+        button.href = (
+            f"{url}?application__exact={application.pk}&application__organization__exact={application.organization.pk}"
+        )
+
+    @link(change_form=True, change_list=False)
+    def notifications(self, button: Button) -> None:
+        url = reverse("admin:bitcaster_notification_changelist")
+        application: Application = button.context["original"]
+        button.href = f"{url}?event__application__exact={application.pk}"
+
+    @button(
+        visible=lambda s: s.context["original"].project.organization.name != Bitcaster.ORGANIZATION,
+        html_attrs={"class": ButtonColor.ACTION.value},
+    )
+    def add_event(self, request: HttpRequest, pk: str) -> HttpResponse:
+        from bitcaster.models import Event
+
+        return HttpResponseRedirect(url_related(Event, op="add", application=pk))

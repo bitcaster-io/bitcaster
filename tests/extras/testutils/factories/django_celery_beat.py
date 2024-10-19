@@ -3,6 +3,7 @@ from django.utils import timezone
 from django_celery_beat.models import (
     SOLAR_SCHEDULES,
     ClockedSchedule,
+    CrontabSchedule,
     IntervalSchedule,
     PeriodicTask,
     SolarSchedule,
@@ -12,7 +13,7 @@ from factory.fuzzy import FuzzyChoice
 from .base import AutoRegisterModelFactory
 
 
-class IntervalScheduleFactory(AutoRegisterModelFactory):
+class IntervalScheduleFactory(AutoRegisterModelFactory[IntervalSchedule]):
     every = 1
     period = IntervalSchedule.HOURS
 
@@ -20,7 +21,7 @@ class IntervalScheduleFactory(AutoRegisterModelFactory):
         model = IntervalSchedule
 
 
-class SolarScheduleFactory(AutoRegisterModelFactory):
+class SolarScheduleFactory(AutoRegisterModelFactory[SolarSchedule]):
     event = FuzzyChoice([x[0] for x in SOLAR_SCHEDULES])
 
     latitude = 10.1
@@ -30,17 +31,23 @@ class SolarScheduleFactory(AutoRegisterModelFactory):
         model = SolarSchedule
 
 
-class ClockedScheduleFactory(AutoRegisterModelFactory):
+class ClockedScheduleFactory(AutoRegisterModelFactory[ClockedSchedule]):
     clocked_time = timezone.now()
 
     class Meta:
         model = ClockedSchedule
 
 
-class PeriodicTaskFactory(AutoRegisterModelFactory):
+class CrontabScheduleFactory(AutoRegisterModelFactory[CrontabSchedule]):
+    class Meta:
+        model = CrontabSchedule
+
+
+class PeriodicTaskFactory(AutoRegisterModelFactory[PeriodicTask]):
     name = factory.Sequence(lambda n: "PeriodicTask%03d" % n)
-    interval = factory.SubFactory(IntervalScheduleFactory)
-    task = "bitcaster.tasks.notify_failures"
+    # interval = factory.SubFactory(IntervalScheduleFactory)
+    crontab = factory.SubFactory(CrontabScheduleFactory)
+    task = "bitcaster.tasks.purge_occurrences"
 
     class Meta:
         model = PeriodicTask

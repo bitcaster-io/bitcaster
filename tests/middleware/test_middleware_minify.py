@@ -1,8 +1,10 @@
+# mypy: disable-error-code="union-attr"
 from unittest.mock import Mock
 
 import pytest
 from constance.test import override_config
 from django.http import HttpResponse
+from django.test.client import RequestFactory
 
 from bitcaster.middleware.minify import MinifyFlag
 
@@ -31,8 +33,8 @@ page = """
    """
 
 
-@override_config(MINIFY_RESPONSE=MinifyFlag.HTML + MinifyFlag.NEWLINE + MinifyFlag.SPACES)
-def test_minify_base_handling(db, rf):
+@override_config(MINIFY_RESPONSE=MinifyFlag.HTML + MinifyFlag.NEWLINE + MinifyFlag.SPACES)  # type: ignore[misc]
+def test_minify_base_handling(rf: RequestFactory) -> None:
     from bitcaster.middleware.minify import HtmlMinMiddleware
 
     request = rf.get("/", headers={"HTT_Content_Type": "text/html"})
@@ -46,7 +48,7 @@ def test_minify_base_handling(db, rf):
 
 
 @pytest.mark.parametrize("opt", [MinifyFlag.HTML, MinifyFlag.NEWLINE, MinifyFlag.SPACES])
-def test_minify_base_handling_option(db, rf, opt):
+def test_minify_base_handling_option(rf: RequestFactory, opt: MinifyFlag) -> None:
     from bitcaster.middleware.minify import HtmlMinMiddleware
 
     override_config(MINIFY_RESPONSE=opt).enable()
@@ -56,8 +58,10 @@ def test_minify_base_handling_option(db, rf, opt):
     assert res.content.decode()
 
 
-@override_config(MINIFY_RESPONSE=MinifyFlag.HTML + MinifyFlag.NEWLINE + MinifyFlag.SPACES, MINIFY_IGNORE_PATH="aa.*")
-def test_minify_base_handling_option_path(db, rf):
+@override_config(
+    MINIFY_RESPONSE=MinifyFlag.HTML + MinifyFlag.NEWLINE + MinifyFlag.SPACES, MINIFY_IGNORE_PATH="aa.*"
+)  # type: ignore[misc]
+def test_minify_base_handling_option_path(rf: RequestFactory) -> None:
     from bitcaster.middleware.minify import HtmlMinMiddleware
 
     request = rf.get("/", headers={"HTT_Content_Type": "text/html"})
@@ -70,8 +74,10 @@ def test_minify_base_handling_option_path(db, rf):
     )
 
 
-@override_config(MINIFY_RESPONSE=MinifyFlag.HTML + MinifyFlag.NEWLINE + MinifyFlag.SPACES, MINIFY_IGNORE_PATH="aa.*")
-def test_minify_skip(db, rf):
+@override_config(
+    MINIFY_RESPONSE=MinifyFlag.HTML + MinifyFlag.NEWLINE + MinifyFlag.SPACES, MINIFY_IGNORE_PATH="aa.*"
+)  # type: ignore[misc]
+def test_minify_skip(rf: RequestFactory) -> None:
     from bitcaster.middleware.minify import HtmlMinMiddleware
 
     request = rf.get("/", headers={"HTT_Content_Type": "text/html"})
@@ -80,8 +86,8 @@ def test_minify_skip(db, rf):
     assert res.content.decode() == "<a  ></a>"
 
 
-@override_config(MINIFY_RESPONSE=MinifyFlag.HTML)
-def test_minify_update_config(db, rf):
+@override_config(MINIFY_RESPONSE=MinifyFlag.HTML)  # type: ignore[misc]
+def test_minify_update_config() -> None:
     from bitcaster.middleware.minify import HtmlMinMiddleware
 
     m = HtmlMinMiddleware(lambda x: HttpResponse("<a  ></a>"))

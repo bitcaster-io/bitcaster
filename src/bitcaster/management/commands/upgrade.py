@@ -8,11 +8,12 @@ from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
 from django.core.validators import validate_email
+from django_celery_beat.models import CrontabSchedule, PeriodicTask
+from flags.state import enable_flag
 from strategy_field.utils import fqn
 
 from bitcaster.config import env
 from bitcaster.constants import Bitcaster
-from bitcaster.dispatchers import EmailDispatcher
 from bitcaster.models import Channel
 
 if TYPE_CHECKING:
@@ -108,8 +109,8 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
         from django.contrib.auth.models import Group
 
-        from bitcaster.dispatchers.log import BitcasterLogDispatcher
-        from bitcaster.models import DistributionList, User
+        from bitcaster.dispatchers.log import BitcasterSysDispatcher
+        from bitcaster.models import DistributionList, Organization, Project, User
 
         self.get_options(options)
         if self.verbosity >= 1:
@@ -123,13 +124,15 @@ class Command(BaseCommand):
                 "verbosity": self.verbosity - 1,
                 "stdout": self.stdout,
             }
+            from django.conf import settings
+
             echo("Running upgrade", style_func=self.style.WARNING)
             call_command("env", check=True)
 
             if self.run_check:
                 call_command("check", deploy=True, verbosity=self.verbosity - 1)
             if self.static:
-                static_root = Path(env("STATIC_ROOT"))
+                static_root = Path(str(settings.STATIC_ROOT))
                 echo(f"Run collectstatic to: '{static_root}' - '{static_root.absolute()}")
                 if not static_root.exists():
                     static_root.mkdir(parents=True)
@@ -140,8 +143,15 @@ class Command(BaseCommand):
                 call_command("migrate", **extra)
                 call_command("create_extra_permissions")
 
+            echo("Init reversion")
+            call_command("createinitialrevisions")
+            call_command("deleterevisions", days=180, keep=3)
+
             echo("Remove stale contenttypes")
             call_command("remove_stale_contenttypes", **extra)
+
+            admin: User | None
+            User.objects.get_or_create(username="__SYSTEM__")
             if self.admin_email:
                 if User.objects.filter(email=self.admin_email).exists():
                     echo(
@@ -149,6 +159,7 @@ class Command(BaseCommand):
                         style_func=self.style.WARNING,
                     )
                 else:
+                    enable_flag("LOCAL_LOGIN")
                     echo(f"Creating superuser: {self.admin_email}", style_func=self.style.WARNING)
                     validate_email(self.admin_email)
                     os.environ["DJANGO_SUPERUSER_USERNAME"] = self.admin_email
@@ -164,7 +175,7 @@ class Command(BaseCommand):
 
                 admin = User.objects.get(email=self.admin_email)
             else:
-                admin = User.objects.filter(is_superuser=True).first()
+                admin = User.objects.filter(is_superuser=True).get()
 
             if not admin:
                 raise CommandError("Create an admin user")
@@ -178,27 +189,13 @@ class Command(BaseCommand):
                 name="BitcasterLog",
                 organization=os4d,
                 project=bitcaster.project,
-                application=bitcaster,
-                dispatcher=fqn(BitcasterLogDispatcher),
-            )[0]
-            ch_mail = Channel.objects.get_or_create(
-                name=Channel.SYSTEM_EMAIL_CHANNEL_NAME,
-                organization=os4d,
-                project=bitcaster.project,
-                application=bitcaster,
-                dispatcher=fqn(EmailDispatcher),
+                dispatcher=fqn(BitcasterSysDispatcher),
+                config={"timeout": settings.EMAIL_TIMEOUT or 5},
             )[0]
 
-            bitcaster.create_message(
-                name="Message for channel {name}".format(name=ch_mail.name),
-                channel=ch_mail,
-                defaults={"subject": "{{subject}}", "content": "{{message}}", "html_content": "{{message}}"},
-            )
             for ev in bitcaster.events.all():  # noqa
-                # ev.channels.add(ch_mail)
-                # ev.channels.add(ch_log)
                 n = ev.create_notification(name=f"Notification for {ev.name}", distribution=dis)
-                for ch in [ch_mail, ch_log]:
+                for ch in [ch_log]:
                     ev.create_message(
                         name=f"Message for event {ev.name} using {ch}",
                         channel=ch,
@@ -211,14 +208,31 @@ class Command(BaseCommand):
                     )
 
             echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
-            admin_email = admin.addresses.get_or_create(name="email", defaults={"value": self.admin_email})[0]
-            v = admin_email.validate_channel(ch_mail)
-            dis.recipients.add(v)
+            admin.addresses.get_or_create(name="email", value=self.admin_email)
 
             from bitcaster.auth.constants import DEFAULT_GROUP_NAME
 
             Group.objects.get_or_create(name="Admins")
             Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
+
+            # -- Inside the function you want to add task dynamically
+
+            schedule_every_minute, _ = CrontabSchedule.objects.get_or_create(minute="*/1")
+            PeriodicTask.objects.get_or_create(
+                name="occurence_processor",
+                defaults={"task": "bitcaster.tasks.schedule_occurrences", "crontab": schedule_every_minute},
+            )
+
+            schedule_every_night, _ = CrontabSchedule.objects.get_or_create(hour=3, minute=30)
+            PeriodicTask.objects.get_or_create(
+                name="purge_occurrences",
+                defaults={"task": "bitcaster.tasks.purge_occurrences", "crontab": schedule_every_night},
+            )
+            if not (org := Organization.objects.local().first()):
+                org = Organization.objects.create(name="Organization", owner=admin)
+
+            if not (prj := Project.objects.local().first()):
+                Project.objects.create(name="Project", owner=admin, organization=org)
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
         except ValidationError as e:

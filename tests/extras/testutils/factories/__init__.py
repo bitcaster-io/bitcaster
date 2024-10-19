@@ -1,23 +1,57 @@
+from django.db.models import Model
+
 from . import base
-from .address import Address, AddressFactory  # noqa
-from .channel import Channel, ChannelFactory  # noqa
-from .distribution import DistributionList, DistributionListFactory  # noqa
-from .django_auth import Group, GroupFactory, Permission, PermissionFactory  # noqa
-from .django_celery_beat import PeriodicTask, PeriodicTaskFactory  # noqa
-from .event import Event, EventFactory  # noqa
-from .key import ApiKey, ApiKeyFactory  # noqa
-from .log import LogEntryFactory, LogMessage  # noqa
-from .message import Message, MessageFactory  # noqa
-from .notification import Notification, NotificationFactory  # noqa
-from .occurrence import Occurrence, OccurrenceFactory  # noqa
+from .address import AddressFactory  # noqa
+from .assignment import AssignmentFactory  # noqa
+from .browser import BrowserFactory  # noqa
+from .channel import ChannelFactory  # noqa
+from .distribution import DistributionListFactory  # noqa
+from .django_auth import GroupFactory, PermissionFactory  # noqa
+from .django_celery_beat import PeriodicTaskFactory  # noqa
+from .event import EventFactory  # noqa
+from .internal import LogMessageFactory  # noqa
+from .key import ApiKeyFactory  # noqa
+from .log import LogEntryFactory  # noqa
+from .media import MediaFileFactory  # noqa
+from .message import MessageFactory  # noqa
+from .monitor import MonitorFactory  # noqa
+from .notification import NotificationFactory  # noqa
+from .occurrence import OccurrenceFactory  # noqa
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory  # noqa
-from .social import SocialProvider, SocialProviderFactory  # noqa
-from .user import SuperUserFactory, User, UserFactory  # noqa
-from .userrole import UserRole, UserRoleFactory  # noqa
-from .validation import Validation, ValidationFactory  # noqa
+from .social import SocialProviderFactory  # noqa
+from .user import SuperUserFactory, UserFactory  # noqa
+from .userrole import UserRoleFactory  # noqa
+
+__all__ = [
+    "AddressFactory",
+    "ApiKeyFactory",
+    "ApplicationFactory",
+    "AssignmentFactory",
+    "BrowserFactory",
+    "BrowserFactory",
+    "ChannelFactory",
+    "DistributionListFactory",
+    "EventFactory",
+    "GroupFactory",
+    "GroupFactory",
+    "LogEntryFactory",
+    "MediaFileFactory",
+    "MessageFactory",
+    "NotificationFactory",
+    "OccurrenceFactory",
+    "OrganizationFactory",
+    "PeriodicTaskFactory",
+    "PermissionFactory",
+    "ProjectFactory",
+    "ProjectFactory",
+    "SocialProviderFactory",
+    "SuperUserFactory",
+    "UserFactory",
+    "UserRoleFactory",
+]
 
 
-def get_factory_for_model(_model) -> type[base.TAutoRegisterModelFactory]:
+def get_factory_for_model(_model: Model) -> "type[base.TAutoRegisterModelFactory]":
     class Meta:
         model = _model
 

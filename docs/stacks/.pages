@@ -1,0 +1,6 @@
+title: Compose
+
+nav:
+    - Simple: simple.md
+    - Full: full.md
+    - Development: develop.md

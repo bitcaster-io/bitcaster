@@ -5,56 +5,76 @@ repos:
       # but we let pre-commit take care of the file filtering.
       - id: black
         name: black
-        args: [ '--check' ]
+        #        args: [ '--check' ]
         entry: black
         language: python
         types: [ python ]
         require_serial: true
-        additional_dependencies: [black]
+        additional_dependencies: [ black ]
 
       # Configuration for isort exists in pyproject.toml,
       # but we let pre-commit take care of the file filtering.
       - id: isort
         name: isort
-#        args: [ '--version']
-        args: ["--profile", "black"]
-#        args: [ '--src', 'src/','--check-only' ]
+        args: [ "--profile", "black" ]
         entry: isort
         language: python
         types: [ python ]
-        additional_dependencies: [isort]
+        additional_dependencies: [ isort ]
       # Configuration for black exists in .flake8,
       # but we let pre-commit take care of the file filtering.
       - id: flake8
         name: flake8
-        args: ["--config", ".flake8"]
+        args: [ "--config", ".flake8" ]
         entry: flake8
         language: python
         types: [ python ]
-        additional_dependencies: [flake8]
+        additional_dependencies: [ flake8 ]
+
       - id: mypy
-        exclude: (^~.*|)
+        exclude: (^~.*|manage\.py|develop\.py|conftest.py)
         args: [ "--config-file", ".mypy.ini" ]
+        require_serial: true
         name: mypy
         entry: mypy
         language: python
         types: [ python ]
         stages: [ commit ]
-        additional_dependencies: [mypy]
+        additional_dependencies: [packaging]
+
+#      - id: mypy
+#        exclude: (^~.*|manage\.py|develop\.py|conftest.py)
+#        args: [ "--config-file", ".mypy.ini" ]
+#        require_serial: true
+#        name: mypy
+#        entry: mypy
+#        language: python
+#        types: [ python ]
+#        stages: [ commit ]
+#        additional_dependencies: [
+#          "django-stubs",
+#          "django-stubs-ext",
+#          "mypy-boto3",
+#          "mypy-boto3-sns",
+#          "boto3-stubs",
+#          "types-freezegun",
+#          "types-markdown",
+#          "types-python-dateutil",
+#          "types-redis",
+#          "types-requests",
+#          "types-s3transfer",
+#        ]
 
   - repo: https://github.com/Yelp/detect-secrets
-    rev: 0.9.1
+    rev: v1.5.0
     hooks:
       - id: detect-secrets
         args: [ '--baseline', '.secrets.baseline' ]
         exclude: (tests/.*|.*/tenant\.sql|Pipfile\.lock|.*\.js|~.gitlab-ci.yml|poetry.lock)
         stages: [ push ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.1.0
+    rev: v4.6.0
     hooks:
-      #      - id: double-quote-string-fixer
-      #        stages: [commit]
-
       - id: debug-statements
         stages: [ commit ]
 
@@ -69,12 +89,13 @@ repos:
         stages: [ commit ]
 
   - repo: https://github.com/saxix/pch
-    rev: fc387f4
+    rev: '0.1'
     hooks:
       - id: check-missed-migrations
         args:
           - src
         stages: [ commit ]
+        additional_dependencies: [ setuptools ]
 
       - id: check-untracked
         args:
@@ -89,17 +110,10 @@ repos:
           - -p
           - /print\(111/
         stages: [ commit ]
-#
+        additional_dependencies: [ setuptools ]
+
   - repo: https://github.com/PyCQA/bandit
-    rev: '' # Update me!
+    rev: '1.7.9' # Update me!
     hooks:
       - id: bandit
-        args: ["-c", "bandit.yaml"]
-#  - repo: https://github.com/mxab/pre-commit-trivy.git
-#    rev: v0.12.0
-#    hooks:
-#      - id: trivyfs-docker
-#        args:
-#          - --skip-dirs
-#          - ./tests
-#          - src/
+        args: [ "-c", "bandit.yaml" ]

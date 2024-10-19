@@ -1,0 +1,24 @@
+quiet: true
+debug: true
+format: json
+exit-code: 0
+
+ignore-policy:
+
+cache-dir: .trivy-cache
+
+fs:
+  skip-files:
+    - .env
+    - .envrc
+scanners:
+  - pippo
+
+severity: CRITICAL
+
+#vulnerability:
+##  # Same as '--vuln-type'
+##  # Default is 'os,library'
+#  type:
+#    - os
+#    - library

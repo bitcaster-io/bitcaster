@@ -1,0 +1,9 @@
+[main]
+host = https://app.transifex.com
+token = 1/e605dfc686c99eb550a9c5c9670385fe9f23e8f0
+
+[o:os4d:p:bitcaster:r:djangopo]
+file_filter = src/bitcaster/LOCALE/<lang>/LC_MESSAGES/django.po
+source_file = src/bitcaster/LOCALE/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO

@@ -3,19 +3,19 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 from pytest_django import DjangoAssertNumQueries
 from strategy_field.utils import fqn
-from testutils.dispatcher import TDispatcher
+from testutils.dispatcher import XDispatcher
 
 if TYPE_CHECKING:
     from bitcaster.models import (
         Address,
         ApiKey,
         Application,
+        Assignment,
         Channel,
         DistributionList,
         Event,
         Message,
         User,
-        Validation,
     )
 
     Context = TypedDict(
@@ -25,26 +25,28 @@ if TYPE_CHECKING:
             "event": Event,
             "key": ApiKey,
             "channel": Channel,
-            "v1": Validation,
-            "v2": Validation,
+            "v1": Assignment,
+            "v2": Assignment,
             "message": Message,
             "address": Address,
         },
     )
 
+pytestmark = pytest.mark.django_db
+
 
 @pytest.fixture
-def context(db) -> "Context":
+def context() -> "Context":
     from testutils.factories import (
         AddressFactory,
         ApiKeyFactory,
         ApplicationFactory,
+        AssignmentFactory,
         ChannelFactory,
         DistributionListFactory,
         EventFactory,
         MessageFactory,
         NotificationFactory,
-        ValidationFactory,
     )
 
     app: "Application" = ApplicationFactory(name="Application-000")
@@ -53,11 +55,11 @@ def context(db) -> "Context":
     user: "User" = key.user
     addr: Address = AddressFactory(value="addr1@example.com", user=user)
 
-    ch = ChannelFactory(organization=app.project.organization, name="test", dispatcher=fqn(TDispatcher))
+    ch = ChannelFactory(organization=app.project.organization, name="test", dispatcher=fqn(XDispatcher))
     evt = EventFactory(application=app, channels=[ch])
     dis: "DistributionList" = DistributionListFactory()
-    v1: Validation = ValidationFactory(address=addr, channel=ch)
-    v2: Validation = ValidationFactory(address__value="addr2@example.com", channel=ch)
+    v1: Assignment = AssignmentFactory(address=addr, channel=ch)
+    v2: Assignment = AssignmentFactory(address__value="addr2@example.com", channel=ch)
 
     NotificationFactory(event=evt, distribution=dis)
     msg = MessageFactory(channel=ch, event=evt, content="Message for {{ event.name }} on channel {{channel.name}}")
@@ -77,12 +79,14 @@ def context(db) -> "Context":
     }
 
 
-def test_trigger(context: "Context", messagebox, django_assert_num_queries: "DjangoAssertNumQueries"):
+def test_trigger(
+    context: "Context", messagebox: list[tuple[str, str]], django_assert_num_queries: "DjangoAssertNumQueries"
+) -> None:
     event: Event = context["event"]
-    v1: Validation = context["v1"]
-    v2: Validation = context["v2"]
+    v1: Assignment = context["v1"]
+    v2: Assignment = context["v2"]
     ch: Channel = context["channel"]
-    o = event.trigger({})
+    o = event.trigger(context={})
     assert event.notifications.exists()
     # with django_assert_num_queries(10) as captured:
     o.process()

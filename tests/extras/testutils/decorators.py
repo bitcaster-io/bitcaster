@@ -1,9 +1,10 @@
 import os
 
 import pytest
+from _pytest.mark.structures import MarkDecorator
 
 
-def requires_env(*envs):
+def requires_env(*envs: str) -> MarkDecorator:
     missing = []
 
     for env in envs:

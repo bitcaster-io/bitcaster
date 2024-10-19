@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel
 
 
-class LockMixin(admin.ModelAdmin["AnyModel"]):
+class LockMixinAdmin(admin.ModelAdmin["AnyModel"]):
 
     def render_change_form(
         self,
@@ -29,8 +29,8 @@ class LockMixin(admin.ModelAdmin["AnyModel"]):
 
     @button(
         label=_("Lock"),
-        visible=lambda s: not s.context["original"].locked,
-        html_attrs={"style": f"background-color:{ButtonColor.LOCK}"},
+        enabled=lambda s: not s.context["original"].locked,
+        html_attrs={"class": ButtonColor.LOCK.value},
     )
     def lock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)
@@ -45,8 +45,8 @@ class LockMixin(admin.ModelAdmin["AnyModel"]):
 
     @button(
         label=_("Unlock"),
-        visible=lambda s: s.context["original"].locked,
-        html_attrs={"style": f"background-color:{ButtonColor.UNLOCK}"},
+        enabled=lambda s: s.context["original"].locked,
+        html_attrs={"class": ButtonColor.UNLOCK.value},
     )
     def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object(request, pk)

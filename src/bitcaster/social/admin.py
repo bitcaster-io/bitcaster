@@ -26,7 +26,9 @@ class SocialProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin[SocialProvider]):
     )
     change_form_template = None
 
-    def formfield_for_dbfield(self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any) -> FormField:
+    def formfield_for_dbfield(
+        self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any
+    ) -> Optional[FormField]:
         formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
         if isinstance(db_field, models.JSONField):
             formfield.widget = SvelteJSONEditorWidget(
@@ -42,7 +44,7 @@ class SocialProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin[SocialProvider]):
             )
         return formfield
 
-    @link(html_attrs={"target": "_blank"})
+    @link()
     def test(self, button: Button) -> None:
         if original := button.context.get("original"):
             button.label = f"Login with '{original.label}'"

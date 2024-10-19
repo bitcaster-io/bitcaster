@@ -1,4 +1,4 @@
-from ..settings import env  # type: ignore[attr-defined]
+from ..settings import env
 
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = [
     "username",

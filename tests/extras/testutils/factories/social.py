@@ -5,7 +5,7 @@ from bitcaster.social.models import Provider, SocialProvider
 from .base import AutoRegisterModelFactory
 
 
-class SocialProviderFactory(AutoRegisterModelFactory):
+class SocialProviderFactory(AutoRegisterModelFactory[SocialProvider]):
     provider = fuzzy.FuzzyChoice(Provider)
 
     class Meta:

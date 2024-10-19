@@ -1,0 +1,232 @@
+body.edit-message-body #edit-message-form input[type=text], body.edit-message-body #edit-message-form textarea {
+  color: black;
+  background-color: white;
+}
+body.edit-message-body iframe {
+  background-color: white;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-size: 1rem;
+    --primary: rgba(229, 55, 52);
+    --secondary: rgba(168, 0, 0, 0.82);
+    --light: #ef5552;
+    --white: rgba(248, 248, 248, 0.93);
+    --black: rgba(32, 33, 36, 1);
+    --bg-primary: var(--primary);
+    --bg-secondary: var(--secondary);
+    --input-bg: var(--white);
+    --input-fg: var(--black);
+    --button-bg: var(--bg-secondary);
+    --button-fg: var(--white);
+    --button-hover-bg: var(--light);
+    --button-hover-fg: var(--white);
+    --object-tools-fg: var(--white);
+    --object-tools-bg: #666666;
+    --object-tools-hover-bg: #444444;
+    --default-button-bg: rgba(200, 0, 0, 1);
+    --default-button-hover-bg: var(--light);
+    --delete-button-fg: white;
+    --delete-button-bg: rgba(43, 68, 214, 0.6);
+    --delete-button-hover-bg: #217DC5FF;
+    --header-bg: var(--primary);
+    --breadcrumbs-bg: var(--secondary);
+    --frame-bg-color: lightgray;
+    --frame-fg-color: var(--black);
+    --sidebar-bg-color: lightgray;
+    --body-bg: var(--white);
+    --body-bg-secondary: rgb(224, 224, 228);
+    --darkened-bg: var(--body-bg-secondary);
+    --body-fg: #333;
+    --fg-primary: var(--black);
+    --link-fg: var(--secondary);
+    --link-hover-color: var(--primary);
+    --header-bg: var(--primary);
+    --breadcrumbs-bg: var(--secondary);
+    color-scheme: light;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-size: 1rem;
+    --primary: rgba(229, 55, 52);
+    --secondary: rgba(168, 0, 0, 0.82);
+    --light: #ef5552;
+    --white: rgba(248, 248, 248, 0.93);
+    --black: rgba(32, 33, 36, 1);
+    --bg-primary: var(--primary);
+    --bg-secondary: var(--secondary);
+    --input-bg: var(--white);
+    --input-fg: var(--black);
+    --button-bg: var(--bg-secondary);
+    --button-fg: var(--white);
+    --button-hover-bg: var(--light);
+    --button-hover-fg: var(--white);
+    --object-tools-fg: var(--white);
+    --object-tools-bg: #666666;
+    --object-tools-hover-bg: #444444;
+    --default-button-bg: rgba(200, 0, 0, 1);
+    --default-button-hover-bg: var(--light);
+    --delete-button-fg: white;
+    --delete-button-bg: rgba(43, 68, 214, 0.6);
+    --delete-button-hover-bg: #217DC5FF;
+    --header-bg: var(--primary);
+    --breadcrumbs-bg: var(--secondary);
+    --frame-bg-color: lightgray;
+    --frame-fg-color: var(--black);
+    --sidebar-bg-color: lightgray;
+    --body-bg: rgba(42, 42, 48);
+    --body-bg-secondary: var(--darkened-bg);
+    --body-fg: #eeeeee;
+    --fg-primary: #bbbbbb;
+    --link-fg: var(--white);
+    --link-hover-color: var(--light);
+    --input-bg: rgb(67, 67, 67);
+    --input-fg: var(--white);
+    color-scheme: dark;
+    color-scheme: dark;
+  }
+}
+html[data-theme=dark] {
+  --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-size: 1rem;
+  --primary: rgba(229, 55, 52);
+  --secondary: rgba(168, 0, 0, 0.82);
+  --light: #ef5552;
+  --white: rgba(248, 248, 248, 0.93);
+  --black: rgba(32, 33, 36, 1);
+  --bg-primary: var(--primary);
+  --bg-secondary: var(--secondary);
+  --input-bg: var(--white);
+  --input-fg: var(--black);
+  --button-bg: var(--bg-secondary);
+  --button-fg: var(--white);
+  --button-hover-bg: var(--light);
+  --button-hover-fg: var(--white);
+  --object-tools-fg: var(--white);
+  --object-tools-bg: #666666;
+  --object-tools-hover-bg: #444444;
+  --default-button-bg: rgba(200, 0, 0, 1);
+  --default-button-hover-bg: var(--light);
+  --delete-button-fg: white;
+  --delete-button-bg: rgba(43, 68, 214, 0.6);
+  --delete-button-hover-bg: #217DC5FF;
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+  --frame-bg-color: lightgray;
+  --frame-fg-color: var(--black);
+  --sidebar-bg-color: lightgray;
+  --body-bg: rgba(42, 42, 48);
+  --body-bg-secondary: var(--darkened-bg);
+  --body-fg: #eeeeee;
+  --fg-primary: #bbbbbb;
+  --link-fg: var(--white);
+  --link-hover-color: var(--light);
+  --input-bg: rgb(67, 67, 67);
+  --input-fg: var(--white);
+  color-scheme: dark;
+}
+
+html[data-theme=light] {
+  --font-family-primary: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-size: 1rem;
+  --primary: rgba(229, 55, 52);
+  --secondary: rgba(168, 0, 0, 0.82);
+  --light: #ef5552;
+  --white: rgba(248, 248, 248, 0.93);
+  --black: rgba(32, 33, 36, 1);
+  --bg-primary: var(--primary);
+  --bg-secondary: var(--secondary);
+  --input-bg: var(--white);
+  --input-fg: var(--black);
+  --button-bg: var(--bg-secondary);
+  --button-fg: var(--white);
+  --button-hover-bg: var(--light);
+  --button-hover-fg: var(--white);
+  --object-tools-fg: var(--white);
+  --object-tools-bg: #666666;
+  --object-tools-hover-bg: #444444;
+  --default-button-bg: rgba(200, 0, 0, 1);
+  --default-button-hover-bg: var(--light);
+  --delete-button-fg: white;
+  --delete-button-bg: rgba(43, 68, 214, 0.6);
+  --delete-button-hover-bg: #217DC5FF;
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+  --frame-bg-color: lightgray;
+  --frame-fg-color: var(--black);
+  --sidebar-bg-color: lightgray;
+  --body-bg: var(--white);
+  --body-bg-secondary: rgb(224, 224, 228);
+  --darkened-bg: var(--body-bg-secondary);
+  --body-fg: #333;
+  --fg-primary: var(--black);
+  --link-fg: var(--secondary);
+  --link-hover-color: var(--primary);
+  --header-bg: var(--primary);
+  --breadcrumbs-bg: var(--secondary);
+}
+
+.align-center {
+  align-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+.md-typeset__table {
+  width: 100%;
+}
+
+.md-typeset__table table:not([class]) {
+  display: table;
+}
+
+.md-header__button.md-logo img, .md-header__button.md-logo svg {
+  filter: brightness(10);
+  fill: currentcolor;
+  display: block;
+  height: 1.2rem;
+  width: auto;
+}
+
+dl#glossary dt {
+  margin: 5px;
+}
+
+code.bc-button {
+  border: none;
+  font-weight: 400;
+  background: var(--default-button-bg);
+  height: 2.1875rem;
+  line-height: 0.9375rem;
+  padding: 5px 7px;
+  border-radius: 4px;
+  color: var(--button-fg);
+  transition: background 0.15s;
+}
+
+a.bc-button, code.bc-tool-button {
+  background-color: var(--object-tools-bg);
+  color: var(--object-tools-fg);
+  background-clip: border-box;
+  border-radius: 0;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  padding-bottom: 3px;
+  padding-top: 3px;
+  padding-left: 12px;
+  padding-right: 12px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+/*# sourceMappingURL=style.css.map */

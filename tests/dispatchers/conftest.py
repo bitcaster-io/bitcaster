@@ -1,16 +1,19 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from urllib.parse import parse_qsl
 
 import pytest
+from requests import PreparedRequest
+from responses import RequestsMock
 
 if TYPE_CHECKING:
-    from bitcaster.dispatchers.base import Payload
+    from pytest import FixtureRequest
 
+    from bitcaster.dispatchers.base import Payload
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
 @pytest.fixture()
-def mail_payload(request) -> "Payload":
+def mail_payload(request: "FixtureRequest") -> "Payload":
     from testutils.factories import ApplicationFactory
 
     from bitcaster.dispatchers.base import Payload
@@ -25,16 +28,16 @@ def mail_payload(request) -> "Payload":
 
 
 @pytest.fixture()
-def twilio_sid():
+def twilio_sid() -> str:
     return "__sid__"
 
 
 @pytest.fixture()
-def smsoutbox(mocked_responses, twilio_sid):
+def smsoutbox(mocked_responses: "RequestsMock", twilio_sid: str) -> list[Any]:
     sms_list = []
 
-    def create_address_callback(request):
-        payload = dict(parse_qsl(request.body))
+    def create_address_callback(request: "PreparedRequest") -> tuple[int, dict[str, str], str]:
+        payload = dict(parse_qsl(str(request.body)))
         sms_list.append(payload)
         return 200, {}, "{}"
 

@@ -1,37 +1,78 @@
+import logging
 from typing import TYPE_CHECKING, Any, Optional
 
 import jmespath
 import yaml
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import QuerySet
+from django.utils.functional import cached_property
+from django.utils.translation import gettext as _
 
 from ..dispatchers.base import Payload
+from ..utils.shortcuts import render_string
+from .assignment import Assignment
 from .distribution import DistributionList
-from .validation import Validation
+from .mixins import BaseQuerySet, BitcasterBaselManager, BitcasterBaseModel
 
 if TYPE_CHECKING:
     from bitcaster.dispatchers.base import Dispatcher
-    from bitcaster.models import Address, Channel, Message
+    from bitcaster.models import Address, Application, Channel, Message
     from bitcaster.types.core import YamlPayload
 
+logger = logging.getLogger(__name__)
 
-class NotificationQuerySet(models.QuerySet["Notification"]):
 
+class NotificationQuerySet(BaseQuerySet["Notification"]):
     def match(self, payload: dict[str, Any], rules: "Optional[YamlPayload]" = None) -> list["Notification"]:
         for subscription in self.all():
             if subscription.match_filter(payload, rules=rules):
                 yield subscription
 
+    def get_by_natural_key(self, name: str, evt: str, app: str, prj: str, org: str, *args: Any) -> "Notification":
+        return self.get(
+            event__application__project__organization__slug=org,
+            event__application__project__slug=prj,
+            event__application__slug=app,
+            event__slug=evt,
+            name=name,
+        )
 
-class Notification(models.Model):
+
+class NotificationManager(BitcasterBaselManager.from_queryset(NotificationQuerySet)):
+    _queryset_class = NotificationQuerySet
+
+
+class Notification(BitcasterBaseModel):
     name = models.CharField(max_length=100)
     event = models.ForeignKey("bitcaster.Event", on_delete=models.CASCADE, related_name="notifications")
     distribution = models.ForeignKey(
         DistributionList, blank=True, null=True, on_delete=models.CASCADE, related_name="notifications"
     )
+    environments = ArrayField(
+        models.CharField(max_length=20, blank=True, null=True),
+        blank=True,
+        null=True,
+        help_text=_("Allow notification only for these environments"),
+    )
     payload_filter = models.TextField(blank=True, null=True)
-    extra_context = models.JSONField(default=dict)
-    objects = NotificationQuerySet.as_manager()
+    extra_context = models.JSONField(default=dict, blank=True)
+
+    objects = NotificationManager()
+
+    class Meta:
+        verbose_name = _("Notification")
+        verbose_name_plural = _("Notifications")
+        unique_together = (("event", "name"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=("event", "name"),
+                name="notification_event_name",
+            )
+        ]
+
+    def natural_key(self) -> tuple[str | None, ...]:
+        return self.name, *self.event.natural_key()
 
     def __init__(self, *args: Any, **kwargs: Any):
         self._cached_messages: dict[Channel, Message | None] = {}
@@ -40,10 +81,14 @@ class Notification(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
-        return {**ctx, "notification": self.name}
+    @cached_property
+    def application(self) -> "Application":
+        return self.event.application
 
-    def get_pending_subscriptions(self, delivered: list[str], channel: "Channel") -> QuerySet[Validation]:
+    def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
+        return {**ctx, "notification": self.name} | self.extra_context
+
+    def get_pending_subscriptions(self, delivered: list[str | int], channel: "Channel") -> QuerySet[Assignment]:
         return (
             self.distribution.recipients.select_related(
                 "address",
@@ -54,20 +99,26 @@ class Notification(models.Model):
             .exclude(id__in=delivered)
         )
 
-    def notify_to_channel(self, channel: "Channel", validation: Validation, context: dict[str, Any]) -> Optional[str]:
+    def notify_to_channel(self, channel: "Channel", assignment: Assignment, context: dict[str, Any]) -> Optional[str]:
         message: Optional["Message"]
-
         dispatcher: "Dispatcher" = channel.dispatcher
-        addr: "Address" = validation.address
+        addr: "Address" = assignment.address
+
+        logger.debug(f"channel: {channel} , assignment: {assignment} , context: {context}")
         if message := self.get_message(channel):
+            logger.debug(f"message: {message}")
             context.update({"channel": channel, "address": addr.value})
             payload: Payload = Payload(
                 event=self.event,
                 user=addr.user,
-                message=message.render(context),
+                subject=render_string(message.subject, context),
+                message=render_string(message.content, context),
+                html_message=render_string(message.html_content, context),
+                # message=message.render(context),
             )
             dispatcher.send(addr.value, payload)
             return addr.value
+
         return None
 
     @classmethod

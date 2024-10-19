@@ -1,0 +1,181 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - releases/*
+      - develop
+      - feature/*
+      - bugfix/*
+      - hotfix/*
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  id-token: write
+  attestations: write
+
+
+jobs:
+  changes:
+    if: (github.event_name != 'pull_request' 
+            || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name) 
+            || github.event_name == 'create'
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      run_tests: ${{ steps.changed_files.outputs.run_tests }}
+      build: ${{ steps.info.outputs.build }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+      - id: changed_files
+        name: Check for file changes
+        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
+        with:
+          base: ${{ github.ref }}
+          token: ${{ github.token }}
+          filters: .github/file-filters.yml
+      - name: info
+        id: info
+        shell: bash
+        run: |
+          force_build="${{ contains(github.event.head_commit.message, 'ci:build') || contains(github.event.head_commit.message, 'ci:release') || contains(github.ref, 'refs/heads/release') || contains(github.event.head_commit.message, 'ci:all') }} "
+          force_scan="${{ contains(github.event.head_commit.message, 'ci:scan') || contains(github.event.head_commit.message, 'ci:all') }}"
+          force_test="${{ contains(github.event.head_commit.message, 'ci:test') || contains(github.event.head_commit.message, 'ci:all') }}"
+          
+          if [[ $force_build == "true" ]]; then
+            echo "::notice:: Forced build docker due to commit message"
+          elif [[ $force_test == "true" ]]; then
+            echo "::notice:: Forced python tests due to commit message"
+          elif [[ $force_scan == "true" ]]; then
+            echo "::notice:: Forced trivy scan due to commit message"
+          fi
+          echo "build=${{needs.changed_files.outputs.build=='true'}}" >> $GITHUB_OUTPUT
+          if [[ $force_build == "true" || "${{needs.changed_files.outputs.run_tests}}" == "true" ]]; then 
+              echo "build=true" >> $GITHUB_OUTPUT
+          fi
+          LOG=$(cat << EOF
+
+            force_build='$force_build'
+            force_scan='$force_scan'
+            force_test='$force_test'
+            build='${{needs.changed_files.outputs.build}}'
+          EOF
+          )
+          LOG="${LOG//'%'/'%25'}"
+          LOG="${LOG//$'\n'/'%0A'}"
+          LOG="${LOG//$'\r'/'%0D'}"
+
+          echo "::notice title=Info:: $LOG"
+          
+#          echo "::notice:: force_build   $force_build"
+#          echo "::notice:: force_scan    $force_scan"
+#          echo "::notice:: force_test    $force_test"
+#          echo "::notice:: build  ${{needs.changed_files.outputs.build}}"
+
+  build:
+    needs: [ changes ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      metadata: ${{ steps.build.outputs.metadata }}
+      version: ${{ steps.build.outputs.version }}
+      created: ${{ steps.build.outputs.created }}
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+      - name: Define code checksum
+        id: checksum
+        uses: ./.github/actions/checksum
+      - name: Build Image
+#        if: (needs.changes.outputs.build == 'true'
+#            || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
+#            || contains(github.event.head_commit.message, 'ci:test')
+#            || contains(github.event.head_commit.message, 'ci:build')
+#            || contains(github.event.head_commit.message, 'ci:all')
+#            )
+        id: build
+        uses: ./.github/actions/docker_build
+        with:
+#          dryrun: ${{ env.ACT || 'false' }}
+          rebuild: ${{ needs.changes.outputs.build == 'true' }}
+          registry: docker.io
+          image: ${{ vars.DOCKER_IMAGE }}
+          push: true
+          target: 'python_dev_deps'
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#          code_checksum: ${{ steps.checksum.outputs.checksum }}
+
+  test:
+    name: Run Test Suite
+    needs: [ changes,build ]
+    if: (needs.changes.outputs.run_tests == 'true'
+        || needs.changes.outputs.build == 'true'
+        || contains(github.event.head_commit.message, 'ci:test') 
+        || contains(github.event.head_commit.message, 'ci:all') 
+        || github.event_name == 'create')
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis
+        ports:
+          - 16379:6379
+      db:
+        image: postgres:14
+        env:
+          POSTGRES_DATABASE: bitcaster
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USERNAME: postgres
+        ports:
+          - 15432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DOCKER_DEFAULT_PLATFORM: linux/amd64
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run tests
+        run: |
+          docker run --rm \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:15432/bitcaster \
+            -e CACHE_URL=redis://localhost:16379/0 \
+            -e CELERY_BROKER_URL=redis://localhost:16379/0 \
+            -e DJANGO_SETTINGS_MODULE=\
+            --network host \
+            -v $PWD:/code/app \
+            -w /code/app \
+            -t ${{ vars.DOCKER_IMAGE }}:${{needs.build.outputs.version}} \
+            pytest tests -vv --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
+          ls -al
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          token: ${{ secrets.CODECOV_TOKEN }}
+        if: env.token != null
+        with:
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: false
+          name: codecov-${{env.GITHUB_REF_NAME}}

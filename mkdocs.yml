@@ -1,33 +1,185 @@
-site_name: Bitcaster Documentation
-site_url: https://example.com/
+copyright: Copyright &copy; 2020-2024 OS4D ltd.
+dev_addr: 127.0.0.1:8001
+docs_dir: docs
+edit_uri: 'blob/develop/docs/'
+repo_url: https://github.com/bitcaster-io/bitcaster
+site_author: Bitcaster Team
+site_description: "The multichannel broker for managing corporate messaging"
+site_dir: ./~build/docs
+site_name: Bitcaster
+site_url: https://bitcaster-io.github.io/bitcaster/
+strict: false
+extra_css:
+  - _theme/css/style.css
+extra_javascript:
+  - _theme/js/js.cookie.js
+  - _theme/js/address.js
+exclude_docs: |
+  ~*
+  .m_templates
+  .templates
+  _scripts
+  _guidelines
+  
 
 markdown_extensions:
-  - abbr
+#  - abbr
+  - admonition
   - attr_list
-  - pymdownx.superfences
-  - pymdownx.tabbed:
-      alternate_style: true
+  - def_list
+#  - footnotes
+  - md_in_html
+#  - mdx_gh_links:
+#      user: bitcaster
+#      repo: bitcaster
+#  - mkdocs-click
+#  - pymdownx.details
+#  - pymdownx.critic
+#  - pymdownx.caret
+#  - pymdownx.keys
+#  - pymdownx.mark
+#  - pymdownx.tilde
+#  - pymdownx.inlinehilite
+#  - pymdownx.emoji:
+#      emoji_index: !!python/name:material.extensions.emoji.twemoji
+#      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+#  - pymdownx.highlight:
+#      use_pygments: true
+#      anchor_linenums: true
+#      line_spans: __span
+#      pygments_lang_class: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.snippets:
-      auto_append:
-        - includes/abbreviations.md
-  - pymdownx.smartsymbols
-  - pymdownx.smartsymbols
-  - pymdownx.blocks.definition
+      base_path: '.'
+      check_paths: true
+#  - pymdownx.tabbed:
+#  - smarty
+  - tables
+  - toc:
+      permalink: #
+      baselevel: 1
+
+
+extra:
+  generator: true
+  consent:
+    title: Cookie consent
+    description: >- 
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bitcaster-io
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/bitcaster/bitcaster
 
 theme:
   name: "material"
+  color_mode: auto
+  custom_dir: docs/_theme/overrides
+  favicon: _theme/img/favicon.ico
+  logo: _theme/img/logo.png
+#  highlightjs: true
+#  hljs_languages:
+#    - yaml
+#    - django
+  user_color_mode_toggle: true
   features:
-    - content.tooltips
+#    - content.action.edit
+#    - content.code.annotate
+    - content.code.copy
+#    - content.tooltips
+#    - header.autohide
+#    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: red
+      media: "(prefers-color-scheme: light)"
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: red
+      media: "(prefers-color-scheme: dark)"
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
 
 plugins:
+  - autorefs
+  - awesome-pages
+  - ezglossary:
+      templates: docs/_theme/glossary
+      inline_refs: short
+      list_definitions: true
+      list_references: true
+#  - ezlinks:
+#      wikilinks: true
+  - link-marker
+#  - mkdocstrings
+  - macros
+#      module_name: source_code
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+      cache_safe: true
+      js_files:
+        - _theme/js/address.js
+      css_files:
+        - _theme/css/style.css
+  - redirects:
+      redirect_maps:
+        'help/channel.md': 'glossary/terms/channel.md'
+#        'some_file.md': 'http://external.url.com/foobar'
+  - include-markdown:
+      encoding: ascii
+      preserve_includer_indent: false
+      dedent: false
+      trailing_newlines: true
+      comments: false
+      rewrite_relative_urls: true
+      heading_offset: 0
+      recursive: true
+  - privacy
   - search
-  - ezlinks
-  - mkdocstrings
-  - mermaid2
+  - social
+#  - autolinks
+#  - blog:
+#      blog_dir: howto
+#      blog_toc: true
+#      post_dir: "{blog}/posts"
+#      post_date_format: ""
+#      post_url_max_categories: 1
+##      post_excerpt: optional
+#      post_readtime: false
+#      archive: false
+#      categories: false
+#      authors: false
+#      pagination: false
+#      draft: false
+  - tags:
+      tags_file: tags.md
 
-nav:
-  - Home: index.md
-  - Glossary: glossary
-  - Examples: examples.md
-  - Todo: todo.md
-  - ClassDiagram: class-diagram.md
+watch:
+  - docs/
+
+hooks:
+  - docs/_hooks/hooks.py

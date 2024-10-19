@@ -3,7 +3,9 @@ import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, cast
 
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.forms import forms
+from django.http import HttpResponseRedirect
 from django.utils.functional import cached_property, classproperty
 from django.utils.module_loading import import_string
 from strategy_field.registry import Registry
@@ -11,23 +13,25 @@ from strategy_field.registry import Registry
 from bitcaster.constants import AddressType
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Event, User
+    from bitcaster.models import Assignment, Channel, Event, User
     from bitcaster.types.dispatcher import DispatcherHandler, TDispatcherConfig
 
 logger = logging.getLogger(__name__)
 
 
-class Capability(enum.IntEnum):
-    HTML = 1
-    TEXT = 2
-    SUBJECT = 4
+class Capability(enum.StrEnum):
+    HTML = "HTML"
+    TEXT = "TEXT"
+    SUBJECT = "SUBJECT"
 
 
 @enum.unique
-class MessageProtocol(enum.IntEnum):
-    PLAINTEXT = 100
-    SMS = 200
-    EMAIL = 300
+class MessageProtocol(models.TextChoices):
+    PLAINTEXT = "PLAINTEXT"
+    SLACK = "SLACK"
+    SMS = "SMS"
+    EMAIL = "EMAIL"
+    WEBPUSH = "WEBPUSH"
 
     def has_capability(self, capability: Capability) -> bool:
         return capability in ProtocolCapabilities[self]
@@ -37,26 +41,8 @@ ProtocolCapabilities = {
     MessageProtocol.PLAINTEXT: [Capability.TEXT],
     MessageProtocol.EMAIL: [Capability.SUBJECT, Capability.HTML, Capability.TEXT],
     MessageProtocol.SMS: [Capability.TEXT],
+    MessageProtocol.WEBPUSH: [Capability.SUBJECT, Capability.TEXT],
 }
-
-
-class DispatcherMeta(type["Dispatcher"]):
-    _all = {}
-    _dispatchers = []
-
-    def __new__(mcs: Type["Dispatcher"], class_name: str, bases: Tuple[Any], attrs: Dict[str, Any]) -> "Dispatcher":
-        if attrs["__qualname__"] == "Dispatcher":
-            return super().__new__(mcs, class_name, bases, attrs)
-
-        if attrs["slug"].isnumeric():  # pragma: no cover
-            raise ValueError(f'{class_name} Invalid Dispatcher.slug {attrs["slug"]}')
-        if attrs["slug"] in mcs._all:  # pragma: no cover
-            raise ValueError(f'{class_name} Duplicate Dispatcher.slug {attrs["slug"]}')
-
-        cls = super().__new__(mcs, class_name, bases, attrs)
-        if cls not in dispatcherManager:  # pragma: no branch
-            dispatcherManager.register(cls)
-        return cast(Dispatcher, cls)
 
 
 class Payload:
@@ -83,20 +69,44 @@ class Payload:
 
 
 class DispatcherConfig(forms.Form):
-    pass
+    help_text = ""
+
+
+class DispatcherMeta(type["Dispatcher"]):
+    _all = {}
+    # _dispatchers = []
+    verbose_name: str = ""
+
+    def __repr__(cls) -> str:
+        return cls.verbose_name
+
+    def __new__(mcs: Type["Dispatcher"], class_name: str, bases: Tuple[Any], attrs: Dict[str, Any]) -> "Dispatcher":
+        if attrs["__qualname__"] == "Dispatcher":
+            return super().__new__(mcs, class_name, bases, attrs)
+        cls = super().__new__(mcs, class_name, bases, attrs)
+        if cls not in dispatcherManager:  # pragma: no branch
+            dispatcherManager.register(cls)
+        return cast(Dispatcher, cls)
 
 
 class Dispatcher(metaclass=DispatcherMeta):
     slug = "--"
     verbose_name: str = ""
-    config_class: "Type[DispatcherConfig]" = DispatcherConfig
+    config_class: "Type[DispatcherConfig] | None" = DispatcherConfig
     backend: "Optional[str, DispatcherHandler]" = None
     address_types: List[AddressType] = [AddressType.GENERIC]
     channel: "Channel"
     protocol: MessageProtocol = MessageProtocol.PLAINTEXT
+    need_subscription = False
 
     def __init__(self, channel: "Channel") -> None:
         self.channel = channel
+
+    def __repr__(self) -> str:
+        return f"<Dispatcher {self.verbose_name}>"
+
+    def __str__(self) -> str:
+        return self.verbose_name or self.__class__.__name__
 
     @cached_property
     def capabilities(self) -> list[Capability]:
@@ -107,6 +117,7 @@ class Dispatcher(metaclass=DispatcherMeta):
             klass = import_string(self.backend)
         else:
             klass = self.backend
+        logger.debug(f"Dispacther: {klass} creating connection with config {self.config}")
         return klass(fail_silently=False, **self.config)
 
     @property
@@ -119,6 +130,12 @@ class Dispatcher(metaclass=DispatcherMeta):
     @classproperty
     def name(cls) -> str:
         return cls.verbose_name or cls.__name__.title()
+
+    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+        raise NotImplementedError
+
+    def subscribe(self, assignment: "Assignment", **kwargs: Any) -> HttpResponseRedirect:
+        return HttpResponseRedirect(".")
 
 
 class DispatcherManager(Registry):

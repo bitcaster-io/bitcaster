@@ -16,21 +16,13 @@ if TYPE_CHECKING:
 
 
 class MessageEditForm(forms.ModelForm[Message]):
+    recipient = forms.CharField(required=False)
     subject = forms.CharField(required=False)
     content = forms.CharField(widget=forms.Textarea, required=False)
     html_content = forms.CharField(
-        required=False,
-        widget=TinyMCE(
-            attrs={"class": "aaaa"},
-            mce_attrs={"setup": "setupTinyMCE", "height": "400px"},
-        ),
+        required=False, widget=TinyMCE(attrs={"class": "aaaa"}, mce_attrs={"setup": "setupTinyMCE", "height": "400px"})
     )
     context = forms.JSONField(widget=SvelteJSONEditorWidget(), required=False)
-    content_type = forms.CharField(widget=forms.HiddenInput)
-
-    class Meta:
-        model = Message
-        fields = ("subject", "content", "html_content", "context")
 
     @property
     def media(self) -> forms.Media:
@@ -41,6 +33,14 @@ class MessageEditForm(forms.ModelForm[Message]):
             "jquery.init.js",
         ]
         return orig + forms.Media(js=["admin/js/%s" % url for url in js])
+
+    class Meta:
+        model = Message
+        fields = ("subject", "content", "html_content", "context", "recipient")
+
+
+class MessageRenderForm(MessageEditForm):
+    content_type = forms.CharField(widget=forms.HiddenInput)
 
 
 class MessageChangeForm(forms.ModelForm[Message]):

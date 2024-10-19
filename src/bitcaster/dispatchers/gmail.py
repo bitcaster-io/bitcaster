@@ -1,29 +1,39 @@
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends.smtp import EmailBackend
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from .base import Dispatcher, DispatcherConfig, Payload
+from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 if TYPE_CHECKING:
     from bitcaster.types.dispatcher import TDispatcherConfig
 
+    from ..models import Assignment
+
 
 class GMailConfig(DispatcherConfig):
     username = forms.CharField(label=_("Username"))
-    password = forms.CharField(label=_("Password"))
+    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput, required=False)
+    timeout = forms.IntegerField(
+        label=_("Timeout"),
+        initial=3,
+        required=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
+    )
 
 
-class GMmailDispatcher(Dispatcher):
+class GMailDispatcher(Dispatcher):
     slug = "gmail"
     verbose_name = "GMmail"
 
     config_class = GMailConfig
     backend = EmailBackend
+    protocol: MessageProtocol = MessageProtocol.EMAIL
 
     @cached_property
     def config(self) -> Dict[str, Any]:
@@ -38,7 +48,7 @@ class GMmailDispatcher(Dispatcher):
         }
         return config
 
-    def send(self, address: str, payload: Payload) -> None:
+    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         email = EmailMultiAlternatives(
             subject=subject,
@@ -49,4 +59,4 @@ class GMmailDispatcher(Dispatcher):
         )
         if payload.html_message:
             email.attach_alternative(payload.html_message, "text/html")
-        email.send()
+        return email.send() > 0

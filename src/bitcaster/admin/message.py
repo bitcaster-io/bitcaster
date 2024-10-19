@@ -1,11 +1,11 @@
 import logging
-from typing import Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template import Context, Template
 from django.template.response import TemplateResponse
 from django.utils import timezone
@@ -22,23 +22,37 @@ from bitcaster.models import (
     Project,
 )
 
-from ..forms.message import MessageChangeForm, MessageCreationForm, MessageEditForm
-from .base import BaseAdmin
+from ..dispatchers.base import Dispatcher, Payload
+from ..forms.message import (
+    MessageChangeForm,
+    MessageCreationForm,
+    MessageEditForm,
+    MessageRenderForm,
+)
+from ..utils.shortcuts import render_string
+from .base import BaseAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from ..types.django import JsonType
+    from ..types.http import AuthHttpRequest
 
 
 class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
     search_fields = ("name",)
     list_display = ("name", "channel", "scope_level")
     list_filter = (
-        ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        ("channel", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
-        ("event", LinkedAutoCompleteFilter.factory(parent="channel__organization")),
-        ("notification", LinkedAutoCompleteFilter.factory(parent="event")),
+        # ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("channel", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("event", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("notification", LinkedAutoCompleteFilter.factory()),
     )
     autocomplete_fields = ("channel", "event", "notification")
     change_form_template = "admin/message/change_form.html"
+    change_list_template = "admin/reversion_change_list.html"
+    object_history_template = "reversion/object_history.html"
+
     form = MessageChangeForm
     add_form = MessageCreationForm
 
@@ -78,7 +92,7 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
 
     @view()
     def render(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        form = MessageEditForm(request.POST)
+        form = MessageRenderForm(request.POST)
         msg: Message = self.get_object(request, pk)
         oc, no = self.get_dummy_source(msg)
         message_context = no.get_context(oc.get_context())
@@ -99,7 +113,33 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
 
         return HttpResponse(res, content_type=ct)
 
-    @button()
+    @view()
+    def send_message(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
+        form = MessageEditForm(request.POST)
+        msg: Message = self.get_object(request, pk)
+        dispatcher: Dispatcher = msg.channel.dispatcher
+        # oc, no = self.get_dummy_source(msg)
+        ret: "JsonType"
+        if form.is_valid():
+            ctx = {**form.cleaned_data["context"], "event": msg.event}
+            payload: Payload = Payload(
+                subject=render_string(form.cleaned_data["subject"], ctx),
+                message=render_string(form.cleaned_data["content"], ctx),
+                user=request.user,
+                html_message=render_string(form.cleaned_data["html_content"], ctx),
+                event=Event(name="Sample Event"),
+            )
+            recipient = form.cleaned_data["recipient"]
+            if not dispatcher.send(recipient, payload):
+                ret = {"error": f"Failed to send message to {recipient}"}
+            else:
+                ret = {"success": "message sent"}
+        else:
+            ret = {"error": form.errors}
+
+        return JsonResponse(ret)
+
+    @button(html_attrs={"class": ButtonColor.ACTION.value})
     def edit(self, request: HttpRequest, pk: str) -> "HttpResponse":
         context = self.get_common_context(request, pk)
         obj = context["original"]
@@ -110,23 +150,31 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
             form = MessageEditForm(request.POST, instance=obj)
             if form.is_valid():
                 form.save()
+                self.message_user(request, _("Message Template updated successfully "))
                 return HttpResponseRedirect("..")
         else:
             form = MessageEditForm(
                 initial={
+                    "recipient": request.user.email,
                     "context": {k: "<sys>" for k, __ in message_context.items()},
-                    "content": "\n".join([f"{k}: {{{{{k}}}}}" for k in message_context.keys()]),
-                    "html_content": "".join([f"<div>{k}: {{{{{k}}}}}</div>" for k in message_context.keys()]),
-                    "subject": "Subject for {{ event }}",
+                    "subject": obj.subject if obj.subject else "Subject for {{ event }}",
+                    "content": (
+                        obj.content if obj.content else "\n".join([f"{k}: {{{{{k}}}}}" for k in message_context.keys()])
+                    ),
+                    "html_content": (
+                        obj.html_content
+                        if obj.html_content
+                        else "".join([f"<div>{k}: {{{{{k}}}}}</div>" for k in message_context.keys()])
+                    ),
                 },
                 instance=obj,
             )
         context["form"] = form
         return TemplateResponse(request, "admin/message/edit.html", context)
 
-    @button()
+    @button(html_attrs={"class": ButtonColor.LINK.value})
     def usage(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        context = self.get_common_context(request, pk, title=_("Usage"))
+        context = self.get_common_context(request, pk, title=_("Message usage"))
         msg: "Message" = context["original"]
         usage: list[Any] = []
         level = ""

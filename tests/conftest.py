@@ -1,17 +1,29 @@
 import os
 import sys
+import tempfile
 from pathlib import Path
+from typing import TYPE_CHECKING, List
 
-import django
 import pytest
 import responses
+
+if TYPE_CHECKING:
+    from bitcaster.models import (
+        Application,
+        Event,
+        Group,
+        Monitor,
+        Occurrence,
+        Project,
+        User,
+    )
 
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))
 sys.path.insert(0, str(here / "extras"))
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser) -> None:
     parser.addoption(
         "--with-selenium",
         action="store_true",
@@ -53,12 +65,33 @@ def pytest_configure(config):
     os.environ.setdefault("TEST_EMAIL_SENDER", "sender@example.com")
     os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
 
+    os.environ["BITCASTER_LOGGING_LEVEL"] = "CRITICAL"
+    os.environ["REDIS_LOGGING_LEVEL"] = "CRITICAL"
+    os.environ["DJANGO_LOGGING_LEVEL"] = "CRITICAL"
+    os.environ["CELERY_TASK_ALWAYS_EAGER"] = "True"
+
+    os.environ["CSRF_COOKIE_SECURE"] = "False"
+    os.environ["CSRF_TRUSTED_ORIGINS"] = "https://close-pro-impala.ngrok-free.app,http://localhost"
+
+    os.environ["LOGGING_LEVEL"] = "CRITICAL"
+
     os.environ["MAILGUN_API_KEY"] = "11"
     os.environ["MAILGUN_SENDER_DOMAIN"] = "mailgun.domain"
     os.environ["MAILJET_API_KEY"] = "11"
     os.environ["MAILJET_SECRET_KEY"] = "11"
 
-    os.environ["GMAIL_USER"] = "11"
+    os.environ["SECRET_KEY"] = "super-secret-key-just-for-testing"
+    os.environ["SECURE_HSTS_PRELOAD"] = "0"
+    os.environ["SECURE_SSL_REDIRECT"] = "False"
+    os.environ["SESSION_COOKIE_DOMAIN"] = ""
+    os.environ["SESSION_COOKIE_SECURE"] = "False"
+    os.environ["SOCIAL_AUTH_REDIRECT_IS_HTTPS"] = "False"
+
+    os.environ["STORAGE_DEFAULT"] = "django.core.files.storage.FileSystemStorage"
+    os.environ["STORAGE_MEDIA"] = "django.core.files.storage.FileSystemStorage"
+    os.environ["STORAGE_STTIC"] = "django.core.files.storage.FileSystemStorage"
+
+    os.environ["GMAIL_USER"] = "user@example.com"
     os.environ["GMAIL_PASSWORD"] = "11"
 
     os.environ["TWILIO_SID"] = "abc"
@@ -75,19 +108,22 @@ def pytest_configure(config):
     from django.conf import settings
 
     settings.ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-    settings.MEDIA_ROOT = "/tmp/media"
-    settings.STATIC_ROOT = "/tmp/static"
+    settings.MEDIA_ROOT = "%s/media" % tempfile.gettempdir()
+    settings.STATIC_ROOT = "%s/static" % tempfile.gettempdir()
+    settings.MESSAGE_STORAGE = "testutils.messages.PlainCookieStorage"
+
     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
     os.makedirs(settings.STATIC_ROOT, exist_ok=True)
 
+    import django
     from django.core.management import CommandError, call_command
 
     django.setup()
-    from testutils.dispatcher import TDispatcher
+    from testutils.dispatcher import XDispatcher
 
     from bitcaster.dispatchers.base import dispatcherManager
 
-    dispatcherManager.register(TDispatcher)
+    dispatcherManager.register(XDispatcher)
 
     try:
         call_command("env", check=True)
@@ -95,13 +131,15 @@ def pytest_configure(config):
         pytest.exit("FATAL: Environment variables missing")
 
 
-@pytest.fixture(autouse=True)
-def defaults(db):
+@pytest.fixture()
+def system_objects(admin_user: "User") -> None:
     from django.contrib.auth.models import Group
 
     from bitcaster.auth.constants import DEFAULT_GROUP_NAME
+    from bitcaster.constants import Bitcaster
 
     Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
+    Bitcaster.initialize(admin_user)
 
 
 @pytest.fixture(autouse=True)
@@ -115,37 +153,6 @@ def clear_state(db):
 
 
 @pytest.fixture()
-def system_events(admin_user):
-    from bitcaster.constants import Bitcaster
-
-    Bitcaster.initialize(admin_user)
-
-
-def pytest_runtest_setup(item):
-    driver = item.config.getoption("--driver") or ""
-
-    if driver.lower() == "firefox" and list(item.iter_markers(name="skip_if_firefox")):
-        pytest.skip("Test skipped because Firefox")
-    if driver.lower() == "safari" and list(item.iter_markers(name="skip_if_safari")):
-        pytest.skip("Test skipped because Safari")
-    if driver.lower() == "edge" and list(item.iter_markers(name="skip_if_edge")):
-        pytest.skip("Test skipped because Edge")
-
-    env_names = [mark.args[0] for mark in item.iter_markers(name="skip_test_if_env")]
-    if env_names:
-        if item.config.getoption("--env") in os.environ:
-            pytest.skip(f"Test skipped because env {env_names!r} is present")
-
-
-def pytest_collection_modifyitems(config, items):
-    if not config.option.enable_selenium:
-        skip_mymarker = pytest.mark.skip(reason="selenium not enabled")
-        for item in items:
-            if list(item.iter_markers(name="selenium")):
-                item.add_marker(skip_mymarker)
-
-
-@pytest.fixture()
 def mocked_responses():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         yield rsps
@@ -153,54 +160,78 @@ def mocked_responses():
 
 @pytest.fixture
 def user(db):
-
     from testutils.factories.user import UserFactory
 
     return UserFactory(username="user@example.com", is_active=True)
 
 
 @pytest.fixture
-def superuser(db):
+def system_user(db):
+    from testutils.factories.user import UserFactory
 
+    return UserFactory(username="__SYSTEM__")
+
+
+@pytest.fixture
+def superuser(db):
     from testutils.factories.user import SuperUserFactory
 
     return SuperUserFactory(username="superuser@example.com")
 
 
 @pytest.fixture()
-def organization(db):
-
+def os4d(db):
     from testutils.factories.org import OrganizationFactory
 
-    return OrganizationFactory(name="OS4D")
+    from bitcaster.constants import Bitcaster
+
+    return OrganizationFactory(name=Bitcaster.ORGANIZATION, slug="os4d")
 
 
 @pytest.fixture()
-def project(db):
-    from testutils.factories.org import ProjectFactory
-
-    return ProjectFactory(name="BITCASTER")
-
-
-@pytest.fixture()
-def application(db):
+def bitcaster(os4d) -> "Application":
     from testutils.factories.org import ApplicationFactory
 
-    return ApplicationFactory(name="Bitcaster", project__name="BITCASTER", project__organization__name="OS4D")
+    from bitcaster.constants import Bitcaster
+
+    return ApplicationFactory(
+        name=Bitcaster.APPLICATION, project__organization=os4d, project__name=Bitcaster.PROJECT, slug="bitcaster"
+    )
 
 
 @pytest.fixture()
-def distributionlist(db):
-    from testutils.factories.distribution import DistributionList
+def organization(db):
+    from testutils.factories.org import OrganizationFactory
 
-    return DistributionList()
+    return OrganizationFactory()
 
 
 @pytest.fixture()
-def event(db):
-    from testutils.factories.event import EventFactory
+def project(organization):
+    from testutils.factories.org import ProjectFactory
 
-    return EventFactory()
+    return ProjectFactory(organization=organization)
+
+
+@pytest.fixture()
+def application(project: "Project"):
+    from testutils.factories.org import ApplicationFactory
+
+    return ApplicationFactory(project=project)
+
+
+@pytest.fixture()
+def distributionlist(project: "Project"):
+    from testutils.factories.distribution import DistributionListFactory
+
+    return DistributionListFactory(project=project)
+
+
+@pytest.fixture()
+def event(application) -> "Event":
+    from testutils.factories import ChannelFactory, EventFactory
+
+    return EventFactory(application=application, channels=[ChannelFactory()], active=True)
 
 
 @pytest.fixture()
@@ -218,10 +249,37 @@ def message(db):
 
 
 @pytest.fixture()
-def channel(db):
+def channel(project: "Project"):
     from testutils.factories.channel import ChannelFactory
 
-    return ChannelFactory()
+    return ChannelFactory(project=project, organization=project.organization)
+
+
+@pytest.fixture()
+def org_channel(organization):
+    from testutils.factories.channel import ChannelFactory
+
+    return ChannelFactory(organization=organization, project=None)
+
+
+@pytest.fixture()
+def email_channel(db):
+    from strategy_field.utils import fqn
+    from testutils.factories.channel import ChannelFactory
+
+    from bitcaster.dispatchers import GMailDispatcher
+
+    return ChannelFactory(dispatcher=fqn(GMailDispatcher))
+
+
+@pytest.fixture()
+def sms_channel(db):
+    from strategy_field.utils import fqn
+    from testutils.factories.channel import ChannelFactory
+
+    from bitcaster.dispatchers import TwilioSMS
+
+    return ChannelFactory(dispatcher=fqn(TwilioSMS))
 
 
 @pytest.fixture()
@@ -238,6 +296,38 @@ def occurrence(db):
     return OccurrenceFactory()
 
 
+@pytest.fixture
+def purgeable_occurrences(db) -> List["Occurrence"]:
+    from datetime import timedelta
+
+    from constance import config
+    from django.utils import timezone
+    from freezegun import freeze_time
+    from testutils.factories import OccurrenceFactory
+
+    with freeze_time(timezone.now() - timedelta(days=config.OCCURRENCE_DEFAULT_RETENTION + 1)):
+        occurrence_default_retention = OccurrenceFactory()
+
+    with freeze_time(timezone.now() - timedelta(days=6)):
+        occurrence_custom_retention = OccurrenceFactory(event__occurrence_retention=5)
+
+    return [occurrence_default_retention, occurrence_custom_retention]
+
+
+@pytest.fixture
+def non_purgeable_occurrences(db) -> List["Occurrence"]:
+    from datetime import timedelta
+
+    from django.utils import timezone
+    from freezegun import freeze_time
+    from testutils.factories import OccurrenceFactory
+
+    with freeze_time(timezone.now() - timedelta(days=1)):
+        non_purgeable_occurrence = OccurrenceFactory(event__occurrence_retention=5)
+
+    return [non_purgeable_occurrence]
+
+
 @pytest.fixture()
 def notification(db):
     from testutils.factories import NotificationFactory
@@ -246,9 +336,30 @@ def notification(db):
 
 
 @pytest.fixture()
-def messagebox():
+def assignment(db):
+    from testutils.factories import AssignmentFactory
+
+    return AssignmentFactory()
+
+
+@pytest.fixture()
+def messagebox() -> list:
     import testutils.dispatcher
 
     testutils.dispatcher.MESSAGES = []
     yield testutils.dispatcher.MESSAGES
     testutils.dispatcher.MESSAGES = []
+
+
+@pytest.fixture()
+def monitor() -> "Monitor":
+    from testutils.factories import MonitorFactory
+
+    return MonitorFactory()
+
+
+@pytest.fixture()
+def group() -> "Group":
+    from testutils.factories import GroupFactory
+
+    return GroupFactory()

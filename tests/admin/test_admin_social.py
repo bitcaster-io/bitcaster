@@ -5,20 +5,17 @@ from django.urls import reverse
 from django_webtest import DjangoTestApp
 
 if TYPE_CHECKING:
+    from django_webtest.pytest_plugin import MixinWithInstanceVariables
+    from pytest_django.fixtures import SettingsWrapper
     from webtest.response import TestResponse
 
-    from bitcaster.models import SocialProvider
+    from bitcaster.models import SocialProvider, User
 
-    Context = TypedDict(
-        "Context",
-        {
-            "provider": SocialProvider,
-        },
-    )
+    Context = TypedDict("Context", {"provider": SocialProvider})
 
 
 @pytest.fixture()
-def app(django_app_factory, admin_user) -> DjangoTestApp:
+def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> DjangoTestApp:
     django_app: DjangoTestApp = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
     django_app._user = admin_user
@@ -33,7 +30,7 @@ def context() -> "Context":
     return {"provider": provider}
 
 
-def test_get_readonly_if_default(app: DjangoTestApp, context: "Context", settings) -> None:
+def test_get_readonly_if_default(app: DjangoTestApp, context: "Context", settings: "SettingsWrapper") -> None:
     settings.ROOT_TOKEN_HEADER = "abc"
     settings.ROOT_TOKEN = "123"
     url = reverse("admin:social_socialprovider_change", args=[context["provider"].pk])

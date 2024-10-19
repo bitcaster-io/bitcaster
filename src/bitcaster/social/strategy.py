@@ -9,6 +9,7 @@ caches = {}
 
 
 class BitcasterStrategy(DjangoStrategy):
+
     def get_setting(self, name: str) -> Optional[str]:
         found = None
         configuration = None

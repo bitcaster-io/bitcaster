@@ -1,32 +1,38 @@
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
-from .mixins import SlugMixin
+from ..constants import Bitcaster
+from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMixin
 from .project import Project
 from .user import User
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Event, Message, Occurrence, Organization
+    from bitcaster.models import Channel, Event, Message, Organization
 
 logger = logging.getLogger(__name__)
 
 
-class ApplicationManager(models.Manager["Application"]):
-    pass
+class ApplicationManager(BitcasterBaselManager["Application"]):
+
+    def get_by_natural_key(self, slug: str, prj: "str", org: str) -> "Application":
+        return self.get(slug=slug, project__organization__slug=org, project__slug=prj)
+
+    def local(self, **kwargs: Any) -> "QuerySet[Application]":
+        return self.exclude(project__organization__name=Bitcaster.ORGANIZATION).filter(**kwargs)
 
 
-class Application(SlugMixin, models.Model):
+class Application(SlugMixin, LockMixin, BitcasterBaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="applications")
-    owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
+    owner = models.ForeignKey(
+        User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True, related_name="applications"
+    )
 
     active = models.BooleanField(default=True, help_text=_("Whether the application should be active"))
-    locked = models.BooleanField(default=False, help_text=_("Security lock of applications"))
 
     from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
     subject_prefix = models.CharField(
@@ -40,7 +46,10 @@ class Application(SlugMixin, models.Model):
 
     class Meta:
         ordering = ("name",)
-        unique_together = (("name", "project"),)
+        unique_together = (("project", "name"), ("project", "slug"))
+
+    def natural_key(self) -> tuple[str, str, str]:
+        return self.slug, *self.project.natural_key()
 
     @cached_property
     def organization(self) -> "Organization":
@@ -58,14 +67,6 @@ class Application(SlugMixin, models.Model):
 
         ev: "Event" = self.events.get_or_create(name=name, description=description, active=False)[0]
         return ev
-
-    def trigger_event(
-        self, name: str, context: dict[str, Any], correlation_id: Optional[Any] = None
-    ) -> "Optional[Occurrence]":
-        try:
-            return self.events.get(name=name).trigger(context, correlation_id)
-        except ObjectDoesNotExist as e:
-            logger.exception(e)
 
     def create_message(self, name: str, channel: "Channel", defaults: Optional[dict[str, Any]] = None) -> "Message":
         return self.message_set.get_or_create(

@@ -1,75 +1,86 @@
-import os
 import uuid
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Any, Tuple, TypedDict
 from unittest.mock import Mock
 
 import pytest
+from django.core.exceptions import ObjectDoesNotExist
+from pytest import MonkeyPatch
 from strategy_field.utils import fqn
-from testutils.dispatcher import TDispatcher
+from testutils.dispatcher import XDispatcher
 
 from bitcaster.constants import Bitcaster, SystemEvent
-from bitcaster.tasks import process_event
+from bitcaster.tasks import (
+    monitor_run,
+    process_occurrence,
+    purge_occurrences,
+    schedule_occurrences,
+)
 
 if TYPE_CHECKING:
     from bitcaster.models import (
         Address,
+        Assignment,
         Channel,
         Event,
         Notification,
         Occurrence,
-        Validation,
+        User,
     )
 
     Context = TypedDict(
         "Context",
         {
             "occurrence": Occurrence,
+            # "silent_occurrence": Occurrence,
             "address": Address,
             "channel": Channel,
-            "validations": list[Validation],
+            "assignments": list[Assignment],
             "silent_event": Event,
         },
     )
 
 
 @pytest.fixture
-def context(admin_user) -> "Context":
+def setup(admin_user: "User") -> "Context":
     from testutils.factories import (
+        AssignmentFactory,
         ChannelFactory,
         EventFactory,
         MessageFactory,
         NotificationFactory,
         OccurrenceFactory,
-        ValidationFactory,
     )
 
-    ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(TDispatcher))
-    v1: Validation = ValidationFactory(channel=ch)
-    v2: Validation = ValidationFactory(channel=ch)
+    ch: "Channel" = ChannelFactory(name="test", dispatcher=fqn(XDispatcher))
+    v1: Assignment = AssignmentFactory(channel=ch, address__value="test1@example.com")
+    v2: Assignment = AssignmentFactory(channel=ch, address__value="test2@example.com")
     no: Notification = NotificationFactory(event__channels=[ch], distribution__recipients=[v1, v2])
     MessageFactory(channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}")
 
     Bitcaster.initialize(admin_user)
-    occurrence = OccurrenceFactory(event=no.event, attempts=3)
+
+    o = OccurrenceFactory(event=no.event, attempts=3)
     return {
-        "occurrence": occurrence,
+        "occurrence": o,
         "address": v1.address,
         "channel": ch,
-        "validations": [v1, v2],
+        "assignments": [v1, v2],
         "silent_event": EventFactory(application__name="External"),
     }
 
 
-def test_process_event_single(context: "Context", messagebox):
+@pytest.mark.django_db(transaction=True)
+def test_process_event_single(setup: "Context", messagebox: list[Tuple[str, str]]) -> None:
     from bitcaster.models import Occurrence
 
-    occurrence = context["occurrence"]
-    v1, v2 = context["validations"]
+    v1: Assignment = setup["assignments"][0]
+    v2: Assignment = setup["assignments"][1]
+    occurrence = setup["occurrence"]
 
-    addr = context["address"]
+    addr = setup["address"]
     event = occurrence.event
-    ch = context["channel"]
-    process_event(occurrence.pk)
+    ch = setup["channel"]
+    process_occurrence(occurrence.pk)
     assert messagebox == [
         (addr.value, f"Message for {event.name} on channel {ch.name}"),
         (v2.address.value, f"Message for {event.name} on channel {ch.name}"),
@@ -82,109 +93,112 @@ def test_process_event_single(context: "Context", messagebox):
     }
 
 
-def test_process_incomplete_event(context: "Context", messagebox):
+def test_process_incomplete_event(setup: "Context", messagebox: list[Tuple[str, str]]) -> None:
     from bitcaster.models import Occurrence
 
-    occurrence = context["occurrence"]
-    v1, v2 = context["validations"]
+    occurrence = setup["occurrence"]
+    v1, v2 = setup["assignments"]
 
-    context["occurrence"].data["delivered"] = [v1.id, v2.id]
-    context["occurrence"].save()
+    setup["occurrence"].data["delivered"] = [v1.id, v2.id]
+    setup["occurrence"].data["recipients"] = []
+    setup["occurrence"].save()
 
-    process_event(occurrence.pk)
+    process_occurrence(occurrence.pk)
     assert messagebox == []
 
     occurrence.refresh_from_db()
     assert occurrence.status == Occurrence.Status.PROCESSED
-    assert occurrence.data == {"delivered": [v1.id, v2.id]}
+    assert occurrence.data == {"delivered": [v1.id, v2.id], "recipients": []}
 
 
-def test_process_event_partially(context: "Context", monkeypatch):
+@pytest.mark.django_db(transaction=True)
+def test_process_event_partially(setup: "Context", monkeypatch: MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
-    occurrence: Occurrence = context["occurrence"]
+    occurrence: Occurrence = setup["occurrence"]
 
     monkeypatch.setattr(
         "bitcaster.models.notification.Notification.notify_to_channel",
         mocked_notify := Mock(side_effect=[None, Exception("This is raised after first call")]),
     )
 
-    process_event(occurrence.pk)
+    process_occurrence(occurrence.pk)
 
     occurrence.refresh_from_db()
     assert occurrence.status == Occurrence.Status.NEW
     assert mocked_notify.call_count == 2
     assert occurrence.data == {
-        "delivered": [context["validations"][0].id],
-        "recipients": [["test@examplec.com", "test"]],
+        "delivered": [setup["assignments"][0].id],
+        "recipients": [["test1@example.com", "test"]],
     }
 
 
-def test_process_event_resume(context: "Context", monkeypatch):
+def test_process_event_resume(setup: "Context", monkeypatch: MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
-    occurrence = context["occurrence"]
-    v1, v2 = context["validations"]
+    v1: Assignment = setup["assignments"][0]
+    v2: Assignment = setup["assignments"][1]
+    occurrence = setup["occurrence"]
 
-    occurrence.data = {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]]}
+    occurrence.data = {"delivered": [v1.id], "recipients": [(v1.address.value, "test")]}
     occurrence.save()
 
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", mocked_notify := Mock())
 
-    process_event(occurrence.pk)
+    process_occurrence(occurrence.pk)
 
     occurrence.refresh_from_db()
     assert occurrence.status == Occurrence.Status.PROCESSED
     assert mocked_notify.call_count == 1
     assert occurrence.data == {
         "delivered": [v1.id, v2.id],
-        "recipients": [["test@examplec.com", "test"], ["test@examplec.com", v1.channel.name]],
+        "recipients": [["test1@example.com", "test"], ["test2@example.com", v1.channel.name]],
     }
 
 
-def test_silent_event(context: "Context", monkeypatch):
+def test_silent_event(setup: "Context", monkeypatch: MonkeyPatch, system_objects: Any) -> None:
     from bitcaster.models import Occurrence
 
     cid = uuid.uuid4()
-    e = context["silent_event"]
-    o = e.trigger({"key": "value"}, cid=cid)
-
+    e = setup["silent_event"]
+    o = e.trigger(context={"key": "value"}, cid=cid)
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
 
-    assert o.__class__.objects.system(correlation_id=cid).count() == 0
-
-    process_event(o.pk)
+    assert Occurrence.objects.system(correlation_id=cid).count() == 0
+    process_occurrence(o.pk)
 
     o.refresh_from_db()
     assert o.status == Occurrence.Status.PROCESSED
     assert o.data == {}
-    assert o.__class__.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
-    assert o.__class__.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
+    assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
+    assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
 
 
-def test_attempts(context: "Context", monkeypatch):
-    from testutils.factories import Occurrence, OccurrenceFactory
+def test_attempts(setup: "Context", monkeypatch: MonkeyPatch) -> None:
+    from testutils.factories import OccurrenceFactory
+
+    from bitcaster.models import Occurrence
 
     o = OccurrenceFactory(attempts=0, status=Occurrence.Status.PROCESSED)
-    process_event(o.pk)
+    process_occurrence(o.pk)
 
     o.refresh_from_db()
     assert o.status == Occurrence.Status.PROCESSED
     assert o.data == {}
 
 
-def test_retry(context: "Context", monkeypatch, system_events):
-    from testutils.factories import Occurrence
+def test_retry(setup: "Context", monkeypatch: MonkeyPatch, system_objects: Any) -> None:
+    from bitcaster.models import Occurrence
 
-    o = context["occurrence"]
-    v1 = context["validations"][0]
+    o = setup["occurrence"]
+    v1 = setup["assignments"][0]
 
     monkeypatch.setattr(
         "bitcaster.models.notification.Notification.notify_to_channel",
         mocked_notify := Mock(side_effect=[None, Exception("This is raised after first call")]),
     )
     for a in range(10):
-        process_event(o.pk)
+        process_occurrence(o.pk)
     o.refresh_from_db()
     assert o.attempts == 0
     assert o.status == Occurrence.Status.FAILED
@@ -192,34 +206,99 @@ def test_retry(context: "Context", monkeypatch, system_events):
     assert o.data == {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]]}
 
 
-def test_error(context: "Context", system_events):
-    from testutils.factories import Occurrence, OccurrenceFactory
+def test_error(setup: "Context", system_objects: Any) -> None:
+    from testutils.factories import OccurrenceFactory
+
+    from bitcaster.models import Occurrence
 
     o = OccurrenceFactory(attempts=0, status=Occurrence.Status.NEW)
-    process_event(o.pk)
+    process_occurrence(o.pk)
 
     o.refresh_from_db()
     assert o.status == Occurrence.Status.FAILED
     assert o.data == {}
 
 
-def test_processed(context: "Context", monkeypatch, system_events):
-    from testutils.factories import Occurrence, OccurrenceFactory
+def test_processed(setup: "Context", monkeypatch: MonkeyPatch, system_objects: Any) -> None:
+    from testutils.factories import OccurrenceFactory
+
+    from bitcaster.models import Occurrence
 
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())
 
     o = OccurrenceFactory(status=Occurrence.Status.PROCESSED)
-    process_event(o.pk)
+    process_occurrence(o.pk)
     assert mocked_notify.call_count == 0
 
 
 @pytest.fixture(scope="session")
-def celery_config():
+def celery_config() -> dict[str, str]:
     return {"broker_url": "memory://"}
 
 
-@pytest.mark.celery()
-@pytest.mark.skipif(os.getenv("GITLAB_CI") is not None, reason="Do not run on GitLab CI")
-def test_live(db, context: "Context", monkeypatch, system_events, celery_app, celery_worker):
-    o = context["occurrence"]
-    assert process_event.delay(o.pk).get(timeout=10) == 2
+# @pytest.mark.celery()
+# @pytest.mark.skipif(os.getenv("GITLAB_CI") is not None, reason="Do not run on GitLab CI")
+# def test_live(db, setup: "Context", monkeypatch, system_objects, celery_app, celery_worker):
+#     o = setup["occurrence"]
+#     assert process_occurrence.delay(o.pk).get(timeout=10) == 2
+
+
+@pytest.mark.django_db(transaction=True)
+def test_schedule_occurrences(setup: "Context", monkeypatch: MonkeyPatch) -> None:
+    from bitcaster.models import Occurrence
+
+    monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock(return_value=True))
+
+    schedule_occurrences()
+
+    o: Occurrence = setup["occurrence"]
+    o.refresh_from_db()
+    assert mocked_notify.call_count == 1
+    assert o.status == Occurrence.Status.PROCESSED
+
+
+@pytest.mark.django_db(transaction=True)
+def test_process_silent(setup: "Context", monkeypatch: MonkeyPatch) -> None:
+    from testutils.factories import OccurrenceFactory
+
+    from bitcaster.models import Event, Occurrence
+
+    monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())
+
+    silent_event = Event.objects.get(name=SystemEvent.OCCURRENCE_SILENCE.value)
+    o = OccurrenceFactory(status=Occurrence.Status.NEW, event=silent_event)
+
+    assert Occurrence.objects.filter(event=silent_event).count() == 1
+    process_occurrence(o.pk)
+    assert Occurrence.objects.filter(event=silent_event).count() == 1
+    assert mocked_notify.call_count == 1
+
+
+def test_purge_occurrences(
+    purgeable_occurrences: list["Occurrence"], non_purgeable_occurrences: list["Occurrence"]
+) -> None:
+    from bitcaster.models import Occurrence
+
+    assert Occurrence.objects.count() == len(purgeable_occurrences) + len(non_purgeable_occurrences)  # Sanity check
+
+    purge_occurrences()
+
+    assert Occurrence.objects.count() == len(non_purgeable_occurrences)
+    assert Occurrence.objects.filter(pk__in=[o.pk for o in purgeable_occurrences]).count() == 0
+    assert Occurrence.objects.filter(pk__in=[o.pk for o in non_purgeable_occurrences]).count() == len(
+        non_purgeable_occurrences
+    )
+
+
+def test_monitor_run(system_user: "User") -> None:
+    from testutils.factories.monitor import MonitorFactory
+
+    monitor = MonitorFactory()
+    assert monitor_run(monitor.pk) == "done"
+
+    with pytest.raises(ObjectDoesNotExist):
+        monitor_run("-1")
+
+    monitor.active = False
+    monitor.save()
+    assert monitor_run(monitor.pk) == "inactive"

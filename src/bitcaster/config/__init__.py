@@ -1,10 +1,17 @@
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, Tuple, TypeAlias, Union
+from typing import TYPE_CHECKING, Any, Mapping, TypeAlias, Union
+from urllib import parse
 
 from environ import Env
 
 if TYPE_CHECKING:
-    ConfigItem: TypeAlias = Union[Tuple[type, Any, str, Any], Tuple[type, Any, str], Tuple[type, Any]]
+    # ConfigItem: TypeAlias = Union[Tuple[type, Any, str, Any], Tuple[type, Any, str], Tuple[type, Any]]
+    ItemValue: TypeAlias = Union[str, bool, int, list[str], None]
+    ConfigItem: TypeAlias = Union[
+        tuple[type, ItemValue],  # type, value
+        tuple[type, ItemValue, str],  # type, value, help,
+        tuple[type, ItemValue, str, Any],  # type, value, hell, develop_value
+    ]
 
 
 DJANGO_HELP_BASE = "https://docs.djangoproject.com/en/5.0/ref/settings"
@@ -21,11 +28,23 @@ class Group(Enum):
 NOT_SET = "<- not set ->"
 EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY", "CACHE_URL", "CELERY_BROKER_URL", "MEDIA_ROOT", "STATIC_ROOT"]
 
-CONFIG: "Dict[str, ConfigItem]" = {
+CONFIG: "Mapping[str, ConfigItem]" = {
     "ADMIN_EMAIL": (str, "", "Initial user created at first deploy"),
     "ADMIN_PASSWORD": (str, "", "Password for initial user created at first deploy"),
+    "AGENT_FILESYSTEM_VALIDATOR": (
+        str,
+        "bitcaster.agents.fs.validate_path",
+        "Callable to validate agent filesystem path",
+    ),
+    "AGENT_FILESYSTEM_ROOT": (str, "", "AgentFilesystem root directory"),
+    "AGENT_FILESYSTEM_DISALLOWED": (list, "", "AgentFilesystem disallowed directories"),
     "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], setting("allowed-hosts")),
     "AUTHENTICATION_BACKENDS": (list, [], setting("authentication-backends")),
+    "BITCASTER_DOCUMENTATION_SITE_URL": (
+        str,
+        "https://bitcaster-io.github.io/bitcaster",
+        "Bitcaster documentation site. (no trailing slash)",
+    ),
     "CACHE_URL": (
         str,
         "redis://localhost:6379/0",
@@ -48,23 +67,26 @@ CONFIG: "Dict[str, ConfigItem]" = {
         1800,
         "https://docs.celeryq.dev/en/stable/userguide/configuration.html#broker-transport-options",
     ),
-    "CSRF_COOKIE_SECURE": (bool, True, setting("csrf-cookie-secure")),
+    "CSRF_COOKIE_SECURE": (bool, True, setting("csrf-cookie-secure"), False),
+    "CSRF_COOKIE_SAMESITE": (str, setting("csrf-cookie-samesite")),
+    "CSRF_TRUSTED_ORIGINS": (list, ["http://localhost", "http://127.0.0.1"]),
     "DATABASE_URL": (
         str,
         "sqlite:///bitcaster.db",
         "https://django-environ.readthedocs.io/en/latest/types.html#environ-env-db-url",
-        "",
+        False,
     ),
     "DEBUG": (bool, False, setting("debug"), True),
-    "GDAL_LIBRARY_PATH": (str, None, setting("gdal-library-path"), True),
-    "GEOS_LIBRARY_PATH": (str, None, setting("geos-library-path"), True),
-    # "EMAIL_BACKEND": (str, "anymail.backends.mailjet.EmailBackend", "Do not change in prod"),
-    # "EMAIL_HOST": (str, ""),
-    # "EMAIL_HOST_PASSWORD": (str, ""),
-    # "EMAIL_HOST_USER": (str, ""),
-    # "EMAIL_PORT": (str, ""),
-    # "EMAIL_USE_SSL": (str, ""),
-    # "EMAIL_USE_TLS": (str, ""),
+    "EMAIL_BACKEND": (str, "django.core.mail.backends.smtp.EmailBackend", setting("email-backend"), True),
+    "EMAIL_HOST": (str, "localhost", setting("email-host"), True),
+    "EMAIL_HOST_USER": (str, "", setting("email-host-user"), True),
+    "EMAIL_HOST_PASSWORD": (str, "", setting("email-host-password"), True),
+    "EMAIL_PORT": (int, "25", setting("email-port"), True),
+    "EMAIL_SUBJECT_PREFIX": (str, "[Bitcaster]", setting("email-subject-prefix"), True),
+    "EMAIL_USE_LOCALTIME": (bool, False, setting("email-use-localtime"), True),
+    "EMAIL_USE_TLS": (bool, False, setting("email-use-tls"), True),
+    "EMAIL_USE_SSL": (bool, False, setting("email-use-ssl"), True),
+    "EMAIL_TIMEOUT": (str, None, setting("email-timeout"), True),
     "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level")),
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "MEDIA_ROOT": (str, None, setting("media-root")),
@@ -77,8 +99,11 @@ CONFIG: "Dict[str, ConfigItem]" = {
     "SENTRY_DSN": (str, "", "Sentry DSN"),
     "SENTRY_ENVIRONMENT": (str, "production", "Sentry Environment"),
     "SENTRY_URL": (str, "", "Sentry server url"),
-    "SESSION_COOKIE_DOMAIN": (str, "bitcaster.org", setting("std-setting-SESSION_COOKIE_DOMAIN"), "localhost"),
-    "SESSION_COOKIE_HTTPONLY": (bool, True, setting("session-cookie-httponly")),
+    "STORAGE_DEFAULT": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
+    "STORAGE_MEDIA": (str, "", setting("storages")),
+    "STORAGE_STATIC": (str, "django.contrib.staticfiles.storage.StaticFilesStorage", setting("storages")),
+    "SESSION_COOKIE_DOMAIN": (str, "bitcaster.io", setting("std-setting-SESSION_COOKIE_DOMAIN"), False),
+    "SESSION_COOKIE_HTTPONLY": (bool, True, setting("session-cookie-httponly"), False),
     "SESSION_COOKIE_NAME": (str, "bitcaster_session", setting("session-cookie-name")),
     "SESSION_COOKIE_PATH": (str, "/", setting("session-cookie-path")),
     "SESSION_COOKIE_SECURE": (bool, True, setting("session-cookie-secure"), False),
@@ -87,7 +112,7 @@ CONFIG: "Dict[str, ConfigItem]" = {
         str,
         "/login/",
         "https://python-social-auth.readthedocs.io/en/latest/configuration/settings.html#urls-options",
-        "",
+        False,
     ),
     "SOCIAL_AUTH_RAISE_EXCEPTIONS": (
         bool,
@@ -102,29 +127,43 @@ CONFIG: "Dict[str, ConfigItem]" = {
         False,
     ),
     "STATIC_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
-    "STATIC_ROOT": (str, None, setting("static-root")),
+    "STATIC_ROOT": (str, "/var/bitcaster/static", setting("static-root")),
     "STATIC_URL": (str, "/static/", setting("static-url")),
     "TIME_ZONE": (str, "UTC", setting("std-setting-TIME_ZONE")),
 }
 
 
+# x
 class SmartEnv(Env):
-    def __init__(self, **scheme):  # type: ignore[no-untyped-def]
-        self.raw = scheme
+    def __init__(self, **scheme: "ConfigItem") -> None:
+        self.raw: "dict[str, ConfigItem]" = scheme
         values = {k: v[:2] for k, v in scheme.items()}
         super().__init__(**values)
 
     def get_help(self, key: str) -> str:
-        entry: "ConfigItem" = self.raw.get(key, "")
+        entry: "ConfigItem | str" = self.raw.get(key, "")
         if len(entry) > 2:
             return entry[2]
         return ""
 
     def for_develop(self, key: str) -> Any:
-        entry: ConfigItem = self.raw.get(key, "")
+        entry: "ConfigItem | str" = self.raw.get(key, "")
         if len(entry) > 3:
             return entry[3]
         return self.get_value(key)
+
+    def storage(self, value: str) -> dict[str, Union[str, Any]] | None:
+        raw_value = self.get_value(value, str)
+        if not raw_value:
+            return None
+        options = {}
+        if "?" in raw_value:
+            value, options = raw_value.split("?", 1)
+            options = dict(parse.parse_qsl(options))
+        else:
+            value = raw_value
+
+        return {"BACKEND": value, "OPTIONS": options}
 
     def get_default(self, var: str) -> Any:
         var_name = f"{self.prefix}{var}"
@@ -132,18 +171,12 @@ class SmartEnv(Env):
         if var_name in self.scheme:
             var_info = self.scheme[var_name]
             value = var_info[1]
-            cast = var_info[0]
-            return cast(value)
-            # prefix = b"$" if isinstance(value, bytes) else "$"
-            # escape = rb"\$" if isinstance(value, bytes) else r"\$"
-            # if hasattr(value, "startswith") and value.startswith(prefix):
-            #     value = value.lstrip(prefix)
-            #     value = self.get_value(value, cast=cast)
-
-            # if self.escape_proxy and hasattr(value, "replace"):
-            #     value = value.replace(escape, prefix)
-
+            try:
+                cast = var_info[0]
+                return cast(value)
+            except TypeError as e:
+                raise TypeError(f"Can't cast {var} to {cast}") from e
         return value
 
 
-env = SmartEnv(**CONFIG)  # type: ignore[no-untyped-call]
+env = SmartEnv(**CONFIG)

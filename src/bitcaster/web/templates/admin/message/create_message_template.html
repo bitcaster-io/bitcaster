@@ -7,7 +7,7 @@
                 <td>{% trans "Channel" %}</td>
             </tr>
             {% for msg in message_templates %}
-                <tr {% if msg.pk == message_created.pk %}style="background-color: #2bc06a" {% endif %}>
+                <tr {% if msg.pk == message_created.pk %}class="last-created-item" {% endif %}>
                     <th width="70%"><a href="{% url "admin:bitcaster_message_change" msg.pk %}">{{ msg }}</a></th>
                     <td>{{ msg.channel }}</td>
                 </tr>

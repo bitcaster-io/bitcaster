@@ -1,57 +1,90 @@
 import logging
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.decorators import button
-from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django import forms
-from django.contrib import admin, messages
+from django.contrib.admin.options import ModelAdmin
+from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse
+from django.forms import Media
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.template.response import TemplateResponse
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.translation import gettext as _
 
-from bitcaster.forms.mixins import ScopedFormMixin
-from bitcaster.models import ApiKey, Application, Organization, Project  # noqa
+from bitcaster.admin.base import BaseAdmin
+from bitcaster.admin.filters import EnvironmentFilter
+from bitcaster.auth.constants import Grant
+from bitcaster.forms.mixins import Scoped3FormMixin
+from bitcaster.models import ApiKey, Application, Event, Organization, Project  # noqa
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
 
 if TYPE_CHECKING:
-    from django.contrib.admin.options import _FieldGroups, _ListOrTuple
-
+    from django.contrib.admin.options import _ListOrTuple
 
 logger = logging.getLogger(__name__)
 
 
-class ApiKeyForm(ScopedFormMixin[ApiKey], forms.ModelForm[ApiKey]):
+class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
+    organization = forms.ModelChoiceField(
+        queryset=Organization.objects.local(),
+        required=True,
+    )
 
     class Meta:
         model = ApiKey
-        fields = "__all__"
+        exclude = ("token",)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            choices = [(k, k) for k in self.instance.project.environments]
+            self.fields["environments"] = forms.MultipleChoiceField(
+                choices=choices,
+                widget=forms.CheckboxSelectMultiple,
+                required=False,
+            )
+
+    def clean(self) -> dict[str, Any]:
+        super().clean()
+        if self.instance.pk is None and (g := self.cleaned_data.get("grants")):
+            a = self.cleaned_data.get("application")
+            if Grant.EVENT_TRIGGER in g and not a:
+                raise ValidationError(_("Application must be set if EVENT_TRIGGER is granted"))
+        return self.cleaned_data
 
 
-class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, admin.ModelAdmin["ApiKey"]):
+class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
     search_fields = ("name",)
-    list_display = ("name", "user", "application")
+    list_display = ("name", "user", "organization", "project", "application", "environments")
     list_filter = (
-        ("application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        ("application__project", LinkedAutoCompleteFilter.factory(parent="application__project__organization")),
-        ("application", LinkedAutoCompleteFilter.factory(parent="application__project")),
+        ("organization", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("project", LinkedAutoCompleteFilter.factory(parent="organization")),
+        ("application", LinkedAutoCompleteFilter.factory(parent="project")),
+        EnvironmentFilter,
     )
     autocomplete_fields = ("user", "application", "organization", "project")
     form = ApiKeyForm
+    save_as_continue = False
 
     def get_queryset(self, request: "HttpRequest") -> "QuerySet[ApiKey]":
         return super().get_queryset(request).select_related("application")
 
-    def get_fields(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_FieldGroups":
-        ret = list(super().get_fields(request, obj))
-        if not is_root(request) and "key" in ret:
-            ret.remove("key")
-        return ret
+    def get_readonly_fields(
+        self, request: HttpRequest, obj: Optional[ApiKey] = None
+    ) -> list[str] | tuple[str, ...] | tuple[()]:
+        if obj and obj.pk:
+            return ["application", "organization", "project"]
+        return self.readonly_fields
 
     def get_exclude(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:
             return ["key"]
+        return ["key", "environments"]
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
@@ -63,16 +96,17 @@ class ApiKeyAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsM
         }
 
     def response_add(self, request: HttpRequest, obj: ApiKey, post_url_continue: str | None = None) -> HttpResponse:
-        self.message_user(request, obj.key, messages.WARNING)
-        return super().response_add(request, obj, post_url_continue)
+        return HttpResponseRedirect(reverse("admin:bitcaster_apikey_show_key", args=[obj.pk]))
 
-    def add_view(
-        self, request: HttpRequest, form_url: str = "", extra_context: Optional[dict[str, Any]] = None
-    ) -> HttpResponse:
-        ret = super().add_view(request, form_url, extra_context)
-        return ret
-
-    @button(visible=lambda s: is_root(s.context["request"]))
-    def show_key(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj = self.get_object(request, pk)
-        self.message_user(request, str(obj.key), messages.WARNING)
+    @button()
+    def show_key(self, request: HttpRequest, pk: str) -> HttpResponse:
+        obj: Optional[ApiKey] = self.get_object(request, pk)
+        if is_root(request):
+            expires = None
+            expired = False
+        else:
+            expires = obj.created + timedelta(seconds=10)
+            expired = timezone.now() > expires
+        media = Media(js=["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"])
+        ctx = self.get_common_context(request, pk, media=media, expires=expires, expired=expired, title=_("Info"))
+        return TemplateResponse(request, "admin/apikey/created.html", ctx)

@@ -1,16 +1,26 @@
 import os
+import random
 from io import StringIO
+from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest import mock
 
 import pytest
 from django.core.management import CommandError, call_command
-from testutils.factories import SuperUserFactory
+from pytest import MonkeyPatch
+from responses import RequestsMock
+from testutils.factories import ProjectFactory, SuperUserFactory
+
+if TYPE_CHECKING:
+    from pytest_django.fixtures import SettingsWrapper
+
+    from bitcaster.models import User
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture()
-def environment():
+def environment() -> dict[str, str]:
     return {
         "CACHE_URL": "test",
         "CELERY_BROKER_URL": "",
@@ -27,9 +37,24 @@ def environment():
 @pytest.mark.parametrize("static", [True, False], ids=["static", "no-static"])
 @pytest.mark.parametrize("verbosity", [1, 0], ids=["verbose", ""])
 @pytest.mark.parametrize("migrate", [True, False], ids=["migrate", ""])
-def test_upgrade_init(verbosity, migrate, monkeypatch, environment, static, static_root, tmp_path):
-    static_root_path = tmp_path / static_root
+def test_upgrade_init(
+    verbosity: int,
+    migrate: bool,
+    monkeypatch: MonkeyPatch,
+    environment: dict[str, str],
+    static: bool,
+    static_root: str,
+    tmp_path: Path,
+    settings: "SettingsWrapper",
+) -> None:
+    if static_root:
+        static_root_path = tmp_path / static_root
+        static_root_path.mkdir()
+    else:
+        static_root_path = tmp_path / str(random.randint(1, 10000))
+        assert not Path(static_root_path).exists()
     out = StringIO()
+    settings.STATIC_ROOT = str(static_root_path.absolute())
     with mock.patch.dict(os.environ, {**environment, "STATIC_ROOT": str(static_root_path.absolute())}, clear=True):
         call_command(
             "upgrade",
@@ -46,7 +71,7 @@ def test_upgrade_init(verbosity, migrate, monkeypatch, environment, static, stat
 
 @pytest.mark.parametrize("verbosity", [1, 0], ids=["verbose", ""])
 @pytest.mark.parametrize("migrate", [1, 0], ids=["migrate", ""])
-def test_upgrade(verbosity, migrate, monkeypatch, environment):
+def test_upgrade(verbosity: int, migrate: int, monkeypatch: MonkeyPatch, environment: dict[str, str]) -> None:
     from testutils.factories import SuperUserFactory
 
     out = StringIO()
@@ -56,21 +81,31 @@ def test_upgrade(verbosity, migrate, monkeypatch, environment):
     assert "error" not in str(out.getvalue())
 
 
-def test_upgrade_check(mocked_responses, admin_user, environment):
+def test_upgrade_next(mocked_responses: RequestsMock) -> None:
+    SuperUserFactory()
+    ProjectFactory()
+    out = StringIO()
+    call_command("upgrade", stdout=out, check=False)
+    assert "error" not in str(out.getvalue())
+
+
+def test_upgrade_check(mocked_responses: RequestsMock, admin_user: "User", environment: dict[str, str]) -> None:
     out = StringIO()
     with mock.patch.dict(os.environ, environment, clear=True):
         call_command("upgrade", stdout=out, check=True)
 
 
-def test_upgrade_noadmin(transactional_db, mocked_responses, environment):
+@pytest.mark.django_db(transaction=True)
+def test_upgrade_noadmin(mocked_responses: RequestsMock, environment: dict[str, str]) -> None:
     out = StringIO()
     with mock.patch.dict(os.environ, environment, clear=True):
         with pytest.raises(SystemExit):
             call_command("upgrade", stdout=out, check=True, admin_email="")
 
 
+@pytest.mark.django_db(transaction=True)
 @pytest.mark.parametrize("admin", [True, False], ids=["existing_admin", "new_admin"])
-def test_upgrade_admin(transactional_db, mocked_responses, environment, admin):
+def test_upgrade_admin(mocked_responses: RequestsMock, environment: dict[str, str], admin: str) -> None:
     if admin:
         email = SuperUserFactory().email
     else:
@@ -86,7 +121,7 @@ def test_upgrade_admin(transactional_db, mocked_responses, environment, admin):
 @pytest.mark.parametrize("diff", [0, 1], ids=["0", "1"])
 @pytest.mark.parametrize("config", [0, 1], ids=["0", "1"])
 @pytest.mark.parametrize("check", [0, 1], ids=["0", "1"])
-def test_env(mocked_responses, verbosity, develop, diff, config, check):
+def test_env(mocked_responses: RequestsMock, verbosity: int, develop: int, diff: int, config: int, check: int) -> None:
     out = StringIO()
     environ = {
         "ADMIN_URL_PREFIX": "test",
@@ -108,7 +143,7 @@ def test_env(mocked_responses, verbosity, develop, diff, config, check):
         assert "error" not in str(out.getvalue())
 
 
-def test_env_raise(mocked_responses):
+def test_env_raise(mocked_responses: RequestsMock) -> None:
     environ = {"ADMIN_URL_PREFIX": "test"}
     with mock.patch.dict(os.environ, environ, clear=True):
         with pytest.raises(CommandError):

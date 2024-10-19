@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -42,5 +42,18 @@ def absolute_uri(url: str | None = None) -> str:
     return uri
 
 
-def absolute_reverse(name: str, args: Tuple[Any] | None = None, kwargs: Dict[str, Any] | None = None) -> str:
+def absolute_reverse(name: str, args: Sequence[Any] | None = None, kwargs: Dict[str, Any] | None = None) -> str:
     return absolute_uri(reverse(name, args=args, kwargs=kwargs))
+
+
+def get_client_ip() -> str:
+    # This uses the first item in X-Forwarded-For, It does not work on Heroku:
+    # @see https://stackoverflow.com/questions/18264304/get-clients-real-ip-address-on-heroku#answer-18517550
+    x_forwarded_for = state.request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(",")[0]
+    elif real := state.request.META.get("HTTP_X_REAL_IP"):
+        ip = real
+    else:
+        ip = state.request.META.get("REMOTE_ADDR")
+    return ip.strip()
