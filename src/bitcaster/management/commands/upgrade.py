@@ -190,6 +190,7 @@ class Command(BaseCommand):
                 organization=os4d,
                 project=bitcaster.project,
                 dispatcher=fqn(BitcasterSysDispatcher),
+                config={"timeout": settings.EMAIL_TIMEOUT or 5},
             )[0]
 
             for ev in bitcaster.events.all():  # noqa

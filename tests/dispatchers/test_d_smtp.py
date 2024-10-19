@@ -22,6 +22,7 @@ def test_smtp(mail_payload: Payload) -> None:
                     "username": "test",
                     "password": "<PASSWORD>",
                     "from_email": "sender@example.com",
+                    "timeout": 3,
                 },
             )
         ).send("test@example.com", mail_payload)

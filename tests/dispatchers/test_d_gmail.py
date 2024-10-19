@@ -24,10 +24,7 @@ def test_gmail(mocked_responses: "RequestsMock", monkeypatch: "MonkeyPatch", mai
     with patch("smtplib.SMTP", autospec=True) as mock:
         ch = Channel(
             project=Project(from_email=os.environ["GMAIL_USER"], subject_prefix="[gmail] "),
-            config={
-                "username": os.environ["GMAIL_USER"],
-                "password": os.environ["GMAIL_PASSWORD"],
-            },
+            config={"username": os.environ["GMAIL_USER"], "password": os.environ["GMAIL_PASSWORD"], "timeout": 3},
         )
         GMailDispatcher(ch).send("test@example.com", mail_payload)
         mock.assert_called()

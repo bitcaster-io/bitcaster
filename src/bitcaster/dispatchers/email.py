@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional, Type
 
 from django import forms
 from django.core.mail import EmailMultiAlternatives
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.forms import PasswordInput
 from django.utils.translation import gettext_lazy as _
 
@@ -23,7 +24,12 @@ class EmailConfig(DispatcherConfig):
     password = forms.CharField(label=_("Password"), widget=PasswordInput)
     use_tls = forms.BooleanField(label=_("TLS"), required=False)
     use_ssl = forms.BooleanField(label=_("SSL"), required=False)
-    timeout = forms.IntegerField(label=_("Timeout"), required=False)
+    timeout = forms.IntegerField(
+        label=_("Timeout"),
+        initial=3,
+        required=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
+    )
 
 
 class EmailDispatcher(Dispatcher):
