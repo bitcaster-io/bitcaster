@@ -131,7 +131,9 @@ class Dispatcher(metaclass=DispatcherMeta):
     def name(cls) -> str:
         return cls.verbose_name or cls.__name__.title()
 
-    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+    def send(
+        self, address: str | List[str], payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any
+    ) -> bool:
         raise NotImplementedError
 
     def subscribe(self, assignment: "Assignment", **kwargs: Any) -> HttpResponseRedirect:

@@ -57,6 +57,7 @@ class Notification(BitcasterBaseModel):
     )
     payload_filter = models.TextField(blank=True, null=True)
     extra_context = models.JSONField(default=dict, blank=True)
+    newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
 
     objects = NotificationManager()
 

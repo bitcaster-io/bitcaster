@@ -102,3 +102,8 @@ def test_get_context(ctx: dict[str, str], expected: dict[str, Any]) -> None:
     }
 
     assert occurrence.get_context() == expected
+
+
+def test_channel_page_size() -> None:
+    occurrence: Occurrence = OccurrenceFactory()
+    occurrence.process()

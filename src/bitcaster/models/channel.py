@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Any, Iterable, Optional
 
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.db.models.base import ModelBase
@@ -41,6 +42,7 @@ class Channel(LockMixin, BitcasterBaseModel):
     protocol = models.CharField(choices=MessageProtocol.choices, max_length=50)
     active = models.BooleanField(default=True)
     parent = models.ForeignKey("self", blank=True, null=True, related_name="children", on_delete=models.CASCADE)
+    page_size = models.PositiveIntegerField(blank=True, null=True, validators=[MinValueValidator(1)])
 
     objects = ChannelManager()
 
