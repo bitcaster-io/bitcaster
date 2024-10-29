@@ -376,17 +376,10 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
             "Advanced options",
             {
                 # "classes": ["collapse"],
-                "fields": ["organization", "project"],
+                "fields": ["page_size", "organization", "project"],
             },
         ),
     ]
-
-    # def get_fieldsets(self, request: HttpRequest, obj: "Optional[AnyModel]" = None) -> "_FieldsetSpec":
-    #     return self.fieldsets
-    #     if obj.pk:
-    #         return [(None, {"fields": (("name"),)})]
-    #     else:
-    #         return self.fieldsets
 
     def dispatcher_(self, obj: Channel) -> str:
         return str(obj.dispatcher)

@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import List, TYPE_CHECKING, Any, Optional
 
 import jmespath
 import yaml
@@ -119,6 +119,30 @@ class Notification(BitcasterBaseModel):
             )
             dispatcher.send(addr.value, payload)
             return addr.value
+
+        return None
+
+    def notify_many_to_channel(
+        self, channel: "Channel", assignments: List[Assignment], context: dict[str, Any]
+    ) -> Optional[List[str]]:
+        message: Optional["Message"]
+        dispatcher: "Dispatcher" = channel.dispatcher
+        addresses: List["Address"] = [assignment.address for assignment in assignments]
+        address_values: List[str] = [addr.value for addr in addresses]
+
+        logger.debug(f"channel: {channel} , assignments: {assignments} , context: {context}")
+        if message := self.get_message(channel):
+            logger.debug(f"message: {message}")
+            context.update({"channel": channel, "addresses": address_values})
+            payload: Payload = Payload(
+                event=self.event,
+                subject=render_string(message.subject, context),
+                message=render_string(message.content, context),
+                html_message=render_string(message.html_content, context),
+                # message=message.render(context),
+            )
+            dispatcher.send_many(address_values, payload)
+            return address_values
 
         return None
 

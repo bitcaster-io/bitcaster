@@ -105,6 +105,7 @@ class Occurrence(BitcasterBaseModel):
     def process(self) -> bool:
         assignment: "Assignment"
         notification: "Notification"
+        channel: "Channel"
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
         assignment_filter = {}
@@ -121,10 +122,9 @@ class Occurrence(BitcasterBaseModel):
         for notification in self.event.notifications.filter(**notification_filter).match(self.context):
             context = notification.get_context(self.get_context())
             logger.debug(f"Processing occurrence {self.id} , context: {context}")
+
             for channel in self.event.channels.filter(**channel_filter):
-                for assignment in notification.get_pending_subscriptions(delivered, channel).filter(
-                    **assignment_filter
-                ):
+                if notification.newsletter:
                     try:
                         notification.notify_to_channel(channel, assignment, context)
 
@@ -136,4 +136,19 @@ class Occurrence(BitcasterBaseModel):
                     finally:
                         self.data = {"delivered": delivered, "recipients": recipients}
                         self.save()
+                else:
+                    for assignment in notification.get_pending_subscriptions(delivered, channel).filter(
+                        **assignment_filter
+                    ):
+                        try:
+                            notification.notify_to_channel(channel, assignment, context)
+
+                            delivered.append(assignment.id)
+                            recipients.append((assignment.address.value, assignment.channel.name))
+                        except Exception as e:
+                            logger.exception(e)
+                            return False
+                        finally:
+                            self.data = {"delivered": delivered, "recipients": recipients}
+                            self.save()
         return True

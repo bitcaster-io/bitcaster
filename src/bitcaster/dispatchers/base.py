@@ -131,8 +131,11 @@ class Dispatcher(metaclass=DispatcherMeta):
     def name(cls) -> str:
         return cls.verbose_name or cls.__name__.title()
 
-    def send(
-        self, address: str | List[str], payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any
+    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+        raise NotImplementedError
+
+    def send_many(
+        self, addresses: List[str], payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any
     ) -> bool:
         raise NotImplementedError
 

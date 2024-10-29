@@ -67,7 +67,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
                 "fields": (
                     ("name", "slug"),
                     ("description",),
-                    ("active", "newsletter", "occurrence_retention"),
+                    ("active", "occurrence_retention"),
                     # ("channels",)
                 )
             },

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import List, TYPE_CHECKING, Any
 from urllib.parse import parse_qsl
 
 import pytest
@@ -25,6 +25,16 @@ def mail_payload(request: "FixtureRequest") -> "Payload":
         subject="subject",
         html_message=getattr(request, "param", ""),
     )
+
+
+@pytest.fixture()
+def recipients_list(request: "FixtureRequest") -> str | List[str]:
+    num_recipients = getattr(request, "param", "")
+
+    if num_recipients == 1:
+        return "test@example.com"
+    else:
+        return [f"test_{x}@example.com" for x in range(num_recipients)]
 
 
 @pytest.fixture()

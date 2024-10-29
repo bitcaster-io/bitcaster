@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional, Type
+from typing import List, TYPE_CHECKING, Any, Optional, Type
 
 from django import forms
 from django.core.mail import EmailMultiAlternatives
@@ -41,17 +41,18 @@ class EmailDispatcher(Dispatcher):
     backend = "django.core.mail.backends.smtp.EmailBackend"
 
     def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+        return self.send_many(addresses=[address], payload=payload, assignment=assignment, **kwargs)
+
+    def send_many(
+        self, addresses: List[str], payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any
+    ) -> bool:
         try:
             subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
             email = EmailMultiAlternatives(
-                # headers={
-                #     "List-Unsubscribe": unsubscribe_url,
-                #     "X-Example-Header": "myapp",
-                # },
                 subject=subject or "",
                 body=payload.message,
                 from_email=self.channel.from_email,
-                to=[address],
+                to=addresses,
                 connection=self.get_connection(),
             )
             if payload.html_message:

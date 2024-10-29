@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import List, TYPE_CHECKING, Any, Dict, Optional
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -49,12 +49,17 @@ class GMailDispatcher(Dispatcher):
         return config
 
     def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+        return self.send_many(addresses=[address], payload=payload, assignment=assignment, **kwargs)
+
+    def send_many(
+        self, addresses: List[str], payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any
+    ) -> bool:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         email = EmailMultiAlternatives(
             subject=subject,
             body=payload.message,
             from_email=self.channel.from_email,
-            to=[address],
+            to=addresses,
             connection=self.get_connection(),
         )
         if payload.html_message:

@@ -3,7 +3,7 @@
 from django.core.validators import MinValueValidator
 from django.db import migrations, models
 
-SQL = "update django.bitcaster_notification n SET newsletter=ev.newsletter FROM django.bitcaster_event ev WHERE ev.id=n.event_id"
+SQL = "update bitcaster_notification n SET newsletter=ev.newsletter FROM bitcaster_event ev WHERE ev.id=n.event_id"
 
 
 class Migration(migrations.Migration):

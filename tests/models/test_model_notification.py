@@ -52,6 +52,16 @@ def test_missing_message(event: "Event", monkeypatch: "MonkeyPatch") -> None:
     assert mocked_notify.call_count == 0
 
 
+def test_newsletter_send(event: "Event", monkeypatch: "MonkeyPatch") -> None:
+    ch1 = ChannelFactory()
+    n1: "Notification" = NotificationFactory(event=event)
+    monkeypatch.setattr(ch1.dispatcher, "send", mocked_notify := Mock())
+
+    ret = n1.notify_to_channel(ch1, Mock(), {})
+    assert ret is None
+    assert mocked_notify.call_count == 0
+
+
 @pytest.mark.parametrize(
     "ctx, extra, expected",
     [
