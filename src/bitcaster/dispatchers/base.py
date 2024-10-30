@@ -117,6 +117,7 @@ class Dispatcher(metaclass=DispatcherMeta):
             klass = import_string(self.backend)
         else:
             klass = self.backend
+        logger.debug(f"Dispacther: {klass} creating connection with config {self.config}")
         return klass(fail_silently=False, **self.config)
 
     @property

@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from unittest.mock import Mock
 
+import pytest
 from pytest_django import DjangoAssertNumQueries
 from testutils.factories import NotificationFactory
 from testutils.factories.channel import ChannelFactory
@@ -49,3 +50,19 @@ def test_missing_message(event: "Event", monkeypatch: "MonkeyPatch") -> None:
     ret = n1.notify_to_channel(ch1, Mock(), {})
     assert ret is None
     assert mocked_notify.call_count == 0
+
+
+@pytest.mark.parametrize(
+    "ctx, extra, expected",
+    [
+        pytest.param({}, {}, {}, id="all-empty"),
+        pytest.param({}, {"new": 123}, {"new": 123}, id="contribute"),
+        pytest.param({"a": 1, "b": 2, "c": 3}, {"b": 99}, {"a": 1, "b": 99, "c": 3}, id="override-b"),
+        pytest.param({"a": 1, "b": 2}, {}, {"a": 1, "b": 2}, id="no-override"),
+        pytest.param({"notification": 1, "b": 2}, {}, {"b": 2}, id="override-element"),
+    ],
+)
+def test_extra_context_override(ctx: dict[str, str], extra: dict[str, Any], expected: dict[str, Any]) -> None:
+    notification = NotificationFactory(extra_context=extra)
+    expected |= {"notification": notification.name}
+    assert notification.get_context(ctx) == expected
