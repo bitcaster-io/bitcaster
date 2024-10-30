@@ -44,10 +44,13 @@ class DistributionList(BitcasterBaseModel):
         unique_together = (("name", "project"),)
 
 
-class Subscription(models.Model):
+class Subscription(BitcasterBaseModel):
     distributionlist = models.ForeignKey(DistributionList, on_delete=models.CASCADE)
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
     config = JSONField(default=dict)
 
-    def natural_key(self) -> tuple[str | None, ...]:
+    def natural_key(self) -> tuple[str]:
         return *self.distributionlist.natural_key(), *self.assignment.natural_key()
+
+    class Meta:
+        unique_together = (("distributionlist", "assignment"),)
