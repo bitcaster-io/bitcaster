@@ -12,7 +12,6 @@ from .project import Project
 if TYPE_CHECKING:
     from .notification import Notification
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -44,10 +43,18 @@ class DistributionList(BitcasterBaseModel):
         unique_together = (("name", "project"),)
 
 
-class SubscriptionManager(models.Manager):
+class SubscriptionManager(models.Manager["Subscription"]):
     def get_by_natural_key(
-        self, dl_name, dl_project_slug, dl_org_slug, as_username, as_name, as_channel_name, as_project_slug, as_org_slug
-    ):
+        self,
+        dl_name: str,
+        dl_project_slug: str,
+        dl_org_slug: str,
+        as_username: str,
+        as_name: str,
+        as_channel_name: str,
+        as_project_slug: str,
+        as_org_slug: str,
+    ) -> "Subscription":
         return self.get(
             distributionlist=DistributionList.objects.get_by_natural_key(
                 name=dl_name, prj=dl_project_slug, org=dl_org_slug
