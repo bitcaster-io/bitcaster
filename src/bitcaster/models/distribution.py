@@ -44,10 +44,30 @@ class DistributionList(BitcasterBaseModel):
         unique_together = (("name", "project"),)
 
 
+class SubscriptionManager(models.Manager):
+    def get_by_natural_key(
+        self, dl_name, dl_project_slug, dl_org_slug, as_username, as_name, as_channel_name, as_project_slug, as_org_slug
+    ):
+        return self.get(
+            distributionlist=DistributionList.objects.get_by_natural_key(
+                name=dl_name, prj=dl_project_slug, org=dl_org_slug
+            ),
+            assignment=Assignment.objects.get_by_natural_key(
+                user=as_username,
+                addr=as_name,
+                ch=as_channel_name,
+                prj=as_project_slug,
+                org=as_org_slug,
+            ),
+        )
+
+
 class Subscription(BitcasterBaseModel):
     distributionlist = models.ForeignKey(DistributionList, on_delete=models.CASCADE)
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
     config = JSONField(default=dict)
+
+    objects = SubscriptionManager()
 
     def natural_key(self) -> tuple[str]:
         return *self.distributionlist.natural_key(), *self.assignment.natural_key()
