@@ -4,7 +4,7 @@ from .address import Address  # noqa
 from .application import Application  # noqa
 from .assignment import Assignment  # noqa
 from .channel import Channel  # noqa
-from .distribution import DistributionList  # noqa
+from .distribution import DistributionList, Subscription  # noqa
 from .event import Event  # noqa
 from .group import Group  # noqa
 from .internal import LogMessage  # noqa
@@ -27,6 +27,7 @@ __all__ = [
     "Assignment",
     "Channel",
     "DistributionList",
+    "Subscription",
     "Event",
     "Group",
     "LogEntry",

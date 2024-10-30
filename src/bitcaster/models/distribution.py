@@ -2,7 +2,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from django.db import models
-from django.db.models import QuerySet
+from django.db.models import JSONField, QuerySet
 from django.utils.translation import gettext_lazy as _
 
 from .assignment import Assignment
@@ -27,6 +27,7 @@ class DistributionList(BitcasterBaseModel):
     name = models.CharField(max_length=255, db_collation="case_insensitive")
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     recipients = models.ManyToManyField(Assignment, blank=True)
+    recipients2 = models.ManyToManyField(Assignment, blank=True, through="Subscription", related_name="recipients2")
     notifications: "QuerySet[Notification]"
 
     objects = DistributionListManager()
@@ -41,3 +42,12 @@ class DistributionList(BitcasterBaseModel):
         verbose_name = _("Distribution List")
         verbose_name_plural = _("Distribution Lists")
         unique_together = (("name", "project"),)
+
+
+class Subscription(models.Model):
+    distributionlist = models.ForeignKey(DistributionList, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    config = JSONField(default=dict)
+
+    def natural_key(self) -> tuple[str | None, ...]:
+        return *self.distributionlist.natural_key(), *self.assignment.natural_key()

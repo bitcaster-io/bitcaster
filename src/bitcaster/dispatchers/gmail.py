@@ -8,6 +8,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
+from . import EmailDispatcher
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 if TYPE_CHECKING:
@@ -27,9 +28,9 @@ class GMailConfig(DispatcherConfig):
     )
 
 
-class GMailDispatcher(Dispatcher):
+class GMailDispatcher(EmailDispatcher):
     slug = "gmail"
-    verbose_name = "GMmail"
+    verbose_name = "GMail"
 
     config_class = GMailConfig
     backend = EmailBackend

@@ -72,6 +72,10 @@ class DispatcherConfig(forms.Form):
     help_text = ""
 
 
+class DispatcherUserConfig(forms.Form):
+    help_text = "No extra config needed"
+
+
 class DispatcherMeta(type["Dispatcher"]):
     _all = {}
     # _dispatchers = []
@@ -93,6 +97,7 @@ class Dispatcher(metaclass=DispatcherMeta):
     slug = "--"
     verbose_name: str = ""
     config_class: "Type[DispatcherConfig] | None" = DispatcherConfig
+    user_config_class: "Type[DispatcherUserConfig] | None" = DispatcherUserConfig
     backend: "Optional[str, DispatcherHandler]" = None
     address_types: List[AddressType] = [AddressType.GENERIC]
     channel: "Channel"

@@ -1,15 +1,19 @@
 import logging
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from typing import TYPE_CHECKING, Any, Optional
 
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
+from django import forms
 from django.contrib import admin
 from django.db.models import QuerySet
+from django.db import models
 from django.http import HttpRequest
 
-from bitcaster.models import DistributionList
+from bitcaster.models import Assignment, Subscription
 
 from .base import BaseAdmin
 from .mixins import TwoStepCreateMixin
+from ..models import DistributionList
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +31,9 @@ class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], adm
         ("recipients__address__user", AutoCompleteFilter.factory()),
     )
     autocomplete_fields = ("project",)
-    filter_horizontal = ("recipients",)
+    exclude = ["recipients"]
+    # filter_horizontal = ("recipients",)
+    # form = DistributionListForm
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[DistributionList]:
         return super().get_queryset(request).select_related("project__organization")
