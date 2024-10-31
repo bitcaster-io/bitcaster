@@ -221,24 +221,22 @@ def test_add(app: "DjangoTestApp", message: "Message") -> None:
 
 
 @pytest.fixture(params=["notification", "event", "application", "project", "organization"])
-def level(request: "FixtureRequest") -> "Channel":
+def creator(request: "FixtureRequest") -> "Channel":
     return request.getfixturevalue(request.param)
 
 
-def test_changelist(app: "DjangoTestApp", level: CreateMessage, channel: "Channel") -> None:
-    owner = level
-    message: "Message" = owner.create_message(name=f"Message {type(owner).__name__}", channel=channel)
+def test_changelist(app: "DjangoTestApp", creator: CreateMessage, channel: "Channel") -> None:
+    message: "Message" = creator.create_message(name=f"Message {type(creator).__name__}", channel=channel)
 
     url = reverse(admin_urlname(message._meta, "changelist"))  # type: ignore[arg-type]
     res = app.get(url)
     assert res.pyquery("#result_list tbody tr th a").text() == message.name
 
 
-def test_usage(app: "DjangoTestApp", level: CreateMessage, channel: "Channel") -> None:
-    owner: CreateMessage = level
-    message: "Message" = owner.create_message(name=f"Message {type(owner).__name__}", channel=channel)
+def test_usage(app: "DjangoTestApp", creator: CreateMessage, channel: "Channel") -> None:
+    message: "Message" = creator.create_message(name=f"Message {type(creator).__name__}", channel=channel)
     opts: "Options[Message]" = message._meta
 
     url = reverse(admin_urlname(opts, "usage"), args=[message.pk])  # type: ignore[arg-type]
     res = app.get(url)
-    assert res.pyquery("#usage tbody tr td a").text() == owner.name
+    assert res.pyquery("#usage tbody tr td a").text() == creator.name

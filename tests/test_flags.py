@@ -5,7 +5,7 @@ import pytest
 from django.test.client import RequestFactory
 from pytest_django.fixtures import SettingsWrapper
 
-from bitcaster.apps import client_ip, development, env_var, header_key, server_address
+from bitcaster.apps import development, env_var, header_key, server_address
 from bitcaster.state import state
 
 
@@ -23,22 +23,6 @@ def test_server_address(rf: RequestFactory, ip: str, settings: "SettingsWrapper"
     request = rf.get("/", HTTP_HOST=ip)
     with state.configure(request=request):
         assert server_address(ip)
-
-
-@pytest.mark.parametrize(
-    "subnet, ip, result",
-    [
-        ("192.168.1.0/24", "192.168.1.1", True),
-        ("192.168.1.1/32", "192.168.1.1", True),
-        ("192.168.1.1", "192.168.1.1", True),
-        ("192.168.1.0/24", "192.168.66.1", False),
-        ("192.168.0.0/16", "192.168.1.1", True),
-    ],
-)
-def test_client_ip(rf: RequestFactory, subnet: str, ip: str, result: str) -> None:
-    request = rf.get("/", REMOTE_ADDR=ip)
-    with state.configure(request=request):
-        assert client_ip(subnet) == result
 
 
 @pytest.mark.parametrize(

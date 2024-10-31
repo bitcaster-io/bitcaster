@@ -20,7 +20,7 @@ class CacheKey:
 
 class Bitcaster:
     ORGANIZATION = "OS4D"
-    PROJECT = "BITCASTER"
+    PROJECT = "BITCASTER-IO"
     APPLICATION = "Bitcaster"
     _app: "Optional[Application]" = None
 

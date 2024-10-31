@@ -2,16 +2,13 @@ import os
 import re
 from typing import Any
 
-import pytricia
 from django.apps import AppConfig
 from django.conf import settings
 from flags import conditions
 from flags.conditions.registry import _conditions
 
 from bitcaster.state import state
-from bitcaster.utils.http import get_client_ip, get_server_host
-
-pyt = pytricia.PyTricia()
+from bitcaster.utils.http import get_server_host
 
 
 @conditions.register("development mode")
@@ -22,13 +19,6 @@ def development(**kwargs: Any) -> bool:
 @conditions.register("server_address")
 def server_address(value: str, **kwargs: Any) -> bool:
     return state.request.get_host() == value
-
-
-@conditions.register("User IP")
-def client_ip(value: str, **kwargs: Any) -> bool:
-    remote = get_client_ip()
-    pyt.insert(value, "")
-    return remote in pyt
 
 
 @conditions.register("Environment Variable")
