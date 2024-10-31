@@ -1,5 +1,4 @@
 exclude *
-exclude requirements.txt
 
 include README.md
 include MANIFEST.in
