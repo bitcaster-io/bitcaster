@@ -1,251 +1,168 @@
-# syntax=docker/dockerfile:1
-ARG PYTHON_FULL_VER=3.12.6
-ARG PYTHON_VER=3.12
-ARG CHECKSUM
-ARG VERSION=0.1.0
-ARG BUILD_DATE=not_provided
-
-FROM python:${PYTHON_FULL_VER}-slim-bookworm AS python_base
-
-ARG CHECKSUM
-ENV CHECKSUM=$CHECKSUM
-ARG VERSION
-ENV VERSION=$VERSION
-ARG BUILD_DATE
-ENV BUILD_DATE=$BUILD_DATE
-ARG SOURCE_COMMIT
-ENV SOURCE_COMMIT=$SOURCE_COMMIT
-ARG GITHUB_SERVER_URL
-ENV GITHUB_SERVER_URL=$GITHUB_SERVER_URL
-ARG GITHUB_REPOSITORY
-ENV GITHUB_REPOSITORY=$GITHUB_REPOSITORY
-
+FROM python:3.12-slim-bookworm AS base_os
 ARG GOSU_VERSION=1.17
 ARG GOSU_SHA256=bbc4136d03ab138b1ad66fa4fc051bafc6cc7ffae632b069a53657279a450de3
-ARG TINI_VERSION=0.19.0
-ARG TINI_SHA256=93dcc18adc78c65a028a84799ecf8ad40c936fdfc5f2a57b1acda5a8117fa82c
-ARG WAITFOR_IT_VERSION=2.4.1
-ARG WAITFOR_IT_MD5=cd67c8e45436c4a7b2b707d7a5b15a66
 
 
 RUN set -x \
-  && buildDeps=" \
-    libpsl5 \
-    wget \
+  && runtimeDeps=" \
+    libmagic1 \
+    libxml2 \
   " \
-  && apt-get update && apt-get install -y --no-install-recommends ${buildDeps}
-
-RUN wget --quiet -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
+  && buildDeps=" \
+wget \
+" \
+  && apt-get update && apt-get install -y --no-install-recommends ${buildDeps} ${runtimeDeps} \
+  && rm -rf /var/lib/apt/lists/* \
+  && wget --quiet -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
   && echo "$GOSU_SHA256 /usr/local/bin/gosu" | sha256sum --check --status \
-  && chmod +x /usr/local/bin/gosu
+  && chmod +x /usr/local/bin/gosu \
+  && apt-get purge -y --auto-remove $buildDeps
 
-RUN wget --quiet -O /usr/local/bin/tini "https://github.com/krallin/tini/releases/download/v$TINI_VERSION/tini-amd64" \
-  && echo "$TINI_SHA256 /usr/local/bin/tini" | sha256sum --check --status \
-  && chmod +x /usr/local/bin/tini
-
-RUN wget --quiet -O /usr/local/bin/waitforit "https://github.com/maxcnunes/waitforit/releases/download/v$WAITFOR_IT_VERSION/waitforit-linux_amd64" \
-  && echo "$WAITFOR_IT_MD5 /usr/local/bin/waitforit" | md5sum --check --status \
-  && chmod +x /usr/local/bin/waitforit
-#  && apt-get purge -y --auto-remove $buildDeps
-
-#    apt-get clean \
-#    && apt-get update  \
-#  && rm -rf /var/lib/apt/lists/* \
-
-RUN \
-    --mount=type=cache,target=/var/cache/apt \
-    apt-get install -y --no-install-recommends  \
-      libffi8 \
-      libgl1  \
-      libglib2.0-0 \
-      libmagic1 \
-      libpng16-16  \
-      libxml2  \
-      mime-support  \
-      postgresql-client
-
-RUN groupadd --gid 1024 app \
-    && adduser --disabled-login --disabled-password --no-create-home --comment "" --ingroup app -q user
+RUN groupadd --gid 1024 bitcaster-io \
+    && adduser --disabled-login --disabled-password --no-create-home --ingroup bitcaster-io -q bitcaster
 
 
-COPY docker/bin/* /usr/local/bin/
-COPY docker/conf/* /conf/
-
-ENV DJANGO_SETTINGS_MODULE="bitcaster.config.settings" \
-    PATH=/app/.venv/bin/:${PATH} \
-    PYTHONDBUFFERED=1 \
-    PYTHONDONTWRITEBYTCODE=1
-
-FROM python_base AS os_deps
-
+# ------- builder -------
+FROM base_os AS builder
 RUN set -x \
-    && buildDeps=" \
-        build-essential \
-        cmake \
-        curl \
-        gcc \
-        libgdal-dev \
-        libgif-dev \
-        libc6-dev \
-        libjpeg-dev \
-        liblapack-dev \
-        libopenblas-dev \
-        libcrypt-dev \
-        libpng-dev \
-        libpq-dev \
-        libwebp-dev \
-        libssl-dev \
-        libxml2-dev \
-        python3-dev \
-        wget \
-        zlib1g-dev \
-    " \
+    && buildDeps="build-essential \
+cmake \
+curl \
+gcc \
+git \
+libfontconfig1 \
+libgconf-2-4 \
+libglib2.0-0 \
+libnss3 \
+libssl-dev \
+libxml2-dev  \
+python3-dev \
+zlib1g-dev  \
+" \
     && apt-get update \
     && apt-get install -y --no-install-recommends $buildDeps \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gnupg wget curl unzip && \
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends google-chrome-stable && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
+    CHROME_VERSION=$(google-chrome --product-version) && \
+    wget -q --continue -P /chromedriver "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip" && \
+    unzip /chromedriver/chromedriver* -d /usr/local/bin/ && \
+    rm -rf /chromedriver
 
-FROM os_deps AS python_prod_deps
-ARG CHECKSUM
-ENV CHECKSUM=$CHECKSUM
-ARG VERSION
-ENV VERSION=$VERSION
-ARG BUILD_DATE
-ENV BUILD_DATE=$BUILD_DATE
-ARG SOURCE_COMMIT
-ENV SOURCE_COMMIT=$SOURCE_COMMIT
-ARG GITHUB_SERVER_URL
-ENV GITHUB_SERVER_URL=$GITHUB_SERVER_URL
-ARG GITHUB_REPOSITORY
-ENV GITHUB_REPOSITORY=$GITHUB_REPOSITORY
+RUN pip install uv uwsgi
 
-LABEL date=$BUILD_DATE
-LABEL version=$VERSION
-LABEL checksum=$CHECKSUM
-LABEL distro="python_prod_deps"
-
-#COPY docker/conf/config.toml /etc/xdg/pdm/config.toml
-COPY pyproject.toml pdm.lock /README.md /LICENSE.md /app/
-COPY ./src /app/src
-
-RUN set -x \
-    && cd /app \
-    && pip install -U pip pdm \
-    && pdm install --no-editable -v --prod --frozen-lockfile \
-    && rm -fr src pyproject.toml pdm.lock
-
-WORKDIR /app
-#ENV DJANGO_SETTINGS_MODULE="bitcaster.config.settings" \
-#    PATH=${APATH}:${PATH} \
-#    PYTHONDBUFFERED=1 \
-#    PYTHONDONTWRITEBYTCODE=1
-
-RUN <<EOF cat> /RELEASE
-{"version": "$VERSION",
- "commit": "$SOURCE_COMMIT",
- "date": "$BUILD_DATE",
- "distro": "python_prod_deps",
- "checksum": "$CHECKSUM",
- "source": "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${SOURCE_COMMIT:-master}/"
-}
-EOF
-
-
-
-FROM python_prod_deps AS python_dev_deps
-COPY --from=python_prod_deps / /
-
-ARG CHECKSUM
-ENV CHECKSUM=$CHECKSUM
-ARG VERSION
-ENV VERSION=$VERSION
-ARG BUILD_DATE
-ENV BUILD_DATE=$BUILD_DATE
-ARG DISTRO
-ENV DISTRO=$DISTRO
-ARG SOURCE_COMMIT
-ENV SOURCE_COMMIT=$SOURCE_COMMIT
-ARG GITHUB_SERVER_URL
-ENV GITHUB_SERVER_URL=$GITHUB_SERVER_URL
-ARG GITHUB_REPOSITORY
-ENV GITHUB_REPOSITORY=$GITHUB_REPOSITORY
-
-
-LABEL date=$BUILD_DATE
-LABEL version=$VERSION
-LABEL checksum=$CHECKSUM
-LABEL distro="python_dev_deps"
-COPY pyproject.toml pdm.lock /README.md /LICENSE.md /app/
-COPY ./src /app/src
-
-RUN set -x \
-    && cd /app \
-    && pip install -U pip pdm \
-    && pdm sync --no-editable -v --no-self \
-    && rm -fr src pyproject.toml pdm.lock
-
-WORKDIR /app
-
-
-#COPY docker/conf/config.toml /etc/xdg/pdm/config.toml
-#COPY . /app
-#
-#RUN set -x \
-#    && cd /workdir \
-#    && pip install -U pip pdm \
-#    && mkdir -p /app \
-#    && pdm sync --no-editable -v --no-self --project /app --lockfile /workdir/pdm.lock \
-#    && rm -fr /workdir
 #
 #WORKDIR /app
-#ENV DJANGO_SETTINGS_MODULE="bitcaster.config.settings" \
-#    PATH=${APATH}:${PATH} \
-#    PYTHONDBUFFERED=1 \
-#    PYTHONDONTWRITEBYTCODE=1
-RUN <<EOF cat> /RELEASE
-{"version": "$VERSION",
- "commit": "$SOURCE_COMMIT",
- "date": "$BUILD_DATE",
- "distro": "python_dev_deps",
- "checksum": "$CHECKSUM",
- "source": "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${SOURCE_COMMIT:-master}/"
-}
-EOF
+#RUN --mount=type=cache,target=/root/.uv-cache \
+#    --mount=type=bind,source=uv.lock,target=/app/uv.lock \
+#    --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
+#    --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
+#    --mount=type=bind,source=README.md,target=/app/README.md \
+#    --mount=type=bind,source=./src/bitcaster,target=/app/src/bitcaster \
+#    uv sync --cache-dir=/root/.uv-cache \
+#        --python=/usr/local/bin//python \
+#        --python-preference=system \
+#        --no-dev --no-editable --frozen --extra distribution
 
-FROM python_base AS dist
 
-ARG CHECKSUM
-ENV CHECKSUM=$CHECKSUM
-ARG VERSION
-ENV VERSION=$VERSION
+# ------- tests -------
+FROM builder AS tests
 ARG BUILD_DATE
-ENV BUILD_DATE=$BUILD_DATE
-ARG SOURCE_COMMIT
-ENV SOURCE_COMMIT=$SOURCE_COMMIT
-ARG GITHUB_SERVER_URL
-ENV GITHUB_SERVER_URL=$GITHUB_SERVER_URL
-ARG GITHUB_REPOSITORY
-ENV GITHUB_REPOSITORY=$GITHUB_REPOSITORY
+ARG VERSION
+
+LABEL distro="tests"
+LABEL org.opencontainers.image.created="$BUILD_DATE"
+LABEL org.opencontainers.image.version="$VERSION"
+
+ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
+    DJANGO_SETTINGS_MODULE=bitcaster.config.settings \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=""\
+    UWSGI_PROCESSES=4
+WORKDIR /app
+COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
+COPY src /app/src/
+
+RUN --mount=type=cache,target=/root/.uv-cache \
+    uv sync --cache-dir=/root/.uv-cache \
+        --python=/usr/local/bin/python \
+        --python-preference=system \
+        --frozen
 
 
-COPY --chown=user:app --from=python_prod_deps /app/ /app
+
+# ------- production only deps-------
+FROM builder AS production
+ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
+    DJANGO_SETTINGS_MODULE=bitcaster.config.settings \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=""\
+    UWSGI_PROCESSES=4
+WORKDIR /app
+COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
+COPY src /app/src/
+
+RUN --mount=type=cache,target=/root/.uv-cache \
+    uv sync --cache-dir=/root/.uv-cache \
+        --python=/usr/local/bin/python \
+        --python-preference=system \
+        --no-dev --no-editable --frozen --extra distribution
+
+
+
+# ------- dist -------
+FROM base_os AS dist
+ARG BUILD_DATE
+ARG VERSION
+ARG GIT_SHA
+
+ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
+    DJANGO_SETTINGS_MODULE=bitcaster.config.settings \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    STATIC_URL="/static/" \
+    PYTHONPATH=""\
+    PGSSLCERT="/tmp/postgresql.crt" \
+    UWSGI_PROCESSES=4
 
 RUN <<EOF cat> /RELEASE
 {"version": "$VERSION",
- "commit": "$SOURCE_COMMIT",
+ "commit": "$GIT_SHA",
  "date": "$BUILD_DATE",
- "distro": "dist",
- "checksum": "$CHECKSUM",
- "source": "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${SOURCE_COMMIT:-master}/"
 }
 EOF
-
 WORKDIR /app
-VOLUME /var/run/app/
+COPY docker/conf /conf/
+COPY docker/bin/* /usr/local/bin/
+COPY LICENSE.md README.md /
+COPY src /app/src/
+RUN rm -fr /app/src/
+
+
+COPY --chown=bitcatser:bitcatser-io --from=production /app/.venv /app/.venv
+COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/uv /usr/local/bin/
+RUN --mount=type=cache,target=/root/.uv-cache \
+    --mount=type=bind,source=uv.lock,target=/app/uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
+    --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
+    --mount=type=bind,source=README.md,target=/app/README.md \
+    --mount=type=bind,source=./src/bitcaster,target=/app/src/bitcaster \
+    uv --cache-dir=/root/.uv-cache pip install --no-deps .
+
+
 EXPOSE 8000
-CMD ["run"]
 ENTRYPOINT exec docker-entrypoint.sh "$0" "$@"
+CMD ["run"]
 
 LABEL distro="final"
 LABEL maintainer="bitcaster@bitcaster.io"

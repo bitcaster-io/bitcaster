@@ -90,13 +90,13 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
 
     def create_message(self, name: str, channel: Channel, defaults: Optional[dict[str, Any]] = None) -> "Message":
         return self.messages.get_or_create(
+            organization=self.application.project.organization,
             name=name,
             channel=channel,
             notification=None,
             event=self,
             application=self.application,
             project=self.application.project,
-            organization=self.application.project.organization,
             defaults=defaults if defaults else {},
         )[0]
 

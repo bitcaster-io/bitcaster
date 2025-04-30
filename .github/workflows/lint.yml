@@ -100,48 +100,30 @@ jobs:
         with:
           python-version: '3.12.6'
       - uses: actions/checkout@v4
-      - name: Define code checksum
-        id: checksum
-        uses: ./.github/actions/checksum
-
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
       - name: Restore cached venv
         id: cache-venv-restore
         uses: actions/cache/restore@v4
         with:
-          path: __pypackages__
+          path: .venv
           key: ${{ runner.os }}-${{steps.checksum.outputs.checksum}}-venv
-      - name: Restore cached pdm
-        id: cache-pdm-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: .pdm_cache
-          key: ${{ runner.os }}-${{steps.checksum.outputs.checksum}}-pdm
+
       - name: Install requirements
         if: steps.cache-venv-restore.outputs.cache-hit != 'true'
         run: |
-          pip install pdm
-          pdm config python.use_venv false
-          pdm config check_update false
-          pdm config cache_dir .pdm_cache
-          pdm sync --no-editable -v --no-self -G :all
-      - name: Cache pdm
-        uses: actions/cache/save@v4
-        with:
-          path: .pdm_cache
-          key: ${{ runner.os }}-${{steps.checksum.outputs.checksum}}-pdm
+          uv sync --no-editable
       - name: Cache venv
         uses: actions/cache/save@v4
         with:
-          path: __pypackages__
+          path: .venv
           key: ${{ runner.os }}-${{steps.checksum.outputs.checksum}}-venv
 
       - name: Mypy
         env:
           PYTHONPATH: __pypackages__/3.12/lib
         run: |
-            mkdir .mypy_cache
-            __pypackages__/3.12/bin/mypy \
-                  --python-executable /opt/hostedtoolcache/Python/3.12.6/x64/bin/python \
+            .venv/bin/mypy \
                   --config-file .mypy.ini \
                   --install-types \
                   --non-interactive \

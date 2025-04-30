@@ -10,11 +10,9 @@ from django.core.management.base import CommandError, SystemCheckError
 from django.core.validators import validate_email
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from flags.state import enable_flag
-from strategy_field.utils import fqn
 
 from bitcaster.config import env
 from bitcaster.constants import Bitcaster
-from bitcaster.models import Channel
 
 if TYPE_CHECKING:
     from argparse import ArgumentParser
@@ -109,8 +107,7 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
         from django.contrib.auth.models import Group
 
-        from bitcaster.dispatchers.log import BitcasterSysDispatcher
-        from bitcaster.models import DistributionList, Organization, Project, User
+        from bitcaster.models import Organization, Project, User
 
         self.get_options(options)
         if self.verbosity >= 1:
@@ -180,32 +177,33 @@ class Command(BaseCommand):
             if not admin:
                 raise CommandError("Create an admin user")
 
-            bitcaster = Bitcaster.initialize(admin)
-            prj = bitcaster.project
-            os4d = prj.organization
-            dis: DistributionList = prj.distributionlist_set.get(name=DistributionList.ADMINS)
-
-            ch_log = Channel.objects.get_or_create(
-                name="BitcasterLog",
-                organization=os4d,
-                project=bitcaster.project,
-                dispatcher=fqn(BitcasterSysDispatcher),
-                config={"timeout": settings.EMAIL_TIMEOUT or 5},
-            )[0]
-
-            for ev in bitcaster.events.all():  # noqa
-                n = ev.create_notification(name=f"Notification for {ev.name}", distribution=dis)
-                for ch in [ch_log]:
-                    ev.create_message(
-                        name=f"Message for event {ev.name} using {ch}",
-                        channel=ch,
-                        defaults={"subject": "{{subject}}", "content": "{{message}}", "html_content": "{{message}}"},
-                    )
-                    n.create_message(
-                        name=f"Message for notification {n.name} using {ch}",
-                        channel=ch,
-                        defaults={"subject": "{{subject}}", "content": "{{message}}", "html_content": "{{message}}"},
-                    )
+            Bitcaster.initialize(admin)
+            # prj = bitcaster.project
+            # dis: DistributionList = prj.distributionlist_set.get(name=DistributionList.ADMINS)
+            #
+            # ch_log = prj.channel_set.get_or_create(
+            #     name="BitcasterLog",
+            #     defaults={
+            #         "project": bitcaster.project,
+            #         "dispatcher": fqn(BitcasterSysDispatcher),
+            #         "config": {"timeout": settings.EMAIL_TIMEOUT or 5},
+            #     },
+            # )[0]
+            #
+            # for ev in bitcaster.events.all():  # noqa
+            #     n = ev.create_notification(name=f"Notification for {ev.name}", distribution=dis)
+            #     for ch in [ch_log]:
+            #         ev.create_message(
+            #             channel=ch,
+            #             defaults={"subject": "{{subject}}",
+            #                       "name": f"Message for event {ev.name} using {ch}",
+            #                       "content": "{{message}}", "html_content": "{{message}}"},
+            #         )
+            #         n.create_message(
+            #             name=f"Message for notification {n.name} using {ch}",
+            #             channel=ch,
+            #             defaults={"subject": "{{subject}}", "content": "{{message}}", "html_content": "{{message}}"},
+            #         )
 
             echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
             admin.addresses.get_or_create(name="email", value=self.admin_email)
@@ -231,7 +229,7 @@ class Command(BaseCommand):
             if not (org := Organization.objects.local().first()):
                 org = Organization.objects.create(name="Organization", owner=admin)
 
-            if not (prj := Project.objects.local().first()):
+            if not Project.objects.local().exists():
                 Project.objects.create(name="Project", owner=admin, organization=org)
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
