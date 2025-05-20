@@ -4,20 +4,19 @@ from unittest.mock import ANY, Mock, patch
 
 import pytest
 from django.core.exceptions import ValidationError
-from responses import RequestsMock
 
 from bitcaster.dispatchers import GMailDispatcher
 
 if TYPE_CHECKING:
-    from pytest import MonkeyPatch
+    from responses import RequestsMock
 
     from bitcaster.dispatchers.base import Payload
 
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
-@pytest.mark.parametrize("mail_payload", ("", "html_message"), indirect=True)
-def test_gmail(mocked_responses: "RequestsMock", monkeypatch: "MonkeyPatch", mail_payload: "Payload") -> None:
+@pytest.mark.parametrize("mail_payload", ["", "html_message"], indirect=True)
+def test_gmail(mocked_responses: "RequestsMock", monkeypatch: pytest.MonkeyPatch, mail_payload: "Payload") -> None:
     from bitcaster.dispatchers import GMailDispatcher
     from bitcaster.models import Channel, Project
 
@@ -38,4 +37,4 @@ def test_gmail(mocked_responses: "RequestsMock", monkeypatch: "MonkeyPatch", mai
 def test_config() -> None:
     d: GMailDispatcher = GMailDispatcher(Mock(config={}))
     with pytest.raises(ValidationError):
-        d.config
+        _ = d.config

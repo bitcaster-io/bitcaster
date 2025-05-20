@@ -1,0 +1,95 @@
+
+.edit-message-body {
+  --editor-bgcolor: lightgray;
+  background-color: var(--editor-bgcolor);
+
+  #edit-message-form {
+    padding: 10px;
+
+    table {
+      width: 100%;
+      background-color: var(--editor-bgcolor);
+
+      td {
+        vertical-align: top;
+        width: 50%;
+        background-color: var(--editor-bgcolor);
+
+      }
+    }
+
+    input[type=text], textarea {
+      width: 100%;
+      background-color: var(--editor-bgcolor);
+      border: 1px solid black;
+    }
+
+    .address-line {
+      display: inline-flex;
+      float: right;
+
+      button {
+
+      }
+
+      input#id_recipient {
+        width: 200px;
+        margin-right: 20px;
+      }
+    }
+
+    input[type=submit].default {
+      background-color: var(--bg-primary);
+    }
+
+    h3.title {
+      padding: 10px;
+      //background-color: var(--bg-primary);
+      //color: var(--primary);
+    }
+
+    .menubar {
+      padding: 5px;
+
+      button {
+        padding: 10px;
+        background-color: var(--bg-primary);
+
+        &:active {
+          color: black;
+
+        }
+      }
+    }
+
+    .tab {
+      display: none;
+    }
+
+    #preview {
+      border: 1px solid black;
+      width: 100%;
+      height: 400px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #jsoneditor_id_context {
+      width: 100%;
+      height: 400px;
+
+      .jse-main {
+        height: 100%;
+
+      }
+
+      div.jse-menu.svelte-id9e3c {
+        background-color: var(--bg-primary);
+      }
+    }
+  }
+
+
+}

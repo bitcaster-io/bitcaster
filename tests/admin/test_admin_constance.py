@@ -2,7 +2,6 @@
 from typing import TYPE_CHECKING
 
 import pytest
-from django.http import HttpRequest
 from django.test.client import RequestFactory
 from django.urls import reverse
 from django_webtest import DjangoTestApp
@@ -18,7 +17,7 @@ from testutils.factories import (
 from bitcaster.state import state
 
 if TYPE_CHECKING:
-
+    from django.http import HttpRequest
     from bitcaster.models import Channel, Group
 
 register(UserFactory)
@@ -27,7 +26,7 @@ register(ChannelFactory, "channel")
 register(ProjectFactory, "project")
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: MixinWithInstanceVariables, rf: RequestFactory) -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 

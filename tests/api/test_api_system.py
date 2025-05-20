@@ -24,13 +24,12 @@ if TYPE_CHECKING:
 pytestmark = [pytest.mark.api, pytest.mark.django_db]
 
 
-@pytest.fixture()
+@pytest.fixture
 def client(admin_user: "User") -> APIClient:
-    c = APIClient()
-    return c
+    return APIClient()
 
 
-@pytest.fixture()
+@pytest.fixture
 def data(admin_user: "User") -> "Context":
     event: "Event" = EventFactory()
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)

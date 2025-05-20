@@ -8,8 +8,6 @@ from django.contrib.messages import (  # type: ignore[attr-defined]
     WARNING,
     Message,
 )
-from django.db.models.options import Options
-from django.http import HttpRequest
 from django.test.client import RequestFactory
 from django.urls import reverse
 from django.utils.safestring import SafeString
@@ -29,6 +27,8 @@ from bitcaster.models import Event, Monitor
 from bitcaster.state import state
 
 if TYPE_CHECKING:
+    from django.http import HttpRequest
+    from django.db.models.options import Options
     from webtest.forms import Form as WebTestForm
     from webtest.response import TestResponse
 
@@ -38,7 +38,7 @@ register(ChannelFactory, "channel")
 register(ProjectFactory, "project")
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: MixinWithInstanceVariables, rf: RequestFactory) -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 
@@ -53,7 +53,7 @@ def app(django_app_factory: MixinWithInstanceVariables, rf: RequestFactory) -> D
         yield django_app
 
 
-@pytest.fixture()
+@pytest.fixture
 def monitor(db: Any) -> Monitor:
     from testutils.factories.monitor import MonitorFactory, PeriodicTaskFactory
 

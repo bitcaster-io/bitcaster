@@ -3,24 +3,24 @@ from unittest.mock import Mock
 
 import pytest
 from admin_extra_buttons.handlers import ButtonHandler, ChoiceHandler
-from admin_extra_buttons.mixins import ExtraButtonsMixin
 from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models import Model
-from django.db.models.options import Options
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django_regex.utils import RegexList as _RegexList
 from pytest_django.fixtures import SettingsWrapper
-from responses import RequestsMock
-from testutils.factories.base import AutoRegisterModelFactory
 from testutils.factories.user import SuperUserFactory
 
 if TYPE_CHECKING:
+    from admin_extra_buttons.mixins import ExtraButtonsMixin
+    from testutils.factories.base import AutoRegisterModelFactory
+    from django.db.models.options import Options
+    from responses import RequestsMock
     from django.contrib.admin import ModelAdmin
     from django_webtest import DjangoTestApp, DjangoWebtestResponse
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
-    from pytest import FixtureRequest, Metafunc, MonkeyPatch
+
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
 
@@ -56,8 +56,7 @@ KWARGS: Mapping[str, Any] = {}
 def reverse_model_admin(model_admin: "ModelAdmin[Model]", op: str, args: Optional[list[Any]] = None) -> str:
     if args:
         return reverse(admin_urlname(model_admin.model._meta, mark_safe(op)), args=args)
-    else:
-        return reverse(admin_urlname(model_admin.model._meta, mark_safe(op)))
+    return reverse(admin_urlname(model_admin.model._meta, mark_safe(op)))
 
 
 def log_submit_error(res: "DjangoWebtestResponse") -> str:
@@ -67,7 +66,7 @@ def log_submit_error(res: "DjangoWebtestResponse") -> str:
         return "Submit failed"
 
 
-def pytest_generate_tests(metafunc: "Metafunc") -> None:  # noqa
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:  # noqa
     import django
 
     ids: list[str]
@@ -89,11 +88,10 @@ def pytest_generate_tests(metafunc: "Metafunc") -> None:  # noqa
             if hasattr(admin, "extra_button_handlers"):
                 name = model._meta.object_name
                 assert admin.urls  # we need to force this call
-                # admin.get_urls()  # we need to force this call
                 buttons = admin.extra_button_handlers.values()
                 full_name = f"{model._meta.app_label}.{name}"
                 admin_name = f"{model._meta.app_label}.{admin.__class__.__name__}"
-                if not (full_name in excluded_models):
+                if full_name not in excluded_models:
                     for btn in buttons:
                         tid = f"{admin_name}:{btn.name}"
                         if tid not in excluded_buttons:
@@ -102,7 +100,7 @@ def pytest_generate_tests(metafunc: "Metafunc") -> None:  # noqa
         metafunc.parametrize("model_admin,button_handler", m1, ids=ids)
     elif "app_label" in metafunc.fixturenames:
         m: dict[str, int] = {}
-        for model, admin in site._registry.items():
+        for model in site._registry:
             m[model._meta.app_label] = 1
         metafunc.parametrize("app_label", m.keys(), ids=m.keys())
     elif "model_admin" in metafunc.fixturenames:
@@ -111,14 +109,14 @@ def pytest_generate_tests(metafunc: "Metafunc") -> None:  # noqa
         for model, admin in site._registry.items():
             name = model._meta.object_name
             full_name = f"{model._meta.app_label}.{name}"
-            if not (full_name in excluded_models):
+            if full_name not in excluded_models:
                 m2.append(admin)
                 ids.append(f"{admin.__class__.__name__}:{full_name}")
         metafunc.parametrize("model_admin", m2, ids=ids)
 
 
-@pytest.fixture()
-def record(db: Any, request: "FixtureRequest") -> Model:
+@pytest.fixture
+def record(db: Any, request: pytest.FixtureRequest) -> Model:
     from testutils.factories import get_factory_for_model
 
     model_admin = request.getfixturevalue("model_admin")
@@ -133,7 +131,7 @@ def record(db: Any, request: "FixtureRequest") -> Model:
     return instance
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(
     django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: SettingsWrapper
 ) -> "DjangoTestApp":
@@ -165,7 +163,7 @@ def test_admin_changelist(app: "DjangoTestApp", model_admin: "ModelAdmin[Model]"
 def show_error(res: Any) -> tuple[str]:
     errors = []
     for k, v in dict(res.context["adminform"].form.errors).items():
-        errors.append(f'{k}: {"".join(v)}')
+        errors.append(f"{k}: {''.join(v)}")
     return (f"Form submitting failed: {res.status_code}: {errors}",)
 
 
@@ -194,7 +192,7 @@ def test_admin_add(app: "DjangoTestApp", model_admin: "ModelAdmin[Model]") -> No
 
 @pytest.mark.skip_models("constance.Config", "webpush.Browser", "bitcaster.Organization")
 def test_admin_delete(
-    app: "DjangoTestApp", model_admin: "ModelAdmin[Model]", record: Model, monkeypatch: "MonkeyPatch"
+    app: "DjangoTestApp", model_admin: "ModelAdmin[Model]", record: Model, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     url = reverse(admin_urlname(model_admin.model._meta, mark_safe("delete")), args=[record.pk])
     if model_admin.has_delete_permission(Mock(user=app._user)):
@@ -211,7 +209,7 @@ def test_admin_buttons(
     model_admin: "ExtraButtonsMixin",
     button_handler: "ButtonHandler",
     record: "Model",
-    monkeypatch: "MonkeyPatch",
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from admin_extra_buttons.handlers import LinkHandler
 

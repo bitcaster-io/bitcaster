@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, Optional
+from typing import Any, TYPE_CHECKING
 
 from cryptography.hazmat.primitives import serialization
 from django import forms
@@ -14,8 +14,10 @@ from bitcaster.dispatchers.base import (
     Payload,
 )
 from bitcaster.exceptions import DispatcherError
-from bitcaster.models import Assignment
 from bitcaster.state import state
+
+if TYPE_CHECKING:
+    from bitcaster.models import Assignment
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +27,6 @@ class TokenInput(forms.HiddenInput):
 
 
 class WebPushConfig(DispatcherConfig):
-
     help_text = """
 
 1. goto [Firebase Console](https://console.firebase.google.com/u/0/?pli=1){:target="_blank"} and create a new project
@@ -79,7 +80,7 @@ class WebPushDispatcher(Dispatcher):
     protocol = MessageProtocol.WEBPUSH
     need_subscription = True
 
-    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         try:
             from .utils import webpush_send_message
 
@@ -93,4 +94,4 @@ class WebPushDispatcher(Dispatcher):
             return res["success"] == 1
         except Exception as e:
             logger.exception(e)
-            raise DispatcherError(e)
+            raise DispatcherError(e) from e

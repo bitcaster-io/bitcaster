@@ -1,36 +1,24 @@
 repos:
+  -   repo: https://github.com/astral-sh/ruff-pre-commit
+      rev: "v0.9.9"
+      hooks:
+          -   id: ruff-format
+          -   id: ruff
+              args: [ "--fix", "--unsafe-fixes", "--exit-non-zero-on-fix" ]
+
+  -   repo: https://github.com/tox-dev/tox-ini-fmt
+      rev: "1.5.0"
+      hooks:
+          -   id: tox-ini-fmt
+              args: [ "-p", "lint" ]
+
+  -   repo: https://github.com/tox-dev/pyproject-fmt
+      rev: "v2.5.1"
+      hooks:
+          -   id: pyproject-fmt
+
   - repo: local
     hooks:
-      # Configuration for black exists in pyproject.toml,
-      # but we let pre-commit take care of the file filtering.
-      - id: black
-        name: black
-        #        args: [ '--check' ]
-        entry: black
-        language: python
-        types: [ python ]
-        require_serial: true
-        additional_dependencies: [ black ]
-
-      # Configuration for isort exists in pyproject.toml,
-      # but we let pre-commit take care of the file filtering.
-      - id: isort
-        name: isort
-        args: [ "--profile", "black" ]
-        entry: isort
-        language: python
-        types: [ python ]
-        additional_dependencies: [ isort ]
-      # Configuration for black exists in .flake8,
-      # but we let pre-commit take care of the file filtering.
-      - id: flake8
-        name: flake8
-        args: [ "--config", ".flake8" ]
-        entry: flake8
-        language: python
-        types: [ python ]
-        additional_dependencies: [ flake8 ]
-
       - id: mypy
         exclude: (^~.*|manage\.py|develop\.py|conftest.py)
         args: [ "--config-file", ".mypy.ini" ]
@@ -73,7 +61,7 @@ repos:
         exclude: (tests/.*|.*/tenant\.sql|Pipfile\.lock|.*\.js|~.gitlab-ci.yml|poetry.lock)
         stages: [ push ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: debug-statements
         stages: [ commit ]

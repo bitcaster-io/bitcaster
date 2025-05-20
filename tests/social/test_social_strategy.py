@@ -35,9 +35,8 @@ def test_social_strategy_error() -> None:
 
 def test_social_strategy_missing() -> None:
     s = BitcasterStrategy(Mock(), Mock())
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(ValueError):  # noqa: PT011
         s.get_setting("SOCIAL_AUTH_GITLAB_KEY")
-        assert e.message == "111"  # type: ignore[attr-defined]
 
 
 def test_social_strategy_url() -> None:

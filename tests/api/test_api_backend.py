@@ -33,16 +33,14 @@ if TYPE_CHECKING:
 pytestmark = [pytest.mark.api, pytest.mark.django_db]
 
 
-@pytest.fixture()
+@pytest.fixture
 def client() -> APIClient:
-    c = APIClient()
-    return c
+    return APIClient()
 
 
-@pytest.fixture()
+@pytest.fixture
 def context(admin_user: "User") -> "Context":
     event: "Event" = EventFactory()
-    # app2: "Application" = ApplicationFactory()
     key: ApiKey = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     key2: ApiKey = ApiKeyFactory(user=admin_user, grants=[], application__project=ProjectFactory())
     assert key.organization.slug != key2.organization.slug
@@ -56,7 +54,7 @@ def context(admin_user: "User") -> "Context":
     }
 
 
-@pytest.mark.parametrize("g", [g for g in Grant])
+@pytest.mark.parametrize("g", list(Grant))
 def test_has_specific_permission(rf: RequestFactory, g: Grant, context: "Context") -> None:
     api_key: ApiKey = context["key"]
     p: ApiBasePermission = context["backend"]

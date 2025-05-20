@@ -1,5 +1,5 @@
 import hashlib
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.core.cache import BaseCache, caches
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from bitcaster.types.http import AnyRequest
 
 USER_AGENTS_CACHE = getattr(settings, "USER_AGENTS_CACHE", "default")
-cache: Optional[BaseCache]
+cache: BaseCache | None
 
 if USER_AGENTS_CACHE:
     cache = caches[USER_AGENTS_CACHE]
@@ -41,15 +41,16 @@ def get_cache_key(ua_string: bytes | str) -> str:
         ua_string = ua_string.encode("utf-8")
     hasher = hashlib.new("sha256")
     hasher.update(ua_string)
-    return "".join(["django_user_agents.", hasher.hexdigest()])
+    return f"django_user_agents.{hasher.hexdigest()}"
 
 
 def get_user_agent(request: "AnyRequest") -> UserAgent:
-    # Tries to get UserAgent objects from cache before constructing a UserAgent
-    # from scratch because parsing regexes.yaml/json (ua-parser) is slow
-    # if not hasattr(request, 'META'):
-    #     return None
+    """Try to get UserAgent objects from cache before constructing a UserAgent from scratch.
 
+    Because parsing regexes.yaml/json (ua-parser) is slow
+    if not hasattr(request, 'META'):
+        return None
+    """
     ua_string = request.META.get("HTTP_USER_AGENT", "")
     if not ua_string:
         return UserAgent("")

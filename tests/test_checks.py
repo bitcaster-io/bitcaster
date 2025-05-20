@@ -3,7 +3,6 @@ from pathlib import Path
 from unittest import mock
 from unittest.mock import Mock
 
-from pytest_django.fixtures import SettingsWrapper
 
 from bitcaster.checks import (
     E002,
@@ -11,6 +10,10 @@ from bitcaster.checks import (
     check_agent_validator,
     check_agent_validator_root,
 )
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pytest_django.fixtures import SettingsWrapper
 
 
 def test_check_agent_validator(settings: "SettingsWrapper") -> None:

@@ -1,0 +1,50 @@
+div.webpush {
+  div.center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  input[type=button] {
+    &.green {
+      background-color: #3e8f3e;
+    }
+  }
+
+  .p-1 {
+    padding: 10px;
+  }
+
+  .w-100 {
+    width: 100%;
+  }
+
+  .mt-5 {
+    margin-top: 50px;
+  }
+
+  .my-2 {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .logo {
+    width: 100px;
+    margin: 10px;
+
+    img {
+      width: 100px;
+    }
+  }
+
+  div.frame {
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 50%;
+    align-content: center;
+  }
+
+  div.subscribe {
+    margin-top: 20px;
+    padding: 10px;
+  }
+}

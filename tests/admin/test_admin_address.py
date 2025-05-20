@@ -8,7 +8,7 @@ from django_webtest.pytest_plugin import MixinWithInstanceVariables
 from bitcaster.constants import AddressType
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 

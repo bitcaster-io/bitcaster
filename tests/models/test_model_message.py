@@ -9,14 +9,14 @@ if TYPE_CHECKING:
     from bitcaster.models import Channel, Message
 
 
-@pytest.fixture()
+@pytest.fixture
 def email_channel(db: Any) -> "Channel":
     from testutils.factories.channel import ChannelFactory
 
     return ChannelFactory(dispatcher=fqn(EmailDispatcher))
 
 
-@pytest.fixture()
+@pytest.fixture
 def email_message(email_channel: "Channel") -> "Message":
     from testutils.factories import MessageFactory
 
@@ -28,13 +28,6 @@ def test_instantiate(message: "Message", channel: "Channel") -> None:
     assert m.channel == channel
     assert m.event == message.event
     assert m.id != message.id
-
-
-# def test_support(email_message: "Message"):
-#     assert email_message.channel.dispatcher.capabilities == [Capability.SUBJECT, Capability.HTML, Capability.TEXT]
-#     assert email_message.support_subject()
-#     assert email_message.support_html()
-#     assert email_message.support_text()
 
 
 @pytest.mark.parametrize("args", [{}, {"application": None}, {"project": None, "application": None}])

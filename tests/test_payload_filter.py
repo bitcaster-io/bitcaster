@@ -55,12 +55,12 @@ def test_queryset_filter(payload: Dict[str, str], matches: bool) -> None:
     sub1 = NotificationFactory()
     sub2 = NotificationFactory(event=sub1.event, payload_filter="foo=='bar'")
 
-    m = list([m.id for m in Notification.objects.match(payload)])
+    m = [m.id for m in Notification.objects.match(payload)]
     assert m == [sub1.id] + ([sub2.id] if matches else [])
 
 
 @pytest.mark.parametrize(
-    "filter, result",
+    "filter_rules, result",
     [
         pytest.param({"OR": ["foo=='doo'", "foo=='bar'"]}, True, id="or"),
         pytest.param({"AND": ["foo=='doo'", "foo=='bar'"]}, False, id="and"),
@@ -69,10 +69,10 @@ def test_queryset_filter(payload: Dict[str, str], matches: bool) -> None:
         pytest.param({}, True, id="empty"),
     ],
 )
-def test_jmespath_filter(filter: Optional[Dict[str, Any] | str], result: bool) -> None:
+def test_jmespath_filter(filter_rules: Optional[Dict[str, Any] | str], result: bool) -> None:
     from bitcaster.models import Notification
 
-    assert Notification.match_line_filter(filter_rules_dict=filter, payload={"foo": "bar"}) is result
+    assert Notification.match_line_filter(filter_rules_dict=filter_rules, payload={"foo": "bar"}) is result
 
 
 @pytest.mark.parametrize(

@@ -22,13 +22,13 @@ class ApplicationBaseForm(forms.ModelForm["Application"]):
 
     class Meta:
         model = Application
-        exclude = ("config", "locked")
+        exclude = ("config", "locked")  # noqa: DJ006
 
 
 class ApplicationChangeForm(ApplicationBaseForm):
     class Meta:
         model = Application
-        exclude = ()
+        exclude = ()  # noqa: DJ006
 
     def get_initial_for_field(self, field: Field, field_name: str) -> Any:
         if field_name == "project":

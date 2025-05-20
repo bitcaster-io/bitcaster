@@ -1,7 +1,9 @@
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
-from bitcaster.models import Channel
 from bitcaster.utils.constance import EmailChannel
+
+if TYPE_CHECKING:
+    from bitcaster.models import Channel
 
 
 def test_emailchannel(db: Any, email_channel: "Channel") -> None:

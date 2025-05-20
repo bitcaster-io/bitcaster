@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     Context = TypedDict("Context", {"provider": SocialProvider})
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> DjangoTestApp:
     django_app: DjangoTestApp = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)

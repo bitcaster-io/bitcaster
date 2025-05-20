@@ -1,0 +1,14 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n %}
+{% block action-content %}
+    <div>
+    These are the channels enabled for your account
+    </div>
+    {{ addresses }}
+    <form method="post" id="test-form">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" value="Test">
+    </form>
+{% endblock %}

@@ -6,4 +6,4 @@ from bitcaster.models import Monitor
 class MonitorForm(forms.ModelForm["Monitor"]):
     class Meta:
         model = Monitor
-        exclude = ("config", "data")
+        exclude = ("config", "data")  # noqa: DJ006

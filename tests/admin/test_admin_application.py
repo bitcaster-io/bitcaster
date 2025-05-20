@@ -8,7 +8,7 @@ from django_webtest.pytest_plugin import MixinWithInstanceVariables
 from bitcaster.models import Application, Project
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 
@@ -19,14 +19,14 @@ def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestAp
     return django_app
 
 
-@pytest.fixture()
+@pytest.fixture
 def application(db: Any) -> Application:
     from testutils.factories import ApplicationFactory
 
     return ApplicationFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def bitcaster(db: Any) -> "Application":
     from testutils.factories import ApplicationFactory
 

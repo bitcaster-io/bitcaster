@@ -1,0 +1,20 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load json %}
+{% block content %}
+    {{ media }}
+    <table>
+        <tr>
+            <th></th>
+            <td>{{ original.timestamp }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <td>{{ original.event }}</td>
+        </tr>
+    </table>
+    <h3>Payload</h3>
+    {{ original.context|beautify }}
+    <h3>Options</h3>
+    <code>
+        {{ original.options }}
+    </code>
+{% endblock %}

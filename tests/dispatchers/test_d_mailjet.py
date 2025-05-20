@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING
 from unittest.mock import Mock
 
 import pytest
@@ -10,14 +9,11 @@ from responses import RequestsMock
 from bitcaster.dispatchers import MailJetDispatcher
 from bitcaster.dispatchers.base import Payload
 
-if TYPE_CHECKING:
-    from pytest import MonkeyPatch
-
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
 # @_recorder.record(file_path=Path(__file__).parent / "mailjet.yaml")
-def test_mailjet(monkeypatch: "MonkeyPatch", mail_payload: Payload, mocked_responses: RequestsMock) -> None:
+def test_mailjet(monkeypatch: pytest.MonkeyPatch, mail_payload: Payload, mocked_responses: RequestsMock) -> None:
     from bitcaster.dispatchers import MailJetDispatcher
     from bitcaster.models import Channel, Project
 
@@ -34,4 +30,4 @@ def test_mailjet(monkeypatch: "MonkeyPatch", mail_payload: Payload, mocked_respo
 def test_config() -> None:
     d: MailJetDispatcher = MailJetDispatcher(Mock(config={}))
     with pytest.raises(ValidationError):
-        d.config
+        _ = d.config

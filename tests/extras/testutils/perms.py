@@ -55,15 +55,14 @@ def get_group(
     for permission_name in permission_names:
         try:
             app_label, codename = permission_name.split(".")
-        except ValueError:
-            raise ValueError(f"Invalid permission name `{permission_name}`")
+        except ValueError as e:
+            raise ValueError(f"Invalid permission name `{permission_name}`") from e
         try:
             permission = Permission.objects.get(content_type__app_label=app_label, codename=codename)
-        except Permission.DoesNotExist:
+        except Permission.DoesNotExist as e:
             if raise_if_missing:
-                raise Permission.DoesNotExist("Permission `{0}` does not exists", permission_name)
-            else:
-                permission = None
+                raise Permission.DoesNotExist("Permission `{0}` does not exists", permission_name) from e
+            permission = None
         if permission:
             group.permissions.add(permission)
     return group
@@ -135,8 +134,7 @@ class user_grant_permissions(ContextDecorator):  # noqa
 
     def start(self) -> "user_grant_permissions":
         """Activate a patch, returning any created mock."""
-        result = self.__enter__()
-        return result
+        return self.__enter__()
 
     def stop(self) -> None:
         """Stop an active patch."""
@@ -171,7 +169,6 @@ class key_grants(ContextDecorator):  # noqa
         self.key = key
         if not isinstance(grants, (list, tuple)):
             grants = [grants]
-        # self.new_grants = grants
         self.add = add
         if organization is None:
             project = None
@@ -224,8 +221,7 @@ class key_grants(ContextDecorator):  # noqa
 
     def start(self) -> "key_grants":
         """Activate a patch, returning any created mock."""
-        result = self.__enter__()
-        return result
+        return self.__enter__()
 
     def stop(self) -> None:
         """Stop an active patch."""

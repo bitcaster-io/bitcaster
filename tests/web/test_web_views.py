@@ -6,9 +6,9 @@ from django.urls import reverse
 from django_webtest import DjangoTestApp
 from pytest_django.fixtures import SettingsWrapper
 
-from bitcaster.models import User
 
 if TYPE_CHECKING:
+    from bitcaster.models import User
     from django.test import Client
 
 pytestmark = pytest.mark.django_db
@@ -57,5 +57,5 @@ def test_media(
     django_app.set_user(user)
     res = django_app.get(f"{settings.MEDIA_URL}/{resource}", expect_errors=True)
     assert res.status_code == expected
-    with mock.patch("bitcaster.web.views.was_modified_since", lambda *a: False):
+    with mock.patch("bitcaster.web.views.was_modified_since", return_value=False):
         django_app.get(f"{settings.MEDIA_URL}/{resource}", expect_errors=True)

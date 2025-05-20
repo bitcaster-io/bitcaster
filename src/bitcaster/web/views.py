@@ -6,7 +6,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
-from django.forms import Form
 from django.http import (
     FileResponse,
     Http404,
@@ -21,6 +20,10 @@ from django.utils.http import http_date
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.static import directory_index, was_modified_since
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from django.forms import Form
 
 
 def index(request: "HttpRequest") -> TemplateResponse:
@@ -28,19 +31,16 @@ def index(request: "HttpRequest") -> TemplateResponse:
 
 
 class LogoutView(BaseLogoutView):
-
     def get_success_url(self) -> str:
         return "/"
 
 
 class HealthCheckView(View):
-
     def get(self, request: HttpRequest) -> HttpResponse:
         return HttpResponse("Ok")
 
 
 class MediaView(View):
-
     def get(self, request: HttpRequest, path: str) -> HttpResponse | FileResponse:
         path = posixpath.normpath(path).lstrip("/")
         fullpath = Path(safe_join(settings.MEDIA_ROOT, path))
@@ -58,8 +58,6 @@ class MediaView(View):
         content_type = content_type or "application/octet-stream"
         response = FileResponse(fullpath.open("rb"), content_type=content_type)
         response.headers["Last-Modified"] = http_date(statobj.st_mtime)
-        # if encoding:
-        #     response.headers["Content-Encoding"] = encoding
         return response
 
 

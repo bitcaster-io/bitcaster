@@ -1,0 +1,14 @@
+{% extends "admin/change_form.html" %}{% load feature_flags %}
+{% block content %}
+    {% if original.name == 'FLAG_CONDITION_TEST' %}
+        {% flag_enabled 'FLAG_CONDITION_TEST' as FLAG_CONDITION_TEST %}
+        <div class="admonition">
+            {% if FLAG_CONDITION_TEST %}
+                <div class="success">Flag is currently enabled for this page/request</div>
+            {% else %}
+                <div class="fail">Flag is currently disabled for this page/request</div>
+            {% endif %}
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

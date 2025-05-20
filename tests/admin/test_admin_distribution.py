@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> "DjangoTestApp":
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)

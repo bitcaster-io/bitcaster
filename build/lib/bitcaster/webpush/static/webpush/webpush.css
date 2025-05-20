@@ -1,0 +1,39 @@
+div.webpush div.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+div.webpush input[type=button].green {
+  background-color: #3e8f3e;
+}
+div.webpush .p-1 {
+  padding: 10px;
+}
+div.webpush .w-100 {
+  width: 100%;
+}
+div.webpush .mt-5 {
+  margin-top: 50px;
+}
+div.webpush .my-2 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+div.webpush .logo {
+  width: 100px;
+  margin: 10px;
+}
+div.webpush .logo img {
+  width: 100px;
+}
+div.webpush div.frame {
+  border: 1px solid black;
+  border-radius: 5px;
+  width: 50%;
+  align-content: center;
+}
+div.webpush div.subscribe {
+  margin-top: 20px;
+  padding: 10px;
+}
+
+/*# sourceMappingURL=webpush.css.map */

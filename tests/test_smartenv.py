@@ -6,7 +6,7 @@ import pytest
 from bitcaster.config import SmartEnv
 
 
-@pytest.fixture()
+@pytest.fixture
 def env() -> SmartEnv:
     return SmartEnv(STORAGE_DEFAULT=(str, ""))
 
@@ -42,12 +42,7 @@ def test_storage_empty(env: SmartEnv) -> None:
 
 def test_env() -> None:
     e = SmartEnv(
-        **{
-            "T1": (str, "a@b.com"),  # type: ignore
-            "T2": (str, "a@b.com", "help"),
-            "T3": (str, "a@b.com", "help", "dev@b.com"),
-            "T4": (int, None),
-        }
+        T1=(str, "a@b.com"), T2=(str, "a@b.com", "help"), T3=(str, "a@b.com", "help", "dev@b.com"), T4=(int, None)
     )
 
     assert e("T1") == "a@b.com"

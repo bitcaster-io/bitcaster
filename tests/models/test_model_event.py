@@ -7,6 +7,7 @@ from testutils.factories import EventFactory
 from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
+    from bitcaster.models import Notification
     from bitcaster.models import Channel, Event, Occurrence
 
 
@@ -33,8 +34,6 @@ def test_get_trigger_url(event: "Event") -> None:
 
 def test_event_notifications(event: "Event") -> None:
     from testutils.factories import AssignmentFactory, NotificationFactory
-
-    from bitcaster.models import Notification
 
     ch: "Channel" = event.channels.first()
     n1: Notification = NotificationFactory(

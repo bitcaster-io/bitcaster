@@ -2,20 +2,22 @@ from unittest.mock import Mock
 
 import pytest
 from django.core.exceptions import ValidationError
-from pytest import FixtureRequest, MonkeyPatch
 from responses import RequestsMock
 
 from bitcaster.dispatchers.base import Payload
 from bitcaster.exceptions import DispatcherError
-from bitcaster.models import Assignment
 from bitcaster.state import state
 from bitcaster.webpush.dispatcher import WebPushConfig, WebPushDispatcher
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bitcaster.models import Assignment
 
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
-@pytest.fixture()
-def payload(request: FixtureRequest) -> "Payload":
+@pytest.fixture
+def payload(request: pytest.FixtureRequest) -> "Payload":
     from testutils.factories import ApplicationFactory
 
     from bitcaster.models import Event
@@ -29,7 +31,7 @@ def payload(request: FixtureRequest) -> "Payload":
 
 
 def test_webpush(
-    monkeypatch: MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch,
     payload: Payload,
     mocked_responses: RequestsMock,
     push_assignment: "Assignment",
@@ -40,7 +42,7 @@ def test_webpush(
 
 
 def test_webpush_error(
-    monkeypatch: MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch,
     payload: Payload,
     mocked_responses: RequestsMock,
     push_assignment: "Assignment",
@@ -52,7 +54,11 @@ def test_webpush_error(
 
 
 def test_webpush_not_subscribed(
-    monkeypatch: MonkeyPatch, payload: Payload, mocked_responses: RequestsMock, assignment: "Assignment", fcm_url: str
+    monkeypatch: pytest.MonkeyPatch,
+    payload: Payload,
+    mocked_responses: RequestsMock,
+    assignment: "Assignment",
+    fcm_url: str,
 ) -> None:
     with pytest.raises(DispatcherError) as e:
         WebPushDispatcher(assignment.channel).send(assignment.address.value, payload, assignment)
@@ -63,7 +69,7 @@ def test_config() -> None:
     with state.configure(request=Mock()):
         d: WebPushDispatcher = WebPushDispatcher(Mock(config={}))
         with pytest.raises(ValidationError):
-            d.config
+            _ = d.config
 
 
 def test_form() -> None:

@@ -1,5 +1,5 @@
 import re
-import xml.etree.ElementTree as etree  # nosec
+import xml.etree.ElementTree as ET  # nosec
 from typing import Any
 
 from markdown import Markdown
@@ -11,7 +11,7 @@ from bitcaster.config import env
 
 def build_url(base: str, path: str) -> str:
     clean_label = re.sub(r"([ ]+_)|(_[ ]+)|([ ]+)", "_", path)
-    return "{}/{}".format(base, clean_label)
+    return f"{base}/{clean_label}"
 
 
 class LinksInlineProcessor(InlineProcessor):
@@ -21,13 +21,13 @@ class LinksInlineProcessor(InlineProcessor):
 
     def handleMatch(  # type: ignore[override]
         self, m: re.Match[str], data: str
-    ) -> tuple[etree.Element | str | None, int | None, int | None]:
+    ) -> tuple[ET.Element | str | None, int | None, int | None]:
         base_url = self.config.get("base_url", "/")
         parts = m.groups()[:]
         path = parts[0]
         label = parts[1].strip() or path
         url = build_url(base_url, path)
-        a = etree.Element("a")
+        a = ET.Element("a")
         a.text = label
         a.set("href", url)
         return a, m.start(0), m.end(0)
@@ -40,7 +40,7 @@ class BitcasterDocSiteExtension(Extension):
         }
         super().__init__(**kwargs)
 
-    def extendMarkdown(self, md: Markdown) -> None:
+    def extendMarkdown(self, md: Markdown) -> None:  #  noqa: N802
         link_re = r"\[\[doc:([\w\/]+):?(\w*)\]\]"
         proc = LinksInlineProcessor(link_re, self.getConfigs())
         proc.md = md

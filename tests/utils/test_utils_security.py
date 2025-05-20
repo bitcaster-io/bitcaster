@@ -1,9 +1,12 @@
 from unittest.mock import Mock
 
-from django.test.client import RequestFactory
-from pytest_django.fixtures import SettingsWrapper
 
 from bitcaster.utils.security import is_root
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pytest_django.fixtures import SettingsWrapper
+    from django.test.client import RequestFactory
 
 
 def test_is_root(rf: "RequestFactory", settings: "SettingsWrapper") -> None:

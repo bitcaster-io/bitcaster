@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import pytest
 from strategy_field.utils import fqn, get_attr
@@ -7,18 +7,15 @@ from testutils.factories import ChannelFactory
 from bitcaster.dispatchers import GMailDispatcher
 from bitcaster.models import Channel, Project
 
-if TYPE_CHECKING:
-    from pytest import FixtureRequest
-
 
 @pytest.fixture
-def channel(request: "FixtureRequest", db: "Any") -> Channel:
+def channel(request: pytest.FixtureRequest, db: "Any") -> Channel:
     from testutils.factories.channel import ChannelFactory
 
     if hasattr(request, "param"):
         if request.param == "organization":
             return ChannelFactory(name="organization", project=None, organization__from_email="from@org")
-        elif request.param == "project":
+        if request.param == "project":
             return ChannelFactory(name="project", project__from_email="from@org")
     return ChannelFactory()
 
@@ -53,7 +50,7 @@ def test_str(channel: "Channel") -> None:
 
 @pytest.mark.parametrize("channel", ["organization", "project"], indirect=True)
 def test_channel_owner(channel: "Channel") -> None:
-    assert getattr(channel, "owner")
+    assert channel.owner
 
 
 @pytest.mark.parametrize("channel", ["organization", "project"], indirect=True)

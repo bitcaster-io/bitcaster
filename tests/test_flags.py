@@ -3,10 +3,13 @@ from unittest import mock
 
 import pytest
 from django.test.client import RequestFactory
-from pytest_django.fixtures import SettingsWrapper
 
 from bitcaster.apps import development, env_var, header_key, server_address
 from bitcaster.state import state
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pytest_django.fixtures import SettingsWrapper
 
 
 @pytest.mark.parametrize("debug", [True, False])
@@ -51,7 +54,6 @@ def test_env_var(value: str, result: str) -> None:
     ],
 )
 def test_header_key(rf: "RequestFactory", value: str, result: str) -> None:
-
     request = rf.get("/", HTTP_CUSTOM_KEY="123")
     with state.configure(request=request):
         assert header_key(value) == result

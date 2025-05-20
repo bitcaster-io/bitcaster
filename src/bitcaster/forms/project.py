@@ -21,7 +21,7 @@ class ProjectBaseForm(forms.ModelForm["Project"]):
 
     class Meta:
         model = Project
-        exclude = ("config", "locked")
+        exclude = ("config", "locked")  # noqa: DJ006
 
     def full_clean(self) -> None:
         return super().full_clean()
@@ -30,11 +30,10 @@ class ProjectBaseForm(forms.ModelForm["Project"]):
 class ProjectAddForm(ProjectBaseForm):
     class Meta:
         model = Project
-        exclude = ("channels", "locked")
+        exclude = ("channels", "locked")  # noqa: DJ006
 
 
 class ProjectChangeForm(ProjectBaseForm):
-
     class Meta:
         model = Project
         exclude = ()

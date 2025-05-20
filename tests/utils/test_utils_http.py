@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, Generator
 from unittest import mock
 
 import pytest
-from pytest_django.fixtures import SettingsWrapper
 
 from bitcaster.state import state
 from bitcaster.utils.http import (
@@ -16,11 +15,11 @@ from bitcaster.utils.http import (
 if TYPE_CHECKING:
     from django.http import HttpRequest
     from django.test.client import RequestFactory
-    from pytest import MonkeyPatch
+    from pytest_django.fixtures import SettingsWrapper
 
 
 @pytest.fixture(autouse=True)
-def r(monkeypatch: "MonkeyPatch", rf: "RequestFactory") -> Generator[None, None, None]:
+def r(monkeypatch: pytest.MonkeyPatch, rf: "RequestFactory") -> Generator[None, None, None]:
     req: "HttpRequest" = rf.get("/", HTTP_HOST="127.0.0.1")
     m = mock.patch("bitcaster.state.state.request", req)
     m.start()

@@ -7,9 +7,9 @@ from webtest import Upload
 
 from bitcaster.auth.constants import DEFAULT_GROUP_NAME
 from bitcaster.constants import Bitcaster
-from bitcaster.models import Channel, Group, Message, Organization, Project
 
 if TYPE_CHECKING:
+    from bitcaster.models import Channel, Group, Message, Organization, Project
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTestApp":
     from testutils.factories import SuperUserFactory
 

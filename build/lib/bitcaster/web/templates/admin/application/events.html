@@ -1,0 +1,22 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% block action-content %}
+    <table>
+            <tr>
+            <th>Event</th>
+            <th>Notifications</th>
+            </tr>
+        {% for e in original.events.all %}
+            
+            <tr>
+            <td><a href="{% url 'admin:bitcaster_event_change' e.pk %}">{{ e }}</a></td>
+            <td>
+                <ul>
+                    {% for n in e.notifications.all %}
+                        <li><a href="{% url 'admin:bitcaster_notification_change' n.pk %}">{{ e }}</a></li>
+                    {% endfor %}
+                </ul>
+            </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock action-content %}

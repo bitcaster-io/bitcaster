@@ -1,0 +1,16 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bitcaster</title>
+    <link rel="stylesheet" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
+    <link rel="stylesheet" href="{% static "bitcaster/css/admin.css" %}">
+    <link rel="stylesheet" href="{% static "bitcaster/css/style.css" %}">
+    {% block head %}{% endblock %}
+
+</head>
+<body>
+{% block body %}{% endblock %}
+{% include "fragments/footer.html" %}
+</body>
+</html>

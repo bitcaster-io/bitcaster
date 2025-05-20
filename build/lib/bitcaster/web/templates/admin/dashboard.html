@@ -1,0 +1,62 @@
+{% load i18n %}
+<div id="dashboard">
+    <div class="left" style="height: 200px;">
+        <table class="last_events" style="border: 1px solid red; height: 100%; border-collapse:unset;overflow: scroll;">
+            <caption>
+                {% trans "Last 24h Events" %}
+            </caption>
+            {% for evt in last_events %}
+                <tr>
+{#                    <a href="#">#}
+                        <td>{{ evt.timestamp.date.day }}</td>
+                        <td>{{ evt.timestamp|date:"H:m:s" }}</td>
+                        <td>{{ evt.event__name }}</td>
+                        <td>{{ evt.application }}</td>
+                        <td>{{ evt.status }}</td>
+                    </a>
+                </tr>
+                {#                {% ifchanged evt.timestamp.date.day %}#}
+                {#                    <tr><td colspan="4"><hr/>----</td></tr>#}
+                {#                {% endifchanged %}#}
+            {% endfor %}
+            <tfoot>
+            <tr>
+                <th  colspan="4"><a href="{% url "admin:bitcaster_occurrence_changelist" %}">See all</a></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="right">
+        {% load log %}
+        {% get_admin_log 10 as admin_log for_user user %}
+        <table class="actiontable">
+            <caption>
+                {% trans "Action log" %}
+            </caption>
+            {% for entry in admin_log %}
+                <tr>
+                    <td>
+                        {% if entry.is_addition %}
+                            {% translate 'Added:' %}{% elif entry.is_change %}
+                            {% translate 'Changed:' %}{% elif entry.is_deletion %}
+                            {% translate 'Deleted:' %}{% else %}
+                            {% translate 'Other:' %}{% endif %}
+                        {% if entry.is_deletion or not entry.get_admin_url %}#}
+                            {{ entry.object_repr|truncatechars:20 }}
+                        {% else %}
+                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr|truncatechars:30 }}</a>
+                        {% endif %}
+                        <br>
+                        {% if entry.content_type %}
+                            <span class="mini quiet">{% filter capfirst %}
+                                {{ entry.content_type.name }}{% endfilter %}</span>
+                        {% else %}
+                            <span class="mini quiet">{% translate 'Unknown content' %}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>

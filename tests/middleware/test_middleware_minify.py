@@ -58,9 +58,7 @@ def test_minify_base_handling_option(rf: RequestFactory, opt: MinifyFlag) -> Non
     assert res.content.decode()
 
 
-@override_config(
-    MINIFY_RESPONSE=MinifyFlag.HTML + MinifyFlag.NEWLINE + MinifyFlag.SPACES, MINIFY_IGNORE_PATH="aa.*"
-)  # type: ignore[misc]
+@override_config(MINIFY_RESPONSE=MinifyFlag.HTML + MinifyFlag.NEWLINE + MinifyFlag.SPACES, MINIFY_IGNORE_PATH="aa.*")  # type: ignore[misc]
 def test_minify_base_handling_option_path(rf: RequestFactory) -> None:
     from bitcaster.middleware.minify import HtmlMinMiddleware
 
@@ -74,9 +72,7 @@ def test_minify_base_handling_option_path(rf: RequestFactory) -> None:
     )
 
 
-@override_config(
-    MINIFY_RESPONSE=MinifyFlag.HTML + MinifyFlag.NEWLINE + MinifyFlag.SPACES, MINIFY_IGNORE_PATH="aa.*"
-)  # type: ignore[misc]
+@override_config(MINIFY_RESPONSE=MinifyFlag.HTML + MinifyFlag.NEWLINE + MinifyFlag.SPACES, MINIFY_IGNORE_PATH="aa.*")  # type: ignore[misc]
 def test_minify_skip(rf: RequestFactory) -> None:
     from bitcaster.middleware.minify import HtmlMinMiddleware
 

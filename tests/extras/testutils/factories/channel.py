@@ -24,9 +24,9 @@ class ChannelFactory(AutoRegisterModelFactory[Channel]):
 
     @classmethod
     def create(cls, **kwargs: dict[str, Any]) -> Channel:
-        if kwargs.get("project", None):
+        if kwargs.get("project"):
             kwargs["organization"] = kwargs["project"].organization  # type: ignore[attr-defined]
-        if not kwargs.get("organization", None):
+        if not kwargs.get("organization"):
             kwargs["organization"] = OrganizationFactory()
 
         return cast(Channel, super().create(**kwargs))

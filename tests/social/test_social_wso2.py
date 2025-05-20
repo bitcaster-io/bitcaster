@@ -5,7 +5,6 @@ import typing
 import pytest
 from constance.test.unittest import override_config
 from django.urls import reverse
-from responses import RequestsMock
 from responses.matchers import query_param_matcher, urlencoded_params_matcher
 from testutils.factories import GroupFactory, SocialProviderFactory
 
@@ -13,7 +12,7 @@ from bitcaster.social.backend.wso2 import Wso2OAuth2
 
 if typing.TYPE_CHECKING:
     from django.test import Client
-    from pytest import MonkeyPatch
+    from responses import RequestsMock
 
     from bitcaster.social.models import SocialProvider
 
@@ -23,7 +22,7 @@ def group() -> None:
     GroupFactory(name="demo")
 
 
-@pytest.fixture()
+@pytest.fixture
 def config() -> SocialProvider:
     from bitcaster.social.models import Provider
 
@@ -41,12 +40,12 @@ def config() -> SocialProvider:
 
 @override_config(NEW_USER_DEFAULT_GROUP="demo")  # type: ignore[misc]
 def test_flow(
-    config: SocialProvider, client: "Client", mocked_responses: RequestsMock, monkeypatch: "MonkeyPatch"
+    config: SocialProvider, client: "Client", mocked_responses: RequestsMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    STATE = "-state-"
-    CODE = "-code-"
-    CODE_CHALLENGE = "-challenge-"
-    SESSION_STATE = "-session-state-"
+    STATE = "-state-"  # noqa: N806
+    CODE = "-code-"  # noqa: N806
+    CODE_CHALLENGE = "-challenge-"  # noqa: N806
+    SESSION_STATE = "-session-state-"  # noqa: N806
 
     monkeypatch.setattr(Wso2OAuth2, "generate_code_challenge", lambda *a: CODE_CHALLENGE)
     monkeypatch.setattr(Wso2OAuth2, "state_token", lambda s: STATE)

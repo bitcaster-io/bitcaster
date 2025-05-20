@@ -4,7 +4,6 @@ from unittest.mock import Mock
 
 import pytest
 from django.core.exceptions import ObjectDoesNotExist
-from pytest import MonkeyPatch
 from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
 
@@ -31,7 +30,6 @@ if TYPE_CHECKING:
         "Context",
         {
             "occurrence": Occurrence,
-            # "silent_occurrence": Occurrence,
             "address": Address,
             "channel": Channel,
             "assignments": list[Assignment],
@@ -112,7 +110,7 @@ def test_process_incomplete_event(setup: "Context", messagebox: list[Tuple[str, 
 
 
 @pytest.mark.django_db(transaction=True)
-def test_process_event_partially(setup: "Context", monkeypatch: MonkeyPatch) -> None:
+def test_process_event_partially(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     occurrence: Occurrence = setup["occurrence"]
@@ -133,7 +131,7 @@ def test_process_event_partially(setup: "Context", monkeypatch: MonkeyPatch) -> 
     }
 
 
-def test_process_event_resume(setup: "Context", monkeypatch: MonkeyPatch) -> None:
+def test_process_event_resume(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     v1: Assignment = setup["assignments"][0]
@@ -156,7 +154,7 @@ def test_process_event_resume(setup: "Context", monkeypatch: MonkeyPatch) -> Non
     }
 
 
-def test_silent_event(setup: "Context", monkeypatch: MonkeyPatch, system_objects: Any) -> None:
+def test_silent_event(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any) -> None:
     from bitcaster.models import Occurrence
 
     cid = uuid.uuid4()
@@ -174,7 +172,7 @@ def test_silent_event(setup: "Context", monkeypatch: MonkeyPatch, system_objects
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
 
 
-def test_attempts(setup: "Context", monkeypatch: MonkeyPatch) -> None:
+def test_attempts(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from testutils.factories import OccurrenceFactory
 
     from bitcaster.models import Occurrence
@@ -187,7 +185,7 @@ def test_attempts(setup: "Context", monkeypatch: MonkeyPatch) -> None:
     assert o.data == {}
 
 
-def test_retry(setup: "Context", monkeypatch: MonkeyPatch, system_objects: Any) -> None:
+def test_retry(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any) -> None:
     from bitcaster.models import Occurrence
 
     o = setup["occurrence"]
@@ -197,7 +195,7 @@ def test_retry(setup: "Context", monkeypatch: MonkeyPatch, system_objects: Any) 
         "bitcaster.models.notification.Notification.notify_to_channel",
         mocked_notify := Mock(side_effect=[None, Exception("This is raised after first call")]),
     )
-    for a in range(10):
+    for _a in range(10):
         process_occurrence(o.pk)
     o.refresh_from_db()
     assert o.attempts == 0
@@ -219,7 +217,7 @@ def test_error(setup: "Context", system_objects: Any) -> None:
     assert o.data == {}
 
 
-def test_processed(setup: "Context", monkeypatch: MonkeyPatch, system_objects: Any) -> None:
+def test_processed(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any) -> None:
     from testutils.factories import OccurrenceFactory
 
     from bitcaster.models import Occurrence
@@ -236,15 +234,8 @@ def celery_config() -> dict[str, str]:
     return {"broker_url": "memory://"}
 
 
-# @pytest.mark.celery()
-# @pytest.mark.skipif(os.getenv("GITLAB_CI") is not None, reason="Do not run on GitLab CI")
-# def test_live(db, setup: "Context", monkeypatch, system_objects, celery_app, celery_worker):
-#     o = setup["occurrence"]
-#     assert process_occurrence.delay(o.pk).get(timeout=10) == 2
-
-
 @pytest.mark.django_db(transaction=True)
-def test_schedule_occurrences(setup: "Context", monkeypatch: MonkeyPatch) -> None:
+def test_schedule_occurrences(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock(return_value=True))
@@ -258,7 +249,7 @@ def test_schedule_occurrences(setup: "Context", monkeypatch: MonkeyPatch) -> Non
 
 
 @pytest.mark.django_db(transaction=True)
-def test_process_silent(setup: "Context", monkeypatch: MonkeyPatch) -> None:
+def test_process_silent(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from testutils.factories import OccurrenceFactory
 
     from bitcaster.models import Event, Occurrence

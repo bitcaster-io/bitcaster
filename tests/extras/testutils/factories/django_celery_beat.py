@@ -45,7 +45,6 @@ class CrontabScheduleFactory(AutoRegisterModelFactory[CrontabSchedule]):
 
 class PeriodicTaskFactory(AutoRegisterModelFactory[PeriodicTask]):
     name = factory.Sequence(lambda n: "PeriodicTask%03d" % n)
-    # interval = factory.SubFactory(IntervalScheduleFactory)
     crontab = factory.SubFactory(CrontabScheduleFactory)
     task = "bitcaster.tasks.purge_occurrences"
 

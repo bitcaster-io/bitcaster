@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from bitcaster.models import Application, Organization, Project
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTestApp":
     from testutils.factories import SuperUserFactory
 

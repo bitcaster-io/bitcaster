@@ -1,6 +1,9 @@
 from bitcaster.dispatchers.base import Capability
-from bitcaster.models import Channel
 from bitcaster.web.templatetags.protocols import has
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bitcaster.models import Channel
 
 
 def test_has(channel: "Channel") -> None:

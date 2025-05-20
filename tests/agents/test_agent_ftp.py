@@ -10,7 +10,7 @@ from bitcaster.agents.ftp import AgentFTP
 from bitcaster.models import Event, Monitor
 
 
-@pytest.fixture()
+@pytest.fixture
 def agent(event: "Event", server: PytestLocalFTPServer) -> AgentFTP:
     return AgentFTP(
         Mock(
@@ -30,7 +30,7 @@ def agent(event: "Event", server: PytestLocalFTPServer) -> AgentFTP:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def server(ftpserver: PytestLocalFTPServer) -> PytestLocalFTPServer:
     ftpserver.reset_tmp_dirs()
     ftpserver.put_files(str(Path(__file__).parent / "file1.txt"), style="rel_path", anon=False, return_paths="new")

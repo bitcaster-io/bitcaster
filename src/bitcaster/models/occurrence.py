@@ -10,27 +10,28 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from ..constants import Bitcaster
-from .assignment import Assignment
 from .event import Event
-from .mixins import BitcasterBaselManager, BitcasterBaseModel
+from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
 if TYPE_CHECKING:
     from .application import Application
+    from .assignment import Assignment
     from .channel import Channel
     from .message import Message
     from .notification import Notification
 
-    OccurrenceData = TypedDict("OccurrenceData", {"delivered": list[str | int], "recipients": list[tuple[str, str]]})
+    OccurrenceData = TypedDict("OccurrenceData", {"delivered": list[str | int], "recipients": list[tuple[str, str]]})  # noqa: UP013
 
 logger = logging.getLogger(__name__)
-OccurrenceOptions = TypedDict(
-    "OccurrenceOptions",
-    {"limit_to": NotRequired[list[str]], "channels": NotRequired[list[str]], "environs": NotRequired[list[str]]},
-)
+
+
+class OccurrenceOptions(TypedDict):
+    limit_to: NotRequired[list[str]]
+    channels: NotRequired[list[str]]
+    environs: NotRequired[list[str]]
 
 
 class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
-
     def get_by_natural_key(self, timestamp: str, evt: str, app: str, prj: str, org: str) -> "Occurrence":
         return self.get(
             timestamp=timestamp,
@@ -47,8 +48,7 @@ class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
         return self.filter(
             last_updated__lt=timezone.now()
             - models.ExpressionWrapper(  # type: ignore
-                timedelta(days=1)
-                * Coalesce(F("event__occurrence_retention"), config.OCCURRENCE_DEFAULT_RETENTION),  # type: ignore
+                timedelta(days=1) * Coalesce(F("event__occurrence_retention"), config.OCCURRENCE_DEFAULT_RETENTION),  # type: ignore
                 output_field=models.DurationField(),
             )
         ).filter(*args, **kwargs)

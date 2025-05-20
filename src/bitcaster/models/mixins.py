@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Iterable, Mapping, Optional
+from typing import TYPE_CHECKING, Any, Iterable, Mapping
 
 from concurrency.fields import IntegerVersionField
 from django.core.exceptions import ObjectDoesNotExist
@@ -39,7 +39,6 @@ class AdminReversable(models.Model):
 
 
 class BaseQuerySet(models.QuerySet["AnyModel"]):
-
     def get(self, *args: Any, **kwargs: Any) -> "AnyModel":
         try:
             return super().get(*args, **kwargs)
@@ -82,20 +81,19 @@ class SlugMixin(models.Model):
 
 
 class ScopedManager(BitcasterBaselManager["AnyModel"]):
-
     def get_or_create(self, defaults: Mapping[str, Any] | None = None, **kwargs: Any) -> "tuple[AnyModel, bool]":
         values = dict(**(defaults or {}))
-        if kwargs.get("application", None):
+        if kwargs.get("application"):
             kwargs["project"] = kwargs["application"].project
 
-        if kwargs.get("project", None):
+        if kwargs.get("project"):
             kwargs["organization"] = kwargs["project"].organization
 
         if values:
-            if values.get("application", None):
+            if values.get("application"):
                 values["project"] = values["application"].project
 
-            if values.get("project", None):
+            if values.get("project"):
                 values["organization"] = values["project"].organization
 
         return super().get_or_create(values, **kwargs)
@@ -107,17 +105,17 @@ class ScopedManager(BitcasterBaselManager["AnyModel"]):
         **kwargs: Any,
     ) -> "tuple[AnyModel, bool]":
         values = dict(**(defaults or {}))
-        if kwargs.get("application", None):
+        if kwargs.get("application"):
             kwargs["project"] = kwargs["application"].project
 
-        if kwargs.get("project", None):
+        if kwargs.get("project"):
             kwargs["organization"] = kwargs["project"].organization
 
         if values:
-            if values.get("application", None):
+            if values.get("application"):
                 values["project"] = values["application"].project
 
-            if values.get("project", None):
+            if values.get("project"):
                 values["organization"] = values["project"].organization
         return super().update_or_create(values, **kwargs)
 
@@ -142,25 +140,12 @@ class Scoped3Mixin(Scoped2Mixin):
     class Meta:
         abstract = True
 
-    def clean(self) -> None:
-        try:
-            if self.application:
-                self.project = self.application.project
-        except ObjectDoesNotExist:  # pragma: no cover
-            pass
-        try:
-            if self.project:
-                self.organization = self.project.organization
-        except ObjectDoesNotExist:  # pragma: no cover
-            pass
-        super().clean()
-
     def save(
         self,
         force_insert: bool | tuple[ModelBase, ...] = False,
         force_update: bool = False,
-        using: Optional[str] = None,
-        update_fields: Optional[Iterable[str]] = None,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
     ) -> None:
         try:
             if self.application:
@@ -173,3 +158,16 @@ class Scoped3Mixin(Scoped2Mixin):
         except ObjectDoesNotExist:  # pragma: no cover
             pass
         super().save(force_insert, force_update, using, update_fields)
+
+    def clean(self) -> None:
+        try:
+            if self.application:
+                self.project = self.application.project
+        except ObjectDoesNotExist:  # pragma: no cover
+            pass
+        try:
+            if self.project:
+                self.organization = self.project.organization
+        except ObjectDoesNotExist:  # pragma: no cover
+            pass
+        super().clean()

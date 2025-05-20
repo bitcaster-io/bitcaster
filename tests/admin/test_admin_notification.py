@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from bitcaster.models import Message, Notification
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTestApp":
     from testutils.factories import SuperUserFactory
 
@@ -22,7 +22,7 @@ def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTes
     return django_app
 
 
-@pytest.fixture()
+@pytest.fixture
 def notification(django_app_factory: "MixinWithInstanceVariables", db: "Any") -> "Notification":
     from testutils.factories import ChannelFactory, MessageFactory, NotificationFactory
 

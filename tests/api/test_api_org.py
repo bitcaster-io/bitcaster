@@ -50,7 +50,7 @@ app_name = "app1"
 event_slug = "evt1"
 
 
-@pytest.fixture()
+@pytest.fixture
 def client(data: SampleData) -> APIClient:
     c = APIClient()
     g = key_grants(data.key, Grant.FULL_ACCESS)
@@ -61,7 +61,7 @@ def client(data: SampleData) -> APIClient:
     g.stop()
 
 
-@pytest.fixture()
+@pytest.fixture
 def data(admin_user: "User", system_objects: Any) -> SampleData:
     event: Event = EventFactory(
         application__project__organization__name=org_name,
@@ -136,7 +136,6 @@ def test_user_create(client: APIClient, data: SampleData) -> None:
     res = client.post(url, {"email": email})
     assert res.json()["email"] == email
     assert data.org.users.filter(email=email).exists()
-    # assert User.objects.filter(email=email).exists()
 
 
 def test_user_update(client: APIClient, data: SampleData) -> None:

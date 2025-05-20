@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from unittest import mock
 from unittest.mock import Mock
 
@@ -11,13 +11,10 @@ from bitcaster.dispatchers.twilio import TwilioSMS
 from bitcaster.exceptions import DispatcherError
 from bitcaster.models import Channel
 
-if TYPE_CHECKING:
-    from pytest import MonkeyPatch
-
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
-def test_twilio_error(monkeypatch: "MonkeyPatch", smsoutbox: list[Any]) -> None:
+def test_twilio_error(monkeypatch: pytest.MonkeyPatch, smsoutbox: list[Any]) -> None:
     ch = Channel(
         dispatcher=fqn(TwilioSMS),
         config={"sid": "__sid__", "token": "__token__", "number": "123456"},

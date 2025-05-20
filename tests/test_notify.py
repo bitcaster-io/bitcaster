@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
-from pytest_django import DjangoAssertNumQueries
 from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
 
 if TYPE_CHECKING:
+    from pytest_django import DjangoAssertNumQueries
     from bitcaster.models import (
         Address,
         ApiKey,
@@ -88,10 +88,7 @@ def test_trigger(
     ch: Channel = context["channel"]
     o = event.trigger(context={})
     assert event.notifications.exists()
-    # with django_assert_num_queries(10) as captured:
     o.process()
-    # msgs_queries = [q for q in captured if q["sql"].startswith('SELECT "bitcaster_message"')]
-    # assert len(msgs_queries) == 1, "get_message() cache is not working"
 
     assert messagebox == [
         (v1.address.value, f"Message for {event.name} on channel {ch.name}"),

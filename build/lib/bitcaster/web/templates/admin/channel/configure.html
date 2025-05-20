@@ -1,0 +1,20 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load markdown %}
+{% block action-content %}
+    <style>
+        input[type=text], input[type=email]{
+            width: 50%;
+        }
+    </style>
+    <h1>{{ original.name }} ({{ original.dispatcher.name }})</h1>
+    <div class="help_text">
+    {{ admin_form.form|help_doc }}
+    </div>
+    {{ admin_form.form.non_field_errors }}
+    <form method="post" id="config-form">
+        {% csrf_token %}
+        {% for fieldset in admin_form %}
+            {% include "admin/includes/fieldset.html" %}
+        {% endfor %}
+        <input type="submit">
+    </form>
+{% endblock %}

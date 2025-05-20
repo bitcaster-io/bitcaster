@@ -1,0 +1,8 @@
+{% extends "admin_extra_buttons/change_form.html" %}{% load i18n admin_urls feature_flags %}
+{% block messages %}
+    {{ block.super }}
+{% endblock messages %}
+{% block object-tools %}
+    {{ block.super }}
+    <div><code class="clipboard">{{ original.get_trigger_url }}</code></div>
+{% endblock  %}

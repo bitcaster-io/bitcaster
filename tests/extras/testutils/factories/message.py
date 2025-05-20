@@ -27,10 +27,10 @@ class MessageFactory(AutoRegisterModelFactory[Message]):
 
     @classmethod
     def create(cls, **kwargs: Any) -> Message:
-        if kwargs.get("event", None):
+        if kwargs.get("event"):
             kwargs["organization"] = kwargs["event"].application.project.organization
 
-        if not kwargs.get("organization", None):
+        if not kwargs.get("organization"):
             kwargs["organization"] = OrganizationFactory()
 
         return cast(Message, super().create(**kwargs))

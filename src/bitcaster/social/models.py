@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 from django.db import models
 from django.utils.translation import gettext as _
 
@@ -20,11 +18,8 @@ class Provider(models.TextChoices):
 
 
 class SocialProviderManager(models.Manager["SocialProvider"]):
-    def choices(self) -> List[Tuple[str, str]]:
-        ret = []
-        for obj in self.filter(enabled=True):
-            ret.append((obj.code, obj.label))
-        return ret
+    def choices(self) -> list[tuple[str, str]]:
+        return [(obj.code, obj.label) for obj in self.filter(enabled=True)]
 
 
 class SocialProvider(models.Model):
@@ -41,6 +36,9 @@ class SocialProvider(models.Model):
     class Meta:
         app_label = "social"
 
+    def __str__(self) -> str:
+        return self.provider
+
     @property
     def code(self) -> str:
         return self.provider.lower().replace("_", "-")
@@ -48,6 +46,3 @@ class SocialProvider(models.Model):
     @property
     def label(self) -> str:
         return Provider[self.provider.replace("-", "_")].label
-
-    def __str__(self) -> str:
-        return self.provider

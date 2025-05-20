@@ -1,8 +1,11 @@
 import pytest
-from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from django.test.client import RequestFactory
 from django.utils import timezone
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from django.core.handlers.wsgi import WSGIRequest
 
 pytestmarker = pytest.mark.django_db
 
