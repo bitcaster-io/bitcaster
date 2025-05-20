@@ -16,4 +16,4 @@ def beautify(json_object: Any) -> str:
     formatter = HtmlFormatter(cssclass="json", linenos="table", wrapcode=True)
     value = highlight(json_str, JsonLexer(), formatter)
 
-    return mark_safe(value)  # nosec
+    return mark_safe(value)  # nosec  # noqa: S308

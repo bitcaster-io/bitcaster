@@ -42,10 +42,10 @@ class BaseQuerySet(models.QuerySet["AnyModel"]):
     def get(self, *args: Any, **kwargs: Any) -> "AnyModel":
         try:
             return super().get(*args, **kwargs)
-        except self.model.DoesNotExist:
+        except self.model.DoesNotExist as e:
             raise self.model.DoesNotExist(
                 "%s matching query does not exist. Using %s %s" % (self.model._meta.object_name, args, kwargs)
-            )
+            ) from e
 
 
 class BitcasterBaselManager(models.Manager["AnyModel"]):

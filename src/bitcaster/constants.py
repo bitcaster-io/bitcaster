@@ -82,7 +82,7 @@ class AddressType(models.TextChoices):
 
 
 class SystemEvent(enum.Enum):
-    CHANNEL_LOCKED = "application_locked"
+    CHANNEL_LOCKED = "channel_locked"
     APPLICATION_LOCKED = "application_locked"
     APPLICATION_UNLOCKED = "application_unlocked"
     OCCURRENCE_SILENCE = "silent_occurrence"

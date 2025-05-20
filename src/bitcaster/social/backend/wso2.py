@@ -14,7 +14,7 @@ class Wso2OAuth2(BaseOAuth2PKCE):
     # https://python-social-auth.readthedocs.io/en/latest/backends/implementation.html
 
     name = "oauth2"
-    ACCESS_TOKEN_METHOD = "POST"  # nosec
+    ACCESS_TOKEN_METHOD = "POST"  # nosec  # noqa: S105
     SCOPE_SEPARATOR = ","
     EXTRA_DATA = [("id", "id"), ("expires", "expires")]
     REDIRECT_STATE = False

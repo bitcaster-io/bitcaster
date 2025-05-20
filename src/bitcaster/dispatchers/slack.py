@@ -32,4 +32,4 @@ class SlackDispatcher(Dispatcher):
             return res.status_code == 200
         except Exception as e:
             logger.exception(e)
-            raise DispatcherError(e)
+            raise DispatcherError(e) from e

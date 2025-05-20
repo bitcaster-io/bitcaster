@@ -1,4 +1,4 @@
-from typing import TypeVar, Union
+from typing import TypeVar
 
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AnonymousUser
@@ -10,4 +10,4 @@ from bitcaster.models.mixins import BitcasterBaseModel
 AnyModel = TypeVar("AnyModel", bound=Model | BitcasterBaseModel, covariant=True)
 
 type AnyUser = AbstractBaseUser | AnonymousUser
-JsonType = Union[None, int, str, bool, list[JsonType], dict[str, JsonType], ErrorDict]
+JsonType = int | str | bool | list[JsonType] | dict[str, JsonType] | ErrorDict | None

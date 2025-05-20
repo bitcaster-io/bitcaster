@@ -166,7 +166,6 @@ LANGUAGES = (
     ("fr", ugettext("French")),  # type: ignore[no-untyped-call]
     ("en", ugettext("English")),  # type: ignore[no-untyped-call]
     ("ar", ugettext("Arabic")),  # type: ignore[no-untyped-call]
-    # ("pt", ugettext("Portuguese")),  # type: ignore[no-untyped-call]
 )
 
 TIME_ZONE = env("TIME_ZONE")
@@ -185,17 +184,10 @@ MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = env("MEDIA_URL")
 STATIC_ROOT = env("STATIC_ROOT")
 STATIC_URL = env("STATIC_URL")
-# STATICFILES_DIRS: List[str] = []
-# STATICFILES_FINDERS = [
-#     "django.contrib.staticfiles.finders.FileSystemFinder",
-#     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-# ]
-
 
 SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE")
 SESSION_COOKIE_PATH = env("SESSION_COOKIE_PATH")
 SESSION_COOKIE_DOMAIN = env("SESSION_COOKIE_DOMAIN")
-# SESSION_COOKIE_HTTPONLY = env("SESSION_COOKIE_HTTPONLY")
 SESSION_COOKIE_NAME = env("SESSION_COOKIE_NAME")
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 

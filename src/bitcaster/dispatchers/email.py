@@ -60,4 +60,4 @@ class EmailDispatcher(Dispatcher):
             return True
         except Exception as e:
             logger.exception(e)
-            raise DispatcherError(e)
+            raise DispatcherError(e) from e

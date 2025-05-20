@@ -56,10 +56,7 @@ Select the organization that this channel belongs to.
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
-        if w.request and ("organization" in w.request.GET or "project" in w.request.GET):
-            # if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
-            return False
-        return True
+        return not (w.request and ("organization" in w.request.GET or "project" in w.request.GET))
 
 
 class ChannelProject(WizardForm):
@@ -130,10 +127,7 @@ Select the abstract channel that you want to make available for this project.
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
-        if w.get_selected_mode() == ChannelType.MODE_INHERIT:
-            # if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
-            return True
-        return False
+        return w.get_selected_mode() == ChannelType.MODE_INHERIT
 
 
 class ChannelData(WizardForm, forms.ModelForm[Channel]):
@@ -153,10 +147,7 @@ Provide a name for this channel and the Dispatcher to use. You will be asked for
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
-        if w.get_selected_mode() in [ChannelType.MODE_TEMPLATE, ChannelType.MODE_NEW]:
-            # if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "new":
-            return True
-        return False
+        return w.get_selected_mode() in [ChannelType.MODE_TEMPLATE, ChannelType.MODE_NEW]
 
 
 class ManagementForm(forms.Form):

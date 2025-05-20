@@ -42,7 +42,7 @@ class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
     filter_horizontal = ()
-    change_user_password_template = "admin/auth/user/change_password2.html"  # nosec
+    change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
     actions = ["export_as_csv", "add_to_distributionlist"]
 
     def add_to_distributionlist(self, request: "HttpRequest", queryset: "QuerySet[User]") -> HttpResponse:

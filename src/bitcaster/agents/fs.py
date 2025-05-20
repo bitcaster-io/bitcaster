@@ -21,8 +21,8 @@ def _validate_path(path: str) -> None:
         f(path)
     except ValidationError as e:
         raise e
-    except Exception:
-        raise ValidationError("Invalid Path")
+    except Exception as e:
+        raise ValidationError("Invalid Path") from e
 
 
 def resolve_path(path: str) -> str:

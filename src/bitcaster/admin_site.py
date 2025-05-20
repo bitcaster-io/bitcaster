@@ -1,3 +1,4 @@
+import contextlib
 from datetime import timedelta
 from typing import Any
 
@@ -80,7 +81,7 @@ class BitcasterAdminSite(AdminSite):
             for model in models:
                 admin_url = None
                 if isinstance(model, tuple | list):
-                    model, admin_url = model
+                    model, admin_url = model  # noqa: PLW2901
                 if model not in self._registry:
                     continue
                 model_admin = self._registry[model]
@@ -96,15 +97,9 @@ class BitcasterAdminSite(AdminSite):
                 }
                 if admin_url is None and (perms.get("change") or perms.get("view")):
                     model_dict["view_only"] = not perms.get("change")
-                    try:
+                    with contextlib.suppress(NoReverseMatch):
                         model_dict["admin_url"] = reverse("admin:%s_%s_changelist" % info, current_app=self.name)
-                    except NoReverseMatch:  # pragma: no cover
-                        pass  # nosec
-                # if perms.get("add"):
-                #     try:
-                #         model_dict["add_url"] = reverse("admin:%s_%s_add" % info, current_app=self.name)
-                #     except NoReverseMatch:  # pragma: no cover
-                #         pass  # nosec
+
                 if section_name in app_dict:
                     app_dict[section_name]["models"].append(model_dict)
                 else:

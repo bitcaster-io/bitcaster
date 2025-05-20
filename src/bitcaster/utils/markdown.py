@@ -19,7 +19,7 @@ class LinksInlineProcessor(InlineProcessor):
         super().__init__(pattern)
         self.config = config
 
-    def handleMatch(  # type: ignore[override]
+    def handleMatch(  # type: ignore[override]  # noqa: N802
         self, m: re.Match[str], data: str
     ) -> tuple[ET.Element | str | None, int | None, int | None]:
         base_url = self.config.get("base_url", "/")

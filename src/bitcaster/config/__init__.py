@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Mapping, TypeAlias, Union
+from typing import TYPE_CHECKING, Any, Mapping
 from urllib import parse
 
 from environ import Env
