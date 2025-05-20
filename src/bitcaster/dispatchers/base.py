@@ -11,11 +11,10 @@ from django.utils.module_loading import import_string
 from strategy_field.registry import Registry
 
 from bitcaster.constants import AddressType
-from bitcaster.types.dispatcher import DispatcherHandler
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment, Channel, Event, User
-    from bitcaster.types.dispatcher import TDispatcherConfig
+    from bitcaster.types.dispatcher import TDispatcherConfig, DispatcherHandler
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +92,7 @@ class Dispatcher(metaclass=DispatcherMeta):
     slug = "--"
     verbose_name: str = ""
     config_class: "type[DispatcherConfig] | None" = DispatcherConfig
-    backend: str | DispatcherHandler | None = None
+    backend: "DispatcherHandler | str | None" = None
     address_types: list[AddressType] = [AddressType.GENERIC]
     channel: "Channel"
     protocol: MessageProtocol = MessageProtocol.PLAINTEXT
