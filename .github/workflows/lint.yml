@@ -2,13 +2,7 @@ name: Lint
 on:
   push:
     branches:
-      - develop
-      - master
-      - staging
-      - release/*
-      - feature/*
-      - bugfix/*
-      - hotfix/*
+      - '**'
 #  pull_request:
 #    branches: [develop, master]
 #    types: [synchronize, opened, reopened, ready_for_review]
@@ -28,9 +22,7 @@ permissions:
 
 jobs:
   changes:
-    if: (github.event_name != 'pull_request'
-        || (github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name))
-        && !contains(github.event.head_commit.message, 'ci:nolint')
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     name: check files
     runs-on: ubuntu-latest
     timeout-minutes: 3
@@ -48,7 +40,7 @@ jobs:
           token: ${{ github.token }}
           filters: .github/file-filters.yml
 
-  flake8:
+  lint:
     needs: changes
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false && needs.changes.outputs.lint
@@ -56,16 +48,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12.6'
-      - name: Install requirements
-        run: pip install flake8 pycodestyle
-      - name: Check syntax
-        # Stop the build if there are Python syntax errors or undefined names
-        run: flake8 src/ --count --statistics --max-line-length=127
+          python-version: '3.12'
+      - run: pip install tox
+      - name: Static Code checks
+        run: tox -e lint
 
-      - name: Warnings
-        run: flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --extend-exclude=""
-  isort:
+  package:
     needs: changes
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false && needs.changes.outputs.lint
@@ -73,58 +61,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12.6'
-      - name: Install requirements
-        run: pip install isort
-      - name: iSort
-        run: isort src/ --check-only
-  black:
-    needs: changes
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false && needs.changes.outputs.lint
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12.6'
-      - name: Install requirements
-        run: pip install black
-      - name: Black
-        run: black src/ --check
-  mypy:
-    needs: changes
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false && needs.changes.outputs.lint
-    steps:
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12.6'
-      - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
-      - name: Restore cached venv
-        id: cache-venv-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: .venv
-          key: ${{ runner.os }}-${{steps.checksum.outputs.checksum}}-venv
-
-      - name: Install requirements
-        if: steps.cache-venv-restore.outputs.cache-hit != 'true'
-        run: |
-          uv sync --no-editable
-      - name: Cache venv
-        uses: actions/cache/save@v4
-        with:
-          path: .venv
-          key: ${{ runner.os }}-${{steps.checksum.outputs.checksum}}-venv
-
-      - name: Mypy
-        env:
-          PYTHONPATH: __pypackages__/3.12/lib
-        run: |
-            .venv/bin/mypy \
-                  --config-file .mypy.ini \
-                  --install-types \
-                  --non-interactive \
-                  src/
+          python-version: '3.12'
+      - run: pip install tox
+      - name: Check Python Package structure
+        run: tox -e pkg_meta
