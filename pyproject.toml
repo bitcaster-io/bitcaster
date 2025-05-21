@@ -20,7 +20,7 @@ classifiers = [ "Programming Language :: Python :: 3 :: Only", "Programming Lang
 dependencies = [
   "apache-libcloud>=3.8",
   "celery>=5.3.6",
-  "django>=5.1",
+  "django>=5.2.1",
   "django-admin-extra-buttons==1.6",
   "django-adminactions>=2.3",
   "django-adminfilters==2.5",

@@ -329,7 +329,7 @@ docs = [
 requires-dist = [
     { name = "apache-libcloud", specifier = ">=3.8" },
     { name = "celery", specifier = ">=5.3.6" },
-    { name = "django", specifier = ">=5.1" },
+    { name = "django", specifier = ">=5.2.1" },
     { name = "django-admin-extra-buttons", specifier = "==1.6" },
     { name = "django-adminactions", specifier = ">=2.3" },
     { name = "django-adminfilters", specifier = "==2.5" },
