@@ -2,6 +2,6 @@
 description:  ""
 template: term.html
 ---
-# Sender 
+# Sender
 
-Is the client system emitting the <glossary:Event>      
+Is the client system emitting the <glossary:Event>

@@ -25,15 +25,15 @@ Prerequisites:
     git config branch.autosetuprebase always
 
     ```
-   
+
 1. In the shell:
-    
+
     ```
     pdm venv create
     pdm use
     pdm venv activate
     ```
-   
+
 1. Check your virtualenv is properly created
 
     ```pdm info```
@@ -50,29 +50,29 @@ Prerequisites:
 1. Add `export PYTHONPATH="$PYTHONPATH:./src"`
 
 
-1. Check your environment: 
+1. Check your environment:
 
     `./manage.py env --check` and configure the missing variables.
 
     !!! hint
-    
-        You can generate a list for your development environment with the command 
-    
-            ./manage.py env --develop --config --pattern='export {key}={value}'   
 
-1. Run upgrade command to properly initialize the application: 
+        You can generate a list for your development environment with the command
+
+            ./manage.py env --develop --config --pattern='export {key}={value}'
+
+1. Run upgrade command to properly initialize the application:
 
     `./manage.py upgrade --admin-email ${ADMIN_EMAIL} --admin-password ${ADMIN_PASSWORD}`
-    
+
     !!! note
-        
+
           Django migrations and collectstatic commands are automatically included in this step
 
 
 ## Configure environment for .direnv
 
 If you want to use [direnv](https://direnv.net/) and automatic loading of environment variables from a _.envrc_ file:
-    
+
 ```
 ./manage.py env --develop --config --pattern='{key}={value}' > .envrc
 

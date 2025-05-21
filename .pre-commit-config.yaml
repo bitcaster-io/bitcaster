@@ -1,107 +1,30 @@
 repos:
-  -   repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: "v0.9.9"
-      hooks:
-          -   id: ruff-format
-          -   id: ruff
-              args: [ "--fix", "--unsafe-fixes", "--exit-non-zero-on-fix" ]
-
-  -   repo: https://github.com/tox-dev/tox-ini-fmt
-      rev: "1.5.0"
-      hooks:
-          -   id: tox-ini-fmt
-              args: [ "-p", "lint" ]
-
-  -   repo: https://github.com/tox-dev/pyproject-fmt
-      rev: "v2.5.1"
-      hooks:
-          -   id: pyproject-fmt
-
-  - repo: local
-    hooks:
-      - id: mypy
-        exclude: (^~.*|manage\.py|develop\.py|conftest.py)
-        args: [ "--config-file", ".mypy.ini" ]
-        require_serial: true
-        name: mypy
-        entry: mypy
-        language: python
-        types: [ python ]
-        stages: [ commit ]
-        additional_dependencies: [packaging]
-
-#      - id: mypy
-#        exclude: (^~.*|manage\.py|develop\.py|conftest.py)
-#        args: [ "--config-file", ".mypy.ini" ]
-#        require_serial: true
-#        name: mypy
-#        entry: mypy
-#        language: python
-#        types: [ python ]
-#        stages: [ commit ]
-#        additional_dependencies: [
-#          "django-stubs",
-#          "django-stubs-ext",
-#          "mypy-boto3",
-#          "mypy-boto3-sns",
-#          "boto3-stubs",
-#          "types-freezegun",
-#          "types-markdown",
-#          "types-python-dateutil",
-#          "types-redis",
-#          "types-requests",
-#          "types-s3transfer",
-#        ]
-
-  - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.5.0
-    hooks:
-      - id: detect-secrets
-        args: [ '--baseline', '.secrets.baseline' ]
-        exclude: (tests/.*|.*/tenant\.sql|Pipfile\.lock|.*\.js|~.gitlab-ci.yml|poetry.lock)
-        stages: [ push ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # frozen: v5.0.0
     hooks:
-      - id: debug-statements
-        stages: [ commit ]
-
       - id: end-of-file-fixer
-        exclude: .bumpversion.cfg
-        stages: [ commit ]
+      - id: trailing-whitespace
 
-      - id: check-merge-conflict
-        stages: [ commit ]
-
-      - id: check-case-conflict
-        stages: [ commit ]
-
-  - repo: https://github.com/saxix/pch
-    rev: '0.1'
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 06e4cc849d03f3a59ca223a4046f4bb5bb2aba6d  # frozen: 0.33.0
     hooks:
-      - id: check-missed-migrations
-        args:
-          - src
-        stages: [ commit ]
-        additional_dependencies: [ setuptools ]
+      - id: check-github-workflows
+        args: [ "--verbose" ]
 
-      - id: check-untracked
-        args:
-          - src
-          - tests
-        stages: [ push ]
-
-      - id: check-forbidden
-        args:
-          - -p
-          - /\.showbrowser\(/
-          - -p
-          - /print\(111/
-        stages: [ commit ]
-        additional_dependencies: [ setuptools ]
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: '1.7.9' # Update me!
+  - repo: https://github.com/tox-dev/tox-ini-fmt
+    rev: "e732f664aa3fd7b32cce3de8abbac43f4c3c375d"  # frozen: 1.5.0
     hooks:
-      - id: bandit
-        args: [ "-c", "bandit.yaml" ]
+      - id: tox-ini-fmt
+        args: [ "-p", "lint" ]
+
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: "57b6ff7bf72affdd12c7f3fd6de761ba18a33b3a"  # frozen: v2.5.1
+    hooks:
+      - id: pyproject-fmt
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "f0fe93c067104b76ffb58852abe79673a8429bd1"  # frozen: v0.11.8
+    hooks:
+      - id: ruff-format
+      - id: ruff
+        args: [ "--fix", "--unsafe-fixes", "--exit-non-zero-on-fix" ]

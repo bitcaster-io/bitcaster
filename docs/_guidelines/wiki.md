@@ -26,7 +26,7 @@ Ref: [superfences](https://facelessuser.github.io/pymdown-extensions/extensions/
 
 > with blank lines
   ```
-  
+
 - &#32;
     ```
     a fenced block

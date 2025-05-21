@@ -22,7 +22,7 @@ class AgentMeta(type["Agent"]):
         cls = super().__new__(cls, class_name, bases, attrs)
         if cls not in agentManager and "abstract" not in attrs:  # pragma: no branch
             agentManager.register(cls)
-        return cast(Agent, cls)
+        return cast("Agent", cls)
 
 
 class AgentConfig(forms.Form):

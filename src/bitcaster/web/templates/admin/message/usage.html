@@ -17,7 +17,7 @@
             <tr>
                 <th>Protocol</th>
                 <td>{{ original.channel.protocol }} </td>
-            </tr>            
+            </tr>
             <tr>
                 <th>Capabilities</th>
                 <td>{% for s in original.channel.dispatcher.capabilities %}{{ s }}{% if not forloop.last %} ; {% endif %} {% endfor %}</td>

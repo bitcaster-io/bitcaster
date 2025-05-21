@@ -85,7 +85,7 @@ class DispatcherMeta(type["Dispatcher"]):
         cls = super().__new__(cls, class_name, bases, attrs)
         if cls not in dispatcherManager:  # pragma: no branch
             dispatcherManager.register(cls)
-        return cast(Dispatcher, cls)
+        return cast("Dispatcher", cls)
 
 
 class Dispatcher(metaclass=DispatcherMeta):

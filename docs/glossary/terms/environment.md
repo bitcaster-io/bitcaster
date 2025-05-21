@@ -2,7 +2,7 @@
 description:  "Something happening in an Application that could be notified to users."
 template: term.html
 terms:
-  - glossary: 
+  - glossary:
     - Environment
 ---
 # Environment

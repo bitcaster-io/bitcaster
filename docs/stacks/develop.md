@@ -2,7 +2,7 @@
 Docker compose file to be use in development environment
 
 !!! note "Mounted local sources to enable local development:"
-    
+
     - src/
     - docker/conf/
     - docker/bin/docker-entrypoint.sh

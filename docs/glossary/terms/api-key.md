@@ -2,7 +2,7 @@
 description: REST API Authorization Token
 template: term.html
 terms:
-  - glossary: 
+  - glossary:
     - API Key
 ---
 

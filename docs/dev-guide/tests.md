@@ -6,11 +6,11 @@ Please refers to its [official documentation](https://docs.pytest.org/en/stable/
 !!! warning
 
     Test suite requires DIANGO_SETTINGS_MODULE is not set in the enviroment during the tests.
-    Uses 
+    Uses
 
          `DJANGO_SETTINGS_MODULE='' pytest tests/` # (or any other test command)
-    
-    if you have it set 
+
+    if you have it set
 
 ## Run full test suite
 

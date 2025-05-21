@@ -71,7 +71,7 @@ class Bitcaster:
     def get_default_group(cls) -> "Group":
         from bitcaster.models.group import Group
 
-        return cast(Group, Group.objects.get(name=config.NEW_USER_DEFAULT_GROUP))
+        return cast("Group", Group.objects.get(name=config.NEW_USER_DEFAULT_GROUP))
 
 
 class AddressType(models.TextChoices):

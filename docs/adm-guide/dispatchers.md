@@ -1,6 +1,6 @@
 # Dispatchers
 
-## Email 
+## Email
 ### SMTP
 
 Support Standard SMTP Email Servers
@@ -37,4 +37,4 @@ Use GMail server to send emails
 
 ### WebPush
 
-A push notification is an instant message that is "pushed" by an app in response to a certain event or process that is taking place in the app 
+A push notification is an instant message that is "pushed" by an app in response to a certain event or process that is taking place in the app

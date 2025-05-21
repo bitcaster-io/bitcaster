@@ -2,7 +2,7 @@
 description:  "Configuration and rules to notify event's messages"
 template: term.html
 terms:
-  - glossary: 
+  - glossary:
     - Notification
 ---
 # Notification

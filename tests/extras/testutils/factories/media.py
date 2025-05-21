@@ -32,4 +32,4 @@ class MediaFileFactory(AutoRegisterModelFactory[MediaFile]):
         if not kwargs.get("organization"):
             kwargs["organization"] = OrganizationFactory()
 
-        return cast(MediaFile, super().create(**kwargs))
+        return cast("MediaFile", super().create(**kwargs))

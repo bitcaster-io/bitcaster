@@ -12,7 +12,7 @@ classDiagram
     Application <-- "1..n" Event:is triggered by
     Project <-- "1..n" DistributionList
     Event <-- "1..n" Channel
-    
+
     Channel <-- Message:for
     Event <-- Message
     Notification <-- Message

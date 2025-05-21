@@ -5,7 +5,7 @@
 The property '#/updates/0/package-ecosystem' value "" did not match one of the following values: npm, bundler, composer, devcontainers, maven, mix, cargo, gradle, nuget, gomod, docker, elm, gitsubmodule, github-actions, pip, terraform, pub, swift
 version: 2
 updates:
-  - package-ecosystem: "pip" 
+  - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"

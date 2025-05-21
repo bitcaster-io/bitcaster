@@ -12,7 +12,7 @@ tags:
 ---
 # Channel
 
-it represents a way of communicating with users sending custom  <glossary:Message> 
+it represents a way of communicating with users sending custom  <glossary:Message>
 to <glossary:Distribution List>
 
 Bitcaster knows two type of channels:
@@ -26,6 +26,6 @@ These channels are created at Organization level, they cannot be used directly u
 #### Project Channels
 
 Project channel can be used to by the project's applications to forward messages.
-They can be created from scratch ot inherit from an `Abstract Channel` 
+They can be created from scratch ot inherit from an `Abstract Channel`
 
 Only project-level Channels can be used to send <glossary:Notification>.

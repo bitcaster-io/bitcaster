@@ -29,7 +29,7 @@
                 <td>{{ selection.project|default_if_none:"N/A" }}</td>
             </tr>
     </table>
-    
+
     </div>
     <form action="" method="post" id="channel-add">{% csrf_token %}
         <table>
@@ -56,7 +56,7 @@
             {% else %}
                 <button class="button" value="finish" type="submit" id="btn-finish" >{% translate "Finish" %}</button>
             {% endif %}
-            <button name="wizard_cancel" 
+            <button name="wizard_cancel"
                     id="btn-cancel"
                     value="{{ back_url }}"
                     class="button cancel clear-required" type="submit">{% translate "Cancel" %}</button>

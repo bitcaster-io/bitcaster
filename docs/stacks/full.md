@@ -1,6 +1,6 @@
 
 
-Full featured docker compose file. 
+Full featured docker compose file.
 
 !!! note "Features"
 

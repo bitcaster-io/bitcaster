@@ -29,4 +29,4 @@ class ChannelFactory(AutoRegisterModelFactory[Channel]):
         if not kwargs.get("organization"):
             kwargs["organization"] = OrganizationFactory()
 
-        return cast(Channel, super().create(**kwargs))
+        return cast("Channel", super().create(**kwargs))

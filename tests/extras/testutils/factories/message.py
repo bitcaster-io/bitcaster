@@ -33,4 +33,4 @@ class MessageFactory(AutoRegisterModelFactory[Message]):
         if not kwargs.get("organization"):
             kwargs["organization"] = OrganizationFactory()
 
-        return cast(Message, super().create(**kwargs))
+        return cast("Message", super().create(**kwargs))

@@ -4,14 +4,14 @@
 
     **Bitcaster uses "security-first" approach**
 
-    All the settings have the safest default value (es. `DEBUG=False` or `SESSION_COOKIE_SECURE=True`); 
-    this could create some issues in some environments (es. staging or development). 
+    All the settings have the safest default value (es. `DEBUG=False` or `SESSION_COOKIE_SECURE=True`);
+    this could create some issues in some environments (es. staging or development).
     Keep this in consideration when you configure your installation.
 
     run `docker run -t bitcaster/bitcaster:latest config` or `django-admin env` to check your configuration
 
 
-## General 
+## General
 
 ### ADMIN_EMAIL
 Default: ``
@@ -42,7 +42,7 @@ Base path allowed by the [local filestem agent](/bitcaster/adm-guide/agents/)
 
 
 ### ALLOWED_HOSTS
-Default: "127.0.0.1,localhost"  
+Default: "127.0.0.1,localhost"
 
 A list of strings representing the host/domain names that this Django site can serve. This is a security measure to prevent HTTP Host header attacks, which are possible even under many seemingly-safe web server configurations.
 
@@ -69,47 +69,47 @@ see <https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html>
 
 
 ### CSRF_TRUSTED_ORIGINS
-Default: "http://localhost,http://127.0.0.1" 
+Default: "http://localhost,http://127.0.0.1"
 
 see <https://docs.djangoproject.com/en/5.1/ref/settings/#csrf-trusted-origins>
 
 
 ### DATABASE_URL
-Default: sqlite:///bitcaster.db  
+Default: sqlite:///bitcaster.db
 
 see <https://django-environ.readthedocs.io/en/latest/types.html#environ-env-db-url>
 
 
 ### MEDIA_FILE_STORAGE
-Default: django.core.files.storage.FileSystemStorage  
+Default: django.core.files.storage.FileSystemStorage
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#storages>
 
 
 ### MEDIA_URL
-Default: `/media/`  
+Default: `/media/`
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#media-url>
 
 
 ### SECRET_KEY
-Default: ``  
+Default: ``
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#secret-key>
 
 ### SECURE_HSTS_PRELOAD
-Default: `True`  
+Default: `True`
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-hsts-preload>
 
 ### SECURE_HSTS_SECONDS
-Default: `60`  
+Default: `60`
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-hsts-seconds>
 
 
 ### SECURE_SSL_REDIRECT
-Default: `True`  
+Default: `True`
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#secure-ssl-redirect>
 
@@ -119,7 +119,7 @@ Default: ``
 [Sentry](https://sentry.io) DSN
 
 ### SENTRY_ENVIRONMENT
-Default: `production`  
+Default: `production`
 
 Sentry Environment
 
@@ -129,36 +129,36 @@ Default: ``
 Sentry server url
 
 ### SESSION_COOKIE_DOMAIN
-Default: `bitcaster.io`  
+Default: `bitcaster.io`
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#std-setting-SESSION_COOKIE_DOMAIN>
 
 ### SESSION_COOKIE_HTTPONLY
-Default: `True`  
+Default: `True`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#session-cookie-httponly>
 
 ### SESSION_COOKIE_NAME
-Default: `bitcaster_session`  
+Default: `bitcaster_session`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#session-cookie-name>
 
 ### SESSION_COOKIE_PATH
-Default: `/`  
+Default: `/`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#session-cookie-path>
 
 ### SESSION_COOKIE_SECURE
-Default: `True`  
+Default: `True`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#session-cookie-secure>
 
 ### SOCIAL_AUTH_REDIRECT_IS_HTTPS
-Default: `True`  
+Default: `True`
 see <https://python-social-auth.readthedocs.io/en/latest/configuration/settings.html>
 
 ### STATIC_FILE_STORAGE
-Default: `django.core.files.storage.FileSystemStorage`  
+Default: `django.core.files.storage.FileSystemStorage`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#storages>
 
 ### STATIC_URL
-Default: `/static/`  
+Default: `/static/`
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#static-url>
 
@@ -166,14 +166,14 @@ see <https://docs.djangoproject.com/en/5.0/ref/settings#storages>
 
 
 ### STORAGE_DEFAULT
-Default: `django.core.files.storage.FileSystemStorage`  
+Default: `django.core.files.storage.FileSystemStorage`
 
 Default Storage
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#storages>
 
 
-### STORAGE_MEDIA= 
+### STORAGE_MEDIA=
 Default: ''
 
 Storage to use for media files. STORAGE_DEFAULT is used if not set
@@ -188,20 +188,20 @@ see <https://docs.djangoproject.com/en/5.0/ref/settings#storages>
 
 
 ### TIME_ZONE
-Default: `UTC`  
+Default: `UTC`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#std-setting-TIME_ZONE>
 
 ## Advanced Configuration
 
 !!! Warning
-    
+
     Do not change these settings in production environment
 
 
 ### CATCH_ALL_EMAIL
 Default: ``
 
-If set all the emails will be sent to this address 
+If set all the emails will be sent to this address
 
 ### CELERY_TASK_ALWAYS_EAGER
 Default: false
@@ -209,13 +209,13 @@ Default: false
 see <https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_always_eager>
 
 ### CELERY_TASK_EAGER_PROPAGATES
-Default: True  
+Default: True
 
 see <https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-eager-propagates>
 
 
 ### CELERY_VISIBILITY_TIMEOUT
-Default: 1800  
+Default: 1800
 
 see <https://docs.celeryq.dev/en/stable/userguide/configuration.html#broker-transport-options>
 
@@ -224,7 +224,7 @@ see <https://docs.celeryq.dev/en/stable/userguide/configuration.html#broker-tran
 see <https://docs.djangoproject.com/en/5.0/ref/settings#csrf-cookie-samesite>
 
 ### CSRF_COOKIE_SECURE
-Default: True  
+Default: True
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#csrf-cookie-secure>
 
@@ -236,14 +236,14 @@ Default: `false`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#debug>
 
 
-### DJANGO_SETTINGS_MODULE  
+### DJANGO_SETTINGS_MODULE
 Default: `bitcaster.config.settings`
 
 
 Read more at <https://docs.djangoproject.com/en/5.1/topics/settings/#designating-the-settings>
 
 ### EMAIL_BACKEND
-Default: django.core.mail.backends.smtp.EmailBackend  
+Default: django.core.mail.backends.smtp.EmailBackend
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#email-backend>
 
@@ -292,22 +292,22 @@ Default: False
 see <https://docs.djangoproject.com/en/5.0/ref/settings#email-use-tls>
 
 ### LOGGING_LEVEL
-Default: CRITICAL  
+Default: CRITICAL
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#logging-level>
 
 ### MEDIA_ROOT
-Default: `/var/run/app/media`  
+Default: `/var/run/app/media`
 
 see <https://docs.djangoproject.com/en/5.0/ref/settings#media-root>
 
 ### SIGNING_BACKEND
-Default: `django.core.signing.TimestampSigner`  
+Default: `django.core.signing.TimestampSigner`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#signing-backend>
 
 
 ### SOCIAL_AUTH_LOGIN_URL
-Default: `/login/`  
+Default: `/login/`
 see <https://python-social-auth.readthedocs.io/en/latest/configuration/settings.html#urls-options>
 
 ### SOCIAL_AUTH_RAISE_EXCEPTIONS
@@ -316,5 +316,5 @@ see <https://python-social-auth.readthedocs.io/en/latest/configuration/django.ht
 
 
 ### STATIC_ROOT
-Default: `/var/run/app/static`  
+Default: `/var/run/app/static`
 see <https://docs.djangoproject.com/en/5.0/ref/settings#static-root>
