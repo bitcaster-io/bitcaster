@@ -95,7 +95,7 @@ jobs:
           echo BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_ENV
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5.5.1
+        uses: docker/metadata-action@v5.7.0
         with:
           images: "bitcaster/bitcaster"
           tags: |
