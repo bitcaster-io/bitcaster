@@ -100,7 +100,7 @@ jobs:
             -t ${{ vars.DOCKER_IMAGE }}:${{needs.build.outputs.version}} \
             pytest tests -v --create-db --maxfail=10 --cov -n auto --cov-report xml:coverage.xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         env:
           token: ${{ secrets.CODECOV_TOKEN }}
         if: env.token != null
