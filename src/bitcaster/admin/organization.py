@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button, view
 from django import forms
@@ -51,9 +51,9 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     def changeform_view(
         self,
         request: HttpRequest,
-        object_id: Optional[str] = None,
+        object_id: str | None = None,
         form_url: str = "",
-        extra_context: Optional[dict[str, Any]] = None,
+        extra_context: dict[str, Any] | None = None,
     ) -> HttpResponse:
         extra_context = extra_context or {}
 
@@ -65,7 +65,6 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
 
     @view(login_required=True)
     def current(self, request: HttpRequest) -> HttpResponse:
-
         if current := Organization.objects.local().first():
             return HttpResponseRedirect(reverse("admin:bitcaster_organization_change", args=[current.pk]))
         return HttpResponseRedirect(reverse("admin:bitcaster_organization_add"))
@@ -122,12 +121,12 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     def has_add_permission(self, request: HttpRequest) -> bool:
         return super().has_add_permission(request) and Organization.objects.count() < 2
 
-    def has_delete_permission(self, request: HttpRequest, obj: Optional[Organization] = None) -> bool:
+    def has_delete_permission(self, request: HttpRequest, obj: Organization | None = None) -> bool:
         if obj and obj.name == Bitcaster.ORGANIZATION:
             return False
         return super().has_delete_permission(request) and super().has_delete_permission(request, obj)
 
-    def get_readonly_fields(self, request: HttpRequest, obj: Optional[Organization] = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: HttpRequest, obj: Organization | None = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
         if obj and obj.name == Bitcaster.ORGANIZATION:
             base.extend(["name", "slug", "subject_prefix"])

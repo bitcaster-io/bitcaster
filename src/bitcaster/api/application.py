@@ -16,9 +16,7 @@ from bitcaster.models import Application
 
 
 class ApplicationView(SecurityMixin, ViewSet, RetrieveAPIView, ListAPIView):
-    """
-    List Project applications
-    """
+    """List Project applications."""
 
     serializer_class = ApplicationSerializer
     required_grants = [Grant.ORGANIZATION_READ]

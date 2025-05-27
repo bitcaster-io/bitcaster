@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import AutoCompleteFilter
@@ -41,9 +41,9 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
     def changeform_view(
         self,
         request: HttpRequest,
-        object_id: Optional[str] = None,
+        object_id: str | None = None,
         form_url: str = "",
-        extra_context: Optional[dict[str, Any]] = None,
+        extra_context: dict[str, Any] | None = None,
     ) -> HttpResponse:
         extra_context = extra_context or {}
 
@@ -80,16 +80,16 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
 
         return HttpResponseRedirect(url_related(Channel, op="add", project=pk))
 
-    def get_readonly_fields(self, request: HttpRequest, obj: Optional[Project] = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: HttpRequest, obj: Project | None = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
         if obj and obj.organization.name == Bitcaster.ORGANIZATION:
             base.extend(["name", "slug", "organization", "subject_prefix"])
         return base
 
-    def has_add_permission(self, request: HttpRequest, obj: Optional[Project] = None) -> bool:
+    def has_add_permission(self, request: HttpRequest, obj: Project | None = None) -> bool:
         return super().has_add_permission(request) and Project.objects.count() < 2
 
-    def has_delete_permission(self, request: HttpRequest, obj: Optional[Project] = None) -> bool:
+    def has_delete_permission(self, request: HttpRequest, obj: Project | None = None) -> bool:
         if obj and obj.organization.name == Bitcaster.ORGANIZATION:
             return False
         return super().has_delete_permission(request) and super().has_delete_permission(request, obj)

@@ -16,7 +16,7 @@
                             <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
                         {% else %}
                             {{ opts.verbose_name_plural|capfirst }}{% endif %}
-            &rsaquo; 
+            &rsaquo;
             {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}
                 {{ original|truncatewords:"18" }}{% endif %}
         </div>

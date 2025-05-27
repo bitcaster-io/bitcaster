@@ -10,12 +10,11 @@ from .fields import Select2TagField
 
 
 class NotificationForm(forms.ModelForm["Notification"]):
-
     environments = Select2TagField(required=False)
 
     class Meta:
         model = Notification
-        exclude = ("config", "locked")
+        exclude = ("config", "locked")  # noqa: DJ006
 
     def clean(self) -> dict[str, Any]:
         evt: Event

@@ -9,11 +9,10 @@ from .mixins import BitcasterBaselManager, BitcasterBaseModel
 
 logger = logging.getLogger(__name__)
 
-LEVELS = zip(logging._nameToLevel.keys(), logging._nameToLevel.keys())
+LEVELS = zip(logging._nameToLevel.keys(), logging._nameToLevel.keys(), strict=False)
 
 
 class LogMessageManager(BitcasterBaselManager["LogMessage"]):
-
     def get_by_natural_key(self, created: "str", app: str, prj: str, org: str, *args: Any) -> "LogMessage":
         return self.get(
             created=created,

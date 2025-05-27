@@ -24,7 +24,7 @@ Each monitor must use an <glossary:Agent> to check for changes.
 1. Configure Agent scheduling
 
      ![Image](_screenshots/monitor/3.png)
-   
+
      Scheduler uses crontab synthax where wa
 
 

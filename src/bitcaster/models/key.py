@@ -32,7 +32,6 @@ class _TypedMultipleChoiceField(forms.TypedMultipleChoiceField):
 
 
 class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
-
     def formfield(
         self,
         form_class: type[forms.Field] | None = None,
@@ -49,7 +48,6 @@ class ChoiceArrayField(ArrayField):  # type: ignore[type-arg]
 
 
 class ApiKeyManager(ScopedManager["ApiKey"]):
-
     def get_by_natural_key(self, name: "str", user: "str", *args: Any) -> "ApiKey":
         return self.get(name=name, user__username=user)
 

@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     Context = TypedDict("Context", {"provider": SocialProvider})
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: MixinWithInstanceVariables, admin_user: "User") -> DjangoTestApp:
     django_app: DjangoTestApp = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
@@ -34,7 +34,6 @@ def test_edit(app: DjangoTestApp, assignment: "Assignment", settings: "SettingsW
 
 
 def test_validate(app: DjangoTestApp, assignment: "Assignment", monkeypatch: Any) -> None:
-
     url = reverse("admin:bitcaster_assignment_validate", args=[assignment.pk])
     monkeypatch.setattr("bitcaster.admin.assignment.AssignmentAdmin.message_user", collector := Mock())
 
@@ -42,8 +41,3 @@ def test_validate(app: DjangoTestApp, assignment: "Assignment", monkeypatch: Any
         app.get(url).follow()
     assert collector.call_count == 1
     assert collector.call_args_list[0].args[1:] == ("Cannot be validated.", 40)
-
-    # with mock.patch.object(type(assignment.channel.dispatcher), "need_subscription", True):
-    #     res: "TestResponse" = app.get(url).follow()
-    # messages = list(res.context.get("messages"))
-    # assert messages == [Message(level=40, message="Cannot be validated.")]

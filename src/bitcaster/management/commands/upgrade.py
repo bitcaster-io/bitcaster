@@ -178,32 +178,6 @@ class Command(BaseCommand):
                 raise CommandError("Create an admin user")
 
             Bitcaster.initialize(admin)
-            # prj = bitcaster.project
-            # dis: DistributionList = prj.distributionlist_set.get(name=DistributionList.ADMINS)
-            #
-            # ch_log = prj.channel_set.get_or_create(
-            #     name="BitcasterLog",
-            #     defaults={
-            #         "project": bitcaster.project,
-            #         "dispatcher": fqn(BitcasterSysDispatcher),
-            #         "config": {"timeout": settings.EMAIL_TIMEOUT or 5},
-            #     },
-            # )[0]
-            #
-            # for ev in bitcaster.events.all():  # noqa
-            #     n = ev.create_notification(name=f"Notification for {ev.name}", distribution=dis)
-            #     for ch in [ch_log]:
-            #         ev.create_message(
-            #             channel=ch,
-            #             defaults={"subject": "{{subject}}",
-            #                       "name": f"Message for event {ev.name} using {ch}",
-            #                       "content": "{{message}}", "html_content": "{{message}}"},
-            #         )
-            #         n.create_message(
-            #             name=f"Message for notification {n.name} using {ch}",
-            #             channel=ch,
-            #             defaults={"subject": "{{subject}}", "content": "{{message}}", "html_content": "{{message}}"},
-            #         )
 
             echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
             admin.addresses.get_or_create(name="email", value=self.admin_email)
@@ -213,8 +187,7 @@ class Command(BaseCommand):
             Group.objects.get_or_create(name="Admins")
             Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
 
-            # -- Inside the function you want to add task dynamically
-
+            # Inside the function you want to add task dynamically
             schedule_every_minute, _ = CrontabSchedule.objects.get_or_create(minute="*/1")
             PeriodicTask.objects.get_or_create(
                 name="occurence_processor",

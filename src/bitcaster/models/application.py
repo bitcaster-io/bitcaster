@@ -1,8 +1,7 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from django.db import models
-from django.db.models import QuerySet
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
@@ -12,13 +11,13 @@ from .project import Project
 from .user import User
 
 if TYPE_CHECKING:
+    from django.db.models import QuerySet
     from bitcaster.models import Channel, Event, Message, Organization
 
 logger = logging.getLogger(__name__)
 
 
 class ApplicationManager(BitcasterBaselManager["Application"]):
-
     def get_by_natural_key(self, slug: str, prj: "str", org: str) -> "Application":
         return self.get(slug=slug, project__organization__slug=org, project__slug=prj)
 
@@ -57,18 +56,16 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         try:
-            self.owner
+            _ = self.owner
         except User.DoesNotExist:
             self.owner = self.project.owner
         super().save(*args, **kwargs)
 
     def register_event(self, name: str, description: str = "") -> "Event":
-        from bitcaster.models import Event
-
         ev: "Event" = self.events.get_or_create(name=name, description=description, active=False)[0]
         return ev
 
-    def create_message(self, name: str, channel: "Channel", defaults: Optional[dict[str, Any]] = None) -> "Message":
+    def create_message(self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None) -> "Message":
         return self.message_set.get_or_create(
             name=name,
             channel=channel,

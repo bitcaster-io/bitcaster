@@ -33,7 +33,6 @@ class Scoped2FormMixin(forms.ModelForm["AnyModel"]):
 
 
 class Scoped3FormMixin(Scoped2FormMixin["AnyModel"]):
-
     application = forms.ModelChoiceField(
         required=False,
         queryset=Application.objects.all(),

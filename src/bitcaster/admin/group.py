@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.http import HttpRequest
@@ -11,8 +11,7 @@ if TYPE_CHECKING:
 
 
 class GroupAdmin(BaseGroupAdmin):
-
-    def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[Group]" = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: "HttpRequest", obj: "Group | None" = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
         if obj and obj.name == DEFAULT_GROUP_NAME:
             base.append("name")

@@ -8,12 +8,12 @@ title: Diagram
 
 ```mermaid
 sequenceDiagram
-    
+
     actor Client
     Client->>API: trigger
     API ->> Event: detect Event from url
-    API ->> Occurrence: create 
-    
+    API ->> Occurrence: create
+
 ```
 
 ### Process Occurrence
@@ -23,7 +23,7 @@ sequenceDiagram
     autonumber
     Process ->> Occurrence: retrieve
     Occurrence ->> Notification: retrieve valid
-    loop for each Channel 
+    loop for each Channel
         loop for each Assignment
             Notification ->> Message: retrieve for channel
             Notification ->> Message: render

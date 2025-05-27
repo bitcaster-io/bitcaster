@@ -15,7 +15,7 @@ from bitcaster.cache.storage import (
 from bitcaster.models import Occurrence
 
 
-@pytest.fixture()
+@pytest.fixture
 def data(settings: SettingsWrapper) -> None:
     from testutils.factories import OccurrenceFactory
 

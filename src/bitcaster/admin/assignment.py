@@ -4,8 +4,6 @@ from typing import TYPE_CHECKING, Any, TypeVar
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django.contrib import admin, messages
-from django.db.models import ForeignKey
-from django.forms import ModelChoiceField, ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import gettext as _
 
@@ -15,6 +13,8 @@ from bitcaster.forms.widgets import AutocompletSelectEnh
 from bitcaster.models import Address, Assignment
 
 if TYPE_CHECKING:
+    from django.db.models import ForeignKey
+    from django.forms import ModelChoiceField, ModelForm
     from django.db.models.fields.related import _ST
 
     from bitcaster.types.django import AnyModel
@@ -43,8 +43,7 @@ class AssignmentAdmin(BaseAdmin, admin.ModelAdmin[Assignment]):
     def get_form(
         self, request: HttpRequest, obj: Assignment | None = None, change: bool = False, **kwargs: Any
     ) -> "type[ModelForm[Assignment]]":
-        frm = super().get_form(request, obj, change, **kwargs)
-        return frm
+        return super().get_form(request, obj, change, **kwargs)
 
     def formfield_for_foreignkey(
         self, db_field: "ForeignKey[Assignment, _ST]", request: HttpRequest, **kwargs: Any

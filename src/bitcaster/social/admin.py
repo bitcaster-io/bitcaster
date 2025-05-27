@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.buttons import Button
 from admin_extra_buttons.decorators import link
@@ -26,9 +26,7 @@ class SocialProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin[SocialProvider]):
     )
     change_form_template = None
 
-    def formfield_for_dbfield(
-        self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any
-    ) -> Optional[FormField]:
+    def formfield_for_dbfield(self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any) -> FormField | None:
         formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
         if isinstance(db_field, models.JSONField):
             formfield.widget = SvelteJSONEditorWidget(
@@ -57,8 +55,7 @@ class SocialProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin[SocialProvider]):
             return ["provider", "configuration"]
         return []
 
-    def get_fields(self, request: "HttpRequest", obj: Optional[SocialProvider] = None) -> "_FieldGroups":
-        if not is_root(request):
-            if obj and obj.pk:
-                return ["provider", "enabled"]
+    def get_fields(self, request: "HttpRequest", obj: SocialProvider | None = None) -> "_FieldGroups":
+        if not is_root(request) and obj and obj.pk:
+            return ["provider", "enabled"]
         return super().get_fields(request, obj)

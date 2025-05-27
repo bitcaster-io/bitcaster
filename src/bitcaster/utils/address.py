@@ -4,7 +4,6 @@ from phonenumbers import NumberParseException, parse
 
 
 def is_phonenumber(value: str) -> bool:
-    #
     try:
         parse(value)
         return True

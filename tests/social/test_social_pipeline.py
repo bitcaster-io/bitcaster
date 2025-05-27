@@ -1,15 +1,17 @@
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from unittest.mock import Mock
 
 import pytest
 from constance.test.unittest import override_config
-from django.contrib.auth.models import Group
 
-from bitcaster.models import User
 from bitcaster.social.pipeline import save_to_group
 
+if TYPE_CHECKING:
+    from bitcaster.models import User
+    from django.contrib.auth.models import Group
 
-@pytest.fixture()
+
+@pytest.fixture
 def group(db: Any) -> None:
     from testutils.factories import GroupFactory
 

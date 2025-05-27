@@ -1,9 +1,8 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django.contrib import admin
-from django.contrib.admin.options import InlineModelAdmin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
@@ -14,6 +13,7 @@ from bitcaster.models import Address, Assignment
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
+    from django.contrib.admin.options import InlineModelAdmin
     from bitcaster.types.django import AnyModel
 
     AddressT = TypeVar("AddressT", bound=Address)
@@ -39,7 +39,7 @@ class AddressAdmin(BaseAdmin, admin.ModelAdmin[Address]):
     form = AddressForm
     inlines = [InlineValidation]
 
-    def get_readonly_fields(self, request: HttpRequest, obj: Optional[Address] = None) -> tuple[str, ...] | list[str]:
+    def get_readonly_fields(self, request: HttpRequest, obj: Address | None = None) -> tuple[str, ...] | list[str]:
         if obj is None:
             return super().get_readonly_fields(request, obj)
         return "user", "type"
@@ -55,7 +55,7 @@ class AddressAdmin(BaseAdmin, admin.ModelAdmin[Address]):
         }
 
     def get_inlines(
-        self, request: HttpRequest, obj: Optional[Address] = None
+        self, request: HttpRequest, obj: Address | None = None
     ) -> "list[type[InlineModelAdmin[Address, AnyModel]]]":
         if obj is None:
             return []

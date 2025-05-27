@@ -9,8 +9,6 @@ from freezegun.api import FakeDatetime
 from testutils.factories import OccurrenceFactory
 
 if TYPE_CHECKING:
-    from pytest import MonkeyPatch
-
     from bitcaster.models import Assignment, Notification, Occurrence, User
 
     Context = TypedDict(
@@ -40,7 +38,7 @@ def context(occurrence: "Occurrence", user: "User") -> "Context":
 )
 @pytest.mark.django_db(transaction=True)
 def test_model_occurrence_filter(
-    payload: dict[str, str], notified_count: int, context: "Context", monkeypatch: "MonkeyPatch"
+    payload: dict[str, str], notified_count: int, context: "Context", monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", mock := Mock())
 
@@ -57,7 +55,7 @@ def test_model_occurrence_filter(
         }
 
 
-def test_model_occurrence_no_notifications(occurrence: "Occurrence", monkeypatch: "MonkeyPatch") -> None:
+def test_model_occurrence_no_notifications(occurrence: "Occurrence", monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("bitcaster.models.notification.Notification.get_context", mock := Mock())
     assert occurrence.process() is True
     assert mock.called is False

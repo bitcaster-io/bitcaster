@@ -17,9 +17,7 @@ app_name = "api"
 
 
 class ChannelView(SecurityMixin, ViewSet, ListAPIView, RetrieveAPIView):
-    """
-    List channels.
-    """
+    """List channels."""
 
     serializer_class = ChannelSerializer
     required_grants = [Grant.ORGANIZATION_READ]
@@ -30,10 +28,11 @@ class ChannelView(SecurityMixin, ViewSet, ListAPIView, RetrieveAPIView):
                 organization__slug=self.kwargs["org"],
                 project__slug=self.kwargs["prj"],
             )
-        elif "org" in self.kwargs:
+        if "org" in self.kwargs:
             return Channel.objects.filter(
                 organization__slug=self.kwargs["org"],
             )
+        return None
 
     @extend_schema(description=_("List organization channels"))
     def list_for_org(self, request: Request, *args: Any, **kwargs: Any) -> Response:

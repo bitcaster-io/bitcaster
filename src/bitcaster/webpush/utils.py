@@ -10,7 +10,7 @@ from bitcaster.exceptions import DispatcherError
 if TYPE_CHECKING:
     from bitcaster.models import Assignment
 
-    SignatureT = TypedDict("SignatureT", {"pk": int, "address": str})
+    SignatureT = TypedDict("SignatureT", {"pk": int, "address": str})  # noqa: UP013
 
 
 logger = logging.getLogger(__name__)
@@ -18,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 def sign(assignment: "Assignment") -> str:
     signer = Signer()
-    secret = signer.sign_object({"pk": assignment.pk, "address": assignment.address.value})
-    return secret
+    return signer.sign_object({"pk": assignment.pk, "address": assignment.address.value})
 
 
 def unsign(secret: str) -> "SignatureT":
@@ -47,4 +46,4 @@ def webpush_send_message(assignment: "Assignment", message: str, **kwargs: Any) 
         return results
     except WebPushException as e:
         logger.exception(e)
-        raise DispatcherError(e.message)
+        raise DispatcherError(e.message) from e

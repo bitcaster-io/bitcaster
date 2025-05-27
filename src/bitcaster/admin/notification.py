@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -35,7 +35,7 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
     autocomplete_fields = ("event", "distribution")
     form = NotificationForm
 
-    def get_exclude(self, request: HttpRequest, obj: "Optional[Notification]" = None) -> tuple[str, ...]:
+    def get_exclude(self, request: HttpRequest, obj: "Notification | None" = None) -> tuple[str, ...]:
         return ("payload_filter", "extra_context")
 
     def get_queryset(self, request: HttpRequest) -> QuerySet["Notification"]:

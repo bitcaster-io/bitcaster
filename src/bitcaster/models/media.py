@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import magic
 from django.core.files.storage import storages
@@ -35,22 +35,21 @@ class MediaFileManager(ScopedManager["MediaFile"]):
 
 
 class ImageFieldWithExtra(models.ImageField):
-
     def __init__(
         self,
-        verbose_name: Optional[str] = None,
-        name: Optional[str] = None,
-        width_field: Optional[str] = None,
-        height_field: Optional[str] = None,
-        mime_field: Optional[str] = None,
-        size_field: Optional[str] = None,
+        verbose_name: str | None = None,
+        name: str | None = None,
+        width_field: str | None = None,
+        height_field: str | None = None,
+        mime_field: str | None = None,
+        size_field: str | None = None,
         **kwargs: Any,
     ):
         self.mime_field = mime_field
         self.size_field = size_field
         super().__init__(verbose_name, name, width_field, height_field, **kwargs)
 
-    def _get_mime(self, instance: "AnyModel", file: ImageFieldFile) -> Optional[str]:
+    def _get_mime(self, instance: "AnyModel", file: ImageFieldFile) -> str | None:
         if not hasattr(instance, "_mime_cache"):
             file_pos = None
             close = file.closed
@@ -109,10 +108,9 @@ class MediaFile(Scoped3Mixin, SlugMixin, BitcasterBaseModel):
     def natural_key(self) -> tuple[str | None, ...]:
         if self.application:
             return self.name, *self.application.natural_key()
-        elif self.project:
+        if self.project:
             return self.name, None, *self.project.natural_key()
-        else:
-            return self.name, None, None, *self.organization.natural_key()
+        return self.name, None, None, *self.organization.natural_key()
 
     #
     # def save(

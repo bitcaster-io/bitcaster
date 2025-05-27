@@ -1,8 +1,8 @@
-from typing import Any, Dict
+from typing import Any
 
 from bitcaster import VERSION
 
-REST_FRAMEWORK: Dict[str, Any] = {
+REST_FRAMEWORK: dict[str, Any] = {
     # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     # "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
     # "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
@@ -23,7 +23,7 @@ REST_FRAMEWORK: Dict[str, Any] = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-JWT_AUTH: Dict[str, Any] = {
+JWT_AUTH: dict[str, Any] = {
     # "JWT_VERIFY": False,  # this requires private key
     # "JWT_VERIFY_EXPIRATION": True,
     # "JWT_LEEWAY": 60,

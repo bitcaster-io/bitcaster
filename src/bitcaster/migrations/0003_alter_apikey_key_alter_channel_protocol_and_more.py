@@ -6,7 +6,6 @@ import bitcaster.models.key
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("bitcaster", "0002_logentry"),
     ]

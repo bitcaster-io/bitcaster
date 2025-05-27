@@ -17,7 +17,6 @@ def test_state(state: State) -> None:
 
 
 def test_cookies(state: State) -> None:
-
     assert not state.cookies
 
 

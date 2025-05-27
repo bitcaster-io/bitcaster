@@ -32,4 +32,4 @@ Below e general bash instruction. See [configuration](configuration.md) for deta
 		-e SESSION_COOKIE_SECURE=True \
 		-t bitcaster/bitcaster:latest
 
-To see a full stack example please have a look to the provided [compose files]() file 
+To see a full stack example please have a look to the provided [compose files]() file

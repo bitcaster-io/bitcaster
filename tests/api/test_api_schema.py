@@ -11,18 +11,11 @@ pytestmark = [pytest.mark.api, pytest.mark.django_db]
 # WE DO NOT USE REVERSE HERE. WE NEED TO CHECK ENDPOINTS CONTRACTS
 
 
-@pytest.fixture()
+@pytest.fixture
 def client(admin_user: "User") -> APIClient:
     c = APIClient()
     c.force_authenticate(user=admin_user)
     return c
-
-
-#
-# def test_api_root(client):
-#     url = "/api/"
-#     res = client.get(url)
-#     assert res.json()
 
 
 def test_api_schema(client: APIClient) -> None:

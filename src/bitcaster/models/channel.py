@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Iterable, Optional
+from typing import TYPE_CHECKING, Any, Iterable
 
 from django.db import models
 from django.db.models import Q
@@ -66,8 +66,8 @@ class Channel(LockMixin, BitcasterBaseModel):
         *args: Any,
         force_insert: bool | tuple[ModelBase, ...] = False,
         force_update: bool = False,
-        using: Optional[str] = None,
-        update_fields: Optional[Iterable[str]] = None,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
     ) -> None:
         self.protocol = self.dispatcher.protocol
         super().save(force_insert, force_update, using, update_fields)
@@ -76,25 +76,21 @@ class Channel(LockMixin, BitcasterBaseModel):
     def owner(self) -> "Application | Project | Organization":
         if self.project:
             return self.project
-        else:
-            return self.organization
+        return self.organization
 
     def natural_key(self) -> tuple[str | None, ...]:
         if self.project:
             return self.name, *self.project.natural_key()
-        else:
-            return self.name, None, *self.organization.natural_key()
+        return self.name, None, *self.organization.natural_key()
 
     @cached_property
     def from_email(self) -> str:
         if self.project:
             return self.project.from_email
-        else:
-            return str(self.organization.from_email)
+        return str(self.organization.from_email)
 
     @cached_property
     def subject_prefix(self) -> str:
         if self.project:
             return self.project.subject_prefix
-        else:
-            return str(self.organization.subject_prefix)
+        return str(self.organization.subject_prefix)

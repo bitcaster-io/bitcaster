@@ -53,9 +53,7 @@ class DistributionListSerializer(serializers.ModelSerializer):
 
 
 class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIView[DistributionList]):
-    """
-    List Project's DistributionList
-    """
+    """List Project's DistributionList."""
 
     serializer_class = DistributionListSerializer
     required_grants = [Grant.DISTRIBUTION_LIST]
@@ -108,9 +106,7 @@ class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, Retri
 
 
 class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView):
-    """
-    Distribution list
-    """
+    """Distribution list."""
 
     serializer_class = DistributionMemberSerializer
     required_grants = [Grant.DISTRIBUTION_LIST]

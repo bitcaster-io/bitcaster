@@ -2,7 +2,6 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from django.db import models
-from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 
 from .assignment import Assignment
@@ -10,6 +9,7 @@ from .mixins import BitcasterBaselManager, BitcasterBaseModel
 from .project import Project
 
 if TYPE_CHECKING:
+    from django.db.models import QuerySet
     from .notification import Notification
 
 
@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 class DistributionListManager(BitcasterBaselManager["DistributionList"]):
-
     def get_by_natural_key(self, name: "str", prj: "str", org: str, *args: Any) -> "DistributionList":
         return self.get(project__organization__slug=org, project__slug=prj, name=name)
 

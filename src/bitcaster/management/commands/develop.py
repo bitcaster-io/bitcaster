@@ -65,8 +65,7 @@ class Command(BaseCommand):
     def echo(self):
         if self.verbosity >= 1:
             return self.stdout.write
-        else:
-            return lambda *a, **kw: None  # noqa: E731
+        return lambda *a, **kw: None  # noqa: E731
 
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
         self.get_options(options)
@@ -82,14 +81,13 @@ class Command(BaseCommand):
                 verbosity=self.verbosity,
             )
 
+        elif Path(".initial_data.json").exists():
+            self.echo("Loading initial data...")
+            with disable_concurrency():
+                call_command("loaddata", ".initial_data.json", verbosity=self.verbosity)
         else:
-            if Path(".initial_data.json").exists():
-                self.echo("Loading initial data...")
-                with disable_concurrency():
-                    call_command("loaddata", ".initial_data.json", verbosity=self.verbosity)
-            else:
-                self.echo("Creating initial data...")
-                self.setup(*args, **options)
+            self.echo("Creating initial data...")
+            self.setup(*args, **options)
 
     def setup(self, *args: Any, **options: Any) -> None:  # noqa: C901
         from bitcaster.models import Application, Channel, User

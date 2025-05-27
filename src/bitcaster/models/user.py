@@ -4,14 +4,15 @@ from typing import TYPE_CHECKING
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as BaseUserManager
 from django.db import models
-from django.db.models import QuerySet
 from django.utils.crypto import RANDOM_STRING_CHARS
 from django.utils.translation import gettext_lazy as _
 
 from .mixins import BitcasterBaseModel, LockMixin
 
 if TYPE_CHECKING:
-    from bitcaster.models import Assignment, Channel, Organization
+    from django.db.models import QuerySet
+
+    from bitcaster.models import Assignment, Channel, DistributionList, Organization
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,6 @@ TOKEN_CHARS = f"{RANDOM_STRING_CHARS}-#@^*_+~;<>,."
 
 
 class UserManager(BaseUserManager["User"]):
-
     def get_by_natural_key(self, username: str | None) -> "User":
         return self.get(username=username)
 
@@ -50,3 +50,10 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
         from bitcaster.models import Assignment
 
         return Assignment.objects.filter(address__user=self, channel=ch).first()
+
+    @property
+    def distribution_lists(self) -> "QuerySet[DistributionList]":
+        """Retrieve all distribution lists this user is a recipient of via any assignment."""
+        from bitcaster.models import DistributionList
+
+        return DistributionList.objects.filter(recipients__address__user=self)

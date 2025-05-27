@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import jmespath
 import yaml
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class NotificationQuerySet(BaseQuerySet["Notification"]):
-    def match(self, payload: dict[str, Any], rules: "Optional[YamlPayload]" = None) -> list["Notification"]:
+    def match(self, payload: dict[str, Any], rules: "YamlPayload | None" = None) -> list["Notification"]:
         for subscription in self.all():
             if subscription.match_filter(payload, rules=rules):
                 yield subscription
@@ -99,8 +99,8 @@ class Notification(BitcasterBaseModel):
             .exclude(id__in=delivered)
         )
 
-    def notify_to_channel(self, channel: "Channel", assignment: Assignment, context: dict[str, Any]) -> Optional[str]:
-        message: Optional["Message"]
+    def notify_to_channel(self, channel: "Channel", assignment: Assignment, context: dict[str, Any]) -> str | None:
+        message: "Message" | None
         dispatcher: "Dispatcher" = channel.dispatcher
         addr: "Address" = assignment.address
 
@@ -132,14 +132,14 @@ class Notification(BitcasterBaseModel):
 
         # it is not a str hence it must be a dict with one of AND, OR, NOT
         if and_stm := filter_rules_dict.get("AND"):
-            return all([cls.match_line_filter(rules, payload) for rules in and_stm])
-        elif or_stm := filter_rules_dict.get("OR"):
-            return any([cls.match_line_filter(rules, payload) for rules in or_stm])
-        elif not_stm := filter_rules_dict.get("NOT"):
+            return all(cls.match_line_filter(rules, payload) for rules in and_stm)
+        if or_stm := filter_rules_dict.get("OR"):
+            return any(cls.match_line_filter(rules, payload) for rules in or_stm)
+        if not_stm := filter_rules_dict.get("NOT"):
             return not cls.match_line_filter(not_stm, payload)
         return False
 
-    def match_filter(self, payload: "YamlPayload", rules: Optional[dict[str, Any] | str] = None) -> bool:
+    def match_filter(self, payload: "YamlPayload", rules: dict[str, Any] | str | None = None) -> bool:
         """Check if given payload matches rules.
 
         If no rules are specified, it defaults to match rules configured in subscription.
@@ -161,13 +161,13 @@ class Notification(BitcasterBaseModel):
             .order_by("notification")
         )
 
-    def get_message(self, channel: "Channel") -> "Optional[Message]":
+    def get_message(self, channel: "Channel") -> "Message | None":
         if channel not in self._cached_messages:
             ret = self.get_messages(channel).first()
             self._cached_messages[channel] = ret
         return self._cached_messages[channel]
 
-    def create_message(self, name: str, channel: "Channel", defaults: Optional[dict[str, Any]] = None) -> "Message":
+    def create_message(self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None) -> "Message":
         return self.messages.get_or_create(
             name=name,
             channel=channel,

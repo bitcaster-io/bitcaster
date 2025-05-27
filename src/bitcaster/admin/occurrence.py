@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -41,7 +40,7 @@ class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False
 
-    def has_change_permission(self, request: HttpRequest, obj: Optional[Occurrence] = None) -> bool:
+    def has_change_permission(self, request: HttpRequest, obj: Occurrence | None = None) -> bool:
         return False
 
     @button(

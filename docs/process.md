@@ -11,8 +11,8 @@ Bitcaster structure allows to manage simple and complex environment, it is organ
             - <glossary:Event> (something that happen in your <glossary:Application> that you want to notify to the users)
 
 
-Each <glossary:Event> can have different <glossary:Channel>s enabled to forward <glossary:Notification>s 
-the destination <glossary:Distribution List> 
+Each <glossary:Event> can have different <glossary:Channel>s enabled to forward <glossary:Notification>s
+the destination <glossary:Distribution List>
 
 
 

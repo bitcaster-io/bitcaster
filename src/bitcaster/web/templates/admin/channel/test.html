@@ -21,10 +21,10 @@
         </ul>
         <a href="{% url "admin:bitcaster_address_add" %}?user={{ user.pk }}">Add Address</a>
     {% else %}
-        
+
         <form method="post" id="config-form">
         {{ form.errors }}
-        {% csrf_token %}         
+        {% csrf_token %}
             <fieldset class="module aligned ">
                 <div class="form-row field-api_key">
                     <div>

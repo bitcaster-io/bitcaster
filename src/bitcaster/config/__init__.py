@@ -1,17 +1,13 @@
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Mapping, TypeAlias, Union
+from typing import TYPE_CHECKING, Any, Mapping
 from urllib import parse
 
 from environ import Env
 
 if TYPE_CHECKING:
     # ConfigItem: TypeAlias = Union[Tuple[type, Any, str, Any], Tuple[type, Any, str], Tuple[type, Any]]
-    ItemValue: TypeAlias = Union[str, bool, int, list[str], None]
-    ConfigItem: TypeAlias = Union[
-        tuple[type, ItemValue],  # type, value
-        tuple[type, ItemValue, str],  # type, value, help,
-        tuple[type, ItemValue, str, Any],  # type, value, hell, develop_value
-    ]
+    type ItemValue = str | bool | int | list[str] | None
+    type ConfigItem = tuple[type, ItemValue] | tuple[type, ItemValue, str] | tuple[type, ItemValue, str, Any]
 
 
 DJANGO_HELP_BASE = "https://docs.djangoproject.com/en/5.0/ref/settings"
@@ -152,7 +148,7 @@ class SmartEnv(Env):
             return entry[3]
         return self.get_value(key)
 
-    def storage(self, value: str) -> dict[str, Union[str, Any]] | None:
+    def storage(self, value: str) -> dict[str, str | Any] | None:
         raw_value = self.get_value(value, str)
         if not raw_value:
             return None

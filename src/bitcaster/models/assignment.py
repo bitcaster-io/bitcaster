@@ -7,7 +7,6 @@ from .mixins import BitcasterBaselManager, BitcasterBaseModel
 
 
 class AssignmentManager(BitcasterBaselManager["Assignment"]):
-
     def get_by_natural_key(self, user: str, addr: str, ch: str, prj: str, org: str) -> "Assignment":
         filters: dict[str, Any] = {}
 

@@ -3,7 +3,7 @@ import json
 from copy import copy
 from datetime import datetime, timedelta
 from threading import local
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Mapping, Optional
+from typing import TYPE_CHECKING, Any, Iterator, Mapping
 
 if TYPE_CHECKING:
     from bitcaster.types.django import JsonType
@@ -14,7 +14,7 @@ not_set = object()
 
 class State(local):
     request: "AnyRequest|None" = None
-    cookies: Dict[str, List[Any]] = {}
+    cookies: dict[str, list[Any]] = {}
 
     def __repr__(self) -> str:
         return f"<State {id(self)}>"
@@ -34,7 +34,7 @@ class State(local):
         value = json.dumps(value)
         self.cookies[key] = [value, max_age, expires, path, domain, secure, httponly, samesite]
 
-    def get_cookie(self, name: str) -> Optional[str]:
+    def get_cookie(self, name: str) -> str | None:
         return self.request.COOKIES.get(name)
 
     def set_cookies(self, response: "AnyResponse") -> None:

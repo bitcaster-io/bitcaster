@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from django import forms
 from django.conf import settings
@@ -10,9 +10,6 @@ from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
 from tinymce.widgets import TinyMCE
 
 from bitcaster.models import Channel, Event, Message, Notification, Organization
-
-if TYPE_CHECKING:
-    pass
 
 
 class MessageEditForm(forms.ModelForm[Message]):

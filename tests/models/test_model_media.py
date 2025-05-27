@@ -6,9 +6,9 @@ import pytest
 from django.core.files.base import ContentFile
 from django.db.models.fields.files import ImageFieldFile
 
-from bitcaster.models import Application
 
 if TYPE_CHECKING:
+    from bitcaster.models import Application
     from bitcaster.models import MediaFile
 
 

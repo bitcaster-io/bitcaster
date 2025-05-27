@@ -25,9 +25,8 @@ def server_address(value: str, **kwargs: Any) -> bool:
 def env_var(value: str, **kwargs: Any) -> bool:
     if "=" in value:
         key, value = value.split("=")
-        return os.environ.get(key, -1) == value
-    else:
-        return value.strip() in os.environ
+        return os.environ.get(key, -1) == value  # noqa: PLW1508
+    return value.strip() in os.environ
 
 
 @conditions.register("HTTP Request Header")

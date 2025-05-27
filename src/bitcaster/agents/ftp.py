@@ -31,8 +31,7 @@ class AgentFTP(AgentFiles):
         return f
 
     def scan(self) -> dict[str, Any]:
-        entries = dict(self.client.mlsd(self.config["path"]))
-        return entries
+        return dict(self.client.mlsd(self.config["path"]))
 
     #
     # def notify(self) -> None:

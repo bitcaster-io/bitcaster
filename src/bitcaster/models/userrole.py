@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class UserRoleManager(models.Manager["UserRole"]):
-
     def get_by_natural_key(self, group: str, user: str, org: str, *args: Any) -> "UserRole":
         return self.get(group__name=group, user__username=user, organization__slug=org)
 

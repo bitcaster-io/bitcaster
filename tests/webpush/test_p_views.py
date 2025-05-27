@@ -7,8 +7,6 @@ from django_webtest import DjangoTestApp
 from bitcaster.webpush.utils import sign
 
 if TYPE_CHECKING:
-    from pytest import MonkeyPatch
-
     from bitcaster.models import Application, Assignment
 
 
@@ -26,14 +24,16 @@ def test_push_serviceworker(django_app: DjangoTestApp, application: "Application
     assert res.status_code == 200
 
 
-def test_push_ask(django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: "MonkeyPatch") -> None:
+def test_push_ask(django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: pytest.MonkeyPatch) -> None:
     secret = sign(push_assignment)
     url = reverse("webpush:ask", args=[secret])
     res = django_app.get(url)
     assert res.status_code == 200
 
 
-def test_push_subscribe(django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: "MonkeyPatch") -> None:
+def test_push_subscribe(
+    django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: pytest.MonkeyPatch
+) -> None:
     secret = sign(push_assignment)
     url = reverse("webpush:subscribe", args=[secret])
     res = django_app.post_json(
@@ -50,7 +50,7 @@ def test_push_subscribe(django_app: DjangoTestApp, push_assignment: "Assignment"
 
 
 def test_push_subscribe_404(
-    django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: "MonkeyPatch"
+    django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: pytest.MonkeyPatch
 ) -> None:
     secret = sign(push_assignment)
     push_assignment.delete()
@@ -59,14 +59,16 @@ def test_push_subscribe_404(
     assert res.status_code == 404
 
 
-def test_push_unsubscribe(django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: "MonkeyPatch") -> None:
+def test_push_unsubscribe(
+    django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: pytest.MonkeyPatch
+) -> None:
     secret = sign(push_assignment)
     url = reverse("webpush:unsubscribe", args=[secret])
     res = django_app.post_json(url)
     assert res.status_code == 200
 
 
-def test_push_data(django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: "MonkeyPatch") -> None:
+def test_push_data(django_app: DjangoTestApp, push_assignment: "Assignment", monkeypatch: pytest.MonkeyPatch) -> None:
     secret = sign(push_assignment)
     url = reverse("webpush:data", args=[secret])
     res = django_app.get(url)

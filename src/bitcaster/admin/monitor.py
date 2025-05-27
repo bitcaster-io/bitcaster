@@ -89,7 +89,7 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]
                 monitor.schedule.last_run_at = None
                 monitor.save()
                 monitor.schedule.save()
-                self.message_user(request, "Configured Monitor {}".format(monitor.name))
+                self.message_user(request, f"Configured Monitor {monitor.name}")
                 if "next" in request.GET:
                     return HttpResponseRedirect(request.GET["next"])
                 return HttpResponseRedirect(monitor.get_admin_change())

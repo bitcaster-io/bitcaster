@@ -16,13 +16,13 @@ class AgentMeta(type["Agent"]):
     def __repr__(cls) -> str:
         return cls.verbose_name or cls.__name__
 
-    def __new__(mcs: type["Agent"], class_name: str, bases: tuple[Any], attrs: dict[str, Any]) -> "Agent":
+    def __new__(cls: type["Agent"], class_name: str, bases: tuple[Any], attrs: dict[str, Any]) -> "Agent":
         if attrs["__qualname__"] == "Agent":
-            return super().__new__(mcs, class_name, bases, attrs)
-        cls = super().__new__(mcs, class_name, bases, attrs)
+            return super().__new__(cls, class_name, bases, attrs)
+        cls = super().__new__(cls, class_name, bases, attrs)
         if cls not in agentManager and "abstract" not in attrs:  # pragma: no branch
             agentManager.register(cls)
-        return cast(Agent, cls)
+        return cast("Agent", cls)
 
 
 class AgentConfig(forms.Form):

@@ -16,7 +16,6 @@ class Command(BaseCommand):
     requires_system_checks = []
 
     def add_arguments(self, parser: "CommandParser") -> None:
-
         parser.add_argument(
             "--pattern",
             action="store",
@@ -58,9 +57,8 @@ class Command(BaseCommand):
                 if options["diff"]:
                     if value != default:
                         line = self.style.SUCCESS(line)
-                elif options["config"]:
-                    if value == default and k not in EXPLICIT_SET:
-                        continue
+                elif options["config"] and value == default and k not in EXPLICIT_SET:
+                    continue
                 self.stdout.write(line)
 
         if check_failure and not options["ignore_errors"]:

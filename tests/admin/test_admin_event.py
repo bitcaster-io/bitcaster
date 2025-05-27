@@ -3,13 +3,13 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.messages import SUCCESS, Message  # type: ignore[attr-defined]
-from django.db.models.options import Options
 from django.urls import reverse
 from testutils.factories import EventFactory
 
 from bitcaster.constants import Bitcaster
 
 if TYPE_CHECKING:
+    from django.db.models.options import Options
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") -> "DjangoTestApp":
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
@@ -109,7 +109,7 @@ def test_delete_action(app: "DjangoTestApp", context: "Context") -> None:
     frm.get("action").value = "delete_selected"
 
     res = frm.submit()
-    assert "Are you sure?" in res.text
+    assert "Are you sure you want to delete the selected events?" in res.text
     res.forms[1].submit().follow()
     assert not Event.objects.filter(pk=event.pk).exists()
     assert Event.objects.filter(pk=internal_event.pk).exists()

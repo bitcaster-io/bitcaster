@@ -5,27 +5,26 @@ from django.contrib.admin.sites import site
 from django.db.models import Model
 from django.urls import reverse
 from pytest_django.fixtures import SettingsWrapper
-from responses import RequestsMock
 from testutils.factories.user import UserFactory
 from testutils.perms import user_grant_permissions
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
-    from pytest import Metafunc
+    from responses import RequestsMock
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
 
 
-def pytest_generate_tests(metafunc: "Metafunc") -> None:
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     if "app_label" in metafunc.fixturenames:
         m: dict[str, type[Model]] = {}
-        for model, admin in site._registry.items():
+        for model in site._registry:
             m[model._meta.app_label] = model
-        metafunc.parametrize("app_label,app_model", zip(m.keys(), m.values()), ids=m.keys())
+        metafunc.parametrize("app_label,app_model", m.items(), ids=m.keys())
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(
     django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: SettingsWrapper
 ) -> "DjangoTestApp":

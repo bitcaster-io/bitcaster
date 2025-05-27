@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from .base import Dispatcher, MessageProtocol, Payload
 
@@ -18,7 +18,7 @@ class BitcasterSysDispatcher(Dispatcher):
     verbose_name = "Log"
     protocol = MessageProtocol.PLAINTEXT
 
-    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         from bitcaster.models.internal import LogMessage
 
         LogMessage.objects.create(level=address, application=payload.event.application, message=payload.message)

@@ -7,7 +7,6 @@ from unittest import mock
 
 import pytest
 from django.core.management import CommandError, call_command
-from pytest import MonkeyPatch
 from responses import RequestsMock
 from testutils.factories import ProjectFactory, SuperUserFactory
 
@@ -19,7 +18,7 @@ if TYPE_CHECKING:
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture()
+@pytest.fixture
 def environment() -> dict[str, str]:
     return {
         "CACHE_URL": "test",
@@ -40,7 +39,7 @@ def environment() -> dict[str, str]:
 def test_upgrade_init(
     verbosity: int,
     migrate: bool,
-    monkeypatch: MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch,
     environment: dict[str, str],
     static: bool,
     static_root: str,
@@ -71,7 +70,7 @@ def test_upgrade_init(
 
 @pytest.mark.parametrize("verbosity", [1, 0], ids=["verbose", ""])
 @pytest.mark.parametrize("migrate", [1, 0], ids=["migrate", ""])
-def test_upgrade(verbosity: int, migrate: int, monkeypatch: MonkeyPatch, environment: dict[str, str]) -> None:
+def test_upgrade(verbosity: int, migrate: int, monkeypatch: pytest.MonkeyPatch, environment: dict[str, str]) -> None:
     from testutils.factories import SuperUserFactory
 
     out = StringIO()
@@ -132,7 +131,7 @@ def test_env(mocked_responses: RequestsMock, verbosity: int, develop: int, diff:
     with mock.patch.dict(os.environ, environ, clear=True):
         call_command(
             "env",
-            ignore_errors=True if check == 1 else False,
+            ignore_errors=check == 1,
             stdout=out,
             verbosity=verbosity,
             develop=develop,

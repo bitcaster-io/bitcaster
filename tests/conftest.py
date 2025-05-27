@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, List
 
 import pytest
 import responses
+import contextlib
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -131,7 +132,7 @@ def pytest_configure(config):
         pytest.exit("FATAL: Environment variables missing")
 
 
-@pytest.fixture()
+@pytest.fixture
 def system_objects(admin_user: "User") -> None:
     from django.contrib.auth.models import Group
 
@@ -146,13 +147,11 @@ def system_objects(admin_user: "User") -> None:
 def clear_state(db):
     from bitcaster.state import state
 
-    try:
+    with contextlib.suppress(AttributeError):
         del state.app
-    except AttributeError:
-        pass
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocked_responses():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         yield rsps
@@ -179,7 +178,7 @@ def superuser(db):
     return SuperUserFactory(username="superuser@example.com")
 
 
-@pytest.fixture()
+@pytest.fixture
 def os4d(db):
     from testutils.factories.org import OrganizationFactory
 
@@ -188,7 +187,7 @@ def os4d(db):
     return OrganizationFactory(name=Bitcaster.ORGANIZATION, slug="os4d")
 
 
-@pytest.fixture()
+@pytest.fixture
 def bitcaster(os4d) -> "Application":
     from testutils.factories.org import ApplicationFactory
 
@@ -199,70 +198,70 @@ def bitcaster(os4d) -> "Application":
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def organization(db):
     from testutils.factories.org import OrganizationFactory
 
     return OrganizationFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def project(organization):
     from testutils.factories.org import ProjectFactory
 
     return ProjectFactory(organization=organization)
 
 
-@pytest.fixture()
+@pytest.fixture
 def application(project: "Project"):
     from testutils.factories.org import ApplicationFactory
 
     return ApplicationFactory(project=project)
 
 
-@pytest.fixture()
+@pytest.fixture
 def distributionlist(project: "Project"):
     from testutils.factories.distribution import DistributionListFactory
 
     return DistributionListFactory(project=project)
 
 
-@pytest.fixture()
+@pytest.fixture
 def event(application) -> "Event":
     from testutils.factories import ChannelFactory, EventFactory
 
     return EventFactory(application=application, channels=[ChannelFactory()], active=True)
 
 
-@pytest.fixture()
+@pytest.fixture
 def address(db):
     from testutils.factories.address import AddressFactory
 
     return AddressFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def message(db):
     from testutils.factories.message import MessageFactory
 
     return MessageFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def channel(project: "Project"):
     from testutils.factories.channel import ChannelFactory
 
     return ChannelFactory(project=project, organization=project.organization)
 
 
-@pytest.fixture()
+@pytest.fixture
 def org_channel(organization):
     from testutils.factories.channel import ChannelFactory
 
     return ChannelFactory(organization=organization, project=None)
 
 
-@pytest.fixture()
+@pytest.fixture
 def email_channel(db):
     from strategy_field.utils import fqn
     from testutils.factories.channel import ChannelFactory
@@ -272,7 +271,7 @@ def email_channel(db):
     return ChannelFactory(dispatcher=fqn(GMailDispatcher))
 
 
-@pytest.fixture()
+@pytest.fixture
 def sms_channel(db):
     from strategy_field.utils import fqn
     from testutils.factories.channel import ChannelFactory
@@ -282,14 +281,14 @@ def sms_channel(db):
     return ChannelFactory(dispatcher=fqn(TwilioSMS))
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_key(db):
     from testutils.factories.key import ApiKeyFactory
 
     return ApiKeyFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def occurrence(db):
     from testutils.factories import OccurrenceFactory
 
@@ -328,21 +327,21 @@ def non_purgeable_occurrences(db) -> List["Occurrence"]:
     return [non_purgeable_occurrence]
 
 
-@pytest.fixture()
+@pytest.fixture
 def notification(db):
     from testutils.factories import NotificationFactory
 
     return NotificationFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def assignment(db):
     from testutils.factories import AssignmentFactory
 
     return AssignmentFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def messagebox() -> list:
     import testutils.dispatcher
 
@@ -351,14 +350,14 @@ def messagebox() -> list:
     testutils.dispatcher.MESSAGES = []
 
 
-@pytest.fixture()
+@pytest.fixture
 def monitor() -> "Monitor":
     from testutils.factories import MonitorFactory
 
     return MonitorFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def group() -> "Group":
     from testutils.factories import GroupFactory
 

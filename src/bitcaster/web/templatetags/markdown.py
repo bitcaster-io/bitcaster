@@ -32,4 +32,4 @@ def md(value: str) -> str:
 @register.filter
 def help_doc(d: "Any") -> str:
     text = getattr(d, "help_text", "")
-    return mark_safe(md(text))  # nosec
+    return mark_safe(md(text))  # nosec  # noqa: S308

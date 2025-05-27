@@ -16,8 +16,6 @@ from testutils.perms import key_grants
 from bitcaster.auth.constants import Grant
 
 if TYPE_CHECKING:
-    from pytest import Metafunc
-
     from bitcaster.models import (
         ApiKey,
         Application,
@@ -54,7 +52,7 @@ event_slug = "evt1"
 dl_pk = 999
 
 
-@pytest.fixture()
+@pytest.fixture
 def client(data: "Context") -> APIClient:
     c = APIClient()
     g = key_grants(data["key"], Grant.FULL_ACCESS)
@@ -65,9 +63,8 @@ def client(data: "Context") -> APIClient:
     g.stop()
 
 
-@pytest.fixture()
+@pytest.fixture
 def data(admin_user: "User", system_objects: Any) -> "Context":
-
     event: Event = EventFactory(
         application__project__organization__slug=org_slug,
         application__project__slug=prj_slug,
@@ -91,24 +88,19 @@ def data(admin_user: "User", system_objects: Any) -> "Context":
     }
 
 
-def pytest_generate_tests(metafunc: "Metafunc") -> None:
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     if "url" in metafunc.fixturenames:
         m = []
         ids = []
         for url in [
-            # "/api/o/",
             f"/api/o/{org_slug}/",
             f"/api/o/{org_slug}/u/",  # users
-            # f"/api/o/{org_slug}/c/",
             f"/api/o/{org_slug}/p/{prj_slug}/",
             f"/api/o/{org_slug}/p/{prj_slug}/d/",  # distributionlist
             f"/api/o/{org_slug}/p/{prj_slug}/d/{dl_pk}/m/",  # distributionlist members
             f"/api/o/{org_slug}/p/{prj_slug}/a/",  # applications
             f"/api/o/{org_slug}/p/{prj_slug}/c/",  # channels
-            # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/",
             f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/",
-            # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/",
-            # f"/api/o/{org_slug}/p/{prj_slug}/a/{app_slug}/e/{event_slug}/c/",
         ]:
             m.append(url)
             r: ResolverMatch = resolve(url)

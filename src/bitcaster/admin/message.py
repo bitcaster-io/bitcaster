@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional
 
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -56,17 +56,16 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
     form = MessageChangeForm
     add_form = MessageCreationForm
 
-    def scope_level(self, obj: "Message") -> "Union[Notification, Event, Application, Project, Organization]":
+    def scope_level(self, obj: "Message") -> "Notification | Event | Application | Project | Organization":
         if obj.notification:
             return obj.notification
-        elif obj.event:
+        if obj.event:
             return obj.event
-        elif obj.application:
+        if obj.application:
             return obj.application
-        elif obj.project:
+        if obj.project:
             return obj.project
-        else:
-            return obj.organization
+        return obj.organization
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Message]:
         return (
@@ -159,12 +158,12 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
                     "context": {k: "<sys>" for k, __ in message_context.items()},
                     "subject": obj.subject if obj.subject else "Subject for {{ event }}",
                     "content": (
-                        obj.content if obj.content else "\n".join([f"{k}: {{{{{k}}}}}" for k in message_context.keys()])
+                        obj.content if obj.content else "\n".join([f"{k}: {{{{{k}}}}}" for k in message_context])
                     ),
                     "html_content": (
                         obj.html_content
                         if obj.html_content
-                        else "".join([f"<div>{k}: {{{{{k}}}}}</div>" for k in message_context.keys()])
+                        else "".join([f"<div>{k}: {{{{{k}}}}}</div>" for k in message_context])
                     ),
                 },
                 instance=obj,

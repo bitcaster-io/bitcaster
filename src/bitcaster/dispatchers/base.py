@@ -1,6 +1,6 @@
 import enum
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -14,7 +14,7 @@ from bitcaster.constants import AddressType
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment, Channel, Event, User
-    from bitcaster.types.dispatcher import DispatcherHandler, TDispatcherConfig
+    from bitcaster.types.dispatcher import TDispatcherConfig, DispatcherHandler
 
 logger = logging.getLogger(__name__)
 
@@ -56,10 +56,10 @@ class Payload:
         self,
         message: str,
         event: "Event",
-        user: "Optional[User]" = None,
+        user: "User | None" = None,
         subject: str = "",
         html_message: str = "",
-        **kwargs: Dict[str, Any],
+        **kwargs: dict[str, Any],
     ):
         self.message = message
         self.event = event
@@ -74,27 +74,26 @@ class DispatcherConfig(forms.Form):
 
 class DispatcherMeta(type["Dispatcher"]):
     _all = {}
-    # _dispatchers = []
     verbose_name: str = ""
 
     def __repr__(cls) -> str:
         return cls.verbose_name
 
-    def __new__(mcs: Type["Dispatcher"], class_name: str, bases: Tuple[Any], attrs: Dict[str, Any]) -> "Dispatcher":
+    def __new__(cls: type["Dispatcher"], class_name: str, bases: tuple[Any], attrs: dict[str, Any]) -> "Dispatcher":
         if attrs["__qualname__"] == "Dispatcher":
-            return super().__new__(mcs, class_name, bases, attrs)
-        cls = super().__new__(mcs, class_name, bases, attrs)
+            return super().__new__(cls, class_name, bases, attrs)
+        cls = super().__new__(cls, class_name, bases, attrs)
         if cls not in dispatcherManager:  # pragma: no branch
             dispatcherManager.register(cls)
-        return cast(Dispatcher, cls)
+        return cast("Dispatcher", cls)
 
 
 class Dispatcher(metaclass=DispatcherMeta):
     slug = "--"
     verbose_name: str = ""
-    config_class: "Type[DispatcherConfig] | None" = DispatcherConfig
-    backend: "Optional[str, DispatcherHandler]" = None
-    address_types: List[AddressType] = [AddressType.GENERIC]
+    config_class: "type[DispatcherConfig] | None" = DispatcherConfig
+    backend: "DispatcherHandler | str | None" = None
+    address_types: list[AddressType] = [AddressType.GENERIC]
     channel: "Channel"
     protocol: MessageProtocol = MessageProtocol.PLAINTEXT
     need_subscription = False
@@ -121,17 +120,17 @@ class Dispatcher(metaclass=DispatcherMeta):
         return klass(fail_silently=False, **self.config)
 
     @property
-    def config(self) -> Dict[str, Any]:
+    def config(self) -> dict[str, Any]:
         cfg: "TDispatcherConfig" = self.config_class(data=self.channel.config)
         if not cfg.is_valid():
             raise ValidationError(cfg.errors)
         return cfg.cleaned_data
 
     @classproperty
-    def name(cls) -> str:
-        return cls.verbose_name or cls.__name__.title()
+    def name(self) -> str:
+        return self.verbose_name or self.__name__.title()
 
-    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         raise NotImplementedError
 
     def subscribe(self, assignment: "Assignment", **kwargs: Any) -> HttpResponseRedirect:

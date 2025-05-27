@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.shortcuts import resolve_url
 from social_django.strategy import DjangoStrategy
 
@@ -9,8 +7,7 @@ caches = {}
 
 
 class BitcasterStrategy(DjangoStrategy):
-
-    def get_setting(self, name: str) -> Optional[str]:
+    def get_setting(self, name: str) -> str | None:
         found = None
         configuration = None
         for provider in Provider.values:
@@ -30,5 +27,4 @@ class BitcasterStrategy(DjangoStrategy):
             if name.endswith("_URL"):
                 value = resolve_url(value)
             return value
-        else:
-            return super().get_setting(name)
+        return super().get_setting(name)

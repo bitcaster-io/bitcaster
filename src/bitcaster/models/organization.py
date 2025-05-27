@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from django.db import models
 from django.db.models import QuerySet
@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class OrganizationManager(BitcasterBaselManager["Organization"]):
-
     def get_by_natural_key(self, slug: str) -> "Organization":
         return self.get(slug=slug)
 
@@ -54,7 +53,7 @@ class Organization(SlugMixin, BitcasterBaseModel):
     def natural_key(self) -> tuple[str]:
         return (self.slug,)
 
-    def create_message(self, name: str, channel: "Channel", defaults: "Optional[dict[str, Any]]" = None) -> "Message":
+    def create_message(self, name: str, channel: "Channel", defaults: "dict[str, Any] | None" = None) -> "Message":
         return self.message_set.get_or_create(
             name=name,
             channel=channel,

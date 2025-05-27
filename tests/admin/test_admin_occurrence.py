@@ -8,13 +8,12 @@ from django_webtest.pytest_plugin import MixinWithInstanceVariables
 from testutils.perms import user_grant_permissions
 
 if TYPE_CHECKING:
-    from pytest import MonkeyPatch
     from webtest.response import TestResponse
 
     from bitcaster.models import User
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: MixinWithInstanceVariables, user: "User") -> DjangoTestApp:
     django_app: DjangoTestApp = django_app_factory(csrf_checks=False)
     django_app.set_user(user)
@@ -22,7 +21,7 @@ def app(django_app_factory: MixinWithInstanceVariables, user: "User") -> DjangoT
     return django_app
 
 
-@pytest.fixture()
+@pytest.fixture
 def app_for_admin(django_app_factory: MixinWithInstanceVariables, admin_user: "User") -> DjangoTestApp:
     django_app: DjangoTestApp = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
@@ -41,7 +40,7 @@ def test_purge_occurrence_permission(app: DjangoTestApp, user: "User") -> None:
         assert res.status_code == 302
 
 
-def test_purge_occurrence(app_for_admin: DjangoTestApp, monkeypatch: "MonkeyPatch") -> None:
+def test_purge_occurrence(app_for_admin: DjangoTestApp, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("bitcaster.tasks.purge_occurrences.delay", purge_occurrences_mock := Mock())
 
     url = reverse("admin:bitcaster_occurrence_purge")

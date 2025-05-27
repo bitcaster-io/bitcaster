@@ -35,7 +35,7 @@ class SecretMixin(View):
         try:
             return Assignment.objects.select_related("channel").get(pk=data["pk"], address__value=data["address"])
         except Assignment.DoesNotExist:
-            raise Http404
+            raise Http404  # noqa: B904
 
 
 class DataView(SecretMixin, RedirectView):
@@ -96,11 +96,10 @@ class ConfirmView(SecretMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         secret = self.kwargs["secret"]
-        # data: "SignatureT" = unsign(secret)
         assignment = self.unsign()
         ch: "Channel" = assignment.channel
 
-        ctx = {
+        return {
             "assignment": assignment,
             "owner": assignment.channel.owner,
             "secret": secret,
@@ -110,8 +109,6 @@ class ConfirmView(SecretMixin, TemplateView):
             "media": self.media,
             "sw": reverse("webpush:service_worker", args=[assignment.channel.project.slug]),
         }
-
-        return ctx
 
 
 class ServiceWorker(TemplateView):

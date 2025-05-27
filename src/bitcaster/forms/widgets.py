@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.admin import AdminSite
 from django.contrib.admin.widgets import AutocompleteSelect
@@ -28,9 +28,9 @@ class AutocompletSelectEnh(AutocompleteSelect):
         self,
         field: Any,
         admin_site: AdminSite,
-        attrs: "Optional[_OptAttrs]" = None,
+        attrs: "_OptAttrs | None" = None,
         choices: Any = (),
-        using: Optional[str] = None,
+        using: str | None = None,
         **kwargs: Any,
     ) -> None:
         self.exclude = kwargs.pop("exclude", {})

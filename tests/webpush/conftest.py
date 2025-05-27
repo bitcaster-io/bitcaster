@@ -1,6 +1,9 @@
 import pytest
 
-from bitcaster.models import Assignment
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bitcaster.models import Assignment
 
 
 @pytest.fixture

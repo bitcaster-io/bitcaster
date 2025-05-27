@@ -85,10 +85,9 @@ class Message(Scoped3Mixin, BitcasterBaseModel):
     def natural_key(self) -> tuple[str, str, str, str] | tuple[str, None, str, str] | tuple[str, None, None, str]:
         if self.application:
             return self.name, *self.application.natural_key()
-        elif self.project:
+        if self.project:
             return self.name, None, *self.project.natural_key()
-        else:
-            return self.name, None, None, *self.organization.natural_key()
+        return self.name, None, None, *self.organization.natural_key()
 
     def clean(self) -> None:
         super().clean()

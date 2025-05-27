@@ -20,10 +20,10 @@ class DistributionListFactory(AutoRegisterModelFactory[DistributionList]):
     project = factory.SubFactory(ProjectFactory)
 
     @factory.post_generation  # type: ignore[misc]
-    def recipients(dist: "DistributionList", create: bool, extracted: "list[Assignment]", **kwargs: Any) -> None:
+    def recipients(self: "DistributionList", create: bool, extracted: "list[Assignment]", **kwargs: Any) -> None:
         if not create:
             return
 
         if extracted:
             for va in extracted:
-                dist.recipients.add(va)
+                self.recipients.add(va)

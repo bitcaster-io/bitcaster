@@ -2,15 +2,14 @@ from typing import TYPE_CHECKING, Any, Mapping, Type
 
 import pytest
 from django.db.models import Model
-from testutils.factories.base import AutoRegisterModelFactory
 
 if TYPE_CHECKING:
-    from pytest import FixtureRequest, Metafunc
+    from testutils.factories.base import AutoRegisterModelFactory
 
 KWARGS: Mapping[str, Any] = {}
 
 
-def pytest_generate_tests(metafunc: "Metafunc") -> None:
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     import django
 
     django.setup()
@@ -26,8 +25,8 @@ def pytest_generate_tests(metafunc: "Metafunc") -> None:
         metafunc.parametrize("model", m, ids=ids)
 
 
-@pytest.fixture()
-def record(db: Any, request: "FixtureRequest") -> Model:
+@pytest.fixture
+def record(db: Any, request: pytest.FixtureRequest) -> Model:
     from testutils.factories import get_factory_for_model
 
     model = request.getfixturevalue("model")
@@ -44,5 +43,5 @@ def record(db: Any, request: "FixtureRequest") -> Model:
 
 def test_natural_key(model: "Type[Model]", record: Model) -> None:
     key = record.natural_key()  # type: ignore[attr-defined]
-    assert all([isinstance(m, (int | str | None)) for m in key]), key
+    assert all(isinstance(m, (int | str | None)) for m in key), key
     assert model.objects.get_by_natural_key(*key) == record, key  # type: ignore[attr-defined]

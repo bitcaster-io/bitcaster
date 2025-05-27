@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button
 from django.contrib import admin, messages
@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 
 class LockMixinAdmin(admin.ModelAdmin["AnyModel"]):
-
     def render_change_form(
         self,
         request: HttpRequest,
@@ -21,7 +20,7 @@ class LockMixinAdmin(admin.ModelAdmin["AnyModel"]):
         add: bool = False,
         change: bool = False,
         form_url: str = "",
-        obj: "Optional[AnyModel]" = None,
+        obj: "AnyModel | None" = None,
     ) -> HttpResponse:
         if obj and obj.locked:
             self.message_user(request, "Locked", messages.ERROR)
@@ -83,9 +82,9 @@ class TwoStepCreateMixin(admin.ModelAdmin["AnyModel"]):
     def changeform_view(
         self,
         request: HttpRequest,
-        object_id: Optional[str] = None,
+        object_id: str | None = None,
         form_url: str = "",
-        extra_context: Optional[dict[str, Any]] = None,
+        extra_context: dict[str, Any] | None = None,
     ) -> HttpResponse:
         extra_context = extra_context or {}
         extra_context["show_save_and_continue"] = True

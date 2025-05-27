@@ -1,5 +1,5 @@
 import json
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable
 
 from django.db import models
 from django.utils.translation import gettext as _
@@ -48,8 +48,8 @@ class Monitor(AdminReversable, models.Model):
         *args: Any,
         force_insert: bool = False,
         force_update: bool = False,
-        using: Optional[str] = None,
-        update_fields: Optional[Iterable[str]] = None,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
     ) -> None:
         super().save(
             *args, force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields

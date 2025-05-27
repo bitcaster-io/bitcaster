@@ -25,12 +25,9 @@ def human_readable(crontab: CrontabSchedule) -> str:
     except ValueError:
         day_of_week = cronexp(crontab.day_of_week)
 
-    cron_expression = "{} {} {} {} {}".format(
-        cronexp(crontab.minute),
-        cronexp(crontab.hour),
-        cronexp(crontab.day_of_month),
-        cronexp(crontab.month_of_year),
-        day_of_week,
+    cron_expression = (
+        f"{cronexp(crontab.minute)} {cronexp(crontab.hour)}"
+        f" {cronexp(crontab.day_of_month)} {cronexp(crontab.month_of_year)} {day_of_week}"
     )
     try:
         readable = get_description(cron_expression)

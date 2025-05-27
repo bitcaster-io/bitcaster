@@ -1,5 +1,6 @@
+import contextlib
 from datetime import timedelta
-from typing import Any, Optional
+from typing import Any
 
 from django.contrib.admin import apps
 from django.contrib.admin.sites import AdminSite
@@ -73,15 +74,14 @@ class BitcasterAdminSite(AdminSite):
         }
 
     def _build_sections_dict(self, request: HttpRequest) -> dict[str, Any]:
-
         sections = self._get_sections()
         app_dict = {}
 
         for section_name, models in sections.items():
             for model in models:
                 admin_url = None
-                if isinstance(model, (tuple, list)):
-                    model, admin_url = model
+                if isinstance(model, tuple | list):
+                    model, admin_url = model  # noqa: PLW2901
                 if model not in self._registry:
                     continue
                 model_admin = self._registry[model]
@@ -95,18 +95,11 @@ class BitcasterAdminSite(AdminSite):
                     "perms": perms,
                     "admin_url": admin_url,
                 }
-                if admin_url is None:
-                    if perms.get("change") or perms.get("view"):
-                        model_dict["view_only"] = not perms.get("change")
-                        try:
-                            model_dict["admin_url"] = reverse("admin:%s_%s_changelist" % info, current_app=self.name)
-                        except NoReverseMatch:  # pragma: no cover
-                            pass  # nosec
-                # if perms.get("add"):
-                #     try:
-                #         model_dict["add_url"] = reverse("admin:%s_%s_add" % info, current_app=self.name)
-                #     except NoReverseMatch:  # pragma: no cover
-                #         pass  # nosec
+                if admin_url is None and (perms.get("change") or perms.get("view")):
+                    model_dict["view_only"] = not perms.get("change")
+                    with contextlib.suppress(NoReverseMatch):
+                        model_dict["admin_url"] = reverse("admin:%s_%s_changelist" % info, current_app=self.name)
+
                 if section_name in app_dict:
                     app_dict[section_name]["models"].append(model_dict)
                 else:
@@ -124,11 +117,10 @@ class BitcasterAdminSite(AdminSite):
 
         return app_dict
 
-    def get_app_list(self, request: HttpRequest, app_label: Optional[str] = None) -> list[str]:
+    def get_app_list(self, request: HttpRequest, app_label: str | None = None) -> list[str]:
         if flag_enabled("OLD_STYLE_UI"):
             return super().get_app_list(request, app_label)
-        else:
-            return list(self._build_sections_dict(request).values())
+        return list(self._build_sections_dict(request).values())
 
     def get_last_events(self) -> list[dict[str, Any]]:
         from bitcaster.models import Occurrence
@@ -146,7 +138,7 @@ class BitcasterAdminSite(AdminSite):
         ret["django_ui"] = flag_enabled("OLD_STYLE_UI")
         return ret
 
-    def index(self, request: HttpRequest, extra_context: Optional[dict[str, Any]] = None) -> TemplateResponse:
+    def index(self, request: HttpRequest, extra_context: dict[str, Any] | None = None) -> TemplateResponse:
         django_ui = flag_enabled("OLD_STYLE_UI")
         extra_context = {"django_ui": django_ui}
         if not django_ui:

@@ -25,11 +25,11 @@ class MediaFileFactory(AutoRegisterModelFactory[MediaFile]):
 
     @classmethod
     def create(cls, **kwargs: dict[str, Any]) -> "MediaFile":
-        if kwargs.get("application", None):
+        if kwargs.get("application"):
             kwargs["project"] = kwargs["application"].project  # type: ignore
-        if kwargs.get("project", None):
+        if kwargs.get("project"):
             kwargs["organization"] = kwargs["project"].organization  # type: ignore
-        if not kwargs.get("organization", None):
+        if not kwargs.get("organization"):
             kwargs["organization"] = OrganizationFactory()
 
-        return cast(MediaFile, super().create(**kwargs))
+        return cast("MediaFile", super().create(**kwargs))

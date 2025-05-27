@@ -21,8 +21,8 @@ def _validate_path(path: str) -> None:
         f(path)
     except ValidationError as e:
         raise e
-    except Exception:
-        raise ValidationError("Invalid Path")
+    except Exception as e:
+        raise ValidationError("Invalid Path") from e
 
 
 def resolve_path(path: str) -> str:
@@ -40,7 +40,7 @@ def validate_path(path: str) -> bool:
             raise ValidationError(
                 _(
                     "Path '%(path)s' is outside allowed root: '%(root)s'"
-                    % dict(path=p, root=settings.AGENT_FILESYSTEM_ROOT)
+                    % {"path": p, "root": settings.AGENT_FILESYSTEM_ROOT}
                 )
             )
     return True
@@ -78,12 +78,12 @@ class AgentFiles(Agent):
     def diff(self, stored: dict[str, Any], current: dict[str, Any]) -> dict[str, Any]:
         ret = {"changed": [], "added": [], "deleted": []}
         for entry, data in current.items():
-            if entry not in stored.keys():
+            if entry not in stored:
                 ret["added"].append(entry)
             elif data != stored[entry]:
                 ret["changed"].append(entry)
-        for key, __ in stored.items():
-            if key not in current.keys():
+        for key in stored:
+            if key not in current:
                 ret["deleted"].append(key)
         return ret
 
@@ -113,10 +113,7 @@ class AgentFiles(Agent):
             self.notify()
 
     def changes_detected(self) -> bool:
-        for k in ["changed", "added", "deleted"]:
-            if self.monitor.data["diff"][k]:
-                return True
-        return False
+        return any(self.monitor.data["diff"][k] for k in ["changed", "added", "deleted"])
 
     def notify(self) -> None:
         self.monitor.event.trigger(context=self.monitor.data)
@@ -129,7 +126,7 @@ class AgentFileSystem(AgentFiles):
         entries = {}
         if self.path.is_dir():
             if self.config["recursive"]:
-                for root, dirs, files in self.path.walk():
+                for root, _dirs, files in self.path.walk():
                     for f in files:
                         entries[str(Path(root / f).absolute())] = str(Path(root / f).stat().st_atime)
             else:

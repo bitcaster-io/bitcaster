@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from bitcaster.models import Monitor
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 
@@ -22,7 +22,8 @@ def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestAp
 
 def test_run(app: DjangoTestApp, monitor: "Monitor") -> None:
     url = reverse(
-        "admin:django_celery_beat_periodictask_change", args=[monitor.schedule.pk]  # type: ignore[union-attr]
+        "admin:django_celery_beat_periodictask_change",
+        args=[monitor.schedule.pk],  # type: ignore[union-attr]
     )
     res = app.get(url)
     res = res.click("Run")

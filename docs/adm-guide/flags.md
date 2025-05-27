@@ -13,7 +13,7 @@ tags:
 
 ### Environment Variable
 
-Use this to check environment variables. 
+Use this to check environment variables.
 It can be used to check for the variable value (using `=`) or just checking for its presence
 
 Es.
@@ -27,13 +27,13 @@ Es.
 Check if remote User IP is equal the value or belong a network/subnet
 
 Es:
-    
+
     192.168.10.1
     192.168.10.0/24
 
 ### Boolean
 
-Hard Enable/Disable Flag 
+Hard Enable/Disable Flag
 
 Es:
 
@@ -71,7 +71,7 @@ Es:
 
         django-admin enable_flag [FLAG_NAME] [FLAG_VALUE]
     or
-        
+
         django-admin disable_flag [FLAG_NAME] [FLAG_VALUE]
 
 

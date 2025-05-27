@@ -15,5 +15,4 @@ class Select2TagField(forms.Field):
     def clean(self, value: str) -> list[str]:
         if value:
             return value.split(",")
-        else:
-            return []
+        return []

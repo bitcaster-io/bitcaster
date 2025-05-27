@@ -6,7 +6,7 @@
             <th>Notifications</th>
             </tr>
         {% for e in original.events.all %}
-            
+
             <tr>
             <td><a href="{% url 'admin:bitcaster_event_change' e.pk %}">{{ e }}</a></td>
             <td>

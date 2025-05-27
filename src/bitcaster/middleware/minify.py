@@ -1,7 +1,7 @@
 import logging
 import re
 from enum import IntFlag, unique
-from typing import TYPE_CHECKING, Any, Awaitable, Optional
+from typing import TYPE_CHECKING, Any, Awaitable
 
 from constance import config
 from constance.signals import config_updated
@@ -48,9 +48,10 @@ class HtmlMinMiddleware:
         return int(config.MINIFY_RESPONSE)
 
     @cached_property
-    def ignore_regex(self) -> Optional[re.Pattern[str]]:
+    def ignore_regex(self) -> re.Pattern[str] | None:
         if config.MINIFY_IGNORE_PATH:
             return re.compile(config.MINIFY_IGNORE_PATH)
+        return None
 
     def update_config(self, sender: Any, key: str, old_value: Any, new_value: Any, **kwargs: Any) -> None:
         if hasattr(self, "config_value"):  # pragma: no cover
@@ -62,6 +63,7 @@ class HtmlMinMiddleware:
     def ignore_path(self, path: str) -> bool:
         if self.ignore_regex:
             return bool(self.ignore_regex.match(path))
+        return None
 
     def can_minify(self, request: "AnyRequest", response: "AnyResponse") -> bool:
         return (

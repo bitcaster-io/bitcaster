@@ -36,7 +36,6 @@ class FlagStateAdmin(_FlagStateAdmin):
 
 
 class PeriodicTaskAdmin(ExtraButtonsMixin, _PeriodicTaskAdmin):
-
     @button()
     def run(self, request: HttpRequest, pk: str) -> "HttpResponse":
         pt = PeriodicTask.objects.get(pk=pk)

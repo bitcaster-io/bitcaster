@@ -2,10 +2,10 @@
 description:  Is the Channel's technical component responsible for sending the Notification.
 template: term.html
 terms:
-  - glossary: 
+  - glossary:
     - Dispatcher
 
 ---
 # Dispatcher
 
-the <glossary:Channel|Channel's> technical component responsible for sending the <glossary:Notification>. 
+the <glossary:Channel|Channel's> technical component responsible for sending the <glossary:Notification>.

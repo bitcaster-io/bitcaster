@@ -4,7 +4,6 @@ from unittest import mock
 
 import pytest
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.db.models.options import Options
 from django.urls import reverse
 from strategy_field.utils import fqn
 from testutils.factories import ChannelFactory
@@ -12,15 +11,15 @@ from testutils.factories import ChannelFactory
 from bitcaster.models.protocols import CreateMessage
 
 if TYPE_CHECKING:
+    from django.db.models.options import Options
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
-    from pytest import FixtureRequest, MonkeyPatch
     from responses import RequestsMock
 
     from bitcaster.models import Channel, Message
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTestApp":
     from testutils.factories import SuperUserFactory
 
@@ -31,7 +30,7 @@ def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTes
     return django_app
 
 
-@pytest.fixture()
+@pytest.fixture
 def message(db: Any) -> "Message":
     from testutils.factories import MessageFactory, NotificationFactory
 
@@ -45,7 +44,7 @@ def message(db: Any) -> "Message":
     return m
 
 
-@pytest.fixture()
+@pytest.fixture
 def email_message(email_channel: "Channel") -> "Message":
     from testutils.factories import MessageFactory
 
@@ -143,7 +142,7 @@ def test_send_message_fail(
     email_message: "Message",
     mailoutbox: list[Any],
     mocked_responses: "RequestsMock",
-    monkeypatch: "MonkeyPatch",
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     opts: "Options[Message]" = email_message._meta
     url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])  # type: ignore[arg-type]
@@ -169,7 +168,7 @@ def test_send_message_invalid(
     email_message: "Message",
     mailoutbox: list[Any],
     mocked_responses: "RequestsMock",
-    monkeypatch: "MonkeyPatch",
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     opts: "Options[Message]" = email_message._meta
     url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])  # type: ignore[arg-type]
@@ -221,7 +220,7 @@ def test_add(app: "DjangoTestApp", message: "Message") -> None:
 
 
 @pytest.fixture(params=["notification", "event", "application", "project", "organization"])
-def creator(request: "FixtureRequest") -> "Channel":
+def creator(request: pytest.FixtureRequest) -> "Channel":
     return request.getfixturevalue(request.param)
 
 

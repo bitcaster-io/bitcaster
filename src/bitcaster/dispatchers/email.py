@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional, Type
+from typing import TYPE_CHECKING, Any
 
 from django import forms
 from django.core.mail import EmailMultiAlternatives
@@ -37,10 +37,10 @@ class EmailDispatcher(Dispatcher):
     verbose_name = "Email"
     protocol: MessageProtocol = MessageProtocol.EMAIL
 
-    config_class: Type[DispatcherConfig] = EmailConfig
+    config_class: type[DispatcherConfig] = EmailConfig
     backend = "django.core.mail.backends.smtp.EmailBackend"
 
-    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         try:
             subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
             email = EmailMultiAlternatives(
@@ -60,4 +60,4 @@ class EmailDispatcher(Dispatcher):
             return True
         except Exception as e:
             logger.exception(e)
-            raise DispatcherError(e)
+            raise DispatcherError(e) from e

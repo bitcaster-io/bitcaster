@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional, Type
+from typing import TYPE_CHECKING, Any
 
 import requests
 from django import forms
@@ -22,14 +22,14 @@ class SlackConfig(DispatcherConfig):
 class SlackDispatcher(Dispatcher):
     id = 500
     slug = "slack"
-    config_class: Type[DispatcherConfig] = SlackConfig
+    config_class: type[DispatcherConfig] = SlackConfig
     protocol = MessageProtocol.PLAINTEXT
 
-    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         try:
             conn = requests.Session()
             res: Response = conn.post(self.config["url"], json={"text": payload.message})
             return res.status_code == 200
         except Exception as e:
             logger.exception(e)
-            raise DispatcherError(e)
+            raise DispatcherError(e) from e

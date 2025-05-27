@@ -36,7 +36,7 @@ class MediaFileForm(forms.ModelForm["MediaFile"]):
 
     class Meta:
         model = MediaFile
-        fields = "__all__"
+        fields = "__all__"  # noqa: DJ007
 
     def clean(self) -> dict[str, Any] | None:
         self.cleaned_data["file_type"] = splitext(self.cleaned_data["image"].name)[1]

@@ -18,17 +18,16 @@ class EventBaseForm(forms.ModelForm["Event"]):
 
     class Meta:
         model = Event
-        exclude = ("config", "locked")
+        exclude = ("config", "locked")  # noqa: DJ006
 
 
 class EventAddForm(EventBaseForm):
     class Meta:
         model = Event
-        exclude = ("channels", "locked")
+        exclude = ("channels", "locked")  # noqa: DJ006
 
 
 class EventChangeForm(EventBaseForm):
-
     class Meta:
         model = Event
-        exclude = ()
+        exclude = ()  # noqa: DJ006

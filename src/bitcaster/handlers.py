@@ -12,8 +12,6 @@ from bitcaster.state import state
 logger = logging.getLogger(__name__)
 
 
-#
-#
 @receiver(post_save, sender=models.Application)
 @receiver(post_save, sender=models.Project)
 @receiver(post_save, sender=models.ApiKey)

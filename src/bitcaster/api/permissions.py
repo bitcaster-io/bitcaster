@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING
 
 from rest_framework import authentication, permissions
 from rest_framework.request import Request
@@ -20,8 +20,8 @@ class ApiKeyAuthentication(authentication.TokenAuthentication):
     keyword = "Key"
     model = ApiKey
 
-    def authenticate(self, request: "ApiRequest") -> "Optional[Tuple[ApiKey, User]]":
-        certs: "Optional[Tuple[ApiKey, User]]" = super().authenticate(request)
+    def authenticate(self, request: "ApiRequest") -> "tuple[ApiKey, User] | None":
+        certs: "tuple[ApiKey, User] | None" = super().authenticate(request)
         if certs:
             request.user = certs[1]
         return certs
@@ -34,13 +34,13 @@ class ApiBasePermission(permissions.BasePermission):
         if "prj" in view.kwargs:
             if not token.project:
                 raise InvalidGrantError("Key not enabled form project scope")
-            elif view.kwargs["prj"] != token.project.slug:
+            if view.kwargs["prj"] != token.project.slug:
                 raise InvalidGrantError(f"Invalid project for {token}")
 
         if "app" in view.kwargs:
             if not token.application:
                 raise InvalidGrantError("Key not enabled form application scope")
-            elif view.kwargs["app"] != token.application.slug:
+            if view.kwargs["app"] != token.application.slug:
                 raise InvalidGrantError(f"Invalid application for {token}")
 
         if Grant.FULL_ACCESS in token.grants:
@@ -52,7 +52,6 @@ class ApiBasePermission(permissions.BasePermission):
 
 
 class ApiApplicationPermission(ApiBasePermission):
-
     def has_permission(self, request: Request, view: "SecurityMixin") -> bool:
         if getattr(request, "auth", None) is None:
             if getattr(request, "user", None) is not None:

@@ -9,7 +9,6 @@ from bitcaster.models.mixins import BitcasterBaselManager
 
 
 class LogEntryManager(BitcasterBaselManager["LogEntry"]):
-
     def get_by_natural_key(self, pk: "str", *args: Any) -> "LogEntry":
         return self.get(pk=pk)
 

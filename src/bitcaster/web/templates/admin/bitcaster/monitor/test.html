@@ -20,14 +20,14 @@
             <li>{{ entry }}</li>
         {% endfor %}
     </ul>
-    
+
     <ul>
         <caption>Deleted</caption>
         {% for entry in monitor.data.diff.delete %}
             <li>{{ entry }}</li>
         {% endfor %}
     </ul>
-    
+
     {#        {{ monitor.data.diff }}</div>#}
     {#    <div>{{ monitor.data.entries }}</div>#}
 {% endblock %}

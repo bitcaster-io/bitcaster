@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from django.contrib.auth.backends import ModelBackend
 from django.http import HttpRequest
@@ -9,7 +9,7 @@ from bitcaster.models import User
 class BitcasterBackend(ModelBackend):
     def authenticate(
         self, request: HttpRequest | None, username: str | None = None, password: str | None = None, **kwargs: Any
-    ) -> Optional[User]:
+    ) -> User | None:
         if username is None:
             username = kwargs.get(User.USERNAME_FIELD)
         try:

@@ -1,7 +1,7 @@
 # Enable Project Channel
 
 
-From the [Project page](https://SERVER_ADDRESS/admin/bitcaster/project/current/){:target=_bc}  click on 
+From the [Project page](https://SERVER_ADDRESS/admin/bitcaster/project/current/){:target=_bc}  click on
 `Add Channel`{ .bc-tool-button .action }
 
 

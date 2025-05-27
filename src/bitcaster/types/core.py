@@ -1,3 +1,3 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
-YamlPayload = Optional[Dict[str, Any] | str]
+YamlPayload = dict[str, Any] | str | None

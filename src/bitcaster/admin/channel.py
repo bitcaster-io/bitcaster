@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.buttons import Button
 from admin_extra_buttons.decorators import button, link
@@ -14,7 +14,6 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
-from formtools.wizard.storage.session import SessionStorage
 from formtools.wizard.views import CookieWizardView
 from reversion.admin import VersionAdmin
 
@@ -27,6 +26,7 @@ from .filters import ChannelTypeFilter
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
+    from formtools.wizard.storage.session import SessionStorage
     from django.utils.datastructures import _ListOrTuple
 
     from bitcaster.types.django import AnyModel
@@ -41,7 +41,6 @@ class ChannelTestForm(forms.Form):
 
 
 class WizardForm(forms.Form):
-
     def __init__(self, request: HttpRequest, **kwargs: Any) -> None:
         self.request = request
         super().__init__(**kwargs)
@@ -57,10 +56,7 @@ Select the organization that this channel belongs to.
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
-        if w.request and ("organization" in w.request.GET or "project" in w.request.GET):
-            # if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
-            return False
-        return True
+        return not (w.request and ("organization" in w.request.GET or "project" in w.request.GET))
 
 
 class ChannelProject(WizardForm):
@@ -75,9 +71,7 @@ Choose the specific project that this channel belongs to.
     def visible(w: "ChannelWizard") -> bool:
         if w.request and "project" in w.request.GET:
             return False
-        if w.get_selected_mode() in ["inherit", "new"]:
-            return True
-        return False
+        return w.get_selected_mode() in ["inherit", "new"]
 
 
 class ChannelType(WizardForm):
@@ -112,9 +106,7 @@ Select the type of channel you want to create. see [[doc:help/channel:Channel]]
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
-        if w.request and "organization" in w.request.GET:
-            return False
-        return True
+        return not (w.request and "organization" in w.request.GET)
 
 
 class ChannelSelectParent(WizardForm, forms.ModelForm[Channel]):
@@ -135,10 +127,7 @@ Select the abstract channel that you want to make available for this project.
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
-        if w.get_selected_mode() == ChannelType.MODE_INHERIT:
-            # if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "inherit":
-            return True
-        return False
+        return w.get_selected_mode() == ChannelType.MODE_INHERIT
 
 
 class ChannelData(WizardForm, forms.ModelForm[Channel]):
@@ -158,10 +147,7 @@ Provide a name for this channel and the Dispatcher to use. You will be asked for
 
     @staticmethod
     def visible(w: "ChannelWizard") -> bool:
-        if w.get_selected_mode() in [ChannelType.MODE_TEMPLATE, ChannelType.MODE_NEW]:
-            # if (d := w.get_cleaned_data_for_step("mode")) and d["operation"] == "new":
-            return True
-        return False
+        return w.get_selected_mode() in [ChannelType.MODE_TEMPLATE, ChannelType.MODE_NEW]
 
 
 class ManagementForm(forms.Form):
@@ -186,17 +172,17 @@ class ChannelWizard(CookieWizardView):
     }
     template_name = "admin/channel/add_view.html"
 
-    def get_selected_mode(self) -> Optional[str]:
+    def get_selected_mode(self) -> str | None:
         if "mode" in self.storage.data.get("step_data"):
             return self.storage.get_step_data("mode")["mode-operation"]
         return None
 
-    def get_form_kwargs(self, step: Optional[str] = None) -> dict[str, Any]:
+    def get_form_kwargs(self, step: str | None = None) -> dict[str, Any]:
         ret = super().get_form_kwargs(step)
         ret["request"] = self.request
         return ret
 
-    def get_form(self, step: Optional[str] = None, data: Any = None, files: Any = None) -> forms.Form:
+    def get_form(self, step: str | None = None, data: Any = None, files: Any = None) -> forms.Form:
         form = super().get_form(step, data, files)
         if step == "org":
             form.fields["organization"].queryset = Organization.objects.local()
@@ -250,8 +236,7 @@ class ChannelWizard(CookieWizardView):
         if wizard_cancel != -1:
             if url_has_allowed_host_and_scheme(wizard_cancel, allowed_hosts=None):
                 return HttpResponseRedirect(wizard_cancel)
-            else:
-                return HttpResponseRedirect(Channel.get_admin_changelist())
+            return HttpResponseRedirect(Channel.get_admin_changelist())
         return super().post(*args, **kwargs)
 
     def get_current_selection(self) -> dict[str, Any]:  # noqa
@@ -305,7 +290,7 @@ class ChannelWizard(CookieWizardView):
         kwargs["cleaned_data"] = {
             form_key: self.get_cleaned_data_for_step(form_key)
             for form_key in self.get_form_list()
-            if form_key in self.storage.data["step_data"].keys()
+            if form_key in self.storage.data["step_data"]
         }
 
         kwargs["data"] = self.storage.data
@@ -395,12 +380,12 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
         return super().get_queryset(request).select_related("project", "organization")
 
     def add_view(
-        self, request: "HttpRequest", form_url: Optional[str] = "", extra_context: Optional[dict[str, Any]] = None
+        self, request: "HttpRequest", form_url: str | None = "", extra_context: dict[str, Any] | None = None
     ) -> HttpResponse:
         ctx = self.get_common_context(request, add=True, title=_("Add Channel"))
         return wizard(request, extra_context=ctx)
 
-    def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[AnyModel]" = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: "HttpRequest", obj: "AnyModel | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk == config.SYSTEM_EMAIL_CHANNEL:
             return ["name", "organization", "project", "parent", "protocol", "locked"]
         return ["parent", "organization", "protocol", "locked", "project"]
@@ -421,7 +406,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
             if config_form.is_valid():
                 obj.config = config_form.cleaned_data
                 obj.save()
-                self.message_user(request, "Configured channel {}".format(obj.name))
+                self.message_user(request, f"Configured channel {obj.name}")
                 return HttpResponseRedirect("..")
         else:
             config_form = form_class(initial={k: v for k, v in obj.config.items() if k in form_class.declared_fields})
@@ -435,7 +420,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
 
         ch: Channel = self.get_object_or_404(request, pk)
         user: User = request.user
-        assignment: Optional[Assignment] = user.get_assignment_for_channel(ch)
+        assignment: Assignment | None = user.get_assignment_for_channel(ch)
         context = self.get_common_context(request, pk, title=_("Test channel"))
         if request.method == "POST":
             config_form = ChannelTestForm(request.POST)
@@ -448,7 +433,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
                 )
                 try:
                     ch.dispatcher.send(recipient, payload, assignment=assignment)
-                    self.message_user(request, "Message sent to {} via {}".format(recipient, ch.name))
+                    self.message_user(request, f"Message sent to {recipient} via {ch.name}")
                 except Exception as e:
                     logger.exception(e)
                     self.message_error_to_user(request, e)

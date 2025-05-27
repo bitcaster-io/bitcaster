@@ -11,7 +11,6 @@ class ChannelBaseForm(forms.ModelForm["Channel"]):
 
 
 class ChannelChangeForm(Scoped2FormMixin[Channel], ChannelBaseForm):
-
     class Meta:
         model = Channel
         exclude = ("config", "locked")

@@ -3,26 +3,26 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from django.urls import reverse
 from pytest_django.fixtures import DjangoAssertNumQueries, SettingsWrapper
-from responses import RequestsMock
 from testutils.factories.user import SuperUserFactory
 
 from bitcaster.state import state
 
 if TYPE_CHECKING:
+    from responses import RequestsMock
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
 
 
-@pytest.fixture()
+@pytest.fixture
 def data() -> None:
     from testutils.factories import OccurrenceFactory
 
     OccurrenceFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(
     django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: SettingsWrapper
 ) -> "DjangoTestApp":

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -36,19 +36,18 @@ class GMailDispatcher(Dispatcher):
     protocol: MessageProtocol = MessageProtocol.EMAIL
 
     @cached_property
-    def config(self) -> Dict[str, Any]:
+    def config(self) -> dict[str, Any]:
         cfg: "TDispatcherConfig" = self.config_class(data=self.channel.config)
         if not cfg.is_valid():
             raise ValidationError(cfg.errors)
-        config = {
+        return {
             "host": "smtp.gmail.com",
             "port": 587,
             "use_tls": True,
             **cfg.cleaned_data,
         }
-        return config
 
-    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         email = EmailMultiAlternatives(
             subject=subject,

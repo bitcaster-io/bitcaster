@@ -12,8 +12,6 @@ from bitcaster.constants import SystemEvent
 from bitcaster.tasks import process_occurrence
 
 if TYPE_CHECKING:
-    from pytest import MonkeyPatch
-
     from bitcaster.models import (
         ApiKey,
         Application,
@@ -44,13 +42,12 @@ pytestmark = [pytest.mark.api, pytest.mark.django_db]
 # WE DO NOT USE REVERSE HERE. WE NEED TO CHECK ENDPOINTS CONTRACTS
 
 
-@pytest.fixture()
+@pytest.fixture
 def client() -> APIClient:
-    c = APIClient()
-    return c
+    return APIClient()
 
 
-@pytest.fixture()
+@pytest.fixture
 def data(admin_user: "User", email_channel: "Channel") -> "Context":
     from testutils.factories import (
         ApiKeyFactory,
@@ -64,7 +61,7 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
     n = NotificationFactory(
         distribution__recipients=[AssignmentFactory(channel=email_channel) for __ in range(4)], event=event
     )
-    # event: "Event" = n.event
+
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     return {
         "event": event,
@@ -162,7 +159,6 @@ def test_cid(client: APIClient, data: "Context") -> None:
 
     # finally... valid token
     with key_grants(api_key, Grant.EVENT_TRIGGER):
-
         # no cid provided
         res = client.post(url, data={"context": event_context}, format="json")
         assert res.status_code == status.HTTP_201_CREATED, res.json()
@@ -194,7 +190,7 @@ def test_trigger_404(client: APIClient, data: "Context") -> None:
         assert res.data["error"]
 
 
-def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypatch: "MonkeyPatch") -> None:
+def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     api_key = data["key"]
@@ -226,7 +222,7 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
     assert o.data == {"delivered": [target.pk], "recipients": [[target.address.value, target.channel.name]]}
 
 
-def test_trigger_limit_by_channel(client: APIClient, data: "Context", monkeypatch: "MonkeyPatch") -> None:
+def test_trigger_limit_by_channel(client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     api_key = data["key"]
@@ -253,11 +249,11 @@ def test_trigger_limit_by_channel(client: APIClient, data: "Context", monkeypatc
     assert o.options == {"channels": [str(target.channel.id)]}
     process_occurrence(o.pk)
     o.refresh_from_db()
-    assert list(set([x[1] for x in o.data["recipients"]]))[0] == target.channel.name
+    assert list({x[1] for x in o.data["recipients"]})[0] == target.channel.name
 
 
 def test_trigger_limit_to_with_wrong_receiver(
-    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+    client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any
 ) -> None:
     from bitcaster.models import Occurrence
 
@@ -290,7 +286,7 @@ def test_trigger_limit_to_with_wrong_receiver(
 
 
 def test_trigger_invalid_options(
-    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+    client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any
 ) -> None:
     api_key = data["key"]
     url: str = data["url"]
@@ -301,7 +297,7 @@ def test_trigger_invalid_options(
 
 
 def test_trigger_selected_environment(
-    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+    client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any
 ) -> None:
     from testutils.factories import AssignmentFactory, NotificationFactory
 
@@ -337,7 +333,7 @@ def test_trigger_selected_environment(
 
 
 def test_trigger_environment_by_key(
-    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+    client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any
 ) -> None:
     from testutils.factories import AssignmentFactory, NotificationFactory
 
@@ -367,7 +363,7 @@ def test_trigger_environment_by_key(
 
 
 def test_trigger_locked_project(
-    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+    client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any
 ) -> None:
     api_key = data["key"]
     url: str = data["url"]
@@ -381,7 +377,7 @@ def test_trigger_locked_project(
 
 
 def test_trigger_locked_application(
-    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+    client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any
 ) -> None:
     api_key = data["key"]
     url: str = data["url"]
@@ -395,7 +391,7 @@ def test_trigger_locked_application(
 
 
 def test_trigger_locked_channel(
-    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+    client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any
 ) -> None:
     api_key = data["key"]
     url: str = data["url"]
@@ -408,7 +404,7 @@ def test_trigger_locked_channel(
 
 
 def test_trigger_locked_event(
-    client: APIClient, data: "Context", monkeypatch: "MonkeyPatch", system_objects: Any
+    client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any
 ) -> None:
     api_key = data["key"]
     url: str = data["url"]

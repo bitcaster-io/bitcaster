@@ -12,7 +12,13 @@ recursive-include src/bitcaster *.html
 recursive-exclude tests *
 
 prune **/~*
+prune docker
+prune docs
+
 global-exclude .*
 global-exclude *~
 global-exclude ~*
+global-exclude __pycache__/*
+global-exclude *.pyc
+
 exclude manage.py

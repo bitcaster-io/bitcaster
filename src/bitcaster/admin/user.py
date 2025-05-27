@@ -4,7 +4,6 @@ from admin_extra_buttons.buttons import Button
 from admin_extra_buttons.decorators import link
 from django.contrib.admin import helpers
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
-from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -13,6 +12,10 @@ from django.utils.translation import gettext as _
 from ..forms.user import SelectDistributionForm
 from ..models import Assignment, DistributionList, User
 from .base import BaseAdmin
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +42,7 @@ class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
     filter_horizontal = ()
-    change_user_password_template = "admin/auth/user/change_password2.html"  # nosec
+    change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
     actions = ["export_as_csv", "add_to_distributionlist"]
 
     def add_to_distributionlist(self, request: "HttpRequest", queryset: "QuerySet[User]") -> HttpResponse:

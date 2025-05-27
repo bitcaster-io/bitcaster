@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django.contrib import admin
@@ -32,14 +32,12 @@ class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], adm
     def get_queryset(self, request: HttpRequest) -> QuerySet[DistributionList]:
         return super().get_queryset(request).select_related("project__organization")
 
-    def get_readonly_fields(
-        self, request: "HttpRequest", obj: "Optional[DistributionList]" = None
-    ) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: "HttpRequest", obj: "DistributionList | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.name == DistributionList.ADMINS:
             return ["name", "project"]
         return []
 
-    def has_delete_permission(self, request: HttpRequest, obj: Optional[DistributionList] = None) -> bool:
+    def has_delete_permission(self, request: HttpRequest, obj: DistributionList | None = None) -> bool:
         if obj and obj.name == DistributionList.ADMINS:
             return False
         return super().has_delete_permission(request, obj)

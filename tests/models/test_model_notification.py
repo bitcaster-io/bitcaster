@@ -8,8 +8,6 @@ from testutils.factories.channel import ChannelFactory
 from testutils.factories.message import MessageFactory
 
 if TYPE_CHECKING:
-    from pytest import MonkeyPatch
-
     from bitcaster.models import Event, Message, Notification
 
 
@@ -42,7 +40,7 @@ def test_get_message_precedence(event: "Event", django_assert_num_queries: Djang
         assert n2.get_message(ch1) == m2
 
 
-def test_missing_message(event: "Event", monkeypatch: "MonkeyPatch") -> None:
+def test_missing_message(event: "Event", monkeypatch: pytest.MonkeyPatch) -> None:
     ch1 = ChannelFactory()
     n1: "Notification" = NotificationFactory(event=event)
     monkeypatch.setattr(ch1.dispatcher, "send", mocked_notify := Mock())

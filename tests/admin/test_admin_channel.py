@@ -5,8 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 from constance.test.unittest import override_config
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.db.models.options import Options
-from django.http import HttpRequest
 from django.test.client import RequestFactory
 from django.urls import reverse
 from django.utils.safestring import SafeString
@@ -28,6 +26,8 @@ from bitcaster.models import Channel
 from bitcaster.state import state
 
 if TYPE_CHECKING:
+    from django.db.models.options import Options
+    from django.http import HttpRequest
     from webtest.forms import Form as WebTestForm
 
     from bitcaster.models import Project, UserRole
@@ -38,7 +38,7 @@ register(ChannelFactory, "channel")
 register(ProjectFactory, "project")
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: MixinWithInstanceVariables, rf: RequestFactory, gmail_channel: "Channel") -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 
@@ -54,7 +54,7 @@ def app(django_app_factory: MixinWithInstanceVariables, rf: RequestFactory, gmai
         yield django_app
 
 
-@pytest.fixture()
+@pytest.fixture
 def gmail_channel(db: Any) -> Channel:
     from testutils.factories.channel import ChannelFactory
 
@@ -66,7 +66,7 @@ def gmail_channel(db: Any) -> Channel:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def channel_template(gmail_channel: "Channel") -> Channel:
     from testutils.factories.channel import ChannelFactory
 
@@ -80,7 +80,7 @@ def channel_template(gmail_channel: "Channel") -> Channel:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def system_channel(db: Any) -> Generator[Channel, None, None]:
     from testutils.factories.channel import ChannelFactory
 
@@ -157,25 +157,6 @@ def test_get_readonly_fields(app: DjangoTestApp, gmail_channel: "Channel") -> No
     res.forms["channel_form"]["name"] = "abc"
     res = res.forms["channel_form"].submit()
     assert res.status_code == 302
-
-
-# @pytest.mark.wizard
-# def test_create_abstract_channel(app: DjangoTestApp, gmail_channel: "Channel") -> None:
-#     url = reverse("admin:bitcaster_channel_add")
-#     res = app.get(url)
-#     res.forms["channel-add"]["mode-operation"] = ChannelType.MODE_TEMPLATE
-#     res = res.forms["channel-add"].submit()
-#     res.forms["channel-add"]["org-organization"] = gmail_channel.organization.pk
-#     res = res.forms["channel-add"].submit()
-#     res.forms["channel-add"]["data-name"] = "Channel-1"
-#     res = res.forms["channel-add"].submit()
-#     assert res.status_code == 302
-#     assert Channel.objects.filter(
-#         name="Channel-1",
-#         organization=gmail_channel.organization,
-#         project=None,
-#         parent=None,
-#     ).exists()
 
 
 @pytest.mark.wizard

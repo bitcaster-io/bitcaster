@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
 
 from django.http import HttpResponse
@@ -9,15 +9,14 @@ if TYPE_CHECKING:
 
 
 class Wso2OAuth2(BaseOAuth2PKCE):
-    """WSO2 OAuth authentication backend"""
+    """WSO2 OAuth authentication backend."""
 
     # https://python-social-auth.readthedocs.io/en/latest/backends/implementation.html
 
     name = "oauth2"
-    ACCESS_TOKEN_METHOD = "POST"  # nosec
+    ACCESS_TOKEN_METHOD = "POST"  # nosec  # noqa: S105
     SCOPE_SEPARATOR = ","
     EXTRA_DATA = [("id", "id"), ("expires", "expires")]
-    # STATE_PARAMETER = "session_state"
     REDIRECT_STATE = False
     DEFAULT_SCOPE = ["openid"]
     PKCE_DEFAULT_CODE_CHALLENGE_METHOD = "S256"
@@ -47,7 +46,7 @@ class Wso2OAuth2(BaseOAuth2PKCE):
         params = urlencode(params)
         return f"{self.authorization_url()}?{params}"
 
-    def auth_complete_params(self, state: Optional[str] = None) -> dict[str, str]:
+    def auth_complete_params(self, state: str | None = None) -> dict[str, str]:
         ret = super().auth_complete_params(state)
         ret["code_challenge"] = self.get_code_verifier()
         ret["code_method"] = self.PKCE_DEFAULT_CODE_CHALLENGE_METHOD
@@ -59,6 +58,6 @@ class Wso2OAuth2(BaseOAuth2PKCE):
         return {k: response.get(v) for k, v in base.items()}
 
     def user_data(self, access_token: str, *args: Any, **kwargs: Any) -> "JsonType":
-        """Loads user data from service"""
+        """Load user data from service."""
         url = f"{self.userinfo_url()}?" + urlencode({"access_token": access_token})
         return self.get_json(url)

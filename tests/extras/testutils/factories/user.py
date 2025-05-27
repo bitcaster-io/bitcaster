@@ -38,5 +38,5 @@ class SuperUserFactory(UserFactory):
 
 class SocialAuthUserFactory(UserFactory):
     @factory.post_generation  # type: ignore[misc]
-    def sso(obj, create: bool, extracted: list[User], **kwargs: Any) -> None:
-        UserSocialAuth.objects.get_or_create(user=obj, provider="test", uid=uuid4())
+    def sso(self, create: bool, extracted: list[User], **kwargs: Any) -> None:
+        UserSocialAuth.objects.get_or_create(user=self, provider="test", uid=uuid4())

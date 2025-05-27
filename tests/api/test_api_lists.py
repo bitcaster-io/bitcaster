@@ -50,7 +50,7 @@ app_name = "app1"
 event_slug = "evt1"
 
 
-@pytest.fixture()
+@pytest.fixture
 def client(data: SampleData) -> APIClient:
     c = APIClient()
     g = key_grants(data.key, Grant.FULL_ACCESS)
@@ -60,9 +60,8 @@ def client(data: SampleData) -> APIClient:
     g.stop()
 
 
-@pytest.fixture()
+@pytest.fixture
 def data(admin_user: "User", system_objects: Any) -> SampleData:
-
     event: Event = EventFactory(
         application__project__organization__name=org_name,
         application__project__name=prj_name,
@@ -72,7 +71,6 @@ def data(admin_user: "User", system_objects: Any) -> SampleData:
     key = ApiKeyFactory(
         user=admin_user, grants=[], application=None, project=None, organization=event.application.project.organization
     )
-    # ch = ChannelFactory(project=event.application.project)
     role: "UserRole" = UserRoleFactory(organization__name=org_name)
     address: "Address" = AddressFactory(user=role.user, value=role.user.email)
     asm: "Assignment" = AssignmentFactory(address=address)

@@ -16,9 +16,7 @@ from bitcaster.models import Project
 
 
 class ProjectView(SecurityMixin, ViewSet, ListAPIView, RetrieveAPIView):
-    """
-    List Organization's projects
-    """
+    """List Organization's projects."""
 
     serializer_class = ProjectSerializer
     required_grants = [Grant.ORGANIZATION_READ]

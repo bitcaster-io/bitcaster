@@ -4,7 +4,6 @@ from unittest import mock
 
 import pytest
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.db.models.options import Options
 from django.urls import reverse
 from django.utils.safestring import SafeString
 from django_webtest import DjangoTestApp, DjangoWebtestResponse
@@ -15,10 +14,12 @@ from testutils.factories import ApiKeyFactory
 from bitcaster.auth.constants import Grant
 
 if TYPE_CHECKING:
+    from django.db.models.options import Options
+
     from bitcaster.models import ApiKey, Application
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestApp:
     from testutils.factories import SuperUserFactory
 
@@ -29,7 +30,7 @@ def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestAp
     return django_app
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_key(db: Any) -> "ApiKey":
     from testutils.factories import ApiKeyFactory, ApplicationFactory
 
@@ -116,6 +117,6 @@ def test_show_key(app: DjangoTestApp, root: bool) -> None:
     with freeze_time("2012-01-14"):
         api_key: "ApiKey" = ApiKeyFactory()
     url = reverse("admin:bitcaster_apikey_show_key", args=[api_key.pk])
-    with mock.patch("bitcaster.admin.api_key.is_root", lambda s: root):
+    with mock.patch("bitcaster.admin.api_key.is_root", return_value=root):
         res: DjangoWebtestResponse = app.get(url)
         assert (api_key.key in res.text) is root

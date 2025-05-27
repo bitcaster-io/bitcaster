@@ -31,9 +31,7 @@ class OrgSerializer(serializers.ModelSerializer):
 
 
 class OrgView(SecurityMixin, ViewSet, RetrieveAPIView):
-    """
-    Organization details
-    """
+    """Organization details."""
 
     serializer_class = OrgSerializer
     required_grants = [Grant.ORGANIZATION_READ]

@@ -9,4 +9,4 @@ terms:
 
 Each <glossary:Notification> has one **Distribution List** assigned to whom send messages based on triggered event
 
-Each **Distribution List** is composed by <glossary:Assignment> and can be used 
+Each **Distribution List** is composed by <glossary:Assignment> and can be used

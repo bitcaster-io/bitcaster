@@ -1,13 +1,12 @@
 import logging
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
 from django.contrib.admin.options import ModelAdmin
 from django.core.exceptions import ValidationError
-from django.db.models import QuerySet
 from django.forms import Media
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
@@ -24,6 +23,7 @@ from bitcaster.state import state
 from bitcaster.utils.security import is_root
 
 if TYPE_CHECKING:
+    from django.db.models import QuerySet
     from django.contrib.admin.options import _ListOrTuple
 
 logger = logging.getLogger(__name__)
@@ -75,13 +75,13 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
         return super().get_queryset(request).select_related("application")
 
     def get_readonly_fields(
-        self, request: HttpRequest, obj: Optional[ApiKey] = None
+        self, request: HttpRequest, obj: ApiKey | None = None
     ) -> list[str] | tuple[str, ...] | tuple[()]:
         if obj and obj.pk:
             return ["application", "organization", "project"]
         return self.readonly_fields
 
-    def get_exclude(self, request: "HttpRequest", obj: "Optional[ApiKey]" = None) -> "_ListOrTuple[str]":
+    def get_exclude(self, request: "HttpRequest", obj: "ApiKey | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:
             return ["key"]
         return ["key", "environments"]
@@ -100,7 +100,7 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
 
     @button()
     def show_key(self, request: HttpRequest, pk: str) -> HttpResponse:
-        obj: Optional[ApiKey] = self.get_object(request, pk)
+        obj: ApiKey | None = self.get_object(request, pk)
         if is_root(request):
             expires = None
             expired = False

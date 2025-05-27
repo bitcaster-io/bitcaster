@@ -34,8 +34,7 @@ class AddressManager(BitcasterBaselManager["Address"]):
             return AddressType.PHONE
         if is_email(value):
             return AddressType.EMAIL
-        else:
-            return AddressType.GENERIC
+        return AddressType.GENERIC
 
 
 PROTOCOL_TO_ADDRESS = {

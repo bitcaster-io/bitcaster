@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, TypedDict, cast
 from unittest.mock import MagicMock
 
 import pytest
-from django.test.client import RequestFactory
 from rest_framework import status
 from rest_framework.test import APIClient
 from testutils.factories.event import EventFactory
@@ -13,6 +12,7 @@ from bitcaster.api.permissions import ApiKeyAuthentication
 from bitcaster.auth.constants import Grant
 
 if TYPE_CHECKING:
+    from django.test.client import RequestFactory
     from bitcaster.models import ApiKey, Event, User
     from bitcaster.types.http import ApiRequest
 
@@ -24,18 +24,17 @@ if TYPE_CHECKING:
 pytestmark = [pytest.mark.api, pytest.mark.django_db]
 
 
-@pytest.fixture()
+@pytest.fixture
 def client() -> APIClient:
-    c = APIClient()
-    return c
+    return APIClient()
 
 
-@pytest.fixture()
+@pytest.fixture
 def key() -> APIClient:
     return ApiKeyFactory(application=None, project=None, grants=[Grant.FULL_ACCESS])
 
 
-@pytest.fixture()
+@pytest.fixture
 def context(admin_user: "User") -> "Context":
     event: "Event" = EventFactory()
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)

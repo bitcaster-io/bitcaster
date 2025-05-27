@@ -26,10 +26,9 @@ class ChannelTypeFilter(SimpleListFilter):
     def queryset(self, request: HttpRequest, queryset: "QuerySet[Channel]") -> "QuerySet[Channel]":
         if self.value() == "abstract":
             return queryset.filter(organization__isnull=False, project__isnull=True)
-        elif self.value() == "project":
+        if self.value() == "project":
             return queryset.filter(organization__isnull=False, project__isnull=False)
-        else:
-            return queryset.all()
+        return queryset.all()
 
 
 class EnvironmentFilter(SimpleListFilter):
@@ -47,5 +46,4 @@ class EnvironmentFilter(SimpleListFilter):
     def queryset(self, request: HttpRequest, queryset: "QuerySet[Channel]") -> "QuerySet[Channel]":
         if self.value():
             return queryset.filter(environments__icontains=self.value())
-        else:
-            return queryset.all()
+        return queryset.all()

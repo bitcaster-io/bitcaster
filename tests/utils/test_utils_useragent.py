@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
-from django.test.client import RequestFactory
-from user_agents.parsers import UserAgent
+import pytest
 
 from bitcaster.utils.user_agent import (
     SmartUserAgent,
@@ -11,10 +10,11 @@ from bitcaster.utils.user_agent import (
 )
 
 if TYPE_CHECKING:
-    from pytest import MonkeyPatch
+    from django.test.client import RequestFactory
+    from user_agents.parsers import UserAgent
 
 
-CHROME = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/51.0.2704.103 Safari/537.36"
+CHROME = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
 OPERA = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/51.0.2704.106 Safari/537.36 OPR/38.0.2220.41"
@@ -70,7 +70,7 @@ def test_cache(rf: "RequestFactory") -> None:
     assert ua.is_mobile
 
 
-def test_no_cache(rf: "RequestFactory", monkeypatch: "MonkeyPatch") -> None:
+def test_no_cache(rf: "RequestFactory", monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("bitcaster.utils.user_agent.cache", None)
     request = rf.get("/", HTTP_USER_AGENT=IE)
     ua: UserAgent = get_user_agent(request)

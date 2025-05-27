@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 from admin_extra_buttons.buttons import Button
 from admin_extra_buttons.decorators import button, link
@@ -84,7 +84,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
     class Media:
         js = ["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"]
 
-    def get_fieldsets(self, request: HttpRequest, obj: Optional[Event] = None) -> "_FieldsetSpec":
+    def get_fieldsets(self, request: HttpRequest, obj: Event | None = None) -> "_FieldsetSpec":
         if obj:
             return self._fieldsets
         return [(None, {"fields": self.get_fields(request, obj)})]
@@ -115,20 +115,19 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
         initial.setdefault("from_email", request.user.email)
         return initial
 
-    def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[Event]" = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: "HttpRequest", obj: "Event | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:
             return ["application", "slug", "name"]
         return []
 
-    def get_fields(self, request: HttpRequest, obj: Optional[Event] = None) -> Sequence[str | Sequence[str]]:
+    def get_fields(self, request: HttpRequest, obj: Event | None = None) -> Sequence[str | Sequence[str]]:
         form = self._get_form_for_get_fields(request, obj)
         return [*self.get_readonly_fields(request, obj), *form.base_fields]
 
-    def get_exclude(self, request: "HttpRequest", obj: "Optional[Event]" = None) -> "_ListOrTuple[str]":
+    def get_exclude(self, request: "HttpRequest", obj: "Event | None" = None) -> "_ListOrTuple[str]":
         if obj is None:
             return ["channels", "locked"]
-        else:
-            return ["locked"]
+        return ["locked"]
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def trigger_event(self, request: HttpRequest, pk: str) -> "HttpResponse":
@@ -142,7 +141,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
             return frm
 
         context = self.get_common_context(request, pk, title=_("Trigger Event"))
-        evt: Optional[Event] = self.get_object(request, pk)
+        evt: Event | None = self.get_object(request, pk)
         if request.method == "POST":
             config_form = get_form(request.POST)
             if config_form.is_valid():

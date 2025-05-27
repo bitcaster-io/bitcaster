@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("admin", "0003_logentry_add_action_flag_choices"),
         ("bitcaster", "0001_initial"),

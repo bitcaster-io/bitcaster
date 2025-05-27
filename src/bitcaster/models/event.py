@@ -1,19 +1,21 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from django.db import models
-from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 
 from ..constants import Bitcaster
 from ..utils.http import absolute_reverse
 from .application import Application
 from .channel import Channel
-from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMixin
+from .mixins import BitcasterBaseModel, BitcasterBaselManager, LockMixin, SlugMixin
 from .notification import Notification
 
 if TYPE_CHECKING:
+    from django.db.models import QuerySet
+
     from bitcaster.models import DistributionList, Message, Occurrence
 
+    from .notification import NotificationManager
     from .occurrence import OccurrenceOptions
 
 
@@ -46,7 +48,7 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
             "If not specified, system default will be used."
         ),
     )
-    notifications: "QuerySet[Notification]"
+    notifications: "NotificationManager"
 
     objects = EventManager()
 
@@ -67,7 +69,7 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
     def natural_key(self) -> tuple[str, ...]:
         return self.slug, *self.application.natural_key()
 
-    def delete(self, using: Optional[str] = None, keep_parents: bool = False) -> tuple[int, dict[str, Any]]:
+    def delete(self, using: str | None = None, keep_parents: bool = False) -> tuple[int, dict[str, Any]]:
         if self.application.project.organization.name == Bitcaster.ORGANIZATION:
             return 0, {}
         return super().delete(using, keep_parents)
@@ -76,9 +78,9 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
         self,
         *,
         context: dict[str, Any],
-        options: "Optional[OccurrenceOptions]" = None,
-        cid: Optional[Any] = None,
-        parent: "Optional[Occurrence]" = None,
+        options: "OccurrenceOptions | None" = None,
+        cid: Any | None = None,
+        parent: "Occurrence | None" = None,
     ) -> "Occurrence":
         from .occurrence import Occurrence
 
@@ -88,7 +90,7 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
             event=self, context=context, options=options or {}, correlation_id=cid, parent=parent
         )
 
-    def create_message(self, name: str, channel: Channel, defaults: Optional[dict[str, Any]] = None) -> "Message":
+    def create_message(self, name: str, channel: Channel, defaults: dict[str, Any] | None = None) -> "Message":
         return self.messages.get_or_create(
             organization=self.application.project.organization,
             name=name,
@@ -101,14 +103,14 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
         )[0]
 
     def create_notification(
-        self, name: str, defaults: Optional[dict[str, Any]] = None, distribution: "Optional[DistributionList]" = None
+        self, name: str, defaults: dict[str, Any] | None = None, distribution: "DistributionList | None" = None
     ) -> "Notification":
         return Notification.objects.get_or_create(
             name=name, event=self, defaults=defaults if defaults else {}, distribution=distribution
         )[0]
 
     def get_trigger_url(self) -> str:
-        url = absolute_reverse(
+        return absolute_reverse(
             "api:event-trigger",
             args=[
                 self.application.project.organization.slug,
@@ -117,4 +119,3 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
                 self.slug,
             ],
         )
-        return url

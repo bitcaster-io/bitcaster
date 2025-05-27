@@ -5,13 +5,16 @@ from unittest.mock import Mock
 import pytest
 from django.core.exceptions import ValidationError
 from pyfakefs.fake_filesystem import FakeFile, FakeFilesystem
-from pytest_django.fixtures import SettingsWrapper
 
 from bitcaster.agents.fs import AgentFileSystem, resolve_path, validate_path
 from bitcaster.models import Event, Monitor
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pytest_django.fixtures import SettingsWrapper
 
 
-@pytest.fixture()
+@pytest.fixture
 def monit_path(event: "Event", fs: FakeFilesystem) -> AgentFileSystem:
     fs.reset()
     fs.create_file("dir1/file1.txt")
@@ -27,7 +30,7 @@ def monit_path(event: "Event", fs: FakeFilesystem) -> AgentFileSystem:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def monit_file(event: "Event", fs: FakeFilesystem) -> AgentFileSystem:
     fs.reset()
     ff: FakeFile = fs.create_file("dir1/file1.txt")
@@ -155,7 +158,6 @@ def test_resolve_path_root(path: str, expected: str, settings: "SettingsWrapper"
     [
         ("/root/b.txt", "/root/b.txt"),
         ("/root/a/b.txt", "/root/a/b.txt"),
-        ("/root/a/b.txt", "/root/a/b.txt"),
         ("/root/a/b/../../b.txt", "/root/b.txt"),
     ],
 )
@@ -181,20 +183,3 @@ def test_validate_path_error(path: str, settings: "SettingsWrapper") -> None:
     settings.AGENT_FILESYSTEM_ROOT = str(Path(__file__).parent)
     with pytest.raises(ValidationError):
         validate_path(path)
-
-
-#
-#
-# @pytest.mark.parametrize("path", ["a.txt", "a/b.txt"])
-# def test_validate_parents_success(path, settings: "SettingsWrapper", fs: FakeFilesystem) -> None:
-#     settings.AGENT_FILESYSTEM_ROOT = str(fs.root)
-#     fs.reset()
-#     fs.create_file(path)
-#     validate_path(path)
-#
-#
-# @pytest.mark.parametrize("path", ["..", "/a.txt"])
-# def test_validate_parents_fail(path, settings: "SettingsWrapper", fs: "FakeFilesystem") -> None:
-#     settings.AGENT_FILESYSTEM_ROOT = str(fs.root)
-#     with pytest.raises(ValidationError):
-#         validate_path(path)

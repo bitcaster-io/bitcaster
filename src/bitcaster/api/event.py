@@ -1,17 +1,19 @@
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from django.db.models import QuerySet
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
-from rest_framework.request import Request
 from rest_framework.response import Response
 
 from ..auth.constants import Grant
 from ..exceptions import LockError
 from ..models import Event, Occurrence
-from ..models.occurrence import OccurrenceOptions
 from .base import SecurityMixin
+
+if TYPE_CHECKING:
+    from rest_framework.request import Request
+    from ..models.occurrence import OccurrenceOptions
 
 app_name = "api"
 
@@ -40,9 +42,7 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class EventList(SecurityMixin, ListAPIView):
-    """
-    List application events
-    """
+    """List application events."""
 
     serializer_class = EventSerializer
     required_grants = [Grant.EVENT_LIST]
@@ -56,9 +56,7 @@ class EventList(SecurityMixin, ListAPIView):
 
 
 class EventTrigger(SecurityMixin, GenericAPIView):
-    """
-    Trigger application's event
-    """
+    """Trigger application's event."""
 
     serializer_class = EventSerializer
     required_grants = [Grant.EVENT_TRIGGER]

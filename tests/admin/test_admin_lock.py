@@ -5,17 +5,16 @@ from django.contrib.admin import ModelAdmin
 from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models import Model
-from django.db.models.options import Options
 from django.urls import reverse
 from django_regex.utils import RegexList as _RegexList
 from django_webtest import DjangoTestApp
-from testutils.factories.base import AutoRegisterModelFactory
 
 from bitcaster.models.mixins import LockMixin
 
 if TYPE_CHECKING:
+    from testutils.factories.base import AutoRegisterModelFactory
+    from django.db.models.options import Options
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
-    from pytest import FixtureRequest, Metafunc
     from pytest_django.fixtures import SettingsWrapper
     from responses import RequestsMock
 
@@ -29,7 +28,7 @@ class RegexList(_RegexList):  # type: ignore[misc]
             self.append(e)
 
 
-def pytest_generate_tests(metafunc: "Metafunc") -> None:
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     import django
 
     from bitcaster.admin.mixins import LockMixinAdmin
@@ -47,21 +46,20 @@ def pytest_generate_tests(metafunc: "Metafunc") -> None:
             if isinstance(admin, LockMixinAdmin):
                 name = model._meta.object_name
                 full_name = f"{model._meta.app_label}.{name}"
-                if not (full_name in excluded_models):
+                if full_name not in excluded_models:
                     m.append(admin)
                     ids.append(f"{admin.__class__.__name__}:{full_name}")
         metafunc.parametrize("model_admin", m, ids=ids)
 
 
-@pytest.fixture()
-def record(db: Any, request: "FixtureRequest") -> Model:
+@pytest.fixture
+def record(db: Any, request: pytest.FixtureRequest) -> Model:
     from testutils.factories import get_factory_for_model
 
     # TIPS: database access is forbidden in pytest_generate_tests
     model_admin = request.getfixturevalue("model_admin")
     instance: Model = model_admin.model.objects.first()
     if not instance:
-        # full_name = f"{model_admin.model._meta.app_label}.{model_admin.model._meta.object_name}"
         factory: type[AutoRegisterModelFactory[Any]] = get_factory_for_model(model_admin.model)
         try:
             instance = factory()
@@ -70,7 +68,7 @@ def record(db: Any, request: "FixtureRequest") -> Model:
     return instance
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(
     django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: "SettingsWrapper"
 ) -> DjangoTestApp:
@@ -113,17 +111,3 @@ def test_admin_unlock(app: DjangoTestApp, model_admin: ModelAdmin[LockMixin], re
     assert res.status_code == 302
     record.refresh_from_db()
     assert not record.locked
-
-
-# @pytest.mark.skip_models("constance.Config", "advanced_filters.AdvancedFilter")
-# def test_admin_lock(app, model_admin, record):
-#     opts: Options = model_admin.model._meta
-#     url = reverse(admin_urlname(opts, "change"), args=[record.pk])
-#
-#     res = app.get(url)
-#     assert str(opts.app_config.verbose_name) in res.body.decode()
-#     res.click("lock")
-#     assert res.status_code == 200
-#     res.click("lock")
-#     assert res.status_code == 302
-#     assert record.locked

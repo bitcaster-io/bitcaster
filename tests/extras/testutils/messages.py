@@ -146,6 +146,7 @@ class PlainCookieStorage(BaseStorage):
             encoder = MessageEncoder(separators=(",", ":"))
             value = encoder.encode(messages)
             return self.signer.sign(value)
+        return None
 
     def _decode(self, data: str) -> Optional[Message]:
         """
