@@ -23,7 +23,7 @@ dependencies = [
   "django>=5.2.1",
   "django-admin-extra-buttons==1.6",
   "django-adminactions>=2.3",
-  "django-adminfilters==2.5",
+  "django-adminfilters==2.5.2",
   "django-anymail>=10.3",
   "django-bitfield>=2.2",
   "django-celery-beat>=2.6",
