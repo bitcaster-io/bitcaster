@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
 
       - name: Check for file changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v3.0.2
         id: changes
         with:
           token: ${{ github.token }}
