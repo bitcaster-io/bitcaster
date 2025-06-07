@@ -4,11 +4,10 @@ from typing import TYPE_CHECKING
 import pytest
 from testutils.factories import EventFactory
 
-from bitcaster.constants import Bitcaster
+from bitcaster.constants import bitcaster
 
 if TYPE_CHECKING:
-    from bitcaster.models import Notification
-    from bitcaster.models import Channel, Event, Occurrence
+    from bitcaster.models import Channel, Event, Notification, Occurrence
 
 
 def test_event_trigger(event: "Event") -> None:
@@ -48,9 +47,9 @@ def test_delete_event_protect_internal() -> None:
 
     event: Event = EventFactory()
     internal_event: Event = EventFactory(
-        application__name=Bitcaster.APPLICATION,
-        application__project__name=Bitcaster.PROJECT,
-        application__project__organization__name=Bitcaster.ORGANIZATION,
+        application__name=bitcaster.APPLICATION,
+        application__project__name=bitcaster.PROJECT,
+        application__project__organization__name=bitcaster.ORGANIZATION,
     )
     event.delete()
     internal_event.delete()

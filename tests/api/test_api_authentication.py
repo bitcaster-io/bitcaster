@@ -13,6 +13,7 @@ from bitcaster.auth.constants import Grant
 
 if TYPE_CHECKING:
     from django.test.client import RequestFactory
+
     from bitcaster.models import ApiKey, Event, User
     from bitcaster.types.http import ApiRequest
 

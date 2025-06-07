@@ -6,6 +6,7 @@ from django.urls import reverse
 
 if TYPE_CHECKING:
     from django.db.models.options import Options
+
     from bitcaster.types.django import AnyModel
 
 

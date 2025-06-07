@@ -6,6 +6,10 @@ dist/
 *.py[cod]
 *.patch
 *.egg-info
+*.dylib
+libcairo.2.dylib
+src/bitcaster/version.py
+junit.xml
 !.git
 !tests/.coveragerc
 !.github

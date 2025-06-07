@@ -1,17 +1,9 @@
 name: Security
 on:
-  push:
-    branches:
-      - develop
-      - master
-      - staging
-      - release/*
-      - feature/*
-      - bugfix/*
-      - hotfix/*
-#  pull_request:
-#    branches: [develop, master]
-#    types: [synchronize, opened, reopened, ready_for_review]
+  workflow_dispatch:
+  pull_request:
+    branches: [develop]
+    types: [synchronize, opened, reopened, ready_for_review]
 
 defaults:
   run:
@@ -28,12 +20,11 @@ permissions:
 
 jobs:
   changes:
-    if: (github.event_name != 'pull_request'
-        || (github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name))
-        && !contains(github.event.head_commit.message, 'ci:nosec')
     name: check files
     runs-on: ubuntu-latest
     timeout-minutes: 3
+    env:
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     outputs:
       lint: ${{ steps.changes.outputs.lint }}
       docker: ${{ steps.changes.outputs.docker_base }}
@@ -47,32 +38,11 @@ jobs:
           base: ${{ github.ref }}
           token: ${{ github.token }}
           filters: .github/file-filters.yml
-  trivy:
-    name: Trivy
-    if: needs.changes.outputs.lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run Trivy vulnerability scanner in fs mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: 'src'
-          trivy-config: trivy.yaml
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL'
-          ignore-unfixed: true
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
 
   bandit:
     needs: changes
     runs-on: ubuntu-latest
-    if: needs.changes.outputs.lint
+    if: github.event.pull_request.draft == false && needs.changes.outputs.lint
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results

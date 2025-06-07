@@ -3,13 +3,15 @@
 {% block head %}
     {{ block.super }}
     {{ wizard.form.media }}
-{% endblock %}
+{% endblock head %}
 
 {% block after_field_sets %}{% endblock %}
+
 {% block object-tools-items %}
     {{ block.super }}
 
-{% endblock %}
+{% endblock object-tools-items %}
+
 {% block action-content %}
     <div class="channel-wizard-help">
         <div>
@@ -62,7 +64,8 @@
                     class="button cancel clear-required" type="submit">{% translate "Cancel" %}</button>
         </div>
     </form>
-{% endblock %}
+{% endblock action-content %}
+
 {% block document_ready %}
     <script>
         const frmAdd = document.getElementById('channel-add');
@@ -77,4 +80,4 @@
             })
     </script>
 
-{% endblock %}
+{% endblock document_ready %}

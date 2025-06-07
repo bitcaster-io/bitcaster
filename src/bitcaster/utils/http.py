@@ -9,6 +9,7 @@ from ..state import state
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
+
     from ..types.http import AnyRequest
 
 

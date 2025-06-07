@@ -1,6 +1,4 @@
-{% load static %}
-{% load i18n %}
-{% load rest_framework %}
+{% load i18n rest_framework static %}
 
 <!DOCTYPE html>
 <html>
@@ -10,7 +8,7 @@
       {% block meta %}
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta name="robots" content="NONE,NOARCHIVE" />
-      {% endblock %}
+      {% endblock meta %}
 
       <title>{% block title %}Django REST framework{% endblock %}</title>
 
@@ -18,12 +16,12 @@
         {% block bootstrap_theme %}
           <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>
           <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/>
-        {% endblock %}
+        {% endblock bootstrap_theme %}
         <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
         <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
-      {% endblock %}
+      {% endblock style %}
 
-    {% endblock %}
+    {% endblock head %}
   </head>
 
   {% block body %}
@@ -37,7 +35,7 @@
                     <a class='navbar-brand' rel="nofollow" href='https://www.django-rest-framework.org/'>
                       Django REST framework
                     </a>
-                  {% endblock %}
+                  {% endblock branding %}
                 </span>
                 <ul class="nav navbar-nav pull-right">
                   {% block userlinks %}
@@ -46,11 +44,11 @@
                     {% else %}
                       {% optional_login request %}
                     {% endif %}
-                  {% endblock %}
+                  {% endblock userlinks %}
                 </ul>
               </div>
             </div>
-          {% endblock %}
+          {% endblock navbar %}
 
           <div class="container">
             {% block breadcrumbs %}
@@ -63,7 +61,7 @@
                   {% endif %}
                 {% endfor %}
               </ul>
-            {% endblock %}
+            {% endblock breadcrumbs %}
 
           <!-- Content -->
           <div id="content">
@@ -113,7 +111,7 @@
             {% if extra_actions %}
               <div class="dropdown" style="float: right; margin-right: 10px">
                 <button class="btn btn-default" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                  {% trans "Extra Actions" %}
+                  {% translate "Extra Actions" %}
                   <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
@@ -127,7 +125,7 @@
             {% if filter_form %}
               <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
                 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
-                {% trans "Filters" %}
+                {% translate "Filters" %}
               </button>
             {% endif %}
 
@@ -139,7 +137,7 @@
               <div style="float:left">
                 {% block description %}
                   {{ description }}
-                {% endblock %}
+                {% endblock description %}
               </div>
 
               {% if paginator %}
@@ -257,7 +255,7 @@
         <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
         <script src="{% static "rest_framework/js/default.js" %}"></script>
         <script src="{% static "rest_framework/js/load-ajax-form.js" %}"></script>
-      {% endblock %}
+      {% endblock script %}
     </body>
-  {% endblock %}
+  {% endblock body %}
 </html>

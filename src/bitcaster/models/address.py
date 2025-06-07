@@ -7,7 +7,7 @@ from django.utils.functional import cached_property
 from ..constants import AddressType
 from ..dispatchers.base import MessageProtocol
 from ..utils.address import is_email, is_phonenumber
-from .mixins import BitcasterBaselManager, BitcasterBaseModel
+from .mixins import BitcasterBaseModel, BitcasterBaselManager
 from .user import User
 
 if TYPE_CHECKING:

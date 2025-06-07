@@ -1,9 +1,9 @@
 import factory
 from factory import Sequence
 from strategy_field.utils import fqn
-from testutils.agent import XAgent
 
 from bitcaster.models import Monitor
+from testutils.agent import XAgent
 
 from . import PeriodicTaskFactory
 from .base import AutoRegisterModelFactory

@@ -1,4 +1,4 @@
-{% extends "admin/base_site.html" %}{% load static i18n %}
+{% extends "admin/base_site.html" %}{% load i18n static %}
 
 {% block nav-breadcrumbs %}
     <nav aria-label="{% translate 'Breadcrumbs' %}">
@@ -8,13 +8,14 @@
             <a href="{% url "locking" %}">{% translate 'Locking' %}</a>
         </div>
     </nav>
-{% endblock %}
+{% endblock nav-breadcrumbs %}
+
 {% block content %}
     <h1>{{ step_header }}</h1>
 
     {% block instructions %}
 
-    {% endblock %}
+    {% endblock instructions %}
     <br>
     <form action="" method="post" id="locking">
         {% csrf_token %}
@@ -30,23 +31,23 @@
                     {{ wizard.form.as_table }}
                 {% endif %}
             </table>
-        {% endblock %}
+        {% endblock form_content %}
         {% block buttons %}
-            {#        {% if wizard.steps.prev %}#}
-            {#            <input type="submit"#}
-            {#                    name="wizard_goto_step" class="button"#}
-            {#                    value="{{ wizard.steps.first }}">#}
-            {#            <input type="submit"#}
-            {#                    name="wizard_goto_step" class="button"#}
-            {#                    value="{{ wizard.steps.prev }}">#}
+            {# {% if wizard.steps.prev %} #}
+            {# <input type="submit" #}
+            {# name="wizard_goto_step" class="button" #}
+            {# value="{{ wizard.steps.first }}"> #}
+            {# <input type="submit" #}
+            {# name="wizard_goto_step" class="button" #}
+            {# value="{{ wizard.steps.prev }}"> #}
 
-            {#            <button name="wizard_goto_step" type="submit"#}
-            {#                    value="{{ wizard.steps.first }}">{% translate "first step" %}</button>#}
-            {#            <button name="wizard_goto_step" type="submit"#}
-            {#                    value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>#}
-            {#        {% endif %}#}
+            {# <button name="wizard_goto_step" type="submit" #}
+            {# value="{{ wizard.steps.first }}">{% translate "first step" %}</button> #}
+            {# <button name="wizard_goto_step" type="submit" #}
+            {# value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button> #}
+            {# {% endif %} #}
 
             <input type="submit" value="Submit">
-        {% endblock %}
+        {% endblock buttons %}
     </form>
-{% endblock %}
+{% endblock content %}

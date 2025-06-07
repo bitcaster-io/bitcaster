@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-
 from bitcaster.social.models import SocialProvider
 
 if TYPE_CHECKING:

@@ -1,7 +1,4 @@
 # This is used by the action https://github.com/dorny/paths-filter
-pipelines: &pipelines
-  - added|modified: './.github/*'
-
 docker: &docker
   - added|modified: './docker/**/*'
   - added|modified: './docker/*'
@@ -9,6 +6,9 @@ docker: &docker
 dependencies: &dependencies
   - 'pdm.lock'
   - 'pyproject.toml'
+
+actions: &actions
+  - added|modified: './.github/**/*'
 
 python: &python
   - added|modified: 'src/**'
@@ -23,24 +23,43 @@ mypy:
   - *python
   - 'mypy.ini'
 
-build:
-  - *docker
-  - *dependencies
-  - '.github/workflows/test.yml'
-
 run_tests:
+  - *actions
   - *python
   - *docker
   - *dependencies
-  - *pipelines
   - 'pytest.ini'
+  - 'tox.ini'
+
+package: &package
+  - *python
+  - *dependencies
+
+dockerize:
+  - *package
+  - *docker
   - '.github/workflows/test.yml'
+  - '.github/workflows/dockerize.yml'
 
 migrations:
   - added|modified: 'src/**/migrations/*'
 
-lint:
-  - *pipelines
-  - *python
-  - '.flake8'
+code_settings: &code_settings
+  - '.pre-commit-config.yaml'
+  - 'pytest.ini'
+  - 'tox.ini'
   - 'pyproject.toml'
+  - 'ruff.toml'
+  - 'mypy.toml'
+
+
+lint:
+  - *python
+  - *code_settings
+
+docs:
+  - added|modified: './docs/**/*'
+  - modified: '.mkdocs.yml'
+  - modified: './src/bitcaster/config/__init__.py'
+  - modified: './github/workflows/docs.yml'
+  - modified: './github/file-filters.yml'

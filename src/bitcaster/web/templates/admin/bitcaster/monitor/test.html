@@ -6,7 +6,7 @@
     </form>
     <div class="frame">{{ monitor.data.timestamp }}</div>
     <div class="frame">{{ monitor.config.path }}</div>
-    {#    <h3>Added</h3>#}
+    {# <h3>Added</h3> #}
     <ul>
         <caption>Changed</caption>
         {% for entry in monitor.data.diff.changed %}
@@ -28,6 +28,6 @@
         {% endfor %}
     </ul>
 
-    {#        {{ monitor.data.diff }}</div>#}
-    {#    <div>{{ monitor.data.entries }}</div>#}
-{% endblock %}
+    {# {{ monitor.data.diff }}</div> #}
+    {# <div>{{ monitor.data.entries }}</div> #}
+{% endblock action-content %}

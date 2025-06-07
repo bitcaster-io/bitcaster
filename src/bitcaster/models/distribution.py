@@ -5,11 +5,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .assignment import Assignment
-from .mixins import BitcasterBaselManager, BitcasterBaseModel
+from .mixins import BitcasterBaseModel, BitcasterBaselManager
 from .project import Project
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+
     from .notification import Notification
 
 

@@ -1,6 +1,6 @@
-{% extends "admin_extra_buttons/action_page.html" %}{% load markdown i18n %}
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n markdown %}
 {% block content %}
-{#    {% block header %}{% endblock %}#}
+{# {% block header %}{% endblock %} #}
     {% if form.help_text %}
         <div class="frame">{{ form|help_doc }}</div>{% endif %}
     {% block form %}
@@ -27,7 +27,7 @@
                     {% endfor %}
                 </fieldset>
             </div>
-            {% block submit %}<input type="submit" id="apply" name="apply" value="{% trans "Confirm" %}">{% endblock %}
+            {% block submit %}<input type="submit" id="apply" name="apply" value="{% translate "Confirm" %}">{% endblock %}
         </form>
-    {% endblock %}
-{% endblock %}
+    {% endblock form %}
+{% endblock content %}

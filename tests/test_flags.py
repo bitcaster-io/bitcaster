@@ -1,4 +1,5 @@
 import os
+from typing import TYPE_CHECKING
 from unittest import mock
 
 import pytest
@@ -6,7 +7,6 @@ from django.test.client import RequestFactory
 
 from bitcaster.apps import development, env_var, header_key, server_address
 from bitcaster.state import state
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper

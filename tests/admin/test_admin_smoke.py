@@ -14,12 +14,12 @@ from testutils.factories.user import SuperUserFactory
 
 if TYPE_CHECKING:
     from admin_extra_buttons.mixins import ExtraButtonsMixin
-    from testutils.factories.base import AutoRegisterModelFactory
-    from django.db.models.options import Options
-    from responses import RequestsMock
     from django.contrib.admin import ModelAdmin
+    from django.db.models.options import Options
     from django_webtest import DjangoTestApp, DjangoWebtestResponse
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
+    from responses import RequestsMock
+    from testutils.factories.base import AutoRegisterModelFactory
 
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]

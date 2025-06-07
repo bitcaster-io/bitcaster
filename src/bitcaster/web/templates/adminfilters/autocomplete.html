@@ -20,11 +20,12 @@
     </select>
     </li>
 </ul>
-{% endblock  %}
+{% endblock content %}
+
 {% block script %}
 <script>
     ;(function ($) {
         $('#ac_{{ spec.field_path }}').djangoAdminSelect2();
     })(django.jQuery);
 </script>
-{% endblock %}
+{% endblock script %}

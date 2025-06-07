@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
 from bitcaster.config.celery import app
-from bitcaster.constants import Bitcaster, SystemEvent
+from bitcaster.constants import SystemEvent, bitcaster
 from bitcaster.models import LogEntry, User
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ def process_occurrence(occurrence_pk: int) -> int | Exception:
                     o.recipients = len(o.data.get("delivered", []))
                     o.save()
                     if success and o.recipients == 0 and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value:
-                        Bitcaster.trigger_event(
+                        bitcaster.trigger_event(
                             SystemEvent.OCCURRENCE_SILENCE,
                             o.context,
                             options=o.options,
@@ -42,7 +42,7 @@ def process_occurrence(occurrence_pk: int) -> int | Exception:
             ):
                 o.status = Occurrence.Status.FAILED
                 o.save()
-                Bitcaster.trigger_event(
+                bitcaster.trigger_event(
                     SystemEvent.OCCURRENCE_ERROR, options=o.options, correlation_id=o.correlation_id, parent=o
                 )
                 return 0

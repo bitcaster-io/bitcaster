@@ -1,4 +1,5 @@
 import logging
+from typing import TYPE_CHECKING
 
 from admin_extra_buttons.buttons import Button
 from admin_extra_buttons.decorators import link
@@ -12,7 +13,6 @@ from django.utils.translation import gettext as _
 from ..forms.user import SelectDistributionForm
 from ..models import Assignment, DistributionList, User
 from .base import BaseAdmin
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet

@@ -1,6 +1,5 @@
-{% load i18n %}
-{% load rest_framework %}
-{% trans "No items to select." as no_items %}
+{% load i18n rest_framework %}
+{% translate "No items to select." as no_items %}
 
 <div class="form-group {% if field.errors %}has-error{% endif %}">
   {% if field.label %}

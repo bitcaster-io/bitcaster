@@ -1,5 +1,4 @@
-from typing import Any, Protocol, TYPE_CHECKING
-
+from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
     from bitcaster.models import Channel, Message

@@ -3,11 +3,11 @@
     <div class="left" style="height: 200px;">
         <table class="last_events" style="border: 1px solid red; height: 100%; border-collapse:unset;overflow: scroll;">
             <caption>
-                {% trans "Last 24h Events" %}
+                {% translate "Last 24h Events" %}
             </caption>
             {% for evt in last_events %}
                 <tr>
-{#                    <a href="#">#}
+{# <a href="#"> #}
                         <td>{{ evt.timestamp.date.day }}</td>
                         <td>{{ evt.timestamp|date:"H:m:s" }}</td>
                         <td>{{ evt.event__name }}</td>
@@ -15,9 +15,9 @@
                         <td>{{ evt.status }}</td>
                     </a>
                 </tr>
-                {#                {% ifchanged evt.timestamp.date.day %}#}
-                {#                    <tr><td colspan="4"><hr/>----</td></tr>#}
-                {#                {% endifchanged %}#}
+                {# {% ifchanged evt.timestamp.date.day %} #}
+                {# <tr><td colspan="4"><hr/>----</td></tr> #}
+                {# {% endifchanged %} #}
             {% endfor %}
             <tfoot>
             <tr>
@@ -31,7 +31,7 @@
         {% get_admin_log 10 as admin_log for_user user %}
         <table class="actiontable">
             <caption>
-                {% trans "Action log" %}
+                {% translate "Action log" %}
             </caption>
             {% for entry in admin_log %}
                 <tr>

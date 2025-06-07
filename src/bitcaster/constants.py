@@ -1,11 +1,10 @@
 import enum
 import logging
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, cast
 
 from constance import config
 from django.db import models
-
-from bitcaster.utils.language import class_property
 
 if TYPE_CHECKING:
     from bitcaster.models import Application, Event, Group, Occurrence, User
@@ -18,6 +17,7 @@ class CacheKey:
     DASHBOARDS_EVENTS: str = "dashboard_events"
 
 
+@dataclass
 class Bitcaster:
     ORGANIZATION = "OS4D"
     PROJECT = "BITCASTER-IO"
@@ -33,18 +33,18 @@ class Bitcaster:
             Project,
         )
 
-        os4d = Organization.objects.get_or_create(name=Bitcaster.ORGANIZATION, owner=admin)[0]
-        prj = Project.objects.get_or_create(name=Bitcaster.PROJECT, organization=os4d, owner=os4d.owner)[0]
-        app = Application.objects.get_or_create(name=Bitcaster.APPLICATION, project=prj, owner=os4d.owner)[0]
+        os4d = Organization.objects.get_or_create(name=bitcaster.ORGANIZATION, owner=admin)[0]
+        prj = Project.objects.get_or_create(name=bitcaster.PROJECT, organization=os4d, owner=os4d.owner)[0]
+        app = Application.objects.get_or_create(name=bitcaster.APPLICATION, project=prj, owner=os4d.owner)[0]
 
         for event_name in SystemEvent:
             app.register_event(event_name.value)
 
         DistributionList.objects.get_or_create(name=DistributionList.ADMINS, project=prj)
-        Bitcaster._app = None
+        bitcaster._app = None
         return app
 
-    @class_property
+    @property
     def app(self) -> "Application":
         from bitcaster.models import Application
 
@@ -54,9 +54,8 @@ class Bitcaster:
             )
         return self._app
 
-    @classmethod
     def trigger_event(
-        cls,
+        self,
         evt: "SystemEvent",
         context: dict[str, Any] | None = None,
         *,
@@ -64,11 +63,10 @@ class Bitcaster:
         correlation_id: Any | None = None,
         parent: "Occurrence | None" = None,
     ) -> "Occurrence":
-        e: "Event" = cls.app.events.get(name=evt.value)
+        e: "Event" = self.app.events.get(name=evt.value)
         return e.trigger(context=(context or {}), options=options or {}, cid=correlation_id, parent=parent)
 
-    @classmethod
-    def get_default_group(cls) -> "Group":
+    def get_default_group(self) -> "Group":
         from bitcaster.models.group import Group
 
         return cast("Group", Group.objects.get(name=config.NEW_USER_DEFAULT_GROUP))
@@ -87,3 +85,6 @@ class SystemEvent(enum.Enum):
     APPLICATION_UNLOCKED = "application_unlocked"
     OCCURRENCE_SILENCE = "silent_occurrence"
     OCCURRENCE_ERROR = "error_occurrence"
+
+
+bitcaster = Bitcaster()

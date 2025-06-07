@@ -3,9 +3,9 @@ from typing import Any, cast
 import factory
 from factory import Sequence
 from strategy_field.utils import fqn
-from testutils.dispatcher import XDispatcher
 
 from bitcaster.models import Channel
+from testutils.dispatcher import XDispatcher
 
 from .base import AutoRegisterModelFactory
 from .org import OrganizationFactory, ProjectFactory

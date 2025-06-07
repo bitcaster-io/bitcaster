@@ -5,15 +5,17 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext as _
 
-from ..constants import Bitcaster
-from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMixin
+from ..constants import bitcaster
+from .mixins import BitcasterBaseModel, BitcasterBaselManager, LockMixin, SlugMixin
 from .organization import Organization
 from .user import User
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
-    from .channel import Channel
+
     from bitcaster.models import Message
+
+    from .channel import Channel
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +25,7 @@ class ProjectManager(BitcasterBaselManager["Project"]):
         return self.get(slug=slug, organization__slug=org)
 
     def local(self, **kwargs: Any) -> "QuerySet[Project]":
-        return self.exclude(organization__name=Bitcaster.ORGANIZATION).filter(**kwargs)
+        return self.exclude(organization__name=bitcaster.ORGANIZATION).filter(**kwargs)
 
 
 class Project(SlugMixin, LockMixin, BitcasterBaseModel):

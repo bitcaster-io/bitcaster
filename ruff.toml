@@ -90,7 +90,7 @@ line-ending = "auto"
 "src/dbtemplates/test**.py" = ["S101", "PLR2004", "S", "SIM117", "D", "UP", "PLR0913", "ANN", "N999", "PT009"]
 "src/**/migrations/*.py" = ["E501", ]
 "src/**/versioning/**.py" = ["N999", ]
-"src/aurora/version.py" = ["ALL", ]
+"src/bitcaster/version.py" = ["ALL", ]
 "src/bitcaster/models/*.py" = ["ERA001"]
 "src/bitcaster/types/*.pyi" = [
     "PLC0105",  # TypeVar` name "..." does not reflect its covariance; consider renaming it to "..."

@@ -3,8 +3,8 @@
     <div class="module">
         <table width="100%">
             <tr>
-                <th width="70%">{% trans "Message Template" %}</th>
-                <td>{% trans "Channel" %}</td>
+                <th width="70%">{% translate "Message Template" %}</th>
+                <td>{% translate "Channel" %}</td>
             </tr>
             {% for msg in message_templates %}
                 <tr {% if msg.pk == message_created.pk %}class="last-created-item" {% endif %}>
@@ -22,7 +22,7 @@
             <table>
                 {{ form.as_table }}
             </table>
-            <input type="submit" value="{% trans "Create" %}">
+            <input type="submit" value="{% translate "Create" %}">
         </form>
     </div>
-{% endblock %}
+{% endblock action-content %}

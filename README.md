@@ -8,7 +8,6 @@
 [![Docker](https://img.shields.io/docker/pulls/bitcaster/bitcaster)](https://hub.docker.com/repository/docker/bitcaster/bitcaster/tags)
 
 
-
 Bitcaster is a system-to-user signal-to-message notification system.
 
 Bitcaster will receive signals from any of your applications/systems using a simple RESTful API and will convert them in messages to be distributed to you users via a plethora of channels.

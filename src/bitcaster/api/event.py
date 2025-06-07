@@ -1,4 +1,4 @@
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django.db.models import QuerySet
 from rest_framework import serializers
@@ -13,6 +13,7 @@ from .base import SecurityMixin
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
+
     from ..models.occurrence import OccurrenceOptions
 
 app_name = "api"

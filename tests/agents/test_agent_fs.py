@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest import mock
 from unittest.mock import Mock
 
@@ -8,7 +9,6 @@ from pyfakefs.fake_filesystem import FakeFile, FakeFilesystem
 
 from bitcaster.agents.fs import AgentFileSystem, resolve_path, validate_path
 from bitcaster.models import Event, Monitor
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper

@@ -8,9 +8,9 @@ from testutils.factories.user import SuperUserFactory
 from bitcaster.state import state
 
 if TYPE_CHECKING:
-    from responses import RequestsMock
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
+    from responses import RequestsMock
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
 

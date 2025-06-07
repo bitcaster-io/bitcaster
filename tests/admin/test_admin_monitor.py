@@ -27,8 +27,8 @@ from bitcaster.models import Event, Monitor
 from bitcaster.state import state
 
 if TYPE_CHECKING:
-    from django.http import HttpRequest
     from django.db.models.options import Options
+    from django.http import HttpRequest
     from webtest.forms import Form as WebTestForm
     from webtest.response import TestResponse
 

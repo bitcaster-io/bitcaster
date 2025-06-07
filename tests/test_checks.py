@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest import mock
 from unittest.mock import Mock
-
 
 from bitcaster.checks import (
     E002,
@@ -10,7 +10,6 @@ from bitcaster.checks import (
     check_agent_validator,
     check_agent_validator_root,
 )
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper

@@ -1,6 +1,7 @@
+from typing import TYPE_CHECKING
+
 from bitcaster import VERSION
 from bitcaster.config import env
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from django.http import HttpRequest

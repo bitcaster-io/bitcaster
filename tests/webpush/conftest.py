@@ -1,6 +1,6 @@
-import pytest
-
 from typing import TYPE_CHECKING
+
+import pytest
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment

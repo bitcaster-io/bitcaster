@@ -35,7 +35,7 @@ def check_agent_validator(app_configs: AppConfig, **kwargs: Any) -> list[CheckMe
         except ImportError:
             return [E001]
         return []
-    return None
+    return []
 
 
 @register("config")

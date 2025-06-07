@@ -13,7 +13,7 @@ from rest_framework.viewsets import ViewSet
 from bitcaster.api.base import SecurityMixin
 from bitcaster.api.serializers import AddressSerializer
 from bitcaster.auth.constants import Grant
-from bitcaster.constants import Bitcaster
+from bitcaster.constants import bitcaster
 from bitcaster.models import Organization, User, UserRole
 
 
@@ -39,7 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
         if not (user := User.objects.filter(email=email).first()):
             user = User.objects.create(username=email, email=email)
 
-        UserRole.objects.get_or_create(user=user, organization=org, group=Bitcaster.get_default_group())
+        UserRole.objects.get_or_create(user=user, organization=org, group=bitcaster.get_default_group())
         user.addresses.get_or_create(value=email)
 
         return user

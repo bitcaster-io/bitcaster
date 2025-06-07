@@ -1,12 +1,12 @@
-{% load admin_list static i18n %}
+{% load admin_list i18n static %}
 <div id="results">
     <table>
         <thead>
             <tr>
-                <th><div class="text">{% trans "Name" %}</div></th>
-                <th><div class="text">{% trans "Default" %}</div></th>
-                <th><div class="text">{% trans "Value" %}</div></th>
-                <th><div class="text">{% trans "Is modified" %}</div></th>
+                <th><div class="text">{% translate "Name" %}</div></th>
+                <th><div class="text">{% translate "Default" %}</div></th>
+                <th><div class="text">{% translate "Value" %}</div></th>
+                <th><div class="text">{% translate "Is modified" %}</div></th>
             </tr>
         </thead>
         {% for item in config_values %}
@@ -23,7 +23,7 @@
             </td>
             <td>
                 {{ item.form_field.errors }}
-                {% if item.is_file %}{% trans "Current file" %}: <a href="{% get_media_prefix as MEDIA_URL %}{{ MEDIA_URL }}{{ item.value }}" target="_blank">{{ item.value }}</a>{% endif %}
+                {% if item.is_file %}{% translate "Current file" %}: <a href="{% get_media_prefix as MEDIA_URL %}{{ MEDIA_URL }}{{ item.value }}" target="_blank">{{ item.value }}</a>{% endif %}
                 {{ item.form_field }}
                 {% if not item.is_file %}
                     <br>
@@ -41,7 +41,7 @@
                         {% elif item.is_datetime %}{{ item.raw_default|date:"U" }}
                         {% else %}{{ item.default }}
                         {% endif %}
-                        {% endspaceless %}">{% trans "Reset to default" %}</a>
+                        {% endspaceless %}">{% translate "Reset to default" %}</a>
                 {% endif %}
             </td>
             <td>

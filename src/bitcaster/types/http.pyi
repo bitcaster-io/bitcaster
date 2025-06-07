@@ -1,5 +1,7 @@
 from typing import Awaitable, Protocol, TypeVar, type_check_only
 
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import AnonymousUser
 from django.http import HttpRequest, HttpResponseBase
 from rest_framework.request import Request
 from user_agents.parsers import UserAgent
@@ -7,7 +9,7 @@ from user_agents.parsers import UserAgent
 from bitcaster.models import ApiKey, User
 
 class ApiRequest(Request):
-    user: User | None
+    user: AbstractBaseUser | AnonymousUser
     auth: ApiKey | None
 
 AnyRequest = TypeVar("AnyRequest", bound=HttpRequest, covariant=True)

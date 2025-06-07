@@ -23,8 +23,8 @@ from bitcaster.state import state
 from bitcaster.utils.security import is_root
 
 if TYPE_CHECKING:
-    from django.db.models import QuerySet
     from django.contrib.admin.options import _ListOrTuple
+    from django.db.models import QuerySet
 
 logger = logging.getLogger(__name__)
 

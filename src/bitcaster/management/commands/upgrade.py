@@ -12,7 +12,7 @@ from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from flags.state import enable_flag
 
 from bitcaster.config import env
-from bitcaster.constants import Bitcaster
+from bitcaster.constants import bitcaster
 
 if TYPE_CHECKING:
     from argparse import ArgumentParser
@@ -177,7 +177,7 @@ class Command(BaseCommand):
             if not admin:
                 raise CommandError("Create an admin user")
 
-            Bitcaster.initialize(admin)
+            bitcaster.initialize(admin)
 
             echo(f"Creating address: {self.admin_email}", style_func=self.style.WARNING)
             admin.addresses.get_or_create(name="email", value=self.admin_email)

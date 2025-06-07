@@ -11,7 +11,7 @@ from django.utils.translation import gettext as _
 
 from bitcaster.models import Channel, Group, Organization
 
-from ..constants import Bitcaster
+from ..constants import bitcaster
 from ..forms.message import OrgTemplateCreateForm
 from ..state import state
 from ..utils.django import url_related
@@ -122,13 +122,13 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
         return super().has_add_permission(request) and Organization.objects.count() < 2
 
     def has_delete_permission(self, request: HttpRequest, obj: Organization | None = None) -> bool:
-        if obj and obj.name == Bitcaster.ORGANIZATION:
+        if obj and obj.name == bitcaster.ORGANIZATION:
             return False
         return super().has_delete_permission(request) and super().has_delete_permission(request, obj)
 
     def get_readonly_fields(self, request: HttpRequest, obj: Organization | None = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
-        if obj and obj.name == Bitcaster.ORGANIZATION:
+        if obj and obj.name == bitcaster.ORGANIZATION:
             base.extend(["name", "slug", "subject_prefix"])
         return base
 

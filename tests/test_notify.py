@@ -6,6 +6,7 @@ from testutils.dispatcher import XDispatcher
 
 if TYPE_CHECKING:
     from pytest_django import DjangoAssertNumQueries
+
     from bitcaster.models import (
         Address,
         ApiKey,

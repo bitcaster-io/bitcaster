@@ -1,5 +1,5 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_urls feature_flags %}
+{% load admin_urls feature_flags i18n %}
 {% if not is_popup %}
     {% block breadcrumbs %}
         {{ site }}
@@ -20,5 +20,5 @@
             {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}
                 {{ original|truncatewords:"18" }}{% endif %}
         </div>
-    {% endblock %}
+    {% endblock breadcrumbs %}
 {% endif %}

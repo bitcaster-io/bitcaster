@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load admin_list static i18n feature_flags %}
+{% load admin_list feature_flags i18n static %}
 
 {% block extrastyle %}
   {{ block.super }}
@@ -7,7 +7,7 @@
   <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
   {{ media.css }}
   <link rel="stylesheet" type="text/css" href="{% static 'admin/css/constance.css' %}">
-{% endblock %}
+{% endblock extrastyle %}
 
 {% block extrahead %}
 {% url 'admin:jsi18n' as jsi18nurl %}
@@ -18,7 +18,7 @@
 {% if django_version < "5.1" %}
 <script type="text/javascript" src="{% static 'admin/js/collapse.js' %}"></script>
 {% endif %}
-{% endblock %}
+{% endblock extrahead %}
 
 {% block bodyclass %}{{ block.super }} change-list{% endblock %}
 
@@ -60,23 +60,23 @@
             {% endif %}
 
             <p class="paginator sticky-footer">
-              <input type="submit" name="_save" class="default" value="{% trans 'Save' %}">
+              <input type="submit" name="_save" class="default" value="{% translate 'Save' %}">
             </p>
         </form>
     </div>
   </div>
-{% endblock %}
+{% endblock content %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
 {% flag_enabled 'OLD_STYLE_UI' as OLD_STYLE_UI %}
     {% if OLD_STYLE_UI %}
     &rsaquo; <a href="{% url 'admin:app_list' app_label=cl.opts.app_label %}">{{ cl.opts.app_config.verbose_name }}</a>
         {% else %}
     {% endif %}
 
-{#  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>#}
+{# &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a> #}
   &rsaquo; {{ opts.verbose_name_plural|capfirst }}
 </div>
-{% endblock %}
+{% endblock breadcrumbs %}
