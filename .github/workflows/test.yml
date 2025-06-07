@@ -73,7 +73,7 @@ jobs:
       DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
       DATABASE_URL: postgres://postgres:postgres@localhost:15432/test
       CACHE_URL: redis://localhost:16379/0
-      VALKEY_URL: redis://localhost:16379/0
+      CELERY_BROKER_URL: redis://localhost:16379/0
       DOCKER_BUILDKIT: 1
       RUNNER_TOOL_CACHE: /tmp/
     steps:
