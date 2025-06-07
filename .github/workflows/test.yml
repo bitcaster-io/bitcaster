@@ -117,7 +117,7 @@ jobs:
 
     - name: Run Test suite
       run: |
-        uv run tox -e tests
+        tox -e tests
 
     - name: Archive selenium results
       uses: actions/upload-artifact@v4
@@ -141,7 +141,7 @@ jobs:
         fail_ci_if_error: true
         files: coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
-        verbose: false
+        verbose: true
         name: codecov-${{env.GITHUB_REF_NAME}}
 
     - name: build
