@@ -93,6 +93,7 @@ jobs:
           **/pyproject.toml
           **/uv.lock
         python-version: 3.13.1
+        activate-environment: true
 
     - name: Restore cached vEnv
       id: cache-venv-restore
