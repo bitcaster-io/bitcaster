@@ -1,3 +1,4 @@
+import contextlib
 import os
 import sys
 import tempfile
@@ -6,7 +7,6 @@ from typing import TYPE_CHECKING, List
 
 import pytest
 import responses
-import contextlib
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -25,23 +25,6 @@ sys.path.insert(0, str(here / "extras"))
 
 
 def pytest_addoption(parser) -> None:
-    parser.addoption(
-        "--with-selenium",
-        action="store_true",
-        dest="enable_selenium",
-        default=False,
-        help="enable selenium tests",
-    )
-
-    parser.addoption(
-        "--show-browser",
-        "-S",
-        action="store_true",
-        dest="show_browser",
-        default=False,
-        help="will not start browsers in headless mode",
-    )
-
     parser.addoption(
         "--with-sentry",
         action="store_true",
@@ -102,9 +85,6 @@ def pytest_configure(config):
     else:
         os.environ["SENTRY_ENVIRONMENT"] = config.option.sentry_environment
 
-    if not config.option.enable_selenium:
-        config.option.enable_selenium = "selenium" in config.option.markexpr
-
     config.addinivalue_line("markers", "skip_test_if_env(env): this mark skips the tests for the given env")
     from django.conf import settings
 
@@ -137,10 +117,10 @@ def system_objects(admin_user: "User") -> None:
     from django.contrib.auth.models import Group
 
     from bitcaster.auth.constants import DEFAULT_GROUP_NAME
-    from bitcaster.constants import Bitcaster
+    from bitcaster.constants import bitcaster
 
     Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
-    Bitcaster.initialize(admin_user)
+    bitcaster.initialize(admin_user)
 
 
 @pytest.fixture(autouse=True)
@@ -182,19 +162,19 @@ def superuser(db):
 def os4d(db):
     from testutils.factories.org import OrganizationFactory
 
-    from bitcaster.constants import Bitcaster
+    from bitcaster.constants import bitcaster
 
-    return OrganizationFactory(name=Bitcaster.ORGANIZATION, slug="os4d")
+    return OrganizationFactory(name=bitcaster.ORGANIZATION, slug="os4d")
 
 
 @pytest.fixture
 def bitcaster(os4d) -> "Application":
     from testutils.factories.org import ApplicationFactory
 
-    from bitcaster.constants import Bitcaster
+    from bitcaster.constants import bitcaster
 
     return ApplicationFactory(
-        name=Bitcaster.APPLICATION, project__organization=os4d, project__name=Bitcaster.PROJECT, slug="bitcaster"
+        name=bitcaster.APPLICATION, project__organization=os4d, project__name=bitcaster.PROJECT, slug="bitcaster"
     )
 
 

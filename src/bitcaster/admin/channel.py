@@ -26,8 +26,8 @@ from .filters import ChannelTypeFilter
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
-    from formtools.wizard.storage.session import SessionStorage
     from django.utils.datastructures import _ListOrTuple
+    from formtools.wizard.storage.session import SessionStorage
 
     from bitcaster.types.django import AnyModel
     from bitcaster.types.http import AuthHttpRequest

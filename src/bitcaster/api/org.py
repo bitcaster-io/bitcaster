@@ -6,7 +6,7 @@ from rest_framework.viewsets import ViewSet
 
 from bitcaster.api.base import SecurityMixin
 from bitcaster.auth.constants import Grant
-from bitcaster.constants import Bitcaster
+from bitcaster.constants import bitcaster
 from bitcaster.models import Organization
 from bitcaster.utils.http import absolute_uri
 
@@ -39,4 +39,4 @@ class OrgView(SecurityMixin, ViewSet, RetrieveAPIView):
     lookup_field = "slug"
 
     def get_queryset(self) -> QuerySet[Organization]:
-        return Organization.objects.exclude(id=Bitcaster.app.organization.pk)
+        return Organization.objects.exclude(id=bitcaster.app.organization.pk)

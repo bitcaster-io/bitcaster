@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from .application import Application
-from .mixins import BitcasterBaselManager, BitcasterBaseModel
+from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
 logger = logging.getLogger(__name__)
 

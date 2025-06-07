@@ -1,4 +1,4 @@
-{% load static i18n %}<!DOCTYPE HTML>
+{% load i18n static %}<!DOCTYPE HTML>
 <html>
 <head>
     <meta name="change-url" content="{% url "admin:bitcaster_message_change" original.pk %}">
@@ -34,7 +34,7 @@
                 type="button">{% translate 'Context' %}</button>
         <div class="address-line">
             {{ form.recipient }}
-{#            <input type="text" class="address" id="address" value="{{ form.re }}">#}
+{# <input type="text" class="address" id="address" value="{{ form.re }}"> #}
             <button id="btn_test" class="button" type="button">{% translate 'Test' %}</button>
         </div>
     </div>

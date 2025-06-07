@@ -12,7 +12,7 @@ from django.urls import reverse
 from bitcaster.forms.application import ApplicationChangeForm
 from bitcaster.models import Application
 
-from ..constants import Bitcaster
+from ..constants import bitcaster
 from ..state import state
 from ..utils.django import url_related
 from .base import BaseAdmin, ButtonColor
@@ -47,7 +47,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
 
     def get_readonly_fields(self, request: HttpRequest, obj: Application | None = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
-        if obj and obj.organization.name == Bitcaster.ORGANIZATION:
+        if obj and obj.organization.name == bitcaster.ORGANIZATION:
             base.extend(
                 [
                     "name",
@@ -83,7 +83,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
         button.href = f"{url}?event__application__exact={application.pk}"
 
     @button(
-        visible=lambda s: s.context["original"].project.organization.name != Bitcaster.ORGANIZATION,
+        visible=lambda s: s.context["original"].project.organization.name != bitcaster.ORGANIZATION,
         html_attrs={"class": ButtonColor.ACTION.value},
     )
     def add_event(self, request: HttpRequest, pk: str) -> HttpResponse:

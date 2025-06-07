@@ -14,7 +14,7 @@ from django.utils.translation import gettext as _
 
 from bitcaster.models import Assignment, Event
 
-from ..constants import Bitcaster
+from ..constants import bitcaster
 from ..forms.event import EventChangeForm
 from ..state import state
 from .base import BaseAdmin, ButtonColor
@@ -93,15 +93,15 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
         return super().get_queryset(request).select_related("application__project__organization")
 
     def delete_queryset(self, request: HttpRequest, queryset: QuerySet[Event]) -> None:
-        queryset.exclude(application__project__organization__name=Bitcaster.ORGANIZATION).delete()
+        queryset.exclude(application__project__organization__name=bitcaster.ORGANIZATION).delete()
 
     def get_deleted_objects(
         self, objs: QuerySet[Event] | Sequence[Event], request: HttpRequest
     ) -> tuple[list[Any] | Any, dict[str, Any] | Any, set[Any] | Any, list[Any] | Any]:
         if isinstance(objs, QuerySet):
-            objs = objs.exclude(application__project__organization__name=Bitcaster.ORGANIZATION)
+            objs = objs.exclude(application__project__organization__name=bitcaster.ORGANIZATION)
             to_delete, model_count, perms_needed, protected = super().get_deleted_objects(objs, request)
-        elif objs[0].application.project.organization.name == Bitcaster.ORGANIZATION:
+        elif objs[0].application.project.organization.name == bitcaster.ORGANIZATION:
             to_delete, model_count, perms_needed, protected = [], {}, set(), objs  # type: ignore[assignment]
         else:
             to_delete, model_count, perms_needed, protected = super().get_deleted_objects(objs, request)

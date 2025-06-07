@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from unittest.mock import Mock
 
 import pytest
@@ -8,7 +9,6 @@ from bitcaster.dispatchers.base import Payload
 from bitcaster.exceptions import DispatcherError
 from bitcaster.state import state
 from bitcaster.webpush.dispatcher import WebPushConfig, WebPushDispatcher
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment

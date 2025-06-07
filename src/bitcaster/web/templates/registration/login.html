@@ -1,4 +1,4 @@
-{% extends "bitcaster/base.html" %}{% load static feature_flags %}
+{% extends "bitcaster/base.html" %}{% load feature_flags static %}
 {% block body %}
     {% flag_enabled 'LOCAL_LOGIN' as LOCAL_LOGIN %}
 
@@ -24,4 +24,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock body %}

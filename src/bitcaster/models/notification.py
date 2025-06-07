@@ -13,7 +13,7 @@ from ..dispatchers.base import Payload
 from ..utils.shortcuts import render_string
 from .assignment import Assignment
 from .distribution import DistributionList
-from .mixins import BaseQuerySet, BitcasterBaselManager, BitcasterBaseModel
+from .mixins import BaseQuerySet, BitcasterBaseModel, BitcasterBaselManager
 
 if TYPE_CHECKING:
     from bitcaster.dispatchers.base import Dispatcher

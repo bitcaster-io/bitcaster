@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from cryptography.hazmat.primitives import serialization
 from django import forms

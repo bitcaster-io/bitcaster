@@ -5,13 +5,14 @@ from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
-from ..constants import Bitcaster
-from .mixins import BitcasterBaselManager, BitcasterBaseModel, LockMixin, SlugMixin
+from ..constants import bitcaster
+from .mixins import BitcasterBaseModel, BitcasterBaselManager, LockMixin, SlugMixin
 from .project import Project
 from .user import User
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+
     from bitcaster.models import Channel, Event, Message, Organization
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,7 @@ class ApplicationManager(BitcasterBaselManager["Application"]):
         return self.get(slug=slug, project__organization__slug=org, project__slug=prj)
 
     def local(self, **kwargs: Any) -> "QuerySet[Application]":
-        return self.exclude(project__organization__name=Bitcaster.ORGANIZATION).filter(**kwargs)
+        return self.exclude(project__organization__name=bitcaster.ORGANIZATION).filter(**kwargs)
 
 
 class Application(SlugMixin, LockMixin, BitcasterBaseModel):

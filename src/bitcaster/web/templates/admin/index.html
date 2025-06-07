@@ -1,7 +1,7 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static feature_flags %}
+{% load feature_flags i18n static %}
 {% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" href="{% static "admin/css/dashboard.css" %}">{% endblock %}
+<link rel="stylesheet" href="{% static "admin/css/dashboard.css" %}">{% endblock extrastyle %}
 
 {% block coltype %}colMS{% endblock %}
 
@@ -10,14 +10,14 @@
 {% block nav-breadcrumbs %}{% endblock %}
 
 {% block nav-sidebar %}
-    {% if not is_popup and is_nav_sidebar_enabled or not django_ui%}
+    {% if not is_popup and is_nav_sidebar_enabled or not django_ui %}
         {% if django_ui %}
               {% include "admin/nav_sidebar.html" %}
         {% else %}
               {% include "admin/nav_sidebar2.html" %}
         {% endif %}
     {% endif %}
-{% endblock %}
+{% endblock nav-sidebar %}
 
 {% block content %}
     <div id="content-main">
@@ -25,10 +25,10 @@
             {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
         {% else %}
             {% include "admin/dashboard.html" %}
-{#            {% include "admin/app_list.html" with app_list=sections show_changelinks=True %}#}
+{# {% include "admin/app_list.html" with app_list=sections show_changelinks=True %} #}
         {% endif %}
     </div>
-{% endblock %}
+{% endblock content %}
 
 {% block sidebar %}
     {% if django_ui %}
@@ -79,4 +79,4 @@
         </div>
     </div>
     {% endif %}
-{% endblock %}
+{% endblock sidebar %}

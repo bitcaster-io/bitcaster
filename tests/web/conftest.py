@@ -5,12 +5,13 @@ import pytest
 from bitcaster.state import state
 
 if TYPE_CHECKING:
-    from django_webtest.pytest_plugin import MixinWithInstanceVariables
-    from bitcaster.models import User
     from django.http import HttpRequest
-    from django_webtest import DjangoTestApp
     from django.test.client import RequestFactory
+    from django_webtest import DjangoTestApp
+    from django_webtest.pytest_plugin import MixinWithInstanceVariables
     from pytest_django.fixtures import SettingsWrapper
+
+    from bitcaster.models import User
 
 
 @pytest.fixture

@@ -14,8 +14,8 @@ from strategy_field.utils import fqn
 from bitcaster.auth.constants import Grant
 from bitcaster.dispatchers import (
     GMailDispatcher,
-    MailgunDispatcher,
     MailJetDispatcher,
+    MailgunDispatcher,
     SlackDispatcher,
 )
 from bitcaster.models import UserRole
@@ -132,9 +132,9 @@ class Command(BaseCommand):
                 o = u.managed_organizations.update_or_create(name=org_name)[0]
                 p = o.projects.update_or_create(name=prj_name, owner=u, defaults={"environments": envs})[0]
                 active_project = p
-                from bitcaster.constants import Bitcaster
+                from bitcaster.constants import bitcaster
 
-                UserRole.objects.get_or_create(user=u, organization=o, group=Bitcaster.get_default_group())
+                UserRole.objects.get_or_create(user=u, organization=o, group=bitcaster.get_default_group())
 
                 self.echo(f"Created/Updated Organization {org_name}", style_func=self.style.SUCCESS)
                 self.echo(f"Created/Updated Project {prj_name}", style_func=self.style.SUCCESS)

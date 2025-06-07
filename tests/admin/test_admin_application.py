@@ -30,10 +30,10 @@ def application(db: Any) -> Application:
 def bitcaster(db: Any) -> "Application":
     from testutils.factories import ApplicationFactory
 
-    from bitcaster.constants import Bitcaster
+    from bitcaster.constants import bitcaster
 
     return ApplicationFactory(
-        name=Bitcaster.APPLICATION, project__name=Bitcaster.PROJECT, project__organization__name=Bitcaster.ORGANIZATION
+        name=bitcaster.APPLICATION, project__name=bitcaster.PROJECT, project__organization__name=bitcaster.ORGANIZATION
     )
 
 

@@ -7,6 +7,7 @@ from bitcaster.utils.user_agent import get_user_agent
 
 if TYPE_CHECKING:
     from django.core.handlers.wsgi import WSGIRequest
+
     from bitcaster.types.http import AsyncGetResponseCallable, GetResponseCallable
 
 

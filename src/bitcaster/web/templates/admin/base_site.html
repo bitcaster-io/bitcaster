@@ -7,14 +7,12 @@
     {% if user.is_anonymous %}
         {% include "admin/color_theme_toggle.html" %}
     {% endif %}
-{% endblock %}
-
+{% endblock branding %}
 
 {% block nav-global %}{% endblock %}
-
 
 {% block footer %}
     <div id="footer">
         {% include "fragments/footer.html" %}
     </div>
-{% endblock %}
+{% endblock footer %}

@@ -5,7 +5,7 @@
             {{ block.super }}
         </div>
         <div style="display: inline-flex; flex:min-content">
-            {% if original.pk and original.schedule and  original.schedule.crontab %}
+            {% if original.pk and original.schedule and original.schedule.crontab %}
                 <div class="boxed">
                     <fieldset>
                         <div class="form-row">
@@ -34,6 +34,7 @@
             {% endif %}
         </div>
     </div>
-{% endblock %}
+{% endblock field_sets %}
+
 {% block after_field_sets %}
-{% endblock %}
+{% endblock after_field_sets %}

@@ -6,10 +6,8 @@ import pytest
 from django.core.files.base import ContentFile
 from django.db.models.fields.files import ImageFieldFile
 
-
 if TYPE_CHECKING:
-    from bitcaster.models import Application
-    from bitcaster.models import MediaFile
+    from bitcaster.models import Application, MediaFile
 
 
 @pytest.mark.parametrize("fmt,mime", [("ICO", "image/vnd.microsoft.icon"), ("JPEG", "image/jpeg")])

@@ -1,0 +1,106 @@
+---
+name: Build Docker
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_reference:
+        description: 'Branch, Tag, or Commit SHA to deploy (e.g., develop, 1.0.0, a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0)'
+        required: true
+        type: string
+        default: 'develop'
+      tag:
+        description: 'Docker tag'
+        required: false
+        type: string
+      latest:
+        description: 'Is this the latest docker image'
+        required: false
+        type: boolean
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  id-token: write
+  attestations: write
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inputs
+        run: |
+            echo "::notice title=Ref:: ${{ github.event.inputs.git_reference }}"
+            echo "::notice title=Tag:: ${{ github.event.inputs.tag }}"
+            echo "::notice title=latest :: ${{ github.event.inputs.latest }}"
+
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+        with:
+          ref: ${{ github.event.inputs.git_reference }}
+          fetch-depth: 0
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set target input
+        id: config
+        run: |
+          version=$(uvx --with hatch-vcs hatchling metadata version)
+          COMMIT_SHA=$(git rev-parse "$GITHUB_SHA")
+          git_reference="${{ github.event.inputs.git_reference }}"
+
+          tag="${{ github.event.inputs.tag }}"
+          if [ -z "$tag" ]; then
+            tag="$git_reference"
+          fi
+          BUILD_DATE=$(date +"%Y-%m-%d %H:%M")
+
+          echo "git_reference=$git_reference" >> $GITHUB_OUTPUT
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          echo "build_date=$BUILD_DATE" >> $GITHUB_OUTPUT
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64
+
+      - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }})
+        uses: docker/build-push-action@v6
+        id: build
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: |
+            os4d/bitcaster:${{ steps.config.outputs.tag }}
+            ${{ github.event.inputs.latest == 'true' && 'os4d/bitcaster:latest' || null}}
+          build-args: |
+            VERSION=${{ steps.config.outputs.git_reference }}
+            BUILD_DATE=${{ steps.config.outputs.build_date }}
+            GIT_SHA=${{ steps.config.outputs.commit_sha }}
+
+      - name: Info
+        run: |
+            echo "::notice title=Tag:: Successfully built os4d/bitcaster:${{ steps.config.outputs.tag }}"
+            echo "::notice title=ImageId:: ${{ steps.build.outputs.imageid }}"
+            echo "::notice title=Version :: ${{ steps.config.outputs.version }}"

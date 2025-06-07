@@ -18,6 +18,7 @@ from bitcaster.state import state
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
+
     from bitcaster.models import Channel, Group
 
 register(UserFactory)

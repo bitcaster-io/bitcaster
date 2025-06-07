@@ -12,11 +12,11 @@ from django_webtest import DjangoTestApp
 from bitcaster.models.mixins import LockMixin
 
 if TYPE_CHECKING:
-    from testutils.factories.base import AutoRegisterModelFactory
     from django.db.models.options import Options
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
     from pytest_django.fixtures import SettingsWrapper
     from responses import RequestsMock
+    from testutils.factories.base import AutoRegisterModelFactory
 
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]

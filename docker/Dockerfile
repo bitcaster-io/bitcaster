@@ -1,10 +1,12 @@
-FROM python:3.12-slim-bookworm AS base_os
-ARG GOSU_VERSION=1.17
-ARG GOSU_SHA256=bbc4136d03ab138b1ad66fa4fc051bafc6cc7ffae632b069a53657279a450de3
-
+FROM python:3.13-slim-bookworm AS base_os
+ARG VERSION
+ARG GIT_SHA
+ARG BUILD_DATE
 
 RUN set -x \
   && runtimeDeps=" \
+    nginx \
+    gettext \
     libmagic1 \
     libxml2 \
   " \
@@ -12,18 +14,13 @@ RUN set -x \
 wget \
 " \
   && apt-get update && apt-get install -y --no-install-recommends ${buildDeps} ${runtimeDeps} \
-  && rm -rf /var/lib/apt/lists/* \
-  && wget --quiet -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
-  && echo "$GOSU_SHA256 /usr/local/bin/gosu" | sha256sum --check --status \
-  && chmod +x /usr/local/bin/gosu \
   && apt-get purge -y --auto-remove $buildDeps
 
-RUN groupadd --gid 1024 bitcaster-io \
-    && adduser --disabled-login --disabled-password --no-create-home --ingroup bitcaster-io -q bitcaster
+RUN groupadd --gid 1024 os4d \
+    && adduser --disabled-login --disabled-password --no-create-home --ingroup os4d -q bitcaster
 
-
-# ------- builder -------
-FROM base_os AS builder
+# ------- deps -------
+FROM base_os AS deps
 RUN set -x \
     && buildDeps="build-essential \
 cmake \
@@ -44,123 +41,48 @@ zlib1g-dev  \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gnupg wget curl unzip && \
-    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
-    apt-get update -y && \
-    apt-get install -y --no-install-recommends google-chrome-stable && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
-    CHROME_VERSION=$(google-chrome --product-version) && \
-    wget -q --continue -P /chromedriver "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip" && \
-    unzip /chromedriver/chromedriver* -d /usr/local/bin/ && \
-    rm -rf /chromedriver
+RUN pip install uwsgi uv
 
-RUN pip install uv uwsgi
-
-#
-#WORKDIR /app
-#RUN --mount=type=cache,target=/root/.uv-cache \
-#    --mount=type=bind,source=uv.lock,target=/app/uv.lock \
-#    --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
-#    --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
-#    --mount=type=bind,source=README.md,target=/app/README.md \
-#    --mount=type=bind,source=./src/bitcaster,target=/app/src/bitcaster \
-#    uv sync --cache-dir=/root/.uv-cache \
-#        --python=/usr/local/bin//python \
-#        --python-preference=system \
-#        --no-dev --no-editable --frozen --extra distribution
-
-
-# ------- tests -------
-FROM builder AS tests
-ARG BUILD_DATE
-ARG VERSION
-
-LABEL distro="tests"
-LABEL org.opencontainers.image.created="$BUILD_DATE"
-LABEL org.opencontainers.image.version="$VERSION"
-
-ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
-    DJANGO_SETTINGS_MODULE=bitcaster.config.settings \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONPATH=""\
-    UWSGI_PROCESSES=4
-WORKDIR /app
-COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
-COPY src /app/src/
-
-RUN --mount=type=cache,target=/root/.uv-cache \
-    uv sync --cache-dir=/root/.uv-cache \
-        --python=/usr/local/bin/python \
-        --python-preference=system \
-        --frozen
-
-
-
-# ------- production only deps-------
-FROM builder AS production
-ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
-    DJANGO_SETTINGS_MODULE=bitcaster.config.settings \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONPATH=""\
-    UWSGI_PROCESSES=4
-WORKDIR /app
-COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
-COPY src /app/src/
-
-RUN --mount=type=cache,target=/root/.uv-cache \
-    uv sync --cache-dir=/root/.uv-cache \
-        --python=/usr/local/bin/python \
-        --python-preference=system \
-        --no-dev --no-editable --frozen
-
-
-# ------- dist -------
-FROM base_os AS dist
-ARG BUILD_DATE
-ARG VERSION
-ARG GIT_SHA
-
-ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
-    DJANGO_SETTINGS_MODULE=bitcaster.config.settings \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    STATIC_URL="/static/" \
-    PYTHONPATH=""\
-    PGSSLCERT="/tmp/postgresql.crt" \
-    UWSGI_PROCESSES=4
+# ------- builder -------
+FROM deps AS builder
+ENV VIRTUAL_ENV=/venv \
+    UV_PROJECT_ENVIRONMENT=/venv
 
 RUN <<EOF cat> /RELEASE
 {"version": "$VERSION",
- "commit": "$GIT_SHA",
- "date": "$BUILD_DATE",
+  "commit": "$GIT_SHA"
+  "date": "$BUILD_DATE"
 }
 EOF
-WORKDIR /app
-COPY docker/conf /conf/
-COPY docker/bin/* /usr/local/bin/
-COPY LICENSE.md README.md /
-COPY src /app/src/
-RUN rm -fr /app/src/
+RUN mkdir /code /venv
 
+WORKDIR /code
+COPY . /code
 
-COPY --chown=bitcatser:bitcatser-io --from=production /app/.venv /app/.venv
-COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/uv /usr/local/bin/
-RUN --mount=type=cache,target=/root/.uv-cache \
-    --mount=type=bind,source=uv.lock,target=/app/uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
-    --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
-    --mount=type=bind,source=README.md,target=/app/README.md \
-    --mount=type=bind,source=./src/bitcaster,target=/app/src/bitcaster \
-    uv --cache-dir=/root/.uv-cache pip install --no-deps .
+RUN ls -al /code/src/
+RUN uv venv --no-cache $VIRTUAL_ENV \
+    && uv sync --no-dev --frozen --no-editable --no-cache
 
+FROM base_os AS dist
+ADD docker/conf /conf/
+ADD docker/bin/* /usr/local/bin/
+
+COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/
+COPY --from=builder /venv /venv
+
+ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
+    VERSION=$VERSION \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    DJANGO_SETTINGS_MODULE="bitcaster.config.settings" \
+    STATIC_URL="/static/" \
+    PYTHONPATH=""\
+    GIT_SHA=$GIT_SHA \
+    PGSSLCERT="/tmp/postgresql.crt" \
+    UWSGI_PROCESSES=4
 
 EXPOSE 8000
-ENTRYPOINT exec docker-entrypoint.sh "$0" "$@"
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run"]
 
 LABEL distro="final"

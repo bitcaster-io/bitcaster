@@ -10,8 +10,9 @@ from bitcaster.webpush.models import Browser
 from bitcaster.webpush.utils import sign
 
 if TYPE_CHECKING:
-    from bitcaster.models import Assignment
     from django.http import HttpResponse
+
+    from bitcaster.models import Assignment
 
 
 @register(Browser)

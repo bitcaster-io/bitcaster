@@ -8,13 +8,13 @@
                 <a class="button small" href="{% url "admin:bitcaster_assignment_add" %}?address={{ a.pk }}&channel={{ original.pk }}&user={{ user.pk }}&next={{ request.path }}">
                     Assign to channel</a>
 
-{#                <ul>#}
-{#                    {% for v in a.assignments.all %}#}
-{#                        <li>{{ v }}</li>#}
-{#                    {% empty %}#}
-{#                        <li>00000</li>#}
-{#                    {% endfor %}#}
-{#                </ul>#}
+{# <ul> #}
+{# {% for v in a.assignments.all %} #}
+{# <li>{{ v }}</li> #}
+{# {% empty %} #}
+{# <li>00000</li> #}
+{# {% endfor %} #}
+{# </ul> #}
 
             </li>
         {% endfor %}
@@ -60,4 +60,4 @@
             <input type="submit">
         </form>
     {% endif %}
-{% endblock %}
+{% endblock action-content %}

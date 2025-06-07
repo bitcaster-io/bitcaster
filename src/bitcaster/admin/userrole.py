@@ -1,15 +1,15 @@
 import logging
+from typing import TYPE_CHECKING
 
 from adminfilters.autocomplete import AutoCompleteFilter
 from django.contrib import admin
 
 from ..models import UserRole
 from .base import BaseAdmin
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from django.http import HttpRequest
     from django.db.models import QuerySet
+    from django.http import HttpRequest
 
 logger = logging.getLogger(__name__)
 

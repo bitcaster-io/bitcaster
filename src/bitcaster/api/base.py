@@ -14,9 +14,10 @@ from ..exceptions import InvalidGrantError
 from .permissions import ApiApplicationPermission, ApiKeyAuthentication
 
 if TYPE_CHECKING:
-    from rest_framework.permissions import BasePermission
-    from ..auth.constants import Grant
     from django.utils.datastructures import _ListOrTuple
+    from rest_framework.permissions import BasePermission
+
+    from ..auth.constants import Grant
 
 
 class SecurityMixin(APIView):

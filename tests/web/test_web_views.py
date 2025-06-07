@@ -6,10 +6,10 @@ from django.urls import reverse
 from django_webtest import DjangoTestApp
 from pytest_django.fixtures import SettingsWrapper
 
-
 if TYPE_CHECKING:
-    from bitcaster.models import User
     from django.test import Client
+
+    from bitcaster.models import User
 
 pytestmark = pytest.mark.django_db
 

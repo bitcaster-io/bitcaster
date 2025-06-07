@@ -14,7 +14,7 @@ from bitcaster.constants import AddressType
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment, Channel, Event, User
-    from bitcaster.types.dispatcher import TDispatcherConfig, DispatcherHandler
+    from bitcaster.types.dispatcher import DispatcherHandler, TDispatcherConfig
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +92,7 @@ class Dispatcher(metaclass=DispatcherMeta):
     slug = "--"
     verbose_name: str = ""
     config_class: "type[DispatcherConfig] | None" = DispatcherConfig
-    backend: "DispatcherHandler | str | None" = None
+    backend: "Any | None" = None
     address_types: list[AddressType] = [AddressType.GENERIC]
     channel: "Channel"
     protocol: MessageProtocol = MessageProtocol.PLAINTEXT

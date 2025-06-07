@@ -5,8 +5,8 @@ from django.db import models
 from django.db.models import QuerySet
 from django.utils.translation import gettext as _
 
-from ..constants import Bitcaster
-from .mixins import BitcasterBaselManager, BitcasterBaseModel, SlugMixin
+from ..constants import bitcaster
+from .mixins import BitcasterBaseModel, BitcasterBaselManager, SlugMixin
 from .user import User
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ class OrganizationManager(BitcasterBaselManager["Organization"]):
         return self.get(slug=slug)
 
     def local(self, **kwargs: Any) -> "QuerySet[Organization]":
-        return self.exclude(name=Bitcaster.ORGANIZATION).filter(**kwargs)
+        return self.exclude(name=bitcaster.ORGANIZATION).filter(**kwargs)
 
 
 class Organization(SlugMixin, BitcasterBaseModel):

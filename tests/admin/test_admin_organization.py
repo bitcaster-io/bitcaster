@@ -6,12 +6,13 @@ from testutils.factories import GroupFactory, OrganizationFactory
 from webtest import Upload
 
 from bitcaster.auth.constants import DEFAULT_GROUP_NAME
-from bitcaster.constants import Bitcaster
+from bitcaster.constants import bitcaster
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Group, Message, Organization, Project
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
+
+    from bitcaster.models import Channel, Group, Message, Organization, Project
 
     Context = TypedDict(
         "Context",
@@ -78,7 +79,7 @@ def test_avoid_duplicates_template(app: "DjangoTestApp", context: "Context") -> 
 
 
 def test_protected_org(app: "DjangoTestApp") -> None:
-    dl = OrganizationFactory(name=Bitcaster.ORGANIZATION)
+    dl = OrganizationFactory(name=bitcaster.ORGANIZATION)
     url = reverse("admin:bitcaster_organization_change", args=[dl.pk])
     res = app.get(url)
     frm = res.forms["organization_form"]

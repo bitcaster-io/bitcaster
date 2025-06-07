@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from ..dispatchers.base import Capability
 from .channel import Channel
 from .event import Event
-from .mixins import BitcasterBaselManager, BitcasterBaseModel, Scoped3Mixin
+from .mixins import BitcasterBaseModel, BitcasterBaselManager, Scoped3Mixin
 from .notification import Notification
 
 if TYPE_CHECKING:

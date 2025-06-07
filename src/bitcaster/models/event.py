@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from ..constants import Bitcaster
+from ..constants import bitcaster
 from ..utils.http import absolute_reverse
 from .application import Application
 from .channel import Channel
@@ -70,7 +70,7 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
         return self.slug, *self.application.natural_key()
 
     def delete(self, using: str | None = None, keep_parents: bool = False) -> tuple[int, dict[str, Any]]:
-        if self.application.project.organization.name == Bitcaster.ORGANIZATION:
+        if self.application.project.organization.name == bitcaster.ORGANIZATION:
             return 0, {}
         return super().delete(using, keep_parents)
 

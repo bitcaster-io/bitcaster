@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from django.contrib.admin.options import InlineModelAdmin
+
     from bitcaster.types.django import AnyModel
 
     AddressT = TypeVar("AddressT", bound=Address)

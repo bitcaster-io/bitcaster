@@ -3,7 +3,7 @@ from typing import Any
 from django.db import models
 from django.utils.translation import gettext as _
 
-from .mixins import BitcasterBaselManager, BitcasterBaseModel
+from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
 
 class AssignmentManager(BitcasterBaselManager["Assignment"]):

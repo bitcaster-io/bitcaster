@@ -10,7 +10,7 @@ from django.urls import reverse
 
 from bitcaster.models import Project
 
-from ..constants import Bitcaster
+from ..constants import bitcaster
 from ..forms.project import ProjectChangeForm
 from ..utils.django import url_related
 from .base import BaseAdmin, ButtonColor
@@ -55,7 +55,7 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
 
     @button(
         html_attrs={"class": ButtonColor.ACTION.value},
-        visible=lambda s: s.context["original"].name != Bitcaster.PROJECT,
+        visible=lambda s: s.context["original"].name != bitcaster.PROJECT,
     )
     def add_application(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Application
@@ -64,7 +64,7 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
 
     @button(
         html_attrs={"class": ButtonColor.ACTION.value},
-        visible=lambda s: s.context["original"].name != Bitcaster.PROJECT,
+        visible=lambda s: s.context["original"].name != bitcaster.PROJECT,
     )
     def add_distribution_list(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import DistributionList
@@ -73,7 +73,7 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
 
     @button(
         html_attrs={"class": ButtonColor.ACTION.value},
-        visible=lambda s: s.context["original"].name != Bitcaster.PROJECT,
+        visible=lambda s: s.context["original"].name != bitcaster.PROJECT,
     )
     def add_channel(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Channel
@@ -82,7 +82,7 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
 
     def get_readonly_fields(self, request: HttpRequest, obj: Project | None = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
-        if obj and obj.organization.name == Bitcaster.ORGANIZATION:
+        if obj and obj.organization.name == bitcaster.ORGANIZATION:
             base.extend(["name", "slug", "organization", "subject_prefix"])
         return base
 
@@ -90,7 +90,7 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]
         return super().has_add_permission(request) and Project.objects.count() < 2
 
     def has_delete_permission(self, request: HttpRequest, obj: Project | None = None) -> bool:
-        if obj and obj.organization.name == Bitcaster.ORGANIZATION:
+        if obj and obj.organization.name == bitcaster.ORGANIZATION:
             return False
         return super().has_delete_permission(request) and super().has_delete_permission(request, obj)
 

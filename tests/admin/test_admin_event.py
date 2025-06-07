@@ -6,7 +6,7 @@ from django.contrib.messages import SUCCESS, Message  # type: ignore[attr-define
 from django.urls import reverse
 from testutils.factories import EventFactory
 
-from bitcaster.constants import Bitcaster
+from bitcaster.constants import bitcaster
 
 if TYPE_CHECKING:
     from django.db.models.options import Options
@@ -80,9 +80,9 @@ def test_delete_event_protect_internal(app: "DjangoTestApp", context: "Context")
     from bitcaster.models import Event
 
     internal_event: Event = EventFactory(
-        application__name=Bitcaster.APPLICATION,
-        application__project__name=Bitcaster.PROJECT,
-        application__project__organization__name=Bitcaster.ORGANIZATION,
+        application__name=bitcaster.APPLICATION,
+        application__project__name=bitcaster.PROJECT,
+        application__project__organization__name=bitcaster.ORGANIZATION,
     )
     url = reverse("admin:bitcaster_event_change", args=[internal_event.pk])  # type: ignore[arg-type]
     res = app.get(url, {})
@@ -97,9 +97,9 @@ def test_delete_action(app: "DjangoTestApp", context: "Context") -> None:
 
     event: "Event" = context["event"]
     internal_event: Event = EventFactory(
-        application__name=Bitcaster.APPLICATION,
-        application__project__name=Bitcaster.PROJECT,
-        application__project__organization__name=Bitcaster.ORGANIZATION,
+        application__name=bitcaster.APPLICATION,
+        application__project__name=bitcaster.PROJECT,
+        application__project__organization__name=bitcaster.ORGANIZATION,
     )
     url = reverse("admin:bitcaster_event_changelist")  # type: ignore[arg-type]
     res = app.get(url, {})

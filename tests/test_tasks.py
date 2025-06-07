@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
 
-from bitcaster.constants import Bitcaster, SystemEvent
+from bitcaster.constants import SystemEvent, bitcaster
 from bitcaster.tasks import (
     monitor_run,
     process_occurrence,
@@ -55,7 +55,7 @@ def setup(admin_user: "User") -> "Context":
     no: Notification = NotificationFactory(event__channels=[ch], distribution__recipients=[v1, v2])
     MessageFactory(channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}")
 
-    Bitcaster.initialize(admin_user)
+    bitcaster.initialize(admin_user)
 
     o = OccurrenceFactory(event=no.event, attempts=3)
     return {

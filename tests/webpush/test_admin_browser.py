@@ -6,6 +6,7 @@ from django_webtest import DjangoTestApp
 
 if TYPE_CHECKING:
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
+
     from bitcaster.models import Assignment, SocialProvider, User
 
     Context = TypedDict("Context", {"provider": SocialProvider})

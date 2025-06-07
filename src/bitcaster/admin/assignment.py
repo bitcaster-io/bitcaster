@@ -14,8 +14,8 @@ from bitcaster.models import Address, Assignment
 
 if TYPE_CHECKING:
     from django.db.models import ForeignKey
-    from django.forms import ModelChoiceField, ModelForm
     from django.db.models.fields.related import _ST
+    from django.forms import ModelChoiceField, ModelForm
 
     from bitcaster.types.django import AnyModel
 

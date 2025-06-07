@@ -1,6 +1,7 @@
 import mimetypes
 import posixpath
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib import messages
@@ -20,7 +21,6 @@ from django.utils.http import http_date
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.static import directory_index, was_modified_since
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from django.forms import Form

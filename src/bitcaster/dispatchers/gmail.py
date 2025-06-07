@@ -32,7 +32,7 @@ class GMailDispatcher(Dispatcher):
     verbose_name = "GMmail"
 
     config_class = GMailConfig
-    backend = EmailBackend
+    backend: type[EmailBackend] = EmailBackend
     protocol: MessageProtocol = MessageProtocol.EMAIL
 
     @cached_property

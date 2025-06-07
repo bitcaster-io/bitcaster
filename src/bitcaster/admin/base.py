@@ -10,6 +10,7 @@ from bitcaster.state import state
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+
     from bitcaster.types.django import AnyModel
 
 logger = logging.getLogger(__name__)

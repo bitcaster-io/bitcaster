@@ -9,7 +9,7 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from ..constants import Bitcaster
+from ..constants import bitcaster
 from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
@@ -42,7 +42,7 @@ class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
         )
 
     def system(self, *args: Any, **kwargs: Any) -> models.QuerySet["Occurrence"]:
-        return self.filter(event__application__name=Bitcaster.APPLICATION).filter(*args, **kwargs)
+        return self.filter(event__application__name=bitcaster.APPLICATION).filter(*args, **kwargs)
 
     def purgeable(self, *args: Any, **kwargs: Any) -> models.QuerySet["Occurrence"]:
         return self.filter(
