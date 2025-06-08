@@ -274,6 +274,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "bump2version" },
+    { name = "coverage" },
     { name = "django-debug-permissions" },
     { name = "django-extensions" },
     { name = "django-stubs", extra = ["compatible-mypy"] },
@@ -409,6 +410,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "bump2version", specifier = ">=1.0.1" },
+    { name = "coverage", specifier = ">=7.8.2" },
     { name = "django-debug-permissions", specifier = ">=1" },
     { name = "django-extensions", specifier = ">=3.2.3" },
     { name = "django-stubs", extras = ["compatible-mypy"], specifier = ">=5.2" },
@@ -423,7 +425,7 @@ dev = [
     { name = "pyfakefs", specifier = ">=5.8" },
     { name = "pyquery", specifier = ">=2" },
     { name = "pytest", specifier = ">=8.3.3" },
-    { name = "pytest-celery", specifier = ">=0" },
+    { name = "pytest-celery", specifier = ">=1.2.0" },
     { name = "pytest-coverage", specifier = ">=0" },
     { name = "pytest-django", specifier = ">=4.8" },
     { name = "pytest-echo", specifier = ">=1.7.3" },

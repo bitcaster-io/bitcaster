@@ -2,8 +2,14 @@
 branch = True
 source = src
 source_pkgs = bitcaster
-relative_files = True
-# partial_branches =
+;relative_files = True
+disable_warnings =
+    CoverageWarning
+    UserWarning
+
+concurrency =
+    thread
+    multiprocessing
 omit =
     **/~*/*
     **/~*
@@ -41,10 +47,11 @@ exclude_lines =
     @abc.abstractmethod
     @abstractmethod
 
-
+show_missing = true
 fail_under=90
 precision=2
 ignore_errors = True
+skip_covered = True
 
 [html]
 directory = ./~build/coverage

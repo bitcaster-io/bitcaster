@@ -81,6 +81,7 @@ dependencies = [
 [dependency-groups]
 dev = [
   "bump2version>=1.0.1",
+  "coverage>=7.8.2",
   "django-debug-permissions>=1",
   "django-extensions>=3.2.3",
   "django-stubs[compatible-mypy]>=5.2",
@@ -95,7 +96,7 @@ dev = [
   "pyfakefs>=5.8",
   "pyquery>=2",
   "pytest>=8.3.3",
-  "pytest-celery>=0",
+  "pytest-celery>=1.2",
   "pytest-coverage>=0",
   "pytest-django>=4.8",
   "pytest-echo>=1.7.3",
@@ -168,7 +169,7 @@ ignore-vcs = true
 packages = [ "src/bitcaster" ]
 
 [tool.poe.tasks.clean]
-script = "poethepoet.scripts:rm('dist', '~build', '*.xml')"
+script = "poethepoet.scripts:rm('dist', '~build', '*.xml', '*.coverage*')"
 
 [tool.poe.tasks.fullclean]
 script = "poethepoet.scripts:rm('dist', '~build', '.tox', '.act', '.venv')"
