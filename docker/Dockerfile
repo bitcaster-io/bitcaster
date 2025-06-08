@@ -85,17 +85,14 @@ EXPOSE 8000
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run"]
 
-LABEL distro="final"
 LABEL maintainer="bitcaster@bitcaster.io"
-LABEL cheksum="$CHECKSUM"
-
 LABEL org.opencontainers.image.authors="bitcaster@bitcaster.io"
 LABEL org.opencontainers.image.created="$BUILD_DATE"
 LABEL org.opencontainers.image.description="Bitcaster"
-LABEL org.opencontainers.image.documentation="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
-LABEL org.opencontainers.image.licenses="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${SOURCE_COMMIT:-master}/LICENSE.md"
-LABEL org.opencontainers.image.revision=$SOURCE_COMMIT
-LABEL org.opencontainers.image.source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${SOURCE_COMMIT:-master}/"
+LABEL org.opencontainers.image.documentation="https://github.com/bitcaster-io/bitcaster"
+LABEL org.opencontainers.image.licenses="https://github.com/bitcaster-io/bitcaster/blob/${GIT_SHA:-master}/LICENSE.md"
+LABEL org.opencontainers.image.revision=$GIT_SHA
+LABEL org.opencontainers.image.source="https://github.com/bitcaster-io/bitcaster/tree/${GIT_SHA:-master}/"
 LABEL org.opencontainers.image.title="Bitcaster"
 LABEL org.opencontainers.image.version="$VERSION"
 LABEL org.opencontainers.image.url="https://bitcaster.io/"
