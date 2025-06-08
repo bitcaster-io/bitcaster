@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any
 
-from admin_extra_buttons.buttons import Button
+from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from django.contrib import admin
@@ -43,7 +43,7 @@ class SocialProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin[SocialProvider]):
         return formfield
 
     @link()
-    def test(self, button: Button) -> None:
+    def test(self, button: ButtonWidget) -> None:
         if original := button.context.get("original"):
             button.label = f"Login with '{original.label}'"
             button.href = reverse("social:begin", args=[original.code])

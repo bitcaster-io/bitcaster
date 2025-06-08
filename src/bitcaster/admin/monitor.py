@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING
 
-from admin_extra_buttons.buttons import Button
+from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
@@ -65,7 +65,7 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]
         return super().get_queryset(request).select_related("event", "event__application")
 
     @link(change_form=True, change_list=False)
-    def events(self, button: Button) -> None:
+    def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         ch: Channel = button.context["original"]
         button.href = f"{url}?channels__exact={ch.pk}"

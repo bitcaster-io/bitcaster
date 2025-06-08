@@ -21,9 +21,9 @@ dependencies = [
   "apache-libcloud>=3.8",
   "celery>=5.3.6",
   "django>=5.2.1",
-  "django-admin-extra-buttons==1.6",
+  "django-admin-extra-buttons>=2.1.1",
   "django-adminactions>=2.3",
-  "django-adminfilters==2.5",
+  "django-adminfilters>=2.6",
   "django-anymail>=10.3",
   "django-bitfield>=2.2",
   "django-celery-beat>=2.6",
@@ -139,11 +139,9 @@ docs = [
 mypy = [
   "boto3-stubs>=1.34.105",
   "djangorestframework-stubs",
-  "mypy",
   "mypy>=1.9",
   "mypy-boto3>=1.34.105",
   "mypy-boto3-sns>=1.34.44",
-
   "types-freezegun>=1.1.10",
   "types-markdown>=3.6.0.20240316",
   "types-pyopenssl",

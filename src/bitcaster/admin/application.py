@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING, Any
 
-from admin_extra_buttons.buttons import Button
+from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django.contrib import admin
@@ -69,7 +69,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
         return initial
 
     @link(change_form=True, change_list=False)
-    def events(self, button: Button) -> None:
+    def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         application: Application = button.context["original"]
         button.href = (
@@ -77,7 +77,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
         )
 
     @link(change_form=True, change_list=False)
-    def notifications(self, button: Button) -> None:
+    def notifications(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_notification_changelist")
         application: Application = button.context["original"]
         button.href = f"{url}?event__application__exact={application.pk}"

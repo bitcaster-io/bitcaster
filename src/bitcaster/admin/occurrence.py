@@ -2,7 +2,7 @@ import logging
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from adminfilters.numbers import NumberFilter
+from adminfilters.filters import NumberFilter
 from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.forms.widgets import Media

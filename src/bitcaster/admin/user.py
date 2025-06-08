@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING
 
-from admin_extra_buttons.buttons import Button
+from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
 from django.contrib.admin import helpers
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
@@ -67,25 +67,25 @@ class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):
         return TemplateResponse(request, "admin/bitcaster/user/add_to_distributionlist.html", ctx)
 
     @link(change_form=True, change_list=False)
-    def addresses(self, button: Button) -> None:
+    def addresses(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_address_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?user__exact={user.pk}"
 
     @link(change_form=True, change_list=False)
-    def lists(self, button: Button) -> None:
+    def lists(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_distributionlist_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?recipients__address__user__exact={user.pk}"
 
     @link(change_form=True, change_list=False)
-    def notifications(self, button: Button) -> None:
+    def notifications(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_notification_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?distribution__recipients__address__user={user.pk}"
 
     @link(change_form=True, change_list=False)
-    def events(self, button: Button) -> None:
+    def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?notifications__distribution__recipients__address__user__exact={user.pk}"

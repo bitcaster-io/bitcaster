@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django_regex.utils import RegexList as _RegexList
 from pytest_django.fixtures import SettingsWrapper
-from testutils.factories.user import SuperUserFactory
+from testutils.factories import SuperUserFactory
 
 if TYPE_CHECKING:
     from admin_extra_buttons.mixins import ExtraButtonsMixin
@@ -219,7 +219,7 @@ def test_admin_buttons(
         btn = button_handler.get_button({"original": record})
         button_handler.func(None, btn)
     else:
-        if len(button_handler.sig.parameters) == 2:
+        if len(button_handler.func_args) == 2:
             url = reverse(f"admin:{button_handler.url_name}")
         else:
             url = reverse(f"admin:{button_handler.url_name}", args=[record.pk])
