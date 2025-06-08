@@ -90,6 +90,7 @@ dev = [
   "freezegun>=1.4",
   "pdbpp>=0.10.3",
   "pip-audit>=2.7.3",
+  "poethepoet>=0.34",
   "pre-commit>=3.7",
   "pyfakefs>=5.8",
   "pyquery>=2",
@@ -167,6 +168,12 @@ only-include = [ "src/bitcaster" ]
 [tool.hatch.build.targets.wheel]
 ignore-vcs = true
 packages = [ "src/bitcaster" ]
+
+[tool.poe.tasks.clean]
+script = "poethepoet.scripts:rm('dist', '~build', '*.xml')"
+
+[tool.poe.tasks.fullclean]
+script = "poethepoet.scripts:rm('dist', '~build', '.tox', '.act', '.venv')"
 
 [tool.uv]
 package = true

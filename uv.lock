@@ -24,6 +24,7 @@ dependencies = [
     { name = "propcache" },
     { name = "yarl" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/fc/76/cc6f37a12372dd72891dad5ffc3fc71375c2f92bb4a59f7ac11119332559/aiohttp-3.12.10.tar.gz", hash = "sha256:a9871b1b1381f8d8241f3ff3de5fcb6e2fdcfe8af43c35bb0496b8be550c5fb9", size = 7810445, upload-time = "2025-06-07T12:27:42.107Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/39/92/74b8f79a643a87069e4e0ad9621e9e803d51798eba30accd785c71005ffa/aiohttp-3.12.10-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:e093a24605e8cf71d8bccd54672581a72404b84fa3adafa2c416b67edff1ced1", size = 693434, upload-time = "2025-06-07T12:26:19.735Z" },
     { url = "https://files.pythonhosted.org/packages/a6/e4/e4f5e0235e46be576843f3892ab4a846a3cdc72f44e4bc62d38c903a9f25/aiohttp-3.12.10-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:19a8d362b222a40fe97cd1641ce5c6a1fb2b2fbe2cf247d514f84f9c1d0f5549", size = 471098, upload-time = "2025-06-07T12:26:21.648Z" },
@@ -282,6 +283,7 @@ dev = [
     { name = "freezegun" },
     { name = "pdbpp" },
     { name = "pip-audit" },
+    { name = "poethepoet" },
     { name = "pre-commit" },
     { name = "pyfakefs" },
     { name = "pyquery" },
@@ -416,6 +418,7 @@ dev = [
     { name = "freezegun", specifier = ">=1.4" },
     { name = "pdbpp", specifier = ">=0.10.3" },
     { name = "pip-audit", specifier = ">=2.7.3" },
+    { name = "poethepoet", specifier = ">=0.34.0" },
     { name = "pre-commit", specifier = ">=3.7" },
     { name = "pyfakefs", specifier = ">=5.8" },
     { name = "pyquery", specifier = ">=2" },
@@ -2576,6 +2579,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pastel"
+version = "0.2.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/76/f1/4594f5e0fcddb6953e5b8fe00da8c317b8b41b547e2b3ae2da7512943c62/pastel-0.2.1.tar.gz", hash = "sha256:e6581ac04e973cac858828c6202c1e1e81fee1dc7de7683f3e1ffe0bfd8a573d", size = 7555, upload-time = "2020-09-16T19:21:12.43Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/18/a8444036c6dd65ba3624c63b734d3ba95ba63ace513078e1580590075d21/pastel-0.2.1-py2.py3-none-any.whl", hash = "sha256:4349225fcdf6c2bb34d483e523475de5bb04a5c10ef711263452cb37d7dd4364", size = 5955, upload-time = "2020-09-16T19:21:11.409Z" },
+]
+
+[[package]]
 name = "pathspec"
 version = "0.12.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2729,6 +2741,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e5/69/882ee5c9d017149285cab114ebeab373308ef0f874fcdac9beb90e0ac4da/ply-3.11.tar.gz", hash = "sha256:00c7c1aaa88358b9c765b6d3000c6eec0ba42abca5351b095321aef446081da3", size = 159130, upload-time = "2018-02-15T19:01:31.097Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a3/58/35da89ee790598a0700ea49b2a66594140f44dec458c07e8e3d4979137fc/ply-3.11-py2.py3-none-any.whl", hash = "sha256:096f9b8350b65ebd2fd1346b12452efe5b9607f7482813ffca50c22722a807ce", size = 49567, upload-time = "2018-02-15T19:01:27.172Z" },
+]
+
+[[package]]
+name = "poethepoet"
+version = "0.34.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pastel" },
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b3/f2/3853d6a9a0dac08aa680895839eeab8ec0ed63db375e1f782e623c9309b6/poethepoet-0.34.0.tar.gz", hash = "sha256:86203acce555bbfe45cb6ccac61ba8b16a5784264484195874da457ddabf5850", size = 64474, upload-time = "2025-04-21T13:38:20.084Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/da/d1/61431afe22577083fcb50614bc5e5aa73aa0ab35e3fc2ae49708a59ff70b/poethepoet-0.34.0-py3-none-any.whl", hash = "sha256:c472d6f0fdb341b48d346f4ccd49779840c15b30dfd6bc6347a80d6274b5e34e", size = 85851, upload-time = "2025-04-21T13:38:18.257Z" },
 ]
 
 [[package]]
