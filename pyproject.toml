@@ -21,9 +21,9 @@ dependencies = [
   "apache-libcloud>=3.8",
   "celery>=5.3.6",
   "django>=5.2.1",
-  "django-admin-extra-buttons==1.6",
+  "django-admin-extra-buttons>=2.1.1",
   "django-adminactions>=2.3",
-  "django-adminfilters==2.5",
+  "django-adminfilters>=2.6",
   "django-anymail>=10.3",
   "django-bitfield>=2.2",
   "django-celery-beat>=2.6",
@@ -81,6 +81,7 @@ dependencies = [
 [dependency-groups]
 dev = [
   "bump2version>=1.0.1",
+  "coverage>=7.8.2",
   "django-debug-permissions>=1",
   "django-extensions>=3.2.3",
   "django-stubs[compatible-mypy]>=5.2",
@@ -95,7 +96,7 @@ dev = [
   "pyfakefs>=5.8",
   "pyquery>=2",
   "pytest>=8.3.3",
-  "pytest-celery>=0",
+  "pytest-celery>=1.2",
   "pytest-coverage>=0",
   "pytest-django>=4.8",
   "pytest-echo>=1.7.3",
@@ -139,11 +140,9 @@ docs = [
 mypy = [
   "boto3-stubs>=1.34.105",
   "djangorestframework-stubs",
-  "mypy",
   "mypy>=1.9",
   "mypy-boto3>=1.34.105",
   "mypy-boto3-sns>=1.34.44",
-
   "types-freezegun>=1.1.10",
   "types-markdown>=3.6.0.20240316",
   "types-pyopenssl",
@@ -170,7 +169,7 @@ ignore-vcs = true
 packages = [ "src/bitcaster" ]
 
 [tool.poe.tasks.clean]
-script = "poethepoet.scripts:rm('dist', '~build', '*.xml')"
+script = "poethepoet.scripts:rm('dist', '~build', '*.xml', '*.coverage*')"
 
 [tool.poe.tasks.fullclean]
 script = "poethepoet.scripts:rm('dist', '~build', '.tox', '.act', '.venv')"

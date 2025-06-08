@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING, Any
 
-from admin_extra_buttons.buttons import Button
+from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
@@ -391,7 +391,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
         return ["parent", "organization", "protocol", "locked", "project"]
 
     @link(change_form=True, change_list=False)
-    def events(self, button: Button) -> None:
+    def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         ch: Channel = button.context["original"]
         button.href = f"{url}?channels__exact={ch.pk}"

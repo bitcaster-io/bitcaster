@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING, Any, Sequence
 
-from admin_extra_buttons.buttons import Button
+from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django import forms
@@ -177,7 +177,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
     #     return TemplateResponse(request, "admin/bitcaster/event/notifications.html", ctx)
 
     @link(change_form=True, change_list=False)
-    def notifications(self, button: Button) -> None:
+    def notifications(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_notification_changelist")
         event: Event = button.context["original"]
         button.href = f"{url}?event__exact={event.pk}&event__application__exact={event.application.pk}"
