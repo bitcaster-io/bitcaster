@@ -11,6 +11,7 @@ omit =
     **/debug_toolbar.py
     **/management/commands/vapid.py
     src/bitcaster/types/*.py
+    src/bitcaster/version.py
     src/bitcaster/management/commands/develop.py
 
 
