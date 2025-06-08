@@ -1,5 +1,10 @@
 .*
 ~*
+**/~*
+
 *.sh
+!docker/bin/*.sh
+
 __pycache__/
 Makefile
+!.git
