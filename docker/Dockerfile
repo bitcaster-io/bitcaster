@@ -1,4 +1,4 @@
-FROM python:3.13-slim-bookworm AS base_os
+FROM python:3.14-slim-bookworm AS base_os
 ARG VERSION
 ARG GIT_SHA
 ARG BUILD_DATE
