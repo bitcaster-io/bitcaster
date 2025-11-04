@@ -54,10 +54,8 @@ INSTALLED_APPS = [
     "constance.backends.database",
     "anymail",
     "bitcaster.apps.Config",
+    *env("EXTRA_APPS"),
 ]
-
-# if DEBUG:
-#     INSTALLED_APPS += ["debug_permissions", "django_extensions"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
