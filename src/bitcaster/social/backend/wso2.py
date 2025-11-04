@@ -53,7 +53,7 @@ class Wso2OAuth2(BaseOAuth2PKCE):
         return ret
 
     def get_user_details(self, response: HttpResponse) -> dict[str, str]:
-        """Return user details from GitHub account."""
+        """Return user details from WSO2 account."""
         base = self.setting("USER_FIELD_MAPPING", default=self.USER_FIELD_MAPPING)
         return {k: response.get(v) for k, v in base.items()}
 
