@@ -38,6 +38,7 @@ class Command(BaseCommand):
 
         check_failure = False
         pattern = options["pattern"]
+        errors = []
 
         for k, __ in sorted(CONFIG.items()):
             help: str = env.get_help(k)
@@ -51,7 +52,11 @@ class Command(BaseCommand):
                 if options["develop"]:
                     value = env.for_develop(k)
                 else:
-                    value = env.get_value(k)
+                    try:
+                        value = env.get_value(k)
+                    except ValueError:
+                        errors.append(k)
+                        check_failure = True
 
                 line: str = pattern.format(key=k, value=str(value or ""), help=help, default=default, space=" ")
                 if options["diff"]:
@@ -62,4 +67,4 @@ class Command(BaseCommand):
                 self.stdout.write(line)
 
         if check_failure and not options["ignore_errors"]:
-            raise CommandError("Env check command failure!")
+            raise CommandError("Env check command failure on following variables: " + ', '.join(errors))
