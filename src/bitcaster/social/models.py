@@ -15,6 +15,8 @@ class Provider(models.TextChoices):
     LINKEDIN_OAUTH2 = "LINKEDIN_OAUTH2", "Linkedin"
     TWITTER = "TWITTER", "Twitter"
     OAUTH2 = "OAUTH2", "oauth2"
+    WSO2 = "WSO2", "Wso2"
+    KEYCLOAK = "KEYCLOAK", "Keycloak"
 
 
 class SocialProviderManager(models.Manager["SocialProvider"]):
