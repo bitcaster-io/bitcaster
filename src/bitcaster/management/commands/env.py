@@ -67,4 +67,4 @@ class Command(BaseCommand):
                 self.stdout.write(line)
 
         if check_failure and not options["ignore_errors"]:
-            raise CommandError("Env check command failure on following variables: " + ', '.join(errors))
+            raise CommandError("Env check command failure on following variables: " + ", ".join(errors))
