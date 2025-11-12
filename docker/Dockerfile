@@ -9,6 +9,7 @@ RUN set -x \
     gettext \
     libmagic1 \
     libxml2 \
+    libexpat1 \
   " \
   && buildDeps=" \
 wget \
@@ -82,6 +83,7 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
     UWSGI_PROCESSES=4
 
 EXPOSE 8000
+USER bitcaster
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run"]
 
