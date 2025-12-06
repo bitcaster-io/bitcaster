@@ -29,21 +29,16 @@ Prerequisites:
 1. In the shell:
 
     ```
-    pdm venv create
-    pdm use
-    pdm venv activate
+    uv ven
+    source .venv/bin/activate
+
     ```
-
-1. Check your virtualenv is properly created
-
-    ```pdm info```
-
 
 1. Install the package
 
     ```
-     pdm install
-     pdm run pre-commit install
+     uv sync
+     uv run pre-commit install
     ```
 
 

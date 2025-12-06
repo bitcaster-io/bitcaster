@@ -33,7 +33,7 @@ class Bitcaster:
             Project,
         )
 
-        os4d = Organization.objects.get_or_create(name=bitcaster.ORGANIZATION, owner=admin)[0]
+        os4d = Organization.objects.get_or_create(name=bitcaster.ORGANIZATION, defaults={"owner": admin})[0]
         prj = Project.objects.get_or_create(name=bitcaster.PROJECT, organization=os4d, owner=os4d.owner)[0]
         app = Application.objects.get_or_create(name=bitcaster.APPLICATION, project=prj, owner=os4d.owner)[0]
 
