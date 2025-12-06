@@ -3,13 +3,13 @@ from typing import TYPE_CHECKING
 
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
-from django.contrib import admin
 from django.contrib.admin import helpers
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from ..forms.user import SelectDistributionForm
 from ..models import Assignment, DistributionList, User
@@ -21,8 +21,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-@admin.register(User)
 class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
     list_display = ("username", "email", "first_name", "last_name", "is_staff")
     list_filter = ("is_staff", "is_superuser", "groups")
     search_fields = ("username", "first_name", "last_name", "email")

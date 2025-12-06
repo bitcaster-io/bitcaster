@@ -1,22 +1,22 @@
-{% extends "admin_extra_buttons/action_page.html" %}{% load admin_list admin_urls extra_buttons feature_flags i18n %}
+{% extends "admin/change_form.html" %}
+{% load birder markdown_deux_tags static %}
+{% block action-content %}
+    {{ form_help }}
+    <form method="post" id="config_form">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <div id="submit-row" class="">
+            <button type="submit" class="primary">
+                Save
+            </button>
+            <button type="submit" name="check" class="secondary">
+                Check + Save
+            </button>
+        </div>
+    </form>
+{% endblock action-content %}
 
-
-{% block breadcrumbs %}
-    <div class="breadcrumbs">
-        {% block breadcrumbs-items %}
-            {% flag_enabled 'OLD_STYLE_UI' as OLD_STYLE_UI %}
-            {% if OLD_STYLE_UI %}
-                <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
-                &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
-            {% else %}
-                <a href="{% url 'admin:index' %}">{% translate 'Dashboard' %}</a>
-            {% endif %}
-            &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
-            {% if original %}&rsaquo; <a href="{% url opts|admin_urlname:'change' original.pk %}">{{ original }}</a>
-            {% endif %}
-            {% block breadcrumbs-active %}&rsaquo; {{ action|default_if_empty:title }}{% endblock %}
-        {% endblock breadcrumbs-items %}
-    </div>
-{% endblock breadcrumbs %}
-
-{% block content_title %}{% if title %}<h1>{{ title|default_if_none:"" }}&nbsp</h1>{% endif %}{% endblock %}
+{% block submit_buttons_bottom %}
+{% endblock submit_buttons_bottom %}

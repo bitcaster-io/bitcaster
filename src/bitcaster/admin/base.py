@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Generic
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
-from unfold.admin import ModelAdmin as UnfoldModelAdmin
+from unfold.admin import ModelAdmin as UnfoldModelAdmin  # noqa
 
 from bitcaster.state import state
 
@@ -24,7 +24,7 @@ class ButtonColor(enum.Enum):
     UNLOCK = "unlock"
 
 
-class BaseAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin, UnfoldModelAdmin):
+class BaseAdmin(AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin):
     def get_object_or_404(self, request: HttpRequest, object_id: str, from_field: str | None = None) -> "AnyModel":
         if not (ret := self.get_object(request, object_id, from_field)):
             raise Http404

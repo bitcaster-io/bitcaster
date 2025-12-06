@@ -1,0 +1,28 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n %}
+{% block action-content %}
+    <div class="module">
+        <table width="100%">
+            <tr>
+                <th width="70%">{% translate "Message Template" %}</th>
+                <td>{% translate "Channel" %}</td>
+            </tr>
+            {% for msg in message_templates %}
+                <tr {% if msg.pk == message_created.pk %}class="last-created-item" {% endif %}>
+                    <th width="70%"><a href="{% url "admin:bitcaster_message_change" msg.pk %}">{{ msg }}</a></th>
+                    <td>{{ msg.channel }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="module">
+        <h2>Add another</h2>
+        {{ form.errors }}
+        <form method="post" id="messageForm">
+            {% csrf_token %}
+            <table>
+                {{ form.as_table }}
+            </table>
+            <input type="submit" value="{% translate "Create" %}">
+        </form>
+    </div>
+{% endblock action-content %}

@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
-from django.contrib.admin.options import ModelAdmin
 from django.core.exceptions import ValidationError
 from django.forms import Media
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -22,6 +21,8 @@ from bitcaster.models import ApiKey, Application, Event, Organization, Project  
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
 
+from .base import UnfoldModelAdmin
+
 if TYPE_CHECKING:
     from django.contrib.admin.options import _ListOrTuple
     from django.db.models import QuerySet
@@ -30,10 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
-    organization = forms.ModelChoiceField(
-        queryset=Organization.objects.local(),
-        required=True,
-    )
+    organization = forms.ModelChoiceField(queryset=Organization.objects.local(), required=True)
 
     class Meta:
         model = ApiKey
@@ -58,7 +56,7 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
         return self.cleaned_data
 
 
-class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
+class ApiKeyAdmin(BaseAdmin, UnfoldModelAdmin["ApiKey"]):
     search_fields = ("name",)
     list_display = ("name", "user", "organization", "project", "application", "environments")
     list_filter = (

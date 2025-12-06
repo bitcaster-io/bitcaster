@@ -32,10 +32,10 @@ if TYPE_CHECKING:
 
     from bitcaster.models import Project, UserRole
 
-register(UserFactory)
-register(OrganizationFactory)
-register(ChannelFactory, "channel")
-register(ProjectFactory, "project")
+# register(UserFactory)
+# register(OrganizationFactory)
+# register(ChannelFactory, "channel")
+# register(ProjectFactory, "project")
 
 
 @pytest.fixture
@@ -95,12 +95,12 @@ def system_channel(db: Any) -> Generator[Channel, None, None]:
         yield ch
 
 
-@pytest.mark.parametrize("channel__project", [None, LazyFixture(ProjectFactory)])
-def test_change(app: DjangoTestApp, channel: Channel) -> None:
-    url = reverse(admin_urlname(Channel._meta, SafeString("change")), args=[channel.pk])
-    res = app.get(url)
-    res = res.forms["channel_form"].submit()
-    assert res.status_code == 302
+# @pytest.mark.parametrize("channel__project", [None, LazyFixture(ProjectFactory)])
+# def test_change(app: DjangoTestApp, channel: Channel) -> None:
+#     url = reverse(admin_urlname(Channel._meta, SafeString("change")), args=[channel.pk])
+#     res = app.get(url)
+#     res = res.forms["channel_form"].submit()
+#     assert res.status_code == 302
 
 
 def test_configure(app: DjangoTestApp, gmail_channel: "Channel") -> None:

@@ -1,0 +1,49 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n static usage %}
+{% block action-content %}
+    <div class="module">
+        <table>
+            <tr>
+                <th>Message</th>
+                <td>{{ original }} </td>
+            </tr>
+            <tr>
+                <th>Channel</th>
+                <td>{{ original.channel }} </td>
+            </tr>
+            <tr>
+                <th>Dispatcher</th>
+                <td>{{ original.channel.dispatcher }} </td>
+            </tr>
+            <tr>
+                <th>Protocol</th>
+                <td>{{ original.channel.protocol }} </td>
+            </tr>
+            <tr>
+                <th>Capabilities</th>
+                <td>{% for s in original.channel.dispatcher.capabilities %}{{ s }}{% if not forloop.last %} ; {% endif %} {% endfor %}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="module">
+        <table width="100%" id="usage">
+            <thead>
+            <tr>
+                <th>Used By</th>
+                <th>Type</th>
+                <th>Id</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for utilizer in usage %}
+                {% usage utilizer as info %}
+                <tr>
+                    <td><a href="{{ info.url }}">{{ utilizer }}</a></td>
+                    <th>{{ info.type }}</th>
+                    <th>{{ utilizer.pk }}</th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock action-content %}

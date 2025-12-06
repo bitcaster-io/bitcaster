@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.template.response import TemplateResponse
@@ -11,7 +10,7 @@ from django.utils.translation import gettext as _
 
 from ..forms.message import NotificationTemplateCreateForm
 from ..forms.notification import NotificationForm
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor, UnfoldModelAdmin
 
 if TYPE_CHECKING:
     from bitcaster.models import Notification
@@ -19,7 +18,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
+class NotificationAdmin(BaseAdmin, UnfoldModelAdmin["Notification"]):
     search_fields = ("name",)
     list_display = ("name", "event", "application")
     list_filter = (

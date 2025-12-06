@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button, view
 from django import forms
-from django.contrib import admin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -16,7 +15,7 @@ from ..forms.message import OrgTemplateCreateForm
 from ..state import state
 from ..utils.django import url_related
 from ..utils.importer import import_users_to_org
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor, UnfoldModelAdmin
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
@@ -43,8 +42,7 @@ Joe,Doe,j.doe@example.com
     group = forms.ModelChoiceField(queryset=Group.objects.all(), help_text=_("Add imported users to this Group"))
 
 
-@admin.register(Organization)
-class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
+class OrganizationAdmin(BaseAdmin, UnfoldModelAdmin[Organization]):
     search_fields = ("name",)
     list_display = ("name", "from_email", "subject_prefix")
     autocomplete_fields = ("owner",)

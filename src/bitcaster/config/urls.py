@@ -10,7 +10,7 @@ from drf_spectacular.views import (
 from bitcaster.admin_site import ConsoleAdminSite
 
 console = ConsoleAdminSite(name="console")
-console.autodiscover()
+
 
 urlpatterns = [
     path("", include("bitcaster.web.urls")),

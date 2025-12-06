@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import AutoCompleteFilter
-from django.contrib import admin
 from django.http import HttpRequest
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -13,7 +12,7 @@ from bitcaster.models import Project
 from ..constants import bitcaster
 from ..forms.project import ProjectChangeForm
 from ..utils.django import url_related
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor, UnfoldModelAdmin
 from .mixins import LockMixinAdmin
 
 if TYPE_CHECKING:
@@ -22,8 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-@admin.register(Project)
-class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]):
+class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], UnfoldModelAdmin[Project]):
     search_fields = ("name",)
     list_display = ("name", "organization", "environments")
     list_filter = (

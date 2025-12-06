@@ -1,0 +1,60 @@
+{% load i18n static %}<!DOCTYPE HTML>
+<html>
+<head>
+    <meta name="change-url" content="{% url "admin:bitcaster_message_change" original.pk %}">
+    <meta name="edit-url" content="{% url "admin:bitcaster_message_edit" original.pk %}">
+    <meta name="render-url" content="{% url "admin:bitcaster_message_render" original.pk %}">
+    <meta name="test-url" content="{% url "admin:bitcaster_message_send_message" original.pk %}">
+    <link rel="stylesheet" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
+    {{ form.media }}
+    <link rel="stylesheet" href="{% static "bitcaster/css/admin.css" %}">
+    <link rel="stylesheet" href="{% static "bitcaster/css/style.css" %}">
+    <link rel="stylesheet" href="{% static "bitcaster/css/editor.css" %}">
+</head>
+<body class="edit-message-body">
+<form method="post" id="edit-message-form">
+    <h3 class="title">Message '{{ original }}' for '{{ original.event|default_if_none:"any" }}' event on
+        '{{ original.channel|default_if_none:"any" }}' channel</h3>
+    {% csrf_token %}
+    <div class="menubar">
+        {% if original.support_text %}
+        <button id="btn_content" class="button toggler" data-content-type="text/plain" data-panel="#tab_content"
+                type="button">{% translate 'Text' %}</button>
+        {% endif %}
+        {% if original.support_subject %}
+            <button id="btn_subject" class="button toggler" data-content-type="text/plain" data-panel="#tab_subject"
+                    type="button">{% translate 'Subject' %}</button>
+        {% endif %}
+        {% if original.support_html %}
+            <button id="btn_html" class="button primary toggler" data-content-type="text/html" data-panel="#tab_html"
+                    type="button">HTML
+            </button>
+        {% endif %}
+        <button id="btn_context" class="button toggler" data-panel="#tab_context"
+                type="button">{% translate 'Context' %}</button>
+        <div class="address-line">
+            {{ form.recipient }}
+{# <input type="text" class="address" id="address" value="{{ form.re }}"> #}
+            <button id="btn_test" class="button" type="button">{% translate 'Test' %}</button>
+        </div>
+    </div>
+    {{ form.errors }}
+    <table>
+        <tr>
+            <td>
+                <div id="tab_subject" class="tab">{{ form.subject }}</div>
+                <div id="tab_content" class="tab">{{ form.content }}</div>
+                <div id="tab_html" class="tab">{{ form.html_content }}</div>
+                <div id="tab_context" class="tab">{{ form.context }}</div>
+            </td>
+            <td>
+                <iframe id="preview"></iframe>
+                <input type="submit" class="default" value="Save">
+                <input type="button" class="cancel" value="Cancel" onclick="window.location.href=change_url">
+            </td>
+        </tr>
+    </table>
+</form>
+<script id="editor-script" src="{% static 'bitcaster/js/editor.min.js' %}"></script>
+</body>
+</html>

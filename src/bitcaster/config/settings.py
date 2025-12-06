@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     "issues",
     "bitcaster.web.apps.Config",
     "bitcaster.webpush.apps.Config",
-    # "bitcaster.social",
+    "bitcaster.social",
     # "bitcaster.admin_site.BitcasterAdminConfig",
     "unfold",  # before django.contrib.admin
     "unfold.contrib.filters",  # optional, if special filters are needed

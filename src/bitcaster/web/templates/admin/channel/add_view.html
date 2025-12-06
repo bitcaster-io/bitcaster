@@ -1,0 +1,83 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n markdown %}
+
+{% block head %}
+    {{ block.super }}
+    {{ wizard.form.media }}
+{% endblock head %}
+
+{% block after_field_sets %}{% endblock %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+
+{% endblock object-tools-items %}
+
+{% block action-content %}
+    <div class="channel-wizard-help">
+        <div>
+        {{ wizard.form|help_doc }}
+    </div>
+        <table class="wizard-summary">
+        <tr>
+            <th>Mode</th>
+            <td>{{ selection.operation }}</td>
+        </tr>
+        <tr>
+            <th>Organization</th>
+            <td>{{ selection.organization|default_if_none:"" }}</td>
+        </tr>
+            <tr>
+                <th>Project</th>
+                <td>{{ selection.project|default_if_none:"N/A" }}</td>
+            </tr>
+    </table>
+
+    </div>
+    <form action="" method="post" id="channel-add">{% csrf_token %}
+        <table>
+            {{ wizard.management_form }}
+            {% if wizard.form.forms %}
+                {{ wizard.form.management_form }}
+                {% for form in wizard.form.forms %}
+                    {{ form.as_table }}
+                {% endfor %}
+            {% else %}
+                {{ wizard.form.as_table }}
+            {% endif %}
+        </table>
+        <div class="wizard-submit-row submit-row m-5">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step"
+                        id="btn-prev"
+                        value="{{ wizard.steps.prev }}"
+                        class="button clear-required" type="submit">{% translate "< Prev step" %}</button>
+
+            {% endif %}
+            {% if wizard.steps.next or selection.operation is None %}
+                <button class="button" value="next" type="submit" id="btn-next">{% translate "Next step >" %}</button>
+            {% else %}
+                <button class="button" value="finish" type="submit" id="btn-finish" >{% translate "Finish" %}</button>
+            {% endif %}
+            <button name="wizard_cancel"
+                    id="btn-cancel"
+                    value="{{ back_url }}"
+                    class="button cancel clear-required" type="submit">{% translate "Cancel" %}</button>
+        </div>
+    </form>
+{% endblock action-content %}
+
+{% block document_ready %}
+    <script>
+        const frmAdd = document.getElementById('channel-add');
+        Array.from(document.getElementsByClassName("clear-required"))
+            .forEach((btn) => {
+                btn.addEventListener('click', function () {
+                    frmAdd.querySelectorAll('input,select')
+                        .forEach((input) => {
+                            input.removeAttribute('required');
+                        });
+                });
+            })
+    </script>
+
+{% endblock document_ready %}

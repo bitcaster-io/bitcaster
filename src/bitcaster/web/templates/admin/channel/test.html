@@ -1,0 +1,63 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load i18n protocols %}
+{% block action-content %}
+    {% if not assignment %}
+        {% translate "No assignments found for this channel" %}
+        <ul>{% for a in request.user.addresses.all %}
+            <li>
+                <a href="{% url "admin:bitcaster_address_change" a.pk %}?next={{ request.path }}">{{ a }}</a>
+                <a class="button small" href="{% url "admin:bitcaster_assignment_add" %}?address={{ a.pk }}&channel={{ original.pk }}&user={{ user.pk }}&next={{ request.path }}">
+                    Assign to channel</a>
+
+{# <ul> #}
+{# {% for v in a.assignments.all %} #}
+{# <li>{{ v }}</li> #}
+{# {% empty %} #}
+{# <li>00000</li> #}
+{# {% endfor %} #}
+{# </ul> #}
+
+            </li>
+        {% endfor %}
+        </ul>
+        <a href="{% url "admin:bitcaster_address_add" %}?user={{ user.pk }}">Add Address</a>
+    {% else %}
+
+        <form method="post" id="config-form">
+        {{ form.errors }}
+        {% csrf_token %}
+            <fieldset class="module aligned ">
+                <div class="form-row field-api_key">
+                    <div>
+                        <div class="flex-container">
+                            <label class="required" for="id_api_key">{% translate 'Recipient' %}</label>
+                            {{ assignment.address.value }}
+                            &nbsp;<a href="{% url "admin:bitcaster_assignment_change" assignment.pk %}">edit</a>
+                        </div>
+                    </div>
+                </div>
+                {% if original|has:"SUBJECT" %}
+                    <div class="form-row field-sender_domain">
+                        <div>
+                            <div class="flex-container">
+                                <label class="required" for="id_sender_domain">Subject:</label>
+                                {{ form.subject }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if original|has:"TEXT" %}
+                    <div class="form-row field-sender_domain">
+                        <div>
+                            <div class="flex-container">
+                                <label class="required" for="id_sender_domain">Message:</label>
+                                {{ form.message }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </fieldset>
+
+            <input type="submit">
+        </form>
+    {% endif %}
+{% endblock action-content %}

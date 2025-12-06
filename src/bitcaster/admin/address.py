@@ -10,6 +10,8 @@ from bitcaster.admin.base import BaseAdmin
 from bitcaster.forms.address import AddressForm
 from bitcaster.models import Address, Assignment
 
+from .base import UnfoldModelAdmin
+
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
@@ -26,8 +28,7 @@ class InlineValidation(admin.TabularInline["Assignment", "AddressAdmin"]):
     fields = ["channel", "validated", "active"]
 
 
-@admin.register(Address)
-class AddressAdmin(BaseAdmin, admin.ModelAdmin[Address]):
+class AddressAdmin(BaseAdmin, UnfoldModelAdmin[Address]):
     search_fields = ("name", "value")
     list_display = ("user", "name", "value", "type")
     list_filter = (
