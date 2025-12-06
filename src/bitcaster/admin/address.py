@@ -26,6 +26,7 @@ class InlineValidation(admin.TabularInline["Assignment", "AddressAdmin"]):
     fields = ["channel", "validated", "active"]
 
 
+@admin.register(Address)
 class AddressAdmin(BaseAdmin, admin.ModelAdmin[Address]):
     search_fields = ("name", "value")
     list_display = ("user", "name", "value", "type")

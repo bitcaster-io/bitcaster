@@ -6,6 +6,7 @@ from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from django import forms
+from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
@@ -332,6 +333,7 @@ class ChannelWizard(CookieWizardView):
 wizard = ChannelWizard.as_view()
 
 
+@admin.register(Channel)
 class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], VersionAdmin[Channel]):
     search_fields = ("name",)
     list_display = ("name", "organization", "project", "dispatcher_", "active", "locked", "protocol")

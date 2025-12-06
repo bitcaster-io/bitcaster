@@ -13,7 +13,7 @@
         <div class="container m-5 ">
             {% if user.is_authenticated %}
                 {% if user.is_staff %}
-                    <a class="button default primary" href="{% url "admin:index" %}">Admin</a>
+                    <a class="button default primary" href="{% url "console:index" %}">Console</a>
                 {% endif %}
                 <form method="post" action="{% url "logout" %}" id="logout-form">
                     {% csrf_token %}

@@ -1,18 +1,15 @@
 {% extends "admin/base.html" %}
 
-{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ _('Bitcaster') }}{% endblock %}
+{% block title %}
+    {% if subtitle %}
+        {{ subtitle }} |
+    {% endif %}
+    {{ title }} | {{ site_title|default:_("Site admin") }}
+{% endblock title %}
 
 {% block branding %}
-    <div id="site-name"><a href="{% url 'admin:index' %}">{{ _('Bitcaster') }}</a></div>
-    {% if user.is_anonymous %}
-        {% include "admin/color_theme_toggle.html" %}
-    {% endif %}
+    {% include "unfold/helpers/site_branding.html" %}
 {% endblock branding %}
 
-{% block nav-global %}{% endblock %}
-
-{% block footer %}
-    <div id="footer">
-        {% include "fragments/footer.html" %}
-    </div>
-{% endblock footer %}
+{% block nav-global %}
+{% endblock nav-global %}

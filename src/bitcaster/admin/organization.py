@@ -43,6 +43,7 @@ Joe,Doe,j.doe@example.com
     group = forms.ModelChoiceField(queryset=Group.objects.all(), help_text=_("Add imported users to this Group"))
 
 
+@admin.register(Organization)
 class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
     search_fields = ("name",)
     list_display = ("name", "from_email", "subject_prefix")

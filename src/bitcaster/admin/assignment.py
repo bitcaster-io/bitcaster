@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+@admin.register(Assignment)
 class AssignmentAdmin(BaseAdmin, admin.ModelAdmin[Assignment]):
     search_fields = ("address__name",)
     list_display = ("address", "channel", "validated", "active")

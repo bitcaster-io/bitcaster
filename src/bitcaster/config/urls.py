@@ -7,8 +7,14 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+from bitcaster.admin_site import ConsoleAdminSite
+
+console = ConsoleAdminSite(name="console")
+console.autodiscover()
+
 urlpatterns = [
     path("", include("bitcaster.web.urls")),
+    path("console/", console.urls),
     path("admin/", admin.site.urls),
     path("webpush/", include("bitcaster.webpush.urls")),
     path("api/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),

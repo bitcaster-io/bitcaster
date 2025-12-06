@@ -83,6 +83,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "EMAIL_USE_TLS": (bool, False, setting("email-use-tls"), True),
     "EMAIL_USE_SSL": (bool, False, setting("email-use-ssl"), True),
     "EMAIL_TIMEOUT": (str, None, setting("email-timeout"), True),
+    "ENVIRONMENT": (str, "production", "Bitcaster Environment", "local"),
     "EXTRA_APPS": (list, [], setting("configuring-applications")),  # nosec
     "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level")),
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),

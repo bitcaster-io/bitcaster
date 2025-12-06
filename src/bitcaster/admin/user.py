@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
+from django.contrib import admin
 from django.contrib.admin import helpers
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+@admin.register(User)
 class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):
     list_display = ("username", "email", "first_name", "last_name", "is_staff")
     list_filter = ("is_staff", "is_superuser", "groups")

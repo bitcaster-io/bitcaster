@@ -10,3 +10,10 @@ def save_to_group(backend: BaseAuth, user: User | None = None, **kwargs: Any) ->
         grp = Group.objects.get(name=config.NEW_USER_DEFAULT_GROUP)
         user.groups.add(grp)
     return {}
+
+
+def save_to_admin(backend: BaseAuth, user: User | None = None, **kwargs: Any) -> dict[str, Any]:
+    if user:
+        grp = Group.objects.get(name=config.NEW_USER_DEFAULT_GROUP)
+        user.groups.add(grp)
+    return {}

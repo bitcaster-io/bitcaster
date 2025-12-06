@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+@admin.register(Project)
 class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], admin.ModelAdmin[Project]):
     search_fields = ("name",)
     list_display = ("name", "organization", "environments")
