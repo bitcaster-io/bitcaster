@@ -90,6 +90,7 @@ class Command(BaseCommand):
         self.static = options["static"]
         self.migrate = options["migrate"]
         self.debug = options["debug"]
+        self.traceback = options["traceback"]
 
         self.admin_email = str(options["admin_email"] or env("ADMIN_EMAIL", ""))
         self.admin_password = str(options["admin_password"] or env("ADMIN_PASSWORD", ""))
@@ -211,6 +212,8 @@ class Command(BaseCommand):
         except (CommandError, SystemCheckError) as e:
             self.halt(e)
         except Exception as e:
+            if self.traceback:
+                raise
             self.stdout.write(str(e), style_func=self.style.ERROR)
             logger.exception(e)
             self.halt(e)
