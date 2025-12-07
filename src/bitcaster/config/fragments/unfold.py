@@ -4,20 +4,7 @@ from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-UNFOLD = {
-    "SITE_DROPDOWN": [
-        {
-            "icon": "diamond",
-            "title": "GitHub",
-            "link": "https://github.com/bitcaster-io/bitcaster",
-        },
-        {
-            "icon": "diamond",
-            "title": "Documentation",
-            "link": "https://bitcaster-io.github.io/bitcaster/",
-        },
-        # ...
-    ],
+COMMON = {
     "LOGIN": {
         "image": lambda request: static("bitcaster/images/logos/logo400.png"),
         "redirect_after": lambda request: reverse_lazy("admin:index"),
@@ -47,8 +34,6 @@ UNFOLD = {
         "light": lambda request: static("bitcaster/images/logos/logo400.png"),
         "dark": lambda request: static("bitcaster/images/logos/logo400.png"),
     },
-    "STYLES": [],
-    "BORDER_RADIUS": "6px",
     "COLORS": {
         "base": {
             "50": "249, 250, 251",  # grigi chiari (default neutral)
@@ -77,6 +62,32 @@ UNFOLD = {
             "950": "69, 10, 10",
         },
     },
+    "STYLES": [],
+    "BORDER_RADIUS": "6px",
+}
+
+UNFOLD = {
+    **COMMON,
+    "SITE_TITLE": "Bitcaster Admin",
+    "SITE_HEADER": "Bitcaster Admin",
+    "SITE_DROPDOWN": [
+        {
+            "icon": "diamond",
+            "title": "Console",
+            "link": "/console/",
+        },
+        {
+            "icon": "diamond",
+            "title": "GitHub",
+            "link": "https://github.com/bitcaster-io/bitcaster",
+        },
+        {
+            "icon": "diamond",
+            "title": "Documentation",
+            "link": "https://bitcaster-io.github.io/bitcaster/",
+        },
+        # ...
+    ],
     # https://fonts.google.com/icons
     "__SIDEBAR": {
         "show_search": True,  # Search in applications and models names
@@ -181,6 +192,29 @@ UNFOLD = {
     ],
 }
 
+CONSOLE = {
+    **COMMON,
+    "SITE_TITLE": "Bitcaster Console",
+    "SITE_HEADER": "Bitcaster Console",
+    "SITE_DROPDOWN": [
+        {
+            "icon": "diamond",
+            "title": "Admin",
+            "link": "/admin/",
+        },
+        {
+            "icon": "diamond",
+            "title": "GitHub",
+            "link": "https://github.com/bitcaster-io/bitcaster",
+        },
+        {
+            "icon": "diamond",
+            "title": "Documentation",
+            "link": "https://bitcaster-io.github.io/bitcaster/",
+        },
+        # ...
+    ],
+}
 
 def badge_callback(request: HttpRequest) -> str:
     return ""

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from bitcaster.models import Assignment
 
 
-@register(Browser)
+# @register(Browser)
 class BrowserAdmin(AssignmentAdmin):
     @button()  # type: ignore[arg-type]
     def validate(self, request: HttpRequest, pk: str) -> "HttpResponse":

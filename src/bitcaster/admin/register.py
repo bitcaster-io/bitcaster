@@ -30,6 +30,8 @@ from .project import ProjectAdmin
 from .user import UserAdmin
 from .userrole import UserRoleAdmin
 
+# from bitcaster.config.urls import site
+
 admin.site.unregister(Group)
 admin.site.register(Group, GroupAdmin)
 

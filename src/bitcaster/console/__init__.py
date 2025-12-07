@@ -18,16 +18,16 @@ class UserConsole(UserAdmin):
     pass
 
 
-@register(Channel, site=console)
+# @register(Channel, site=console)
 class ChannelConsole(ChannelAdmin):
     pass
 
 
-@register(Organization, site=console)
+# @register(Organization, site=console)
 class OrganizationConsole(OrganizationAdmin):
     pass
 
 
-@register(Project, site=console)
+# @register(Project, site=console)
 class ProjectConsole(ProjectAdmin):
     pass

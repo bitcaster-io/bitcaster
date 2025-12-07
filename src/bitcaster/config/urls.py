@@ -9,13 +9,17 @@ from drf_spectacular.views import (
 
 from bitcaster.admin_site import ConsoleAdminSite
 
+# The BitcasterAdminSite is set as the default in settings.py,
+# so we can use admin.site directly. We only need to instantiate
+# the secondary console site.
 console = ConsoleAdminSite(name="console")
-
+console.autodiscover()
 
 urlpatterns = [
     path("", include("bitcaster.web.urls")),
-    path("console/", console.urls),
+    path("console/", include((console.get_urls(), "console"), namespace="console")),
     path("admin/", admin.site.urls),
+    # path("console/", console.urls),
     path("webpush/", include("bitcaster.webpush.urls")),
     path("api/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
