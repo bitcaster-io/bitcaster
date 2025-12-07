@@ -1,8 +1,24 @@
+from typing import Any
+
 from django.conf import settings
 from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+
+# see https://fonts.google.com/icons?icon.query=docs for icons
+COMMON_SITE_DROPDOWN = [
+    {
+        "icon": "commit",
+        "title": "GitHub",
+        "link": "https://github.com/bitcaster-io/bitcaster",
+    },
+    {
+        "icon": "docs",
+        "title": "Documentation",
+        "link": "https://bitcaster-io.github.io/bitcaster/",
+    },
+]
 
 COMMON = {
     "LOGIN": {
@@ -28,7 +44,7 @@ COMMON = {
             "href": lambda request: static("bitcaster/images/logos/logo400.png"),
         },
     ],
-    "SITE_SYMBOL": "speed",  # symbol from icon set
+    # "SITE_SYMBOL": "speed",  # symbol from icon set
     "SITE_URL": "/",
     "SITE_ICON": {
         "light": lambda request: static("bitcaster/images/logos/logo400.png"),
@@ -72,124 +88,16 @@ UNFOLD = {
     "SITE_HEADER": "Bitcaster Admin",
     "SITE_DROPDOWN": [
         {
-            "icon": "diamond",
+            "icon": "apps",
             "title": "Console",
             "link": "/console/",
         },
-        {
-            "icon": "diamond",
-            "title": "GitHub",
-            "link": "https://github.com/bitcaster-io/bitcaster",
-        },
-        {
-            "icon": "diamond",
-            "title": "Documentation",
-            "link": "https://bitcaster-io.github.io/bitcaster/",
-        },
-        # ...
+        *COMMON_SITE_DROPDOWN,
     ],
-    # https://fonts.google.com/icons
-    "__SIDEBAR": {
+    "SIDEBAR": {
         "show_search": True,  # Search in applications and models names
         "show_all_applications": True,  # Dropdown with all applications and models
-        "navigation": [
-            {
-                "title": "HOPE",
-                "separator": True,  # Top border
-                "collapsible": False,  # Collapsible group of links
-                "items": [
-                    {
-                        "title": _("Programs"),
-                        "icon": "folder",
-                        "link": reverse_lazy("admin:hope_program_changelist"),
-                    },
-                    {
-                        "title": _("Offices"),
-                        "icon": "domain",
-                        "link": reverse_lazy("admin:hope_businessarea_changelist"),
-                    },
-                    {
-                        "title": _("Household"),
-                        "icon": "people",
-                        "link": reverse_lazy("admin:hope_household_changelist"),
-                    },
-                    {
-                        "title": _("Individual"),
-                        "icon": "person",
-                        "link": reverse_lazy("admin:hope_individual_changelist"),
-                    },
-                    {
-                        "title": _("Payment Plans"),
-                        "icon": "assignment",
-                        "link": reverse_lazy("admin:hope_paymentplan_changelist"),
-                    },
-                    {
-                        "title": _("Payments"),
-                        "icon": "payments",
-                        "link": reverse_lazy("admin:hope_payment_changelist"),
-                    },
-                ],
-            },
-            {
-                "title": _("Security"),
-                "separator": True,  # Top border
-                "collapsible": False,  # Collapsible group of links
-                "items": [
-                    {
-                        "title": _("Users"),
-                        "icon": "person",
-                        "link": reverse_lazy("admin:hope_portal_user_changelist"),
-                    },
-                    {
-                        "title": _("Groups"),
-                        "icon": "people",
-                        "link": reverse_lazy("admin:auth_group_changelist"),
-                    },
-                ],
-            },
-            {
-                "title": _("Configuration"),
-                "separator": True,  # Top border
-                "collapsible": False,  # Collapsible group of links
-                "items": [
-                    {
-                        "title": _("Constance"),
-                        "icon": "settings",
-                        "link": reverse_lazy("admin:constance_config_changelist"),
-                    },
-                    {
-                        "title": _("Flags"),
-                        "icon": "done",
-                        "link": reverse_lazy("admin:flags_flagstate_changelist"),
-                    },
-                ],
-            },
-        ],
     },
-    "__TABS": [
-        {
-            "models": [
-                "auth.group",
-            ],
-            "items": [
-                {
-                    "title": _("Users"),
-                    "link": reverse_lazy("admin:hope_portal_user_changelist"),
-                },
-            ],
-        },
-        {
-            "models": [
-                "hope_live.user",
-            ],
-            "items": [
-                {
-                    "title": _("Groups"),
-                    "link": reverse_lazy("admin:auth_group_changelist"),
-                },
-            ],
-        },
-    ],
 }
 
 CONSOLE = {
@@ -198,23 +106,55 @@ CONSOLE = {
     "SITE_HEADER": "Bitcaster Console",
     "SITE_DROPDOWN": [
         {
-            "icon": "diamond",
+            "icon": "settings",
             "title": "Admin",
             "link": "/admin/",
         },
-        {
-            "icon": "diamond",
-            "title": "GitHub",
-            "link": "https://github.com/bitcaster-io/bitcaster",
-        },
-        {
-            "icon": "diamond",
-            "title": "Documentation",
-            "link": "https://bitcaster-io.github.io/bitcaster/",
-        },
-        # ...
+        *COMMON_SITE_DROPDOWN,
     ],
+    "DASHBOARD_CALLBACK": "bitcaster.config.fragments.unfold.console_dashboard",
+    "SIDEBAR": {
+        "show_search": False,
+        "command_search": False,
+        "show_all_applications": False,  # Dropdown with all applications and models
+        "navigation": [
+            {
+                "title": _("System"),
+                "separator": True,  # Top border
+                "collapsible": False,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Address"),
+                        "icon": "alternate_email",  # Supported icon set: https://fonts.google.com/icons
+                        "link": reverse_lazy("console:bitcaster_address_changelist"),
+                        # "badge": "sample_app.badge_callback",
+                        # "permission": lambda request: request.user.is_superuser,
+                    },
+                ],
+            },
+            {
+                "title": _("Security"),
+                "separator": True,  # Top border
+                "collapsible": True,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Users"),
+                        "icon": "person",  # Supported icon set: https://fonts.google.com/icons
+                        "link": reverse_lazy("console:bitcaster_user_changelist"),
+                        # "badge": "sample_app.badge_callback",
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    # {
+                    #     "title": _("Users"),
+                    #     "icon": "people",
+                    #     "link": reverse_lazy("admin:auth_user_changelist"),
+                    # },
+                ],
+            },
+        ],
+    },
 }
+
 
 def badge_callback(request: HttpRequest) -> str:
     return ""
@@ -222,3 +162,12 @@ def badge_callback(request: HttpRequest) -> str:
 
 def environment_callback(request: "HttpRequest") -> tuple[str, str]:
     return settings.ENVIRONMENT, "info"
+
+
+def console_dashboard(request: "HttpRequest", context: dict[str, Any]) -> dict[str, Any]:
+    context.update(
+        {
+            "sample": "example",  # this will be injected into templates/admin/index.html
+        }
+    )
+    return context

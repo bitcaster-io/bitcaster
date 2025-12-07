@@ -14,7 +14,7 @@ from bitcaster.models import Application
 from ..constants import bitcaster
 from ..state import state
 from ..utils.django import url_related
-from .base import BaseAdmin, ButtonColor, UnfoldModelAdmin
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from .mixins import LockMixinAdmin
 
 if TYPE_CHECKING:
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], UnfoldModelAdmin[Application]):
+class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdmin[Application]):
     search_fields = ("name",)
     list_display = ("name", "project", "organization", "active", "locked")
     list_filter = (

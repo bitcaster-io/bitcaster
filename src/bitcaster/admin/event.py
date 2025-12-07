@@ -17,7 +17,7 @@ from bitcaster.models import Assignment, Event
 from ..constants import bitcaster
 from ..forms.event import EventChangeForm
 from ..state import state
-from .base import BaseAdmin, ButtonColor, UnfoldModelAdmin
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from .message import Message
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
@@ -42,7 +42,7 @@ class EventTestForm(forms.Form):
     assignment = forms.ModelChoiceField(queryset=Assignment.objects.none())
 
 
-class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], UnfoldModelAdmin[Event]):
+class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], BitcasterModelAdmin[Event]):
     search_fields = ("name",)
     list_display = ("name", "application", "active", "locked")
     list_filter = (

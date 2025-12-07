@@ -1,12 +1,10 @@
 from typing import TYPE_CHECKING
 
 from admin_extra_buttons.decorators import button
-from django.contrib.admin import register
 from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse
 
 from bitcaster.admin.assignment import AssignmentAdmin
-from bitcaster.webpush.models import Browser
 from bitcaster.webpush.utils import sign
 
 if TYPE_CHECKING:

@@ -15,6 +15,7 @@ from bitcaster.admin_site import ConsoleAdminSite
 console = ConsoleAdminSite(name="console")
 console.autodiscover()
 
+
 urlpatterns = [
     path("", include("bitcaster.web.urls")),
     path("console/", include((console.get_urls(), "console"), namespace="console")),

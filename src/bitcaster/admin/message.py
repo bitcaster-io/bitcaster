@@ -30,7 +30,7 @@ from ..forms.message import (
     MessageRenderForm,
 )
 from ..utils.shortcuts import render_string
-from .base import BaseAdmin, ButtonColor, UnfoldModelAdmin
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     from ..types.http import AuthHttpRequest
 
 
-class MessageAdmin(BaseAdmin, UnfoldModelAdmin, VersionAdmin[Message]):
+class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
     search_fields = ("name",)
     list_display = ("name", "channel", "scope_level")
     list_filter = (

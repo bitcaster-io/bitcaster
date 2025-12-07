@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from adminfilters.autocomplete import AutoCompleteFilter
 
 from ..models import UserRole
-from .base import BaseAdmin, UnfoldModelAdmin
+from .base import BaseAdmin, BitcasterModelAdmin
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class UserRoleAdmin(BaseAdmin, UnfoldModelAdmin[UserRole]):
+class UserRoleAdmin(BaseAdmin, BitcasterModelAdmin[UserRole]):
     list_display = (
         "user",
         "organization",

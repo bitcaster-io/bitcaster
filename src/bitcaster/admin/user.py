@@ -13,7 +13,7 @@ from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationFo
 
 from ..forms.user import SelectDistributionForm
 from ..models import Assignment, DistributionList, User
-from .base import BaseAdmin
+from .base import BaseAdmin, BitcasterModelAdmin
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):
+class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
@@ -64,7 +64,7 @@ class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):
                     if asm := Assignment.objects.filter(address__user=user).first():
                         dl.recipients.add(asm)
                 self.message_user(request, _("Users successfully added"))
-                return HttpResponseRedirect(reverse("admin:bitcaster_user_changelist"))
+                return HttpResponseRedirect(reverse(f"{self.admin_site.name}:bitcaster_user_changelist"))
         else:
             form = SelectDistributionForm(initial=initial)
         ctx["form"] = form
@@ -72,24 +72,24 @@ class UserAdmin(BaseAdmin, DjangoUserAdmin[User]):
 
     @link(change_form=True, change_list=False)
     def addresses(self, button: ButtonWidget) -> None:
-        url = reverse("admin:bitcaster_address_changelist")
+        url = reverse(f"{self.admin_site.name}:bitcaster_address_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?user__exact={user.pk}"
 
     @link(change_form=True, change_list=False)
     def lists(self, button: ButtonWidget) -> None:
-        url = reverse("admin:bitcaster_distributionlist_changelist")
+        url = reverse(f"{self.admin_site.name}:bitcaster_distributionlist_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?recipients__address__user__exact={user.pk}"
 
     @link(change_form=True, change_list=False)
     def notifications(self, button: ButtonWidget) -> None:
-        url = reverse("admin:bitcaster_notification_changelist")
+        url = reverse(f"{self.admin_site.name}:bitcaster_notification_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?distribution__recipients__address__user={user.pk}"
 
     @link(change_form=True, change_list=False)
     def events(self, button: ButtonWidget) -> None:
-        url = reverse("admin:bitcaster_event_changelist")
+        url = reverse(f"{self.admin_site.name}:bitcaster_event_changelist")
         user: User = button.context["original"]
         button.href = f"{url}?notifications__distribution__recipients__address__user__exact={user.pk}"

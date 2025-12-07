@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING, Any, TypeVar
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
-from django.contrib import admin, messages
+from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import gettext as _
 
-from bitcaster.admin.base import BaseAdmin, ButtonColor
+from bitcaster.admin.base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from bitcaster.forms.assignment import AssignmentForm
 from bitcaster.forms.widgets import AutocompletSelectEnh
 from bitcaster.models import Address, Assignment
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class AssignmentAdmin(BaseAdmin, admin.ModelAdmin[Assignment]):
+class AssignmentAdmin(BaseAdmin, BitcasterModelAdmin[Assignment]):
     search_fields = ("address__name",)
     list_display = ("address", "channel", "validated", "active")
     list_filter = (

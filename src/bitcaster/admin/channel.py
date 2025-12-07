@@ -15,13 +15,12 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from formtools.wizard.views import CookieWizardView
-from reversion.admin import VersionAdmin
 
 from bitcaster.models import Assignment, Channel, Organization, Project, User
 
 from ..dispatchers.base import Payload, dispatcherManager
 from ..forms.channel import ChannelChangeForm
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from .filters import ChannelTypeFilter
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
@@ -332,7 +331,7 @@ class ChannelWizard(CookieWizardView):
 wizard = ChannelWizard.as_view()
 
 
-class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], VersionAdmin[Channel]):
+class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], BitcasterModelAdmin[Channel]):
     search_fields = ("name",)
     list_display = ("name", "organization", "project", "dispatcher_", "active", "locked", "protocol")
     list_filter = (

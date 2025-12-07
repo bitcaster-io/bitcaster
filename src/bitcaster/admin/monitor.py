@@ -18,7 +18,7 @@ from reversion.admin import VersionAdmin
 from bitcaster.models import Channel, Monitor
 
 from ..forms.monitor import MonitorForm
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from .mixins import TwoStepCreateMixin
 
 if TYPE_CHECKING:
@@ -35,7 +35,7 @@ class MonitorScheduleForm(forms.Form):
     crontab = forms.ModelChoiceField(queryset=CrontabSchedule.objects.all())
 
 
-class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]):
+class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, VersionAdmin[Monitor]):
     search_fields = ("name",)
     list_display = (
         "name",

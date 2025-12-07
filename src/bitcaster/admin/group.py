@@ -5,12 +5,14 @@ from django.http import HttpRequest
 
 from bitcaster.auth.constants import DEFAULT_GROUP_NAME
 
+from .base import BaseAdmin, BitcasterModelAdmin
+
 if TYPE_CHECKING:
     from django.contrib.auth.models import Group
     from django.utils.datastructures import _ListOrTuple
 
 
-class GroupAdmin(BaseGroupAdmin):
+class GroupAdmin(BaseAdmin, BitcasterModelAdmin, BaseGroupAdmin):
     def get_readonly_fields(self, request: "HttpRequest", obj: "Group | None" = None) -> "_ListOrTuple[str]":
         base = list(super().get_readonly_fields(request, obj))
         if obj and obj.name == DEFAULT_GROUP_NAME:

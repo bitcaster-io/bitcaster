@@ -10,7 +10,7 @@ from django.utils.translation import gettext as _
 
 from ..forms.message import NotificationTemplateCreateForm
 from ..forms.notification import NotificationForm
-from .base import BaseAdmin, ButtonColor, UnfoldModelAdmin
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 if TYPE_CHECKING:
     from bitcaster.models import Notification
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class NotificationAdmin(BaseAdmin, UnfoldModelAdmin["Notification"]):
+class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     search_fields = ("name",)
     list_display = ("name", "event", "application")
     list_filter = (

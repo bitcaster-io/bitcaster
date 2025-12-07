@@ -21,7 +21,7 @@ from bitcaster.models import ApiKey, Application, Event, Organization, Project  
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
 
-from .base import UnfoldModelAdmin
+from .base import BitcasterModelAdmin
 
 if TYPE_CHECKING:
     from django.contrib.admin.options import _ListOrTuple
@@ -56,7 +56,7 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
         return self.cleaned_data
 
 
-class ApiKeyAdmin(BaseAdmin, UnfoldModelAdmin["ApiKey"]):
+class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
     search_fields = ("name",)
     list_display = ("name", "user", "organization", "project", "application", "environments")
     list_filter = (

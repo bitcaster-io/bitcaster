@@ -1,12 +1,11 @@
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from django.contrib import admin
 
-from bitcaster.admin.base import BaseAdmin
+from bitcaster.admin.base import BaseAdmin, BitcasterModelAdmin
 from bitcaster.forms.media import MediaFileForm
 from bitcaster.models import MediaFile
 
 
-class MediaAdmin(BaseAdmin, admin.ModelAdmin[MediaFile]):
+class MediaAdmin(BaseAdmin, BitcasterModelAdmin[MediaFile]):
     list_display = ("name", "image", "size", "file_type", "mime_type")
     list_filter = (
         ("application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),

@@ -7,7 +7,7 @@ from django.http import HttpRequest
 
 from bitcaster.models import DistributionList
 
-from .base import BaseAdmin, UnfoldModelAdmin
+from .base import BaseAdmin, BitcasterModelAdmin
 from .mixins import TwoStepCreateMixin
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
 
-class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], UnfoldModelAdmin[DistributionList]):
+class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], BitcasterModelAdmin[DistributionList]):
     search_fields = ("name",)
     list_display = ("name", "project")
     list_filter = (

@@ -3,7 +3,7 @@ import logging
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from adminfilters.filters import NumberFilter
-from django.contrib import admin, messages
+from django.contrib import messages
 from django.db.models import QuerySet
 from django.forms.widgets import Media
 from django.http import HttpRequest, HttpResponse
@@ -13,12 +13,12 @@ from django.utils.translation import gettext as _
 from bitcaster.models import Occurrence
 from bitcaster.tasks import purge_occurrences
 
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
 
 
-class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
+class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     search_fields = ("name",)
     list_display = ("timestamp", "application", "event", "status", "attempts", "recipients")
     list_filter = (

@@ -6,13 +6,13 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext as _
 
-from .base import ButtonColor
+from .base import BitcasterModelAdmin, ButtonColor
 
 if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel
 
 
-class LockMixinAdmin(admin.ModelAdmin["AnyModel"]):
+class LockMixinAdmin(BitcasterModelAdmin["AnyModel"]):
     def render_change_form(
         self,
         request: HttpRequest,

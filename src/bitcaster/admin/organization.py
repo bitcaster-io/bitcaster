@@ -15,7 +15,7 @@ from ..forms.message import OrgTemplateCreateForm
 from ..state import state
 from ..utils.django import url_related
 from ..utils.importer import import_users_to_org
-from .base import BaseAdmin, ButtonColor, UnfoldModelAdmin
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
@@ -42,7 +42,7 @@ Joe,Doe,j.doe@example.com
     group = forms.ModelChoiceField(queryset=Group.objects.all(), help_text=_("Add imported users to this Group"))
 
 
-class OrganizationAdmin(BaseAdmin, UnfoldModelAdmin[Organization]):
+class OrganizationAdmin(BaseAdmin, BitcasterModelAdmin[Organization]):
     search_fields = ("name",)
     list_display = ("name", "from_email", "subject_prefix")
     autocomplete_fields = ("owner",)
