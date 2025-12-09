@@ -1,24 +1,24 @@
 {% extends "admin/base_site.html" %}
 {% load admin_urls i18n l10n static %}
-
 {% block extrahead %}
     {{ block.super }}
     {{ media }}
     <script src="{% static 'admin/js/cancel.js' %}" async></script>
 {% endblock extrahead %}
-
-{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} delete-confirmation delete-selected-confirmation{% endblock %}
-
+{% block bodyclass %}
+    {{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} delete-confirmation delete-selected-confirmation
+{% endblock %}
 {% block content %}
     {% if perms_lacking %}
         <p class="font-semibold p-4 text-font-important-light dark:text-font-important-dark">
             {% blocktranslate %}Deleting the selected {{ objects_name }} would result in deleting related objects, but your account doesn't have permission to delete the following types of objects:{% endblocktranslate %}
         </p>
-
         <div class="border-t border-base-200 p-4 dark:border-base-800">
             <ul class="leading-relaxed dark:border-base-800">
                 {% for obj in perms_lacking %}
-                    <li>{{ obj }}</li>
+                    <li>
+                        {{ obj }}
+                    </li>
                 {% endfor %}
             </ul>
         </div>
@@ -27,11 +27,12 @@
             <p class="font-semibold p-4 text-font-important-light dark:text-font-important-dark">
                 {% blocktranslate %}Deleting the selected {{ objects_name }} would require deleting the following protected related objects:{% endblocktranslate %}
             </p>
-
             <div class="border-t border-base-200 p-4 dark:border-base-800">
                 <ul class="leading-relaxed">
                     {% for obj in protected %}
-                        <li>{{ obj }}</li>
+                        <li>
+                            {{ obj }}
+                        </li>
                     {% endfor %}
                 </ul>
             </div>
@@ -41,33 +42,26 @@
             <p class="font-semibold p-4 text-font-important-light dark:text-font-important-dark">
                 {% blocktranslate %}Are you sure you want to delete the selected {{ objects_name }}? All of the following objects and their related items will be deleted:{% endblocktranslate %}
             </p>
-
             {% include "admin/includes/object_delete_summary.html" %}
-
             <div class="border-t border-base-200 p-4 dark:border-base-800">
                 <h2 class="font-semibold mb-2 text-font-important-light dark:text-font-important-dark">
                     {% translate "Objects" %}
                 </h2>
-
                 {% for deletable_object in deletable_objects %}
                     <ul class="leading-relaxed">
                         {{ deletable_object|unordered_list }}
                     </ul>
                 {% endfor %}
             </div>
-
             <form method="post" class="border-t border-base-200 px-4 py-3 dark:border-base-800">
                 {% csrf_token %}
-
                 <div class="flex items-center">
                     {% for obj in queryset %}
-                        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}">
+                        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
                     {% endfor %}
-
-                    <input type="hidden" name="action" value="delete_selected">
-                    <input type="hidden" name="post" value="yes">
-
-                    {% include "unfold/helpers/delete_submit_line.html" %}
+                    <input type="hidden" name="action" value="delete_selected" />
+                    <input type="hidden" name="post" value="yes" />
+                    {% include "~unfold/helpers/delete_submit_line.html" %}
                 </div>
             </form>
         </div>

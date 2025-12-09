@@ -100,7 +100,6 @@ class Notification(BitcasterBaseModel):
         )
 
     def notify_to_channel(self, channel: "Channel", assignment: Assignment, context: dict[str, Any]) -> str | None:
-        message: "Message" | None
         dispatcher: "Dispatcher" = channel.dispatcher
         addr: "Address" = assignment.address
 

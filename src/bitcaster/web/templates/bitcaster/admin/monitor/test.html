@@ -1,0 +1,41 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% load markdown %}
+{% block action-content %}
+    <form method="post" id="config-form">
+        {% csrf_token %}
+        <input type="submit" value="Check" />
+    </form>
+    <div class="frame">
+        {{ monitor.data.timestamp }}
+    </div>
+    <div class="frame">
+        {{ monitor.config.path }}
+    </div>
+    {# <h3>Added</h3> #}
+    <ul>
+        <caption>Changed</caption>
+        {% for entry in monitor.data.diff.changed %}
+            <li>
+                {{ entry }}
+            </li>
+        {% endfor %}
+    </ul>
+    <ul>
+        <caption>Added</caption>
+        {% for entry in monitor.data.diff.added %}
+            <li>
+                {{ entry }}
+            </li>
+        {% endfor %}
+    </ul>
+    <ul>
+        <caption>Deleted</caption>
+        {% for entry in monitor.data.diff.delete %}
+            <li>
+                {{ entry }}
+            </li>
+        {% endfor %}
+    </ul>
+    {# {{ monitor.data.diff }}</div> #}
+    {# <div>{{ monitor.data.entries }}</div> #}
+{% endblock action-content %}

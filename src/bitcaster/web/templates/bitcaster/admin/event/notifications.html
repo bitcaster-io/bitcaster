@@ -1,0 +1,34 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% block action-content %}
+    <div class="module">
+        <table>
+            <tr>
+                <th>
+                    Notification
+                </th>
+                <th>
+                    Distribution List
+                </th>
+                <th>
+                    Environments
+                </th>
+            </tr>
+            {% for n in original.notifications.all %}
+                <tr>
+                    <td>
+                        <a href="{% url 'admin:bitcaster_notification_change' n.pk %}">{{ n }}</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin:bitcaster_distributionlist_change' n.distribution.pk %}">{{ n.distribution }}</a>
+                    </td>
+                    <td>
+                        {{ n.environments }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="submit-row">
+        <a class="button" href="{% url 'admin:bitcaster_notification_add' %}?event={{ original.pk }}">Add</a>
+    </div>
+{% endblock action-content %}

@@ -15,15 +15,15 @@ SECRET_KEY = env("SECRET_KEY")
 SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT")
 
 DEBUG = env.bool("DEBUG")
-
+INTERNAL_IPS = env.list("INTERNAL_IPS")
 ALLOWED_HOSTS: list[str] = env("ALLOWED_HOSTS")
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    "issues",
     "bitcaster.web.apps.Config",
+    "bitcaster.web.theme.apps.Config",
     "bitcaster.webpush.apps.Config",
     "bitcaster.social",
     # "bitcaster.admin_site.BitcasterAdminConfig",
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "social_django",
     "csp",
     "django_celery_beat",
+    "smart_selects",
     "adminfilters",
     "debug_toolbar",
     "django_svelte_jsoneditor",
@@ -65,6 +66,8 @@ INSTALLED_APPS = [
     "constance.backends.database",
     "anymail",
     "bitcaster.apps.Config",
+    "tailwind",
+    "issues",
     *env("EXTRA_APPS"),
 ]
 
@@ -97,7 +100,6 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "constance.context_processors.config",
-                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -105,6 +107,7 @@ TEMPLATES = [
                 "social_django.context_processors.login_redirect",
                 "bitcaster.social.context_processors.available_providers",
                 "bitcaster.web.context_processors.version",
+                "bitcaster.web.context_processors.debug",
             ],
         },
     },
@@ -221,6 +224,7 @@ STORAGES = {
 
 
 from .fragments.agents import *  # noqa
+from .fragments.bitcaster import *  # noqa
 from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.csp import *  # noqa
@@ -231,6 +235,6 @@ from .fragments.rest_framework import *  # noqa
 from .fragments.root import *  # noqa
 from .fragments.sentry import *  # noqa
 from .fragments.social_auth import *  # noqa
+from .fragments.tailwind import *  # noqa
 from .fragments.tinymce import *  # noqa
 from .fragments.unfold import *  # noqa
-from .fragments.bitcaster import *  # noqa

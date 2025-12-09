@@ -1,0 +1,30 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% load i18n %}
+{% block content %}
+    <form method="post" id="lock-form">
+        {% csrf_token %}
+        {% if original.locked %}
+            <div class="frame frame-success">
+                <h3>
+                    {% blocktranslate %}Unlocking the {{ target }} will start message
+                    forwarding{% endblocktranslate %}
+                </h3>
+            </div>
+            <div id="submit-row" class="flex">
+                <input type="submit" value="Unlock" class="button button-primary mx-2" />
+                <a class="button" href="..">Back</a>
+            </div>
+        {% else %}
+            <div class="frame frame-warning">
+                <h3>
+                    {% blocktranslate %}Locking the {{ target }} will stop any message
+                    forwarding{% endblocktranslate %}
+                </h3>
+            </div>
+            <div id="submit-row" class="flex">
+                <input type="submit" value="Lock" class="button button-primary mx-2" />
+                <a class="button" href="..">Back</a>
+            </div>
+        {% endif %}
+    </form>
+{% endblock content %}

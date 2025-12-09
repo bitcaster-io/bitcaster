@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
+from django.template.context_processors import debug as django_debug
 
 from bitcaster import VERSION
 from bitcaster.config import env
@@ -14,3 +16,7 @@ def version(request: "HttpRequest") -> dict[str, dict[str, str]]:
             "doc_site": env("BITCASTER_DOCUMENTATION_SITE_URL"),
         }
     }
+
+
+def debug(request: "HttpRequest") -> dict[str, Any]:
+    return django_debug(request)

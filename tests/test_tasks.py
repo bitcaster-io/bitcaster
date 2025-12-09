@@ -167,7 +167,7 @@ def test_silent_event(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_
 
     o.refresh_from_db()
     assert o.status == Occurrence.Status.PROCESSED
-    assert o.data == {}
+    assert o.data == {"delivered": [], "recipients": []}
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
 
@@ -222,7 +222,7 @@ def test_processed(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_obj
 
     from bitcaster.models import Occurrence
 
-    monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())
+    monkeypatch.setattr("bitcaster.models.occurrence.Occurrence._process", mocked_notify := Mock())
 
     o = OccurrenceFactory(status=Occurrence.Status.PROCESSED)
     process_occurrence(o.pk)
@@ -238,7 +238,10 @@ def celery_config() -> dict[str, str]:
 def test_schedule_occurrences(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
-    monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock(return_value=True))
+    monkeypatch.setattr(
+        "bitcaster.models.occurrence.Occurrence._process",
+        mocked_notify := Mock(return_value=[True, {"delivered": [], "recipients": []}]),
+    )
 
     schedule_occurrences()
 

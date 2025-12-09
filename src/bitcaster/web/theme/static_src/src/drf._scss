@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+form {
+  p {
+    label {
+      @apply block;
+    }
+
+    input, select {
+      @apply border-1 border-b-gray-500 p-2 rounded;
+    }
+  }
+}
+
+@source "../../**/rest_framework/*.{html,py,js}";

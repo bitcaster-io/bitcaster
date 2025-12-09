@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     search_fields = ("name",)
-    list_display = ("name", "event", "application")
+    list_display = ("name", "event", "application", "distribution")
     list_filter = (
         # ("event__application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         # (
@@ -66,4 +66,4 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
             form = NotificationTemplateCreateForm(notification=notification)
         ctx["message_templates"] = notification.messages.filter()
         ctx["form"] = form
-        return TemplateResponse(request, "admin/notification/messages.html", ctx, status=status_code)
+        return TemplateResponse(request, "bitcaster/admin/notification/messages.html", ctx, status=status_code)

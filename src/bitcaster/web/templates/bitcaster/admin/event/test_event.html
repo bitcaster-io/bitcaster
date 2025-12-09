@@ -1,0 +1,13 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% load i18n %}
+{% block content %}
+    <form method="post" id="test-form">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <div class="form-submit-row">
+            <input type="submit" class="button button-primary" value="Test" />
+        </div>
+    </form>
+{% endblock content %}

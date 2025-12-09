@@ -6,7 +6,6 @@ from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from django import forms
-from django.contrib.admin.helpers import AdminForm
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -15,8 +14,10 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from formtools.wizard.views import CookieWizardView
+from unfold import widgets as uwidgets
 
 from bitcaster.models import Assignment, Channel, Organization, Project, User
+from bitcaster.utils.unfold import UnfoldAdminForm
 
 from ..dispatchers.base import Payload, dispatcherManager
 from ..forms.channel import ChannelChangeForm
@@ -89,7 +90,7 @@ Select the type of channel you want to create. see [[doc:help/channel:Channel]]
     )
     operation = forms.ChoiceField(
         choices=MODE_CHOICES,
-        widget=forms.RadioSelect,
+        widget=uwidgets.UnfoldAdminSelect2Widget,
     )
 
     def __init__(self, request: HttpRequest, **kwargs: Any) -> None:
@@ -341,36 +342,8 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
         "protocol",
         "active",
         "locked",
-        # ("dispatcher", ChoicesFieldComboFilter),
     )
-    autocomplete_fields = ("organization", "project")
-    change_list_template = "admin/reversion_change_list.html"
-    change_form_template = "admin/channel/change_form.html"
     form = ChannelChangeForm
-    fieldsets = [
-        (
-            None,
-            {"fields": (("name", "active"),)},
-        ),
-        (
-            None,
-            {"fields": (("dispatcher", "protocol"),)},
-        ),
-        (
-            "Advanced options",
-            {
-                # "classes": ["collapse"],
-                "fields": ["organization", "project"],
-            },
-        ),
-    ]
-
-    # def get_fieldsets(self, request: HttpRequest, obj: "Optional[AnyModel]" = None) -> "_FieldsetSpec":
-    #     return self.fieldsets
-    #     if obj.pk:
-    #         return [(None, {"fields": (("name"),)})]
-    #     else:
-    #         return self.fieldsets
 
     def dispatcher_(self, obj: Channel) -> str:
         return str(obj.dispatcher)
@@ -378,16 +351,23 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
     def get_queryset(self, request: "HttpRequest") -> QuerySet[Channel]:
         return super().get_queryset(request).select_related("project", "organization")
 
-    def add_view(
-        self, request: "HttpRequest", form_url: str | None = "", extra_context: dict[str, Any] | None = None
-    ) -> HttpResponse:
-        ctx = self.get_common_context(request, add=True, title=_("Add Channel"))
-        return wizard(request, extra_context=ctx)
+    def get_changeform_initial_data(self, request):
+        initial = super().get_changeform_initial_data(request)
+        if initial.get("project"):
+            initial["organization"] = Project.objects.get(pk=initial["project"]).organization
+        return initial
+
+    # def add_view(
+    #     self, request: "HttpRequest", form_url: str | None = "", extra_context: dict[str, Any] | None = None
+    # ) -> HttpResponse:
+    #     return super().add_view(request,form_url, extra_context)
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "AnyModel | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk == config.SYSTEM_EMAIL_CHANNEL:
             return ["name", "organization", "project", "parent", "protocol", "locked"]
-        return ["parent", "organization", "protocol", "locked", "project"]
+        if obj and obj.pk:
+            return ["parent", "organization", "protocol", "locked", "project"]
+        return []
 
     @link(change_form=True, change_list=False)
     def events(self, button: ButtonWidget) -> None:
@@ -398,7 +378,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj = self.get_object_or_404(request, pk)
-        context = self.get_common_context(request, pk, title=_("Configure channel"))
+        context = self.get_common_context(request, pk, action_title=_("Configure channel"))
         form_class = obj.dispatcher.config_class
         if request.method == "POST":
             config_form = form_class(request.POST)
@@ -410,8 +390,8 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
         else:
             config_form = form_class(initial={k: v for k, v in obj.config.items() if k in form_class.declared_fields})
         fs = (("", {"fields": form_class.declared_fields}),)
-        context["admin_form"] = AdminForm(config_form, fs, {})  # type: ignore[arg-type]
-        return TemplateResponse(request, "admin/channel/configure.html", context)
+        context["adminform"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)  # type: ignore[arg-type]
+        return TemplateResponse(request, "bitcaster/admin/channel/configure.html", context)
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def test(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
@@ -420,7 +400,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
         ch: Channel = self.get_object_or_404(request, pk)
         user: User = request.user
         assignment: Assignment | None = user.get_assignment_for_channel(ch)
-        context = self.get_common_context(request, pk, title=_("Test channel"))
+        context = self.get_common_context(request, pk, action_title=_("Test channel"))
         if request.method == "POST":
             config_form = ChannelTestForm(request.POST)
             if config_form.is_valid():
@@ -444,5 +424,6 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
                 }
             )
         context["assignment"] = assignment
-        context["form"] = config_form
-        return TemplateResponse(request, "admin/channel/test.html", context)
+        fs = (("", {"fields": ChannelTestForm.declared_fields}),)
+        context["adminform"] = UnfoldAdminForm(config_form, fs, {})
+        return TemplateResponse(request, "bitcaster/admin/channel/test.html", context)

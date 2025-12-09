@@ -354,12 +354,12 @@ def test_trigger_environment_by_key(
         res = client.post(url, data={"context": {}}, format="json")
         o = Occurrence.objects.get(pk=res.data["occurrence"])
         delivered = process_occurrence(o.pk)
-        assert delivered == 3
+    assert delivered == 3
 
-        res = client.post(url, data={"context": {}, "options": {"environs": ["develop"]}}, format="json")
-        o = Occurrence.objects.get(pk=res.data["occurrence"])
-        delivered = process_occurrence(o.pk)
-        assert delivered == 3
+    res = client.post(url, data={"context": {}, "options": {"environs": ["develop"]}}, format="json")
+    o = Occurrence.objects.get(pk=res.data["occurrence"])
+    delivered = process_occurrence(o.pk)
+    assert delivered == 3
 
 
 def test_trigger_locked_project(

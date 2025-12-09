@@ -43,6 +43,8 @@ def context(admin_user: "User") -> "Context":
     event: "Event" = EventFactory()
     key: ApiKey = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     key2: ApiKey = ApiKeyFactory(user=admin_user, grants=[], application__project=ProjectFactory())
+    et = MagicMock(specs=EventTrigger)
+    et.grants = [Grant.EVENT_TRIGGER]
     assert key.organization.slug != key2.organization.slug
     return {
         "user": UserFactory(is_staff=True),
@@ -50,7 +52,7 @@ def context(admin_user: "User") -> "Context":
         "key": key,
         "key2": key2,
         "backend": ApiApplicationPermission(),
-        "view": MagicMock(specs=EventTrigger.as_view()),
+        "view": et,
     }
 
 
@@ -127,10 +129,12 @@ def test_has_permission(rf: RequestFactory, context: "Context") -> None:
         with mock.patch.object(view, "grants", [Grant.SYSTEM_PING], create=True):
             with mock.patch.object(view, "required_grants", [Grant.SYSTEM_PING], create=True):
                 with key_grants(api_key, None):
-                    assert not p.has_permission(req, view)
+                    with pytest.raises(InvalidGrantError):
+                        p.has_permission(req, view)
 
                 with key_grants(api_key, None):
-                    assert not p.has_permission(req, view)
+                    with pytest.raises(InvalidGrantError):
+                        p.has_permission(req, view)
 
         with mock.patch.object(view, "grants", [Grant.SYSTEM_PING], create=True):
             with mock.patch.object(view, "required_grants", [Grant.SYSTEM_PING], create=True):
@@ -151,7 +155,8 @@ def test_user_inactive(rf: RequestFactory, context: "Context") -> None:
             with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
                 with mock.patch.object(view, "required_grants", [Grant.SYSTEM_PING]):
                     with key_grants(api_key, None):
-                        assert not p.has_permission(req, view)
+                        with pytest.raises(InvalidGrantError):
+                            p.has_permission(req, view)
 
     with mock.patch.object(req, "auth", None, create=True):
         with mock.patch.object(req, "user", context["key"].user, create=True):
@@ -176,10 +181,12 @@ def test_has_object_permission(rf: RequestFactory, context: "Context") -> None:
         with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
             with mock.patch.object(view, "required_grants", [Grant.SYSTEM_PING]):
                 with key_grants(api_key, None):
-                    assert not p.has_object_permission(req, view, event)
+                    with pytest.raises(InvalidGrantError):
+                        p.has_object_permission(req, view, event)
 
         with key_grants(api_key, None):
-            assert not p.has_object_permission(req, view, event)
+            with pytest.raises(InvalidGrantError):
+                p.has_object_permission(req, view, event)
 
         with mock.patch.object(view, "grants", [Grant.SYSTEM_PING]):
             with key_grants(api_key, Grant.SYSTEM_PING):
@@ -195,6 +202,7 @@ def test_has_object_permission(rf: RequestFactory, context: "Context") -> None:
 
 def test_valid_scope(rf: RequestFactory, context: "Context") -> None:
     api_key: ApiKey = context["key"]
+    api_key.grants = [Grant.EVENT_TRIGGER]
     p: ApiBasePermission = context["backend"]
     view: "EventTrigger" = context["view"]
     event: "Event" = context["event"]
@@ -229,7 +237,7 @@ def test_valid_scope(rf: RequestFactory, context: "Context") -> None:
             with key_grants(api_key, project=None):
                 with pytest.raises(InvalidGrantError) as exc:
                     p.has_object_permission(req, view, event)
-                assert str(exc.value) == "Key not enabled form project scope"
+                assert str(exc.value) == "Key not enabled for project scope"
 
         # Application
         with mock.patch.object(
@@ -264,4 +272,4 @@ def test_valid_scope(rf: RequestFactory, context: "Context") -> None:
             with key_grants(api_key, project=event.application.project, application=None):
                 with pytest.raises(InvalidGrantError) as exc:
                     p.has_object_permission(req, view, event)
-                assert str(exc.value) == "Key not enabled form application scope"
+                assert str(exc.value) == "Key not enabled for application scope"

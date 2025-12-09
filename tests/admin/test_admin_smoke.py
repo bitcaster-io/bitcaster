@@ -217,7 +217,7 @@ def test_admin_buttons(
         pass
     elif isinstance(button_handler, LinkHandler):
         btn = button_handler.get_button({"original": record})
-        button_handler.func(None, btn)
+        button_handler.func(model_admin, btn)
     else:
         if len(button_handler.func_args) == 2:
             url = reverse(f"admin:{button_handler.url_name}")

@@ -28,7 +28,7 @@ class LockMixinAdmin(BitcasterModelAdmin["AnyModel"]):
 
     @button(
         label=_("Lock"),
-        enabled=lambda s: not s.context["original"].locked,
+        visible=lambda s: not s.context["original"].locked,
         html_attrs={"class": ButtonColor.LOCK.value},
     )
     def lock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
@@ -40,11 +40,11 @@ class LockMixinAdmin(BitcasterModelAdmin["AnyModel"]):
             obj.save()
             self.message_user(request, _("{} locked").format(label))
             return HttpResponseRedirect("..")
-        return TemplateResponse(request, "admin/channel/lock.html", context)
+        return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
 
     @button(
         label=_("Unlock"),
-        enabled=lambda s: s.context["original"].locked,
+        visible=lambda s: s.context["original"].locked,
         html_attrs={"class": ButtonColor.UNLOCK.value},
     )
     def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
@@ -57,7 +57,7 @@ class LockMixinAdmin(BitcasterModelAdmin["AnyModel"]):
             obj.save()
             self.message_user(request, _("{} unlocked").format(label))
             return HttpResponseRedirect("..")
-        return TemplateResponse(request, "admin/channel/lock.html", context)
+        return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
 
 
 # class CloneMixin(admin.ModelAdmin["AnyModel"]):

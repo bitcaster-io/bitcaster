@@ -9,6 +9,11 @@ from django.utils.translation import gettext_lazy as _
 # see https://fonts.google.com/icons?icon.query=docs for icons
 COMMON_SITE_DROPDOWN = [
     {
+        "icon": "webhook",
+        "title": "API",
+        "link": "/api/",
+    },
+    {
         "icon": "commit",
         "title": "GitHub",
         "link": "https://github.com/bitcaster-io/bitcaster",
@@ -78,7 +83,9 @@ COMMON = {
             "950": "69, 10, 10",
         },
     },
-    "STYLES": [],
+    "STYLES": [
+        "/static/css/unfold_ext.css",
+    ],
     "BORDER_RADIUS": "6px",
 }
 
@@ -87,48 +94,76 @@ UNFOLD = {
     "SITE_TITLE": "Bitcaster Admin",
     "SITE_HEADER": "Bitcaster Admin",
     "SITE_DROPDOWN": [
-        {
-            "icon": "apps",
-            "title": "Console",
-            "link": "/console/",
-        },
         *COMMON_SITE_DROPDOWN,
     ],
     "SIDEBAR": {
         "show_search": True,  # Search in applications and models names
-        "show_all_applications": True,  # Dropdown with all applications and models
-    },
-}
-
-CONSOLE = {
-    **COMMON,
-    "SITE_TITLE": "Bitcaster Console",
-    "SITE_HEADER": "Bitcaster Console",
-    "SITE_DROPDOWN": [
-        {
-            "icon": "settings",
-            "title": "Admin",
-            "link": "/admin/",
-        },
-        *COMMON_SITE_DROPDOWN,
-    ],
-    "DASHBOARD_CALLBACK": "bitcaster.config.fragments.unfold.console_dashboard",
-    "SIDEBAR": {
-        "show_search": False,
-        "command_search": False,
-        "show_all_applications": False,  # Dropdown with all applications and models
+        "show_all_applications": lambda request: request.user.is_superuser,
         "navigation": [
+            {
+                "title": _("Monitor"),
+                "separator": True,  # Top border
+                "collapsible": False,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Occurrences"),
+                        "icon": "view_apps",
+                        "link": reverse_lazy("admin:bitcaster_occurrence_changelist"),
+                        "badge": "bitcaster.config.fragments.unfold.occurrence_callback",
+                        # "permission": lambda request: request.user.is_superuser,
+                    },
+                ],
+            },
+            {
+                "title": _("Configuration"),
+                "separator": True,  # Top border
+                "collapsible": False,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Addresses"),
+                        "icon": "alternate_email",
+                        "link": reverse_lazy("admin:bitcaster_address_changelist"),
+                        # "badge": "sample_app.badge_callback",
+                        # "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("Distribution List"),
+                        "icon": "patient_list",
+                        "link": reverse_lazy("admin:bitcaster_distributionlist_changelist"),
+                    },
+                    {
+                        "title": _("Events"),
+                        "icon": "event_list",
+                        "link": reverse_lazy("admin:bitcaster_event_changelist"),
+                    },
+                    {
+                        "title": _("Notifications"),
+                        "icon": "route",
+                        "link": reverse_lazy("admin:bitcaster_notification_changelist"),
+                    },
+                    {
+                        "title": _("Message Templates"),
+                        "icon": "article",
+                        "link": reverse_lazy("admin:bitcaster_message_changelist"),
+                    },
+                ],
+            },
             {
                 "title": _("System"),
                 "separator": True,  # Top border
                 "collapsible": False,  # Collapsible group of links
                 "items": [
                     {
-                        "title": _("Address"),
-                        "icon": "alternate_email",  # Supported icon set: https://fonts.google.com/icons
-                        "link": reverse_lazy("console:bitcaster_address_changelist"),
+                        "title": _("Applications"),
+                        "icon": "view_apps",
+                        "link": reverse_lazy("admin:bitcaster_application_changelist"),
                         # "badge": "sample_app.badge_callback",
                         # "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("Channels"),
+                        "icon": "business_messages",
+                        "link": reverse_lazy("admin:bitcaster_channel_changelist"),
                     },
                 ],
             },
@@ -139,15 +174,36 @@ CONSOLE = {
                 "items": [
                     {
                         "title": _("Users"),
-                        "icon": "person",  # Supported icon set: https://fonts.google.com/icons
-                        "link": reverse_lazy("console:bitcaster_user_changelist"),
+                        "icon": "person",
+                        "link": reverse_lazy("admin:bitcaster_user_changelist"),
                         # "badge": "sample_app.badge_callback",
                         "permission": lambda request: request.user.is_superuser,
                     },
+                    {
+                        "title": _("Roles"),
+                        "icon": "account_child_invert",
+                        "link": reverse_lazy("admin:bitcaster_userrole_changelist"),
+                        # "badge": "sample_app.badge_callback",
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("Groups"),
+                        "icon": "group",
+                        "link": reverse_lazy("admin:auth_group_changelist"),
+                        # "badge": "sample_app.badge_callback",
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("API Keys"),
+                        "icon": "key",
+                        "link": reverse_lazy("admin:bitcaster_apikey_changelist"),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
                     # {
-                    #     "title": _("Users"),
-                    #     "icon": "people",
-                    #     "link": reverse_lazy("admin:auth_user_changelist"),
+                    # "title": _("Flags"),
+                    # "icon": "group",
+                    # "link": reverse_lazy("admin:flags_apikey_changelist"),
+                    # "permission": lambda request: request.user.is_superuser,
                     # },
                 ],
             },
@@ -162,6 +218,12 @@ def badge_callback(request: HttpRequest) -> str:
 
 def environment_callback(request: "HttpRequest") -> tuple[str, str]:
     return settings.ENVIRONMENT, "info"
+
+
+def occurrence_callback(request: "HttpRequest") -> int:
+    from bitcaster.models import Occurrence
+
+    return Occurrence.objects.filter(status=Occurrence.Status.NEW.value).count()
 
 
 def console_dashboard(request: "HttpRequest", context: dict[str, Any]) -> dict[str, Any]:

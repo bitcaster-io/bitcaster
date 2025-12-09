@@ -17,7 +17,7 @@ class MessageEditForm(forms.ModelForm[Message]):
     subject = forms.CharField(required=False)
     content = forms.CharField(widget=forms.Textarea, required=False)
     html_content = forms.CharField(
-        required=False, widget=TinyMCE(attrs={"class": "aaaa"}, mce_attrs={"setup": "setupTinyMCE", "height": "400px"})
+        required=False, widget=TinyMCE(mce_attrs={"setup": "setupTinyMCE", "height": "400px"})
     )
     context = forms.JSONField(widget=SvelteJSONEditorWidget(), required=False)
 
@@ -26,10 +26,12 @@ class MessageEditForm(forms.ModelForm[Message]):
         orig = super().media
         extra = "" if settings.DEBUG else ".min"
         js = [
-            "vendor/jquery/jquery%s.js" % extra,
-            "jquery.init.js",
+            "admin/js/vendor/jquery/jquery%s.js" % extra,
+            "admin/js/jquery.init.js",
+            "bitcaster/js/editor%s.js" % extra,
         ]
-        return orig + forms.Media(js=["admin/js/%s" % url for url in js])
+        css = {"screen": ["tinymce/skins/ui/oxide/skin.min.css", "css/unfold.css"]}
+        return orig + forms.Media(js=js, css=css)  # type: ignore
 
     class Meta:
         model = Message

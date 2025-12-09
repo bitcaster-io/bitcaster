@@ -12,6 +12,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from flags.state import flag_enabled
 
 from bitcaster.admin.base import BaseAdmin
 from bitcaster.admin.filters import EnvironmentFilter
@@ -68,6 +69,7 @@ class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
     autocomplete_fields = ("user", "application", "organization", "project")
     form = ApiKeyForm
     save_as_continue = False
+    change_form_outer_before_template = "bitcaster/admin/apikey/outer_before.html"
 
     def get_queryset(self, request: "HttpRequest") -> "QuerySet[ApiKey]":
         return super().get_queryset(request).select_related("application")
@@ -80,6 +82,8 @@ class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
         return self.readonly_fields
 
     def get_exclude(self, request: "HttpRequest", obj: "ApiKey | None" = None) -> "_ListOrTuple[str]":
+        if flag_enabled("DEVELOP_FULL_EDIT"):
+            return []
         if obj and obj.pk:
             return ["key"]
         return ["key", "environments"]
@@ -106,5 +110,7 @@ class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
             expires = obj.created + timedelta(seconds=10)
             expired = timezone.now() > expires
         media = Media(js=["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"])
-        ctx = self.get_common_context(request, pk, media=media, expires=expires, expired=expired, title=_("Info"))
-        return TemplateResponse(request, "admin/apikey/created.html", ctx)
+        ctx = self.get_common_context(
+            request, pk, bae=obj.get_bae(), media=media, expires=expires, expired=expired, title=_("Info")
+        )
+        return TemplateResponse(request, "bitcaster/admin/apikey/created.html", ctx)

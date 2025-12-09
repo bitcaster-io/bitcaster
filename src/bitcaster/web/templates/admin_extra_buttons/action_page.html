@@ -1,13 +1,13 @@
 {% extends "admin/change_form.html" %}
-{% load birder markdown_deux_tags static %}
-{% block action-content %}
+{% load static %}
+{% block content %}
     {{ form_help }}
     <form method="post" id="config_form">
         {% csrf_token %}
         <table>
             {{ form.as_table }}
         </table>
-        <div id="submit-row" class="">
+        <div d="submit-row" class="">
             <button type="submit" class="primary">
                 Save
             </button>
@@ -16,7 +16,6 @@
             </button>
         </div>
     </form>
-{% endblock action-content %}
-
+{% endblock content %}
 {% block submit_buttons_bottom %}
 {% endblock submit_buttons_bottom %}

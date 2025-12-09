@@ -4,11 +4,17 @@ from typing import TYPE_CHECKING, Any, Generic
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
+from django.contrib.postgres.fields import ArrayField
+from django.db.models import ForeignKey, TextField
+from django.forms import ModelChoiceField
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
+from django.utils.translation import gettext as _
+from smart_selects.db_fields import ChainedForeignKey
 from unfold.admin import ModelAdmin as UnfoldModelAdmin  # noqa
+from unfold.contrib.forms import widgets as uwidgets
 
-from bitcaster.multi_admin.modeladmin import MultiModelAdmin
 from bitcaster.state import state
+from bitcaster.utils.unfold import UnfoldChainedSelect
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -25,11 +31,48 @@ class ButtonColor(enum.Enum):
     UNLOCK = "unlock"
 
 
-class BitcasterModelAdmin(MultiModelAdmin, UnfoldModelAdmin):
-    pass
+class BitcasterModelAdmin(UnfoldModelAdmin):
+    formfield_overrides = {
+        TextField: {
+            "widget": uwidgets.WysiwygWidget,
+        },
+        ArrayField: {
+            "widget": uwidgets.ArrayWidget,
+        },
+    }
+
+    def formfield_for_foreignkey(
+        self, db_field: ForeignKey, request: HttpRequest, **kwargs: Any
+    ) -> ModelChoiceField | None:
+        db = kwargs.get("using")
+        if isinstance(db_field, ChainedForeignKey):
+            widget = UnfoldChainedSelect(
+                to_app_name=db_field.to_app_name,
+                to_model_name=db_field.to_model_name,
+                chained_field=db_field.chained_field,
+                chained_model_field=db_field.chained_model_field,
+                foreign_key_app_name=db_field.model._meta.app_label,
+                foreign_key_model_name=db_field.model._meta.object_name,
+                foreign_key_field_name=db_field.name,
+                show_all=db_field.show_all,
+                auto_choose=db_field.auto_choose,
+                sort=db_field.sort,
+                view_name=db_field.view_name,
+            )
+            kwargs["widget"] = widget
+        # Overrides widgets for all related fields
+        if "widget" not in kwargs:
+            if db_field.name in self.raw_id_fields:
+                kwargs["widget"] = uwidgets.UnfoldForeignKeyRawIdWidget(
+                    db_field.remote_field, self.admin_site, using=db
+                )
+            elif db_field.name not in self.get_autocomplete_fields(request) and db_field.name not in self.radio_fields:
+                kwargs["widget"] = uwidgets.UnfoldAdminSelectWidget()
+                kwargs["empty_label"] = _("Select value")
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class BaseAdmin(AdminFiltersMixin, MultiModelAdmin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin):
+class BaseAdmin(BitcasterModelAdmin, AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin):
     def get_object_or_404(self, request: HttpRequest, object_id: str, from_field: str | None = None) -> "AnyModel":
         if not (ret := self.get_object(request, object_id, from_field)):
             raise Http404

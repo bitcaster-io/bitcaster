@@ -7,4 +7,5 @@ FLAGS = {
     "DEVELOP_DEBUG_TOOLBAR": [],
     "FLAG_CONDITION_TEST": [],
     "OLD_STYLE_UI": [],
+    "DEVELOP_FULL_EDIT": [],
 }

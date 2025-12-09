@@ -3,13 +3,13 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
 from constance import config
-from django.db import models
+from django.db import models, transaction
 from django.db.models.expressions import F
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from ..constants import bitcaster
+from ..constants import SystemEvent, bitcaster
 from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
@@ -47,7 +47,7 @@ class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
     def purgeable(self, *args: Any, **kwargs: Any) -> models.QuerySet["Occurrence"]:
         return self.filter(
             last_updated__lt=timezone.now()
-            - models.ExpressionWrapper(  # type: ignore
+            - models.ExpressionWrapper(
                 timedelta(days=1) * Coalesce(F("event__occurrence_retention"), config.OCCURRENCE_DEFAULT_RETENTION),  # type: ignore
                 output_field=models.DurationField(),
             )
@@ -67,12 +67,14 @@ class Occurrence(BitcasterBaseModel):
         blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
     )
     correlation_id = models.CharField(max_length=255, editable=False, blank=True, null=True)
-    recipients = models.IntegerField(default=0, help_text=_("Total number of recipients"))
+    recipients = models.IntegerField(default=0, help_text=_("Total number of reached recipients"))
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
     data: "OccurrenceData" = models.JSONField(  # type: ignore[assignment]
         default=dict, help_text=_("Information about the processing (recipients, channels)")
     )
-    status = models.CharField(choices=Status, default=Status.NEW.value, max_length=20)
+    status = models.CharField(
+        choices=Status, default=Status.NEW.value, max_length=20, help_text=_("Status of the occurrence")
+    )
     attempts = models.IntegerField(default=5)
     parent = models.ForeignKey("self", editable=False, blank=True, null=True, on_delete=models.CASCADE)
 
@@ -102,7 +104,49 @@ class Occurrence(BitcasterBaseModel):
     def application(self) -> "Application":
         return self.event.application
 
-    def process(self) -> bool:
+    def process(self) -> int:
+        from bitcaster.models import Occurrence
+
+        num_sent = 0
+        try:
+            with transaction.atomic():
+                o: Occurrence = Occurrence.objects.select_related("event").select_for_update().get(id=self.pk)
+                if o.attempts > 0:
+                    o.attempts = o.attempts - 1
+                    o.save()
+                    if o.status == Occurrence.Status.NEW:
+                        success, ret = o._process()
+                        delivered = len(ret["delivered"])
+                        o.data = ret
+                        if success:
+                            o.status = Occurrence.Status.PROCESSED
+                        o.recipients = delivered
+                        if delivered == 0 and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value:
+                            bitcaster.trigger_event(
+                                SystemEvent.OCCURRENCE_SILENCE,
+                                o.context,
+                                options=o.options,
+                                correlation_id=o.correlation_id,
+                                parent=o,
+                            )
+                        num_sent = o.recipients
+                        o.save()
+                elif (
+                    o.attempts == 0
+                    and o.status == Occurrence.Status.NEW
+                    and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value
+                ):
+                    o.status = Occurrence.Status.FAILED
+                    bitcaster.trigger_event(
+                        SystemEvent.OCCURRENCE_ERROR, options=o.options, correlation_id=o.correlation_id, parent=o
+                    )
+                    num_sent = 0
+                    o.save()
+        except Exception as e:
+            logger.exception(e)
+        return num_sent
+
+    def _process(self) -> "tuple[bool, OccurrenceData]":
         assignment: "Assignment"
         notification: "Notification"
         delivered = self.data.get("delivered", [])
@@ -110,6 +154,7 @@ class Occurrence(BitcasterBaseModel):
         assignment_filter = {}
         notification_filter = {}
         channel_filter = {}
+        success = True
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
 
@@ -118,22 +163,21 @@ class Occurrence(BitcasterBaseModel):
         if environs := self.options.get("environs", []):
             notification_filter["environments__overlap"] = environs
 
-        for notification in self.event.notifications.filter(**notification_filter).match(self.context):
-            context = notification.get_context(self.get_context())
-            logger.debug(f"Processing occurrence {self.id} , context: {context}")
-            for channel in self.event.channels.filter(**channel_filter):
-                for assignment in notification.get_pending_subscriptions(delivered, channel).filter(
-                    **assignment_filter
-                ):
-                    try:
-                        notification.notify_to_channel(channel, assignment, context)
+        try:
+            for notification in self.event.notifications.filter(**notification_filter).match(self.context):
+                context = notification.get_context(self.get_context())
+                logger.debug(f"Processing occurrence {self.id} , context: {context}")
 
+                for channel in self.event.channels.filter(**channel_filter):
+                    for assignment in notification.get_pending_subscriptions(delivered, channel).filter(
+                        **assignment_filter
+                    ):
+                        notification.notify_to_channel(channel, assignment, context)
                         delivered.append(assignment.id)
                         recipients.append((assignment.address.value, assignment.channel.name))
-                    except Exception as e:
-                        logger.exception(e)
-                        return False
-                    finally:
-                        self.data = {"delivered": delivered, "recipients": recipients}
-                        self.save()
-        return True
+        except Exception as e:
+            logger.exception(e)
+            success = False
+        finally:
+            data: "OccurrenceData" = {"delivered": delivered, "recipients": recipients}
+        return success, data

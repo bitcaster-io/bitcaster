@@ -2,9 +2,9 @@ import logging
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
-from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
+from unfold.admin import TabularInline
 
 from bitcaster.admin.base import BaseAdmin
 from bitcaster.forms.address import AddressForm
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     AddressT = TypeVar("AddressT", bound=Address)
 
 
-class InlineValidation(admin.TabularInline["Assignment", "AddressAdmin"]):
+class InlineValidation(TabularInline["Assignment", "AddressAdmin"]):
     model = Assignment
     extra = 0
     fields = ["channel", "validated", "active"]

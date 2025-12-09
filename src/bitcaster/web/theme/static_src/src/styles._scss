@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@source "../../**/*.{html,py,js}";
+@source "../../../**/*.{html,py,js}";
+@source "../../../../**/*.{html,py,js}";
+
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+.lang-en {
+  .no-eng {
+    @apply hidden;
+  }
+}
+
+.banner {
+  @apply w-1/2 border border-white rounded-lg py-5 bg-primary;
+  @apply dark:border-gray-400;
+  min-height: 300px;
+
+  .app-name {
+    @apply m-auto text-center text-white text-5xl;
+  }
+
+  .app-local-name {
+    @apply m-auto text-center text-white text-2xl;
+  }
+}
+
+header {
+  background-color: var(--color-primary);
+}
+footer{
+  .info-line{
+    @apply inline-flex;
+    div{
+      @apply inline-flex;
+      &:after {
+        padding-right: 2px;
+        padding-left: 2px;
+        content: " -";
+      }
+    }
+  }
+}
+.font-size-selector {
+  @apply flex;
+  span {
+    @apply flex-1 mx-2 p-1 cursor-pointer text-center m-auto;
+    &.selected {
+      @apply bg-amber-100 rounded-lg text-black;
+    }
+
+    &.font-1 {
+      font-size: 16px;
+    }
+
+    &.font-2 {
+      font-size: 24px;
+    }
+
+    &.font-3 {
+      font-size: 32px;
+    }
+  }
+}
+
+ul.errorlist {
+  li {
+    @apply text-red-600;
+  }
+}
+
+fieldset {
+  @apply p-3 my-4;
+  legend {
+
+  }
+
+  .helptext {
+    font-size: 80%;
+    @apply dark:text-gray-400 text-gray-900 mt-1;
+  }
+
+}
+
+.font-size-normal {
+  //font-size: 100% !important;
+}
+
+.font-size-medium {
+  font-size: 120% !important;
+}
+
+.font-size-big {
+  font-size: 150% !important;
+}
+
+aside {
+  @apply text-gray-900 bg-gray-100;
+  @apply dark:text-white dark:bg-gray-900;
+  ul {
+    li {
+      a {
+        @apply flex items-center p-2 rounded-lg;
+        @apply bg-gray-100 text-gray-700;
+        @apply dark:text-white dark:bg-gray-900;
+        @apply hover:bg-gray-300 dark:hover:bg-gray-700;
+      }
+    }
+  }
+}

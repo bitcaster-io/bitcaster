@@ -85,6 +85,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "EMAIL_TIMEOUT": (str, None, setting("email-timeout"), True),
     "ENVIRONMENT": (str, "production", "Bitcaster Environment", "local"),
     "EXTRA_APPS": (list, [], setting("configuring-applications")),  # nosec
+    "INTERNAL_IPS": (list, [], setting("internal-ips"), ["127.0.0.1", "localhost"]),  # nosec
     "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level")),
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "MEDIA_ROOT": (str, None, setting("media-root")),

@@ -5,6 +5,7 @@ from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
 from django.contrib.admin import helpers
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.db.models import F
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -25,7 +26,7 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
-    list_display = ("username", "email", "first_name", "last_name", "is_staff")
+    list_display = ("username", "email", "first_name", "last_name", "is_staff", "is_superuser")
     list_filter = ("is_staff", "is_superuser", "groups")
     search_fields = ("username", "first_name", "last_name", "email")
     ordering = ("username",)
@@ -47,7 +48,13 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     )
     filter_horizontal = ()
     change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
-    actions = ["export_as_csv", "add_to_distributionlist"]
+    actions = ["export_as_csv", "add_to_distributionlist", "toggle_superuser"]
+
+    def toggle_superuser(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
+        queryset.exclude(pk=request.user.pk).update(is_superuser=~F("is_superuser"))
+
+    def toggle_staff(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
+        queryset.exclude(pk=request.user.pk).update(is_staff=~F("is_staff"))
 
     def add_to_distributionlist(self, request: "HttpRequest", queryset: "QuerySet[User]") -> HttpResponse:
         ctx = self.get_common_context(request, title=_("Add to Distributionlist"))
@@ -68,7 +75,7 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
         else:
             form = SelectDistributionForm(initial=initial)
         ctx["form"] = form
-        return TemplateResponse(request, "admin/bitcaster/user/add_to_distributionlist.html", ctx)
+        return TemplateResponse(request, "bitcaster/admin/user/add_to_distributionlist.html", ctx)
 
     @link(change_form=True, change_list=False)
     def addresses(self, button: ButtonWidget) -> None:

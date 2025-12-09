@@ -11,6 +11,7 @@ from django.http import HttpRequest, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from unfold import widgets as uwidgets
 
 from bitcaster.models import Assignment, Event
 
@@ -39,7 +40,7 @@ class MessageInline(admin.TabularInline[Message, Event]):
 
 
 class EventTestForm(forms.Form):
-    assignment = forms.ModelChoiceField(queryset=Assignment.objects.none())
+    assignment = forms.ModelChoiceField(queryset=Assignment.objects.none(), widget=uwidgets.UnfoldAdminSelect2Widget)
 
 
 class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], BitcasterModelAdmin[Event]):
@@ -79,7 +80,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
             },
         ),
     ]
-    change_form_template = None
+    change_form_template = "bitcaster/admin/event/change_form.html"
 
     class Media:
         js = ["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"]
@@ -154,7 +155,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
                         },
                     )
                     o.process()
-                    self.message_user(request, f"Sent {o.data}", messages.SUCCESS)
+                    self.message_user(request, f"Sent {o.status} - {o.data}", messages.SUCCESS)
                     return HttpResponseRedirect(".")
                 except Exception as e:
                     logger.exception(e)
@@ -167,7 +168,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
                 }
             )
         context["form"] = config_form
-        return TemplateResponse(request, "admin/bitcaster/event/test_event.html", context)
+        return TemplateResponse(request, "bitcaster/admin/event/test_event.html", context)
 
     #
     # @button(html_attrs={"class": ButtonColor.LINK.value})

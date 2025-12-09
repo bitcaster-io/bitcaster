@@ -48,8 +48,10 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
         visible=lambda btn: btn.original.status == btn.original.Status.NEW,
     )
     def process(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj = self.get_object(request, pk)
-        obj.process()
+        obj: Occurrence = self.get_object(request, pk)
+        if obj.process():
+            self.message_user(request, _("Occurrence has been successfully processed"), messages.SUCCESS)
+            self.message_user(request, f"{obj.data}", messages.INFO)
 
     @button(
         html_attrs={"class": ButtonColor.ACTION.value},
@@ -66,4 +68,4 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     def payload(self, request: HttpRequest, pk: str) -> TemplateResponse:  # noqa
         ctx = self.get_common_context(request, pk)
         ctx["media"] = Media(css={"screen": ["bitcaster/css/pygments.css"]})
-        return TemplateResponse(request, "admin/bitcaster/occurrence/payload.html", ctx)
+        return TemplateResponse(request, "bitcaster/admin/occurrence/payload.html", ctx)

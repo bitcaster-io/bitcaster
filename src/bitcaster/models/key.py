@@ -1,5 +1,6 @@
 import logging
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit
 
 from django import forms
 from django.contrib.postgres.fields import ArrayField
@@ -10,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from bitcaster.auth.constants import Grant
 
+from ..utils.http import absolute_reverse
 from .mixins import BitcasterBaseModel, Scoped3Mixin, ScopedManager
 from .user import User
 
@@ -68,6 +70,19 @@ class ApiKey(Scoped3Mixin, BitcasterBaseModel):
     class Meta:
         ordering = ("name",)
         unique_together = (("name", "user"),)
+
+    def get_bae(self) -> str:
+        password = self.key
+        if self.project:
+            url = absolute_reverse("api:project-detail", args=[self.organization.slug, self.project.slug])
+        else:
+            url = absolute_reverse("api:org", args=[self.organization.slug])
+
+        url_parts = urlsplit(url)
+        netloc = f"{password}@{url_parts.hostname}"
+        if url_parts.port:
+            netloc += f":{url_parts.port}"
+        return urlunsplit((url_parts.scheme, netloc, url_parts.path, url_parts.query, url_parts.fragment))
 
     def natural_key(self) -> tuple[str, ...]:
         return self.name, self.user.username

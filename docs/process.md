@@ -14,6 +14,10 @@ Bitcaster structure allows to manage simple and complex environment, it is organ
 Each <glossary:Event> can have different <glossary:Channel>s enabled to forward <glossary:Notification>s
 the destination <glossary:Distribution List>
 
+<glossary:Notification> represents the routing and enrichment handler for the event.
+It can filter out some event's payload informations or add specific data to be forwarded to tha
+<glossary:Distribution List>. In this way each event can have multiple Notifications with different filters
+and destination recipients.
 
 
 See the [Glossary](./glossary/index.md) for a list of common Bitcaster terminology

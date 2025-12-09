@@ -57,7 +57,7 @@ def test_model_occurrence_filter(
 
 def test_model_occurrence_no_notifications(occurrence: "Occurrence", monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("bitcaster.models.notification.Notification.get_context", mock := Mock())
-    assert occurrence.process() is True
+    assert occurrence.process() == 0
     assert mock.called is False
 
 
@@ -91,7 +91,7 @@ def test_purgeable(purgeable_occurrences: List["Occurrence"], non_purgeable_occu
     ],
 )
 def test_get_context(ctx: dict[str, str], expected: dict[str, Any]) -> None:
-    occurrence = OccurrenceFactory()
+    occurrence: Occurrence = OccurrenceFactory()
     occurrence.context = ctx
 
     expected = expected | {
