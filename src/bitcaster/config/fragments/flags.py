@@ -6,6 +6,6 @@ FLAGS = {
     "DISABLE_CACHE": [],
     "DEVELOP_DEBUG_TOOLBAR": [],
     "FLAG_CONDITION_TEST": [],
-    "OLD_STYLE_UI": [],
+    "IS_ROOT": [],
     "DEVELOP_FULL_EDIT": [],
 }

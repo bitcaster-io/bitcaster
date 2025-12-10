@@ -26,8 +26,7 @@ INSTALLED_APPS = [
     "bitcaster.web.theme.apps.Config",
     "bitcaster.webpush.apps.Config",
     "bitcaster.social",
-    # "bitcaster.admin_site.BitcasterAdminConfig",
-    "unfold",  # before django.contrib.admin
+    "unfold.apps.BasicAppConfig",  # before django.contrib.admin
     "unfold.contrib.filters",  # optional, if special filters are needed
     "unfold.contrib.forms",  # optional, if special form elements are needed
     "unfold.contrib.inlines",  # optional, if special inlines are needed
@@ -75,6 +74,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "bitcaster.middleware.errors.ExceptionHandlingMiddleware",
     "csp.middleware.CSPMiddleware",
     "bitcaster.middleware.user_agent.UserAgentMiddleware",
     "bitcaster.middleware.state.StateMiddleware",

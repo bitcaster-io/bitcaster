@@ -2,7 +2,6 @@
 <details data-filter-title="{{ spec.get_title }}" open {% include "adminfilters/_attrs.html" with spec=spec %}>
     <summary>
         {% blocktranslate with filter_title=spec.get_title %} By {{ filter_title }} {% endblocktranslate %}
-        {{ spec.value }}
     </summary>
     {# <div {% include "adminfilters/_attrs.html" with spec=spec %}> #}
     {# {% block title %} #}

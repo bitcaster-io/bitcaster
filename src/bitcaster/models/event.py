@@ -8,12 +8,11 @@ from ..utils.http import absolute_reverse
 from .application import Application
 from .channel import Channel
 from .mixins import BitcasterBaseModel, BitcasterBaselManager, LockMixin, SlugMixin
-from .notification import Notification
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from bitcaster.models import DistributionList, Message, Occurrence
+    from bitcaster.models import Message, Occurrence
 
     from .notification import NotificationManager
     from .occurrence import OccurrenceOptions
@@ -100,13 +99,6 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
             application=self.application,
             project=self.application.project,
             defaults=defaults if defaults else {},
-        )[0]
-
-    def create_notification(
-        self, name: str, defaults: dict[str, Any] | None = None, distribution: "DistributionList | None" = None
-    ) -> "Notification":
-        return Notification.objects.get_or_create(
-            name=name, event=self, defaults=defaults if defaults else {}, distribution=distribution
         )[0]
 
     def get_trigger_url(self) -> str:

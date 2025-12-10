@@ -2,7 +2,6 @@ import logging
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from adminfilters.filters import NumberFilter
 from django.contrib import messages
 from django.db.models import QuerySet
 from django.forms.widgets import Media
@@ -26,7 +25,6 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
         ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent="event__application")),
         "status",
-        ("recipients", NumberFilter),
     )
     readonly_fields = ["correlation_id"]
     ordering = ("-timestamp",)

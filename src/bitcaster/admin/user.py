@@ -48,7 +48,7 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     )
     filter_horizontal = ()
     change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
-    actions = ["export_as_csv", "add_to_distributionlist", "toggle_superuser"]
+    actions = ["export_as_csv", "add_to_distributionlist", "toggle_superuser", "toggle_staff"]
 
     def toggle_superuser(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
         queryset.exclude(pk=request.user.pk).update(is_superuser=~F("is_superuser"))

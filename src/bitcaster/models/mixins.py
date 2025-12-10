@@ -29,14 +29,6 @@ class AdminReversable(models.Model):
     def get_admin_change(self) -> str:
         return reverse("admin:%s_%s_change" % (self._meta.app_label, self._meta.model_name), args=(self.pk,))
 
-    @classmethod
-    def get_admin_changelist(cls) -> str:
-        return reverse("admin:%s_%s_changelist" % (cls._meta.app_label, cls._meta.model_name))
-
-    @classmethod
-    def get_admin_add(cls) -> str:
-        return reverse("admin:%s_%s_add" % (cls._meta.app_label, cls._meta.model_name))
-
 
 class BaseQuerySet(models.QuerySet["AnyModel"]):
     def get(self, *args: Any, **kwargs: Any) -> "AnyModel":

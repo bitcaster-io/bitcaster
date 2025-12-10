@@ -16,8 +16,7 @@ from testutils.factories import (
     UserRoleFactory,
 )
 
-from bitcaster.admin.channel import ChannelType
-from bitcaster.models import Channel
+from bitcaster.models import Channel, Project
 from bitcaster.state import state
 
 if TYPE_CHECKING:
@@ -145,9 +144,7 @@ def test_get_readonly_fields(app: DjangoTestApp, gmail_channel: "Channel") -> No
 def test_add_create_abstract_for_org(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     # Create Abstract Channel for provided organization
     url = reverse("admin:bitcaster_channel_add")
-    res: DjangoWebtestResponse = app.get(
-        f"{url}?mode={ChannelType.MODE_TEMPLATE}&organization={gmail_channel.organization.pk}"
-    )
+    res: DjangoWebtestResponse = app.get(f"{url}?organization={gmail_channel.organization.pk}")
     frm: "WebTestForm" = res.forms["channel_form"]
     frm["name"] = "Channel-1"
     res = frm.submit()
@@ -169,7 +166,7 @@ def test_add_new_channel_for_project(app: DjangoTestApp, gmail_channel: "Channel
     frm.submit()
     frm["name"] = "Channel-1"
     res = frm.submit()
-    assert res.status_code == 302, res.showbrowser()
+    assert res.status_code == 302
     assert Channel.objects.filter(
         name="Channel-1",
         organization=gmail_channel.organization,
@@ -195,14 +192,21 @@ def test_inherit_channel_for_project(app: DjangoTestApp, channel_template: "Chan
     ).exists()
 
 
+def assert_form_error(response: DjangoWebtestResponse, field: str, error: str) -> None:
+    target = response.context["adminform"].form
+    assert field in target.errors, f"No errors found for field {field}"
+    assert error in target.errors[field], f"Error message '{error} not found for field '{field}'"
+
+
 @pytest.mark.wizard
 def test_add_new_channel(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     url = reverse("admin:bitcaster_channel_add")
     res = app.get(url)
+    res = res.forms["channel_form"].submit()
+    assert_form_error(res, "name", "This field is required.")
+
     res.forms["channel_form"]["organization"] = gmail_channel.organization.pk
-    res = res.forms["channel_form"].submit()
     res.forms["channel_form"]["project"].force_value(gmail_channel.project.pk)
-    res = res.forms["channel_form"].submit()
     res.forms["channel_form"]["name"] = "Channel-1"
     res = res.forms["channel_form"].submit()
     assert res.status_code == 302
@@ -212,6 +216,17 @@ def test_add_new_channel(app: DjangoTestApp, gmail_channel: "Channel") -> None:
         project=gmail_channel.project,
         parent=None,
     ).exists()
+
+
+@pytest.mark.wizard
+def test_channel_consistency(app: DjangoTestApp, gmail_channel: "Channel", project: "Project") -> None:
+    url = reverse("admin:bitcaster_channel_add")
+    res = app.get(url)
+    res.forms["channel_form"]["organization"] = gmail_channel.organization.pk
+    res.forms["channel_form"]["project"].force_value(project.pk)
+    res.forms["channel_form"]["name"] = "Channel-1"
+    res = res.forms["channel_form"].submit()
+    assert_form_error(res, "project", "Project does not belong selected organization.")
 
 
 @pytest.mark.wizard

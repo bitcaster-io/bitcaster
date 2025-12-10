@@ -92,6 +92,7 @@ def pytest_configure(config):
     settings.MEDIA_ROOT = "%s/media" % tempfile.gettempdir()
     settings.STATIC_ROOT = "%s/static" % tempfile.gettempdir()
     settings.MESSAGE_STORAGE = "testutils.messages.PlainCookieStorage"
+    settings.SUPERUSERS = ["superuser001@example.com", "superuser002@example.com"]
 
     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
     os.makedirs(settings.STATIC_ROOT, exist_ok=True)

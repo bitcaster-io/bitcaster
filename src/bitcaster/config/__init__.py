@@ -128,6 +128,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "STATIC_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "STATIC_ROOT": (str, "/var/bitcaster/static", setting("static-root")),
     "STATIC_URL": (str, "/static/", setting("static-url")),
+    "SUPERUSERS": (list, [], "Users in this list will be granted superuser privileges when created."),
     "TIME_ZONE": (str, "UTC", setting("std-setting-TIME_ZONE")),
 }
 

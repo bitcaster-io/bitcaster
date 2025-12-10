@@ -74,7 +74,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
             },
         ),
         (
-            "Channels",
+            "",
             {
                 "fields": ["channels"],
             },

@@ -67,24 +67,6 @@ class MessageCreationForm(forms.ModelForm[Message]):
             self.cleaned_data["organization"] = self.cleaned_data["channel"].organization
 
 
-class OrgTemplateCreateForm(forms.Form):
-    name = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Name"}))
-    channel = forms.ModelChoiceField(queryset=Channel.objects.all(), label="Channel")
-
-    organization: "Organization"
-
-    def __init__(self, *args: Any, **kwargs: Any):
-        self.organization = kwargs.pop("organization")
-        super().__init__(*args, **kwargs)
-        self.fields["channel"].queryset = self.organization.channel_set.all()
-
-    def clean_name(self) -> str:
-        name = self.cleaned_data["name"]
-        if self.organization.message_set.filter(name__iexact=name).exists():
-            raise ValidationError(_("This name is already in use."))
-        return name
-
-
 class NotificationTemplateCreateForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Name"}))
     channel = forms.ModelChoiceField(queryset=Channel.objects.all(), label="Channel")

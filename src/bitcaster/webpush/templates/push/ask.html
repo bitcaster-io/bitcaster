@@ -2,16 +2,16 @@
 {% load i18n static %}
 {% block head %}
     <meta name="s" content="{{ secret }}" />
-    {# <meta name="u" content="{{ unsubscribe_url }}" /> #}
-    {# <meta name="k"  content="{{ private_key }}" /> #}
-    {# <meta name="w"  content="{{ sw }}" /> #}
+    <meta name="u" content="{{ unsubscribe_url }}" />
+    <meta name="k"  content="{{ private_key }}" />
+    <meta name="w"  content="{{ sw }}" />
     {{ block.super }}
     <link rel="stylesheet" href="{% static "webpush/webpush.css" %}" />
     {{ media }}
 {% endblock head %}
 {% block body %}
     <div class="webpush">
-        <div class="frame center mt-5">
+        <div class=" center mt-5">
             <div class="center logo">
                 <img src="{% static "bitcaster/images/logos/bitcaster.svg" %}" />
             </div>

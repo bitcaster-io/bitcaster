@@ -9,12 +9,10 @@ from django.db.models import ForeignKey, TextField
 from django.forms import ModelChoiceField
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.utils.translation import gettext as _
-from smart_selects.db_fields import ChainedForeignKey
 from unfold.admin import ModelAdmin as UnfoldModelAdmin  # noqa
 from unfold.contrib.forms import widgets as uwidgets
 
 from bitcaster.state import state
-from bitcaster.utils.unfold import UnfoldChainedSelect
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -32,6 +30,9 @@ class ButtonColor(enum.Enum):
 
 
 class BitcasterModelAdmin(UnfoldModelAdmin):
+    warn_unsaved_form = True
+    list_filter_submit = True
+    # list_fullwidth = False
     formfield_overrides = {
         TextField: {
             "widget": uwidgets.WysiwygWidget,
@@ -45,21 +46,6 @@ class BitcasterModelAdmin(UnfoldModelAdmin):
         self, db_field: ForeignKey, request: HttpRequest, **kwargs: Any
     ) -> ModelChoiceField | None:
         db = kwargs.get("using")
-        if isinstance(db_field, ChainedForeignKey):
-            widget = UnfoldChainedSelect(
-                to_app_name=db_field.to_app_name,
-                to_model_name=db_field.to_model_name,
-                chained_field=db_field.chained_field,
-                chained_model_field=db_field.chained_model_field,
-                foreign_key_app_name=db_field.model._meta.app_label,
-                foreign_key_model_name=db_field.model._meta.object_name,
-                foreign_key_field_name=db_field.name,
-                show_all=db_field.show_all,
-                auto_choose=db_field.auto_choose,
-                sort=db_field.sort,
-                view_name=db_field.view_name,
-            )
-            kwargs["widget"] = widget
         # Overrides widgets for all related fields
         if "widget" not in kwargs:
             if db_field.name in self.raw_id_fields:

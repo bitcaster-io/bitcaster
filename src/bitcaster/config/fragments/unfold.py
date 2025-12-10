@@ -1,10 +1,13 @@
-from typing import Any
+from typing import TYPE_CHECKING
 
 from django.conf import settings
-from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
+
 
 # see https://fonts.google.com/icons?icon.query=docs for icons
 COMMON_SITE_DROPDOWN = [
@@ -12,16 +15,25 @@ COMMON_SITE_DROPDOWN = [
         "icon": "webhook",
         "title": "API",
         "link": "/api/",
+        "attrs": {
+            "target": "_api",
+        },
     },
     {
         "icon": "commit",
         "title": "GitHub",
         "link": "https://github.com/bitcaster-io/bitcaster",
+        "attrs": {
+            "target": "_blank",
+        },
     },
     {
         "icon": "docs",
         "title": "Documentation",
         "link": "https://bitcaster-io.github.io/bitcaster/",
+        "attrs": {
+            "target": "_docs",
+        },
     },
 ]
 
@@ -57,7 +69,7 @@ COMMON = {
     },
     "COLORS": {
         "base": {
-            "50": "249, 250, 251",  # grigi chiari (default neutral)
+            "50": "249, 250, 251",
             "100": "243, 244, 246",
             "200": "229, 231, 235",
             "300": "209, 213, 219",
@@ -110,7 +122,6 @@ UNFOLD = {
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_occurrence_changelist"),
                         "badge": "bitcaster.config.fragments.unfold.occurrence_callback",
-                        # "permission": lambda request: request.user.is_superuser,
                     },
                 ],
             },
@@ -157,8 +168,6 @@ UNFOLD = {
                         "title": _("Applications"),
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_application_changelist"),
-                        # "badge": "sample_app.badge_callback",
-                        # "permission": lambda request: request.user.is_superuser,
                     },
                     {
                         "title": _("Channels"),
@@ -176,21 +185,18 @@ UNFOLD = {
                         "title": _("Users"),
                         "icon": "person",
                         "link": reverse_lazy("admin:bitcaster_user_changelist"),
-                        # "badge": "sample_app.badge_callback",
                         "permission": lambda request: request.user.is_superuser,
                     },
                     {
                         "title": _("Roles"),
                         "icon": "account_child_invert",
                         "link": reverse_lazy("admin:bitcaster_userrole_changelist"),
-                        # "badge": "sample_app.badge_callback",
                         "permission": lambda request: request.user.is_superuser,
                     },
                     {
                         "title": _("Groups"),
                         "icon": "group",
                         "link": reverse_lazy("admin:auth_group_changelist"),
-                        # "badge": "sample_app.badge_callback",
                         "permission": lambda request: request.user.is_superuser,
                     },
                     {
@@ -199,21 +205,11 @@ UNFOLD = {
                         "link": reverse_lazy("admin:bitcaster_apikey_changelist"),
                         "permission": lambda request: request.user.is_superuser,
                     },
-                    # {
-                    # "title": _("Flags"),
-                    # "icon": "group",
-                    # "link": reverse_lazy("admin:flags_apikey_changelist"),
-                    # "permission": lambda request: request.user.is_superuser,
-                    # },
                 ],
             },
         ],
     },
 }
-
-
-def badge_callback(request: HttpRequest) -> str:
-    return ""
 
 
 def environment_callback(request: "HttpRequest") -> tuple[str, str]:
@@ -224,12 +220,3 @@ def occurrence_callback(request: "HttpRequest") -> int:
     from bitcaster.models import Occurrence
 
     return Occurrence.objects.filter(status=Occurrence.Status.NEW.value).count()
-
-
-def console_dashboard(request: "HttpRequest", context: dict[str, Any]) -> dict[str, Any]:
-    context.update(
-        {
-            "sample": "example",  # this will be injected into templates/admin/index.html
-        }
-    )
-    return context

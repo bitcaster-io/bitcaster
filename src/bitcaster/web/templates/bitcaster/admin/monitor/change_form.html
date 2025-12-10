@@ -5,9 +5,9 @@
         <div {% if original.pk %}style="display: inline-flex;flex:max-content" {% endif %}>
             {{ block.super }}
         </div>
-        <div style="display: inline-flex; flex:min-content">
+        <div>
             {% if original.pk and original.schedule and original.schedule.crontab %}
-                <div class="boxed">
+                <div class="">
                     <fieldset>
                         <div class="form-row">
                             <h3>

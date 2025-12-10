@@ -1,4 +1,10 @@
 @import "tailwindcss";
+
+@source "../../**/*.{html,py,js}";
+@source "../../../**/*.{html,py,js}";
+@source "../../../../**/*.{html,py,js}";
+
+
 @theme {
   /* BASE */
   --color-base-50: 249 250 251;
@@ -30,9 +36,29 @@
 
   --font-default-light: 400;     /* peso */
   --text-default-light: var(--color-base-600); /* colore di default */
-
   --font-default-dark: 400;     /* peso */
   --text-default-dark: var(--color-base-600); /* colore di default */
+
+  --font-size-3xl: 1.875rem;
+  --line-height-3xl: 2.25rem;
+
+  --font-size-4xl: 2.25rem;
+  --line-height-4xl: 2.5rem;
+
+  --font-size-5xl: 3rem;
+  --line-height-5xl: 1;
+
+  --font-size-6xl: 3.75rem;
+  --line-height-6xl: 1;
+
+  --font-size-7xl: 4.5rem;
+  --line-height-7xl: 1;
+
+  --font-size-8xl: 6rem;
+  --line-height-8xl: 1;
+
+  --font-size-9xl: 8rem;
+  --line-height-9xl: 1;
 
 }
 @utility text-font-default-light {
@@ -62,7 +88,8 @@
       width: 100%;
       height: 400px;
     }
-    input, textarea{
+
+    input, textarea {
       @apply font-medium min-w-20 rounded-default shadow-xs text-font-default-light text-sm px-3 py-2 w-full max-w-2xl;
       @apply border-gray-500 border-1;
       /*
@@ -73,9 +100,11 @@
       @apply dark:text-white dark:bg-gray-900 border-base-200 bg-white font-medium min-w-20 placeholder-base-400 rounded-default shadow-xs text-font-default-light text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 group-[.errors]:border-red-600 focus:group-[.errors]:outline-red-600 dark:bg-base-900 dark:border-base-700 dark:text-font-default-dark dark:group-[.errors]:border-red-500 dark:focus:group-[.errors]:outline-red-500 dark:scheme-dark group-[.primary]:border-transparent disabled:!bg-base-50 dark:disabled:!bg-base-800 px-3 py-2 w-full max-w-2xl;
       */
     }
-    textarea{
+
+    textarea {
       @apply h-100;
     }
+
     .toolbar {
       button {
         @apply rounded-none border-transparent;
@@ -116,8 +145,13 @@
     @apply bg-green-300 border-transparent;
   }
 
-  .form-submit-row{
+  .form-submit-row {
     @apply flex border-1;
   }
 
+  .filter-lookup {
+    @apply font-medium min-w-20 rounded-default shadow-xs text-font-default-light text-sm px-3 py-2 w-full max-w-2xl;
+    @apply border-gray-500 border-1;
+    @apply bg-base-500;
+  }
 }

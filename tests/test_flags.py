@@ -5,8 +5,8 @@ from unittest import mock
 import pytest
 from django.test.client import RequestFactory
 
-from bitcaster.apps import development, env_var, header_key, server_address
 from bitcaster.state import state
+from bitcaster.utils.flags import development, env_var, header_key, server_address
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper

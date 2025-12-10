@@ -12,7 +12,7 @@ from .mixins import BitcasterBaseModel, LockMixin
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from bitcaster.models import Assignment, Channel, DistributionList, Organization
+    from bitcaster.models import Assignment, Channel, Organization
 
 logger = logging.getLogger(__name__)
 
@@ -50,10 +50,3 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
         from bitcaster.models import Assignment
 
         return Assignment.objects.filter(address__user=self, channel=ch).first()
-
-    @property
-    def distribution_lists(self) -> "QuerySet[DistributionList]":
-        """Retrieve all distribution lists this user is a recipient of via any assignment."""
-        from bitcaster.models import DistributionList
-
-        return DistributionList.objects.filter(recipients__address__user=self)

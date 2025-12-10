@@ -103,7 +103,7 @@ class ConfirmView(SecretMixin, TemplateView):
             "assignment": assignment,
             "owner": assignment.channel.owner,
             "secret": secret,
-            "private_key": ch.config["APPLICATION_SERVER_KEY"],
+            "private_key": ch.config.get("APPLICATION_SERVER_KEY", ""),
             "subscribe_url": reverse("webpush:subscribe", args=[secret]),
             "unsubscribe_url": reverse("webpush:unsubscribe", args=[secret]),
             "media": self.media,

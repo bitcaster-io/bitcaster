@@ -12,6 +12,8 @@ class BitcasterAdminConfig(AdminConfig):
 
 class BitcasterAdminSite(UnfoldAdminSite):
     site_title = gettext_lazy("Bitcaster admin")
+    default_site = "bitcaster.admin_site.BitcasterAdminSite"
+    settings_name = "UNFOLD"
 
     def each_context(self, request: HttpRequest) -> dict[str, Any]:
         context = super().each_context(request)
