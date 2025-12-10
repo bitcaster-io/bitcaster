@@ -146,7 +146,7 @@
   }
 
   .form-submit-row {
-    @apply flex border-1;
+    @apply flex border-1 p-2 rounded border-gray-700 bg-gray-900 justify-end;
   }
 
   .filter-lookup {

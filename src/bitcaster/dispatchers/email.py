@@ -44,10 +44,6 @@ class EmailDispatcher(Dispatcher):
         try:
             subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
             email = EmailMultiAlternatives(
-                # headers={
-                #     "List-Unsubscribe": unsubscribe_url,
-                #     "X-Example-Header": "myapp",
-                # },
                 subject=subject or "",
                 body=payload.message,
                 from_email=self.channel.from_email,

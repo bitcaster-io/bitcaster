@@ -36,10 +36,10 @@ def app(
 
 def test_admin_index(app: "DjangoTestApp", data: Any, django_assert_num_queries: DjangoAssertNumQueries) -> None:
     url = reverse("admin:index")
-    with django_assert_num_queries(16):
+    with django_assert_num_queries(15):
         res = app.get(url)
         assert res.status_code == 200
     state.reset()
-    with django_assert_num_queries(12):
+    with django_assert_num_queries(11):
         res = app.get(url)
         assert res.status_code == 200

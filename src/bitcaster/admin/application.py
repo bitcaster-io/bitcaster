@@ -32,7 +32,6 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
         "active",
         "locked",
     )
-    # autocomplete_fields = ("project", "owner")
     readonly_fields = ["locked"]
     form = ApplicationChangeForm
 
@@ -71,9 +70,8 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
     def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         application: Application = button.context["original"]
-        button.href = (
-            f"{url}?application__exact={application.pk}&application__organization__exact={application.organization.pk}"
-        )
+        # application__project__exact=4&application__exact=5
+        button.href = f"{url}?application__exact={application.pk}&application__project__exact={application.project.pk}"
 
     @link(change_form=True, change_list=False)
     def notifications(self, button: ButtonWidget) -> None:

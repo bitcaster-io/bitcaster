@@ -21,7 +21,6 @@ class UserRoleAdmin(BaseAdmin, BitcasterModelAdmin[UserRole]):
     )
     list_filter = (
         ("user", AutoCompleteFilter),
-        # ("organization", AutoCompleteFilter),
         ("group", AutoCompleteFilter),
     )
     search_fields = ("user__username",)

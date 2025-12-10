@@ -9,15 +9,17 @@ from django.db.models import ForeignKey, TextField
 from django.forms import ModelChoiceField
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.utils.translation import gettext as _
+from smart_selects.db_fields import ChainedForeignKey
 from unfold.admin import ModelAdmin as UnfoldModelAdmin  # noqa
 from unfold.contrib.forms import widgets as uwidgets
 
 from bitcaster.state import state
+from bitcaster.utils.unfold import UnfoldChainedSelect
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from bitcaster.types.django import AnyModel
+    from bitcaster.types.django import AnyModel_co
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +34,6 @@ class ButtonColor(enum.Enum):
 class BitcasterModelAdmin(UnfoldModelAdmin):
     warn_unsaved_form = True
     list_filter_submit = True
-    # list_fullwidth = False
     formfield_overrides = {
         TextField: {
             "widget": uwidgets.WysiwygWidget,
@@ -46,6 +47,21 @@ class BitcasterModelAdmin(UnfoldModelAdmin):
         self, db_field: ForeignKey, request: HttpRequest, **kwargs: Any
     ) -> ModelChoiceField | None:
         db = kwargs.get("using")
+        if isinstance(db_field, ChainedForeignKey):
+            widget = UnfoldChainedSelect(
+                to_app_name=db_field.to_app_name,
+                to_model_name=db_field.to_model_name,
+                chained_field=db_field.chained_field,
+                chained_model_field=db_field.chained_model_field,
+                foreign_key_app_name=db_field.model._meta.app_label,
+                foreign_key_model_name=db_field.model._meta.object_name,
+                foreign_key_field_name=db_field.name,
+                show_all=db_field.show_all,
+                auto_choose=db_field.auto_choose,
+                sort=db_field.sort,
+                view_name=db_field.view_name,
+            )
+            kwargs["widget"] = widget
         # Overrides widgets for all related fields
         if "widget" not in kwargs:
             if db_field.name in self.raw_id_fields:
@@ -59,24 +75,22 @@ class BitcasterModelAdmin(UnfoldModelAdmin):
 
 
 class BaseAdmin(BitcasterModelAdmin, AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin):
-    def get_object_or_404(self, request: HttpRequest, object_id: str, from_field: str | None = None) -> "AnyModel":
+    def get_object_or_404(self, request: HttpRequest, object_id: str, from_field: str | None = None) -> "AnyModel_co":
         if not (ret := self.get_object(request, object_id, from_field)):
             raise Http404
         return ret
 
     def response_add(
-        self, request: HttpRequest, obj: "Generic[AnyModel]", post_url_continue: str | None = None
+        self, request: HttpRequest, obj: "Generic[AnyModel_co]", post_url_continue: str | None = None
     ) -> HttpResponse:
         ret = super().response_add(request, obj, post_url_continue)
-        # if ret.status_code in [200, 400]:
-        #     return ret
         if redirect_url := request.GET.get("next", ""):
             return HttpResponseRedirect(redirect_url)
         return ret
 
     def get_search_results(
-        self, request: HttpRequest, queryset: "QuerySet[AnyModel]", search_term: str
-    ) -> "tuple[QuerySet[AnyModel], bool]":
+        self, request: HttpRequest, queryset: "QuerySet[AnyModel_co]", search_term: str
+    ) -> "tuple[QuerySet[AnyModel_co], bool]":
         field_names = [f.name for f in self.model._meta.get_fields()]
         filters = {k: v for k, v in request.GET.items() if k in field_names}
         exclude = {k[:-5]: v for k, v in request.GET.items() if k.endswith("__not") and k[:-5] in field_names}
@@ -104,7 +118,6 @@ class BaseAdmin(BitcasterModelAdmin, AdminFiltersMixin, AdminAutoCompleteSearchM
     ) -> HttpResponse:
         extra_context = extra_context or {}
 
-        # extra_context["show_save"] = True
         extra_context["show_save_and_add_another"] = False
         extra_context["show_save_and_continue"] = self.save_as_continue
 

@@ -36,4 +36,4 @@ class ProjectAddForm(ProjectBaseForm):
 class ProjectChangeForm(ProjectBaseForm):
     class Meta:
         model = Project
-        exclude = ()
+        fields = ("name", "slug", "organization", "owner", "from_email", "subject_prefix", "environments", "locked")

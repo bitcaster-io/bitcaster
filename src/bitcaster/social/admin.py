@@ -25,7 +25,6 @@ class SocialProviderAdmin(ExtraButtonsMixin, BitcasterModelAdmin[SocialProvider]
         "provider",
         "enabled",
     )
-    # change_form_template = None
 
     def formfield_for_dbfield(self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any) -> FormField | None:
         formfield = super().formfield_for_dbfield(db_field, request, **kwargs)

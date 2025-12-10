@@ -1,0 +1,14 @@
+{% extends 'admin/base.html' %}
+{% load i18n %}
+{% block title %}
+    {% if subtitle %}
+        {{ subtitle }} |
+    {% endif %}
+    {{ title }} | {{ site_title|default:_("Bitcaster") }}
+{% endblock %}
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+{% block content %}
+    <!-- Dashboard -->
+{% endblock %}

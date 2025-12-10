@@ -22,11 +22,6 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     search_fields = ("name",)
     list_display = ("name", "event", "application", "distribution")
     list_filter = (
-        # ("event__application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        # (
-        #     "event__application__project",
-        #     LinkedAutoCompleteFilter.factory(parent="event__application__project__organization"),
-        # ),
         ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent="event__application")),
         ("distribution__recipients__address__user", LinkedAutoCompleteFilter.factory(parent=None)),

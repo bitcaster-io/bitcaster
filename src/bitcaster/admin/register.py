@@ -13,6 +13,7 @@ from .event import EventAdmin
 from .group import GroupAdmin
 from .internal import LogMessageAdmin
 from .media import MediaAdmin
+from .member import MemberAdmin
 from .message import MessageAdmin
 from .monitor import MonitorAdmin
 from .notification import NotificationAdmin
@@ -48,6 +49,7 @@ admin.site.register(models.Event, EventAdmin)
 admin.site.register(models.LogMessage, LogMessageAdmin)
 admin.site.register(models.MediaFile, MediaAdmin)
 admin.site.register(models.Message, MessageAdmin)
+admin.site.register(models.Member, MemberAdmin)
 admin.site.register(models.Notification, NotificationAdmin)
 admin.site.register(models.Occurrence, OccurrenceAdmin)
 admin.site.register(models.Organization, OrganizationAdmin)

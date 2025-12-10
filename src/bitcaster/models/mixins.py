@@ -7,9 +7,10 @@ from django.db.models.base import ModelBase
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import gettext as _
+from smart_selects.db_fields import ChainedForeignKey
 
 if TYPE_CHECKING:
-    from bitcaster.types.django import AnyModel
+    from bitcaster.types.django import AnyModel_co
 
     from .application import Application
     from .organization import Organization
@@ -30,8 +31,8 @@ class AdminReversable(models.Model):
         return reverse("admin:%s_%s_change" % (self._meta.app_label, self._meta.model_name), args=(self.pk,))
 
 
-class BaseQuerySet(models.QuerySet["AnyModel"]):
-    def get(self, *args: Any, **kwargs: Any) -> "AnyModel":
+class BaseQuerySet(models.QuerySet["AnyModel_co"]):
+    def get(self, *args: Any, **kwargs: Any) -> "AnyModel_co":
         try:
             return super().get(*args, **kwargs)
         except self.model.DoesNotExist as e:
@@ -40,7 +41,7 @@ class BaseQuerySet(models.QuerySet["AnyModel"]):
             ) from e
 
 
-class BitcasterBaselManager(models.Manager["AnyModel"]):
+class BitcasterBaselManager(models.Manager["AnyModel_co"]):
     _queryset_class = BaseQuerySet
 
 
@@ -72,8 +73,8 @@ class SlugMixin(models.Model):
         super().save(*args, **kwargs)
 
 
-class ScopedManager(BitcasterBaselManager["AnyModel"]):
-    def get_or_create(self, defaults: Mapping[str, Any] | None = None, **kwargs: Any) -> "tuple[AnyModel, bool]":
+class ScopedManager(BitcasterBaselManager["AnyModel_co"]):
+    def get_or_create(self, defaults: Mapping[str, Any] | None = None, **kwargs: Any) -> "tuple[AnyModel_co, bool]":
         values = dict(**(defaults or {}))
         if kwargs.get("application"):
             kwargs["project"] = kwargs["application"].project
@@ -95,7 +96,7 @@ class ScopedManager(BitcasterBaselManager["AnyModel"]):
         defaults: Mapping[str, Any] | None = None,
         create_defaults: Mapping[str, Any] | None = None,
         **kwargs: Any,
-    ) -> "tuple[AnyModel, bool]":
+    ) -> "tuple[AnyModel_co, bool]":
         values = dict(**(defaults or {}))
         if kwargs.get("application"):
             kwargs["project"] = kwargs["application"].project
@@ -115,8 +116,15 @@ class ScopedManager(BitcasterBaselManager["AnyModel"]):
 class Scoped2Mixin(models.Model):
     organization: "Organization"
     organization = models.ForeignKey("Organization", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True)
-    project = models.ForeignKey(
-        "Project", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True, null=True
+    project = ChainedForeignKey(
+        "Project",
+        blank=True,
+        null=True,
+        chained_field="organization",
+        chained_model_field="organization",
+        show_all=False,
+        related_name="%(class)s_set",
+        on_delete=models.CASCADE,
     )
 
     class Meta:
@@ -125,8 +133,15 @@ class Scoped2Mixin(models.Model):
 
 class Scoped3Mixin(Scoped2Mixin):
     application: "Application"
-    application = models.ForeignKey(
-        "Application", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True, null=True
+    application = ChainedForeignKey(
+        "Application",
+        blank=True,
+        null=True,
+        chained_field="project",
+        chained_model_field="project",
+        show_all=False,
+        related_name="%(class)s_set",
+        on_delete=models.CASCADE,
     )
 
     class Meta:

@@ -15,43 +15,6 @@ def process_occurrence(occurrence_pk: int) -> int:
     o: Occurrence = Occurrence.objects.select_related("event").get(id=occurrence_pk)
     return o.process()
 
-    #
-    # try:
-    #     with transaction.atomic():
-    #         o: Occurrence = Occurrence.objects.select_related("event").select_for_update().get(id=occurrence_pk)
-    #         if o.attempts > 0:
-    #             o.attempts = o.attempts - 1
-    #             o.save()
-    #             if o.status == Occurrence.Status.NEW:
-    #                 success = o.process()
-    #                 if success:
-    #                     o.status = Occurrence.Status.PROCESSED
-    #                 o.recipients = len(o.data.get("delivered", []))
-    #                 o.save()
-    #                 if success and o.recipients == 0 and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value:
-    #                     bitcaster.trigger_event(
-    #                         SystemEvent.OCCURRENCE_SILENCE,
-    #                         o.context,
-    #                         options=o.options,
-    #                         correlation_id=o.correlation_id,
-    #                         parent=o,
-    #                     )
-    #                 return o.recipients
-    #         elif (
-    #             o.attempts == 0
-    #             and o.status == Occurrence.Status.NEW
-    #             and o.event.name != SystemEvent.OCCURRENCE_SILENCE.value
-    #         ):
-    #             o.status = Occurrence.Status.FAILED
-    #             o.save()
-    #             bitcaster.trigger_event(
-    #                 SystemEvent.OCCURRENCE_ERROR, options=o.options, correlation_id=o.correlation_id, parent=o
-    #             )
-    #             return 0
-    # except Exception as e:
-    #     logger.exception(e)
-    #     return e
-
 
 @app.task()
 def schedule_occurrences() -> None | Exception:

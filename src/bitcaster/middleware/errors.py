@@ -1,4 +1,5 @@
-from typing import Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
+
 from django.shortcuts import render
 from social_core.exceptions import AuthException
 

@@ -20,8 +20,6 @@ class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], Bit
     search_fields = ("name",)
     list_display = ("name", "project")
     list_filter = (
-        # ("project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        # ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
         ("project", LinkedAutoCompleteFilter.factory(parent=None)),
         ("recipients__address__user", AutoCompleteFilter.factory()),
     )

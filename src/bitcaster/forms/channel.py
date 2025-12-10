@@ -9,13 +9,13 @@ from bitcaster.models import Channel
 class ChannelBaseForm(forms.ModelForm["Channel"]):
     class Meta:
         model = Channel
-        exclude = ("config", "locked")
+        fields = ("organization", "project", "name", "dispatcher", "active", "parent")
 
 
 class ChannelChangeForm(Scoped2FormMixin[Channel], ChannelBaseForm):
     class Meta:
         model = Channel
-        exclude = ("config", "locked")
+        fields = ("organization", "project", "name", "dispatcher", "active", "parent")
 
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()

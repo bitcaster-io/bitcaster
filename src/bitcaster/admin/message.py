@@ -67,7 +67,6 @@ class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
     search_fields = ("name",)
     list_display = ("name", "channel", "scope_level")
     list_filter = (
-        # ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("channel", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent=None)),
         ("notification", LinkedAutoCompleteFilter.factory()),

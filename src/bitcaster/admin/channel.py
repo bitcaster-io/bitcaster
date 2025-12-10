@@ -24,7 +24,7 @@ from .mixins import LockMixinAdmin, TwoStepCreateMixin
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
-    from bitcaster.types.django import AnyModel
+    from bitcaster.types.django import AnyModel_co
     from bitcaster.types.http import AuthHttpRequest
 
 logger = logging.getLogger(__name__)
@@ -65,12 +65,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
             initial["organization"] = Project.objects.get(pk=initial["project"]).organization
         return initial
 
-    # def add_view(
-    #     self, request: "HttpRequest", form_url: str | None = "", extra_context: dict[str, Any] | None = None
-    # ) -> HttpResponse:
-    #     return super().add_view(request,form_url, extra_context)
-
-    def get_readonly_fields(self, request: "HttpRequest", obj: "AnyModel | None" = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: "HttpRequest", obj: "AnyModel_co | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk == config.SYSTEM_EMAIL_CHANNEL:
             return ["name", "organization", "project", "parent", "protocol", "locked"]
         if obj and obj.pk:

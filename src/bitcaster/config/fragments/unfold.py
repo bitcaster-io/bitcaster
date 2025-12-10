@@ -8,7 +8,6 @@ from django.utils.translation import gettext_lazy as _
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
-
 # see https://fonts.google.com/icons?icon.query=docs for icons
 COMMON_SITE_DROPDOWN = [
     {
@@ -61,7 +60,6 @@ COMMON = {
             "href": lambda request: static("bitcaster/images/logos/logo400.png"),
         },
     ],
-    # "SITE_SYMBOL": "speed",  # symbol from icon set
     "SITE_URL": "/",
     "SITE_ICON": {
         "light": lambda request: static("bitcaster/images/logos/logo400.png"),
@@ -123,6 +121,11 @@ UNFOLD = {
                         "link": reverse_lazy("admin:bitcaster_occurrence_changelist"),
                         "badge": "bitcaster.config.fragments.unfold.occurrence_callback",
                     },
+                    {
+                        "title": _("Members"),
+                        "icon": "person",
+                        "link": reverse_lazy("admin:bitcaster_member_changelist"),
+                    },
                 ],
             },
             {
@@ -134,8 +137,6 @@ UNFOLD = {
                         "title": _("Addresses"),
                         "icon": "alternate_email",
                         "link": reverse_lazy("admin:bitcaster_address_changelist"),
-                        # "badge": "sample_app.badge_callback",
-                        # "permission": lambda request: request.user.is_superuser,
                     },
                     {
                         "title": _("Distribution List"),
@@ -209,6 +210,30 @@ UNFOLD = {
             },
         ],
     },
+    "TABS": [
+        {
+            "models": [
+                "bitcaster.user",
+            ],
+            "items": [
+                {
+                    "title": _("Groups"),
+                    "link": reverse_lazy("admin:auth_group_changelist"),
+                },
+            ],
+        },
+        {
+            "models": [
+                "auth.group",
+            ],
+            "items": [
+                {
+                    "title": _("Users"),
+                    "link": reverse_lazy("admin:bitcaster_user_changelist"),
+                },
+            ],
+        },
+    ],
 }
 
 

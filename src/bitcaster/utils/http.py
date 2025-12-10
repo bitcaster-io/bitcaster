@@ -10,10 +10,10 @@ from ..state import state
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
-    from ..types.http import AnyRequest
+    from ..types.http import AnyRequest_co
 
 
-def get_server_host(request: "AnyRequest | None" = None) -> str:
+def get_server_host(request: "AnyRequest_co | None" = None) -> str:
     req: HttpRequest | None = request or state.request
     host = req.get_host()
     domain, port = split_domain_port(host)

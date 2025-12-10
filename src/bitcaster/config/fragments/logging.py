@@ -64,4 +64,3 @@ LOGGING = {
         },
     },
 }
-# cssutils.log.setLevel(logging.CRITICAL)

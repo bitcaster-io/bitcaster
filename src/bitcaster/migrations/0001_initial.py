@@ -88,7 +88,8 @@ class Migration(migrations.Migration):
                     "is_active",
                     models.BooleanField(
                         default=True,
-                        help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
+                        help_text="Designates whether this user should be treated as active. "
+                        "Unselect this instead of deleting accounts.",
                         verbose_name="active",
                     ),
                 ),
@@ -98,7 +99,8 @@ class Migration(migrations.Migration):
                     "groups",
                     models.ManyToManyField(
                         blank=True,
-                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        help_text="The groups this user belongs to. A user will get all permissions "
+                        "granted to each of their groups.",
                         related_name="user_set",
                         related_query_name="user",
                         to="auth.group",
@@ -322,7 +324,8 @@ class Migration(migrations.Migration):
                     "occurrence_retention",
                     models.IntegerField(
                         blank=True,
-                        help_text="Number of days (from last update) after which related Occurrences can be purged. If not specified, system default will be used.",
+                        help_text="Number of days (from last update) after which related Occurrences can be purged. "
+                        "If not specified, system default will be used.",
                         null=True,
                     ),
                 ),
@@ -819,7 +822,8 @@ class Migration(migrations.Migration):
                     django.contrib.postgres.fields.ArrayField(
                         base_field=models.CharField(blank=True, max_length=20, null=True),
                         blank=True,
-                        help_text="Limit validity to these environments. If empty the key will be valid for any environment",
+                        help_text="Limit validity to these environments. "
+                        "If empty the key will be valid for any environment",
                         null=True,
                         size=None,
                     ),

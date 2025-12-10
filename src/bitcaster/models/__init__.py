@@ -17,7 +17,7 @@ from .notification import Notification  # noqa
 from .occurrence import Occurrence  # noqa
 from .organization import Organization  # noqa
 from .project import Project  # noqa
-from .user import User  # noqa
+from .user import User, Member  # noqa
 from .userrole import UserRole  # noqa
 
 __all__ = [
@@ -32,6 +32,7 @@ __all__ = [
     "LogEntry",
     "LogMessage",
     "MediaFile",
+    "Member",
     "Message",
     "Monitor",
     "Notification",

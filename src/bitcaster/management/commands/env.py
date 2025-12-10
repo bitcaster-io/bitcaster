@@ -41,7 +41,6 @@ class Command(BaseCommand):
         errors = []
 
         for k, __ in sorted(CONFIG.items()):
-            help: str = env.get_help(k)
             default = env.get_default(k)
             if options["check"]:
                 if k in EXPLICIT_SET and k not in env.ENVIRON:

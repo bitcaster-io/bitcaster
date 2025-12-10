@@ -32,8 +32,6 @@ class EventManager(BitcasterBaselManager["Event"]):
 
 
 class Event(SlugMixin, LockMixin, BitcasterBaseModel):
-    # messages: "QuerySet[Message]"
-
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="events")
     description = models.CharField(max_length=255, blank=True, null=True)
     active = models.BooleanField(default=True)

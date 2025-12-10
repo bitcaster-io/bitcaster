@@ -12,8 +12,8 @@ class ApiRequest(Request):
     user: AbstractBaseUser | AnonymousUser
     auth: ApiKey | None
 
-AnyRequest = TypeVar("AnyRequest", bound=HttpRequest, covariant=True)
-AnyResponse = TypeVar("AnyResponse", bound=HttpResponseBase, covariant=True)
+AnyRequest_co = TypeVar("AnyRequest_co", bound=HttpRequest, covariant=True)
+AnyResponse_co = TypeVar("AnyResponse_co", bound=HttpResponseBase, covariant=True)
 
 class AuthHttpRequest(HttpRequest):
     user: User

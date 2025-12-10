@@ -9,7 +9,7 @@ from django.utils.translation import gettext as _
 from .base import BitcasterModelAdmin, ButtonColor
 
 if TYPE_CHECKING:
-    from bitcaster.types.django import AnyModel
+    from bitcaster.types.django import AnyModel_co
 
 
 class LockMixinAdmin(BitcasterModelAdmin["AnyModel"]):
@@ -20,7 +20,7 @@ class LockMixinAdmin(BitcasterModelAdmin["AnyModel"]):
         add: bool = False,
         change: bool = False,
         form_url: str = "",
-        obj: "AnyModel | None" = None,
+        obj: "AnyModel_co | None" = None,
     ) -> HttpResponse:
         if obj and obj.locked:
             self.message_user(request, "Locked", messages.ERROR)
@@ -58,24 +58,6 @@ class LockMixinAdmin(BitcasterModelAdmin["AnyModel"]):
             self.message_user(request, _("{} unlocked").format(label))
             return HttpResponseRedirect("..")
         return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
-
-
-# class CloneMixin(admin.ModelAdmin["AnyModel"]):
-#
-#     @button(
-#         label=_("Clone"),
-#         html_attrs={"style": f"background-color:{ButtonColor.ACTION}"},
-#     )
-#     def clone(self, request: "HttpRequest", pk: str) -> "HttpResponse":
-#         obj: "AnyModel|None" = self.get_object(request, pk)
-#         obj.pk = None
-#         if hasattr(obj, "name"):
-#             obj.name = f"Clone of {obj.name}"
-#         obj.save()
-#         from django.utils.safestring import SafeString
-#
-#         url = reverse(admin_urlname(obj._meta, SafeString("change")), args=(obj.pk,))
-#         return HttpResponseRedirect(url)
 
 
 class TwoStepCreateMixin(admin.ModelAdmin["AnyModel"]):

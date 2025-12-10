@@ -14,7 +14,6 @@ class EventBaseForm(forms.ModelForm["Event"]):
             Event._meta.get_field("application"), admin.site, exclude={"name": bitcaster.APPLICATION}
         ),
     )
-    slug = forms.SlugField(required=False)
 
     class Meta:
         model = Event

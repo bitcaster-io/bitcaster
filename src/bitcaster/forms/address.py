@@ -15,4 +15,4 @@ class AddressForm(forms.ModelForm["Address"]):
 
     class Meta:
         model = Address
-        fields = "__all__"
+        fields = ("user", "name", "type", "value")

@@ -40,14 +40,13 @@ class MessageInline(admin.TabularInline[Message, Event]):
 
 
 class EventTestForm(forms.Form):
-    assignment = forms.ModelChoiceField(queryset=Assignment.objects.none(), widget=uwidgets.UnfoldAdminSelect2Widget)
+    assignment = forms.ModelChoiceField(queryset=Assignment.objects.none(), widget=uwidgets.UnfoldAdminSelectWidget)
 
 
 class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], BitcasterModelAdmin[Event]):
     search_fields = ("name",)
     list_display = ("name", "application", "active", "locked")
     list_filter = (
-        # ("application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("application__project", LinkedAutoCompleteFilter.factory(parent=None)),
         ("application", LinkedAutoCompleteFilter.factory(parent="application__project")),
         ("channels", AutoCompleteFilter),
@@ -69,7 +68,6 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
                     ("name", "slug"),
                     ("description",),
                     ("active", "newsletter", "occurrence_retention"),
-                    # ("channels",)
                 )
             },
         ),
@@ -141,7 +139,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
             ).distinct()
             return frm
 
-        context = self.get_common_context(request, pk, title=_("Trigger Event"))
+        context = self.get_common_context(request, pk, action_title=_("Trigger Event"))
         evt: Event | None = self.get_object(request, pk)
         if request.method == "POST":
             config_form = get_form(request.POST)
@@ -169,13 +167,6 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
             )
         context["form"] = config_form
         return TemplateResponse(request, "bitcaster/admin/event/test_event.html", context)
-
-    #
-    # @button(html_attrs={"class": ButtonColor.LINK.value})
-    # def notifications(self, request: HttpRequest, pk: str) -> "HttpResponse":
-    #     ctx = self.get_common_context(request, pk, title=_("Notifications"))
-    #     # ctx[""]
-    #     return TemplateResponse(request, "admin/bitcaster/event/notifications.html", ctx)
 
     @link(change_form=True, change_list=False)
     def notifications(self, button: ButtonWidget) -> None:

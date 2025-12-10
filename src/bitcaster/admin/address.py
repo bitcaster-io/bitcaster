@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from django.contrib.admin.options import InlineModelAdmin
 
-    from bitcaster.types.django import AnyModel
+    from bitcaster.types.django import AnyModel_co
 
     AddressT = TypeVar("AddressT", bound=Address)
 
@@ -32,7 +32,6 @@ class AddressAdmin(BaseAdmin, BitcasterModelAdmin[Address]):
     search_fields = ("name", "value")
     list_display = ("user", "name", "value", "type")
     list_filter = (
-        # ("user__roles__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("user", LinkedAutoCompleteFilter.factory(parent=None)),
         ("assignments__channel", AutoCompleteFilter),
         ("assignments__distributionlist__notifications__event", AutoCompleteFilter),
@@ -59,7 +58,7 @@ class AddressAdmin(BaseAdmin, BitcasterModelAdmin[Address]):
 
     def get_inlines(
         self, request: HttpRequest, obj: Address | None = None
-    ) -> "list[type[InlineModelAdmin[Address, AnyModel]]]":
+    ) -> "list[type[InlineModelAdmin[Address, AnyModel_co]]]":
         if obj is None:
             return []
         return super().get_inlines(request, obj)

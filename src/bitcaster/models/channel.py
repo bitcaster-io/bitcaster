@@ -32,9 +32,6 @@ class ChannelManager(ScopedManager["Channel"]):
 
 class Channel(LockMixin, BitcasterBaseModel):
     organization = models.ForeignKey("Organization", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True)
-    # project = models.ForeignKey(
-    #     "Project", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True, null=True
-    # )
     project = ChainedForeignKey(
         "Project",
         blank=True,
@@ -48,7 +45,6 @@ class Channel(LockMixin, BitcasterBaseModel):
     config = models.JSONField(blank=True, default=dict)
     protocol = models.CharField(choices=MessageProtocol.choices, max_length=50)
     active = models.BooleanField(default=True)
-    # parent = models.ForeignKey("self", blank=True, null=True, related_name="children", on_delete=models.CASCADE)
     parent = ChainedForeignKey(
         "self", blank=True, null=True, chained_field="organization", chained_model_field="organization", show_all=False
     )

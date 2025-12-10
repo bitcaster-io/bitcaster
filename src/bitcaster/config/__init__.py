@@ -5,7 +5,6 @@ from urllib import parse
 from environ import Env
 
 if TYPE_CHECKING:
-    # ConfigItem: TypeAlias = Union[Tuple[type, Any, str, Any], Tuple[type, Any, str], Tuple[type, Any]]
     type ItemValue = str | bool | int | list[str] | None
     type ConfigItem = tuple[type, ItemValue] | tuple[type, ItemValue, str] | tuple[type, ItemValue, str, Any]
 

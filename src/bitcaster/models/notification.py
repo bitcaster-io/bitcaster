@@ -113,7 +113,6 @@ class Notification(BitcasterBaseModel):
                 subject=render_string(message.subject, context),
                 message=render_string(message.content, context),
                 html_message=render_string(message.html_content, context),
-                # message=message.render(context),
             )
             dispatcher.send(addr.value, payload)
             return addr.value
@@ -146,10 +145,6 @@ class Notification(BitcasterBaseModel):
         if not rules:
             rules = yaml.safe_load(self.payload_filter or "")
         return self.match_line_filter(rules, payload)
-
-    # @staticmethod
-    # def check_filter(filter_rules_dict: "YamlPayload") -> Any:
-    #     return jmespath.compile(filter_rules_dict)
 
     def get_messages(self, channel: "Channel") -> QuerySet["Message"]:
         from .message import Message

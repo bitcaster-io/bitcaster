@@ -1,32 +1,28 @@
-{% extends "admin_extra_buttons/action_page.html" %}
+{% extends "bitcaster/admin/action_form.html" %}
 {% load json %}
 {% block content %}
     {{ media }}
-    <table class="w-full">
-        <tr>
-            <th>
-                Date
-            </th>
-            <td>
-                {{ original.timestamp }}
-            </td>
-        </tr>
-        <tr>
-            <th>
-                Event
-            </th>
-            <td>
-                {{ original.event }}
-            </td>
-        </tr>
-    </table>
-    <h3 class="text-lg text-strong">
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            Date
+        </div>
+        <div>
+            {{ original.timestamp }}
+        </div>
+        <div>
+            Event
+        </div>
+        <div>
+            {{ original.event }}
+        </div>
+    </div>
+    <div class="text-lg text-strong m-2">
         Payload
-    </h3>
+    </div>
     {{ original.context|beautify }}
-    <h3 class="text-lg text-strong">
+    <div class="text-lg text-strong m-2">
         Options
-    </h3>
+    </div>
     <code>
         {{ original.options }}
     </code>

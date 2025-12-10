@@ -28,12 +28,10 @@ def save_last_choices(sender: Any, instance: Any, **kwargs: Any) -> None:
 
 @receiver(user_logged_in, sender=models.User)
 def on_login(sender: Any, user: models.User, **kwargs: Any) -> None:
-    if not state.get_cookie("organization"):  # pragma: no branch
-        if org := Organization.objects.local().first():
-            state.add_cookie("organization", org.pk)
-    if not state.get_cookie("project"):  # pragma: no branch
-        if prj := Project.objects.local().first():
-            state.add_cookie("project", prj.pk)
+    if not state.get_cookie("organization") and (org := Organization.objects.local().first()):
+        state.add_cookie("organization", org.pk)
+    if not state.get_cookie("project") and (prj := Project.objects.local().first()):
+        state.add_cookie("project", prj.pk)
 
 
 @receiver(post_save, sender=models.User)

@@ -13,6 +13,7 @@ WIDGETS_OVERRIDES = {
     forms.DateField: widgets.UnfoldAdminSingleDateWidget,
     forms.EmailField: widgets.UnfoldAdminEmailInputWidget,
     forms.CharField: widgets.UnfoldAdminTextInputWidget,
+    forms.SlugField: widgets.UnfoldAdminTextInputWidget,
     forms.URLField: widgets.UnfoldAdminURLInputWidget,
     forms.GenericIPAddressField: widgets.UnfoldAdminTextInputWidget,
     forms.UUIDField: widgets.UnfoldAdminUUIDInputWidget,

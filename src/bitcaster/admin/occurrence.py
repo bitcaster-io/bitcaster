@@ -64,6 +64,6 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
         permission="bitcaster.delete_occurrence",
     )
     def payload(self, request: HttpRequest, pk: str) -> TemplateResponse:  # noqa
-        ctx = self.get_common_context(request, pk)
+        ctx = self.get_common_context(request, pk, action_title="Payload")
         ctx["media"] = Media(css={"screen": ["bitcaster/css/pygments.css"]})
         return TemplateResponse(request, "bitcaster/admin/occurrence/payload.html", ctx)

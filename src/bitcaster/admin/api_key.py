@@ -32,11 +32,9 @@ logger = logging.getLogger(__name__)
 
 
 class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
-    organization = forms.ModelChoiceField(queryset=Organization.objects.local(), required=True)
-
     class Meta:
         model = ApiKey
-        exclude = ("token",)
+        fields = ("name", "organization", "user", "grants", "environments", "project", "application")
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)

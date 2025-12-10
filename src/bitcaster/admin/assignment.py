@@ -17,9 +17,8 @@ if TYPE_CHECKING:
     from django.db.models.fields.related import _ST
     from django.forms import ModelChoiceField, ModelForm
 
-    from bitcaster.types.django import AnyModel
+    from bitcaster.types.django import AnyModel_co
 
-    # _ST = TypeVar("_ST")
     AssignmentT = TypeVar("AssignmentT", bound=Assignment)
     AddressT = TypeVar("AddressT", bound=Address)
 
@@ -31,7 +30,6 @@ class AssignmentAdmin(BaseAdmin, BitcasterModelAdmin[Assignment]):
     list_display = ("address", "channel", "validated", "active")
     list_filter = (
         "channel",
-        # ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("channel__project", AutoCompleteFilter),
         ("address__user", LinkedAutoCompleteFilter.factory(parent=None)),
         ("address", LinkedAutoCompleteFilter.factory(parent="address__user")),
@@ -47,7 +45,7 @@ class AssignmentAdmin(BaseAdmin, BitcasterModelAdmin[Assignment]):
 
     def formfield_for_foreignkey(
         self, db_field: "ForeignKey[Assignment, _ST]", request: HttpRequest, **kwargs: Any
-    ) -> "ModelChoiceField[AnyModel]":
+    ) -> "ModelChoiceField[AnyModel_co]":
         form_field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "address":
             filters = {}

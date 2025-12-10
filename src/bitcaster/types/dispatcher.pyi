@@ -4,7 +4,7 @@ from django.core.mail.backends.base import BaseEmailBackend
 
 from bitcaster.dispatchers.base import DispatcherConfig
 
-TDispatcherConfig = TypeVar("TDispatcherConfig", bound=DispatcherConfig, covariant=True)
-TBaseEmailBackend = TypeVar("TBaseEmailBackend", bound=BaseEmailBackend, covariant=True)
+TDispatcherConfig_co = TypeVar("TDispatcherConfig_co", bound=DispatcherConfig, covariant=True)
+TBaseEmailBackend_co = TypeVar("TBaseEmailBackend_co", bound=BaseEmailBackend, covariant=True)
 
 DispatcherHandler = BaseEmailBackend
