@@ -7,6 +7,7 @@ dist/
 *.patch
 *.egg-info
 *.dylib
+downloaded_files/
 libcairo.2.dylib
 src/bitcaster/version.py
 junit.xml
