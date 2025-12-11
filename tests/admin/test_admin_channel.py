@@ -15,6 +15,7 @@ from testutils.factories import (
     AssignmentFactory,
     UserRoleFactory,
 )
+from testutils.helpers import assert_form_error
 
 from bitcaster.models import Channel, Project
 from bitcaster.state import state
@@ -50,6 +51,19 @@ def gmail_channel(db: Any) -> Channel:
     from bitcaster.dispatchers import GMailDispatcher
 
     return ChannelFactory(
+        dispatcher=fqn(GMailDispatcher),
+        config={"username": "username", "password": "password", "timeout": 3},
+    )
+
+
+@pytest.fixture
+def alien_channel(db: Any) -> Channel:
+    from testutils.factories import ChannelFactory, OrganizationFactory
+
+    from bitcaster.dispatchers import GMailDispatcher
+
+    return ChannelFactory(
+        organization=OrganizationFactory(name="alien"),
         dispatcher=fqn(GMailDispatcher),
         config={"username": "username", "password": "password", "timeout": 3},
     )
@@ -192,12 +206,6 @@ def test_inherit_channel_for_project(app: DjangoTestApp, channel_template: "Chan
     ).exists()
 
 
-def assert_form_error(response: DjangoWebtestResponse, field: str, error: str) -> None:
-    target = response.context["adminform"].form
-    assert field in target.errors, f"No errors found for field {field}"
-    assert error in target.errors[field], f"Error message '{error} not found for field '{field}'"
-
-
 @pytest.mark.wizard
 def test_add_new_channel(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     url = reverse("admin:bitcaster_channel_add")
@@ -250,3 +258,18 @@ def test_add_channel_filter_by_type(
     url = reverse("admin:bitcaster_channel_changelist")
     res = app.get(f"{url}?type={flt}")
     assert res.status_code == 200
+
+
+def test_add_channel_with_parent(
+    app: DjangoTestApp,
+    alien_channel: "Channel",
+    channel_template: "Channel",
+) -> None:
+    url = reverse("admin:bitcaster_channel_add")
+    res = app.get(url)
+    res.forms["channel_form"]["organization"] = channel_template.organization.pk
+    res.forms["channel_form"]["parent"].force_value(alien_channel.pk)
+    res.forms["channel_form"]["name"] = "Channel-2"
+    res = res.forms["channel_form"].submit()
+    assert res.status_code == 200
+    assert_form_error(res, "parent", "Parent does not belong same organization.")

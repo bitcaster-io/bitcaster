@@ -22,8 +22,11 @@ omit =
 
 
 [report]
-# Regexes for lines to exclude from consideration
-exclude_lines =
+exclude_also =
+    ; Comments to turn coverage on and off:
+    no-cover: start(?s:.)*?no-cover: stop
+    ; A pragma comment that excludes an entire file:
+    \A(?s:.*# pragma: exclude file.*)\Z
     pragma: no cover
     pragma: no-cover
     def __repr__
@@ -31,8 +34,8 @@ exclude_lines =
     if settings.DEBUG:
     if DEBUG
     if SENTRY_ENABLED
-    if typing.TYPE_CHECKING
-    if TYPE_CHECKING
+    if typing.TYPE_CHECKING:
+    if TYPE_CHECKING:
     if self\.debug
     if __name__ == .__main__.:
     except JSONDecodeError
