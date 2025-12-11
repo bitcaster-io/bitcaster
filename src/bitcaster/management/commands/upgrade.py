@@ -12,7 +12,7 @@ from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from flags.state import enable_flag
 
 from bitcaster.config import env
-from bitcaster.constants import bitcaster
+from bitcaster.constants import Bitcaster, bitcaster
 
 if TYPE_CHECKING:
     from argparse import ArgumentParser
@@ -148,7 +148,7 @@ class Command(BaseCommand):
             call_command("remove_stale_contenttypes", **extra)
 
             admin: User | None
-            User.objects.get_or_create(username="__SYSTEM__")
+            User.objects.get_or_create(username=Bitcaster.SYSTEM_USER)
             if self.admin_email:
                 if User.objects.filter(email=self.admin_email).exists():
                     echo(

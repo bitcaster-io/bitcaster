@@ -1,7 +1,9 @@
+from django.db.models import Q
 from unfold.admin import TabularInline
 from unfold.contrib.inlines.admin import NonrelatedTabularInline
 
 from bitcaster.admin.base import BaseAdmin, BitcasterModelAdmin
+from bitcaster.constants import Bitcaster
 from bitcaster.models import Address, Assignment, DistributionList, Member
 
 
@@ -51,5 +53,11 @@ class ListsInline(ReadOnlyInline, NonrelatedTabularInline):  # NonrelatedStacked
 
 class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     list_display = ("username", "first_name", "last_name", "email")
-    fields = ("username", "first_name", "last_name", "email")
+    fields = ("username", "first_name", "last_name", "email", "custom_fields")
+
     inlines = [AddressInline, AssignmentInline, ListsInline]
+
+    def get_queryset(self, request):
+        return Member.objects.exclude(Q(username=Bitcaster.SYSTEM_USER) | Q(is_staff=True, is_superuser=True)).order_by(
+            "username"
+        )

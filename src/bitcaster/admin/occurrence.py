@@ -47,9 +47,19 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     )
     def process(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
         obj: Occurrence = self.get_object(request, pk)
-        if obj.process():
-            self.message_user(request, _("Occurrence has been successfully processed"), messages.SUCCESS)
-            self.message_user(request, f"{obj.data}", messages.INFO)
+        try:
+            if obj.process():
+                self.message_user(request, _("Occurrence has been successfully processed"), messages.SUCCESS)
+                self.message_user(request, f"{obj.data}", messages.INFO)
+            else:
+                self.message_user(
+                    request,
+                    _("Occurrence has been processed, but no recipients have been reached out"),
+                    messages.WARNING,
+                )
+        except Exception as e:
+            logger.exception(e)
+            self.message_user(request, _("Error processing occurrence"), messages.ERROR)
 
     @button(
         html_attrs={"class": ButtonColor.ACTION.value},

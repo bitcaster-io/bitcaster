@@ -17,37 +17,40 @@ from bitcaster.constants import bitcaster
 from bitcaster.models import Organization, User, UserRole
 
 
+class UserCreateSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+    username = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ("id", "email", "username", "first_name", "last_name", "custom_fields")
+
+    def create(self, validated_data: dict[str, Any]) -> User:
+        org: Organization = self.context["view"].organization
+        email = validated_data.get("email")
+
+        if not (user := User.objects.filter(email=email).first()):
+            user = User.objects.create(username=email, **validated_data)
+
+        UserRole.objects.get_or_create(user=user, organization=org, group=bitcaster.get_default_group())
+        user.addresses.get_or_create(name="email", value=email)
+
+        return user
+
+
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     username = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
-        exclude = (
-            "password",
-            "last_login",
-            "is_superuser",
-            "is_staff",
-            "date_joined",
-            "groups",
-            "user_permissions",
-        )
-
-    def create(self, validated_data: dict[str, Any]) -> User:
-        org: Organization = self.context["view"].organization
-        email = validated_data.get("email")
-        if not (user := User.objects.filter(email=email).first()):
-            user = User.objects.create(username=email, email=email)
-
-        UserRole.objects.get_or_create(user=user, organization=org, group=bitcaster.get_default_group())
-        user.addresses.get_or_create(value=email)
-
-        return user
+        fields = ("id", "email", "username", "first_name", "last_name", "locked")
 
 
 class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIView):
     serializer_class = UserSerializer
     required_grants = [Grant.USER_READ, Grant.USER_WRITE]
+    action_serializers = {"post": UserCreateSerializer}
 
     @property
     def organization(self) -> "Organization":

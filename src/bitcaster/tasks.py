@@ -3,6 +3,7 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 
 from bitcaster.config.celery import app
+from bitcaster.constants import Bitcaster
 from bitcaster.models import LogEntry, User
 
 logger = logging.getLogger(__name__)
@@ -58,7 +59,7 @@ def monitor_run(pk: str) -> str:
                 content_type=ContentType.objects.get_for_model(Monitor),
                 object_id=pk,
                 action_flag=100,
-                user=User.objects.get(username="__SYSTEM__"),
+                user=User.objects.get(username=Bitcaster.SYSTEM_USER),
                 object_repr=str(monitor),
                 change_message="Monitor started",
             )

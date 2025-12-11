@@ -21,7 +21,7 @@ omit =
     src/bitcaster/management/commands/develop.py
 
 [report]
-exclude_lines =
+exclude_also =
     pragma: no cover
     pragma: no-cover
     def __repr__

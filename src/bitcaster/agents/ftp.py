@@ -24,7 +24,7 @@ class AgentFTP(AgentFiles):
 
     @cached_property
     def client(self) -> ftplib.FTP:
-        f = ftplib.FTP()  # noqa S321
+        f = ftplib.FTP()  # nosec # noqa S321
         host, port = self.config["server"].split(":")
         f.connect(host, int(port))
         f.login(self.config["username"], self.config["password"])

@@ -207,11 +207,18 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
-        "console": {"class": "logging.StreamHandler", "level": "INFO"},
+        "console": {"class": "logging.StreamHandler", "level": "DEBUG"},
     },
     "root": {
         "handlers": ["console"],
-        "level": env("LOGGING_LEVEL"),
+        "level": env("LOGGING_LEVEL").upper(),
+    },
+    "loggers": {
+        "bitcaster": {
+            "handlers": ["console"],
+            "level": env("LOGGING_LEVEL").upper(),
+            "propagate": False,
+        },
     },
 }
 X_FRAME_OPTIONS = "SAMEORIGIN"

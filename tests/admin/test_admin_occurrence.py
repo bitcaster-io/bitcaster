@@ -1,16 +1,19 @@
 from typing import TYPE_CHECKING
+from unittest import mock
 from unittest.mock import Mock
 
 import pytest
+from django.contrib import messages
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
+from testutils.helpers import assert_message
 from testutils.perms import user_grant_permissions
 
 if TYPE_CHECKING:
     from webtest.response import TestResponse
 
-    from bitcaster.models import User
+    from bitcaster.models import Occurrence, User
 
 
 @pytest.fixture
@@ -55,3 +58,24 @@ def test_purge_occurrence(app_for_admin: DjangoTestApp, monkeypatch: pytest.Monk
     assert "Occurrence purge has been successfully triggered" in res.text
 
     assert purge_occurrences_mock.called
+
+
+def test_process_occurrence(
+    app_for_admin: DjangoTestApp, monkeypatch: pytest.MonkeyPatch, occurrence: "Occurrence"
+) -> None:
+    url = reverse("admin:bitcaster_occurrence_change", args=[occurrence.pk])
+    res: "TestResponse" = app_for_admin.get(url)
+
+    with mock.patch("bitcaster.models.occurrence.Occurrence.process", return_value=0):
+        res = res.click("Process").follow()
+    assert_message(res, "Occurrence has been processed, but no recipients have been reached out", messages.WARNING)
+
+    res: "TestResponse" = app_for_admin.get(url)
+    with mock.patch("bitcaster.models.occurrence.Occurrence.process", return_value=1):
+        res = res.click("Process").follow()
+    assert_message(res, "Occurrence has been successfully processed", messages.SUCCESS)
+
+    res: "TestResponse" = app_for_admin.get(url)
+    with mock.patch("bitcaster.models.occurrence.Occurrence.process", side_effect=Exception):
+        res = res.click("Process").follow()
+    assert_message(res, "Error processing occurrence", messages.ERROR)

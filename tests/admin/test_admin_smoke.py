@@ -120,7 +120,7 @@ def record(db: Any, request: pytest.FixtureRequest) -> Model:
     from testutils.factories import get_factory_for_model
 
     model_admin = request.getfixturevalue("model_admin")
-    instance: Model = model_admin.model.objects.first()
+    instance: Model = model_admin.get_queryset(Mock()).first()
     if not instance:
         full_name = f"{model_admin.model._meta.app_label}.{model_admin.model._meta.object_name}"
         factory: type[AutoRegisterModelFactory[Any]] = get_factory_for_model(model_admin.model)
