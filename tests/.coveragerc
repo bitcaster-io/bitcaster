@@ -20,13 +20,8 @@ omit =
     src/bitcaster/version.py
     src/bitcaster/management/commands/develop.py
 
-
 [report]
-exclude_also =
-    ; Comments to turn coverage on and off:
-    no-cover: start(?s:.)*?no-cover: stop
-    ; A pragma comment that excludes an entire file:
-    \A(?s:.*# pragma: exclude file.*)\Z
+exclude_lines =
     pragma: no cover
     pragma: no-cover
     def __repr__
@@ -50,9 +45,9 @@ exclude_also =
     @abc.abstractmethod
     @abstractmethod
 
-;show_missing = true
-fail_under=90
-precision=2
+show_missing = true
+fail_under = 90
+precision = 2
 ignore_errors = True
 skip_covered = True
 

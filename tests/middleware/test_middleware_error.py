@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import pytest
 from pyquery import PyQuery
 from social_core.exceptions import AuthException
@@ -7,7 +9,13 @@ from bitcaster.middleware.errors import ExceptionHandlingMiddleware
 
 @pytest.fixture
 def middleware():
-    return ExceptionHandlingMiddleware()
+    return ExceptionHandlingMiddleware(MagicMock())
+
+
+def test_call(rf, middleware):
+    request = rf.get("/")
+    response = middleware(request)
+    assert response
 
 
 def test_auth_exception_handling(rf, middleware):

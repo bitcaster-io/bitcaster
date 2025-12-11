@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Callable
 from django.shortcuts import render
 from social_core.exceptions import AuthException
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no branch
     from bitcaster.types.http import HttpRequest, HttpResponse
 
 
