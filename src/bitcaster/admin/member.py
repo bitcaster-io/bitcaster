@@ -1,3 +1,4 @@
+from adminfilters.json_filter import JsonFieldFilter
 from django.db.models import Q
 from unfold.admin import TabularInline
 from unfold.contrib.inlines.admin import NonrelatedTabularInline
@@ -54,7 +55,7 @@ class ListsInline(ReadOnlyInline, NonrelatedTabularInline):  # NonrelatedStacked
 class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     list_display = ("username", "first_name", "last_name", "email")
     fields = ("username", "first_name", "last_name", "email", "custom_fields")
-
+    list_filter = (("custom_fields", JsonFieldFilter.factory()),)
     inlines = [AddressInline, AssignmentInline, ListsInline]
 
     def get_queryset(self, request):

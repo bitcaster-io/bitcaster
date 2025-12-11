@@ -69,6 +69,21 @@
   font-weight: var(--font-default-dark);
   color: rgb(var(--text-default-dark) / 10);
 }
+@utility unfold-input {
+  @apply font-medium min-w-20 rounded-default shadow-xs text-font-default-light text-sm px-3 py-2 w-full max-w-2xl;
+  @apply border-gray-500 border-1;
+}
+
+@utility unfold-select {
+  @apply font-medium min-w-20 rounded-default shadow-xs text-font-default-light text-sm px-3 py-2 w-full max-w-2xl;
+  @apply border-gray-500 border-1;
+  /*
+  @apply border border-base-200 bg-white font-medium min-w-20 placeholder-base-400 rounded-default shadow-xs text-font-default-light text-sm
+  @apply focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 group-[.errors]:border-red-600 focus:group-[.errors]:outline-red-600
+  @apply dark:bg-base-900 dark:border-base-700 dark:text-font-default-dark dark:group-[.errors]:border-red-500 dark:focus:group-[.errors]:outline-red-500 dark:scheme-dark group-[.primary]:border-transparent disabled:!bg-base-50 dark:disabled:!bg-base-800 px-3 py-2 w-full pr-8! max-w-2xl appearance-none text-ellipsis
+  */
+}
+
 .tox-tinymce {
   @apply dark:text-white dark:bg-gray-300 w-full !rounded-none;
 }
@@ -77,10 +92,17 @@
   .tox-tinymce {
     @apply dark:text-white dark:bg-gray-300 w-full rounded-none;
   }
-
 }
 
 @layer components {
+  .adminfilters{
+    input {
+      @apply unfold-input;
+    }
+    select{
+      @apply unfold-select;
+    }
+  }
   div.edit-message-body {
     @apply border-none;
     #preview {
@@ -90,8 +112,7 @@
     }
 
     input, textarea {
-      @apply font-medium min-w-20 rounded-default shadow-xs text-font-default-light text-sm px-3 py-2 w-full max-w-2xl;
-      @apply border-gray-500 border-1;
+      @apply unfold-input
       /*
       @apply bg-white;
       @apply focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 group-[.errors]:border-red-600 focus:group-[.errors]:outline-red-600;
@@ -150,8 +171,6 @@
   }
 
   .filter-lookup {
-    @apply font-medium min-w-20 rounded-default shadow-xs text-font-default-light text-sm px-3 py-2 w-full max-w-2xl;
-    @apply border-gray-500 border-1;
-    @apply bg-base-500;
+    @apply unfold-input;
   }
 }
