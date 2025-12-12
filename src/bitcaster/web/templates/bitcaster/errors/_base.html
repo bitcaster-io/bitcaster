@@ -1,0 +1,21 @@
+{% extends "unfold/layouts/base_simple.html" %}
+{% load i18n static %}
+{% block extrastyle %}
+    <link href="{% static "css/unfold_ext.css" %}" rel="stylesheet" />
+{% endblock %}
+{% block content %}
+    <div class="flex flex-col items-center justify-center">
+        <div id="error_code" class="text-9xl font-extralight">
+            {{ code }}
+        </div>
+        <div id="error_message" class="text-5xl font-extralight my-4">
+            {{ message }}
+        </div>
+        <div id="error_description" class="text-2xl font-extralight">
+            {{ description }}
+        </div>
+        <div class="text-2xl mt-20 font-extralight mb-20">
+            <a class="btn btn-primary" href="javascript:history.back()">{% translate "back" %}</a>
+        </div>
+    </div>
+{% endblock content %}

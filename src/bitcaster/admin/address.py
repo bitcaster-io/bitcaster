@@ -2,35 +2,36 @@ import logging
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
-from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
+from unfold.admin import TabularInline
 
 from bitcaster.admin.base import BaseAdmin
 from bitcaster.forms.address import AddressForm
 from bitcaster.models import Address, Assignment
+
+from .base import BitcasterModelAdmin
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from django.contrib.admin.options import InlineModelAdmin
 
-    from bitcaster.types.django import AnyModel
+    from bitcaster.types.django import AnyModel_co
 
     AddressT = TypeVar("AddressT", bound=Address)
 
 
-class InlineValidation(admin.TabularInline["Assignment", "AddressAdmin"]):
+class InlineValidation(TabularInline["Assignment", "AddressAdmin"]):
     model = Assignment
     extra = 0
     fields = ["channel", "validated", "active"]
 
 
-class AddressAdmin(BaseAdmin, admin.ModelAdmin[Address]):
+class AddressAdmin(BaseAdmin, BitcasterModelAdmin[Address]):
     search_fields = ("name", "value")
     list_display = ("user", "name", "value", "type")
     list_filter = (
-        # ("user__roles__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("user", LinkedAutoCompleteFilter.factory(parent=None)),
         ("assignments__channel", AutoCompleteFilter),
         ("assignments__distributionlist__notifications__event", AutoCompleteFilter),
@@ -57,7 +58,7 @@ class AddressAdmin(BaseAdmin, admin.ModelAdmin[Address]):
 
     def get_inlines(
         self, request: HttpRequest, obj: Address | None = None
-    ) -> "list[type[InlineModelAdmin[Address, AnyModel]]]":
+    ) -> "list[type[InlineModelAdmin[Address, AnyModel_co]]]":
         if obj is None:
             return []
         return super().get_inlines(request, obj)

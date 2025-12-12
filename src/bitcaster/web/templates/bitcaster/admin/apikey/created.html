@@ -1,0 +1,32 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% load i18n %}
+<script src="/static/admin/js/vendor/jquery/jquery.js"></script>
+{% block content %}
+    {% if expired and not debug %}
+        <div class="text-2xl">
+            {% translate "Grace period expired" %}
+        </div>
+    {% else %}
+        {% if debug %}
+            <div class="w-full flex m-auto border-1 text-2xl p-2 rounded bg-red-500">
+                This Key is visible only because
+                DEBUG is True
+            </div>
+        {% endif %}
+        <h1 class="text-2xl">
+            Key '{{ original.name }}' successfully created
+        </h1>
+        <div class="p-5 text-md m-auto center-block text-center">
+            <code class="p-2 my-2 border-1 block clipboard">{{ original.key }}</code>
+            <code class="p-2 border-1 block clipboard">{{ bae }}</code>
+        </div>
+        <div class="bg-orange-300 p-3 my-5 rounded text-black text-xl">
+            {% blocktranslate %}
+                This is the only time this key will be displayed. Copy it and put in a safe place.
+            {% endblocktranslate %}
+        </div>
+    {% endif %}
+{% endblock content %}
+{% block endbody %}
+    {{ media }}
+{% endblock %}

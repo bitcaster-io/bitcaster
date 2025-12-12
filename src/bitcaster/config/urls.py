@@ -10,6 +10,7 @@ from drf_spectacular.views import (
 urlpatterns = [
     path("", include("bitcaster.web.urls")),
     path("admin/", admin.site.urls),
+    path("chaining/", include("smart_selects.urls")),
     path("webpush/", include("bitcaster.webpush.urls")),
     path("api/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),

@@ -36,6 +36,7 @@ GLOBAL_EXCLUDED_MODELS = RegexList(
         r"django_celery_beat\.ClockedSchedule",
         r"contenttypes\.ContentType",
         r"webpush\.BrowserAdmin",
+        "bitcaster.Member",
         "authtoken",
         "social_django",
         "depot",
@@ -120,7 +121,7 @@ def record(db: Any, request: pytest.FixtureRequest) -> Model:
     from testutils.factories import get_factory_for_model
 
     model_admin = request.getfixturevalue("model_admin")
-    instance: Model = model_admin.model.objects.first()
+    instance: Model = model_admin.get_queryset(Mock()).first()
     if not instance:
         full_name = f"{model_admin.model._meta.app_label}.{model_admin.model._meta.object_name}"
         factory: type[AutoRegisterModelFactory[Any]] = get_factory_for_model(model_admin.model)
@@ -217,7 +218,7 @@ def test_admin_buttons(
         pass
     elif isinstance(button_handler, LinkHandler):
         btn = button_handler.get_button({"original": record})
-        button_handler.func(None, btn)
+        button_handler.func(model_admin, btn)
     else:
         if len(button_handler.func_args) == 2:
             url = reverse(f"admin:{button_handler.url_name}")

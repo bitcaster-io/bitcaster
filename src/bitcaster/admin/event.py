@@ -11,13 +11,14 @@ from django.http import HttpRequest, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from unfold import widgets as uwidgets
 
 from bitcaster.models import Assignment, Event
 
 from ..constants import bitcaster
 from ..forms.event import EventChangeForm
 from ..state import state
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from .message import Message
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
@@ -39,14 +40,13 @@ class MessageInline(admin.TabularInline[Message, Event]):
 
 
 class EventTestForm(forms.Form):
-    assignment = forms.ModelChoiceField(queryset=Assignment.objects.none())
+    assignment = forms.ModelChoiceField(queryset=Assignment.objects.none(), widget=uwidgets.UnfoldAdminSelectWidget)
 
 
-class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], admin.ModelAdmin[Event]):
+class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], BitcasterModelAdmin[Event]):
     search_fields = ("name",)
     list_display = ("name", "application", "active", "locked")
     list_filter = (
-        # ("application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("application__project", LinkedAutoCompleteFilter.factory(parent=None)),
         ("application", LinkedAutoCompleteFilter.factory(parent="application__project")),
         ("channels", AutoCompleteFilter),
@@ -68,18 +68,17 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
                     ("name", "slug"),
                     ("description",),
                     ("active", "newsletter", "occurrence_retention"),
-                    # ("channels",)
                 )
             },
         ),
         (
-            "Channels",
+            "",
             {
                 "fields": ["channels"],
             },
         ),
     ]
-    change_form_template = None
+    change_form_template = "bitcaster/admin/event/change_form.html"
 
     class Media:
         js = ["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"]
@@ -140,7 +139,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
             ).distinct()
             return frm
 
-        context = self.get_common_context(request, pk, title=_("Trigger Event"))
+        context = self.get_common_context(request, pk, action_title=_("Trigger Event"))
         evt: Event | None = self.get_object(request, pk)
         if request.method == "POST":
             config_form = get_form(request.POST)
@@ -154,7 +153,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
                         },
                     )
                     o.process()
-                    self.message_user(request, f"Sent {o.data}", messages.SUCCESS)
+                    self.message_user(request, f"Sent {o.status} - {o.data}", messages.SUCCESS)
                     return HttpResponseRedirect(".")
                 except Exception as e:
                     logger.exception(e)
@@ -167,14 +166,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], ad
                 }
             )
         context["form"] = config_form
-        return TemplateResponse(request, "admin/bitcaster/event/test_event.html", context)
-
-    #
-    # @button(html_attrs={"class": ButtonColor.LINK.value})
-    # def notifications(self, request: HttpRequest, pk: str) -> "HttpResponse":
-    #     ctx = self.get_common_context(request, pk, title=_("Notifications"))
-    #     # ctx[""]
-    #     return TemplateResponse(request, "admin/bitcaster/event/notifications.html", ctx)
+        return TemplateResponse(request, "bitcaster/admin/event/test_event.html", context)
 
     @link(change_form=True, change_list=False)
     def notifications(self, button: ButtonWidget) -> None:

@@ -10,7 +10,7 @@ from bitcaster.models import ApiKey, User
 
 if TYPE_CHECKING:
     from bitcaster.api.base import SecurityMixin
-    from bitcaster.types.django import AnyModel
+    from bitcaster.types.django import AnyModel_co
     from bitcaster.types.http import ApiRequest
 
 logger = logging.getLogger(__name__)
@@ -33,13 +33,13 @@ class ApiBasePermission(permissions.BasePermission):
             raise InvalidGrantError(f"Invalid organization for {token}")
         if "prj" in view.kwargs:
             if not token.project:
-                raise InvalidGrantError("Key not enabled form project scope")
+                raise InvalidGrantError("Key not enabled for project scope")
             if view.kwargs["prj"] != token.project.slug:
                 raise InvalidGrantError(f"Invalid project for {token}")
 
         if "app" in view.kwargs:
             if not token.application:
-                raise InvalidGrantError("Key not enabled form application scope")
+                raise InvalidGrantError("Key not enabled for application scope")
             if view.kwargs["app"] != token.application.slug:
                 raise InvalidGrantError(f"Invalid application for {token}")
 
@@ -48,22 +48,25 @@ class ApiBasePermission(permissions.BasePermission):
         ret = bool(len({*token.grants} & {*view.grants}))
         if not ret:
             logger.error(f"{view.grants} not in {token.grants}")
+            raise InvalidGrantError(f"You do not have permission to perform this action. {view.grants}")
         return ret
 
 
 class ApiApplicationPermission(ApiBasePermission):
     def has_permission(self, request: Request, view: "SecurityMixin") -> bool:
         if getattr(request, "auth", None) is None:
-            if getattr(request, "user", None) is not None:
-                if request.user.is_authenticated and request.user.is_superuser:
-                    return True
-            return False
+            return (
+                getattr(request, "user", None) is not None
+                and request.user.is_authenticated
+                and request.user.is_superuser
+            )
         return self._check_valid_scope(request.auth, view)
 
-    def has_object_permission(self, request: Request, view: "SecurityMixin", obj: "AnyModel") -> bool:
+    def has_object_permission(self, request: Request, view: "SecurityMixin", obj: "AnyModel_co") -> bool:
         if getattr(request, "auth", None) is None:
-            if getattr(request, "user", None) is not None:
-                if request.user.is_authenticated and request.user.is_superuser:
-                    return True
-            return False
+            return (
+                getattr(request, "user", None) is not None
+                and request.user.is_authenticated
+                and request.user.is_superuser
+            )
         return self._check_valid_scope(request.auth, view)

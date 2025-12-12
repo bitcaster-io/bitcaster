@@ -22,6 +22,7 @@ class Bitcaster:
     ORGANIZATION = "OS4D"
     PROJECT = "BITCASTER-IO"
     APPLICATION = "Bitcaster"
+    SYSTEM_USER = "__SYSTEM__"
     _app: "Application | None" = None
 
     @staticmethod

@@ -5,7 +5,6 @@ from urllib import parse
 from environ import Env
 
 if TYPE_CHECKING:
-    # ConfigItem: TypeAlias = Union[Tuple[type, Any, str, Any], Tuple[type, Any, str], Tuple[type, Any]]
     type ItemValue = str | bool | int | list[str] | None
     type ConfigItem = tuple[type, ItemValue] | tuple[type, ItemValue, str] | tuple[type, ItemValue, str, Any]
 
@@ -83,7 +82,9 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "EMAIL_USE_TLS": (bool, False, setting("email-use-tls"), True),
     "EMAIL_USE_SSL": (bool, False, setting("email-use-ssl"), True),
     "EMAIL_TIMEOUT": (str, None, setting("email-timeout"), True),
+    "ENVIRONMENT": (str, "production", "Bitcaster Environment", "local"),
     "EXTRA_APPS": (list, [], setting("configuring-applications")),  # nosec
+    "INTERNAL_IPS": (list, [], setting("internal-ips"), ["127.0.0.1", "localhost"]),  # nosec
     "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level")),
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "MEDIA_ROOT": (str, None, setting("media-root")),
@@ -126,6 +127,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "STATIC_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "STATIC_ROOT": (str, "/var/bitcaster/static", setting("static-root")),
     "STATIC_URL": (str, "/static/", setting("static-url")),
+    "SUPERUSERS": (list, [], "Users in this list will be granted superuser privileges when created."),
     "TIME_ZONE": (str, "UTC", setting("std-setting-TIME_ZONE")),
 }
 

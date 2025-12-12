@@ -61,7 +61,7 @@ ignore = [
     "ISC001",  # conflicts with ruff format command
     "RUF005",  # collection-literal-concatenation: syntax not compatible with py2
     "RUF012", # mutable-class-default: typing is not available for py2
-    "I001", # unsorted imports https://docs.astral.sh/ruff/rules/unsorted-imports/#unsorted-imports-i001
+#    "I001", # unsorted imports https://docs.astral.sh/ruff/rules/unsorted-imports/#unsorted-imports-i001
     "UP037", # [*] Remove quotes from type annotation
     "UP035", # Import from `collections.abc` instead: `Sequence`
     "UP031", # Use format specifiers instead of percent format
@@ -73,10 +73,10 @@ ignore = [
     "BLE001", # blind exception
     "S324",  # insecure md5
     "C901",  # too complex
-    "PLR0912",
-    "PLR0913",
-    "PLR0915",
-    "PLW0603"
+    "PLR0912",  # Too many branches
+    "PLR0913",  # Too many arguments in function definitio
+    "PLR0915",  # Too many statements
+#    "PLW0603"
 ]
 
 [format]
@@ -88,24 +88,4 @@ line-ending = "auto"
 [lint.per-file-ignores]
 "tests/**.py" = ["S101", "PLR2004", "S", "SIM117", "D", "UP", "PLR0913", "ANN", "N999", "PT006"]
 "src/dbtemplates/test**.py" = ["S101", "PLR2004", "S", "SIM117", "D", "UP", "PLR0913", "ANN", "N999", "PT009"]
-"src/**/migrations/*.py" = ["E501", ]
-"src/**/versioning/**.py" = ["N999", ]
 "src/bitcaster/version.py" = ["ALL", ]
-"src/bitcaster/models/*.py" = ["ERA001"]
-"src/bitcaster/types/*.pyi" = [
-    "PLC0105",  # TypeVar` name "..." does not reflect its covariance; consider renaming it to "..."
-]
-"src/bitcaster/**/*.py" = [
-    "A005",  # Module `...` shadows a Python standard-library module"
-    "B904",  # Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
-    "DJ006",  # Do not use `exclude` with `ModelForm`, use `fields` instead
-    "DJ007",  # Do not use `__all__` with `ModelForm`, use `fields` instead
-    "ERA001",  # Found commented-out code
-    "N816",  # Variable `dispatcherManager` in global scope should not be mixedCase
-    "PLW0642",  # Reassigned `cls` variable in `__new__` method
-    "S321",  # FTP-related functions are being called. FTP is considered insecure. Use SSH/SFTP/SCP or some other encrypted protocol.
-    "SIM102",  # Use a single `if` statement instead of nested `if` statements
-]
-"src/bitcaster/management/commands/*.py" = [
-    "A001",  # Variable `help` is shadowing a Python builtin
-]

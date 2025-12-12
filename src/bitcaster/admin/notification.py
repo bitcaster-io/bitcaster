@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.template.response import TemplateResponse
@@ -11,7 +10,7 @@ from django.utils.translation import gettext as _
 
 from ..forms.message import NotificationTemplateCreateForm
 from ..forms.notification import NotificationForm
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 if TYPE_CHECKING:
     from bitcaster.models import Notification
@@ -19,15 +18,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
+class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     search_fields = ("name",)
-    list_display = ("name", "event", "application")
+    list_display = ("name", "event", "application", "distribution")
     list_filter = (
-        # ("event__application__project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        # (
-        #     "event__application__project",
-        #     LinkedAutoCompleteFilter.factory(parent="event__application__project__organization"),
-        # ),
         ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent="event__application")),
         ("distribution__recipients__address__user", LinkedAutoCompleteFilter.factory(parent=None)),
@@ -67,4 +61,4 @@ class NotificationAdmin(BaseAdmin, admin.ModelAdmin["Notification"]):
             form = NotificationTemplateCreateForm(notification=notification)
         ctx["message_templates"] = notification.messages.filter()
         ctx["form"] = form
-        return TemplateResponse(request, "admin/notification/messages.html", ctx, status=status_code)
+        return TemplateResponse(request, "bitcaster/admin/notification/messages.html", ctx, status=status_code)

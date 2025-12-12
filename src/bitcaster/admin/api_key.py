@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
-from django.contrib.admin.options import ModelAdmin
 from django.core.exceptions import ValidationError
 from django.forms import Media
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -13,6 +12,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from flags.state import flag_enabled
 
 from bitcaster.admin.base import BaseAdmin
 from bitcaster.admin.filters import EnvironmentFilter
@@ -22,6 +22,8 @@ from bitcaster.models import ApiKey, Application, Event, Organization, Project  
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
 
+from .base import BitcasterModelAdmin
+
 if TYPE_CHECKING:
     from django.contrib.admin.options import _ListOrTuple
     from django.db.models import QuerySet
@@ -30,14 +32,9 @@ logger = logging.getLogger(__name__)
 
 
 class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
-    organization = forms.ModelChoiceField(
-        queryset=Organization.objects.local(),
-        required=True,
-    )
-
     class Meta:
         model = ApiKey
-        exclude = ("token",)
+        fields = ("name", "organization", "user", "grants", "environments", "project", "application")
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -58,7 +55,7 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
         return self.cleaned_data
 
 
-class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
+class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
     search_fields = ("name",)
     list_display = ("name", "user", "organization", "project", "application", "environments")
     list_filter = (
@@ -70,6 +67,7 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
     autocomplete_fields = ("user", "application", "organization", "project")
     form = ApiKeyForm
     save_as_continue = False
+    change_form_outer_before_template = "bitcaster/admin/apikey/outer_before.html"
 
     def get_queryset(self, request: "HttpRequest") -> "QuerySet[ApiKey]":
         return super().get_queryset(request).select_related("application")
@@ -82,6 +80,8 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
         return self.readonly_fields
 
     def get_exclude(self, request: "HttpRequest", obj: "ApiKey | None" = None) -> "_ListOrTuple[str]":
+        if flag_enabled("DEVELOP_FULL_EDIT"):
+            return []
         if obj and obj.pk:
             return ["key"]
         return ["key", "environments"]
@@ -108,5 +108,7 @@ class ApiKeyAdmin(BaseAdmin, ModelAdmin["ApiKey"]):
             expires = obj.created + timedelta(seconds=10)
             expired = timezone.now() > expires
         media = Media(js=["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"])
-        ctx = self.get_common_context(request, pk, media=media, expires=expires, expired=expired, title=_("Info"))
-        return TemplateResponse(request, "admin/apikey/created.html", ctx)
+        ctx = self.get_common_context(
+            request, pk, bae=obj.get_bae(), media=media, expires=expires, expired=expired, title=_("Info")
+        )
+        return TemplateResponse(request, "bitcaster/admin/apikey/created.html", ctx)

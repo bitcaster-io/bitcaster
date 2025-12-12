@@ -1,0 +1,29 @@
+{% extends "bitcaster/admin/action_form.html" %}
+{% load json %}
+{% block content %}
+    {{ media }}
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            Date
+        </div>
+        <div>
+            {{ original.timestamp }}
+        </div>
+        <div>
+            Event
+        </div>
+        <div>
+            {{ original.event }}
+        </div>
+    </div>
+    <div class="text-lg text-strong m-2">
+        Payload
+    </div>
+    {{ original.context|beautify }}
+    <div class="text-lg text-strong m-2">
+        Options
+    </div>
+    <code>
+        {{ original.options }}
+    </code>
+{% endblock content %}

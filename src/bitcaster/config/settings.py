@@ -15,7 +15,7 @@ SECRET_KEY = env("SECRET_KEY")
 SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT")
 
 DEBUG = env.bool("DEBUG")
-
+INTERNAL_IPS = env.list("INTERNAL_IPS")
 ALLOWED_HOSTS: list[str] = env("ALLOWED_HOSTS")
 
 
@@ -23,10 +23,20 @@ ALLOWED_HOSTS: list[str] = env("ALLOWED_HOSTS")
 
 INSTALLED_APPS = [
     "bitcaster.web.apps.Config",
+    "bitcaster.web.theme.apps.Config",
     "bitcaster.webpush.apps.Config",
     "bitcaster.social",
-    "bitcaster.admin_site.BitcasterAdminConfig",
+    "unfold.apps.BasicAppConfig",  # before django.contrib.admin
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
+    "unfold.contrib.inlines",  # optional, if special inlines are needed
+    "unfold.contrib.import_export",  # optional, if django-import-export package is used
+    "unfold.contrib.guardian",  # optional, if django-guardian package is used
+    "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
+    "unfold.contrib.location_field",  # optional, if django-location-field package is used
+    "unfold.contrib.constance",  # optional, if django-constance package is used
     # "django.contrib.admin",
+    "bitcaster.admin_site.BitcasterAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -38,6 +48,7 @@ INSTALLED_APPS = [
     "social_django",
     "csp",
     "django_celery_beat",
+    "smart_selects",
     "adminfilters",
     "debug_toolbar",
     "django_svelte_jsoneditor",
@@ -54,6 +65,8 @@ INSTALLED_APPS = [
     "constance.backends.database",
     "anymail",
     "bitcaster.apps.Config",
+    "tailwind",
+    "issues",
     *env("EXTRA_APPS"),
 ]
 
@@ -61,6 +74,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "bitcaster.middleware.errors.ExceptionHandlingMiddleware",
     "csp.middleware.CSPMiddleware",
     "bitcaster.middleware.user_agent.UserAgentMiddleware",
     "bitcaster.middleware.state.StateMiddleware",
@@ -86,7 +100,6 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "constance.context_processors.config",
-                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -94,6 +107,7 @@ TEMPLATES = [
                 "social_django.context_processors.login_redirect",
                 "bitcaster.social.context_processors.available_providers",
                 "bitcaster.web.context_processors.version",
+                "bitcaster.web.context_processors.debug",
             ],
         },
     },
@@ -193,11 +207,18 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
-        "console": {"class": "logging.StreamHandler", "level": "INFO"},
+        "console": {"class": "logging.StreamHandler", "level": "DEBUG"},
     },
     "root": {
         "handlers": ["console"],
-        "level": env("LOGGING_LEVEL"),
+        "level": env("LOGGING_LEVEL").upper(),
+    },
+    "loggers": {
+        "bitcaster": {
+            "handlers": ["console"],
+            "level": env("LOGGING_LEVEL").upper(),
+            "propagate": False,
+        },
     },
 }
 X_FRAME_OPTIONS = "SAMEORIGIN"
@@ -210,6 +231,7 @@ STORAGES = {
 
 
 from .fragments.agents import *  # noqa
+from .fragments.bitcaster import *  # noqa
 from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.csp import *  # noqa
@@ -220,4 +242,6 @@ from .fragments.rest_framework import *  # noqa
 from .fragments.root import *  # noqa
 from .fragments.sentry import *  # noqa
 from .fragments.social_auth import *  # noqa
+from .fragments.tailwind import *  # noqa
 from .fragments.tinymce import *  # noqa
+from .fragments.unfold import *  # noqa

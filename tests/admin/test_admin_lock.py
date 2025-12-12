@@ -89,7 +89,7 @@ def test_admin_lock(app: "DjangoTestApp", model_admin: ModelAdmin[LockMixin], re
 
     res = app.get(url)
     assert str(opts.app_config.verbose_name) in res.body.decode()
-    res = res.click(".Lock$")
+    res = res.click("Lock")
     assert res.status_code == 200
     res = res.forms["lock-form"].submit()
     assert res.status_code == 302
@@ -105,7 +105,7 @@ def test_admin_unlock(app: DjangoTestApp, model_admin: ModelAdmin[LockMixin], re
 
     res = app.get(url)
     assert str(opts.app_config.verbose_name) in res.body.decode()
-    res = res.click(".Unlock$")
+    res = res.click("Unlock")
     assert res.status_code == 200
     res = res.forms["lock-form"].submit()
     assert res.status_code == 302

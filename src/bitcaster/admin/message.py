@@ -14,10 +14,10 @@ from reversion.admin import VersionAdmin
 
 from bitcaster.models import (
     Application,
+    DistributionList,
     Event,
     Message,
     Notification,
-    Occurrence,
     Organization,
     Project,
 )
@@ -30,7 +30,7 @@ from ..forms.message import (
     MessageRenderForm,
 )
 from ..utils.shortcuts import render_string
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
 
@@ -38,18 +38,41 @@ if TYPE_CHECKING:
     from ..types.django import JsonType
     from ..types.http import AuthHttpRequest
 
+SAMPLE_TEXT_MESSAGE = """This is a sample message for event '{{ event }}' for the application '{{ event.application}}'.
 
-class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
+It hs been triggered on {{occurrence.timestamp|date:"Y-m-d"}} at {{occurrence.timestamp|date:"H:m"}},
+ and produced by the notification '{{notification}}' for the DistributionList '{{ distribution }}'
+
+
+The destination address is '{{ address }}' thru the channel '{{ channel }}'
+
+"""
+
+SAMPLE_HTML_MESSAGE = """
+<div>
+This is a sample message for event: <b>{{ event }}</b> for the application <b>{{ event.application}}</b>.
+</div>
+
+<div>
+It hs been triggered on {{occurrence.timestamp|date:"Y-m-d"}} at {{occurrence.timestamp|date:"H:m"}}.
+and produced by the notification '{{notification}}' for the DistributionList '{{ distribution }}'
+</div>
+
+The destination address is {{ address }} thru the channel {{ channel }}
+
+"""
+
+
+class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
     search_fields = ("name",)
     list_display = ("name", "channel", "scope_level")
     list_filter = (
-        # ("channel__organization", LinkedAutoCompleteFilter.factory(parent=None)),
         ("channel", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent=None)),
         ("notification", LinkedAutoCompleteFilter.factory()),
     )
     autocomplete_fields = ("channel", "event", "notification")
-    change_form_template = "admin/message/change_form.html"
+    change_form_template = "bitcaster/admin/message/change_form.html"
     change_list_template = "admin/reversion_change_list.html"
     object_history_template = "reversion/object_history.html"
 
@@ -81,26 +104,27 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
         defaults.update(kwargs)
         return super().get_form(request, obj, **defaults)
 
-    def get_dummy_source(self, obj: Message) -> tuple[Occurrence, Notification]:
+    def get_dummy_source_context(self, obj: Message, extra_context: dict[str, str] | None = None) -> dict[str, str]:
         from bitcaster.models import Event, Notification, Occurrence
 
         event = obj.event if obj.event else Event(name="Sample Event")
-        no = Notification(name="Sample Notification", event=event)
+        dl = DistributionList(name="Sample DistributionList", project=event.application.project)
+        no = Notification(name="Sample Notification", event=event, distribution=dl)
         oc = Occurrence(event=event, timestamp=timezone.now())
-        return oc, no
+        return no.get_context(oc.get_context()) | (extra_context or {})
 
     @view()
     def render(self, request: HttpRequest, pk: str) -> "HttpResponse":
         form = MessageRenderForm(request.POST)
         msg: Message = self.get_object(request, pk)
-        oc, no = self.get_dummy_source(msg)
-        message_context = no.get_context(oc.get_context())
+        message_context = self.get_dummy_source_context(msg)
 
         ct = "text/html"
         if form.is_valid():
-            tpl = Template(form.cleaned_data["content"])
-            ct = form.cleaned_data["content_type"]
+            message_context |= {"channel": msg.channel.name, "address": form.cleaned_data["recipient"]}
             try:
+                tpl = Template(form.cleaned_data["content"])
+                ct = form.cleaned_data["content_type"]
                 ctx = {**form.cleaned_data["context"], **message_context}
                 res = str(tpl.render(Context(ctx)))
                 if ct != "text/html":
@@ -117,10 +141,13 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
         form = MessageEditForm(request.POST)
         msg: Message = self.get_object(request, pk)
         dispatcher: Dispatcher = msg.channel.dispatcher
-        # oc, no = self.get_dummy_source(msg)
         ret: "JsonType"
         if form.is_valid():
-            ctx = {**form.cleaned_data["context"], "event": msg.event}
+            message_context = self.get_dummy_source_context(
+                msg, extra_context={"channel": msg.channel.name, "address": form.cleaned_data["recipient"]}
+            )
+            ctx = {**form.cleaned_data["context"], **message_context}
+
             payload: Payload = Payload(
                 subject=render_string(form.cleaned_data["subject"], ctx),
                 message=render_string(form.cleaned_data["content"], ctx),
@@ -140,13 +167,14 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def edit(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        context = self.get_common_context(request, pk)
-        obj = context["original"]
-        oc, no = self.get_dummy_source(obj)
-        message_context = no.get_context(oc.get_context())
+        context = self.get_common_context(request, pk, action_title="Edit")
+        msg = context["original"]
+        message_context = self.get_dummy_source_context(
+            msg, extra_context={"channel": msg.channel.name, "address": "<sys>"}
+        )
 
         if request.method == "POST":
-            form = MessageEditForm(request.POST, instance=obj)
+            form = MessageEditForm(request.POST, instance=msg)
             if form.is_valid():
                 form.save()
                 self.message_user(request, _("Message Template updated successfully "))
@@ -156,20 +184,14 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
                 initial={
                     "recipient": request.user.email,
                     "context": {k: "<sys>" for k, __ in message_context.items()},
-                    "subject": obj.subject if obj.subject else "Subject for {{ event }}",
-                    "content": (
-                        obj.content if obj.content else "\n".join([f"{k}: {{{{{k}}}}}" for k in message_context])
-                    ),
-                    "html_content": (
-                        obj.html_content
-                        if obj.html_content
-                        else "".join([f"<div>{k}: {{{{{k}}}}}</div>" for k in message_context])
-                    ),
+                    "subject": msg.subject if msg.subject else "Subject for {{ event }}",
+                    "content": (msg.content if msg.content else SAMPLE_TEXT_MESSAGE),
+                    "html_content": (msg.html_content if msg.html_content else SAMPLE_HTML_MESSAGE),
                 },
-                instance=obj,
+                instance=msg,
             )
         context["form"] = form
-        return TemplateResponse(request, "admin/message/edit.html", context)
+        return TemplateResponse(request, "bitcaster/admin/message/edit.html", context)
 
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def usage(self, request: HttpRequest, pk: str) -> "HttpResponse":
@@ -207,4 +229,4 @@ class MessageAdmin(BaseAdmin, VersionAdmin[Message]):
 
         context["usage"] = usage
         context["level"] = level
-        return TemplateResponse(request, "admin/message/usage.html", context)
+        return TemplateResponse(request, "bitcaster/admin/message/usage.html", context)

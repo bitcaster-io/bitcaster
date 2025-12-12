@@ -1,0 +1,10 @@
+<li class="max-md:first:rounded-t-default border border-base-200 max-md:-mt-px md:first:rounded-l-default hover:text-primary-600 dark:hover:text-primary-500 max-md:last:rounded-b-default dark:border-base-700 md:-ml-px md:last:rounded-r-default">
+    <a href="{{ button.url }}"
+       id="{{ button.html_attrs.id }}"
+       class="cursor-pointer flex grow items-center gap-2 px-3 py-2 text-left whitespace-nowrap">
+        {% if button.icon %}
+            <i class="{{ button.icon }}"></i>&nbsp;
+        {% endif %}
+        {{ button.label|title }}
+    </a>
+</li>

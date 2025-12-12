@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING, Any, Iterator, Mapping
 
 if TYPE_CHECKING:
     from bitcaster.types.django import JsonType
-    from bitcaster.types.http import AnyRequest, AnyResponse
+    from bitcaster.types.http import AnyRequest_co, AnyResponse_co
 
 not_set = object()
 
 
 class State(local):
-    request: "AnyRequest|None" = None
+    request: "AnyRequest_co|None" = None
     cookies: dict[str, list[Any]] = {}
 
     def __repr__(self) -> str:
@@ -37,7 +37,7 @@ class State(local):
     def get_cookie(self, name: str) -> str | None:
         return self.request.COOKIES.get(name)
 
-    def set_cookies(self, response: "AnyResponse") -> None:
+    def set_cookies(self, response: "AnyResponse_co") -> None:
         for name, args in self.cookies.items():
             response.set_cookie(name, *args)
 

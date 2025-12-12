@@ -18,7 +18,7 @@ from reversion.admin import VersionAdmin
 from bitcaster.models import Channel, Monitor
 
 from ..forms.monitor import MonitorForm
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from .mixins import TwoStepCreateMixin
 
 if TYPE_CHECKING:
@@ -35,7 +35,7 @@ class MonitorScheduleForm(forms.Form):
     crontab = forms.ModelChoiceField(queryset=CrontabSchedule.objects.all())
 
 
-class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]):
+class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, VersionAdmin[Monitor]):
     search_fields = ("name",)
     list_display = (
         "name",
@@ -54,7 +54,7 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]
     )
     autocomplete_fields = ("event",)
     change_list_template = "admin_extra_buttons/change_list.html"
-    change_form_template = "admin/bitcaster/monitor/change_form.html"
+    change_form_template = "bitcaster/admin/monitor/change_form.html"
     form = MonitorForm
     exclude = ("schedule",)
 
@@ -99,7 +99,7 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]
             )
         fs = (("", {"fields": form_class.declared_fields}),)
         context["admin_form"] = AdminForm(config_form, fs, {})  # type: ignore[arg-type]
-        return TemplateResponse(request, "admin/bitcaster/monitor/configure.html", context)
+        return TemplateResponse(request, "bitcaster/admin/monitor/configure.html", context)
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def schedule(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
@@ -117,7 +117,7 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]
 
         context["form"] = form
 
-        return TemplateResponse(request, "admin/bitcaster/monitor/schedule.html", context)
+        return TemplateResponse(request, "bitcaster/admin/monitor/schedule.html", context)
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def test(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
@@ -137,4 +137,4 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]
                 self.message_error_to_user(request, e)
         context["monitor"] = monitor
         context["form"] = MonitorTestForm()
-        return TemplateResponse(request, "admin/bitcaster/monitor/test.html", context)
+        return TemplateResponse(request, "bitcaster/admin/monitor/test.html", context)

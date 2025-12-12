@@ -6,12 +6,8 @@ from django.core.exceptions import ValidationError
 
 from bitcaster.models import Event, Notification
 
-from .fields import Select2TagField
-
 
 class NotificationForm(forms.ModelForm["Notification"]):
-    environments = Select2TagField(required=False)
-
     class Meta:
         model = Notification
         exclude = ("config", "locked")  # noqa: DJ006

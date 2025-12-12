@@ -6,13 +6,6 @@ from django.test.client import RequestFactory
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
-from pytest_factoryboy import register
-from testutils.factories import (
-    ChannelFactory,
-    OrganizationFactory,
-    ProjectFactory,
-    UserFactory,
-)
 
 from bitcaster.state import state
 
@@ -20,11 +13,6 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
     from bitcaster.models import Channel, Group
-
-register(UserFactory)
-register(OrganizationFactory)
-register(ChannelFactory, "channel")
-register(ProjectFactory, "project")
 
 
 @pytest.fixture

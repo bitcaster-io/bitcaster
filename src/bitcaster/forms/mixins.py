@@ -1,46 +1,20 @@
 from typing import TYPE_CHECKING
 
 from django import forms
-from django_select2 import forms as s2forms
+from unfold import widgets as uwidgets
 
-from bitcaster.models import Application, Organization, Project
+from bitcaster.models import Organization
 
 if TYPE_CHECKING:
-    from bitcaster.types.django import AnyModel  # noqa
+    from bitcaster.types.django import AnyModel_co  # noqa
 
 
-class Scoped2FormMixin(forms.ModelForm["AnyModel"]):
+class Scoped2FormMixin(forms.ModelForm["AnyModel_co"]):
+    # pass
     organization = forms.ModelChoiceField(
-        queryset=Organization.objects.all(),
-        label="Organization",
-        widget=s2forms.ModelSelect2Widget(
-            model=Organization,
-            search_fields=["name__icontains"],
-        ),
-    )
-
-    project = forms.ModelChoiceField(
-        required=False,
-        queryset=Project.objects.all(),
-        label="Project",
-        widget=s2forms.ModelSelect2Widget(
-            model=Project,
-            search_fields=["name__icontains"],
-            dependent_fields={"organization": "organization"},
-            max_results=500,
-        ),
+        queryset=Organization.objects.all(), required=True, widget=uwidgets.UnfoldAdminSelect2Widget
     )
 
 
-class Scoped3FormMixin(Scoped2FormMixin["AnyModel"]):
-    application = forms.ModelChoiceField(
-        required=False,
-        queryset=Application.objects.all(),
-        label="Application",
-        widget=s2forms.ModelSelect2Widget(
-            model=Application,
-            search_fields=["name__icontains"],
-            dependent_fields={"project": "project"},
-            max_results=500,
-        ),
-    )
+class Scoped3FormMixin(Scoped2FormMixin["AnyModel_co"]):
+    pass

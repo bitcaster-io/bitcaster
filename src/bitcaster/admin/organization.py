@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button, view
 from django import forms
-from django.contrib import admin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -12,11 +11,10 @@ from django.utils.translation import gettext as _
 from bitcaster.models import Channel, Group, Organization
 
 from ..constants import bitcaster
-from ..forms.message import OrgTemplateCreateForm
 from ..state import state
 from ..utils.django import url_related
 from ..utils.importer import import_users_to_org
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
@@ -43,7 +41,7 @@ Joe,Doe,j.doe@example.com
     group = forms.ModelChoiceField(queryset=Group.objects.all(), help_text=_("Add imported users to this Group"))
 
 
-class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
+class OrganizationAdmin(BaseAdmin, BitcasterModelAdmin[Organization]):
     search_fields = ("name",)
     list_display = ("name", "from_email", "subject_prefix")
     autocomplete_fields = ("owner",)
@@ -84,40 +82,6 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
         state.add_cookie("wizard_channel_wizard", {"step": "prj", "step_data": {"mode": "new"}})
         return HttpResponseRedirect(url)
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
-    def create_channel(self, request: HttpRequest, pk: str) -> HttpResponse:
-        from bitcaster.models import Channel
-
-        from .channel import ChannelType
-
-        return HttpResponseRedirect(
-            url_related(
-                Channel,
-                op="add",
-                organization=pk,
-                mode=ChannelType.MODE_TEMPLATE,
-                _from=reverse("admin:bitcaster_organization_change", args=[pk]),
-            )
-        )
-
-    @button(html_attrs={"class": ButtonColor.LINK.value})
-    def templates(self, request: HttpRequest, pk: str) -> HttpResponse:
-        status_code = 200
-        ctx = self.get_common_context(request, pk, title="Edit/Create Template")
-        org = ctx["original"]
-        if request.method == "POST":
-            form = OrgTemplateCreateForm(request.POST, organization=org)
-            if form.is_valid():
-                msg = org.message_set.create(name=form.cleaned_data["name"], channel=form.cleaned_data["channel"])
-                ctx["message_created"] = msg
-            else:
-                status_code = 400
-        else:
-            form = OrgTemplateCreateForm(organization=org)
-        ctx["message_templates"] = org.message_set.filter(project=None)
-        ctx["form"] = form
-        return TemplateResponse(request, "admin/message/create_message_template.html", ctx, status=status_code)
-
     def has_add_permission(self, request: HttpRequest) -> bool:
         return super().has_add_permission(request) and Organization.objects.count() < 2
 
@@ -154,4 +118,4 @@ class OrganizationAdmin(BaseAdmin, admin.ModelAdmin[Organization]):
         else:
             form = ImportFromFileForm()
         ctx["form"] = form
-        return TemplateResponse(request, "admin/bitcaster/organization/import.html", ctx)
+        return TemplateResponse(request, "bitcaster/admin/organization/import.html", ctx)

@@ -10,19 +10,14 @@ from django.urls import reverse
 from django.utils.safestring import SafeString
 from django_webtest import DjangoTestApp, DjangoWebtestResponse
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
-from pytest_factoryboy import LazyFixture, register
 from strategy_field.utils import fqn
 from testutils.factories import (
     AssignmentFactory,
-    ChannelFactory,
-    OrganizationFactory,
-    ProjectFactory,
-    UserFactory,
     UserRoleFactory,
 )
+from testutils.helpers import assert_form_error
 
-from bitcaster.admin.channel import ChannelType
-from bitcaster.models import Channel
+from bitcaster.models import Channel, Project
 from bitcaster.state import state
 
 if TYPE_CHECKING:
@@ -30,12 +25,7 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
     from webtest.forms import Form as WebTestForm
 
-    from bitcaster.models import Project, UserRole
-
-register(UserFactory)
-register(OrganizationFactory)
-register(ChannelFactory, "channel")
-register(ProjectFactory, "project")
+    from bitcaster.models import UserRole
 
 
 @pytest.fixture
@@ -61,6 +51,19 @@ def gmail_channel(db: Any) -> Channel:
     from bitcaster.dispatchers import GMailDispatcher
 
     return ChannelFactory(
+        dispatcher=fqn(GMailDispatcher),
+        config={"username": "username", "password": "password", "timeout": 3},
+    )
+
+
+@pytest.fixture
+def alien_channel(db: Any) -> Channel:
+    from testutils.factories import ChannelFactory, OrganizationFactory
+
+    from bitcaster.dispatchers import GMailDispatcher
+
+    return ChannelFactory(
+        organization=OrganizationFactory(name="alien"),
         dispatcher=fqn(GMailDispatcher),
         config={"username": "username", "password": "password", "timeout": 3},
     )
@@ -93,14 +96,6 @@ def system_channel(db: Any) -> Generator[Channel, None, None]:
     )
     with override_config(SYSTEM_EMAIL_CHANNEL=ch.pk):
         yield ch
-
-
-@pytest.mark.parametrize("channel__project", [None, LazyFixture(ProjectFactory)])
-def test_change(app: DjangoTestApp, channel: Channel) -> None:
-    url = reverse(admin_urlname(Channel._meta, SafeString("change")), args=[channel.pk])
-    res = app.get(url)
-    res = res.forms["channel_form"].submit()
-    assert res.status_code == 302
 
 
 def test_configure(app: DjangoTestApp, gmail_channel: "Channel") -> None:
@@ -163,13 +158,9 @@ def test_get_readonly_fields(app: DjangoTestApp, gmail_channel: "Channel") -> No
 def test_add_create_abstract_for_org(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     # Create Abstract Channel for provided organization
     url = reverse("admin:bitcaster_channel_add")
-    res: DjangoWebtestResponse = app.get(
-        f"{url}?mode={ChannelType.MODE_TEMPLATE}&organization={gmail_channel.organization.pk}"
-    )
-    res.forms["channel-add"]["data-name"] = "Channel-1"
-    frm: "WebTestForm" = res.forms["channel-add"]
-    assert res.pyquery("#btn-finish")
-    assert not res.pyquery("#btn-next")
+    res: DjangoWebtestResponse = app.get(f"{url}?organization={gmail_channel.organization.pk}")
+    frm: "WebTestForm" = res.forms["channel_form"]
+    frm["name"] = "Channel-1"
     res = frm.submit()
     assert res.status_code == 302
     assert Channel.objects.filter(
@@ -185,11 +176,10 @@ def test_add_new_channel_for_project(app: DjangoTestApp, gmail_channel: "Channel
     # Create Program Channel for provided project
     url = reverse("admin:bitcaster_channel_add")
     res: DjangoWebtestResponse = app.get(f"{url}?project={gmail_channel.project.pk}")
-
-    res.forms["channel-add"]["mode-operation"] = "new"
-    res = res.forms["channel-add"].submit()
-    res.forms["channel-add"]["data-name"] = "Channel-1"
-    res = res.forms["channel-add"].submit()
+    frm: "WebTestForm" = res.forms["channel_form"]
+    frm.submit()
+    frm["name"] = "Channel-1"
+    res = frm.submit()
     assert res.status_code == 302
     assert Channel.objects.filter(
         name="Channel-1",
@@ -202,17 +192,16 @@ def test_add_new_channel_for_project(app: DjangoTestApp, gmail_channel: "Channel
 @pytest.mark.wizard
 def test_inherit_channel_for_project(app: DjangoTestApp, channel_template: "Channel") -> None:
     # Create Program Channel for provided project
-    project: Project = ProjectFactory(organization=channel_template.organization)
     url = reverse("admin:bitcaster_channel_add")
-    res = app.get(f"{url}?mode=inherit&project={project.pk}")
-    res.forms["channel-add"]["parent-parent"] = channel_template.pk
-    res.forms["channel-add"]["parent-name"] = "Channel-2"
-    res = res.forms["channel-add"].submit()
+    res = app.get(f"{url}?organization={channel_template.organization.pk}")
+    res.forms["channel_form"]["parent"].force_value(channel_template.pk)
+    res.forms["channel_form"]["name"] = "Channel-2"
+    res = res.forms["channel_form"].submit()
     assert res.status_code == 302
     assert Channel.objects.filter(
         name="Channel-2",
         organization=channel_template.organization,
-        project=project,
+        project=None,
         parent=channel_template,
     ).exists()
 
@@ -221,14 +210,13 @@ def test_inherit_channel_for_project(app: DjangoTestApp, channel_template: "Chan
 def test_add_new_channel(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     url = reverse("admin:bitcaster_channel_add")
     res = app.get(url)
-    res.forms["channel-add"]["mode-operation"] = ChannelType.MODE_NEW
-    res = res.forms["channel-add"].submit()
-    res.forms["channel-add"]["org-organization"] = gmail_channel.organization.pk
-    res = res.forms["channel-add"].submit()
-    res.forms["channel-add"]["prj-project"] = gmail_channel.project.pk
-    res = res.forms["channel-add"].submit()
-    res.forms["channel-add"]["data-name"] = "Channel-1"
-    res = res.forms["channel-add"].submit()
+    res = res.forms["channel_form"].submit()
+    assert_form_error(res, "name", "This field is required.")
+
+    res.forms["channel_form"]["organization"] = gmail_channel.organization.pk
+    res.forms["channel_form"]["project"].force_value(gmail_channel.project.pk)
+    res.forms["channel_form"]["name"] = "Channel-1"
+    res = res.forms["channel_form"].submit()
     assert res.status_code == 302
     assert Channel.objects.filter(
         name="Channel-1",
@@ -239,28 +227,14 @@ def test_add_new_channel(app: DjangoTestApp, gmail_channel: "Channel") -> None:
 
 
 @pytest.mark.wizard
-@pytest.mark.parametrize(
-    "back_url,expected",
-    [
-        ("/admin/bitcaster/user/", "/admin/bitcaster/user/"),
-        ("http://url/", reverse("admin:bitcaster_channel_changelist")),
-        ("", reverse("admin:bitcaster_channel_changelist")),
-    ],
-)
-def test_add_new_channel_abort(app: DjangoTestApp, gmail_channel: "Channel", back_url: str, expected: str) -> None:
+def test_channel_consistency(app: DjangoTestApp, gmail_channel: "Channel", project: "Project") -> None:
     url = reverse("admin:bitcaster_channel_add")
-    res = app.get(f"{url}?_from={back_url}")
-    res.forms["channel-add"]["mode-operation"] = ChannelType.MODE_NEW
-    res = res.forms["channel-add"].submit()
-    res.forms["channel-add"]["org-organization"] = gmail_channel.organization.pk
-    res = res.forms["channel-add"].submit()
-    res.forms["channel-add"]["prj-project"] = gmail_channel.project.pk
-    res = res.forms["channel-add"].submit()
-    res.forms["channel-add"]["data-name"] = "Channel-1"
-    res = res.forms["channel-add"].submit("wizard_cancel")
-    assert res.status_code == 302
-    assert res.location == expected
-    assert not Channel.objects.filter(name="Channel-1").exists()
+    res = app.get(url)
+    res.forms["channel_form"]["organization"] = gmail_channel.organization.pk
+    res.forms["channel_form"]["project"].force_value(project.pk)
+    res.forms["channel_form"]["name"] = "Channel-1"
+    res = res.forms["channel_form"].submit()
+    assert_form_error(res, "project", "Project does not belong selected organization.")
 
 
 @pytest.mark.wizard
@@ -277,15 +251,6 @@ def test_add_channel_permission(app: DjangoTestApp, gmail_channel: "Channel") ->
     assert res.status_code == 403
 
 
-@pytest.mark.wizard
-def test_add_channel_tampered_with(app: DjangoTestApp, gmail_channel: "Channel") -> None:
-    url = reverse("admin:bitcaster_channel_add")
-    res = app.get(url)
-    res.forms["channel-add"]["mode-operation"].force_value("missing")
-    res = res.forms["channel-add"].submit()
-    assert res.status_code == 200
-
-
 @pytest.mark.parametrize("flt", ["abstract", "project", ""])
 def test_add_channel_filter_by_type(
     app: DjangoTestApp, gmail_channel: "Channel", channel_template: "Channel", flt: str
@@ -293,3 +258,18 @@ def test_add_channel_filter_by_type(
     url = reverse("admin:bitcaster_channel_changelist")
     res = app.get(f"{url}?type={flt}")
     assert res.status_code == 200
+
+
+def test_add_channel_with_parent(
+    app: DjangoTestApp,
+    alien_channel: "Channel",
+    channel_template: "Channel",
+) -> None:
+    url = reverse("admin:bitcaster_channel_add")
+    res = app.get(url)
+    res.forms["channel_form"]["organization"] = channel_template.organization.pk
+    res.forms["channel_form"]["parent"].force_value(alien_channel.pk)
+    res.forms["channel_form"]["name"] = "Channel-2"
+    res = res.forms["channel_form"].submit()
+    assert res.status_code == 200
+    assert_form_error(res, "parent", "Parent does not belong same organization.")

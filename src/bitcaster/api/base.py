@@ -38,6 +38,15 @@ class SecurityMixin(APIView):
             return Response({"detail": str(exc)}, status=403)
         return super().handle_exception(exc)
 
+    def get_serializer_class(self):
+        if hasattr(self, "action_serializers"):
+            return self.action_serializers.get(self.action, self.serializer_class)
+        return super().get_serializer_class()
+
+
+class SerializerMixin(APIView):
+    pass
+
 
 class BaseView(SecurityMixin, views.APIView):
     renderer_classes = (JSONRenderer,)

@@ -47,37 +47,6 @@ def context() -> "Context":
     }
 
 
-def test_create_organization_template(app: "DjangoTestApp", context: "Context") -> None:
-    channel: "Channel" = context["channel"]
-    org: "Organization" = context["organization"]
-
-    url = reverse("admin:bitcaster_organization_templates", args=[org.pk])
-    res = app.get(url)
-    frm = res.forms["messageForm"]
-    frm["name"] = "Test Organization Template"
-    frm["channel"] = channel.pk
-    frm.submit()
-
-    assert org.message_set.filter(name="Test Organization Template").count() == 1
-
-
-def test_avoid_duplicates_template(app: "DjangoTestApp", context: "Context") -> None:
-    message: "Message" = context["message"]
-    channel: "Channel" = context["channel"]
-    org: "Organization" = context["organization"]
-
-    url = reverse("admin:bitcaster_organization_templates", args=[org.pk])
-    res = app.get(url)
-
-    frm = res.forms["messageForm"]
-    frm["name"] = message.name
-    frm["channel"] = channel.pk
-    res = frm.submit(expect_errors=True)
-    assert res.status_code == 400
-
-    assert org.message_set.filter(name=message.name).count() == 1
-
-
 def test_protected_org(app: "DjangoTestApp") -> None:
     dl = OrganizationFactory(name=bitcaster.ORGANIZATION)
     url = reverse("admin:bitcaster_organization_change", args=[dl.pk])

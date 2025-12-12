@@ -39,3 +39,29 @@ def test_add_to_distributionlist(app: "DjangoTestApp", distributionlist: "Distri
     res = frm.submit("apply")
     assert res.status_code == 302, res.context["form"].errors
     assert distributionlist.recipients.count() == Assignment.objects.filter(address__user__in=selected_users).count()
+
+
+def test_toggle_superuser(app: "DjangoTestApp") -> None:
+    url = reverse("admin:bitcaster_user_changelist")
+    res = app.get(url)
+    frm = res.forms["changelist-form"]
+    selected_users = []
+    for i in range(len(res.pyquery("input[name=_selected_action]"))):
+        frm.get("_selected_action", index=i).checked = True
+        selected_users.append(frm.get("_selected_action", index=i).value)
+    frm["action"] = "toggle_superuser"
+    frm.submit()
+    assert not User.objects.filter(is_superuser=False).exists()
+
+
+def test_toggle_staff(app: "DjangoTestApp") -> None:
+    url = reverse("admin:bitcaster_user_changelist")
+    res = app.get(url)
+    frm = res.forms["changelist-form"]
+    selected_users = []
+    for i in range(len(res.pyquery("input[name=_selected_action]"))):
+        frm.get("_selected_action", index=i).checked = True
+        selected_users.append(frm.get("_selected_action", index=i).value)
+    frm["action"] = "toggle_staff"
+    frm.submit()
+    assert not User.objects.filter(is_staff=False).exists()

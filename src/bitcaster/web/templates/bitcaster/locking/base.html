@@ -1,5 +1,5 @@
-{% extends "admin/base_site.html" %}{% load i18n static %}
-
+{% extends "~admin/base_site.html" %}
+{% load i18n static %}
 {% block nav-breadcrumbs %}
     <nav aria-label="{% translate 'Breadcrumbs' %}">
         <div class="breadcrumbs">
@@ -9,14 +9,13 @@
         </div>
     </nav>
 {% endblock nav-breadcrumbs %}
-
 {% block content %}
-    <h1>{{ step_header }}</h1>
-
+    <h1>
+        {{ step_header }}
+    </h1>
     {% block instructions %}
-
     {% endblock instructions %}
-    <br>
+    <br />
     <form action="" method="post" id="locking">
         {% csrf_token %}
         {{ wizard.management_form }}
@@ -40,14 +39,12 @@
             {# <input type="submit" #}
             {# name="wizard_goto_step" class="button" #}
             {# value="{{ wizard.steps.prev }}"> #}
-
             {# <button name="wizard_goto_step" type="submit" #}
             {# value="{{ wizard.steps.first }}">{% translate "first step" %}</button> #}
             {# <button name="wizard_goto_step" type="submit" #}
             {# value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button> #}
             {# {% endif %} #}
-
-            <input type="submit" value="Submit">
+            <input type="submit" value="Submit" />
         {% endblock buttons %}
     </form>
 {% endblock content %}

@@ -19,10 +19,10 @@ class AgentMeta(type["Agent"]):
     def __new__(cls: type["Agent"], class_name: str, bases: tuple[Any], attrs: dict[str, Any]) -> "Agent":
         if attrs["__qualname__"] == "Agent":
             return super().__new__(cls, class_name, bases, attrs)
-        cls = super().__new__(cls, class_name, bases, attrs)
-        if cls not in agentManager and "abstract" not in attrs:  # pragma: no branch
-            agentManager.register(cls)
-        return cast("Agent", cls)
+        new_cls = super().__new__(cls, class_name, bases, attrs)
+        if new_cls not in agentManager and "abstract" not in attrs:  # pragma: no branch
+            agentManager.register(new_cls)
+        return cast("Agent", new_cls)
 
 
 class AgentConfig(forms.Form):
@@ -60,4 +60,4 @@ class AgentManager(Registry):
     pass
 
 
-agentManager = AgentManager(Agent)
+agentManager = AgentManager(Agent)  # noqa N816

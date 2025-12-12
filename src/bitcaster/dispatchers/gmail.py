@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 if TYPE_CHECKING:
-    from bitcaster.types.dispatcher import TDispatcherConfig
+    from bitcaster.types.dispatcher import TDispatcherConfig_co
 
     from ..models import Assignment
 
@@ -37,7 +37,7 @@ class GMailDispatcher(Dispatcher):
 
     @cached_property
     def config(self) -> dict[str, Any]:
-        cfg: "TDispatcherConfig" = self.config_class(data=self.channel.config)
+        cfg: "TDispatcherConfig_co" = self.config_class(data=self.channel.config)
         if not cfg.is_valid():
             raise ValidationError(cfg.errors)
         return {

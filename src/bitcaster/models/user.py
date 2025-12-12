@@ -57,3 +57,8 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
         from bitcaster.models import DistributionList
 
         return DistributionList.objects.filter(recipients__address__user=self)
+
+
+class Member(User):
+    class Meta:
+        proxy = True

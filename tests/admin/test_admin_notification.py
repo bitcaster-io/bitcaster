@@ -61,7 +61,7 @@ def test_edit_check_environments(app: "DjangoTestApp", notification: "Notificati
     url = reverse("admin:bitcaster_notification_change", args=[notification.pk])
     res = app.get(url)
     frm = res.forms["notification_form"]
-    frm["environments"].force_value(["test"])
+    frm.fields["environments"][0].value = "test"
     res = frm.submit(expect_errors=True)
     assert res.status_code == 200
     assert res.context["adminform"].form.errors == {
@@ -74,7 +74,7 @@ def test_add_check_environments(app: "DjangoTestApp", notification: "Notificatio
     res = app.get(url)
     frm = res.forms["notification_form"]
     frm["name"] = "Not2"
-    frm["environments"].force_value(["test"])
+    frm.fields["environments"][0].value = "test"
     res = frm.submit(expect_errors=True)
     assert res.status_code == 200
     assert res.context["adminform"].form.errors == {"event": ["This field is required."]}
@@ -84,7 +84,7 @@ def test_add_check_environments(app: "DjangoTestApp", notification: "Notificatio
     frm["name"] = "Not2"
     frm["event"].force_value(notification.event.pk)
     frm["distribution"].force_value(notification.distribution.pk)
-    frm["environments"].force_value(["test"])
+    frm.fields["environments"][0].value = "test"
     res = frm.submit(expect_errors=True)
     assert res.status_code == 200
     assert res.context["adminform"].form.errors == {
@@ -96,6 +96,6 @@ def test_add_check_environments(app: "DjangoTestApp", notification: "Notificatio
     frm["name"] = "Not2"
     frm["event"].force_value(notification.event.pk)
     frm["distribution"].force_value(notification.distribution.pk)
-    frm["environments"].force_value(["development"])
+    frm.fields["environments"][0].value = "development"
     res = frm.submit()
     assert res.status_code == 302

@@ -1,0 +1,76 @@
+{% extends "unfold/layouts/base.html" %}
+{% load i18n static %}
+<!DOCTYPE HTML>
+{% block extrastyle %}
+    {{ block.super }}
+    <meta name="change-url" content="{% url "admin:bitcaster_message_change" original.pk %}" />
+    <meta name="edit-url" content="{% url "admin:bitcaster_message_edit" original.pk %}" />
+    <meta name="render-url" content="{% url "admin:bitcaster_message_render" original.pk %}" />
+    <meta name="test-url" content="{% url "admin:bitcaster_message_send_message" original.pk %}" />
+    {{ form.media }}
+{% endblock extrastyle %}
+{% block extrahead %}
+{% endblock extrahead %}
+{% block nav-sidebar %}
+{% endblock nav-sidebar %}
+{% block content %}
+    <div class="edit-message-body">
+        <form method="post" id="edit-message-form">
+            {% csrf_token %}
+            <div class="flex p-2">
+                <div class="inline-flex toolbar grow">
+                    {% if original.support_text %}
+                        <button id="btn_content" class="button active toggler" data-content-type="text/plain" data-panel="#tab_content" type="button">
+                            {% translate 'Text' %}
+                        </button>
+                    {% endif %}
+                    {% if original.support_subject %}
+                        <button id="btn_subject" class="button toggler" data-content-type="text/plain" data-panel="#tab_subject" type="button">
+                            {% translate 'Subject' %}
+                        </button>
+                    {% endif %}
+                    {% if original.support_html %}
+                        <button id="btn_html" class="button toggler" data-content-type="text/html" data-panel="#tab_html" type="button">
+                            HTML
+                        </button>
+                    {% endif %}
+                    <button id="btn_context" class="button toggler" data-panel="#tab_context" type="button">
+                        {% translate 'Context' %}
+                    </button>
+                </div>
+                <div class="inline-flex w-1/3">
+                    {{ form.recipient }}
+                    <button id="btn_test" class="ml-2 button button-alt" type="button">
+                        {% translate 'Test' %}
+                    </button>
+                </div>
+            </div>
+            {{ form.errors }}
+            <table class="w-full">
+                <tr>
+                    <td class="w-1/2">
+                        <div id="tab_subject" class="tab">
+                            {{ form.subject }}
+                        </div>
+                        <div id="tab_content" class="tab">
+                            {{ form.content }}
+                        </div>
+                        <div id="tab_html" class="tab">
+                            {{ form.html_content }}
+                        </div>
+                        <div id="tab_context" class="tab">
+                            {{ form.context }}
+                        </div>
+                    </td>
+                    <td>
+                        <iframe id="preview"></iframe>
+                        <div class="flex p-2 my-2 gap-2">
+                            <input type="submit" class="button button-primary" value="Save" />
+                            <input type="button" class="button button-alt" value="Cancel" onclick="window.location.href='..'" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+{% endblock content %}

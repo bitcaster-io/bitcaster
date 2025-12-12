@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.db.models.base import ModelBase
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+from smart_selects.db_fields import ChainedForeignKey
 from strategy_field.fields import StrategyField
 
 from bitcaster.dispatchers.base import Dispatcher, MessageProtocol, dispatcherManager
@@ -31,17 +32,22 @@ class ChannelManager(ScopedManager["Channel"]):
 
 class Channel(LockMixin, BitcasterBaseModel):
     organization = models.ForeignKey("Organization", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True)
-    project = models.ForeignKey(
-        "Project", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True, null=True
+    project = ChainedForeignKey(
+        "Project",
+        blank=True,
+        null=True,
+        chained_field="organization",
+        chained_model_field="organization",
+        show_all=False,
     )
-
     name = models.CharField(_("Name"), max_length=255)
     dispatcher: "Dispatcher" = StrategyField(registry=dispatcherManager, default="test")
     config = models.JSONField(blank=True, default=dict)
     protocol = models.CharField(choices=MessageProtocol.choices, max_length=50)
     active = models.BooleanField(default=True)
-    parent = models.ForeignKey("self", blank=True, null=True, related_name="children", on_delete=models.CASCADE)
-
+    parent = ChainedForeignKey(
+        "self", blank=True, null=True, chained_field="organization", chained_model_field="organization", show_all=False
+    )
     objects = ChannelManager()
 
     class Meta:

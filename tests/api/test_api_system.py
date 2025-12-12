@@ -52,7 +52,7 @@ def test_ping(client: APIClient, data: "Context") -> None:
     client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
     res = client.get(url)
     assert res.status_code == status.HTTP_403_FORBIDDEN
-    assert res.json() == {"detail": "You do not have permission to perform this action."}
+    assert res.json() == {"detail": "You do not have permission to perform this action. [Grant.SYSTEM_PING]"}
     # finally... valid token
     with key_grants(api_key, Grant.SYSTEM_PING):
         res = client.get(url, data={})

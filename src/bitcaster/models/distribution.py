@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
     from .notification import Notification
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -27,9 +26,9 @@ class DistributionList(BitcasterBaseModel):
     name = models.CharField(max_length=255, db_collation="case_insensitive")
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     recipients = models.ManyToManyField(Assignment, blank=True)
-    notifications: "QuerySet[Notification]"
 
     objects = DistributionListManager()
+    notifications: "QuerySet[Notification]"
 
     def __str__(self) -> str:
         return self.name
@@ -41,3 +40,6 @@ class DistributionList(BitcasterBaseModel):
         verbose_name = _("Distribution List")
         verbose_name_plural = _("Distribution Lists")
         unique_together = (("name", "project"),)
+
+    def get_context(self) -> dict[str, Any]:
+        return {"distribution": self.name}

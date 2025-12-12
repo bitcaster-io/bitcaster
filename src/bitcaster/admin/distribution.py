@@ -2,13 +2,12 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
-from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
 from bitcaster.models import DistributionList
 
-from .base import BaseAdmin
+from .base import BaseAdmin, BitcasterModelAdmin
 from .mixins import TwoStepCreateMixin
 
 logger = logging.getLogger(__name__)
@@ -17,12 +16,10 @@ if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
 
 
-class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], admin.ModelAdmin[DistributionList]):
+class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], BitcasterModelAdmin[DistributionList]):
     search_fields = ("name",)
     list_display = ("name", "project")
     list_filter = (
-        # ("project__organization", LinkedAutoCompleteFilter.factory(parent=None)),
-        # ("project", LinkedAutoCompleteFilter.factory(parent="project__organization")),
         ("project", LinkedAutoCompleteFilter.factory(parent=None)),
         ("recipients__address__user", AutoCompleteFilter.factory()),
     )

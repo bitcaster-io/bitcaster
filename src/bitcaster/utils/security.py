@@ -1,7 +1,8 @@
 from typing import Any
 
 from django.conf import settings
+from flags.state import flag_enabled
 
 
 def is_root(request: Any, *args: Any, **kwargs: Any) -> bool:
-    return request.user.is_superuser and request.headers.get(settings.ROOT_TOKEN_HEADER) == settings.ROOT_TOKEN != ""
+    return settings.DEBUG and flag_enabled("IS_ROOT", request=request)

@@ -24,7 +24,7 @@ class AgentFTP(AgentFiles):
 
     @cached_property
     def client(self) -> ftplib.FTP:
-        f = ftplib.FTP()  # nosec
+        f = ftplib.FTP()  # nosec # noqa S321
         host, port = self.config["server"].split(":")
         f.connect(host, int(port))
         f.login(self.config["username"], self.config["password"])
@@ -32,7 +32,3 @@ class AgentFTP(AgentFiles):
 
     def scan(self) -> dict[str, Any]:
         return dict(self.client.mlsd(self.config["path"]))
-
-    #
-    # def notify(self) -> None:
-    #     self.monitor.event.trigger(context=self.monitor.data)

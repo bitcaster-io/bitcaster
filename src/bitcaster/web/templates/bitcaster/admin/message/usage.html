@@ -1,0 +1,74 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% load i18n static usage %}
+{% block content %}
+    <div class="grid grid-cols-2 gap-4 p-2 mb-4">
+        <div>
+            Message
+        </div>
+        <div>
+            {{ original }}
+        </div>
+        <div>
+            Channel
+        </div>
+        <div>
+            {{ original.channel }}
+        </div>
+        <div>
+            Dispatcher
+        </div>
+        <div>
+            {{ original.channel.dispatcher }}
+        </div>
+        <div>
+            Protocol
+        </div>
+        <div>
+            {{ original.channel.protocol }}
+        </div>
+        <div>
+            Capabilities
+        </div>
+        <div>
+            {% for s in original.channel.dispatcher.capabilities %}
+                {{ s }}
+                {% if not forloop.last %}
+                    ;
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="module">
+        <table width="100%" id="usage">
+            <thead>
+                <tr>
+                    <th>
+                        Used By
+                    </th>
+                    <th>
+                        Type
+                    </th>
+                    <th>
+                        Id
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for utilizer in usage %}
+                    {% usage utilizer as info %}
+                    <tr>
+                        <td>
+                            <a href="{{ info.url }}">{{ utilizer }}</a>
+                        </td>
+                        <th>
+                            {{ info.type }}
+                        </th>
+                        <th>
+                            {{ utilizer.pk }}
+                        </th>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

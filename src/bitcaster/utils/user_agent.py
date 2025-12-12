@@ -6,7 +6,7 @@ from django.core.cache import BaseCache, caches
 from user_agents.parsers import UserAgent
 
 if TYPE_CHECKING:
-    from bitcaster.types.http import AnyRequest
+    from bitcaster.types.http import AnyRequest_co
 
 USER_AGENTS_CACHE = getattr(settings, "USER_AGENTS_CACHE", "default")
 cache: BaseCache | None
@@ -44,7 +44,7 @@ def get_cache_key(ua_string: bytes | str) -> str:
     return f"django_user_agents.{hasher.hexdigest()}"
 
 
-def get_user_agent(request: "AnyRequest") -> UserAgent:
+def get_user_agent(request: "AnyRequest_co") -> UserAgent:
     """Try to get UserAgent objects from cache before constructing a UserAgent from scratch.
 
     Because parsing regexes.yaml/json (ua-parser) is slow

@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button, link
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -15,7 +14,7 @@ from bitcaster.models import Application
 from ..constants import bitcaster
 from ..state import state
 from ..utils.django import url_related
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from .mixins import LockMixinAdmin
 
 if TYPE_CHECKING:
@@ -24,7 +23,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[Application]):
+class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdmin[Application]):
     search_fields = ("name",)
     list_display = ("name", "project", "organization", "active", "locked")
     list_filter = (
@@ -33,7 +32,6 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
         "active",
         "locked",
     )
-    # autocomplete_fields = ("project", "owner")
     readonly_fields = ["locked"]
     form = ApplicationChangeForm
 
@@ -72,9 +70,8 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], admin.ModelAdmin[
     def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         application: Application = button.context["original"]
-        button.href = (
-            f"{url}?application__exact={application.pk}&application__organization__exact={application.organization.pk}"
-        )
+        # application__project__exact=4&application__exact=5
+        button.href = f"{url}?application__exact={application.pk}&application__project__exact={application.project.pk}"
 
     @link(change_form=True, change_list=False)
     def notifications(self, button: ButtonWidget) -> None:

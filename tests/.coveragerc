@@ -20,10 +20,8 @@ omit =
     src/bitcaster/version.py
     src/bitcaster/management/commands/develop.py
 
-
 [report]
-# Regexes for lines to exclude from consideration
-exclude_lines =
+exclude_also =
     pragma: no cover
     pragma: no-cover
     def __repr__
@@ -31,8 +29,8 @@ exclude_lines =
     if settings.DEBUG:
     if DEBUG
     if SENTRY_ENABLED
-    if typing.TYPE_CHECKING
-    if TYPE_CHECKING
+    if typing.TYPE_CHECKING:
+    if TYPE_CHECKING:
     if self\.debug
     if __name__ == .__main__.:
     except JSONDecodeError
@@ -48,8 +46,8 @@ exclude_lines =
     @abstractmethod
 
 show_missing = true
-fail_under=90
-precision=2
+fail_under = 90
+precision = 2
 ignore_errors = True
 skip_covered = True
 

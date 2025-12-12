@@ -6,11 +6,13 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
 
-  - repo: https://github.com/adamchainz/djade-pre-commit
-    rev: "1.3.2"
+
+  - repo: https://github.com/djlint/djLint
+    rev: v1.36.4
     hooks:
-    -   id: djade
-        args: [--target-version, "5.1"]  # Use current Django version
+    -   id: djlint-reformat
+        args: ["--configuration", "djlint.toml"]
+
 
   - repo: https://github.com/twisted/towncrier
     rev: 24.8.0
@@ -37,7 +39,7 @@ repos:
           - --check
 
   - repo: https://github.com/saxix/pch
-    rev: '0.1'
+    rev: '0.2'
     hooks:
       - id: check-missed-migrations
         args:
@@ -50,3 +52,10 @@ repos:
           - src
           - tests
         stages: [ pre-push ]
+
+      - id: check-tailwind
+        name: check tailwind CSS ready for production
+        files: src/bitcaster/web/theme/static_src/src/unfold_ext.scss
+        args:
+          - -o
+          - src/bitcaster/web/static/css/unfold_ext.css

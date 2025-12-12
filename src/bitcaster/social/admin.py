@@ -11,6 +11,7 @@ from django.http import HttpRequest
 from django.urls import reverse
 from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
 
+from bitcaster.admin.base import BitcasterModelAdmin
 from bitcaster.models import SocialProvider
 from bitcaster.utils.security import is_root
 
@@ -19,12 +20,11 @@ if TYPE_CHECKING:
 
 
 @admin.register(SocialProvider)
-class SocialProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin[SocialProvider]):
+class SocialProviderAdmin(ExtraButtonsMixin, BitcasterModelAdmin[SocialProvider]):
     list_display = (
         "provider",
         "enabled",
     )
-    change_form_template = None
 
     def formfield_for_dbfield(self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any) -> FormField | None:
         formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
@@ -43,7 +43,7 @@ class SocialProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin[SocialProvider]):
         return formfield
 
     @link()
-    def test(self, button: ButtonWidget) -> None:
+    def login_with(self, button: ButtonWidget) -> None:
         if original := button.context.get("original"):
             button.label = f"Login with '{original.label}'"
             button.href = reverse("social:begin", args=[original.code])

@@ -86,7 +86,7 @@ class Notification(BitcasterBaseModel):
         return self.event.application
 
     def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
-        return {**ctx, "notification": self.name} | self.extra_context
+        return {**ctx, "notification": self.name} | self.distribution.get_context() | self.extra_context
 
     def get_pending_subscriptions(self, delivered: list[str | int], channel: "Channel") -> QuerySet[Assignment]:
         return (
@@ -100,7 +100,6 @@ class Notification(BitcasterBaseModel):
         )
 
     def notify_to_channel(self, channel: "Channel", assignment: Assignment, context: dict[str, Any]) -> str | None:
-        message: "Message" | None
         dispatcher: "Dispatcher" = channel.dispatcher
         addr: "Address" = assignment.address
 
@@ -114,7 +113,6 @@ class Notification(BitcasterBaseModel):
                 subject=render_string(message.subject, context),
                 message=render_string(message.content, context),
                 html_message=render_string(message.html_content, context),
-                # message=message.render(context),
             )
             dispatcher.send(addr.value, payload)
             return addr.value
@@ -147,10 +145,6 @@ class Notification(BitcasterBaseModel):
         if not rules:
             rules = yaml.safe_load(self.payload_filter or "")
         return self.match_line_filter(rules, payload)
-
-    # @staticmethod
-    # def check_filter(filter_rules_dict: "YamlPayload") -> Any:
-    #     return jmespath.compile(filter_rules_dict)
 
     def get_messages(self, channel: "Channel") -> QuerySet["Message"]:
         from .message import Message

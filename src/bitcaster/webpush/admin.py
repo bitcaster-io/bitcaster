@@ -6,8 +6,9 @@ from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse
 
 from bitcaster.admin.assignment import AssignmentAdmin
-from bitcaster.webpush.models import Browser
-from bitcaster.webpush.utils import sign
+
+from .models import Browser
+from .utils import sign
 
 if TYPE_CHECKING:
     from django.http import HttpResponse

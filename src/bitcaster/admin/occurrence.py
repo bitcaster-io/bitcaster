@@ -2,8 +2,7 @@ import logging
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from adminfilters.filters import NumberFilter
-from django.contrib import admin, messages
+from django.contrib import messages
 from django.db.models import QuerySet
 from django.forms.widgets import Media
 from django.http import HttpRequest, HttpResponse
@@ -13,12 +12,12 @@ from django.utils.translation import gettext as _
 from bitcaster.models import Occurrence
 from bitcaster.tasks import purge_occurrences
 
-from .base import BaseAdmin, ButtonColor
+from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
 
 
-class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
+class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     search_fields = ("name",)
     list_display = ("timestamp", "application", "event", "status", "attempts", "recipients")
     list_filter = (
@@ -26,7 +25,6 @@ class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
         ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent="event__application")),
         "status",
-        ("recipients", NumberFilter),
     )
     readonly_fields = ["correlation_id"]
     ordering = ("-timestamp",)
@@ -48,8 +46,20 @@ class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
         visible=lambda btn: btn.original.status == btn.original.Status.NEW,
     )
     def process(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj = self.get_object(request, pk)
-        obj.process()
+        obj: Occurrence = self.get_object(request, pk)
+        try:
+            if obj.process():
+                self.message_user(request, _("Occurrence has been successfully processed"), messages.SUCCESS)
+                self.message_user(request, f"{obj.data}", messages.INFO)
+            else:
+                self.message_user(
+                    request,
+                    _("Occurrence has been processed, but no recipients have been reached out"),
+                    messages.WARNING,
+                )
+        except Exception as e:
+            logger.exception(e)
+            self.message_user(request, _("Error processing occurrence"), messages.ERROR)
 
     @button(
         html_attrs={"class": ButtonColor.ACTION.value},
@@ -64,6 +74,6 @@ class OccurrenceAdmin(BaseAdmin, admin.ModelAdmin[Occurrence]):
         permission="bitcaster.delete_occurrence",
     )
     def payload(self, request: HttpRequest, pk: str) -> TemplateResponse:  # noqa
-        ctx = self.get_common_context(request, pk)
+        ctx = self.get_common_context(request, pk, action_title="Payload")
         ctx["media"] = Media(css={"screen": ["bitcaster/css/pygments.css"]})
-        return TemplateResponse(request, "admin/bitcaster/occurrence/payload.html", ctx)
+        return TemplateResponse(request, "bitcaster/admin/occurrence/payload.html", ctx)

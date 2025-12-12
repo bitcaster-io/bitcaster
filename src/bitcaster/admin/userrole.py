@@ -2,10 +2,9 @@ import logging
 from typing import TYPE_CHECKING
 
 from adminfilters.autocomplete import AutoCompleteFilter
-from django.contrib import admin
 
 from ..models import UserRole
-from .base import BaseAdmin
+from .base import BaseAdmin, BitcasterModelAdmin
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -14,7 +13,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class UserRoleAdmin(BaseAdmin, admin.ModelAdmin[UserRole]):
+class UserRoleAdmin(BaseAdmin, BitcasterModelAdmin[UserRole]):
     list_display = (
         "user",
         "organization",
@@ -22,7 +21,6 @@ class UserRoleAdmin(BaseAdmin, admin.ModelAdmin[UserRole]):
     )
     list_filter = (
         ("user", AutoCompleteFilter),
-        # ("organization", AutoCompleteFilter),
         ("group", AutoCompleteFilter),
     )
     search_fields = ("user__username",)

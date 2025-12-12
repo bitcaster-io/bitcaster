@@ -13,14 +13,7 @@ from django.urls import reverse
 from django.utils.safestring import SafeString
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
-from pytest_factoryboy import register
 from strategy_field.utils import fqn
-from testutils.factories import (
-    ChannelFactory,
-    OrganizationFactory,
-    ProjectFactory,
-    UserFactory,
-)
 
 from bitcaster.agents import AgentFileSystem
 from bitcaster.models import Event, Monitor
@@ -31,11 +24,6 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
     from webtest.forms import Form as WebTestForm
     from webtest.response import TestResponse
-
-register(UserFactory)
-register(OrganizationFactory)
-register(ChannelFactory, "channel")
-register(ProjectFactory, "project")
 
 
 @pytest.fixture

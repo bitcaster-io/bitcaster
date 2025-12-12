@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
+from django.test import override_settings
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 
@@ -30,14 +31,14 @@ def context() -> "Context":
     return {"provider": provider}
 
 
-def test_get_readonly_if_default(app: DjangoTestApp, context: "Context", settings: "SettingsWrapper") -> None:
-    settings.ROOT_TOKEN_HEADER = "abc"
-    settings.ROOT_TOKEN = "123"
+def test_get_readonly_if_root(app: DjangoTestApp, context: "Context", settings: "SettingsWrapper") -> None:
     url = reverse("admin:social_socialprovider_change", args=[context["provider"].pk])
+    with override_settings(FLAGS={"IS_ROOT": [("boolean", True)]}, DEBUG=True):
+        res: "TestResponse" = app.get(url)
+        frm = res.forms["socialprovider_form"]
+        assert "configuration" in frm.fields
 
-    res: "TestResponse" = app.get(url)
-    frm = res.forms["socialprovider_form"]
-    assert "configuration" not in frm.fields
-    res = app.get(url, extra_environ={"HTTP_ABC": settings.ROOT_TOKEN})
-    frm = res.forms["socialprovider_form"]
-    assert "configuration" in frm.fields
+    with override_settings(FLAGS={"IS_ROOT": [("boolean", False)]}):
+        res = app.get(url)
+        frm = res.forms["socialprovider_form"]
+        assert "configuration" not in frm.fields

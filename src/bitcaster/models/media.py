@@ -13,7 +13,7 @@ from bitcaster.models.mixins import (
 )
 
 if TYPE_CHECKING:
-    from bitcaster.types.django import AnyModel
+    from bitcaster.types.django import AnyModel_co
 
 mime = magic.Magic(mime=True)
 
@@ -49,7 +49,7 @@ class ImageFieldWithExtra(models.ImageField):
         self.size_field = size_field
         super().__init__(verbose_name, name, width_field, height_field, **kwargs)
 
-    def _get_mime(self, instance: "AnyModel", file: ImageFieldFile) -> str | None:
+    def _get_mime(self, instance: "AnyModel_co", file: ImageFieldFile) -> str | None:
         if not hasattr(instance, "_mime_cache"):
             file_pos = None
             close = file.closed
@@ -67,7 +67,9 @@ class ImageFieldWithExtra(models.ImageField):
                     file.seek(file_pos)
         return instance._mime_cache
 
-    def update_dimension_fields(self, instance: "AnyModel", force: bool = False, *args: "Any", **kwargs: "Any") -> None:
+    def update_dimension_fields(
+        self, instance: "AnyModel_co", force: bool = False, *args: "Any", **kwargs: "Any"
+    ) -> None:
         super().update_dimension_fields(instance, force, *args, **kwargs)
         if self.mime_field or self.size_field:
             file: ImageFieldFile = getattr(instance, self.attname)
@@ -111,14 +113,3 @@ class MediaFile(Scoped3Mixin, SlugMixin, BitcasterBaseModel):
         if self.project:
             return self.name, None, *self.project.natural_key()
         return self.name, None, None, *self.organization.natural_key()
-
-    #
-    # def save(
-    #     self,
-    #     force_insert: bool | tuple[ModelBase, ...] = False,
-    #     force_update: bool = False,
-    #     using: Optional[str] = None,
-    #     update_fields: Optional[Iterable[str]] = None,
-    # ) -> None:
-    #     super().save(force_insert, force_update, using, update_fields)
-    #

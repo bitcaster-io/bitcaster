@@ -14,7 +14,7 @@ from bitcaster.constants import AddressType
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment, Channel, Event, User
-    from bitcaster.types.dispatcher import DispatcherHandler, TDispatcherConfig
+    from bitcaster.types.dispatcher import DispatcherHandler, TDispatcherConfig_co
 
 logger = logging.getLogger(__name__)
 
@@ -82,10 +82,10 @@ class DispatcherMeta(type["Dispatcher"]):
     def __new__(cls: type["Dispatcher"], class_name: str, bases: tuple[Any], attrs: dict[str, Any]) -> "Dispatcher":
         if attrs["__qualname__"] == "Dispatcher":
             return super().__new__(cls, class_name, bases, attrs)
-        cls = super().__new__(cls, class_name, bases, attrs)
-        if cls not in dispatcherManager:  # pragma: no branch
-            dispatcherManager.register(cls)
-        return cast("Dispatcher", cls)
+        new_cls = super().__new__(cls, class_name, bases, attrs)
+        if new_cls not in dispatcherManager:  # pragma: no branch
+            dispatcherManager.register(new_cls)
+        return cast("Dispatcher", new_cls)
 
 
 class Dispatcher(metaclass=DispatcherMeta):
@@ -121,7 +121,7 @@ class Dispatcher(metaclass=DispatcherMeta):
 
     @property
     def config(self) -> dict[str, Any]:
-        cfg: "TDispatcherConfig" = self.config_class(data=self.channel.config)
+        cfg: "TDispatcherConfig_co" = self.config_class(data=self.channel.config)
         if not cfg.is_valid():
             raise ValidationError(cfg.errors)
         return cfg.cleaned_data
@@ -141,4 +141,4 @@ class DispatcherManager(Registry):
     pass
 
 
-dispatcherManager = DispatcherManager(Dispatcher)
+dispatcherManager = DispatcherManager(Dispatcher)  # noqa N816
