@@ -73,7 +73,7 @@ def data(admin_user: "User", system_objects: Any) -> SampleData:
         user=admin_user, grants=[], application=None, project=None, organization=event.application.project.organization
     )
     ch = ChannelFactory(project=event.application.project)
-    role: "UserRole" = UserRoleFactory(organization__name=org_name)
+    role: "UserRole" = UserRoleFactory(organization__name=org_name, user__custom_fields={"custom": 1})
     AddressFactory(user=role.user, value=role.user.email)
     return SampleData(
         org=event.application.project.organization,
@@ -141,16 +141,48 @@ def test_user_create(client: APIClient, data: SampleData) -> None:
 def test_user_update(client: APIClient, data: SampleData) -> None:
     # create new user and add to the organization
     url = f"/api/o/{data.org.slug}/u/{data.user.username}/"
-    res = client.put(url, {"last_name": "aaaaaa"})
+    res = client.put(url, {"last_name": "aaaaaa"}, format="json")
     assert res.json()["last_name"] == "aaaaaa"
     assert data.org.users.filter(last_name="aaaaaa").exists()
 
 
-def test_user_update_invalid(client: APIClient, data: SampleData) -> None:
-    # create new user and add to the organization
+def test_user_update_custom_fields(client: APIClient, data: SampleData) -> None:
     url = f"/api/o/{data.org.slug}/u/{data.user.username}/"
-    res = client.put(url, {"email": "--"})
-    assert res.status_code == 400
+    res = client.put(url, {"custom_fields": {"f1": 1}}, format="json")
+    assert res.status_code == 200
+    assert not data.org.users.filter(custom_fields__f1=1).exists()
+
+
+def test_user_update_custom_fields_add(client: APIClient, data: SampleData) -> None:
+    url = f"/api/o/{data.org.slug}/u/{data.user.username}/"
+    res = client.put(url, {"custom_fields": {"f1": 1}, "_mode": "merge"}, format="json")
+    assert res.status_code == 200
+    assert res.json()["custom_fields"] == {"custom": 1, "f1": 1}
+    assert data.org.users.filter(custom_fields__f1=1, custom_fields__custom=1).exists()
+
+
+def test_user_update_custom_fields_override(client: APIClient, data: SampleData) -> None:
+    url = f"/api/o/{data.org.slug}/u/{data.user.username}/"
+    res = client.put(url, {"custom_fields": {"custom": 2}, "_mode": "override"}, format="json")
+    assert res.status_code == 200
+    assert res.json()["custom_fields"] == {"custom": 2}
+    assert data.org.users.filter(custom_fields__custom=2).exists()
+
+
+def test_user_update_custom_fields_rewrite(client: APIClient, data: SampleData) -> None:
+    url = f"/api/o/{data.org.slug}/u/{data.user.username}/"
+    res = client.put(url, {"custom_fields": {"xx": 2}, "_mode": "rewrite"}, format="json")
+    assert res.status_code == 200
+    assert res.json()["custom_fields"] == {"xx": 2}
+    assert data.org.users.exclude(custom_fields__has_key="custom").filter(custom_fields__xx=2).exists()
+
+
+def test_user_update_custom_fields_remove(client: APIClient, data: SampleData) -> None:
+    url = f"/api/o/{data.org.slug}/u/{data.user.username}/"
+    res = client.put(url, {"custom_fields": {"custom": 2}, "_mode": "remove"}, format="json")
+    assert res.status_code == 200
+    assert res.json()["custom_fields"] == {}
+    assert not data.org.users.filter(custom_fields__has_key="custom").exists()
 
 
 def test_user_addresses(client: APIClient, data: SampleData) -> None:

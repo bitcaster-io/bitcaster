@@ -58,6 +58,16 @@ class Notification(BitcasterBaseModel):
     payload_filter = models.TextField(blank=True, null=True)
     extra_context = models.JSONField(default=dict, blank=True)
 
+    dynamic = models.BooleanField(
+        default=False,
+        help_text="Dynamic notification do not need DistributionList. "
+        "It filters users based on 'recipients_filter' rules",
+    )
+    recipients_filter = models.JSONField(
+        default=dict,
+        blank=True,
+    )
+
     objects = NotificationManager()
 
     class Meta:

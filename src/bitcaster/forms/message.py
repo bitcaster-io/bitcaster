@@ -10,6 +10,7 @@ from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
 from tinymce.widgets import TinyMCE
 
 from bitcaster.models import Channel, Event, Message, Notification, Organization
+from bitcaster.web import widgets
 
 
 class MessageEditForm(forms.ModelForm[Message]):
@@ -68,8 +69,10 @@ class MessageCreationForm(forms.ModelForm[Message]):
 
 
 class NotificationTemplateCreateForm(forms.Form):
-    name = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Name"}))
-    channel = forms.ModelChoiceField(queryset=Channel.objects.all(), label="Channel")
+    name = forms.CharField(widget=widgets.UnfoldAdminTextInputWidget(attrs={"placeholder": "Name"}))
+    channel = forms.ModelChoiceField(
+        queryset=Channel.objects.all(), label="Channel", widget=widgets.UnfoldAdminSelectWidget
+    )
 
     notification: "Notification"
 

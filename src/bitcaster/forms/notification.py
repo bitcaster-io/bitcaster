@@ -4,7 +4,8 @@ from typing import Any
 from django import forms
 from django.core.exceptions import ValidationError
 
-from bitcaster.models import Event, Notification
+from bitcaster.models import Event, Notification, User
+from bitcaster.utils.filering import validate_filters, validate_lookups, validate_schema
 
 
 class NotificationForm(forms.ModelForm["Notification"]):
@@ -17,6 +18,15 @@ class NotificationForm(forms.ModelForm["Notification"]):
         prj_envs: list[str] = []
         envs: list[str] = []
         super().clean()
+        if self.cleaned_data.get("dynamic", False):
+            try:
+                recipients = self.cleaned_data["recipients_filter"]
+                validate_schema(recipients)
+                validate_filters(User.objects, recipients)
+                validate_lookups(User, recipients)
+            except ValidationError as e:
+                raise ValidationError({"recipients_filter": e}) from None
+
         if self.instance.pk:
             evt = self.instance.event
             prj_envs = evt.application.project.environments or []

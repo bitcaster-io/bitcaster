@@ -39,36 +39,28 @@
         </div>
     </div>
     <div class="module">
-        <table width="100%" id="usage">
-            <thead>
-                <tr>
-                    <th>
-                        Used By
-                    </th>
-                    <th>
-                        Type
-                    </th>
-                    <th>
-                        Id
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for utilizer in usage %}
-                    {% usage utilizer as info %}
-                    <tr>
-                        <td>
-                            <a href="{{ info.url }}">{{ utilizer }}</a>
-                        </td>
-                        <th>
-                            {{ info.type }}
-                        </th>
-                        <th>
-                            {{ utilizer.pk }}
-                        </th>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="grid grid-cols-3 gap-4 p-2 mb-4">
+            <div>
+                Used By
+            </div>
+            <div>
+                Type
+            </div>
+            <div>
+                Id
+            </div>
+            {% for utilizer in usage %}
+                {% usage utilizer as info %}
+                <div>
+                    <a class="link" href="{{ info.url }}">{{ utilizer }}</a>
+                </div>
+                <div>
+                    {{ info.type }}
+                </div>
+                <div>
+                    {{ utilizer.pk }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock content %}

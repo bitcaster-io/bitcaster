@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
@@ -15,6 +15,7 @@ from bitcaster.api.serializers import AddressSerializer
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import bitcaster
 from bitcaster.models import Organization, User, UserRole
+from bitcaster.utils.json import JsonUpdateMode, process_dict
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -38,6 +39,24 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserUpdateSerializer(serializers.ModelSerializer):
+    _mode = serializers.ChoiceField(choices=JsonUpdateMode.choices, default=JsonUpdateMode.IGNORE)
+
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "locked", "custom_fields", "_mode")
+
+    def validate(self, attrs):
+        ret = super().validate(attrs)
+        if "custom_fields" in ret:
+            if attrs["_mode"] == JsonUpdateMode.IGNORE:
+                del ret["custom_fields"]
+            else:
+                custom_fields = process_dict(self.instance.custom_fields, attrs["custom_fields"], attrs["_mode"])
+                ret["custom_fields"] = custom_fields
+        return ret
+
+
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     username = serializers.CharField(read_only=True)
@@ -47,10 +66,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("id", "email", "username", "first_name", "last_name", "locked")
 
 
-class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIView):
+class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, UpdateAPIView, RetrieveAPIView):
     serializer_class = UserSerializer
     required_grants = [Grant.USER_READ, Grant.USER_WRITE]
-    action_serializers = {"post": UserCreateSerializer}
+    action_serializers = {
+        "create": UserCreateSerializer,
+        "list": UserSerializer,
+        "update": UserUpdateSerializer,
+        "patch": UserUpdateSerializer,
+    }
 
     @property
     def organization(self) -> "Organization":
@@ -62,28 +86,8 @@ class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIVi
     def get_object(self) -> "User":
         return self.get_queryset().get(username=self.kwargs["username"])
 
-    @extend_schema(description=_("List Organization's users"))
-    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> Response:
-        return super().get(request, *args, **kwargs)
-
-    @extend_schema(description=_("Creat an Organization's user"))
-    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> Response:
-        return super().post(request, *args, **kwargs)
-
-    @extend_schema(
-        request=UserSerializer,
-        description=_("Update an Organization's user"),
-    )
-    @action(detail=True, methods=["PUT"])
-    def update(self, request: HttpRequest, **kwargs: Any) -> Response:
-        status_code = status.HTTP_200_OK
-        user = self.get_object()
-        ser = UserSerializer(instance=user, data=request.data, partial=True)
-        if ser.is_valid():
-            ser.save()
-        else:
-            status_code = status.HTTP_400_BAD_REQUEST
-        return Response(ser.data, status=status_code)
+    def patch(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
 
     @extend_schema(request=AddressSerializer, responses=AddressSerializer, description=_("List User's addresses"))
     @action(detail=False, methods=["GET"], serializer_class=AddressSerializer)
