@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 from django.urls import reverse
 from testutils.factories import AddressFactory, AssignmentFactory
-from testutils.helpers import assert_form_error, assert_message
+from testutils.helpers import assert_form_error, assert_message, get_resource
+from webtest import Upload
 
 from bitcaster.admin.member import JsonUpdateMode2
 from bitcaster.models import Assignment, Channel, DistributionList, Member, Organization, User
@@ -100,3 +101,12 @@ def test_update_custom_fields(app: "DjangoTestApp", context: "Context", mode) ->
     res.forms["action-form"]["mode"] = mode
     res = res.forms["action-form"].submit("apply").follow()
     assert_message(res, "Record successfully updated")
+
+
+def test_import_members(app: "DjangoTestApp") -> None:
+    url = reverse("admin:bitcaster_member_changelist")
+    res = app.get(url)
+    res = res.click("Import Members")
+    res.forms["action-form"]["file"] = Upload(str(get_resource("data/bulk_update.csv").absolute()))
+    res = res.forms["action-form"].submit("apply").follow()
+    assert_message(res, "Record successfully imported 2/3")

@@ -1,3 +1,3 @@
-from unfold.widgets import UnfoldAdminSelectWidget, UnfoldAdminTextInputWidget
+from unfold.widgets import UnfoldAdminFileFieldWidget, UnfoldAdminSelectWidget, UnfoldAdminTextInputWidget
 
-__all__ = ["UnfoldAdminTextInputWidget", "UnfoldAdminSelectWidget"]
+__all__ = ["UnfoldAdminTextInputWidget", "UnfoldAdminSelectWidget", "UnfoldAdminFileFieldWidget"]

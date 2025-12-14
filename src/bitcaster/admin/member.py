@@ -1,10 +1,18 @@
+import codecs
+import csv
 import json
+from contextlib import suppress
+from pathlib import Path
 from typing import TYPE_CHECKING
 
+from admin_extra_buttons.decorators import button
 from adminfilters.json_filter import JsonFieldFilter
 from django import forms
 from django.contrib import messages
 from django.contrib.admin import helpers
+from django.core.exceptions import ValidationError
+from django.core.files.utils import FileProxyMixin
+from django.core.validators import EmailValidator
 from django.db import transaction
 from django.db.models import Q, QuerySet, TextChoices
 from django.http import HttpResponseRedirect
@@ -126,6 +134,10 @@ class MemberForm(forms.ModelForm):
         return check_custom_fields(self.cleaned_data["custom_fields"])
 
 
+class ImportForm(forms.Form):
+    file = forms.FileField(widget=widgets.UnfoldAdminFileFieldWidget)
+
+
 class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     list_display = ("username", "first_name", "last_name", "email")
     fields = ("username", "first_name", "last_name", "email", "custom_fields")
@@ -154,6 +166,44 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
             form = SelectDistributionForm(initial=initial)
         ctx["form"] = form
         return TemplateResponse(request, "bitcaster/admin/user/add_to_distributionlist.html", ctx)
+
+    @button(label="Import Members")
+    def import_members(self, request) -> "HttpResponse":
+        ctx = self.get_common_context(request, action_title="Import Members")
+        if "apply" in request.POST:
+            form = ImportForm(request.POST, request.FILES)
+            if form.is_valid():
+                file_name_or_object = form.cleaned_data.pop("file")
+                if isinstance(file_name_or_object, FileProxyMixin):
+                    f = file_name_or_object
+                else:
+                    f = Path(file_name_or_object).open("rb")  # noqa: SIM115
+                reader = csv.DictReader(codecs.iterdecode(f, "utf-8"))
+                validator = EmailValidator()
+                data = []
+                processed = 1
+                for row in reader:
+                    processed += 1
+                    if email := row.get("email"):
+                        with suppress(ValidationError):
+                            validator(email)
+                            record = {"username": email, "email": email, "custom_fields": {}}
+                            for fname in reader.fieldnames:
+                                if fname in []:
+                                    record[fname] = row.get(fname, "")
+                                elif fname.startswith("custom__"):
+                                    record["custom_fields"][fname[8:]] = row.get(fname, "")
+                            data.append(Member(**record))
+                with transaction.atomic():
+                    Member.objects.bulk_create(data, ignore_conflicts=True)
+                    self.message_user(
+                        request, f"Record successfully imported {len(data)}/{processed}", messages.SUCCESS
+                    )
+                return HttpResponseRedirect("..")
+        else:
+            form = ImportForm()
+        ctx["form"] = form
+        return render(request, "bitcaster/admin/members/import_members.html", ctx)
 
     @action(description="Update Custom fields", icon="person")
     def update_custom_fields(self, request: "HttpRequest", queryset: "QuerySet") -> "HttpResponse":
