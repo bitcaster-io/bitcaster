@@ -13,6 +13,7 @@ from .internal import LogMessageFactory  # noqa
 from .key import ApiKeyFactory  # noqa
 from .log import LogEntryFactory  # noqa
 from .media import MediaFileFactory  # noqa
+from .member import MemberFactory  # noqa
 from .message import MessageFactory  # noqa
 from .monitor import MonitorFactory  # noqa
 from .notification import NotificationFactory  # noqa
@@ -36,6 +37,7 @@ __all__ = [
     "GroupFactory",
     "LogEntryFactory",
     "MediaFileFactory",
+    "MemberFactory",
     "MessageFactory",
     "NotificationFactory",
     "OccurrenceFactory",
