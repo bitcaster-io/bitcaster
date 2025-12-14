@@ -62,11 +62,6 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
             )
         )
 
-    def add_view(
-        self, request: HttpRequest, form_url: str = "", extra_context: "dict[str, Any]| None" = None
-    ) -> HttpResponse:
-        return super().add_view(request, form_url, extra_context)
-
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def messages(self, request: HttpRequest, pk: str) -> HttpResponse:
         status_code = 200
