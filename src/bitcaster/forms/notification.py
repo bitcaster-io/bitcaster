@@ -5,7 +5,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from bitcaster.models import Event, Notification, User
-from bitcaster.utils.filering import validate_filters, validate_lookups, validate_schema
+from bitcaster.utils.filtering import validate_filters, validate_lookups, validate_schema
 
 
 class NotificationForm(forms.ModelForm["Notification"]):

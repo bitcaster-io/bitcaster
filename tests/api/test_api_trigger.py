@@ -296,6 +296,17 @@ def test_trigger_invalid_options(
         assert res.status_code == status.HTTP_400_BAD_REQUEST, res.json()
 
 
+def test_trigger_no_options(
+    client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any
+) -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.EVENT_TRIGGER, environments=["develop"]):
+        res = client.post(url, data={"context": {}, "options": {"environs": ["develop"]}}, format="json")
+    assert res.status_code == status.HTTP_201_CREATED
+
+
 def test_trigger_selected_environment(
     client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any
 ) -> None:

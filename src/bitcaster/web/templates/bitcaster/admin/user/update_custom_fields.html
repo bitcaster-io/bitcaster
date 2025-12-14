@@ -1,0 +1,10 @@
+{% extends "bitcaster/admin/action_form.html" %}
+{% block extrahead %}
+    <script>
+    actionDropdownOpen = null;
+    </script>
+    {{ form.media }}
+{% endblock %}
+{% block form %}
+    {{ block.super }}
+{% endblock form %}

@@ -4,7 +4,7 @@ import pytest
 from django.core.exceptions import ValidationError
 
 from bitcaster.models import User
-from bitcaster.utils.filering import FilterManager, validate_filters, validate_lookups, validate_schema
+from bitcaster.utils.filtering import FilterManager, validate_filters, validate_lookups, validate_schema
 
 if TYPE_CHECKING:
     from bitcaster.types.filtering import QuerysetFilter
@@ -143,3 +143,23 @@ def test_validate_lookups(excludes, expected) -> None:
         e = ex
         success = False
     assert success == expected, f"{e}: {filters}"
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ({"include": [], "exclude": []}, True),
+        ({}, False),
+        ([], False),
+        (22, False),
+    ],
+)
+def test_validate_schema(value, expected) -> None:
+    e = None
+    try:
+        validate_schema(value)
+        success = True
+    except ValidationError as ex:
+        e = ex
+        success = False
+    assert success == expected, f"{e}: {value}"

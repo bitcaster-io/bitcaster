@@ -18,6 +18,7 @@ schema = {
     # "$id": "https://example.com/schemas/queryset-filter.schema.json",
     "title": "QuerysetFilter",
     "type": "object",
+    "minProperties": 2,
     "additionalProperties": False,
     "properties": {"include": {"$ref": "#/$defs/filterGroup"}, "exclude": {"$ref": "#/$defs/filterGroup"}},
     "$defs": {
@@ -113,11 +114,6 @@ def or_group_to_q(group: "list[JSON]") -> "models.Q":
     for item in group:
         q |= dict_to_q(item)
     return q
-
-
-def get_filters(d: "JSON") -> "QuerysetFilter":
-    base: "QuerysetFilter" = {"include": [], "exclude": []}
-    return base | d
 
 
 def parse_filter_clause(data: "JSON | list[JSON] | list[list[JSON]]") -> "models.Q":

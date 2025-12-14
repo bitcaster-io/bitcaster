@@ -46,7 +46,6 @@ class BitcasterModelAdmin(UnfoldModelAdmin):
     def formfield_for_foreignkey(
         self, db_field: ForeignKey, request: HttpRequest, **kwargs: Any
     ) -> ModelChoiceField | None:
-        db = kwargs.get("using")
         if isinstance(db_field, ChainedForeignKey):
             widget = UnfoldChainedSelect(
                 to_app_name=db_field.to_app_name,
@@ -63,14 +62,14 @@ class BitcasterModelAdmin(UnfoldModelAdmin):
             )
             kwargs["widget"] = widget
         # Overrides widgets for all related fields
-        if "widget" not in kwargs:
-            if db_field.name in self.raw_id_fields:
-                kwargs["widget"] = uwidgets.UnfoldForeignKeyRawIdWidget(
-                    db_field.remote_field, self.admin_site, using=db
-                )
-            elif db_field.name not in self.get_autocomplete_fields(request) and db_field.name not in self.radio_fields:
-                kwargs["widget"] = uwidgets.UnfoldAdminSelectWidget()
-                kwargs["empty_label"] = _("Select value")
+        # Note: we do not use raw_id_fields so we slip if db_field.name in self.raw_id_fields:
+        if (
+            "widget" not in kwargs
+            and db_field.name not in self.get_autocomplete_fields(request)
+            and db_field.name not in self.radio_fields
+        ):
+            kwargs["widget"] = uwidgets.UnfoldAdminSelectWidget()
+            kwargs["empty_label"] = _("Select value")
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 

@@ -12,7 +12,7 @@ from jsoneditor.forms import JSONEditor
 
 from ..forms.message import NotificationTemplateCreateForm
 from ..forms.notification import NotificationForm
-from ..utils.filering import schema
+from ..utils.filtering import schema
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 if TYPE_CHECKING:
@@ -32,46 +32,10 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     autocomplete_fields = ("event", "distribution")
     form = NotificationForm
     fieldsets = (
-        (
-            _("General"),
-            {
-                "classes": ["tab"],
-                "fields": [
-                    "name",
-                    "event",
-                    "environments",
-                ],
-            },
-        ),
-        (
-            _("Distribution"),
-            {
-                "classes": ["tab"],
-                "fields": [
-                    "dynamic",
-                    "distribution",
-                    "recipients_filter",
-                ],
-            },
-        ),
-        (
-            _("Matching rules"),
-            {
-                "classes": ["tab"],
-                "fields": [
-                    "payload_filter",
-                ],
-            },
-        ),
-        (
-            _("Extra context"),
-            {
-                "classes": ["tab"],
-                "fields": [
-                    "extra_context",
-                ],
-            },
-        ),
+        (_("General"), {"classes": ["tab"], "fields": ["name", "event", "environments"]}),
+        (_("Distribution"), {"classes": ["tab"], "fields": ["dynamic", "distribution", "recipients_filter"]}),
+        (_("Matching rules"), {"classes": ["tab"], "fields": ["payload_filter"]}),
+        (_("Extra context"), {"classes": ["tab"], "fields": ["extra_context"]}),
     )
     conditional_fields = {"distribution": "dynamic == false", "recipients_filter": "dynamic == true"}
 

@@ -5,10 +5,8 @@ from django.contrib.admin.models import LogEntry as _LogEntry
 from django.utils.translation import gettext
 from django.utils.translation import gettext as _
 
-from bitcaster.models.mixins import BitcasterBaselManager
 
-
-class LogEntryManager(BitcasterBaselManager["LogEntry"]):
+class LogEntryManager(_LogEntry.objects.__class__):  # type: ignore[name-defined]
     def get_by_natural_key(self, pk: "str", *args: Any) -> "LogEntry":
         return self.get(pk=pk)
 
@@ -27,6 +25,7 @@ class LogEntry(_LogEntry):
     objects = LogEntryManager()  # type: ignore
 
     class Meta:
+        proxy = True
         app_label = "bitcaster"
         verbose_name = _("log entry")
         verbose_name_plural = _("log entries")

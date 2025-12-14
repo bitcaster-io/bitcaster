@@ -94,13 +94,13 @@
   }
 }
 
-@layer theme {
+@layer components {
   .outer_jsoneditor{
     @apply rounded-lg;
   }
   div.jsoneditor {
     @apply !border-gray-900 text-black;
-    @apply dark:!border-gray-500 rounded dark:text-white;
+    @apply dark:!border-gray-500 rounded-lg dark:text-white;
     .jsoneditor-poweredBy {
       @apply hidden;
     }
@@ -119,7 +119,7 @@
     }
 
     div.jsoneditor-outer {
-      .ace_content, .ace_gutter {
+      .ace_scroller, .ace_gutter {
         @apply !border-gray-100 !bg-gray-100 text-black;
         @apply dark:!bg-gray-600  dark:!text-white;
         .ace_line_group {
@@ -133,8 +133,7 @@
     }
 
     .jsoneditor-statusbar {
-      @apply !bg-gray-900;
-
+      @apply !bg-gray-900 dark:!border-red-500 mx-2;
     }
   }
 
@@ -192,7 +191,11 @@
 
     }
   }
-
+  ul.errorlist{
+    li{
+      @apply text-red-500;
+    }
+  }
   .button {
     @apply block border cursor-pointer px-3 py-2 rounded w-auto;
     @apply text-black;

@@ -1,4 +1,5 @@
 # mypy: disable-error-code="union-attr"
+import json
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -97,5 +98,18 @@ def test_add_check_environments(app: "DjangoTestApp", notification: "Notificatio
     frm["event"].force_value(notification.event.pk)
     frm["distribution"].force_value(notification.distribution.pk)
     frm.fields["environments"][0].value = "development"
+    res = frm.submit()
+    assert res.status_code == 302
+
+
+def test_add_dynamic(app: "DjangoTestApp", notification: "Notification") -> None:
+    url = reverse("admin:bitcaster_notification_add")
+    res = app.get(url)
+    frm = res.forms["notification_form"]
+    frm["name"] = "Not2"
+    frm["event"].force_value(notification.event.pk)
+    frm.fields["environments"][0].value = "development"
+    frm["dynamic"] = True
+    frm["recipients_filter"] = json.dumps({"include": [], "exclude": []})
     res = frm.submit()
     assert res.status_code == 302
