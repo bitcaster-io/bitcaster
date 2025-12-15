@@ -1,6 +1,7 @@
 nav:
   - Setup: setup.md
   - Run Tests: tests.md
+  - Filtering: filtering.md
 #  - Quick Start: quickstart.md
 #  - Create Initial Structure: structure.md
 #  - Dispatchers: dispatchers.md

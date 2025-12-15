@@ -33,12 +33,12 @@
   --color-primary-950: 8 54 68;
 
   --radius-default: 6px;
+  --radius-2xl: 20px;
 
   --font-default-light: 400;     /* peso */
   --text-default-light: var(--color-base-600); /* colore di default */
   --font-default-dark: 400;     /* peso */
   --text-default-dark: var(--color-base-600); /* colore di default */
-
   --font-size-3xl: 1.875rem;
   --line-height-3xl: 2.25rem;
 
@@ -95,14 +95,58 @@
 }
 
 @layer components {
-  .adminfilters{
+  .outer_jsoneditor{
+    @apply rounded-lg;
+  }
+  div.jsoneditor {
+    @apply !border-gray-900 text-black;
+    @apply dark:!border-gray-500 rounded-lg dark:text-white;
+    .jsoneditor-poweredBy {
+      @apply hidden;
+    }
+
+    .ace-jsoneditor .ace_marker-layer .ace_active-line {
+      @apply !bg-transparent;
+    }
+
+    div.jsoneditor-menu {
+      @apply !bg-gray-400 !border-gray-900 !border-b-gray-900 text-black;
+      @apply dark:bg-gray-900 dark:border-b-gray-500;
+    }
+
+    .ace_gutter-active-line {
+      @apply !bg-red-500 !border-none;
+    }
+
+    div.jsoneditor-outer {
+      .ace_scroller, .ace_gutter {
+        @apply !border-gray-100 !bg-gray-100 text-black;
+        @apply dark:!bg-gray-600  dark:!text-white;
+        .ace_line_group {
+          * {
+            @apply !border-gray-100 text-black;
+            @apply dark:!bg-gray-600  dark:!text-white;
+          }
+        }
+      }
+
+    }
+
+    .jsoneditor-statusbar {
+      @apply !bg-gray-900 dark:!border-red-500 mx-2;
+    }
+  }
+
+  .adminfilters {
     input {
       @apply unfold-input;
     }
-    select{
+
+    select {
       @apply unfold-select;
     }
   }
+
   div.edit-message-body {
     @apply border-none;
     #preview {
@@ -147,7 +191,11 @@
 
     }
   }
-
+  ul.errorlist{
+    li{
+      @apply text-red-500;
+    }
+  }
   .button {
     @apply block border cursor-pointer px-3 py-2 rounded w-auto;
     @apply text-black;
@@ -167,7 +215,7 @@
   }
 
   .form-submit-row {
-    @apply flex border-1 p-2 rounded border-gray-700 bg-gray-900 justify-end;
+    @apply flex border-1 p-2 border-gray-700 bg-gray-800 justify-end;
   }
 
   .filter-lookup {

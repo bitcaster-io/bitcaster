@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-    from bitcaster.models import Assignment, Channel, Event, Notification, User
+    from bitcaster.models import Application, Assignment, Channel, Event, Notification, User
 
     Context = TypedDict(
         "Context",
@@ -45,6 +45,24 @@ def context(app: "DjangoTestApp") -> "Context":
         "assignment": asm,
         "event": n.event,
     }
+
+
+def test_add_event(app: "DjangoTestApp", application: "Application") -> None:
+    url = reverse("admin:bitcaster_event_add")
+    res = app.get(url)
+    res.forms["event_form"]["name"] = "Event #1"
+    res.forms["event_form"]["application"].force_value(application.pk)
+    res.forms["event_form"]["application"].force_value(application.pk)
+    res = res.forms["event_form"].submit()
+    assert res.status_code == 302
+
+
+def test_change_event(app: "DjangoTestApp", event: "Event") -> None:
+    url = reverse("admin:bitcaster_event_change", args=[event.pk])
+    res = app.get(url)
+    res.forms["event_form"]["description"] = "Event #2"
+    res = res.forms["event_form"].submit()
+    assert res.status_code == 302
 
 
 def test_trigger_event(app: "DjangoTestApp", context: "Context") -> None:

@@ -51,7 +51,9 @@ INSTALLED_APPS = [
     "smart_selects",
     "adminfilters",
     "debug_toolbar",
-    "django_svelte_jsoneditor",
+    # "django_svelte_jsoneditor",
+    "jsoneditor",
+    "django_ace",
     "tinymce",
     "reversion",
     "taggit",
@@ -245,3 +247,4 @@ from .fragments.social_auth import *  # noqa
 from .fragments.tailwind import *  # noqa
 from .fragments.tinymce import *  # noqa
 from .fragments.unfold import *  # noqa
+from .fragments.json_editor import *  # noqa

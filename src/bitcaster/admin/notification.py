@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -7,9 +7,12 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext as _
+from django_ace import AceWidget
+from jsoneditor.forms import JSONEditor
 
 from ..forms.message import NotificationTemplateCreateForm
 from ..forms.notification import NotificationForm
+from ..utils.filtering import schema
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 if TYPE_CHECKING:
@@ -28,9 +31,23 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     )
     autocomplete_fields = ("event", "distribution")
     form = NotificationForm
+    fieldsets = (
+        (_("General"), {"classes": ["tab"], "fields": ["name", "event", "environments"]}),
+        (_("Distribution"), {"classes": ["tab"], "fields": ["dynamic", "distribution", "recipients_filter"]}),
+        (_("Matching rules"), {"classes": ["tab"], "fields": ["payload_filter"]}),
+        (_("Extra context"), {"classes": ["tab"], "fields": ["extra_context"]}),
+    )
+    conditional_fields = {"distribution": "dynamic == false", "recipients_filter": "dynamic == true"}
 
-    def get_exclude(self, request: HttpRequest, obj: "Notification | None" = None) -> tuple[str, ...]:
-        return ("payload_filter", "extra_context")
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        field = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == "recipients_filter":
+            field.widget = JSONEditor(jsonschema=schema)
+        elif db_field.name == "extra_context":
+            field.widget = JSONEditor()
+        elif db_field.name == "payload_filter":
+            field.widget = AceWidget(mode="yaml")
+        return field
 
     def get_queryset(self, request: HttpRequest) -> QuerySet["Notification"]:
         return (
@@ -44,6 +61,11 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
                 "distribution",
             )
         )
+
+    def add_view(
+        self, request: HttpRequest, form_url: str = "", extra_context: "dict[str, Any]| None" = None
+    ) -> HttpResponse:
+        return super().add_view(request, form_url, extra_context)
 
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def messages(self, request: HttpRequest, pk: str) -> HttpResponse:

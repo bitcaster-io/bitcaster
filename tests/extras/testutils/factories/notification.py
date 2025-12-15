@@ -18,3 +18,4 @@ class NotificationFactory(AutoRegisterModelFactory[Notification]):
     distribution = factory.SubFactory(DistributionListFactory)
     event = factory.SubFactory(EventFactory)
     extra_context = {"extra_field": "extra_value"}
+    recipients_filter = {}

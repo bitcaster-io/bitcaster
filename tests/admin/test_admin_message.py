@@ -238,4 +238,4 @@ def test_usage(app: "DjangoTestApp", creator: CreateMessage, channel: "Channel")
 
     url = reverse(admin_urlname(opts, "usage"), args=[message.pk])  # type: ignore[arg-type]
     res = app.get(url)
-    assert res.pyquery("#usage tbody tr td a").text() == creator.name
+    assert res.pyquery("div.grid a.link").text() == creator.name

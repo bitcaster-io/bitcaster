@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.safestring import SafeString
 from django_webtest import DjangoTestApp, DjangoWebtestResponse
@@ -52,6 +53,14 @@ def test_edit(app: DjangoTestApp, api_key: "ApiKey") -> None:
     assert res.status_code == 302
     api_key.refresh_from_db()
     assert sorted(api_key.grants) == [Grant.EVENT_TRIGGER, Grant.FULL_ACCESS]
+
+
+def test_edit_develop(app: DjangoTestApp, api_key: "ApiKey") -> None:
+    opts: Options[ApiKey] = api_key._meta
+    url = reverse(admin_urlname(opts, SafeString("change")), args=[api_key.pk])
+    with override_settings(FLAGS={"DEVELOP_FULL_EDIT": [("boolean", True)]}, DEBUG=True):
+        res = app.get(url)
+        assert res.status_code == 200
 
 
 def test_add(app: DjangoTestApp, api_key: "ApiKey") -> None:

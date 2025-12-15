@@ -27,17 +27,12 @@ class Bitcaster:
 
     @staticmethod
     def initialize(admin: "User") -> "Application":
-        from bitcaster.models import (
-            Application,
-            DistributionList,
-            Organization,
-            Project,
-        )
+        from bitcaster.models import Application, DistributionList, Group, Organization, Project
 
         os4d = Organization.objects.get_or_create(name=bitcaster.ORGANIZATION, defaults={"owner": admin})[0]
         prj = Project.objects.get_or_create(name=bitcaster.PROJECT, organization=os4d, owner=os4d.owner)[0]
         app = Application.objects.get_or_create(name=bitcaster.APPLICATION, project=prj, owner=os4d.owner)[0]
-
+        Group.objects.get_or_create(name=config.NEW_USER_DEFAULT_GROUP)
         for event_name in SystemEvent:
             app.register_event(event_name.value)
 
@@ -70,7 +65,7 @@ class Bitcaster:
     def get_default_group(self) -> "Group":
         from bitcaster.models.group import Group
 
-        return cast("Group", Group.objects.get(name=config.NEW_USER_DEFAULT_GROUP))
+        return cast("Group", Group.objects.get_or_create(name=config.NEW_USER_DEFAULT_GROUP)[0])
 
 
 class AddressType(models.TextChoices):
