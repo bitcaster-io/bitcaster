@@ -78,7 +78,10 @@ def test_add_check_environments(app: "DjangoTestApp", notification: "Notificatio
     frm.fields["environments"][0].value = "test"
     res = frm.submit(expect_errors=True)
     assert res.status_code == 200
-    assert res.context["adminform"].form.errors == {"event": ["This field is required."]}
+    assert res.context["adminform"].form.errors == {
+        "event": ["This field is required."],
+        "distribution": ["This field is required"],
+    }
     # add missing fields
     res = app.get(url)
     frm = res.forms["notification_form"]
