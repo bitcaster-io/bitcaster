@@ -27,6 +27,9 @@ class NotificationForm(forms.ModelForm["Notification"]):
             except ValidationError as e:
                 raise ValidationError({"recipients_filter": e}) from None
 
+        if self.cleaned_data.get("external_filtering", False):
+            self.cleaned_data["distribution"] = None
+
         if self.instance.pk:
             evt = self.instance.event
             prj_envs = evt.application.project.environments or []

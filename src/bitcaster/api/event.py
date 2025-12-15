@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Any
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import QuerySet
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView, ListAPIView
@@ -8,13 +9,15 @@ from rest_framework.response import Response
 
 from ..auth.constants import Grant
 from ..exceptions import LockError
-from ..models import Event, Occurrence
+from ..models import Event, Occurrence, User
+from ..utils.filtering import validate_filters, validate_lookups, validate_schema
 from .base import SecurityMixin
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
 
     from ..models.occurrence import OccurrenceOptions
+    from ..types.filtering import QuerysetFilter
 
 app_name = "api"
 
@@ -23,12 +26,22 @@ class OptionSerializer(serializers.Serializer):
     limit_to = serializers.ListField(child=serializers.CharField(), required=False)
     channels = serializers.ListField(child=serializers.CharField(), required=False)
     environs = serializers.ListField(child=serializers.CharField(), required=False)
+    filters = serializers.JSONField(required=False)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         unknown = set(self.parent.initial_data["options"]) - set(self.fields)
         if unknown:
             raise serializers.ValidationError("Unknown field(s): {}".format(", ".join(unknown)))
         return attrs
+
+    def validate_filters(self, data: "dict") -> "QuerysetFilter":
+        try:
+            validate_schema(data)
+            validate_filters(User.objects, data)
+            validate_lookups(User, data)
+            return data
+        except DjangoValidationError as e:
+            raise serializers.ValidationError({"error": e.message}) from None
 
 
 class ActionSerializer(serializers.Serializer):

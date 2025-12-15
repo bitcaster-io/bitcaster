@@ -33,11 +33,24 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     form = NotificationForm
     fieldsets = (
         (_("General"), {"classes": ["tab"], "fields": ["name", "event", "environments"]}),
-        (_("Distribution"), {"classes": ["tab"], "fields": ["dynamic", "distribution", "recipients_filter"]}),
-        (_("Matching rules"), {"classes": ["tab"], "fields": ["payload_filter"]}),
+        (
+            _("Distribution"),
+            {
+                "classes": ["tab"],
+                "fields": [
+                    "external_filtering",
+                    "dynamic",
+                    "distribution",
+                    "recipients_filter",
+                ],
+            },
+        ),
         (_("Extra context"), {"classes": ["tab"], "fields": ["extra_context"]}),
     )
-    conditional_fields = {"distribution": "dynamic == false", "recipients_filter": "dynamic == true"}
+    conditional_fields = {
+        "distribution": "(dynamic == false && external_filtering == false)",
+        "recipients_filter": "dynamic == true",
+    }
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         field = super().formfield_for_dbfield(db_field, request, **kwargs)

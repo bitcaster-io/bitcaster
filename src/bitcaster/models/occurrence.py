@@ -14,6 +14,7 @@ from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
 if TYPE_CHECKING:
+    from ..types.filtering import QuerysetFilter
     from .application import Application
     from .assignment import Assignment
     from .channel import Channel
@@ -22,13 +23,14 @@ if TYPE_CHECKING:
 
     OccurrenceData = TypedDict("OccurrenceData", {"delivered": list[str | int], "recipients": list[tuple[str, str]]})  # noqa: UP013
 
+    class OccurrenceOptions(TypedDict):
+        limit_to: NotRequired[list[str]]
+        channels: NotRequired[list[str]]
+        environs: NotRequired[list[str]]
+        filters: NotRequired[QuerysetFilter]
+
+
 logger = logging.getLogger(__name__)
-
-
-class OccurrenceOptions(TypedDict):
-    limit_to: NotRequired[list[str]]
-    channels: NotRequired[list[str]]
-    environs: NotRequired[list[str]]
 
 
 class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
@@ -157,6 +159,7 @@ class Occurrence(BitcasterBaseModel):
         success = True
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
+        dynamic_filters = self.options.get("filters", {}) or {}
 
         if channels := self.options.get("channels", []):
             channel_filter["pk__in"] = channels
@@ -169,9 +172,9 @@ class Occurrence(BitcasterBaseModel):
                 logger.debug(f"Processing occurrence {self.id} , context: {context}")
 
                 for channel in self.event.channels.filter(**channel_filter):
-                    for assignment in notification.get_pending_subscriptions(delivered, channel).filter(
-                        **assignment_filter
-                    ):
+                    for assignment in notification.get_pending_subscriptions(
+                        delivered, channel, **dynamic_filters
+                    ).filter(**assignment_filter):
                         notification.notify_to_channel(channel, assignment, context)
                         delivered.append(assignment.id)
                         recipients.append((assignment.address.value, assignment.channel.name))
