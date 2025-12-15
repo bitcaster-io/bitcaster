@@ -1,6 +1,7 @@
 import json
 from typing import TYPE_CHECKING
 
+from admin_extra_buttons.decorators import button
 from adminfilters.json_filter import JsonFieldFilter
 from django import forms
 from django.contrib import messages
@@ -17,12 +18,13 @@ from unfold.admin import TabularInline
 from unfold.contrib.inlines.admin import NonrelatedTabularInline
 from unfold.decorators import action
 
-from bitcaster.constants import Bitcaster
+from bitcaster.constants import Bitcaster, bitcaster
 from bitcaster.forms.user import GenericActionForm, SelectDistributionForm
-from bitcaster.models import Address, Assignment, DistributionList, LogEntry, Member, User
+from bitcaster.models import Address, Assignment, DistributionList, Group, LogEntry, Member, User
 from bitcaster.utils.json import process_dict
 from bitcaster.web import widgets
 
+from ..importing.members import import_members_csv
 from .base import BaseAdmin, BitcasterModelAdmin
 
 if TYPE_CHECKING:
@@ -126,6 +128,11 @@ class MemberForm(forms.ModelForm):
         return check_custom_fields(self.cleaned_data["custom_fields"])
 
 
+class ImportForm(forms.Form):
+    file = forms.FileField(widget=widgets.UnfoldAdminFileFieldWidget)
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, widget=widgets.UnfoldAdminSelectWidget)
+
+
 class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     list_display = ("username", "first_name", "last_name", "email")
     fields = ("username", "first_name", "last_name", "email", "custom_fields")
@@ -154,6 +161,21 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
             form = SelectDistributionForm(initial=initial)
         ctx["form"] = form
         return TemplateResponse(request, "bitcaster/admin/user/add_to_distributionlist.html", ctx)
+
+    @button(label="Import Members")
+    def import_members(self, request) -> "HttpResponse":
+        ctx = self.get_common_context(request, action_title="Import Members")
+        if "apply" in request.POST:
+            form = ImportForm(request.POST, request.FILES, initial={"group": bitcaster.get_default_group()})
+            if form.is_valid():
+                f = form.cleaned_data.pop("file")
+                imported, processed = import_members_csv(f, group=form.cleaned_data["group"])
+                self.message_user(request, f"Record successfully imported {imported}/{processed}", messages.SUCCESS)
+                return HttpResponseRedirect("..")
+        else:
+            form = ImportForm(initial={"group": bitcaster.get_default_group()})
+        ctx["form"] = form
+        return render(request, "bitcaster/admin/members/import_members.html", ctx)
 
     @action(description="Update Custom fields", icon="person")
     def update_custom_fields(self, request: "HttpRequest", queryset: "QuerySet") -> "HttpResponse":

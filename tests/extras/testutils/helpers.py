@@ -1,3 +1,4 @@
+import pathlib
 from typing import TYPE_CHECKING
 
 import pytest
@@ -5,6 +6,10 @@ import pytest
 if TYPE_CHECKING:
     from django.contrib.messages.storage.base import Message
     from django_webtest import DjangoWebtestResponse
+
+
+def get_resource(path: str | pathlib.Path) -> pathlib.Path:
+    return pathlib.Path(__file__).parent.parent.parent / pathlib.Path(path)
 
 
 def assert_form_error(response: "DjangoWebtestResponse", field: str, error: str) -> None:
@@ -23,4 +28,4 @@ def assert_message(response: "DjangoWebtestResponse", message: str, level: int |
             if level and level == m.level:
                 return
             return
-    pytest.fail(f"'{message}' not found")
+    pytest.fail(f"'{message}' not found. {messages}")

@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -61,11 +61,6 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
                 "distribution",
             )
         )
-
-    def add_view(
-        self, request: HttpRequest, form_url: str = "", extra_context: "dict[str, Any]| None" = None
-    ) -> HttpResponse:
-        return super().add_view(request, form_url, extra_context)
 
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def messages(self, request: HttpRequest, pk: str) -> HttpResponse:
