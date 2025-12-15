@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
-from ..models import User
+from ..models import LogEntry, User
 from .base import BaseAdmin, BitcasterModelAdmin
 
 if TYPE_CHECKING:
@@ -45,13 +45,19 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     )
     filter_horizontal = ()
     change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
-    actions = ["export_as_csv", "toggle_superuser", "toggle_staff"]
+    actions = ["toggle_superuser", "toggle_staff", "toggle_active"]
 
     def toggle_superuser(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
         queryset.exclude(pk=request.user.pk).update(is_superuser=~F("is_superuser"))
+        LogEntry.objects.log_actions(request.user.pk, queryset, LogEntry.CHANGE, "Toggled is_superuser flag")
 
     def toggle_staff(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
         queryset.exclude(pk=request.user.pk).update(is_staff=~F("is_staff"))
+        LogEntry.objects.log_actions(request.user.pk, queryset, LogEntry.CHANGE, "Toggled is_staff flag")
+
+    def toggle_active(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
+        queryset.exclude(pk=request.user.pk).update(active=~F("active"))
+        LogEntry.objects.log_actions(request.user.pk, queryset, LogEntry.CHANGE, "Toggled active status")
 
     @link(change_form=True, change_list=False)
     def addresses(self, button: ButtonWidget) -> None:
