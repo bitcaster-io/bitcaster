@@ -1,5 +1,6 @@
 import uuid
 from typing import TYPE_CHECKING, Any, TypedDict
+from unittest import mock
 from unittest.mock import Mock
 
 import pytest
@@ -31,6 +32,7 @@ if TYPE_CHECKING:
             "key": ApiKey,
             "user": User,
             "channel": Channel,
+            "assignments": list[Assignment],
             "notification": Notification,
             "url": str,
         },
@@ -58,15 +60,47 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
     )
 
     event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
-    n = NotificationFactory(
-        distribution__recipients=[AssignmentFactory(channel=email_channel) for __ in range(4)], event=event
-    )
+    assignments = [AssignmentFactory(channel=email_channel) for __ in range(4)]
+
+    n = NotificationFactory(distribution__recipients=assignments, event=event)
 
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     return {
         "event": event,
         "key": key,
         "user": admin_user,
+        "channel": email_channel,
+        "notification": n,
+        "assignments": assignments,
+        "url": "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
+            event.application.project.organization.slug,
+            event.application.project.slug,
+            event.application.slug,
+            event.slug,
+        ),
+    }
+
+
+@pytest.fixture
+def data_dynamic(admin_user: "User", email_channel: "Channel") -> "Context":
+    from testutils.factories import (
+        ApiKeyFactory,
+        AssignmentFactory,
+        EventFactory,
+        MessageFactory,
+        NotificationFactory,
+    )
+
+    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
+    assignments = [AssignmentFactory(channel=email_channel) for __ in range(4)]
+    n = NotificationFactory(distribution=None, external_filtering=True, event=event)
+
+    key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
+    return {
+        "event": event,
+        "key": key,
+        "user": admin_user,
+        "assignments": assignments,
         "channel": email_channel,
         "notification": n,
         "url": "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
@@ -426,3 +460,30 @@ def test_trigger_locked_event(
             res = client.post(url, data={"context": {}, "options": {}}, format="json")
             assert res.status_code == status.HTTP_400_BAD_REQUEST, res.json()
             assert res.json() == {"error": "Unable to process this event. Event locked"}
+
+
+def test_trigger_external_filtering(client: APIClient, data_dynamic: "Context") -> None:
+    from bitcaster.models import Occurrence
+
+    api_key = data_dynamic["key"]
+    url: str = data_dynamic["url"]
+    addresses = [a.address.value for a in data_dynamic["assignments"]]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.post(
+            url,
+            data={
+                "context": {},
+                "options": {"filters": {"include": [{"addresses__value__in": addresses}], "exclude": []}},
+            },
+            format="json",
+        )
+        assert res.status_code == status.HTTP_201_CREATED, res.json()
+        assert res.data["occurrence"]
+        o = Occurrence.objects.get(pk=res.data["occurrence"])
+        with mock.patch("bitcaster.dispatchers.gmail.GMailDispatcher.send"):
+            num_sent = o.process()
+    assert num_sent == 4
+    o.refresh_from_db()
+    assert o.recipients == 4
