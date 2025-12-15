@@ -1,8 +1,4 @@
-import codecs
-import csv
 import json
-from contextlib import suppress
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from admin_extra_buttons.decorators import button
@@ -10,9 +6,6 @@ from adminfilters.json_filter import JsonFieldFilter
 from django import forms
 from django.contrib import messages
 from django.contrib.admin import helpers
-from django.core.exceptions import ValidationError
-from django.core.files.utils import FileProxyMixin
-from django.core.validators import EmailValidator
 from django.db import transaction
 from django.db.models import Q, QuerySet, TextChoices
 from django.http import HttpResponseRedirect
@@ -31,6 +24,7 @@ from bitcaster.models import Address, Assignment, DistributionList, LogEntry, Me
 from bitcaster.utils.json import process_dict
 from bitcaster.web import widgets
 
+from ..importing.members import import_members_csv
 from .base import BaseAdmin, BitcasterModelAdmin
 
 if TYPE_CHECKING:
@@ -173,32 +167,9 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
         if "apply" in request.POST:
             form = ImportForm(request.POST, request.FILES)
             if form.is_valid():
-                file_name_or_object = form.cleaned_data.pop("file")
-                if isinstance(file_name_or_object, FileProxyMixin):
-                    f = file_name_or_object
-                else:
-                    f = Path(file_name_or_object).open("rb")  # noqa: SIM115
-                reader = csv.DictReader(codecs.iterdecode(f, "utf-8"))
-                validator = EmailValidator()
-                data = []
-                processed = 1
-                for row in reader:
-                    processed += 1
-                    if email := row.get("email"):
-                        with suppress(ValidationError):
-                            validator(email)
-                            record = {"username": email, "email": email, "custom_fields": {}}
-                            for fname in reader.fieldnames:
-                                if fname in []:
-                                    record[fname] = row.get(fname, "")
-                                elif fname.startswith("custom__"):
-                                    record["custom_fields"][fname[8:]] = row.get(fname, "")
-                            data.append(Member(**record))
-                with transaction.atomic():
-                    Member.objects.bulk_create(data, ignore_conflicts=True)
-                    self.message_user(
-                        request, f"Record successfully imported {len(data)}/{processed}", messages.SUCCESS
-                    )
+                f = form.cleaned_data.pop("file")
+                imported, processed = import_members_csv(f)
+                self.message_user(request, f"Record successfully imported {imported}/{processed}", messages.SUCCESS)
                 return HttpResponseRedirect("..")
         else:
             form = ImportForm()

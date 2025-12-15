@@ -103,10 +103,10 @@ def test_update_custom_fields(app: "DjangoTestApp", context: "Context", mode) ->
     assert_message(res, "Record successfully updated")
 
 
-def test_import_members(app: "DjangoTestApp") -> None:
+def test_import_members_ui(app: "DjangoTestApp") -> None:
     url = reverse("admin:bitcaster_member_changelist")
     res = app.get(url)
     res = res.click("Import Members")
-    res.forms["action-form"]["file"] = Upload(str(get_resource("data/bulk_update.csv").absolute()))
+    res.forms["action-form"]["file"] = Upload(str(get_resource("data/members_ok.csv").absolute()))
     res = res.forms["action-form"].submit("apply").follow()
     assert_message(res, "Record successfully imported 2/3")

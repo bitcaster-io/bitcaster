@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any
 from admin_extra_buttons.decorators import button, view
 from django import forms
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -13,7 +12,6 @@ from bitcaster.models import Channel, Group, Organization
 from ..constants import bitcaster
 from ..state import state
 from ..utils.django import url_related
-from ..utils.importer import import_users_to_org
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 if TYPE_CHECKING:
@@ -100,22 +98,3 @@ class OrganizationAdmin(BaseAdmin, BitcasterModelAdmin[Organization]):
         return {
             "owner": request.user.id,
         }
-
-    @button(label="Import Users")
-    def import_from_file(self, request: HttpRequest, pk: str) -> HttpResponse:
-        ctx = self.get_common_context(request, pk)
-        org: Organization = ctx["original"]
-        if request.method == "POST":
-            form = ImportFromFileForm(request.POST, request.FILES)
-            if form.is_valid():
-                try:
-                    import_users_to_org(form.cleaned_data["file"], org, form.cleaned_data["group"], {})
-                    return HttpResponseRedirect(reverse("admin:bitcaster_distributionlist_change", args=[org.pk]))
-                except Exception as e:
-                    logger.exception(e)
-                    self.message_error_to_user(request, e)
-
-        else:
-            form = ImportFromFileForm()
-        ctx["form"] = form
-        return TemplateResponse(request, "bitcaster/admin/organization/import.html", ctx)
