@@ -19,6 +19,7 @@ class NotificationForm(forms.ModelForm["Notification"]):
         envs: list[str] = []
         super().clean()
         if self.cleaned_data.get("dynamic", False):
+            self.cleaned_data["distribution"] = None
             try:
                 recipients = self.cleaned_data["recipients_filter"]
                 validate_schema(recipients)
@@ -29,6 +30,13 @@ class NotificationForm(forms.ModelForm["Notification"]):
 
         if self.cleaned_data.get("external_filtering", False):
             self.cleaned_data["distribution"] = None
+
+        if (
+            not self.cleaned_data.get("external_filtering")
+            and not self.cleaned_data.get("dynamic")
+            and not self.cleaned_data.get("distribution")
+        ):
+            raise ValidationError({"distribution": "This field is required"}) from None
 
         if self.instance.pk:
             evt = self.instance.event
