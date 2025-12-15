@@ -97,7 +97,7 @@ jobs:
 
     - name: Restore cached vEnv
       id: cache-venv-restore
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: |
           ./uv-cache
@@ -109,7 +109,7 @@ jobs:
 
     - name: Save vEnv
       id: cache-venv-save
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: |
           ./uv-cache
