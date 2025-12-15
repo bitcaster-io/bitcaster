@@ -18,9 +18,9 @@ from unfold.admin import TabularInline
 from unfold.contrib.inlines.admin import NonrelatedTabularInline
 from unfold.decorators import action
 
-from bitcaster.constants import Bitcaster
+from bitcaster.constants import Bitcaster, bitcaster
 from bitcaster.forms.user import GenericActionForm, SelectDistributionForm
-from bitcaster.models import Address, Assignment, DistributionList, LogEntry, Member, User
+from bitcaster.models import Address, Assignment, DistributionList, Group, LogEntry, Member, User
 from bitcaster.utils.json import process_dict
 from bitcaster.web import widgets
 
@@ -130,6 +130,7 @@ class MemberForm(forms.ModelForm):
 
 class ImportForm(forms.Form):
     file = forms.FileField(widget=widgets.UnfoldAdminFileFieldWidget)
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, widget=widgets.UnfoldAdminSelectWidget)
 
 
 class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
@@ -165,14 +166,14 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     def import_members(self, request) -> "HttpResponse":
         ctx = self.get_common_context(request, action_title="Import Members")
         if "apply" in request.POST:
-            form = ImportForm(request.POST, request.FILES)
+            form = ImportForm(request.POST, request.FILES, initial={"group": bitcaster.get_default_group()})
             if form.is_valid():
                 f = form.cleaned_data.pop("file")
-                imported, processed = import_members_csv(f)
+                imported, processed = import_members_csv(f, group=form.cleaned_data["group"])
                 self.message_user(request, f"Record successfully imported {imported}/{processed}", messages.SUCCESS)
                 return HttpResponseRedirect("..")
         else:
-            form = ImportForm()
+            form = ImportForm(initial={"group": bitcaster.get_default_group()})
         ctx["form"] = form
         return render(request, "bitcaster/admin/members/import_members.html", ctx)
 

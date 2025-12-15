@@ -5,6 +5,7 @@ import pytest
 from django.core.files import File
 from testutils.helpers import get_resource
 
+from bitcaster.constants import bitcaster
 from bitcaster.importing.members import import_members_csv, process_csv_line
 from bitcaster.importing.utils import get_column_mapping
 
@@ -65,7 +66,7 @@ def test_process_csv_line(line: dict[str, Any], expected) -> None:
 @pytest.mark.parametrize(
     "filename, expected",
     [
-        ("members_ok.csv", (2, 3)),
+        ("members_mixed.csv", (2, 3)),
         ("members1.csv", NotImplementedError),
         ("members_no_email.csv", (0, 3)),
         ("members_clean_fields.csv", (2, 2)),
@@ -98,3 +99,11 @@ def test_import_csv_columns_cleaning(data: str, expected) -> None:
 
     with mock.patch("bitcaster.models.user.Member.objects.bulk_create", mocked):
         import_members_csv(data)
+
+
+def test_import_csv_with_group() -> None:
+    data = File(get_resource("data/members_ok.csv").open("rb"))
+    group = bitcaster.get_default_group()
+    result = import_members_csv(data, group=group)
+    assert result == (2, 2)
+    assert group.user_set.count() == 2

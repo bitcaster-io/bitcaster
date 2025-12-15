@@ -6,7 +6,9 @@ Bitcaster allows you to add multiple members at once by importing them from a co
 
 1.  From the admin sidebar, navigate to **Bitcaster** > **Members**.
 2.  On the Member list page, click the **Import Members** button located in the top-right corner.
-3.  On the "Import Members" page, click "Choose File" and select the CSV file you want to upload.
+3.  On the "Import Members" page, you will see two fields:
+    -   **File:** Click "Choose File" and select the CSV file you want to upload.
+    -   **Group:** Select the Group to which all newly imported members will be assigned. This field is required and defaults to the systems default group.
 4.  Click the **Confirm** button to begin the import process.
 
 After the import is complete, you will be redirected back to the Member list, and a message will appear confirming how many members were successfully created (e.g., "Record successfully imported 2/3").
@@ -49,4 +51,4 @@ invalid-email,,,Human Resources,3003
 -   The third row will be skipped because the email address is invalid.
 -   The final success message will report that "2/3" records were imported.
 
-**Note:** The import process is designed to **add new members only**. It uses the email address to identify conflicts. If a member with a given email already exists in the system, that row will be skipped and the existing member will not be updated.
+**Note:** The import process is designed to **add new members only**. It uses the email address to identify conflicts. If a member with a given email already exists in the system, that row will be skipped. All successfully imported members will be automatically added to the group you select on the import form.

@@ -1,3 +1,4 @@
 email,first_name,last_name, custom__field1, custom__field2, custom__field3, custom__field4[],custom__field5{}
 u@example.com,,,abc,xyz,123,"first,second","attr1=val1,attr2=val2,attr3=44, attr5="abc def""
 u1@example.com,,,abc,xyz,123,"first,second","attr1=val1,attr2=val2"
+abc,,,abc,xyz,123,"first,second","attr1=val1,attr2=val2"

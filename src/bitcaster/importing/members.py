@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.db import transaction
 
-from ..models import Member
+from ..models import Group, Member
 from .utils import get_column_mapping, parse_kv
 
 
@@ -37,7 +37,7 @@ def process_csv_line(row: dict[str, Any], cleaned_names: dict[str, str]) -> dict
     return record
 
 
-def import_members_csv(f: Iterable[bytes]) -> tuple[int, int]:
+def import_members_csv(f: Iterable[bytes], group: "Group|None" = None) -> tuple[int, int]:
     reader = csv.DictReader(codecs.iterdecode(f, "utf-8"))
     if not reader.fieldnames:
         raise NotImplementedError("No fieldnames found")
@@ -45,6 +45,8 @@ def import_members_csv(f: Iterable[bytes]) -> tuple[int, int]:
     validator = EmailValidator()
     data = []
     processed = 0
+    emails_to_add = []
+
     for row in reader:
         processed += 1
         email = row.get(cleaned_names.get("email", "email"), "")
@@ -54,6 +56,13 @@ def import_members_csv(f: Iterable[bytes]) -> tuple[int, int]:
             validator(email)
             if record := process_csv_line(row, cleaned_names):
                 data.append(Member(**record))
+                emails_to_add.append(email)
+
     with transaction.atomic():
-        created = Member.objects.bulk_create(data, ignore_conflicts=True)
-    return len(created), processed
+        created_count = len(Member.objects.bulk_create(data, ignore_conflicts=True))
+        if group and emails_to_add:
+            # Re-fetch the members to ensure they are attached to the database
+            members_to_add = Member.objects.filter(email__in=emails_to_add)
+            group.user_set.add(*members_to_add)
+
+    return created_count, processed
