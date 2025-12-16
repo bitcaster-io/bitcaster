@@ -22,8 +22,6 @@ if TYPE_CHECKING:
     from bitcaster.models import Address, Application, Channel, Message
     from bitcaster.types.yaml import YamlPayload
 
-    from ..types.filtering import QuerysetFilter
-
 logger = logging.getLogger(__name__)
 
 
@@ -110,25 +108,31 @@ class Notification(BitcasterBaseModel):
         return ctx
 
     def get_pending_subscriptions(
-        self, delivered: list[str | int], channel: "Channel", **extra: Any
+        self, delivered: list[str | int], channel: "Channel", api_filtering: Any
     ) -> QuerySet[Assignment]:
-        if self.external_filtering:
-            return self.get_dynamic_pending_subscriptions(delivered, channel, **extra)
-        return self.get_static_pending_subscriptions(delivered, channel, **extra)
+        if self.dynamic and self.recipients_filter:
+            included, excluded = FilterManager.parse(self.recipients_filter)
+            users = User.objects.filter(included).exclude(excluded)
+        elif self.external_filtering and api_filtering:
+            included, excluded = FilterManager.parse(api_filtering)
+            users = User.objects.filter(included).exclude(excluded)
+        else:
+            users = User.objects.filter(is_active=True)
+        if self.dynamic or self.external_filtering:
+            return self.get_dynamic_pending_subscriptions(delivered, channel, filter_users=users)
+        return self.get_distributionlist_pending_subscriptions(delivered, channel, filter_users=users)
 
     def get_dynamic_pending_subscriptions(
-        self, delivered: list[str | int], channel: "Channel", **extra: "QuerysetFilter"
+        self, delivered: list[str | int], channel: "Channel", filter_users: QuerySet[User]
     ) -> QuerySet[Assignment]:
-        included, excluded = FilterManager.parse(extra)
-        qs = User.objects.filter(included).exclude(excluded).filter().values_list("id", flat=True)
         return (
             Assignment.objects.select_related("address", "channel", "address__user")
             .filter(active=True, channel=channel)
             .exclude(id__in=delivered)
-        ).filter(address__user_id__in=qs)
+        ).filter(address__user_id__in=filter_users)
 
-    def get_static_pending_subscriptions(
-        self, delivered: list[str | int], channel: "Channel", **extra: Any
+    def get_distributionlist_pending_subscriptions(
+        self, delivered: list[str | int], channel: "Channel", filter_users: QuerySet[User]
     ) -> QuerySet[Assignment]:
         return (
             self.distribution.recipients.select_related(
@@ -136,9 +140,9 @@ class Notification(BitcasterBaseModel):
                 "channel",
                 "address__user",
             )
-            .filter(active=True, channel=channel, **extra)
+            .filter(active=True, channel=channel)
             .exclude(id__in=delivered)
-        )
+        ).filter(address__user_id__in=filter_users)
 
     def notify_to_channel(self, channel: "Channel", assignment: Assignment, context: dict[str, Any]) -> str | None:
         dispatcher: "Dispatcher" = channel.dispatcher

@@ -159,7 +159,7 @@ class Occurrence(BitcasterBaseModel):
         success = True
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
-        dynamic_filters = self.options.get("filters", {}) or {}
+        api_filtering = self.options.get("filters", {}) or {}
 
         if channels := self.options.get("channels", []):
             channel_filter["pk__in"] = channels
@@ -172,9 +172,9 @@ class Occurrence(BitcasterBaseModel):
                 logger.debug(f"Processing occurrence {self.id} , context: {context}")
 
                 for channel in self.event.channels.filter(**channel_filter):
-                    for assignment in notification.get_pending_subscriptions(
-                        delivered, channel, **dynamic_filters
-                    ).filter(**assignment_filter):
+                    for assignment in notification.get_pending_subscriptions(delivered, channel, api_filtering).filter(
+                        **assignment_filter
+                    ):
                         notification.notify_to_channel(channel, assignment, context)
                         delivered.append(assignment.id)
                         recipients.append((assignment.address.value, assignment.channel.name))

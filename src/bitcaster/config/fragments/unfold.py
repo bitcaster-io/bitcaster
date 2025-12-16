@@ -19,19 +19,19 @@ COMMON_SITE_DROPDOWN = [
         },
     },
     {
-        "icon": "commit",
-        "title": "GitHub",
-        "link": "https://github.com/bitcaster-io/bitcaster",
-        "attrs": {
-            "target": "_blank",
-        },
-    },
-    {
         "icon": "docs",
         "title": "Documentation",
         "link": "https://bitcaster-io.github.io/bitcaster/",
         "attrs": {
             "target": "_docs",
+        },
+    },
+    {
+        "icon": "commit",
+        "title": "GitHub",
+        "link": "https://github.com/bitcaster-io/bitcaster",
+        "attrs": {
+            "target": "_blank",
         },
     },
 ]

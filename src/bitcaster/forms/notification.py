@@ -18,6 +18,9 @@ class NotificationForm(forms.ModelForm["Notification"]):
         prj_envs: list[str] = []
         envs: list[str] = []
         super().clean()
+        if self.cleaned_data.get("dynamic", False) and self.cleaned_data.get("external_filtering", False):
+            raise ValidationError("dynamic and external_filtering cannot be set at the same time")
+
         if self.cleaned_data.get("dynamic", False):
             self.cleaned_data["distribution"] = None
             try:

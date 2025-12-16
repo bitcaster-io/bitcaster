@@ -49,6 +49,8 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     )
     conditional_fields = {
         "distribution": "(dynamic == false && external_filtering == false)",
+        "external_filtering": "(dynamic == false)",
+        "dynamic": "(external_filtering == false)",
         "recipients_filter": "dynamic == true",
     }
 
