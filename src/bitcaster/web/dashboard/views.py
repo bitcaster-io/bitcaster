@@ -4,6 +4,7 @@ from django import forms
 from django.apps import apps
 from django.contrib import messages
 from django.db.models import Model, QuerySet
+from django.forms import HiddenInput
 from django.http import HttpRequest, HttpResponse
 from django.views.generic import TemplateView
 from unfold.views import UnfoldModelAdminViewMixin
@@ -47,8 +48,8 @@ def form_builder(qs: QuerySet[Model], mode: str, data: dict[str, Any] | None = N
     class FormClass(forms.Form):
         form_id = model._meta.model_name.lower()
         title = model._meta.verbose_name_plural
-        model_name = forms.CharField()
-        op = forms.CharField()
+        model_name = forms.CharField(widget=HiddenInput)
+        op = forms.CharField(widget=HiddenInput)
         target = forms.ModelChoiceField(label="", queryset=qs, widget=widgets.UnfoldAdminSelectWidget)
 
     return FormClass(data, initial={"model_name": f"{model._meta.app_label}.{model._meta.model_name}", "op": mode})

@@ -67,7 +67,8 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
                 "fields": (
                     ("name", "slug"),
                     ("description",),
-                    ("active", "newsletter", "occurrence_retention"),
+                    ("active", "newsletter", "paused"),
+                    ("occurrence_retention",),
                 )
             },
         ),
@@ -121,7 +122,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "Event | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:
-            return ["application", "slug", "name"]
+            return ["application", "slug"]
         return []
 
     def get_fields(self, request: HttpRequest, obj: Event | None = None) -> Sequence[str | Sequence[str]]:
@@ -176,5 +177,11 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
     @link(change_form=True, change_list=False)
     def notifications(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_notification_changelist")
+        event: Event = button.context["original"]
+        button.href = f"{url}?event__exact={event.pk}&event__application__exact={event.application.pk}"
+
+    @link(change_form=True, change_list=False)
+    def occurrences(self, button: ButtonWidget) -> None:
+        url = reverse("admin:bitcaster_occurrence_changelist")
         event: Event = button.context["original"]
         button.href = f"{url}?event__exact={event.pk}&event__application__exact={event.application.pk}"

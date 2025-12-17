@@ -31,6 +31,15 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     )
     autocomplete_fields = ("event", "distribution")
     form = NotificationForm
+    add_fieldsets = (
+        (
+            _("General"),
+            {
+                "classes": ["tab"],
+                "fields": ["name", "event", "environments", "dynamic", "distribution", "external_filtering"],
+            },
+        ),
+    )
     fieldsets = (
         (_("General"), {"classes": ["tab"], "fields": ["name", "event", "environments"]}),
         (

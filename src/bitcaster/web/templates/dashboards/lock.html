@@ -24,22 +24,30 @@
             </ul>
         </div>
         {% for group, iforms in forms.items %}
-            <div class="grid grid-cols-2 gap-1" x-cloak x-transition x-show="open_{{ group }}">
+            <div class="grid grid-cols-2 gap-3" x-cloak x-transition x-show="open_{{ group }}">
                 {% for form in iforms %}
                     <form method="post" id="{{ group }}-{{ form.form_id }}">
                         {% csrf_token %}
-                        {% component "unfold/components/card.html" %}
-                        {% component "unfold/components/title.html" %}
-                        {{ form.title }}
-                    {% endcomponent %}
-                    {% component "unfold/components/text.html" %}
-                    {{ form }}
-                    <input type="submit" class="button button-primary" value="{{ group|title }}" />
-                {% endcomponent %}
-            {% endcomponent %}
-        </form>
-    {% endfor %}
-</div>
-{% endfor %}
-</div>
+                        {#                        {% component "unfold/components/card.html" %}#}
+                        <div class="border-1 rounded border-gray-700">
+                            <div class="p-4">
+                                {#                            {% component "unfold/components/title.html" %}#}
+                                <div class="text-2xl mb-2">
+                                    {{ form.title }}
+                                </div>
+                                {#                            {% endcomponent %}#}
+                                {#                            {% component "unfold/components/text.html" %}#}
+                                {{ form }}
+                            </div>
+                            <div class="form-submit-row mt-3">
+                                <input type="submit" class="button button-primary" value="{{ group|title }}" />
+                            </div>
+                            {#                            {% endcomponent %}#}
+                        </div>
+                        {#                        {% endcomponent %}#}
+                    </form>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
