@@ -40,6 +40,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         "https://bitcaster-io.github.io/bitcaster",
         "Bitcaster documentation site. (no trailing slash)",
     ),
+    "CACHE_PREFIX": (str, "", "", "prefix string to use in cache keys"),
     "CACHE_URL": (
         str,
         "redis://localhost:6379/0",

@@ -4,6 +4,7 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, List
+from uuid import uuid4
 
 import pytest
 import responses
@@ -93,6 +94,7 @@ def pytest_configure(config):
     settings.STATIC_ROOT = "%s/static" % tempfile.gettempdir()
     settings.MESSAGE_STORAGE = "testutils.messages.PlainCookieStorage"
     settings.SUPERUSERS = ["superuser001@example.com", "superuser002@example.com"]
+    settings.CACHE_PREFIX = uuid4().hex
 
     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
     os.makedirs(settings.STATIC_ROOT, exist_ok=True)

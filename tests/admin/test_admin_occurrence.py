@@ -38,9 +38,9 @@ def test_purge_occurrence_permission(app: DjangoTestApp, user: "User") -> None:
     res: "TestResponse" = app.get(url, expect_errors=True)
     assert res.status_code == 403
 
-    with user_grant_permissions(user, "bitcaster.delete_occurrence"):
+    with user_grant_permissions(user, ["bitcaster.delete_occurrence"]):
         res = app.get(url)
-        assert res.status_code == 302
+    assert res.status_code == 200
 
 
 def test_purge_occurrence(app_for_admin: DjangoTestApp, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -50,7 +50,9 @@ def test_purge_occurrence(app_for_admin: DjangoTestApp, monkeypatch: pytest.Monk
     url_redirect = reverse("admin:bitcaster_occurrence_changelist")
 
     res: "TestResponse" = app_for_admin.get(url, headers={"REFERER": url_redirect})
-    assert res.status_code == 302
+    assert res.status_code == 200
+
+    res = res.forms["confirm-form"].submit()
     assert res.location == url_redirect
 
     res = res.follow()
@@ -67,15 +69,19 @@ def test_process_occurrence(
     res: "TestResponse" = app_for_admin.get(url)
 
     with mock.patch("bitcaster.models.occurrence.Occurrence.process", return_value=0):
-        res = res.click("Process").follow()
+        res = res.click("Process")
+        res = res.forms["confirm-form"].submit().follow()
+
     assert_message(res, "Occurrence has been processed, but no recipients have been reached out", messages.WARNING)
 
     res: "TestResponse" = app_for_admin.get(url)
     with mock.patch("bitcaster.models.occurrence.Occurrence.process", return_value=1):
-        res = res.click("Process").follow()
+        res = res.click("Process")
+        res = res.forms["confirm-form"].submit().follow()
     assert_message(res, "Occurrence has been successfully processed", messages.SUCCESS)
 
     res: "TestResponse" = app_for_admin.get(url)
     with mock.patch("bitcaster.models.occurrence.Occurrence.process", side_effect=Exception):
-        res = res.click("Process").follow()
+        res = res.click("Process")
+        res = res.forms["confirm-form"].submit().follow()
     assert_message(res, "Error processing occurrence", messages.ERROR)

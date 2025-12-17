@@ -195,7 +195,7 @@ class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
 
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def usage(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        context = self.get_common_context(request, pk, title=_("Message usage"))
+        context = self.get_common_context(request, pk, action_title=_("Message usage"))
         msg: "Message" = context["original"]
         usage: list[Any] = []
         level = ""

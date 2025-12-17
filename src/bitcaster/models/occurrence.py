@@ -58,9 +58,9 @@ class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
 
 class Occurrence(BitcasterBaseModel):
     class Status(models.TextChoices):
-        NEW = "NEW", _("New")
         PROCESSED = "PROCESSED", _("Processed")
         FAILED = "FAILED", _("Failed")
+        NEW = "NEW", _("New")
 
     timestamp = models.DateTimeField(auto_now_add=True, help_text=_("Timestamp when occurrence has been created."))
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
@@ -87,7 +87,7 @@ class Occurrence(BitcasterBaseModel):
         constraints = [models.UniqueConstraint(fields=("timestamp", "event"), name="occurrence_unique")]
 
     def __str__(self) -> str:
-        return f"Occurrence of {self.event.name} on {self.timestamp}"
+        return f"{self.event.name} on {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
 
     def natural_key(self) -> tuple[str, ...]:
         return str(self.timestamp), *self.event.natural_key()

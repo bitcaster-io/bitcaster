@@ -5,9 +5,11 @@ from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.db.models import F
-from django.urls import reverse
+from django.urls import path, reverse
 from django.utils.translation import gettext as _
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
+
+from bitcaster.web.dashboard.views import LockView, ToolsView
 
 from ..models import LogEntry, User
 from .base import BaseAdmin, BitcasterModelAdmin
@@ -46,6 +48,15 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     filter_horizontal = ()
     change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
     actions = ["toggle_superuser", "toggle_staff", "toggle_active"]
+
+    def get_urls(self):
+        extra = []
+        for console in [ToolsView, LockView]:
+            custom_view = self.admin_site.admin_view(console.as_view(model_admin=self))
+            extra.append(
+                path(console.__name__.lower(), custom_view, name=f"console-{console.__name__.lower()}"),
+            )
+        return super().get_urls() + extra
 
     def toggle_superuser(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
         queryset.exclude(pk=request.user.pk).update(is_superuser=~F("is_superuser"))

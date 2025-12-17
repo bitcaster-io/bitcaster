@@ -83,13 +83,18 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
     class Media:
         js = ["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"]
 
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
+        return super().get_queryset(request).select_related("application__project__organization")
+
+    def has_delete_permission(self, request: HttpRequest, obj: Event | None = None) -> bool:
+        if obj and obj.application.project.organization.name == bitcaster.ORGANIZATION:
+            return False
+        return super().has_delete_permission(request, obj)
+
     def get_fieldsets(self, request: HttpRequest, obj: Event | None = None) -> "_FieldsetSpec":
         if obj:
             return self._fieldsets
         return [(None, {"fields": self.get_fields(request, obj)})]
-
-    def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
-        return super().get_queryset(request).select_related("application__project__organization")
 
     def delete_queryset(self, request: HttpRequest, queryset: QuerySet[Event]) -> None:
         queryset.exclude(application__project__organization__name=bitcaster.ORGANIZATION).delete()
