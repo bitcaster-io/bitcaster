@@ -9,7 +9,6 @@ from .utils import django_prefix
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
-
 HOUR = 60 * 60
 
 end_date = timezone.now()
@@ -25,21 +24,18 @@ class CacheManager:
 
     def count_keys(self) -> int:
         client = cache.client.get_client()
-        pattern = f"{django_prefix()}{CacheManager.SEED}*"
-
+        pattern = f"{django_prefix()}{CacheManager.SEED}{self.prefix}*"
         count = 0
         for _ in client.scan_iter(match=pattern):
             count += 1
-
         return count
 
     def clear_cache(self) -> int:
         client = cache.client.get_client()
-        pattern = f"{django_prefix()}{CacheManager.SEED}*"
+        pattern = f"{django_prefix()}{CacheManager.SEED}{self.prefix}*"
         deleted = 0
         for key in client.scan_iter(match=pattern):
             deleted += client.delete(key)
-
         return deleted
 
     def store(self, key: str, value: Any) -> None:

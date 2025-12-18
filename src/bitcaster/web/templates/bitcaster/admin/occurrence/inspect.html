@@ -1,31 +1,36 @@
 {% extends "bitcaster/admin/action_form.html" %}
 {% load json %}
+{% load json %}
 {% block content %}
     <div class="p-3 text-xl">
         This page displays information about occurrence processing.
         It contains ONLY recipients that pass the filtering criteria.
     </div>
     <div id="inspect-page">
-        <div x-data="{ generalTab:true, notificationTab: false, recipientsTab: false, activeTab: 'generalTab' }">
+        <div x-data="{activeTab:'generalTab', tabs: {generalTab:true, notificationTab: false, recipientsTab: false, payloadTab: false}, select(el){ for (k in this.tabs) { this.tabs[k] = false }; this.tabs[el] = true; console.log(1111, el, this.tabs) }}">
             <div class="border-b-1 border-default mb-3">
                 <ul class="flex flex-wrap text-sm font-medium text-center text-body  -mb-px">
-                    <li class="me-2 " x-bind:class="(activeTab == 'generalTab' && 'active') || 'border-none'">
-                        <a @click="generalTab = true; notificationTab = false; recipientsTab=false; activeTab = 'generalTab'"
+                    <li class="me-2 " x-bind:class="(tabs.generalTab && 'active') || 'border-none'">
+                        <a @click="select('generalTab')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">
                             Info
                         </a>
                     </li>
-                    <li class="me-2" x-bind:class="(activeTab == 'notificationTab' && 'active') || 'border-none'">
-                        <a @click="notificationTab = true; generalTab = false; recipientsTab=false; activeTab = 'notificationTab'"
+                    <li class="me-2" x-bind:class="(tabs.notificationTab && 'active') || 'border-none'">
+                        <a @click="select('notificationTab')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Notifications</a>
                     </li>
-                    <li class="me-2" x-bind:class="(activeTab == 'recipientsTab' && 'active') || 'border-none'">
-                        <a @click="recipientsTab=true;notificationTab = false; generalTab = false; activeTab = 'recipientsTab'"
+                    <li class="me-2" x-bind:class="(tabs.recipientsTab && 'active') || 'border-none'">
+                        <a @click="select('recipientsTab')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Recipients</a>
+                    </li>
+                    <li class="me-2" x-bind:class="(tabs.payloadTab && 'active') || 'border-none'">
+                        <a @click="select('payloadTab')"
+                           class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Payload</a>
                     </li>
                 </ul>
             </div>
-            <div x-show="generalTab" class="tab-content">
+            <div x-show="tabs.generalTab" class="tab-content">
                 <div class="grid grid-cols-1 gap-2 p-2">
                     <div class="grid grid-cols-3 gap-2 p-2">
                         <div class="font-bold">
@@ -43,20 +48,34 @@
                             {{ original.timestamp }}
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 p-2 hover:bg-gray-600">
+                    <div class="grid grid-cols-3 gap-2 p-2">
                         <div class="font-bold">
                             Event
                         </div>
-                        <div>
+                        <span class="flex">
                             <a href="{% url 'admin:bitcaster_event_change' original.event.pk %}">{{ original.event }}</a>
-                        </div>
+                            {% if original.event.paused %}
+                                <span class="material-symbols-outlined text-red-700">pause</span>
+                            {% endif %}
+                            {% if original.event.locked %}
+                                <span class="material-symbols-outlined text-red-700">lock</span>
+                            {% endif %}
+                        </span>
                     </div>
                     <div class="grid grid-cols-3 gap-2 p-2">
                         <div class="font-bold">
                             Application
                         </div>
                         <div>
-                            <a href="{% url 'admin:bitcaster_application_change' original.event.application.pk %}">{{ original.event.application }}</a>
+                            <span class="flex">
+                                <a href="{% url 'admin:bitcaster_application_change' original.event.application.pk %}">{{ original.event.application }}</a>
+                                {% if original.event.application.paused %}
+                                    <span class="material-symbols-outlined text-red-700">pause</span>
+                                {% endif %}
+                                {% if original.event.application.locked %}
+                                    <span class="material-symbols-outlined text-red-700">lock</span>
+                                {% endif %}
+                            </span>
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-2 p-2">
@@ -64,17 +83,31 @@
                             Channels
                         </div>
                         <div>
-                            {% for ch in original.event.channels.all %}
-                                <a href="{% url 'admin:bitcaster_channel_change' ch.pk %}">{{ ch.name }}</a>
-                            {% empty %}
-                                <span class="material-symbols-outlined text-orange-300">warning</span>
-                                No channels configured for this event
-                            {% endfor %}
+                            <ul>
+                                {% for ch in original.event.channels.all %}
+                                    <li class="flex">
+                                        <a class="{% if ch.pk in active_channels %} text-green-600 font-bold {% else %}text-gray-500{% endif %}"
+                                           href="{% url 'admin:bitcaster_channel_change' ch.pk %}">{{ ch.name }}</a>
+                                        {% if not ch.active %}
+                                            <span class="material-symbols-outlined ml-2 text-orange-300">do_not_disturb_off</span>
+                                        {% endif %}
+                                        {% if ch.paused %}
+                                            <span class="material-symbols-outlined ml-2 text-orange-300">pause</span>
+                                        {% endif %}
+                                        {% if ch.locked %}
+                                            <span class="material-symbols-outlined ml-2 text-orange-300">lock</span>
+                                        {% endif %}
+                                    </li>
+                                {% empty %}
+                                    <span class="material-symbols-outlined text-orange-300">warning</span>
+                                    No channels configured for this event
+                                {% endfor %}
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
-            <div x-show="notificationTab" class="tab-content">
+            <div x-show="tabs.notificationTab" class="tab-content">
                 <div class="grid grid-cols-4 gap-2 p-2">
                     <div>
                         Name
@@ -131,7 +164,7 @@
                     {% endfor %}
                 </div>
             </div>
-            <div x-show="recipientsTab" class="tab-content">
+            <div x-show="tabs.recipientsTab" class="tab-content">
                 <div class="grid grid-cols-4 gap-2 p-2">
                     <div>
                         Assignment
@@ -159,6 +192,16 @@
                             <a href="{% url "admin:bitcaster_member_change" asm.address__user__pk %}">{{ asm.address__user__username }}</a>
                         </div>
                     {% endfor %}
+                </div>
+            </div>
+            <div x-show="tabs.payloadTab" class="tab-content">
+                <div class="grid grid-cols-1 gap-2 p-2">
+                    <div class="border p-2 rounded">
+                        {{ original.context|beautify }}
+                    </div>
+                    <div class="border p-2 rounded">
+                        {{ original.options|beautify }}
+                    </div>
                 </div>
             </div>
         </div>

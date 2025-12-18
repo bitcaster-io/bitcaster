@@ -35,21 +35,21 @@ def test_lock_view_get(django_app, user):
     assert res.status_code == 200
 
 
-@patch("bitcaster.models.Application.lock")
-def test_lock_view_post_lock_application(mock_lock, django_app, user, application):
+def test_lock_view_post_lock_application(django_app, user, application):
     url = reverse("admin:console-lockview")
     with user_grant_permissions(user, ["bitcaster.console_lock"]):
         res = django_app.get(url, user=user)
         res.forms["lock-application"]["target"] = application.id
         res.forms["lock-application"].submit()
-    mock_lock.assert_called_once()
+    application.refresh_from_db()
+    assert application.locked
 
 
-@patch("bitcaster.models.Application.pause")
-def test_lock_view_post_pause_event(mock_pause, django_app, user, application):
+def test_lock_view_post_pause_event(django_app, user, application):
     url = reverse("admin:console-lockview")
     with user_grant_permissions(user, ["bitcaster.console_lock"]):
         res = django_app.get(url, user=user)
         res.forms["pause-application"]["target"] = application.id
         res.forms["pause-application"].submit()
-    mock_pause.assert_called_once()
+    application.refresh_from_db()
+    assert application.paused

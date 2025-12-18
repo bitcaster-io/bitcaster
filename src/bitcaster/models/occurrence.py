@@ -15,6 +15,8 @@ from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
 if TYPE_CHECKING:
+    from django.db.models import QuerySet
+
     from ..types.filtering import QuerysetFilter
     from .application import Application
     from .assignment import Assignment
@@ -155,6 +157,12 @@ class Occurrence(BitcasterBaseModel):
             notification_filter["environments__overlap"] = environs
         return self.event.notifications.filter(**notification_filter).match(self.context)
 
+    def _get_valid_channels(self) -> "QuerySet[Channel]":
+        channel_filter: dict[str, Any] = {"active": True, "locked": False, "paused": False}
+        if channels := self.options.get("channels", []):
+            channel_filter["pk__in"] = channels
+        return self.event.channels.filter(**channel_filter)
+
     def _process(self) -> "tuple[bool, OccurrenceData]":
         assignment: "Assignment"
         notification: "Notification"
@@ -162,9 +170,6 @@ class Occurrence(BitcasterBaseModel):
         recipients = self.data.get("recipients", [])
         assignment_filter = {}
         success = True
-        channel_filter = {}
-        if channels := self.options.get("channels", []):
-            channel_filter["pk__in"] = channels
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
         api_filtering = self.options.get("filters", {}) or {}
@@ -174,7 +179,7 @@ class Occurrence(BitcasterBaseModel):
                 context = notification.get_context(self.get_context())
                 logger.debug(f"Processing occurrence {self.id} , context: {context}")
 
-                for channel in self.event.channels.filter(**channel_filter):
+                for channel in self._get_valid_channels():
                     for assignment in notification.get_pending_subscriptions(delivered, channel, api_filtering).filter(
                         **assignment_filter
                     ):

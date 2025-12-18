@@ -117,6 +117,7 @@ def test_inspect_new_occurrence(
     url = reverse("admin:bitcaster_occurrence_change", args=[new_occurrence.pk])
     res: "TestResponse" = app_for_admin.get(url)
     res = res.click("Inspect")
+    res.forms["confirm-form"].submit()
     assert res
 
 
@@ -126,4 +127,13 @@ def test_inspect_occurrence(
     url = reverse("admin:bitcaster_occurrence_change", args=[occurrence.pk])
     res: "TestResponse" = app_for_admin.get(url)
     res = res.click("Inspect")
+    assert res
+
+
+def test_button_add_notification(
+    app_for_admin: DjangoTestApp, monkeypatch: pytest.MonkeyPatch, occurrence: "Occurrence"
+) -> None:
+    url = reverse("admin:bitcaster_occurrence_change", args=[occurrence.pk])
+    res: "TestResponse" = app_for_admin.get(url)
+    res = res.click("Add Notification")
     assert res

@@ -8,7 +8,6 @@ from constance import config
 from django.contrib import messages
 from django.contrib.admin import display
 from django.db.models import QuerySet
-from django.forms.widgets import Media
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -101,12 +100,14 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
         def inspect(req):
             try:
                 active_notifications = [p.pk for p in obj._get_valid_notifications()]
+                active_channels = list(obj._get_valid_channels().values_list("pk", flat=True))
                 ctx = self.get_common_context(
                     request,
                     pk,
                     action_title="Inspect",
                     statuses=Occurrence.Status,
                     active_notifications=active_notifications,
+                    active_channels=active_channels,
                 )
                 if obj.status == Occurrence.Status.NEW:
                     with mock.patch("bitcaster.models.notification.Notification.notify_to_channel"):
@@ -220,16 +221,6 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
             extra_context={"action_title": "Purge occurrences"},
             error_message="",
         )
-
-    @button(
-        html_attrs={"class": ButtonColor.ACTION.value},
-        permission="bitcaster.delete_occurrence",
-    )
-    def payload(self, request: HttpRequest, pk: str) -> TemplateResponse:  # noqa
-        obj = self.get_object(request, pk)
-        ctx = self.get_common_context(request, pk, action_title="Payload", object=obj, opts=obj._meta)
-        ctx["media"] = Media(css={"screen": ["bitcaster/css/pygments.css"]})
-        return TemplateResponse(request, "bitcaster/admin/occurrence/payload.html", ctx)
 
     @button(
         html_attrs={"class": ButtonColor.ACTION.value},

@@ -64,9 +64,6 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     def toggle_staff(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
         admin_toggle_bool_action(request, queryset.exclude(pk=request.user.pk), "is_staff")
 
-    def toggle_active(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
-        admin_toggle_bool_action(request, queryset.exclude(pk=request.user.pk), "active")
-
     @link(change_form=True, change_list=False)
     def addresses(self, button: ButtonWidget) -> None:
         url = reverse(f"{self.admin_site.name}:bitcaster_address_changelist")
