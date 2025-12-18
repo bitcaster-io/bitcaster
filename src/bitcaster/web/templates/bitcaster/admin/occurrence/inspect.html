@@ -1,30 +1,166 @@
 {% extends "bitcaster/admin/action_form.html" %}
 {% load json %}
 {% block content %}
-    {{ media }}
-    {{ data }}
-    <div class="grid grid-cols-2 gap-4">
-        <div>
-            Date
-        </div>
-        <div>
-            {{ original.timestamp }}
-        </div>
-        <div>
-            Event
-        </div>
-        <div>
-            {{ original.event }}
+    <div class="p-3 text-xl">
+        This page displays information about occurrence processing.
+        It contains ONLY recipients that pass the filtering criteria.
+    </div>
+    <div id="inspect-page">
+        <div x-data="{ generalTab:true, notificationTab: false, recipientsTab: false, activeTab: 'generalTab' }">
+            <div class="border-b-1 border-default mb-3">
+                <ul class="flex flex-wrap text-sm font-medium text-center text-body  -mb-px">
+                    <li class="me-2 " x-bind:class="(activeTab == 'generalTab' && 'active') || 'border-none'">
+                        <a @click="generalTab = true; notificationTab = false; recipientsTab=false; activeTab = 'generalTab'"
+                           class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">
+                            Info
+                        </a>
+                    </li>
+                    <li class="me-2" x-bind:class="(activeTab == 'notificationTab' && 'active') || 'border-none'">
+                        <a @click="notificationTab = true; generalTab = false; recipientsTab=false; activeTab = 'notificationTab'"
+                           class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Notifications</a>
+                    </li>
+                    <li class="me-2" x-bind:class="(activeTab == 'recipientsTab' && 'active') || 'border-none'">
+                        <a @click="recipientsTab=true;notificationTab = false; generalTab = false; activeTab = 'recipientsTab'"
+                           class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Recipients</a>
+                    </li>
+                </ul>
+            </div>
+            <div x-show="generalTab" class="tab-content">
+                <div class="grid grid-cols-1 gap-2 p-2">
+                    <div class="grid grid-cols-3 gap-2 p-2">
+                        <div class="font-bold">
+                            Status
+                        </div>
+                        <div class="status-{{ original.status.lower }}">
+                            {{ original.status }}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 p-2">
+                        <div class="font-bold">
+                            Date
+                        </div>
+                        <div>
+                            {{ original.timestamp }}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 p-2 hover:bg-gray-600">
+                        <div class="font-bold">
+                            Event
+                        </div>
+                        <div>
+                            <a href="{% url 'admin:bitcaster_event_change' original.event.pk %}">{{ original.event }}</a>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 p-2">
+                        <div class="font-bold">
+                            Application
+                        </div>
+                        <div>
+                            <a href="{% url 'admin:bitcaster_application_change' original.event.application.pk %}">{{ original.event.application }}</a>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 p-2">
+                        <div class="font-bold">
+                            Channels
+                        </div>
+                        <div>
+                            {% for ch in original.event.channels.all %}
+                                <a href="{% url 'admin:bitcaster_channel_change' ch.pk %}">{{ ch.name }}</a>
+                            {% empty %}
+                                <span class="material-symbols-outlined text-orange-300">warning</span>
+                                No channels configured for this event
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div x-show="notificationTab" class="tab-content">
+                <div class="grid grid-cols-4 gap-2 p-2">
+                    <div>
+                        Name
+                    </div>
+                    <div>
+                        Type
+                    </div>
+                    <div>
+                        Active
+                    </div>
+                    <div>
+                        Pass filters
+                    </div>
+                    {% for notification in original.event.notifications.all %}
+                        <div>
+                            <a href="{% url 'admin:bitcaster_notification_change' notification.pk %}">{{ notification.name }}</a>
+                        </div>
+                        <div>
+                            {% if notification.distribution %}
+                                <a href="{% url 'admin:bitcaster_distributionlist_change' notification.distribution.pk %}">{{ notification.distribution }}</a>
+                            {% elif notification.distribution %}
+                                dynamic
+                            {% elif notification.external_filtering %}
+                                API filtering
+                            {% else %}
+                                <span class="material-symbols-outlined text-orange-300">warning</span>
+                                Invalid configuration
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if notification.pk in active_notifications %}
+                                <span class="material-symbols-outlined text-green-700">check_box</span>
+                            {% else %}
+                                <span class="material-symbols-outlined text-red-500">check_box_outline_blank</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if notification.pk in active_notifications %}
+                                <span class="material-symbols-outlined text-green-700">check</span>
+                            {% else %}
+                                <span class="material-symbols-outlined text-red-500">do_not_disturb_on</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% for notification in obj.event.notifications.all %}
+                        <div>
+                            <a href="{% url 'admin:bitcaster_notification_change' notification.pk %}">{{ notification.name }}</a>
+                        </div>
+                        <div>
+                            {% if notification.distribution %}
+                                <a href="{% url 'admin:bitcaster_distributionlist_change' notification.distribution.pk %}">{{ notification.distribution }}</a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div x-show="recipientsTab" class="tab-content">
+                <div class="grid grid-cols-4 gap-2 p-2">
+                    <div>
+                        Assignment
+                    </div>
+                    <div>
+                        Address
+                    </div>
+                    <div>
+                        Channel
+                    </div>
+                    <div>
+                        User
+                    </div>
+                    {% for asm in assignments %}
+                        <div>
+                            <a href="{% url "admin:bitcaster_assignment_change" asm.pk %}">Asm {{ asm.pk }}</a>
+                        </div>
+                        <div>
+                            <a href="{% url "admin:bitcaster_address_change" asm.address__pk %}">{{ asm.address__value }}</a>
+                        </div>
+                        <div>
+                            <a href="{% url "admin:bitcaster_channel_change" asm.channel__pk %}">{{ asm.channel__name }}</a>
+                        </div>
+                        <div>
+                            <a href="{% url "admin:bitcaster_member_change" asm.address__user__pk %}">{{ asm.address__user__username }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
-    <div class="text-lg text-strong m-2">
-        Payload
-    </div>
-    {{ original.context|beautify }}
-    <div class="text-lg text-strong m-2">
-        Options
-    </div>
-    <code>
-        {{ original.options }}
-    </code>
 {% endblock content %}

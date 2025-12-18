@@ -17,5 +17,6 @@ class NotificationFactory(AutoRegisterModelFactory[Notification]):
     name = factory.Sequence(lambda n: f"Notification {n}")
     distribution = factory.SubFactory(DistributionListFactory)
     event = factory.SubFactory(EventFactory)
+    active = True
     extra_context = {"extra_field": "extra_value"}
     recipients_filter = {}

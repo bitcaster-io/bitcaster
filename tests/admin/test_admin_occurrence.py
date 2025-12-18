@@ -13,7 +13,7 @@ from testutils.perms import user_grant_permissions
 if TYPE_CHECKING:
     from webtest.response import TestResponse
 
-    from bitcaster.models import Occurrence, User
+    from bitcaster.models import Assignment, Notification, Occurrence, User
 
 
 @pytest.fixture
@@ -30,6 +30,30 @@ def app_for_admin(django_app_factory: MixinWithInstanceVariables, admin_user: "U
     django_app.set_user(admin_user)
     django_app._user = admin_user
     return django_app
+
+
+@pytest.fixture
+def new_occurrence(app):
+    from testutils.factories import AssignmentFactory, DistributionListFactory, NotificationFactory, OccurrenceFactory
+
+    asm: "Assignment" = AssignmentFactory.create()
+    n: "Notification" = NotificationFactory.create(distribution__recipients=[asm], event__channels=[asm.channel])
+
+    DistributionListFactory.create(recipients=[asm])
+    return OccurrenceFactory(event=n.event)
+
+
+@pytest.fixture
+def occurrence(app):
+    from testutils.factories import AssignmentFactory, DistributionListFactory, NotificationFactory, OccurrenceFactory
+
+    asm: "Assignment" = AssignmentFactory.create()
+    n: "Notification" = NotificationFactory.create(distribution__recipients=[asm], event__channels=[asm.channel])
+
+    DistributionListFactory.create(recipients=[asm])
+    o = OccurrenceFactory.create(event=n.event)
+    o.process()
+    return o
 
 
 def test_purge_occurrence_permission(app: DjangoTestApp, user: "User") -> None:
@@ -63,9 +87,9 @@ def test_purge_occurrence(app_for_admin: DjangoTestApp, monkeypatch: pytest.Monk
 
 
 def test_process_occurrence(
-    app_for_admin: DjangoTestApp, monkeypatch: pytest.MonkeyPatch, occurrence: "Occurrence"
+    app_for_admin: DjangoTestApp, monkeypatch: pytest.MonkeyPatch, new_occurrence: "Occurrence"
 ) -> None:
-    url = reverse("admin:bitcaster_occurrence_change", args=[occurrence.pk])
+    url = reverse("admin:bitcaster_occurrence_change", args=[new_occurrence.pk])
     res: "TestResponse" = app_for_admin.get(url)
 
     with mock.patch("bitcaster.models.occurrence.Occurrence.process", return_value=0):
@@ -85,3 +109,21 @@ def test_process_occurrence(
         res = res.click("Process")
         res = res.forms["confirm-form"].submit().follow()
     assert_message(res, "Error processing occurrence", messages.ERROR)
+
+
+def test_inspect_new_occurrence(
+    app_for_admin: DjangoTestApp, monkeypatch: pytest.MonkeyPatch, new_occurrence: "Occurrence"
+) -> None:
+    url = reverse("admin:bitcaster_occurrence_change", args=[new_occurrence.pk])
+    res: "TestResponse" = app_for_admin.get(url)
+    res = res.click("Inspect")
+    assert res
+
+
+def test_inspect_occurrence(
+    app_for_admin: DjangoTestApp, monkeypatch: pytest.MonkeyPatch, occurrence: "Occurrence"
+) -> None:
+    url = reverse("admin:bitcaster_occurrence_change", args=[occurrence.pk])
+    res: "TestResponse" = app_for_admin.get(url)
+    res = res.click("Inspect")
+    assert res

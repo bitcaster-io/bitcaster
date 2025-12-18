@@ -35,9 +35,13 @@ class NotificationForm(forms.ModelForm["Notification"]):
             self.cleaned_data["distribution"] = None
 
         if (
-            not self.cleaned_data.get("external_filtering")
-            and not self.cleaned_data.get("dynamic")
-            and not self.cleaned_data.get("distribution")
+            self.instance.pk
+            and self.cleaned_data["active"]
+            and (
+                not self.cleaned_data.get("external_filtering")
+                and not self.cleaned_data.get("dynamic")
+                and not self.cleaned_data.get("distribution")
+            )
         ):
             raise ValidationError({"distribution": "This field is required"}) from None
 

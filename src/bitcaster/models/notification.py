@@ -59,7 +59,7 @@ class Notification(BitcasterBaseModel):
     )
     payload_filter = models.TextField(blank=True, null=True)
     extra_context = models.JSONField(default=dict, blank=True)
-
+    active = models.BooleanField(default=False)
     external_filtering = models.BooleanField(
         default=False, help_text="Allow filtering recipients based on rules passed in the api call"
     )

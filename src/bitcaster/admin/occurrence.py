@@ -14,7 +14,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from bitcaster.models import Occurrence
+from bitcaster.models import Assignment, Occurrence
 from bitcaster.tasks import purge_occurrences
 
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
@@ -94,35 +94,78 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     def has_change_permission(self, request: HttpRequest, obj: Occurrence | None = None) -> bool:
         return False
 
-    @button(
-        html_attrs={"class": ButtonColor.ACTION.value},
-        visible=lambda btn: btn.original.status == btn.original.Status.NEW,
-    )
+    @button(html_attrs={"class": ButtonColor.ACTION.value})
     def inspect(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
         obj: Occurrence = self.get_object(request, pk)
 
-        def doit(request):
+        def inspect(req):
             try:
-                ctx = self.get_common_context(request, obj)
+                active_notifications = [p.pk for p in obj._get_valid_notifications()]
+                ctx = self.get_common_context(
+                    request,
+                    pk,
+                    action_title="Inspect",
+                    statuses=Occurrence.Status,
+                    active_notifications=active_notifications,
+                )
                 if obj.status == Occurrence.Status.NEW:
                     with mock.patch("bitcaster.models.notification.Notification.notify_to_channel"):
                         data = obj._process()
-                        ctx["data"] = data
-                    return TemplateResponse(request, "bitcaster/admin/occurrence/inspect.html", ctx)
+                        ctx["assignments"] = (
+                            Assignment.objects.select_related(
+                                "address__user",
+                                "channel",
+                            )
+                            .filter(pk__in=data[1]["delivered"])
+                            .order_by("address__user__username")
+                            .values(
+                                "pk",
+                                "address__pk",
+                                "address__value",
+                                "channel__pk",
+                                "channel__name",
+                                "address__user__pk",
+                                "address__user__username",
+                            )
+                        )
+
+                else:
+                    data = obj.data
+                    ctx["assignments"] = (
+                        Assignment.objects.select_related(
+                            "address__user",
+                            "channel",
+                        )
+                        .filter(pk__in=data["delivered"])
+                        .order_by("address__user__username")
+                        .values(
+                            "pk",
+                            "address__pk",
+                            "address__value",
+                            "channel__pk",
+                            "channel__name",
+                            "address__user__pk",
+                            "address__user__username",
+                        )
+                    )
+                return TemplateResponse(request, "bitcaster/admin/occurrence/inspect.html", ctx)
             except Exception as e:
                 logger.exception(e)
                 self.message_user(request, _("Error processing occurrence"), messages.ERROR)
 
-        return confirm_action(
-            self,
-            request,
-            doit,
-            message="Proceeding will process the occurrence",
-            success_message="",
-            description=_(""),
-            extra_context={"content_title": "Process", "object": obj, "opts": obj._meta},
-            error_message="",
-        )
+        if obj.status == Occurrence.Status.NEW:
+            return confirm_action(
+                self,
+                request,
+                inspect,
+                message="Proceeding will take some time",
+                success_message="",
+                description="",
+                extra_context={"content_title": "Inspect", "object": obj, "opts": obj._meta},
+                error_message="",
+            )
+
+        return inspect(request)
 
     @button(
         html_attrs={"class": ButtonColor.ACTION.value},

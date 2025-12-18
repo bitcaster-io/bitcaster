@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Generator
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
@@ -148,26 +149,28 @@ class Occurrence(BitcasterBaseModel):
             logger.exception(e)
         return num_sent
 
+    def _get_valid_notifications(self) -> Generator["Notification", None, None]:
+        notification_filter: dict[str, Any] = {"active": True}
+        if environs := self.options.get("environs", []):
+            notification_filter["environments__overlap"] = environs
+        return self.event.notifications.filter(**notification_filter).match(self.context)
+
     def _process(self) -> "tuple[bool, OccurrenceData]":
         assignment: "Assignment"
         notification: "Notification"
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
         assignment_filter = {}
-        notification_filter = {}
-        channel_filter = {}
         success = True
+        channel_filter = {}
+        if channels := self.options.get("channels", []):
+            channel_filter["pk__in"] = channels
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
         api_filtering = self.options.get("filters", {}) or {}
 
-        if channels := self.options.get("channels", []):
-            channel_filter["pk__in"] = channels
-        if environs := self.options.get("environs", []):
-            notification_filter["environments__overlap"] = environs
-
         try:
-            for notification in self.event.notifications.filter(**notification_filter).match(self.context):
+            for notification in self._get_valid_notifications():
                 context = notification.get_context(self.get_context())
                 logger.debug(f"Processing occurrence {self.id} , context: {context}")
 

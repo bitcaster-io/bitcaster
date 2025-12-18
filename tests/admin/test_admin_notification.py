@@ -80,14 +80,12 @@ def test_add_check_environments(app: "DjangoTestApp", notification: "Notificatio
     assert res.status_code == 200
     assert res.context["adminform"].form.errors == {
         "event": ["This field is required."],
-        "distribution": ["This field is required"],
     }
     # add missing fields
     res = app.get(url)
     frm = res.forms["notification_form"]
     frm["name"] = "Not2"
     frm["event"].force_value(notification.event.pk)
-    frm["distribution"].force_value(notification.distribution.pk)
     frm.fields["environments"][0].value = "test"
     res = frm.submit(expect_errors=True)
     assert res.status_code == 200
@@ -99,6 +97,8 @@ def test_add_check_environments(app: "DjangoTestApp", notification: "Notificatio
     frm = res.forms["notification_form"]
     frm["name"] = "Not2"
     frm["event"].force_value(notification.event.pk)
+    res = frm.submit().follow()
+    frm = res.forms["notification_form"]
     frm["distribution"].force_value(notification.distribution.pk)
     frm.fields["environments"][0].value = "development"
     res = frm.submit()
@@ -112,6 +112,12 @@ def test_add_dynamic(app: "DjangoTestApp", notification: "Notification") -> None
     frm["name"] = "Not2"
     frm["event"].force_value(notification.event.pk)
     frm.fields["environments"][0].value = "development"
+    res = frm.submit()
+    assert res.status_code == 302, res.context["adminform"].form.errors
+    res = res.follow()
+    assert not res.context["original"].active
+    frm = res.forms["notification_form"]
+    frm["active"] = True
     frm["dynamic"] = True
     frm["recipients_filter"] = json.dumps({"include": [], "exclude": []})
     res = frm.submit()

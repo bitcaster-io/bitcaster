@@ -6,7 +6,7 @@
 
 
 @theme {
-  /* BASE */
+  /* BASE
   --color-base-50: 249 250 251;
   --color-base-100: 243 244 246;
   --color-base-200: 229 231 235;
@@ -19,7 +19,6 @@
   --color-base-900: 17 24 39;
   --color-base-950: 3 7 18;
 
-  /* PRIMARY (UNICEF BLUE palette you provided earlier) */
   --color-primary-50: 235 248 253;
   --color-primary-100: 209 237 250;
   --color-primary-200: 163 219 245;
@@ -31,14 +30,15 @@
   --color-primary-800: 16 101 129;
   --color-primary-900: 12 77 98;
   --color-primary-950: 8 54 68;
-
+  */
   --radius-default: 6px;
   --radius-2xl: 20px;
+  --color-primary-600:  #ef4434;
 
-  --font-default-light: 400;     /* peso */
-  --text-default-light: var(--color-base-600); /* colore di default */
-  --font-default-dark: 400;     /* peso */
-  --text-default-dark: var(--color-base-600); /* colore di default */
+  --font-default-light: 400;
+  --text-default-light: var(--color-base-600);
+  --font-default-dark: 400;
+  --text-default-dark: var(--color-base-600);
   --font-size-3xl: 1.875rem;
   --line-height-3xl: 2.25rem;
 
@@ -95,6 +95,33 @@
 }
 
 @layer components {
+  #inspect-page{
+    .status-processed {
+        @apply text-green-500 ;
+
+    }
+    .status-new {
+        @apply dark:text-white ;
+    }
+    .status-failed {
+        @apply text-red-500 ;
+    }
+    li{
+      &.active{
+        @apply text-red-500 border-b-red-500 border-b-2;
+      }
+    }
+    a{
+      color: #ef4434;
+    }
+    div.grid{
+
+    }
+    .tab-content{
+
+    }
+  }
+
   .outer_jsoneditor{
     @apply rounded-lg;
   }
