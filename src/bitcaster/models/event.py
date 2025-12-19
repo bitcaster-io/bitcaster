@@ -63,6 +63,9 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
     def __str__(self) -> str:
         return self.name
 
+    def can_be_locked(self) -> bool:
+        return self.application.organization.name != bitcaster.ORGANIZATION
+
     def natural_key(self) -> tuple[str, ...]:
         return self.slug, *self.application.natural_key()
 

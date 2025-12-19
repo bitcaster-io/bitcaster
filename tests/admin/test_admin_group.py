@@ -43,14 +43,14 @@ def context(django_app_factory: "MixinWithInstanceVariables", admin_user: "User"
 
 
 def test_get_readonly_if_default(app: "DjangoTestApp", context: "Context") -> None:
-    url = reverse("admin:auth_group_change", args=[context["group1"].pk])
+    url = reverse("admin:bitcaster_group_change", args=[context["group1"].pk])
     res = app.get(url)
     frm = res.forms["group_form"]
     assert "name" not in frm.fields
 
 
 def test_get_readonly_fields(app: "DjangoTestApp", context: "Context") -> None:
-    url = reverse("admin:auth_group_change", args=[context["group2"].pk])
+    url = reverse("admin:bitcaster_group_change", args=[context["group2"].pk])
     res = app.get(url)
     res.forms["group_form"]["name"] = "abc"
     res = res.forms["group_form"].submit()

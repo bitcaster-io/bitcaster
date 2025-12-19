@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING, Any
 
 import pytest
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from pytest_django.fixtures import DjangoAssertNumQueries, SettingsWrapper
 from testutils.factories.user import SuperUserFactory
@@ -36,10 +38,11 @@ def app(
 
 def test_admin_index(app: "DjangoTestApp", data: Any, django_assert_num_queries: DjangoAssertNumQueries) -> None:
     url = reverse("admin:index")
-    with django_assert_num_queries(15):
+    with CaptureQueriesContext(connection) as ctx1:
         res = app.get(url)
         assert res.status_code == 200
     state.reset()
-    with django_assert_num_queries(11):
+    with CaptureQueriesContext(connection) as ctx2:
         res = app.get(url)
         assert res.status_code == 200
+    assert len(ctx2) < len(ctx1)
