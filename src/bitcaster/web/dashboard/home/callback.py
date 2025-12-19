@@ -2,9 +2,9 @@ from typing import TYPE_CHECKING, Any
 
 from django.db.models import Count
 
+from bitcaster.cache.manager import CacheManager
 from bitcaster.models import Occurrence
 
-from ..cache import CacheManager
 from ..utils import get_dates
 
 if TYPE_CHECKING:

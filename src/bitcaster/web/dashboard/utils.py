@@ -1,13 +1,8 @@
 from datetime import datetime, timedelta
 
-from django.conf import settings
 from django.utils import timezone
 
 HOUR = 60 * 60
-
-
-def django_prefix() -> str:
-    return f":{settings.CACHES['default'].get('VERSION', 1)}:"
 
 
 def get_dates(days: int = 30) -> tuple[datetime, datetime]:

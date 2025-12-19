@@ -6,9 +6,9 @@ from django.db import models
 from django.db.models.functions import TruncDay
 from unfold.components import BaseComponent, register_component
 
+from bitcaster.cache.manager import CacheManager
 from bitcaster.models import Occurrence
 
-from ..cache import CacheManager
 from ..utils import get_dates
 
 

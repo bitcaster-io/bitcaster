@@ -7,7 +7,8 @@
             This occurrence has already been processed. Even if some notes and information reflect the current status,
             the list of recipients contains the actual addresses reached out.
         {% else %}
-            This page displays information about occurrence processing.. It contains ONLY recipients that pass the filtering criteria.
+            This occurrence has not been processed yet.
+            It contains ONLY recipients that pass the filtering criteria, and it supposed will receive the notification.
         {% endif %}
     </div>
     {% if notes %}
@@ -139,7 +140,7 @@
                     <div>
                         Pass filters
                     </div>
-                    {% for notification in original.event.notifications.all %}
+                    {% for notification in notifications %}
                         <div>
                             <a href="{% url 'admin:bitcaster_notification_change' notification.pk %}">{{ notification.name }}</a>
                         </div>
@@ -170,7 +171,7 @@
                             {% endif %}
                         </div>
                     {% endfor %}
-                    {% for notification in obj.event.notifications.all %}
+                    {% for notification in notifications %}
                         <div>
                             <a href="{% url 'admin:bitcaster_notification_change' notification.pk %}">{{ notification.name }}</a>
                         </div>

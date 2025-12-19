@@ -1,6 +1,7 @@
 import urllib
 from typing import TYPE_CHECKING, Any
 
+from django.conf import settings
 from django.db.models import F, Model, QuerySet
 from django.http import HttpRequest
 from django.urls import reverse
@@ -11,6 +12,10 @@ if TYPE_CHECKING:
     from django.db.models.options import Options
 
     from bitcaster.types.django import AnyModel_co
+
+
+def get_cache_prefix() -> str:
+    return f":{settings.CACHES['default'].get('VERSION', 1)}:"
 
 
 def url_related(m: type[Model], op: str = "changelist", **kwargs: Any | None) -> str:

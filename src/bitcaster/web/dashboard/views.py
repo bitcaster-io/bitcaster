@@ -9,9 +9,9 @@ from django.http import HttpRequest, HttpResponse
 from django.views.generic import TemplateView
 from unfold.views import UnfoldModelAdminViewMixin
 
+from bitcaster.cache.manager import CacheManager
 from bitcaster.constants import bitcaster
 from bitcaster.web import widgets
-from bitcaster.web.dashboard.cache import CacheManager
 
 
 class ConsoleMixin(UnfoldModelAdminViewMixin):

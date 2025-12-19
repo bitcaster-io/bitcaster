@@ -3,8 +3,8 @@ from typing import Any
 from django.db.models import Count
 from unfold.components import BaseComponent, register_component
 
+from bitcaster.cache.manager import CacheManager
 from bitcaster.models import Occurrence
-from bitcaster.web.dashboard.cache import CacheManager
 from bitcaster.web.dashboard.utils import get_dates
 
 
