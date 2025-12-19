@@ -45,10 +45,11 @@
                     </li>
                     <li class="me-2" x-bind:class="(tabs.msgT && 'active') || 'border-none'">
                         <a @click="select('msgT')"
-                           class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Message</a>
+                           class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Messages</a>
                     </li>
                 </ul>
             </div>
+            {# About #}
             <div x-show="tabs.aboutT" class="tab-content">
                 <div class="grid grid-cols-1 gap-2 p-2">
                     <div class="grid grid-cols-3 gap-2 p-2">
@@ -126,6 +127,7 @@
                     </div>
                 </div>
             </div>
+            {# Notification #}
             <div x-show="tabs.notifT" class="tab-content">
                 <div class="grid grid-cols-4 gap-2 p-2">
                     <div>
@@ -142,7 +144,8 @@
                     </div>
                     {% for notification in notifications %}
                         <div>
-                            <a href="{% url 'admin:bitcaster_notification_change' notification.pk %}">{{ notification.name }}</a>
+                            <a class="{% if notification.pk not in active_notifications %}text-gray-500{% endif %}"
+                               href="{% url 'admin:bitcaster_notification_change' notification.pk %}">{{ notification.name }}</a>
                         </div>
                         <div>
                             {% if notification.distribution %}
@@ -152,37 +155,30 @@
                             {% elif notification.external_filtering %}
                                 API filtering
                             {% else %}
-                                <span class="material-symbols-outlined text-orange-300">warning</span>
-                                Invalid configuration
+                                <div class="flex {% if notification.pk not in active_notifications %}text-gray-500{% endif %}">
+                                    <span class="material-symbols-outlined text-orange-300 pr-2">warning</span>
+                                    Invalid configuration
+                                </div>
                             {% endif %}
                         </div>
                         <div>
                             {% if notification.pk in active_notifications %}
                                 <span class="material-symbols-outlined text-green-700">check_box</span>
                             {% else %}
-                                <span class="material-symbols-outlined text-red-500">check_box_outline_blank</span>
+                                <span class="material-symbols-outlined {% if notification.pk not in active_notifications %}text-gray-500{% endif %}">check_box_outline_blank</span>
                             {% endif %}
                         </div>
                         <div>
                             {% if notification.pk in active_notifications %}
                                 <span class="material-symbols-outlined text-green-700">check</span>
                             {% else %}
-                                <span class="material-symbols-outlined text-red-500">do_not_disturb_on</span>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                    {% for notification in notifications %}
-                        <div>
-                            <a href="{% url 'admin:bitcaster_notification_change' notification.pk %}">{{ notification.name }}</a>
-                        </div>
-                        <div>
-                            {% if notification.distribution %}
-                                <a href="{% url 'admin:bitcaster_distributionlist_change' notification.distribution.pk %}">{{ notification.distribution }}</a>
+                                <span class="material-symbols-outlined {% if notification.pk not in active_notifications %}text-gray-500{% endif %}">do_not_disturb_on</span>
                             {% endif %}
                         </div>
                     {% endfor %}
                 </div>
             </div>
+            {# Recipients #}
             <div x-show="tabs.rcptT" class="tab-content">
                 <div class="grid grid-cols-4 gap-2 p-2">
                     <div>
@@ -213,21 +209,52 @@
                     {% endfor %}
                 </div>
             </div>
+            {# Payload #}
             <div x-show="tabs.payloadT" class="tab-content">
                 <div class="grid grid-cols-1 gap-2 p-2">
+                    <div>
+                        Context
+                    </div>
                     <div class="border p-2 rounded">
                         {{ original.context|beautify }}
+                    </div>
+                    <div>
+                        Options
                     </div>
                     <div class="border p-2 rounded">
                         {{ original.options|beautify }}
                     </div>
                 </div>
             </div>
+            {# Messages #}
             <div x-show="tabs.msgT" class="tab-content">
-                <div class="grid grid-cols-1 gap-2 p-2">
-                    <div class="border p-2 rounded">
-                        {{ messages }}
+                <div class="grid grid-cols-3 gap-2 p-2">
+                    <div>
+                        Name
                     </div>
+                    <div>
+                        Channel
+                    </div>
+                    <div>
+                        Valid
+                    </div>
+                    {% for msg in all_messages %}
+                        <div>
+                            <a class="{% if message.channel.pk in active_channels %} text-green-600 {% else %}text-gray-500{% endif %}"
+                               href="{% url 'admin:bitcaster_message_change' msg.pk %}">{{ msg.name }}</a>
+                        </div>
+                        <div>
+                            <a class="{% if message.channel.pk in active_channels %} text-green-600 {% else %}text-gray-500{% endif %}"
+                               href="{% url 'admin:bitcaster_channel_change' msg.channel.pk %}">{{ msg.channel }}</a>
+                        </div>
+                        <div>
+                            {% if message.channel.pk in active_channels %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

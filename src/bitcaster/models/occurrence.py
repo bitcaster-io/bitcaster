@@ -173,7 +173,6 @@ class Occurrence(BitcasterBaseModel):
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
         api_filtering = self.options.get("filters", {}) or {}
-
         try:
             for notification in self._get_valid_notifications():
                 context = notification.get_context(self.get_context())

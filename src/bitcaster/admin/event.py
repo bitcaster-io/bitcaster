@@ -185,3 +185,9 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
         url = reverse("admin:bitcaster_occurrence_changelist")
         event: Event = button.context["original"]
         button.href = f"{url}?event__exact={event.pk}&event__application__exact={event.application.pk}"
+
+    @link(change_form=True, change_list=False)
+    def messages(self, button: ButtonWidget) -> None:
+        url = reverse("admin:bitcaster_message_changelist")
+        event: Event = button.context["original"]
+        button.href = f"{url}?event__exact={event.pk}"

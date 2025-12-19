@@ -113,12 +113,14 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
                         }
                         for nt in obj.event.notifications.filter(id__in=active_notifications):
                             for ch in active_channels:
-                                message_for_channel.setdefault(ch.pk, (ch, nt.get_message(ch)))
+                                message_for_channel.setdefault(ch.pk, (ch, nt, nt.get_message(ch)))
+                        all_messages = obj.event.messages.all()
                         extra_context = {
                             "notifications": obj.event.notifications.select_related("distribution").all(),
                             "active_notifications": active_notifications,
                             "active_channels": list(active_channels.values_list("pk", flat=True)),
                             "messages": message_for_channel,
+                            "all_messages": all_messages,
                         }
                         dm.store("extra_context", extra_context)
 

@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
@@ -57,10 +57,10 @@ class CacheManager:
         return f"{get_cache_prefix()}{CacheManager.SEED}{self.current_namespace}{self.prefix}:{key}"
 
     def set_expire_at_midnight(self, key: str) -> None:
-        midnight_ts = int(
-            (datetime.now() + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
-        )
-        self.client.expire_at(key, midnight_ts)
+        now = timezone.localtime()
+        tomorrow = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        ttl = int((tomorrow - now).total_seconds())
+        self.client.expire(key, ttl)
 
     def count_keys(self) -> int:
         pattern = self.get_key("*")
@@ -78,13 +78,12 @@ class CacheManager:
 
     def store(self, key: str, value: Any, timeout: int | None = None, timeboxed: bool = True) -> None:
         if flag_enabled("DISABLE_CACHE"):
-            return value
+            return
         if timeout and not timeboxed:
             timeout = 25 * HOUR
-        ret = self.client.set(self.get_key(key), value, timeout=timeout)
+        self.client.set(self.get_key(key), value, timeout=timeout)
         if timeboxed:
             self.set_expire_at_midnight(self.get_key(key))
-        return ret
 
     def retrieve(self, key: str) -> Any:
         if flag_enabled("DISABLE_CACHE"):
