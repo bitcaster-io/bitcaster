@@ -3,34 +3,52 @@
 {% load json %}
 {% block content %}
     <div class="p-3 text-xl">
-        This page displays information about occurrence processing.
-        It contains ONLY recipients that pass the filtering criteria.
+        {% if original.status == "PROCESSED" %}
+            This occurrence has already been processed. Even if some notes and information reflect the current status,
+            the list of recipients contains the actual addresses reached out.
+        {% else %}
+            This page displays information about occurrence processing.. It contains ONLY recipients that pass the filtering criteria.
+        {% endif %}
     </div>
+    {% if notes %}
+        <div class="grid grid-col-1 p-3">
+            {% for note in notes %}
+                <div class="flex">
+                    <span class="material-symbols-outlined text-orange-300 mr-2">{{ note.0 }}</span>
+                    {{ note.1 }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <div id="inspect-page">
-        <div x-data="{activeTab:'generalTab', tabs: {generalTab:true, notificationTab: false, recipientsTab: false, payloadTab: false}, select(el){ for (k in this.tabs) { this.tabs[k] = false }; this.tabs[el] = true; console.log(1111, el, this.tabs) }}">
+        <div x-data="{activeTab:'aboutT', tabs: {aboutT:true, notifT: false, rcptT: false, payloadT: false, msgT:false}, select(el){ for (k in this.tabs) { this.tabs[k] = false }; this.tabs[el] = true; console.log(1111, el, this.tabs) }}">
             <div class="border-b-1 border-default mb-3">
                 <ul class="flex flex-wrap text-sm font-medium text-center text-body  -mb-px">
-                    <li class="me-2 " x-bind:class="(tabs.generalTab && 'active') || 'border-none'">
-                        <a @click="select('generalTab')"
+                    <li class="me-2 " x-bind:class="(tabs.aboutT && 'active') || 'border-none'">
+                        <a @click="select('aboutT')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">
                             Info
                         </a>
                     </li>
-                    <li class="me-2" x-bind:class="(tabs.notificationTab && 'active') || 'border-none'">
-                        <a @click="select('notificationTab')"
+                    <li class="me-2" x-bind:class="(tabs.notifT && 'active') || 'border-none'">
+                        <a @click="select('notifT')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Notifications</a>
                     </li>
-                    <li class="me-2" x-bind:class="(tabs.recipientsTab && 'active') || 'border-none'">
-                        <a @click="select('recipientsTab')"
+                    <li class="me-2" x-bind:class="(tabs.rcptT && 'active') || 'border-none'">
+                        <a @click="select('rcptT')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Recipients</a>
                     </li>
-                    <li class="me-2" x-bind:class="(tabs.payloadTab && 'active') || 'border-none'">
-                        <a @click="select('payloadTab')"
+                    <li class="me-2" x-bind:class="(tabs.payloadT && 'active') || 'border-none'">
+                        <a @click="select('payloadT')"
                            class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Payload</a>
+                    </li>
+                    <li class="me-2" x-bind:class="(tabs.msgT && 'active') || 'border-none'">
+                        <a @click="select('msgT')"
+                           class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Message</a>
                     </li>
                 </ul>
             </div>
-            <div x-show="tabs.generalTab" class="tab-content">
+            <div x-show="tabs.aboutT" class="tab-content">
                 <div class="grid grid-cols-1 gap-2 p-2">
                     <div class="grid grid-cols-3 gap-2 p-2">
                         <div class="font-bold">
@@ -107,7 +125,7 @@
                     </div>
                 </div>
             </div>
-            <div x-show="tabs.notificationTab" class="tab-content">
+            <div x-show="tabs.notifT" class="tab-content">
                 <div class="grid grid-cols-4 gap-2 p-2">
                     <div>
                         Name
@@ -164,7 +182,7 @@
                     {% endfor %}
                 </div>
             </div>
-            <div x-show="tabs.recipientsTab" class="tab-content">
+            <div x-show="tabs.rcptT" class="tab-content">
                 <div class="grid grid-cols-4 gap-2 p-2">
                     <div>
                         Assignment
@@ -194,13 +212,20 @@
                     {% endfor %}
                 </div>
             </div>
-            <div x-show="tabs.payloadTab" class="tab-content">
+            <div x-show="tabs.payloadT" class="tab-content">
                 <div class="grid grid-cols-1 gap-2 p-2">
                     <div class="border p-2 rounded">
                         {{ original.context|beautify }}
                     </div>
                     <div class="border p-2 rounded">
                         {{ original.options|beautify }}
+                    </div>
+                </div>
+            </div>
+            <div x-show="tabs.msgT" class="tab-content">
+                <div class="grid grid-cols-1 gap-2 p-2">
+                    <div class="border p-2 rounded">
+                        {{ messages }}
                     </div>
                 </div>
             </div>

@@ -202,17 +202,20 @@ def test_edit_error(app: "DjangoTestApp", message: "Message") -> None:
 
 
 def test_add(app: "DjangoTestApp", message: "Message") -> None:
-    from testutils.factories import ChannelFactory, NotificationFactory
+    from testutils.factories import ChannelFactory, EventFactory, NotificationFactory
 
     opts: "Options[Message]" = message._meta
     url = reverse(admin_urlname(opts, "add"))  # type: ignore[arg-type]
     res = app.get(url)
     assert res.status_code == 200
+    event = EventFactory.create(channels=[ChannelFactory.create()])
+    notification = NotificationFactory.create(event=event)
     res = app.post(
         url,
         {
-            "channel": ChannelFactory().pk,
-            "notification": NotificationFactory().pk,
+            "channel": event.channels.first().pk,
+            "notification": notification.pk,
+            "event": notification.event.pk,
             "name": "name",
         },
     )

@@ -29,8 +29,6 @@ class ToolsView(ConsoleMixin, TemplateView):
             case "clear_cache":
                 cm.clear_cache()
                 self.model_admin.message_user(request, "Cache cleared", messages.SUCCESS)
-            case _:
-                pass
         return self.get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -81,11 +79,7 @@ class LockView(ConsoleMixin, TemplateView):
                 case "pause":
                     target.pause()
                     self.model_admin.message_user(request, f"{target} paused", messages.SUCCESS)
-                case _:
-                    self.model_admin.message_user(request, "Unknown operation", messages.ERROR)
-            return self.get(request, *args, **kwargs)
-
-        return HttpResponse(f"{request.POST}", content_type="text/plain")
+        return self.get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         cm = CacheManager(self.request)

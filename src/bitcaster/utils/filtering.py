@@ -41,10 +41,12 @@ schema = {
         "singleRuleGroup": {"$ref": "#/$defs/filterRule"},
         "orGroup": {"type": "array", "items": {"$ref": "#/$defs/filterRule"}, "minItems": 1},
         "andGroup": {"type": "array", "items": {"$ref": "#/$defs/orGroup"}, "minItems": 1},
-        "emptyGroup": {"type": "array", "maxItems": 0},
+        "emptyListGroup": {"type": "array", "maxItems": 0},
+        "emptyDictGroup": {"type": "object", "maxProperties": 0},
         "filterGroup": {
             "oneOf": [
-                {"$ref": "#/$defs/emptyGroup"},
+                {"$ref": "#/$defs/emptyListGroup"},
+                {"$ref": "#/$defs/emptyDictGroup"},
                 {"$ref": "#/$defs/singleRuleGroup"},
                 {"$ref": "#/$defs/orGroup"},
                 {"$ref": "#/$defs/andGroup"},
@@ -66,12 +68,11 @@ def validate_lookups(model: "type[models.Model]", filter_spec: "QuerysetFilter")
         if parsed := parse_filter_clause(filter_spec.get(family, [])):
             model_name = f"{model._meta.app_label}.{model._meta.model_name}"
             rules = RegexList(DEFAULT_MODEL_INVALID_LOOKUPS.get(model_name, []) + DEFAULT_INVALID_LOOKUPS)
-            if parsed:
-                for i, entry in enumerate(parsed.children, 1):
-                    if not isinstance(entry, tuple):
-                        raise NotImplementedError(f"Not implemented lookup: {entry} {entry.__class__}")
-                    if entry[0] in rules:
-                        raise ValidationError(f"Unauthorised lookup: '{entry[0]}' in {family}[{i}]")
+            for i, entry in enumerate(parsed.children, 1):
+                if not isinstance(entry, tuple):
+                    raise NotImplementedError(f"Not implemented lookup: {entry} {entry.__class__}")
+                if entry[0] in rules:
+                    raise ValidationError(f"Unauthorised lookup: '{entry[0]}' in {family}[{i}]")
 
 
 def validate_schema(d: dict[str, Any]) -> None:

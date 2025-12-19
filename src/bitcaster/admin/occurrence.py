@@ -13,9 +13,10 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from bitcaster.models import Assignment, Occurrence
+from bitcaster.models import Assignment, Message, Occurrence
 from bitcaster.tasks import purge_occurrences
 
+from ..web.dashboard.cache import CacheManager
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
@@ -99,25 +100,63 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
 
         def inspect(req):
             try:
-                active_notifications = [p.pk for p in obj._get_valid_notifications()]
-                active_channels = list(obj._get_valid_channels().values_list("pk", flat=True))
+                dm = CacheManager(request)
+                version = dm.retrieve(f"inspect:{obj.pk}:version")
+                base_key = f"inspect:{obj.pk}:{version}"
+                notes = []
+                if not (extra_context := dm.retrieve(f"{base_key}:extra_context:")):
+                    active_notifications = [p.pk for p in obj._get_valid_notifications()]
+                    active_channels = obj._get_valid_channels()
+                    message_for_channel = {
+                        msg.channel.pk: msg for msg in Message.objects.filter(notification__event=obj.event)
+                    }
+                    for n in active_notifications:
+                        for ch in active_channels:
+                            if ch not in messages:
+                                message_for_channel[ch] = n.get_message(ch)
+                    extra_context = {
+                        "active_notifications": active_notifications,
+                        "active_channels": list(active_channels.values_list("pk", flat=True)),
+                        "messages": message_for_channel,
+                    }
+
+                if not extra_context["active_channels"]:
+                    notes.append(["warning", _("No channels enabled for this occurrence")])
+                elif not extra_context["messages"]:
+                    notes.append(["warning", _("No messages configured for selected channels")])
+
                 ctx = self.get_common_context(
-                    request,
-                    pk,
-                    action_title="Inspect",
-                    statuses=Occurrence.Status,
-                    active_notifications=active_notifications,
-                    active_channels=active_channels,
+                    request, pk, action_title="Inspect", statuses=Occurrence.Status, notes=notes, **extra_context
                 )
-                if obj.status == Occurrence.Status.NEW:
-                    with mock.patch("bitcaster.models.notification.Notification.notify_to_channel"):
-                        data = obj._process()
-                        ctx["assignments"] = (
+                if not (assignments := dm.retrieve(f"{base_key}:assignments")):
+                    if obj.status == Occurrence.Status.NEW:
+                        with mock.patch("bitcaster.models.notification.Notification.notify_to_channel"):
+                            data = obj._process()
+                            assignments = (
+                                Assignment.objects.select_related(
+                                    "address__user",
+                                    "channel",
+                                )
+                                .filter(pk__in=data[1]["delivered"])
+                                .order_by("address__user__username")
+                                .values(
+                                    "pk",
+                                    "address__pk",
+                                    "address__value",
+                                    "channel__pk",
+                                    "channel__name",
+                                    "address__user__pk",
+                                    "address__user__username",
+                                )
+                            )
+                    else:
+                        data = obj.data
+                        assignments = (
                             Assignment.objects.select_related(
                                 "address__user",
                                 "channel",
                             )
-                            .filter(pk__in=data[1]["delivered"])
+                            .filter(pk__in=data["delivered"])
                             .order_by("address__user__username")
                             .values(
                                 "pk",
@@ -129,26 +168,7 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
                                 "address__user__username",
                             )
                         )
-
-                else:
-                    data = obj.data
-                    ctx["assignments"] = (
-                        Assignment.objects.select_related(
-                            "address__user",
-                            "channel",
-                        )
-                        .filter(pk__in=data["delivered"])
-                        .order_by("address__user__username")
-                        .values(
-                            "pk",
-                            "address__pk",
-                            "address__value",
-                            "channel__pk",
-                            "channel__name",
-                            "address__user__pk",
-                            "address__user__username",
-                        )
-                    )
+                ctx["assignments"] = assignments
                 return TemplateResponse(request, "bitcaster/admin/occurrence/inspect.html", ctx)
             except Exception as e:
                 logger.exception(e)
