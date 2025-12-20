@@ -13,6 +13,7 @@ downloaded_files/
 src/bitcaster/version.py
 junit.xml
 !.git
+!.codecov.yml
 !tests/.coveragerc
 !.github
 !.dockerignore

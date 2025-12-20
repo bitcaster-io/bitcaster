@@ -7,6 +7,7 @@ from django.http import HttpRequest
 
 from bitcaster.models import DistributionList
 
+from ..constants import bitcaster
 from .base import BaseAdmin, BitcasterModelAdmin
 from .mixins import TwoStepCreateMixin
 
@@ -35,7 +36,7 @@ class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], Bit
         return []
 
     def has_delete_permission(self, request: HttpRequest, obj: DistributionList | None = None) -> bool:
-        if obj and obj.name == DistributionList.ADMINS:
+        if obj and obj.name == DistributionList.ADMINS and obj.project.organization.name == bitcaster.ORGANIZATION:
             return False
         return super().has_delete_permission(request, obj)
 

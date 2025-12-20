@@ -4,12 +4,14 @@ from typing import TYPE_CHECKING
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
-from django.db.models import F
-from django.urls import reverse
+from django.urls import path, reverse
 from django.utils.translation import gettext as _
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
-from ..models import LogEntry, User
+from bitcaster.web.dashboard.views import LockView, ToolsView
+
+from ..models import User
+from ..utils.django import admin_toggle_bool_action
 from .base import BaseAdmin, BitcasterModelAdmin
 
 if TYPE_CHECKING:
@@ -47,17 +49,20 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
     actions = ["toggle_superuser", "toggle_staff", "toggle_active"]
 
+    def get_urls(self):
+        extra = []
+        for console in [ToolsView, LockView]:
+            custom_view = self.admin_site.admin_view(console.as_view(model_admin=self))
+            extra.append(
+                path(console.__name__.lower(), custom_view, name=f"console-{console.__name__.lower()}"),
+            )
+        return super().get_urls() + extra
+
     def toggle_superuser(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
-        queryset.exclude(pk=request.user.pk).update(is_superuser=~F("is_superuser"))
-        LogEntry.objects.log_actions(request.user.pk, queryset, LogEntry.CHANGE, "Toggled is_superuser flag")
+        admin_toggle_bool_action(request, queryset.exclude(pk=request.user.pk), "is_superuser")
 
     def toggle_staff(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
-        queryset.exclude(pk=request.user.pk).update(is_staff=~F("is_staff"))
-        LogEntry.objects.log_actions(request.user.pk, queryset, LogEntry.CHANGE, "Toggled is_staff flag")
-
-    def toggle_active(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
-        queryset.exclude(pk=request.user.pk).update(active=~F("active"))
-        LogEntry.objects.log_actions(request.user.pk, queryset, LogEntry.CHANGE, "Toggled active status")
+        admin_toggle_bool_action(request, queryset.exclude(pk=request.user.pk), "is_staff")
 
     @link(change_form=True, change_list=False)
     def addresses(self, button: ButtonWidget) -> None:

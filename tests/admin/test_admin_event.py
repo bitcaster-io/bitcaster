@@ -95,8 +95,6 @@ def test_delete_event(app: "DjangoTestApp", context: "Context") -> None:
 
 
 def test_delete_event_protect_internal(app: "DjangoTestApp", context: "Context") -> None:
-    from bitcaster.models import Event
-
     internal_event: Event = EventFactory(
         application__name=bitcaster.APPLICATION,
         application__project__name=bitcaster.PROJECT,
@@ -104,10 +102,8 @@ def test_delete_event_protect_internal(app: "DjangoTestApp", context: "Context")
     )
     url = reverse("admin:bitcaster_event_change", args=[internal_event.pk])  # type: ignore[arg-type]
     res = app.get(url, {})
-    res = res.click("Delete")
-    res.forms[0].submit().follow()
-    assert "Cannot delete event" in res.text
-    assert Event.objects.filter(pk=internal_event.pk).exists()
+    with pytest.raises(IndexError):
+        res.click("Delete")
 
 
 def test_delete_action(app: "DjangoTestApp", context: "Context") -> None:

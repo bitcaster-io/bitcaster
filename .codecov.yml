@@ -1,0 +1,15 @@
+github_checks:
+  annotations: false
+
+coverage:
+  status:
+    project:
+      default:
+        threshold: 90%
+    patch:
+      default:
+        target: 97%
+  ignore:
+    - "pragma: no cover"
+    - "pragma: no-cover"
+    - "if TYPE_CHECKING"

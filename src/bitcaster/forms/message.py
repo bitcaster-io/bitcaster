@@ -43,29 +43,47 @@ class MessageRenderForm(MessageEditForm):
     content_type = forms.CharField(widget=forms.HiddenInput)
 
 
+def validate_cleaned_data(form: "forms.ModelForm[Message] | NotificationTemplateCreateForm") -> None:
+    if "channel" in form.cleaned_data and "notification" in form.cleaned_data:
+        form.cleaned_data["organization"] = form.cleaned_data["channel"].organization
+    if (
+        "channel" in form.cleaned_data
+        and "event" in form.cleaned_data
+        and (form.cleaned_data["channel"] not in form.cleaned_data["event"].channels.all())
+    ):
+        form.add_error("channel", _("This channel is not available"))
+
+
 class MessageChangeForm(forms.ModelForm[Message]):
     class Meta:
         model = Message
-        fields = ("name", "channel", "notification")
+        fields = ("name", "event", "channel", "notification")
+
+    def clean(self) -> None:
+        super().clean()
+        validate_cleaned_data(self)
 
 
 class MessageCreationForm(forms.ModelForm[Message]):
     organization = forms.ModelChoiceField(queryset=Organization.objects.all(), widget=forms.HiddenInput, required=False)
-    event = forms.ModelChoiceField(queryset=Event.objects.all(), widget=forms.HiddenInput, required=False)
+    event = forms.ModelChoiceField(
+        queryset=Event.objects.all(),
+        widget=AutocompleteSelect(Message._meta.get_field("event"), admin.site),
+        required=True,
+    )
     notification = forms.ModelChoiceField(
         queryset=Notification.objects.all(),
-        required=True,
+        required=False,
         widget=AutocompleteSelect(Message._meta.get_field("notification"), admin.site),
     )
 
     class Meta:
         model = Message
-        fields = ("name", "channel", "notification")
+        fields = ("name", "event", "channel", "notification")
 
     def clean(self) -> None:
         super().clean()
-        if "channel" in self.cleaned_data and "notification" in self.cleaned_data:
-            self.cleaned_data["organization"] = self.cleaned_data["channel"].organization
+        validate_cleaned_data(self)
 
 
 class NotificationTemplateCreateForm(forms.Form):
@@ -86,3 +104,7 @@ class NotificationTemplateCreateForm(forms.Form):
         if self.notification.messages.filter(name__iexact=name).exists():
             raise ValidationError(_("This name is already in use."))
         return name
+
+    def clean(self) -> None:
+        super().clean()
+        validate_cleaned_data(self)

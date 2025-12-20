@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Generator
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
@@ -14,6 +15,9 @@ from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
 if TYPE_CHECKING:
+    from django.db.models import QuerySet
+
+    from ..types.filtering import QuerysetFilter
     from .application import Application
     from .assignment import Assignment
     from .channel import Channel
@@ -22,13 +26,14 @@ if TYPE_CHECKING:
 
     OccurrenceData = TypedDict("OccurrenceData", {"delivered": list[str | int], "recipients": list[tuple[str, str]]})  # noqa: UP013
 
+    class OccurrenceOptions(TypedDict):
+        limit_to: NotRequired[list[str]]
+        channels: NotRequired[list[str]]
+        environs: NotRequired[list[str]]
+        filters: NotRequired[QuerysetFilter]
+
+
 logger = logging.getLogger(__name__)
-
-
-class OccurrenceOptions(TypedDict):
-    limit_to: NotRequired[list[str]]
-    channels: NotRequired[list[str]]
-    environs: NotRequired[list[str]]
 
 
 class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
@@ -56,9 +61,9 @@ class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
 
 class Occurrence(BitcasterBaseModel):
     class Status(models.TextChoices):
-        NEW = "NEW", _("New")
         PROCESSED = "PROCESSED", _("Processed")
         FAILED = "FAILED", _("Failed")
+        NEW = "NEW", _("New")
 
     timestamp = models.DateTimeField(auto_now_add=True, help_text=_("Timestamp when occurrence has been created."))
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
@@ -85,7 +90,7 @@ class Occurrence(BitcasterBaseModel):
         constraints = [models.UniqueConstraint(fields=("timestamp", "event"), name="occurrence_unique")]
 
     def __str__(self) -> str:
-        return f"Occurrence of {self.event.name} on {self.timestamp}"
+        return f"{self.event.name} on {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
 
     def natural_key(self) -> tuple[str, ...]:
         return str(self.timestamp), *self.event.natural_key()
@@ -146,30 +151,35 @@ class Occurrence(BitcasterBaseModel):
             logger.exception(e)
         return num_sent
 
+    def _get_valid_notifications(self) -> Generator["Notification", None, None]:
+        notification_filter: dict[str, Any] = {"active": True}
+        if environs := self.options.get("environs", []):
+            notification_filter["environments__overlap"] = environs
+        return self.event.notifications.filter(**notification_filter).match(self.context)
+
+    def _get_valid_channels(self) -> "QuerySet[Channel]":
+        channel_filter: dict[str, Any] = {"active": True, "locked": False, "paused": False}
+        if channels := self.options.get("channels", []):
+            channel_filter["pk__in"] = channels
+        return self.event.channels.filter(**channel_filter)
+
     def _process(self) -> "tuple[bool, OccurrenceData]":
         assignment: "Assignment"
         notification: "Notification"
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
         assignment_filter = {}
-        notification_filter = {}
-        channel_filter = {}
         success = True
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
-
-        if channels := self.options.get("channels", []):
-            channel_filter["pk__in"] = channels
-        if environs := self.options.get("environs", []):
-            notification_filter["environments__overlap"] = environs
-
+        api_filtering = self.options.get("filters", {}) or {}
         try:
-            for notification in self.event.notifications.filter(**notification_filter).match(self.context):
+            for notification in self._get_valid_notifications():
                 context = notification.get_context(self.get_context())
                 logger.debug(f"Processing occurrence {self.id} , context: {context}")
 
-                for channel in self.event.channels.filter(**channel_filter):
-                    for assignment in notification.get_pending_subscriptions(delivered, channel).filter(
+                for channel in self._get_valid_channels():
+                    for assignment in notification.get_pending_subscriptions(delivered, channel, api_filtering).filter(
                         **assignment_filter
                     ):
                         notification.notify_to_channel(channel, assignment, context)

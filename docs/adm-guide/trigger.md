@@ -1,0 +1,77 @@
+# Trigger an Event
+
+You can trigger an event by sending a `POST` request to its trigger URL. This will create a new [Occurrence](../occurrence/) and start the process of sending notifications to the subscribers of the event.
+
+**Endpoint:** `POST /api/o/{org}/p/{proj}/a/{app}/e/{event}/trigger/`
+
+## Authentication
+
+Authentication is performed via an [API Key](../api_key/) sent in the `Authorization` header.
+
+`Authorization: Key <YOUR_API_KEY>`
+
+The API Key must have the `event:trigger` grant for the specified event's application.
+
+## Request Body
+
+The request body should be a JSON object with the following properties:
+
+-   **`context`** (optional): A dictionary of key-value pairs that will be available in the message templates.
+-   **`options`** (optional): A dictionary of options to customize the notification process.
+
+### `options` object
+
+The `options` object can contain the following keys:
+
+-   `limit_to`: A list of recipient addresses to limit the notifications to.
+-   `channels`: A list of channel names to limit the notifications to.
+-   `environs`: A list of environment names to limit the notifications to.
+-   `filters`: A set of rules to dynamically filter recipients.
+
+#### The `filters` object
+
+The `filters` object allows for dynamic filtering of recipients based on user attributes. It is only considered for notifications that have the `external_filtering` flag enabled.
+
+The object has two main keys:
+- `include`: A list of rules to select users.
+- `exclude`: A list of rules to filter out users from the selection.
+
+The structure of the rules follows the logic described in the [filtering documentation](../../dev-guide/filtering).
+
+**Example:**
+
+```json
+{
+    "context": {
+        "transaction_id": "12345",
+        "amount": "100.00"
+    },
+    "options": {
+        "channels": ["email", "sms"],
+        "filters": {
+            "include": [
+                {"is_staff": true},
+                {"groups__name": "support"}
+            ],
+            "exclude": {
+                "last_login__isnull": true
+            }
+        }
+    }
+}
+```
+
+In this example, the notification will be sent to all staff members who are also in the "support" group, excluding those who have never logged in. The notification will only be sent through the "email" and "sms" channels.
+
+## Response
+
+-   **`201 CREATED`**: The event was triggered successfully. The response body will contain the ID of the created occurrence.
+    ```json
+    {
+        "occurrence": "<occurrence_id>"
+    }
+    ```
+-   **`400 BAD REQUEST`**: The request was invalid. The response body will contain details about the error.
+-   **`401 UNAUTHORIZED`**: The API key is invalid or missing.
+-   **`403 FORBIDDEN`**: The API key does not have the required permissions.
+-   **`404 NOT FOUND`**: The organization, project, application, or event does not exist.
