@@ -86,9 +86,6 @@ class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, UpdateAPIView
     def get_object(self) -> "User":
         return self.get_queryset().get(username=self.kwargs["username"])
 
-    def patch(self, request, *args, **kwargs):
-        return super().put(request, *args, **kwargs)
-
     @extend_schema(request=AddressSerializer, responses=AddressSerializer, description=_("List User's addresses"))
     @action(detail=False, methods=["GET"], serializer_class=AddressSerializer)
     def list_address(self, request: HttpRequest, **kwargs: Any) -> Response:

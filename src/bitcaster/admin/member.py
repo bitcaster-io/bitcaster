@@ -139,6 +139,7 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     list_filter = (("custom_fields", JsonFieldFilter.factory()),)
     inlines = [AddressInline, AssignmentInline, ListsInline]
     actions = ["update_custom_fields", "add_to_distributionlist"]
+    search_fields = ("username", "first_name", "last_name", "email")
     form = MemberForm
 
     def add_to_distributionlist(self, request: "HttpRequest", queryset: "QuerySet[User]") -> "HttpResponse":
@@ -215,6 +216,4 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
         return render(request, "bitcaster/admin/user/update_custom_fields.html", ctx)
 
     def get_queryset(self, request):
-        return Member.objects.exclude(Q(username=Bitcaster.SYSTEM_USER) | Q(is_staff=True, is_superuser=True)).order_by(
-            "username"
-        )
+        return Member.objects.exclude(Q(username=Bitcaster.SYSTEM_USER)).order_by("username")

@@ -1,0 +1,21 @@
+{% extends "dashboards/home.html" %}
+{% load i18n unfold %}
+{% block title %}
+    {% if subtitle %}
+        {{ subtitle }} |
+    {% endif %}
+    {{ title }} | {{ site_title|default:"Bitcaster" }}
+{% endblock %}
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+{% block content %}
+    {% component "unfold/components/container.html" %}
+    <form method="post" id="clear_cache">
+        {% csrf_token %}
+        <button type="submit" class="button button-primary" name="op" value="clear_cache">
+            Clear cache ({{ cache_size }})
+        </button>
+    </form>
+{% endcomponent %}
+{% endblock %}

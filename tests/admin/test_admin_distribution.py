@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 from testutils.factories import DistributionListFactory
 
+from bitcaster.constants import bitcaster
 from bitcaster.models import DistributionList, User
 
 if TYPE_CHECKING:
@@ -20,7 +21,7 @@ def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") ->
 
 
 def test_get_protected_list(app: "DjangoTestApp") -> None:
-    dl = DistributionListFactory(name=DistributionList.ADMINS)
+    dl = DistributionListFactory(name=DistributionList.ADMINS, project__organization__name=bitcaster.ORGANIZATION)
     url = reverse("admin:bitcaster_distributionlist_change", args=[dl.pk])
     res = app.get(url)
     frm = res.forms["distributionlist_form"]

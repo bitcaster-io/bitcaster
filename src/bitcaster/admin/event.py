@@ -67,7 +67,8 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
                 "fields": (
                     ("name", "slug"),
                     ("description",),
-                    ("active", "newsletter", "occurrence_retention"),
+                    ("active", "newsletter", "paused"),
+                    ("occurrence_retention",),
                 )
             },
         ),
@@ -83,13 +84,18 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
     class Media:
         js = ["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"]
 
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
+        return super().get_queryset(request).select_related("application__project__organization")
+
+    def has_delete_permission(self, request: HttpRequest, obj: Event | None = None) -> bool:
+        if obj and obj.application.project.organization.name == bitcaster.ORGANIZATION:
+            return False
+        return super().has_delete_permission(request, obj)
+
     def get_fieldsets(self, request: HttpRequest, obj: Event | None = None) -> "_FieldsetSpec":
         if obj:
             return self._fieldsets
         return [(None, {"fields": self.get_fields(request, obj)})]
-
-    def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
-        return super().get_queryset(request).select_related("application__project__organization")
 
     def delete_queryset(self, request: HttpRequest, queryset: QuerySet[Event]) -> None:
         queryset.exclude(application__project__organization__name=bitcaster.ORGANIZATION).delete()
@@ -116,7 +122,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "Event | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:
-            return ["application", "slug", "name"]
+            return ["application", "slug"]
         return []
 
     def get_fields(self, request: HttpRequest, obj: Event | None = None) -> Sequence[str | Sequence[str]]:
@@ -173,3 +179,15 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
         url = reverse("admin:bitcaster_notification_changelist")
         event: Event = button.context["original"]
         button.href = f"{url}?event__exact={event.pk}&event__application__exact={event.application.pk}"
+
+    @link(change_form=True, change_list=False)
+    def occurrences(self, button: ButtonWidget) -> None:
+        url = reverse("admin:bitcaster_occurrence_changelist")
+        event: Event = button.context["original"]
+        button.href = f"{url}?event__exact={event.pk}&event__application__exact={event.application.pk}"
+
+    @link(change_form=True, change_list=False)
+    def messages(self, button: ButtonWidget) -> None:
+        url = reverse("admin:bitcaster_message_changelist")
+        event: Event = button.context["original"]
+        button.href = f"{url}?event__exact={event.pk}"

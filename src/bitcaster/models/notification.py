@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Generator
 
 import jmespath
 import yaml
@@ -10,21 +10,23 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
 from ..dispatchers.base import Payload
+from ..utils.filtering import FilterManager
 from ..utils.shortcuts import render_string
 from .assignment import Assignment
 from .distribution import DistributionList
 from .mixins import BaseQuerySet, BitcasterBaseModel, BitcasterBaselManager
+from .user import User
 
 if TYPE_CHECKING:
     from bitcaster.dispatchers.base import Dispatcher
     from bitcaster.models import Address, Application, Channel, Message
-    from bitcaster.types.core import YamlPayload
+    from bitcaster.types.yaml import YamlPayload
 
 logger = logging.getLogger(__name__)
 
 
 class NotificationQuerySet(BaseQuerySet["Notification"]):
-    def match(self, payload: dict[str, Any], rules: "YamlPayload | None" = None) -> list["Notification"]:
+    def match(self, payload: dict[str, Any], rules: "YamlPayload | None" = None) -> "Generator[Notification]":
         for subscription in self.all():
             if subscription.match_filter(payload, rules=rules):
                 yield subscription
@@ -57,6 +59,10 @@ class Notification(BitcasterBaseModel):
     )
     payload_filter = models.TextField(blank=True, null=True)
     extra_context = models.JSONField(default=dict, blank=True)
+    active = models.BooleanField(default=False)
+    external_filtering = models.BooleanField(
+        default=False, help_text="Allow filtering recipients based on rules passed in the api call"
+    )
 
     dynamic = models.BooleanField(
         default=False,
@@ -96,9 +102,38 @@ class Notification(BitcasterBaseModel):
         return self.event.application
 
     def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
-        return {**ctx, "notification": self.name} | self.distribution.get_context() | self.extra_context
+        ctx = {**ctx, "notification": self.name} | self.extra_context
+        if self.distribution:
+            ctx.update(self.distribution.get_context())
+        return ctx
 
-    def get_pending_subscriptions(self, delivered: list[str | int], channel: "Channel") -> QuerySet[Assignment]:
+    def get_pending_subscriptions(
+        self, delivered: list[str | int], channel: "Channel", api_filtering: Any
+    ) -> QuerySet[Assignment]:
+        if self.dynamic and self.recipients_filter:
+            included, excluded = FilterManager.parse(self.recipients_filter)
+            users = User.objects.filter(included).exclude(excluded)
+        elif self.external_filtering and api_filtering:
+            included, excluded = FilterManager.parse(api_filtering)
+            users = User.objects.filter(included).exclude(excluded)
+        else:
+            users = User.objects.filter(is_active=True)
+        if self.dynamic or self.external_filtering:
+            return self.get_dynamic_pending_subscriptions(delivered, channel, filter_users=users)
+        return self.get_distributionlist_pending_subscriptions(delivered, channel, filter_users=users)
+
+    def get_dynamic_pending_subscriptions(
+        self, delivered: list[str | int], channel: "Channel", filter_users: QuerySet[User]
+    ) -> QuerySet[Assignment]:
+        return (
+            Assignment.objects.select_related("address", "channel", "address__user")
+            .filter(active=True, channel=channel)
+            .exclude(id__in=delivered)
+        ).filter(address__user_id__in=filter_users)
+
+    def get_distributionlist_pending_subscriptions(
+        self, delivered: list[str | int], channel: "Channel", filter_users: QuerySet[User]
+    ) -> QuerySet[Assignment]:
         return (
             self.distribution.recipients.select_related(
                 "address",
@@ -107,12 +142,11 @@ class Notification(BitcasterBaseModel):
             )
             .filter(active=True, channel=channel)
             .exclude(id__in=delivered)
-        )
+        ).filter(address__user_id__in=filter_users)
 
     def notify_to_channel(self, channel: "Channel", assignment: Assignment, context: dict[str, Any]) -> str | None:
         dispatcher: "Dispatcher" = channel.dispatcher
         addr: "Address" = assignment.address
-
         logger.debug(f"channel: {channel} , assignment: {assignment} , context: {context}")
         if message := self.get_message(channel):
             logger.debug(f"message: {message}")

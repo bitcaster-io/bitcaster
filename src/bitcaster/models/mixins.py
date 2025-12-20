@@ -18,9 +18,33 @@ if TYPE_CHECKING:
 
 class LockMixin(models.Model):
     locked = models.BooleanField(default=False, help_text=_("If checked any notification is ignored and not forwarded"))
+    paused = models.BooleanField(default=False, help_text=_("If checked any notification paused"))
 
     class Meta:
         abstract = True
+
+    def can_be_locked(self) -> bool:
+        raise NotImplementedError
+
+    def lock(self) -> None:
+        if not self.locked:
+            self.locked = True
+            self.save()
+
+    def unlock(self) -> None:
+        if self.locked:
+            self.locked = False
+            self.save()
+
+    def pause(self) -> None:
+        if not self.paused:
+            self.paused = True
+            self.save()
+
+    def resume(self) -> None:
+        if self.paused:
+            self.paused = False
+            self.save()
 
 
 class AdminReversable(models.Model):

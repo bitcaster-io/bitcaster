@@ -6,6 +6,7 @@ nav:
   - Configuration: configuration.md
   - Administration Guide: adm-guide
   - Development Guide: dev-guide
+  - API: api
   - Glossary: glossary/
   - Links: links
   - License: license

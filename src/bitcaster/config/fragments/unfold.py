@@ -11,19 +11,16 @@ if TYPE_CHECKING:
 # see https://fonts.google.com/icons?icon.query=docs for icons
 COMMON_SITE_DROPDOWN = [
     {
+        "icon": "home",
+        "title": "Dashboard",
+        "link": "/admin/",
+    },
+    {
         "icon": "webhook",
         "title": "API",
         "link": "/api/",
         "attrs": {
             "target": "_api",
-        },
-    },
-    {
-        "icon": "commit",
-        "title": "GitHub",
-        "link": "https://github.com/bitcaster-io/bitcaster",
-        "attrs": {
-            "target": "_blank",
         },
     },
     {
@@ -34,6 +31,14 @@ COMMON_SITE_DROPDOWN = [
             "target": "_docs",
         },
     },
+    {
+        "icon": "commit",
+        "title": "GitHub",
+        "link": "https://github.com/bitcaster-io/bitcaster",
+        "attrs": {
+            "target": "_blank",
+        },
+    },
 ]
 
 COMMON = {
@@ -41,6 +46,7 @@ COMMON = {
         "image": lambda request: static("bitcaster/images/logos/logo400.png"),
         "redirect_after": lambda request: reverse_lazy("admin:index"),
     },
+    "DASHBOARD_CALLBACK": "bitcaster.web.dashboard.home.callback.dashboard_callback",
     "ENVIRONMENT": "bitcaster.config.fragments.unfold.environment_callback",  # environment name in header
     "SHOW_HISTORY": True,
     "SITE_TITLE": "Bitcaster: ",
@@ -197,7 +203,7 @@ UNFOLD = {
                     {
                         "title": _("Groups"),
                         "icon": "group",
-                        "link": reverse_lazy("admin:auth_group_changelist"),
+                        "link": reverse_lazy("admin:bitcaster_group_changelist"),
                         "permission": lambda request: request.user.is_superuser,
                     },
                     {
