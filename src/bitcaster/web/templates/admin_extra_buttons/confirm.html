@@ -1,0 +1,30 @@
+{% extends 'unfold/layouts/base.html' %}
+{% load admin_list admin_urls i18n static %}
+{% block content %}
+    <h1 class="text-4xl font-bold text-red-500 my-4">
+        {% translate 'Warning' %}
+    </h1>
+    <h2 class="text-xl font-bold">
+        {{ message }}
+    </h2>
+    {% if description %}
+        <br />
+        <div class="p-2">
+            <h3>
+                {{ description }}
+            </h3>
+        </div>
+    {% endif %}
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <form method="post" id="confirm-form">
+        {% csrf_token %}
+        <div class="flex gap-2">
+            <input type="submit" class="button button-primary button-danger" name="confirm" value="{% trans 'Confirm' %}" />
+            <input type="button" class="button button-alternative" onclick="javascript:history.back()" value="{% trans 'Go Back' %}" />
+        </div>
+    </form>
+{% endblock content %}

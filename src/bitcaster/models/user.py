@@ -33,7 +33,10 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
         verbose_name_plural = _("users")
         app_label = "bitcaster"
         abstract = False
-        permissions = (("bitcaster.lock_system", "Can lock system components"),)
+        permissions = (
+            ("console_lock", "Can access Lock console"),
+            ("console_tools", "Can access Tools console"),
+        )
 
     @property
     def organizations(self) -> "QuerySet[Organization]":

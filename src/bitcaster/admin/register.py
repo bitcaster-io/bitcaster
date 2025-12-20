@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.auth.models import Group
 
 from bitcaster import models
 
@@ -29,8 +28,7 @@ from .project import ProjectAdmin
 from .user import UserAdmin
 from .userrole import UserRoleAdmin
 
-admin.site.unregister(Group)
-admin.site.register(Group, GroupAdmin)
+admin.site.register(models.Group, GroupAdmin)
 
 admin.site.unregister(FlagState)
 admin.site.register(FlagState, FlagStateAdmin)

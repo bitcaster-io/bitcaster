@@ -42,11 +42,10 @@ def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") ->
     return django_app
 
 
-def test_member_add(app: "DjangoTestApp"):
-    url = reverse("admin:bitcaster_member_add")
+def test_member_add(app: "DjangoTestApp", context: "Context"):
+    member = context["members"][0]
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
     res = app.get(url)
-    res.forms["member_form"]["username"] = "user__test1"
-    res.forms["member_form"]["email"] = "user@email.com"
     res.forms["member_form"]["custom_fields"] = "{}"
     res = res.forms["member_form"].submit()
     assert res.status_code == 302, res.context["form"].errors
