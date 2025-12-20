@@ -55,6 +55,9 @@ class Project(SlugMixin, LockMixin, BitcasterBaseModel):
             ("organization", "slug"),
         )
 
+    def can_be_locked(self) -> bool:
+        return self.organization.name != bitcaster.ORGANIZATION
+
     def natural_key(self) -> tuple[str, str]:
         return self.slug, *self.organization.natural_key()
 

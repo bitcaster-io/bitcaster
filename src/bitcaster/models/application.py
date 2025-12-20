@@ -48,6 +48,9 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
         ordering = ("name",)
         unique_together = (("project", "name"), ("project", "slug"))
 
+    def can_be_locked(self) -> bool:
+        return self.project.organization.name != bitcaster.ORGANIZATION
+
     def natural_key(self) -> tuple[str, str, str]:
         return self.slug, *self.project.natural_key()
 

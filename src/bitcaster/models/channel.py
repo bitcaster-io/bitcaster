@@ -67,6 +67,9 @@ class Channel(LockMixin, BitcasterBaseModel):
     def __str__(self) -> str:
         return self.name
 
+    def can_be_locked(self) -> bool:
+        return True
+
     def save(
         self,
         *args: Any,

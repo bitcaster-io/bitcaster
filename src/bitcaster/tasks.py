@@ -1,6 +1,7 @@
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 from bitcaster.config.celery import app
 from bitcaster.constants import Bitcaster
@@ -23,7 +24,11 @@ def schedule_occurrences() -> None | Exception:
 
     o: Occurrence
     try:
-        for o in Occurrence.objects.select_related("event").filter(status=Occurrence.Status.NEW):
+        for o in (
+            Occurrence.objects.select_related("event")
+            .filter(status=Occurrence.Status.NEW)
+            .exclude(Q(event__paused=True) | Q(event__application__paused=True))
+        ):
             process_occurrence.delay(o.id)
     except Exception as e:
         logger.exception(e)

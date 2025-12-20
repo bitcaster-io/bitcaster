@@ -17,6 +17,7 @@ if TYPE_CHECKING:
         ({}, 2),
         # AND
         ({"username": "superuser@example.com"}, 1),
+        ({"username__in": ["superuser@example.com"]}, 1),
         ([{"username": "superuser@example.com"}], 1),
         ([{"username": "user@example.com"}], 1),
         ([{"username": "superuser@example.com", "is_superuser": True}], 1),
@@ -42,6 +43,7 @@ def test_filtering_include(superuser: User, user: User, includes, expected) -> N
         ({}, 2),
         # AND
         ({"username": "superuser@example.com"}, 1),
+        ({"username__in": ["superuser@example.com"]}, 1),
         ([{"username": "superuser@example.com"}], 1),
         ([{"username": "user@example.com"}], 1),
         ([{"username": "superuser@example.com", "is_superuser": True}], 1),
