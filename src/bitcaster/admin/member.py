@@ -19,10 +19,10 @@ from unfold.contrib.inlines.admin import NonrelatedTabularInline
 from unfold.decorators import action
 
 from bitcaster.constants import Bitcaster, bitcaster
+from bitcaster.forms import unfold as uwidgets
 from bitcaster.forms.user import GenericActionForm, SelectDistributionForm
 from bitcaster.models import Address, Assignment, DistributionList, Group, LogEntry, Member, User
 from bitcaster.utils.json import process_dict
-from bitcaster.web import widgets
 
 from ..importing.members import import_members_csv
 from .base import BaseAdmin, BitcasterModelAdmin
@@ -110,7 +110,7 @@ class CustomFieldForm(GenericActionForm):
             "jsonScalar": {"oneOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"}, {"type": "null"}]},
         },
     }
-    mode = forms.ChoiceField(choices=JsonUpdateMode2.choices, widget=widgets.UnfoldAdminSelectWidget)
+    mode = forms.ChoiceField(choices=JsonUpdateMode2.choices, widget=uwidgets.UnfoldAdminSelectWidget)
     custom_fields = forms.CharField(widget=JSONEditor(jsonschema=schema), required=False)
 
     def clean_custom_fields(self):
@@ -129,8 +129,8 @@ class MemberForm(forms.ModelForm):
 
 
 class ImportForm(forms.Form):
-    file = forms.FileField(widget=widgets.UnfoldAdminFileFieldWidget)
-    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, widget=widgets.UnfoldAdminSelectWidget)
+    file = forms.FileField(widget=uwidgets.UnfoldAdminFileFieldWidget)
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, widget=uwidgets.UnfoldAdminSelectWidget)
 
 
 class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):

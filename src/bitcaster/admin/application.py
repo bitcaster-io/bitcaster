@@ -33,6 +33,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
         "locked",
     )
     readonly_fields = ["locked"]
+    autocomplete_fields = ("owner",)
     form = ApplicationChangeForm
 
     def has_add_permission(self, request: HttpRequest) -> bool:

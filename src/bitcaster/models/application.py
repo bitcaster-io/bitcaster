@@ -66,7 +66,7 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
         super().save(*args, **kwargs)
 
     def register_event(self, name: str, description: str = "") -> "Event":
-        ev: "Event" = self.events.get_or_create(name=name, description=description, active=False)[0]
+        ev: "Event" = self.events.get_or_create(name=name, defaults={"description": description, "active": False})[0]
         return ev
 
     def create_message(self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None) -> "Message":

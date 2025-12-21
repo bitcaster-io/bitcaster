@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from ..constants import SystemEvent, bitcaster
+from . import LogEntry
 from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
@@ -109,12 +110,16 @@ class Occurrence(BitcasterBaseModel):
     def application(self) -> "Application":
         return self.event.application
 
+    def log_action(self) -> None:
+        LogEntry.objects.log_actions(bitcaster.system_user_id, [self], LogEntry.OTHER, "Start processing")
+
     def process(self) -> int:
         from bitcaster.models import Occurrence
 
         num_sent = 0
         try:
             with transaction.atomic():
+                transaction.on_commit(self.log_action)
                 o: Occurrence = Occurrence.objects.select_related("event").select_for_update().get(id=self.pk)
                 if o.attempts > 0:
                     o.attempts = o.attempts - 1

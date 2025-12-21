@@ -53,7 +53,6 @@ def pytest_configure(config):
     os.environ["BITCASTER_LOGGING_LEVEL"] = "CRITICAL"
     os.environ["REDIS_LOGGING_LEVEL"] = "CRITICAL"
     os.environ["DJANGO_LOGGING_LEVEL"] = "CRITICAL"
-    os.environ["CELERY_TASK_ALWAYS_EAGER"] = "True"
 
     os.environ["CSRF_COOKIE_SECURE"] = "False"
     os.environ["CSRF_TRUSTED_ORIGINS"] = "https://close-pro-impala.ngrok-free.app,http://localhost"
@@ -93,6 +92,7 @@ def pytest_configure(config):
     settings.MEDIA_ROOT = "%s/media" % tempfile.gettempdir()
     settings.STATIC_ROOT = "%s/static" % tempfile.gettempdir()
     settings.MESSAGE_STORAGE = "testutils.messages.PlainCookieStorage"
+    settings.CELERY_TASK_ALWAYS_EAGER = True
     settings.SUPERUSERS = ["superuser001@example.com", "superuser002@example.com"]
     settings.CACHE_PREFIX = uuid4().hex
 

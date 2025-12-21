@@ -12,8 +12,8 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+from bitcaster.forms.unfold import UnfoldAdminForm
 from bitcaster.models import Assignment, Channel, Project, User
-from bitcaster.utils.unfold import UnfoldAdminForm
 
 from ..dispatchers.base import Payload
 from ..forms.channel import ChannelChangeForm

@@ -10,20 +10,8 @@ echo $STATIC_ROOT
 echo $MEDIA_ROOT
 
 case "$1" in
-    upgrade)
-      django-admin check --deploy
-      django-admin upgrade
-      ;;
-    config)
-      echo "CMD $@"
-      django-admin env
-      exit 0
-      ;;
-    flower)
-      celery -A bitcaster.config.celery flower
-      ;;
     worker)
-      celery -A bitcaster.config.celery worker -E --loglevel=ERROR --concurrency=4
+      bitcaster celery -A bitcaster.config.celery worker -E --loglevel=ERROR --concurrency=4
       ;;
     beat)
       celery -A bitcaster.config.celery beat --loglevel=ERROR --scheduler django_celery_beat.schedulers:DatabaseScheduler

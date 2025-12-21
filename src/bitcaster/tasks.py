@@ -1,13 +1,24 @@
 import logging
 
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.utils import timezone
 
 from bitcaster.config.celery import app
-from bitcaster.constants import Bitcaster
-from bitcaster.models import LogEntry, User
+from bitcaster.constants import bitcaster
+from bitcaster.models import LogEntry
 
 logger = logging.getLogger(__name__)
+
+
+@app.task(expires=55)
+def beat_heartbeat() -> None:
+    cache.set(
+        "celery:beat:alive",
+        timezone.now().isoformat(),
+        timeout=None,  # None means infinite timeout in Django cache
+    )
 
 
 @app.task()
@@ -19,7 +30,7 @@ def process_occurrence(occurrence_pk: int) -> int:
 
 
 @app.task()
-def schedule_occurrences() -> None | Exception:
+def scan_occurrences() -> None:
     from bitcaster.models import Occurrence
 
     o: Occurrence
@@ -32,7 +43,7 @@ def schedule_occurrences() -> None | Exception:
             process_occurrence.delay(o.id)
     except Exception as e:
         logger.exception(e)
-        return e
+        raise
 
 
 @app.task()
@@ -64,7 +75,7 @@ def monitor_run(pk: str) -> str:
                 content_type=ContentType.objects.get_for_model(Monitor),
                 object_id=pk,
                 action_flag=100,
-                user=User.objects.get(username=Bitcaster.SYSTEM_USER),
+                user=bitcaster.system_user,
                 object_repr=str(monitor),
                 change_message="Monitor started",
             )

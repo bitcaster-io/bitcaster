@@ -13,8 +13,8 @@ from smart_selects.db_fields import ChainedForeignKey
 from unfold.admin import ModelAdmin as UnfoldModelAdmin  # noqa
 from unfold.contrib.forms import widgets as uwidgets
 
+from bitcaster.forms.unfold import UnfoldChainedSelect
 from bitcaster.state import state
-from bitcaster.utils.unfold import UnfoldChainedSelect
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet

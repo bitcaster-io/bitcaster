@@ -65,6 +65,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
             None,
             {
                 "fields": (
+                    ("application",),
                     ("name", "slug"),
                     ("description",),
                     ("active", "newsletter", "paused"),
