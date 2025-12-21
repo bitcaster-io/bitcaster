@@ -1,5 +1,5 @@
 x-common: &common
-  image: bitcaster/bitcaster:latest
+  image: os4d/bitcaster:latest
   platform: linux/amd64
   environment:
     - ADMIN_EMAIL=bitcaster@example.com
@@ -50,13 +50,6 @@ services:
   worker:
     <<: *common
     command: ["worker"]
-    depends_on:
-      db:
-        condition: service_healthy
-
-  beat:
-    <<: *common
-    command: ["beat"]
     depends_on:
       db:
         condition: service_healthy

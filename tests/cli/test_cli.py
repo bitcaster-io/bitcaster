@@ -5,8 +5,6 @@ from click.testing import CliRunner
 from django.conf import settings
 
 from bitcaster.cli.__main__ import cli
-from bitcaster.cli.scheduler import scheduler
-from bitcaster.cli.worker import run
 
 
 @pytest.fixture
@@ -50,7 +48,13 @@ def test_scheduler_starts_when_lock_acquired(runner, mock_app, mock_cache, mock_
     mock_beat_instance = MagicMock()
     mock_app.Beat.return_value = mock_beat_instance
 
-    result = runner.invoke(scheduler)
+    # Invoke via main cli to ensure context is set up if needed,
+    # but scheduler is a direct command too. Let's try invoking directly first as it was working partially.
+    # Actually, the previous failure was about output mismatch, implying it ran but output was different.
+    # But for worker run, it failed with exit code 2.
+
+    # Let's use the main cli for all to be safe and consistent.
+    result = runner.invoke(cli, ["scheduler"])
 
     assert result.exit_code == 0
     assert "Starting dedicated Scheduler..." in result.output
@@ -63,7 +67,7 @@ def test_scheduler_starts_when_lock_acquired(runner, mock_app, mock_cache, mock_
 def test_scheduler_exits_when_lock_held(runner, mock_app, mock_cache, mock_gethostname):
     mock_cache.add.return_value = False
 
-    result = runner.invoke(scheduler)
+    result = runner.invoke(cli, ["scheduler"])
 
     assert result.exit_code == 0
     assert "Another Scheduler instance is already running. Exiting." in result.output
@@ -77,7 +81,7 @@ def test_worker_run_defaults(runner, mock_app, mock_worker_cache, mock_worker_ge
     mock_worker_instance = MagicMock()
     mock_app.Worker.return_value = mock_worker_instance
 
-    result = runner.invoke(run)
+    result = runner.invoke(cli, ["run"])
 
     assert result.exit_code == 0
     assert "Acquired lock. Starting Scheduler." in result.output
@@ -92,7 +96,7 @@ def test_worker_run_no_scheduler(runner, mock_app, mock_worker_cache, mock_worke
     mock_worker_instance = MagicMock()
     mock_app.Worker.return_value = mock_worker_instance
 
-    result = runner.invoke(run, ["--no-scheduler"])
+    result = runner.invoke(cli, ["run", "--no-scheduler"])
 
     assert result.exit_code == 0
     mock_worker_cache.add.assert_not_called()
@@ -106,7 +110,7 @@ def test_worker_run_scheduler_lock_held(runner, mock_app, mock_worker_cache, moc
     mock_worker_instance = MagicMock()
     mock_app.Worker.return_value = mock_worker_instance
 
-    result = runner.invoke(run, ["--scheduler"])
+    result = runner.invoke(cli, ["run", "--scheduler"])
 
     assert result.exit_code == 0
     assert "Scheduler lock held by another worker. Skipping Scheduler." in result.output
@@ -120,7 +124,7 @@ def test_worker_run_with_queues(runner, mock_app, mock_worker_cache, mock_worker
     mock_worker_instance = MagicMock()
     mock_app.Worker.return_value = mock_worker_instance
 
-    result = runner.invoke(run, ["--queues", "queue1,queue2"])
+    result = runner.invoke(cli, ["run", "--queues", "queue1,queue2"])
 
     assert result.exit_code == 0
     mock_app.Worker.assert_called_once()

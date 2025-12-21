@@ -146,7 +146,7 @@ def list_running_tasks() -> dict[str, list[dict[str, Any]]]:
 
 
 class MonitorView(ConsoleMixin, TemplateView):
-    title = "Console: Tools"
+    title = "Console: Monitor"
     permission_required = ("bitcaster.console_tools",)
     template_name = "dashboards/monitor.html"
 

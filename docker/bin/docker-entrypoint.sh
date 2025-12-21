@@ -11,10 +11,10 @@ echo $MEDIA_ROOT
 
 case "$1" in
     worker)
-      bitcaster celery -A bitcaster.config.celery worker -E --loglevel=ERROR --concurrency=4
+      bitcaster run
       ;;
     beat)
-      celery -A bitcaster.config.celery beat --loglevel=ERROR --scheduler django_celery_beat.schedulers:DatabaseScheduler
+      bitcaster scheduler
       ;;
     run)
       django-admin check --deploy

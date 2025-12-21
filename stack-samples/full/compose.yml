@@ -1,5 +1,5 @@
 x-common: &common
-  image: bitcaster/bitcaster:latest
+  image: os4d/bitcaster:latest
   platform: linux/amd64
   environment:
     - ADMIN_EMAIL=bitcaster@example.com
@@ -85,13 +85,6 @@ services:
       db:
         condition: service_healthy
 
-  beat:
-    <<: *common
-    command: ["beat"]
-    depends_on:
-      db:
-        condition: service_healthy
-
   flower:
       <<: *common
       command: ["flower"]
@@ -138,29 +131,29 @@ services:
       timeout: 4s
       retries: 5
 
-#
-#  sentry:
-#    image: saxix/sentry-localdev
-#    container_name: gundam-sentry
-#    environment:
-#      - SENTRY_SECRET_KEY=abc
-#      - SENTRY_REDIS_HOST=redis
-#      - SENTRY_DB_NAME=sentry
-#      - SENTRY_POSTGRES_HOST=db
-#      - SENTRY_ADMIN_USERNAME=bitcaster
-#      - SENTRY_ADMIN_PASSWORD=password
-#      - C_FORCE_ROOT=1 # never in production
-#    ports:
-#      - 9000:9000
-#    volumes:
-#      - sentry:/conf
-#    restart: unless-stopped
-#    depends_on:
-#      - db
-#      - redis
-#
-#  azurite-container:
-#    image: mcr.microsoft.com/azure-cli
+
+  sentry:
+    image: saxix/sentry-localdev
+    container_name: gundam-sentry
+    environment:
+      - SENTRY_SECRET_KEY=abc
+      - SENTRY_REDIS_HOST=redis
+      - SENTRY_DB_NAME=sentry
+      - SENTRY_POSTGRES_HOST=db
+      - SENTRY_ADMIN_USERNAME=bitcaster
+      - SENTRY_ADMIN_PASSWORD=password
+      - C_FORCE_ROOT=1 # never in production
+    ports:
+      - 9000:9000
+    volumes:
+      - sentry:/conf
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+
+  azurite-container:
+    image: mcr.microsoft.com/azure-cli
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
