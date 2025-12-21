@@ -17,6 +17,7 @@ authors = [
 requires-python = "==3.13.*"
 classifiers = [ "Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.13" ]
 dynamic = [ "version" ]
+
 dependencies = [
   "apache-libcloud>=3.8",
   "celery>=5.3.6",
@@ -84,6 +85,8 @@ dependencies = [
   "twilio>=9.0.4",
   "user-agents>=2.2",
 ]
+
+scripts.bitcaster = "bitcaster.cli.__main__:cli"
 
 [dependency-groups]
 dev = [

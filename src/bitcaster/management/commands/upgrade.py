@@ -191,10 +191,13 @@ class Command(BaseCommand):
             # Inside the function you want to add task dynamically
             schedule_every_minute, _ = CrontabSchedule.objects.get_or_create(minute="*/1")
             PeriodicTask.objects.get_or_create(
-                name="occurence_processor",
+                name="schedule_occurrences",
                 defaults={"task": "bitcaster.tasks.schedule_occurrences", "crontab": schedule_every_minute},
             )
-
+            PeriodicTask.objects.get_or_create(
+                name="beat_heartbeat",
+                defaults={"task": "bitcaster.tasks.beat_heartbeat", "crontab": schedule_every_minute},
+            )
             schedule_every_night, _ = CrontabSchedule.objects.get_or_create(hour=3, minute=30)
             PeriodicTask.objects.get_or_create(
                 name="purge_occurrences",

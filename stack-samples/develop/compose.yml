@@ -62,22 +62,6 @@ services:
       db:
         condition: service_healthy
 
-  beat:
-    <<: *common
-    command: ["beat"]
-    depends_on:
-      db:
-        condition: service_healthy
-
-  flower:
-      <<: *common
-      command: ["flower"]
-      ports:
-        - 5555:5555
-      depends_on:
-        db:
-          condition: service_healthy
-
   db:
     image: postgres:15
     user: postgres

@@ -1,20 +1,30 @@
 from json import loads
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button
 from constance.admin import Config
 from django import forms
+from django.db.models import Field
+from django.forms import TypedChoiceField
 from django.http import HttpRequest
 from django.utils.translation import gettext as _
 from django_celery_beat.admin import PeriodicTaskAdmin as _PeriodicTaskAdmin
+from django_celery_beat.admin import PeriodicTaskForm as _PeriodicTaskForm
+from django_celery_beat.admin import TaskChoiceField, TaskSelectWidget
 from django_celery_beat.models import PeriodicTask
 from flags.admin import FlagStateAdmin as _FlagStateAdmin
 from flags.forms import FlagStateForm as BaseFlagStateForm
 from flags.models import FlagState
 from flags.state import flag_enabled
-from unfold.widgets import UnfoldAdminSelectWidget, UnfoldAdminTextInputWidget, UnfoldBooleanSwitchWidget
+from jsoneditor.forms import JSONEditor
 
 from bitcaster.admin.base import BaseAdmin
+from bitcaster.forms import unfold as uwidgets
+from bitcaster.forms.unfold import (
+    UnfoldAdminSelectWidget,
+    UnfoldAdminTextInputWidget,
+    UnfoldBooleanSwitchWidget,
+)
 
 if TYPE_CHECKING:
     from django.http import HttpResponse
@@ -47,7 +57,36 @@ class FlagStateAdmin(BaseAdmin, _FlagStateAdmin):
     active.boolean = True
 
 
+class UnfoldTaskSelectWidget(UnfoldAdminSelectWidget, TaskSelectWidget):
+    template_name = "unfold/widgets/select.html"
+
+
+class PeriodicTaskForm(_PeriodicTaskForm):
+    regtask = TaskChoiceField(
+        label=_("Task (registered)"),
+        required=False,
+        widget=UnfoldTaskSelectWidget,
+    )
+    task = forms.CharField(
+        label=_("Task (custom)"),
+        required=False,
+        max_length=200,
+        widget=UnfoldAdminTextInputWidget,
+    )
+
+
 class PeriodicTaskAdmin(BaseAdmin, _PeriodicTaskAdmin):
+    form = PeriodicTaskForm
+    fieldsets = (
+        (_("General"), {"classes": ["tab"], "fields": ["name", "task", "regtask", "enabled", "description"]}),
+        (_("Schedule"), {"classes": ["tab"], "fields": ["interval", "crontab", "solar", "clocked"]}),
+        (_("Arguments"), {"classes": ["tab"], "fields": ["args", "kwargs"]}),
+        (_("Advanced"), {"classes": ["tab"], "fields": ["queue", "exchange", "routing_key", "headers", "priority"]}),
+        (_("Date/Time"), {"classes": ["tab"], "fields": ["expires", "expire_seconds", "one_off", "start_time"]}),
+        (_("Infos"), {"classes": ["tab"], "fields": ["last_run_at", "total_run_count", "date_changed"]}),
+    )
+    readonly_fields = ("total_run_count", "last_run_at", "date_changed")
+
     @button()
     def run(self, request: HttpRequest, pk: str) -> "HttpResponse":
         pt = PeriodicTask.objects.get(pk=pk)
@@ -55,3 +94,19 @@ class PeriodicTaskAdmin(BaseAdmin, _PeriodicTaskAdmin):
         if task:  # pragma: no branch
             task.apply_async(args=loads(pt.args), kwargs=loads(pt.kwargs), queue=pt.queue, periodic_task_name=pt.name)
             self.message_user(request, _("{0} task was successfully queued").format(pt.name))
+
+    def formfield_for_choice_field(self, db_field: Field, request: HttpRequest, **kwargs) -> TypedChoiceField:
+        formfield = super().formfield_for_choice_field(db_field, request, **kwargs)
+        if db_field.name == "regtask":
+            formfield.widget = uwidgets.UnfoldAdminTextInputWidget()
+
+        return formfield
+
+    def formfield_for_dbfield(self, db_field: Field, request: HttpRequest, **kwargs: Any) -> Field | None:
+        formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name in ["args", "kwargs"]:
+            formfield.widget = JSONEditor()
+        elif db_field.name == "task":
+            formfield.widget = uwidgets.UnfoldAdminTextInputWidget()
+
+        return formfield

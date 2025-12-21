@@ -1,22 +1,16 @@
 from typing import Any
 
 from django import forms
-from django.contrib import admin
 from django.forms import Field
 
 from bitcaster.constants import bitcaster
 from bitcaster.models import Application, Project
-
-from .widgets import AutocompletSelectEnh
 
 
 class ApplicationBaseForm(forms.ModelForm["Application"]):
     project = forms.ModelChoiceField(
         queryset=Project.objects.exclude(name=bitcaster.PROJECT),
         required=True,
-        widget=AutocompletSelectEnh(
-            Application._meta.get_field("project"), admin.site, exclude={"name": bitcaster.PROJECT}
-        ),
     )
     slug = forms.SlugField(required=False)
 

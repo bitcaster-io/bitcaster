@@ -4,6 +4,7 @@ ARG GIT_SHA
 ARG BUILD_DATE
 
 RUN set -x \
+  && apt-get update && apt-get install -y --no-install-recommends debian-archive-keyring \
   && runtimeDeps=" \
     nginx \
     gettext \
@@ -51,7 +52,7 @@ ENV VIRTUAL_ENV=/venv \
 
 RUN <<EOF cat> /RELEASE
 {"version": "$VERSION",
-  "commit": "$GIT_SHA"
+  "commit": "$GIT_SHA",
   "date": "$BUILD_DATE"
 }
 EOF

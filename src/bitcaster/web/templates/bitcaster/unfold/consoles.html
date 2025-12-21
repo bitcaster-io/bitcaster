@@ -30,6 +30,13 @@
                 <span class="material-symbols-outlined mr-2">apps</span>
                 <span class="leading-none self-center">Tools</span>
             </a>
+            <a class="cursor-pointer flex flex-row leading-none mx-1 px-3 py-1.5 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200"
+               href="{% url "admin:console-monitorview" %}"
+               x-on:click="adminTheme = 'dark'"
+               x-bind:class="adminTheme == 'dark' && ''">
+                <span class="material-symbols-outlined mr-2">planner_review</span>
+                <span class="leading-none self-center">Monitor</span>
+            </a>
         {% endif %}
     </nav>
 </div>

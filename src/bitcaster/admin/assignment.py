@@ -9,15 +9,10 @@ from django.utils.translation import gettext as _
 
 from bitcaster.admin.base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from bitcaster.forms.assignment import AssignmentForm
-from bitcaster.forms.widgets import AutocompletSelectEnh
 from bitcaster.models import Address, Assignment
 
 if TYPE_CHECKING:
-    from django.db.models import ForeignKey
-    from django.db.models.fields.related import _ST
-    from django.forms import ModelChoiceField, ModelForm
-
-    from bitcaster.types.django import AnyModel_co
+    from django.forms import ModelForm
 
     AssignmentT = TypeVar("AssignmentT", bound=Assignment)
     AddressT = TypeVar("AddressT", bound=Address)
@@ -42,18 +37,6 @@ class AssignmentAdmin(BaseAdmin, BitcasterModelAdmin[Assignment]):
         self, request: HttpRequest, obj: Assignment | None = None, change: bool = False, **kwargs: Any
     ) -> "type[ModelForm[Assignment]]":
         return super().get_form(request, obj, change, **kwargs)
-
-    def formfield_for_foreignkey(
-        self, db_field: "ForeignKey[Assignment, _ST]", request: HttpRequest, **kwargs: Any
-    ) -> "ModelChoiceField[AnyModel_co]":
-        form_field = super().formfield_for_foreignkey(db_field, request, **kwargs)
-        if db_field.name == "address":
-            filters = {}
-            if user := request.GET.get("user", None):
-                filters = {"user": user}
-            form_field.widget = AutocompletSelectEnh(db_field, self.admin_site, filters=filters)
-            form_field.queryset = form_field.queryset.filter(**filters)
-        return form_field  # type: ignore[return-value]
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def validate(self, request: HttpRequest, pk: str) -> "HttpResponse":

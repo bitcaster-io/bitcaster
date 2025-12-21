@@ -87,6 +87,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
     def post(self, request: "Request", *args: Any, **kwargs: Any) -> Response:
         ser = ActionSerializer(data=request.data)
         correlation_id = request.query_params.get("cid", None)
+
         if ser.is_valid():
             slug = self.kwargs["evt"]
             try:

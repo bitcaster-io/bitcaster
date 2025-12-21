@@ -12,7 +12,7 @@ from bitcaster.tasks import (
     monitor_run,
     process_occurrence,
     purge_occurrences,
-    schedule_occurrences,
+    scan_occurrences,
 )
 
 if TYPE_CHECKING:
@@ -243,7 +243,7 @@ def test_schedule_occurrences(setup: "Context", monkeypatch: pytest.MonkeyPatch)
         mocked_notify := Mock(return_value=[True, {"delivered": [], "recipients": []}]),
     )
 
-    schedule_occurrences()
+    scan_occurrences()
 
     o: Occurrence = setup["occurrence"]
     o.refresh_from_db()
