@@ -13,6 +13,7 @@ from .monitor import MonitorAdmin
 from .notification import NotificationAdmin
 from .occurrence import OccurrenceAdmin
 from .organization import OrganizationAdmin
+from .overrides import LogEntryAdmin
 from .project import ProjectAdmin
 from .user import UserAdmin
 from .userrole import UserRoleAdmin
@@ -26,6 +27,7 @@ __all__ = [
     "DistributionListAdmin",
     "EventAdmin",
     "GroupAdmin",
+    "LogEntryAdmin",
     "LogMessageAdmin",
     "MediaAdmin",
     "MessageAdmin",

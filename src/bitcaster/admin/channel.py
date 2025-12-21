@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bitcaster.forms.unfold import UnfoldAdminForm
-from bitcaster.models import Assignment, Channel, Project, User
+from bitcaster.models import Assignment, Channel, User
 
 from ..dispatchers.base import Payload
 from ..forms.channel import ChannelChangeForm
@@ -59,12 +59,6 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
     def get_queryset(self, request: "HttpRequest") -> QuerySet[Channel]:
         return super().get_queryset(request).select_related("project", "organization")
 
-    def get_changeform_initial_data(self, request):
-        initial = super().get_changeform_initial_data(request)
-        if initial.get("project"):
-            initial["organization"] = Project.objects.get(pk=initial["project"]).organization
-        return initial
-
     def get_readonly_fields(self, request: "HttpRequest", obj: "AnyModel_co | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk == config.SYSTEM_EMAIL_CHANNEL:
             return ["name", "organization", "project", "parent", "protocol", "locked"]
@@ -76,7 +70,8 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
     def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         ch: Channel = button.context["original"]
-        button.href = f"{url}?channels__exact={ch.pk}"
+        if ch:
+            button.href = f"{url}?channels__exact={ch.pk}"
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":

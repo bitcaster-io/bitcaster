@@ -15,10 +15,11 @@ if TYPE_CHECKING:
 @click.command()
 @click.option("-l", "--loglevel", default="info", help="Logging level (default: info)")
 @click.option("--events/--no-events", "events", default=True, help="Enable/disable worker events (default: enabled)")
+@click.option("--purge", default=False, help="Enable/disable worker events (default: enabled)")
 @click.option("--concurrency", default=4, type=int, help="Number of child processes processing the queue")
 @click.option("--scheduler/--no-scheduler", "scheduler", default=True, help="Embedded Beat Options")
 @click.option("--queues", default=None, help="List of queues to enable for this worker")
-def run(events: bool, loglevel: str, scheduler: bool, concurrency: int, queues: str | None) -> None:
+def run(events: bool, loglevel: str, scheduler: bool, concurrency: int, queues: str | None, purge: bool) -> None:
     """Start background process manager."""
     from bitcaster.config.celery import app
 
@@ -41,6 +42,7 @@ def run(events: bool, loglevel: str, scheduler: bool, concurrency: int, queues: 
         "task_events": events,
         "pool": "prefork",
         "statedb": None,
+        "purge": purge,
         "beat": run_beat,
         "scheduler": settings.CELERY_BEAT_SCHEDULER,
     }

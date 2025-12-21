@@ -21,6 +21,7 @@ from .organization import OrganizationAdmin
 from .overrides import (
     FlagState,
     FlagStateAdmin,
+    LogEntryAdmin,
     PeriodicTask,
     PeriodicTaskAdmin,
 )
@@ -29,13 +30,13 @@ from .user import UserAdmin
 from .userrole import UserRoleAdmin
 
 admin.site.register(models.Group, GroupAdmin)
+admin.site.register(models.LogEntry, LogEntryAdmin)
 
 admin.site.unregister(FlagState)
 admin.site.register(FlagState, FlagStateAdmin)
 
 admin.site.unregister(PeriodicTask)
 admin.site.register(PeriodicTask, PeriodicTaskAdmin)
-
 
 admin.site.register(models.Address, AddressAdmin)
 admin.site.register(models.ApiKey, ApiKeyAdmin)

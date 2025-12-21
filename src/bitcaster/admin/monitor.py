@@ -68,7 +68,10 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, 
     def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         ch: Channel = button.context["original"]
-        button.href = f"{url}?channels__exact={ch.pk}"
+        if ch:
+            button.href = f"{url}?channels__exact={ch.pk}"
+        else:
+            button.visible = False
 
     def response_add(self, request: HttpRequest, obj: Monitor, post_url_continue: str | None = None) -> HttpResponse:
         base_url = reverse("admin:bitcaster_monitor_configure", args=[obj.pk])

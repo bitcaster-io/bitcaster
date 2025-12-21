@@ -4,13 +4,13 @@ from django import forms
 from django.forms import Field
 
 from bitcaster.constants import bitcaster
+from bitcaster.forms import unfold
 from bitcaster.models import Application, Project
 
 
 class ApplicationBaseForm(forms.ModelForm["Application"]):
     project = forms.ModelChoiceField(
-        queryset=Project.objects.exclude(name=bitcaster.PROJECT),
-        required=True,
+        queryset=Project.objects.exclude(name=bitcaster.PROJECT), required=True, widget=unfold.UnfoldAdminSelect2Widget
     )
     slug = forms.SlugField(required=False)
 

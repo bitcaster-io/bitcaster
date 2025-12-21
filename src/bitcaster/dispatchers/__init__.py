@@ -1,15 +1,15 @@
-from .email import EmailDispatcher  # noqa
-from .gmail import GMailDispatcher  # noqa
-from .log import BitcasterSysDispatcher  # noqa
-from .mailgun import MailgunDispatcher  # noqa
-from .mailjet import MailJetDispatcher  # noqa
-from .sendgrid import SendGridDispatcher  # noqa
-from .slack import SlackDispatcher  # noqa
-from .sys import SystemDispatcher  # noqa
-from .twilio import TwilioSMS  # noqa
+from .email import EmailDispatcher
+from .gmail import GMailDispatcher
+from .log import LocalDatabaseDispatcher
+from .mailgun import MailgunDispatcher
+from .mailjet import MailJetDispatcher
+from .sendgrid import SendGridDispatcher
+from .slack import SlackDispatcher
+from .sys import SystemDispatcher
+from .twilio import TwilioSMS
 
 __all__ = [
-    "BitcasterSysDispatcher",
+    "LocalDatabaseDispatcher",
     "EmailDispatcher",
     "GMailDispatcher",
     "MailJetDispatcher",

@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], UnfoldModelAdmin[Project]):
     search_fields = ("name",)
-    list_display = ("name", "organization", "environments")
+    list_display = ("name", "organization", "slug", "environments")
     list_filter = (("organization", AutoCompleteFilter),)
     autocomplete_fields = ("organization", "owner")
     exclude = ("locked",)

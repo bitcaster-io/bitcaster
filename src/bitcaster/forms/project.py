@@ -1,10 +1,11 @@
 from django import forms
 
+from bitcaster.forms import unfold
 from bitcaster.models import Project
 
 
 class ProjectBaseForm(forms.ModelForm["Project"]):
-    slug = forms.SlugField(required=False)
+    slug = forms.SlugField(required=False, widget=unfold.UnfoldAdminTextInputWidget)
 
     class Meta:
         model = Project

@@ -2,10 +2,14 @@ import os
 
 from .. import env
 
+SYSTEM_LEVEL = env("LOGGING_LEVEL")
+if env("DEBUG") and SYSTEM_LEVEL == "CRITICAL" and "LOGGING_LEVEL" not in os.environ:
+    SYSTEM_LEVEL = "INFO"
 
-def get_logging_level(logger: str) -> str:
-    key = f"{logger.upper()}_LOGGING_LEVEL"
-    return os.environ.get(key, "CRITICAL")
+
+def get_logging_level(logger: str, default: str = "") -> str:
+    key = f"LOGGING_LEVEL_{logger.upper()}"
+    return os.environ.get(key, default or SYSTEM_LEVEL)
 
 
 LOGGING = {
@@ -19,18 +23,26 @@ LOGGING = {
     "handlers": {
         "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
         "front_door": {"class": "logging.StreamHandler", "formatter": "front_door"},
-        "null": {
-            "class": "logging.NullHandler",
-        },
+        "null": {"class": "logging.NullHandler"},
     },
     "root": {
         "handlers": ["console"],
-        "level": "ERROR",
+        "level": SYSTEM_LEVEL,
     },
     "loggers": {
         "environ": {
             "handlers": ["console"],
             "level": get_logging_level("environ"),
+            "propagate": False,
+        },
+        "django.template": {
+            "handlers": ["null"],
+            "level": get_logging_level("django"),
+            "propagate": False,
+        },
+        "django.utils.autoreload": {
+            "handlers": ["null"],
+            "level": get_logging_level("django"),
             "propagate": False,
         },
         "django": {
@@ -59,7 +71,7 @@ LOGGING = {
         },
         "bitcaster": {
             "handlers": ["console"],
-            "level": env("LOGGING_LEVEL"),
+            "level": get_logging_level("bitcaster", "DEBUG" if env("DEBUG") else None),
             "propagate": False,
         },
     },

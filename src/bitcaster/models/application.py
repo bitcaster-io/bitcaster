@@ -33,7 +33,9 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
     )
 
     active = models.BooleanField(default=True, help_text=_("Whether the application should be active"))
-
+    auto_crete_event = models.BooleanField(
+        default=False, help_text=_("If true unknown events will be automatically created")
+    )
     from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
     subject_prefix = models.CharField(
         max_length=50,

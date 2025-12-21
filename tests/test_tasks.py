@@ -235,7 +235,7 @@ def celery_config() -> dict[str, str]:
 
 
 @pytest.mark.django_db(transaction=True)
-def test_schedule_occurrences(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
+def test_scan_occurrences(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     monkeypatch.setattr(

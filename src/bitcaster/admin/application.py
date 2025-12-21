@@ -35,6 +35,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
     readonly_fields = ["locked"]
     autocomplete_fields = ("owner",)
     form = ApplicationChangeForm
+    change_form_template = "bitcaster/admin/application/change_form.html"
 
     def has_add_permission(self, request: HttpRequest) -> bool:
         from bitcaster.models import Project
@@ -72,13 +73,21 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
         url = reverse("admin:bitcaster_event_changelist")
         application: Application = button.context["original"]
         # application__project__exact=4&application__exact=5
-        button.href = f"{url}?application__exact={application.pk}&application__project__exact={application.project.pk}"
+        if application:
+            button.href = (
+                f"{url}?application__exact={application.pk}&application__project__exact={application.project.pk}"
+            )
+        else:
+            button.visible = False
 
     @link(change_form=True, change_list=False)
     def notifications(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_notification_changelist")
         application: Application = button.context["original"]
-        button.href = f"{url}?event__application__exact={application.pk}"
+        if application:
+            button.href = f"{url}?event__application__exact={application.pk}"
+        else:
+            button.visible = False
 
     @button(
         visible=lambda s: s.context["original"].project.organization.name != bitcaster.ORGANIZATION,
