@@ -71,7 +71,7 @@ LOGGING = {
         },
         "bitcaster": {
             "handlers": ["console"],
-            "level": get_logging_level("bitcaster", "DEBUG" if env("DEBUG") else None),
+            "level": get_logging_level("bitcaster"),
             "propagate": False,
         },
     },

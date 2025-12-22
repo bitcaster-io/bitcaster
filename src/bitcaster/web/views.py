@@ -65,7 +65,7 @@ class LoginView(BaseLoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self) -> str:
-        return reverse_lazy("home")
+        return str(reverse_lazy("home"))
 
     def form_invalid(self, form: "Form") -> HttpResponse:
         messages.error(self.request, "Invalid username or password")
