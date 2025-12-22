@@ -1,4 +1,5 @@
 import factory
+from django.contrib.admin.models import LogEntry as DjangoLogEntry
 
 from bitcaster.models import LogEntry
 
@@ -14,3 +15,12 @@ class LogEntryFactory(AutoRegisterModelFactory[LogEntry]):
 
     class Meta:
         model = LogEntry
+
+
+class DjangoLogEntryFactory(AutoRegisterModelFactory[DjangoLogEntry]):
+    action_flag = LogEntry.ADDITION
+    user = factory.SubFactory(UserFactory)
+    content_type = factory.SubFactory(ContentTypeFactory)
+
+    class Meta:
+        model = DjangoLogEntry

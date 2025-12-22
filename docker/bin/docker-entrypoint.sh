@@ -6,8 +6,6 @@ export UWSGI_PROCESSES="${UWSGI_PROCESSES:-"4"}"
 export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-"bitcaster.config.settings"}"
 mkdir -p "${MEDIA_ROOT}" "${STATIC_ROOT}" || echo "Cannot create dirs ${MEDIA_ROOT} ${STATIC_ROOT}"
 
-echo $STATIC_ROOT
-echo $MEDIA_ROOT
 
 case "$1" in
     worker)

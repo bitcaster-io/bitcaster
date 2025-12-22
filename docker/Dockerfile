@@ -71,6 +71,8 @@ ADD docker/bin/* /usr/local/bin/
 
 COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/
 COPY --from=builder /venv /venv
+RUN mkdir -p /var/storage/media/ /var/storage/static/ \
+    && chown -R bitcaster /var/storage/
 
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
     VERSION=$VERSION \
@@ -85,6 +87,7 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
 
 EXPOSE 8000
 USER bitcaster
+
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run"]
 

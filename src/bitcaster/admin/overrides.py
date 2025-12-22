@@ -17,14 +17,11 @@ from flags.forms import FlagStateForm as BaseFlagStateForm
 from flags.models import FlagState
 from flags.state import flag_enabled
 from jsoneditor.forms import JSONEditor
+from unfold.contrib.filters.admin import RelatedDropdownFilter
 
-from bitcaster.admin.base import BaseAdmin
+from bitcaster.admin.base import BaseAdmin, BitcasterModelAdmin
 from bitcaster.forms import unfold as uwidgets
-from bitcaster.forms.unfold import (
-    UnfoldAdminSelectWidget,
-    UnfoldAdminTextInputWidget,
-    UnfoldBooleanSwitchWidget,
-)
+from bitcaster.models import LogEntry
 
 if TYPE_CHECKING:
     from django.http import HttpResponse
@@ -33,14 +30,14 @@ __all__ = ["Config", "FlagStateAdmin", "FlagState", "PeriodicTask", "PeriodicTas
 
 
 class FlagStateForm(BaseFlagStateForm):
-    name = forms.ChoiceField(label="Flag", required=True, widget=UnfoldAdminSelectWidget)
-    condition = forms.ChoiceField(label="Condition name", required=True, widget=UnfoldAdminSelectWidget)
-    value = forms.CharField(label="Expected value", required=True, widget=UnfoldAdminTextInputWidget)
+    name = forms.ChoiceField(label="Flag", required=True, widget=uwidgets.UnfoldAdminSelectWidget)
+    condition = forms.ChoiceField(label="Condition name", required=True, widget=uwidgets.UnfoldAdminSelectWidget)
+    value = forms.CharField(label="Expected value", required=True, widget=uwidgets.UnfoldAdminTextInputWidget)
     required = forms.BooleanField(
         label="Required",
         required=False,
         help_text=('All conditions marked "required" must be met to enable the flag'),
-        widget=UnfoldBooleanSwitchWidget,
+        widget=uwidgets.UnfoldBooleanSwitchWidget,
     )
 
 
@@ -57,7 +54,7 @@ class FlagStateAdmin(BaseAdmin, _FlagStateAdmin):
     active.boolean = True
 
 
-class UnfoldTaskSelectWidget(UnfoldAdminSelectWidget, TaskSelectWidget):
+class UnfoldTaskSelectWidget(uwidgets.UnfoldAdminSelectWidget, TaskSelectWidget):
     template_name = "unfold/widgets/select.html"
 
 
@@ -71,7 +68,7 @@ class PeriodicTaskForm(_PeriodicTaskForm):
         label=_("Task (custom)"),
         required=False,
         max_length=200,
-        widget=UnfoldAdminTextInputWidget,
+        widget=uwidgets.UnfoldAdminTextInputWidget,
     )
 
 
@@ -110,3 +107,20 @@ class PeriodicTaskAdmin(BaseAdmin, _PeriodicTaskAdmin):
             formfield.widget = uwidgets.UnfoldAdminTextInputWidget()
 
         return formfield
+
+
+class LogEntryAdmin(BaseAdmin, BitcasterModelAdmin[LogEntry]):
+    list_display = (
+        "action_time",
+        "user",
+        "action_flag",
+        "object_repr",
+    )
+    readonly_fields = ("user", "content_type", "object_id", "object_repr", "action_flag", "change_message")
+    list_filter = (
+        ("content_type", RelatedDropdownFilter),
+        ("user", RelatedDropdownFilter),
+    )
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        return False

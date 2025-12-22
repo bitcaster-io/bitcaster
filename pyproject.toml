@@ -21,6 +21,7 @@ dynamic = [ "version" ]
 dependencies = [
   "apache-libcloud>=3.8",
   "celery>=5.3.6",
+  "cryptography==45.0.3",
   "django>=5.2.1",
   "django-ace>=1.43.3",
   "django-admin-extra-buttons>=2.1.1",
@@ -150,6 +151,7 @@ docs = [
 ]
 mypy = [
   "boto3-stubs>=1.34.105",
+  "celery-types",
   "djangorestframework-stubs",
   "mypy>=1.9",
   "mypy-boto3>=1.34.105",

@@ -131,7 +131,7 @@ class Command(BaseCommand):
                 call_command("check", deploy=True, verbosity=self.verbosity - 1)
             if self.static:
                 static_root = Path(str(settings.STATIC_ROOT))
-                echo(f"Run collectstatic to: '{static_root}' - '{static_root.absolute()}")
+                echo(f"Run collectstatic to: '{static_root}' '({static_root.absolute()})")
                 if not static_root.exists():
                     static_root.mkdir(parents=True)
                 call_command("collectstatic", **extra)
@@ -191,8 +191,8 @@ class Command(BaseCommand):
             # Inside the function you want to add task dynamically
             schedule_every_minute, _ = CrontabSchedule.objects.get_or_create(minute="*/1")
             PeriodicTask.objects.get_or_create(
-                name="schedule_occurrences",
-                defaults={"task": "bitcaster.tasks.schedule_occurrences", "crontab": schedule_every_minute},
+                name="scan_occurrences",
+                defaults={"task": "bitcaster.tasks.scan_occurrences", "crontab": schedule_every_minute},
             )
             PeriodicTask.objects.get_or_create(
                 name="beat_heartbeat",
