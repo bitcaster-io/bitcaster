@@ -1,18 +1,19 @@
 import logging
 
+import dramatiq
+from apscheduler.schedulers.blocking import BlockingScheduler
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.utils import timezone
 
-from bitcaster.config.celery import app
 from bitcaster.constants import bitcaster
-from bitcaster.models import LogEntry
 
 logger = logging.getLogger(__name__)
+scheduler = BlockingScheduler()
 
 
-@app.task(expires=55)
+@dramatiq.actor
 def beat_heartbeat() -> None:
     cache.set(
         "celery:beat:alive",
@@ -21,7 +22,7 @@ def beat_heartbeat() -> None:
     )
 
 
-@app.task()
+@dramatiq.actor
 def process_occurrence(occurrence_pk: int) -> int:
     from bitcaster.models import Occurrence
 
@@ -29,7 +30,7 @@ def process_occurrence(occurrence_pk: int) -> int:
     return o.process()
 
 
-@app.task()
+@dramatiq.actor
 def scan_occurrences() -> None:
     from bitcaster.models import Occurrence
 
@@ -40,13 +41,13 @@ def scan_occurrences() -> None:
             .filter(status=Occurrence.Status.NEW)
             .exclude(Q(event__paused=True) | Q(event__application__paused=True))
         ):
-            process_occurrence.delay(o.id)
+            process_occurrence.send(o.id)
     except Exception as e:
         logger.exception(e)
         raise
 
 
-@app.task()
+@dramatiq.actor
 def purge_occurrences() -> None | Exception:
     from bitcaster.models import Occurrence
 
@@ -57,11 +58,11 @@ def purge_occurrences() -> None | Exception:
         return e
 
 
-@app.task()
+@dramatiq.actor
 def monitor_run(pk: str) -> str:
     from django.contrib.contenttypes.models import ContentType
 
-    from bitcaster.models import Monitor
+    from bitcaster.models import LogEntry, Monitor
 
     try:
         monitor: "Monitor" = Monitor.objects.get(pk=pk)

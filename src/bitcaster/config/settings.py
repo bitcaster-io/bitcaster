@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "admin_extra_buttons",
     "social_django",
     "csp",
-    "django_celery_beat",
     "smart_selects",
     "adminfilters",
     "debug_toolbar",
@@ -216,10 +215,10 @@ STORAGES = {
 
 from .fragments.agents import *  # noqa
 from .fragments.bitcaster import *  # noqa
-from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.csp import *  # noqa
 from .fragments.debug_toolbar import *  # noqa
+from .fragments.dramatiq import *  # noqa
 from .fragments.flags import *  # noqa
 from .fragments.logging import *  # noqa
 from .fragments.rest_framework import *  # noqa

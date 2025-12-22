@@ -18,7 +18,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.utils._os import safe_join
 from django.utils.http import http_date
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.static import directory_index, was_modified_since
 

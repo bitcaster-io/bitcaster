@@ -20,7 +20,8 @@ dynamic = [ "version" ]
 
 dependencies = [
   "apache-libcloud>=3.8",
-  "celery>=5.3.6",
+  "apscheduler>=3.11.2",
+  "cron-descriptor>=2.0.6",
   "cryptography==45.0.3",
   "django>=5.2.1",
   "django-ace>=1.43.3",
@@ -29,7 +30,6 @@ dependencies = [
   "django-adminfilters>=2.6",
   "django-anymail>=10.3",
   "django-bitfield>=2.2",
-  "django-celery-beat>=2.6",
   "django-concurrency>=2.5",
   "django-constance>=3.1",
   "django-csp>=3.8",
@@ -57,6 +57,7 @@ dependencies = [
   "django-tinymce>=4",
   "django-unfold>=0.72",
   "djangorestframework>=3.15",
+  "dramatiq>=2",
   "drf-extensions>=0.7.1",
   "drf-nested-routers>=0.93.5",
   "drf-spectacular>=0.27.1",
@@ -87,7 +88,7 @@ dependencies = [
   "user-agents>=2.2",
 ]
 
-scripts.bitcaster = "bitcaster.cli.__main__:cli"
+scripts.bc = "bitcaster.cli.__main__:cli"
 
 [dependency-groups]
 dev = [
@@ -108,7 +109,6 @@ dev = [
   "pyfakefs>=5.8",
   "pyquery>=2",
   "pytest>=8.3.3",
-  "pytest-celery>=1.2",
   "pytest-coverage>=0",
   "pytest-django>=4.8",
   "pytest-echo>=1.7.3",

@@ -21,7 +21,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("auth", "0012_alter_user_first_name_max_length"),
-        ("django_celery_beat", "0019_alter_periodictasks_options"),
     ]
 
     operations = [

@@ -1,54 +1,44 @@
+import logging.config
 import os
-from typing import TYPE_CHECKING
 
 import click
-from celery.utils.nodenames import gethostname, host_format
-from django.conf import settings
-from django.core.cache import cache
-
-from bitcaster.cli import lock_key
-
-if TYPE_CHECKING:
-    from celery.apps.worker import Worker
+import dramatiq.cli
 
 
 @click.command()
 @click.option("-l", "--loglevel", default="info", help="Logging level (default: info)")
-@click.option("--events/--no-events", "events", default=True, help="Enable/disable worker events (default: enabled)")
-@click.option("--purge", default=False, help="Enable/disable worker events (default: enabled)")
-@click.option("--concurrency", default=4, type=int, help="Number of child processes processing the queue")
-@click.option("--scheduler/--no-scheduler", "scheduler", default=True, help="Embedded Beat Options")
-@click.option("--queues", default=None, help="List of queues to enable for this worker")
-def run(events: bool, loglevel: str, scheduler: bool, concurrency: int, queues: str | None, purge: bool) -> None:
-    """Start background process manager."""
-    from bitcaster.config.celery import app
+@click.option("-p", "--processes", default=1, help="Enable/disable worker events (default: enabled)")
+@click.option("-t", "--threads", default=1, help="Enable/disable worker events (default: enabled)")
+def run(loglevel: str, processes: int, threads: int) -> None:
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bitcaster.config.settings")
+    import django
 
-    run_beat = scheduler
-    if scheduler:
-        lock_timeout = 60  # seconds
-        if not cache.add(lock_key, gethostname(), lock_timeout):
-            click.echo("Scheduler lock held by another worker. Skipping Scheduler.")
-            run_beat = False  # another worker is running Beat
-        else:
-            click.echo("Acquired lock. Starting Scheduler.")
+    django.setup()
 
-    options = {
-        "hostname": host_format(f"bitcaster-{os.getpid()}", "bitcaster", gethostname()),
-        "loglevel": loglevel,
-        "concurrency": concurrency,
-        "traceback": True,
-        "without_gossip": True,
-        "without_mingle": True,
-        "task_events": events,
-        "pool": "prefork",
-        "statedb": None,
-        "purge": purge,
-        "beat": run_beat,
-        "scheduler": settings.CELERY_BEAT_SCHEDULER,
-    }
+    from django.conf import settings
 
-    if queues:
-        options["queues"] = queues
+    from bitcaster.config.dramatiq import broker
 
-    w: "Worker" = app.Worker(**options)
-    w.start()
+    logging.config.dictConfig(settings.DRAMATIQ_LOGGING)
+    dramatiq.set_broker(broker)
+    from dramatiq.cli import make_argument_parser
+
+    args = [
+        "dramatiq",
+        "--path",
+        ".",
+        "--processes",
+        str(processes),
+        "--threads",
+        str(threads),
+        "--worker-shutdown-timeout",
+        "600000",
+        "--skip-logging",
+        "bitcaster.tasks",
+    ]
+    if loglevel.lower() == "debug":
+        args.append("-vv")
+    elif loglevel.lower() == "info":
+        args.append("-v")
+
+    dramatiq.cli.main(make_argument_parser().parse_args(args))

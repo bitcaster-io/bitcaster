@@ -94,6 +94,18 @@ wheels = [
 ]
 
 [[package]]
+name = "apscheduler"
+version = "3.11.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tzlocal" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/07/12/3e4389e5920b4c1763390c6d371162f3784f86f85cd6d6c1bfe68eef14e2/apscheduler-3.11.2.tar.gz", hash = "sha256:2a9966b052ec805f020c8c4c3ae6e6a06e24b1bf19f2e11d91d8cca0473eef41", size = 108683, upload-time = "2025-12-22T00:39:34.884Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9f/64/2e54428beba8d9992aa478bb8f6de9e4ecaa5f8f513bcfd567ed7fb0262d/apscheduler-3.11.2-py3-none-any.whl", hash = "sha256:ce005177f741409db4e4dd40a7431b76feb856b9dd69d57e0da49d6715bfd26d", size = 64439, upload-time = "2025-12-22T00:39:33.303Z" },
+]
+
+[[package]]
 name = "asgiref"
 version = "3.11.0"
 source = { registry = "https://pypi.org/simple" }
@@ -211,7 +223,8 @@ name = "bitcaster"
 source = { editable = "." }
 dependencies = [
     { name = "apache-libcloud" },
-    { name = "celery" },
+    { name = "apscheduler" },
+    { name = "cron-descriptor" },
     { name = "cryptography" },
     { name = "django" },
     { name = "django-ace" },
@@ -220,7 +233,6 @@ dependencies = [
     { name = "django-adminfilters" },
     { name = "django-anymail" },
     { name = "django-bitfield" },
-    { name = "django-celery-beat" },
     { name = "django-concurrency" },
     { name = "django-constance" },
     { name = "django-csp" },
@@ -248,6 +260,7 @@ dependencies = [
     { name = "django-tinymce" },
     { name = "django-unfold" },
     { name = "djangorestframework" },
+    { name = "dramatiq" },
     { name = "drf-extensions" },
     { name = "drf-nested-routers" },
     { name = "drf-spectacular" },
@@ -297,7 +310,6 @@ dev = [
     { name = "pyfakefs" },
     { name = "pyquery" },
     { name = "pytest" },
-    { name = "pytest-celery" },
     { name = "pytest-coverage" },
     { name = "pytest-django" },
     { name = "pytest-echo" },
@@ -357,7 +369,8 @@ mypy = [
 [package.metadata]
 requires-dist = [
     { name = "apache-libcloud", specifier = ">=3.8" },
-    { name = "celery", specifier = ">=5.3.6" },
+    { name = "apscheduler", specifier = ">=3.11.2" },
+    { name = "cron-descriptor", specifier = ">=2.0.6" },
     { name = "cryptography", specifier = "==45.0.3" },
     { name = "django", specifier = ">=5.2.1" },
     { name = "django-ace", specifier = ">=1.43.3" },
@@ -366,7 +379,6 @@ requires-dist = [
     { name = "django-adminfilters", specifier = ">=2.6" },
     { name = "django-anymail", specifier = ">=10.3" },
     { name = "django-bitfield", specifier = ">=2.2" },
-    { name = "django-celery-beat", specifier = ">=2.6" },
     { name = "django-concurrency", specifier = ">=2.5" },
     { name = "django-constance", specifier = ">=3.1" },
     { name = "django-csp", specifier = ">=3.8" },
@@ -394,6 +406,7 @@ requires-dist = [
     { name = "django-tinymce", specifier = ">=4" },
     { name = "django-unfold", specifier = ">=0.72" },
     { name = "djangorestframework", specifier = ">=3.15" },
+    { name = "dramatiq", specifier = ">=2.0.0" },
     { name = "drf-extensions", specifier = ">=0.7.1" },
     { name = "drf-nested-routers", specifier = ">=0.93.5" },
     { name = "drf-spectacular", specifier = ">=0.27.1" },
@@ -443,7 +456,6 @@ dev = [
     { name = "pyfakefs", specifier = ">=5.8" },
     { name = "pyquery", specifier = ">=2" },
     { name = "pytest", specifier = ">=8.3.3" },
-    { name = "pytest-celery", specifier = ">=1.2" },
     { name = "pytest-coverage", specifier = ">=0" },
     { name = "pytest-django", specifier = ">=4.8" },
     { name = "pytest-echo", specifier = ">=1.7.3" },
@@ -958,19 +970,6 @@ wheels = [
 ]
 
 [[package]]
-name = "debugpy"
-version = "1.8.19"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/73/75/9e12d4d42349b817cd545b89247696c67917aab907012ae5b64bbfea3199/debugpy-1.8.19.tar.gz", hash = "sha256:eea7e5987445ab0b5ed258093722d5ecb8bb72217c5c9b1e21f64efe23ddebdb", size = 1644590, upload-time = "2025-12-15T21:53:28.044Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/71/3d/388035a31a59c26f1ecc8d86af607d0c42e20ef80074147cd07b180c4349/debugpy-1.8.19-cp313-cp313-macosx_15_0_universal2.whl", hash = "sha256:91e35db2672a0abaf325f4868fcac9c1674a0d9ad9bb8a8c849c03a5ebba3e6d", size = 2538859, upload-time = "2025-12-15T21:53:50.478Z" },
-    { url = "https://files.pythonhosted.org/packages/4a/19/c93a0772d0962294f083dbdb113af1a7427bb632d36e5314297068f55db7/debugpy-1.8.19-cp313-cp313-manylinux_2_34_x86_64.whl", hash = "sha256:85016a73ab84dea1c1f1dcd88ec692993bcbe4532d1b49ecb5f3c688ae50c606", size = 4292575, upload-time = "2025-12-15T21:53:51.821Z" },
-    { url = "https://files.pythonhosted.org/packages/5c/56/09e48ab796b0a77e3d7dc250f95251832b8bf6838c9632f6100c98bdf426/debugpy-1.8.19-cp313-cp313-win32.whl", hash = "sha256:b605f17e89ba0ecee994391194285fada89cee111cfcd29d6f2ee11cbdc40976", size = 5286209, upload-time = "2025-12-15T21:53:53.602Z" },
-    { url = "https://files.pythonhosted.org/packages/fb/4e/931480b9552c7d0feebe40c73725dd7703dcc578ba9efc14fe0e6d31cfd1/debugpy-1.8.19-cp313-cp313-win_amd64.whl", hash = "sha256:c30639998a9f9cd9699b4b621942c0179a6527f083c72351f95c6ab1728d5b73", size = 5328206, upload-time = "2025-12-15T21:53:55.433Z" },
-    { url = "https://files.pythonhosted.org/packages/25/3e/e27078370414ef35fafad2c06d182110073daaeb5d3bf734b0b1eeefe452/debugpy-1.8.19-py2.py3-none-any.whl", hash = "sha256:360ffd231a780abbc414ba0f005dad409e71c78637efe8f2bd75837132a41d38", size = 5292321, upload-time = "2025-12-15T21:54:16.024Z" },
-]
-
-[[package]]
 name = "defusedxml"
 version = "0.7.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1090,23 +1089,6 @@ dependencies = [
     { name = "six" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/1a/fc/872e9c94107a7ed3b9534c76be29cdc6697cc27332075fccc384e8c30b93/django-bitfield-2.2.0.tar.gz", hash = "sha256:1b21262acc4ec0af3f82ed04498a056cd9d5452532ac02771e004835a34e0b1b", size = 17365, upload-time = "2022-07-12T00:36:08.008Z" }
-
-[[package]]
-name = "django-celery-beat"
-version = "2.8.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "celery" },
-    { name = "cron-descriptor" },
-    { name = "django" },
-    { name = "django-timezone-field" },
-    { name = "python-crontab" },
-    { name = "tzdata" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/aa/11/0c8b412869b4fda72828572068312b10aafe7ccef7b41af3633af31f9d4b/django_celery_beat-2.8.1.tar.gz", hash = "sha256:dfad0201c0ac50c91a34700ef8fa0a10ee098cc7f3375fe5debed79f2204f80a", size = 175802, upload-time = "2025-05-13T06:58:29.246Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/61/e5/3a0167044773dee989b498e9a851fc1663bea9ab879f1179f7b8a827ac10/django_celery_beat-2.8.1-py3-none-any.whl", hash = "sha256:da2b1c6939495c05a551717509d6e3b79444e114a027f7b77bf3727c2a39d171", size = 104833, upload-time = "2025-05-13T06:58:27.309Z" },
-]
 
 [[package]]
 name = "django-concurrency"
@@ -1539,17 +1521,12 @@ wheels = [
 ]
 
 [[package]]
-name = "docker"
-version = "7.1.0"
+name = "dramatiq"
+version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pywin32", marker = "sys_platform == 'win32'" },
-    { name = "requests" },
-    { name = "urllib3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/91/9b/4a2ea29aeba62471211598dac5d96825bb49348fa07e906ea930394a83ce/docker-7.1.0.tar.gz", hash = "sha256:ad8c70e6e3f8926cb8a92619b832b4ea5299e2831c14284663184e200546fa6c", size = 117834, upload-time = "2024-05-23T11:13:57.216Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/06/73/0a082a71634438099e19a80dde5c1a4c0c8c19f21844bc997eb8971feaf9/dramatiq-2.0.0.tar.gz", hash = "sha256:85ff840bcc1393812e0079bb310036f647e011036124a7a1492692da7966a093", size = 102989, upload-time = "2025-11-18T11:11:33.322Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e3/26/57c6fb270950d476074c087527a558ccb6f4436657314bfb6cdf484114c4/docker-7.1.0-py3-none-any.whl", hash = "sha256:c96b93b7f0a746f9e77d325bcfb87422a3d8bd4f03136ae8a85b37f1898d5fc0", size = 147774, upload-time = "2024-05-23T11:13:55.01Z" },
+    { url = "https://files.pythonhosted.org/packages/38/4b/4a538e5c324d5d2f788f437531419c7331c7f958591c7b6075b5ce931520/dramatiq-2.0.0-py3-none-any.whl", hash = "sha256:732eff33f9080338b528f2dff7336a5145687cf9efb57a6a0bbd42ca937f1a30", size = 123850, upload-time = "2025-11-18T11:11:31.9Z" },
 ]
 
 [[package]]
@@ -3473,25 +3450,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pytest-celery"
-version = "1.2.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "celery" },
-    { name = "debugpy" },
-    { name = "docker" },
-    { name = "kombu" },
-    { name = "psutil" },
-    { name = "pytest-docker-tools" },
-    { name = "setuptools" },
-    { name = "tenacity" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/cf/91/21c4ce8728cea5b35e0cd1a5a89495ec3586411035db83e59b348cc80464/pytest_celery-1.2.1.tar.gz", hash = "sha256:7873fb3cf4fbfe9b0dd15d359bdb8bbab4a41c7e48f5b0adb7d36138d3704d52", size = 28190, upload-time = "2025-07-30T14:44:37.153Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b0/3b/3286146375677079c0d2c571a6806c53038c2be5f2c25f25eff0e7b739dc/pytest_celery-1.2.1-py3-none-any.whl", hash = "sha256:0441ab0c2a712b775be16ffda3d7deb31995fd7b5e9d71630e7ea98b474346a3", size = 49094, upload-time = "2025-07-30T14:44:35.492Z" },
-]
-
-[[package]]
 name = "pytest-cov"
 version = "7.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3539,19 +3497,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b1/fb/55d580352db26eb3d59ad50c64321ddfe228d3d8ac107db05387a2fadf3a/pytest_django-4.11.1.tar.gz", hash = "sha256:a949141a1ee103cb0e7a20f1451d355f83f5e4a5d07bdd4dcfdd1fd0ff227991", size = 86202, upload-time = "2025-04-03T18:56:09.338Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/be/ac/bd0608d229ec808e51a21044f3f2f27b9a37e7a0ebaca7247882e67876af/pytest_django-4.11.1-py3-none-any.whl", hash = "sha256:1b63773f648aa3d8541000c26929c1ea63934be1cfa674c76436966d73fe6a10", size = 25281, upload-time = "2025-04-03T18:56:07.678Z" },
-]
-
-[[package]]
-name = "pytest-docker-tools"
-version = "3.1.9"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "docker" },
-    { name = "pytest" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/2a/4d68472c2bac257c4e7389b5ca3a6b6cd7da88bce012bed321fdd31372ae/pytest_docker_tools-3.1.9.tar.gz", hash = "sha256:1b6a0cb633c20145731313335ef15bcf5571839c06726764e60cbe495324782b", size = 42824, upload-time = "2025-03-16T13:48:23.888Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/57/79/9dae84c244dabebca6a952e098d6ac9d13719b701fc5323ba6d00abc675a/pytest_docker_tools-3.1.9-py2.py3-none-any.whl", hash = "sha256:36f8e88d56d84ea177df68a175673681243dd991d2807fbf551d90f60341bfdb", size = 29268, upload-time = "2025-03-16T13:48:22.184Z" },
 ]
 
 [[package]]
@@ -3716,15 +3661,6 @@ psutil = [
 ]
 
 [[package]]
-name = "python-crontab"
-version = "3.3.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/99/7f/c54fb7e70b59844526aa4ae321e927a167678660ab51dda979955eafb89a/python_crontab-3.3.0.tar.gz", hash = "sha256:007c8aee68dddf3e04ec4dce0fac124b93bd68be7470fc95d2a9617a15de291b", size = 57626, upload-time = "2025-07-13T20:05:35.535Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/47/42/bb4afa5b088f64092036221843fc989b7db9d9d302494c1f8b024ee78a46/python_crontab-3.3.0-py3-none-any.whl", hash = "sha256:739a778b1a771379b75654e53fd4df58e5c63a9279a63b5dfe44c0fcc3ee7884", size = 27533, upload-time = "2025-07-13T20:05:34.266Z" },
-]
-
-[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -3816,16 +3752,6 @@ dependencies = [
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7d/98/80a2aa60c65ff84fbb8b3f2bb4f6e15c78ed64b2024a9ee868f4d2891e2d/pywebpush-2.1.2-py3-none-any.whl", hash = "sha256:53b79ec6e85e4c582ed865f088ecf354d81096857e012a7bcaf138359ff3cef9", size = 22656, upload-time = "2025-11-10T19:15:39.668Z" },
-]
-
-[[package]]
-name = "pywin32"
-version = "311"
-source = { registry = "https://pypi.org/simple" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a5/be/3fd5de0979fcb3994bfee0d65ed8ca9506a8a1260651b86174f6a86f52b3/pywin32-311-cp313-cp313-win32.whl", hash = "sha256:f95ba5a847cba10dd8c4d8fefa9f2a6cf283b8b88ed6178fa8a6c1ab16054d0d", size = 8705700, upload-time = "2025-07-14T20:13:26.471Z" },
-    { url = "https://files.pythonhosted.org/packages/e3/28/e0a1909523c6890208295a29e05c2adb2126364e289826c0a8bc7297bd5c/pywin32-311-cp313-cp313-win_amd64.whl", hash = "sha256:718a38f7e5b058e76aee1c56ddd06908116d35147e133427e59a3983f703a20d", size = 9494700, upload-time = "2025-07-14T20:13:28.243Z" },
-    { url = "https://files.pythonhosted.org/packages/04/bf/90339ac0f55726dce7d794e6d79a18a91265bdf3aa70b6b9ca52f35e022a/pywin32-311-cp313-cp313-win_arm64.whl", hash = "sha256:7b4075d959648406202d92a2310cb990fea19b535c7f4a78d3f5e10b926eeb8a", size = 8709318, upload-time = "2025-07-14T20:13:30.348Z" },
 ]
 
 [[package]]
@@ -4321,15 +4247,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/73/1a/ed3544579628c5709bae6fae2255e94c6982a9ff77d42d8ba59fd2f3b21a/tabcompleter-1.4.0.tar.gz", hash = "sha256:7562a9938e62f8e7c3be612c3ac4e14c5ec4307b58ba9031c148260e866e8814", size = 10431, upload-time = "2024-10-28T00:44:52.665Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/65/44/bb509c3d2c0b5a87e7a5af1d5917a402a32ff026f777a6d7cb6990746cbb/tabcompleter-1.4.0-py3-none-any.whl", hash = "sha256:d744aa735b49c0a6cc2fb8fcd40077fec47425e4388301010b14e6ce3311368b", size = 6725, upload-time = "2024-10-28T00:44:51.267Z" },
-]
-
-[[package]]
-name = "tenacity"
-version = "9.1.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/0a/d4/2b0cd0fe285e14b36db076e78c93766ff1d529d70408bd1d2a5a84f1d929/tenacity-9.1.2.tar.gz", hash = "sha256:1169d376c297e7de388d18b4481760d478b0e99a777cad3a9c86e556f4b697cb", size = 48036, upload-time = "2025-04-02T08:25:09.966Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e5/30/643397144bfbfec6f6ef821f36f33e57d35946c44a2352d3c9f0ae847619/tenacity-9.1.2-py3-none-any.whl", hash = "sha256:f77bf36710d8b73a50b2dd155c97b870017ad21afe6ab300326b0371b3b05138", size = 28248, upload-time = "2025-04-02T08:25:07.678Z" },
 ]
 
 [[package]]

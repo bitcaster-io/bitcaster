@@ -22,8 +22,6 @@ from .overrides import (
     FlagState,
     FlagStateAdmin,
     LogEntryAdmin,
-    PeriodicTask,
-    PeriodicTaskAdmin,
 )
 from .project import ProjectAdmin
 from .user import UserAdmin
@@ -35,8 +33,6 @@ admin.site.register(models.LogEntry, LogEntryAdmin)
 admin.site.unregister(FlagState)
 admin.site.register(FlagState, FlagStateAdmin)
 
-admin.site.unregister(PeriodicTask)
-admin.site.register(PeriodicTask, PeriodicTaskAdmin)
 
 admin.site.register(models.Address, AddressAdmin)
 admin.site.register(models.ApiKey, ApiKeyAdmin)

@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import timedelta
 from typing import Any
 
 from django import forms
@@ -14,7 +14,6 @@ from django.views.generic import TemplateView
 from unfold.views import UnfoldModelAdminViewMixin
 
 from bitcaster.cache.manager import CacheManager
-from bitcaster.config.celery import app
 from bitcaster.constants import bitcaster
 from bitcaster.forms import unfold as uwidgets
 
@@ -113,38 +112,6 @@ def last_seen_beat() -> dict[str, Any]:
     }
 
 
-def is_worker_running(timeout: float = 1.0) -> bool:
-    try:
-        insp = app.control.inspect(timeout=timeout)
-        replies = insp.ping()
-        return bool(replies)
-    except Exception:
-        return False
-
-
-def list_running_tasks() -> dict[str, list[dict[str, Any]]]:
-    i = app.control.inspect()
-
-    active_tasks = i.active()
-    ret = {}
-    if active_tasks:
-        for worker, tasks in active_tasks.items():
-            ret[worker] = []
-            for task in tasks:
-                started = task.get("time_start")
-                ret[worker].append(
-                    {
-                        "id": task["id"],
-                        "name": task["name"],
-                        "args": task["args"],
-                        "kwargs": task["kwargs"],
-                        "started_at": (datetime.fromtimestamp(started, tz=UTC).isoformat() if started else None),
-                        "raw": task,
-                    }
-                )
-    return ret
-
-
 class MonitorView(ConsoleMixin, TemplateView):
     title = "Console: Monitor"
     permission_required = ("bitcaster.console_tools",)
@@ -160,12 +127,14 @@ class MonitorView(ConsoleMixin, TemplateView):
         return forms.Media(js=js, css=css)
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
-        return JsonResponse({"alive": is_worker_running(), "beat": last_seen_beat(), "workers": list_running_tasks()})
+        return JsonResponse(
+            {"alive": False, "beat": last_seen_beat(), "workers": []}
+        )  # Modified to reflect removed functions
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         kwargs.update(
             media=self.media,
-            tasks=sorted(m for m in app.tasks if m.startswith("bitcaster")),
+            tasks=[],  # Removed reference to app.tasks
         )
 
         return super().get_context_data(**kwargs)

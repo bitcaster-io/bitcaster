@@ -11,8 +11,7 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils.translation import gettext as _
-from django_celery_beat.models import CrontabSchedule
+from django.utils.translation import gettext_lazy as _
 from reversion.admin import VersionAdmin
 
 from bitcaster.models import Channel, Monitor
@@ -32,7 +31,7 @@ class MonitorTestForm(forms.Form):
 
 
 class MonitorScheduleForm(forms.Form):
-    crontab = forms.ModelChoiceField(queryset=CrontabSchedule.objects.all())
+    pass
 
 
 class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, VersionAdmin[Monitor]):
