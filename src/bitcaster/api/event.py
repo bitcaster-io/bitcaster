@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from bitcaster.models import Application
 
 from ..auth.constants import Grant
-from ..exceptions import LockError
+from ..exceptions import InactiveError, LockError
 from ..models import Event, Occurrence, User
 from ..utils.filtering import validate_filters, validate_lookups, validate_schema
 from .base import SecurityMixin
@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
     from ..models.occurrence import OccurrenceOptions
     from ..types.filtering import QuerysetFilter
+    from ..types.json import JSON
 
 app_name = "api"
 
@@ -112,9 +113,14 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                     options=opts,
                     cid=correlation_id,
                 )
-                return Response({"occurrence": o.pk}, status=201)
+                data: "JSON" = {"occurrence": o.pk}
+                if o.event.paused or o.event.application.paused:
+                    data["paused"] = True
+                return Response(data, status=201)
             except LockError as e:
                 return Response({"error": str(e)}, status=400)
+            except InactiveError as e:
+                return Response({"warning": str(e)}, status=200)
             except Event.DoesNotExist:
                 grant = Grant.EVENT_AUTO_CREATE in request.auth.grants
                 if grant and (
@@ -127,11 +133,12 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                     )
                     .first()
                 ):
+                    slug = self.kwargs["evt"]
                     evt = Event.objects.create(
                         application=app,
                         active=False,
-                        slug=self.kwargs["evt"],
-                        name=self.kwargs["evt"],
+                        slug=slug,
+                        name=f"AUTO: {slug.title()}",
                         description="auto created via APO invocation",
                     )
                     return Response({"warning": f"New event created '{evt.slug}' with id {evt.pk}"}, status=201)

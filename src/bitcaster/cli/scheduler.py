@@ -1,61 +1,57 @@
 import os
+from typing import TYPE_CHECKING, Any
 
 import click
 import django
-from apscheduler import events
+from django.utils import timezone
+from django.utils.module_loading import import_string
+
+if TYPE_CHECKING:
+    from dramatiq import Actor
 
 
-@click.command()
+def echo(message: str, fg: str = "yellow") -> None:
+    ts = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
+    click.secho(f"{ts} - {message}", fg=fg)
+
+
+@click.command(name="scheduler")
 @click.option("-l", "--loglevel", default="info", help="Logging level (default: info)")
-def scheduler(loglevel: str, scheduler_name: str | None = None) -> None:
-    """Run Celery Beat as a dedicated process.
-
-    Only one Beat process will run at a time using Django cache lock.
-    """
+def cron(loglevel: str, scheduler_name: str | None = None) -> None:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bitcaster.config.settings")
     django.setup()
+    from bitcaster.runner.config import SCHEDULER
+    from bitcaster.runner.manager import BackgroundManager, scheduler
 
-    from bitcaster.tasks import beat_heartbeat, scan_occurrences, scheduler
+    def healthcheck() -> None:
+        echo("Healthcheck", fg="yellow")
+        BackgroundManager().scheduler_ping()
 
-    def xxx(event: events.SchedulerEvent):
-        match event.code:
-            case events.EVENT_EXECUTOR_ADDED:
-                _ = "EVENT_EXECUTOR_ADDED"  # noqa: F841
-            case events.EVENT_JOBSTORE_ADDED:
-                _ = "EVENT_JOBSTORE_ADDED"  # noqa: F841
-            case events.EVENT_JOB_ADDED:
-                _ = f"EVENT_JOB_ADDED {event.job_id}"  # noqa: F841
-            case events.EVENT_JOB_EXECUTED:
-                _ = f"EVENT_JOB_EXECUTED {event.job_id}"  # noqa: F841
-            case events.EVENT_JOB_SUBMITTED:
-                _ = f"EVENT_JOB_SUBMITTED {event.job_id}"  # noqa: F841
-            case events.EVENT_JOB_ERROR:
-                _ = f"EVENT_JOB_ERROR {event.job_id}"  # noqa: F841
-            case events.EVENT_SCHEDULER_START:
-                _ = "EVENT_SCHEDULER_START"  # noqa: F841
-            case events.EVENT_SCHEDULER_SHUTDOWN:
-                _ = "EVENT_SCHEDULER_SHUTDOWN"  # noqa: F841
-            case __:
-                _ = "??"  # noqa: F841
-
-    scheduler.add_listener(xxx)
+    def queued(func: "Actor[Any, Any]") -> None:
+        echo(f"Queued {func.actor_name}", fg="yellow")
+        func.send()
 
     scheduler.add_job(
-        id="beat_heartheart",  # Corrected typo in id
-        func=lambda: beat_heartbeat.send(),
+        id="scheduler_ping",  # Corrected typo in id
+        func=healthcheck,
         trigger="interval",
         seconds=10,
         replace_existing=True,
     )
-    scheduler.add_job(
-        id="scan_occurrences",
-        func=lambda: scan_occurrences.send(),
-        trigger="interval",
-        seconds=10,
-        replace_existing=True,
-    )
+    for name, config in SCHEDULER.items():
+        click.echo(f"Adding job {name}")
+        if isinstance(config["func"], str):
+            f = import_string(config["func"])
+        elif callable(config["func"]):
+            f = config["func"]
+        else:
+            continue
+        entry = {**config, "id": name, "func": lambda: queued(f)}  # noqa B023
+        scheduler.add_job(**entry)
+
     try:
         click.echo("Scheduler started... Press Ctrl+C to exit")
+        healthcheck()
         scheduler.start()
     except KeyboardInterrupt:
         click.echo("Scheduler stopping...")

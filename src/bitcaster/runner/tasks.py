@@ -1,25 +1,23 @@
 import logging
 
 import dramatiq
-from apscheduler.schedulers.blocking import BlockingScheduler
-from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from django.utils import timezone
 
 from bitcaster.constants import bitcaster
 
+from .broker import broker
+
 logger = logging.getLogger(__name__)
-scheduler = BlockingScheduler()
 
 
-@dramatiq.actor
+dramatiq.set_broker(broker)
+
+
 def beat_heartbeat() -> None:
-    cache.set(
-        "celery:beat:alive",
-        timezone.now().isoformat(),
-        timeout=None,  # None means infinite timeout in Django cache
-    )
+    from .manager import BackgroundManager
+
+    BackgroundManager().scheduler_ping()
 
 
 @dramatiq.actor

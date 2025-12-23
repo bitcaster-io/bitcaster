@@ -1,15 +1,13 @@
-from datetime import timedelta
+from datetime import datetime
 from typing import Any
 
 from django import forms
 from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
-from django.core.cache import cache
 from django.db.models import Model, QuerySet
 from django.forms import HiddenInput
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.utils import timezone
 from django.views.generic import TemplateView
 from unfold.views import UnfoldModelAdminViewMixin
 
@@ -102,16 +100,6 @@ class LockView(ConsoleMixin, TemplateView):
         return ret
 
 
-def last_seen_beat() -> dict[str, Any]:
-    ts = cache.get("celery:beat:alive")
-    if not ts:
-        return {"status": False, "seen": ""}
-    return {
-        "status": timezone.now() - timezone.datetime.fromisoformat(ts) < timedelta(minutes=1),
-        "seen": ts,
-    }
-
-
 class MonitorView(ConsoleMixin, TemplateView):
     title = "Console: Monitor"
     permission_required = ("bitcaster.console_tools",)
@@ -127,9 +115,16 @@ class MonitorView(ConsoleMixin, TemplateView):
         return forms.Media(js=js, css=css)
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
+        from bitcaster.runner.manager import BackgroundManager
+
+        manager = BackgroundManager()
         return JsonResponse(
-            {"alive": False, "beat": last_seen_beat(), "workers": []}
-        )  # Modified to reflect removed functions
+            {
+                "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "beat": manager.scheduler_info(),
+                "workers": manager.get_runners(),
+            }
+        )
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         kwargs.update(

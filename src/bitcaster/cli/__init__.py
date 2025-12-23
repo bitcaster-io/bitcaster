@@ -1,1 +1,1 @@
-lock_key = "celery-beat-lock"
+lock_key = "scheduler-beat-lock"

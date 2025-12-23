@@ -5,8 +5,9 @@ from . import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 SETTINGS_DIR = Path(__file__).parent  # .../src/bitcaster/config
-PACKAGE_DIR = SETTINGS_DIR.parent  # .../src/bitcaster/
-SOURCE_DIR = PACKAGE_DIR.parent.parent  # .../src
+PROJECT_ROOT = SETTINGS_DIR.parent.parent.parent  # .../src/bitcaster/
+SOURCE_DIR = PROJECT_ROOT / "src"  # .../src
+PACKAGE_DIR = SOURCE_DIR / "bitcaster"  # .../src/bitcaster/
 LOCALE_PATHS = [str((PACKAGE_DIR / "LOCALE").absolute())]
 
 # Quick-start development settings - unsuitable for production

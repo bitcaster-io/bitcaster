@@ -24,12 +24,14 @@ def cli(ctx: "Context", debug: bool) -> None:
 
 def register_commands() -> None:
     from .inspect import inspect
-    from .scheduler import scheduler
+    from .queue import queue
+    from .scheduler import cron
     from .worker import run
 
     cli.add_command(run)
     cli.add_command(inspect)
-    cli.add_command(scheduler)
+    cli.add_command(cron)
+    cli.add_command(queue)
 
 
 register_commands()

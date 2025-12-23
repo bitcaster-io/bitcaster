@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 from django.apps import AppConfig
 from django.conf import settings
@@ -8,6 +8,7 @@ from django.core.checks import CheckMessage, Error, register
 from django.utils.module_loading import import_string
 
 from bitcaster.config import env
+from bitcaster.runner.config import SCHEDULER
 
 E001 = Error(
     "'%s' is not a valid function fully qualified name" % env("AGENT_FILESYSTEM_VALIDATOR"),
@@ -46,3 +47,30 @@ def check_agent_validator_root(app_configs: AppConfig, **kwargs: Any) -> list[Ch
         if not Path(str(settings.AGENT_FILESYSTEM_ROOT)).is_dir():
             return [E002]
     return []
+
+
+@register("config")
+def check_tasks(app_configs: AppConfig, **kwargs: Any) -> Sequence[CheckMessage]:
+    ret: Sequence[CheckMessage] = []
+    for entry in SCHEDULER.values():
+        try:
+            if isinstance(entry["func"], str):
+                f = import_string(str(entry["func"]))
+                if not hasattr(f, "send"):
+                    ret.append(
+                        Error(
+                            f"Invalid actor {entry['func']}",
+                            hint="function is missing actor() decorator",
+                            id="bitcaster.T002",
+                        )
+                    )
+        except ImportError as e:
+            ret.append(
+                Error(
+                    f"Invalid scheduler configuration: {e}",
+                    hint="check bitcaster.runner.config.SCHEDULER",
+                    id="bitcaster.T001",
+                )
+            )
+
+    return ret

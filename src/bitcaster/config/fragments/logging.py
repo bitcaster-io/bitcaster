@@ -62,5 +62,10 @@ LOGGING = {
             "level": get_logging_level("bitcaster"),
             "propagate": False,
         },
+        "bitcaster.runner": {
+            "handlers": ["console"],
+            "level": "CRITICAL",
+            "propagate": False,
+        },
     },
 }
