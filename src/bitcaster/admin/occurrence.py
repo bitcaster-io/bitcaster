@@ -32,48 +32,10 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
         "status",
     )
     fieldsets = (
-        (
-            _("General"),
-            {
-                "classes": ["tab"],
-                "fields": [
-                    "timestamp",
-                    "event",
-                    "newsletter",
-                ],
-            },
-        ),
-        (
-            _("Process"),
-            {
-                "classes": ["tab"],
-                "fields": [
-                    "attempts",
-                    "status",
-                ],
-            },
-        ),
-        (
-            _("Input"),
-            {
-                "classes": ["tab"],
-                "fields": [
-                    "correlation_id",
-                    "context",
-                    "options",
-                ],
-            },
-        ),
-        (
-            _("Delivery"),
-            {
-                "classes": ["tab"],
-                "fields": [
-                    "recipients",
-                    "data",
-                ],
-            },
-        ),
+        (_("General"), {"classes": ["tab"], "fields": ["timestamp", "event", "newsletter"]}),
+        (_("Process"), {"classes": ["tab"], "fields": ["attempts", "status"]}),
+        (_("Input"), {"classes": ["tab"], "fields": ["correlation_id", "context", "options"]}),
+        (_("Delivery"), {"classes": ["tab"], "fields": ["recipients", "data"]}),
     )
     readonly_fields = ["correlation_id"]
     ordering = ("-timestamp",)
@@ -124,8 +86,13 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
                         }
                         dm.store("extra_context", extra_context)
 
+                    if not extra_context["active_notifications"]:
+                        if not obj.event.notifications.filter(active=True).exists():
+                            notes.append(["warning", _("This event does not have any notification")])
+                        else:
+                            notes.append(["warning", _("No active notifications for this event")])
                     if not extra_context["active_channels"]:
-                        notes.append(["warning", _("No channels enabled for this occurrence")])
+                        notes.append(["warning", _("No active channels enabled for this event")])
                     if not extra_context["messages"]:
                         notes.append(["warning", _("No messages configured for selected channels")])
 

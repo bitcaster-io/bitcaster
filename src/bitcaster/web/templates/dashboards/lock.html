@@ -1,14 +1,4 @@
-{% extends "dashboards/home.html" %}
-{% load i18n unfold %}
-{% block title %}
-    {% if subtitle %}
-        {{ subtitle }} |
-    {% endif %}
-    {{ title }} | {{ site_title|default:"Bitcaster" }}
-{% endblock %}
-{% block branding %}
-    {% include "unfold/helpers/site_branding.html" %}
-{% endblock %}
+{% extends 'dashboards/_base.html' %}
 {% block content %}
     <div x-data="{ open_lock: true, open_pause: false, activeTab: 'open_lock' }">
         <div class="border-b-1 border-default mb-3">

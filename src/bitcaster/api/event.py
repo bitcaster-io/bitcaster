@@ -7,6 +7,8 @@ from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
+from bitcaster.models import Application
+
 from ..auth.constants import Grant
 from ..exceptions import LockError
 from ..models import Event, Occurrence, User
@@ -87,6 +89,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
     def post(self, request: "Request", *args: Any, **kwargs: Any) -> Response:
         ser = ActionSerializer(data=request.data)
         correlation_id = request.query_params.get("cid", None)
+
         if ser.is_valid():
             slug = self.kwargs["evt"]
             try:
@@ -113,6 +116,25 @@ class EventTrigger(SecurityMixin, GenericAPIView):
             except LockError as e:
                 return Response({"error": str(e)}, status=400)
             except Event.DoesNotExist:
+                grant = Grant.EVENT_AUTO_CREATE in request.auth.grants
+                if grant and (
+                    app := Application.objects.select_related("project__organization")
+                    .filter(
+                        project__organization__slug=self.kwargs["org"],
+                        project__slug=self.kwargs["prj"],
+                        slug=self.kwargs["app"],
+                        auto_crete_event=True,
+                    )
+                    .first()
+                ):
+                    evt = Event.objects.create(
+                        application=app,
+                        active=False,
+                        slug=self.kwargs["evt"],
+                        name=self.kwargs["evt"],
+                        description="auto created via APO invocation",
+                    )
+                    return Response({"warning": f"New event created '{evt.slug}' with id {evt.pk}"}, status=201)
                 return Response({"error": f"Event not found {self.kwargs}"}, status=404)
         else:
             return Response(ser.errors, status=400)

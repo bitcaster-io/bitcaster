@@ -12,7 +12,7 @@ from bitcaster.tasks import (
     monitor_run,
     process_occurrence,
     purge_occurrences,
-    schedule_occurrences,
+    scan_occurrences,
 )
 
 if TYPE_CHECKING:
@@ -235,7 +235,7 @@ def celery_config() -> dict[str, str]:
 
 
 @pytest.mark.django_db(transaction=True)
-def test_schedule_occurrences(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
+def test_scan_occurrences(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
     monkeypatch.setattr(
@@ -243,7 +243,7 @@ def test_schedule_occurrences(setup: "Context", monkeypatch: pytest.MonkeyPatch)
         mocked_notify := Mock(return_value=[True, {"delivered": [], "recipients": []}]),
     )
 
-    schedule_occurrences()
+    scan_occurrences()
 
     o: Occurrence = setup["occurrence"]
     o.refresh_from_db()
