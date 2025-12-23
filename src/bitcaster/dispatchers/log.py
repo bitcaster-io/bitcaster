@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 MESSAGES = []
 
 
-class BitcasterSysDispatcher(Dispatcher):
+class LocalDatabaseDispatcher(Dispatcher):
     id = 1
     slug = "test"
     local = True

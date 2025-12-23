@@ -22,7 +22,7 @@ class LogEntry(_LogEntry):
         (DELETION, _("Deletion")),
         (OTHER, _("Other")),
     ]
-    objects = LogEntryManager()  # type: ignore
+    objects = LogEntryManager()
 
     class Meta:
         proxy = True

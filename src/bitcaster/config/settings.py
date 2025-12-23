@@ -205,24 +205,6 @@ SESSION_COOKIE_DOMAIN = env("SESSION_COOKIE_DOMAIN")
 SESSION_COOKIE_NAME = env("SESSION_COOKIE_NAME")
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {"class": "logging.StreamHandler", "level": "DEBUG"},
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": env("LOGGING_LEVEL").upper(),
-    },
-    "loggers": {
-        "bitcaster": {
-            "handlers": ["console"],
-            "level": env("LOGGING_LEVEL").upper(),
-            "propagate": False,
-        },
-    },
-}
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
 STORAGES = {

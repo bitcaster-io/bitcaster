@@ -76,7 +76,7 @@ class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
         self, request: HttpRequest, obj: ApiKey | None = None
     ) -> list[str] | tuple[str, ...] | tuple[()]:
         if obj and obj.pk:
-            return ["application", "organization", "project"]
+            return ["organization", "project"]
         return self.readonly_fields
 
     def get_exclude(self, request: "HttpRequest", obj: "ApiKey | None" = None) -> "_ListOrTuple[str]":

@@ -10,6 +10,7 @@ dist/
 downloaded_files/
 libcairo.2.dylib
 downloaded_files/
+celerybeat-schedule
 src/bitcaster/version.py
 junit.xml
 !.git

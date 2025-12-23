@@ -1,5 +1,5 @@
 x-common: &common
-  image: bitcaster/bitcaster:latest
+  image: os4d/bitcaster:latest
   platform: linux/amd64
   environment:
     - ADMIN_EMAIL=bitcaster@example.com
@@ -17,9 +17,6 @@ x-common: &common
     - SESSION_COOKIE_DOMAIN=
     - SESSION_COOKIE_SECURE=False
     - SOCIAL_AUTH_REDIRECT_IS_HTTPS=False
-    - STORAGE_STATIC=django.core.files.storage.FileSystemStorage
-    - STORAGE_MEDIA=django.core.files.storage.FileSystemStorage
-    - STORAGE_DEFAULT=django.core.files.storage.FileSystemStorage
     - STATIC_ROOT=/var/storage/static/
     - STATIC_URL=/static/
   volumes:
@@ -50,13 +47,6 @@ services:
   worker:
     <<: *common
     command: ["worker"]
-    depends_on:
-      db:
-        condition: service_healthy
-
-  beat:
-    <<: *common
-    command: ["beat"]
     depends_on:
       db:
         condition: service_healthy

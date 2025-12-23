@@ -8,7 +8,7 @@ from django.urls import path, reverse
 from django.utils.translation import gettext as _
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
-from bitcaster.web.dashboard.views import LockView, ToolsView
+from bitcaster.web.dashboard.views import LockView, MonitorView, ToolsView
 
 from ..models import User
 from ..utils.django import admin_toggle_bool_action
@@ -51,7 +51,7 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
 
     def get_urls(self):
         extra = []
-        for console in [ToolsView, LockView]:
+        for console in [ToolsView, LockView, MonitorView]:
             custom_view = self.admin_site.admin_view(console.as_view(model_admin=self))
             extra.append(
                 path(console.__name__.lower(), custom_view, name=f"console-{console.__name__.lower()}"),

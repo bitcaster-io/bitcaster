@@ -1,14 +1,5 @@
-{% extends 'admin/base.html' %}
+{% extends 'dashboards/_base.html' %}
 {% load i18n unfold %}
-{% block title %}
-    {% if subtitle %}
-        {{ subtitle }} |
-    {% endif %}
-    {{ title }} | {{ site_title|default:"Bitcaster" }}
-{% endblock %}
-{% block branding %}
-    {% include "unfold/helpers/site_branding.html" %}
-{% endblock %}
 {% block content %}
     {% component "unfold/components/container.html" %}
     <div class="flex flex-col gap-4">

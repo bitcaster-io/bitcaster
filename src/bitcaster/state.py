@@ -6,14 +6,16 @@ from threading import local
 from typing import TYPE_CHECKING, Any, Iterator, Mapping
 
 if TYPE_CHECKING:
+    from django.http import HttpRequest
+
     from bitcaster.types.django import JsonType
-    from bitcaster.types.http import AnyRequest_co, AnyResponse_co
+    from bitcaster.types.http import AnyResponse_co
 
 not_set = object()
 
 
 class State(local):
-    request: "AnyRequest_co|None" = None
+    request: "HttpRequest|None" = None
     cookies: dict[str, list[Any]] = {}
 
     def __repr__(self) -> str:
