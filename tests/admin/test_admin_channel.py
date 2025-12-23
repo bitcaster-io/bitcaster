@@ -178,9 +178,10 @@ def test_add_new_channel_for_project(app: DjangoTestApp, gmail_channel: "Channel
     res: DjangoWebtestResponse = app.get(f"{url}?project={gmail_channel.project.pk}")
     frm: "WebTestForm" = res.forms["channel_form"]
     frm.submit()
+    frm["organization"] = gmail_channel.project.organization.pk
     frm["name"] = "Channel-1"
     res = frm.submit()
-    assert res.status_code == 302
+    assert res.status_code == 302, res.context["adminform"].form.errors
     assert Channel.objects.filter(
         name="Channel-1",
         organization=gmail_channel.organization,

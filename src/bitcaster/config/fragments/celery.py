@@ -1,23 +1,24 @@
+from celery.schedules import crontab
+
 from ..settings import env
 
 CELERY_ACCEPT_CONTENT = ["pickle", "json", "application/text", "application/json"]
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_BROKER_VISIBILITY_VAR = env("CELERY_VISIBILITY_TIMEOUT")
 
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
-
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_BEAT_SCHEDULE = {"beat_heartbeat": {"task": "bitcaster.tasks.beat_heartbeat", "schedule": crontab(minute="*/1")}}
 CELERY_TASK_ACKS_LATE = True
 CELERY_TASK_ALWAYS_EAGER = env("CELERY_TASK_ALWAYS_EAGER")
-CELERY_TASK_DEFAULT_QUEUE = "queue_hcr"
-CELERY_TASK_REVOKED_QUEUE = "queue_hcr_revoked"
 CELERY_TASK_EAGER_PROPAGATES = env("CELERY_TASK_EAGER_PROPAGATES")
 CELERY_TASK_IGNORE_RESULT = False
 CELERY_TASK_PUBLISH_RETRY = True
 CELERY_TASK_SERIALIZER = "json"
+CELERY_TASK_SEND_SENT_EVENT = True
 CELERY_TASK_TIME_LIMIT = None
 CELERY_TASK_TRACK_STARTED = True
 
-
+CELERY_WORKER_SEND_TASK_EVENTS = True
 CELERY_WORKER_DISABLE_RATE_LIMITS = False
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 

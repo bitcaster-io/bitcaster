@@ -4,6 +4,8 @@ x-common: &common
     dockerfile: docker/Dockerfile
     target: dist
   platform: linux/amd64
+  tty: true
+  stdin_open: true
   environment:
     - ADMIN_EMAIL=bitcaster@example.com
     - ADMIN_PASSWORD=123
@@ -21,9 +23,6 @@ x-common: &common
     - SESSION_COOKIE_DOMAIN=
     - SESSION_COOKIE_SECURE=False
     - SOCIAL_AUTH_REDIRECT_IS_HTTPS=False
-    - STORAGE_STATIC=django.core.files.storage.FileSystemStorage
-    - STORAGE_MEDIA=django.core.files.storage.FileSystemStorage
-    - STORAGE_DEFAULT=django.core.files.storage.FileSystemStorage
     - STATIC_ROOT=/var/storage/static/
     - STATIC_URL=/static/
   volumes:
@@ -31,7 +30,7 @@ x-common: &common
 #    - $PWD:/code/app
     - $PWD/docker/conf:/conf
     - $PWD/docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
-    - $PWD/src/bitcaster:/code/__pypackages__/3.12/lib/bitcaster
+    - $PWD/src/bitcaster:/code/__pypackages__/3.13/lib/bitcaster
   restart: unless-stopped
   depends_on:
     db:
@@ -61,22 +60,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
-  beat:
-    <<: *common
-    command: ["beat"]
-    depends_on:
-      db:
-        condition: service_healthy
-
-  flower:
-      <<: *common
-      command: ["flower"]
-      ports:
-        - 5555:5555
-      depends_on:
-        db:
-          condition: service_healthy
 
   db:
     image: postgres:15

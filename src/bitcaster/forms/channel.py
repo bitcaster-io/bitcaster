@@ -3,7 +3,9 @@ from typing import Any
 from django import forms
 
 from bitcaster.forms.mixins import Scoped2FormMixin
-from bitcaster.models import Channel
+from bitcaster.models import Channel, Organization
+
+from .unfold import UnfoldAdminSelect2Widget
 
 
 class ChannelBaseForm(forms.ModelForm["Channel"]):
@@ -13,6 +15,8 @@ class ChannelBaseForm(forms.ModelForm["Channel"]):
 
 
 class ChannelChangeForm(Scoped2FormMixin[Channel], ChannelBaseForm):
+    organization = forms.ModelChoiceField(queryset=Organization.objects.local(), widget=UnfoldAdminSelect2Widget)
+
     class Meta:
         model = Channel
         fields = ("organization", "project", "name", "dispatcher", "active", "parent")
