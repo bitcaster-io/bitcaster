@@ -13,9 +13,10 @@ from django.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseNotModified,
+    HttpResponseRedirect,
 )
 from django.template.response import TemplateResponse
-from django.urls import reverse_lazy
+from django.urls import reverse
 from django.utils._os import safe_join
 from django.utils.http import http_date
 from django.utils.translation import gettext_lazy as _
@@ -65,7 +66,7 @@ class LoginView(BaseLoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self) -> str:
-        return str(reverse_lazy("home"))
+        return reverse("home")
 
     def form_invalid(self, form: "Form") -> HttpResponse:
         messages.error(self.request, "Invalid username or password")
