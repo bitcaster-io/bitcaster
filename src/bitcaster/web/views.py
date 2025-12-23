@@ -13,7 +13,6 @@ from django.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseNotModified,
-    HttpResponseRedirect,
 )
 from django.template.response import TemplateResponse
 from django.urls import reverse
