@@ -20,5 +20,6 @@ class Grant(TextChoices):
 
     EVENT_LIST = "EVENT_LIST", "Event list"
     EVENT_TRIGGER = "EVENT_TRIGGER", "Event Trigger"
+    EVENT_AUTO_CREATE = "EVENT_AUTO_CREATE", "Event Auto-Create"
 
     DISTRIBUTION_LIST = "DISTRIBUTION_LIST", "Distribution list"

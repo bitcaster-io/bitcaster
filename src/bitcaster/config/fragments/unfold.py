@@ -132,6 +132,11 @@ UNFOLD = {
                         "icon": "person",
                         "link": reverse_lazy("admin:bitcaster_member_changelist"),
                     },
+                    {
+                        "title": _("Stream"),
+                        "icon": "call_log",
+                        "link": reverse_lazy("admin:bitcaster_logmessage_changelist"),
+                    },
                 ],
             },
             {
@@ -172,14 +177,24 @@ UNFOLD = {
                 "collapsible": False,  # Collapsible group of links
                 "items": [
                     {
+                        "title": _("Channels"),
+                        "icon": "business_messages",
+                        "link": reverse_lazy("admin:bitcaster_channel_changelist"),
+                    },
+                    {
                         "title": _("Applications"),
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_application_changelist"),
                     },
                     {
-                        "title": _("Channels"),
-                        "icon": "business_messages",
-                        "link": reverse_lazy("admin:bitcaster_channel_changelist"),
+                        "title": _("Projects"),
+                        "icon": "view_apps",
+                        "link": reverse_lazy("admin:bitcaster_project_changelist"),
+                    },
+                    {
+                        "title": _("Organization"),
+                        "icon": "view_apps",
+                        "link": reverse_lazy("admin:bitcaster_organization_changelist"),
                     },
                 ],
             },
@@ -211,6 +226,11 @@ UNFOLD = {
                         "icon": "key",
                         "link": reverse_lazy("admin:bitcaster_apikey_changelist"),
                         "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("System Log"),
+                        "icon": "data_alert",
+                        "link": reverse_lazy("admin:bitcaster_logentry_changelist"),
                     },
                 ],
             },
