@@ -18,13 +18,6 @@ def test_home(client: "Client") -> None:
     assert client.get("/").status_code == 200
 
 
-def test_index_superuser_redirect(django_app: DjangoTestApp, superuser: "User") -> None:
-    django_app.set_user(superuser)
-    response = django_app.get(reverse("home"))
-    assert response.status_code == 302
-    assert response.url == reverse("dashboard")
-
-
 def test_index_user_no_redirect(django_app: DjangoTestApp, user: "User") -> None:
     django_app.set_user(user)
     response = django_app.get(reverse("home"))

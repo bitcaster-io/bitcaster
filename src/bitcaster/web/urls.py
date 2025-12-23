@@ -4,11 +4,9 @@ from django.conf import settings
 from django.urls import path, re_path
 
 from . import views
-from .dashboard_views import DashboardView
 
 urlpatterns = [
     path("", views.index, name="home"),
-    path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     path("admin/logout/", views.LogoutView.as_view(), name="logout"),

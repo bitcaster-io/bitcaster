@@ -13,7 +13,6 @@ from django.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseNotModified,
-    HttpResponseRedirect,
 )
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -28,8 +27,6 @@ if TYPE_CHECKING:
 
 
 def index(request: "HttpRequest") -> TemplateResponse:
-    if request.user.is_authenticated and request.user.is_superuser:
-        return HttpResponseRedirect(reverse("dashboard"))
     return TemplateResponse(request, "bitcaster/index.html", {})
 
 
