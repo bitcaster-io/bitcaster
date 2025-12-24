@@ -405,7 +405,7 @@ requires-dist = [
     { name = "django-tinymce", specifier = ">=4" },
     { name = "django-unfold", specifier = ">=0.72" },
     { name = "djangorestframework", specifier = ">=3.15" },
-    { name = "dramatiq", specifier = ">=2.0.0" },
+    { name = "dramatiq", specifier = ">=2" },
     { name = "drf-extensions", specifier = ">=0.7.1" },
     { name = "drf-nested-routers", specifier = ">=0.93.5" },
     { name = "drf-spectacular", specifier = ">=0.27.1" },
