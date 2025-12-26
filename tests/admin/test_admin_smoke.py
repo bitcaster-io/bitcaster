@@ -35,7 +35,8 @@ GLOBAL_EXCLUDED_MODELS = RegexList(
     [
         r"contenttypes\.ContentType",
         r"webpush\.BrowserAdmin",
-        "bitcaster.Member",
+        r"bitcaster\.Member",
+        r"bitcaster\.Task",
         "authtoken",
         "social_django",
         "depot",

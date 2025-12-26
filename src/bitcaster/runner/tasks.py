@@ -25,12 +25,15 @@ def process_occurrence(occurrence_pk: int) -> int:
     from bitcaster.models import Occurrence
 
     o: Occurrence = Occurrence.objects.select_related("event").get(id=occurrence_pk)
+    logger.debug(f"Processing occurrence {o}")
     return o.process()
 
 
 @dramatiq.actor
 def scan_occurrences() -> None:
     from bitcaster.models import Occurrence
+
+    logger.debug("Scan new occurrences")
 
     o: Occurrence
     try:

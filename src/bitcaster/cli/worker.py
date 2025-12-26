@@ -2,10 +2,16 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import click
+from colorlog import ColoredFormatter
 from dramatiq import Middleware
 
+logger = logging.getLogger(__name__)
+
+
 if TYPE_CHECKING:
-    from dramatiq import Broker, MessageProxy
+    from dramatiq import Broker, Message, MessageProxy
+
+LOGFORMAT = "%(log_color)s%(asctime)s%(reset)s | %(log_color)s%(message)s%(reset)s"
 
 
 @click.command()
@@ -13,8 +19,9 @@ if TYPE_CHECKING:
 @click.option("-p", "--processes", default=1, help="Enable/disable worker events (default: enabled)")
 @click.option("-t", "--threads", default=1, help="Enable/disable worker events (default: enabled)")
 @click.option("-d", "--debug", is_flag=True, help="")
-@click.option("--dry-run", is_flag=True, help="")
-def run(loglevel: str, processes: int, threads: int, dry_run: bool, debug: bool) -> None:
+@click.option("-v", "--verbose", count=True)
+@click.option("--autoreload", is_flag=True, help="Reload on code changes")
+def run(loglevel: str, processes: int, threads: int, verbose: bool, debug: bool, autoreload: bool) -> None:
     args = [
         "--path",
         ".",
@@ -25,24 +32,33 @@ def run(loglevel: str, processes: int, threads: int, dry_run: bool, debug: bool)
         "--worker-shutdown-timeout",
         "600000",
         "--skip-logging",
-        # "--pid-file",
-        # "bitcaster.pid",
+        "-" + "v" * verbose,
+        "--pid-file",
+        "bitcaster.pid",
         "bitcaster.runner.tasks",
     ]
-    if loglevel.lower() == "debug":
-        args.append("-vv")
-    elif loglevel.lower() == "info":
-        args.append("-v")
 
     from dramatiq.cli import make_argument_parser
+
+    log_level = logging.CRITICAL - (verbose * 10)
 
     if debug:
         logging.getLogger("root").root.setLevel(logging.DEBUG)
         logging.getLogger("root").setLevel(logging.DEBUG)
         logging.getLogger("bitcaster").setLevel(logging.DEBUG)
+        logging.getLogger("dramatiq").setLevel(logging.DEBUG)
+        logging.getLogger("dramatiq.worker").setLevel(logging.DEBUG)
     else:
-        logging.getLogger("root").setLevel(logging.CRITICAL)
-        logging.getLogger("bitcaster").setLevel(logging.CRITICAL)
+        stream = logging.StreamHandler()
+        stream.setLevel(log_level)
+        formatter = ColoredFormatter(LOGFORMAT)
+        stream.setFormatter(formatter)
+        for logger_name in ["dramatiq", "bitcaster", "dramatiq.worker"]:
+            logger = logging.getLogger(logger_name)
+            logger.setLevel(log_level)
+            logger.setLevel(log_level)
+            logger.addHandler(stream)
+            logger.propagate = False
 
     from bitcaster.runner.config import dramatiq
     from bitcaster.runner.manager import BackgroundManager
@@ -51,6 +67,12 @@ def run(loglevel: str, processes: int, threads: int, dry_run: bool, debug: bool)
     manager.register_runner()
 
     class ClickMiddleware(Middleware):
+        def before_enqueue(self, broker: "Broker", message: "Message[Any]", delay: int) -> None:
+            click.echo(f"Enqueueing...{message.actor_name}")
+
+        def before_ack(self, broker: "Broker", message: "MessageProxy") -> None:
+            click.echo(f"Ack...{message.actor_name}")
+
         def before_process_message(self, broker: "Broker", message: "MessageProxy") -> None:
             click.echo(f"Starting...{message.actor_name}")
 

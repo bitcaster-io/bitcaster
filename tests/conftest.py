@@ -6,8 +6,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, List
 from uuid import uuid4
 
+import psycopg2
 import pytest
 import responses
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -51,6 +53,7 @@ def pytest_configure(config):
     os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
 
     os.environ["BITCASTER_LOGGING_LEVEL"] = "CRITICAL"
+    os.environ["DRAMATIQ_BROKER"] = "redis://localhost:6379/2"
     os.environ["REDIS_LOGGING_LEVEL"] = "CRITICAL"
     os.environ["DJANGO_LOGGING_LEVEL"] = "CRITICAL"
 
@@ -113,6 +116,14 @@ def pytest_configure(config):
         call_command("env", check=True)
     except CommandError:
         pytest.exit("FATAL: Environment variables missing")
+
+
+def run_sql(sql):
+    conn = psycopg2.connect(database="postgres")
+    conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    cur = conn.cursor()
+    cur.execute(sql)
+    conn.close()
 
 
 @pytest.fixture

@@ -24,6 +24,7 @@ from .overrides import (
     LogEntryAdmin,
 )
 from .project import ProjectAdmin
+from .task import TaskAdmin
 from .user import UserAdmin
 from .userrole import UserRoleAdmin
 
@@ -52,3 +53,4 @@ admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.UserRole, UserRoleAdmin)
 admin.site.register(models.Monitor, MonitorAdmin)
+admin.site.register(models.Task, TaskAdmin)

@@ -8,6 +8,7 @@ from unfold.forms import AdminForm
 from unfold.widgets import (
     SELECT_CLASSES,
     UnfoldAdminFileFieldWidget,
+    UnfoldAdminIntegerFieldWidget,
     UnfoldAdminSelect2Widget,
     UnfoldAdminSelectWidget,
     UnfoldAdminTextInputWidget,
@@ -22,6 +23,7 @@ __all__ = [
     "UnfoldAdminSelectWidget",
     "UnfoldAdminFileFieldWidget",
     "UnfoldBooleanSwitchWidget",
+    "UnfoldAdminIntegerFieldWidget",
 ]
 
 WIDGETS_OVERRIDES = {

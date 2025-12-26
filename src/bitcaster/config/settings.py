@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     "smart_selects",
     "adminfilters",
     "debug_toolbar",
-    # "django_svelte_jsoneditor",
     "jsoneditor",
     "django_ace",
     "tinymce",

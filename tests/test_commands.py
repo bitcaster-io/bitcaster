@@ -22,7 +22,7 @@ pytestmark = pytest.mark.django_db
 def environment() -> dict[str, str]:
     return {
         "CACHE_URL": "test",
-        "CELERY_BROKER_URL": "",
+        "DRAMATIQ_BROKER": "",
         "DATABASE_URL": "",
         "SECRET_KEY": "",
         "MEDIA_ROOT": "/tmp/media",

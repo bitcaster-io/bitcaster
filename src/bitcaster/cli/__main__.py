@@ -1,14 +1,18 @@
+import logging
+import logging.config
 import os
 from typing import TYPE_CHECKING
 
 import click
 import django
+from django.conf import settings
 
 if TYPE_CHECKING:
     from click.core import Context
 
 try:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bitcaster.config.settings")
+    logging.config.dictConfig(settings.DRAMATIQ_LOGGING)
     django.setup()
 except Exception as e:
     raise click.ClickException(f"Failed to initialize Bitcaster. {e}") from None

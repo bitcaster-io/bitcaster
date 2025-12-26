@@ -19,6 +19,7 @@ from .notification import NotificationFactory
 from .occurrence import OccurrenceFactory
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
 from .social import SocialProviderFactory
+from .task import TaskFactory
 from .user import SuperUserFactory, UserFactory
 from .userrole import UserRoleFactory
 
@@ -48,6 +49,7 @@ __all__ = [
     "ProjectFactory",
     "SocialProviderFactory",
     "SuperUserFactory",
+    "TaskFactory",
     "UserFactory",
     "UserRoleFactory",
 ]
