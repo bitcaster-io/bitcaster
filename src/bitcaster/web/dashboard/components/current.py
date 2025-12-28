@@ -16,7 +16,7 @@ class CurrentChartComponent(BaseComponent):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         cm = CacheManager(self.request)
-        if not (chart_data := cm.retrieve("dashboard:cache:OccurrenceChartComponent")):
+        if not (chart_data := cm.retrieve("dashboard:cache:CurrentChartComponent")):  # FIX: Changed cache key
             # Get the start and end date for the last 30 days
             start_date, end_date = get_dates()
 
@@ -61,7 +61,7 @@ class CurrentChartComponent(BaseComponent):
                 "height": 220,
                 "data": json.dumps({"labels": labels, "datasets": datasets}),
             }
-            cm.store("dashboard:cache:OccurrenceChartComponent", chart_data)
+            cm.store("dashboard:cache:CurrentChartComponent", chart_data)  # FIX: Changed cache key
         context.update(chart_data)
 
         return context
