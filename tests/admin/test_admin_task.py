@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 import pytest
 from django.urls import reverse
 from strategy_field.utils import fqn
+from testutils.factories import TaskFactory
 
 from bitcaster.runner.tasks import scan_occurrences
 
@@ -32,3 +33,16 @@ def test_task_add(app: "DjangoTestApp") -> None:
     res = res.follow()
     new_task = res.context["original"]
     assert res.request.path == reverse("admin:bitcaster_task_change", args=[new_task.id])
+
+
+def test_task_change(app: "DjangoTestApp") -> None:
+    task = TaskFactory()  # Use factory directly
+    url = reverse("admin:bitcaster_task_change", args=[task.id])
+    res = app.get(url)
+    frm = res.forms["task_form"]
+    new_name = "New Task Name"
+    frm["name"] = new_name
+    res = frm.submit()
+    assert res.status_code == 302, res.showbrowser()
+    task.refresh_from_db()
+    assert task.name == new_name
