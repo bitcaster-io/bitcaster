@@ -14,14 +14,34 @@ if TYPE_CHECKING:
 LOGFORMAT = "%(log_color)s%(asctime)s%(reset)s | %(log_color)s%(message)s%(reset)s"
 
 
+class ClickMiddleware(Middleware):
+    def before_enqueue(self, broker: "Broker", message: "Message[Any]", delay: int) -> None:
+        click.echo(f"Enqueueing...{message.actor_name}")
+
+    def before_ack(self, broker: "Broker", message: "MessageProxy") -> None:
+        click.echo(f"Ack...{message.actor_name}")
+
+    def before_process_message(self, broker: "Broker", message: "MessageProxy") -> None:
+        click.echo(f"Starting...{message.actor_name}")
+
+    def after_process_message(
+        self,
+        broker: "Broker",
+        message: "MessageProxy",
+        *,
+        result: "Any|None" = None,
+        exception: BaseException | None = None,
+    ) -> None:
+        click.echo(f"Completed...{message.actor_name}")
+
+
 @click.command()
-@click.option("-l", "--loglevel", default="info", help="Logging level (default: info)")
 @click.option("-p", "--processes", default=1, help="Enable/disable worker events (default: enabled)")
 @click.option("-t", "--threads", default=1, help="Enable/disable worker events (default: enabled)")
 @click.option("-d", "--debug", is_flag=True, help="")
 @click.option("-v", "--verbose", count=True)
 @click.option("--autoreload", is_flag=True, help="Reload on code changes")
-def run(loglevel: str, processes: int, threads: int, verbose: bool, debug: bool, autoreload: bool) -> None:
+def run(processes: int, threads: int, verbose: bool, debug: bool, autoreload: bool) -> None:
     args = [
         "--path",
         ".",
@@ -65,26 +85,6 @@ def run(loglevel: str, processes: int, threads: int, verbose: bool, debug: bool,
 
     manager = BackgroundManager()
     manager.register_runner()
-
-    class ClickMiddleware(Middleware):
-        def before_enqueue(self, broker: "Broker", message: "Message[Any]", delay: int) -> None:
-            click.echo(f"Enqueueing...{message.actor_name}")
-
-        def before_ack(self, broker: "Broker", message: "MessageProxy") -> None:
-            click.echo(f"Ack...{message.actor_name}")
-
-        def before_process_message(self, broker: "Broker", message: "MessageProxy") -> None:
-            click.echo(f"Starting...{message.actor_name}")
-
-        def after_process_message(
-            self,
-            broker: "Broker",
-            message: "MessageProxy",
-            *,
-            result: "Any|None" = None,
-            exception: BaseException | None = None,
-        ) -> None:
-            click.echo(f"Completed...{message.actor_name}")
 
     try:
         from bitcaster.runner.tasks import broker

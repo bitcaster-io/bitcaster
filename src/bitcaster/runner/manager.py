@@ -79,12 +79,13 @@ class BackgroundManager:
     def register_runner(self) -> None:
         logger.debug(f"Registering runner {self.name}")
         self.client.sadd("background:runners", self.name)
-        self.client.set(f"background:runner:{self.name}:last_seen", datetime.now(UTC).timestamp())
+        return self.client.set(f"background:runner:{self.name}:last_seen", datetime.now(UTC).timestamp())
 
     def unregister_runner(self) -> None:
         logger.debug(f"Unregistering runner {self.name}")
         self.client.srem("background:runners", self.name)
         self.client.delete(f"background:runners:{self.name}:tasks")
+        return self.client.delete(f"background:runners:{self.name}:last_seen")
 
     def get_runners(self) -> dict[str, Any]:
         items = self.client.smembers("background:runners")
@@ -108,14 +109,14 @@ class BackgroundManager:
                 "ppid": os.getppid(),
                 "pid": os.getpid(),
                 "name": message.actor_name,
-                "started_at": message.options["started_at"],
+                "started_at": message.options.get("started_at", None),
                 "enqueued_at": message.message_timestamp,
             }
         )
-        self.client.hset(f"background:runners:{self.name}:tasks", self.get_executor_name(), task_info)
+        return self.client.hset(f"background:runners:{self.name}:tasks", self.get_executor_name(), task_info)
 
     def unregister_task(self, message: "MessageProxy") -> None:
-        self.client.hdel(f"background:runners:{self.name}:task", self.get_executor_name())
+        return self.client.hdel(f"background:runners:{self.name}:task", self.get_executor_name())
 
     def scheduler_ping(self) -> None:
         self.client.set("scheduler:alive", datetime.now(UTC).isoformat())

@@ -15,7 +15,7 @@ def inspect(loglevel: str, scheduler: str | None = None) -> None:
     django.setup()
 
     # Import tasks to register actors
-    from bitcaster import tasks  # noqa: F401
+    from bitcaster.runner import tasks  # noqa: F401
 
     broker = dramatiq.get_broker()
     print("Registered Dramatiq Actors:")  # noqa: T201
