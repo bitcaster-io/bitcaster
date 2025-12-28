@@ -7,7 +7,6 @@ from dramatiq import Middleware
 
 logger = logging.getLogger(__name__)
 
-
 if TYPE_CHECKING:
     from dramatiq import Broker, Message, MessageProxy
 
@@ -35,13 +34,34 @@ class ClickMiddleware(Middleware):
         click.echo(f"Completed...{message.actor_name}")
 
 
+def runit(args: list[str]) -> None:
+    from dramatiq.cli import make_argument_parser
+
+    from bitcaster.runner.config import dramatiq
+    from bitcaster.runner.manager import BackgroundManager
+
+    manager = BackgroundManager()
+    manager.register_runner()
+
+    try:
+        from bitcaster.runner.tasks import broker
+
+        broker.middleware.append(ClickMiddleware())
+        dramatiq.cli.main(make_argument_parser().parse_args(args))  # type: ignore[no-untyped-call]
+    except KeyboardInterrupt:
+        click.echo("Runner stopping...")
+    finally:
+        manager.unregister_runner()
+
+
 @click.command()
 @click.option("-p", "--processes", default=1, help="Enable/disable worker events (default: enabled)")
 @click.option("-t", "--threads", default=1, help="Enable/disable worker events (default: enabled)")
 @click.option("-d", "--debug", is_flag=True, help="")
 @click.option("-v", "--verbose", count=True)
-@click.option("--autoreload", is_flag=True, help="Reload on code changes")
-def run(processes: int, threads: int, verbose: bool, debug: bool, autoreload: bool) -> None:
+@click.option("--pid-file", type=click.Path())
+@click.option("--autoreload", is_flag=True, default=False, help="Reload on code changes")
+def run(processes: int, threads: int, verbose: bool, debug: bool, autoreload: bool, pid_file: str) -> None:
     args = [
         "--path",
         ".",
@@ -53,12 +73,10 @@ def run(processes: int, threads: int, verbose: bool, debug: bool, autoreload: bo
         "600000",
         "--skip-logging",
         "-" + "v" * verbose,
-        "--pid-file",
-        "bitcaster.pid",
         "bitcaster.runner.tasks",
     ]
-
-    from dramatiq.cli import make_argument_parser
+    if pid_file:
+        args.extend(["--pid-file", pid_file])
 
     log_level = logging.CRITICAL - (verbose * 10)
 
@@ -79,19 +97,9 @@ def run(processes: int, threads: int, verbose: bool, debug: bool, autoreload: bo
             logger.setLevel(log_level)
             logger.addHandler(stream)
             logger.propagate = False
+    if autoreload:
+        from django.utils import autoreload as django_autoreload
 
-    from bitcaster.runner.config import dramatiq
-    from bitcaster.runner.manager import BackgroundManager
-
-    manager = BackgroundManager()
-    manager.register_runner()
-
-    try:
-        from bitcaster.runner.tasks import broker
-
-        broker.middleware.append(ClickMiddleware())
-        dramatiq.cli.main(make_argument_parser().parse_args(args))  # type: ignore[no-untyped-call]
-    except KeyboardInterrupt:
-        click.echo("Runner stopping...")
-    finally:
-        manager.unregister_runner()
+        django_autoreload.run_with_reloader(runit, args)
+    else:
+        runit(args)

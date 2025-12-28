@@ -1,12 +1,17 @@
+from typing import TYPE_CHECKING
+
 import dramatiq
 import pytest
 from dramatiq import Message
 
-from bitcaster.runner.manager import BackgroundManager
+if TYPE_CHECKING:
+    from bitcaster.runner.manager import BackgroundManager
 
 
 @pytest.fixture
-def manager() -> BackgroundManager:
+def manager(broker) -> "BackgroundManager":
+    from bitcaster.runner.manager import BackgroundManager
+
     return BackgroundManager()
 
 
@@ -22,7 +27,7 @@ def message() -> Message:
     )
 
 
-def test_get_queue_sizes(broker, manager: BackgroundManager):
+def test_get_queue_sizes(broker, manager: "BackgroundManager"):
     @dramatiq.actor
     def test1():
         pass
@@ -31,7 +36,7 @@ def test_get_queue_sizes(broker, manager: BackgroundManager):
     assert manager.get_queue_sizes() == {"default": 1}
 
 
-def test_get_queued_items(broker, manager: BackgroundManager):
+def test_get_queued_items(broker, manager: "BackgroundManager"):
     @dramatiq.actor
     def test2():
         pass
@@ -41,7 +46,7 @@ def test_get_queued_items(broker, manager: BackgroundManager):
     assert manager.get_queued_items()[0]["actor_name"] == "test2"
 
 
-def test_reset(broker, manager: BackgroundManager):
+def test_reset(broker, manager: "BackgroundManager"):
     @dramatiq.actor
     def test3():
         pass
@@ -50,27 +55,27 @@ def test_reset(broker, manager: BackgroundManager):
     manager.reset()
 
 
-def test_register_runner(broker, manager: BackgroundManager):
+def test_register_runner(broker, manager: "BackgroundManager"):
     assert manager.register_runner()
 
 
-def test_unregister_runner(broker, manager: BackgroundManager):
+def test_unregister_runner(broker, manager: "BackgroundManager"):
     manager.register_runner()
     manager.unregister_runner()
 
 
-def test_get_runners(broker, manager: BackgroundManager):
+def test_get_runners(broker, manager: "BackgroundManager"):
     assert manager.get_runners() == {}
 
 
-def test_register_task(broker, manager: BackgroundManager, message):
+def test_register_task(broker, manager: "BackgroundManager", message):
     manager.register_task(message)
     manager.unregister_task(message.message_id)
 
 
-def test_scheduler_ping(broker, manager: BackgroundManager, message):
+def test_scheduler_ping(broker, manager: "BackgroundManager", message):
     manager.scheduler_ping()
 
 
-def test_scheduler_info(broker, manager: BackgroundManager, message):
+def test_scheduler_info(broker, manager: "BackgroundManager", message):
     manager.scheduler_info()

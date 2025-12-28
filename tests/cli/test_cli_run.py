@@ -12,8 +12,8 @@ def test_worker_run(runner):
             with patch("dramatiq.set_broker"):
                 result = runner.invoke(cli, ["run"])
 
-                assert result.exit_code == 0
-                mock_main.assert_called_once()
+    assert result.exit_code == 0
+    mock_main.assert_called_once()
 
 
 def test_worker_run_options(runner):

@@ -1,5 +1,6 @@
 import uuid
 
+import dramatiq
 import pytest
 
 
@@ -7,5 +8,8 @@ import pytest
 def broker():
     from bitcaster.runner.broker import broker
 
+    original_broker = dramatiq.get_broker()
     broker.namespace = uuid.uuid4().hex
-    return broker
+    dramatiq.set_broker(broker)
+    yield broker
+    dramatiq.set_broker(original_broker)
