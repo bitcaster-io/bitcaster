@@ -42,7 +42,7 @@ def runit(args: list[str]) -> None:
 
     manager = BackgroundManager()
     manager.register_runner()
-
+    click.echo(" ".join(args))
     try:
         from bitcaster.runner.tasks import broker
 
@@ -72,9 +72,12 @@ def run(processes: int, threads: int, verbose: bool, debug: bool, autoreload: bo
         "--worker-shutdown-timeout",
         "600000",
         "--skip-logging",
-        "-" + "v" * verbose,
         "bitcaster.runner.tasks",
     ]
+    if verbose:
+        args.append(
+            "-" + "v" * verbose,
+        )
     if pid_file:
         args.extend(["--pid-file", pid_file])
 
