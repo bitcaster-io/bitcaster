@@ -156,7 +156,6 @@ docs = [
 ]
 mypy = [
   "boto3-stubs>=1.34.105",
-  "celery-types",
   "djangorestframework-stubs",
   "mypy>=1.9",
   "mypy-boto3>=1.34.105",

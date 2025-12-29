@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     "tinymce",
     "reversion",
     "taggit",
-    "celery",
     # "treebeard",
     "rest_framework",
     "drf_spectacular",
