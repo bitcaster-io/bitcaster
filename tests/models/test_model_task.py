@@ -36,12 +36,12 @@ def test_task_scheduling_cron():
         trigger=Task.TriggerOption.CRON,
         trigger_config={
             "minute": "0",
-            "hour": "0",
+            "hour": "10",
             "day_of_week": "mon,tue",
             "month": "1",
         },
     )
-    expected_output = "At 12:00 AM, only on Monday and Tuesday, only in January"
+    expected_output = "At 10:00 AM, only on Monday and Tuesday, only in January"
     assert task.scheduling() == expected_output
 
     task_all_wildcards = Task.objects.create(
