@@ -1,20 +1,17 @@
-from datetime import UTC, datetime, timedelta
+from datetime import datetime
 from typing import Any
 
 from django import forms
 from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
-from django.core.cache import cache
 from django.db.models import Model, QuerySet
 from django.forms import HiddenInput
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.utils import timezone
 from django.views.generic import TemplateView
 from unfold.views import UnfoldModelAdminViewMixin
 
 from bitcaster.cache.manager import CacheManager
-from bitcaster.config.celery import app
 from bitcaster.constants import bitcaster
 from bitcaster.forms import unfold as uwidgets
 
@@ -103,48 +100,6 @@ class LockView(ConsoleMixin, TemplateView):
         return ret
 
 
-def last_seen_beat() -> dict[str, Any]:
-    ts = cache.get("celery:beat:alive")
-    if not ts:
-        return {"status": False, "seen": ""}
-    return {
-        "status": timezone.now() - timezone.datetime.fromisoformat(ts) < timedelta(minutes=1),
-        "seen": ts,
-    }
-
-
-def is_worker_running(timeout: float = 1.0) -> bool:
-    try:
-        insp = app.control.inspect(timeout=timeout)
-        replies = insp.ping()
-        return bool(replies)
-    except Exception:
-        return False
-
-
-def list_running_tasks() -> dict[str, list[dict[str, Any]]]:
-    i = app.control.inspect()
-
-    active_tasks = i.active()
-    ret = {}
-    if active_tasks:
-        for worker, tasks in active_tasks.items():
-            ret[worker] = []
-            for task in tasks:
-                started = task.get("time_start")
-                ret[worker].append(
-                    {
-                        "id": task["id"],
-                        "name": task["name"],
-                        "args": task["args"],
-                        "kwargs": task["kwargs"],
-                        "started_at": (datetime.fromtimestamp(started, tz=UTC).isoformat() if started else None),
-                        "raw": task,
-                    }
-                )
-    return ret
-
-
 class MonitorView(ConsoleMixin, TemplateView):
     title = "Console: Monitor"
     permission_required = ("bitcaster.console_tools",)
@@ -160,12 +115,21 @@ class MonitorView(ConsoleMixin, TemplateView):
         return forms.Media(js=js, css=css)
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
-        return JsonResponse({"alive": is_worker_running(), "beat": last_seen_beat(), "workers": list_running_tasks()})
+        from bitcaster.runner.manager import BackgroundManager
+
+        manager = BackgroundManager()
+        return JsonResponse(
+            {
+                "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "beat": manager.scheduler_info(),
+                "workers": manager.get_runners(),
+            }
+        )
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         kwargs.update(
             media=self.media,
-            tasks=sorted(m for m in app.tasks if m.startswith("bitcaster")),
+            tasks=[],  # Removed reference to app.tasks
         )
 
         return super().get_context_data(**kwargs)

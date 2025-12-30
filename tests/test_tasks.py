@@ -8,7 +8,7 @@ from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
 
 from bitcaster.constants import SystemEvent, bitcaster
-from bitcaster.tasks import (
+from bitcaster.runner.tasks import (
     monitor_run,
     process_occurrence,
     purge_occurrences,
@@ -234,20 +234,27 @@ def celery_config() -> dict[str, str]:
     return {"broker_url": "memory://"}
 
 
+@pytest.fixture(autouse=True)
+def run_tasks_sync(monkeypatch):
+    import dramatiq
+    from dramatiq.brokers.stub import StubBroker
+
+    stub_broker = StubBroker()
+    monkeypatch.setattr("bitcaster.runner.broker.broker", stub_broker)
+    dramatiq.set_broker(stub_broker)
+
+
 @pytest.mark.django_db(transaction=True)
-def test_scan_occurrences(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
+def test_scan_occurrences(run_tasks_sync, setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
     from bitcaster.models import Occurrence
 
-    monkeypatch.setattr(
-        "bitcaster.models.occurrence.Occurrence._process",
-        mocked_notify := Mock(return_value=[True, {"delivered": [], "recipients": []}]),
-    )
+    monkeypatch.setattr("bitcaster.runner.tasks.process_occurrence.send", process_occurrence.fn)
 
     scan_occurrences()
 
     o: Occurrence = setup["occurrence"]
     o.refresh_from_db()
-    assert mocked_notify.call_count == 1
+    assert o.recipients == 2
     assert o.status == Occurrence.Status.PROCESSED
 
 

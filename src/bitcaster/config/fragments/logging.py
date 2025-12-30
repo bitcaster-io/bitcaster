@@ -3,8 +3,6 @@ import os
 from .. import env
 
 SYSTEM_LEVEL = env("LOGGING_LEVEL")
-if env("DEBUG") and SYSTEM_LEVEL == "CRITICAL" and "LOGGING_LEVEL" not in os.environ:
-    SYSTEM_LEVEL = "INFO"
 
 
 def get_logging_level(logger: str, default: str = "") -> str:
@@ -35,16 +33,6 @@ LOGGING = {
             "level": get_logging_level("environ"),
             "propagate": False,
         },
-        "django.template": {
-            "handlers": ["null"],
-            "level": get_logging_level("django"),
-            "propagate": False,
-        },
-        "django.utils.autoreload": {
-            "handlers": ["null"],
-            "level": get_logging_level("django"),
-            "propagate": False,
-        },
         "django": {
             "handlers": ["console"],
             "level": get_logging_level("django"),
@@ -72,6 +60,11 @@ LOGGING = {
         "bitcaster": {
             "handlers": ["console"],
             "level": get_logging_level("bitcaster"),
+            "propagate": False,
+        },
+        "bitcaster.runner": {
+            "handlers": ["console"],
+            "level": "CRITICAL",
             "propagate": False,
         },
     },

@@ -11,7 +11,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from flags.state import flag_enabled
 
 from bitcaster.admin.base import BaseAdmin
@@ -109,6 +109,6 @@ class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
             expired = timezone.now() > expires
         media = Media(js=["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"])
         ctx = self.get_common_context(
-            request, pk, bae=obj.get_bae(), media=media, expires=expires, expired=expired, title=_("Info")
+            request, pk, bae=obj.get_bae(), media=media, expires=expires, expired=expired, action_title=_("Info")
         )
         return TemplateResponse(request, "bitcaster/admin/apikey/created.html", ctx)

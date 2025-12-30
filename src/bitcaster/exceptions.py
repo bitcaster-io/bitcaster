@@ -18,3 +18,11 @@ class LockError(Exception):
 
     def __str__(self) -> str:
         return f"Unable to process this event. {self.locked.__class__.__name__} locked"
+
+
+class InactiveError(Exception):
+    def __init__(self, event: "LockMixin"):
+        self.event = event
+
+    def __str__(self) -> str:
+        return f"Unable to accept this event. {self.event.__class__.__name__} is paused or deactivated"

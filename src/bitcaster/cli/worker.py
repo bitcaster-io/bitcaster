@@ -1,54 +1,108 @@
-import os
-from typing import TYPE_CHECKING
+import logging
+from typing import TYPE_CHECKING, Any
 
 import click
-from celery.utils.nodenames import gethostname, host_format
-from django.conf import settings
-from django.core.cache import cache
+from colorlog import ColoredFormatter
+from dramatiq import Middleware
 
-from bitcaster.cli import lock_key
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from celery.apps.worker import Worker
+    from dramatiq import Broker, Message, MessageProxy
+
+LOGFORMAT = "%(log_color)s%(asctime)s%(reset)s | %(log_color)s%(message)s%(reset)s"
+
+
+class ClickMiddleware(Middleware):
+    def before_enqueue(self, broker: "Broker", message: "Message[Any]", delay: int) -> None:
+        click.echo(f"Enqueueing...{message.actor_name}")
+
+    def before_ack(self, broker: "Broker", message: "MessageProxy") -> None:
+        click.echo(f"Ack...{message.actor_name}")
+
+    def before_process_message(self, broker: "Broker", message: "MessageProxy") -> None:
+        click.echo(f"Starting...{message.actor_name}")
+
+    def after_process_message(
+        self,
+        broker: "Broker",
+        message: "MessageProxy",
+        *,
+        result: "Any|None" = None,
+        exception: BaseException | None = None,
+    ) -> None:
+        click.echo(f"Completed...{message.actor_name}")
+
+
+def runit(args: list[str]) -> None:
+    from dramatiq.cli import make_argument_parser
+
+    from bitcaster.runner.config import dramatiq
+    from bitcaster.runner.manager import BackgroundManager
+
+    manager = BackgroundManager()
+    manager.register_runner()
+    click.echo(" ".join(args))
+    try:
+        from bitcaster.runner.tasks import broker
+
+        broker.middleware.append(ClickMiddleware())
+        dramatiq.cli.main(make_argument_parser().parse_args(args))  # type: ignore[no-untyped-call]
+    except KeyboardInterrupt:
+        click.echo("Runner stopping...")
+    finally:
+        manager.unregister_runner()
 
 
 @click.command()
-@click.option("-l", "--loglevel", default="info", help="Logging level (default: info)")
-@click.option("--events/--no-events", "events", default=True, help="Enable/disable worker events (default: enabled)")
-@click.option("--purge", default=False, help="Enable/disable worker events (default: enabled)")
-@click.option("--concurrency", default=4, type=int, help="Number of child processes processing the queue")
-@click.option("--scheduler/--no-scheduler", "scheduler", default=True, help="Embedded Beat Options")
-@click.option("--queues", default=None, help="List of queues to enable for this worker")
-def run(events: bool, loglevel: str, scheduler: bool, concurrency: int, queues: str | None, purge: bool) -> None:
-    """Start background process manager."""
-    from bitcaster.config.celery import app
+@click.option("-p", "--processes", default=1, help="Enable/disable worker events (default: enabled)")
+@click.option("-t", "--threads", default=1, help="Enable/disable worker events (default: enabled)")
+@click.option("-d", "--debug", is_flag=True, help="")
+@click.option("-v", "--verbose", count=True)
+@click.option("--pid-file", type=click.Path())
+@click.option("--autoreload", is_flag=True, default=False, help="Reload on code changes")
+def run(processes: int, threads: int, verbose: bool, debug: bool, autoreload: bool, pid_file: str) -> None:
+    args = [
+        "--path",
+        ".",
+        "--processes",
+        str(processes),
+        "--threads",
+        str(threads),
+        "--worker-shutdown-timeout",
+        "600000",
+        "--skip-logging",
+        "bitcaster.runner.tasks",
+    ]
+    if verbose:
+        args.append(
+            "-" + "v" * verbose,
+        )
+    if pid_file:
+        args.extend(["--pid-file", pid_file])
 
-    run_beat = scheduler
-    if scheduler:
-        lock_timeout = 60  # seconds
-        if not cache.add(lock_key, gethostname(), lock_timeout):
-            click.echo("Scheduler lock held by another worker. Skipping Scheduler.")
-            run_beat = False  # another worker is running Beat
-        else:
-            click.echo("Acquired lock. Starting Scheduler.")
+    log_level = logging.CRITICAL - (verbose * 10)
 
-    options = {
-        "hostname": host_format(f"bitcaster-{os.getpid()}", "bitcaster", gethostname()),
-        "loglevel": loglevel,
-        "concurrency": concurrency,
-        "traceback": True,
-        "without_gossip": True,
-        "without_mingle": True,
-        "task_events": events,
-        "pool": "prefork",
-        "statedb": None,
-        "purge": purge,
-        "beat": run_beat,
-        "scheduler": settings.CELERY_BEAT_SCHEDULER,
-    }
+    if debug:
+        logging.getLogger("root").root.setLevel(logging.DEBUG)
+        logging.getLogger("root").setLevel(logging.DEBUG)
+        logging.getLogger("bitcaster").setLevel(logging.DEBUG)
+        logging.getLogger("dramatiq").setLevel(logging.DEBUG)
+        logging.getLogger("dramatiq.worker").setLevel(logging.DEBUG)
+    else:
+        stream = logging.StreamHandler()
+        stream.setLevel(log_level)
+        formatter = ColoredFormatter(LOGFORMAT)
+        stream.setFormatter(formatter)
+        for logger_name in ["dramatiq", "bitcaster", "dramatiq.worker"]:
+            logger = logging.getLogger(logger_name)
+            logger.setLevel(log_level)
+            logger.setLevel(log_level)
+            logger.addHandler(stream)
+            logger.propagate = False
+    if autoreload:
+        from django.utils import autoreload as django_autoreload
 
-    if queues:
-        options["queues"] = queues
-
-    w: "Worker" = app.Worker(**options)
-    w.start()
+        django_autoreload.run_with_reloader(runit, args)
+    else:
+        runit(args)

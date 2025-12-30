@@ -6,8 +6,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, List
 from uuid import uuid4
 
+import psycopg2
 import pytest
 import responses
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -58,6 +60,7 @@ def pytest_configure(config):
     os.environ["CSRF_TRUSTED_ORIGINS"] = "https://close-pro-impala.ngrok-free.app,http://localhost"
 
     os.environ["LOGGING_LEVEL"] = "CRITICAL"
+    os.environ["LOGGING_LEVEL_BITCASTER"] = "CRITICAL"
 
     os.environ["MAILGUN_API_KEY"] = "11"
     os.environ["MAILGUN_SENDER_DOMAIN"] = "mailgun.domain"
@@ -92,7 +95,6 @@ def pytest_configure(config):
     settings.MEDIA_ROOT = "%s/media" % tempfile.gettempdir()
     settings.STATIC_ROOT = "%s/static" % tempfile.gettempdir()
     settings.MESSAGE_STORAGE = "testutils.messages.PlainCookieStorage"
-    settings.CELERY_TASK_ALWAYS_EAGER = True
     settings.SUPERUSERS = ["superuser001@example.com", "superuser002@example.com"]
     settings.CACHE_PREFIX = uuid4().hex
 
@@ -113,6 +115,14 @@ def pytest_configure(config):
         call_command("env", check=True)
     except CommandError:
         pytest.exit("FATAL: Environment variables missing")
+
+
+def run_sql(sql):
+    conn = psycopg2.connect(database="postgres")
+    conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    cur = conn.cursor()
+    cur.execute(sql)
+    conn.close()
 
 
 @pytest.fixture
