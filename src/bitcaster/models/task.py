@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from typing import Any
 
 from apscheduler.triggers.cron import CronTrigger
+from cron_descriptor import Options
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import JSONField
@@ -65,7 +66,8 @@ class Task(BitcasterBaseModel):
                     month=self.trigger_config.get("month", "*"),
                     day_of_week=self.trigger_config.get("day_of_week", "*"),
                 )
-                return get_description(cron_expression)
+                options: Options = Options(locale_code="en_US", use_24hour_time_format=False)
+                return get_description(cron_expression, options)
             except ImportError:
                 return str(CronTrigger(**self.trigger_config))
         return "Invalid trigger type"
