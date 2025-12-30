@@ -53,7 +53,6 @@ def pytest_configure(config):
     os.environ.setdefault("TEST_EMAIL_RECIPIENT", "recipient@example.com")
 
     os.environ["BITCASTER_LOGGING_LEVEL"] = "CRITICAL"
-    os.environ["DRAMATIQ_BROKER"] = "redis://localhost:6379/2"
     os.environ["REDIS_LOGGING_LEVEL"] = "CRITICAL"
     os.environ["DJANGO_LOGGING_LEVEL"] = "CRITICAL"
 
