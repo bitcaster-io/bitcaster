@@ -1,9 +1,10 @@
 import abc
 from typing import TYPE_CHECKING, Any, cast
 
-from django import forms
 from django.core.exceptions import ValidationError
 from strategy_field.registry import Registry
+
+from bitcaster.forms.unfold import UnfoldForm
 
 if TYPE_CHECKING:
     from bitcaster.models import Monitor
@@ -25,7 +26,7 @@ class AgentMeta(type["Agent"]):
         return cast("Agent", new_cls)
 
 
-class AgentConfig(forms.Form):
+class AgentConfig(UnfoldForm):
     help_text = ""
 
 

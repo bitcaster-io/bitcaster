@@ -53,15 +53,13 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, 
     )
     autocomplete_fields = ("event",)
     change_list_template = "admin_extra_buttons/change_list.html"
-    change_form_template = "bitcaster/admin/monitor/change_form.html"
     form = MonitorForm
-    exclude = ("schedule",)
 
     def agent_(self, obj: Monitor) -> str:
         return str(obj.agent)
 
     def get_queryset(self, request: "HttpRequest") -> QuerySet[Monitor]:
-        return super().get_queryset(request).select_related("event", "event__application")
+        return super().get_queryset(request).select_related("event", "event__application__project")
 
     @link(change_form=True, change_list=False)
     def events(self, button: ButtonWidget) -> None:
@@ -75,7 +73,7 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         monitor: Monitor = self.get_object_or_404(request, pk)
-        context = self.get_common_context(request, pk, title=_("Configure Monitor"))
+        context = self.get_common_context(request, pk, action_title=_("Configure Monitor"))
         form_class = monitor.agent.config_class
         if request.method == "POST":
             config_form = form_class(request.POST)
