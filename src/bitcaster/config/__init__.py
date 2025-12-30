@@ -43,7 +43,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "CACHE_PREFIX": (str, "", "", "prefix string to use in cache keys"),
     "CACHE_URL": (
         str,
-        "redis://localhost:6379/0",
+        "redis://cache-server:6379/0",
     ),
     "CATCH_ALL_EMAIL": (str, "If set all the emails will be sent to this address"),
     "CSRF_COOKIE_SECURE": (bool, True, setting("csrf-cookie-secure"), False),
@@ -55,7 +55,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         "https://django-environ.readthedocs.io/en/latest/types.html#environ-env-db-url",
         False,
     ),
-    "DRAMATIQ_BROKER": (str, "redis://localhost:6379/0", "", True),
+    "DRAMATIQ_BROKER": (str, "redis://dramatiq-broker:6379/0", "", True),
     "DEBUG": (bool, False, setting("debug"), True),
     "EMAIL_BACKEND": (str, "django.core.mail.backends.smtp.EmailBackend", setting("email-backend"), True),
     "EMAIL_HOST": (str, "localhost", setting("email-host"), True),
