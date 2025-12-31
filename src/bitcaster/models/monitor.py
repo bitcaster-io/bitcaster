@@ -26,7 +26,6 @@ class Monitor(AdminReversable, models.Model):
     data = models.JSONField(blank=True, default=dict, editable=False)
     result = models.JSONField(blank=True, default=dict, editable=False)
     async_result = models.CharField(blank=True, default="", editable=False, max_length=255)
-    schedule = models.CharField(blank=True, default="", max_length=255)
 
     objects = MonitorManager()
 
