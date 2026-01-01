@@ -8,7 +8,7 @@ from django.db import models, transaction
 from django.db.models.expressions import F
 from django.db.models.functions import Coalesce
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from ..constants import SystemEvent, bitcaster
 from . import LogEntry

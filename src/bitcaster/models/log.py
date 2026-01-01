@@ -2,8 +2,7 @@ from typing import Any
 
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.contrib.admin.models import LogEntry as _LogEntry
-from django.utils.translation import gettext
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 
 class LogEntryManager(_LogEntry.objects.__class__):  # type: ignore[name-defined]
@@ -39,7 +38,7 @@ class LogEntry(_LogEntry):
 
     def __str__(self) -> str:
         if self.is_other():
-            return gettext("”%(object)s”.") % {"object": self.object_repr}
+            return _("”%(object)s”.") % {"object": self.object_repr}
         return super().__str__()
 
     def is_other(self) -> bool:

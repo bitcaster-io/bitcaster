@@ -9,10 +9,10 @@ mkdir -p "${MEDIA_ROOT}" "${STATIC_ROOT}" || echo "Cannot create dirs ${MEDIA_RO
 
 case "$1" in
     worker)
-      bitcaster run
+      bc run
       ;;
-    beat)
-      bitcaster scheduler
+    scheduler)
+      bc scheduler
       ;;
     run)
       django-admin check --deploy

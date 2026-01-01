@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from bitcaster.models import Application
 
 from ..auth.constants import Grant
-from ..exceptions import LockError
+from ..exceptions import InactiveError, LockError
 from ..models import Event, Occurrence, User
 from ..utils.filtering import validate_filters, validate_lookups, validate_schema
 from .base import SecurityMixin
@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
     from ..models.occurrence import OccurrenceOptions
     from ..types.filtering import QuerysetFilter
+    from ..types.json import JSON
 
 app_name = "api"
 
@@ -93,7 +94,32 @@ class EventTrigger(SecurityMixin, GenericAPIView):
         if ser.is_valid():
             slug = self.kwargs["evt"]
             try:
-                evt: "Event" = self.get_queryset().get(slug=slug)
+                data: "JSON" = {}
+                try:
+                    evt: "Event" = self.get_queryset().get(slug=slug)
+                except Event.DoesNotExist:
+                    grant = Grant.EVENT_AUTO_CREATE in request.auth.grants
+                    if grant and (
+                        app := Application.objects.select_related("project__organization")
+                        .filter(
+                            project__organization__slug=self.kwargs["org"],
+                            project__slug=self.kwargs["prj"],
+                            slug=self.kwargs["app"],
+                            auto_crete_event=True,
+                        )
+                        .first()
+                    ):
+                        slug = self.kwargs["evt"]
+                        evt = Event.objects.create(
+                            application=app,
+                            active=False,
+                            slug=slug,
+                            name=f"AUTO: {slug.title()}",
+                            description="auto created via APO invocation",
+                        )
+                        data["warning"] = f"New event '{evt.name}' created with id {evt.id}"
+                    else:
+                        raise
                 if evt.locked:
                     raise LockError(evt)
                 if evt.application.locked:
@@ -112,29 +138,15 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                     options=opts,
                     cid=correlation_id,
                 )
-                return Response({"occurrence": o.pk}, status=201)
+                data["occurrence"] = o.pk
+                if o.event.paused or o.event.application.paused:
+                    data["paused"] = True
+                return Response(data, status=201)
             except LockError as e:
                 return Response({"error": str(e)}, status=400)
+            except InactiveError as e:
+                return Response({"warning": str(e)}, status=200)
             except Event.DoesNotExist:
-                grant = Grant.EVENT_AUTO_CREATE in request.auth.grants
-                if grant and (
-                    app := Application.objects.select_related("project__organization")
-                    .filter(
-                        project__organization__slug=self.kwargs["org"],
-                        project__slug=self.kwargs["prj"],
-                        slug=self.kwargs["app"],
-                        auto_crete_event=True,
-                    )
-                    .first()
-                ):
-                    evt = Event.objects.create(
-                        application=app,
-                        active=False,
-                        slug=self.kwargs["evt"],
-                        name=self.kwargs["evt"],
-                        description="auto created via APO invocation",
-                    )
-                    return Response({"warning": f"New event created '{evt.slug}' with id {evt.pk}"}, status=201)
                 return Response({"error": f"Event not found {self.kwargs}"}, status=404)
         else:
             return Response(ser.errors, status=400)

@@ -4,7 +4,7 @@ from admin_extra_buttons.decorators import button
 from django.contrib import admin, messages
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from .base import BitcasterModelAdmin, ButtonColor
 

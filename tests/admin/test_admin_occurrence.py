@@ -112,7 +112,7 @@ def test_purge_occurrence_permission(app: DjangoTestApp, user: "User") -> None:
 
 
 def test_purge_occurrence(app_for_admin: DjangoTestApp, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("bitcaster.tasks.purge_occurrences.delay", purge_occurrences_mock := Mock())
+    monkeypatch.setattr("bitcaster.runner.tasks.purge_occurrences.send", purge_occurrences_mock := Mock())
 
     url = reverse("admin:bitcaster_occurrence_purge")
     url_redirect = reverse("admin:bitcaster_occurrence_changelist")

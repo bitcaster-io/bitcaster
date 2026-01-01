@@ -8,6 +8,7 @@ from unfold.forms import AdminForm
 from unfold.widgets import (
     SELECT_CLASSES,
     UnfoldAdminFileFieldWidget,
+    UnfoldAdminIntegerFieldWidget,
     UnfoldAdminSelect2Widget,
     UnfoldAdminSelectWidget,
     UnfoldAdminTextInputWidget,
@@ -22,6 +23,7 @@ __all__ = [
     "UnfoldAdminSelectWidget",
     "UnfoldAdminFileFieldWidget",
     "UnfoldBooleanSwitchWidget",
+    "UnfoldAdminIntegerFieldWidget",
 ]
 
 WIDGETS_OVERRIDES = {
@@ -41,6 +43,15 @@ WIDGETS_OVERRIDES = {
     forms.FileField: widgets.UnfoldAdminFileFieldWidget,
     forms.ImageField: widgets.UnfoldAdminImageFieldWidget,
 }
+
+
+# kudos to https://github.com/unfoldadmin/django-unfold/issues/180
+class UnfoldForm(forms.Form):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if widget := WIDGETS_OVERRIDES.get(field.__class__):
+                field.widget = widget()
 
 
 # kudos to https://github.com/unfoldadmin/django-unfold/issues/180

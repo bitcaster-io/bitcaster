@@ -20,7 +20,7 @@
                     <input type="submit" class="submit primary" value="{% translate "Logout" %}" />
                 </form>
             {% else %}
-                <a class="button primary" href="{% url "login" %}">{% translate "Login" %}</a>
+                <a class="button primary" href="{% url "admin:login" %}">{% translate "Login" %}</a>
             {% endif %}
         </div>
     </div>

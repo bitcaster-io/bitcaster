@@ -1,37 +1,39 @@
 import logging
 
-from django.core.cache import cache
+import dramatiq
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from django.utils import timezone
 
-from bitcaster.config.celery import app
 from bitcaster.constants import bitcaster
-from bitcaster.models import LogEntry
+
+from .broker import broker
 
 logger = logging.getLogger(__name__)
 
 
-@app.task(expires=55)
+dramatiq.set_broker(broker)
+
+
 def beat_heartbeat() -> None:
-    cache.set(
-        "celery:beat:alive",
-        timezone.now().isoformat(),
-        timeout=None,  # None means infinite timeout in Django cache
-    )
+    from .manager import BackgroundManager
+
+    BackgroundManager().scheduler_ping()
 
 
-@app.task()
+@dramatiq.actor
 def process_occurrence(occurrence_pk: int) -> int:
     from bitcaster.models import Occurrence
 
     o: Occurrence = Occurrence.objects.select_related("event").get(id=occurrence_pk)
+    logger.debug(f"Processing occurrence {o}")
     return o.process()
 
 
-@app.task()
+@dramatiq.actor
 def scan_occurrences() -> None:
     from bitcaster.models import Occurrence
+
+    logger.debug("Scan new occurrences")
 
     o: Occurrence
     try:
@@ -40,13 +42,13 @@ def scan_occurrences() -> None:
             .filter(status=Occurrence.Status.NEW)
             .exclude(Q(event__paused=True) | Q(event__application__paused=True))
         ):
-            process_occurrence.delay(o.id)
+            process_occurrence.send(o.id)
     except Exception as e:
         logger.exception(e)
         raise
 
 
-@app.task()
+@dramatiq.actor
 def purge_occurrences() -> None | Exception:
     from bitcaster.models import Occurrence
 
@@ -57,11 +59,11 @@ def purge_occurrences() -> None | Exception:
         return e
 
 
-@app.task()
+@dramatiq.actor
 def monitor_run(pk: str) -> str:
     from django.contrib.contenttypes.models import ContentType
 
-    from bitcaster.models import Monitor
+    from bitcaster.models import LogEntry, Monitor
 
     try:
         monitor: "Monitor" = Monitor.objects.get(pk=pk)

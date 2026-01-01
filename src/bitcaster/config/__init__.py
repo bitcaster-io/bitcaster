@@ -21,7 +21,7 @@ class Group(Enum):
 
 
 NOT_SET = "<- not set ->"
-EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY", "CACHE_URL", "CELERY_BROKER_URL", "MEDIA_ROOT", "STATIC_ROOT"]
+EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY", "CACHE_URL", "DRAMATIQ_BROKER", "MEDIA_ROOT", "STATIC_ROOT"]
 
 CONFIG: "Mapping[str, ConfigItem]" = {
     "ADMIN_EMAIL": (str, "", "Initial user created at first deploy"),
@@ -43,26 +43,9 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "CACHE_PREFIX": (str, "", "", "prefix string to use in cache keys"),
     "CACHE_URL": (
         str,
-        "redis://localhost:6379/0",
+        "redis://cache-server:6379/0",
     ),
     "CATCH_ALL_EMAIL": (str, "If set all the emails will be sent to this address"),
-    "CELERY_BROKER_URL": (str, NOT_SET, "https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html"),
-    "CELERY_TASK_ALWAYS_EAGER": (
-        bool,
-        False,
-        "https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_always_eager",
-        True,
-    ),
-    "CELERY_TASK_EAGER_PROPAGATES": (
-        bool,
-        True,
-        "https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-eager-propagates",
-    ),
-    "CELERY_VISIBILITY_TIMEOUT": (
-        int,
-        1800,
-        "https://docs.celeryq.dev/en/stable/userguide/configuration.html#broker-transport-options",
-    ),
     "CSRF_COOKIE_SECURE": (bool, True, setting("csrf-cookie-secure"), False),
     "CSRF_COOKIE_SAMESITE": (str, setting("csrf-cookie-samesite")),
     "CSRF_TRUSTED_ORIGINS": (list, ["http://localhost", "http://127.0.0.1"]),
@@ -72,6 +55,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         "https://django-environ.readthedocs.io/en/latest/types.html#environ-env-db-url",
         False,
     ),
+    "DRAMATIQ_BROKER": (str, "redis://dramatiq-broker:6379/0", "", True),
     "DEBUG": (bool, False, setting("debug"), True),
     "EMAIL_BACKEND": (str, "django.core.mail.backends.smtp.EmailBackend", setting("email-backend"), True),
     "EMAIL_HOST": (str, "localhost", setting("email-host"), True),

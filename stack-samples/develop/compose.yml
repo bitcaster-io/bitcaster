@@ -7,14 +7,15 @@ x-common: &common
   tty: true
   stdin_open: true
   environment:
-    - ADMIN_EMAIL=bitcaster@example.com
-    - ADMIN_PASSWORD=123
+    - ADMIN_EMAIL=admin@bitcaster.io
+    - ADMIN_PASSWORD=password
     - ALLOWED_HOSTS=localhost,127.0.0.1
     - CACHE_URL=redis://redis:6379/1?client_class=django_redis.client.DefaultClient
-    - CELERY_BROKER_URL=redis://redis:6379/9
+    - DRAMATIQ_BROKER=redis://redis:6379/2
     - CSRF_COOKIE_SECURE=False
     - CSRF_TRUSTED_ORIGINS=http://localhost
     - DATABASE_URL=postgres://bitcaster:password@db:5432/bitcaster
+    - LOGGING_LEVEL=CRITICAL
     - DEBUG=True
     - MEDIA_ROOT=/var/storage/media/
     - SECRET_KEY=super_secret_key_just_for_development_that_needs_to_be_more_than_fifty_characters
@@ -28,9 +29,9 @@ x-common: &common
   volumes:
     - storage_volume:/var/storage
 #    - $PWD:/code/app
-    - $PWD/docker/conf:/conf
-    - $PWD/docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
-    - $PWD/src/bitcaster:/code/__pypackages__/3.13/lib/bitcaster
+#    - $PWD/docker/conf:/conf
+#    - $PWD/docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+#    - $PWD/src/bitcaster:/code/__pypackages__/3.13/lib/bitcaster
   restart: unless-stopped
   depends_on:
     db:
@@ -57,6 +58,13 @@ services:
   worker:
     <<: *common
     command: ["worker"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  scheduler:
+    <<: *common
+    command: ["scheduler"]
     depends_on:
       db:
         condition: service_healthy

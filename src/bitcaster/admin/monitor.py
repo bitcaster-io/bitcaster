@@ -11,8 +11,7 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils.translation import gettext as _
-from django_celery_beat.models import CrontabSchedule
+from django.utils.translation import gettext_lazy as _
 from reversion.admin import VersionAdmin
 
 from bitcaster.models import Channel, Monitor
@@ -32,7 +31,7 @@ class MonitorTestForm(forms.Form):
 
 
 class MonitorScheduleForm(forms.Form):
-    crontab = forms.ModelChoiceField(queryset=CrontabSchedule.objects.all())
+    pass
 
 
 class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, VersionAdmin[Monitor]):
@@ -54,15 +53,13 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, 
     )
     autocomplete_fields = ("event",)
     change_list_template = "admin_extra_buttons/change_list.html"
-    change_form_template = "bitcaster/admin/monitor/change_form.html"
     form = MonitorForm
-    exclude = ("schedule",)
 
     def agent_(self, obj: Monitor) -> str:
         return str(obj.agent)
 
     def get_queryset(self, request: "HttpRequest") -> QuerySet[Monitor]:
-        return super().get_queryset(request).select_related("event", "event__application")
+        return super().get_queryset(request).select_related("event", "event__application__project")
 
     @link(change_form=True, change_list=False)
     def events(self, button: ButtonWidget) -> None:
@@ -73,15 +70,10 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, 
         else:
             button.visible = False
 
-    def response_add(self, request: HttpRequest, obj: Monitor, post_url_continue: str | None = None) -> HttpResponse:
-        base_url = reverse("admin:bitcaster_monitor_configure", args=[obj.pk])
-        schedule_url = reverse("admin:bitcaster_monitor_schedule", args=[obj.pk])
-        return HttpResponseRedirect(f"{base_url}?next={schedule_url}")
-
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         monitor: Monitor = self.get_object_or_404(request, pk)
-        context = self.get_common_context(request, pk, title=_("Configure Monitor"))
+        context = self.get_common_context(request, pk, action_title=_("Configure Monitor"))
         form_class = monitor.agent.config_class
         if request.method == "POST":
             config_form = form_class(request.POST)
@@ -89,9 +81,7 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, 
                 monitor.config = config_form.cleaned_data
                 monitor.data = {}
                 monitor.result = {}
-                monitor.schedule.last_run_at = None
                 monitor.save()
-                monitor.schedule.save()
                 self.message_user(request, f"Configured Monitor {monitor.name}")
                 if "next" in request.GET:
                     return HttpResponseRedirect(request.GET["next"])
@@ -103,24 +93,6 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, 
         fs = (("", {"fields": form_class.declared_fields}),)
         context["admin_form"] = AdminForm(config_form, fs, {})  # type: ignore[arg-type]
         return TemplateResponse(request, "bitcaster/admin/monitor/configure.html", context)
-
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
-    def schedule(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
-        context = self.get_common_context(request, pk, title=_("Schedule"))
-        monitor: Monitor = context["original"]
-        if request.method == "POST":
-            form = MonitorScheduleForm(request.POST, request.FILES)
-            if form.is_valid():
-                monitor.schedule.crontab = form.cleaned_data["crontab"]
-                monitor.schedule.save()
-                return HttpResponseRedirect(monitor.get_admin_change())
-
-        else:
-            form = MonitorScheduleForm(initial={"crontab": monitor.schedule.crontab})
-
-        context["form"] = form
-
-        return TemplateResponse(request, "bitcaster/admin/monitor/schedule.html", context)
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def test(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":

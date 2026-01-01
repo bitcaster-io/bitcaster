@@ -11,10 +11,10 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models import Assignment, Message, Occurrence
-from bitcaster.tasks import purge_occurrences
+from bitcaster.runner.tasks import purge_occurrences
 
 from ..cache.manager import CacheManager
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
@@ -200,7 +200,7 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     )
     def purge(self, request: HttpRequest) -> HttpResponse:  # noqa
         def doit(request) -> "HttpResponse|None":
-            purge_occurrences.delay()
+            purge_occurrences.send()
             self.message_user(request, _("Occurrence purge has been successfully triggered"), messages.SUCCESS)
 
         return confirm_action(
