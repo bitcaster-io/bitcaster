@@ -9,7 +9,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonRes
 from django.template import Context, Template
 from django.template.response import TemplateResponse
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from reversion.admin import VersionAdmin
 
 from bitcaster.models import (

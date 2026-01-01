@@ -1,5 +1,4 @@
 import sentry_sdk
-from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from bitcaster.config import env
@@ -12,5 +11,7 @@ if SENTRY_DSN:  # pragma: no cover
         environment=env("SENTRY_ENVIRONMENT"),
         send_default_pii=True,
         enable_tracing=True,
-        integrations=[DjangoIntegration(), CeleryIntegration()],
+        integrations=[
+            DjangoIntegration(),
+        ],
     )

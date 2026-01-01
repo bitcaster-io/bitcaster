@@ -59,3 +59,11 @@ repos:
         args:
           - -o
           - src/bitcaster/web/static/css/unfold_ext.css
+
+      -   id: check-minimized
+          name: check missing minimized javascript
+          files: (monitor\.js)$
+          exclude: (\.min\.js)$
+          args:
+          -   -i
+          -   "src/bitcaster/web/static/dashboards/monitor.js/*.js"

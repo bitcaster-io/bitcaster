@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 import requests
 from django import forms
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from requests import Response
 
 from ..exceptions import DispatcherError
