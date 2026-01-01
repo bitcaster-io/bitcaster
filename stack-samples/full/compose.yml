@@ -6,7 +6,7 @@ x-common: &common
     - ADMIN_PASSWORD=123
     - ALLOWED_HOSTS=app,localhost,127.0.0.1
     - CACHE_URL=redis://redis:6379/1?client_class=django_redis.client.DefaultClient
-    - CELERY_BROKER_URL=redis://redis:6379/9
+    - DRAMATIQ_BROKER=redis://redis:6379/2
     - CSRF_COOKIE_SECURE=False
     - CSRF_TRUSTED_ORIGINS=http://localhost,https://localhost:1443
     - DATABASE_URL=postgres://bitcaster:password@db:5432/bitcaster
@@ -81,13 +81,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
-  flower:
-      <<: *common
-      command: ["flower"]
-      depends_on:
-        db:
-          condition: service_healthy
 
   db:
     image: postgres:15

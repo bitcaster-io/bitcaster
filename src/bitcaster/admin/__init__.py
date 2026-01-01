@@ -15,6 +15,7 @@ from .occurrence import OccurrenceAdmin
 from .organization import OrganizationAdmin
 from .overrides import LogEntryAdmin
 from .project import ProjectAdmin
+from .task import TaskAdmin
 from .user import UserAdmin
 from .userrole import UserRoleAdmin
 
@@ -36,6 +37,7 @@ __all__ = [
     "OccurrenceAdmin",
     "OrganizationAdmin",
     "ProjectAdmin",
+    "TaskAdmin",
     "UserAdmin",
     "UserRoleAdmin",
 ]

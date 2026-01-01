@@ -9,7 +9,6 @@ class Config(AppConfig):
 
     def ready(self) -> None:
         from . import checks  # noqa
-        from . import tasks  # noqa
         from . import handlers as global_handlers  # noqa
         from .cache import handlers as cache_handlers  # noqa
         from .admin import register  # noqa

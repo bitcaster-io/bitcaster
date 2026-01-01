@@ -13,13 +13,6 @@
                             <h3>
                                 Refresh:
                             </h3>
-                            <div style="text-wrap: nowrap;">
-                                <a href="{% url "admin:bitcaster_monitor_schedule" original.pk %}">{{ original.schedule.crontab|cron_human_readable }}</a>
-                            </div>
-                            <div>
-                                <a href="{% url "admin:django_celery_beat_periodictask_change" original.schedule.pk %}">Periodic
-                                Task</a>
-                            </div>
                         </div>
                     </fieldset>
                     <fieldset>

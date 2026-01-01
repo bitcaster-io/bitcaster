@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
 from django.core.validators import validate_email
-from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from flags.state import enable_flag
 
 from bitcaster.config import env
@@ -188,21 +187,6 @@ class Command(BaseCommand):
             Group.objects.get_or_create(name="Admins")
             Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
 
-            # Inside the function you want to add task dynamically
-            schedule_every_minute, _ = CrontabSchedule.objects.get_or_create(minute="*/1")
-            PeriodicTask.objects.get_or_create(
-                name="scan_occurrences",
-                defaults={"task": "bitcaster.tasks.scan_occurrences", "crontab": schedule_every_minute},
-            )
-            PeriodicTask.objects.get_or_create(
-                name="beat_heartbeat",
-                defaults={"task": "bitcaster.tasks.beat_heartbeat", "crontab": schedule_every_minute},
-            )
-            schedule_every_night, _ = CrontabSchedule.objects.get_or_create(hour=3, minute=30)
-            PeriodicTask.objects.get_or_create(
-                name="purge_occurrences",
-                defaults={"task": "bitcaster.tasks.purge_occurrences", "crontab": schedule_every_night},
-            )
             if not (org := Organization.objects.local().first()):
                 org = Organization.objects.create(name="Organization", owner=admin)
 

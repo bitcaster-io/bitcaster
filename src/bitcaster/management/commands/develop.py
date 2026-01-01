@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from concurrency.api import disable_concurrency
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
@@ -69,7 +70,7 @@ class Command(BaseCommand):
 
     def handle(self, *args: Any, **options: Any) -> None:  # noqa: C901
         self.get_options(options)
-
+        sys.path.insert(0, str(settings.SOURCE_DIR.parent / "tests/extras"))
         if self.snapshot:
             call_command(
                 "dumpdata",

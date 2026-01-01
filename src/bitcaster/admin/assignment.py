@@ -5,7 +5,7 @@ from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster.admin.base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from bitcaster.forms.assignment import AssignmentForm

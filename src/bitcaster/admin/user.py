@@ -5,7 +5,7 @@ from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.urls import path, reverse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from bitcaster.web.dashboard.views import LockView, MonitorView, ToolsView

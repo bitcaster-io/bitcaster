@@ -43,7 +43,7 @@ COMMON_SITE_DROPDOWN = [
 
 COMMON = {
     "LOGIN": {
-        "image": lambda request: static("bitcaster/images/logos/logo400.png"),
+        "image": lambda request: static("bitcaster/images/logos/bitcaster.svg"),
         "redirect_after": lambda request: reverse_lazy("admin:index"),
     },
     "DASHBOARD_CALLBACK": "bitcaster.web.dashboard.home.callback.dashboard_callback",

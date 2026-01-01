@@ -25,34 +25,40 @@ class OccurrenceChartComponent(BaseComponent):
             occurrences_by_day = (
                 Occurrence.objects.filter(timestamp__range=(start_date, end_date))
                 .annotate(day=TruncDay("timestamp"))
-                .values("day")
+                .values("day", "status")
                 .annotate(count=models.Count("id"))
-                .order_by("day")
+                .order_by("day", "status")
             )
 
-            # Create a dictionary to hold the data for each day
-            data_map = {item["day"].strftime("%Y-%m-%d"): item["count"] for item in occurrences_by_day}
+            data_map = {}
+            for item in occurrences_by_day:
+                day_str = item["day"].strftime("%Y-%m-%d")
+                status = item["status"]
+                data_map[(day_str, status)] = item["count"]
 
-            # Generate all dates from start_date to end_date
             all_dates = [start_date + timedelta(days=i) for i in range(31)]
             labels = [date.strftime("%b %d") for date in all_dates]
             data_keys = [date.strftime("%Y-%m-%d") for date in all_dates]
-            data = [data_map.get(key, 0) for key in data_keys]
+
+            datasets = []
+            colors = {
+                Occurrence.Status.PROCESSED: "var(--color-green-500)",
+                Occurrence.Status.FAILED: "var(--color-red-500)",
+                Occurrence.Status.NEW: "var(--color-gray-500)",
+            }
+            for status in Occurrence.Status:
+                data = [data_map.get((key, status.value), 0) for key in data_keys]
+                datasets.append(
+                    {
+                        "label": str(status.label),
+                        "data": data,
+                        "backgroundColor": colors.get(status, "var(--color-gray-500)"),
+                        "type": "bar",
+                    }
+                )
             chart_data = {
                 "height": 220,
-                "data": json.dumps(
-                    {
-                        "labels": labels,
-                        "datasets": [
-                            {
-                                "label": "Occurrences",
-                                "data": data,
-                                "backgroundColor": "var(--color-primary-700)",
-                                "type": "bar",
-                            },
-                        ],
-                    }
-                ),
+                "data": json.dumps({"labels": labels, "datasets": datasets}),
             }
             cm.store("dashboard:cache:OccurrenceChartComponent", chart_data)
         context.update(chart_data)

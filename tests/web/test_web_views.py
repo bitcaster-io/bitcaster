@@ -18,6 +18,12 @@ def test_home(client: "Client") -> None:
     assert client.get("/").status_code == 200
 
 
+def test_index_user_no_redirect(django_app: DjangoTestApp, user: "User") -> None:
+    django_app.set_user(user)
+    response = django_app.get(reverse("home"))
+    assert response.status_code == 200
+
+
 def test_healthcheck(client: "Client") -> None:
     # DO NOT REVERSE THIS URL
     assert client.get("/healthcheck/").status_code == 200

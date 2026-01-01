@@ -2,12 +2,11 @@ from typing import Any
 
 from django import forms
 from django.conf import settings
-from django.contrib import admin
-from django.contrib.admin.widgets import AutocompleteSelect
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
 from tinymce.widgets import TinyMCE
+from unfold.widgets import UnfoldAdminSelect2Widget
 
 from bitcaster.models import Channel, Event, Message, Notification, Organization
 
@@ -70,11 +69,12 @@ class MessageCreationForm(forms.ModelForm[Message]):
     event = forms.ModelChoiceField(
         queryset=Event.objects.all(),
         required=True,
+        widget=UnfoldAdminSelect2Widget,
     )
     notification = forms.ModelChoiceField(
         queryset=Notification.objects.all(),
         required=False,
-        widget=AutocompleteSelect(Message._meta.get_field("notification"), admin.site),
+        widget=UnfoldAdminSelect2Widget,
     )
 
     class Meta:

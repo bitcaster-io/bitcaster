@@ -3,7 +3,7 @@ from functools import cached_property
 from typing import Any
 
 from django import forms
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from .base import AgentConfig
 from .fs import AgentFiles

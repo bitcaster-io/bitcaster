@@ -6,6 +6,7 @@ document.addEventListener('alpine:init', () => {
         tabTasks: false,
         alive: false,
         tasksMap: {},
+        datetime: null,
         beat: false,
         beatLastUpdate: "",
         flash: false,
@@ -13,11 +14,14 @@ document.addEventListener('alpine:init', () => {
         interval: null,
         error: null,
 
-        runningFrom(isoDate) {
-            if (!isoDate) return '';
-            const started = new Date(isoDate);
-            const now = new Date();
-            let seconds = Math.floor((now - started) / 1000);
+        runningFrom(timestampMs) {
+            if (!timestampMs) return '';
+
+            // Dramatiq Message.timestamp → milliseconds
+            const startedMs = Number(timestampMs);
+            const nowMs = Date.now();
+
+            let seconds = Math.floor((nowMs - startedMs) / 1000);
             if (seconds < 0) return 'just started';
 
             const hours = Math.floor(seconds / 3600);
@@ -25,9 +29,9 @@ document.addEventListener('alpine:init', () => {
             const minutes = Math.floor(seconds / 60);
             seconds %= 60;
 
-            if (hours > 0) return `running from ${hours}h ${minutes}m`;
-            if (minutes > 0) return `running from ${minutes}m ${seconds}s`;
-            return `running from ${seconds}s`;
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            if (minutes > 0) return `${minutes}m ${seconds}s`;
+            return `${seconds}s`;
         },
         init() {
             this.check()
@@ -61,8 +65,9 @@ document.addEventListener('alpine:init', () => {
                         timeStyle: "medium"
                     });
                 }
-                this.alive = Boolean(data.alive)
+                this.datetime = data.datetime || {};
                 this.tasksMap = data.workers || {};
+                this.alive = Boolean(data.alive) || Object.keys(this.tasksMap).length > 0;
             } catch (e) {
                 this.beat = false;
                 this.alive = false;

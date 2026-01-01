@@ -17,6 +17,7 @@ from .notification import Notification
 from .occurrence import Occurrence
 from .organization import Organization
 from .project import Project
+from .task import Task
 from .user import Member, User
 from .userrole import UserRole
 
@@ -41,6 +42,7 @@ __all__ = [
     "Organization",
     "Project",
     "SocialProvider",
+    "Task",
     "User",
     "UserRole",
 ]
