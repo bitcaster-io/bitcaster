@@ -5,8 +5,9 @@ from . import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 SETTINGS_DIR = Path(__file__).parent  # .../src/bitcaster/config
-PACKAGE_DIR = SETTINGS_DIR.parent  # .../src/bitcaster/
-SOURCE_DIR = PACKAGE_DIR.parent.parent  # .../src
+PROJECT_ROOT = SETTINGS_DIR.parent.parent.parent  # .../src/bitcaster/
+SOURCE_DIR = PROJECT_ROOT / "src"  # .../src
+PACKAGE_DIR = SOURCE_DIR / "bitcaster"  # .../src/bitcaster/
 LOCALE_PATHS = [str((PACKAGE_DIR / "LOCALE").absolute())]
 
 # Quick-start development settings - unsuitable for production
@@ -47,17 +48,14 @@ INSTALLED_APPS = [
     "admin_extra_buttons",
     "social_django",
     "csp",
-    "django_celery_beat",
     "smart_selects",
     "adminfilters",
     "debug_toolbar",
-    # "django_svelte_jsoneditor",
     "jsoneditor",
     "django_ace",
     "tinymce",
     "reversion",
     "taggit",
-    "celery",
     # "treebeard",
     "rest_framework",
     "drf_spectacular",
@@ -86,7 +84,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-LOGIN_URL = "/login/"
+LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_URL = "/"
 
@@ -216,10 +214,10 @@ STORAGES = {
 
 from .fragments.agents import *  # noqa
 from .fragments.bitcaster import *  # noqa
-from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.csp import *  # noqa
 from .fragments.debug_toolbar import *  # noqa
+from .fragments.dramatiq import *  # noqa
 from .fragments.flags import *  # noqa
 from .fragments.logging import *  # noqa
 from .fragments.rest_framework import *  # noqa

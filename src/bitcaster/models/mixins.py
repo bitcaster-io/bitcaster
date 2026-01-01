@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models.base import ModelBase
 from django.urls import reverse
 from django.utils.text import slugify
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from smart_selects.db_fields import ChainedForeignKey
 
 if TYPE_CHECKING:

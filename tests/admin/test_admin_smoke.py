@@ -33,10 +33,10 @@ class RegexList(_RegexList):  # type: ignore[misc]
 
 GLOBAL_EXCLUDED_MODELS = RegexList(
     [
-        r"django_celery_beat\.ClockedSchedule",
         r"contenttypes\.ContentType",
         r"webpush\.BrowserAdmin",
-        "bitcaster.Member",
+        r"bitcaster\.Member",
+        r"bitcaster\.Task",
         "authtoken",
         "social_django",
         "depot",

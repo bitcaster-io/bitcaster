@@ -10,7 +10,7 @@ from testutils.perms import key_grants, lock
 
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import SystemEvent
-from bitcaster.tasks import process_occurrence
+from bitcaster.runner.tasks import process_occurrence
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -249,7 +249,6 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
 
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
     assert o.options == {"limit_to": [target.address.value]}
-
     delivered = process_occurrence(o.pk)
     assert delivered == 1
     o.refresh_from_db()

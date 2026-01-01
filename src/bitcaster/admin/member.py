@@ -12,7 +12,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from jsoneditor.forms import JSONEditor
 from unfold.admin import TabularInline
 from unfold.contrib.inlines.admin import NonrelatedTabularInline
