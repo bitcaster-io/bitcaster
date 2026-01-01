@@ -173,11 +173,14 @@ AUTHENTICATION_BACKENDS = [
 
 LANGUAGE_CODE = "en-us"
 ugettext = lambda s: s  # noqa
+LANGUAGE_COOKIE_NAME = "language"
 LANGUAGES = (
-    ("es", ugettext("Spanish")),  # type: ignore[no-untyped-call]
-    ("fr", ugettext("French")),  # type: ignore[no-untyped-call]
-    ("en", ugettext("English")),  # type: ignore[no-untyped-call]
-    ("ar", ugettext("Arabic")),  # type: ignore[no-untyped-call]
+    ("en", "English"),
+    ("es", "Español"),
+    ("it", "Italiano"),
+    ("fr", "Français"),
+    ("de", "Deutsch"),
+    ("ar", "العربية"),
 )
 
 TIME_ZONE = env("TIME_ZONE")

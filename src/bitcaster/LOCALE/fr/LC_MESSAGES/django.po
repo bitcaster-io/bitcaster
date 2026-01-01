@@ -8,495 +8,1086 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-05 11:40+0000\n"
+"POT-Creation-Date: 2026-01-01 16:53+0000\n"
 "PO-Revision-Date: 2024-05-05 11:42+0000\n"
 "Language-Team: French (https://app.transifex.com/os4d/teams/191976/fr/)\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
+"1000000 == 0 ? 1 : 2;\n"
 
-#: bitcaster/admin/channel.py:89
+#: src/bitcaster/admin/api_key.py:54
+msgid "Application must be set if EVENT_TRIGGER is granted"
+msgstr "L'application doit être définie si EVENT_TRIGGER est accordé"
+
+#: src/bitcaster/admin/api_key.py:112
+msgid "Info"
+msgstr "Info"
+
+#: src/bitcaster/admin/assignment.py:45
+msgid "Cannot be validated."
+msgstr "Ne peut pas être validé."
+
+#: src/bitcaster/admin/assignment.py:49
+msgid "Validated."
+msgstr "Validé."
+
+#: src/bitcaster/admin/base.py:79
+msgid "Select value"
+msgstr "Sélectionner une valeur"
+
+#: src/bitcaster/admin/channel.py:79
 msgid "Configure channel"
-msgstr ""
+msgstr "Configurer le canal"
 
-#: bitcaster/admin/channel.py:109
+#: src/bitcaster/admin/channel.py:101
 msgid "Test channel"
-msgstr ""
+msgstr "Tester le canal"
 
-#: bitcaster/admin/message.py:129
-msgid "Usage"
-msgstr ""
+#: src/bitcaster/admin/event.py:149
+msgid "Trigger Event"
+msgstr "Déclencher l'événement"
 
-#: bitcaster/admin/mixins.py:31
+#: src/bitcaster/admin/filters.py:19 src/bitcaster/admin/filters.py:38
+msgid "Abstract"
+msgstr "Résumé"
+
+#: src/bitcaster/admin/filters.py:20 src/bitcaster/admin/filters.py:39
+#: src/bitcaster/models/project.py:50
+msgid "Project"
+msgstr "Projet"
+
+#: src/bitcaster/admin/member.py:146
+msgid "Add to Distribution List"
+msgstr "Ajouter à la liste de distribution"
+
+#: src/bitcaster/admin/member.py:159
+msgid "Users successfully added"
+msgstr "Utilisateurs ajoutés avec succès"
+
+#: src/bitcaster/admin/message.py:180
+msgid "Message Template updated successfully "
+msgstr "Modèle de message mis à jour avec succès"
+
+#: src/bitcaster/admin/message.py:198
+msgid "Message usage"
+msgstr "Utilisation du message"
+
+#: src/bitcaster/admin/mixins.py:30
 msgid "Lock"
-msgstr ""
+msgstr "Verrouiller"
 
-#: bitcaster/admin/mixins.py:38
+#: src/bitcaster/admin/mixins.py:40
+#, fuzzy, python-brace-format
+#| msgid "Lock {} "
 msgid "Lock {}"
-msgstr ""
+msgstr "Verrouiller {} "
 
-#: bitcaster/admin/mixins.py:42
+#: src/bitcaster/admin/mixins.py:43
+#, python-brace-format
 msgid "{} locked"
-msgstr ""
+msgstr "{} verrouillé"
 
-#: bitcaster/admin/mixins.py:47
+#: src/bitcaster/admin/mixins.py:49
 msgid "Unlock"
-msgstr ""
+msgstr "Déverrouiller"
 
-#: bitcaster/admin/mixins.py:54
+#: src/bitcaster/admin/mixins.py:58
+#, fuzzy, python-brace-format
+#| msgid "Unlock {} "
 msgid "Unlock {}"
-msgstr ""
+msgstr "Déverrouiller {} "
 
-#: bitcaster/admin/mixins.py:59
+#: src/bitcaster/admin/mixins.py:62
+#, python-brace-format
 msgid "{} unlocked"
-msgstr ""
+msgstr "{} déverrouillé"
 
-#: bitcaster/admin/user.py:19
+#: src/bitcaster/admin/monitor.py:76
+msgid "Configure Monitor"
+msgstr "Configurer le moniteur"
+
+#: src/bitcaster/admin/monitor.py:102
+msgid "Test Monitor"
+msgstr "Tester le moniteur"
+
+#: src/bitcaster/admin/notification.py:39
+#: src/bitcaster/admin/notification.py:47 src/bitcaster/admin/occurrence.py:35
+#: src/bitcaster/admin/task.py:25 src/bitcaster/admin/task.py:34
+msgid "General"
+msgstr "Général"
+
+#: src/bitcaster/admin/notification.py:49
+msgid "Distribution"
+msgstr "Distribution"
+
+#: src/bitcaster/admin/notification.py:61
+msgid "Extra context"
+msgstr "Contexte supplémentaire"
+
+#: src/bitcaster/admin/notification.py:108
+msgid "Messages"
+msgstr "Messages"
+
+#: src/bitcaster/admin/occurrence.py:36
+msgid "Process"
+msgstr "Processus"
+
+#: src/bitcaster/admin/occurrence.py:37
+msgid "Input"
+msgstr "Entrée"
+
+#: src/bitcaster/admin/occurrence.py:38
+msgid "Delivery"
+msgstr "Livraison"
+
+#: src/bitcaster/admin/occurrence.py:91
+msgid "This event does not have any notification"
+msgstr "Cet événement n'a aucune notification"
+
+#: src/bitcaster/admin/occurrence.py:93
+msgid "No active notifications for this event"
+msgstr "Aucune notification active pour cet événement"
+
+#: src/bitcaster/admin/occurrence.py:95
+msgid "No active channels enabled for this event"
+msgstr "Aucun canal actif activé pour cet événement"
+
+#: src/bitcaster/admin/occurrence.py:97
+msgid "No messages configured for selected channels"
+msgstr "Aucun message configuré pour les canaux sélectionnés"
+
+#: src/bitcaster/admin/occurrence.py:148
+msgid "Error inspecting occurrence"
+msgstr "Erreur lors de l'inspection de l'occurrence"
+
+#: src/bitcaster/admin/occurrence.py:174
+msgid "Occurrence has been successfully processed"
+msgstr "L'occurrence a été traitée avec succès"
+
+#: src/bitcaster/admin/occurrence.py:179
+msgid "Occurrence has been processed, but no recipients have been reached out"
+msgstr "L'occurrence a été traitée, mais aucun destinataire n'a été contacté"
+
+#: src/bitcaster/admin/occurrence.py:184
+msgid "Error processing occurrence"
+msgstr "Erreur lors du traitement de l'occurrence"
+
+#: src/bitcaster/admin/occurrence.py:204
+msgid "Occurrence purge has been successfully triggered"
+msgstr "La purge des occurrences a été déclenchée avec succès"
+
+#: src/bitcaster/admin/occurrence.py:212
+msgid "All data will be permanently removed. No rollback action available"
+msgstr ""
+"Toutes les données seront supprimées de façon permanente. Aucune action de "
+"restauration n'est disponible"
+
+#: src/bitcaster/admin/occurrence.py:213
+msgid "Purge occurrences"
+msgstr "Purger les occurrences"
+
+#: src/bitcaster/admin/organization.py:25
+msgid ""
+"\n"
+"File must be a .csv file, comma separated `,` with 3 columns\n"
+"\n"
+"_Headers must be provided and named: last_name, first_name, email. Order can "
+"be customised_\n"
+"\n"
+"Es:\n"
+"\n"
+"```\n"
+"last_name,first_name,email\n"
+"Joe,Doe,j.doe@example.com\n"
+"```\n"
+msgstr ""
+"\n"
+"Le fichier doit être un fichier .csv, séparé par des virgules `,` avec 3 "
+"colonnes\n"
+"\n"
+"_Les en-têtes doivent être fournis et nommés: last_name, first_name, email. "
+"L'ordre peut être personnalisé_\n"
+"\n"
+"Ex:\n"
+"\n"
+"```\n"
+"last_name,first_name,email\n"
+"Joe,Doe,j.doe@example.com\n"
+"```\n"
+
+#: src/bitcaster/admin/organization.py:38
+msgid ".CSV file"
+msgstr "Fichier .CSV"
+
+#: src/bitcaster/admin/organization.py:39
+msgid "Add imported users to this Group"
+msgstr "Ajouter les utilisateurs importés à ce groupe"
+
+#: src/bitcaster/admin/task.py:37
+msgid "Job"
+msgstr "Tâche"
+
+#: src/bitcaster/admin/task.py:38
+msgid "trigger"
+msgstr "déclencheur"
+
+#: src/bitcaster/admin/user.py:35
 msgid "Personal info"
-msgstr ""
+msgstr "Informations personnelles"
 
-#: bitcaster/admin/user.py:21
+#: src/bitcaster/admin/user.py:37
 msgid "Permissions"
-msgstr ""
+msgstr "Autorisations"
 
-#: bitcaster/admin/user.py:30
+#: src/bitcaster/admin/user.py:46
 msgid "Important dates"
-msgstr ""
+msgstr "Dates importantes"
 
-#: bitcaster/config/settings.py:166
-msgid "Spanish"
-msgstr ""
+#: src/bitcaster/admin_site.py:14
+msgid "Bitcaster admin"
+msgstr "Administration de Bitcaster"
 
-#: bitcaster/config/settings.py:167
-msgid "French"
-msgstr ""
+#: src/bitcaster/agents/fs.py:45
+#, python-format
+msgid "Path '%(path)s' is outside allowed root: '%(root)s'"
+msgstr "Le chemin '%(path)s' est en dehors de la racine autorisée: '%(root)s'"
 
-#: bitcaster/config/settings.py:168
-msgid "English"
-msgstr ""
+#: src/bitcaster/agents/fs.py:54
+msgid "Check also subdirectories"
+msgstr "Vérifier également les sous-répertoires"
 
-#: bitcaster/config/settings.py:169
-msgid "Arabic"
-msgstr ""
+#: src/bitcaster/agents/fs.py:55 src/bitcaster/agents/ftp.py:17
+msgid "Monitor directory for new files"
+msgstr "Surveiller le répertoire pour les nouveaux fichiers"
 
-#: bitcaster/dispatchers/email.py:16
-msgid "Host"
-msgstr ""
+#: src/bitcaster/agents/fs.py:56 src/bitcaster/agents/ftp.py:18
+msgid "Monitor directory for changed files"
+msgstr "Surveiller le répertoire pour les fichiers modifiés"
 
-#: bitcaster/dispatchers/email.py:17
-msgid "Port"
-msgstr ""
+#: src/bitcaster/agents/fs.py:57 src/bitcaster/agents/ftp.py:19
+msgid "Monitor directory for deleted files"
+msgstr "Surveiller le répertoire pour les fichiers supprimés"
 
-#: bitcaster/dispatchers/email.py:18 bitcaster/dispatchers/gmail.py:17
-msgid "Username"
-msgstr ""
+#: src/bitcaster/api/application.py:32
+msgid "List Project applications"
+msgstr "Lister les applications du projet"
 
-#: bitcaster/dispatchers/email.py:19 bitcaster/dispatchers/gmail.py:18
-msgid "Password"
-msgstr ""
+#: src/bitcaster/api/channel.py:37
+msgid "List organization channels"
+msgstr "Lister les canaux de l'organisation"
 
-#: bitcaster/dispatchers/email.py:20
-msgid "TLS"
-msgstr ""
+#: src/bitcaster/api/channel.py:41
+msgid "List Project channels"
+msgstr "Lister les canaux du projet"
 
-#: bitcaster/dispatchers/email.py:21
-msgid "SSL"
-msgstr ""
+#: src/bitcaster/api/distribution_list.py:76
+msgid "Add recipient to a DistributionList"
+msgstr "Ajouter un destinataire à une liste de distribution"
 
-#: bitcaster/dispatchers/email.py:22
-msgid "Timeout"
-msgstr ""
+#: src/bitcaster/api/project.py:31
+msgid "Retrieve project details"
+msgstr "Récupérer les détails du projet"
 
-#: bitcaster/dispatchers/mailgun.py:10 bitcaster/dispatchers/mailjet.py:10
-#: bitcaster/dispatchers/sendgrid.py:10
-msgid "API Key"
-msgstr ""
+#: src/bitcaster/api/system.py:26
+msgid "Ping system"
+msgstr "Tester le système"
 
-#: bitcaster/dispatchers/mailgun.py:11
-msgid "Sender Domain"
-msgstr ""
+#: src/bitcaster/api/user.py:89
+msgid "List User's addresses"
+msgstr "Lister les adresses de l'utilisateur"
 
-#: bitcaster/dispatchers/mailjet.py:11
-msgid "API Secret"
-msgstr ""
+#: src/bitcaster/api/user.py:96
+msgid "Add an User's address"
+msgstr "Ajouter une adresse d'utilisateur"
 
-#: bitcaster/dispatchers/slack.py:16
-msgid "URL"
-msgstr ""
+#: src/bitcaster/config/fragments/unfold.py:120
+msgid "Monitor"
+msgstr "Moniteur"
 
-#: bitcaster/dispatchers/twilio.py:17
-msgid "SID"
-msgstr ""
+#: src/bitcaster/config/fragments/unfold.py:125
+msgid "Occurrences"
+msgstr "Occurrences"
 
-#: bitcaster/dispatchers/twilio.py:18 bitcaster/models/key.py:92
-msgid "Token"
-msgstr ""
+#: src/bitcaster/config/fragments/unfold.py:131
+msgid "Members"
+msgstr "Membres"
 
-#: bitcaster/dispatchers/twilio.py:19
-msgid "Number"
-msgstr ""
+#: src/bitcaster/config/fragments/unfold.py:136
+msgid "Stream"
+msgstr "Flux"
 
-#: bitcaster/forms/message.py:85 bitcaster/forms/message.py:103
-msgid "This name is already in use."
-msgstr ""
+#: src/bitcaster/config/fragments/unfold.py:143
+msgid "Configuration"
+msgstr "Configuration"
 
-#: bitcaster/forms/mixins.py:49
-msgid "This field is required."
-msgstr ""
+#: src/bitcaster/config/fragments/unfold.py:148
+msgid "Addresses"
+msgstr "Adresses"
 
-#: bitcaster/models/application.py:25 bitcaster/models/organization.py:24
-#: bitcaster/models/project.py:21
-msgid "Owner"
-msgstr ""
-
-#: bitcaster/models/application.py:27
-msgid "Whether the application should be active"
-msgstr ""
-
-#: bitcaster/models/application.py:28
-msgid "Security lock of applications"
-msgstr ""
-
-#: bitcaster/models/application.py:30 bitcaster/models/organization.py:17
-#: bitcaster/models/project.py:23
-msgid "default from address for emails"
-msgstr ""
-
-#: bitcaster/models/application.py:34 bitcaster/models/organization.py:22
-#: bitcaster/models/project.py:28
-msgid "Default prefix for messages supporting subject"
-msgstr ""
-
-#: bitcaster/models/channel.py:57 bitcaster/models/key.py:90
-#: bitcaster/models/message.py:19
-msgid "Name"
-msgstr ""
-
-#: bitcaster/models/distribution.py:22
+#: src/bitcaster/config/fragments/unfold.py:153 src/bitcaster/forms/user.py:20
+#: src/bitcaster/models/distribution.py:40
 msgid "Distribution List"
-msgstr ""
+msgstr "Liste de distribution"
 
-#: bitcaster/models/distribution.py:23
+#: src/bitcaster/config/fragments/unfold.py:158
+msgid "Events"
+msgstr "Événements"
+
+#: src/bitcaster/config/fragments/unfold.py:163
+#: src/bitcaster/models/notification.py:81
+msgid "Notifications"
+msgstr "Notifications"
+
+#: src/bitcaster/config/fragments/unfold.py:168
+msgid "Message Templates"
+msgstr "Modèles de message"
+
+#: src/bitcaster/config/fragments/unfold.py:175
+msgid "System"
+msgstr "Système"
+
+#: src/bitcaster/config/fragments/unfold.py:180
+msgid "Channels"
+msgstr "Canaux"
+
+#: src/bitcaster/config/fragments/unfold.py:185
+msgid "Applications"
+msgstr "Applications"
+
+#: src/bitcaster/config/fragments/unfold.py:190
+#: src/bitcaster/models/project.py:51
+msgid "Projects"
+msgstr "Projets"
+
+#: src/bitcaster/config/fragments/unfold.py:195
+#: src/bitcaster/models/organization.py:41
+msgid "Organization"
+msgstr "Organisation"
+
+#: src/bitcaster/config/fragments/unfold.py:202
+msgid "Security"
+msgstr "Sécurité"
+
+#: src/bitcaster/config/fragments/unfold.py:207
+#: src/bitcaster/config/fragments/unfold.py:257
+msgid "Users"
+msgstr "Utilisateurs"
+
+#: src/bitcaster/config/fragments/unfold.py:213
+msgid "Roles"
+msgstr "Rôles"
+
+#: src/bitcaster/config/fragments/unfold.py:219
+#: src/bitcaster/config/fragments/unfold.py:246
+msgid "Groups"
+msgstr "Groupes"
+
+#: src/bitcaster/config/fragments/unfold.py:225
+msgid "API Keys"
+msgstr "Clés API"
+
+#: src/bitcaster/config/fragments/unfold.py:231
+msgid "System Log"
+msgstr "Journal système"
+
+#: src/bitcaster/dispatchers/email.py:21
+msgid "Host"
+msgstr "Hôte"
+
+#: src/bitcaster/dispatchers/email.py:22
+msgid "Port"
+msgstr "Port"
+
+#: src/bitcaster/dispatchers/email.py:23 src/bitcaster/dispatchers/gmail.py:20
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: src/bitcaster/dispatchers/email.py:24 src/bitcaster/dispatchers/gmail.py:21
+msgid "Password"
+msgstr "Mot de passe"
+
+#: src/bitcaster/dispatchers/email.py:25
+msgid "TLS"
+msgstr "TLS"
+
+#: src/bitcaster/dispatchers/email.py:26
+msgid "SSL"
+msgstr "SSL"
+
+#: src/bitcaster/dispatchers/email.py:28 src/bitcaster/dispatchers/gmail.py:23
+msgid "Timeout"
+msgstr "Délai d'attente"
+
+#: src/bitcaster/dispatchers/mailgun.py:10
+#: src/bitcaster/dispatchers/mailjet.py:10
+#: src/bitcaster/dispatchers/sendgrid.py:10
+msgid "API Key"
+msgstr "Clé API"
+
+#: src/bitcaster/dispatchers/mailgun.py:11
+msgid "Sender Domain"
+msgstr "Domaine de l'expéditeur"
+
+#: src/bitcaster/dispatchers/mailjet.py:11
+msgid "API Secret"
+msgstr "Secret API"
+
+#: src/bitcaster/dispatchers/slack.py:19
+msgid "URL"
+msgstr "URL"
+
+#: src/bitcaster/dispatchers/twilio.py:19
+msgid "SID"
+msgstr "SID"
+
+#: src/bitcaster/dispatchers/twilio.py:20 src/bitcaster/models/key.py:60
+msgid "Token"
+msgstr "Jeton"
+
+#: src/bitcaster/dispatchers/twilio.py:21
+msgid "Number"
+msgstr "Nombre"
+
+#: src/bitcaster/forms/message.py:54
+msgid "This channel is not available"
+msgstr "Ce canal n'est pas disponible"
+
+#: src/bitcaster/forms/message.py:105
+msgid "This name is already in use."
+msgstr "Ce nom est déjà utilisé."
+
+#: src/bitcaster/models/application.py:32
+#: src/bitcaster/models/organization.py:35 src/bitcaster/models/project.py:33
+msgid "Owner"
+msgstr "Propriétaire"
+
+#: src/bitcaster/models/application.py:35
+msgid "Whether the application should be active"
+msgstr "Si l'application doit être active"
+
+#: src/bitcaster/models/application.py:37
+msgid "If true unknown events will be automatically created"
+msgstr "Si vrai, les événements inconnus seront créés automatiquement"
+
+#: src/bitcaster/models/application.py:39
+#: src/bitcaster/models/organization.py:27 src/bitcaster/models/project.py:34
+msgid "default from address for emails"
+msgstr "adresse de l'expéditeur par défaut pour les e-mails"
+
+#: src/bitcaster/models/application.py:43
+#: src/bitcaster/models/organization.py:32 src/bitcaster/models/project.py:39
+msgid "Default prefix for messages supporting subject"
+msgstr "Préfixe par défaut pour les messages prenant en charge le sujet"
+
+#: src/bitcaster/models/assignment.py:36
+msgid "Assignment"
+msgstr "Affectation"
+
+#: src/bitcaster/models/assignment.py:37
+msgid "Assignments"
+msgstr "Affectations"
+
+#: src/bitcaster/models/channel.py:43 src/bitcaster/models/key.py:58
+#: src/bitcaster/models/message.py:40 src/bitcaster/models/monitor.py:21
+#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:39
+msgid "Name"
+msgstr "Nom"
+
+#: src/bitcaster/models/distribution.py:41
 msgid "Distribution Lists"
-msgstr ""
+msgstr "Listes de distribution"
 
-#: bitcaster/models/event.py:21
-msgid "Security lock"
-msgstr ""
-
-#: bitcaster/models/event.py:22 bitcaster/models/occurrence.py:43
+#: src/bitcaster/models/event.py:38 src/bitcaster/models/occurrence.py:77
 msgid "Do not customise notifications per single user"
-msgstr ""
+msgstr "Ne pas personnaliser les notifications par utilisateur"
 
-#: bitcaster/models/log.py:20
+#: src/bitcaster/models/event.py:44
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "Number of days (from last update) after which related Occurrences can be "
+#| "purged. If not specified, system default will be used.\n"
+msgid ""
+"Number of days (from last update) after which related Occurrences can be "
+"purged. If not specified, system default will be used."
+msgstr ""
+"\n"
+"Nombre de jours (à partir de la dernière mise à jour) après lesquels les "
+"occurrences associées peuvent être purgées. Si non spécifié, la valeur par "
+"défaut du système sera utilisée.\n"
+
+#: src/bitcaster/models/internal.py:34
 msgid "Log Message"
-msgstr ""
+msgstr "Message du journal"
 
-#: bitcaster/models/log.py:21
+#: src/bitcaster/models/internal.py:35
 msgid "Log Messages"
-msgstr ""
+msgstr "Messages du journal"
 
-#: bitcaster/models/message.py:24
+#: src/bitcaster/models/key.py:66
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "Limit validity to these environments. If empty the key will be valid for "
+#| "any environment\n"
+msgid ""
+"Limit validity to these environments. If empty the key will be valid for any "
+"environment"
+msgstr ""
+"\n"
+"Limiter la validité à ces environnements. Si vide, la clé sera valide pour "
+"n'importe quel environnement\n"
+
+#: src/bitcaster/models/log.py:19
+msgid "Addition"
+msgstr "Ajout"
+
+#: src/bitcaster/models/log.py:20
+msgid "Change"
+msgstr "Changement"
+
+#: src/bitcaster/models/log.py:21
+msgid "Deletion"
+msgstr "Suppression"
+
+#: src/bitcaster/models/log.py:22
+msgid "Other"
+msgstr "Autre"
+
+#: src/bitcaster/models/log.py:29
+msgid "log entry"
+msgstr "entrée de journal"
+
+#: src/bitcaster/models/log.py:30
+msgid "log entries"
+msgstr "entrées de journal"
+
+#: src/bitcaster/models/log.py:41
+#, fuzzy, python-format
+#| msgid "”%(object)s”. "
+msgid "”%(object)s”."
+msgstr "”%(object)s”. "
+
+#: src/bitcaster/models/message.py:45
 msgid "Channel for which  the message is valid"
-msgstr ""
+msgstr "Canal pour lequel le message est valide"
 
-#: bitcaster/models/message.py:32
+#: src/bitcaster/models/message.py:53
 msgid "Event to which this message belongs"
-msgstr ""
+msgstr "Événement auquel ce message appartient"
 
-#: bitcaster/models/message.py:40
+#: src/bitcaster/models/message.py:61
 msgid "Notification to which this message belongs"
-msgstr ""
+msgstr "Notification à laquelle ce message appartient"
 
-#: bitcaster/models/message.py:42
+#: src/bitcaster/models/message.py:63
 msgid "subject"
-msgstr ""
+msgstr "sujet"
 
-#: bitcaster/models/message.py:42
+#: src/bitcaster/models/message.py:63
 msgid "The subject of the message"
-msgstr ""
+msgstr "Le sujet du message"
 
-#: bitcaster/models/message.py:43
-#: bitcaster/web/templates/rest_framework/base.html:75
+#: src/bitcaster/models/message.py:64
+#: src/bitcaster/web/templates/rest_framework/base.html:71
 msgid "content"
-msgstr ""
+msgstr "contenu"
 
-#: bitcaster/models/message.py:43
+#: src/bitcaster/models/message.py:64
 msgid "The content of the message"
-msgstr ""
+msgstr "Le contenu du message"
 
-#: bitcaster/models/message.py:45
+#: src/bitcaster/models/message.py:66
 msgid "HTML Content"
-msgstr ""
+msgstr "Contenu HTML"
 
-#: bitcaster/models/message.py:45
+#: src/bitcaster/models/message.py:66
 msgid "The HTML formatted content of the message"
-msgstr ""
+msgstr "Le contenu du message au format HTML"
 
-#: bitcaster/models/message.py:49
+#: src/bitcaster/models/message.py:71
 msgid "Message template"
-msgstr ""
+msgstr "Modèle de message"
 
-#: bitcaster/models/message.py:50
+#: src/bitcaster/models/message.py:72
 msgid "Message templates"
-msgstr ""
+msgstr "Modèles de message"
 
-#: bitcaster/models/occurrence.py:29
-msgid "New"
-msgstr ""
+#: src/bitcaster/models/mixins.py:20
+msgid "If checked any notification is ignored and not forwarded"
+msgstr "Si coché, toute notification est ignorée et non transmise"
 
-#: bitcaster/models/occurrence.py:30
+#: src/bitcaster/models/mixins.py:21
+msgid "If checked any notification paused"
+msgstr "Si coché, toute notification est en pause"
+
+#: src/bitcaster/models/notification.py:58
+msgid "Allow notification only for these environments"
+msgstr "Autoriser les notifications uniquement pour ces environnements"
+
+#: src/bitcaster/models/notification.py:80
+msgid "Notification"
+msgstr "Notification"
+
+#: src/bitcaster/models/occurrence.py:65
 msgid "Processed"
-msgstr ""
+msgstr "Traité"
 
-#: bitcaster/models/occurrence.py:31
+#: src/bitcaster/models/occurrence.py:66
 msgid "Failed"
-msgstr ""
+msgstr "Échoué"
 
-#: bitcaster/models/occurrence.py:33
+#: src/bitcaster/models/occurrence.py:67
+msgid "New"
+msgstr "Nouveau"
+
+#: src/bitcaster/models/occurrence.py:69
 msgid "Timestamp when occurrence has been created."
-msgstr ""
+msgstr "Horodatage de la création de l'occurrence."
 
-#: bitcaster/models/occurrence.py:35
+#: src/bitcaster/models/occurrence.py:71
 msgid "Context provided by the sender"
-msgstr ""
+msgstr "Contexte fourni par l'expéditeur"
 
-#: bitcaster/models/occurrence.py:37
+#: src/bitcaster/models/occurrence.py:73
 msgid "Options provided by the sender to route linked notifications"
 msgstr ""
+"Options fournies par l'expéditeur pour acheminer les notifications liées"
 
-#: bitcaster/models/occurrence.py:41
-msgid "Total number of recipients"
-msgstr ""
+#: src/bitcaster/models/occurrence.py:76
+msgid "Total number of reached recipients"
+msgstr "Nombre total de destinataires atteints"
 
-#: bitcaster/models/occurrence.py:44
+#: src/bitcaster/models/occurrence.py:79
 msgid "Information about the processing (recipients, channels)"
-msgstr ""
+msgstr "Informations sur le traitement (destinataires, canaux)"
 
-#: bitcaster/models/organization.py:19 bitcaster/models/project.py:25
+#: src/bitcaster/models/occurrence.py:82
+msgid "Status of the occurrence"
+msgstr "Statut de l'occurrence"
+
+#: src/bitcaster/models/organization.py:29 src/bitcaster/models/project.py:36
 msgid "Subject Prefix"
-msgstr ""
+msgstr "Préfixe du sujet"
 
-#: bitcaster/models/project.py:22
-msgid "Security lock of project"
-msgstr ""
+#: src/bitcaster/models/organization.py:42
+msgid "Organizations"
+msgstr "Organisations"
 
-#: bitcaster/models/user.py:28
+#: src/bitcaster/models/project.py:45
+msgid "Environments available for project"
+msgstr "Environnements disponibles pour le projet"
+
+#: src/bitcaster/models/user.py:32
 msgid "user"
-msgstr ""
+msgstr "utilisateur"
 
-#: bitcaster/models/user.py:29
+#: src/bitcaster/models/user.py:33
 msgid "users"
-msgstr ""
+msgstr "utilisateurs"
 
-#: bitcaster/social/models.py:32
+#: src/bitcaster/models/userrole.py:28
+msgid "User Role"
+msgstr "Rôle d'utilisateur"
+
+#: src/bitcaster/models/userrole.py:29
+msgid "User Roles"
+msgstr "Rôles d'utilisateur"
+
+#: src/bitcaster/social/models.py:30
 msgid "Social Login provider"
-msgstr ""
+msgstr "Fournisseur de connexion sociale"
 
-#: bitcaster/social/models.py:36
+#: src/bitcaster/social/models.py:34
 msgid "Configuration as per Python Social Auth"
-msgstr ""
+msgstr "Configuration selon Python Social Auth"
 
-#: bitcaster/web/templates/admin/404.html:4
-#: bitcaster/web/templates/admin/404.html:8
-msgid "Page not found"
-msgstr ""
+#: src/bitcaster/web/templates/admin/base_site.html:6
+#: src/bitcaster/web/templates/admin/login.html:11
+msgid "Django site admin"
+msgstr "Administration du site Django"
 
-#: bitcaster/web/templates/admin/404.html:10
-msgid "We’re sorry, but the requested page could not be found."
-msgstr ""
+#: src/bitcaster/web/templates/admin/login.html:11
+msgid "Welcome back to"
+msgstr "Bienvenue à nouveau à"
 
-#: bitcaster/web/templates/admin/500.html:6
-#: bitcaster/web/templates/admin/app_index.html:10
-#: bitcaster/web/templates/admin/base.html:79
-#: bitcaster/web/templates/admin/social/socialprovider/change_form.html:18
-msgid "Home"
-msgstr ""
-
-#: bitcaster/web/templates/admin/500.html:7
-msgid "Server error"
-msgstr ""
-
-#: bitcaster/web/templates/admin/500.html:11
-msgid "Server error (500)"
-msgstr ""
-
-#: bitcaster/web/templates/admin/500.html:14
-msgid "Server Error <em>(500)</em>"
-msgstr ""
-
-#: bitcaster/web/templates/admin/500.html:15
+#: src/bitcaster/web/templates/admin/login.html:18
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "You are authenticated as %(username)s, but are not authorized to access "
+#| "this page. Would you like to login to a different account?"
 msgid ""
-"There’s been an error. It’s been reported to the site administrators via "
-"email and should be fixed shortly. Thanks for your patience."
+"You are authenticated as %(username)s, but are not authorized to access this "
+"page. Would you like to login to a different account?"
 msgstr ""
+"\n"
+"Vous êtes authentifié en tant que %(username)s, mais vous n'êtes pas "
+"autorisé à accéder à cette page. Souhaitez-vous vous connecter à un autre "
+"compte?"
 
-#: bitcaster/web/templates/admin/app_index.html:8
-#: bitcaster/web/templates/admin/base.html:76
-msgid "Breadcrumbs"
-msgstr ""
+#: src/bitcaster/web/templates/admin/login.html:44
+msgid "Log in"
+msgstr "Connexion"
 
-#: bitcaster/web/templates/admin/app_list.html:8
+#: src/bitcaster/web/templates/admin/social/socialprovider/-change_form.html:21
+#: src/bitcaster/web/templates/bitcaster/locking/base.html:6
+#: src/bitcaster/web/templates/bitcaster/locking/lock.html:6
+msgid "Home"
+msgstr "Accueil"
+
+#: src/bitcaster/web/templates/admin/social/socialprovider/-change_form.html:31
 #, python-format
-msgid "Models in the %(name)s application"
+msgid "Add %(name)s"
+msgstr "Ajouter %(name)s"
+
+#: src/bitcaster/web/templates/admin/social/socialprovider/-change_form.html:72
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Veuillez corriger l'erreur ci-dessous."
+msgstr[1] "Veuillez corriger les erreurs ci-dessous."
+msgstr[2] "Veuillez corriger les erreurs ci-dessous."
+
+#: src/bitcaster/web/templates/admin_extra_buttons/confirm.html:5
+msgid "Warning"
+msgstr "Avertissement"
+
+#: src/bitcaster/web/templates/admin_extra_buttons/confirm.html:26
+#: src/bitcaster/web/templates/bitcaster/admin/action_form.html:21
+#: src/bitcaster/web/templates/bitcaster/admin/members/import_members.html:21
+msgid "Confirm"
+msgstr "Confirmer"
+
+#: src/bitcaster/web/templates/admin_extra_buttons/confirm.html:27
+msgid "Go Back"
+msgstr "Retour"
+
+#: src/bitcaster/web/templates/adminfilters/_wrapper.html:4
+#: src/bitcaster/web/templates/adminfilters/combobox.html:3
+#: src/bitcaster/web/templates/adminfilters/radio.html:3
+#, python-format
+msgid " By %(filter_title)s "
+msgstr " Par %(filter_title)s "
+
+#: src/bitcaster/web/templates/adminfilters/checkbox.html:3
+#, python-format
+msgid " By %(filter_title)s"
+msgstr " Par %(filter_title)s"
+
+#: src/bitcaster/web/templates/adminfilters/dj.html:19
+#: src/bitcaster/web/templates/adminfilters/json.html:11
+#: src/bitcaster/web/templates/adminfilters/querystring.html:20
+#: src/bitcaster/web/templates/adminfilters/value.html:17
+#: src/bitcaster/web/templates/adminfilters/value_multi.html:17
+msgid "Exclude"
+msgstr "Exclure"
+
+#: src/bitcaster/web/templates/bitcaster/admin/apikey/created.html:7
+msgid "Grace period expired"
+msgstr "Période de grâce expirée"
+
+#: src/bitcaster/web/templates/bitcaster/admin/apikey/created.html:24
+msgid ""
+"\n"
+"                This is the only time this key will be displayed. Copy it "
+"and put in a safe place.\n"
+"            "
+msgstr ""
+"\n"
+"                C'est la seule fois que cette clé sera affichée. Copiez-la "
+"et mettez-la en lieu sûr.\n"
+"            "
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:60
+msgid "< Prev step"
+msgstr "< Étape précédente"
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:65
+msgid "Next step >"
+msgstr "Étape suivante >"
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:69
+msgid "Finish"
+msgstr "Terminer"
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:73
+msgid "Cancel"
+msgstr "Annuler"
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/lock.html:9
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "Unlocking the %(target)s will start message\n"
+#| "                    forwarding"
+msgid ""
+"Unlocking the %(target)s will start message\n"
+"                    forwarding"
+msgstr ""
+"\n"
+"Le déverrouillage de %(target)s démarrera la transmission des messages"
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/lock.html:20
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "Locking the %(target)s will stop any message\n"
+#| "                    forwarding"
+msgid ""
+"Locking the %(target)s will stop any message\n"
+"                    forwarding"
+msgstr ""
+"\n"
+"Le verrouillage de %(target)s arrêtera toute transmission de message"
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/test.html:6
+msgid "No assignments found for this channel"
+msgstr "Aucune affectation trouvée pour ce canal"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:8
+msgid "Message Template"
+msgstr "Modèle de message"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
+#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
+msgid "Channel"
+msgstr "Canal"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:36
+#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:32
+msgid "Create"
+msgstr "Créer"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/edit.html:24
+msgid "Text"
+msgstr "Texte"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/edit.html:29
+msgid "Subject"
+msgstr "Sujet"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/edit.html:38
+msgid "Context"
+msgstr "Contexte"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/edit.html:44
+msgid "Test"
+msgstr "Test"
+
+#: src/bitcaster/web/templates/bitcaster/errors/_base.html:18
+msgid "back"
+msgstr "retour"
+
+#: src/bitcaster/web/templates/bitcaster/index.html:20
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: src/bitcaster/web/templates/bitcaster/index.html:23
+msgid "Login"
+msgstr "Connexion"
+
+#: src/bitcaster/web/templates/bitcaster/locking/base.html:4
+#: src/bitcaster/web/templates/bitcaster/locking/lock.html:4
+msgid "Breadcrumbs"
+msgstr "Fil d'Ariane"
+
+#: src/bitcaster/web/templates/bitcaster/locking/base.html:8
+#: src/bitcaster/web/templates/bitcaster/locking/lock.html:8
+msgid "Locking"
+msgstr "Verrouillage"
+
+#: src/bitcaster/web/templates/rest_framework/admin.html:108
+#: src/bitcaster/web/templates/rest_framework/base.html:148
+msgid "Extra Actions"
+msgstr "Actions supplémentaires"
+
+#: src/bitcaster/web/templates/rest_framework/admin.html:123
+#: src/bitcaster/web/templates/rest_framework/base.html:163
+msgid "Filters"
+msgstr "Filtres"
+
+#: src/bitcaster/web/templates/rest_framework/base.html:30
+msgid "navbar"
+msgstr "barre de navigation"
+
+#: src/bitcaster/web/templates/rest_framework/base.html:73
+msgid "request form"
+msgstr "formulaire de demande"
+
+#: src/bitcaster/web/templates/rest_framework/base.html:168
+msgid "main content"
+msgstr "contenu principal"
+
+#: src/bitcaster/web/templates/rest_framework/base.html:184
+msgid "request info"
+msgstr "informations sur la demande"
+
+#: src/bitcaster/web/templates/rest_framework/base.html:187
+msgid "response info"
+msgstr "informations sur la réponse"
+
+#: src/bitcaster/web/templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Classement"
+
+#: src/bitcaster/web/templates/rest_framework/filters/search.html:3
+#: src/bitcaster/web/templates/rest_framework/filters/search.html:11
+msgid "Search"
+msgstr "Rechercher"
+
+#: src/bitcaster/web/templates/rest_framework/horizontal/radio.html:2
+#: src/bitcaster/web/templates/rest_framework/inline/radio.html:2
+#: src/bitcaster/web/templates/rest_framework/vertical/radio.html:2
+msgid "None"
 msgstr ""
 
-#: bitcaster/web/templates/admin/app_list.html:19
-msgid "Add"
+#: src/bitcaster/web/templates/rest_framework/horizontal/select_multiple.html:2
+#: src/bitcaster/web/templates/rest_framework/inline/select_multiple.html:2
+#: src/bitcaster/web/templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
 msgstr ""
 
-#: bitcaster/web/templates/admin/app_list.html:26
-msgid "View"
-msgstr ""
-
-#: bitcaster/web/templates/admin/app_list.html:28
-msgid "Change"
-msgstr ""
-
-#: bitcaster/web/templates/admin/app_list.html:39
-msgid "You don’t have permission to view or edit anything."
-msgstr ""
-
-#: bitcaster/web/templates/admin/base.html:29
-msgid "Skip to main content"
-msgstr ""
-
-#: bitcaster/web/templates/admin/base.html:44
-msgid "Welcome,"
-msgstr ""
-
-#: bitcaster/web/templates/admin/base.html:49
+#: src/bitcaster/web/templates/unfold/helpers/--account_links.html:21
 msgid "View site"
 msgstr ""
 
-#: bitcaster/web/templates/admin/base.html:54
-msgid "Documentation"
-msgstr ""
-
-#: bitcaster/web/templates/admin/base.html:58
+#: src/bitcaster/web/templates/unfold/helpers/--account_links.html:35
+#, fuzzy
+#| msgid "Password"
 msgid "Change password"
-msgstr ""
+msgstr "Mot de passe"
 
-#: bitcaster/web/templates/admin/base.html:62
+#: src/bitcaster/web/templates/unfold/helpers/--account_links.html:44
+#, fuzzy
+#| msgid "Log in"
 msgid "Log out"
+msgstr "Connexion"
+
+#: src/bitcaster/web/templates/unfold/helpers/app_list.html:60
+#, fuzzy
+#| msgid "Applications"
+msgid "All applications"
+msgstr "Applications"
+
+#: src/bitcaster/web/templates/unfold/helpers/app_list.html:92
+msgid "You don’t have permission to view or edit anything."
 msgstr ""
 
-#: bitcaster/web/templates/admin/base.html:65
-msgid "API"
-msgstr ""
-
-#: bitcaster/web/templates/admin/base_site.html:3
-#: bitcaster/web/templates/admin/base_site.html:6
-msgid "Bitcaster"
-msgstr ""
-
-#: bitcaster/web/templates/admin/channel/lock.html:7
+#: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:30
 #, python-format
-msgid "Unlocking the %(target)s will start message forwarding"
-msgstr ""
-
-#: bitcaster/web/templates/admin/channel/lock.html:12
-#, python-format
-msgid "Locking the %(target)s will stop any message forwarding"
-msgstr ""
-
-#: bitcaster/web/templates/admin/channel/test.html:9
-msgid "Recipient"
-msgstr ""
-
-#: bitcaster/web/templates/admin/message/create_message_template.html:6
-msgid "Message Template"
-msgstr ""
-
-#: bitcaster/web/templates/admin/message/create_message_template.html:7
-msgid "Channel"
-msgstr ""
-
-#: bitcaster/web/templates/admin/message/create_message_template.html:25
-msgid "Create"
-msgstr ""
-
-#: bitcaster/web/templates/admin/message/edit.html:18
-msgid "Text"
-msgstr ""
-
-#: bitcaster/web/templates/admin/message/edit.html:20
-msgid "Subject"
-msgstr ""
-
-#: bitcaster/web/templates/admin/message/edit.html:25
-msgid "Context"
-msgstr ""
-
-#: bitcaster/web/templates/admin/social/socialprovider/change_form.html:21
-#, python-format
-msgid "Add %(name)s"
-msgstr ""
-
-#: bitcaster/web/templates/admin/social/socialprovider/change_form.html:45
-msgid "Please correct the error below."
-msgid_plural "Please correct the errors below."
+msgid "%(counter)s result"
+msgid_plural ""
+"%(counter)s\n"
+"                    results"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: bitcaster/web/templates/bitcaster/index.html:17
-msgid "Logout"
+#: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:33
+#, python-format
+msgid ""
+"%(full_result_count)s total\n"
+"                    "
 msgstr ""
 
-#: bitcaster/web/templates/bitcaster/index.html:21
-msgid "Enter"
+#: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:36
+msgid "Show all"
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/admin.html:116
-#: bitcaster/web/templates/rest_framework/base.html:155
-msgid "Extra Actions"
+#: src/bitcaster/web/views.py:50
+msgid "Directory indexes are not allowed here."
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/admin.html:130
-#: bitcaster/web/templates/rest_framework/base.html:170
-msgid "Filters"
+#: src/bitcaster/web/views.py:52
+#, python-format
+msgid "“%(path)s” does not exist"
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/base.html:38
-msgid "navbar"
+#: src/bitcaster/webpush/dispatcher.py:44
+#, fuzzy
+#| msgid "Sender Domain"
+msgid "Sender ID"
+msgstr "Domaine de l'expéditeur"
+
+#: src/bitcaster/webpush/dispatcher.py:44
+msgid "Firebase Cloud Messaging API (V1) Sender ID"
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/base.html:78
-msgid "request form"
+#: src/bitcaster/webpush/dispatcher.py:46
+msgid "Private Key"
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/base.html:177
-msgid "main content"
+#: src/bitcaster/webpush/dispatcher.py:46
+msgid "private key"
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/base.html:193
-msgid "request info"
+#: src/bitcaster/webpush/dispatcher.py:47
+msgid "Claim Email Key"
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/base.html:197
-msgid "response info"
+#: src/bitcaster/webpush/dispatcher.py:47
+msgid "JWT contact information"
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/filters/ordering.html:3
-msgid "Ordering"
+#: src/bitcaster/webpush/dispatcher.py:88
+msgid "WebPushDispatcher: assignment arg must be provided"
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/filters/search.html:2
-#: bitcaster/web/templates/rest_framework/filters/search.html:8
-msgid "Search"
+#: src/bitcaster/webpush/dispatcher.py:91
+#, fuzzy
+#| msgid "Assignments"
+msgid "Assignment not subscribed"
+msgstr "Affectations"
+
+#: src/bitcaster/webpush/templates/push/ask.html:27
+msgid "you have already denied the authorization"
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/horizontal/radio.html:4
-#: bitcaster/web/templates/rest_framework/inline/radio.html:3
-#: bitcaster/web/templates/rest_framework/vertical/radio.html:3
-msgid "None"
+#: src/bitcaster/webpush/templates/push/ask.html:30
+#: src/bitcaster/webpush/templates/push/ask.html:45
+msgid "Allow"
 msgstr ""
 
-#: bitcaster/web/templates/rest_framework/horizontal/select_multiple.html:4
-#: bitcaster/web/templates/rest_framework/inline/select_multiple.html:3
-#: bitcaster/web/templates/rest_framework/vertical/select_multiple.html:3
-msgid "No items to select."
+#: src/bitcaster/webpush/templates/push/ask.html:34
+msgid "Already subscribed"
 msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:37
+msgid "Refresh exiting subscription"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:38
+msgid "Cancel exiting subscription"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:42
+msgid "wants to send you push notifications"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:46
+msgid "Deny"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:53
+msgid "We are sorry this browser does not support notifications"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:58
+msgid ""
+"we cannot send you web notifications, because your settings do not allow that"
+msgstr ""
+
+#~ msgid "Spanish"
+#~ msgstr "Espagnol"
+
+#~ msgid "French"
+#~ msgstr "Français"
+
+#~ msgid "English"
+#~ msgstr "Anglais"
+
+#~ msgid "Arabic"
+#~ msgstr "Arabe"
