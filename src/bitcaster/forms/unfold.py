@@ -46,6 +46,15 @@ WIDGETS_OVERRIDES = {
 
 
 # kudos to https://github.com/unfoldadmin/django-unfold/issues/180
+class UnfoldForm(forms.Form):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if widget := WIDGETS_OVERRIDES.get(field.__class__):
+                field.widget = widget()
+
+
+# kudos to https://github.com/unfoldadmin/django-unfold/issues/180
 class UnfoldAdminForm(AdminForm):
     def __init__(
         self,
