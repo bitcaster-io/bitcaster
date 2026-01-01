@@ -46,6 +46,7 @@ COMMON = {
         "image": lambda request: static("bitcaster/images/logos/bitcaster.svg"),
         "redirect_after": lambda request: reverse_lazy("admin:index"),
     },
+    "SHOW_LANGUAGES": True,
     "DASHBOARD_CALLBACK": "bitcaster.web.dashboard.home.callback.dashboard_callback",
     "ENVIRONMENT": "bitcaster.config.fragments.unfold.environment_callback",  # environment name in header
     "SHOW_HISTORY": True,
