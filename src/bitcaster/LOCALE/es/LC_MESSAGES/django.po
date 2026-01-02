@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-01 16:53+0000\n"
+"POT-Creation-Date: 2026-01-02 10:26+0000\n"
 "PO-Revision-Date: 2024-05-05 11:42+0000\n"
 "Language-Team: Spanish (https://app.transifex.com/os4d/teams/191976/es/)\n"
 "Language: es\n"
@@ -297,107 +297,107 @@ msgstr ""
 msgid "Add an User's address"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:120
+#: src/bitcaster/config/fragments/unfold.py:121
 #, fuzzy
 #| msgid "Test Monitor"
 msgid "Monitor"
 msgstr "Probar monitor"
 
-#: src/bitcaster/config/fragments/unfold.py:125
+#: src/bitcaster/config/fragments/unfold.py:126
 #, fuzzy
 #| msgid "Purge occurrences"
 msgid "Occurrences"
 msgstr "Purgar ocurrencias"
 
-#: src/bitcaster/config/fragments/unfold.py:131
+#: src/bitcaster/config/fragments/unfold.py:132
 msgid "Members"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:136
+#: src/bitcaster/config/fragments/unfold.py:137
 msgid "Stream"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:143
+#: src/bitcaster/config/fragments/unfold.py:144
 #, fuzzy
 #| msgid "Configure channel"
 msgid "Configuration"
 msgstr "Configurar canal"
 
-#: src/bitcaster/config/fragments/unfold.py:148
+#: src/bitcaster/config/fragments/unfold.py:149
 msgid "Addresses"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:153 src/bitcaster/forms/user.py:20
+#: src/bitcaster/config/fragments/unfold.py:154 src/bitcaster/forms/user.py:20
 #: src/bitcaster/models/distribution.py:40
 #, fuzzy
 #| msgid "Add to Distribution List"
 msgid "Distribution List"
 msgstr "Añadir a la lista de distribución"
 
-#: src/bitcaster/config/fragments/unfold.py:158
+#: src/bitcaster/config/fragments/unfold.py:159
 msgid "Events"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:163
+#: src/bitcaster/config/fragments/unfold.py:164
 #: src/bitcaster/models/notification.py:81
 msgid "Notifications"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:168
+#: src/bitcaster/config/fragments/unfold.py:169
 #, fuzzy
 #| msgid "Message usage"
 msgid "Message Templates"
 msgstr "Uso del mensaje"
 
-#: src/bitcaster/config/fragments/unfold.py:175
+#: src/bitcaster/config/fragments/unfold.py:176
 msgid "System"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:180
+#: src/bitcaster/config/fragments/unfold.py:181
 #, fuzzy
 #| msgid "Test channel"
 msgid "Channels"
 msgstr "Probar canal"
 
-#: src/bitcaster/config/fragments/unfold.py:185
+#: src/bitcaster/config/fragments/unfold.py:186
 msgid "Applications"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:190
+#: src/bitcaster/config/fragments/unfold.py:191
 #: src/bitcaster/models/project.py:51
 #, fuzzy
 #| msgid "Project"
 msgid "Projects"
 msgstr "Proyecto"
 
-#: src/bitcaster/config/fragments/unfold.py:195
+#: src/bitcaster/config/fragments/unfold.py:196
 #: src/bitcaster/models/organization.py:41
 msgid "Organization"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:202
+#: src/bitcaster/config/fragments/unfold.py:203
 msgid "Security"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:207
-#: src/bitcaster/config/fragments/unfold.py:257
+#: src/bitcaster/config/fragments/unfold.py:208
+#: src/bitcaster/config/fragments/unfold.py:258
 msgid "Users"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:213
+#: src/bitcaster/config/fragments/unfold.py:214
 msgid "Roles"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:219
-#: src/bitcaster/config/fragments/unfold.py:246
+#: src/bitcaster/config/fragments/unfold.py:220
+#: src/bitcaster/config/fragments/unfold.py:247
 msgid "Groups"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:225
+#: src/bitcaster/config/fragments/unfold.py:226
 msgid "API Keys"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:231
+#: src/bitcaster/config/fragments/unfold.py:232
 msgid "System Log"
 msgstr ""
 
@@ -590,7 +590,7 @@ msgid "The subject of the message"
 msgstr ""
 
 #: src/bitcaster/models/message.py:64
-#: src/bitcaster/web/templates/rest_framework/base.html:71
+#: src/bitcaster/web/templates/rest_framework/base.html:81
 #, fuzzy
 #| msgid "Extra context"
 msgid "content"
@@ -893,59 +893,36 @@ msgstr ""
 msgid "Locking"
 msgstr "Bloquear"
 
-#: src/bitcaster/web/templates/rest_framework/admin.html:108
-#: src/bitcaster/web/templates/rest_framework/base.html:148
+#: src/bitcaster/web/templates/rest_framework/base.html:39
+msgid "navbar"
+msgstr ""
+
+#: src/bitcaster/web/templates/rest_framework/base.html:83
+msgid "request form"
+msgstr ""
+
+#: src/bitcaster/web/templates/rest_framework/base.html:157
 #, fuzzy
 #| msgid "Extra context"
 msgid "Extra Actions"
 msgstr "Contexto extra"
 
-#: src/bitcaster/web/templates/rest_framework/admin.html:123
-#: src/bitcaster/web/templates/rest_framework/base.html:163
+#: src/bitcaster/web/templates/rest_framework/base.html:172
 msgid "Filters"
 msgstr ""
 
-#: src/bitcaster/web/templates/rest_framework/base.html:30
-msgid "navbar"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/base.html:73
-msgid "request form"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/base.html:168
+#: src/bitcaster/web/templates/rest_framework/base.html:177
 #, fuzzy
 #| msgid "Extra context"
 msgid "main content"
 msgstr "Contexto extra"
 
-#: src/bitcaster/web/templates/rest_framework/base.html:184
+#: src/bitcaster/web/templates/rest_framework/base.html:193
 msgid "request info"
 msgstr ""
 
-#: src/bitcaster/web/templates/rest_framework/base.html:187
+#: src/bitcaster/web/templates/rest_framework/base.html:196
 msgid "response info"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/filters/ordering.html:3
-msgid "Ordering"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/filters/search.html:3
-#: src/bitcaster/web/templates/rest_framework/filters/search.html:11
-msgid "Search"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/horizontal/radio.html:2
-#: src/bitcaster/web/templates/rest_framework/inline/radio.html:2
-#: src/bitcaster/web/templates/rest_framework/vertical/radio.html:2
-msgid "None"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/horizontal/select_multiple.html:2
-#: src/bitcaster/web/templates/rest_framework/inline/select_multiple.html:2
-#: src/bitcaster/web/templates/rest_framework/vertical/select_multiple.html:2
-msgid "No items to select."
 msgstr ""
 
 #: src/bitcaster/web/templates/unfold/helpers/--account_links.html:21

@@ -8,15 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-01 09:03+0000\n"
+"POT-Creation-Date: 2026-01-02 10:26+0000\n"
 "PO-Revision-Date: 2024-05-05 11:42+0000\n"
 "Language-Team: Arabic (https://app.transifex.com/os4d/teams/191976/ar/)\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
-" && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3  "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 #: src/bitcaster/admin/api_key.py:54
 msgid "Application must be set if EVENT_TRIGGER is granted"
@@ -80,8 +80,9 @@ msgid "Lock"
 msgstr "قفل"
 
 #: src/bitcaster/admin/mixins.py:40
-#, python-brace-format
-msgid "Lock {} "
+#, fuzzy, python-brace-format
+#| msgid "Lock {} "
+msgid "Lock {}"
 msgstr "قفل {} "
 
 #: src/bitcaster/admin/mixins.py:43
@@ -94,8 +95,9 @@ msgid "Unlock"
 msgstr "فتح"
 
 #: src/bitcaster/admin/mixins.py:58
-#, python-brace-format
-msgid "Unlock {} "
+#, fuzzy, python-brace-format
+#| msgid "Unlock {} "
+msgid "Unlock {}"
 msgstr "فتح {} "
 
 #: src/bitcaster/admin/mixins.py:62
@@ -114,7 +116,6 @@ msgstr "اختبار الشاشة"
 #: src/bitcaster/admin/notification.py:39
 #: src/bitcaster/admin/notification.py:47 src/bitcaster/admin/occurrence.py:35
 #: src/bitcaster/admin/task.py:25 src/bitcaster/admin/task.py:34
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/tab_items.html:16
 msgid "General"
 msgstr "عام"
 
@@ -187,8 +188,32 @@ msgid "Purge occurrences"
 msgstr "مسح الأحداث"
 
 #: src/bitcaster/admin/organization.py:25
-msgid "\nFile must be a .csv file, comma separated `,` with 3 columns\n\n_Headers must be provided and named: last_name, first_name, email. Order can be customised_\n\nEs:\n\n```\nlast_name,first_name,email\nJoe,Doe,j.doe@example.com\n```\n"
-msgstr "\nيجب أن يكون الملف ملف .csv، مفصول بفاصلة `,` مع 3 أعمدة\n\n_يجب توفير رؤوس الأسماء وتسميتها: last_name, first_name, email. يمكن تخصيص الترتيب_\n\nمثال:\n\n```\nlast_name,first_name,email\nJoe,Doe,j.doe@example.com\n```\n"
+msgid ""
+"\n"
+"File must be a .csv file, comma separated `,` with 3 columns\n"
+"\n"
+"_Headers must be provided and named: last_name, first_name, email. Order can "
+"be customised_\n"
+"\n"
+"Es:\n"
+"\n"
+"```\n"
+"last_name,first_name,email\n"
+"Joe,Doe,j.doe@example.com\n"
+"```\n"
+msgstr ""
+"\n"
+"يجب أن يكون الملف ملف .csv، مفصول بفاصلة `,` مع 3 أعمدة\n"
+"\n"
+"_يجب توفير رؤوس الأسماء وتسميتها: last_name, first_name, email. يمكن تخصيص "
+"الترتيب_\n"
+"\n"
+"مثال:\n"
+"\n"
+"```\n"
+"last_name,first_name,email\n"
+"Joe,Doe,j.doe@example.com\n"
+"```\n"
 
 #: src/bitcaster/admin/organization.py:38
 msgid ".CSV file"
@@ -275,113 +300,95 @@ msgstr "سرد عناوين المستخدم"
 msgid "Add an User's address"
 msgstr "إضافة عنوان مستخدم"
 
-#: src/bitcaster/config/fragments/unfold.py:120
+#: src/bitcaster/config/fragments/unfold.py:121
 msgid "Monitor"
 msgstr "مراقبة"
 
-#: src/bitcaster/config/fragments/unfold.py:125
+#: src/bitcaster/config/fragments/unfold.py:126
 msgid "Occurrences"
 msgstr "أحداث"
 
-#: src/bitcaster/config/fragments/unfold.py:131
+#: src/bitcaster/config/fragments/unfold.py:132
 msgid "Members"
 msgstr "أعضاء"
 
-#: src/bitcaster/config/fragments/unfold.py:136
+#: src/bitcaster/config/fragments/unfold.py:137
 msgid "Stream"
 msgstr "تدفق"
 
-#: src/bitcaster/config/fragments/unfold.py:143
+#: src/bitcaster/config/fragments/unfold.py:144
 msgid "Configuration"
 msgstr "تكوين"
 
-#: src/bitcaster/config/fragments/unfold.py:148
+#: src/bitcaster/config/fragments/unfold.py:149
 msgid "Addresses"
 msgstr "عناوين"
 
-#: src/bitcaster/config/fragments/unfold.py:153 src/bitcaster/forms/user.py:20
+#: src/bitcaster/config/fragments/unfold.py:154 src/bitcaster/forms/user.py:20
 #: src/bitcaster/models/distribution.py:40
 msgid "Distribution List"
 msgstr "قائمة التوزيع"
 
-#: src/bitcaster/config/fragments/unfold.py:158
+#: src/bitcaster/config/fragments/unfold.py:159
 msgid "Events"
 msgstr "أحداث"
 
-#: src/bitcaster/config/fragments/unfold.py:163
+#: src/bitcaster/config/fragments/unfold.py:164
 #: src/bitcaster/models/notification.py:81
 msgid "Notifications"
 msgstr "إشعارات"
 
-#: src/bitcaster/config/fragments/unfold.py:168
+#: src/bitcaster/config/fragments/unfold.py:169
 msgid "Message Templates"
 msgstr "قوالب الرسائل"
 
-#: src/bitcaster/config/fragments/unfold.py:175
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/theme_switch.html:23
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/theme_switch_dropdown.html:30
+#: src/bitcaster/config/fragments/unfold.py:176
 msgid "System"
 msgstr "نظام"
 
-#: src/bitcaster/config/fragments/unfold.py:180
+#: src/bitcaster/config/fragments/unfold.py:181
 msgid "Channels"
 msgstr "قنوات"
 
-#: src/bitcaster/config/fragments/unfold.py:185
+#: src/bitcaster/config/fragments/unfold.py:186
 msgid "Applications"
 msgstr "تطبيقات"
 
-#: src/bitcaster/config/fragments/unfold.py:190
+#: src/bitcaster/config/fragments/unfold.py:191
 #: src/bitcaster/models/project.py:51
 msgid "Projects"
 msgstr "مشاريع"
 
-#: src/bitcaster/config/fragments/unfold.py:195
+#: src/bitcaster/config/fragments/unfold.py:196
 #: src/bitcaster/models/organization.py:41
 msgid "Organization"
 msgstr "منظمة"
 
-#: src/bitcaster/config/fragments/unfold.py:202
+#: src/bitcaster/config/fragments/unfold.py:203
 msgid "Security"
 msgstr "أمن"
 
-#: src/bitcaster/config/fragments/unfold.py:207
-#: src/bitcaster/config/fragments/unfold.py:257
+#: src/bitcaster/config/fragments/unfold.py:208
+#: src/bitcaster/config/fragments/unfold.py:258
 msgid "Users"
 msgstr "مستخدمون"
 
-#: src/bitcaster/config/fragments/unfold.py:213
+#: src/bitcaster/config/fragments/unfold.py:214
 msgid "Roles"
 msgstr "أدوار"
 
-#: src/bitcaster/config/fragments/unfold.py:219
-#: src/bitcaster/config/fragments/unfold.py:246
+#: src/bitcaster/config/fragments/unfold.py:220
+#: src/bitcaster/config/fragments/unfold.py:247
 msgid "Groups"
 msgstr "مجموعات"
 
-#: src/bitcaster/config/fragments/unfold.py:225
+#: src/bitcaster/config/fragments/unfold.py:226
 msgid "API Keys"
 msgstr "مفاتيح API"
 
-#: src/bitcaster/config/fragments/unfold.py:231
+#: src/bitcaster/config/fragments/unfold.py:232
 msgid "System Log"
 msgstr "سجل النظام"
-
-#: src/bitcaster/config/settings.py:177
-msgid "Spanish"
-msgstr "إسباني"
-
-#: src/bitcaster/config/settings.py:178
-msgid "French"
-msgstr "فرنسي"
-
-#: src/bitcaster/config/settings.py:179
-msgid "English"
-msgstr "إنجليزي"
-
-#: src/bitcaster/config/settings.py:180
-msgid "Arabic"
-msgstr "عربي"
 
 #: src/bitcaster/dispatchers/email.py:21
 msgid "Host"
@@ -495,8 +502,18 @@ msgid "Do not customise notifications per single user"
 msgstr "لا تقم بتخصيص الإشعارات لكل مستخدم على حدة"
 
 #: src/bitcaster/models/event.py:44
-msgid "\nNumber of days (from last update) after which related Occurrences can be purged. If not specified, system default will be used.\n"
-msgstr "\nعدد الأيام (من آخر تحديث) بعد التي يمكن فيها مسح الأحداث ذات الصلة. إذا لم يتم تحديده ، فسيتم استخدام افتراضي النظام.\n"
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "Number of days (from last update) after which related Occurrences can be "
+#| "purged. If not specified, system default will be used.\n"
+msgid ""
+"Number of days (from last update) after which related Occurrences can be "
+"purged. If not specified, system default will be used."
+msgstr ""
+"\n"
+"عدد الأيام (من آخر تحديث) بعد التي يمكن فيها مسح الأحداث ذات الصلة. إذا لم "
+"يتم تحديده ، فسيتم استخدام افتراضي النظام.\n"
 
 #: src/bitcaster/models/internal.py:34
 msgid "Log Message"
@@ -507,17 +524,17 @@ msgid "Log Messages"
 msgstr "رسائل السجل"
 
 #: src/bitcaster/models/key.py:66
-msgid "Limit validity to these environments. If empty the key will be valid for any environment"
-msgstr "قصر الصلاحية على هذه البيئات. إذا كانت فارغة ، فستكون المفتاح صالحًا لأي بيئة"
+msgid ""
+"Limit validity to these environments. If empty the key will be valid for any "
+"environment"
+msgstr ""
+"قصر الصلاحية على هذه البيئات. إذا كانت فارغة ، فستكون المفتاح صالحًا لأي بيئة"
 
 #: src/bitcaster/models/log.py:19
 msgid "Addition"
 msgstr "إضافة"
 
 #: src/bitcaster/models/log.py:20
-#: src/bitcaster/web/templates/~unfold_templates/admin/edit_inline/stacked.html:57
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/app_list_default.html:42
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/edit_inline/tabular_title.html:23
 msgid "Change"
 msgstr "تغيير"
 
@@ -543,7 +560,9 @@ msgid "”%(object)s”."
 msgstr "”%(object)s”."
 
 #: src/bitcaster/models/message.py:45
-msgid "Channel for which the message is valid"
+#, fuzzy
+#| msgid "Channel for which the message is valid"
+msgid "Channel for which  the message is valid"
 msgstr "القناة التي يكون الرسالة صالحة لها"
 
 #: src/bitcaster/models/message.py:53
@@ -563,7 +582,7 @@ msgid "The subject of the message"
 msgstr "موضوع الرسالة"
 
 #: src/bitcaster/models/message.py:64
-#: src/bitcaster/web/templates/rest_framework/base.html:71
+#: src/bitcaster/web/templates/rest_framework/base.html:81
 msgid "content"
 msgstr "المحتوى"
 
@@ -677,47 +696,367 @@ msgstr "التكوين وفقًا لمصادقة Python الاجتماعية"
 
 #: src/bitcaster/web/templates/admin/base_site.html:6
 #: src/bitcaster/web/templates/admin/login.html:11
-#: src/bitcaster/web/templates/~unfold_templates/admin/app_index.html:5
-#: src/bitcaster/web/templates/~unfold_templates/admin/base_site.html:3
-#: src/bitcaster/web/templates/~unfold_templates/admin/index.html:5
-#: src/bitcaster/web/templates/~unfold_templates/admin/login.html:15
-#: src/bitcaster/web/templates/~unfold_templates/unfold/layouts/base.html:7
 msgid "Django site admin"
 msgstr "مسؤول موقع Django"
 
 #: src/bitcaster/web/templates/admin/login.html:11
-#: src/bitcaster/web/templates/~unfold_templates/admin/login.html:15
 msgid "Welcome back to"
 msgstr "أهلاً بعودتك إلى"
 
 #: src/bitcaster/web/templates/admin/login.html:18
-#: src/bitcaster/web/templates/~unfold_templates/admin/login.html:26
 #, python-format
-msgid "You are authenticated as %(username)s, but are not authorized to access this page. Would you like to login to a different account?"
-msgstr "أنت مصادق عليه باسم %(username)s، ولكن ليس لديك الإذن للوصول إلى هذه الصفحة. هل ترغب في تسجيل الدخول إلى حساب مختلف؟"
+msgid ""
+"You are authenticated as %(username)s, but are not authorized to access this "
+"page. Would you like to login to a different account?"
+msgstr ""
+"أنت مصادق عليه باسم %(username)s، ولكن ليس لديك الإذن للوصول إلى هذه الصفحة. "
+"هل ترغب في تسجيل الدخول إلى حساب مختلف؟"
 
 #: src/bitcaster/web/templates/admin/login.html:44
-#: src/bitcaster/web/templates/~unfold_templates/admin/login.html:47
 msgid "Log in"
 msgstr "تسجيل الدخول"
 
 #: src/bitcaster/web/templates/admin/social/socialprovider/-change_form.html:21
 #: src/bitcaster/web/templates/bitcaster/locking/base.html:6
 #: src/bitcaster/web/templates/bitcaster/locking/lock.html:6
-#: src/bitcaster/web/templates/bitcaster/locking/~mode.html:6
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_icon.html:7
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_icon.html:9
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_icon.html:11
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_logo.html:5
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_logo.html:7
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_logo.html:9
 msgid "Home"
 msgstr "الصفحة الرئيسية"
 
 #: src/bitcaster/web/templates/admin/social/socialprovider/-change_form.html:31
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/add_link.html:5
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/add_link.html:8
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/empty_results.html:4
 #, python-format
 msgid "Add %(name)s"
 msgstr "إضافة %(name)s"
+
+#: src/bitcaster/web/templates/admin/social/socialprovider/-change_form.html:72
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
+#: src/bitcaster/web/templates/admin_extra_buttons/confirm.html:5
+msgid "Warning"
+msgstr ""
+
+#: src/bitcaster/web/templates/admin_extra_buttons/confirm.html:26
+#: src/bitcaster/web/templates/bitcaster/admin/action_form.html:21
+#: src/bitcaster/web/templates/bitcaster/admin/members/import_members.html:21
+#, fuzzy
+#| msgid "Configuration"
+msgid "Confirm"
+msgstr "تكوين"
+
+#: src/bitcaster/web/templates/admin_extra_buttons/confirm.html:27
+msgid "Go Back"
+msgstr ""
+
+#: src/bitcaster/web/templates/adminfilters/_wrapper.html:4
+#: src/bitcaster/web/templates/adminfilters/combobox.html:3
+#: src/bitcaster/web/templates/adminfilters/radio.html:3
+#, python-format
+msgid " By %(filter_title)s "
+msgstr ""
+
+#: src/bitcaster/web/templates/adminfilters/checkbox.html:3
+#, python-format
+msgid " By %(filter_title)s"
+msgstr ""
+
+#: src/bitcaster/web/templates/adminfilters/dj.html:19
+#: src/bitcaster/web/templates/adminfilters/json.html:11
+#: src/bitcaster/web/templates/adminfilters/querystring.html:20
+#: src/bitcaster/web/templates/adminfilters/value.html:17
+#: src/bitcaster/web/templates/adminfilters/value_multi.html:17
+msgid "Exclude"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/admin/apikey/created.html:7
+msgid "Grace period expired"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/admin/apikey/created.html:24
+msgid ""
+"\n"
+"                This is the only time this key will be displayed. Copy it "
+"and put in a safe place.\n"
+"            "
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:60
+msgid "< Prev step"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:65
+msgid "Next step >"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:69
+#, fuzzy
+#| msgid "Spanish"
+msgid "Finish"
+msgstr "إسباني"
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:73
+msgid "Cancel"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/lock.html:9
+#, python-format
+msgid ""
+"Unlocking the %(target)s will start message\n"
+"                    forwarding"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/lock.html:20
+#, python-format
+msgid ""
+"Locking the %(target)s will stop any message\n"
+"                    forwarding"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/admin/channel/test.html:6
+#, fuzzy
+#| msgid "No messages configured for selected channels"
+msgid "No assignments found for this channel"
+msgstr "لا توجد رسائل مكونة للقنوات المحددة"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:8
+#, fuzzy
+#| msgid "Message Templates"
+msgid "Message Template"
+msgstr "قوالب الرسائل"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
+#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
+#, fuzzy
+#| msgid "Channels"
+msgid "Channel"
+msgstr "قنوات"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:36
+#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:32
+msgid "Create"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/edit.html:24
+msgid "Text"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/edit.html:29
+#, fuzzy
+#| msgid "subject"
+msgid "Subject"
+msgstr "الموضوع"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/edit.html:38
+#, fuzzy
+#| msgid "content"
+msgid "Context"
+msgstr "المحتوى"
+
+#: src/bitcaster/web/templates/bitcaster/admin/message/edit.html:44
+msgid "Test"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/errors/_base.html:18
+msgid "back"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/index.html:20
+msgid "Logout"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/index.html:23
+msgid "Login"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/locking/base.html:4
+#: src/bitcaster/web/templates/bitcaster/locking/lock.html:4
+msgid "Breadcrumbs"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/locking/base.html:8
+#: src/bitcaster/web/templates/bitcaster/locking/lock.html:8
+#, fuzzy
+#| msgid "Lock"
+msgid "Locking"
+msgstr "قفل"
+
+#: src/bitcaster/web/templates/rest_framework/base.html:39
+msgid "navbar"
+msgstr ""
+
+#: src/bitcaster/web/templates/rest_framework/base.html:83
+msgid "request form"
+msgstr ""
+
+#: src/bitcaster/web/templates/rest_framework/base.html:157
+#, fuzzy
+#| msgid "Extra context"
+msgid "Extra Actions"
+msgstr "سياق إضافي"
+
+#: src/bitcaster/web/templates/rest_framework/base.html:172
+msgid "Filters"
+msgstr ""
+
+#: src/bitcaster/web/templates/rest_framework/base.html:177
+#, fuzzy
+#| msgid "content"
+msgid "main content"
+msgstr "المحتوى"
+
+#: src/bitcaster/web/templates/rest_framework/base.html:193
+msgid "request info"
+msgstr ""
+
+#: src/bitcaster/web/templates/rest_framework/base.html:196
+#, fuzzy
+#| msgid "Personal info"
+msgid "response info"
+msgstr "معلومات شخصية"
+
+#: src/bitcaster/web/templates/unfold/helpers/--account_links.html:21
+msgid "View site"
+msgstr ""
+
+#: src/bitcaster/web/templates/unfold/helpers/--account_links.html:35
+#, fuzzy
+#| msgid "Password"
+msgid "Change password"
+msgstr "كلمة المرور"
+
+#: src/bitcaster/web/templates/unfold/helpers/--account_links.html:44
+#, fuzzy
+#| msgid "Log in"
+msgid "Log out"
+msgstr "تسجيل الدخول"
+
+#: src/bitcaster/web/templates/unfold/helpers/app_list.html:60
+#, fuzzy
+#| msgid "Applications"
+msgid "All applications"
+msgstr "تطبيقات"
+
+#: src/bitcaster/web/templates/unfold/helpers/app_list.html:92
+msgid "You don’t have permission to view or edit anything."
+msgstr ""
+
+#: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:30
+#, python-format
+msgid "%(counter)s result"
+msgid_plural ""
+"%(counter)s\n"
+"                    results"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
+#: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:33
+#, python-format
+msgid ""
+"%(full_result_count)s total\n"
+"                    "
+msgstr ""
+
+#: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:36
+msgid "Show all"
+msgstr ""
+
+#: src/bitcaster/web/views.py:50
+msgid "Directory indexes are not allowed here."
+msgstr ""
+
+#: src/bitcaster/web/views.py:52
+#, python-format
+msgid "“%(path)s” does not exist"
+msgstr ""
+
+#: src/bitcaster/webpush/dispatcher.py:44
+#, fuzzy
+#| msgid "Sender Domain"
+msgid "Sender ID"
+msgstr "نطاق المرسل"
+
+#: src/bitcaster/webpush/dispatcher.py:44
+msgid "Firebase Cloud Messaging API (V1) Sender ID"
+msgstr ""
+
+#: src/bitcaster/webpush/dispatcher.py:46
+msgid "Private Key"
+msgstr ""
+
+#: src/bitcaster/webpush/dispatcher.py:46
+msgid "private key"
+msgstr ""
+
+#: src/bitcaster/webpush/dispatcher.py:47
+msgid "Claim Email Key"
+msgstr ""
+
+#: src/bitcaster/webpush/dispatcher.py:47
+msgid "JWT contact information"
+msgstr ""
+
+#: src/bitcaster/webpush/dispatcher.py:88
+msgid "WebPushDispatcher: assignment arg must be provided"
+msgstr ""
+
+#: src/bitcaster/webpush/dispatcher.py:91
+#, fuzzy
+#| msgid "Assignments"
+msgid "Assignment not subscribed"
+msgstr "تعيينات"
+
+#: src/bitcaster/webpush/templates/push/ask.html:27
+msgid "you have already denied the authorization"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:30
+#: src/bitcaster/webpush/templates/push/ask.html:45
+msgid "Allow"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:34
+msgid "Already subscribed"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:37
+msgid "Refresh exiting subscription"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:38
+msgid "Cancel exiting subscription"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:42
+msgid "wants to send you push notifications"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:46
+msgid "Deny"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:53
+msgid "We are sorry this browser does not support notifications"
+msgstr ""
+
+#: src/bitcaster/webpush/templates/push/ask.html:58
+msgid ""
+"we cannot send you web notifications, because your settings do not allow that"
+msgstr ""
+
+#~ msgid "French"
+#~ msgstr "فرنسي"
+
+#~ msgid "English"
+#~ msgstr "إنجليزي"
+
+#~ msgid "Arabic"
+#~ msgstr "عربي"
