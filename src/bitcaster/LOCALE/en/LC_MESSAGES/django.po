@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-01 09:03+0000\n"
+"POT-Creation-Date: 2026-01-02 14:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -108,7 +108,6 @@ msgstr ""
 #: src/bitcaster/admin/notification.py:39
 #: src/bitcaster/admin/notification.py:47 src/bitcaster/admin/occurrence.py:35
 #: src/bitcaster/admin/task.py:25 src/bitcaster/admin/task.py:34
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/tab_items.html:16
 msgid "General"
 msgstr ""
 
@@ -281,112 +280,99 @@ msgstr ""
 msgid "Add an User's address"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:120
+#: src/bitcaster/config/fragments/unfold.py:121
+#: src/bitcaster/models/monitor.py:33
 msgid "Monitor"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:125
+#: src/bitcaster/config/fragments/unfold.py:126
+#: src/bitcaster/models/occurrence.py:91
 msgid "Occurrences"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:131
+#: src/bitcaster/config/fragments/unfold.py:132 src/bitcaster/models/user.py:69
 msgid "Members"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:136
+#: src/bitcaster/config/fragments/unfold.py:137
 msgid "Stream"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:143
+#: src/bitcaster/config/fragments/unfold.py:144
 msgid "Configuration"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:148
+#: src/bitcaster/config/fragments/unfold.py:149
 msgid "Addresses"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:153 src/bitcaster/forms/user.py:20
+#: src/bitcaster/config/fragments/unfold.py:154 src/bitcaster/forms/user.py:20
 #: src/bitcaster/models/distribution.py:40
 msgid "Distribution List"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:158
+#: src/bitcaster/config/fragments/unfold.py:159
+#: src/bitcaster/models/event.py:54
 msgid "Events"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:163
+#: src/bitcaster/config/fragments/unfold.py:164
 #: src/bitcaster/models/notification.py:81
 msgid "Notifications"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:168
+#: src/bitcaster/config/fragments/unfold.py:169
 msgid "Message Templates"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:175
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/theme_switch.html:23
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/theme_switch_dropdown.html:30
+#: src/bitcaster/config/fragments/unfold.py:176
 msgid "System"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:180
+#: src/bitcaster/config/fragments/unfold.py:181
+#: src/bitcaster/models/channel.py:55
 msgid "Channels"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:185
+#: src/bitcaster/config/fragments/unfold.py:186
+#: src/bitcaster/models/application.py:53
 msgid "Applications"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:190
+#: src/bitcaster/config/fragments/unfold.py:191
 #: src/bitcaster/models/project.py:51
 msgid "Projects"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:195
+#: src/bitcaster/config/fragments/unfold.py:196
 #: src/bitcaster/models/organization.py:41
 msgid "Organization"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:202
+#: src/bitcaster/config/fragments/unfold.py:203
 msgid "Security"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:207
-#: src/bitcaster/config/fragments/unfold.py:257
+#: src/bitcaster/config/fragments/unfold.py:208
+#: src/bitcaster/config/fragments/unfold.py:258 src/bitcaster/models/user.py:33
 msgid "Users"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:213
+#: src/bitcaster/config/fragments/unfold.py:214
 msgid "Roles"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:219
-#: src/bitcaster/config/fragments/unfold.py:246
+#: src/bitcaster/config/fragments/unfold.py:220
+#: src/bitcaster/config/fragments/unfold.py:247 src/bitcaster/models/group.py:9
 msgid "Groups"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:225
+#: src/bitcaster/config/fragments/unfold.py:226
 msgid "API Keys"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:231
+#: src/bitcaster/config/fragments/unfold.py:232
 msgid "System Log"
-msgstr ""
-
-#: src/bitcaster/config/settings.py:177
-msgid "Spanish"
-msgstr ""
-
-#: src/bitcaster/config/settings.py:178
-msgid "French"
-msgstr ""
-
-#: src/bitcaster/config/settings.py:179
-msgid "English"
-msgstr ""
-
-#: src/bitcaster/config/settings.py:180
-msgid "Arabic"
 msgstr ""
 
 #: src/bitcaster/dispatchers/email.py:21
@@ -478,6 +464,10 @@ msgstr ""
 msgid "Default prefix for messages supporting subject"
 msgstr ""
 
+#: src/bitcaster/models/application.py:52
+msgid "Application"
+msgstr ""
+
 #: src/bitcaster/models/assignment.py:36
 msgid "Assignment"
 msgstr ""
@@ -490,6 +480,12 @@ msgstr ""
 #: src/bitcaster/models/message.py:40 src/bitcaster/models/monitor.py:21
 #: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:39
 msgid "Name"
+msgstr ""
+
+#: src/bitcaster/models/channel.py:54
+#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
+#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
+msgid "Channel"
 msgstr ""
 
 #: src/bitcaster/models/distribution.py:41
@@ -506,6 +502,14 @@ msgid ""
 "purged. If not specified, system default will be used."
 msgstr ""
 
+#: src/bitcaster/models/event.py:53
+msgid "Event"
+msgstr ""
+
+#: src/bitcaster/models/group.py:8
+msgid "Group"
+msgstr ""
+
 #: src/bitcaster/models/internal.py:34
 msgid "Log Message"
 msgstr ""
@@ -520,14 +524,19 @@ msgid ""
 "environment"
 msgstr ""
 
+#: src/bitcaster/models/key.py:73
+msgid "Api Key"
+msgstr ""
+
+#: src/bitcaster/models/key.py:74
+msgid "Api Keys"
+msgstr ""
+
 #: src/bitcaster/models/log.py:19
 msgid "Addition"
 msgstr ""
 
 #: src/bitcaster/models/log.py:20
-#: src/bitcaster/web/templates/~unfold_templates/admin/edit_inline/stacked.html:57
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/app_list_default.html:42
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/edit_inline/tabular_title.html:23
 msgid "Change"
 msgstr ""
 
@@ -573,7 +582,7 @@ msgid "The subject of the message"
 msgstr ""
 
 #: src/bitcaster/models/message.py:64
-#: src/bitcaster/web/templates/rest_framework/base.html:71
+#: src/bitcaster/web/templates/rest_framework/base.html:81
 msgid "content"
 msgstr ""
 
@@ -603,6 +612,10 @@ msgstr ""
 
 #: src/bitcaster/models/mixins.py:21
 msgid "If checked any notification paused"
+msgstr ""
+
+#: src/bitcaster/models/monitor.py:34
+msgid "Monitors"
 msgstr ""
 
 #: src/bitcaster/models/notification.py:58
@@ -649,6 +662,10 @@ msgstr ""
 msgid "Status of the occurrence"
 msgstr ""
 
+#: src/bitcaster/models/occurrence.py:90
+msgid "Occurrence"
+msgstr ""
+
 #: src/bitcaster/models/organization.py:29 src/bitcaster/models/project.py:36
 msgid "Subject Prefix"
 msgstr ""
@@ -662,11 +679,11 @@ msgid "Environments available for project"
 msgstr ""
 
 #: src/bitcaster/models/user.py:32
-msgid "user"
+msgid "User"
 msgstr ""
 
-#: src/bitcaster/models/user.py:33
-msgid "users"
+#: src/bitcaster/models/user.py:68
+msgid "Member"
 msgstr ""
 
 #: src/bitcaster/models/userrole.py:28
@@ -687,21 +704,14 @@ msgstr ""
 
 #: src/bitcaster/web/templates/admin/base_site.html:6
 #: src/bitcaster/web/templates/admin/login.html:11
-#: src/bitcaster/web/templates/~unfold_templates/admin/app_index.html:5
-#: src/bitcaster/web/templates/~unfold_templates/admin/base_site.html:3
-#: src/bitcaster/web/templates/~unfold_templates/admin/index.html:5
-#: src/bitcaster/web/templates/~unfold_templates/admin/login.html:15
-#: src/bitcaster/web/templates/~unfold_templates/unfold/layouts/base.html:7
 msgid "Django site admin"
 msgstr ""
 
 #: src/bitcaster/web/templates/admin/login.html:11
-#: src/bitcaster/web/templates/~unfold_templates/admin/login.html:15
 msgid "Welcome back to"
 msgstr ""
 
 #: src/bitcaster/web/templates/admin/login.html:18
-#: src/bitcaster/web/templates/~unfold_templates/admin/login.html:26
 #, python-format
 msgid ""
 "You are authenticated as %(username)s, but are not authorized to access this "
@@ -709,37 +719,8 @@ msgid ""
 msgstr ""
 
 #: src/bitcaster/web/templates/admin/login.html:44
-#: src/bitcaster/web/templates/~unfold_templates/admin/login.html:47
 msgid "Log in"
 msgstr ""
-
-#: src/bitcaster/web/templates/admin/social/socialprovider/-change_form.html:21
-#: src/bitcaster/web/templates/bitcaster/locking/base.html:6
-#: src/bitcaster/web/templates/bitcaster/locking/lock.html:6
-#: src/bitcaster/web/templates/bitcaster/locking/~mode.html:6
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_icon.html:7
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_icon.html:9
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_icon.html:11
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_logo.html:5
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_logo.html:7
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_logo.html:9
-msgid "Home"
-msgstr ""
-
-#: src/bitcaster/web/templates/admin/social/socialprovider/-change_form.html:31
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/add_link.html:5
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/add_link.html:8
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/empty_results.html:4
-#, python-format
-msgid "Add %(name)s"
-msgstr ""
-
-#: src/bitcaster/web/templates/admin/social/socialprovider/-change_form.html:72
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/messages/errornote.html:5
-msgid "Please correct the error below."
-msgid_plural "Please correct the errors below."
-msgstr[0] ""
-msgstr[1] ""
 
 #: src/bitcaster/web/templates/admin_extra_buttons/confirm.html:5
 msgid "Warning"
@@ -758,7 +739,6 @@ msgstr ""
 #: src/bitcaster/web/templates/adminfilters/_wrapper.html:4
 #: src/bitcaster/web/templates/adminfilters/combobox.html:3
 #: src/bitcaster/web/templates/adminfilters/radio.html:3
-#: src/bitcaster/web/templates/~unfold_templates/admin/filter.html:5
 #, python-format
 msgid " By %(filter_title)s "
 msgstr ""
@@ -826,11 +806,6 @@ msgstr ""
 msgid "Message Template"
 msgstr ""
 
-#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
-#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
-msgid "Channel"
-msgstr ""
-
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:36
 #: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:32
 msgid "Create"
@@ -866,536 +841,81 @@ msgstr ""
 
 #: src/bitcaster/web/templates/bitcaster/locking/base.html:4
 #: src/bitcaster/web/templates/bitcaster/locking/lock.html:4
-#: src/bitcaster/web/templates/bitcaster/locking/~mode.html:4
 msgid "Breadcrumbs"
+msgstr ""
+
+#: src/bitcaster/web/templates/bitcaster/locking/base.html:6
+#: src/bitcaster/web/templates/bitcaster/locking/lock.html:6
+msgid "Home"
 msgstr ""
 
 #: src/bitcaster/web/templates/bitcaster/locking/base.html:8
 #: src/bitcaster/web/templates/bitcaster/locking/lock.html:8
-#: src/bitcaster/web/templates/bitcaster/locking/~mode.html:8
 msgid "Locking"
 msgstr ""
 
-#: src/bitcaster/web/templates/rest_framework/admin.html:108
-#: src/bitcaster/web/templates/rest_framework/base.html:148
-msgid "Extra Actions"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/admin.html:123
-#: src/bitcaster/web/templates/rest_framework/base.html:163
-#: src/bitcaster/web/templates/~unfold_templates/admin/change_list.html:69
-msgid "Filters"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/base.html:30
+#: src/bitcaster/web/templates/rest_framework/base.html:39
 msgid "navbar"
 msgstr ""
 
-#: src/bitcaster/web/templates/rest_framework/base.html:73
+#: src/bitcaster/web/templates/rest_framework/base.html:83
 msgid "request form"
 msgstr ""
 
-#: src/bitcaster/web/templates/rest_framework/base.html:168
+#: src/bitcaster/web/templates/rest_framework/base.html:157
+msgid "Extra Actions"
+msgstr ""
+
+#: src/bitcaster/web/templates/rest_framework/base.html:172
+msgid "Filters"
+msgstr ""
+
+#: src/bitcaster/web/templates/rest_framework/base.html:177
 msgid "main content"
 msgstr ""
 
-#: src/bitcaster/web/templates/rest_framework/base.html:184
+#: src/bitcaster/web/templates/rest_framework/base.html:193
 msgid "request info"
 msgstr ""
 
-#: src/bitcaster/web/templates/rest_framework/base.html:187
+#: src/bitcaster/web/templates/rest_framework/base.html:196
 msgid "response info"
 msgstr ""
 
-#: src/bitcaster/web/templates/rest_framework/filters/ordering.html:3
-msgid "Ordering"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/filters/search.html:3
-#: src/bitcaster/web/templates/rest_framework/filters/search.html:11
-msgid "Search"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/horizontal/radio.html:2
-#: src/bitcaster/web/templates/rest_framework/inline/radio.html:2
-#: src/bitcaster/web/templates/rest_framework/vertical/radio.html:2
-msgid "None"
-msgstr ""
-
-#: src/bitcaster/web/templates/rest_framework/horizontal/select_multiple.html:2
-#: src/bitcaster/web/templates/rest_framework/inline/select_multiple.html:2
-#: src/bitcaster/web/templates/rest_framework/vertical/select_multiple.html:2
-msgid "No items to select."
-msgstr ""
-
 #: src/bitcaster/web/templates/unfold/helpers/--account_links.html:21
-#: src/bitcaster/web/templates/unfold/helpers/~~account_links.html:6
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/account_links.html:6
 msgid "View site"
 msgstr ""
 
 #: src/bitcaster/web/templates/unfold/helpers/--account_links.html:35
-#: src/bitcaster/web/templates/unfold/helpers/~~account_links.html:19
-#: src/bitcaster/web/templates/~unfold_templates/admin/auth/user/change_password.html:30
-#: src/bitcaster/web/templates/~unfold_templates/registration/password_change_form.html:32
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/account_links.html:19
 msgid "Change password"
 msgstr ""
 
 #: src/bitcaster/web/templates/unfold/helpers/--account_links.html:44
-#: src/bitcaster/web/templates/unfold/helpers/~~account_links.html:29
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/account_links.html:29
 msgid "Log out"
 msgstr ""
 
 #: src/bitcaster/web/templates/unfold/helpers/app_list.html:60
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/app_list.html:60
 msgid "All applications"
 msgstr ""
 
 #: src/bitcaster/web/templates/unfold/helpers/app_list.html:92
-#: src/bitcaster/web/templates/~unfold_templates/admin/app_list.html:48
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/app_list.html:91
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/app_list_default.html:59
 msgid "You don’t have permission to view or edit anything."
 msgstr ""
 
 #: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:30
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/popup_header.html:14
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/welcomemsg.html:25
 #, python-format
 msgid "%(counter)s result"
-msgid_plural ""
-"%(counter)s\n"
-"                    results"
+msgid_plural "%(counter)s results"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:33
-#, python-format
-msgid ""
-"%(full_result_count)s total\n"
-"                    "
-msgstr ""
-
-#: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:36
-#: src/bitcaster/web/templates/~unfold_templates/admin/pagination.html:12
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/popup_header.html:14
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/welcomemsg.html:25
-msgid "Show all"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/actions.html:23
-#: src/bitcaster/web/templates/~unfold_templates/admin/dataset_actions.html:46
-msgid "Run the selected action"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/actions.html:24
-#: src/bitcaster/web/templates/~unfold_templates/admin/dataset_actions.html:47
-msgid "Run"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/actions.html:44
-#: src/bitcaster/web/templates/~unfold_templates/admin/dataset_actions.html:17
-msgid "Click here to select the objects across all pages"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/actions.html:45
-#: src/bitcaster/web/templates/~unfold_templates/admin/dataset_actions.html:18
-#, python-format
-msgid "Select all %(total_count)s %(module_name)s"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/actions.html:51
-#: src/bitcaster/web/templates/~unfold_templates/admin/dataset_actions.html:24
-msgid "Clear selection"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/app_list.html:12
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/app_list_default.html:9
-#, python-format
-msgid "Models in the %(name)s application"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/auth/user/add_form.html:6
-msgid "After you've created a user, you’ll be able to edit more user options."
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/auth/user/change_password.html:19
-#, python-format
-msgid "Enter a new password for the user <strong>%(username)s</strong>."
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/change_form_object_tools.html:6
-msgid "History"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/change_form_object_tools.html:12
-#: src/bitcaster/web/templates/~unfold_templates/admin/edit_inline/stacked.html:71
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/edit_inline/tabular_title.html:33
-msgid "View on site"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/change_list_results.html:33
-msgid "Expand row"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/delete_confirmation.html:16
-#, python-format
-msgid ""
-"Deleting the %(object_name)s '%(escaped_object)s' would result in deleting "
-"related objects, but your account doesn't have permission to delete the "
-"following types of objects:"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/delete_confirmation.html:32
-#, python-format
-msgid ""
-"Deleting the %(object_name)s '%(escaped_object)s' would require deleting the "
-"following protected related objects:"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/delete_confirmation.html:48
-#, python-format
-msgid ""
-"Are you sure you want to delete the %(object_name)s \"%(escaped_object)s\"? "
-"All of the following related items will be deleted:"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/delete_confirmation.html:55
-#: src/bitcaster/web/templates/~unfold_templates/admin/delete_selected_confirmation.html:49
-msgid "Objects"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/delete_selected_confirmation.html:15
-#, python-format
-msgid ""
-"Deleting the selected %(objects_name)s would result in deleting related "
-"objects, but your account doesn't have permission to delete the following "
-"types of objects:"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/delete_selected_confirmation.html:28
-#, python-format
-msgid ""
-"Deleting the selected %(objects_name)s would require deleting the following "
-"protected related objects:"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/delete_selected_confirmation.html:42
-#, python-format
-msgid ""
-"Are you sure you want to delete the selected %(objects_name)s? All of the "
-"following objects and their related items will be deleted:"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/edit_inline/stacked.html:59
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/app_list_default.html:38
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/edit_inline/tabular_title.html:25
-msgid "View"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/includes/object_delete_summary.html:5
-msgid "Summary"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/login.html:55
-msgid "Forgotten your password or username?"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/object_history.html:10
-#: src/bitcaster/web/templates/~unfold_templates/admin/object_history.html:26
-msgid "Date/time"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/object_history.html:14
-#: src/bitcaster/web/templates/~unfold_templates/admin/object_history.html:30
-msgid "User"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/object_history.html:18
-#: src/bitcaster/web/templates/~unfold_templates/admin/object_history.html:34
-msgid "Action"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/object_history.html:57
-msgid "entry"
-msgid_plural "entries"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/object_history.html:60
-msgid ""
-"This object doesn’t have a change history. It probably wasn’t added via this "
-"admin site."
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/pagination.html:19
-#: src/bitcaster/web/templates/~unfold_templates/admin/submit_line.html:9
-msgid "Save"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/search_form.html:18
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/command.html:24
-msgid "Type to search"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/submit_line.html:28
-msgid "Save and continue editing"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/submit_line.html:30
-msgid "Save and view"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/submit_line.html:37
-msgid "Save and add another"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/submit_line.html:43
-msgid "Save as new"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/submit_line.html:52
-msgid "Close"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/admin/submit_line.html:60
-msgid "Delete"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/registration/logged_out.html:14
-msgid "You have been successfully logged out from the administration"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/registration/logged_out.html:18
-msgid "Thanks for spending some quality time with the web site today."
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/registration/logged_out.html:23
-msgid "Log in again"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/registration/password_change_done.html:8
-msgid "Your password was changed."
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/registration/password_change_form.html:18
-msgid ""
-"Please enter your old password, for security’s sake, and then enter your new "
-"password twice so we can verify you typed it in correctly."
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/components/table.html:93
-msgid "No data"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/actions_row.html:4
-msgid "More actions"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/app_list_default.html:31
-msgid "Add"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/boolean.html:4
-msgid "Unknown"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/boolean.html:4
-msgid "True"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/boolean.html:4
-msgid "False"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/change_list_filter_actions.html:7
-msgid "Apply Filters"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/change_list_filter_actions.html:16
-msgid "Hide counts"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/change_list_filter_actions.html:20
-msgid "Show counts"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/change_list_filter_actions.html:27
-msgid "Clear all filters"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/change_list_headers.html:27
-msgid "Select all rows"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/change_list_headers.html:41
-msgid "Toggle sorting"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/change_list_headers.html:49
-msgid "Remove from sorting"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/change_list_headers.html:55
-#, python-format
-msgid "Sorting priority: %(priority_number)s"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/command_history.html:7
-msgid "Recent searches"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/command_history.html:49
-msgid "No recent searches"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/command_results.html:44
-msgid "No results matching your query"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/command_results.html:57
-msgid "Loading more results..."
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/command_results.html:62
-#, python-format
-msgid ""
-"\n"
-"                Found %(counter)s result in %(time)s seconds\n"
-"            "
-msgid_plural ""
-"\n"
-"                Found %(counter)s results in %(time)s seconds\n"
-"            "
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/delete_submit_line.html:5
-msgid "No, take me back"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/delete_submit_line.html:9
-msgid "Yes, I’m sure"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/display_header.html:10
-msgid "Record picture"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/edit_inline/tabular_delete.html:4
-msgid "Remove"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/edit_inline/tabular_heading.html:21
-msgid "Delete?"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/empty_results.html:14
-msgid "No results found"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/empty_results.html:18
-msgid ""
-"This page yielded into no results. Create a new item or reset your filters."
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/empty_results.html:32
-msgid "Reset filters"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/field_readonly_value_file.html:8
-#: src/bitcaster/web/templates/~unfold_templates/unfold/widgets/clearable_file_input.html:6
-msgid "Image preview"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/field_readonly_value_file.html:13
-msgid "Click to download"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/header_back_button.html:7
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/header_back_button.html:15
-msgid "Go back"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/history.html:9
-msgid "Recent actions"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/history.html:28
-msgid "Unknown content"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/pagination_infinite.html:5
-msgid "Previous"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/pagination_infinite.html:9
-msgid "Next"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/popup_header.html:14
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/welcomemsg.html:25
+#: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:32
 #, python-format
 msgid "%(full_result_count)s total"
 msgstr ""
 
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/search.html:10
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/search.html:40
-msgid "Search apps and models..."
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/search.html:41
-msgid "Filter navigation items"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_branding.html:3
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/site_branding.html:6
-msgid "Django administration"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/theme_switch.html:9
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/theme_switch_dropdown.html:16
-msgid "Light"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/theme_switch.html:16
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/theme_switch_dropdown.html:23
-msgid "Dark"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/helpers/unauthenticated_header.html:6
-msgid "Return to site"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/widgets/clearable_file_input.html:25
-#: src/bitcaster/web/templates/~unfold_templates/unfold/widgets/clearable_file_input_small.html:18
-msgid "Choose file to upload"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/widgets/related_widget_wrapper.html:16
-#, python-format
-msgid "Change selected %(model)s"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/widgets/related_widget_wrapper.html:26
-#, python-format
-msgid "Add another %(model)s"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/widgets/related_widget_wrapper.html:35
-#, python-format
-msgid "View selected %(model)s"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold/widgets/related_widget_wrapper.html:45
-#, python-format
-msgid "Delete selected %(model)s"
-msgstr ""
-
-#: src/bitcaster/web/templates/~unfold_templates/unfold_crispy/layout/table_inline_formset.html:65
-msgid "Add row"
+#: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:36
+msgid "Show all"
 msgstr ""
 
 #: src/bitcaster/web/views.py:50
