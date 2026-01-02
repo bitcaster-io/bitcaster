@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 15:09+0000\n"
+"POT-Creation-Date: 2026-01-02 15:36+0000\n"
 "PO-Revision-Date: 2026-01-02 12:16+0000\n"
 "Last-Translator: Stefano Apostolico <s.apostolico@gmail.com>, 2026\n"
 "Language-Team: Arabic (https://app.transifex.com/bitcaster/teams/197085/"
@@ -461,10 +461,8 @@ msgid "This name is already in use."
 msgstr "هذا الاسم مستخدم بالفعل."
 
 #: src/bitcaster/models/address.py:52 src/bitcaster/models/notification.py:49
-#, fuzzy
-#| msgid "Username"
 msgid "name"
-msgstr "اسم المستخدم"
+msgstr ""
 
 #: src/bitcaster/models/address.py:54
 msgid "type"
@@ -502,10 +500,8 @@ msgid "default from address for emails"
 msgstr "عنوان المرسل الافتراضي لرسائل البريد الإلكتروني"
 
 #: src/bitcaster/models/application.py:45
-#, fuzzy
-#| msgid "Subject Prefix"
 msgid "subject prefix"
-msgstr "بادئة العنوان"
+msgstr ""
 
 #: src/bitcaster/models/application.py:48
 #: src/bitcaster/models/organization.py:32 src/bitcaster/models/project.py:39
@@ -531,10 +527,8 @@ msgid "Name"
 msgstr "الاسم"
 
 #: src/bitcaster/models/channel.py:45
-#, fuzzy
-#| msgid "Configuration"
 msgid "configuration"
-msgstr "إعدادات"
+msgstr ""
 
 #: src/bitcaster/models/channel.py:46
 msgid "protocol"
@@ -551,10 +545,8 @@ msgid "Distribution Lists"
 msgstr "قوائم توزيع"
 
 #: src/bitcaster/models/event.py:36
-#, fuzzy
-#| msgid "Addition"
 msgid "description"
-msgstr "إضافة"
+msgstr ""
 
 #: src/bitcaster/models/event.py:38 src/bitcaster/models/occurrence.py:84
 msgid "Do not customise notifications per single user"
@@ -686,10 +678,8 @@ msgid "Monitors"
 msgstr "مراقبين"
 
 #: src/bitcaster/models/notification.py:56
-#, fuzzy
-#| msgid "Assignments"
 msgid "environments"
-msgstr "تكليفات"
+msgstr ""
 
 #: src/bitcaster/models/notification.py:59
 msgid "Allow notification only for these environments"
@@ -720,7 +710,7 @@ msgid "New"
 msgstr "جديد"
 
 #: src/bitcaster/models/occurrence.py:70
-msgid "Date"
+msgid "date"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:70
@@ -728,10 +718,8 @@ msgid "Timestamp when occurrence has been created."
 msgstr "الطابع الزمني وقت إنشاء الحدوث."
 
 #: src/bitcaster/models/occurrence.py:74
-#, fuzzy
-#| msgid "Context"
 msgid "context"
-msgstr "سياق"
+msgstr ""
 
 #: src/bitcaster/models/occurrence.py:74
 msgid "Context provided by the sender"
@@ -770,7 +758,8 @@ msgid "Tentativi"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:99
-msgid "Remaming Number of attempts before the occurrence is marked as failed"
+msgid ""
+"The remaining number of attempts before the occurrence is marked as failed"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:106

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 15:09+0000\n"
+"POT-Creation-Date: 2026-01-02 15:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -688,7 +688,7 @@ msgid "New"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:70
-msgid "Date"
+msgid "date"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:70
@@ -736,7 +736,8 @@ msgid "Tentativi"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:99
-msgid "Remaming Number of attempts before the occurrence is marked as failed"
+msgid ""
+"The remaining number of attempts before the occurrence is marked as failed"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:106

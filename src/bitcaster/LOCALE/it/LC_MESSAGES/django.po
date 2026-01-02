@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 15:09+0000\n"
+"POT-Creation-Date: 2026-01-02 15:36+0000\n"
 "PO-Revision-Date: 2026-01-02 12:16+0000\n"
 "Last-Translator: Stefano Apostolico <s.apostolico@gmail.com>, 2026\n"
 "Language-Team: Italian (https://app.transifex.com/bitcaster/teams/197085/"
@@ -465,18 +465,16 @@ msgid "This name is already in use."
 msgstr "Questo nome è già in uso."
 
 #: src/bitcaster/models/address.py:52 src/bitcaster/models/notification.py:49
-#, fuzzy
-#| msgid "Username"
 msgid "name"
-msgstr "Nome utente"
+msgstr "nome"
 
 #: src/bitcaster/models/address.py:54
 msgid "type"
-msgstr ""
+msgstr "tipo"
 
 #: src/bitcaster/models/address.py:60
 msgid "value"
-msgstr ""
+msgstr "valore"
 
 #: src/bitcaster/models/application.py:32
 #: src/bitcaster/models/organization.py:35 src/bitcaster/models/project.py:33
@@ -486,7 +484,7 @@ msgstr "Proprietario"
 #: src/bitcaster/models/application.py:36 src/bitcaster/models/channel.py:47
 #: src/bitcaster/models/event.py:37 src/bitcaster/models/notification.py:63
 msgid "active"
-msgstr ""
+msgstr "attivo"
 
 #: src/bitcaster/models/application.py:36
 msgid "Whether the application should be active"
@@ -494,7 +492,7 @@ msgstr "Indica se l'applicazione deve essere attiva"
 
 #: src/bitcaster/models/application.py:39
 msgid "auto create events"
-msgstr ""
+msgstr "auto-crea eventi"
 
 #: src/bitcaster/models/application.py:41
 msgid "If true unknown events will be automatically created"
@@ -506,10 +504,8 @@ msgid "default from address for emails"
 msgstr "indirizzo mittente predefinito per le email"
 
 #: src/bitcaster/models/application.py:45
-#, fuzzy
-#| msgid "Subject Prefix"
 msgid "subject prefix"
-msgstr "Prefisso dell'oggetto"
+msgstr "prefisso oggetto"
 
 #: src/bitcaster/models/application.py:48
 #: src/bitcaster/models/organization.py:32 src/bitcaster/models/project.py:39
@@ -535,14 +531,12 @@ msgid "Name"
 msgstr "Nome"
 
 #: src/bitcaster/models/channel.py:45
-#, fuzzy
-#| msgid "Configuration"
 msgid "configuration"
-msgstr "Configurazione"
+msgstr "configurazione"
 
 #: src/bitcaster/models/channel.py:46
 msgid "protocol"
-msgstr ""
+msgstr "protocollo"
 
 #: src/bitcaster/models/channel.py:54
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
@@ -555,10 +549,8 @@ msgid "Distribution Lists"
 msgstr "Liste di distribuzione"
 
 #: src/bitcaster/models/event.py:36
-#, fuzzy
-#| msgid "Addition"
 msgid "description"
-msgstr "Aggiunta"
+msgstr "descrizione"
 
 #: src/bitcaster/models/event.py:38 src/bitcaster/models/occurrence.py:84
 msgid "Do not customise notifications per single user"
@@ -692,10 +684,8 @@ msgid "Monitors"
 msgstr "Monitor"
 
 #: src/bitcaster/models/notification.py:56
-#, fuzzy
-#| msgid "Assignments"
 msgid "environments"
-msgstr "Assegnazioni"
+msgstr "ambienti"
 
 #: src/bitcaster/models/notification.py:59
 msgid "Allow notification only for these environments"
@@ -703,11 +693,11 @@ msgstr "Consenti notifiche solo per questi ambienti"
 
 #: src/bitcaster/models/notification.py:61
 msgid "payload filter"
-msgstr ""
+msgstr "filtro payload"
 
 #: src/bitcaster/models/notification.py:65
 msgid "external filtering"
-msgstr ""
+msgstr "filtro API"
 
 #: src/bitcaster/models/notification.py:83
 msgid "Notification"
@@ -726,7 +716,7 @@ msgid "New"
 msgstr "Nuovo"
 
 #: src/bitcaster/models/occurrence.py:70
-msgid "Date"
+msgid "date"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:70
@@ -734,10 +724,8 @@ msgid "Timestamp when occurrence has been created."
 msgstr "Data e ora in cui l'occorrenza è stata creata."
 
 #: src/bitcaster/models/occurrence.py:74
-#, fuzzy
-#| msgid "Context"
 msgid "context"
-msgstr "Contesto"
+msgstr "contesto"
 
 #: src/bitcaster/models/occurrence.py:74
 msgid "Context provided by the sender"
@@ -749,7 +737,7 @@ msgstr "Opzioni fornite dal mittente per instradare le notifiche collegate"
 
 #: src/bitcaster/models/occurrence.py:81
 msgid "recipients"
-msgstr ""
+msgstr "destinatari"
 
 #: src/bitcaster/models/occurrence.py:81
 msgid "Total number of reached recipients"
@@ -757,7 +745,7 @@ msgstr "Numero totale di destinatari raggiunti"
 
 #: src/bitcaster/models/occurrence.py:84
 msgid "newsletter mode"
-msgstr ""
+msgstr "modalità newsletter"
 
 #: src/bitcaster/models/occurrence.py:87
 msgid "Information about the processing (recipients, channels)"
@@ -765,7 +753,7 @@ msgstr "Informazioni sull'elaborazione (destinatari, canali)"
 
 #: src/bitcaster/models/occurrence.py:90
 msgid "status"
-msgstr ""
+msgstr "stato"
 
 #: src/bitcaster/models/occurrence.py:94
 msgid "Status of the occurrence"
@@ -773,10 +761,11 @@ msgstr "Stato dell'occorrenza"
 
 #: src/bitcaster/models/occurrence.py:97
 msgid "Tentativi"
-msgstr ""
+msgstr "tentativi"
 
 #: src/bitcaster/models/occurrence.py:99
-msgid "Remaming Number of attempts before the occurrence is marked as failed"
+msgid ""
+"The remaining number of attempts before the occurrence is marked as failed"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:106
@@ -1126,3 +1115,6 @@ msgid ""
 msgstr ""
 "non possiamo inviarti notifiche web perché le tue impostazioni non lo "
 "consentono"
+
+#~ msgid "Date"
+#~ msgstr "data"
