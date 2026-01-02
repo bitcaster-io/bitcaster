@@ -67,7 +67,7 @@ class Occurrence(BitcasterBaseModel):
         NEW = "NEW", _("New")
 
     timestamp = models.DateTimeField(
-        verbose_name=_("Date"), auto_now_add=True, help_text=_("Timestamp when occurrence has been created.")
+        verbose_name=_("date"), auto_now_add=True, help_text=_("Timestamp when occurrence has been created.")
     )
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     context = models.JSONField(
@@ -96,7 +96,7 @@ class Occurrence(BitcasterBaseModel):
     attempts = models.IntegerField(
         verbose_name=_("Tentativi"),
         default=5,
-        help_text=_("Remaming Number of attempts before the occurrence is marked as failed"),
+        help_text=_("Remaning number of attempts before the occurrence is marked as failed"),
     )
     parent = models.ForeignKey("self", editable=False, blank=True, null=True, on_delete=models.CASCADE)
 
