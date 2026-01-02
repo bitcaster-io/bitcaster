@@ -7,14 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 15:52+0000\n"
+"POT-Creation-Date: 2026-01-02 16:41+0000\n"
 "PO-Revision-Date: 2026-01-02 12:16+0000\n"
 "Last-Translator: Stefano Apostolico <s.apostolico@gmail.com>, 2026\n"
-"Language-Team: German (https://app.transifex.com/bitcaster/teams/197085/de/)\n"
+"Language-Team: German (https://app.transifex.com/bitcaster/teams/197085/"
+"de/)\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/bitcaster/admin/api_key.py:54
@@ -189,7 +190,8 @@ msgid ""
 "\n"
 "File must be a .csv file, comma separated `,` with 3 columns\n"
 "\n"
-"_Headers must be provided and named: last_name, first_name, email. Order can be customised_\n"
+"_Headers must be provided and named: last_name, first_name, email. Order can "
+"be customised_\n"
 "\n"
 "Es:\n"
 "\n"
@@ -199,9 +201,11 @@ msgid ""
 "```\n"
 msgstr ""
 "\n"
-"Die Datei muss eine .csv-Datei sein, durch Kommas `,` getrennt mit 3 Spalten\n"
+"Die Datei muss eine .csv-Datei sein, durch Kommas `,` getrennt mit 3 "
+"Spalten\n"
 "\n"
-"_Header müssen vorhanden sein und wie folgt benannt werden: last_name, first_name, email. Die Reihenfolge ist anpassbar_\n"
+"_Header müssen vorhanden sein und wie folgt benannt werden: last_name, "
+"first_name, email. Die Reihenfolge ist anpassbar_\n"
 "\n"
 "Bsp:\n"
 "\n"
@@ -246,8 +250,7 @@ msgstr "Bitcaster-Admin"
 #, python-format
 msgid "Path '%(path)s' is outside allowed root: '%(root)s'"
 msgstr ""
-"Pfad '%(path)s' liegt außerhalb des erlaubten Stammverzeichnisses: "
-"'%(root)s'"
+"Pfad '%(path)s' liegt außerhalb des erlaubten Stammverzeichnisses: '%(root)s'"
 
 #: src/bitcaster/agents/fs.py:54
 msgid "Check also subdirectories"
@@ -307,8 +310,7 @@ msgstr "Monitor"
 msgid "Occurrences"
 msgstr "Vorkommen"
 
-#: src/bitcaster/config/fragments/unfold.py:132
-#: src/bitcaster/models/user.py:69
+#: src/bitcaster/config/fragments/unfold.py:132 src/bitcaster/models/user.py:69
 msgid "Members"
 msgstr "Mitglieder"
 
@@ -330,7 +332,6 @@ msgid "Distribution List"
 msgstr "Verteilerliste"
 
 #: src/bitcaster/config/fragments/unfold.py:159
-#: src/bitcaster/models/event.py:54
 msgid "Events"
 msgstr "Ereignisse"
 
@@ -372,8 +373,7 @@ msgid "Security"
 msgstr "Sicherheit"
 
 #: src/bitcaster/config/fragments/unfold.py:208
-#: src/bitcaster/config/fragments/unfold.py:258
-#: src/bitcaster/models/user.py:33
+#: src/bitcaster/config/fragments/unfold.py:258 src/bitcaster/models/user.py:33
 msgid "Users"
 msgstr "Benutzer"
 
@@ -382,8 +382,7 @@ msgid "Roles"
 msgstr "Rollen"
 
 #: src/bitcaster/config/fragments/unfold.py:220
-#: src/bitcaster/config/fragments/unfold.py:247
-#: src/bitcaster/models/group.py:9
+#: src/bitcaster/config/fragments/unfold.py:247 src/bitcaster/models/group.py:9
 msgid "Groups"
 msgstr "Gruppen"
 
@@ -563,8 +562,16 @@ msgstr ""
 "Systemstandard verwendet."
 
 #: src/bitcaster/models/event.py:53
-msgid "Event"
+#, fuzzy
+#| msgid "Event"
+msgid "event"
 msgstr "Ereignis"
+
+#: src/bitcaster/models/event.py:54
+#, fuzzy
+#| msgid "Events"
+msgid "events"
+msgstr "Ereignisse"
 
 #: src/bitcaster/models/group.py:8
 msgid "Group"
@@ -580,8 +587,8 @@ msgstr "Protokollnachrichten"
 
 #: src/bitcaster/models/key.py:66
 msgid ""
-"Limit validity to these environments. If empty the key will be valid for any"
-" environment"
+"Limit validity to these environments. If empty the key will be valid for any "
+"environment"
 msgstr ""
 "Gültigkeit auf diese Umgebungen beschränken. Wenn leer, ist der Schlüssel "
 "für jede Umgebung gültig"
@@ -668,20 +675,20 @@ msgstr "Nachrichtenvorlage"
 msgid "Message templates"
 msgstr "Nachrichtenvorlagen"
 
-#: src/bitcaster/models/mixins.py:20
+#: src/bitcaster/models/mixins.py:21
 msgid "locked"
 msgstr ""
 
-#: src/bitcaster/models/mixins.py:20
+#: src/bitcaster/models/mixins.py:21
 msgid "If checked any notification is ignored and not forwarded"
 msgstr ""
 "Wenn markiert, wird jede Benachrichtigung ignoriert und nicht weitergeleitet"
 
-#: src/bitcaster/models/mixins.py:21
+#: src/bitcaster/models/mixins.py:24
 msgid "paused"
 msgstr ""
 
-#: src/bitcaster/models/mixins.py:21
+#: src/bitcaster/models/mixins.py:24
 msgid "If checked any notification paused"
 msgstr "Wenn markiert, wird jede Benachrichtigung pausiert"
 
@@ -828,8 +835,8 @@ msgstr "Willkommen zurück bei"
 #: src/bitcaster/web/templates/admin/login.html:18
 #, python-format
 msgid ""
-"You are authenticated as %(username)s, but are not authorized to access this"
-" page. Would you like to login to a different account?"
+"You are authenticated as %(username)s, but are not authorized to access this "
+"page. Would you like to login to a different account?"
 msgstr ""
 "Sie sind als %(username)s authentifiziert, aber nicht berechtigt, auf diese "
 "Seite zuzugreifen. Möchten Sie sich mit einem anderen Konto anmelden?"
@@ -879,11 +886,13 @@ msgstr "Nachfrist abgelaufen"
 #: src/bitcaster/web/templates/bitcaster/admin/apikey/created.html:24
 msgid ""
 "\n"
-"                This is the only time this key will be displayed. Copy it and put in a safe place.\n"
+"                This is the only time this key will be displayed. Copy it "
+"and put in a safe place.\n"
 "            "
 msgstr ""
 "\n"
-"                Dies ist das einzige Mal, dass dieser Schlüssel angezeigt wird. Kopieren Sie ihn und bewahren Sie ihn an einem sicheren Ort auf.\n"
+"                Dies ist das einzige Mal, dass dieser Schlüssel angezeigt "
+"wird. Kopieren Sie ihn und bewahren Sie ihn an einem sicheren Ort auf.\n"
 "            "
 
 #: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:60
@@ -1112,8 +1121,7 @@ msgstr "Es tut uns leid, dieser Browser unterstützt keine Benachrichtigungen"
 
 #: src/bitcaster/webpush/templates/push/ask.html:58
 msgid ""
-"we cannot send you web notifications, because your settings do not allow "
-"that"
+"we cannot send you web notifications, because your settings do not allow that"
 msgstr ""
 "wir können Ihnen keine Web-Benachrichtigungen senden, da Ihre Einstellungen "
 "dies nicht zulassen"

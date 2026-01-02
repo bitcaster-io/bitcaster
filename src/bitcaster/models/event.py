@@ -50,8 +50,8 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
     objects = EventManager()
 
     class Meta:
-        verbose_name = _("Event")
-        verbose_name_plural = _("Events")
+        verbose_name = _("event")
+        verbose_name_plural = _("events")
         unique_together = (
             ("name", "application"),
             ("slug", "application"),

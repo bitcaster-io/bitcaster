@@ -7,15 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 15:52+0000\n"
+"POT-Creation-Date: 2026-01-02 16:41+0000\n"
 "PO-Revision-Date: 2026-01-02 12:16+0000\n"
 "Last-Translator: Stefano Apostolico <s.apostolico@gmail.com>, 2026\n"
-"Language-Team: Italian (https://app.transifex.com/bitcaster/teams/197085/it/)\n"
+"Language-Team: Italian (https://app.transifex.com/bitcaster/teams/197085/"
+"it/)\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
 
 #: src/bitcaster/admin/api_key.py:54
 msgid "Application must be set if EVENT_TRIGGER is granted"
@@ -192,7 +194,8 @@ msgid ""
 "\n"
 "File must be a .csv file, comma separated `,` with 3 columns\n"
 "\n"
-"_Headers must be provided and named: last_name, first_name, email. Order can be customised_\n"
+"_Headers must be provided and named: last_name, first_name, email. Order can "
+"be customised_\n"
 "\n"
 "Es:\n"
 "\n"
@@ -204,7 +207,8 @@ msgstr ""
 "\n"
 "Il file deve essere un .csv, separato da virgole `,` con 3 colonne\n"
 "\n"
-"_Le intestazioni devono essere presenti e nominate: last_name, first_name, email. L'ordine può essere personalizzato_\n"
+"_Le intestazioni devono essere presenti e nominate: last_name, first_name, "
+"email. L'ordine può essere personalizzato_\n"
 "\n"
 "Es:\n"
 "\n"
@@ -309,8 +313,7 @@ msgstr "Monitor"
 msgid "Occurrences"
 msgstr "Occorrenze"
 
-#: src/bitcaster/config/fragments/unfold.py:132
-#: src/bitcaster/models/user.py:69
+#: src/bitcaster/config/fragments/unfold.py:132 src/bitcaster/models/user.py:69
 msgid "Members"
 msgstr "Membri"
 
@@ -332,7 +335,6 @@ msgid "Distribution List"
 msgstr "Liste"
 
 #: src/bitcaster/config/fragments/unfold.py:159
-#: src/bitcaster/models/event.py:54
 msgid "Events"
 msgstr "Eventi"
 
@@ -374,8 +376,7 @@ msgid "Security"
 msgstr "Sicurezza"
 
 #: src/bitcaster/config/fragments/unfold.py:208
-#: src/bitcaster/config/fragments/unfold.py:258
-#: src/bitcaster/models/user.py:33
+#: src/bitcaster/config/fragments/unfold.py:258 src/bitcaster/models/user.py:33
 msgid "Users"
 msgstr "Utenti"
 
@@ -384,8 +385,7 @@ msgid "Roles"
 msgstr "Ruoli"
 
 #: src/bitcaster/config/fragments/unfold.py:220
-#: src/bitcaster/config/fragments/unfold.py:247
-#: src/bitcaster/models/group.py:9
+#: src/bitcaster/config/fragments/unfold.py:247 src/bitcaster/models/group.py:9
 msgid "Groups"
 msgstr "Gruppi"
 
@@ -565,8 +565,16 @@ msgstr ""
 "valore predefinito di sistema."
 
 #: src/bitcaster/models/event.py:53
-msgid "Event"
+#, fuzzy
+#| msgid "Event"
+msgid "event"
 msgstr "Evento"
+
+#: src/bitcaster/models/event.py:54
+#, fuzzy
+#| msgid "Events"
+msgid "events"
+msgstr "Eventi"
 
 #: src/bitcaster/models/group.py:8
 msgid "Group"
@@ -582,8 +590,8 @@ msgstr "Messaggi di log"
 
 #: src/bitcaster/models/key.py:66
 msgid ""
-"Limit validity to these environments. If empty the key will be valid for any"
-" environment"
+"Limit validity to these environments. If empty the key will be valid for any "
+"environment"
 msgstr ""
 "Limita la validità a questi ambienti. Se vuoto, la chiave sarà valida per "
 "qualsiasi ambiente"
@@ -670,19 +678,19 @@ msgstr "Template messaggio"
 msgid "Message templates"
 msgstr "Template messaggi"
 
-#: src/bitcaster/models/mixins.py:20
+#: src/bitcaster/models/mixins.py:21
 msgid "locked"
 msgstr "{} bloccato"
 
-#: src/bitcaster/models/mixins.py:20
+#: src/bitcaster/models/mixins.py:21
 msgid "If checked any notification is ignored and not forwarded"
 msgstr "Se selezionato, ogni notifica viene ignorata e non inoltrata"
 
-#: src/bitcaster/models/mixins.py:21
+#: src/bitcaster/models/mixins.py:24
 msgid "paused"
 msgstr "in pausa"
 
-#: src/bitcaster/models/mixins.py:21
+#: src/bitcaster/models/mixins.py:24
 msgid "If checked any notification paused"
 msgstr "Se selezionato, ogni notifica è messa in pausa"
 
@@ -829,8 +837,8 @@ msgstr "Bentornato su"
 #: src/bitcaster/web/templates/admin/login.html:18
 #, python-format
 msgid ""
-"You are authenticated as %(username)s, but are not authorized to access this"
-" page. Would you like to login to a different account?"
+"You are authenticated as %(username)s, but are not authorized to access this "
+"page. Would you like to login to a different account?"
 msgstr ""
 "Sei autenticato come %(username)s, ma non sei autorizzato ad accedere a "
 "questa pagina. Vuoi effettuare il login con un account diverso?"
@@ -880,11 +888,13 @@ msgstr "Periodo di grazia scaduto"
 #: src/bitcaster/web/templates/bitcaster/admin/apikey/created.html:24
 msgid ""
 "\n"
-"                This is the only time this key will be displayed. Copy it and put in a safe place.\n"
+"                This is the only time this key will be displayed. Copy it "
+"and put in a safe place.\n"
 "            "
 msgstr ""
 "\n"
-"                Questa è l'unica volta in cui questa chiave verrà mostrata. Copiala e conservala in un posto sicuro.\n"
+"                Questa è l'unica volta in cui questa chiave verrà mostrata. "
+"Copiala e conservala in un posto sicuro.\n"
 "            "
 
 #: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:60
@@ -1118,8 +1128,7 @@ msgstr "Spiacenti, questo browser non supporta le notifiche"
 
 #: src/bitcaster/webpush/templates/push/ask.html:58
 msgid ""
-"we cannot send you web notifications, because your settings do not allow "
-"that"
+"we cannot send you web notifications, because your settings do not allow that"
 msgstr ""
 "non possiamo inviarti notifiche web perché le tue impostazioni non lo "
 "consentono"

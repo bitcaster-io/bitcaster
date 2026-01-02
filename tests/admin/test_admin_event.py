@@ -124,6 +124,7 @@ def test_delete_action(app: "DjangoTestApp", context: "Context") -> None:
     frm.get("action").value = "delete_selected"
 
     res = frm.submit()
+    res.showbrowser()
     assert "Are you sure you want to delete the selected events?" in res.text
     delete_form_index = next(filter(lambda i: res.forms[i].action == "", res.forms))
     res.forms[delete_form_index].submit().follow()

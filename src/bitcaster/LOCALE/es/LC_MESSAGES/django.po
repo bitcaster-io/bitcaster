@@ -7,15 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 15:52+0000\n"
+"POT-Creation-Date: 2026-01-02 16:41+0000\n"
 "PO-Revision-Date: 2026-01-02 12:16+0000\n"
 "Last-Translator: Stefano Apostolico <s.apostolico@gmail.com>, 2026\n"
-"Language-Team: Spanish (https://app.transifex.com/bitcaster/teams/197085/es/)\n"
+"Language-Team: Spanish (https://app.transifex.com/bitcaster/teams/197085/"
+"es/)\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
 
 #: src/bitcaster/admin/api_key.py:54
 msgid "Application must be set if EVENT_TRIGGER is granted"
@@ -180,8 +182,8 @@ msgstr "La purga de ocurrencias se ha iniciado correctamente"
 #: src/bitcaster/admin/occurrence.py:212
 msgid "All data will be permanently removed. No rollback action available"
 msgstr ""
-"Todos los datos serán eliminados permanentemente. No hay acción de reversión"
-" disponible."
+"Todos los datos serán eliminados permanentemente. No hay acción de reversión "
+"disponible."
 
 #: src/bitcaster/admin/occurrence.py:213
 msgid "Purge occurrences"
@@ -192,7 +194,8 @@ msgid ""
 "\n"
 "File must be a .csv file, comma separated `,` with 3 columns\n"
 "\n"
-"_Headers must be provided and named: last_name, first_name, email. Order can be customised_\n"
+"_Headers must be provided and named: last_name, first_name, email. Order can "
+"be customised_\n"
 "\n"
 "Es:\n"
 "\n"
@@ -204,7 +207,8 @@ msgstr ""
 "\n"
 "El archivo debe ser un .csv, separado por comas `,` con 3 columnas\n"
 "\n"
-"_Los encabezados son obligatorios y deben llamarse: last_name, first_name, email. El orden se puede personalizar_\n"
+"_Los encabezados son obligatorios y deben llamarse: last_name, first_name, "
+"email. El orden se puede personalizar_\n"
 "\n"
 "Ej:\n"
 "\n"
@@ -308,8 +312,7 @@ msgstr "Monitor"
 msgid "Occurrences"
 msgstr "Ocurrencias"
 
-#: src/bitcaster/config/fragments/unfold.py:132
-#: src/bitcaster/models/user.py:69
+#: src/bitcaster/config/fragments/unfold.py:132 src/bitcaster/models/user.py:69
 msgid "Members"
 msgstr "Miembros"
 
@@ -331,7 +334,6 @@ msgid "Distribution List"
 msgstr "Lista de distribución"
 
 #: src/bitcaster/config/fragments/unfold.py:159
-#: src/bitcaster/models/event.py:54
 msgid "Events"
 msgstr "Eventos"
 
@@ -373,8 +375,7 @@ msgid "Security"
 msgstr "Seguridad"
 
 #: src/bitcaster/config/fragments/unfold.py:208
-#: src/bitcaster/config/fragments/unfold.py:258
-#: src/bitcaster/models/user.py:33
+#: src/bitcaster/config/fragments/unfold.py:258 src/bitcaster/models/user.py:33
 msgid "Users"
 msgstr "Usuarios"
 
@@ -383,8 +384,7 @@ msgid "Roles"
 msgstr "Roles"
 
 #: src/bitcaster/config/fragments/unfold.py:220
-#: src/bitcaster/config/fragments/unfold.py:247
-#: src/bitcaster/models/group.py:9
+#: src/bitcaster/config/fragments/unfold.py:247 src/bitcaster/models/group.py:9
 msgid "Groups"
 msgstr "Grupos"
 
@@ -564,8 +564,16 @@ msgstr ""
 "del sistema."
 
 #: src/bitcaster/models/event.py:53
-msgid "Event"
+#, fuzzy
+#| msgid "Event"
+msgid "event"
 msgstr "Evento"
+
+#: src/bitcaster/models/event.py:54
+#, fuzzy
+#| msgid "Events"
+msgid "events"
+msgstr "Eventos"
 
 #: src/bitcaster/models/group.py:8
 msgid "Group"
@@ -581,8 +589,8 @@ msgstr "Mensajes de log"
 
 #: src/bitcaster/models/key.py:66
 msgid ""
-"Limit validity to these environments. If empty the key will be valid for any"
-" environment"
+"Limit validity to these environments. If empty the key will be valid for any "
+"environment"
 msgstr ""
 "Limitar validez a estos entornos. Si está vacío, la clave será válida para "
 "cualquier entorno"
@@ -669,19 +677,19 @@ msgstr "Plantilla de mensaje"
 msgid "Message templates"
 msgstr "Plantillas de mensajes"
 
-#: src/bitcaster/models/mixins.py:20
+#: src/bitcaster/models/mixins.py:21
 msgid "locked"
 msgstr "bloqueado"
 
-#: src/bitcaster/models/mixins.py:20
+#: src/bitcaster/models/mixins.py:21
 msgid "If checked any notification is ignored and not forwarded"
 msgstr "Si se marca, cualquier notificación se ignora y no se reenvía"
 
-#: src/bitcaster/models/mixins.py:21
+#: src/bitcaster/models/mixins.py:24
 msgid "paused"
 msgstr "en pausa"
 
-#: src/bitcaster/models/mixins.py:21
+#: src/bitcaster/models/mixins.py:24
 msgid "If checked any notification paused"
 msgstr "Si se marca, cualquier notificación se pausa"
 
@@ -827,8 +835,8 @@ msgstr "Bienvenido de nuevo a"
 #: src/bitcaster/web/templates/admin/login.html:18
 #, python-format
 msgid ""
-"You are authenticated as %(username)s, but are not authorized to access this"
-" page. Would you like to login to a different account?"
+"You are authenticated as %(username)s, but are not authorized to access this "
+"page. Would you like to login to a different account?"
 msgstr ""
 "Estás autenticado como %(username)s, pero no tienes autorización para "
 "acceder a esta página. ¿Deseas iniciar sesión con una cuenta diferente?"
@@ -878,11 +886,13 @@ msgstr "Periodo de gracia expirado"
 #: src/bitcaster/web/templates/bitcaster/admin/apikey/created.html:24
 msgid ""
 "\n"
-"                This is the only time this key will be displayed. Copy it and put in a safe place.\n"
+"                This is the only time this key will be displayed. Copy it "
+"and put in a safe place.\n"
 "            "
 msgstr ""
 "\n"
-"                Esta es la única vez que se mostrará esta clave. Cópiela y guárdela en un lugar seguro.\n"
+"                Esta es la única vez que se mostrará esta clave. Cópiela y "
+"guárdela en un lugar seguro.\n"
 "            "
 
 #: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:60
@@ -1116,7 +1126,6 @@ msgstr "Lo sentimos, este navegador no soporta notificaciones"
 
 #: src/bitcaster/webpush/templates/push/ask.html:58
 msgid ""
-"we cannot send you web notifications, because your settings do not allow "
-"that"
+"we cannot send you web notifications, because your settings do not allow that"
 msgstr ""
 "no podemos enviarte notificaciones web porque tus ajustes no lo permiten"

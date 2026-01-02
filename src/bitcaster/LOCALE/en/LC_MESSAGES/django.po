@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 15:52+0000\n"
+"POT-Creation-Date: 2026-01-02 16:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -312,7 +312,6 @@ msgid "Distribution List"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:159
-#: src/bitcaster/models/event.py:54
 msgid "Events"
 msgstr ""
 
@@ -540,7 +539,11 @@ msgid ""
 msgstr ""
 
 #: src/bitcaster/models/event.py:53
-msgid "Event"
+msgid "event"
+msgstr ""
+
+#: src/bitcaster/models/event.py:54
+msgid "events"
 msgstr ""
 
 #: src/bitcaster/models/group.py:8
@@ -643,19 +646,19 @@ msgstr ""
 msgid "Message templates"
 msgstr ""
 
-#: src/bitcaster/models/mixins.py:20
+#: src/bitcaster/models/mixins.py:21
 msgid "locked"
 msgstr ""
 
-#: src/bitcaster/models/mixins.py:20
+#: src/bitcaster/models/mixins.py:21
 msgid "If checked any notification is ignored and not forwarded"
 msgstr ""
 
-#: src/bitcaster/models/mixins.py:21
+#: src/bitcaster/models/mixins.py:24
 msgid "paused"
 msgstr ""
 
-#: src/bitcaster/models/mixins.py:21
+#: src/bitcaster/models/mixins.py:24
 msgid "If checked any notification paused"
 msgstr ""
 
