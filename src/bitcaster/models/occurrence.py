@@ -94,7 +94,7 @@ class Occurrence(BitcasterBaseModel):
         help_text=_("Status of the occurrence"),
     )
     attempts = models.IntegerField(
-        verbose_name=_("tentativi"),
+        verbose_name=_("attempts"),
         default=5,
         help_text=_("The remaining number of attempts before the occurrence is marked as failed"),
     )

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 15:36+0000\n"
+"POT-Creation-Date: 2026-01-02 15:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -644,7 +644,15 @@ msgid "Message templates"
 msgstr ""
 
 #: src/bitcaster/models/mixins.py:20
+msgid "locked"
+msgstr ""
+
+#: src/bitcaster/models/mixins.py:20
 msgid "If checked any notification is ignored and not forwarded"
+msgstr ""
+
+#: src/bitcaster/models/mixins.py:21
+msgid "paused"
 msgstr ""
 
 #: src/bitcaster/models/mixins.py:21
@@ -732,7 +740,7 @@ msgid "Status of the occurrence"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:97
-msgid "Tentativi"
+msgid "attempts"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:99

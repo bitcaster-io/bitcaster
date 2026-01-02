@@ -7,17 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 15:36+0000\n"
+"POT-Creation-Date: 2026-01-02 15:52+0000\n"
 "PO-Revision-Date: 2026-01-02 12:16+0000\n"
 "Last-Translator: Stefano Apostolico <s.apostolico@gmail.com>, 2026\n"
-"Language-Team: Arabic (https://app.transifex.com/bitcaster/teams/197085/"
-"ar/)\n"
-"Language: ar\n"
+"Language-Team: Arabic (https://app.transifex.com/bitcaster/teams/197085/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
-"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 #: src/bitcaster/admin/api_key.py:54
 msgid "Application must be set if EVENT_TRIGGER is granted"
@@ -191,8 +189,7 @@ msgid ""
 "\n"
 "File must be a .csv file, comma separated `,` with 3 columns\n"
 "\n"
-"_Headers must be provided and named: last_name, first_name, email. Order can "
-"be customised_\n"
+"_Headers must be provided and named: last_name, first_name, email. Order can be customised_\n"
 "\n"
 "Es:\n"
 "\n"
@@ -204,8 +201,7 @@ msgstr ""
 "\n"
 "يجب أن يكون الملف بصيغة .csv، مفصولاً بفاصلة `,` ويحتوي على 3 أعمدة\n"
 "\n"
-"_يجب توفير رؤوس الأعمدة وتسميتها كالتالي: last_name, first_name, email. يمكن "
-"تخصيص الترتيب_\n"
+"_يجب توفير رؤوس الأعمدة وتسميتها كالتالي: last_name, first_name, email. يمكن تخصيص الترتيب_\n"
 "\n"
 "مثال:\n"
 "\n"
@@ -309,7 +305,8 @@ msgstr "مراقب"
 msgid "Occurrences"
 msgstr "حدوث"
 
-#: src/bitcaster/config/fragments/unfold.py:132 src/bitcaster/models/user.py:69
+#: src/bitcaster/config/fragments/unfold.py:132
+#: src/bitcaster/models/user.py:69
 msgid "Members"
 msgstr "أعضاء"
 
@@ -373,7 +370,8 @@ msgid "Security"
 msgstr "الأمان"
 
 #: src/bitcaster/config/fragments/unfold.py:208
-#: src/bitcaster/config/fragments/unfold.py:258 src/bitcaster/models/user.py:33
+#: src/bitcaster/config/fragments/unfold.py:258
+#: src/bitcaster/models/user.py:33
 msgid "Users"
 msgstr "مستخدمين"
 
@@ -382,7 +380,8 @@ msgid "Roles"
 msgstr "أدوار"
 
 #: src/bitcaster/config/fragments/unfold.py:220
-#: src/bitcaster/config/fragments/unfold.py:247 src/bitcaster/models/group.py:9
+#: src/bitcaster/config/fragments/unfold.py:247
+#: src/bitcaster/models/group.py:9
 msgid "Groups"
 msgstr "مجموعات"
 
@@ -462,15 +461,15 @@ msgstr "هذا الاسم مستخدم بالفعل."
 
 #: src/bitcaster/models/address.py:52 src/bitcaster/models/notification.py:49
 msgid "name"
-msgstr ""
+msgstr "اسم"
 
 #: src/bitcaster/models/address.py:54
 msgid "type"
-msgstr ""
+msgstr "يكتب"
 
 #: src/bitcaster/models/address.py:60
 msgid "value"
-msgstr ""
+msgstr "قيمة"
 
 #: src/bitcaster/models/application.py:32
 #: src/bitcaster/models/organization.py:35 src/bitcaster/models/project.py:33
@@ -578,8 +577,8 @@ msgstr "رسائل السجل"
 
 #: src/bitcaster/models/key.py:66
 msgid ""
-"Limit validity to these environments. If empty the key will be valid for any "
-"environment"
+"Limit validity to these environments. If empty the key will be valid for any"
+" environment"
 msgstr ""
 "قصر الصلاحية على هذه البيئات. إذا كان فارغاً، فسيكون المفتاح صالحاً لأي بيئة"
 
@@ -666,8 +665,16 @@ msgid "Message templates"
 msgstr "قوالب الرسائل"
 
 #: src/bitcaster/models/mixins.py:20
+msgid "locked"
+msgstr ""
+
+#: src/bitcaster/models/mixins.py:20
 msgid "If checked any notification is ignored and not forwarded"
 msgstr "في حال التفعيل، سيتم تجاهل أي إشعار وعدم إعادة توجيهه"
+
+#: src/bitcaster/models/mixins.py:21
+msgid "paused"
+msgstr ""
 
 #: src/bitcaster/models/mixins.py:21
 msgid "If checked any notification paused"
@@ -754,7 +761,7 @@ msgid "Status of the occurrence"
 msgstr "حالة الحدوث"
 
 #: src/bitcaster/models/occurrence.py:97
-msgid "Tentativi"
+msgid "attempts"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:99
@@ -814,11 +821,11 @@ msgstr "مرحباً بعودتك إلى"
 #: src/bitcaster/web/templates/admin/login.html:18
 #, python-format
 msgid ""
-"You are authenticated as %(username)s, but are not authorized to access this "
-"page. Would you like to login to a different account?"
+"You are authenticated as %(username)s, but are not authorized to access this"
+" page. Would you like to login to a different account?"
 msgstr ""
-"لقد تم توثيقك كـ %(username)s، ولكنك لا تملك الصلاحية للوصول لهذه الصفحة. هل "
-"ترغب في تسجيل الدخول بحساب مختلف؟"
+"لقد تم توثيقك كـ %(username)s، ولكنك لا تملك الصلاحية للوصول لهذه الصفحة. هل"
+" ترغب في تسجيل الدخول بحساب مختلف؟"
 
 #: src/bitcaster/web/templates/admin/login.html:44
 msgid "Log in"
@@ -865,13 +872,11 @@ msgstr "انتهت فترة السماح"
 #: src/bitcaster/web/templates/bitcaster/admin/apikey/created.html:24
 msgid ""
 "\n"
-"                This is the only time this key will be displayed. Copy it "
-"and put in a safe place.\n"
+"                This is the only time this key will be displayed. Copy it and put in a safe place.\n"
 "            "
 msgstr ""
 "\n"
-"                هذه هي المرة الوحيدة التي سيظهر فيها هذا المفتاح. قم بنسخه "
-"ووضعه في مكان آمن.\n"
+"                هذه هي المرة الوحيدة التي سيظهر فيها هذا المفتاح. قم بنسخه ووضعه في مكان آمن.\n"
 "            "
 
 #: src/bitcaster/web/templates/bitcaster/admin/channel/add_view.html:60
@@ -1104,5 +1109,6 @@ msgstr "نأسف، هذا المتصفح لا يدعم الإشعارات"
 
 #: src/bitcaster/webpush/templates/push/ask.html:58
 msgid ""
-"we cannot send you web notifications, because your settings do not allow that"
+"we cannot send you web notifications, because your settings do not allow "
+"that"
 msgstr "لا يمكننا إرسال إشعارات ويب إليك لأن إعداداتك لا تسمح بذلك"
