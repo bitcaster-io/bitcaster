@@ -49,6 +49,8 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
     class Meta:
         ordering = ("name",)
         unique_together = (("project", "name"), ("project", "slug"))
+        verbose_name = _("Application")
+        verbose_name_plural = _("Applications")
 
     def can_be_locked(self) -> bool:
         return self.project.organization.name != bitcaster.ORGANIZATION

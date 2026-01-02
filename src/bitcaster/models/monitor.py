@@ -29,6 +29,11 @@ class Monitor(AdminReversable, models.Model):
 
     objects = MonitorManager()
 
+    class Meta:
+        verbose_name = _("Monitor")
+        verbose_name_plural = _("Monitors")
+        ordering = ("name",)
+
     def __str__(self) -> str:
         return self.name
 

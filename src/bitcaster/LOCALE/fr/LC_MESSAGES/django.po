@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 10:26+0000\n"
+"POT-Creation-Date: 2026-01-02 10:34+0000\n"
 "PO-Revision-Date: 2024-05-05 11:42+0000\n"
 "Language-Team: French (https://app.transifex.com/os4d/teams/191976/fr/)\n"
 "Language: fr\n"
@@ -304,14 +304,16 @@ msgid "Add an User's address"
 msgstr "Ajouter une adresse d'utilisateur"
 
 #: src/bitcaster/config/fragments/unfold.py:121
+#: src/bitcaster/models/monitor.py:32
 msgid "Monitor"
 msgstr "Moniteur"
 
 #: src/bitcaster/config/fragments/unfold.py:126
+#: src/bitcaster/models/occurrence.py:91
 msgid "Occurrences"
 msgstr "Occurrences"
 
-#: src/bitcaster/config/fragments/unfold.py:132
+#: src/bitcaster/config/fragments/unfold.py:132 src/bitcaster/models/user.py:69
 msgid "Members"
 msgstr "Membres"
 
@@ -328,11 +330,13 @@ msgid "Addresses"
 msgstr "Adresses"
 
 #: src/bitcaster/config/fragments/unfold.py:154 src/bitcaster/forms/user.py:20
-#: src/bitcaster/models/distribution.py:40
+#: src/bitcaster/models/distribution.py:34
+#: src/bitcaster/models/distribution.py:45
 msgid "Distribution List"
 msgstr "Liste de distribution"
 
 #: src/bitcaster/config/fragments/unfold.py:159
+#: src/bitcaster/models/event.py:54
 msgid "Events"
 msgstr "Événements"
 
@@ -350,10 +354,12 @@ msgid "System"
 msgstr "Système"
 
 #: src/bitcaster/config/fragments/unfold.py:181
+#: src/bitcaster/models/channel.py:55
 msgid "Channels"
 msgstr "Canaux"
 
 #: src/bitcaster/config/fragments/unfold.py:186
+#: src/bitcaster/models/application.py:53
 msgid "Applications"
 msgstr "Applications"
 
@@ -372,7 +378,7 @@ msgid "Security"
 msgstr "Sécurité"
 
 #: src/bitcaster/config/fragments/unfold.py:208
-#: src/bitcaster/config/fragments/unfold.py:258
+#: src/bitcaster/config/fragments/unfold.py:258 src/bitcaster/models/user.py:33
 msgid "Users"
 msgstr "Utilisateurs"
 
@@ -381,7 +387,7 @@ msgid "Roles"
 msgstr "Rôles"
 
 #: src/bitcaster/config/fragments/unfold.py:220
-#: src/bitcaster/config/fragments/unfold.py:247
+#: src/bitcaster/config/fragments/unfold.py:247 src/bitcaster/models/group.py:9
 msgid "Groups"
 msgstr "Groupes"
 
@@ -482,6 +488,12 @@ msgstr "adresse de l'expéditeur par défaut pour les e-mails"
 msgid "Default prefix for messages supporting subject"
 msgstr "Préfixe par défaut pour les messages prenant en charge le sujet"
 
+#: src/bitcaster/models/application.py:52
+#, fuzzy
+#| msgid "Applications"
+msgid "Application"
+msgstr "Applications"
+
 #: src/bitcaster/models/assignment.py:36
 msgid "Assignment"
 msgstr "Affectation"
@@ -496,7 +508,14 @@ msgstr "Affectations"
 msgid "Name"
 msgstr "Nom"
 
-#: src/bitcaster/models/distribution.py:41
+#: src/bitcaster/models/channel.py:54
+#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
+#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
+msgid "Channel"
+msgstr "Canal"
+
+#: src/bitcaster/models/distribution.py:35
+#: src/bitcaster/models/distribution.py:46
 msgid "Distribution Lists"
 msgstr "Listes de distribution"
 
@@ -519,6 +538,18 @@ msgstr ""
 "occurrences associées peuvent être purgées. Si non spécifié, la valeur par "
 "défaut du système sera utilisée.\n"
 
+#: src/bitcaster/models/event.py:53
+#, fuzzy
+#| msgid "Events"
+msgid "Event"
+msgstr "Événements"
+
+#: src/bitcaster/models/group.py:8
+#, fuzzy
+#| msgid "Groups"
+msgid "Group"
+msgstr "Groupes"
+
 #: src/bitcaster/models/internal.py:34
 msgid "Log Message"
 msgstr "Message du journal"
@@ -540,6 +571,18 @@ msgstr ""
 "\n"
 "Limiter la validité à ces environnements. Si vide, la clé sera valide pour "
 "n'importe quel environnement\n"
+
+#: src/bitcaster/models/key.py:73
+#, fuzzy
+#| msgid "API Key"
+msgid "Api Key"
+msgstr "Clé API"
+
+#: src/bitcaster/models/key.py:74
+#, fuzzy
+#| msgid "API Keys"
+msgid "Api Keys"
+msgstr "Clés API"
 
 #: src/bitcaster/models/log.py:19
 msgid "Addition"
@@ -624,6 +667,12 @@ msgstr "Si coché, toute notification est ignorée et non transmise"
 msgid "If checked any notification paused"
 msgstr "Si coché, toute notification est en pause"
 
+#: src/bitcaster/models/monitor.py:33
+#, fuzzy
+#| msgid "Monitor"
+msgid "Monitors"
+msgstr "Moniteur"
+
 #: src/bitcaster/models/notification.py:58
 msgid "Allow notification only for these environments"
 msgstr "Autoriser les notifications uniquement pour ces environnements"
@@ -669,6 +718,12 @@ msgstr "Informations sur le traitement (destinataires, canaux)"
 msgid "Status of the occurrence"
 msgstr "Statut de l'occurrence"
 
+#: src/bitcaster/models/occurrence.py:90
+#, fuzzy
+#| msgid "Occurrences"
+msgid "Occurrence"
+msgstr "Occurrences"
+
 #: src/bitcaster/models/organization.py:29 src/bitcaster/models/project.py:36
 msgid "Subject Prefix"
 msgstr "Préfixe du sujet"
@@ -682,12 +737,16 @@ msgid "Environments available for project"
 msgstr "Environnements disponibles pour le projet"
 
 #: src/bitcaster/models/user.py:32
-msgid "user"
-msgstr "utilisateur"
+#, fuzzy
+#| msgid "Users"
+msgid "User"
+msgstr "Utilisateurs"
 
-#: src/bitcaster/models/user.py:33
-msgid "users"
-msgstr "utilisateurs"
+#: src/bitcaster/models/user.py:68
+#, fuzzy
+#| msgid "Members"
+msgid "Member"
+msgstr "Membres"
 
 #: src/bitcaster/models/userrole.py:28
 msgid "User Role"
@@ -850,11 +909,6 @@ msgstr "Aucune affectation trouvée pour ce canal"
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:8
 msgid "Message Template"
 msgstr "Modèle de message"
-
-#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
-#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
-msgid "Channel"
-msgstr "Canal"
 
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:36
 #: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:32
@@ -1056,6 +1110,12 @@ msgstr ""
 msgid ""
 "we cannot send you web notifications, because your settings do not allow that"
 msgstr ""
+
+#~ msgid "user"
+#~ msgstr "utilisateur"
+
+#~ msgid "users"
+#~ msgstr "utilisateurs"
 
 #~ msgid "Ordering"
 #~ msgstr "Classement"

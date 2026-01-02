@@ -87,6 +87,8 @@ class Occurrence(BitcasterBaseModel):
     objects = OccurrenceManager()
 
     class Meta:
+        verbose_name = _("Occurrence")
+        verbose_name_plural = _("Occurrences")
         ordering = ("timestamp",)
         constraints = [models.UniqueConstraint(fields=("timestamp", "event"), name="occurrence_unique")]
 

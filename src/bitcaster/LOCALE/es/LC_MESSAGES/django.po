@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 10:26+0000\n"
+"POT-Creation-Date: 2026-01-02 10:34+0000\n"
 "PO-Revision-Date: 2024-05-05 11:42+0000\n"
 "Language-Team: Spanish (https://app.transifex.com/os4d/teams/191976/es/)\n"
 "Language: es\n"
@@ -298,18 +298,20 @@ msgid "Add an User's address"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:121
+#: src/bitcaster/models/monitor.py:32
 #, fuzzy
 #| msgid "Test Monitor"
 msgid "Monitor"
 msgstr "Probar monitor"
 
 #: src/bitcaster/config/fragments/unfold.py:126
+#: src/bitcaster/models/occurrence.py:91
 #, fuzzy
 #| msgid "Purge occurrences"
 msgid "Occurrences"
 msgstr "Purgar ocurrencias"
 
-#: src/bitcaster/config/fragments/unfold.py:132
+#: src/bitcaster/config/fragments/unfold.py:132 src/bitcaster/models/user.py:69
 msgid "Members"
 msgstr ""
 
@@ -328,13 +330,15 @@ msgid "Addresses"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:154 src/bitcaster/forms/user.py:20
-#: src/bitcaster/models/distribution.py:40
+#: src/bitcaster/models/distribution.py:34
+#: src/bitcaster/models/distribution.py:45
 #, fuzzy
 #| msgid "Add to Distribution List"
 msgid "Distribution List"
 msgstr "Añadir a la lista de distribución"
 
 #: src/bitcaster/config/fragments/unfold.py:159
+#: src/bitcaster/models/event.py:54
 msgid "Events"
 msgstr ""
 
@@ -354,12 +358,14 @@ msgid "System"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:181
+#: src/bitcaster/models/channel.py:55
 #, fuzzy
 #| msgid "Test channel"
 msgid "Channels"
 msgstr "Probar canal"
 
 #: src/bitcaster/config/fragments/unfold.py:186
+#: src/bitcaster/models/application.py:53
 msgid "Applications"
 msgstr ""
 
@@ -380,7 +386,7 @@ msgid "Security"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:208
-#: src/bitcaster/config/fragments/unfold.py:258
+#: src/bitcaster/config/fragments/unfold.py:258 src/bitcaster/models/user.py:33
 msgid "Users"
 msgstr ""
 
@@ -389,7 +395,7 @@ msgid "Roles"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:220
-#: src/bitcaster/config/fragments/unfold.py:247
+#: src/bitcaster/config/fragments/unfold.py:247 src/bitcaster/models/group.py:9
 msgid "Groups"
 msgstr ""
 
@@ -490,6 +496,10 @@ msgstr ""
 msgid "Default prefix for messages supporting subject"
 msgstr ""
 
+#: src/bitcaster/models/application.py:52
+msgid "Application"
+msgstr ""
+
 #: src/bitcaster/models/assignment.py:36
 msgid "Assignment"
 msgstr ""
@@ -504,7 +514,16 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: src/bitcaster/models/distribution.py:41
+#: src/bitcaster/models/channel.py:54
+#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
+#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
+#, fuzzy
+#| msgid "Test channel"
+msgid "Channel"
+msgstr "Probar canal"
+
+#: src/bitcaster/models/distribution.py:35
+#: src/bitcaster/models/distribution.py:46
 #, fuzzy
 #| msgid "Add to Distribution List"
 msgid "Distribution Lists"
@@ -520,6 +539,14 @@ msgstr "No hay notificaciones activas para este evento"
 msgid ""
 "Number of days (from last update) after which related Occurrences can be "
 "purged. If not specified, system default will be used."
+msgstr ""
+
+#: src/bitcaster/models/event.py:53
+msgid "Event"
+msgstr ""
+
+#: src/bitcaster/models/group.py:8
+msgid "Group"
 msgstr ""
 
 #: src/bitcaster/models/internal.py:34
@@ -538,6 +565,14 @@ msgstr "Mensajes"
 msgid ""
 "Limit validity to these environments. If empty the key will be valid for any "
 "environment"
+msgstr ""
+
+#: src/bitcaster/models/key.py:73
+msgid "Api Key"
+msgstr ""
+
+#: src/bitcaster/models/key.py:74
+msgid "Api Keys"
 msgstr ""
 
 #: src/bitcaster/models/log.py:19
@@ -628,6 +663,12 @@ msgstr ""
 msgid "If checked any notification paused"
 msgstr ""
 
+#: src/bitcaster/models/monitor.py:33
+#, fuzzy
+#| msgid "Test Monitor"
+msgid "Monitors"
+msgstr "Probar monitor"
+
 #: src/bitcaster/models/notification.py:58
 #, fuzzy
 #| msgid "No active notifications for this event"
@@ -678,6 +719,12 @@ msgstr ""
 msgid "Status of the occurrence"
 msgstr "Purgar ocurrencias"
 
+#: src/bitcaster/models/occurrence.py:90
+#, fuzzy
+#| msgid "Purge occurrences"
+msgid "Occurrence"
+msgstr "Purgar ocurrencias"
+
 #: src/bitcaster/models/organization.py:29 src/bitcaster/models/project.py:36
 msgid "Subject Prefix"
 msgstr ""
@@ -691,11 +738,11 @@ msgid "Environments available for project"
 msgstr ""
 
 #: src/bitcaster/models/user.py:32
-msgid "user"
+msgid "User"
 msgstr ""
 
-#: src/bitcaster/models/user.py:33
-msgid "users"
+#: src/bitcaster/models/user.py:68
+msgid "Member"
 msgstr ""
 
 #: src/bitcaster/models/userrole.py:28
@@ -838,13 +885,6 @@ msgstr "No hay mensajes configurados para los canales seleccionados"
 #| msgid "Message usage"
 msgid "Message Template"
 msgstr "Uso del mensaje"
-
-#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
-#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
-#, fuzzy
-#| msgid "Test channel"
-msgid "Channel"
-msgstr "Probar canal"
 
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:36
 #: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:32

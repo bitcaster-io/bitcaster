@@ -51,6 +51,8 @@ class Channel(LockMixin, BitcasterBaseModel):
     objects = ChannelManager()
 
     class Meta:
+        verbose_name = _("Channel")
+        verbose_name_plural = _("Channels")
         ordering = ("name",)
         constraints = [
             models.UniqueConstraint(

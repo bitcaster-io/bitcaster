@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 10:26+0000\n"
+"POT-Creation-Date: 2026-01-02 10:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -287,14 +287,16 @@ msgid "Add an User's address"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:121
+#: src/bitcaster/models/monitor.py:32
 msgid "Monitor"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:126
+#: src/bitcaster/models/occurrence.py:91
 msgid "Occurrences"
 msgstr ""
 
-#: src/bitcaster/config/fragments/unfold.py:132
+#: src/bitcaster/config/fragments/unfold.py:132 src/bitcaster/models/user.py:69
 msgid "Members"
 msgstr ""
 
@@ -311,11 +313,13 @@ msgid "Addresses"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:154 src/bitcaster/forms/user.py:20
-#: src/bitcaster/models/distribution.py:40
+#: src/bitcaster/models/distribution.py:34
+#: src/bitcaster/models/distribution.py:45
 msgid "Distribution List"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:159
+#: src/bitcaster/models/event.py:54
 msgid "Events"
 msgstr ""
 
@@ -333,10 +337,12 @@ msgid "System"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:181
+#: src/bitcaster/models/channel.py:55
 msgid "Channels"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:186
+#: src/bitcaster/models/application.py:53
 msgid "Applications"
 msgstr ""
 
@@ -355,7 +361,7 @@ msgid "Security"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:208
-#: src/bitcaster/config/fragments/unfold.py:258
+#: src/bitcaster/config/fragments/unfold.py:258 src/bitcaster/models/user.py:33
 msgid "Users"
 msgstr ""
 
@@ -364,7 +370,7 @@ msgid "Roles"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:220
-#: src/bitcaster/config/fragments/unfold.py:247
+#: src/bitcaster/config/fragments/unfold.py:247 src/bitcaster/models/group.py:9
 msgid "Groups"
 msgstr ""
 
@@ -465,6 +471,10 @@ msgstr ""
 msgid "Default prefix for messages supporting subject"
 msgstr ""
 
+#: src/bitcaster/models/application.py:52
+msgid "Application"
+msgstr ""
+
 #: src/bitcaster/models/assignment.py:36
 msgid "Assignment"
 msgstr ""
@@ -479,7 +489,14 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: src/bitcaster/models/distribution.py:41
+#: src/bitcaster/models/channel.py:54
+#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
+#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
+msgid "Channel"
+msgstr ""
+
+#: src/bitcaster/models/distribution.py:35
+#: src/bitcaster/models/distribution.py:46
 msgid "Distribution Lists"
 msgstr ""
 
@@ -491,6 +508,14 @@ msgstr ""
 msgid ""
 "Number of days (from last update) after which related Occurrences can be "
 "purged. If not specified, system default will be used."
+msgstr ""
+
+#: src/bitcaster/models/event.py:53
+msgid "Event"
+msgstr ""
+
+#: src/bitcaster/models/group.py:8
+msgid "Group"
 msgstr ""
 
 #: src/bitcaster/models/internal.py:34
@@ -505,6 +530,14 @@ msgstr ""
 msgid ""
 "Limit validity to these environments. If empty the key will be valid for any "
 "environment"
+msgstr ""
+
+#: src/bitcaster/models/key.py:73
+msgid "Api Key"
+msgstr ""
+
+#: src/bitcaster/models/key.py:74
+msgid "Api Keys"
 msgstr ""
 
 #: src/bitcaster/models/log.py:19
@@ -589,6 +622,10 @@ msgstr ""
 msgid "If checked any notification paused"
 msgstr ""
 
+#: src/bitcaster/models/monitor.py:33
+msgid "Monitors"
+msgstr ""
+
 #: src/bitcaster/models/notification.py:58
 msgid "Allow notification only for these environments"
 msgstr ""
@@ -633,6 +670,10 @@ msgstr ""
 msgid "Status of the occurrence"
 msgstr ""
 
+#: src/bitcaster/models/occurrence.py:90
+msgid "Occurrence"
+msgstr ""
+
 #: src/bitcaster/models/organization.py:29 src/bitcaster/models/project.py:36
 msgid "Subject Prefix"
 msgstr ""
@@ -646,11 +687,11 @@ msgid "Environments available for project"
 msgstr ""
 
 #: src/bitcaster/models/user.py:32
-msgid "user"
+msgid "User"
 msgstr ""
 
-#: src/bitcaster/models/user.py:33
-msgid "users"
+#: src/bitcaster/models/user.py:68
+msgid "Member"
 msgstr ""
 
 #: src/bitcaster/models/userrole.py:28
@@ -788,11 +829,6 @@ msgstr ""
 
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:8
 msgid "Message Template"
-msgstr ""
-
-#: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
-#: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
-msgid "Channel"
 msgstr ""
 
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:36
