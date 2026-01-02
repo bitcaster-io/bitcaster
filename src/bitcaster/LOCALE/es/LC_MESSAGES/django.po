@@ -8,187 +8,183 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 10:34+0000\n"
-"PO-Revision-Date: 2024-05-05 11:42+0000\n"
-"Language-Team: Spanish (https://app.transifex.com/os4d/teams/191976/es/)\n"
+"POT-Creation-Date: 2026-01-02 12:53+0000\n"
+"PO-Revision-Date: 2026-01-02 12:16+0000\n"
+"Language-Team: Spanish (https://app.transifex.com/bitcaster/teams/197085/"
+"es/)\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
 
 #: src/bitcaster/admin/api_key.py:54
 msgid "Application must be set if EVENT_TRIGGER is granted"
-msgstr "La aplicación debe configurarse si se otorga EVENT_TRIGGER"
+msgstr ""
 
 #: src/bitcaster/admin/api_key.py:112
 msgid "Info"
-msgstr "Información"
+msgstr ""
 
 #: src/bitcaster/admin/assignment.py:45
 msgid "Cannot be validated."
-msgstr "No se puede validar."
+msgstr ""
 
 #: src/bitcaster/admin/assignment.py:49
 msgid "Validated."
-msgstr "Validado."
+msgstr ""
 
 #: src/bitcaster/admin/base.py:79
 msgid "Select value"
-msgstr "Seleccionar valor"
+msgstr ""
 
 #: src/bitcaster/admin/channel.py:79
 msgid "Configure channel"
-msgstr "Configurar canal"
+msgstr ""
 
 #: src/bitcaster/admin/channel.py:101
 msgid "Test channel"
-msgstr "Probar canal"
+msgstr ""
 
 #: src/bitcaster/admin/event.py:149
 msgid "Trigger Event"
-msgstr "Disparar evento"
+msgstr ""
 
 #: src/bitcaster/admin/filters.py:19 src/bitcaster/admin/filters.py:38
 msgid "Abstract"
-msgstr "Resumen"
+msgstr ""
 
 #: src/bitcaster/admin/filters.py:20 src/bitcaster/admin/filters.py:39
 #: src/bitcaster/models/project.py:50
 msgid "Project"
-msgstr "Proyecto"
+msgstr ""
 
 #: src/bitcaster/admin/member.py:146
 msgid "Add to Distribution List"
-msgstr "Añadir a la lista de distribución"
+msgstr ""
 
 #: src/bitcaster/admin/member.py:159
 msgid "Users successfully added"
-msgstr "Usuarios añadidos correctamente"
+msgstr ""
 
 #: src/bitcaster/admin/message.py:180
 msgid "Message Template updated successfully "
-msgstr "Plantilla de mensaje actualizada correctamente"
+msgstr ""
 
 #: src/bitcaster/admin/message.py:198
 msgid "Message usage"
-msgstr "Uso del mensaje"
+msgstr ""
 
 #: src/bitcaster/admin/mixins.py:30
 msgid "Lock"
-msgstr "Bloquear"
+msgstr ""
 
 #: src/bitcaster/admin/mixins.py:40
-#, fuzzy, python-brace-format
-#| msgid "Lock {} "
+#, python-brace-format
 msgid "Lock {}"
-msgstr "Bloquear {} "
+msgstr ""
 
 #: src/bitcaster/admin/mixins.py:43
 #, python-brace-format
 msgid "{} locked"
-msgstr "{} bloqueado"
+msgstr ""
 
 #: src/bitcaster/admin/mixins.py:49
 msgid "Unlock"
-msgstr "Desbloquear"
+msgstr ""
 
 #: src/bitcaster/admin/mixins.py:58
-#, fuzzy, python-brace-format
-#| msgid "Unlock {} "
+#, python-brace-format
 msgid "Unlock {}"
-msgstr "Desbloquear {} "
+msgstr ""
 
 #: src/bitcaster/admin/mixins.py:62
 #, python-brace-format
 msgid "{} unlocked"
-msgstr "{} desbloqueado"
+msgstr ""
 
 #: src/bitcaster/admin/monitor.py:76
 msgid "Configure Monitor"
-msgstr "Configurar monitor"
+msgstr ""
 
 #: src/bitcaster/admin/monitor.py:102
 msgid "Test Monitor"
-msgstr "Probar monitor"
+msgstr ""
 
 #: src/bitcaster/admin/notification.py:39
 #: src/bitcaster/admin/notification.py:47 src/bitcaster/admin/occurrence.py:35
 #: src/bitcaster/admin/task.py:25 src/bitcaster/admin/task.py:34
 msgid "General"
-msgstr "General"
+msgstr ""
 
 #: src/bitcaster/admin/notification.py:49
 msgid "Distribution"
-msgstr "Distribución"
+msgstr ""
 
 #: src/bitcaster/admin/notification.py:61
 msgid "Extra context"
-msgstr "Contexto extra"
+msgstr ""
 
 #: src/bitcaster/admin/notification.py:108
 msgid "Messages"
-msgstr "Mensajes"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:36
 msgid "Process"
-msgstr "Proceso"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:37
 msgid "Input"
-msgstr "Entrada"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:38
 msgid "Delivery"
-msgstr "Entrega"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:91
 msgid "This event does not have any notification"
-msgstr "Este evento no tiene ninguna notificación"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:93
 msgid "No active notifications for this event"
-msgstr "No hay notificaciones activas para este evento"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:95
 msgid "No active channels enabled for this event"
-msgstr "No hay canales activos habilitados para este evento"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:97
 msgid "No messages configured for selected channels"
-msgstr "No hay mensajes configurados para los canales seleccionados"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:148
 msgid "Error inspecting occurrence"
-msgstr "Error al inspeccionar la ocurrencia"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:174
 msgid "Occurrence has been successfully processed"
-msgstr "La ocurrencia ha sido procesada correctamente"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:179
 msgid "Occurrence has been processed, but no recipients have been reached out"
 msgstr ""
-"La ocurrencia ha sido procesada, pero no se ha contactado a ningún "
-"destinatario"
 
 #: src/bitcaster/admin/occurrence.py:184
 msgid "Error processing occurrence"
-msgstr "Error al procesar la ocurrencia"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:204
 msgid "Occurrence purge has been successfully triggered"
-msgstr "La purga de ocurrencias se ha disparado correctamente"
+msgstr ""
 
 #: src/bitcaster/admin/occurrence.py:212
 msgid "All data will be permanently removed. No rollback action available"
 msgstr ""
-"Todos los datos serán eliminados permanentemente. No hay acción de deshacer "
-"disponible"
 
 #: src/bitcaster/admin/occurrence.py:213
 msgid "Purge occurrences"
-msgstr "Purgar ocurrencias"
+msgstr ""
 
 #: src/bitcaster/admin/organization.py:25
 msgid ""
@@ -219,10 +215,8 @@ msgid "Job"
 msgstr ""
 
 #: src/bitcaster/admin/task.py:38
-#, fuzzy
-#| msgid "Trigger Event"
 msgid "trigger"
-msgstr "Disparar evento"
+msgstr ""
 
 #: src/bitcaster/admin/user.py:35
 msgid "Personal info"
@@ -270,16 +264,12 @@ msgid "List organization channels"
 msgstr ""
 
 #: src/bitcaster/api/channel.py:41
-#, fuzzy
-#| msgid "Test channel"
 msgid "List Project channels"
-msgstr "Probar canal"
+msgstr ""
 
 #: src/bitcaster/api/distribution_list.py:76
-#, fuzzy
-#| msgid "Add to Distribution List"
 msgid "Add recipient to a DistributionList"
-msgstr "Añadir a la lista de distribución"
+msgstr ""
 
 #: src/bitcaster/api/project.py:31
 msgid "Retrieve project details"
@@ -298,18 +288,14 @@ msgid "Add an User's address"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:121
-#: src/bitcaster/models/monitor.py:32
-#, fuzzy
-#| msgid "Test Monitor"
+#: src/bitcaster/models/monitor.py:33
 msgid "Monitor"
-msgstr "Probar monitor"
+msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:126
 #: src/bitcaster/models/occurrence.py:91
-#, fuzzy
-#| msgid "Purge occurrences"
 msgid "Occurrences"
-msgstr "Purgar ocurrencias"
+msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:132 src/bitcaster/models/user.py:69
 msgid "Members"
@@ -320,22 +306,17 @@ msgid "Stream"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:144
-#, fuzzy
-#| msgid "Configure channel"
 msgid "Configuration"
-msgstr "Configurar canal"
+msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:149
 msgid "Addresses"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:154 src/bitcaster/forms/user.py:20
-#: src/bitcaster/models/distribution.py:34
-#: src/bitcaster/models/distribution.py:45
-#, fuzzy
-#| msgid "Add to Distribution List"
+#: src/bitcaster/models/distribution.py:40
 msgid "Distribution List"
-msgstr "Añadir a la lista de distribución"
+msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:159
 #: src/bitcaster/models/event.py:54
@@ -348,10 +329,8 @@ msgid "Notifications"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:169
-#, fuzzy
-#| msgid "Message usage"
 msgid "Message Templates"
-msgstr "Uso del mensaje"
+msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:176
 msgid "System"
@@ -359,10 +338,8 @@ msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:181
 #: src/bitcaster/models/channel.py:55
-#, fuzzy
-#| msgid "Test channel"
 msgid "Channels"
-msgstr "Probar canal"
+msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:186
 #: src/bitcaster/models/application.py:53
@@ -371,10 +348,8 @@ msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:191
 #: src/bitcaster/models/project.py:51
-#, fuzzy
-#| msgid "Project"
 msgid "Projects"
-msgstr "Proyecto"
+msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:196
 #: src/bitcaster/models/organization.py:41
@@ -517,23 +492,16 @@ msgstr ""
 #: src/bitcaster/models/channel.py:54
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
 #: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:42
-#, fuzzy
-#| msgid "Test channel"
 msgid "Channel"
-msgstr "Probar canal"
+msgstr ""
 
-#: src/bitcaster/models/distribution.py:35
-#: src/bitcaster/models/distribution.py:46
-#, fuzzy
-#| msgid "Add to Distribution List"
+#: src/bitcaster/models/distribution.py:41
 msgid "Distribution Lists"
-msgstr "Añadir a la lista de distribución"
+msgstr ""
 
 #: src/bitcaster/models/event.py:38 src/bitcaster/models/occurrence.py:77
-#, fuzzy
-#| msgid "No active notifications for this event"
 msgid "Do not customise notifications per single user"
-msgstr "No hay notificaciones activas para este evento"
+msgstr ""
 
 #: src/bitcaster/models/event.py:44
 msgid ""
@@ -550,16 +518,12 @@ msgid "Group"
 msgstr ""
 
 #: src/bitcaster/models/internal.py:34
-#, fuzzy
-#| msgid "Messages"
 msgid "Log Message"
-msgstr "Mensajes"
+msgstr ""
 
 #: src/bitcaster/models/internal.py:35
-#, fuzzy
-#| msgid "Messages"
 msgid "Log Messages"
-msgstr "Mensajes"
+msgstr ""
 
 #: src/bitcaster/models/key.py:66
 msgid ""
@@ -626,10 +590,8 @@ msgstr ""
 
 #: src/bitcaster/models/message.py:64
 #: src/bitcaster/web/templates/rest_framework/base.html:81
-#, fuzzy
-#| msgid "Extra context"
 msgid "content"
-msgstr "Contexto extra"
+msgstr ""
 
 #: src/bitcaster/models/message.py:64
 msgid "The content of the message"
@@ -644,16 +606,12 @@ msgid "The HTML formatted content of the message"
 msgstr ""
 
 #: src/bitcaster/models/message.py:71
-#, fuzzy
-#| msgid "Message usage"
 msgid "Message template"
-msgstr "Uso del mensaje"
+msgstr ""
 
 #: src/bitcaster/models/message.py:72
-#, fuzzy
-#| msgid "Message usage"
 msgid "Message templates"
-msgstr "Uso del mensaje"
+msgstr ""
 
 #: src/bitcaster/models/mixins.py:20
 msgid "If checked any notification is ignored and not forwarded"
@@ -663,27 +621,21 @@ msgstr ""
 msgid "If checked any notification paused"
 msgstr ""
 
-#: src/bitcaster/models/monitor.py:33
-#, fuzzy
-#| msgid "Test Monitor"
+#: src/bitcaster/models/monitor.py:34
 msgid "Monitors"
-msgstr "Probar monitor"
+msgstr ""
 
 #: src/bitcaster/models/notification.py:58
-#, fuzzy
-#| msgid "No active notifications for this event"
 msgid "Allow notification only for these environments"
-msgstr "No hay notificaciones activas para este evento"
+msgstr ""
 
 #: src/bitcaster/models/notification.py:80
 msgid "Notification"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:65
-#, fuzzy
-#| msgid "Process"
 msgid "Processed"
-msgstr "Proceso"
+msgstr ""
 
 #: src/bitcaster/models/occurrence.py:66
 msgid "Failed"
@@ -714,16 +666,12 @@ msgid "Information about the processing (recipients, channels)"
 msgstr ""
 
 #: src/bitcaster/models/occurrence.py:82
-#, fuzzy
-#| msgid "Purge occurrences"
 msgid "Status of the occurrence"
-msgstr "Purgar ocurrencias"
+msgstr ""
 
 #: src/bitcaster/models/occurrence.py:90
-#, fuzzy
-#| msgid "Purge occurrences"
 msgid "Occurrence"
-msgstr "Purgar ocurrencias"
+msgstr ""
 
 #: src/bitcaster/models/organization.py:29 src/bitcaster/models/project.py:36
 msgid "Subject Prefix"
@@ -797,6 +745,7 @@ msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: src/bitcaster/web/templates/admin_extra_buttons/confirm.html:5
 msgid "Warning"
@@ -875,16 +824,12 @@ msgid ""
 msgstr ""
 
 #: src/bitcaster/web/templates/bitcaster/admin/channel/test.html:6
-#, fuzzy
-#| msgid "No messages configured for selected channels"
 msgid "No assignments found for this channel"
-msgstr "No hay mensajes configurados para los canales seleccionados"
+msgstr ""
 
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:8
-#, fuzzy
-#| msgid "Message usage"
 msgid "Message Template"
-msgstr "Uso del mensaje"
+msgstr ""
 
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:36
 #: src/bitcaster/web/templates/bitcaster/admin/notification/messages.html:32
@@ -900,10 +845,8 @@ msgid "Subject"
 msgstr ""
 
 #: src/bitcaster/web/templates/bitcaster/admin/message/edit.html:38
-#, fuzzy
-#| msgid "Extra context"
 msgid "Context"
-msgstr "Contexto extra"
+msgstr ""
 
 #: src/bitcaster/web/templates/bitcaster/admin/message/edit.html:44
 msgid "Test"
@@ -928,10 +871,8 @@ msgstr ""
 
 #: src/bitcaster/web/templates/bitcaster/locking/base.html:8
 #: src/bitcaster/web/templates/bitcaster/locking/lock.html:8
-#, fuzzy
-#| msgid "Lock"
 msgid "Locking"
-msgstr "Bloquear"
+msgstr ""
 
 #: src/bitcaster/web/templates/rest_framework/base.html:39
 msgid "navbar"
@@ -942,20 +883,16 @@ msgid "request form"
 msgstr ""
 
 #: src/bitcaster/web/templates/rest_framework/base.html:157
-#, fuzzy
-#| msgid "Extra context"
 msgid "Extra Actions"
-msgstr "Contexto extra"
+msgstr ""
 
 #: src/bitcaster/web/templates/rest_framework/base.html:172
 msgid "Filters"
 msgstr ""
 
 #: src/bitcaster/web/templates/rest_framework/base.html:177
-#, fuzzy
-#| msgid "Extra context"
 msgid "main content"
-msgstr "Contexto extra"
+msgstr ""
 
 #: src/bitcaster/web/templates/rest_framework/base.html:193
 msgid "request info"
@@ -993,6 +930,7 @@ msgid_plural ""
 "                    results"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: src/bitcaster/web/templates/unfold/helpers/welcomemsg.html:33
 #, python-format

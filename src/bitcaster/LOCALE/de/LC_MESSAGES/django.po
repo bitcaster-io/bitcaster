@@ -8,11 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 10:34+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2026-01-02 12:53+0000\n"
+"PO-Revision-Date: 2026-01-02 12:16+0000\n"
+"Language-Team: German (https://app.transifex.com/bitcaster/teams/197085/"
+"de/)\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -287,7 +287,7 @@ msgid "Add an User's address"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:121
-#: src/bitcaster/models/monitor.py:32
+#: src/bitcaster/models/monitor.py:33
 msgid "Monitor"
 msgstr ""
 
@@ -313,8 +313,7 @@ msgid "Addresses"
 msgstr ""
 
 #: src/bitcaster/config/fragments/unfold.py:154 src/bitcaster/forms/user.py:20
-#: src/bitcaster/models/distribution.py:34
-#: src/bitcaster/models/distribution.py:45
+#: src/bitcaster/models/distribution.py:40
 msgid "Distribution List"
 msgstr ""
 
@@ -495,8 +494,7 @@ msgstr ""
 msgid "Channel"
 msgstr ""
 
-#: src/bitcaster/models/distribution.py:35
-#: src/bitcaster/models/distribution.py:46
+#: src/bitcaster/models/distribution.py:41
 msgid "Distribution Lists"
 msgstr ""
 
@@ -622,7 +620,7 @@ msgstr ""
 msgid "If checked any notification paused"
 msgstr ""
 
-#: src/bitcaster/models/monitor.py:33
+#: src/bitcaster/models/monitor.py:34
 msgid "Monitors"
 msgstr ""
 
