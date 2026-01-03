@@ -29,8 +29,8 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
     objects = UserManager()
 
     class Meta:
-        verbose_name = _("user")
-        verbose_name_plural = _("users")
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
         app_label = "bitcaster"
         abstract = False
         permissions = (
@@ -65,3 +65,5 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
 class Member(User):
     class Meta:
         proxy = True
+        verbose_name = _("Member")
+        verbose_name_plural = _("Members")
