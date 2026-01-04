@@ -1,0 +1,22 @@
+{% load i18n %}
+<div class="relative" x-data="{ openUserMenu: false }">
+    <a class="block cursor-pointer h-[18px] hover:text-base-700 dark:hover:text-base-200"
+       @click="openUserMenu = !openUserMenu">
+        <span class="material-symbols-outlined">person</span>
+    </a>
+    <nav class="absolute bg-white border border-base-200 flex flex-col leading-none py-1 -right-2 rounded-default shadow-lg top-7 w-52 z-50 dark:bg-base-800 dark:border-base-700"
+         x-cloak
+         x-show="openUserMenu"
+         x-transition
+         x-on:click.outside="openConsoles = false">
+        <a class="cursor-pointer flex flex-row leading-none mx-1 px-3 py-1.5 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200"
+           href="{% url "admin:bitcaster_user_change" user.pk %}"
+           x-on:click="adminTheme = 'dark'"
+           x-bind:class="adminTheme == 'dark' && ''">
+            <span class="material-symbols-outlined mr-2">person</span>
+            <span class="leading-none self-center">{% trans "Profile" %}</span>
+        </a>
+        {% include "unfold/helpers/language_switch.html" %}
+        #}
+    </nav>
+</div>
