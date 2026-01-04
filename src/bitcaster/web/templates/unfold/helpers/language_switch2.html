@@ -1,0 +1,36 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% get_language_info_list for LANGUAGES as languages %}
+<div class="px-1 py-2 border-b border-base-200 mt-1 pt-1 dark:border-base-700">
+    <form id="language_form"
+          action="{% if languages_action %}{{ languages_action }}{% else %}{% url 'set_language' %}{% endif %}"
+          method="post"
+          class="flex w-full">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="{{ redirect_to }}" />
+        <select id="select_language" name="language">
+            {% if languages_list %}
+                {% for language in languages_list %}
+                    #}
+                    <option {% if language.code == LANGUAGE_CODE %} selected {% endif %} value="{{ language.code }}">
+                        {{ language.name_local }}
+                    </option>
+                {% endfor %}
+            {% else %}
+                {% for language in languages %}
+                    #}
+                    <option {% if language.code == LANGUAGE_CODE %} selected {% endif %} value="{{ language.code }}">
+                        {{ language.name_local }}
+                    </option>
+                {% endfor %}
+            {% endif %}
+        </select>
+    </form>
+</div>
+<script>
+    const dropdown = document.getElementById("select_language");
+    dropdown.addEventListener("change", function () {
+        document.getElementById("language_form").submit();
+    });
+</script>

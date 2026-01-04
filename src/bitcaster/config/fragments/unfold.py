@@ -42,6 +42,13 @@ COMMON_SITE_DROPDOWN = [
 ]
 
 COMMON = {
+    "LANGUAGES": {
+        "navigation": [
+            {"code": "en", "name_local": "English"},
+            {"code": "es", "name_local": "Español"},
+            {"code": "it", "name_local": "Italiano"},
+        ],
+    },
     "LOGIN": {
         "image": lambda request: static("bitcaster/images/logos/bitcaster.svg"),
         "redirect_after": lambda request: reverse_lazy("admin:index"),

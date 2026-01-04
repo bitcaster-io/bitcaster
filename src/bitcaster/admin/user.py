@@ -4,10 +4,12 @@ from typing import TYPE_CHECKING
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.forms import TypedChoiceField
 from django.urls import path, reverse
 from django.utils.translation import gettext_lazy as _
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
+from bitcaster.forms.unfold import UnfoldAdminSelect2Widget
 from bitcaster.web.dashboard.views import LockView, MonitorView, ToolsView
 
 from ..models import User
@@ -15,7 +17,7 @@ from ..utils.django import admin_toggle_bool_action
 from .base import BaseAdmin, BitcasterModelAdmin
 
 if TYPE_CHECKING:
-    from django.db.models import QuerySet
+    from django.db.models import Field, QuerySet
     from django.http import HttpRequest
 
 logger = logging.getLogger(__name__)
@@ -32,7 +34,7 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     exclude = ("groups",)
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "email")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name", "email", "timezone")}),
         (
             _("Permissions"),
             {
@@ -48,6 +50,11 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     filter_horizontal = ()
     change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
     actions = ["toggle_superuser", "toggle_staff", "toggle_active"]
+
+    def formfield_for_choice_field(self, db_field: "Field", request: "HttpRequest", **kwargs) -> TypedChoiceField:
+        if db_field.name == "timezone":
+            return TypedChoiceField(choices=db_field.choices, coerce=str, widget=UnfoldAdminSelect2Widget)
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
 
     def get_urls(self):
         extra = []
