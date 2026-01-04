@@ -6,6 +6,7 @@ from django.contrib.auth.models import UserManager as BaseUserManager
 from django.db import models
 from django.utils.crypto import RANDOM_STRING_CHARS
 from django.utils.translation import gettext_lazy as _
+from timezone_field import TimeZoneField
 
 from .mixins import BitcasterBaseModel, LockMixin
 
@@ -26,6 +27,8 @@ class UserManager(BaseUserManager["User"]):
 
 class User(LockMixin, BitcasterBaseModel, AbstractUser):
     custom_fields = models.JSONField(default=dict, blank=True)
+    timezone = TimeZoneField(default="UTC")
+
     objects = UserManager()
 
     class Meta:

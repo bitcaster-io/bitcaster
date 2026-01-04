@@ -1,0 +1,34 @@
+{% load i18n %}
+{#{% if site_url %}#}
+{#    <a href="{{ site_url }}" target="_blank" class="mx-1 px-3 py-2 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200">#}
+{#        {% translate 'View site' %}#}
+{#    </a>#}
+{#{% endif %}#}
+<a href="{% url "admin:bitcaster_user_change" user.pk %}"
+   class="mx-1 px-3 py-2 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200">
+    {% translate 'My Profile' %}
+</a>
+{% if account_links %}
+    {% for link in account_links %}
+        <a href="{{ link.link }}"
+           class="mx-1 px-3 py-2 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200">
+            {{ link.title }}
+        </a>
+    {% endfor %}
+{% else %}
+    {% if user.has_usable_password %}
+        <a href="{% url 'admin:password_change' %}"
+           class="mx-1 px-3 py-2 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200">
+            {% translate 'Change password' %}
+        </a>
+    {% endif %}
+{% endif %}
+<div class="border-t border-base-200 mt-1 pt-1 dark:border-base-700">
+    <form id="logout-form" method="post" action="{% url 'admin:logout' %}" class="mx-1">
+        {% csrf_token %}
+        <button type="submit"
+                class="bg-none flex cursor-pointer items-center px-3 py-1.5 text-left text-red-500 rounded-default w-full hover:bg-red-100 dark:hover:bg-red-500/20 dark:hover:text-red-500">
+            {% translate 'Log out' %} <span class="ml-auto material-symbols-outlined text-red-500 dark:text-red-500">logout</span>
+        </button>
+    </form>
+</div>
