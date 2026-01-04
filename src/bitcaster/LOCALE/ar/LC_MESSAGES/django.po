@@ -1,14 +1,15 @@
-#
+# 
 # Translators:
+# Mark Hanarero, 2026
 # Stefano Apostolico <s.apostolico@gmail.com>, 2026
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Bitcaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-02 16:41+0000\n"
-"PO-Revision-Date: 2026-01-02 12:16+0000\n"
+"PO-Revision-Date: 2026-01-03 07:15+0000\n"
 "Last-Translator: Stefano Apostolico <s.apostolico@gmail.com>, 2026\n"
 "Language-Team: Arabic (https://app.transifex.com/bitcaster/teams/197085/ar/)\n"
 "MIME-Version: 1.0\n"
@@ -478,7 +479,7 @@ msgstr "المالك"
 #: src/bitcaster/models/application.py:36 src/bitcaster/models/channel.py:47
 #: src/bitcaster/models/event.py:37 src/bitcaster/models/notification.py:63
 msgid "active"
-msgstr ""
+msgstr "نشيط"
 
 #: src/bitcaster/models/application.py:36
 msgid "Whether the application should be active"
@@ -486,7 +487,7 @@ msgstr "ما إذا كان التطبيق يجب أن يكون نشطاً"
 
 #: src/bitcaster/models/application.py:39
 msgid "auto create events"
-msgstr ""
+msgstr "إنشاء الأحداث تلقائيًا"
 
 #: src/bitcaster/models/application.py:41
 msgid "If true unknown events will be automatically created"
@@ -499,7 +500,7 @@ msgstr "عنوان المرسل الافتراضي لرسائل البريد ا�
 
 #: src/bitcaster/models/application.py:45
 msgid "subject prefix"
-msgstr ""
+msgstr "بادئة الموضوع"
 
 #: src/bitcaster/models/application.py:48
 #: src/bitcaster/models/organization.py:32 src/bitcaster/models/project.py:39
@@ -526,11 +527,11 @@ msgstr "الاسم"
 
 #: src/bitcaster/models/channel.py:45
 msgid "configuration"
-msgstr ""
+msgstr "إعدادات"
 
 #: src/bitcaster/models/channel.py:46
 msgid "protocol"
-msgstr ""
+msgstr "بروتوكول"
 
 #: src/bitcaster/models/channel.py:54
 #: src/bitcaster/web/templates/bitcaster/admin/message/create_message_template.html:11
@@ -544,7 +545,7 @@ msgstr "قوائم توزيع"
 
 #: src/bitcaster/models/event.py:36
 msgid "description"
-msgstr ""
+msgstr "وصف"
 
 #: src/bitcaster/models/event.py:38 src/bitcaster/models/occurrence.py:84
 msgid "Do not customise notifications per single user"
@@ -560,11 +561,11 @@ msgstr ""
 
 #: src/bitcaster/models/event.py:53
 msgid "event"
-msgstr ""
+msgstr "حدث"
 
 #: src/bitcaster/models/event.py:54
 msgid "events"
-msgstr ""
+msgstr "حدث"
 
 #: src/bitcaster/models/group.py:8
 msgid "Group"
@@ -669,7 +670,7 @@ msgstr "قوالب الرسائل"
 
 #: src/bitcaster/models/mixins.py:21
 msgid "locked"
-msgstr ""
+msgstr " مقفل"
 
 #: src/bitcaster/models/mixins.py:21
 msgid "If checked any notification is ignored and not forwarded"
@@ -677,7 +678,7 @@ msgstr "في حال التفعيل، سيتم تجاهل أي إشعار وعد�
 
 #: src/bitcaster/models/mixins.py:24
 msgid "paused"
-msgstr ""
+msgstr "توقف مؤقتًا"
 
 #: src/bitcaster/models/mixins.py:24
 msgid "If checked any notification paused"
@@ -689,7 +690,7 @@ msgstr "مراقبين"
 
 #: src/bitcaster/models/notification.py:56
 msgid "environments"
-msgstr ""
+msgstr "البيئات"
 
 #: src/bitcaster/models/notification.py:59
 msgid "Allow notification only for these environments"
@@ -697,11 +698,11 @@ msgstr "السماح بالإشعارات لهذه البيئات فقط"
 
 #: src/bitcaster/models/notification.py:61
 msgid "payload filter"
-msgstr ""
+msgstr "مرشح الحمولة"
 
 #: src/bitcaster/models/notification.py:65
 msgid "external filtering"
-msgstr ""
+msgstr "تصفية API"
 
 #: src/bitcaster/models/notification.py:83
 msgid "Notification"
@@ -721,7 +722,7 @@ msgstr "جديد"
 
 #: src/bitcaster/models/occurrence.py:70
 msgid "date"
-msgstr ""
+msgstr "تاريخ"
 
 #: src/bitcaster/models/occurrence.py:70
 msgid "Timestamp when occurrence has been created."
@@ -729,7 +730,7 @@ msgstr "الطابع الزمني وقت إنشاء الحدوث."
 
 #: src/bitcaster/models/occurrence.py:74
 msgid "context"
-msgstr ""
+msgstr "سياق"
 
 #: src/bitcaster/models/occurrence.py:74
 msgid "Context provided by the sender"
@@ -741,7 +742,7 @@ msgstr "الخيارات المقدمة من المرسل لتوجيه الإش�
 
 #: src/bitcaster/models/occurrence.py:81
 msgid "recipients"
-msgstr ""
+msgstr "المستفيدين"
 
 #: src/bitcaster/models/occurrence.py:81
 msgid "Total number of reached recipients"
@@ -749,7 +750,7 @@ msgstr "العدد الإجمالي للمستلمين الذين تم الوص�
 
 #: src/bitcaster/models/occurrence.py:84
 msgid "newsletter mode"
-msgstr ""
+msgstr "وضع النشرة الإخبارية"
 
 #: src/bitcaster/models/occurrence.py:87
 msgid "Information about the processing (recipients, channels)"
@@ -757,7 +758,7 @@ msgstr "معلومات حول المعالجة (المستلمين، القنو�
 
 #: src/bitcaster/models/occurrence.py:90
 msgid "status"
-msgstr ""
+msgstr "حالة"
 
 #: src/bitcaster/models/occurrence.py:94
 msgid "Status of the occurrence"
@@ -765,12 +766,12 @@ msgstr "حالة الحدوث"
 
 #: src/bitcaster/models/occurrence.py:97
 msgid "attempts"
-msgstr ""
+msgstr "محاولات"
 
 #: src/bitcaster/models/occurrence.py:99
 msgid ""
 "The remaining number of attempts before the occurrence is marked as failed"
-msgstr ""
+msgstr "يتم وضع علامة \"فشل\" على عدد المحاولات المتبقية قبل وقوع الحدث"
 
 #: src/bitcaster/models/occurrence.py:106
 msgid "Occurrence"
