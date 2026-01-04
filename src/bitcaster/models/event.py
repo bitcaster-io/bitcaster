@@ -33,8 +33,8 @@ class EventManager(BitcasterBaselManager["Event"]):
 
 class Event(SlugMixin, LockMixin, BitcasterBaseModel):
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="events")
-    description = models.CharField(max_length=255, blank=True, null=True)
-    active = models.BooleanField(default=True)
+    description = models.CharField(verbose_name=_("description"), max_length=255, blank=True, null=True)
+    active = models.BooleanField(verbose_name=_("active"), default=True)
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
     channels = models.ManyToManyField(Channel, blank=True)
     occurrence_retention = models.IntegerField(
@@ -50,6 +50,8 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
     objects = EventManager()
 
     class Meta:
+        verbose_name = _("event")
+        verbose_name_plural = _("events")
         unique_together = (
             ("name", "application"),
             ("slug", "application"),

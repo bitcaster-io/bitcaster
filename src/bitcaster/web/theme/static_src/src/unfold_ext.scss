@@ -96,6 +96,9 @@
 }
 
 @layer components {
+  select#select_language{
+    @apply border rounded w-full p-2 capitalize;
+  }
   #inspect-page{
     .status-processed {
         @apply text-green-500 ;

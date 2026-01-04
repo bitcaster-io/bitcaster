@@ -46,22 +46,25 @@ class NotificationManager(BitcasterBaselManager.from_queryset(NotificationQueryS
 
 
 class Notification(BitcasterBaseModel):
-    name = models.CharField(max_length=100)
+    name = models.CharField(verbose_name=_("name"), max_length=100)
     event = models.ForeignKey("bitcaster.Event", on_delete=models.CASCADE, related_name="notifications")
     distribution = models.ForeignKey(
         DistributionList, blank=True, null=True, on_delete=models.CASCADE, related_name="notifications"
     )
     environments = ArrayField(
         models.CharField(max_length=20, blank=True, null=True),
+        verbose_name=_("environments"),
         blank=True,
         null=True,
         help_text=_("Allow notification only for these environments"),
     )
-    payload_filter = models.TextField(blank=True, null=True)
+    payload_filter = models.TextField(verbose_name=_("payload filter"), blank=True, null=True)
     extra_context = models.JSONField(default=dict, blank=True)
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(verbose_name=_("active"), default=False)
     external_filtering = models.BooleanField(
-        default=False, help_text="Allow filtering recipients based on rules passed in the api call"
+        verbose_name=_("external filtering"),
+        default=False,
+        help_text="Allow filtering recipients based on rules passed in the api call",
     )
 
     dynamic = models.BooleanField(

@@ -189,7 +189,7 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
             doit,
             message="Proceeding will process the occurrence",
             success_message="",
-            description=_(""),
+            description="",
             extra_context={"content_title": "Process", "object": obj, "opts": obj._meta},
             error_message="",
         )

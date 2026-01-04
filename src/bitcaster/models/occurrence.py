@@ -66,27 +66,45 @@ class Occurrence(BitcasterBaseModel):
         FAILED = "FAILED", _("Failed")
         NEW = "NEW", _("New")
 
-    timestamp = models.DateTimeField(auto_now_add=True, help_text=_("Timestamp when occurrence has been created."))
+    timestamp = models.DateTimeField(
+        verbose_name=_("date"), auto_now_add=True, help_text=_("Timestamp when occurrence has been created.")
+    )
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    context = models.JSONField(blank=True, default=dict, help_text=_("Context provided by the sender"))
+    context = models.JSONField(
+        verbose_name=_("context"), blank=True, default=dict, help_text=_("Context provided by the sender")
+    )
     options: "OccurrenceOptions" = models.JSONField(  # type: ignore[assignment]
         blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
     )
     correlation_id = models.CharField(max_length=255, editable=False, blank=True, null=True)
-    recipients = models.IntegerField(default=0, help_text=_("Total number of reached recipients"))
-    newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
+    recipients = models.IntegerField(
+        verbose_name=_("recipients"), default=0, help_text=_("Total number of reached recipients")
+    )
+    newsletter = models.BooleanField(
+        verbose_name=_("newsletter mode"), default=False, help_text=_("Do not customise notifications per single user")
+    )
     data: "OccurrenceData" = models.JSONField(  # type: ignore[assignment]
         default=dict, help_text=_("Information about the processing (recipients, channels)")
     )
     status = models.CharField(
-        choices=Status, default=Status.NEW.value, max_length=20, help_text=_("Status of the occurrence")
+        verbose_name=_("status"),
+        choices=Status,
+        default=Status.NEW.value,
+        max_length=20,
+        help_text=_("Status of the occurrence"),
     )
-    attempts = models.IntegerField(default=5)
+    attempts = models.IntegerField(
+        verbose_name=_("attempts"),
+        default=5,
+        help_text=_("The remaining number of attempts before the occurrence is marked as failed"),
+    )
     parent = models.ForeignKey("self", editable=False, blank=True, null=True, on_delete=models.CASCADE)
 
     objects = OccurrenceManager()
 
     class Meta:
+        verbose_name = _("Occurrence")
+        verbose_name_plural = _("Occurrences")
         ordering = ("timestamp",)
         constraints = [models.UniqueConstraint(fields=("timestamp", "event"), name="occurrence_unique")]
 

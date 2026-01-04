@@ -21,7 +21,6 @@ junit.xml
 !.flake8
 !.gitignore
 !.github/
-!.tx/config
 !.mypy.ini
 !.pre-commit-config.yaml
 !.bumpversion.cfg
