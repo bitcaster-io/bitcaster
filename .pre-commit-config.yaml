@@ -39,7 +39,7 @@ repos:
           - --check
 
   - repo: https://github.com/saxix/pch
-    rev: '0.2'
+    rev: '0.4'
     hooks:
       - id: check-missed-migrations
         args:
@@ -62,8 +62,20 @@ repos:
 
       -   id: check-minimized
           name: check missing minimized javascript
-          files: (monitor\.js)$
+          files: (\.js)$
           exclude: (\.min\.js)$
           args:
-          -   -i
-          -   "src/bitcaster/web/static/dashboards/monitor.js/*.js"
+            - -i
+            - "docs/*"
+            - -i
+            - "@node_modules/.*"
+            - -i
+            - '@.*postcss\.config\.js'
+
+      - id: check-forbidden
+        name: check pyproject to avoid editable sources/deps
+        files: pyproject.toml
+        language: python
+        args:
+          - -p
+          - /\[tool\.uv\.sources\]\s/s
