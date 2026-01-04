@@ -17,8 +17,12 @@ if TYPE_CHECKING:
 
 
 class LockMixin(models.Model):
-    locked = models.BooleanField(default=False, help_text=_("If checked any notification is ignored and not forwarded"))
-    paused = models.BooleanField(default=False, help_text=_("If checked any notification paused"))
+    locked = models.BooleanField(
+        verbose_name=_("locked"), default=False, help_text=_("If checked any notification is ignored and not forwarded")
+    )
+    paused = models.BooleanField(
+        verbose_name=_("paused"), default=False, help_text=_("If checked any notification paused")
+    )
 
     class Meta:
         abstract = True

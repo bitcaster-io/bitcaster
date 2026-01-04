@@ -21,6 +21,7 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.load_extra_data",
     "social_core.pipeline.user.user_details",
     "bitcaster.social.pipeline.save_to_group",
+    "bitcaster.social.pipeline.add_email_address",
 )
 
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
