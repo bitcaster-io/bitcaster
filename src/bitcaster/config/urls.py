@@ -9,6 +9,7 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     path("", include("bitcaster.web.urls")),
+    path("chrome/", include("bitcaster.chrome.urls")),
     path("i18n/", include("django.conf.urls.i18n")),
     path("admin/", admin.site.urls),
     path("chaining/", include("smart_selects.urls")),

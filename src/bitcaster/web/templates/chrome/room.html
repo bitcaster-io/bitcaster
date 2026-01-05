@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Chrome Plugin Communication</title>
+        <style>
+        body { font-family: sans-serif; margin: 20px; }
+        #log { border: 1px solid #ccc; padding: 10px; min-height: 200px; max-height: 400px; overflow-y: scroll; background: #f9f9f9; }
+        .message-entry { margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px dotted #eee; }
+        .message-event { font-weight: bold; color: #333; }
+        .message-data { font-family: monospace; background: #eef; padding: 2px 5px; border-radius: 3px; display: block; margin-top: 5px; }
+        </style>
+    </head>
+    <body>
+        <h1>
+            Chrome Plugin Messages
+        </h1>
+        <div id="log">
+        </div>
+        {{ user_email|json_script:"user-email" }}
+        <script>
+        const userEmail = JSON.parse(document.getElementById('user-email').textContent);
+        const logElement = document.getElementById('log');
+
+        // Construct the WebSocket URL to match the new routing
+        const url = 'ws://'
+            + window.location.host
+            + '/ws/chrome/' // Added 'ws/' prefix as per new routing
+            + userEmail
+            + '/';
+
+        const socket = new WebSocket(url);
+
+        socket.onopen = function(e) {
+            logMessage('WebSocket connection established.');
+        };
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            // Expected format from dispatcher: {"event": "notification", "data": {...}}
+            logIncomingMessage(data.event, data.data);
+        };
+
+        socket.onclose = function(e) {
+            console.error('WebSocket closed unexpectedly:', e);
+            logMessage('WebSocket connection closed.', 'error');
+        };
+
+        socket.onerror = function(e) {
+            console.error('WebSocket error:', e);
+            logMessage('WebSocket error occurred.', 'error');
+        };
+
+        function logMessage(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = 'message-entry ' + type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logElement.prepend(entry); // Add to top
+        }
+
+        function logIncomingMessage(event, data) {
+            const entry = document.createElement('div');
+            entry.className = 'message-entry';
+
+            const eventSpan = document.createElement('span');
+            eventSpan.className = 'message-event';
+            eventSpan.textContent = `Event: ${event}`;
+            entry.appendChild(eventSpan);
+
+            if (data) {
+                const dataPre = document.createElement('pre');
+                dataPre.className = 'message-data';
+                dataPre.textContent = JSON.stringify(data, null, 2);
+                entry.appendChild(dataPre);
+            }
+
+            logElement.prepend(entry); // Add to top
+        }
+
+        // Removed the chat input/send functionality as the primary use case
+        // is backend-to-frontend communication for a Chrome plugin.
+        // If two-way communication is needed, this part would be re-added
+        // and the consumer's 'receive' method implemented.
+        </script>
+    </body>
+</html>

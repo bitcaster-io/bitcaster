@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "unfold.contrib.constance",  # optional, if django-constance package is used
     # "django.contrib.admin",
     "bitcaster.admin_site.BitcasterAdminConfig",
+    # "bitcaster.chrome.apps.Config",
+    "daphne",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -115,6 +117,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "bitcaster.config.wsgi.application"
+ASGI_APPLICATION = "bitcaster.config.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [env("CHANNEL_SERVER")],
+        },
+    },
+}
 
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE")

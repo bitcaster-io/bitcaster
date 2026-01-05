@@ -30,8 +30,9 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         str,
         "bitcaster.agents.fs.validate_path",
         "Callable to validate agent filesystem path",
+        None,
     ),
-    "AGENT_FILESYSTEM_ROOT": (str, "", "AgentFilesystem root directory"),
+    "AGENT_FILESYSTEM_ROOT": (str, "", "AgentFilesystem root directory", ""),
     "AGENT_FILESYSTEM_DISALLOWED": (list, "", "AgentFilesystem disallowed directories"),
     "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], setting("allowed-hosts")),
     "AUTHENTICATION_BACKENDS": (list, [], setting("authentication-backends")),
@@ -41,10 +42,8 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         "Bitcaster documentation site. (no trailing slash)",
     ),
     "CACHE_PREFIX": (str, "", "", "prefix string to use in cache keys"),
-    "CACHE_URL": (
-        str,
-        "redis://cache-server:6379/0",
-    ),
+    "CACHE_URL": (str, "redis://cache-server:6379/0", "", "redis://cache-server:6379/0"),
+    "CHANNEL_SERVER": (str, "channel-server:6379", "", "channel-server:6379"),
     "CATCH_ALL_EMAIL": (str, "If set all the emails will be sent to this address"),
     "CSRF_COOKIE_SECURE": (bool, True, setting("csrf-cookie-secure"), False),
     "CSRF_COOKIE_SAMESITE": (str, setting("csrf-cookie-samesite")),
@@ -70,7 +69,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "ENVIRONMENT": (str, "production", "Bitcaster Environment", "local"),
     "EXTRA_APPS": (list, [], setting("configuring-applications")),  # nosec
     "INTERNAL_IPS": (list, [], setting("internal-ips"), ["127.0.0.1", "localhost"]),  # nosec
-    "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level")),
+    "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level"), "DEBUG"),
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "MEDIA_ROOT": (str, None, setting("media-root")),
     "MEDIA_URL": (str, "/media/", setting("media-url")),
