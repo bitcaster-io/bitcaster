@@ -55,7 +55,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         "https://django-environ.readthedocs.io/en/latest/types.html#environ-env-db-url",
         False,
     ),
-    "DRAMATIQ_BROKER": (str, "redis://dramatiq-broker:6379/0", "", True),
+    "DRAMATIQ_BROKER": (str, "redis://dramatiq-broker:6379/0", "", "redis://dramatiq-broker:6379/0"),
     "DEBUG": (bool, False, setting("debug"), True),
     "EMAIL_BACKEND": (str, "django.core.mail.backends.smtp.EmailBackend", setting("email-backend"), True),
     "EMAIL_HOST": (str, "localhost", setting("email-host"), True),
