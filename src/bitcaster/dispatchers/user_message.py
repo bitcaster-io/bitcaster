@@ -5,6 +5,7 @@ from constance import config
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from unfold.widgets import UnfoldAdminSelect2Widget
 
 from ..utils.shortcuts import render_string
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
@@ -17,7 +18,7 @@ class UserMessageConfig(DispatcherConfig):
     auto_assign = forms.BooleanField(
         label=_("auto_assign"), required=False, help_text=_("Automatically assign users to this channel")
     )
-    event = forms.ModelChoiceField(queryset=None, label=_("event"))
+    event = forms.ModelChoiceField(queryset=None, label=_("event"), widget=UnfoldAdminSelect2Widget)
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         from bitcaster.models import Event
@@ -62,21 +63,21 @@ class UserMessageDispatcher(Dispatcher):
     def get_extra_config_info(self) -> str:
         from bitcaster.models import Event
 
-        event = None
-        if event_pk := self.config.get("event"):
+        if event_pk := self.channel.config.get("event"):
             event = Event.objects.filter(pk=event_pk).first()
-        return render_string(
-            """
-<div class="grid grid-cols-2 gap-4">
-<div>Event</div><div><a href="{% url 'admin:bitcaster_event_change' event.pk %}">{{event}}</div>
-<div>Channel</div>
-<div><a href="{% url 'admin:bitcaster_channel_change' event.channels.first.pk %}">{{event.channels.first}}</a></div>
-<div>Message</div>
-<div><a href="{% url 'admin:bitcaster_message_change' event.messages.first.pk %}">{{event.messages.first}}</div>
-</div>
-""",
-            {"event": event},
-        )
+            return render_string(
+                """
+    <div class="grid grid-cols-2 gap-4">
+    <div>Event</div><div><a href="{% url 'admin:bitcaster_event_change' event.pk %}">{{event}}</div>
+    <div>Channel</div>
+    <div><a href="{% url 'admin:bitcaster_channel_change' event.channels.first.pk %}">{{event.channels.first}}</a></div>
+    <div>Message</div>
+    <div><a href="{% url 'admin:bitcaster_message_change' event.messages.first.pk %}">{{event.messages.first}}</div>
+    </div>
+    """,
+                {"event": event},
+            )
+        return ""
 
     def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
