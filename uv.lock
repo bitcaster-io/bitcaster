@@ -190,6 +190,7 @@ name = "bitcaster"
 source = { editable = "." }
 dependencies = [
     { name = "apscheduler" },
+    { name = "click" },
     { name = "colorlog" },
     { name = "cron-descriptor" },
     { name = "cryptography" },
@@ -333,6 +334,7 @@ mypy = [
 [package.metadata]
 requires-dist = [
     { name = "apscheduler", specifier = ">=3.11.2" },
+    { name = "click", specifier = ">=8.3.1" },
     { name = "colorlog", specifier = ">=6.10.1" },
     { name = "cron-descriptor", specifier = ">=2.0.6" },
     { name = "cryptography", specifier = "==45.0.3" },
