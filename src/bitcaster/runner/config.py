@@ -26,4 +26,10 @@ SCHEDULER = {
         "trigger": "interval",
         "minutes": 5,
     },
+    "check_for_new_user_messages": {
+        "func": "bitcaster.runner.tasks.check_for_new_user_messages",
+        "replace_existing": True,
+        "trigger": "interval",
+        "minutes": 5,
+    },
 }

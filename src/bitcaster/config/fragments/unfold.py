@@ -11,6 +11,11 @@ if TYPE_CHECKING:
 # see https://fonts.google.com/icons?icon.query=docs for icons
 COMMON_SITE_DROPDOWN = [
     {
+        "icon": "inbox",
+        "title": "Console",
+        "link": "/console/",
+    },
+    {
         "icon": "home",
         "title": "Dashboard",
         "link": "/admin/",
@@ -144,6 +149,11 @@ UNFOLD = {
                         "title": _("Stream"),
                         "icon": "call_log",
                         "link": reverse_lazy("admin:bitcaster_logmessage_changelist"),
+                    },
+                    {
+                        "title": _("Messages"),
+                        "icon": "inbox_text_person",
+                        "link": reverse_lazy("admin:bitcaster_usermessage_changelist"),
                     },
                 ],
             },

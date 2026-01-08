@@ -6,7 +6,6 @@ import pytest
 from constance.test.unittest import override_config
 from django.urls import reverse
 from responses.matchers import query_param_matcher, urlencoded_params_matcher
-from testutils.factories import GroupFactory, SocialProviderFactory
 
 from bitcaster.social.backend.wso2 import Wso2OAuth2
 
@@ -19,14 +18,18 @@ if typing.TYPE_CHECKING:
 
 @pytest.fixture(autouse=True)
 def group() -> None:
+    from testutils.factories import GroupFactory
+
     GroupFactory(name="demo")
 
 
 @pytest.fixture
 def config() -> SocialProvider:
+    from testutils.factories import SocialProviderFactory
+
     from bitcaster.social.models import Provider
 
-    return SocialProviderFactory(
+    return SocialProviderFactory.create(
         provider=Provider.OAUTH2,
         configuration={
             "SOCIAL_AUTH_OAUTH2_KEY": "Key1",

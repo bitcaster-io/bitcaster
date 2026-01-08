@@ -2,8 +2,8 @@ from django.apps import AppConfig
 
 
 class Config(AppConfig):
-    verbose_name = "Chrome plugin"
-    name = "bitcaster.chrome"
+    verbose_name = "Console"
+    name = "bitcaster.console"
 
     def ready(self) -> None:
         pass

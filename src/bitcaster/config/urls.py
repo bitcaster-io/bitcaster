@@ -9,9 +9,9 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     path("", include("bitcaster.web.urls")),
-    path("chrome/", include("bitcaster.chrome.urls")),
     path("i18n/", include("django.conf.urls.i18n")),
     path("admin/", admin.site.urls),
+    path("console/", include("bitcaster.console.urls", namespace="console")),
     path("chaining/", include("smart_selects.urls")),
     path("webpush/", include("bitcaster.webpush.urls")),
     path("api/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
@@ -21,6 +21,5 @@ urlpatterns = [
     path("adminactions/", include("adminactions.urls")),
     path("tinymce/", include("tinymce.urls")),
     path("social/", include("social_django.urls", namespace="social")),
-    path("select2/", include("django_select2.urls")),
     path(r"__debug__/", include(debug_toolbar.urls)),
 ]

@@ -11,10 +11,6 @@ from django.utils.safestring import SafeString
 from django_webtest import DjangoTestApp, DjangoWebtestResponse
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
 from strategy_field.utils import fqn
-from testutils.factories import (
-    AssignmentFactory,
-    UserRoleFactory,
-)
 from testutils.helpers import assert_form_error
 
 from bitcaster.models import Channel, Project
@@ -30,7 +26,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def app(django_app_factory: MixinWithInstanceVariables, rf: RequestFactory, gmail_channel: "Channel") -> DjangoTestApp:
-    from testutils.factories import SuperUserFactory
+    from testutils.factories import SuperUserFactory, UserRoleFactory
 
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")
@@ -100,14 +96,18 @@ def system_channel(db: Any) -> Generator[Channel, None, None]:
 
 def test_configure(app: DjangoTestApp, gmail_channel: "Channel") -> None:
     opts: Options[Channel] = Channel._meta
-    url = reverse(admin_urlname(opts, SafeString("configure")), args=[gmail_channel.pk])
+    url = reverse(admin_urlname(opts, SafeString("change")), args=[gmail_channel.pk])
     res = app.get(url)
+    res = res.click("Configure")
+    assert res.status_code == 200
+    res.forms["config-form"]["username"] = ""
+    res.forms["config-form"]["password"] = ""
+    res = res.forms["config-form"].submit()
     assert res.status_code == 200
 
-    res = app.post(url, {"username": "", "password": ""})
-    assert res.status_code == 200
-
-    res = app.post(url, {"username": "username", "password": "password", "timeout": 3})
+    res.forms["config-form"]["username"] = "username"
+    res.forms["config-form"]["password"] = "password"
+    res = res.forms["config-form"].submit()
     assert res.status_code == 302
 
 
@@ -119,6 +119,8 @@ def test_test_404(app: DjangoTestApp) -> None:
 
 
 def test_test(app: DjangoTestApp, gmail_channel: Channel) -> None:
+    from testutils.factories import AssignmentFactory
+
     opts: Options[Channel] = Channel._meta
     url = reverse(admin_urlname(opts, SafeString("test")), args=[gmail_channel.pk])
     res = app.get(url)
@@ -130,7 +132,7 @@ def test_test(app: DjangoTestApp, gmail_channel: Channel) -> None:
 
     with patch("smtplib.SMTP", autospec=True) as mock:
         res = app.post(url, {"recipient": "recipient", "subject": "subject", "message": "message"})
-    assert res.status_code == 200
+    assert res.status_code == 302
 
     mock.assert_called()
     s: Mock = mock.return_value
@@ -240,6 +242,8 @@ def test_channel_consistency(app: DjangoTestApp, gmail_channel: "Channel", proje
 
 @pytest.mark.wizard
 def test_add_channel_permission(app: DjangoTestApp, gmail_channel: "Channel") -> None:
+    from testutils.factories import UserRoleFactory
+
     r: UserRole = UserRoleFactory()
     assert r.organization != gmail_channel.organization
     url = reverse("admin:bitcaster_channel_add")

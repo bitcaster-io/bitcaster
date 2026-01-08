@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 import pytest
 from django.urls import reverse
 from strategy_field.utils import fqn
-from testutils.factories import TaskFactory
 from testutils.helpers import assert_form_error
 
 from bitcaster.runner.tasks import scan_occurrences
@@ -13,7 +12,14 @@ if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-    from bitcaster.models import User
+    from bitcaster.models import Task, User
+
+
+@pytest.fixture
+def task() -> "Task":
+    from testutils.factories import TaskFactory
+
+    return TaskFactory()
 
 
 @pytest.fixture
@@ -38,8 +44,7 @@ def test_task_add(app: "DjangoTestApp") -> None:
 
 
 @pytest.mark.parametrize("trigger, config", [("interval", {"minutes": 1}), ("cron", {"minute": 1})])
-def test_task_change(app: "DjangoTestApp", trigger, config) -> None:
-    task = TaskFactory()  # Use factory directly
+def test_task_change(app: "DjangoTestApp", trigger, config, task) -> None:
     url = reverse("admin:bitcaster_task_change", args=[task.id])
     res = app.get(url)
     frm = res.forms["task_form"]
@@ -54,8 +59,7 @@ def test_task_change(app: "DjangoTestApp", trigger, config) -> None:
 
 
 @pytest.mark.parametrize("trigger, config", [("interval", {"a": 1}), ("cron", {"b": 1})])
-def test_task_invalid_config(app: "DjangoTestApp", trigger, config) -> None:
-    task = TaskFactory()  # Use factory directly
+def test_task_invalid_config(app: "DjangoTestApp", trigger, config, task) -> None:
     url = reverse("admin:bitcaster_task_change", args=[task.id])
     res = app.get(url)
     frm = res.forms["task_form"]
@@ -69,6 +73,8 @@ def test_task_invalid_config(app: "DjangoTestApp", trigger, config) -> None:
 
 
 def test_task_change_invalid_trigger(app: "DjangoTestApp") -> None:
+    from testutils.factories import TaskFactory
+
     task = TaskFactory(trigger="-", trigger_config={})  # Use factory directly
     url = reverse("admin:bitcaster_task_change", args=[task.id])
     res = app.get(url)

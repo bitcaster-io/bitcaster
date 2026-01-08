@@ -39,13 +39,12 @@ INSTALLED_APPS = [
     # "django.contrib.admin",
     "bitcaster.admin_site.BitcasterAdminConfig",
     # "bitcaster.chrome.apps.Config",
-    "daphne",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_select2",
+    # "django_select2",
     "adminactions",
     "admin_extra_buttons",
     "social_django",
@@ -54,6 +53,7 @@ INSTALLED_APPS = [
     "adminfilters",
     "debug_toolbar",
     "jsoneditor",
+    "django_svelte_jsoneditor",
     "django_ace",
     "tinymce",
     "reversion",
@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "constance.backends.database",
     "anymail",
     "bitcaster.apps.Config",
+    "bitcaster.console.apps.Config",
     "tailwind",
     "issues",
     *env("EXTRA_APPS"),
@@ -117,7 +118,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "bitcaster.config.wsgi.application"
-ASGI_APPLICATION = "bitcaster.config.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
@@ -142,6 +142,8 @@ CACHES = {
     "default": env.cache(),
     "select2": env.cache(),
 }
+CACHES["default"]["KEY_PREFIX"] = env("ENVIRONMENT")
+CACHES["select2"]["KEY_PREFIX"] = env("ENVIRONMENT")
 
 AUTH_USER_MODEL = "bitcaster.user"
 

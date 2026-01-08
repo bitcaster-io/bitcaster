@@ -19,6 +19,7 @@ from .organization import Organization
 from .project import Project
 from .task import Task
 from .user import Member, User
+from .user_message import UserMessage
 from .userrole import UserRole
 
 __all__ = [
@@ -44,5 +45,6 @@ __all__ = [
     "SocialProvider",
     "Task",
     "User",
+    "UserMessage",
     "UserRole",
 ]

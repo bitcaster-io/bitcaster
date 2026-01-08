@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, Any, TypedDict
 
 import pytest
 from django.urls import reverse
-from testutils.factories import OrganizationFactory
 
 from bitcaster.constants import bitcaster
 
@@ -31,7 +30,7 @@ def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTes
 
 @pytest.fixture
 def context() -> "Context":
-    from testutils.factories import ChannelFactory, MessageFactory
+    from testutils.factories import ChannelFactory, MessageFactory, OrganizationFactory
 
     o = OrganizationFactory()
     ch: Channel = ChannelFactory(organization=o)
@@ -46,6 +45,8 @@ def context() -> "Context":
 
 
 def test_protected_org(app: "DjangoTestApp") -> None:
+    from testutils.factories import OrganizationFactory
+
     dl = OrganizationFactory(name=bitcaster.ORGANIZATION)
     url = reverse("admin:bitcaster_organization_change", args=[dl.pk])
     res = app.get(url)

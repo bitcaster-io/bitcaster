@@ -31,7 +31,7 @@ class MessageEditForm(forms.ModelForm[Message]):
             "admin/js/jquery.init.js",
             "bitcaster/js/editor%s.js" % extra,
         ]
-        css = {"screen": ["tinymce/skins/ui/oxide/skin.min.css", "css/unfold.css"]}
+        css = {"screen": ["tinymce/skins/ui/oxide/skin.min.css", "css/message_editor.css"]}
         return orig + forms.Media(js=js, css=css)  # type: ignore
 
     class Meta:
@@ -51,7 +51,7 @@ def validate_cleaned_data(form: "forms.ModelForm[Message] | NotificationTemplate
         and "event" in form.cleaned_data
         and (form.cleaned_data["channel"] not in form.cleaned_data["event"].channels.all())
     ):
-        form.add_error("channel", _("This channel is not available"))
+        form.add_error("channel", _("This channel is not available for the selected event"))
 
 
 class MessageChangeForm(forms.ModelForm[Message]):

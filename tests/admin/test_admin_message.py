@@ -6,7 +6,6 @@ import pytest
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.urls import reverse
 from strategy_field.utils import fqn
-from testutils.factories import ChannelFactory
 
 from bitcaster.models.protocols import CreateMessage
 
@@ -46,7 +45,7 @@ def message(db: Any) -> "Message":
 
 @pytest.fixture
 def email_message(email_channel: "Channel") -> "Message":
-    from testutils.factories import MessageFactory
+    from testutils.factories import ChannelFactory, MessageFactory
 
     from bitcaster.dispatchers import SystemDispatcher
 
@@ -241,4 +240,4 @@ def test_usage(app: "DjangoTestApp", creator: CreateMessage, channel: "Channel")
 
     url = reverse(admin_urlname(opts, "usage"), args=[message.pk])  # type: ignore[arg-type]
     res = app.get(url)
-    assert res.pyquery("div.grid a.link").text() == creator.name
+    assert res.pyquery(".usage div.grid a.link").text() == creator.name
