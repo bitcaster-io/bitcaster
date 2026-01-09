@@ -1,21 +1,40 @@
 {% extends "admin_extra_buttons/action_page.html" %}
-{% load markdown %}
+{% load markdown i18n %}
+{% block extrahead %}
+    {{ block.super }}
+    {{ adminform.media }}
+{% endblock extrahead %}
 {% block content %}
-    <h1>
+    <h1 class="text-xl font-medium">
         {{ original.name }} ({{ original.dispatcher.name }})
     </h1>
-    <div class="help_text">
-        {{ admin_form.form|help_doc }}
-    </div>
-    {{ admin_form.form.non_field_errors }}
-    <form method="post" id="config-form">
-        {% csrf_token %}
-        {% for fieldset in adminform %}
-            {% include "admin/includes/fieldset.html" %}
-        {% endfor %}
-        <div id="submit-row" class="flex">
-            <input type="submit" value="Save" class="button button-primary mx-2" />
-            <a class="button" href="..">Back</a>
+    {% if adminform %}
+        <div class="help_text">
+            {{ admin_form.form|help_doc }}
         </div>
-    </form>
-{% endblock content %}
+        {{ admin_form.form.non_field_errors }}
+        <form method="post" id="config-form">
+            {% csrf_token %}
+            {% for fieldset in adminform %}
+                {% include "admin/includes/fieldset.html" %}
+            {% endfor %}
+            <div id="submit-row" class="flex">
+                <input type="submit" value="Save" class="button button-primary mx-2" />
+                <a class="button" href="..">Back</a>
+            </div>
+        </form>
+        <div>
+            <div class="my-2 p-2">
+                {{ extra_config_info }}
+            </div>
+        {% else %}
+            <div class="">
+                <div class="text-center text-xl p-5">
+                    {% trans "This dispatcher does not need configuration" %}
+                </div>
+                <div class="flex">
+                    <a class="button m-auto" href="..">Back</a>
+                </div>
+            </div>
+        {% endif %}
+    {% endblock content %}

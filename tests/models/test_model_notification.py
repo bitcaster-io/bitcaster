@@ -3,9 +3,6 @@ from unittest.mock import Mock
 
 import pytest
 from pytest_django import DjangoAssertNumQueries
-from testutils.factories import NotificationFactory
-from testutils.factories.channel import ChannelFactory
-from testutils.factories.message import MessageFactory
 
 if TYPE_CHECKING:
     from bitcaster.models import ApiKey, Assignment, Channel, DistributionList, Event, Message, Notification, User
@@ -51,6 +48,8 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
 
 
 def test_get_message_cache(notification: "Notification", django_assert_num_queries: DjangoAssertNumQueries) -> None:
+    from testutils.factories import ChannelFactory, MessageFactory
+
     ch1 = ChannelFactory()
     m1 = MessageFactory(channel=ch1, notification=notification, event=notification.event)
 
@@ -61,12 +60,14 @@ def test_get_message_cache(notification: "Notification", django_assert_num_queri
 
 
 def test_get_message_precedence(event: "Event", django_assert_num_queries: DjangoAssertNumQueries) -> None:
-    ch1 = ChannelFactory()
-    n1: "Notification" = NotificationFactory(event=event)
-    n2: "Notification" = NotificationFactory(event=event)
+    from testutils.factories import ChannelFactory, MessageFactory, NotificationFactory
 
-    m1: "Message" = MessageFactory(name="m1", channel=ch1, event=n1.event, notification=None)
-    m2: "Message" = MessageFactory(name="m2", channel=ch1, event=n1.event, notification=n2)
+    ch1 = ChannelFactory()
+    n1: "Notification" = NotificationFactory.create(event=event)
+    n2: "Notification" = NotificationFactory.create(event=event)
+
+    m1: "Message" = MessageFactory.create(name="m1", channel=ch1, event=n1.event, notification=None)
+    m2: "Message" = MessageFactory.create(name="m2", channel=ch1, event=n1.event, notification=n2)
 
     assert list(n1.get_messages(ch1)) == [m1]
     assert list(n2.get_messages(ch1)) == [m2, m1]
@@ -80,8 +81,10 @@ def test_get_message_precedence(event: "Event", django_assert_num_queries: Djang
 
 
 def test_missing_message(event: "Event", monkeypatch: pytest.MonkeyPatch) -> None:
+    from testutils.factories import ChannelFactory, NotificationFactory
+
     ch1 = ChannelFactory()
-    n1: "Notification" = NotificationFactory(event=event)
+    n1: "Notification" = NotificationFactory.create(event=event)
     monkeypatch.setattr(ch1.dispatcher, "send", mocked_notify := Mock())
 
     ret = n1.notify_to_channel(ch1, Mock(), {})
@@ -100,6 +103,8 @@ def test_missing_message(event: "Event", monkeypatch: pytest.MonkeyPatch) -> Non
     ],
 )
 def test_extra_context_override(ctx: dict[str, str], extra: dict[str, Any], expected: dict[str, Any]) -> None:
+    from testutils.factories import NotificationFactory
+
     notification = NotificationFactory(extra_context=extra)
     expected |= {"notification": notification.name}
     assert notification.get_context(ctx).items() >= expected.items()
@@ -116,6 +121,8 @@ def test_extra_context_override(ctx: dict[str, str], extra: dict[str, Any], expe
     ],
 )
 def test_get_pending_subscriptions(data: "Context", recipients_filter, api_filters, expected) -> None:
+    from testutils.factories import NotificationFactory
+
     distribution = None
     external_filtering = False
     dynamic = False

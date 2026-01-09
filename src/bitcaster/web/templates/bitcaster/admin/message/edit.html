@@ -1,4 +1,5 @@
 {% extends "unfold/layouts/base.html" %}
+{#{% extends "admin/change_form.html" %}#}
 {% load i18n static %}
 <!DOCTYPE HTML>
 {% block extrastyle %}
@@ -20,7 +21,7 @@
             <div class="flex p-2">
                 <div class="inline-flex toolbar grow">
                     {% if original.support_text %}
-                        <button id="btn_content" class="button active toggler" data-content-type="text/plain" data-panel="#tab_content" type="button">
+                        <button id="btn_content" class="button toggler" data-content-type="text/plain" data-panel="#tab_content" type="button">
                             {% translate 'Text' %}
                         </button>
                     {% endif %}

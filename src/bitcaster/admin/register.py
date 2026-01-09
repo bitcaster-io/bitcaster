@@ -26,6 +26,7 @@ from .overrides import (
 from .project import ProjectAdmin
 from .task import TaskAdmin
 from .user import UserAdmin
+from .user_message import UserMessageAdmin
 from .userrole import UserRoleAdmin
 
 admin.site.register(models.Group, GroupAdmin)
@@ -52,5 +53,6 @@ admin.site.register(models.Organization, OrganizationAdmin)
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.UserRole, UserRoleAdmin)
+admin.site.register(models.UserMessage, UserMessageAdmin)
 admin.site.register(models.Monitor, MonitorAdmin)
 admin.site.register(models.Task, TaskAdmin)

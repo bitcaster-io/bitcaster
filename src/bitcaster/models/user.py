@@ -1,3 +1,4 @@
+import datetime
 import logging
 from typing import TYPE_CHECKING
 
@@ -63,6 +64,9 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
         from bitcaster.models import DistributionList
 
         return DistributionList.objects.filter(recipients__address__user=self)
+
+    def format_date(self, d: datetime.datetime) -> str:
+        return d.strftime("%d %b %Y %H:%M")
 
 
 class Member(User):

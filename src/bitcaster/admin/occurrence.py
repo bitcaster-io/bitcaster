@@ -6,12 +6,12 @@ from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from django.contrib import messages
-from django.contrib.admin import display
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from unfold.decorators import display
 
 from bitcaster.models import Assignment, Message, Occurrence
 from bitcaster.runner.tasks import purge_occurrences
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     search_fields = ("name",)
-    list_display = ("timestamp", "application", "event", "status", "paused", "attempts", "recipients")
+    list_display = ("pk", "timestamp", "application", "event", "status_badge", "paused", "attempts", "recipients")
     list_filter = (
         "timestamp",
         ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
@@ -46,6 +46,17 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     @display(boolean=True)
     def paused(self, obj: Occurrence):
         return obj.event.paused or obj.event.application.paused
+
+    @display(
+        ordering="status",
+        label={
+            Occurrence.Status.PROCESSED: "success",  # green
+            Occurrence.Status.FAILED: "danger",  # green
+            Occurrence.Status.NEW: "info",  # green
+        },
+    )
+    def status_badge(self, obj):
+        return obj.status
 
     def get_list_display(self, request: HttpRequest) -> list[str]:  # type: ignore[override]
         return super().get_list_display(request)  # type: ignore[return-value]

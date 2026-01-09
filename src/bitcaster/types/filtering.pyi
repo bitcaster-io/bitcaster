@@ -1,13 +1,13 @@
-from typing import TypedDict
+from typing import Any, TypedDict
 
-from .json import JSONScalar
+from .json import JSON
 
-class FilterRule(TypedDict):
-    field_path: str
-    value: JSONScalar
+FilterRule = JSON
 
 FilterRuleSet = list[FilterRule]
 
 class QuerysetFilter(TypedDict):
     include: list[FilterRule]
     exclude: list[FilterRule]
+
+AllowedFilters = dict[str, Any] | QuerysetFilter
