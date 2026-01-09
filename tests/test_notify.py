@@ -15,7 +15,7 @@ if TYPE_CHECKING:
         Channel,
         DistributionList,
         Event,
-        Message,
+        MessageTemplate,
         User,
     )
 
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
             "channel": Channel,
             "v1": Assignment,
             "v2": Assignment,
-            "message": Message,
+            "message": MessageTemplate,
             "address": Address,
         },
     )

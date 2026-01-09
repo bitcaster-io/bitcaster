@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from unfold.decorators import display
 
-from bitcaster.models import Assignment, Message, Occurrence
+from bitcaster.models import Assignment, MessageTemplate, Occurrence
 from bitcaster.runner.tasks import purge_occurrences
 
 from ..cache.manager import CacheManager
@@ -82,7 +82,7 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
                         active_notifications = [p.pk for p in obj._get_valid_notifications()]
                         active_channels = obj._get_valid_channels()
                         message_for_channel = {
-                            msg.channel.pk: msg for msg in Message.objects.filter(notification__event=obj.event)
+                            msg.channel.pk: msg for msg in MessageTemplate.objects.filter(notification__event=obj.event)
                         }
                         for nt in obj.event.notifications.filter(id__in=active_notifications):
                             for ch in active_channels:

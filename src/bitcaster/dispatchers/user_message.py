@@ -66,7 +66,8 @@ class UserMessageDispatcher(Dispatcher):
     <div>Channel</div>
     <div><a href="{% url 'admin:bitcaster_channel_change' event.channels.first.pk %}">{{event.channels.first}}</a></div>
     <div>Message</div>
-    <div><a href="{% url 'admin:bitcaster_message_change' event.messages.first.pk %}">{{event.messages.first}}</div>
+    <div>
+    <a href="{% url 'admin:bitcaster_messagetemplate_change' event.messages.first.pk %}">{{event.messages.first}}</div>
     </div>
     """,
                 {"event": event},

@@ -19,7 +19,7 @@ from .user import User
 
 if TYPE_CHECKING:
     from bitcaster.dispatchers.base import Dispatcher
-    from bitcaster.models import Address, Application, Channel, Message
+    from bitcaster.models import Address, Application, Channel, MessageTemplate
     from bitcaster.types.yaml import YamlPayload
 
 logger = logging.getLogger(__name__)
@@ -94,7 +94,7 @@ class Notification(BitcasterBaseModel):
         return self.name, *self.event.natural_key()
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self._cached_messages: dict[Channel, Message | None] = {}
+        self._cached_messages: dict[Channel, MessageTemplate | None] = {}
         super().__init__(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -193,22 +193,24 @@ class Notification(BitcasterBaseModel):
             rules = yaml.safe_load(self.payload_filter or "")
         return self.match_line_filter(rules, payload)
 
-    def get_messages(self, channel: "Channel") -> QuerySet["Message"]:
-        from .message import Message
+    def get_messages(self, channel: "Channel") -> QuerySet["MessageTemplate"]:
+        from .messagetemplate import MessageTemplate
 
         return (
-            Message.objects.filter(channel=channel)
+            MessageTemplate.objects.filter(channel=channel)
             .filter(models.Q(event=self.event, notification=self) | models.Q(event=self.event, notification=None))
             .order_by("notification")
         )
 
-    def get_message(self, channel: "Channel") -> "Message | None":
+    def get_message(self, channel: "Channel") -> "MessageTemplate | None":
         if channel not in self._cached_messages:
             ret = self.get_messages(channel).first()
             self._cached_messages[channel] = ret
         return self._cached_messages[channel]
 
-    def create_message(self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None) -> "Message":
+    def create_message(
+        self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None
+    ) -> "MessageTemplate":
         return self.messages.get_or_create(
             name=name,
             channel=channel,

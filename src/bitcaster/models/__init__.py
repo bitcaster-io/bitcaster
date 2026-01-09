@@ -11,7 +11,7 @@ from .internal import LogMessage
 from .key import ApiKey
 from .log import LogEntry
 from .media import MediaFile
-from .message import Message
+from .messagetemplate import MessageTemplate
 from .monitor import Monitor
 from .notification import Notification
 from .occurrence import Occurrence
@@ -35,7 +35,7 @@ __all__ = [
     "LogMessage",
     "MediaFile",
     "Member",
-    "Message",
+    "MessageTemplate",
     "Monitor",
     "Notification",
     "Occurrence",

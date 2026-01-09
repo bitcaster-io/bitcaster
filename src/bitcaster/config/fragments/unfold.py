@@ -185,7 +185,7 @@ UNFOLD = {
                     {
                         "title": _("Message Templates"),
                         "icon": "article",
-                        "link": reverse_lazy("admin:bitcaster_message_changelist"),
+                        "link": reverse_lazy("admin:bitcaster_messagetemplate_changelist"),
                     },
                 ],
             },
