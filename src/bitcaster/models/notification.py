@@ -19,7 +19,7 @@ from .user import User
 
 if TYPE_CHECKING:
     from bitcaster.dispatchers.base import Dispatcher
-    from bitcaster.models import Address, Application, Channel, Message
+    from bitcaster.models import Address, Application, Channel, MessageTemplate
     from bitcaster.types.yaml import YamlPayload
 
 logger = logging.getLogger(__name__)
@@ -46,22 +46,25 @@ class NotificationManager(BitcasterBaselManager.from_queryset(NotificationQueryS
 
 
 class Notification(BitcasterBaseModel):
-    name = models.CharField(max_length=100)
+    name = models.CharField(verbose_name=_("name"), max_length=100)
     event = models.ForeignKey("bitcaster.Event", on_delete=models.CASCADE, related_name="notifications")
     distribution = models.ForeignKey(
         DistributionList, blank=True, null=True, on_delete=models.CASCADE, related_name="notifications"
     )
     environments = ArrayField(
         models.CharField(max_length=20, blank=True, null=True),
+        verbose_name=_("environments"),
         blank=True,
         null=True,
         help_text=_("Allow notification only for these environments"),
     )
-    payload_filter = models.TextField(blank=True, null=True)
+    payload_filter = models.TextField(verbose_name=_("payload filter"), blank=True, null=True)
     extra_context = models.JSONField(default=dict, blank=True)
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(verbose_name=_("active"), default=False)
     external_filtering = models.BooleanField(
-        default=False, help_text="Allow filtering recipients based on rules passed in the api call"
+        verbose_name=_("external filtering"),
+        default=False,
+        help_text="Allow filtering recipients based on rules passed in the api call",
     )
 
     dynamic = models.BooleanField(
@@ -91,7 +94,7 @@ class Notification(BitcasterBaseModel):
         return self.name, *self.event.natural_key()
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self._cached_messages: dict[Channel, Message | None] = {}
+        self._cached_messages: dict[Channel, MessageTemplate | None] = {}
         super().__init__(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -190,22 +193,24 @@ class Notification(BitcasterBaseModel):
             rules = yaml.safe_load(self.payload_filter or "")
         return self.match_line_filter(rules, payload)
 
-    def get_messages(self, channel: "Channel") -> QuerySet["Message"]:
-        from .message import Message
+    def get_messages(self, channel: "Channel") -> QuerySet["MessageTemplate"]:
+        from .messagetemplate import MessageTemplate
 
         return (
-            Message.objects.filter(channel=channel)
+            MessageTemplate.objects.filter(channel=channel)
             .filter(models.Q(event=self.event, notification=self) | models.Q(event=self.event, notification=None))
             .order_by("notification")
         )
 
-    def get_message(self, channel: "Channel") -> "Message | None":
+    def get_message(self, channel: "Channel") -> "MessageTemplate | None":
         if channel not in self._cached_messages:
             ret = self.get_messages(channel).first()
             self._cached_messages[channel] = ret
         return self._cached_messages[channel]
 
-    def create_message(self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None) -> "Message":
+    def create_message(
+        self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None
+    ) -> "MessageTemplate":
         return self.messages.get_or_create(
             name=name,
             channel=channel,

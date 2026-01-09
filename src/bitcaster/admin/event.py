@@ -19,7 +19,7 @@ from ..constants import bitcaster
 from ..forms.event import EventChangeForm
 from ..state import state
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
-from .message import Message
+from .message import MessageTemplate
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
@@ -30,8 +30,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class MessageInline(admin.TabularInline[Message, Event]):
-    model = Message
+class MessageInline(admin.TabularInline[MessageTemplate, Event]):
+    model = MessageTemplate
     extra = 0
     fields = [
         "name",
@@ -195,7 +195,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
 
     @link(change_form=True, change_list=False)
     def messages(self, button: ButtonWidget) -> None:
-        url = reverse("admin:bitcaster_message_changelist")
+        url = reverse("admin:bitcaster_messagetemplate_changelist")
         event: Event = button.context["original"]
         if event:
             button.href = f"{url}?event__exact={event.pk}"

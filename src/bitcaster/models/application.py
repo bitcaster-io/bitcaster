@@ -13,7 +13,7 @@ from .user import User
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from bitcaster.models import Channel, Event, Message, Organization
+    from bitcaster.models import Channel, Event, MessageTemplate, Organization
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +32,17 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
         User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True, related_name="applications"
     )
 
-    active = models.BooleanField(default=True, help_text=_("Whether the application should be active"))
+    active = models.BooleanField(
+        verbose_name=_("active"), default=True, help_text=_("Whether the application should be active")
+    )
     auto_crete_event = models.BooleanField(
-        default=False, help_text=_("If true unknown events will be automatically created")
+        verbose_name=_("auto create events"),
+        default=False,
+        help_text=_("If true unknown events will be automatically created"),
     )
     from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
     subject_prefix = models.CharField(
+        verbose_name=_("subject prefix"),
         max_length=50,
         default="[Bitcaster] ",
         help_text=_("Default prefix for messages supporting subject"),
@@ -49,6 +54,8 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
     class Meta:
         ordering = ("name",)
         unique_together = (("project", "name"), ("project", "slug"))
+        verbose_name = _("Application")
+        verbose_name_plural = _("Applications")
 
     def can_be_locked(self) -> bool:
         return self.project.organization.name != bitcaster.ORGANIZATION
@@ -71,8 +78,10 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
         ev: "Event" = self.events.get_or_create(name=name, defaults={"description": description, "active": False})[0]
         return ev
 
-    def create_message(self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None) -> "Message":
-        return self.message_set.get_or_create(
+    def create_message(
+        self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None
+    ) -> "MessageTemplate":
+        return self.messagetemplate_set.get_or_create(
             name=name,
             channel=channel,
             notification=None,

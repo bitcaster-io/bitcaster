@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, Any, TypedDict
 
 import pytest
 from django.urls import reverse
-from testutils.factories import OrganizationFactory
 
 from bitcaster.constants import bitcaster
 
@@ -10,11 +9,11 @@ if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-    from bitcaster.models import Channel, Message, Organization, Project
+    from bitcaster.models import Channel, MessageTemplate, Organization, Project
 
     Context = TypedDict(
         "Context",
-        {"organization": Organization, "channel": Channel, "message": Message},
+        {"organization": Organization, "channel": Channel, "message": MessageTemplate},
     )
 
 
@@ -31,12 +30,12 @@ def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTes
 
 @pytest.fixture
 def context() -> "Context":
-    from testutils.factories import ChannelFactory, MessageFactory
+    from testutils.factories import ChannelFactory, MessageFactory, OrganizationFactory
 
     o = OrganizationFactory()
     ch: Channel = ChannelFactory(organization=o)
     o.channel_set.add(ch)
-    message: Message = MessageFactory(channel=ch, organization=o, project=None, application=None)
+    message: MessageTemplate = MessageFactory(channel=ch, organization=o, project=None, application=None)
 
     return {
         "organization": o,
@@ -46,6 +45,8 @@ def context() -> "Context":
 
 
 def test_protected_org(app: "DjangoTestApp") -> None:
+    from testutils.factories import OrganizationFactory
+
     dl = OrganizationFactory(name=bitcaster.ORGANIZATION)
     url = reverse("admin:bitcaster_organization_change", args=[dl.pk])
     res = app.get(url)

@@ -3,8 +3,6 @@ from typing import TYPE_CHECKING, TypedDict
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
-from testutils.factories.event import EventFactory
-from testutils.factories.key import ApiKeyFactory
 from testutils.perms import key_grants
 
 from bitcaster.auth.constants import Grant
@@ -31,8 +29,10 @@ def client(admin_user: "User") -> APIClient:
 
 @pytest.fixture
 def data(admin_user: "User") -> "Context":
-    event: "Event" = EventFactory()
-    key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
+    from testutils.factories import ApiKeyFactory, EventFactory
+
+    event: "Event" = EventFactory.create()
+    key = ApiKeyFactory.create(user=admin_user, grants=[], application=event.application)
     return {
         "event": event,
         "key": key,

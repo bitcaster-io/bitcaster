@@ -38,12 +38,13 @@ INSTALLED_APPS = [
     "unfold.contrib.constance",  # optional, if django-constance package is used
     # "django.contrib.admin",
     "bitcaster.admin_site.BitcasterAdminConfig",
+    # "bitcaster.chrome.apps.Config",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_select2",
+    # "django_select2",
     "adminactions",
     "admin_extra_buttons",
     "social_django",
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     "adminfilters",
     "debug_toolbar",
     "jsoneditor",
+    "django_svelte_jsoneditor",
     "django_ace",
     "tinymce",
     "reversion",
@@ -65,6 +67,7 @@ INSTALLED_APPS = [
     "constance.backends.database",
     "anymail",
     "bitcaster.apps.Config",
+    "bitcaster.console.apps.Config",
     "tailwind",
     "issues",
     *env("EXTRA_APPS"),
@@ -74,6 +77,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "bitcaster.middleware.errors.ExceptionHandlingMiddleware",
     "csp.middleware.CSPMiddleware",
     "bitcaster.middleware.user_agent.UserAgentMiddleware",
@@ -115,6 +119,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "bitcaster.config.wsgi.application"
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [env("CHANNEL_SERVER")],
+        },
+    },
+}
+
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE")
 CSRF_COOKIE_SAMESITE = "Strict"
@@ -129,6 +142,8 @@ CACHES = {
     "default": env.cache(),
     "select2": env.cache(),
 }
+CACHES["default"]["KEY_PREFIX"] = env("ENVIRONMENT")
+CACHES["select2"]["KEY_PREFIX"] = env("ENVIRONMENT")
 
 AUTH_USER_MODEL = "bitcaster.user"
 
@@ -173,11 +188,14 @@ AUTHENTICATION_BACKENDS = [
 
 LANGUAGE_CODE = "en-us"
 ugettext = lambda s: s  # noqa
+LANGUAGE_COOKIE_NAME = "language"
 LANGUAGES = (
-    ("es", ugettext("Spanish")),  # type: ignore[no-untyped-call]
-    ("fr", ugettext("French")),  # type: ignore[no-untyped-call]
-    ("en", ugettext("English")),  # type: ignore[no-untyped-call]
-    ("ar", ugettext("Arabic")),  # type: ignore[no-untyped-call]
+    ("en", "English"),
+    ("es", "Español"),
+    ("it", "Italiano"),
+    ("fr", "Français"),
+    ("de", "Deutsch"),
+    ("ar", "العربية"),
 )
 
 TIME_ZONE = env("TIME_ZONE")

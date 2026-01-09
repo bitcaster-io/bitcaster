@@ -29,7 +29,7 @@ Prerequisites:
 1. In the shell:
 
     ```
-    uv ven
+    uv venv
     source .venv/bin/activate
 
     ```

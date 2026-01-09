@@ -17,6 +17,7 @@ from .overrides import LogEntryAdmin
 from .project import ProjectAdmin
 from .task import TaskAdmin
 from .user import UserAdmin
+from .user_message import UserMessageAdmin
 from .userrole import UserRoleAdmin
 
 __all__ = [
@@ -39,5 +40,6 @@ __all__ = [
     "ProjectAdmin",
     "TaskAdmin",
     "UserAdmin",
+    "UserMessageAdmin",
     "UserRoleAdmin",
 ]

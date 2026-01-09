@@ -4,7 +4,6 @@ import pytest
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.messages import SUCCESS, Message  # type: ignore[attr-defined]
 from django.urls import reverse
-from testutils.factories import EventFactory
 
 from bitcaster.constants import bitcaster
 
@@ -90,11 +89,14 @@ def test_delete_event(app: "DjangoTestApp", context: "Context") -> None:
     url = reverse(admin_urlname(opts, "change"), args=[event.pk])  # type: ignore[arg-type]
     res = app.get(url, {})
     res = res.click("Delete")
-    res.forms[1].submit().follow()
+    delete_form_index = next(filter(lambda i: res.forms[i].action == "", res.forms))
+    res.forms[delete_form_index].submit().follow()
     assert not Event.objects.filter(pk=event.pk).exists()
 
 
 def test_delete_event_protect_internal(app: "DjangoTestApp", context: "Context") -> None:
+    from testutils.factories import EventFactory
+
     internal_event: Event = EventFactory(
         application__name=bitcaster.APPLICATION,
         application__project__name=bitcaster.PROJECT,
@@ -107,6 +109,8 @@ def test_delete_event_protect_internal(app: "DjangoTestApp", context: "Context")
 
 
 def test_delete_action(app: "DjangoTestApp", context: "Context") -> None:
+    from testutils.factories import EventFactory
+
     from bitcaster.models import Event
 
     event: "Event" = context["event"]
@@ -124,6 +128,7 @@ def test_delete_action(app: "DjangoTestApp", context: "Context") -> None:
 
     res = frm.submit()
     assert "Are you sure you want to delete the selected events?" in res.text
-    res.forms[1].submit().follow()
+    delete_form_index = next(filter(lambda i: res.forms[i].action == "", res.forms))
+    res.forms[delete_form_index].submit().follow()
     assert not Event.objects.filter(pk=event.pk).exists()
     assert Event.objects.filter(pk=internal_event.pk).exists()

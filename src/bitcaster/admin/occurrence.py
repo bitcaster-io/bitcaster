@@ -6,14 +6,14 @@ from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from django.contrib import messages
-from django.contrib.admin import display
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from unfold.decorators import display
 
-from bitcaster.models import Assignment, Message, Occurrence
+from bitcaster.models import Assignment, MessageTemplate, Occurrence
 from bitcaster.runner.tasks import purge_occurrences
 
 from ..cache.manager import CacheManager
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     search_fields = ("name",)
-    list_display = ("timestamp", "application", "event", "status", "paused", "attempts", "recipients")
+    list_display = ("pk", "timestamp", "application", "event", "status_badge", "paused", "attempts", "recipients")
     list_filter = (
         "timestamp",
         ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
@@ -46,6 +46,17 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     @display(boolean=True)
     def paused(self, obj: Occurrence):
         return obj.event.paused or obj.event.application.paused
+
+    @display(
+        ordering="status",
+        label={
+            Occurrence.Status.PROCESSED: "success",  # green
+            Occurrence.Status.FAILED: "danger",  # green
+            Occurrence.Status.NEW: "info",  # green
+        },
+    )
+    def status_badge(self, obj):
+        return obj.status
 
     def get_list_display(self, request: HttpRequest) -> list[str]:  # type: ignore[override]
         return super().get_list_display(request)  # type: ignore[return-value]
@@ -71,7 +82,7 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
                         active_notifications = [p.pk for p in obj._get_valid_notifications()]
                         active_channels = obj._get_valid_channels()
                         message_for_channel = {
-                            msg.channel.pk: msg for msg in Message.objects.filter(notification__event=obj.event)
+                            msg.channel.pk: msg for msg in MessageTemplate.objects.filter(notification__event=obj.event)
                         }
                         for nt in obj.event.notifications.filter(id__in=active_notifications):
                             for ch in active_channels:
@@ -189,7 +200,7 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
             doit,
             message="Proceeding will process the occurrence",
             success_message="",
-            description=_(""),
+            description="",
             extra_context={"content_title": "Process", "object": obj, "opts": obj._meta},
             error_message="",
         )

@@ -22,10 +22,13 @@ if TYPE_CHECKING:
     from .application import Application
     from .assignment import Assignment
     from .channel import Channel
-    from .message import Message
+    from .messagetemplate import MessageTemplate
     from .notification import Notification
 
-    OccurrenceData = TypedDict("OccurrenceData", {"delivered": list[str | int], "recipients": list[tuple[str, str]]})  # noqa: UP013
+    class OccurrenceData(TypedDict):
+        delivered: list[str | int]
+        recipients: list[tuple[str, str]]
+        errors: list[str]
 
     class OccurrenceOptions(TypedDict):
         limit_to: NotRequired[list[str]]
@@ -66,27 +69,45 @@ class Occurrence(BitcasterBaseModel):
         FAILED = "FAILED", _("Failed")
         NEW = "NEW", _("New")
 
-    timestamp = models.DateTimeField(auto_now_add=True, help_text=_("Timestamp when occurrence has been created."))
+    timestamp = models.DateTimeField(
+        verbose_name=_("date"), auto_now_add=True, help_text=_("Timestamp when occurrence has been created.")
+    )
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    context = models.JSONField(blank=True, default=dict, help_text=_("Context provided by the sender"))
+    context = models.JSONField(
+        verbose_name=_("context"), blank=True, default=dict, help_text=_("Context provided by the sender")
+    )
     options: "OccurrenceOptions" = models.JSONField(  # type: ignore[assignment]
         blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
     )
     correlation_id = models.CharField(max_length=255, editable=False, blank=True, null=True)
-    recipients = models.IntegerField(default=0, help_text=_("Total number of reached recipients"))
-    newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
+    recipients = models.IntegerField(
+        verbose_name=_("recipients"), default=0, help_text=_("Total number of reached recipients")
+    )
+    newsletter = models.BooleanField(
+        verbose_name=_("newsletter mode"), default=False, help_text=_("Do not customise notifications per single user")
+    )
     data: "OccurrenceData" = models.JSONField(  # type: ignore[assignment]
         default=dict, help_text=_("Information about the processing (recipients, channels)")
     )
     status = models.CharField(
-        choices=Status, default=Status.NEW.value, max_length=20, help_text=_("Status of the occurrence")
+        verbose_name=_("status"),
+        choices=Status,
+        default=Status.NEW.value,
+        max_length=20,
+        help_text=_("Status of the occurrence"),
     )
-    attempts = models.IntegerField(default=5)
+    attempts = models.IntegerField(
+        verbose_name=_("attempts"),
+        default=5,
+        help_text=_("The remaining number of attempts before the occurrence is marked as failed"),
+    )
     parent = models.ForeignKey("self", editable=False, blank=True, null=True, on_delete=models.CASCADE)
 
     objects = OccurrenceManager()
 
     class Meta:
+        verbose_name = _("Occurrence")
+        verbose_name_plural = _("Occurrences")
         ordering = ("timestamp",)
         constraints = [models.UniqueConstraint(fields=("timestamp", "event"), name="occurrence_unique")]
 
@@ -97,7 +118,7 @@ class Occurrence(BitcasterBaseModel):
         return str(self.timestamp), *self.event.natural_key()
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self._cached_messages: dict[Channel, Message] = {}
+        self._cached_messages: dict[Channel, MessageTemplate] = {}
         super().__init__(*args, **kwargs)
 
     def get_context(self) -> dict[str, Any]:
@@ -175,6 +196,7 @@ class Occurrence(BitcasterBaseModel):
         recipients = self.data.get("recipients", [])
         assignment_filter = {}
         success = True
+        data: "OccurrenceData" = {"delivered": [], "recipients": [], "errors": []}
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
         api_filtering = self.options.get("filters", {}) or {}
@@ -192,7 +214,9 @@ class Occurrence(BitcasterBaseModel):
                         recipients.append((assignment.address.value, assignment.channel.name))
         except Exception as e:
             logger.exception(e)
+            data["errors"].append(f"{e.__class__.__name__}: {str(e)}")
             success = False
         finally:
-            data: "OccurrenceData" = {"delivered": delivered, "recipients": recipients}
+            data["delivered"] = delivered
+            data["recipients"] = recipients
         return success, data

@@ -16,7 +16,16 @@ from testutils.perms import user_grant_permissions
 if TYPE_CHECKING:
     from webtest.response import TestResponse
 
-    from bitcaster.models import Assignment, Channel, DistributionList, Event, Message, Notification, Occurrence, User
+    from bitcaster.models import (
+        Assignment,
+        Channel,
+        DistributionList,
+        Event,
+        MessageTemplate,
+        Notification,
+        Occurrence,
+        User,
+    )
 
     Context = TypedDict(
         "Context",
@@ -27,7 +36,7 @@ if TYPE_CHECKING:
             "assignment": Assignment,
             "notification": Notification,
             "distribution": DistributionList,
-            "message": Message,
+            "message": MessageTemplate,
         },
     )
 

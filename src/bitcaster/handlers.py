@@ -7,7 +7,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from bitcaster import models
-from bitcaster.models import Organization, Project
+from bitcaster.constants import AddressType
+from bitcaster.dispatchers import UserMessageDispatcher
+from bitcaster.models import Address, Assignment, Channel, Organization, Project
 from bitcaster.state import state
 
 logger = logging.getLogger(__name__)
@@ -40,3 +42,15 @@ def auto_set_superusers(sender: Any, instance: models.User, created: bool = Fals
         instance.is_superuser = True
         instance.is_staff = True
         instance.save()
+
+
+@receiver(post_save, sender=models.User)
+def auto_assign_to_messages(sender: Any, instance: models.User, created: bool = False, **kwargs: Any) -> None:
+    if created and instance.email:
+        for channel in Channel.objects.filter(dispatcher=UserMessageDispatcher):
+            address, __ = Address.objects.get_or_create(
+                user=instance, value=instance.email, defaults={"name": "Email", "type": AddressType.EMAIL}
+            )
+            Assignment.objects.get_or_create(
+                channel=channel, address=address, validated=True, defaults={"active": True}
+            )

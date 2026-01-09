@@ -11,6 +11,11 @@ if TYPE_CHECKING:
 # see https://fonts.google.com/icons?icon.query=docs for icons
 COMMON_SITE_DROPDOWN = [
     {
+        "icon": "inbox",
+        "title": "Console",
+        "link": "/console/",
+    },
+    {
         "icon": "home",
         "title": "Dashboard",
         "link": "/admin/",
@@ -42,10 +47,18 @@ COMMON_SITE_DROPDOWN = [
 ]
 
 COMMON = {
+    "LANGUAGES": {
+        "navigation": [
+            {"code": "en", "name_local": "English"},
+            {"code": "es", "name_local": "Español"},
+            {"code": "it", "name_local": "Italiano"},
+        ],
+    },
     "LOGIN": {
         "image": lambda request: static("bitcaster/images/logos/bitcaster.svg"),
         "redirect_after": lambda request: reverse_lazy("admin:index"),
     },
+    "SHOW_LANGUAGES": True,
     "DASHBOARD_CALLBACK": "bitcaster.web.dashboard.home.callback.dashboard_callback",
     "ENVIRONMENT": "bitcaster.config.fragments.unfold.environment_callback",  # environment name in header
     "SHOW_HISTORY": True,
@@ -137,6 +150,11 @@ UNFOLD = {
                         "icon": "call_log",
                         "link": reverse_lazy("admin:bitcaster_logmessage_changelist"),
                     },
+                    {
+                        "title": _("Messages"),
+                        "icon": "inbox_text_person",
+                        "link": reverse_lazy("admin:bitcaster_usermessage_changelist"),
+                    },
                 ],
             },
             {
@@ -167,7 +185,7 @@ UNFOLD = {
                     {
                         "title": _("Message Templates"),
                         "icon": "article",
-                        "link": reverse_lazy("admin:bitcaster_message_changelist"),
+                        "link": reverse_lazy("admin:bitcaster_messagetemplate_changelist"),
                     },
                 ],
             },

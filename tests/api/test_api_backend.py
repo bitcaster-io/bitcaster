@@ -5,7 +5,6 @@ from unittest.mock import MagicMock
 import pytest
 from django.test.client import RequestFactory
 from rest_framework.test import APIClient
-from testutils.factories import ApiKeyFactory, EventFactory, ProjectFactory, UserFactory
 from testutils.perms import key_grants
 
 from bitcaster.api.event import EventTrigger
@@ -40,6 +39,8 @@ def client() -> APIClient:
 
 @pytest.fixture
 def context(admin_user: "User") -> "Context":
+    from testutils.factories import ApiKeyFactory, EventFactory, ProjectFactory, UserFactory
+
     event: "Event" = EventFactory()
     key: ApiKey = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     key2: ApiKey = ApiKeyFactory(user=admin_user, grants=[], application__project=ProjectFactory())

@@ -41,15 +41,9 @@ def app(django_app_factory: MixinWithInstanceVariables, rf: RequestFactory) -> D
 
 @pytest.fixture
 def monitor(db: Any) -> Monitor:
-    from testutils.factories.monitor import MonitorFactory
+    from testutils.factories import MonitorFactory
 
-    return MonitorFactory(
-        agent=fqn(AgentFileSystem),
-        config={
-            "path": ".",
-        },
-        data={},
-    )
+    return MonitorFactory.create(agent=fqn(AgentFileSystem), config={"path": "."}, data={})
 
 
 def test_add(app: DjangoTestApp, event: "Event") -> None:
@@ -62,11 +56,11 @@ def test_add(app: DjangoTestApp, event: "Event") -> None:
     assert res.status_code == 302
 
 
-def test_change(app: DjangoTestApp, monitor: Monitor) -> None:
+def test_change(app: DjangoTestApp, monitor: "Monitor") -> None:
     url = reverse(admin_urlname(Monitor._meta, SafeString("change")), args=[monitor.pk])
     res = app.get(url)
     res = res.forms["monitor_form"].submit()
-    assert res.status_code == 302
+    assert res.status_code == 302, res.showbrowser()
 
 
 def test_configure(app: DjangoTestApp, monitor: "Monitor") -> None:

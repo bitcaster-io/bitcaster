@@ -6,7 +6,7 @@ from strategy_field.utils import fqn
 from bitcaster.dispatchers import EmailDispatcher
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Message
+    from bitcaster.models import Channel, MessageTemplate
 
 
 @pytest.fixture
@@ -17,13 +17,13 @@ def email_channel(db: Any) -> "Channel":
 
 
 @pytest.fixture
-def email_message(email_channel: "Channel") -> "Message":
+def email_message(email_channel: "Channel") -> "MessageTemplate":
     from testutils.factories import MessageFactory
 
     return MessageFactory(channel=email_channel)
 
 
-def test_instantiate(message: "Message", channel: "Channel") -> None:
+def test_instantiate(message: "MessageTemplate", channel: "Channel") -> None:
     m = message.clone(channel)
     assert m.channel == channel
     assert m.event == message.event
@@ -34,7 +34,7 @@ def test_instantiate(message: "Message", channel: "Channel") -> None:
 def test_natural_key(args: dict[str, Any]) -> None:
     from testutils.factories import MessageFactory
 
-    from bitcaster.models import Message
+    from bitcaster.models import MessageTemplate
 
-    msg: "Message" = MessageFactory(**args)
-    assert Message.objects.get_by_natural_key(*msg.natural_key()) == msg, msg.natural_key()
+    msg: "MessageTemplate" = MessageFactory(**args)
+    assert MessageTemplate.objects.get_by_natural_key(*msg.natural_key()) == msg, msg.natural_key()

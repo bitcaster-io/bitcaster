@@ -1,0 +1,21 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% load markdown i18n %}
+{% block content %}
+    <h1 class="text-2xl font-medium text-gray-800">
+        {% trans "Assign addresses to channel" %}
+    </h1>
+    <div class="help_text">
+        {{ form.form|help_doc }}
+    </div>
+    {{ form.non_field_errors }}
+    <form method="post" id="assign_form">
+        <div class="p-2 my-4">
+            {% csrf_token %}
+            {{ form }}
+        </div>
+        <div id="submit-row" class="flex">
+            <input name="apply" type="submit" value="Apply" class="button button-primary mx-2" />
+            <a class="button" href="..">Back</a>
+        </div>
+    </form>
+{% endblock content %}

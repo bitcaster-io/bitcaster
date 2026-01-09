@@ -33,7 +33,7 @@
   */
   --radius-default: 6px;
   --radius-2xl: 20px;
-  --color-primary-600:  #ef4434;
+  --color-primary-600: #ef4434;
   --color-green-600: rgba(71, 239, 52, 0.88);
 
   --font-default-light: 400;
@@ -96,36 +96,49 @@
 }
 
 @layer components {
-  #inspect-page{
+  select#select_language {
+    @apply border rounded w-full p-2 capitalize;
+  }
+  a.link{
+    @apply text-red-700;
+  }
+  #inspect-page {
     .status-processed {
-        @apply text-green-500 ;
+      @apply text-green-500 ;
 
     }
+
     .status-new {
-        @apply dark:text-white ;
+      @apply dark:text-white ;
     }
+
     .status-failed {
-        @apply text-red-500 ;
+      @apply text-red-500 ;
     }
-    li{
-      &.active{
+
+    li {
+      &.active {
         @apply text-red-500 border-b-red-500 border-b-2;
       }
     }
-    a{
+
+    a {
       color: #ef4434;
     }
-    div.grid{
+
+    div.grid {
 
     }
-    .tab-content{
+
+    .tab-content {
 
     }
   }
 
-  .outer_jsoneditor{
+  .outer_jsoneditor {
     @apply rounded-lg;
   }
+
   div.jsoneditor {
     @apply !border-gray-900 text-black;
     @apply dark:!border-gray-500 rounded-lg dark:text-white;
@@ -219,11 +232,13 @@
 
     }
   }
-  ul.errorlist{
-    li{
+
+  ul.errorlist {
+    li {
       @apply text-red-500;
     }
   }
+
   .button {
     @apply block border cursor-pointer px-3 py-2 rounded w-auto;
     @apply text-black;
@@ -243,10 +258,44 @@
   }
 
   .form-submit-row {
-    @apply flex border-1 p-2 border-gray-700 bg-gray-800 justify-end;
+    @apply flex border-1 p-2 border-gray-700 bg-gray-800 justify-end rounded my-3;
   }
 
   .filter-lookup {
     @apply unfold-input;
   }
+}
+
+#user_messages {
+  .badge{
+    @apply border rounded text-sm p-1 w-24 block uppercase font-bold text-center;
+    @apply dark:border-gray-600;
+    &.badge-new{
+      @apply dark:bg-gray-400  dark:text-black ;
+    }
+    &.badge-read{
+      @apply dark:bg-green-700 dark:text-black;
+    }
+    &.badge-unread{
+      @apply dark:bg-yellow-600 dark:text-black;
+    }
+  }
+  @apply table-auto w-full;
+  thead {
+    tr {
+      @apply p-2;
+      th {
+        @apply text-left p-2;
+      }
+    }
+  }
+  tbody {
+    tr {
+      @apply p-2 hover:bg-gray-500 cursor-pointer;
+      td {
+        @apply p-2;
+      }
+    }
+  }
+
 }

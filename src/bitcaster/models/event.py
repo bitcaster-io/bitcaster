@@ -12,7 +12,7 @@ from .mixins import BitcasterBaseModel, BitcasterBaselManager, LockMixin, SlugMi
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from bitcaster.models import Message, Occurrence
+    from bitcaster.models import MessageTemplate, Occurrence
 
     from .notification import NotificationManager
     from .occurrence import OccurrenceOptions
@@ -33,8 +33,8 @@ class EventManager(BitcasterBaselManager["Event"]):
 
 class Event(SlugMixin, LockMixin, BitcasterBaseModel):
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="events")
-    description = models.CharField(max_length=255, blank=True, null=True)
-    active = models.BooleanField(default=True)
+    description = models.CharField(verbose_name=_("description"), max_length=255, blank=True, null=True)
+    active = models.BooleanField(verbose_name=_("active"), default=True)
     newsletter = models.BooleanField(default=False, help_text=_("Do not customise notifications per single user"))
     channels = models.ManyToManyField(Channel, blank=True)
     occurrence_retention = models.IntegerField(
@@ -50,6 +50,8 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
     objects = EventManager()
 
     class Meta:
+        verbose_name = _("event")
+        verbose_name_plural = _("events")
         unique_together = (
             ("name", "application"),
             ("slug", "application"),
@@ -57,7 +59,7 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
         ordering = ("name",)
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self._cached_messages: dict[Channel, Message] = {}
+        self._cached_messages: dict[Channel, MessageTemplate] = {}
         super().__init__(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -90,7 +92,7 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
             event=self, context=context, options=options or {}, correlation_id=cid, parent=parent
         )
 
-    def create_message(self, name: str, channel: Channel, defaults: dict[str, Any] | None = None) -> "Message":
+    def create_message(self, name: str, channel: Channel, defaults: dict[str, Any] | None = None) -> "MessageTemplate":
         return self.messages.get_or_create(
             organization=self.application.project.organization,
             name=name,
