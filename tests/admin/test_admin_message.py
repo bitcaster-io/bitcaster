@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
     from responses import RequestsMock
 
-    from bitcaster.models import Channel, Message
+    from bitcaster.models import Channel, MessageTemplate
 
 
 @pytest.fixture
@@ -30,13 +30,13 @@ def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTes
 
 
 @pytest.fixture
-def message(db: Any) -> "Message":
+def message(db: Any) -> "MessageTemplate":
     from testutils.factories import MessageFactory, NotificationFactory
 
     from bitcaster.dispatchers import EmailDispatcher
 
     n = NotificationFactory()
-    m: Message = MessageFactory(notification=n, channel__dispatcher=fqn(EmailDispatcher))
+    m: MessageTemplate = MessageFactory(notification=n, channel__dispatcher=fqn(EmailDispatcher))
     assert m.support_html()
     assert m.support_text()
     assert m.support_subject()
@@ -44,7 +44,7 @@ def message(db: Any) -> "Message":
 
 
 @pytest.fixture
-def email_message(email_channel: "Channel") -> "Message":
+def email_message(email_channel: "Channel") -> "MessageTemplate":
     from testutils.factories import ChannelFactory, MessageFactory
 
     from bitcaster.dispatchers import SystemDispatcher
@@ -52,33 +52,33 @@ def email_message(email_channel: "Channel") -> "Message":
     return MessageFactory(channel=ChannelFactory(dispatcher=fqn(SystemDispatcher)))
 
 
-def test_render(app: "DjangoTestApp", message: "Message") -> None:
-    opts: "Options[Message]" = message._meta
+def test_render(app: "DjangoTestApp", message: "MessageTemplate") -> None:
+    opts: "Options[MessageTemplate]" = message._meta
     url = reverse(admin_urlname(opts, "render"), args=[message.pk])  # type: ignore[arg-type]
     res = app.post(url, {"content": "{{a}}", "content_type": "text/html", "context": json.dumps({"a": "333"})})
     assert res.content == b"333"
 
 
-def test_render_text(app: "DjangoTestApp", message: "Message") -> None:
-    opts: "Options[Message]" = message._meta
+def test_render_text(app: "DjangoTestApp", message: "MessageTemplate") -> None:
+    opts: "Options[MessageTemplate]" = message._meta
     url = reverse(admin_urlname(opts, "render"), args=[message.pk])  # type: ignore[arg-type]
     res = app.post(url, {"content": "{{a}}", "content_type": "text/plain", "context": json.dumps({"a": "333"})})
     assert res.content == b"<pre>333</pre>"
 
 
-def test_render_error(app: "DjangoTestApp", message: "Message") -> None:
-    opts: "Options[Message]" = message._meta
+def test_render_error(app: "DjangoTestApp", message: "MessageTemplate") -> None:
+    opts: "Options[MessageTemplate]" = message._meta
     url = reverse(admin_urlname(opts, "render"), args=[message.pk])  # type: ignore[arg-type]
     res = app.post(url, {"content": "{{a}}", "content_type": "text/html", "context": "--"})
     assert res.content == b"<!DOCTYPE HTML>* context\n  * Enter a valid JSON."
 
 
-def test_edit(app: "DjangoTestApp", message: "Message") -> None:
+def test_edit(app: "DjangoTestApp", message: "MessageTemplate") -> None:
     new_subject_value = "subject_update_value"
     new_content_value = "content_update_value"
     new_html_content_value = "html_content_update_value"
 
-    opts: "Options[Message]" = message._meta
+    opts: "Options[MessageTemplate]" = message._meta
     url = reverse(admin_urlname(opts, "edit"), args=[message.pk])  # type: ignore[arg-type]
 
     res = app.get(url)
@@ -116,9 +116,9 @@ def test_edit(app: "DjangoTestApp", message: "Message") -> None:
 
 
 def test_send_message(
-    app: "DjangoTestApp", email_message: "Message", mailoutbox: list[Any], mocked_responses: "RequestsMock"
+    app: "DjangoTestApp", email_message: "MessageTemplate", mailoutbox: list[Any], mocked_responses: "RequestsMock"
 ) -> None:
-    opts: "Options[Message]" = email_message._meta
+    opts: "Options[MessageTemplate]" = email_message._meta
     url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])  # type: ignore[arg-type]
 
     res = app.post(
@@ -138,12 +138,12 @@ def test_send_message(
 
 def test_send_message_fail(
     app: "DjangoTestApp",
-    email_message: "Message",
+    email_message: "MessageTemplate",
     mailoutbox: list[Any],
     mocked_responses: "RequestsMock",
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    opts: "Options[Message]" = email_message._meta
+    opts: "Options[MessageTemplate]" = email_message._meta
     url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])  # type: ignore[arg-type]
 
     with mock.patch("bitcaster.dispatchers.SystemDispatcher.send", return_value=False):
@@ -164,12 +164,12 @@ def test_send_message_fail(
 
 def test_send_message_invalid(
     app: "DjangoTestApp",
-    email_message: "Message",
+    email_message: "MessageTemplate",
     mailoutbox: list[Any],
     mocked_responses: "RequestsMock",
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    opts: "Options[Message]" = email_message._meta
+    opts: "Options[MessageTemplate]" = email_message._meta
     url = reverse(admin_urlname(opts, "send_message"), args=[email_message.pk])  # type: ignore[arg-type]
 
     with mock.patch("bitcaster.dispatchers.SystemDispatcher.send", return_value=False):
@@ -188,8 +188,8 @@ def test_send_message_invalid(
     assert len(mailoutbox) == 0
 
 
-def test_edit_error(app: "DjangoTestApp", message: "Message") -> None:
-    opts: "Options[Message]" = message._meta
+def test_edit_error(app: "DjangoTestApp", message: "MessageTemplate") -> None:
+    opts: "Options[MessageTemplate]" = message._meta
     url = reverse(admin_urlname(opts, "edit"), args=[message.pk])  # type: ignore[arg-type]
     res = app.get(url)
     assert res.status_code == 200
@@ -200,10 +200,10 @@ def test_edit_error(app: "DjangoTestApp", message: "Message") -> None:
     assert res.status_code == 200
 
 
-def test_add(app: "DjangoTestApp", message: "Message") -> None:
+def test_add(app: "DjangoTestApp", message: "MessageTemplate") -> None:
     from testutils.factories import ChannelFactory, EventFactory, NotificationFactory
 
-    opts: "Options[Message]" = message._meta
+    opts: "Options[MessageTemplate]" = message._meta
     url = reverse(admin_urlname(opts, "add"))  # type: ignore[arg-type]
     res = app.get(url)
     assert res.status_code == 200
@@ -227,7 +227,7 @@ def creator(request: pytest.FixtureRequest) -> "Channel":
 
 
 def test_changelist(app: "DjangoTestApp", creator: CreateMessage, channel: "Channel") -> None:
-    message: "Message" = creator.create_message(name=f"Message {type(creator).__name__}", channel=channel)
+    message: "MessageTemplate" = creator.create_message(name=f"Message {type(creator).__name__}", channel=channel)
 
     url = reverse(admin_urlname(message._meta, "changelist"))  # type: ignore[arg-type]
     res = app.get(url)
@@ -235,8 +235,8 @@ def test_changelist(app: "DjangoTestApp", creator: CreateMessage, channel: "Chan
 
 
 def test_usage(app: "DjangoTestApp", creator: CreateMessage, channel: "Channel") -> None:
-    message: "Message" = creator.create_message(name=f"Message {type(creator).__name__}", channel=channel)
-    opts: "Options[Message]" = message._meta
+    message: "MessageTemplate" = creator.create_message(name=f"Message {type(creator).__name__}", channel=channel)
+    opts: "Options[MessageTemplate]" = message._meta
 
     url = reverse(admin_urlname(opts, "usage"), args=[message.pk])  # type: ignore[arg-type]
     res = app.get(url)

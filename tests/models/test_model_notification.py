@@ -5,7 +5,16 @@ import pytest
 from pytest_django import DjangoAssertNumQueries
 
 if TYPE_CHECKING:
-    from bitcaster.models import ApiKey, Assignment, Channel, DistributionList, Event, Message, Notification, User
+    from bitcaster.models import (
+        ApiKey,
+        Assignment,
+        Channel,
+        DistributionList,
+        Event,
+        MessageTemplate,
+        Notification,
+        User,
+    )
 
     Context = TypedDict(
         "Context",
@@ -66,8 +75,8 @@ def test_get_message_precedence(event: "Event", django_assert_num_queries: Djang
     n1: "Notification" = NotificationFactory.create(event=event)
     n2: "Notification" = NotificationFactory.create(event=event)
 
-    m1: "Message" = MessageFactory.create(name="m1", channel=ch1, event=n1.event, notification=None)
-    m2: "Message" = MessageFactory.create(name="m2", channel=ch1, event=n1.event, notification=n2)
+    m1: "MessageTemplate" = MessageFactory.create(name="m1", channel=ch1, event=n1.event, notification=None)
+    m2: "MessageTemplate" = MessageFactory.create(name="m2", channel=ch1, event=n1.event, notification=n2)
 
     assert list(n1.get_messages(ch1)) == [m1]
     assert list(n2.get_messages(ch1)) == [m2, m1]
