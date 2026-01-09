@@ -11,7 +11,7 @@ from ..utils.shortcuts import render_string
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 if TYPE_CHECKING:
-    from ..models import Assignment, Notification, User
+    from ..models import Assignment, User
 
 
 class UserMessageConfig(DispatcherConfig):
@@ -28,9 +28,6 @@ class UserMessageConfig(DispatcherConfig):
 
     def clean_event(self) -> int:
         event = self.cleaned_data["event"]
-        n: "Notification"
-        if not event.notifications.exists():
-            raise ValidationError(_("Event does not have any Notification configured"))
         channels = list(event.channels.all())
         match len(channels):
             case 0:
@@ -38,15 +35,12 @@ class UserMessageConfig(DispatcherConfig):
             case 1:
                 ch = channels[0]
                 if str(ch.pk) != str(config.SYSTEM_EMAIL_CHANNEL):
-                    raise ValidationError(
-                        _(f"Event must use system Email channel {ch.pk} != {config.SYSTEM_EMAIL_CHANNEL}")
-                    )
+                    raise ValidationError(_("Event must use system Email Channel"))
             case _:
-                raise ValidationError(_("Event must have only one channel configured"))
+                raise ValidationError(_("Event must have only one Channel configured"))
 
-        for n in event.notifications.all():
-            if not n.external_filtering:
-                raise ValidationError(_("Linked notifications must have external filtering enabled"))
+        if not event.notifications.filter(external_filtering=True).exists():
+            raise ValidationError(_("At least one notification with external_filtering=True must be configured"))
         if not event.messages.exists():
             raise ValidationError(_("Event does not have any Message Template configured"))
 

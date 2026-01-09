@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 from admin_extra_buttons.decorators import view
 from admin_extra_buttons.utils import HttpResponseRedirectToReferrer
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
+from django.contrib import messages
 from django.contrib.admin import helpers
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -78,8 +79,12 @@ class AddressAdmin(BaseAdmin, BitcasterModelAdmin[Address]):
         obj: Address = self.get_object_or_404(request, pk)
         from bitcaster.models import Channel
 
-        ch = Channel.objects.get(pk=request.GET.get("ch"))
-        obj.assignments.get_or_create(channel=ch)
+        try:
+            ch = Channel.objects.get(pk=request.GET.get("ch"))
+            obj.assignments.get_or_create(channel=ch)
+            self.message_user(request, _("Channel successfully assigned"))
+        except Channel.DoesNotExist:
+            self.message_user(request, _("Channel not found"), level=messages.ERROR)
         return HttpResponseRedirectToReferrer(request)
 
     def assign_to_channel(self, request: HttpRequest, queryset: QuerySet[Address]) -> "HttpResponse | None":

@@ -85,7 +85,7 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
                 if config_form.is_valid():
                     config_form.save(obj)
                     self.message_user(request, f"Configured channel {obj.name}")
-                    return HttpResponseRedirect("..")
+                    return HttpResponseRedirect(reverse("admin:bitcaster_channel_change", args=(obj.pk,)))
             else:
                 config_form = form_class(
                     initial={k: v for k, v in obj.config.items() if k in form_class.declared_fields}
