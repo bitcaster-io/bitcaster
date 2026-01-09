@@ -87,7 +87,7 @@ class BackgroundManager:
         self.client.delete(f"background:runners:{self.name}:tasks")
         return self.client.delete(f"background:runners:{self.name}:last_seen")
 
-    def get_runners(self) -> dict[str, Any]:
+    def get_runners(self, quick: bool = False) -> dict[str, Any]:
         items = self.client.smembers("background:runners")
         ret = {}
         for e in items:
@@ -113,10 +113,14 @@ class BackgroundManager:
                 "enqueued_at": message.message_timestamp,
             }
         )
-        return self.client.hset(f"background:runners:{self.name}:tasks", self.get_executor_name(), task_info)
+        ret = self.client.hset(f"background:runners:{self.name}:tasks", self.get_executor_name(), task_info)
+        logger.debug(f"Registered task {message.actor_name}")
+        return ret
 
     def unregister_task(self, message: "MessageProxy") -> None:
-        return self.client.hdel(f"background:runners:{self.name}:task", self.get_executor_name())
+        ret = self.client.hdel(f"background:runners:{self.name}:tasks", self.get_executor_name())
+        logger.debug(f"Unregister task {message.actor_name}")
+        return ret
 
     def scheduler_ping(self) -> None:
         self.client.set("scheduler:alive", datetime.now(UTC).isoformat())

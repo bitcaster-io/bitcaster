@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import dramatiq
 import pytest
-from dramatiq import Message
+from dramatiq import Message, MessageProxy
 
 if TYPE_CHECKING:
     from bitcaster.runner.manager import BackgroundManager
@@ -16,15 +16,21 @@ def manager(broker) -> "BackgroundManager":
 
 
 @pytest.fixture
-def message() -> Message:
-    return Message(
-        message_id="id",
-        queue_name="queue_name",
-        actor_name="actor_name",
-        args=(),
-        kwargs={},
-        options={"started_at": None},
+def message() -> MessageProxy:
+    return MessageProxy(
+        Message(
+            message_id="id",
+            queue_name="queue_name",
+            actor_name="actor_name",
+            args=(),
+            kwargs={},
+            options={"started_at": None},
+        )
     )
+
+
+def test_get_executor_name(manager):
+    assert manager.get_executor_name()
 
 
 def test_get_queue_sizes(broker, manager: "BackgroundManager"):
@@ -55,27 +61,32 @@ def test_reset(broker, manager: "BackgroundManager"):
     manager.reset()
 
 
-def test_register_runner(broker, manager: "BackgroundManager"):
-    assert manager.register_runner()
-
-
-def test_unregister_runner(broker, manager: "BackgroundManager"):
+def test_register_runner(manager: "BackgroundManager"):
     manager.register_runner()
+    assert manager.get_runners()
     manager.unregister_runner()
-
-
-def test_get_runners(broker, manager: "BackgroundManager"):
     assert manager.get_runners() == {}
 
 
-def test_register_task(broker, manager: "BackgroundManager", message):
+def test_get_runners(manager: "BackgroundManager"):
+    assert manager.get_runners() == {}
+
+
+def test_register_register_task(manager: "BackgroundManager", message):
     manager.register_task(message)
-    manager.unregister_task(message.message_id)
+
+    assert (runners := manager.get_runners())
+    assert len(runners[manager.name]["tasks"]) == 1
+    assert runners[manager.name]["tasks"][0]["name"] == message.actor_name
+    manager.unregister_task(message)
+    assert (runners := manager.get_runners())
+    assert len(runners[manager.name]["tasks"]) == 0
 
 
-def test_scheduler_ping(broker, manager: "BackgroundManager", message):
+def test_scheduler_ping(manager: "BackgroundManager", message):
     manager.scheduler_ping()
+    assert manager.get_runners()
 
 
-def test_scheduler_info(broker, manager: "BackgroundManager", message):
+def test_scheduler_info(manager: "BackgroundManager", message):
     manager.scheduler_info()

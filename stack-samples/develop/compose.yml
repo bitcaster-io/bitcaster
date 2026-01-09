@@ -11,12 +11,12 @@ x-common: &common
     - ADMIN_PASSWORD=password
     - ALLOWED_HOSTS=localhost,127.0.0.1
     - CACHE_URL=redis://redis:6379/1?client_class=django_redis.client.DefaultClient
-    - DRAMATIQ_BROKER=redis://redis:6379/2
     - CSRF_COOKIE_SECURE=False
     - CSRF_TRUSTED_ORIGINS=http://localhost
     - DATABASE_URL=postgres://bitcaster:password@db:5432/bitcaster
-    - LOGGING_LEVEL=CRITICAL
     - DEBUG=True
+    - DRAMATIQ_BROKER=redis://redis:6379/2
+    - LOGGING_LEVEL=CRITICAL
     - MEDIA_ROOT=/var/storage/media/
     - SECRET_KEY=super_secret_key_just_for_development_that_needs_to_be_more_than_fifty_characters
     - SECURE_HSTS_PRELOAD=0

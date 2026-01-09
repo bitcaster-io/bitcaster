@@ -65,7 +65,7 @@ document.addEventListener('alpine:init', () => {
                         timeStyle: "medium"
                     });
                 }
-                this.datetime = data.datetime || {};
+                this.datetime = data.datetime || "";
                 this.tasksMap = data.workers || {};
                 this.alive = Boolean(data.alive) || Object.keys(this.tasksMap).length > 0;
             } catch (e) {
