@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 HOUR = 60 * 60
 
+epoch = datetime(1970, 1, 1, 0, 0, 0, tzinfo=UTC)
 end_date = timezone.now()
 day = end_date.day
 
@@ -69,6 +70,20 @@ class CacheManager:
             count += 1
         return count
 
+    def touch(self, key: str, timeout: int | None = None, timeboxed: bool = True) -> datetime:
+        now = timezone.now()
+        self.store(key, now.timestamp(), timeout, timeboxed=False)
+        return now
+
+    def get_last_touch(
+        self,
+        key: str,
+    ) -> datetime:
+        value = self.retrieve(key)
+        if value is None:
+            return epoch
+        return datetime.fromtimestamp(value, tz=timezone.get_current_timezone())
+
     def clear_cache(self) -> int:
         pattern = self.get_key("*")
         deleted = 0
@@ -81,7 +96,10 @@ class CacheManager:
             return
         if timeout and not timeboxed:
             timeout = 25 * HOUR
-        self.client.set(self.get_key(key), value, timeout=timeout)
+        try:
+            self.client.set(self.get_key(key), value, timeout=timeout)
+        except TypeError:
+            return
         if timeboxed:
             self.set_expire_at_midnight(self.get_key(key))
 

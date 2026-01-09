@@ -22,10 +22,13 @@ if TYPE_CHECKING:
     from .application import Application
     from .assignment import Assignment
     from .channel import Channel
-    from .message import Message
+    from .messagetemplate import MessageTemplate
     from .notification import Notification
 
-    OccurrenceData = TypedDict("OccurrenceData", {"delivered": list[str | int], "recipients": list[tuple[str, str]]})  # noqa: UP013
+    class OccurrenceData(TypedDict):
+        delivered: list[str | int]
+        recipients: list[tuple[str, str]]
+        errors: list[str]
 
     class OccurrenceOptions(TypedDict):
         limit_to: NotRequired[list[str]]
@@ -115,7 +118,7 @@ class Occurrence(BitcasterBaseModel):
         return str(self.timestamp), *self.event.natural_key()
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self._cached_messages: dict[Channel, Message] = {}
+        self._cached_messages: dict[Channel, MessageTemplate] = {}
         super().__init__(*args, **kwargs)
 
     def get_context(self) -> dict[str, Any]:
@@ -193,6 +196,7 @@ class Occurrence(BitcasterBaseModel):
         recipients = self.data.get("recipients", [])
         assignment_filter = {}
         success = True
+        data: "OccurrenceData" = {"delivered": [], "recipients": [], "errors": []}
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
         api_filtering = self.options.get("filters", {}) or {}
@@ -210,7 +214,9 @@ class Occurrence(BitcasterBaseModel):
                         recipients.append((assignment.address.value, assignment.channel.name))
         except Exception as e:
             logger.exception(e)
+            data["errors"].append(f"{e.__class__.__name__}: {str(e)}")
             success = False
         finally:
-            data: "OccurrenceData" = {"delivered": delivered, "recipients": recipients}
+            data["delivered"] = delivered
+            data["recipients"] = recipients
         return success, data

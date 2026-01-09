@@ -113,6 +113,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                         evt = Event.objects.create(
                             application=app,
                             active=False,
+                            paused=True,
                             slug=slug,
                             name=f"AUTO: {slug.title()}",
                             description="auto created via APO invocation",

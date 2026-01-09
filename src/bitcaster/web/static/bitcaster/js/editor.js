@@ -43,7 +43,7 @@ function Editor() {
         })
         $("#btn_content").click();
         setupTinyMCE(ed)
-
+        $(".button.toggler:first").click()
     }
 
     function csrfSafeMethod(method) {

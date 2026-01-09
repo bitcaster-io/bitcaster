@@ -335,15 +335,6 @@ def assignment(db):
 
 
 @pytest.fixture
-def messagebox() -> list:
-    import testutils.dispatcher
-
-    testutils.dispatcher.MESSAGES = []
-    yield testutils.dispatcher.MESSAGES
-    testutils.dispatcher.MESSAGES = []
-
-
-@pytest.fixture
 def monitor() -> "Monitor":
     from testutils.factories import MonitorFactory
 

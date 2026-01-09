@@ -1,0 +1,57 @@
+{% extends "bitcaster/admin/action_form.html" %}
+{% load i18n admin_urls static admin_modify unfold %}
+{% block content %}
+    <div class="container p-2 text-xl ">
+        <div class="p-2">
+            {{ original.created }}
+        </div>
+        <div class="p-2 rounded bg-gray-500 my-2""> {{ original.subject }}
+        </div>
+        <div class="p-2 border border-gray-500 rounded">
+            {{ original.message|safe }}
+        </div>
+    </div>
+    <div class="container p-2">
+        <div class="grid grid-cols-2 p-2 gap-2 ">
+            <div class="shrink">
+                {% trans "read" %}
+            </div>
+            <div class="grow">
+                {{ original.read|default_if_none:""|date:"%Y %b" }}
+            </div>
+            <div class="shrink">
+                {% trans "displayed" %}
+            </div>
+            <div class="grow">
+                {{ original.displayed }}
+            </div>
+        </div>
+    </div>
+    <div x-data="{show_info: false}">
+        <div class="material-symbols-outlined cursor-pointer" @click="show_info=!show_info">
+            info
+        </div>
+        <div class="container border rounded" x-show="show_info">
+            <div class="grid grid-cols-2 p-2 gap-2 ">
+                <div class="shrink">
+                    Project
+                </div>
+                <div class="grow">
+                    {{ original.event.application.project }}
+                </div>
+                <div class="shrink">
+                    Application
+                </div>
+                <div class="grow">
+                    {{ original.event.application }}
+                </div>
+                <div class="shrink">
+                    Event
+                </div>
+                <div class="grow">
+                    {{ original.event }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

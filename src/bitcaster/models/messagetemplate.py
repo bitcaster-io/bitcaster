@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class MessageManager(BitcasterBaselManager["Message"]):
-    def get_by_natural_key(self, name: str, app: str, prj: str, org: str) -> "Message":
+    def get_by_natural_key(self, name: str, app: str, prj: str, org: str) -> "MessageTemplate":
         filters: dict[str, str | None] = {}
         if app:
             filters["application__slug"] = app
@@ -34,7 +34,7 @@ class MessageManager(BitcasterBaselManager["Message"]):
         return self.get(name=name, organization__slug=org, **filters)
 
 
-class Message(Scoped3Mixin, BitcasterBaseModel):
+class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
     application: "Application"
 
     name = models.CharField(_("Name"), max_length=255)
@@ -103,8 +103,8 @@ class Message(Scoped3Mixin, BitcasterBaseModel):
     def support_text(self) -> bool:
         return self.channel.dispatcher.protocol.has_capability(Capability.TEXT)
 
-    def clone(self, channel: Channel) -> "Message":
-        return Message.objects.get_or_create(
+    def clone(self, channel: Channel) -> "MessageTemplate":
+        return MessageTemplate.objects.get_or_create(
             organization=self.organization,
             event=self.event,
             notification=self.notification,
