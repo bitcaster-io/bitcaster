@@ -1,33 +1,25 @@
 import json
-from typing import Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import factory
 import pytest
 from rest_framework.test import APIClient
-from testutils.factories import (
-    AddressFactory,
-    ApiKeyFactory,
-    AssignmentFactory,
-    DistributionListFactory,
-    EventFactory,
-    UserRoleFactory,
-)
 from testutils.perms import key_grants
 
 from bitcaster.auth.constants import Grant
-from bitcaster.models import (
-    Address,
-    ApiKey,
-    Assignment,
-    DistributionList,
-    Event,
-    Organization,
-    Project,
-    User,
-    UserRole,
-)
 
-# if TYPE_CHECKING:
+if TYPE_CHECKING:
+    from bitcaster.models import (
+        Address,
+        ApiKey,
+        Assignment,
+        DistributionList,
+        Event,
+        Organization,
+        Project,
+        User,
+        UserRole,
+    )
 
 
 class SampleData(NamedTuple):
@@ -51,7 +43,7 @@ event_slug = "evt1"
 
 
 @pytest.fixture
-def client(data: SampleData) -> APIClient:
+def client(data: SampleData):
     c = APIClient()
     g = key_grants(data.key, Grant.FULL_ACCESS)
     g.start()
@@ -62,20 +54,29 @@ def client(data: SampleData) -> APIClient:
 
 @pytest.fixture
 def data(admin_user: "User", system_objects: Any) -> SampleData:
-    event: Event = EventFactory(
+    from testutils.factories import (
+        AddressFactory,
+        ApiKeyFactory,
+        AssignmentFactory,
+        DistributionListFactory,
+        EventFactory,
+        UserRoleFactory,
+    )
+
+    event: Event = EventFactory.create(
         application__project__organization__name=org_name,
         application__project__name=prj_name,
         application__name=app_name,
         slug=event_slug,
     )
-    key = ApiKeyFactory(
+    key = ApiKeyFactory.create(
         user=admin_user, grants=[], application=None, project=None, organization=event.application.project.organization
     )
-    role: "UserRole" = UserRoleFactory(organization__name=org_name)
-    address: "Address" = AddressFactory(user=role.user, value=role.user.email)
-    asm: "Assignment" = AssignmentFactory(address=address)
+    role: "UserRole" = UserRoleFactory.create(organization__name=org_name)
+    address: "Address" = AddressFactory.create(user=role.user, value=role.user.email)
+    asm: "Assignment" = AssignmentFactory.create(address=address)
 
-    distribution_list = DistributionListFactory(project=event.application.project, recipients=[asm])
+    distribution_list = DistributionListFactory.create(project=event.application.project, recipients=[asm])
     return SampleData(
         org=event.application.project.organization,
         prj=event.application.project,
@@ -99,6 +100,8 @@ def test_distribution_list(client: APIClient, data: SampleData) -> None:
 
 
 def test_distribution_create(client: APIClient, data: SampleData) -> None:
+    from bitcaster.models import DistributionList
+
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/"
     with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
         res = client.post(url, {"name": "Sample List #1"})

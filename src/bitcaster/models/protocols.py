@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Message
+    from bitcaster.models import Channel, MessageTemplate
 
 
 class CreateMessage(Protocol):
@@ -9,5 +9,5 @@ class CreateMessage(Protocol):
 
     def create_message(
         self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None
-    ) -> "Message":  # pragma: no cover
+    ) -> "MessageTemplate":  # pragma: no cover
         ...

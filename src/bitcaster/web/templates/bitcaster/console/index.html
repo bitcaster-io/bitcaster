@@ -1,0 +1,56 @@
+{% extends "bitcaster/base.html" %}
+{% load feature_flags i18n static user %}
+{% block body %}
+    <div class="flex h-16 p-3 mb-5">
+        <img class="align-middle" src="{% static "bitcaster/images/logos/logo48.png" %}" />
+        <img class="align-middle" src="{% static "bitcaster/images/logos/name.svg" %}" />
+    </div>
+    {{ last_seen }}
+    <table id="user_messages">
+        <thead>
+            <tr>
+                <th>
+                    #
+                </th>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Subject
+                </th>
+                <th>
+                    Event
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for message in messages %}
+                <tr x-data="{}" @click="location.href ='{% url "console:detail" message.instance.pk %}'">
+                    <td>
+                        {{ message.check }}
+                    </td>
+                    <td>
+                        {% user_date message.instance.created %}
+                    </td>
+                    <td>
+                        {{ message.instance.subject }}
+                    </td>
+                    <td>
+                        {{ message.instance.event }}
+                    </td>
+                    <td>
+                        {% if message.instance.created > last_seen %}
+                            <span class="badge badge-new">new</span>
+                        {% else %}
+                            {% if message.instance.read %}
+                                <span class="badge badge-read">read</span>
+                            {% else %}
+                                <span class="badge badge-unread">not read</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock body %}

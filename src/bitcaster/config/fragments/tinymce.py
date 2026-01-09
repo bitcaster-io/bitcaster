@@ -3,6 +3,7 @@
 TINYMCE_DEFAULT_CONFIG = {
     "menubar": False,
     "plugins": "preview, code, lists, link, table",
+    "license_key": "gpl",
     "toolbar": (
         "undo redo "
         " bold italic underline strikethrough "

@@ -4,13 +4,6 @@ import pytest
 from django.urls import ResolverMatch, resolve
 from rest_framework import status
 from rest_framework.test import APIClient
-from testutils.factories import (
-    ApiKeyFactory,
-    AssignmentFactory,
-    ChannelFactory,
-    DistributionListFactory,
-    EventFactory,
-)
 from testutils.perms import key_grants
 
 from bitcaster.auth.constants import Grant
@@ -65,17 +58,25 @@ def client(data: "Context") -> APIClient:
 
 @pytest.fixture
 def data(admin_user: "User", system_objects: Any) -> "Context":
-    event: Event = EventFactory(
+    from testutils.factories import (
+        ApiKeyFactory,
+        AssignmentFactory,
+        ChannelFactory,
+        DistributionListFactory,
+        EventFactory,
+    )
+
+    event: Event = EventFactory.create(
         application__project__organization__slug=org_slug,
         application__project__slug=prj_slug,
         application__slug=app_slug,
         slug=event_slug,
     )
-    key = ApiKeyFactory(
+    key = ApiKeyFactory.create(
         user=admin_user, grants=[], application=None, project=None, organization=event.application.project.organization
     )
-    ch = ChannelFactory(project=event.application.project)
-    dl = DistributionListFactory(id=dl_pk, project=event.application.project, recipients=[AssignmentFactory()])
+    ch = ChannelFactory.create(project=event.application.project)
+    dl = DistributionListFactory.create(id=dl_pk, project=event.application.project, recipients=[AssignmentFactory()])
     return {
         "org": event.application.project.organization,
         "prj": event.application.project,

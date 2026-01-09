@@ -6,7 +6,6 @@ from unittest.mock import Mock
 import pytest
 from freezegun import freeze_time
 from freezegun.api import FakeDatetime
-from testutils.factories import OccurrenceFactory
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment, Notification, Occurrence, User
@@ -52,6 +51,7 @@ def test_model_occurrence_filter(
         assert occurrence.data == {
             "delivered": [context["assignment"].id],
             "recipients": [[context["assignment"].address.value, context["assignment"].channel.name]],
+            "errors": [],
         }
 
 
@@ -91,6 +91,8 @@ def test_purgeable(purgeable_occurrences: List["Occurrence"], non_purgeable_occu
     ],
 )
 def test_get_context(ctx: dict[str, str], expected: dict[str, Any]) -> None:
+    from testutils.factories import OccurrenceFactory
+
     occurrence: Occurrence = OccurrenceFactory()
     occurrence.context = ctx
 

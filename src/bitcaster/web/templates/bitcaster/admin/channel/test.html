@@ -2,59 +2,82 @@
 {% load i18n protocols %}
 {% block content %}
     {% if not assignment %}
-        <div class="frame frame-warning">
+        <div class="text-xl text-danger text-center">
             {% translate "No assignments found for this channel" %}
         </div>
-        <ul>
+        <table class="w-full my-5">
             {% for a in request.user.addresses.all %}
-                <li>
-                    <a href="{% url "admin:bitcaster_address_change" a.pk %}?next={{ request.path }}">{{ a }}</a>
-                    <a class="button small"
-                       href="{% url "admin:bitcaster_assignment_add" %}?address={{ a.pk }}&channel={{ original.pk }}&user={{ user.pk }}&next={{ request.path }}">
-                    Assign to channel</a>
-                </li>
+                <tr>
+                    <td>
+                        <a href="{% url "admin:bitcaster_address_change" a.pk %}?next={{ request.path }}">{{ a }}</a>
+                    </td>
+                    <td>
+                        <a class=" small" href="{% url "admin:bitcaster_address_assign_to_channel_single" a.pk %}?ch={{ original.pk }}">
+                        {% translate "Assign to channel" %}</a>
+                    </td>
+                </tr>
             {% endfor %}
-        </ul>
+        </table>
         <div class="flex">
-            <a class="button button-primary mx-2" href="{% url "admin:bitcaster_address_add" %}?user={{ user.pk }}">Add Address</a>
+            <a class="button button-primary mx-2" href="{% url "admin:bitcaster_address_add" %}?user={{ user.pk }}">Create
+            new Address</a>
             <a class="button" href="..">Back</a>
         </div>
     {% else %}
         <form method="post" id="config-form">
-            {# {{ form.errors }} #}
-            {# {% csrf_token %} #}
-            {# <fieldset class="module aligned "> #}
-            {# <div class="form-row field-api_key"> #}
-            {# <div> #}
-            {# <div class="flex-container"> #}
-            {# <label class="required" for="id_api_key">{% translate 'Recipient' %}</label> #}
-            {# {{ assignment.address.value }} #}
-            {# &nbsp;<a href="{% url "admin:bitcaster_assignment_change" assignment.pk %}">edit</a> #}
-            {# </div> #}
-            {# </div> #}
-            {# </div> #}
-            {# {% if original|has:"SUBJECT" %} #}
-            {# <div class="form-row field-sender_domain"> #}
-            {# <div> #}
-            {# <div class="flex-container"> #}
-            {# <label class="required" for="id_sender_domain">Subject:</label> #}
-            {# {{ form.subject }} #}
-            {# </div> #}
-            {# </div> #}
-            {# </div> #}
-            {# {% endif %} #}
-            {# {% if original|has:"TEXT" %} #}
-            {# <div class="form-row field-sender_domain"> #}
-            {# <div> #}
-            {# <div class="flex-container"> #}
-            {# <label class="required" for="id_sender_domain">Message:</label> #}
-            {# {{ form.message }} #}
-            {# </div> #}
-            {# </div> #}
-            {# </div> #}
-            {# {% endif %} #}
-            {# </fieldset> #}
-            <input type="submit" value="Save" class="btn btn-primary" />
+            {{ adminform.form.errors }}
+            {% csrf_token %}
+            <fieldset class="module aligned ">
+                <div class="form-row field-api_key m-2">
+                    <div>
+                        <div class="flex-container">
+                            <label class="required" for="id_api_key">
+                                {% translate 'Recipient' %}
+                            </label>
+                            {{ assignment.address.value }}
+                            &nbsp;<a href="{% url "admin:bitcaster_assignment_change" assignment.pk %}">edit</a>
+                        </div>
+                    </div>
+                </div>
+                {% if original|has:"SUBJECT" %}
+                    <div class="form-row field-sender_domain">
+                        <div>
+                            <div class="flex-container">
+                                <label class="block required" for="id_sender_domain">
+                                    Subject:
+                                </label>
+                                {{ adminform.form.subject }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if original|has:"TEXT" %}
+                    <div class="form-row field-sender_domain">
+                        <div>
+                            <div class="flex-container">
+                                <label class="block required" for="id_sender_domain">
+                                    Message:
+                                </label>
+                                {{ adminform.form.message }}
+                            </div>
+                        </div>
+                    </div>
+                {% elif original|has:"HTML" %}
+                    <div class="form-row field-sender_domain">
+                        <div>
+                            <div class="flex-container">
+                                <label class="block required" for="id_sender_domain">
+                                    Message:
+                                </label>
+                                {{ adminform.form.message }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </fieldset>
+            <div class="form-submit-row">
+                <input type="submit" value="Test" class="button button-primary" />
+            </div>
         </form>
     {% endif %}
 {% endblock content %}

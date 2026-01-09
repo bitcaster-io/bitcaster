@@ -1,12 +1,13 @@
 {% extends "unfold/layouts/base.html" %}
+{#{% extends "admin/change_form.html" %}#}
 {% load i18n static %}
 <!DOCTYPE HTML>
 {% block extrastyle %}
     {{ block.super }}
-    <meta name="change-url" content="{% url "admin:bitcaster_message_change" original.pk %}" />
-    <meta name="edit-url" content="{% url "admin:bitcaster_message_edit" original.pk %}" />
-    <meta name="render-url" content="{% url "admin:bitcaster_message_render" original.pk %}" />
-    <meta name="test-url" content="{% url "admin:bitcaster_message_send_message" original.pk %}" />
+    <meta name="change-url" content="{% url "admin:bitcaster_messagetemplate_change" original.pk %}" />
+    <meta name="edit-url" content="{% url "admin:bitcaster_messagetemplate_edit" original.pk %}" />
+    <meta name="render-url" content="{% url "admin:bitcaster_messagetemplate_render" original.pk %}" />
+    <meta name="test-url" content="{% url "admin:bitcaster_messagetemplate_send_message" original.pk %}" />
     {{ form.media }}
 {% endblock extrastyle %}
 {% block extrahead %}
@@ -20,7 +21,7 @@
             <div class="flex p-2">
                 <div class="inline-flex toolbar grow">
                     {% if original.support_text %}
-                        <button id="btn_content" class="button active toggler" data-content-type="text/plain" data-panel="#tab_content" type="button">
+                        <button id="btn_content" class="button toggler" data-content-type="text/plain" data-panel="#tab_content" type="button">
                             {% translate 'Text' %}
                         </button>
                     {% endif %}

@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING, Any, Tuple, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 from unittest.mock import Mock
 
 import pytest
@@ -68,9 +68,10 @@ def setup(admin_user: "User") -> "Context":
 
 
 @pytest.mark.django_db(transaction=True)
-def test_process_event_single(setup: "Context", messagebox: list[Tuple[str, str]]) -> None:
+def test_process_event_single(setup: "Context") -> None:
     from bitcaster.models import Occurrence
 
+    ch = setup["channel"]
     v1: Assignment = setup["assignments"][0]
     v2: Assignment = setup["assignments"][1]
     occurrence = setup["occurrence"]
@@ -79,21 +80,25 @@ def test_process_event_single(setup: "Context", messagebox: list[Tuple[str, str]
     event = occurrence.event
     ch = setup["channel"]
     process_occurrence(occurrence.pk)
-    assert messagebox == [
-        (addr.value, f"Message for {event.name} on channel {ch.name}"),
-        (v2.address.value, f"Message for {event.name} on channel {ch.name}"),
-    ]
+    assert sorted(ch.dispatcher._messages()) == sorted(
+        [
+            [addr.value, f"Message for {event.name} on channel {ch.name}", 0],
+            [v2.address.value, f"Message for {event.name} on channel {ch.name}", 1],
+        ]
+    )
     occurrence.refresh_from_db()
     assert occurrence.status == Occurrence.Status.PROCESSED
     assert occurrence.data == {
         "delivered": [v1.id, v2.id],
         "recipients": [[v1.address.value, "test"], [v2.address.value, "test"]],
+        "errors": [],
     }
 
 
-def test_process_incomplete_event(setup: "Context", messagebox: list[Tuple[str, str]]) -> None:
+def test_process_incomplete_event(setup: "Context") -> None:
     from bitcaster.models import Occurrence
 
+    ch = setup["channel"]
     occurrence = setup["occurrence"]
     v1, v2 = setup["assignments"]
 
@@ -102,11 +107,11 @@ def test_process_incomplete_event(setup: "Context", messagebox: list[Tuple[str, 
     setup["occurrence"].save()
 
     process_occurrence(occurrence.pk)
-    assert messagebox == []
+    assert ch.dispatcher._messages() == []
 
     occurrence.refresh_from_db()
     assert occurrence.status == Occurrence.Status.PROCESSED
-    assert occurrence.data == {"delivered": [v1.id, v2.id], "recipients": []}
+    assert occurrence.data == {"delivered": [v1.id, v2.id], "recipients": [], "errors": []}
 
 
 @pytest.mark.django_db(transaction=True)
@@ -128,6 +133,7 @@ def test_process_event_partially(setup: "Context", monkeypatch: pytest.MonkeyPat
     assert occurrence.data == {
         "delivered": [setup["assignments"][0].id],
         "recipients": [["test1@example.com", "test"]],
+        "errors": ["Exception: This is raised after first call"],
     }
 
 
@@ -151,6 +157,7 @@ def test_process_event_resume(setup: "Context", monkeypatch: pytest.MonkeyPatch)
     assert occurrence.data == {
         "delivered": [v1.id, v2.id],
         "recipients": [["test1@example.com", "test"], ["test2@example.com", v1.channel.name]],
+        "errors": [],
     }
 
 
@@ -167,7 +174,7 @@ def test_silent_event(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_
 
     o.refresh_from_db()
     assert o.status == Occurrence.Status.PROCESSED
-    assert o.data == {"delivered": [], "recipients": []}
+    assert o.data == {"delivered": [], "recipients": [], "errors": []}
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value, correlation_id=cid).count() == 1
 
@@ -201,7 +208,7 @@ def test_retry(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects
     assert o.attempts == 0
     assert o.status == Occurrence.Status.FAILED
     assert mocked_notify.call_count == 4
-    assert o.data == {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]]}
+    assert o.data == {"delivered": [v1.id], "recipients": [[v1.address.value, "test"]], "errors": ["StopIteration: "]}
 
 
 def test_error(setup: "Context", system_objects: Any) -> None:
@@ -227,11 +234,6 @@ def test_processed(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_obj
     o = OccurrenceFactory(status=Occurrence.Status.PROCESSED)
     process_occurrence(o.pk)
     assert mocked_notify.call_count == 0
-
-
-@pytest.fixture(scope="session")
-def celery_config() -> dict[str, str]:
-    return {"broker_url": "memory://"}
 
 
 @pytest.fixture(autouse=True)

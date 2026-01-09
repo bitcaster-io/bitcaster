@@ -1,6 +1,5 @@
 {% extends "bitcaster/admin/action_form.html" %}
 {% load json %}
-{% load json %}
 {% block content %}
     <div class="p-3 text-xl">
         {% if original.status == "PROCESSED" %}
@@ -150,7 +149,7 @@
                         <div>
                             {% if notification.distribution %}
                                 <a href="{% url 'admin:bitcaster_distributionlist_change' notification.distribution.pk %}">{{ notification.distribution }}</a>
-                            {% elif notification.distribution %}
+                            {% elif notification.dynamic %}
                                 dynamic
                             {% elif notification.external_filtering %}
                                 API filtering
@@ -240,18 +239,18 @@
                     </div>
                     {% for msg in all_messages %}
                         <div>
-                            <a class="{% if message.channel.pk in active_channels %} text-green-600 {% else %}text-gray-500{% endif %}"
-                               href="{% url 'admin:bitcaster_message_change' msg.pk %}">{{ msg.name }}</a>
+                            <a class="{% if msg.channel.pk in active_channels %} text-green-600 {% else %}text-gray-500{% endif %}"
+                               href="{% url 'admin:bitcaster_messagetemplate_change' msg.pk %}">{{ msg.name }}</a>
                         </div>
                         <div>
-                            <a class="{% if message.channel.pk in active_channels %} text-green-600 {% else %}text-gray-500{% endif %}"
+                            <a class="{% if msg.channel.pk in active_channels %} text-green-600 {% else %}text-gray-500{% endif %}"
                                href="{% url 'admin:bitcaster_channel_change' msg.channel.pk %}">{{ msg.channel }}</a>
                         </div>
                         <div>
-                            {% if message.channel.pk in active_channels %}
+                            {% if msg.channel.pk in active_channels %}
                                 Yes
                             {% else %}
-                                No
+                                Not valid for any active channel
                             {% endif %}
                         </div>
                     {% endfor %}

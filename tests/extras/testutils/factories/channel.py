@@ -1,3 +1,4 @@
+import uuid
 from typing import Any, cast
 
 import factory
@@ -16,7 +17,7 @@ class ChannelFactory(AutoRegisterModelFactory[Channel]):
     organization = factory.SubFactory(OrganizationFactory)
     project = factory.SubFactory(ProjectFactory)
     dispatcher = fqn(XDispatcher)
-    config = {"foo": "bar"}
+    config = factory.LazyFunction(lambda: {"seed": uuid.uuid4().hex})
 
     class Meta:
         model = Channel
@@ -28,5 +29,8 @@ class ChannelFactory(AutoRegisterModelFactory[Channel]):
             kwargs["organization"] = kwargs["project"].organization  # type: ignore[attr-defined]
         if not kwargs.get("organization"):
             kwargs["organization"] = OrganizationFactory()
+
+        if not kwargs.get("project"):
+            kwargs["project"] = ProjectFactory(organization=kwargs["organization"])
 
         return cast("Channel", super().create(**kwargs))
