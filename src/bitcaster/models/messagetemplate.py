@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class MessageManager(BitcasterBaselManager["Message"]):
+class MessageManager(BitcasterBaselManager["MessageTemplate"]):
     def get_by_natural_key(self, name: str, app: str, prj: str, org: str) -> "MessageTemplate":
         filters: dict[str, str | None] = {}
         if app:
