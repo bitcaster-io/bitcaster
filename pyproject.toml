@@ -24,7 +24,7 @@ dependencies = [
   "click>=8.3.1",
   "colorlog>=6.10.1",
   "cron-descriptor>=2.0.6",
-  "cryptography==45.0.3",
+  "cryptography==46.0.3",
   "django>=5.2.1,<6",
   "django-ace>=1.43.3",
   "django-admin-extra-buttons>=2.1.1",
