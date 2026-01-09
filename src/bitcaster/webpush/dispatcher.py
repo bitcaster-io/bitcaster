@@ -1,11 +1,12 @@
+import base64
 import json
 import logging
 from typing import TYPE_CHECKING, Any
 
-from cryptography.hazmat.primitives import serialization
+import ecdsa
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from py_vapid import Vapid02, b64urlencode
+from py_vapid import Vapid02
 
 from bitcaster.dispatchers.base import (
     Dispatcher,
@@ -24,6 +25,15 @@ logger = logging.getLogger(__name__)
 
 class TokenInput(forms.HiddenInput):
     pass
+
+
+def generate_vapid_keypair():
+    pk = ecdsa.SigningKey.generate(curve=ecdsa.NIST256p)
+    vk = pk.get_verifying_key()
+    return {
+        "private_key": base64.urlsafe_b64encode(pk.to_string()).strip(b"="),
+        "public_key": base64.urlsafe_b64encode(b"\x04" + vk.to_string()).strip(b"="),
+    }
 
 
 class WebPushConfig(DispatcherConfig):
@@ -59,16 +69,12 @@ Notes:
     def clean(self) -> dict[str, Any] | None:
         super().clean()
         if "email" in self.cleaned_data:
-            vapid = Vapid02()
-            vapid.generate_keys()
+            keys = generate_vapid_keypair()
             private_key = self.cleaned_data.get("private_key")
             vapid = Vapid02.from_string(private_key)
-            raw_pub = vapid.public_key.public_bytes(
-                serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint
-            )
             claims = {"sub": "mailto: %s" % self.cleaned_data["email"], "aud": "https://android.googleapis.com"}
             auth = vapid.sign(claims)
-            self.cleaned_data["APPLICATION_SERVER_KEY"] = b64urlencode(raw_pub)
+            self.cleaned_data["APPLICATION_SERVER_KEY"] = keys["public_key"]
             self.cleaned_data["VAPID"] = auth["Authorization"]
             self.cleaned_data["CLAIMS"] = json.dumps(claims)
 
