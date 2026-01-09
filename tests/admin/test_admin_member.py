@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, TypedDict
 
 import pytest
 from django.urls import reverse
-from testutils.factories import AddressFactory, AssignmentFactory
 from testutils.helpers import assert_form_error, assert_message, get_resource
 from webtest import Upload
 
@@ -21,7 +20,13 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def context(system_objects) -> "Context":
-    from testutils.factories import ChannelFactory, MemberFactory, OrganizationFactory
+    from testutils.factories import (
+        AddressFactory,
+        AssignmentFactory,
+        ChannelFactory,
+        MemberFactory,
+        OrganizationFactory,
+    )
 
     org: "Organization" = OrganizationFactory()
     ch: "Channel" = ChannelFactory(organization=org)
@@ -64,6 +69,8 @@ def test_member_check_custom_fields(app: "DjangoTestApp", value, expected) -> No
 
 
 def test_add_to_distributionlist(app: "DjangoTestApp", distributionlist: "DistributionList") -> None:
+    from testutils.factories import AssignmentFactory
+
     AssignmentFactory.create_batch(5)
     url = reverse("admin:bitcaster_member_changelist")
     res = app.get(url)

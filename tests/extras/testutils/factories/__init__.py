@@ -21,6 +21,7 @@ from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
 from .social import SocialProviderFactory
 from .task import TaskFactory
 from .user import SuperUserFactory, UserFactory
+from .usermessage import UserMessageFactory
 from .userrole import UserRoleFactory
 
 __all__ = [
@@ -51,6 +52,7 @@ __all__ = [
     "SuperUserFactory",
     "TaskFactory",
     "UserFactory",
+    "UserMessageFactory",
     "UserRoleFactory",
 ]
 

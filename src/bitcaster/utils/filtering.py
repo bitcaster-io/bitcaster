@@ -9,7 +9,7 @@ from jsonschema import validate
 
 if TYPE_CHECKING:
     from bitcaster.types.django import QuerySetOrManager
-    from bitcaster.types.filtering import QuerysetFilter
+    from bitcaster.types.filtering import AllowedFilters, QuerysetFilter
     from bitcaster.types.json import JSON
 
     M = TypeVar("M", bound=models.Model)
@@ -63,7 +63,7 @@ def clean_field_error_message(message: str) -> str:
     return message
 
 
-def validate_lookups(model: "type[models.Model]", filter_spec: "QuerysetFilter") -> None:
+def validate_lookups(model: "type[models.Model]", filter_spec: "AllowedFilters") -> None:
     for family in ["include", "exclude"]:
         if parsed := parse_filter_clause(filter_spec.get(family, [])):
             model_name = f"{model._meta.app_label}.{model._meta.model_name}"
@@ -75,14 +75,14 @@ def validate_lookups(model: "type[models.Model]", filter_spec: "QuerysetFilter")
                     raise ValidationError(f"Unauthorised lookup: '{entry[0]}' in {family}[{i}]")
 
 
-def validate_schema(d: dict[str, Any]) -> None:
+def validate_schema(d: "dict[str, Any] | QuerysetFilter") -> None:
     try:
         validate(instance=d, schema=schema)
     except SchemaValidationError as e:
         raise ValidationError(e.message) from None
 
 
-def validate_filters(queryset: "QuerySetOrManager[M]", d: "QuerysetFilter") -> None:
+def validate_filters(queryset: "QuerySetOrManager[M]", d: "AllowedFilters") -> None:
     try:
         fm = FilterManager(queryset=queryset, filter_spec=d)
         fm.filter().first()
@@ -135,13 +135,13 @@ def parse_filter_clause(data: "JSON | list[JSON] | list[list[JSON]]") -> "models
 
 
 class FilterManager[M]:
-    def __init__(self, queryset: "QuerySetOrManager[M]", filter_spec: "QuerysetFilter"):
+    def __init__(self, queryset: "QuerySetOrManager[M]", filter_spec: "AllowedFilters"):
         self.filter_spec = filter_spec
 
         self.queryset = queryset
 
     @classmethod
-    def parse(cls, filter_spec: "QuerysetFilter|dict[str,Any]") -> tuple[Q, Q]:
+    def parse(cls, filter_spec: "AllowedFilters") -> tuple[Q, Q]:
         includes = parse_filter_clause(filter_spec.get("include", []))
         excludes = parse_filter_clause(filter_spec.get("exclude", []))
         return includes, excludes

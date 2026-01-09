@@ -13,7 +13,7 @@ from .user import User
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from bitcaster.models import Message
+    from bitcaster.models import MessageTemplate
 
     from .channel import Channel
 
@@ -68,8 +68,10 @@ class Project(SlugMixin, LockMixin, BitcasterBaseModel):
             self.owner = self.organization.owner
         super().save(*args, **kwargs)
 
-    def create_message(self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None) -> "Message":
-        return self.message_set.get_or_create(
+    def create_message(
+        self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None
+    ) -> "MessageTemplate":
+        return self.messagetemplate_set.get_or_create(
             name=name,
             channel=channel,
             notification=None,

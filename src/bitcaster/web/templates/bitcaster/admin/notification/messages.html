@@ -43,7 +43,7 @@
             </div>
             {% for msg in message_templates %}
                 <div {% if msg.pk == message_created.pk %}style="background-color: #2bc06a" {% endif %}>
-                    <a href="{% url "admin:bitcaster_message_change" msg.pk %}">{{ msg }}</a>
+                    <a href="{% url "admin:bitcaster_messagetemplate_change" msg.pk %}">{{ msg }}</a>
                 </div>
                 <div>
                     {{ msg.channel }}

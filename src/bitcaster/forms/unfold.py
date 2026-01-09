@@ -27,21 +27,23 @@ __all__ = [
 ]
 
 WIDGETS_OVERRIDES = {
-    forms.DateField: widgets.UnfoldAdminSingleDateWidget,
-    forms.EmailField: widgets.UnfoldAdminEmailInputWidget,
-    forms.CharField: widgets.UnfoldAdminTextInputWidget,
-    forms.SlugField: widgets.UnfoldAdminTextInputWidget,
-    forms.URLField: widgets.UnfoldAdminURLInputWidget,
-    forms.GenericIPAddressField: widgets.UnfoldAdminTextInputWidget,
-    forms.UUIDField: widgets.UnfoldAdminUUIDInputWidget,
-    forms.TextInput: widgets.UnfoldAdminTextareaWidget,
-    forms.NullBooleanField: widgets.UnfoldAdminNullBooleanSelectWidget,
     forms.BooleanField: widgets.UnfoldBooleanSwitchWidget,
-    forms.IntegerField: widgets.UnfoldAdminIntegerFieldWidget,
+    forms.ChoiceField: widgets.UnfoldAdminSelectWidget,
+    forms.CharField: widgets.UnfoldAdminTextInputWidget,
+    forms.DateField: widgets.UnfoldAdminSingleDateWidget,
     forms.DecimalField: widgets.UnfoldAdminDecimalFieldWidget,
-    forms.FloatField: widgets.UnfoldAdminDecimalFieldWidget,
+    forms.EmailField: widgets.UnfoldAdminEmailInputWidget,
     forms.FileField: widgets.UnfoldAdminFileFieldWidget,
+    forms.FloatField: widgets.UnfoldAdminDecimalFieldWidget,
+    forms.GenericIPAddressField: widgets.UnfoldAdminTextInputWidget,
     forms.ImageField: widgets.UnfoldAdminImageFieldWidget,
+    forms.IntegerField: widgets.UnfoldAdminIntegerFieldWidget,
+    forms.NullBooleanField: widgets.UnfoldAdminNullBooleanSelectWidget,
+    forms.SlugField: widgets.UnfoldAdminTextInputWidget,
+    forms.Textarea: widgets.UnfoldAdminTextareaWidget,
+    forms.URLField: widgets.UnfoldAdminURLInputWidget,
+    forms.UUIDField: widgets.UnfoldAdminUUIDInputWidget,
+    # forms.ModelChoiceField: widgets.UnfoldAdminSelectWidget,
 }
 
 
@@ -67,7 +69,12 @@ class UnfoldAdminForm(AdminForm):
         super().__init__(form, fieldsets, prepopulated_fields, readonly_fields, model_admin)
         for field in self.form.fields.values():
             if widget := WIDGETS_OVERRIDES.get(field.__class__):
-                field.widget = widget()
+                if isinstance(field.widget, forms.Textarea):
+                    field.widget = widgets.UnfoldAdminTextareaWidget()
+                elif hasattr(field, "choices"):
+                    field.widget.choices = field.choices
+                else:
+                    field.widget = widget()
 
 
 class UnfoldChainedSelect(ChainedSelect):

@@ -4,7 +4,6 @@ import pytest
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.messages import SUCCESS, Message  # type: ignore[attr-defined]
 from django.urls import reverse
-from testutils.factories import EventFactory
 
 from bitcaster.constants import bitcaster
 
@@ -96,6 +95,8 @@ def test_delete_event(app: "DjangoTestApp", context: "Context") -> None:
 
 
 def test_delete_event_protect_internal(app: "DjangoTestApp", context: "Context") -> None:
+    from testutils.factories import EventFactory
+
     internal_event: Event = EventFactory(
         application__name=bitcaster.APPLICATION,
         application__project__name=bitcaster.PROJECT,
@@ -108,6 +109,8 @@ def test_delete_event_protect_internal(app: "DjangoTestApp", context: "Context")
 
 
 def test_delete_action(app: "DjangoTestApp", context: "Context") -> None:
+    from testutils.factories import EventFactory
+
     from bitcaster.models import Event
 
     event: "Event" = context["event"]

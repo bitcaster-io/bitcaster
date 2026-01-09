@@ -10,7 +10,6 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django_regex.utils import RegexList as _RegexList
 from pytest_django.fixtures import SettingsWrapper
-from testutils.factories import SuperUserFactory
 
 if TYPE_CHECKING:
     from admin_extra_buttons.mixins import ExtraButtonsMixin
@@ -136,6 +135,8 @@ def record(db: Any, request: pytest.FixtureRequest) -> Model:
 def app(
     django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: SettingsWrapper
 ) -> "DjangoTestApp":
+    from testutils.factories import SuperUserFactory
+
     settings.FLAGS = {"OLD_STYLE_UI": [("boolean", True)]}
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")

@@ -249,10 +249,14 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
 
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
     assert o.options == {"limit_to": [target.address.value]}
-    delivered = process_occurrence(o.pk)
+    delivered = process_occurrence(o.pk, True)
     assert delivered == 1
     o.refresh_from_db()
-    assert o.data == {"delivered": [target.pk], "recipients": [[target.address.value, target.channel.name]]}
+    assert o.data == {
+        "delivered": [target.pk],
+        "recipients": [[target.address.value, target.channel.name]],
+        "errors": [],
+    }
 
 
 def test_trigger_limit_by_channel(client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
@@ -310,7 +314,7 @@ def test_trigger_limit_to_with_wrong_receiver(
     monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
     assert o.options == {"limit_to": ["invalid-address"]}
 
-    delivered = process_occurrence(o.pk)
+    delivered = process_occurrence(o.pk, True)
     assert delivered == 0
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
 
@@ -361,17 +365,17 @@ def test_trigger_selected_environment(
     with key_grants(api_key, Grant.EVENT_TRIGGER):
         res = client.post(url, data={"context": {}}, format="json")
         o = Occurrence.objects.get(pk=res.data["occurrence"])
-        delivered = process_occurrence(o.pk)
+        delivered = process_occurrence(o.pk, True)
         assert delivered == 7
 
         res = client.post(url, data={"context": {}, "options": {"environs": ["develop"]}}, format="json")
         o = Occurrence.objects.get(pk=res.data["occurrence"])
-        delivered = process_occurrence(o.pk)
+        delivered = process_occurrence(o.pk, True)
         assert delivered == 3
         # silent event because missing env
         res = client.post(url, data={"context": {}, "options": {"environs": ["missing"]}}, format="json")
         o = Occurrence.objects.get(pk=res.data["occurrence"])
-        delivered = process_occurrence(o.pk)
+        delivered = process_occurrence(o.pk, True)
         assert delivered == 0
         assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
 
@@ -397,12 +401,12 @@ def test_trigger_environment_by_key(
     with key_grants(api_key, Grant.EVENT_TRIGGER, environments=["develop"]):
         res = client.post(url, data={"context": {}}, format="json")
         o = Occurrence.objects.get(pk=res.data["occurrence"])
-        delivered = process_occurrence(o.pk)
+        delivered = process_occurrence(o.pk, True)
     assert delivered == 3
 
     res = client.post(url, data={"context": {}, "options": {"environs": ["develop"]}}, format="json")
     o = Occurrence.objects.get(pk=res.data["occurrence"])
-    delivered = process_occurrence(o.pk)
+    delivered = process_occurrence(o.pk, True)
     assert delivered == 3
 
 

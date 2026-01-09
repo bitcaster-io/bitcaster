@@ -14,7 +14,7 @@
             {% for msg in message_templates %}
                 <tr {% if msg.pk == message_created.pk %}class="last-created-item" {% endif %}>
                     <th width="70%">
-                        <a href="{% url "admin:bitcaster_message_change" msg.pk %}">{{ msg }}</a>
+                        <a href="{% url "admin:bitcaster_messagetemplate_change" msg.pk %}">{{ msg }}</a>
                     </th>
                     <td>
                         {{ msg.channel }}

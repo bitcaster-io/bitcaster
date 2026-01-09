@@ -8,9 +8,7 @@ from django.contrib.auth.models import Permission
 from faker import Faker
 
 from bitcaster.auth.constants import Grant
-from bitcaster.models import ApiKey, Application, Organization, Project, User
 from bitcaster.state import state
-from testutils.factories.django_auth import GroupFactory
 
 whitespace = " \t\n\r\v\f"
 lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -23,6 +21,7 @@ ascii_letters = ascii_lowercase + ascii_uppercase
 if TYPE_CHECKING:
     from django.contrib.auth.models import Group
 
+    from bitcaster.models import ApiKey, Application, Organization, Project, User
     from bitcaster.models.mixins import LockMixin
 
 
@@ -50,6 +49,8 @@ def text(length: int, choices: str = ascii_letters) -> str:
 def get_group(
     name: Optional[str] = None, permissions: Optional[list[str]] = None, raise_if_missing: bool = True
 ) -> "Group":
+    from .factories.django_auth import GroupFactory
+
     group = GroupFactory(name=(name or text(5)))
     permission_names = permissions or []
     for permission_name in permission_names:
@@ -166,6 +167,8 @@ class key_grants(ContextDecorator):  # noqa
         application: "Union[Null, None, Application]" = keep_existing,
         environments: "Union[Null, Iterable[str]]" = keep_existing,
     ):
+        from bitcaster.models import Application
+
         self.key = key
         if not isinstance(grants, (list, tuple)):
             grants = [grants]
