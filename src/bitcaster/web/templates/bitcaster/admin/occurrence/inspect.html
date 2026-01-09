@@ -240,7 +240,7 @@
                     {% for msg in all_messages %}
                         <div>
                             <a class="{% if msg.channel.pk in active_channels %} text-green-600 {% else %}text-gray-500{% endif %}"
-                               href="{% url 'admin:bitcaster_message_change' msg.pk %}">{{ msg.name }}</a>
+                               href="{% url 'admin:bitcaster_messagetemplate_change' msg.pk %}">{{ msg.name }}</a>
                         </div>
                         <div>
                             <a class="{% if msg.channel.pk in active_channels %} text-green-600 {% else %}text-gray-500{% endif %}"

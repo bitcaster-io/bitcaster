@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-    from bitcaster.models import Message
+    from bitcaster.models import MessageTemplate
 
 
 @pytest.fixture
@@ -51,7 +51,7 @@ def test_create_notification_template(app: "DjangoTestApp", notification: "Notif
 def test_avoid_duplicates_template(app: "DjangoTestApp", notification: "Notification") -> None:
     from testutils.factories import MessageFactory
 
-    message: "Message" = MessageFactory(notification=notification, event=notification.event)
+    message: "MessageTemplate" = MessageFactory(notification=notification, event=notification.event)
     url = reverse("admin:bitcaster_notification_messages", args=[notification.pk])
     res = app.get(url)
     frm = res.forms["messageForm"]

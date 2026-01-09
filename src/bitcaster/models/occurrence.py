@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from .application import Application
     from .assignment import Assignment
     from .channel import Channel
-    from .message import Message
+    from .messagetemplate import MessageTemplate
     from .notification import Notification
 
     class OccurrenceData(TypedDict):
@@ -118,7 +118,7 @@ class Occurrence(BitcasterBaseModel):
         return str(self.timestamp), *self.event.natural_key()
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self._cached_messages: dict[Channel, Message] = {}
+        self._cached_messages: dict[Channel, MessageTemplate] = {}
         super().__init__(*args, **kwargs)
 
     def get_context(self) -> dict[str, Any]:

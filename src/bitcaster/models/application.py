@@ -13,7 +13,7 @@ from .user import User
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from bitcaster.models import Channel, Event, Message, Organization
+    from bitcaster.models import Channel, Event, MessageTemplate, Organization
 
 logger = logging.getLogger(__name__)
 
@@ -78,8 +78,10 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
         ev: "Event" = self.events.get_or_create(name=name, defaults={"description": description, "active": False})[0]
         return ev
 
-    def create_message(self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None) -> "Message":
-        return self.message_set.get_or_create(
+    def create_message(
+        self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None
+    ) -> "MessageTemplate":
+        return self.messagetemplate_set.get_or_create(
             name=name,
             channel=channel,
             notification=None,

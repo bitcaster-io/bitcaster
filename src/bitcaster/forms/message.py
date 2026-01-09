@@ -8,12 +8,12 @@ from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
 from tinymce.widgets import TinyMCE
 from unfold.widgets import UnfoldAdminSelect2Widget
 
-from bitcaster.models import Channel, Event, Message, Notification, Organization
+from bitcaster.models import Channel, Event, MessageTemplate, Notification, Organization
 
 from . import unfold
 
 
-class MessageEditForm(forms.ModelForm[Message]):
+class MessageEditForm(forms.ModelForm[MessageTemplate]):
     recipient = forms.CharField(required=False)
     subject = forms.CharField(required=False)
     content = forms.CharField(widget=forms.Textarea, required=False)
@@ -35,7 +35,7 @@ class MessageEditForm(forms.ModelForm[Message]):
         return orig + forms.Media(js=js, css=css)  # type: ignore
 
     class Meta:
-        model = Message
+        model = MessageTemplate
         fields = ("subject", "content", "html_content", "context", "recipient")
 
 
@@ -43,7 +43,7 @@ class MessageRenderForm(MessageEditForm):
     content_type = forms.CharField(widget=forms.HiddenInput)
 
 
-def validate_cleaned_data(form: "forms.ModelForm[Message] | NotificationTemplateCreateForm") -> None:
+def validate_cleaned_data(form: "forms.ModelForm[MessageTemplate] | NotificationTemplateCreateForm") -> None:
     if "channel" in form.cleaned_data and "notification" in form.cleaned_data:
         form.cleaned_data["organization"] = form.cleaned_data["channel"].organization
     if (
@@ -54,9 +54,9 @@ def validate_cleaned_data(form: "forms.ModelForm[Message] | NotificationTemplate
         form.add_error("channel", _("This channel is not available for the selected event"))
 
 
-class MessageChangeForm(forms.ModelForm[Message]):
+class MessageChangeForm(forms.ModelForm[MessageTemplate]):
     class Meta:
-        model = Message
+        model = MessageTemplate
         fields = ("name", "event", "channel", "notification")
 
     def clean(self) -> None:
@@ -64,7 +64,7 @@ class MessageChangeForm(forms.ModelForm[Message]):
         validate_cleaned_data(self)
 
 
-class MessageCreationForm(forms.ModelForm[Message]):
+class MessageCreationForm(forms.ModelForm[MessageTemplate]):
     organization = forms.ModelChoiceField(queryset=Organization.objects.all(), widget=forms.HiddenInput, required=False)
     event = forms.ModelChoiceField(
         queryset=Event.objects.all(),
@@ -78,7 +78,7 @@ class MessageCreationForm(forms.ModelForm[Message]):
     )
 
     class Meta:
-        model = Message
+        model = MessageTemplate
         fields = ("name", "event", "channel", "notification")
 
     def clean(self) -> None:
