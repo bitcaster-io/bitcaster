@@ -5,6 +5,8 @@ import click
 from colorlog import ColoredFormatter
 from dramatiq import Middleware
 
+from bitcaster.runner.manager import BackgroundManager
+
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
@@ -58,10 +60,13 @@ def runit(args: list[str]) -> None:
 @click.option("-p", "--processes", default=1, help="Enable/disable worker events (default: enabled)")
 @click.option("-t", "--threads", default=1, help="Enable/disable worker events (default: enabled)")
 @click.option("-d", "--debug", is_flag=True, help="")
+@click.option("--reset", is_flag=True, help="")
 @click.option("-v", "--verbose", count=True)
 @click.option("--pid-file", type=click.Path())
 @click.option("--autoreload", is_flag=True, default=False, help="Reload on code changes")
-def run(processes: int, threads: int, verbose: bool, debug: bool, autoreload: bool, pid_file: str) -> None:
+def run(
+    processes: int, threads: int, verbose: bool, debug: bool, autoreload: bool, pid_file: str, reset: bool = False
+) -> None:
     args = [
         "--path",
         ".",
@@ -82,7 +87,9 @@ def run(processes: int, threads: int, verbose: bool, debug: bool, autoreload: bo
         args.extend(["--pid-file", pid_file])
 
     log_level = logging.CRITICAL - (verbose * 10)
-
+    if reset:
+        manager = BackgroundManager()
+        manager.reset()
     if debug:
         logging.getLogger("root").root.setLevel(logging.DEBUG)
         logging.getLogger("root").setLevel(logging.DEBUG)

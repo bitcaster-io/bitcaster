@@ -6,11 +6,12 @@ x-common: &common
     - ADMIN_PASSWORD=123
     - ALLOWED_HOSTS=app,localhost,127.0.0.1
     - CACHE_URL=redis://redis:6379/1?client_class=django_redis.client.DefaultClient
-    - DRAMATIQ_BROKER=redis://redis:6379/2
     - CSRF_COOKIE_SECURE=False
     - CSRF_TRUSTED_ORIGINS=http://localhost,https://localhost:1443
     - DATABASE_URL=postgres://bitcaster:password@db:5432/bitcaster
     - DEBUG=True
+    - DRAMATIQ_BROKER=redis://redis:6379/2
+    - LOGGING_LEVEL=CRITICAL
     - MEDIA_ROOT=/var/storage/media/
     - SECRET_KEY=super_secret_key_just_for_development_that_needs_to_be_more_than_fifty_characters
     - SECURE_HSTS_PRELOAD=0
@@ -126,7 +127,7 @@ services:
     image: saxix/sentry-localdev
     container_name: gundam-sentry
     environment:
-      - SENTRY_SECRET_KEY=abc
+      - SENTRY_SECRET_KEY=super_secret_key_just_for_development_that_needs_to_be_more_than_fifty_characters
       - SENTRY_REDIS_HOST=redis
       - SENTRY_DB_NAME=sentry
       - SENTRY_POSTGRES_HOST=db

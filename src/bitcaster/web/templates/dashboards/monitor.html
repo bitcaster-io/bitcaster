@@ -65,10 +65,12 @@
                     </ul>
                 </div>
                 <div class="block" x-show="alive && tabWorker">
-                    <template x-for="(tasks, worker) in tasksMap" :key="worker">
+                    <template x-for="(workerData, workerName) in tasksMap" :key="workerName">
                         <div class="block mb-2">
                             <div class="flex mb-3">
-                                <div class="font-bold mr-5" x-text="worker">
+                                <div class="font-bold mr-5" x-text="workerName">
+                                </div>
+                                <div class="text-sm text-gray-500" x-text="'Last seen: ' + workerData.last_seen">
                                 </div>
                             </div>
                             <div class="grid grid-cols-4 gap-2 font-semibold text-sm text-gray-600 border-b pb-1">
@@ -85,12 +87,12 @@
                                     Enqueued from
                                 </div>
                             </div>
-                            <template x-if="tasks.length === 0">
+                            <template x-if="!workerData.tasks || workerData.tasks.length === 0">
                                 <div class="ml-4 italic text-gray-500">
                                     No active tasks
                                 </div>
                             </template>
-                            <template x-for="task in tasks" :key="task.id">
+                            <template x-for="task in workerData.tasks" :key="task.id">
                                 <div class="grid grid-cols-4 grid-cols-[auto_1fr]">
                                     <div class="shrink-0" x-text="task.id">
                                     </div>
