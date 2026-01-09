@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@source "../../../templates/bitcaster/admin/usermessage/*.{html,py,js}";
+div.edit-message-body {
+  @apply border-1 ;
+  #edit-message-form {
+    table {
+      width: 100%;
+
+      td {
+        vertical-align: top;
+        width: 50%;
+      }
+    }
+
+    input[type=text], textarea {
+      width: 100%;
+      border: 1px solid black;
+    }
+  }
+    .tab {
+      display: none;
+    }
+}

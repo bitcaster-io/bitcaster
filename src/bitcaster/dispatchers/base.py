@@ -32,6 +32,7 @@ class MessageProtocol(models.TextChoices):
     SMS = "SMS"
     EMAIL = "EMAIL"
     WEBPUSH = "WEBPUSH"
+    INTERNAL = "INTERNAL"
 
     def has_capability(self, capability: Capability) -> bool:
         return capability in ProtocolCapabilities[self]
@@ -42,11 +43,13 @@ ProtocolCapabilities = {
     MessageProtocol.EMAIL: [Capability.SUBJECT, Capability.HTML, Capability.TEXT],
     MessageProtocol.SMS: [Capability.TEXT],
     MessageProtocol.WEBPUSH: [Capability.SUBJECT, Capability.TEXT],
+    MessageProtocol.INTERNAL: [Capability.SUBJECT, Capability.HTML],
 }
 
 
 class Payload:
     message: str
+    level: int = logging.INFO
     subject: str | None = None
     html_message: str | None = None
     event: "Event"
@@ -67,9 +70,21 @@ class Payload:
         self.html_message = html_message
         self.user = user
 
+    def as_dict(self) -> dict[str, str]:
+        return {
+            "message": self.message or "",
+            "subject": self.subject or "",
+            "html_message": self.html_message or "",
+            "user": self.user.username,
+        }
+
 
 class DispatcherConfig(forms.Form):
     help_text = ""
+
+    def save(self, channel: "Channel") -> None:
+        channel.config = self.cleaned_data
+        channel.save()
 
 
 class DispatcherMeta(type["Dispatcher"]):
@@ -125,6 +140,9 @@ class Dispatcher(metaclass=DispatcherMeta):
         if not cfg.is_valid():
             raise ValidationError(cfg.errors)
         return cfg.cleaned_data
+
+    def get_extra_config_info(self) -> str:
+        return ""
 
     @classproperty
     def name(self) -> str:

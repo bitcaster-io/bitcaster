@@ -1,0 +1,22 @@
+{% extends "bitcaster/base.html" %}
+{% load feature_flags i18n static user %}
+{% block body %}
+    <div class="flex h-16 p-3 mb-5">
+        <img class="align-middle" src="{% static "bitcaster/images/logos/logo48.png" %}" />
+        <img class="align-middle" src="{% static "bitcaster/images/logos/name.svg" %}" />
+    </div>
+    <div class="p-5 text-xl">
+        <div class="p-2">
+            {% user_date object.created %}
+        </div>
+        <div class="p-2 rounded bg-gray-500 my-2">
+            {{ object.subject }}
+        </div>
+        <div class="p-2 border border-gray-500 rounded">
+            {{ object.message|safe }}
+        </div>
+    </div>
+    <div class="container mx-10">
+        <a class="w-16 button button-primary" href="..">{% trans 'Back' %}</a>
+    </div>
+{% endblock body %}

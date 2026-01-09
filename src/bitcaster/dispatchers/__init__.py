@@ -7,6 +7,7 @@ from .sendgrid import SendGridDispatcher
 from .slack import SlackDispatcher
 from .sys import SystemDispatcher
 from .twilio import TwilioSMS
+from .user_message import UserMessageDispatcher
 
 __all__ = [
     "LocalDatabaseDispatcher",
@@ -18,4 +19,5 @@ __all__ = [
     "SlackDispatcher",
     "SystemDispatcher",
     "TwilioSMS",
+    "UserMessageDispatcher",
 ]

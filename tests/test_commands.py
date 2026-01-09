@@ -8,7 +8,6 @@ from unittest import mock
 import pytest
 from django.core.management import CommandError, call_command
 from responses import RequestsMock
-from testutils.factories import ProjectFactory, SuperUserFactory
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper
@@ -81,6 +80,8 @@ def test_upgrade(verbosity: int, migrate: int, monkeypatch: pytest.MonkeyPatch, 
 
 
 def test_upgrade_next(mocked_responses: RequestsMock) -> None:
+    from testutils.factories import ProjectFactory, SuperUserFactory
+
     SuperUserFactory()
     ProjectFactory()
     out = StringIO()
@@ -105,6 +106,8 @@ def test_upgrade_noadmin(mocked_responses: RequestsMock, environment: dict[str, 
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.parametrize("admin", [True, False], ids=["existing_admin", "new_admin"])
 def test_upgrade_admin(mocked_responses: RequestsMock, environment: dict[str, str], admin: str) -> None:
+    from testutils.factories import SuperUserFactory
+
     if admin:
         email = SuperUserFactory().email
     else:

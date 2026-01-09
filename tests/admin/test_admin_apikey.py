@@ -10,7 +10,6 @@ from django.utils.safestring import SafeString
 from django_webtest import DjangoTestApp, DjangoWebtestResponse
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
 from freezegun import freeze_time
-from testutils.factories import ApiKeyFactory
 
 from bitcaster.auth.constants import Grant
 
@@ -123,6 +122,8 @@ def test_add_channel_filter_by_type(app: DjangoTestApp, api_key: "ApiKey", flt: 
 
 @pytest.mark.parametrize("root", [True, False])
 def test_show_key(app: DjangoTestApp, root: bool) -> None:
+    from testutils.factories import ApiKeyFactory
+
     with freeze_time("2012-01-14"):
         api_key: "ApiKey" = ApiKeyFactory()
     url = reverse("admin:bitcaster_apikey_show_key", args=[api_key.pk])

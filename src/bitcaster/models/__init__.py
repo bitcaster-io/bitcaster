@@ -11,7 +11,7 @@ from .internal import LogMessage
 from .key import ApiKey
 from .log import LogEntry
 from .media import MediaFile
-from .message import Message
+from .messagetemplate import MessageTemplate
 from .monitor import Monitor
 from .notification import Notification
 from .occurrence import Occurrence
@@ -19,6 +19,7 @@ from .organization import Organization
 from .project import Project
 from .task import Task
 from .user import Member, User
+from .user_message import UserMessage
 from .userrole import UserRole
 
 __all__ = [
@@ -34,7 +35,7 @@ __all__ = [
     "LogMessage",
     "MediaFile",
     "Member",
-    "Message",
+    "MessageTemplate",
     "Monitor",
     "Notification",
     "Occurrence",
@@ -44,5 +45,6 @@ __all__ = [
     "SocialProvider",
     "Task",
     "User",
+    "UserMessage",
     "UserRole",
 ]

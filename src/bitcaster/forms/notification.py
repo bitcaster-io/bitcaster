@@ -24,7 +24,7 @@ class NotificationForm(forms.ModelForm["Notification"]):
         if self.cleaned_data.get("dynamic", False):
             self.cleaned_data["distribution"] = None
             try:
-                recipients = self.cleaned_data["recipients_filter"]
+                recipients = self.cleaned_data.get("recipients_filter", {"include": [], "exclude": []})
                 validate_schema(recipients)
                 validate_filters(User.objects, recipients)
                 validate_lookups(User, recipients)

@@ -42,6 +42,8 @@ class EventFactory(AutoRegisterModelFactory[Event]):
                     msg = MessageFactory()
                     self.messages.add(msg)
                     self.channels.add(msg.channel)
+            elif isinstance(extracted, str):
+                MessageFactory(channel=self.channels.first(), event=self, content=extracted)
             else:
                 for msg in extracted:
                     self.messages.add(msg)

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
         Channel,
         DistributionList,
         Event,
-        Message,
+        MessageTemplate,
         User,
     )
 
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
             "channel": Channel,
             "v1": Assignment,
             "v2": Assignment,
-            "message": Message,
+            "message": MessageTemplate,
             "address": Address,
         },
     )
@@ -50,20 +50,22 @@ def context() -> "Context":
         NotificationFactory,
     )
 
-    app: "Application" = ApplicationFactory(name="Application-000")
+    app: "Application" = ApplicationFactory.create(name="Application-000")
 
-    key: "ApiKey" = ApiKeyFactory(application=app)
+    key: "ApiKey" = ApiKeyFactory.create(application=app)
     user: "User" = key.user
-    addr: Address = AddressFactory(value="addr1@example.com", user=user)
+    addr: Address = AddressFactory.create(value="addr1@example.com", user=user)
 
-    ch = ChannelFactory(organization=app.project.organization, name="test", dispatcher=fqn(XDispatcher))
-    evt = EventFactory(application=app, channels=[ch])
-    dis: "DistributionList" = DistributionListFactory()
-    v1: Assignment = AssignmentFactory(address=addr, channel=ch)
-    v2: Assignment = AssignmentFactory(address__value="addr2@example.com", channel=ch)
+    ch = ChannelFactory.create(organization=app.project.organization, name="test", dispatcher=fqn(XDispatcher))
+    evt = EventFactory.create(application=app, channels=[ch])
+    dis: "DistributionList" = DistributionListFactory.create()
+    v1: Assignment = AssignmentFactory.create(address=addr, channel=ch)
+    v2: Assignment = AssignmentFactory.create(address__value="addr2@example.com", channel=ch)
 
-    NotificationFactory(event=evt, distribution=dis)
-    msg = MessageFactory(channel=ch, event=evt, content="Message for {{ event.name }} on channel {{channel.name}}")
+    NotificationFactory.create(event=evt, distribution=dis)
+    msg = MessageFactory.create(
+        channel=ch, event=evt, content="Message for {{ event.name }} on channel {{channel.name}}"
+    )
 
     dis.recipients.add(v1)
     dis.recipients.add(v2)
@@ -80,9 +82,7 @@ def context() -> "Context":
     }
 
 
-def test_trigger(
-    context: "Context", messagebox: list[tuple[str, str]], django_assert_num_queries: "DjangoAssertNumQueries"
-) -> None:
+def test_trigger(context: "Context", django_assert_num_queries: "DjangoAssertNumQueries") -> None:
     event: Event = context["event"]
     v1: Assignment = context["v1"]
     v2: Assignment = context["v2"]
@@ -91,10 +91,12 @@ def test_trigger(
     assert event.notifications.exists()
     o.process()
 
-    assert messagebox == [
-        (v1.address.value, f"Message for {event.name} on channel {ch.name}"),
-        (v2.address.value, f"Message for {event.name} on channel {ch.name}"),
-    ]
+    assert sorted(ch.dispatcher._messages()) == sorted(
+        [
+            [v1.address.value, f"Message for {event.name} on channel {ch.name}", 0],
+            [v2.address.value, f"Message for {event.name} on channel {ch.name}", 1],
+        ]
+    )
     o.refresh_from_db()
     assert o.data == {
         "delivered": [v1.pk, v2.pk],
@@ -102,4 +104,5 @@ def test_trigger(
             [v1.address.value, v1.channel.name],
             [v2.address.value, v2.channel.name],
         ],
+        "errors": [],
     }

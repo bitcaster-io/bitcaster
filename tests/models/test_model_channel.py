@@ -2,7 +2,6 @@ from typing import Any
 
 import pytest
 from strategy_field.utils import fqn, get_attr
-from testutils.factories import ChannelFactory
 
 from bitcaster.dispatchers import GMailDispatcher
 from bitcaster.models import Channel, Project
@@ -67,5 +66,7 @@ def test_clean(channel: "Channel", attr: str) -> None:
 
 @pytest.mark.parametrize("args", [{}, {"project": None}])
 def test_natural_key(args: dict[str, Any]) -> None:
+    from testutils.factories import ChannelFactory
+
     ch = ChannelFactory(name="ch1", **args)
     assert Channel.objects.get_by_natural_key(*ch.natural_key()) == ch, ch.natural_key()

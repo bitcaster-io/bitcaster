@@ -1,15 +1,21 @@
 import logging
+from typing import TYPE_CHECKING
 
 import dramatiq
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from strategy_field.utils import fqn
 
 from bitcaster.constants import bitcaster
 
+from ..console.utils import get_users_to_notify, set_user_latest_notify_time
+from ..dispatchers import UserMessageDispatcher
 from .broker import broker
 
-logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    from ..models.occurrence import OccurrenceOptions
 
+logger = logging.getLogger(__name__)
 
 dramatiq.set_broker(broker)
 
@@ -21,12 +27,35 @@ def beat_heartbeat() -> None:
 
 
 @dramatiq.actor
-def process_occurrence(occurrence_pk: int) -> int:
+def process_occurrence(occurrence_pk: int, return_value: bool = False) -> int | None:
     from bitcaster.models import Occurrence
 
-    o: Occurrence = Occurrence.objects.select_related("event").get(id=occurrence_pk)
-    logger.debug(f"Processing occurrence {o}")
-    return o.process()
+    try:
+        o: Occurrence = Occurrence.objects.select_related("event").get(id=occurrence_pk)
+        logger.debug(f"Processing occurrence {o}")
+        delivered = o.process()
+        if return_value:
+            return delivered
+        return None
+    except Occurrence.DoesNotExist:
+        raise
+
+
+@dramatiq.actor
+def check_for_new_user_messages() -> None:
+    from bitcaster.models import Channel, Event
+
+    users = get_users_to_notify()
+    if (
+        users
+        and (ch := Channel.objects.filter(dispatcher=fqn(UserMessageDispatcher)).first())
+        and (event_pk := ch.config.get("event"))
+    ):
+        options: "OccurrenceOptions" = {"filters": {"include": [{"pk__in": users}], "exclude": []}}
+        evt: Event = Event.objects.get(pk=event_pk)
+        evt.trigger(context={}, options=options)
+        for uid in users:
+            set_user_latest_notify_time(uid)
 
 
 @dramatiq.actor
@@ -34,7 +63,6 @@ def scan_occurrences() -> None:
     from bitcaster.models import Occurrence
 
     logger.debug("Scan new occurrences")
-
     o: Occurrence
     try:
         for o in (
