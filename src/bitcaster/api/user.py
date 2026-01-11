@@ -11,10 +11,11 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from bitcaster.api.base import SecurityMixin
-from bitcaster.api.serializers import AddressSerializer
+from bitcaster.api.serializers import AddressSerializer, UserMessageSerializer
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import bitcaster
 from bitcaster.models import Organization, User, UserRole
+from bitcaster.utils.http import absolute_reverse
 from bitcaster.utils.json import JsonUpdateMode, process_dict
 
 
@@ -58,12 +59,29 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
-    username = serializers.CharField(read_only=True)
+    url = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ("id", "email", "username", "first_name", "last_name", "locked")
+        fields = ("id", "url", "email", "username", "first_name", "last_name", "locked")
+
+    def get_url(self, obj: User) -> str:
+        return absolute_reverse("api:user-update", args=[self.context["view"].kwargs["org"], obj.username])
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    messages = serializers.SerializerMethodField()
+    addresses = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ("id", "email", "username", "first_name", "last_name", "locked", "messages", "addresses")
+
+    def get_messages(self, obj: User) -> str:
+        return absolute_reverse("api:user-messages", args=[self.context["view"].kwargs["org"], obj.username])
+
+    def get_addresses(self, obj: User) -> str:
+        return absolute_reverse("api:user-addresses", args=[self.context["view"].kwargs["org"], obj.username])
 
 
 class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, UpdateAPIView, RetrieveAPIView):
@@ -72,6 +90,7 @@ class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, UpdateAPIView
     action_serializers = {
         "create": UserCreateSerializer,
         "list": UserSerializer,
+        "retrieve": UserDetailSerializer,
         "update": UserUpdateSerializer,
         "patch": UserUpdateSerializer,
     }
@@ -104,3 +123,12 @@ class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, UpdateAPIView
         else:
             status_code = status.HTTP_400_BAD_REQUEST
         return Response(ser.data, status=status_code)
+
+    @extend_schema(
+        request=UserMessageSerializer, responses=UserMessageSerializer, description=_("Retrieve user messages")
+    )
+    @action(detail=True, methods=["GET"], serializer_class=UserMessageSerializer)
+    def list_messages(self, request: HttpRequest, **kwargs: Any) -> Response:
+        user: User = self.get_object()
+        ser = UserMessageSerializer(many=True, instance=user.bitcaster_messages.all())
+        return Response(ser.data)

@@ -7,8 +7,8 @@ from .distribution import DistributionListAdmin
 from .event import EventAdmin
 from .group import GroupAdmin
 from .internal import LogMessageAdmin
-from .media import MediaAdmin
-from .message import MessageAdmin
+from .media import MediaFileAdmin
+from .message import MessageTemplateAdmin
 from .monitor import MonitorAdmin
 from .notification import NotificationAdmin
 from .occurrence import OccurrenceAdmin
@@ -31,8 +31,8 @@ __all__ = [
     "GroupAdmin",
     "LogEntryAdmin",
     "LogMessageAdmin",
-    "MediaAdmin",
-    "MessageAdmin",
+    "MediaFileAdmin",
+    "MessageTemplateAdmin",
     "MonitorAdmin",
     "NotificationAdmin",
     "OccurrenceAdmin",

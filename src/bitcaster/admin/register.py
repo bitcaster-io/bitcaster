@@ -11,9 +11,9 @@ from .distribution import DistributionListAdmin
 from .event import EventAdmin
 from .group import GroupAdmin
 from .internal import LogMessageAdmin
-from .media import MediaAdmin
+from .media import MediaFileAdmin
 from .member import MemberAdmin
-from .message import MessageAdmin
+from .message import MessageTemplateAdmin
 from .monitor import MonitorAdmin
 from .notification import NotificationAdmin
 from .occurrence import OccurrenceAdmin
@@ -44,8 +44,8 @@ admin.site.register(models.Channel, ChannelAdmin)
 admin.site.register(models.DistributionList, DistributionListAdmin)
 admin.site.register(models.Event, EventAdmin)
 admin.site.register(models.LogMessage, LogMessageAdmin)
-admin.site.register(models.MediaFile, MediaAdmin)
-admin.site.register(models.MessageTemplate, MessageAdmin)
+admin.site.register(models.MediaFile, MediaFileAdmin)
+admin.site.register(models.MessageTemplate, MessageTemplateAdmin)
 admin.site.register(models.Member, MemberAdmin)
 admin.site.register(models.Notification, NotificationAdmin)
 admin.site.register(models.Occurrence, OccurrenceAdmin)

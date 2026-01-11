@@ -10,6 +10,8 @@ from django.utils import timezone
 from django.utils.module_loading import import_string
 from sentry_sdk.utils import epoch
 
+from bitcaster.runner.manager import init_scheduler
+
 if TYPE_CHECKING:
     from apscheduler.job import Job
 
@@ -30,7 +32,6 @@ def run_scheduler(verbose: int, debug: bool) -> None:
     django.setup()
 
     from bitcaster.models import Task
-    from bitcaster.runner.config import SCHEDULER
     from bitcaster.runner.manager import BackgroundManager, scheduler
 
     last_round = epoch.astimezone(datetime.UTC)
@@ -117,12 +118,7 @@ def run_scheduler(verbose: int, debug: bool) -> None:
         seconds=10,
         replace_existing=True,
     )
-    for sid, config in SCHEDULER.items():
-        job_args = {k: v for k, v in config.items() if k in ["func", "trigger", "replace_existing", "args", "kwargs"]}
-        trigger_args = {k: v for k, v in config.items() if k not in job_args}
-        __, created = Task.objects.get_or_create(
-            slug=sid, defaults={"name": sid, "trigger_config": trigger_args, **job_args}
-        )
+    init_scheduler()
 
     try:
         if log_level < logging.WARN:

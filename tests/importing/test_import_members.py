@@ -53,7 +53,7 @@ from bitcaster.importing.utils import get_column_mapping
         ),
     ],
 )
-def test_process_csv_line(line: dict[str, Any], expected) -> None:
+def test_process_csv_line(local_organization, line: dict[str, Any], expected) -> None:
     mapping = get_column_mapping(line.keys())
     if isinstance(expected, type) and issubclass(expected, Exception):
         with pytest.raises(expected):
@@ -63,6 +63,7 @@ def test_process_csv_line(line: dict[str, Any], expected) -> None:
         assert result == expected
 
 
+@pytest.mark.django_db(transaction=True)
 @pytest.mark.parametrize(
     "filename, expected",
     [
@@ -72,9 +73,11 @@ def test_process_csv_line(line: dict[str, Any], expected) -> None:
         ("members_clean_fields.csv", (2, 2)),
     ],
 )
-def test_import_csv(filename: str, expected) -> None:
+def test_import_csv(local_organization, filename: str, expected) -> None:
     data = File(get_resource(f"data/{filename}").open("rb"))
+    from bitcaster.constants import bitcaster
 
+    assert bitcaster.local_organization
     if isinstance(expected, type) and issubclass(expected, Exception):
         with pytest.raises(expected):
             import_members_csv(data)
@@ -83,6 +86,7 @@ def test_import_csv(filename: str, expected) -> None:
         assert result == expected
 
 
+@pytest.mark.django_db(transaction=True)
 @pytest.mark.parametrize(
     "data, expected",
     [
@@ -92,7 +96,7 @@ def test_import_csv(filename: str, expected) -> None:
         ),
     ],
 )
-def test_import_csv_columns_cleaning(data: str, expected) -> None:
+def test_import_csv_columns_cleaning(local_organization, data: str, expected) -> None:
     def mocked(d, *, ignore_conflicts=True):
         assert d[0].email == expected["email"]
         return d
@@ -101,9 +105,10 @@ def test_import_csv_columns_cleaning(data: str, expected) -> None:
         import_members_csv(data)
 
 
-def test_import_csv_with_group() -> None:
+@pytest.mark.django_db(transaction=True)
+def test_import_csv_with_group(local_organization) -> None:
     data = File(get_resource("data/members_ok.csv").open("rb"))
     group = bitcaster.get_default_group()
     result = import_members_csv(data, group=group)
     assert result == (2, 2)
-    assert group.user_set.count() == 2
+    assert bitcaster.local_organization.users.count() == 2

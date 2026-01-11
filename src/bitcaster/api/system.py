@@ -28,3 +28,15 @@ class PingView(BaseView):
         key: "ApiKey" = request.auth
         ser = PingSerializer({"token": key.name})
         return Response(ser.data, status=status.HTTP_200_OK)
+
+
+class LoginView(BaseView):
+    required_grants = [Grant.SYSTEM_PING]
+    serializer_class = PingSerializer
+    authentication_classes = [ApiKeyAuthentication]
+
+    @extend_schema(request=PingSerializer, description=_("Ping system"))
+    def get(self, request: Request, **kwargs: Any) -> Response:
+        key: "ApiKey" = request.auth
+        ser = PingSerializer({"token": key.name})
+        return Response(ser.data, status=status.HTTP_200_OK)

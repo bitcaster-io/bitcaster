@@ -70,17 +70,20 @@ class ImageFieldWithExtra(models.ImageField):
     def update_dimension_fields(
         self, instance: "AnyModel_co", force: bool = False, *args: "Any", **kwargs: "Any"
     ) -> None:
-        super().update_dimension_fields(instance, force, *args, **kwargs)
-        if self.mime_field or self.size_field:
-            file: ImageFieldFile = getattr(instance, self.attname)
-            if not file and not force:
-                return
-            if self.mime_field:
-                mime_type = self._get_mime(instance, file)
-                setattr(instance, self.mime_field, mime_type)
+        try:
+            super().update_dimension_fields(instance, force, *args, **kwargs)
+            if self.mime_field or self.size_field:
+                file: ImageFieldFile = getattr(instance, self.attname)
+                if not file and not force:
+                    return
+                if self.mime_field:
+                    mime_type = self._get_mime(instance, file)
+                    setattr(instance, self.mime_field, mime_type)
 
-            if self.size_field:
-                setattr(instance, self.size_field, file.size)
+                if self.size_field:
+                    setattr(instance, self.size_field, file.size)
+        except FileNotFoundError:
+            pass
 
 
 class MediaFile(Scoped3Mixin, SlugMixin, BitcasterBaseModel):

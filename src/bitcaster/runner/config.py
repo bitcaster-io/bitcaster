@@ -32,4 +32,10 @@ SCHEDULER = {
         "trigger": "interval",
         "minutes": 5,
     },
+    "delete_expired_user_messages": {
+        "func": "bitcaster.runner.tasks.delete_expired_user_messages",
+        "replace_existing": True,
+        "trigger": "interval",
+        "days": 1,
+    },
 }

@@ -74,6 +74,13 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
         if ch:
             button.href = f"{url}?channels__exact={ch.pk}"
 
+    @link(change_form=True, change_list=False)
+    def assignments(self, button: ButtonWidget) -> None:
+        url = reverse("admin:bitcaster_assignment_changelist")
+        ch: Channel = button.context["original"]
+        if ch:
+            button.href = f"{url}?channel__id__exact={ch.pk}"
+
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
         obj: "Channel" = self.get_object_or_404(request, pk)
@@ -87,9 +94,12 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
                     self.message_user(request, f"Configured channel {obj.name}")
                     return HttpResponseRedirect(reverse("admin:bitcaster_channel_change", args=(obj.pk,)))
             else:
-                config_form = form_class(
-                    initial={k: v for k, v in obj.config.items() if k in form_class.declared_fields}
-                )
+                initial = {k: v for k, v in obj.config.items() if k in form_class.declared_fields}
+                for k, v in obj.dispatcher.default_config.items():
+                    if k not in initial:
+                        initial[k] = v
+
+                config_form = form_class(initial=initial)
             fs = (("", {"fields": form_class.declared_fields}),)
             context["adminform"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)  # type: ignore[arg-type]
             context["extra_config_info"] = obj.dispatcher.get_extra_config_info()

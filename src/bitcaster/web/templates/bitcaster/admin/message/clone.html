@@ -1,0 +1,29 @@
+{% extends "unfold/layouts/base.html" %}
+{#{% extends "admin/change_form.html" %}#}
+{% load i18n static %}
+<!DOCTYPE HTML>
+{% block extrastyle %}
+    {{ block.super }}
+    <meta name="change-url" content="{% url "admin:bitcaster_messagetemplate_change" original.pk %}" />
+    <meta name="edit-url" content="{% url "admin:bitcaster_messagetemplate_edit" original.pk %}" />
+    <meta name="render-url" content="{% url "admin:bitcaster_messagetemplate_render" original.pk %}" />
+    <meta name="test-url" content="{% url "admin:bitcaster_messagetemplate_send_message" original.pk %}" />
+    {{ form.media }}
+    {{ admin_form.media }}
+{% endblock extrastyle %}
+{% block extrahead %}
+{% endblock extrahead %}
+{% block content %}
+    <div>
+        <form method="post">
+            {% csrf_token %}
+            {{ admin_form.form.non_field_errors }}
+            {% for fieldset in admin_form %}
+                {% include "admin/includes/fieldset.html" %}
+            {% endfor %}
+            <div class="form-submit-row">
+                <input type="submit" class="button button-primary" value="{% translate 'Save' %}" />
+            </div>
+        </form>
+    </div>
+{% endblock content %}

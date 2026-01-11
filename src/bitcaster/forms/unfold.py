@@ -43,7 +43,7 @@ WIDGETS_OVERRIDES = {
     forms.Textarea: widgets.UnfoldAdminTextareaWidget,
     forms.URLField: widgets.UnfoldAdminURLInputWidget,
     forms.UUIDField: widgets.UnfoldAdminUUIDInputWidget,
-    # forms.ModelChoiceField: widgets.UnfoldAdminSelectWidget,
+    # forms.ModelChoiceField: widgets.UnfoldAdminSelect2Widget,
 }
 
 

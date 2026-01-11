@@ -10,7 +10,7 @@ from .mixins import BitcasterBaseModel, BitcasterBaselManager, SlugMixin
 from .user import User
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, MessageTemplate
+    from bitcaster.models import Channel, Group, MessageTemplate, UserRole
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +45,16 @@ class Organization(SlugMixin, BitcasterBaseModel):
             models.UniqueConstraint(fields=("slug",), name="org_slug_unique"),
             models.UniqueConstraint(fields=("slug", "owner"), name="owner_slug_unique"),
         ]
+
+    def enroll_users(self, queryset: "QuerySet[User]", group: "Group | None" = None) -> "list[UserRole]":
+        from bitcaster.models import UserRole
+
+        grp = group or bitcaster.get_default_group()
+        enrolled = [
+            UserRole(user=u, organization=bitcaster.local_organization, group=grp)
+            for u in queryset.exclude(username__in=[bitcaster.SYSTEM_USER])
+        ]
+        return UserRole.objects.bulk_create(enrolled, ignore_conflicts=True)
 
     @property
     def users(self) -> QuerySet["User"]:

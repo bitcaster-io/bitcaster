@@ -8,7 +8,7 @@ from django.db import models
 from django.utils.functional import cached_property
 
 if TYPE_CHECKING:
-    from bitcaster.models import Application, Event, Group, Occurrence, User
+    from bitcaster.models import Application, Event, Group, Occurrence, Organization, User
     from bitcaster.models.occurrence import OccurrenceOptions
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,7 @@ class Bitcaster:
     APPLICATION = "Bitcaster"
     SYSTEM_USER = "__SYSTEM__"
     _app: "Application | None" = None
+    _local_org: "Organization | None" = None
 
     @staticmethod
     def initialize(admin: "User") -> "Application":
@@ -46,11 +47,19 @@ class Bitcaster:
     def system_user(self) -> "User":
         from bitcaster.models import User
 
-        return User.objects.get_or_create(username=Bitcaster.SYSTEM_USER)[0]
+        return User.objects.get_or_create(username=self.SYSTEM_USER)[0]
 
     @cached_property
     def system_user_id(self) -> int:
         return self.system_user.pk
+
+    @property
+    def local_organization(self) -> "Organization":
+        from bitcaster.models import Organization
+
+        if not self._local_org:
+            self._local_org = Organization.objects.exclude(name=self.ORGANIZATION).get()
+        return self._local_org
 
     @property
     def app(self) -> "Application":

@@ -24,8 +24,10 @@ def context(occurrence: "Occurrence", user: "User") -> "Context":
         NotificationFactory,
     )
 
-    notification: "Notification" = NotificationFactory(event__channels=[ChannelFactory()], payload_filter="foo=='bar'")
-    assignment: "Assignment" = AssignmentFactory(channel=notification.event.channels.first())
+    notification: "Notification" = NotificationFactory.create(
+        event__channels=[ChannelFactory()], payload_filter="foo=='bar'"
+    )
+    assignment: "Assignment" = AssignmentFactory.create(channel=notification.event.channels.first())
     notification.distribution.recipients.add(assignment)
 
     return {"assignment": assignment, "notification": notification}
@@ -39,8 +41,10 @@ def context(occurrence: "Occurrence", user: "User") -> "Context":
 def test_model_occurrence_filter(
     payload: dict[str, str], notified_count: int, context: "Context", monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", mock := Mock())
-
+    monkeypatch.setattr(
+        "bitcaster.models.notification.Notification.notify_to_channel", mock := Mock(return_value=(None, 999))
+    )
+    asm = context["assignment"]
     occurrence: Occurrence = context["notification"].event.trigger(context=payload)
     occurrence.process()
 
@@ -49,8 +53,13 @@ def test_model_occurrence_filter(
 
     if notified_count == 1:
         assert occurrence.data == {
-            "delivered": [context["assignment"].id],
-            "recipients": [[context["assignment"].address.value, context["assignment"].channel.name]],
+            "channels": [asm.channel.pk],
+            "messages": [999],
+            "notifications": [context["notification"].pk],
+            "delivered": [asm.id],
+            "recipients": [
+                [asm.address.value, asm.channel.name, asm.pk, asm.channel.pk, context["notification"].pk, 999]
+            ],
             "errors": [],
         }
 

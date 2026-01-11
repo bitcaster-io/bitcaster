@@ -128,10 +128,15 @@ class MonitorView(ConsoleMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         from bitcaster.runner.broker import broker
+        from bitcaster.runner.manager import BackgroundManager
+
+        manager = BackgroundManager()
 
         kwargs.update(
             media=self.media,
-            tasks=broker.get_declared_actors(),  # Removed reference to app.tasks
+            tasks=[
+                (a, manager.get_task_last_run(a)) for a in broker.get_declared_actors()
+            ],  # Removed reference to app.tasks
         )
 
         return super().get_context_data(**kwargs)

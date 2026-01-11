@@ -12,6 +12,7 @@ from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationFo
 from bitcaster.forms.unfold import UnfoldAdminSelect2Widget
 from bitcaster.web.dashboard.views import LockView, MonitorView, ToolsView
 
+from ..constants import bitcaster
 from ..models import User
 from ..utils.django import admin_toggle_bool_action
 from .base import BaseAdmin, BitcasterModelAdmin
@@ -49,7 +50,7 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     )
     filter_horizontal = ()
     change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
-    actions = ["toggle_superuser", "toggle_staff", "toggle_active"]
+    actions = ["toggle_superuser", "toggle_staff", "toggle_active", "enroll"]
 
     def formfield_for_choice_field(self, db_field: "Field", request: "HttpRequest", **kwargs) -> TypedChoiceField:
         if db_field.name == "timezone":
@@ -70,6 +71,9 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
 
     def toggle_staff(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
         admin_toggle_bool_action(request, queryset.exclude(pk=request.user.pk), "is_staff")
+
+    def enroll(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
+        bitcaster.local_organization.enroll_users(queryset)
 
     @link(change_form=True, change_list=False)
     def addresses(self, button: ButtonWidget) -> None:

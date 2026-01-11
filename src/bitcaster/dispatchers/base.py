@@ -112,6 +112,7 @@ class Dispatcher(metaclass=DispatcherMeta):
     channel: "Channel"
     protocol: MessageProtocol = MessageProtocol.PLAINTEXT
     need_subscription = False
+    default_config: dict[str, Any] = {}
 
     def __init__(self, channel: "Channel") -> None:
         self.channel = channel

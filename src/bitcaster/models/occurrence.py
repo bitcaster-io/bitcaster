@@ -27,8 +27,13 @@ if TYPE_CHECKING:
 
     class OccurrenceData(TypedDict):
         delivered: list[str | int]
-        recipients: list[tuple[str, str]]
+        recipients: list[
+            tuple[str, str, int, int, int | None, int | None]
+        ]  # assignment.address.value, channel.name, assignment.pk, channel.pk, notification.pk, message_template_pk
         errors: list[str]
+        notifications: list[int]
+        channels: list[int]
+        messages: list[int]
 
     class OccurrenceOptions(TypedDict):
         limit_to: NotRequired[list[str]]
@@ -194,24 +199,48 @@ class Occurrence(BitcasterBaseModel):
         notification: "Notification"
         delivered = self.data.get("delivered", [])
         recipients = self.data.get("recipients", [])
+        errors = self.data.get("errors", [])
+        notifications = set(self.data.get("notifications", []))
+        channels = set(self.data.get("channels", []))
+        messages = set(self.data.get("messages", []))
         assignment_filter = {}
         success = True
-        data: "OccurrenceData" = {"delivered": [], "recipients": [], "errors": []}
+        data: "OccurrenceData" = {
+            "delivered": delivered,
+            "recipients": recipients,
+            "errors": errors,
+            "notifications": [],
+            "channels": [],
+            "messages": [],
+        }
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
         api_filtering = self.options.get("filters", {}) or {}
         try:
             for notification in self._get_valid_notifications():
+                notifications.add(notification.pk)
                 context = notification.get_context(self.get_context())
                 logger.debug(f"Processing occurrence {self.id} , context: {context}")
 
                 for channel in self._get_valid_channels():
+                    channels.add(channel.pk)
                     for assignment in notification.get_pending_subscriptions(delivered, channel, api_filtering).filter(
                         **assignment_filter
                     ):
-                        notification.notify_to_channel(channel, assignment, context)
+                        __, message_template_pk = notification.notify_to_channel(channel, assignment, context)
+                        if message_template_pk:
+                            messages.add(message_template_pk)
                         delivered.append(assignment.id)
-                        recipients.append((assignment.address.value, assignment.channel.name))
+                        recipients.append(
+                            (
+                                assignment.address.value,
+                                channel.name,
+                                assignment.pk,
+                                channel.pk,
+                                notification.pk,
+                                message_template_pk,
+                            )
+                        )
         except Exception as e:
             logger.exception(e)
             data["errors"].append(f"{e.__class__.__name__}: {str(e)}")
@@ -219,4 +248,7 @@ class Occurrence(BitcasterBaseModel):
         finally:
             data["delivered"] = delivered
             data["recipients"] = recipients
+            data["notifications"] = list(notifications)
+            data["messages"] = list(messages)
+            data["channels"] = list(channels)
         return success, data
