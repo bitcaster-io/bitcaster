@@ -77,6 +77,13 @@ def scan_occurrences() -> None:
 
 
 @dramatiq.actor
+def delete_expired_user_messages() -> None | Exception:
+    from bitcaster.models import UserMessage
+
+    UserMessage.objects.expired().delete()
+
+
+@dramatiq.actor
 def purge_occurrences() -> None | Exception:
     from bitcaster.models import Occurrence
 

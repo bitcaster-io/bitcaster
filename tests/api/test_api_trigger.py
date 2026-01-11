@@ -1,7 +1,6 @@
 import uuid
 from typing import TYPE_CHECKING, Any, TypedDict
 from unittest import mock
-from unittest.mock import Mock
 
 import pytest
 from rest_framework import status
@@ -231,6 +230,8 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
     event = data["event"]
     url: str = data["url"]
     n: "Notification" = event.notifications.first()
+    ch: "Channel" = data["channel"]
+    msg = n.get_message(ch.pk)
     recipients: list[Assignment] = list(n.distribution.recipients.all())
     target: Assignment = recipients[0]
     client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
@@ -246,16 +247,18 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
         assert res.status_code == status.HTTP_201_CREATED, res.json()
         assert res.data["occurrence"]
         o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
-
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
     assert o.options == {"limit_to": [target.address.value]}
-    delivered = process_occurrence(o.pk, True)
+    with mock.patch("bitcaster.models.notification.Notification.notify_to_channel", return_value=[None, msg.pk]):
+        delivered = process_occurrence(o.pk, True)
     assert delivered == 1
     o.refresh_from_db()
     assert o.data == {
         "delivered": [target.pk],
-        "recipients": [[target.address.value, target.channel.name]],
+        "recipients": [[target.address.value, target.channel.name, target.pk, target.channel.pk, n.pk, msg.pk]],
         "errors": [],
+        "messages": [msg.pk],
+        "notifications": [data["notification"].pk],
+        "channels": [data["channel"].pk],
     }
 
 
@@ -266,6 +269,9 @@ def test_trigger_limit_by_channel(client: APIClient, data: "Context", monkeypatc
     event = data["event"]
     url: str = data["url"]
     n: "Notification" = event.notifications.first()
+    ch: "Channel" = data["channel"]
+    msg = n.get_message(ch.pk)
+
     recipients: list[Assignment] = list(n.distribution.recipients.all())
     target: Assignment = recipients[0]
     client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
@@ -282,9 +288,9 @@ def test_trigger_limit_by_channel(client: APIClient, data: "Context", monkeypatc
         assert res.data["occurrence"]
         o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
 
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
     assert o.options == {"channels": [str(target.channel.id)]}
-    process_occurrence(o.pk)
+    with mock.patch("bitcaster.models.notification.Notification.notify_to_channel", return_value=[None, msg.pk]):
+        process_occurrence(o.pk)
     o.refresh_from_db()
     assert list({x[1] for x in o.data["recipients"]})[0] == target.channel.name
 
@@ -311,10 +317,9 @@ def test_trigger_limit_to_with_wrong_receiver(
         assert res.data["occurrence"]
         o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
 
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
     assert o.options == {"limit_to": ["invalid-address"]}
-
-    delivered = process_occurrence(o.pk, True)
+    with mock.patch("bitcaster.models.notification.Notification.notify_to_channel", return_value=[None, None]):
+        delivered = process_occurrence(o.pk, True)
     assert delivered == 0
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
 
@@ -351,7 +356,9 @@ def test_trigger_selected_environment(
 
     from bitcaster.models import Occurrence
 
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
+    monkeypatch.setattr(
+        "bitcaster.models.notification.Notification.notify_to_channel", lambda *args, **kwargs: (None, None)
+    )
     NotificationFactory(
         environments=["develop"],
         distribution__recipients=[AssignmentFactory(channel=data["channel"]) for __ in range(3)],
@@ -387,7 +394,9 @@ def test_trigger_environment_by_key(
 
     from bitcaster.models import Occurrence
 
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
+    monkeypatch.setattr(
+        "bitcaster.models.notification.Notification.notify_to_channel", lambda *args, **kwargs: (None, None)
+    )
     NotificationFactory(
         environments=["develop"],
         distribution__recipients=[AssignmentFactory(channel=data["channel"]) for __ in range(3)],

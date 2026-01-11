@@ -8,6 +8,7 @@ from unfold.decorators import display
 
 from ..models import UserMessage
 from .base import BaseAdmin, BitcasterModelAdmin
+from .filters import UserMessageExpiredFilter
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -24,7 +25,8 @@ class UserMessageAdmin(BaseAdmin, BitcasterModelAdmin[UserMessage]):
     list_display = ("created", "level_badge", "event", "user", "subject")
     list_filter = (
         ("user", AutocompleteSelectFilter),
-        ("event", HorizontalChoicesFieldListFilter),
+        ("event", AutocompleteSelectFilter),
+        UserMessageExpiredFilter,
     )
     change_form_template = "bitcaster/admin/usermessage/change_form.html"
 

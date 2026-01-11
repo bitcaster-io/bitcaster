@@ -10,6 +10,8 @@ import msgpack
 from apscheduler.schedulers.blocking import BlockingScheduler
 from django_redis import get_redis_connection
 
+from bitcaster.runner.config import SCHEDULER
+
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
@@ -100,6 +102,17 @@ class BackgroundManager:
             }
         return ret
 
+    def update_task(self, actor_name: str) -> None:
+        self.client.set(f"background:runner:{actor_name}:last_run", datetime.now(UTC).timestamp())
+
+    def get_task_last_run(self, actor_name: str) -> datetime | None:
+        try:
+            ts = float(self.client.get(f"background:runner:{actor_name}:last_run").decode())
+            dt = datetime.fromtimestamp(ts, tz=UTC)
+        except (TypeError, AttributeError):
+            dt = None
+        return dt
+
     def register_task(self, message: "MessageProxy") -> None:
         self.register_runner()
         task_info = json.dumps(
@@ -114,11 +127,13 @@ class BackgroundManager:
             }
         )
         ret = self.client.hset(f"background:runners:{self.name}:tasks", self.get_executor_name(), task_info)
+        self.update_task(message.actor_name)
         logger.debug(f"Registered task {message.actor_name}")
         return ret
 
     def unregister_task(self, message: "MessageProxy") -> None:
-        ret = self.client.hdel(f"background:runners:{self.name}:tasks", self.get_executor_name())
+        actor_name = self.get_executor_name()
+        ret = self.client.hdel(f"background:runners:{self.name}:tasks", actor_name)
         logger.debug(f"Unregister task {message.actor_name}")
         return ret
 
@@ -133,6 +148,17 @@ class BackgroundManager:
             "status": datetime.now(UTC) - datetime.fromisoformat(ts.decode()) < timedelta(minutes=1),
             "seen": ts.decode(),
         }
+
+
+def init_scheduler() -> None:
+    from bitcaster.models import Task
+
+    for sid, config in SCHEDULER.items():
+        job_args = {k: v for k, v in config.items() if k in ["func", "trigger", "replace_existing", "args", "kwargs"]}
+        trigger_args = {k: v for k, v in config.items() if k not in job_args}
+        __, created = Task.objects.get_or_create(
+            slug=sid, defaults={"name": sid, "trigger_config": trigger_args, **job_args}
+        )
 
 
 scheduler = BlockingScheduler()

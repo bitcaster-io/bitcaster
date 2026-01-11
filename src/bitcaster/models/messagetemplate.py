@@ -1,11 +1,12 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django.db import models
 from django.db.models import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
 from ..dispatchers.base import Capability
+from ..utils.shortcuts import render_string
 from .channel import Channel
 from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager, Scoped3Mixin
@@ -65,6 +66,9 @@ class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
     html_content = models.TextField(
         _("HTML Content"), blank=True, help_text=_("The HTML formatted content of the message")
     )
+    debug = models.BooleanField(
+        _("debug allowed"), default=False, help_text=_("Allow debug information in teh message")
+    )
     objects = MessageManager()
 
     class Meta:
@@ -113,3 +117,19 @@ class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
             html_content=self.html_content,
             subject=self.subject,
         )[0]
+
+    def render(self, context: dict[str, Any]) -> tuple[str, str, str]:
+        if self.debug:
+            context["debug_info"] = {
+                "context": context,
+                "message": (self.pk, self.name),
+                "channel": (self.channel.pk, self.channel),
+            }
+        subject = message = html_message = ""
+        if self.support_subject():
+            subject = render_string(self.subject, context)
+        if self.support_text():
+            message = render_string(self.content, context)
+        if self.support_html():
+            html_message = render_string(self.html_content, context)
+        return subject, message, html_message

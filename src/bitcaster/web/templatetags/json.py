@@ -17,3 +17,8 @@ def beautify(json_object: Any) -> str:
     value = highlight(json_str, JsonLexer(), formatter)
 
     return mark_safe(value)  # nosec  # noqa: S308
+
+
+@register.filter
+def get_item(d: dict[str, Any], key: Any) -> Any:
+    return d.get(key)

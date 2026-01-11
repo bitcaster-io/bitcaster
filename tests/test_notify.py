@@ -16,6 +16,7 @@ if TYPE_CHECKING:
         DistributionList,
         Event,
         MessageTemplate,
+        Notification,
         User,
     )
 
@@ -30,6 +31,7 @@ if TYPE_CHECKING:
             "v2": Assignment,
             "message": MessageTemplate,
             "address": Address,
+            "notification": Notification,
         },
     )
 
@@ -62,7 +64,7 @@ def context() -> "Context":
     v1: Assignment = AssignmentFactory.create(address=addr, channel=ch)
     v2: Assignment = AssignmentFactory.create(address__value="addr2@example.com", channel=ch)
 
-    NotificationFactory.create(event=evt, distribution=dis)
+    n = NotificationFactory.create(event=evt, distribution=dis)
     msg = MessageFactory.create(
         channel=ch, event=evt, content="Message for {{ event.name }} on channel {{channel.name}}"
     )
@@ -79,6 +81,7 @@ def context() -> "Context":
         "v2": v2,
         "message": msg,
         "address": addr,
+        "notification": n,
     }
 
 
@@ -87,6 +90,8 @@ def test_trigger(context: "Context", django_assert_num_queries: "DjangoAssertNum
     v1: Assignment = context["v1"]
     v2: Assignment = context["v2"]
     ch: Channel = context["channel"]
+    msg: MessageTemplate = context["message"]
+    n: Notification = context["notification"]
     o = event.trigger(context={})
     assert event.notifications.exists()
     o.process()
@@ -101,8 +106,11 @@ def test_trigger(context: "Context", django_assert_num_queries: "DjangoAssertNum
     assert o.data == {
         "delivered": [v1.pk, v2.pk],
         "recipients": [
-            [v1.address.value, v1.channel.name],
-            [v2.address.value, v2.channel.name],
+            [v1.address.value, v1.channel.name, v1.pk, ch.pk, n.pk, msg.pk],
+            [v2.address.value, v2.channel.name, v2.pk, ch.pk, n.pk, msg.pk],
         ],
         "errors": [],
+        "messages": [msg.pk],
+        "notifications": [n.pk],
+        "channels": [ch.pk],
     }

@@ -59,6 +59,9 @@ def pytest_configure(config):
     os.environ["CSRF_COOKIE_SECURE"] = "False"
     os.environ["CSRF_TRUSTED_ORIGINS"] = "https://close-pro-impala.ngrok-free.app,http://localhost"
 
+    for entry in os.environ:
+        if entry.startswith("LOGGING_"):
+            del os.environ[entry]
     os.environ["LOGGING_LEVEL"] = "CRITICAL"
     os.environ["LOGGING_LEVEL_BITCASTER"] = "CRITICAL"
 
@@ -196,6 +199,16 @@ def organization(db):
     from testutils.factories.org import OrganizationFactory
 
     return OrganizationFactory()
+
+
+@pytest.fixture
+def local_organization(db):
+    from testutils.factories import OrganizationFactory
+
+    from bitcaster.constants import bitcaster
+
+    bitcaster._local_org = None
+    return OrganizationFactory.create()
 
 
 @pytest.fixture

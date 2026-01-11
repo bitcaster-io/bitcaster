@@ -11,7 +11,6 @@ from django.utils.translation import gettext_lazy as _
 
 from ..dispatchers.base import Payload
 from ..utils.filtering import FilterManager
-from ..utils.shortcuts import render_string
 from .assignment import Assignment
 from .distribution import DistributionList
 from .mixins import BaseQuerySet, BitcasterBaseModel, BitcasterBaselManager
@@ -147,24 +146,27 @@ class Notification(BitcasterBaseModel):
             .exclude(id__in=delivered)
         ).filter(address__user_id__in=filter_users)
 
-    def notify_to_channel(self, channel: "Channel", assignment: Assignment, context: dict[str, Any]) -> str | None:
+    def notify_to_channel(
+        self, channel: "Channel", assignment: Assignment, context: dict[str, Any]
+    ) -> tuple[str | None, int | None]:
         dispatcher: "Dispatcher" = channel.dispatcher
         addr: "Address" = assignment.address
         logger.debug(f"channel: {channel} , assignment: {assignment} , context: {context}")
-        if message := self.get_message(channel):
-            logger.debug(f"message: {message}")
+        if message_template := self.get_message(channel):
+            logger.debug(f"message: {message_template}")
             context.update({"channel": channel, "address": addr.value})
+            subject, message, html_message = message_template.render(context)
             payload: Payload = Payload(
                 event=self.event,
                 user=addr.user,
-                subject=render_string(message.subject, context),
-                message=render_string(message.content, context),
-                html_message=render_string(message.html_content, context),
+                subject=subject,
+                message=message,
+                html_message=html_message,
             )
-            dispatcher.send(addr.value, payload)
-            return addr.value
+            dispatcher.send(addr.value, payload, assignment=assignment)
+            return addr.value, message_template.pk
 
-        return None
+        return None, None
 
     @classmethod
     def match_line_filter(cls, filter_rules_dict: "YamlPayload", payload: "YamlPayload") -> bool:

@@ -18,7 +18,13 @@ class UserMessageConfig(DispatcherConfig):
     auto_assign = forms.BooleanField(
         label=_("auto_assign"), required=False, help_text=_("Automatically assign users to this channel")
     )
-    event = forms.ModelChoiceField(queryset=None, label=_("event"), widget=UnfoldAdminSelect2Widget)
+    event = forms.ModelChoiceField(
+        queryset=None,
+        label=_("event"),
+        widget=UnfoldAdminSelect2Widget,
+        help_text=_("Event to trigger to notify user the presence of new messages"),
+    )
+    message_ttl = forms.IntegerField(help_text=_("Number of days read messages will be kept before automatic deletion"))
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         from bitcaster.models import Event
@@ -53,6 +59,7 @@ class UserMessageDispatcher(Dispatcher):
     backend = None
     protocol: MessageProtocol = MessageProtocol.INTERNAL
     config_class: type[DispatcherConfig] = UserMessageConfig
+    default_config = {"message_ttl": 7, "auto_assign": True}
 
     def get_extra_config_info(self) -> str:
         from bitcaster.models import Event

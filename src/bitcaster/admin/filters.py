@@ -6,10 +6,13 @@ from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
 if TYPE_CHECKING:
+    from bitcaster.models.user_message import UserMessageQuerySet
+
+if TYPE_CHECKING:
     from django.contrib.admin import ModelAdmin
     from django.db.models.query import QuerySet
 
-    from bitcaster.models import Channel
+    from bitcaster.models import Channel, UserMessage
 
 
 class ChannelTypeFilter(SimpleListFilter):
@@ -47,3 +50,22 @@ class EnvironmentFilter(SimpleListFilter):
         if self.value():
             return queryset.filter(environments__icontains=self.value())
         return queryset.all()
+
+
+class UserMessageExpiredFilter(SimpleListFilter):
+    parameter_name = "expired"
+    title = "Expired"
+    prefixes = (
+        ("0", _("Expired")),
+        ("1", _("Not expired")),
+    )
+
+    def lookups(self, request: HttpRequest, model_admin: "ModelAdmin[UserMessage]") -> tuple[tuple[str, str], ...]:
+        return self.prefixes
+
+    def queryset(self, request: HttpRequest, queryset: "UserMessageQuerySet") -> "QuerySet[UserMessage]":
+        if self.value() == "0":
+            return queryset.expired()
+        if self.value() == "1":
+            return queryset.active()
+        return queryset

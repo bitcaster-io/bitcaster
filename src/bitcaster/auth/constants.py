@@ -13,6 +13,7 @@ class Grant(TextChoices):
     FULL_ACCESS = "FULL_ACCESS", "Full Access"
     SYSTEM_PING = "SYSTEM_PING", "Ping"
     USER_READ = "USER_READ", "User Read"
+    USER_PROFILE = "USER_PROFILE", "Read User Profile and emssages"
     USER_WRITE = "USER_WRITE", "User Write"
 
     ORGANIZATION_READ = "ORG_READ", "Organization Read"

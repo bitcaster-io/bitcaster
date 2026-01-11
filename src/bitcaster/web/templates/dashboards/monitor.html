@@ -56,13 +56,16 @@
                     </ul>
                 </div>
                 <div class="block" x-show="tabTasks">
-                    <ul>
-                        {% for task_name in tasks %}
-                            <li class="p-1">
+                    <div class="grid grid-cols-2">
+                        {% for task_name, last_run in tasks %}
+                            <div class="p-1">
                                 {{ task_name }}
-                            </li>
+                            </div>
+                            <div class="p-1">
+                                {{ last_run|default_if_none:"-" }}
+                            </div>
                         {% endfor %}
-                    </ul>
+                    </div>
                 </div>
                 <div class="block" x-show="alive && tabWorker">
                     <template x-for="(workerData, workerName) in tasksMap" :key="workerName">

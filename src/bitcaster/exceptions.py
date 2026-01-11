@@ -4,6 +4,10 @@ if TYPE_CHECKING:
     from bitcaster.models.mixins import LockMixin
 
 
+class ConfigError(Exception):
+    pass
+
+
 class DispatcherError(Exception):
     pass
 

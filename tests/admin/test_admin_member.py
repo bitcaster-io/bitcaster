@@ -109,7 +109,7 @@ def test_update_custom_fields(app: "DjangoTestApp", context: "Context", mode) ->
     assert_message(res, "Record successfully updated")
 
 
-def test_import_members_ui(app: "DjangoTestApp") -> None:
+def test_import_members_ui(app: "DjangoTestApp", local_organization) -> None:
     url = reverse("admin:bitcaster_member_changelist")
     res = app.get(url)
     res = res.click("Import Members")

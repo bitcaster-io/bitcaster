@@ -1,4 +1,5 @@
 import logging
+from typing import TYPE_CHECKING, Any
 from unittest import mock
 
 from admin_extra_buttons.api import confirm_action
@@ -13,11 +14,14 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from unfold.decorators import display
 
-from bitcaster.models import Assignment, MessageTemplate, Occurrence
+from bitcaster.models import Assignment, Channel, MessageTemplate, Notification, Occurrence
 from bitcaster.runner.tasks import purge_occurrences
 
 from ..cache.manager import CacheManager
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+
+if TYPE_CHECKING:
+    from ..models.occurrence import OccurrenceData
 
 logger = logging.getLogger(__name__)
 
@@ -110,49 +114,37 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
                     ctx = self.get_common_context(
                         req, pk, action_title="Inspect", statuses=Occurrence.Status, notes=notes, **extra_context
                     )
-                    if not (assignments := dm.retrieve("assignments")):
+                    # Processing info
+                    data: "OccurrenceData"
+                    assignments = dm.retrieve("assignments")
+                    recipients = dm.retrieve("recipients")
+
+                    if not assignments or not recipients:
                         if obj.status == Occurrence.Status.NEW:
-                            with mock.patch("bitcaster.models.notification.Notification.notify_to_channel"):
-                                data = obj._process()
-                                assignments = (
-                                    Assignment.objects.select_related(
-                                        "address__user",
-                                        "channel",
-                                    )
-                                    .filter(pk__in=data[1]["delivered"])
-                                    .order_by("address__user__username")
-                                    .values(
-                                        "pk",
-                                        "address__pk",
-                                        "address__value",
-                                        "channel__pk",
-                                        "channel__name",
-                                        "address__user__pk",
-                                        "address__user__username",
-                                    )
-                                )
+
+                            def collect_info(
+                                n: "Notification", channel: "Channel", assignment: "Assignment", context: dict[str, Any]
+                            ):
+                                return assignment.address.value, n.get_message(channel).pk
+
+                            with mock.patch(
+                                "bitcaster.models.notification.Notification.notify_to_channel", collect_info
+                            ):
+                                __, data = obj._process()
                         else:
                             data = obj.data
-                            assignments = (
-                                Assignment.objects.select_related(
-                                    "address__user",
-                                    "channel",
-                                )
-                                .filter(pk__in=data.get("delivered", []))
-                                .order_by("address__user__username")
-                                .values(
-                                    "pk",
-                                    "address__pk",
-                                    "address__value",
-                                    "channel__pk",
-                                    "channel__name",
-                                    "address__user__pk",
-                                    "address__user__username",
-                                )
-                            )
+                        recipients = data.get("recipients", [])
+                        assignment_pks = [e[2] for e in recipients]
+                        assignments = (
+                            Assignment.objects.select_related("address__user", "channel")
+                            .filter(pk__in=assignment_pks)
+                            .in_bulk()
+                        )
                         dm.store("assignments", assignments)
+                        dm.store("recipients", recipients)
 
                     ctx["assignments"] = assignments
+                    ctx["recipients"] = recipients
                     return TemplateResponse(req, "bitcaster/admin/occurrence/inspect.html", ctx)
                 except Exception as e:
                     logger.exception(e)

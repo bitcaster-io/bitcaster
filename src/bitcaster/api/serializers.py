@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from strategy_field.utils import fqn
 
-from bitcaster.models import Address, Application, Channel, Event, Project
+from bitcaster.models import Address, Application, Channel, Event, Project, UserMessage
 from bitcaster.utils.http import absolute_reverse
 
 
@@ -56,3 +56,9 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = "__all__"
+
+
+class UserMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserMessage
+        fields = ("id", "level", "subject", "message", "created", "read", "displayed")

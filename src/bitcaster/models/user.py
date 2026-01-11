@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 
     from bitcaster.models import Assignment, Channel, DistributionList, Organization
 
+    from .user_message import UserMessageManager
+
 logger = logging.getLogger(__name__)
 
 TOKEN_CHARS = f"{RANDOM_STRING_CHARS}-#@^*_+~;<>,."
@@ -29,6 +31,7 @@ class UserManager(BaseUserManager["User"]):
 class User(LockMixin, BitcasterBaseModel, AbstractUser):
     custom_fields = models.JSONField(default=dict, blank=True)
     timezone = TimeZoneField(default="UTC")
+    bitcaster_messages: "UserMessageManager"
 
     objects = UserManager()
 

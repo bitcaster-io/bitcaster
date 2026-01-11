@@ -10,6 +10,7 @@ from django.views.generic import DetailView, TemplateView
 
 from bitcaster.console.utils import (
     get_user_latest_display_time,
+    get_user_latest_notify_time,
     set_user_latest_display_time,
     set_user_latest_notify_time,
 )
@@ -36,9 +37,13 @@ class ConsoleIndexView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         qs = self.request.user.bitcaster_messages.order_by("-created")
         last_seen = get_user_latest_display_time(self.request.user.pk)  # type: ignore[arg-type]
+        last_notify = get_user_latest_notify_time(self.request.user.pk)  # type: ignore[arg-type]
+
         set_user_latest_display_time(self.request.user.pk)  # type: ignore[arg-type]
         set_user_latest_notify_time(self.request.user.pk)  # type: ignore[arg-type]
-        ctx.update(user=self.request.user, messages=MessageFormSet(queryset=qs), last_seen=last_seen)
+        ctx.update(
+            user=self.request.user, messages=MessageFormSet(queryset=qs), last_seen=last_seen, last_notify=last_notify
+        )
         return ctx
 
 

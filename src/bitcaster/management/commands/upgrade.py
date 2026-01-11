@@ -12,6 +12,7 @@ from flags.state import enable_flag
 
 from bitcaster.config import env
 from bitcaster.constants import Bitcaster, bitcaster
+from bitcaster.runner.manager import init_scheduler
 
 if TYPE_CHECKING:
     from argparse import ArgumentParser
@@ -192,6 +193,7 @@ class Command(BaseCommand):
 
             if not Project.objects.local().exists():
                 Project.objects.create(name="Project", owner=admin, organization=org)
+            init_scheduler()
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
         except ValidationError as e:

@@ -267,6 +267,7 @@
 }
 
 #user_messages {
+  @apply table-auto w-full;
   .badge{
     @apply border rounded text-sm p-1 w-24 block uppercase font-bold text-center;
     @apply dark:border-gray-600;
@@ -280,7 +281,6 @@
       @apply dark:bg-yellow-600 dark:text-black;
     }
   }
-  @apply table-auto w-full;
   thead {
     tr {
       @apply p-2;

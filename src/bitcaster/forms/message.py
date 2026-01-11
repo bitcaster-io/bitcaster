@@ -6,14 +6,25 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
 from tinymce.widgets import TinyMCE
-from unfold.widgets import UnfoldAdminSelect2Widget
 
 from bitcaster.models import Channel, Event, MessageTemplate, Notification, Organization
 
 from . import unfold
 
+# from .unfold import UnfoldForm, UnfoldAdminSelect2Widget, UnfoldAdminTextInputWidget,
 
-class MessageEditForm(forms.ModelForm[MessageTemplate]):
+
+class MessageTemplateCloneForm(forms.ModelForm[MessageTemplate]):
+    name = forms.CharField()
+    event = forms.ModelChoiceField(Event.objects.all(), widget=unfold.UnfoldAdminSelect2Widget)
+    channel = forms.ModelChoiceField(Channel.objects.all(), widget=unfold.UnfoldAdminSelect2Widget)
+
+    class Meta:
+        model = MessageTemplate
+        fields = ("name", "event", "channel")
+
+
+class MessageTemplateEditForm(forms.ModelForm[MessageTemplate]):
     recipient = forms.CharField(required=False)
     subject = forms.CharField(required=False)
     content = forms.CharField(widget=forms.Textarea, required=False)
@@ -39,7 +50,7 @@ class MessageEditForm(forms.ModelForm[MessageTemplate]):
         fields = ("subject", "content", "html_content", "context", "recipient")
 
 
-class MessageRenderForm(MessageEditForm):
+class MessageTemplateRenderForm(MessageTemplateEditForm):
     content_type = forms.CharField(widget=forms.HiddenInput)
 
 
@@ -54,27 +65,27 @@ def validate_cleaned_data(form: "forms.ModelForm[MessageTemplate] | Notification
         form.add_error("channel", _("This channel is not available for the selected event"))
 
 
-class MessageChangeForm(forms.ModelForm[MessageTemplate]):
+class MessageTemplateChangeForm(forms.ModelForm[MessageTemplate]):
     class Meta:
         model = MessageTemplate
-        fields = ("name", "event", "channel", "notification")
+        fields = ("name", "event", "channel", "notification", "debug")
 
     def clean(self) -> None:
         super().clean()
         validate_cleaned_data(self)
 
 
-class MessageCreationForm(forms.ModelForm[MessageTemplate]):
+class MessageTemplateCreationForm(forms.ModelForm[MessageTemplate]):
     organization = forms.ModelChoiceField(queryset=Organization.objects.all(), widget=forms.HiddenInput, required=False)
     event = forms.ModelChoiceField(
         queryset=Event.objects.all(),
         required=True,
-        widget=UnfoldAdminSelect2Widget,
+        widget=unfold.UnfoldAdminSelect2Widget,
     )
     notification = forms.ModelChoiceField(
         queryset=Notification.objects.all(),
         required=False,
-        widget=UnfoldAdminSelect2Widget,
+        widget=unfold.UnfoldAdminSelect2Widget,
     )
 
     class Meta:
