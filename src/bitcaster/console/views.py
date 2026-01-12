@@ -1,6 +1,7 @@
 from typing import Any
 
 from django import forms
+from django.core.paginator import Paginator
 from django.db.models import QuerySet
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -32,17 +33,27 @@ MessageFormSet = forms.modelformset_factory(UserMessage, MessageForm, extra=0)
 # @method_decorator(vary_on_cookie, name='dispatch')
 class ConsoleIndexView(TemplateView):
     template_name = "bitcaster/console/index.html"
+    paginate_by = 25
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         ctx = super().get_context_data(**kwargs)
         qs = self.request.user.bitcaster_messages.order_by("-created")
+
+        paginator = Paginator(qs, self.paginate_by)
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
         last_seen = get_user_latest_display_time(self.request.user.pk)  # type: ignore[arg-type]
         last_notify = get_user_latest_notify_time(self.request.user.pk)  # type: ignore[arg-type]
 
         set_user_latest_display_time(self.request.user.pk)  # type: ignore[arg-type]
         set_user_latest_notify_time(self.request.user.pk)  # type: ignore[arg-type]
         ctx.update(
-            user=self.request.user, messages=MessageFormSet(queryset=qs), last_seen=last_seen, last_notify=last_notify
+            user=self.request.user,
+            messages=MessageFormSet(queryset=page_obj.object_list),
+            page_obj=page_obj,
+            last_seen=last_seen,
+            last_notify=last_notify,
         )
         return ctx
 
@@ -50,6 +61,20 @@ class ConsoleIndexView(TemplateView):
 @method_decorator(cache_page(60 * 60), name="dispatch")
 @method_decorator(vary_on_cookie, name="dispatch")
 class ConsoleDetailView(DetailView[UserMessage]):
+    template_name = "bitcaster/console/detail.html"
+    model = UserMessage
+
+    def get_object(self, queryset: QuerySet["UserMessage"] | None = None) -> UserMessage:
+        obj = super().get_object(queryset)
+        if not obj.read:
+            obj.read = timezone.now()
+            obj.save()
+        return obj
+
+
+@method_decorator(cache_page(60 * 60), name="dispatch")
+@method_decorator(vary_on_cookie, name="dispatch")
+class ConsoleUserPrefsView(DetailView[UserMessage]):
     template_name = "bitcaster/console/detail.html"
     model = UserMessage
 

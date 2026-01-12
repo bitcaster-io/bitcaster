@@ -62,6 +62,7 @@
                                 {{ task_name }}
                             </div>
                             <div class="p-1">
+                                {% user_date %}
                                 {{ last_run|default_if_none:"-" }}
                             </div>
                         {% endfor %}
