@@ -43,9 +43,9 @@ def get_date_format_choices():
 class User(LockMixin, BitcasterBaseModel, AbstractUser):
     timezone = TimeZoneField(default="UTC")
     date_time_format = models.CharField(
-        max_length=50, choices=get_datetime_format_choices(), default=settings.DATETIME_FORMAT
+        max_length=50, choices=get_datetime_format_choices, default=settings.DATETIME_FORMAT
     )
-    date_format = models.CharField(max_length=50, choices=get_date_format_choices(), default=settings.DATE_FORMAT)
+    date_format = models.CharField(max_length=50, choices=get_date_format_choices, default=settings.DATE_FORMAT)
 
     custom_fields = models.JSONField(default=dict, blank=True)
 
