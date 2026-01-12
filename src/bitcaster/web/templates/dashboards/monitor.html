@@ -1,5 +1,5 @@
 {% extends 'dashboards/_base.html' %}
-{% load i18n unfold %}
+{% load i18n unfold user %}
 {% block alpine-init %}
     {{ media }}
     <style>
@@ -25,7 +25,7 @@
             </div>
             <div x-show="!error">
                 <div class="grid grid-col-1 mb-5">
-                    <div class="text-sm" x-text="datetime">
+                    <div class="text-sm m-4" x-text="datetime">
                     </div>
                     {#                    <div class="">#}
                     <span :class="alive ? 'text-green-600' : 'text-red-600'">
@@ -62,8 +62,7 @@
                                 {{ task_name }}
                             </div>
                             <div class="p-1">
-                                {% user_date %}
-                                {{ last_run|default_if_none:"-" }}
+                                {% user_datetime last_run %}
                             </div>
                         {% endfor %}
                     </div>

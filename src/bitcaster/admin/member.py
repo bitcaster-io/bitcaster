@@ -149,7 +149,7 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     )
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "User|None" = None) -> list[str]:
-        return ["username", "email", "last_login", "date_joined", "custom_fields"]
+        return ["username", "email", "last_login", "date_joined"]
 
     def add_to_distributionlist(self, request: "HttpRequest", queryset: "QuerySet[User]") -> "HttpResponse":
         ctx = self.get_common_context(request, title=_("Add to Distribution List"))

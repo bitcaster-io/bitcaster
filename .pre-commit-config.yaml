@@ -71,6 +71,8 @@ repos:
             - "@node_modules/.*"
             - -i
             - '@.*postcss\.config\.js'
+            - -i
+            - '@.*tailwind\.config\.js'
 
       - id: check-forbidden
         name: check pyproject to avoid editable sources/deps

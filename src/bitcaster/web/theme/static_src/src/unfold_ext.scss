@@ -33,6 +33,7 @@
   */
   --radius-default: 6px;
   --radius-2xl: 20px;
+  /*
   --color-primary-600: #ef4434;
   --color-green-600: rgba(71, 239, 52, 0.88);
 
@@ -42,7 +43,7 @@
   --text-default-dark: var(--color-base-600);
   --font-size-3xl: 1.875rem;
   --line-height-3xl: 2.25rem;
-
+*/
   --font-size-4xl: 2.25rem;
   --line-height-4xl: 2.5rem;
 
@@ -64,11 +65,11 @@
 }
 @utility text-font-default-light {
   font-weight: var(--font-default-light);
-  color: rgb(var(--text-default-light) / 10);
+  olor: rgb(var(--text-default-light) / 10);
 }
 @utility text-font-default-dark {
   font-weight: var(--font-default-dark);
-  color: rgb(var(--text-default-dark) / 10);
+  olor: rgb(var(--text-default-dark) / 10);
 }
 @utility unfold-input {
   @apply font-medium min-w-20 rounded-default shadow-xs text-font-default-light text-sm px-3 py-2 w-full max-w-2xl;

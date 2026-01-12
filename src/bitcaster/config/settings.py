@@ -231,19 +231,23 @@ STORAGES = {
 DATE_FORMAT = "%Y-%m-%d"
 DATETIME_FORMAT = "%Y-%m-%d %H:%M"
 
-DATETIME_FORMATS = [
-    "%Y-%m-%d %H:%M",  # '2006-10-25 14:30'
-    "%Y %b %d %H:%M",  # '2006 Oct 25 14:30'
-    "%d %b %Y %H:%M",  # '25 Oct 2006 14:30'
-    "%d %B %Y %H:%M",  # '25 October 2006 14:30'
-    "%B %d %Y %H:%M",  # 'October 25 2006 14:30'
-]
 DATE_FORMATS = [
-    "%Y-%m-%d",
-    "%Y %b %d",
-    "%d %b %Y",
-    "%d %B %Y",
-    "%B %d %Y",
+    "%m-%d-%Y",  # 12-31-2000
+    "%d %B %Y",  # 1 February 2025
+    "%d %b %Y",  # 1 Feb 2025
+    "%B %d, %Y",  # February 1, 2025
+    "%b %d, %Y",  # Feb 1, 2025
+    "%Y-%m-%d",  # 2000-12-31
+    "%d-%m-%Y",  # 31-12-2000
+    "%a, %d %B %Y",  # Mon, 1 February 2025
+    "%a, %d %b %Y",  # Mon, 1 Feb 2025
+]
+
+TIME_FORMATS = [
+    "%H:%M",
+    "%H:%M %Z",
+    "%I:%M%p %Z",
+    "%I:%M%p",
 ]
 
 

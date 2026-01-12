@@ -51,7 +51,7 @@
     {% else %}
         $persist('auto').as('adminTheme')
     {% endif %}
-    }" x-bind:class="{'dark': adminTheme === 'dark' || (adminTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)}" x-cloak>
+    }" x-bind:class="{'dark': adminTheme === 'dark' || (adminTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)};" x-cloak>
     <head>
         <title>{{ environment_title_prefix|default:"" }}
             {% block title %}

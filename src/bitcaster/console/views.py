@@ -1,13 +1,17 @@
 from typing import Any
 
 from django import forms
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import DetailView, TemplateView, UpdateView
+from django.views.generic.base import ContextMixin
+from timezone_field import TimeZoneFormField
+from unfold.sites import UnfoldAdminSite
 
 from bitcaster.console.utils import (
     get_user_latest_display_time,
@@ -15,7 +19,8 @@ from bitcaster.console.utils import (
     set_user_latest_display_time,
     set_user_latest_notify_time,
 )
-from bitcaster.models import UserMessage
+from bitcaster.forms.unfold import UnfoldAdminSelectWidget, UnfoldForm
+from bitcaster.models import User, UserMessage
 
 
 class MessageForm(forms.ModelForm[UserMessage]):
@@ -29,9 +34,18 @@ class MessageForm(forms.ModelForm[UserMessage]):
 MessageFormSet = forms.modelformset_factory(UserMessage, MessageForm, extra=0)
 
 
+class ConsoleMixin(UnfoldAdminSite, ContextMixin):
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        ctx = super().get_context_data(**kwargs)
+        ctx.update(
+            colors=self._get_colors("COLORS", self.request),
+        )
+        return ctx
+
+
 # @method_decorator(cache_page(60 * 1), name='dispatch')
 # @method_decorator(vary_on_cookie, name='dispatch')
-class ConsoleIndexView(TemplateView):
+class ConsoleIndexView(ConsoleMixin, LoginRequiredMixin, TemplateView):
     template_name = "bitcaster/console/index.html"
     paginate_by = 25
 
@@ -50,7 +64,7 @@ class ConsoleIndexView(TemplateView):
         set_user_latest_notify_time(self.request.user.pk)  # type: ignore[arg-type]
         ctx.update(
             user=self.request.user,
-            messages=MessageFormSet(queryset=page_obj.object_list),
+            messages=MessageFormSet(queryset=page_obj.object_list),  # type: ignore[arg-type]
             page_obj=page_obj,
             last_seen=last_seen,
             last_notify=last_notify,
@@ -60,7 +74,7 @@ class ConsoleIndexView(TemplateView):
 
 @method_decorator(cache_page(60 * 60), name="dispatch")
 @method_decorator(vary_on_cookie, name="dispatch")
-class ConsoleDetailView(DetailView[UserMessage]):
+class ConsoleDetailView(ConsoleMixin, LoginRequiredMixin, DetailView[UserMessage]):
     template_name = "bitcaster/console/detail.html"
     model = UserMessage
 
@@ -72,15 +86,19 @@ class ConsoleDetailView(DetailView[UserMessage]):
         return obj
 
 
-@method_decorator(cache_page(60 * 60), name="dispatch")
-@method_decorator(vary_on_cookie, name="dispatch")
-class ConsoleUserPrefsView(DetailView[UserMessage]):
-    template_name = "bitcaster/console/detail.html"
-    model = UserMessage
+class UserPrefFrom(UnfoldForm, forms.ModelForm[User]):
+    timezone = TimeZoneFormField(widget=UnfoldAdminSelectWidget)
 
-    def get_object(self, queryset: QuerySet["UserMessage"] | None = None) -> UserMessage:
-        obj = super().get_object(queryset)
-        if not obj.read:
-            obj.read = timezone.now()
-            obj.save()
-        return obj
+    class Meta:
+        model = User
+        fields = ("timezone", "date_format", "time_format")
+
+
+class ConsoleUserPrefsView(ConsoleMixin, LoginRequiredMixin, UpdateView[User, UserPrefFrom]):
+    template_name = "bitcaster/console/prefs.html"
+    form_class = UserPrefFrom
+    model = User
+    success_url = "."
+
+    def get_object(self, queryset: QuerySet["User"] | None = None) -> User:
+        return self.request.user  # type: ignore[return-value]

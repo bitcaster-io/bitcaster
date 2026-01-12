@@ -48,7 +48,7 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
             },
         ),
         (_("Important dates"), {"classes": ["tab"], "fields": ("last_login", "date_joined")}),
-        (_("Options"), {"classes": ["tab"], "fields": ("timezone", "date_time_format", "date_format")}),
+        (_("Options"), {"classes": ["tab"], "fields": ("timezone", "date_format", "time_format")}),
         (_("Extended"), {"classes": ["tab"], "fields": ("custom_fields",)}),
     )
     filter_horizontal = ()
