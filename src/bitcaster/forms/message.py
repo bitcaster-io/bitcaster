@@ -42,7 +42,12 @@ class MessageTemplateEditForm(forms.ModelForm[MessageTemplate]):
             "admin/js/jquery.init.js",
             "bitcaster/js/editor%s.js" % extra,
         ]
-        css = {"screen": ["tinymce/skins/ui/oxide/skin.min.css", "css/message_editor.css"]}
+        css = {
+            "screen": [
+                "tinymce/skins/ui/oxide/skin.min.css",
+                "css/message_editor.css",
+            ]
+        }
         return orig + forms.Media(js=js, css=css)  # type: ignore
 
     class Meta:

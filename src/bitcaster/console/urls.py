@@ -1,11 +1,11 @@
 from django.urls import path
 
-from .views import ConsoleDetailView, ConsoleIndexView, ConsoleUserPrefsView
+from .views import UserConsoleDetailView, UserConsoleIndexView, UserConsoleUserPrefsView
 
 app_name = "console"
 
 urlpatterns = [
-    path("", ConsoleIndexView.as_view(), name="index"),
-    path("<int:pk>/", ConsoleDetailView.as_view(), name="detail"),
-    path("prefs/", ConsoleUserPrefsView.as_view(), name="prefs"),
+    path("", UserConsoleIndexView.as_view(), name="index"),
+    path("<int:pk>/", UserConsoleDetailView.as_view(), name="detail"),
+    path("prefs/", UserConsoleUserPrefsView.as_view(), name="prefs"),
 ]

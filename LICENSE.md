@@ -6,7 +6,7 @@ OS4D-1.1-Apache-2.0
 
 ## Notice
 
-Copyright 2008-2024 OS4D Ltd dba Bitcaster
+Copyright 2008-2026 OS4D Ltd dba Bitcaster
 
 ## Terms and Conditions
 

@@ -11,7 +11,6 @@ from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import DetailView, TemplateView, UpdateView
 from django.views.generic.base import ContextMixin
 from timezone_field import TimeZoneFormField
-from unfold.sites import UnfoldAdminSite
 
 from bitcaster.console.utils import (
     get_user_latest_display_time,
@@ -21,6 +20,7 @@ from bitcaster.console.utils import (
 )
 from bitcaster.forms.unfold import UnfoldAdminSelectWidget, UnfoldForm
 from bitcaster.models import User, UserMessage
+from bitcaster.web.views import UnfoldViewMixin
 
 
 class MessageForm(forms.ModelForm[UserMessage]):
@@ -34,18 +34,13 @@ class MessageForm(forms.ModelForm[UserMessage]):
 MessageFormSet = forms.modelformset_factory(UserMessage, MessageForm, extra=0)
 
 
-class ConsoleMixin(UnfoldAdminSite, ContextMixin):
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        ctx = super().get_context_data(**kwargs)
-        ctx.update(
-            colors=self._get_colors("COLORS", self.request),
-        )
-        return ctx
+class UserConsoleMixin(UnfoldViewMixin, ContextMixin):
+    pass
 
 
 # @method_decorator(cache_page(60 * 1), name='dispatch')
 # @method_decorator(vary_on_cookie, name='dispatch')
-class ConsoleIndexView(ConsoleMixin, LoginRequiredMixin, TemplateView):
+class UserConsoleIndexView(UserConsoleMixin, LoginRequiredMixin, TemplateView):
     template_name = "bitcaster/console/index.html"
     paginate_by = 25
 
@@ -74,7 +69,7 @@ class ConsoleIndexView(ConsoleMixin, LoginRequiredMixin, TemplateView):
 
 @method_decorator(cache_page(60 * 60), name="dispatch")
 @method_decorator(vary_on_cookie, name="dispatch")
-class ConsoleDetailView(ConsoleMixin, LoginRequiredMixin, DetailView[UserMessage]):
+class UserConsoleDetailView(UserConsoleMixin, LoginRequiredMixin, DetailView[UserMessage]):
     template_name = "bitcaster/console/detail.html"
     model = UserMessage
 
@@ -94,7 +89,7 @@ class UserPrefFrom(UnfoldForm, forms.ModelForm[User]):
         fields = ("timezone", "date_format", "time_format")
 
 
-class ConsoleUserPrefsView(ConsoleMixin, LoginRequiredMixin, UpdateView[User, UserPrefFrom]):
+class UserConsoleUserPrefsView(UserConsoleMixin, LoginRequiredMixin, UpdateView[User, UserPrefFrom]):
     template_name = "bitcaster/console/prefs.html"
     form_class = UserPrefFrom
     model = User
