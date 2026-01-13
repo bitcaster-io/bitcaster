@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+
+.button {
+  @apply block border cursor-pointer px-3 py-2 rounded w-auto;
+  @apply text-black;
+  @apply dark:text-white;
+}
+
+.button-primary {
+  @apply bg-red-500 border-transparent;
+}
+
+.button-alternative, .button-alt, .button-secondary {
+  @apply bg-transparent border-gray-600 border-1
+}
+
+.button-success {
+  @apply bg-green-300 border-transparent;
+}

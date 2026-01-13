@@ -113,7 +113,7 @@ COMMON = {
         },
     },
     "STYLES": [
-        "/static/css/unfold_ext.css",
+        lambda *a: static("css/admin_ext.css"),
     ],
     "BORDER_RADIUS": "6px",
 }

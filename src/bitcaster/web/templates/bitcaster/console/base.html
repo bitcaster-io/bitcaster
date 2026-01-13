@@ -1,4 +1,4 @@
-{% extends "unfold/layouts/skeleton.html" %}
+{% extends "bitcaster/base.html" %}
 {% load feature_flags i18n static user %}
 {% block base %}
     {% block header %}
@@ -13,6 +13,11 @@
                 </template>
             </div>
             <div class="mx-3 text-2xl flex items-center gap-3">
+                <a href="{% url "home" %}"
+                   class="text-font-default-light dark:text-font-default-dark hover:text-primary-600 dark:hover:text-primary-500">
+                    <span class="material-symbols-outlined text-3xl" x-show="this.adminTheme !== 'dark'">home</span>
+                    <span class="material-symbols-outlined text-3xl text-white" x-show="this.adminTheme === 'dark'">home</span>
+                </a>
                 <a href="{% url "console:index" %}"
                    class="text-font-default-light dark:text-font-default-dark hover:text-primary-600 dark:hover:text-primary-500">
                     <span class="material-symbols-outlined text-3xl" x-show="this.adminTheme !== 'dark'">list</span>

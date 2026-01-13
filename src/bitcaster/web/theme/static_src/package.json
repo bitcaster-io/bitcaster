@@ -5,12 +5,12 @@
   "scripts": {
     "build": "npm run build:clean && npm run build:tailwind",
     "build:clean": "rimraf ../../static/css/",
-    "build:tailwind2": "cross-env NODE_ENV=production postcss src/*.scss --dir ../../static/css/ --ext css --minify",
-    "build:tailwind": "for f in src/*.scss; do\n  filename=$(basename \"$f\" .scss) \n  NODE_ENV=production tailwindcss -i \"$f\" -o \"../../static/css/${filename}.css\" --minify \ndone",
+    "build:tailwind": "cross-env NODE_ENV=production postcss src/*.scss --dir ../../static/css/ --ext css --minify",
+    "__build:tailwind": "for f in src/*.scss; do\n  filename=$(basename \"$f\" .scss) \n  NODE_ENV=production tailwindcss -i \"$f\" -o \"../../static/css/${filename}.css\" --minify \ndone",
     "dev": "cross-env NODE_ENV=development postcss src/*.scss --dir ../../static/css/ --ext css --watch ",
-    "start2": "cross-env NODE_ENV=development postcss src/*.scss --dir ../../static/css/ --ext css --watch --poll",
-    "start3": "cross-env NODE_ENV=development tailwindcss -i src/console.scss -o ../../static/css/console.css --watch",
-    "start": " NODE_ENV=development ; for f in src/*.scss; do\n  filename=$(basename \"$f\" .scss) \n tailwindcss -i \"$f\" -o \"../../static/css/${filename}.css\" --watch &\ndone"
+    "start": "cross-env NODE_ENV=development postcss src/*.scss --dir ../../static/css/ --ext css --watch --poll",
+    "_start": "cross-env NODE_ENV=development tailwindcss -i src/~console.scss -o ../../static/css/console.css --watch",
+    "__start": " NODE_ENV=development ; for f in src/*.scss; do\n  filename=$(basename \"$f\" .scss) \n tailwindcss -i \"$f\" -o \"../../static/css/${filename}.css\" --watch &\ndone"
   },
   "keywords": [],
   "author": "",
