@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@source "../../**/*.{html,py,js}";
+@source "../../../**/*.{html,py,js}";
+@source "../../../../**/*.{html,py,js}";
+
+
+@theme {
+  --radius-default: 6px;
+  --radius-2xl: 20px;
+
+  --font-size-4xl: 2.25rem;
+  --line-height-4xl: 2.5rem;
+
+  --font-size-5xl: 3rem;
+  --line-height-5xl: 1;
+
+  --font-size-6xl: 3.75rem;
+  --line-height-6xl: 1;
+
+  --font-size-7xl: 4.5rem;
+  --line-height-7xl: 1;
+
+  --font-size-8xl: 6rem;
+  --line-height-8xl: 1;
+
+  --font-size-9xl: 8rem;
+  --line-height-9xl: 1;
+
+}
+  .button {
+    @apply block border cursor-pointer px-3 py-2 rounded w-auto;
+    @apply text-black;
+    @apply dark:text-white;
+  }
+
+  .button-primary {
+    @apply bg-red-500 border-transparent;
+  }
+
+#user_messages {
+  @apply table-auto w-full;
+  .badge{
+    @apply border rounded text-sm p-1 w-24 block uppercase font-bold text-center;
+    @apply dark:border-gray-600;
+    &.badge-new{
+      @apply dark:bg-gray-400  dark:text-black ;
+    }
+    &.badge-read{
+      @apply dark:bg-green-700 dark:text-black;
+    }
+    &.badge-unread{
+      @apply dark:bg-yellow-600 dark:text-black;
+    }
+  }
+  thead {
+    tr {
+      @apply p-2;
+      th {
+        @apply text-left p-2;
+      }
+    }
+  }
+  tbody {
+    tr {
+      @apply p-2 hover:bg-gray-500 cursor-pointer;
+      @apply dark:hover:text-gray-200;
+      td {
+        @apply p-2
+      }
+    }
+  }
+
+}
+
+.pagination{
+
+}

@@ -72,14 +72,14 @@ class CacheManager:
 
     def touch(self, key: str, timeout: int | None = None, timeboxed: bool = True) -> datetime:
         now = timezone.now()
-        self.store(key, now.timestamp(), timeout, timeboxed=False)
+        self.client.set(self.get_key(key), now.timestamp(), timeout=timeout)
         return now
 
     def get_last_touch(
         self,
         key: str,
     ) -> datetime:
-        value = self.retrieve(key)
+        value = self.client.get(self.get_key(key))
         if value is None:
             return epoch
         return datetime.fromtimestamp(value, tz=timezone.get_current_timezone())

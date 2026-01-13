@@ -96,10 +96,12 @@ class BackgroundManager:
             ts = float(self.client.get(f"background:runner:{e.decode()}:last_seen").decode())
             dt = datetime.fromtimestamp(ts, tz=UTC)
             tasks = self.client.hgetall(f"background:runners:{e.decode()}:tasks")
-            ret[e.decode()] = {
-                "tasks": sorted([json.loads(v.decode()) for k, v in tasks.items()], key=lambda t: t["pid"]),
-                "last_seen": dt.strftime("%Y-%m-%d %H:%M:%S"),
-            }
+            if alive := (datetime.now(UTC) - dt < timedelta(minutes=2)):
+                ret[e.decode()] = {
+                    "tasks": sorted([json.loads(v.decode()) for k, v in tasks.items()], key=lambda t: t["pid"]),
+                    "last_seen": dt.strftime("%Y-%m-%d %H:%M:%S"),
+                    "alive": alive,
+                }
         return ret
 
     def update_task(self, actor_name: str) -> None:

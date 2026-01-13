@@ -11,7 +11,7 @@ class BitcasterAdminConfig(AdminConfig):
 
 
 class BitcasterAdminSite(UnfoldAdminSite):
-    site_title = gettext_lazy("Bitcaster admin")
+    site_title = gettext_lazy("Bitcaster admin2222")
     default_site = "bitcaster.admin_site.BitcasterAdminSite"
     settings_name = "UNFOLD"
 
