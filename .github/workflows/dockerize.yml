@@ -54,9 +54,14 @@ jobs:
       - name: Set target input
         id: config
         run: |
+
+          checkout = $(git st | head -1 )
           version=$(uvx --with hatch-vcs hatchling metadata version)
           COMMIT_SHA=$(git rev-parse "$GITHUB_SHA")
           git_reference="${{ github.event.inputs.git_reference }}"
+
+          echo "::notice title=Git Reference:: ${{ git_reference }}"
+          echo "::notice title=Git Checkout:: ${{ checkout }}"
 
           tag="${{ github.event.inputs.tag }}"
           if [ -z "$tag" ]; then
