@@ -55,7 +55,7 @@ jobs:
         id: config
         run: |
 
-          checkout = $(git st | head -1 )
+          checkout=$(git st | head -1 )
           version=$(uvx --with hatch-vcs hatchling metadata version)
           COMMIT_SHA=$(git rev-parse "$GITHUB_SHA")
           git_reference="${{ github.event.inputs.git_reference }}"
