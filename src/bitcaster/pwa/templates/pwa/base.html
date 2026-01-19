@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+{% load static i18n pwa %}
+<html lang="en">
+    <head>
+        <title>Bob</title>
+        <meta name="params" id="params" content="{{ params|js|btoa }}" />
+        <meta name="key" id="key" content="{{ params.secret|btoa }}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name=description content="Bob" />
+        {#    <link rel="stylesheet" media="all" type="text/css" href="{% static 'pwa/pwa.css' %}?a={{ asset.version }}" />#}
+        <link rel="manifest" id="pwa-manifest" href="/pwa/{{ secret }}/manifest.json" />
+        <!-- Add to homescreen for Chrome on Android -->
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="application-name" content="{{ PWA_APP_NAME }}" />
+        <!-- Chrome for Android theme color -->
+        {#    <meta name="theme-color" content="{{ PWA_APP_THEME_COLOR }}" />#}
+        <!-- Add to homescreen for Safari on iOS -->
+        {#    <meta name="apple-mobile-web-app-capable" content="yes" />#}
+        {#    <meta name="apple-mobile-web-app-title" content="{{ PWA_APP_NAME }}" />#}
+        {#    <meta name="apple-mobile-web-app-status-bar-style" content="{{ PWA_APP_STATUS_BAR_COLOR }}" />#}
+        {#    {% if PWA_APP_ICONS_APPLE %}#}
+        {#        {% for icon in PWA_APP_ICONS_APPLE %}#}
+        {#            <link rel="apple-touch-icon" href="{{ icon.src }}" sizes="{{ icon.size }}" />#}
+        {#        {% endfor %}#}
+        {#    {% else %}#}
+        {#        {% for icon in PWA_APP_ICONS %}#}
+        {#            <link rel="apple-touch-icon" href="{{ icon.src }}" sizes="{{ icon.size }}" />#}
+        {#        {% endfor %}#}
+        {#    {% endif %}#}
+        {#    {% for splash in PWA_APP_SPLASH_SCREEN %}#}
+        {#        <link href="{{ splash.src }}" media="{{ splash.media }}" rel="apple-touch-startup-image" />#}
+        {#    {% endfor %}#}
+        <!-- Tile for Win8 -->
+        <meta name="msapplication-TileColor" content="{{ PWA_APP_BACKGROUND_COLOR }}" />
+        {% with PWA_APP_ICONS|last as icon %}
+            <meta name="msapplication-TileImage" content="{{ icon.src }}" />
+            <link rel="icon" sizes="{{ icon.size }}" href="{{ icon.src }}" />
+        {% endwith %}
+        {#    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>#}
+        {#    <script type="text/javascript" src="{% static 'vendor/axios.min.js' %}"></script>#}
+        {#    <script type="text/javascript" src="{% static 'sentry/sentry.js' %}"></script>#}
+        {#    <script type="text/javascript" src="{% static 'pwa/ko-3.5.1.js' %}"></script>#}
+        {#    <script src="{% url 'js_reverse' %}"></script>#}
+        {#    <script type="text/javascript" src="{% static 'pwa/pwa.js' %}?v={{ asset.version }}"></script>#}
+    </head>
+    {% if request.user_agent.is_pc %}
+        <body class="background">
+            {#    <div class="grid h-screen place-items-center text-white">#}
+            {#        <div class="place-items-center">#}
+            {#            <div class="text-center">{% trans "You are offline" %}</div>#}
+            {#            <img width="300" height="300" src="data:image/png;base64,{{ qrcode }}" alt="Red dot" />#}
+            {#        </div>#}
+            {#    </div>#}
+            ==========
+        </body>
+    {% endif %}
+</html>

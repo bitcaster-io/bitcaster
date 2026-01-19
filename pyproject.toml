@@ -45,6 +45,7 @@ dependencies = [
   "django-migration-linter>=5.2",
   "django-online-issues[github]>=0.6",
   "django-push-notifications>=3.1",
+  "django-pwa>=1.0.12",
   "django-redis>=5.4",
   "django-regex>=0.5",
   "django-reversion>=5.0.12",

@@ -1,0 +1,31 @@
+{
+  "name": "theme",
+  "version": "3.5.0",
+  "description": "",
+  "scripts": {
+    "start": "npm run dev",
+    "sass": "cross-env NODE_ENV=production sass ./src/styles.scss --style compressed ./src/styles.css",
+    "build": "npm run build:clean && npm run build:tailwind",
+    "build:clean": "rimraf ../static/pwa/pwa.css",
+    "build:tailwind": "cross-env NODE_ENV=production tailwindcss --postcss -i ./src/styles.scss -o ../static/pwa/pwa.css --minify",
+    "dev": "cross-env NODE_ENV=development tailwindcss --postcss -i ./src/styles.scss -o ../static/pwa/pwa.css -w",
+    "tailwindcss": "node ./node_modules/tailwindcss/lib/cli.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/line-clamp": "^0.4.2",
+    "@tailwindcss/typography": "^0.5.2",
+    "cross-env": "^7.0.3",
+    "postcss": "^8.4.14",
+    "postcss-import": "^15.1.0",
+    "postcss-nested": "^6.0.0",
+    "postcss-sass": "*",
+    "postcss-simple-vars": "^7.0.1",
+    "rimraf": "^4.1.2",
+    "tailwindcss": "^3.2.7"
+  }
+}

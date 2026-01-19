@@ -1,0 +1,9 @@
+{% extends "pwa/base.html" %}
+{% load static %}
+{% block body %}
+    <div class="background error" data-bind="hidden:isApp()">
+        <div class="content">
+            No Network
+        </div>
+    </div>
+{% endblock %}

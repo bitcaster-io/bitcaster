@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html * {
+  max-height: 100000px;
+}
+
+body {
+  @apply h-screen;
+}
+
+.background {
+  height: 100vh;
+  /* Fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+  background-color: #00a8b5;
+  z-index: 0;
+  position: relative;
+}
+.background.app {
+  background-image: url(/static/pwa/images/bg_ciao.svg);
+}
+.background.install {
+  background-image: url(/static/pwa/images/install.svg);
+}
+.background.error {
+  background-image: url(/static/pwa/images/bg_error.svg);
+}
+.background div.content {
+  @apply text-white absolute text-lg text-center w-full;
+}
+.background div.content button.button {
+  @apply mt-2 border rounded p-2;
+}
+.background div.content button.button:disabled {
+  @apply bg-gray-300;
+}
+.background div.content button.help img {
+  width: 200px;
+}
+
+@media only screen and (min-height: 300px) {
+  .background.app div.content {
+    top: 350px;
+  }
+
+  .background header div.alarm {
+    @apply bg-red-300;
+  }
+  .background header div.success {
+    @apply bg-green-300;
+  }
+  .background header div.err {
+    @apply bg-red-500;
+  }
+  .background div.content {
+    top: 415px;
+  }
+  .background div.content .info {
+    @apply flex text-black text-sm;
+  }
+}
+
+/*# sourceMappingURL=styles.css.map */

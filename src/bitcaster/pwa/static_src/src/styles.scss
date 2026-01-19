@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+$bob-primary: #00a8b5;
+$bob-secondary: #59add4;
+$bob-default: #00a8b5;
+
+html * {max-height:100000px;}
+
+body {
+  @apply h-screen;
+}
+
+.background {
+  height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+  background-color: $bob-primary;
+  z-index: 0;
+  position: relative;
+
+
+  &.app {
+    background-image: url(/static/pwa/images/bg_ciao.svg);
+  }
+
+  &.install {
+    background-image: url(/static/pwa/images/install.svg);
+  }
+
+  &.error {
+    background-image: url(/static/pwa/images/bg_error.svg);
+  }
+
+  div.content {
+    @apply text-white absolute text-lg text-center w-full;
+    button {
+      &.button {
+        @apply mt-2 border rounded p-2;
+        &:disabled {
+          @apply bg-gray-300;
+        }
+      }
+
+      &.help {
+        img {
+          width: 200px;
+        }
+      }
+    }
+  }
+
+}
+
+@media only screen and (min-height: 300px) {
+  .background.app {
+    div.content {
+      top: 350px;
+    }
+  }
+  .background {
+    header {
+      div.alarm {
+        @apply bg-red-300;
+      }
+
+      div.success {
+        @apply bg-green-300;
+      }
+
+      div.err {
+        @apply bg-red-500;
+      }
+    }
+
+    div.content {
+      top: 415px;
+      .info {
+        @apply flex text-black text-sm;
+      }
+    }
+  }
+}
