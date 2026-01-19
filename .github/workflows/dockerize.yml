@@ -2,6 +2,11 @@
 name: Build Docker
 
 on:
+  release:
+    types: [published]
+  push:
+    branches:
+      - '**'  # Trigger on push to any branch
   workflow_dispatch:
     inputs:
       git_reference:
@@ -38,14 +43,14 @@ jobs:
     steps:
       - name: Inputs
         run: |
-            echo "::notice title=Ref:: ${{ github.event.inputs.git_reference }}"
+            echo "::notice title=Ref:: ${{ github.event.inputs.git_reference || github.ref_name }}"
             echo "::notice title=Tag:: ${{ github.event.inputs.tag }}"
             echo "::notice title=latest :: ${{ github.event.inputs.latest }}"
 
       - name: Checkout code
         uses: actions/checkout@v4.1.7
         with:
-          ref: ${{ github.event.inputs.git_reference }}
+          ref: ${{ github.event.inputs.git_reference || github.ref }}
           fetch-depth: 0
 
       - name: Install the latest version of uv
@@ -54,20 +59,42 @@ jobs:
       - name: Set target input
         id: config
         run: |
+          # Determine git reference and tag base
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            git_reference="${{ github.event.inputs.git_reference }}"
+            manual_tag="${{ github.event.inputs.tag }}"
+            tag_base="$manual_tag"
+          elif [ "${{ github.event_name }}" == "release" ]; then
+             # For release event, ref_name is the tag name (e.g. v1.0.0)
+             git_reference="${{ github.event.release.tag_name }}"
+             tag_base="${{ github.event.release.tag_name }}"
+          else
+             # For push event (branches)
+             git_reference="${{ github.ref_name }}"
+             tag_base="${{ github.ref_name }}"
+          fi
 
-          checkout=$(git st | head -1 )
+          # Clean up tag base for docker tag (replace / with -)
+          # Also remove 'v' prefix if present for cleaner docker tags if desired,
+          # but usually git tags match docker tags.
+          # Here we just ensure it's safe for docker.
+          clean_tag=$(echo "$tag_base" | sed 's/\//-/g')
+
+          # Final tag logic
+          if [ -n "$manual_tag" ]; then
+            tag="$manual_tag"
+          else
+            tag="$clean_tag"
+          fi
+
+          checkout=$(git status | head -1)
           version=$(uvx --with hatch-vcs hatchling metadata version)
           COMMIT_SHA=$(git rev-parse "$GITHUB_SHA")
-          git_reference="${{ github.event.inputs.git_reference }}"
-
-          echo "::notice title=Git Reference:: ${{ git_reference }}"
-          echo "::notice title=Git Checkout:: ${{ checkout }}"
-
-          tag="${{ github.event.inputs.tag }}"
-          if [ -z "$tag" ]; then
-            tag="$git_reference"
-          fi
           BUILD_DATE=$(date +"%Y-%m-%d %H:%M")
+
+          echo "::notice title=Git Reference:: $git_reference"
+          echo "::notice title=Docker Tag:: $tag"
+          echo "::notice title=Git Checkout:: $checkout"
 
           echo "git_reference=$git_reference" >> $GITHUB_OUTPUT
           echo "version=$version" >> $GITHUB_OUTPUT
