@@ -65,7 +65,7 @@ COPY . /code
 RUN ls -al /code/src/
 RUN uv venv --no-cache $VIRTUAL_ENV \
     && uv sync --no-dev --frozen --no-editable --no-cache \
-    && git st \
+    && git status \
     && uv build
 
 FROM base_os AS dist
