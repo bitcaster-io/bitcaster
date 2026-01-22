@@ -75,9 +75,6 @@ jobs:
           fi
 
           # Clean up tag base for docker tag (replace / with -)
-          # Also remove 'v' prefix if present for cleaner docker tags if desired,
-          # but usually git tags match docker tags.
-          # Here we just ensure it's safe for docker.
           clean_tag=$(echo "$tag_base" | sed 's/\//-/g')
 
           # Final tag logic
@@ -88,13 +85,26 @@ jobs:
           fi
 
           checkout=$(git status | head -1)
-          version=$(uvx --with hatch-vcs hatchling metadata version)
+
+          # Determine version
+          # If git_reference is a tag, use it as version (stripping 'v'), otherwise calculate it
+          if git show-ref --tags --verify --quiet "refs/tags/$git_reference"; then
+            # It is a tag. Strip 'v' prefix if present (e.g. v1.0.0 -> 1.0.0)
+            version=${git_reference#v}
+            echo "::notice title=Version Source:: Tag match ($git_reference -> $version)"
+          else
+            # Not a tag. Let hatch calculate it.
+            version=$(uvx --with hatch-vcs hatchling metadata version)
+            echo "::notice title=Version Source:: Hatch calculation ($version)"
+          fi
+
           COMMIT_SHA=$(git rev-parse "$GITHUB_SHA")
           BUILD_DATE=$(date +"%Y-%m-%d %H:%M")
 
           echo "::notice title=Git Reference:: $git_reference"
           echo "::notice title=Docker Tag:: $tag"
           echo "::notice title=Git Checkout:: $checkout"
+          echo "::notice title=Version:: $version"
 
           echo "git_reference=$git_reference" >> $GITHUB_OUTPUT
           echo "version=$version" >> $GITHUB_OUTPUT
@@ -116,9 +126,11 @@ jobs:
         with:
           platforms: linux/amd64
 
-      - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }})
+      - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }} / ${{ steps.config.outputs.version }})
         uses: docker/build-push-action@v6
         id: build
+        env:
+          HATCH_VCS_VERSION: ${{ steps.config.outputs.version }}
         with:
           context: .
           file: docker/Dockerfile
@@ -127,7 +139,7 @@ jobs:
             os4d/bitcaster:${{ steps.config.outputs.tag }}
             ${{ github.event.inputs.latest == 'true' && 'os4d/bitcaster:latest' || null}}
           build-args: |
-            VERSION=${{ steps.config.outputs.git_reference }}
+            VERSION=${{ steps.config.outputs.version }}
             BUILD_DATE=${{ steps.config.outputs.build_date }}
             GIT_SHA=${{ steps.config.outputs.commit_sha }}
 

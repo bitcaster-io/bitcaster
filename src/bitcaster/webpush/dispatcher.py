@@ -79,6 +79,7 @@ class WebPushDispatcher(Dispatcher):
     config_class: type[DispatcherConfig] = WebPushConfig
     protocol = MessageProtocol.WEBPUSH
     need_subscription = True
+    verbose_name = "WebPush"
 
     def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         try:
