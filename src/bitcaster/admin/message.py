@@ -32,6 +32,7 @@ from ..forms.message import (
 )
 from ..forms.unfold import UnfoldAdminForm
 from ..utils.shortcuts import render_string
+from ..web.templatetags.markdown import md
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
@@ -152,8 +153,13 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
                 ct = form.cleaned_data["content_type"]
                 ctx = {**form.cleaned_data["context"], **message_context}
                 res = str(tpl.render(Context(ctx)))
-                if ct != "text/html":
-                    res = f"<pre>{res}</pre>"
+                match ct:
+                    case "text/html":
+                        pass
+                    case "text/markdown":
+                        res = md(res)
+                    case __:
+                        res = f"<pre>{res}</pre>"
             except Exception as e:
                 res = f"<!DOCTYPE HTML>{str(e)}"
         else:
@@ -212,6 +218,7 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
                     "subject": msg.subject if msg.subject else "Subject for {{ event }}",
                     "content": (msg.content if msg.content else SAMPLE_TEXT_MESSAGE),
                     "html_content": (msg.html_content if msg.html_content else SAMPLE_HTML_MESSAGE),
+                    "markdown_content": (msg.content if msg.content else SAMPLE_TEXT_MESSAGE),
                 },
                 instance=msg,
             )

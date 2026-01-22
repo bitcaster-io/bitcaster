@@ -30,6 +30,11 @@
                             {% translate 'Subject' %}
                         </button>
                     {% endif %}
+                    {% if original.support_markdown %}
+                        <button id="btn_md" class="button toggler" data-content-type="text/markdown" data-panel="#tab_md" type="button">
+                            Markdown
+                        </button>
+                    {% endif %}
                     {% if original.support_html %}
                         <button id="btn_html" class="button toggler" data-content-type="text/html" data-panel="#tab_html" type="button">
                             HTML
@@ -55,6 +60,9 @@
                         </div>
                         <div id="tab_content" class="tab">
                             {{ form.content }}
+                        </div>
+                        <div id="tab_md" class="tab">
+                            {{ form.markdown_content }}
                         </div>
                         <div id="tab_html" class="tab">
                             {{ form.html_content }}

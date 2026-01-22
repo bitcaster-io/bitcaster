@@ -23,6 +23,7 @@ class Capability(enum.StrEnum):
     HTML = "HTML"
     TEXT = "TEXT"
     SUBJECT = "SUBJECT"
+    MARKDOWN = "MARKDOWN"
 
 
 @enum.unique
@@ -33,6 +34,7 @@ class MessageProtocol(models.TextChoices):
     EMAIL = "EMAIL"
     WEBPUSH = "WEBPUSH"
     INTERNAL = "INTERNAL"
+    MARKDOWN = "MARKDOWN"
 
     def has_capability(self, capability: Capability) -> bool:
         return capability in ProtocolCapabilities[self]
@@ -44,6 +46,7 @@ ProtocolCapabilities = {
     MessageProtocol.SMS: [Capability.TEXT],
     MessageProtocol.WEBPUSH: [Capability.SUBJECT, Capability.TEXT],
     MessageProtocol.INTERNAL: [Capability.SUBJECT, Capability.HTML],
+    MessageProtocol.MARKDOWN: [Capability.SUBJECT, Capability.MARKDOWN],
 }
 
 
