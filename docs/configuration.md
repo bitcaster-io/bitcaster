@@ -37,7 +37,7 @@ Password for initial user created at first deploy. It is ignored if `ADMIN_EMAIL
 ### AGENT_FILESYSTEM_ROOT
 Default: ``
 
-Base path allowed by the [local filestem agent](/bitcaster/adm-guide/agents/)
+Base path allowed by the local filestem <glossary:Agent>
 
 
 

@@ -52,7 +52,7 @@ This endpoint triggers a specific event.
 ### Request Body
 
 -   `context` (object, optional): A JSON object with context data to be used in the notification templates.
--   `options` (object, optional): A JSON object with options to customize the notification process. See the [Triggering Events documentation](../../adm-guide/trigger) for more details.
+-   `options` (object, optional): A JSON object with options to customize the notification process. See the [Triggering Events documentation](../adm-guide/trigger.md) for more details.
 
     ```json
     {
