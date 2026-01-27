@@ -34,7 +34,7 @@ jobs:
       dockerize: ${{ steps.changes.outputs.dockerize }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v6
 
     - id: changes
       name: Check for file changes
@@ -78,7 +78,7 @@ jobs:
       RUNNER_TOOL_CACHE: /tmp/
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
