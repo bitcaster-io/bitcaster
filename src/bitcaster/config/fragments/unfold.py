@@ -250,6 +250,11 @@ UNFOLD = {
                         "icon": "data_alert",
                         "link": reverse_lazy("admin:bitcaster_logentry_changelist"),
                     },
+                    {
+                        "title": _("SSO Providers"),
+                        "icon": "captive_portal",
+                        "link": reverse_lazy("admin:social_socialprovider_changelist"),
+                    },
                 ],
             },
         ],
