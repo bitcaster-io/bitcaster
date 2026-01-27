@@ -24,6 +24,7 @@ class SlackDispatcher(Dispatcher):
     slug = "slack"
     config_class: type[DispatcherConfig] = SlackConfig
     protocol = MessageProtocol.PLAINTEXT
+    verbose_name = "Slack"
 
     def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         try:

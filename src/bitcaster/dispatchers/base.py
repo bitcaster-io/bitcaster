@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.utils.functional import cached_property, classproperty
 from django.utils.module_loading import import_string
 from strategy_field.registry import Registry
+from strategy_field.utils import fqn
 
 from bitcaster.constants import AddressType
 
@@ -160,7 +161,15 @@ class Dispatcher(metaclass=DispatcherMeta):
 
 
 class DispatcherManager(Registry):
-    pass
+    def get_name(self, entry: type) -> str:
+        if hasattr(entry, "verbose_name"):
+            attr = entry.verbose_name
+            if not attr:
+                return fqn(entry)
+            if callable(attr):
+                return str(attr())
+            return str(attr)
+        return fqn(entry)
 
 
 dispatcherManager = DispatcherManager(Dispatcher)  # noqa N816
