@@ -155,6 +155,11 @@ UNFOLD = {
                         "icon": "inbox_text_person",
                         "link": reverse_lazy("admin:bitcaster_usermessage_changelist"),
                     },
+                    {
+                        "title": _("Attachments"),
+                        "icon": "attachment",
+                        "link": reverse_lazy("admin:bitcaster_attachment_changelist"),
+                    },
                 ],
             },
             {

@@ -12,6 +12,7 @@ from django.http import (
     HttpResponse,
     HttpResponseNotModified,
 )
+from django.http.response import HttpResponseBadRequest
 from django.utils._os import safe_join
 from django.utils.http import http_date
 from django.utils.translation import gettext_lazy as _
@@ -19,6 +20,14 @@ from django.views import View
 from django.views.generic.base import ContextMixin, TemplateView
 from django.views.static import directory_index, was_modified_since
 from unfold.sites import UnfoldAdminSite
+
+from bitcaster.models import Attachment
+from bitcaster.utils.attachment import (
+    DownloadKey,
+    DownloadKeyDecryptionError,
+    DownloadKeyExpiredError,
+    DownloadKeyManager,
+)
 
 
 class UnfoldViewMixin(UnfoldAdminSite, ContextMixin):
@@ -63,3 +72,17 @@ class MediaView(View):
         response = FileResponse(fullpath.open("rb"), content_type=content_type)
         response.headers["Last-Modified"] = http_date(statobj.st_mtime)
         return response
+
+
+class SafeAttachmentDownloadView(View):
+    def get(self, request: HttpRequest, key: DownloadKey) -> HttpResponse | FileResponse:
+        try:
+            attachment = DownloadKeyManager().get_attachment(key)
+        except DownloadKeyDecryptionError:
+            return HttpResponseBadRequest(_("Malformed download key."))
+        except DownloadKeyExpiredError as e:
+            return HttpResponseBadRequest(str(e))
+        except Attachment.DoesNotExist as e:
+            raise Http404(_("No attachment found for this key.")) from e
+
+        return FileResponse(attachment.document, content_type=attachment.mime_type, as_attachment=True)

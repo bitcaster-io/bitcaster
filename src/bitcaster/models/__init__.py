@@ -3,6 +3,7 @@ from bitcaster.social.models import SocialProvider
 from .address import Address
 from .application import Application
 from .assignment import Assignment
+from .attachment import Attachment
 from .channel import Channel
 from .distribution import DistributionList
 from .event import Event
@@ -27,6 +28,7 @@ __all__ = [
     "Address",
     "ApiKey",
     "Assignment",
+    "Attachment",
     "Channel",
     "DistributionList",
     "Event",
