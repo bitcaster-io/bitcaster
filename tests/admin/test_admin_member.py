@@ -60,8 +60,6 @@ def test_member_add(app: "DjangoTestApp", context: "Context"):
 def test_member_check_custom_fields(app: "DjangoTestApp", value, expected) -> None:
     url = reverse("admin:bitcaster_member_add")
     res = app.get(url)
-    res.forms["member_form"]["username"] = "user__test1"
-    res.forms["member_form"]["email"] = "user@email.com"
     res.forms["member_form"]["custom_fields"] = value
     res = res.forms["member_form"].submit("apply")
     assert res.status_code == 200

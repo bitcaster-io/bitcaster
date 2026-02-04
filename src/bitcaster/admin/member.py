@@ -135,12 +135,21 @@ class ImportForm(forms.Form):
 
 class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     list_display = ("username", "first_name", "last_name", "email")
-    fields = ("username", "first_name", "last_name", "email", "custom_fields")
     list_filter = (("custom_fields", JsonFieldFilter.factory()),)
     inlines = [AddressInline, AssignmentInline, ListsInline]
     actions = ["update_custom_fields", "add_to_distributionlist"]
     search_fields = ("username", "first_name", "last_name", "email")
     form = MemberForm
+    fieldsets = (
+        (_("Personal info"), {"classes": ["tab"], "fields": ("first_name", "last_name", "email")}),
+        (_("Account"), {"classes": ["tab"], "fields": ("username",)}),
+        (_("Important dates"), {"classes": ["tab"], "fields": ("last_login", "date_joined")}),
+        (_("Options"), {"classes": ["tab"], "fields": ("timezone", "date_time_format", "date_format")}),
+        (_("Extended"), {"classes": ["tab"], "fields": ("custom_fields",)}),
+    )
+
+    def get_readonly_fields(self, request: "HttpRequest", obj: "User|None" = None) -> list[str]:
+        return ["username", "email", "last_login", "date_joined"]
 
     def add_to_distributionlist(self, request: "HttpRequest", queryset: "QuerySet[User]") -> "HttpResponse":
         ctx = self.get_common_context(request, title=_("Add to Distribution List"))

@@ -29,6 +29,7 @@ __all__ = [
 WIDGETS_OVERRIDES = {
     forms.BooleanField: widgets.UnfoldBooleanSwitchWidget,
     forms.ChoiceField: widgets.UnfoldAdminSelectWidget,
+    forms.TypedChoiceField: widgets.UnfoldAdminSelectWidget,
     forms.CharField: widgets.UnfoldAdminTextInputWidget,
     forms.DateField: widgets.UnfoldAdminSingleDateWidget,
     forms.DecimalField: widgets.UnfoldAdminDecimalFieldWidget,
@@ -53,7 +54,13 @@ class UnfoldForm(forms.Form):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             if widget := WIDGETS_OVERRIDES.get(field.__class__):
-                field.widget = widget()
+                if isinstance(field.widget, forms.Textarea):
+                    field.widget = widgets.UnfoldAdminTextareaWidget()
+                elif hasattr(field, "choices"):
+                    field.widget = widget()
+                    field.widget.choices = field.choices
+                else:
+                    field.widget = widget()
 
 
 # kudos to https://github.com/unfoldadmin/django-unfold/issues/180

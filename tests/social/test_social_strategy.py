@@ -45,6 +45,6 @@ def test_social_strategy_missing() -> None:
 def test_social_strategy_url() -> None:
     from testutils.factories.social import SocialProviderFactory
 
-    SocialProviderFactory(provider=Provider.FACEBOOK, configuration={"SOCIAL_AUTH_FACEBOOK_URL": "login"})
+    SocialProviderFactory(provider=Provider.FACEBOOK, configuration={"SOCIAL_AUTH_FACEBOOK_URL": "admin:login"})
     s = BitcasterStrategy(Mock(), Mock())
     s.get_setting("SOCIAL_AUTH_FACEBOOK_URL")

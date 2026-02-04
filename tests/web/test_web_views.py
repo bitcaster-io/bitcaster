@@ -32,7 +32,7 @@ def test_healthcheck(client: "Client") -> None:
 def test_login(django_app: DjangoTestApp, user: "User", settings: SettingsWrapper) -> None:
     settings.FLAGS = {"LOCAL_LOGIN": [("boolean", True)]}
 
-    url = reverse("login")
+    url = reverse("admin:login")
     res = django_app.get(url)
     assert res.status_code == 200
 

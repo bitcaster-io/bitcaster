@@ -113,7 +113,7 @@ COMMON = {
         },
     },
     "STYLES": [
-        "/static/css/unfold_ext.css",
+        lambda *a: static("css/admin_ext.css"),
     ],
     "BORDER_RADIUS": "6px",
 }
@@ -249,6 +249,11 @@ UNFOLD = {
                         "title": _("System Log"),
                         "icon": "data_alert",
                         "link": reverse_lazy("admin:bitcaster_logentry_changelist"),
+                    },
+                    {
+                        "title": _("SSO Providers"),
+                        "icon": "captive_portal",
+                        "link": reverse_lazy("admin:social_socialprovider_changelist"),
                     },
                 ],
             },

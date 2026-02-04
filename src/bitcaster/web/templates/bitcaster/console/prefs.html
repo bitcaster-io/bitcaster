@@ -1,0 +1,19 @@
+{% extends "bitcaster/console/base.html" %}
+{% load feature_flags i18n static user %}
+{% block content %}
+    <div class="p-4">
+        <form method="post">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 gap-4">
+                {{ form }}
+                <div class="">
+                    <button type="submit"
+                            name="_save"
+                            class="bg-primary-600 block border border-transparent cursor-pointer font-medium px-3 py-2 rounded-default text-white w-full lg:w-auto">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

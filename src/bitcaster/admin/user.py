@@ -34,11 +34,12 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     ordering = ("username",)
     exclude = ("groups",)
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "email", "timezone")}),
+        (_("Personal info"), {"classes": ["tab"], "fields": ("first_name", "last_name", "email")}),
+        (_("Account"), {"classes": ["tab"], "fields": ("username", "password")}),
         (
             _("Permissions"),
             {
+                "classes": ["tab"],
                 "fields": (
                     "is_active",
                     "is_staff",
@@ -46,11 +47,16 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
                 ),
             },
         ),
-        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+        (_("Important dates"), {"classes": ["tab"], "fields": ("last_login", "date_joined")}),
+        (_("Options"), {"classes": ["tab"], "fields": ("timezone", "date_format", "time_format")}),
+        (_("Extended"), {"classes": ["tab"], "fields": ("custom_fields",)}),
     )
     filter_horizontal = ()
     change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
     actions = ["toggle_superuser", "toggle_staff", "toggle_active", "enroll"]
+
+    def get_readonly_fields(self, request: "HttpRequest", obj: "User|None" = None) -> list[str]:
+        return ["custom_fields"]
 
     def formfield_for_choice_field(self, db_field: "Field", request: "HttpRequest", **kwargs) -> TypedChoiceField:
         if db_field.name == "timezone":

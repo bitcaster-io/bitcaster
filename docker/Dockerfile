@@ -48,7 +48,8 @@ RUN pip install uwsgi uv
 # ------- builder -------
 FROM deps AS builder
 ENV VIRTUAL_ENV=/venv \
-    UV_PROJECT_ENVIRONMENT=/venv
+    UV_PROJECT_ENVIRONMENT=/venv \
+    HATCH_VCS_VERSION=${VERSION}
 
 RUN <<EOF cat> /RELEASE
 {"version": "$VERSION",
@@ -63,7 +64,9 @@ COPY . /code
 
 RUN ls -al /code/src/
 RUN uv venv --no-cache $VIRTUAL_ENV \
-    && uv sync --no-dev --frozen --no-editable --no-cache
+    && uv sync --no-dev --frozen --no-editable --no-cache \
+    && git status \
+    && uv build
 
 FROM base_os AS dist
 ADD docker/conf /conf/

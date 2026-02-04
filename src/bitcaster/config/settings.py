@@ -19,7 +19,6 @@ DEBUG = env.bool("DEBUG")
 INTERNAL_IPS = env.list("INTERNAL_IPS")
 ALLOWED_HOSTS: list[str] = env("ALLOWED_HOSTS")
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -228,6 +227,28 @@ STORAGES = {
     "staticfiles": env.storage("STORAGE_STATIC"),
     "mediafiles": env.storage("STORAGE_MEDIA") or env.storage("STORAGE_DEFAULT"),
 }
+
+DATE_FORMAT = "%Y-%m-%d"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M"
+
+DATE_FORMATS = [
+    "%m-%d-%Y",  # 12-31-2000
+    "%d %B %Y",  # 1 February 2025
+    "%d %b %Y",  # 1 Feb 2025
+    "%B %d, %Y",  # February 1, 2025
+    "%b %d, %Y",  # Feb 1, 2025
+    "%Y-%m-%d",  # 2000-12-31
+    "%d-%m-%Y",  # 31-12-2000
+    "%a, %d %B %Y",  # Mon, 1 February 2025
+    "%a, %d %b %Y",  # Mon, 1 Feb 2025
+]
+
+TIME_FORMATS = [
+    "%H:%M",
+    "%H:%M %Z",
+    "%I:%M%p %Z",
+    "%I:%M%p",
+]
 
 
 from .fragments.agents import *  # noqa

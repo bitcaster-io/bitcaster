@@ -1,12 +1,18 @@
 {% extends "bitcaster/base.html" %}
 {% load feature_flags i18n static %}
-{% block body %}
+{% block base %}
     <div class="">
         <div class="flex justify-center">
             <img tyle="width: 400px" src="{% static "bitcaster/images/logos/logo400.png" %}" />
         </div>
         <div class="flex justify-center">
-            <img style="width: 400px" src="{% static "bitcaster/images/logos/name.svg" %}" />
+            {#            <img style="width: 400px" src="{% static "bitcaster/images/logos/name.svg" %}" />#}
+            <template x-if="adminTheme === 'dark'">
+                <img class="align-middle h-8" src="{% static "bitcaster/images/logos/name_white.svg" %}" />
+            </template>
+            <template x-if="adminTheme !== 'dark'">
+                <img class="align-middle h-8" src="{% static "bitcaster/images/logos/name.svg" %}" />
+            </template>
         </div>
         <div class="flex justify-center gap-2 mt-4 mb-10">
             {% if user.is_authenticated %}
@@ -22,5 +28,20 @@
                 <a class="button button-primary" href="{% url "admin:login" %}">{% translate "Login" %}</a>
             {% endif %}
         </div>
+        <div class="flex justify-center gap-2 mt-4 mb-10">
+            <a class="cursor-pointer flex flex-row mx-1 px-3 py-1.5 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200 text-primary-600 dark:text-primary-500 dark:hover:text-primary-500! hover:text-primary-600!"
+               x-on:click="adminTheme = 'light'"
+               x-bind:class="adminTheme == 'light' && 'border text-primary-600 dark:text-primary-500 dark:hover:text-primary-500! hover:text-primary-600!'">
+                <span class="material-symbols-outlined mr-2">light_mode</span>
+                <span class="leading-none self-center">Light</span>
+            </a>
+            <a class="cursor-pointer flex flex-row leading-none mx-1 px-3 py-1.5 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200"
+               x-on:click="adminTheme = 'dark'"
+               x-bind:class="adminTheme == 'dark' && 'border text-primary-600 dark:text-primary-500 dark:hover:text-primary-500! hover:text-primary-600!'">
+                <span class="material-symbols-outlined mr-2">dark_mode</span>
+                <span class="leading-none self-center">Dark</span>
+            </a>
+        </div>
     </div>
-{% endblock body %}
+</div>
+{% endblock %}
