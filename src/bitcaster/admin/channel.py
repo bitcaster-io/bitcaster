@@ -10,10 +10,11 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
-from bitcaster.models import Assignment, Channel, Project, User
-from bitcaster.utils.unfold import UnfoldAdminForm
+from bitcaster.forms.unfold import UnfoldAdminForm
+from bitcaster.models import Assignment, Channel, User
 
 from ..dispatchers.base import Payload
 from ..forms.channel import ChannelChangeForm
@@ -59,12 +60,6 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
     def get_queryset(self, request: "HttpRequest") -> QuerySet[Channel]:
         return super().get_queryset(request).select_related("project", "organization")
 
-    def get_changeform_initial_data(self, request):
-        initial = super().get_changeform_initial_data(request)
-        if initial.get("project"):
-            initial["organization"] = Project.objects.get(pk=initial["project"]).organization
-        return initial
-
     def get_readonly_fields(self, request: "HttpRequest", obj: "AnyModel_co | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk == config.SYSTEM_EMAIL_CHANNEL:
             return ["name", "organization", "project", "parent", "protocol", "locked"]
@@ -76,24 +71,38 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
     def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         ch: Channel = button.context["original"]
-        button.href = f"{url}?channels__exact={ch.pk}"
+        if ch:
+            button.href = f"{url}?channels__exact={ch.pk}"
+
+    @link(change_form=True, change_list=False)
+    def assignments(self, button: ButtonWidget) -> None:
+        url = reverse("admin:bitcaster_assignment_changelist")
+        ch: Channel = button.context["original"]
+        if ch:
+            button.href = f"{url}?channel__id__exact={ch.pk}"
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
-        obj = self.get_object_or_404(request, pk)
+        obj: "Channel" = self.get_object_or_404(request, pk)
         context = self.get_common_context(request, pk, action_title=_("Configure channel"))
         form_class = obj.dispatcher.config_class
-        if request.method == "POST":
-            config_form = form_class(request.POST)
-            if config_form.is_valid():
-                obj.config = config_form.cleaned_data
-                obj.save()
-                self.message_user(request, f"Configured channel {obj.name}")
-                return HttpResponseRedirect("..")
-        else:
-            config_form = form_class(initial={k: v for k, v in obj.config.items() if k in form_class.declared_fields})
-        fs = (("", {"fields": form_class.declared_fields}),)
-        context["adminform"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)  # type: ignore[arg-type]
+        if form_class:
+            if request.method == "POST":
+                config_form = form_class(request.POST)
+                if config_form.is_valid():
+                    config_form.save(obj)
+                    self.message_user(request, f"Configured channel {obj.name}")
+                    return HttpResponseRedirect(reverse("admin:bitcaster_channel_change", args=(obj.pk,)))
+            else:
+                initial = {k: v for k, v in obj.config.items() if k in form_class.declared_fields}
+                for k, v in obj.dispatcher.default_config.items():
+                    if k not in initial:
+                        initial[k] = v
+
+                config_form = form_class(initial=initial)
+            fs = (("", {"fields": form_class.declared_fields}),)
+            context["adminform"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)  # type: ignore[arg-type]
+            context["extra_config_info"] = obj.dispatcher.get_extra_config_info()
         return TemplateResponse(request, "bitcaster/admin/channel/configure.html", context)
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
@@ -116,14 +125,15 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
                 try:
                     ch.dispatcher.send(recipient, payload, assignment=assignment)
                     self.message_user(request, f"Message sent to {recipient} via {ch.name}")
+                    return HttpResponseRedirect(".")
                 except Exception as e:
                     logger.exception(e)
                     self.message_error_to_user(request, e)
         else:
             config_form = ChannelTestForm(
                 initial={
-                    "subject": "[TEST] Subject",
-                    "message": "aaa",
+                    "subject": f"[TEST Channel] {ch}",
+                    "message": f"Test message sent on {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}",
                 }
             )
         context["assignment"] = assignment

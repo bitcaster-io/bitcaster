@@ -4,16 +4,19 @@ x-common: &common
     dockerfile: docker/Dockerfile
     target: dist
   platform: linux/amd64
+  tty: true
+  stdin_open: true
   environment:
-    - ADMIN_EMAIL=bitcaster@example.com
-    - ADMIN_PASSWORD=123
+    - ADMIN_EMAIL=admin@bitcaster.io
+    - ADMIN_PASSWORD=password
     - ALLOWED_HOSTS=localhost,127.0.0.1
     - CACHE_URL=redis://redis:6379/1?client_class=django_redis.client.DefaultClient
-    - CELERY_BROKER_URL=redis://redis:6379/9
     - CSRF_COOKIE_SECURE=False
     - CSRF_TRUSTED_ORIGINS=http://localhost
     - DATABASE_URL=postgres://bitcaster:password@db:5432/bitcaster
     - DEBUG=True
+    - DRAMATIQ_BROKER=redis://redis:6379/2
+    - LOGGING_LEVEL=CRITICAL
     - MEDIA_ROOT=/var/storage/media/
     - SECRET_KEY=super_secret_key_just_for_development_that_needs_to_be_more_than_fifty_characters
     - SECURE_HSTS_PRELOAD=0
@@ -21,17 +24,14 @@ x-common: &common
     - SESSION_COOKIE_DOMAIN=
     - SESSION_COOKIE_SECURE=False
     - SOCIAL_AUTH_REDIRECT_IS_HTTPS=False
-    - STORAGE_STATIC=django.core.files.storage.FileSystemStorage
-    - STORAGE_MEDIA=django.core.files.storage.FileSystemStorage
-    - STORAGE_DEFAULT=django.core.files.storage.FileSystemStorage
     - STATIC_ROOT=/var/storage/static/
     - STATIC_URL=/static/
   volumes:
     - storage_volume:/var/storage
 #    - $PWD:/code/app
-    - $PWD/docker/conf:/conf
-    - $PWD/docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
-    - $PWD/src/bitcaster:/code/__pypackages__/3.12/lib/bitcaster
+#    - $PWD/docker/conf:/conf
+#    - $PWD/docker/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+#    - $PWD/src/bitcaster:/code/__pypackages__/3.13/lib/bitcaster
   restart: unless-stopped
   depends_on:
     db:
@@ -62,21 +62,12 @@ services:
       db:
         condition: service_healthy
 
-  beat:
+  scheduler:
     <<: *common
-    command: ["beat"]
+    command: ["scheduler"]
     depends_on:
       db:
         condition: service_healthy
-
-  flower:
-      <<: *common
-      command: ["flower"]
-      ports:
-        - 5555:5555
-      depends_on:
-        db:
-          condition: service_healthy
 
   db:
     image: postgres:15

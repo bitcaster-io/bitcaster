@@ -1,0 +1,14 @@
+<div class="text-center mt-10">
+    <div class="text-center">
+        Version {{ bitcaster.version }}
+        - Copyright &copy; 2022-<script>document.write(new Date().getFullYear())</script> OS4D ltd
+        - <a href="https://github.com/bitcaster-io/bitcaster/issues/new/choose">Open Issue</a>
+        -  <a href="/api/">API</a>
+        -  <a href="{{ bitcaster.doc_site }}">Documentation</a>
+        -  <a href="{{ bitcaster.doc_site }}/license/">License</a>
+        -  <a href="https://github.com/bitcaster-io">GitHub</a>
+        {% if user.is_superuser %}
+            -  <a href="{% url "admin:index" %}">Admin</a>
+        {% endif %}
+    </div>
+</div>

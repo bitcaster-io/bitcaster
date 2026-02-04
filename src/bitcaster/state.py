@@ -1,19 +1,21 @@
 import contextlib
 import json
 from copy import copy
-from datetime import datetime, timedelta
 from threading import local
 from typing import TYPE_CHECKING, Any, Iterator, Mapping
 
 if TYPE_CHECKING:
+    from datetime import datetime, timedelta
+
+    from django.http import HttpRequest, HttpResponse
+
     from bitcaster.types.django import JsonType
-    from bitcaster.types.http import AnyRequest_co, AnyResponse_co
 
 not_set = object()
 
 
 class State(local):
-    request: "AnyRequest_co|None" = None
+    request: "HttpRequest|None" = None
     cookies: dict[str, list[Any]] = {}
 
     def __repr__(self) -> str:
@@ -23,8 +25,8 @@ class State(local):
         self,
         key: str,
         value: "JsonType",
-        max_age: [int | float, timedelta] = None,
-        expires: [str | datetime] = None,
+        max_age: "int | float | timedelta | None" = None,
+        expires: "str | datetime | None" = None,
         path: str = "/",
         domain: str | None = None,
         secure: bool = False,
@@ -37,7 +39,7 @@ class State(local):
     def get_cookie(self, name: str) -> str | None:
         return self.request.COOKIES.get(name)
 
-    def set_cookies(self, response: "AnyResponse_co") -> None:
+    def set_cookies(self, response: "HttpResponse") -> None:
         for name, args in self.cookies.items():
             response.set_cookie(name, *args)
 

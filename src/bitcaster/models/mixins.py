@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models.base import ModelBase
 from django.urls import reverse
 from django.utils.text import slugify
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from smart_selects.db_fields import ChainedForeignKey
 
 if TYPE_CHECKING:
@@ -17,10 +17,38 @@ if TYPE_CHECKING:
 
 
 class LockMixin(models.Model):
-    locked = models.BooleanField(default=False, help_text=_("If checked any notification is ignored and not forwarded"))
+    locked = models.BooleanField(
+        verbose_name=_("locked"), default=False, help_text=_("If checked any notification is ignored and not forwarded")
+    )
+    paused = models.BooleanField(
+        verbose_name=_("paused"), default=False, help_text=_("If checked any notification paused")
+    )
 
     class Meta:
         abstract = True
+
+    def can_be_locked(self) -> bool:
+        raise NotImplementedError
+
+    def lock(self) -> None:
+        if not self.locked:
+            self.locked = True
+            self.save()
+
+    def unlock(self) -> None:
+        if self.locked:
+            self.locked = False
+            self.save()
+
+    def pause(self) -> None:
+        if not self.paused:
+            self.paused = True
+            self.save()
+
+    def resume(self) -> None:
+        if self.paused:
+            self.paused = False
+            self.save()
 
 
 class AdminReversable(models.Model):

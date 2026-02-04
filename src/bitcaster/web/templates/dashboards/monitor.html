@@ -1,0 +1,116 @@
+{% extends 'dashboards/_base.html' %}
+{% load i18n unfold user %}
+{% block alpine-init %}
+    {{ media }}
+    <style>
+        @keyframes flash {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .animate-flash {
+            animation: flash 0.5s;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div>
+        <div x-data="celeryHealth($el.dataset.url)" data-url="{% url 'admin:console-monitorview' %}" class="">
+            <div x-show="error" class="text-2xl text-center flex">
+                Server disconnected. Refresh this page.
+            </div>
+            <div x-show="!error">
+                <div class="grid grid-col-1 mb-5">
+                    <div class="text-sm m-4" x-text="datetime">
+                    </div>
+                    {#                    <div class="">#}
+                    <span :class="alive ? 'text-green-600' : 'text-red-600'">
+                        <span :class="flash ? 'text-orange-200' : alive ? 'text-green-600' : 'text-red-600'">●</span>
+                        <span class="font-semibold" x-show="alive">Background process maanger running</span>
+                        <span class="font-semibold" x-show="!alive">Background process down</span>
+                    </span>
+                    {#                    </div>#}
+                    {#                    <div class="">#}
+                    <span :class="beat ? 'text-green-600' : 'text-red-600'">
+                        <span :class="flash ? 'text-orange-200' : beat ? 'text-green-600' : 'text-red-600'">●</span>
+                        <span class="font-semibold" x-show="beat">Scheduler running</span>
+                        <span class="font-semibold" x-show="!beat">Scheduler down</span>
+                        <span x-show="!beat">last seen on <span x-text="beatLastUpdate"></span></span>
+                    </span>
+                    {#                    </div>#}
+                </div>
+                <div class="border-b-1 border-default mb-3">
+                    <ul class="flex flex-wrap text-sm font-medium text-center text-body  -mb-px">
+                        <li class="me-2" x-bind:class="(tabWorker && 'text-red-500 border-b-red-500 border-b-2') || 'border-none'">
+                            <a @click="tabWorker = true; tabTasks = false;"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Workers</a>
+                        </li>
+                        <li class="me-2" x-bind:class="(tabTasks && 'text-red-500 border-b-red-500 border-b-2') || 'border-none'">
+                            <a @click="tabTasks = true; tabWorker = false;"
+                               class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Tasks</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="block" x-show="tabTasks">
+                    <div class="grid grid-cols-2">
+                        {% for task_name, last_run in tasks %}
+                            <div class="p-1">
+                                {{ task_name }}
+                            </div>
+                            <div class="p-1">
+                                {% user_datetime last_run %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="block" x-show="alive && tabWorker">
+                    <template x-for="(workerData, workerName) in tasksMap" :key="workerName">
+                        <div class="block mb-2">
+                            <div class="flex mb-3">
+                                <div class="font-bold mr-5" x-text="workerName">
+                                </div>
+                                <div class="text-sm text-gray-500" x-text="'Last seen: ' + workerData.last_seen">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2 font-semibold text-sm text-gray-600 border-b pb-1">
+                                <div>
+                                    ID
+                                </div>
+                                <div>
+                                    Name
+                                </div>
+                                <div>
+                                    Running from
+                                </div>
+                                <div>
+                                    Enqueued from
+                                </div>
+                            </div>
+                            <template x-if="!workerData.tasks || workerData.tasks.length === 0">
+                                <div class="ml-4 italic text-gray-500">
+                                    No active tasks
+                                </div>
+                            </template>
+                            <template x-for="task in workerData.tasks" :key="task.id">
+                                <div class="grid grid-cols-4 grid-cols-[auto_1fr]">
+                                    <div class="shrink-0" x-text="task.id">
+                                    </div>
+                                    <div class="" x-text="task.name">
+                                    </div>
+                                    <div class="" x-text="runningFrom(task.started_at)">
+                                    </div>
+                                    <div class="" x-text="runningFrom(task.enqueued_at)">
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

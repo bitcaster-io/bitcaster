@@ -1,0 +1,17 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% get_language_info_list for LANGUAGES as languages %}
+{% if show_languages %}
+    {% if languages_list %}
+        {% for language in languages_list %}
+            {% include "unfold/helpers/language_form.html" with language=language %}
+        {% endfor %}
+    {% else %}
+        {% for language in languages %}
+            {% include "unfold/helpers/language_form.html" with language=language %}
+        {% endfor %}
+    {% endif %}
+    <div class="border-t border-base-200 mt-1 pt-1 dark:border-base-700">
+    </div>
+{% endif %}

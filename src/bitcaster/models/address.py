@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Mapping
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.functional import cached_property
+from django.utils.translation import gettext as _
 
 from ..constants import AddressType
 from ..dispatchers.base import MessageProtocol
@@ -48,11 +49,15 @@ PROTOCOL_TO_ADDRESS = {
 
 class Address(BitcasterBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
-    name = models.CharField(max_length=255, help_text="Label or mnemonic name for this address")
+    name = models.CharField(verbose_name=_("name"), max_length=255, help_text="Label or mnemonic name for this address")
     type = models.CharField(
-        max_length=10, choices=AddressType.choices, default=AddressType.GENERIC, help_text="Type of address"
+        verbose_name=_("type"),
+        max_length=10,
+        choices=AddressType.choices,
+        default=AddressType.GENERIC,
+        help_text="Type of address",
     )
-    value = models.CharField(max_length=255, help_text="Specific address value.")
+    value = models.CharField(verbose_name=_("value"), max_length=255, help_text="Specific address value.")
     assignments: "QuerySet[Assignment]"
 
     objects = AddressManager()

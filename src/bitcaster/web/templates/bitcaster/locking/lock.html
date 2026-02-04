@@ -16,7 +16,7 @@
     {% block instructions %}
     {% endblock instructions %}
     <br />
-    <form action="" method="post" id="locking">
+    <form action="" method="post" id="lock-form">
         {% csrf_token %}
         {{ wizard.management_form }}
         {% block form_content %}

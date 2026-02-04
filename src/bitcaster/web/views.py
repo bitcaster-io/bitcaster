@@ -1,11 +1,9 @@
 import mimetypes
 import posixpath
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import Any
 
 from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.http import (
     FileResponse,
@@ -14,20 +12,26 @@ from django.http import (
     HttpResponse,
     HttpResponseNotModified,
 )
-from django.template.response import TemplateResponse
-from django.urls import reverse_lazy
 from django.utils._os import safe_join
 from django.utils.http import http_date
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views import View
+from django.views.generic.base import ContextMixin, TemplateView
 from django.views.static import directory_index, was_modified_since
-
-if TYPE_CHECKING:
-    from django.forms import Form
+from unfold.sites import UnfoldAdminSite
 
 
-def index(request: "HttpRequest") -> TemplateResponse:
-    return TemplateResponse(request, "bitcaster/index.html", {})
+class UnfoldViewMixin(UnfoldAdminSite, ContextMixin):
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        ctx = super().get_context_data(**kwargs)
+        ctx.update(
+            colors=self._get_colors("COLORS", self.request),
+        )
+        return ctx
+
+
+class IndexView(UnfoldViewMixin, TemplateView):
+    template_name = "bitcaster/index.html"
 
 
 class LogoutView(BaseLogoutView):
@@ -59,14 +63,3 @@ class MediaView(View):
         response = FileResponse(fullpath.open("rb"), content_type=content_type)
         response.headers["Last-Modified"] = http_date(statobj.st_mtime)
         return response
-
-
-class LoginView(BaseLoginView):
-    redirect_authenticated_user = True
-
-    def get_success_url(self) -> str:
-        return reverse_lazy("home")
-
-    def form_invalid(self, form: "Form") -> HttpResponse:
-        messages.error(self.request, "Invalid username or password")
-        return self.render_to_response(self.get_context_data(form=form))

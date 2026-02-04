@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, TypedDict
 
 import pytest
 from django.urls import reverse
-from testutils.factories import AddressFactory, AssignmentFactory
 from testutils.helpers import assert_form_error, assert_message, get_resource
 from webtest import Upload
 
@@ -21,7 +20,13 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def context(system_objects) -> "Context":
-    from testutils.factories import ChannelFactory, MemberFactory, OrganizationFactory
+    from testutils.factories import (
+        AddressFactory,
+        AssignmentFactory,
+        ChannelFactory,
+        MemberFactory,
+        OrganizationFactory,
+    )
 
     org: "Organization" = OrganizationFactory()
     ch: "Channel" = ChannelFactory(organization=org)
@@ -42,11 +47,10 @@ def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") ->
     return django_app
 
 
-def test_member_add(app: "DjangoTestApp"):
-    url = reverse("admin:bitcaster_member_add")
+def test_member_add(app: "DjangoTestApp", context: "Context"):
+    member = context["members"][0]
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
     res = app.get(url)
-    res.forms["member_form"]["username"] = "user__test1"
-    res.forms["member_form"]["email"] = "user@email.com"
     res.forms["member_form"]["custom_fields"] = "{}"
     res = res.forms["member_form"].submit()
     assert res.status_code == 302, res.context["form"].errors
@@ -56,8 +60,6 @@ def test_member_add(app: "DjangoTestApp"):
 def test_member_check_custom_fields(app: "DjangoTestApp", value, expected) -> None:
     url = reverse("admin:bitcaster_member_add")
     res = app.get(url)
-    res.forms["member_form"]["username"] = "user__test1"
-    res.forms["member_form"]["email"] = "user@email.com"
     res.forms["member_form"]["custom_fields"] = value
     res = res.forms["member_form"].submit("apply")
     assert res.status_code == 200
@@ -65,6 +67,8 @@ def test_member_check_custom_fields(app: "DjangoTestApp", value, expected) -> No
 
 
 def test_add_to_distributionlist(app: "DjangoTestApp", distributionlist: "DistributionList") -> None:
+    from testutils.factories import AssignmentFactory
+
     AssignmentFactory.create_batch(5)
     url = reverse("admin:bitcaster_member_changelist")
     res = app.get(url)
@@ -103,7 +107,7 @@ def test_update_custom_fields(app: "DjangoTestApp", context: "Context", mode) ->
     assert_message(res, "Record successfully updated")
 
 
-def test_import_members_ui(app: "DjangoTestApp") -> None:
+def test_import_members_ui(app: "DjangoTestApp", local_organization) -> None:
     url = reverse("admin:bitcaster_member_changelist")
     res = app.get(url)
     res = res.click("Import Members")

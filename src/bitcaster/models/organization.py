@@ -3,14 +3,14 @@ from typing import TYPE_CHECKING, Any
 
 from django.db import models
 from django.db.models import QuerySet
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from ..constants import bitcaster
 from .mixins import BitcasterBaseModel, BitcasterBaselManager, SlugMixin
 from .user import User
 
 if TYPE_CHECKING:
-    from bitcaster.models import Channel, Message
+    from bitcaster.models import Channel, Group, MessageTemplate, UserRole
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +46,16 @@ class Organization(SlugMixin, BitcasterBaseModel):
             models.UniqueConstraint(fields=("slug", "owner"), name="owner_slug_unique"),
         ]
 
+    def enroll_users(self, queryset: "QuerySet[User]", group: "Group | None" = None) -> "list[UserRole]":
+        from bitcaster.models import UserRole
+
+        grp = group or bitcaster.get_default_group()
+        enrolled = [
+            UserRole(user=u, organization=bitcaster.local_organization, group=grp)
+            for u in queryset.exclude(username__in=[bitcaster.SYSTEM_USER])
+        ]
+        return UserRole.objects.bulk_create(enrolled, ignore_conflicts=True)
+
     @property
     def users(self) -> QuerySet["User"]:
         return User.objects.filter(roles__organization=self)
@@ -53,8 +63,10 @@ class Organization(SlugMixin, BitcasterBaseModel):
     def natural_key(self) -> tuple[str]:
         return (self.slug,)
 
-    def create_message(self, name: str, channel: "Channel", defaults: "dict[str, Any] | None" = None) -> "Message":
-        return self.message_set.get_or_create(
+    def create_message(
+        self, name: str, channel: "Channel", defaults: "dict[str, Any] | None" = None
+    ) -> "MessageTemplate":
+        return self.messagetemplate_set.get_or_create(
             name=name,
             channel=channel,
             notification=None,

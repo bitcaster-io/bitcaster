@@ -1,6 +1,6 @@
 import uuid
 from typing import TYPE_CHECKING, Any, TypedDict
-from unittest.mock import Mock
+from unittest import mock
 
 import pytest
 from rest_framework import status
@@ -9,7 +9,7 @@ from testutils.perms import key_grants, lock
 
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import SystemEvent
-from bitcaster.tasks import process_occurrence
+from bitcaster.runner.tasks import process_occurrence
 
 if TYPE_CHECKING:
     from bitcaster.models import (
@@ -31,6 +31,7 @@ if TYPE_CHECKING:
             "key": ApiKey,
             "user": User,
             "channel": Channel,
+            "assignments": list[Assignment],
             "notification": Notification,
             "url": str,
         },
@@ -58,15 +59,47 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
     )
 
     event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
-    n = NotificationFactory(
-        distribution__recipients=[AssignmentFactory(channel=email_channel) for __ in range(4)], event=event
-    )
+    assignments = [AssignmentFactory(channel=email_channel) for __ in range(4)]
+
+    n = NotificationFactory(distribution__recipients=assignments, event=event)
 
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     return {
         "event": event,
         "key": key,
         "user": admin_user,
+        "channel": email_channel,
+        "notification": n,
+        "assignments": assignments,
+        "url": "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
+            event.application.project.organization.slug,
+            event.application.project.slug,
+            event.application.slug,
+            event.slug,
+        ),
+    }
+
+
+@pytest.fixture
+def data_dynamic(admin_user: "User", email_channel: "Channel") -> "Context":
+    from testutils.factories import (
+        ApiKeyFactory,
+        AssignmentFactory,
+        EventFactory,
+        MessageFactory,
+        NotificationFactory,
+    )
+
+    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
+    assignments = [AssignmentFactory(channel=email_channel) for __ in range(4)]
+    n = NotificationFactory(distribution=None, external_filtering=True, event=event)
+
+    key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
+    return {
+        "event": event,
+        "key": key,
+        "user": admin_user,
+        "assignments": assignments,
         "channel": email_channel,
         "notification": n,
         "url": "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
@@ -197,6 +230,8 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
     event = data["event"]
     url: str = data["url"]
     n: "Notification" = event.notifications.first()
+    ch: "Channel" = data["channel"]
+    msg = n.get_message(ch.pk)
     recipients: list[Assignment] = list(n.distribution.recipients.all())
     target: Assignment = recipients[0]
     client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
@@ -212,14 +247,19 @@ def test_trigger_limit_to_receiver(client: APIClient, data: "Context", monkeypat
         assert res.status_code == status.HTTP_201_CREATED, res.json()
         assert res.data["occurrence"]
         o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
-
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
     assert o.options == {"limit_to": [target.address.value]}
-
-    delivered = process_occurrence(o.pk)
+    with mock.patch("bitcaster.models.notification.Notification.notify_to_channel", return_value=[None, msg.pk]):
+        delivered = process_occurrence(o.pk, True)
     assert delivered == 1
     o.refresh_from_db()
-    assert o.data == {"delivered": [target.pk], "recipients": [[target.address.value, target.channel.name]]}
+    assert o.data == {
+        "delivered": [target.pk],
+        "recipients": [[target.address.value, target.channel.name, target.pk, target.channel.pk, n.pk, msg.pk]],
+        "errors": [],
+        "messages": [msg.pk],
+        "notifications": [data["notification"].pk],
+        "channels": [data["channel"].pk],
+    }
 
 
 def test_trigger_limit_by_channel(client: APIClient, data: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
@@ -229,6 +269,9 @@ def test_trigger_limit_by_channel(client: APIClient, data: "Context", monkeypatc
     event = data["event"]
     url: str = data["url"]
     n: "Notification" = event.notifications.first()
+    ch: "Channel" = data["channel"]
+    msg = n.get_message(ch.pk)
+
     recipients: list[Assignment] = list(n.distribution.recipients.all())
     target: Assignment = recipients[0]
     client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
@@ -245,9 +288,9 @@ def test_trigger_limit_by_channel(client: APIClient, data: "Context", monkeypatc
         assert res.data["occurrence"]
         o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
 
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
     assert o.options == {"channels": [str(target.channel.id)]}
-    process_occurrence(o.pk)
+    with mock.patch("bitcaster.models.notification.Notification.notify_to_channel", return_value=[None, msg.pk]):
+        process_occurrence(o.pk)
     o.refresh_from_db()
     assert list({x[1] for x in o.data["recipients"]})[0] == target.channel.name
 
@@ -274,10 +317,9 @@ def test_trigger_limit_to_with_wrong_receiver(
         assert res.data["occurrence"]
         o: "Occurrence" = Occurrence.objects.get(pk=res.data["occurrence"])
 
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
     assert o.options == {"limit_to": ["invalid-address"]}
-
-    delivered = process_occurrence(o.pk)
+    with mock.patch("bitcaster.models.notification.Notification.notify_to_channel", return_value=[None, None]):
+        delivered = process_occurrence(o.pk, True)
     assert delivered == 0
     assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
 
@@ -314,7 +356,9 @@ def test_trigger_selected_environment(
 
     from bitcaster.models import Occurrence
 
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
+    monkeypatch.setattr(
+        "bitcaster.models.notification.Notification.notify_to_channel", lambda *args, **kwargs: (None, None)
+    )
     NotificationFactory(
         environments=["develop"],
         distribution__recipients=[AssignmentFactory(channel=data["channel"]) for __ in range(3)],
@@ -328,17 +372,17 @@ def test_trigger_selected_environment(
     with key_grants(api_key, Grant.EVENT_TRIGGER):
         res = client.post(url, data={"context": {}}, format="json")
         o = Occurrence.objects.get(pk=res.data["occurrence"])
-        delivered = process_occurrence(o.pk)
+        delivered = process_occurrence(o.pk, True)
         assert delivered == 7
 
         res = client.post(url, data={"context": {}, "options": {"environs": ["develop"]}}, format="json")
         o = Occurrence.objects.get(pk=res.data["occurrence"])
-        delivered = process_occurrence(o.pk)
+        delivered = process_occurrence(o.pk, True)
         assert delivered == 3
         # silent event because missing env
         res = client.post(url, data={"context": {}, "options": {"environs": ["missing"]}}, format="json")
         o = Occurrence.objects.get(pk=res.data["occurrence"])
-        delivered = process_occurrence(o.pk)
+        delivered = process_occurrence(o.pk, True)
         assert delivered == 0
         assert Occurrence.objects.system(event__name=SystemEvent.OCCURRENCE_SILENCE.value).count() == 1
 
@@ -350,7 +394,9 @@ def test_trigger_environment_by_key(
 
     from bitcaster.models import Occurrence
 
-    monkeypatch.setattr("bitcaster.models.notification.Notification.notify_to_channel", Mock())
+    monkeypatch.setattr(
+        "bitcaster.models.notification.Notification.notify_to_channel", lambda *args, **kwargs: (None, None)
+    )
     NotificationFactory(
         environments=["develop"],
         distribution__recipients=[AssignmentFactory(channel=data["channel"]) for __ in range(3)],
@@ -364,12 +410,12 @@ def test_trigger_environment_by_key(
     with key_grants(api_key, Grant.EVENT_TRIGGER, environments=["develop"]):
         res = client.post(url, data={"context": {}}, format="json")
         o = Occurrence.objects.get(pk=res.data["occurrence"])
-        delivered = process_occurrence(o.pk)
+        delivered = process_occurrence(o.pk, True)
     assert delivered == 3
 
     res = client.post(url, data={"context": {}, "options": {"environs": ["develop"]}}, format="json")
     o = Occurrence.objects.get(pk=res.data["occurrence"])
-    delivered = process_occurrence(o.pk)
+    delivered = process_occurrence(o.pk, True)
     assert delivered == 3
 
 
@@ -426,3 +472,30 @@ def test_trigger_locked_event(
             res = client.post(url, data={"context": {}, "options": {}}, format="json")
             assert res.status_code == status.HTTP_400_BAD_REQUEST, res.json()
             assert res.json() == {"error": "Unable to process this event. Event locked"}
+
+
+def test_trigger_external_filtering(client: APIClient, data_dynamic: "Context") -> None:
+    from bitcaster.models import Occurrence
+
+    api_key = data_dynamic["key"]
+    url: str = data_dynamic["url"]
+    addresses = [a.address.value for a in data_dynamic["assignments"]]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.post(
+            url,
+            data={
+                "context": {},
+                "options": {"filters": {"include": [{"addresses__value__in": addresses}], "exclude": []}},
+            },
+            format="json",
+        )
+        assert res.status_code == status.HTTP_201_CREATED, res.json()
+        assert res.data["occurrence"]
+        o = Occurrence.objects.get(pk=res.data["occurrence"])
+        with mock.patch("bitcaster.dispatchers.gmail.GMailDispatcher.send"):
+            num_sent = o.process()
+    assert num_sent == 4
+    o.refresh_from_db()
+    assert o.recipients == 4

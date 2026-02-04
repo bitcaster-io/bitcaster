@@ -6,27 +6,13 @@ export UWSGI_PROCESSES="${UWSGI_PROCESSES:-"4"}"
 export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-"bitcaster.config.settings"}"
 mkdir -p "${MEDIA_ROOT}" "${STATIC_ROOT}" || echo "Cannot create dirs ${MEDIA_ROOT} ${STATIC_ROOT}"
 
-echo $STATIC_ROOT
-echo $MEDIA_ROOT
 
 case "$1" in
-    upgrade)
-      django-admin check --deploy
-      django-admin upgrade
-      ;;
-    config)
-      echo "CMD $@"
-      django-admin env
-      exit 0
-      ;;
-    flower)
-      celery -A bitcaster.config.celery flower
-      ;;
     worker)
-      celery -A bitcaster.config.celery worker -E --loglevel=ERROR --concurrency=4
+      bc run
       ;;
-    beat)
-      celery -A bitcaster.config.celery beat --loglevel=ERROR --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    scheduler)
+      bc scheduler
       ;;
     run)
       django-admin check --deploy

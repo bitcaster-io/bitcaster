@@ -39,7 +39,7 @@ repos:
           - --check
 
   - repo: https://github.com/saxix/pch
-    rev: '0.2'
+    rev: '0.6'
     hooks:
       - id: check-missed-migrations
         args:
@@ -55,7 +55,29 @@ repos:
 
       - id: check-tailwind
         name: check tailwind CSS ready for production
-        files: src/bitcaster/web/theme/static_src/src/unfold_ext.scss
+        files: src/bitcaster/web/theme/static_src/src/.*\.scss
         args:
-          - -o
-          - src/bitcaster/web/static/css/unfold_ext.css
+          - -d
+          - src/bitcaster/web/static/css/
+
+      -   id: check-minimized
+          name: check missing minimized javascript
+          files: (\.js)$
+          exclude: (\.min\.js)$
+          args:
+            - -i
+            - "docs/*"
+            - -i
+            - "@node_modules/.*"
+            - -i
+            - '@.*postcss\.config\.js'
+            - -i
+            - '@.*tailwind\.config\.js'
+
+      - id: check-forbidden
+        name: check pyproject to avoid editable sources/deps
+        files: pyproject.toml
+        language: python
+        args:
+          - -p
+          - /\[tool\.uv\.sources\]\s/s

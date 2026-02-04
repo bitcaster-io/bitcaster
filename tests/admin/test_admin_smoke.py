@@ -10,7 +10,6 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django_regex.utils import RegexList as _RegexList
 from pytest_django.fixtures import SettingsWrapper
-from testutils.factories import SuperUserFactory
 
 if TYPE_CHECKING:
     from admin_extra_buttons.mixins import ExtraButtonsMixin
@@ -33,10 +32,10 @@ class RegexList(_RegexList):  # type: ignore[misc]
 
 GLOBAL_EXCLUDED_MODELS = RegexList(
     [
-        r"django_celery_beat\.ClockedSchedule",
         r"contenttypes\.ContentType",
         r"webpush\.BrowserAdmin",
-        "bitcaster.Member",
+        r"bitcaster\.Member",
+        r"bitcaster\.Task",
         "authtoken",
         "social_django",
         "depot",
@@ -136,6 +135,8 @@ def record(db: Any, request: pytest.FixtureRequest) -> Model:
 def app(
     django_app_factory: "MixinWithInstanceVariables", mocked_responses: "RequestsMock", settings: SettingsWrapper
 ) -> "DjangoTestApp":
+    from testutils.factories import SuperUserFactory
+
     settings.FLAGS = {"OLD_STYLE_UI": [("boolean", True)]}
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")

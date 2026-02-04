@@ -1,0 +1,27 @@
+{% extends 'dashboards/_base.html' %}
+{% load i18n unfold %}
+{% block content %}
+    {% component "unfold/components/container.html" %}
+    <div class="flex flex-col gap-4">
+        {% component "unfold/components/chart/bar.html" with component_class="CurrentChartComponent" %}{% endcomponent %}
+    </div>
+    <div class="flex flex-col gap-4">
+        {% component "unfold/components/chart/bar.html" with component_class="OccurrenceChartComponent" %}{% endcomponent %}
+    </div>
+    <div class="grid grid-cols-4">
+        {% for card in cards %}
+            {% component "unfold/components/card.html" %}
+            {% component "unfold/components/text.html" %}
+            {{ card.title }}
+        {% endcomponent %}
+        {% component "unfold/components/title.html" %}
+        {{ card.metric }}
+    {% endcomponent %}
+{% endcomponent %}
+{% endfor %}
+</div>
+<div class="w-full">
+    {% component "unfold/components/tracker.html" with component_class="ErrorTrackerComponent" %}{% endcomponent %}
+</div>
+{% endcomponent %}
+{% endblock %}

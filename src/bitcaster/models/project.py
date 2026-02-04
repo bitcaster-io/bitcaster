@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from ..constants import bitcaster
 from .mixins import BitcasterBaseModel, BitcasterBaselManager, LockMixin, SlugMixin
@@ -13,7 +13,7 @@ from .user import User
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from bitcaster.models import Message
+    from bitcaster.models import MessageTemplate
 
     from .channel import Channel
 
@@ -55,6 +55,9 @@ class Project(SlugMixin, LockMixin, BitcasterBaseModel):
             ("organization", "slug"),
         )
 
+    def can_be_locked(self) -> bool:
+        return self.organization.name != bitcaster.ORGANIZATION
+
     def natural_key(self) -> tuple[str, str]:
         return self.slug, *self.organization.natural_key()
 
@@ -65,8 +68,10 @@ class Project(SlugMixin, LockMixin, BitcasterBaseModel):
             self.owner = self.organization.owner
         super().save(*args, **kwargs)
 
-    def create_message(self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None) -> "Message":
-        return self.message_set.get_or_create(
+    def create_message(
+        self, name: str, channel: "Channel", defaults: dict[str, Any] | None = None
+    ) -> "MessageTemplate":
+        return self.messagetemplate_set.get_or_create(
             name=name,
             channel=channel,
             notification=None,

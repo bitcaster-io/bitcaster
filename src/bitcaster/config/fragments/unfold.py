@@ -11,19 +11,21 @@ if TYPE_CHECKING:
 # see https://fonts.google.com/icons?icon.query=docs for icons
 COMMON_SITE_DROPDOWN = [
     {
+        "icon": "inbox",
+        "title": "Console",
+        "link": "/console/",
+    },
+    {
+        "icon": "home",
+        "title": "Dashboard",
+        "link": "/admin/",
+    },
+    {
         "icon": "webhook",
         "title": "API",
         "link": "/api/",
         "attrs": {
             "target": "_api",
-        },
-    },
-    {
-        "icon": "commit",
-        "title": "GitHub",
-        "link": "https://github.com/bitcaster-io/bitcaster",
-        "attrs": {
-            "target": "_blank",
         },
     },
     {
@@ -34,13 +36,30 @@ COMMON_SITE_DROPDOWN = [
             "target": "_docs",
         },
     },
+    {
+        "icon": "commit",
+        "title": "GitHub",
+        "link": "https://github.com/bitcaster-io/bitcaster",
+        "attrs": {
+            "target": "_blank",
+        },
+    },
 ]
 
 COMMON = {
+    "LANGUAGES": {
+        "navigation": [
+            {"code": "en", "name_local": "English"},
+            {"code": "es", "name_local": "Español"},
+            {"code": "it", "name_local": "Italiano"},
+        ],
+    },
     "LOGIN": {
-        "image": lambda request: static("bitcaster/images/logos/logo400.png"),
+        "image": lambda request: static("bitcaster/images/logos/bitcaster.svg"),
         "redirect_after": lambda request: reverse_lazy("admin:index"),
     },
+    "SHOW_LANGUAGES": True,
+    "DASHBOARD_CALLBACK": "bitcaster.web.dashboard.home.callback.dashboard_callback",
     "ENVIRONMENT": "bitcaster.config.fragments.unfold.environment_callback",  # environment name in header
     "SHOW_HISTORY": True,
     "SITE_TITLE": "Bitcaster: ",
@@ -94,7 +113,7 @@ COMMON = {
         },
     },
     "STYLES": [
-        "/static/css/unfold_ext.css",
+        lambda *a: static("css/admin_ext.css"),
     ],
     "BORDER_RADIUS": "6px",
 }
@@ -126,6 +145,16 @@ UNFOLD = {
                         "icon": "person",
                         "link": reverse_lazy("admin:bitcaster_member_changelist"),
                     },
+                    {
+                        "title": _("Stream"),
+                        "icon": "call_log",
+                        "link": reverse_lazy("admin:bitcaster_logmessage_changelist"),
+                    },
+                    {
+                        "title": _("Messages"),
+                        "icon": "inbox_text_person",
+                        "link": reverse_lazy("admin:bitcaster_usermessage_changelist"),
+                    },
                 ],
             },
             {
@@ -156,7 +185,7 @@ UNFOLD = {
                     {
                         "title": _("Message Templates"),
                         "icon": "article",
-                        "link": reverse_lazy("admin:bitcaster_message_changelist"),
+                        "link": reverse_lazy("admin:bitcaster_messagetemplate_changelist"),
                     },
                 ],
             },
@@ -166,14 +195,24 @@ UNFOLD = {
                 "collapsible": False,  # Collapsible group of links
                 "items": [
                     {
+                        "title": _("Channels"),
+                        "icon": "business_messages",
+                        "link": reverse_lazy("admin:bitcaster_channel_changelist"),
+                    },
+                    {
                         "title": _("Applications"),
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_application_changelist"),
                     },
                     {
-                        "title": _("Channels"),
-                        "icon": "business_messages",
-                        "link": reverse_lazy("admin:bitcaster_channel_changelist"),
+                        "title": _("Projects"),
+                        "icon": "view_apps",
+                        "link": reverse_lazy("admin:bitcaster_project_changelist"),
+                    },
+                    {
+                        "title": _("Organization"),
+                        "icon": "view_apps",
+                        "link": reverse_lazy("admin:bitcaster_organization_changelist"),
                     },
                 ],
             },
@@ -197,7 +236,7 @@ UNFOLD = {
                     {
                         "title": _("Groups"),
                         "icon": "group",
-                        "link": reverse_lazy("admin:auth_group_changelist"),
+                        "link": reverse_lazy("admin:bitcaster_group_changelist"),
                         "permission": lambda request: request.user.is_superuser,
                     },
                     {
@@ -205,6 +244,16 @@ UNFOLD = {
                         "icon": "key",
                         "link": reverse_lazy("admin:bitcaster_apikey_changelist"),
                         "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("System Log"),
+                        "icon": "data_alert",
+                        "link": reverse_lazy("admin:bitcaster_logentry_changelist"),
+                    },
+                    {
+                        "title": _("SSO Providers"),
+                        "icon": "captive_portal",
+                        "link": reverse_lazy("admin:social_socialprovider_changelist"),
                     },
                 ],
             },

@@ -1,0 +1,43 @@
+{% extends "bitcaster/base.html" %}
+{% load feature_flags i18n static user %}
+{% block base %}
+    {% block header %}
+        <div class="flex h-16 p-3 mb-5 border-b border-base-200">
+            <div class="inline-flex grow items-center">
+                <img class="align-middle h-10 mr-2" src="{% static "bitcaster/images/logos/logo48.png" %}" />
+                <template x-if="adminTheme === 'dark'">
+                    <img class="align-middle h-8" src="{% static "bitcaster/images/logos/name_white.svg" %}" />
+                </template>
+                <template x-if="adminTheme !== 'dark'">
+                    <img class="align-middle h-8" src="{% static "bitcaster/images/logos/name.svg" %}" />
+                </template>
+            </div>
+            <div class="mx-3 text-2xl flex items-center gap-3">
+                <a href="{% url "home" %}"
+                   class="text-font-default-light dark:text-font-default-dark hover:text-primary-600 dark:hover:text-primary-500">
+                    <span class="material-symbols-outlined text-3xl" x-show="this.adminTheme !== 'dark'">home</span>
+                    <span class="material-symbols-outlined text-3xl text-white" x-show="this.adminTheme === 'dark'">home</span>
+                </a>
+                <a href="{% url "console:index" %}"
+                   class="text-font-default-light dark:text-font-default-dark hover:text-primary-600 dark:hover:text-primary-500">
+                    <span class="material-symbols-outlined text-3xl" x-show="this.adminTheme !== 'dark'">list</span>
+                    <span class="material-symbols-outlined text-3xl text-white" x-show="this.adminTheme === 'dark'">list</span>
+                </a>
+                <a href="{% url "console:prefs" %}"
+                   class="text-font-default-light dark:text-font-default-dark hover:text-primary-600 dark:hover:text-primary-500">
+                    <span class="material-symbols-outlined text-3xl" x-show="this.adminTheme !== 'dark'">account_circle</span>
+                    <span class="material-symbols-outlined text-3xl text-white" x-show="this.adminTheme === 'dark'">account_circle</span>
+                </a>
+                <button x-on:click="adminTheme == 'dark' ? adminTheme='light' : adminTheme='dark'"
+                        class="mr-4 text-font-default-light dark:text-font-default-dark hover:text-primary-600 dark:hover:text-primary-500 cursor-pointer focus:outline-none">
+                    <span class="material-symbols-outlined" x-show="this.adminTheme !== 'dark'">light_mode</span>
+                    <span class="material-symbols-outlined text-white" x-show="this.adminTheme === 'dark'">dark_mode</span>
+                </button>
+            </div>
+        </div>
+    {% endblock %}
+    <div class="container mx-auto px-4 grow">
+        {% block content %}
+        {% endblock %}
+    </div>
+{% endblock %}

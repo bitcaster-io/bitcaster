@@ -1,0 +1,17 @@
+{% extends "bitcaster/console/base.html" %}
+{% load feature_flags i18n static user %}
+{% block content %}
+    <div class="p-5 text-xl">
+        <div class="p-2">
+            Date: {% user_datetime object.created %}
+        </div>
+        <div class="p-2 border border-gray-500 rounded mb-2 dark:text-white  text-black">
+            {{ object.subject }}
+        </div>
+        <div class="p-2 border border-gray-500 rounded dark:text-white text-black">
+            {{ object.message|safe }}
+        </div>
+    </div>
+    <a class="bg-primary-600 text-white w-full lg:w-auto p-3 rounded" href="..">{% trans 'Back' %}
+    </a>
+{% endblock %}

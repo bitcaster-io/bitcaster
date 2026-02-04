@@ -12,17 +12,17 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from jsoneditor.forms import JSONEditor
 from unfold.admin import TabularInline
 from unfold.contrib.inlines.admin import NonrelatedTabularInline
 from unfold.decorators import action
 
 from bitcaster.constants import Bitcaster, bitcaster
+from bitcaster.forms import unfold as uwidgets
 from bitcaster.forms.user import GenericActionForm, SelectDistributionForm
 from bitcaster.models import Address, Assignment, DistributionList, Group, LogEntry, Member, User
 from bitcaster.utils.json import process_dict
-from bitcaster.web import widgets
 
 from ..importing.members import import_members_csv
 from .base import BaseAdmin, BitcasterModelAdmin
@@ -110,7 +110,7 @@ class CustomFieldForm(GenericActionForm):
             "jsonScalar": {"oneOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"}, {"type": "null"}]},
         },
     }
-    mode = forms.ChoiceField(choices=JsonUpdateMode2.choices, widget=widgets.UnfoldAdminSelectWidget)
+    mode = forms.ChoiceField(choices=JsonUpdateMode2.choices, widget=uwidgets.UnfoldAdminSelectWidget)
     custom_fields = forms.CharField(widget=JSONEditor(jsonschema=schema), required=False)
 
     def clean_custom_fields(self):
@@ -129,17 +129,27 @@ class MemberForm(forms.ModelForm):
 
 
 class ImportForm(forms.Form):
-    file = forms.FileField(widget=widgets.UnfoldAdminFileFieldWidget)
-    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, widget=widgets.UnfoldAdminSelectWidget)
+    file = forms.FileField(widget=uwidgets.UnfoldAdminFileFieldWidget)
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, widget=uwidgets.UnfoldAdminSelectWidget)
 
 
 class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     list_display = ("username", "first_name", "last_name", "email")
-    fields = ("username", "first_name", "last_name", "email", "custom_fields")
     list_filter = (("custom_fields", JsonFieldFilter.factory()),)
     inlines = [AddressInline, AssignmentInline, ListsInline]
     actions = ["update_custom_fields", "add_to_distributionlist"]
+    search_fields = ("username", "first_name", "last_name", "email")
     form = MemberForm
+    fieldsets = (
+        (_("Personal info"), {"classes": ["tab"], "fields": ("first_name", "last_name", "email")}),
+        (_("Account"), {"classes": ["tab"], "fields": ("username",)}),
+        (_("Important dates"), {"classes": ["tab"], "fields": ("last_login", "date_joined")}),
+        (_("Options"), {"classes": ["tab"], "fields": ("timezone", "date_time_format", "date_format")}),
+        (_("Extended"), {"classes": ["tab"], "fields": ("custom_fields",)}),
+    )
+
+    def get_readonly_fields(self, request: "HttpRequest", obj: "User|None" = None) -> list[str]:
+        return ["username", "email", "last_login", "date_joined"]
 
     def add_to_distributionlist(self, request: "HttpRequest", queryset: "QuerySet[User]") -> "HttpResponse":
         ctx = self.get_common_context(request, title=_("Add to Distribution List"))
@@ -215,6 +225,4 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
         return render(request, "bitcaster/admin/user/update_custom_fields.html", ctx)
 
     def get_queryset(self, request):
-        return Member.objects.exclude(Q(username=Bitcaster.SYSTEM_USER) | Q(is_staff=True, is_superuser=True)).order_by(
-            "username"
-        )
+        return Member.objects.exclude(Q(username=Bitcaster.SYSTEM_USER)).order_by("username")

@@ -1,18 +1,16 @@
 from django import forms
-from django.contrib import admin
+from unfold.widgets import UnfoldAdminSelectWidget
 
-from bitcaster.models import Address, User
+from bitcaster.models import Address, Channel
 
-from .widgets import AutocompletSelectEnh
+from .actions import GenericActionForm
+
+
+class AssignToChannelForm(GenericActionForm):
+    channel = forms.ModelChoiceField(queryset=Channel.objects.all(), widget=UnfoldAdminSelectWidget)
 
 
 class AddressForm(forms.ModelForm["Address"]):
-    user = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        required=True,
-        widget=AutocompletSelectEnh(Address._meta.get_field("user"), admin.site),
-    )
-
     class Meta:
         model = Address
         fields = ("user", "name", "type", "value")

@@ -1,18 +1,15 @@
-{% extends "admin_extra_buttons/action_page.html" %}
+{% extends "bitcaster/admin/action_form.html" %}
 {% load i18n static usage %}
 {% block content %}
+    <h1 class="text-xl font-medium">
+        {{ original }}
+    </h1>
     <div class="grid grid-cols-2 gap-4 p-2 mb-4">
-        <div>
-            Message
-        </div>
-        <div>
-            {{ original }}
-        </div>
         <div>
             Channel
         </div>
         <div>
-            {{ original.channel }}
+            <a class="link" href="{% url 'admin:bitcaster_channel_change' original.channel.pk %}">{{ original.channel }}</a>
         </div>
         <div>
             Dispatcher
@@ -38,26 +35,25 @@
             {% endfor %}
         </div>
     </div>
-    <div class="module">
-        <div class="grid grid-cols-3 gap-4 p-2 mb-4">
-            <div>
+    <div class="module usage">
+        <div class="grid grid-cols-3 p-2 mb-4">
+            <div class="font-bold border-b-2 p-2">
                 Used By
             </div>
-            <div>
-                Type
+            <div class="font-bold border-b-2 p-2">
             </div>
-            <div>
+            <div class="font-bold border-b-2 p-2">
                 Id
             </div>
             {% for utilizer in usage %}
                 {% usage utilizer as info %}
-                <div>
-                    <a class="link" href="{{ info.url }}">{{ utilizer }}</a>
-                </div>
-                <div>
+                <div class="p-2">
                     {{ info.type }}
                 </div>
-                <div>
+                <div class="p-2">
+                    <a class="link" href="{{ info.url }}">{{ utilizer }}</a>
+                </div>
+                <div class="p-2">
                     {{ utilizer.pk }}
                 </div>
             {% endfor %}

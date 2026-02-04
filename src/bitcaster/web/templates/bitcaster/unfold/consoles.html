@@ -1,0 +1,42 @@
+{% load i18n %}
+<div class="relative" x-data="{ openConsoles: false }">
+    <a class="block cursor-pointer h-[18px] hover:text-base-700 dark:hover:text-base-200"
+       @click="openConsoles = !openConsoles">
+        <span class="material-symbols-outlined">manufacturing</span>
+    </a>
+    <nav class="absolute bg-white border border-base-200 flex flex-col leading-none py-1 -right-2 rounded-default shadow-lg top-7 w-52 z-50 dark:bg-base-800 dark:border-base-700"
+         x-cloak
+         x-show="openConsoles"
+         x-transition
+         x-on:click.outside="openConsoles = false">
+        <a class="cursor-pointer flex flex-row leading-none mx-1 px-3 py-1.5 rounded-default">
+            {#                <span class="material-symbols-outlined mr-2">lock</span>#}
+            <span class="leading-none font-bold self-center">Consoles</span>
+        </a>
+        {% if perms.user.console_lock %}
+            <a class="cursor-pointer flex flex-row leading-none mx-1 px-3 py-1.5 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200"
+               href="{% url "admin:console-lockview" %}"
+               x-on:click="adminTheme = 'dark'"
+               x-bind:class="adminTheme == 'dark' && ''">
+                <span class="material-symbols-outlined mr-2">lock</span>
+                <span class="leading-none self-center">Lock</span>
+            </a>
+        {% endif %}
+        {% if perms.user.console_tools %}
+            <a class="cursor-pointer flex flex-row leading-none mx-1 px-3 py-1.5 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200"
+               href="{% url "admin:console-toolsview" %}"
+               x-on:click="adminTheme = 'dark'"
+               x-bind:class="adminTheme == 'dark' && ''">
+                <span class="material-symbols-outlined mr-2">apps</span>
+                <span class="leading-none self-center">Tools</span>
+            </a>
+            <a class="cursor-pointer flex flex-row leading-none mx-1 px-3 py-1.5 rounded-default hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200"
+               href="{% url "admin:console-monitorview" %}"
+               x-on:click="adminTheme = 'dark'"
+               x-bind:class="adminTheme == 'dark' && ''">
+                <span class="material-symbols-outlined mr-2">planner_review</span>
+                <span class="leading-none self-center">Monitor</span>
+            </a>
+        {% endif %}
+    </nav>
+</div>

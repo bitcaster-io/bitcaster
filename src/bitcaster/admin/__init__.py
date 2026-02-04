@@ -7,14 +7,17 @@ from .distribution import DistributionListAdmin
 from .event import EventAdmin
 from .group import GroupAdmin
 from .internal import LogMessageAdmin
-from .media import MediaAdmin
-from .message import MessageAdmin
+from .media import MediaFileAdmin
+from .message import MessageTemplateAdmin
 from .monitor import MonitorAdmin
 from .notification import NotificationAdmin
 from .occurrence import OccurrenceAdmin
 from .organization import OrganizationAdmin
+from .overrides import LogEntryAdmin
 from .project import ProjectAdmin
+from .task import TaskAdmin
 from .user import UserAdmin
+from .user_message import UserMessageAdmin
 from .userrole import UserRoleAdmin
 
 __all__ = [
@@ -26,14 +29,17 @@ __all__ = [
     "DistributionListAdmin",
     "EventAdmin",
     "GroupAdmin",
+    "LogEntryAdmin",
     "LogMessageAdmin",
-    "MediaAdmin",
-    "MessageAdmin",
+    "MediaFileAdmin",
+    "MessageTemplateAdmin",
     "MonitorAdmin",
     "NotificationAdmin",
     "OccurrenceAdmin",
     "OrganizationAdmin",
     "ProjectAdmin",
+    "TaskAdmin",
     "UserAdmin",
+    "UserMessageAdmin",
     "UserRoleAdmin",
 ]

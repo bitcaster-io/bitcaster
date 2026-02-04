@@ -2,18 +2,29 @@ from typing import Any
 
 from django import forms
 from django.conf import settings
-from django.contrib import admin
-from django.contrib.admin.widgets import AutocompleteSelect
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
 from tinymce.widgets import TinyMCE
 
-from bitcaster.models import Channel, Event, Message, Notification, Organization
-from bitcaster.web import widgets
+from bitcaster.models import Channel, Event, MessageTemplate, Notification, Organization
+
+from . import unfold
+
+# from .unfold import UnfoldForm, UnfoldAdminSelect2Widget, UnfoldAdminTextInputWidget,
 
 
-class MessageEditForm(forms.ModelForm[Message]):
+class MessageTemplateCloneForm(forms.ModelForm[MessageTemplate]):
+    name = forms.CharField()
+    event = forms.ModelChoiceField(Event.objects.all(), widget=unfold.UnfoldAdminSelect2Widget)
+    channel = forms.ModelChoiceField(Channel.objects.all(), widget=unfold.UnfoldAdminSelect2Widget)
+
+    class Meta:
+        model = MessageTemplate
+        fields = ("name", "event", "channel")
+
+
+class MessageTemplateEditForm(forms.ModelForm[MessageTemplate]):
     recipient = forms.CharField(required=False)
     subject = forms.CharField(required=False)
     content = forms.CharField(widget=forms.Textarea, required=False)
@@ -31,47 +42,70 @@ class MessageEditForm(forms.ModelForm[Message]):
             "admin/js/jquery.init.js",
             "bitcaster/js/editor%s.js" % extra,
         ]
-        css = {"screen": ["tinymce/skins/ui/oxide/skin.min.css", "css/unfold.css"]}
+        css = {
+            "screen": [
+                "tinymce/skins/ui/oxide/skin.min.css",
+                "css/message_editor.css",
+            ]
+        }
         return orig + forms.Media(js=js, css=css)  # type: ignore
 
     class Meta:
-        model = Message
+        model = MessageTemplate
         fields = ("subject", "content", "html_content", "context", "recipient")
 
 
-class MessageRenderForm(MessageEditForm):
+class MessageTemplateRenderForm(MessageTemplateEditForm):
     content_type = forms.CharField(widget=forms.HiddenInput)
 
 
-class MessageChangeForm(forms.ModelForm[Message]):
+def validate_cleaned_data(form: "forms.ModelForm[MessageTemplate] | NotificationTemplateCreateForm") -> None:
+    if "channel" in form.cleaned_data and "notification" in form.cleaned_data:
+        form.cleaned_data["organization"] = form.cleaned_data["channel"].organization
+    if (
+        "channel" in form.cleaned_data
+        and "event" in form.cleaned_data
+        and (form.cleaned_data["channel"] not in form.cleaned_data["event"].channels.all())
+    ):
+        form.add_error("channel", _("This channel is not available for the selected event"))
+
+
+class MessageTemplateChangeForm(forms.ModelForm[MessageTemplate]):
     class Meta:
-        model = Message
-        fields = ("name", "channel", "notification")
-
-
-class MessageCreationForm(forms.ModelForm[Message]):
-    organization = forms.ModelChoiceField(queryset=Organization.objects.all(), widget=forms.HiddenInput, required=False)
-    event = forms.ModelChoiceField(queryset=Event.objects.all(), widget=forms.HiddenInput, required=False)
-    notification = forms.ModelChoiceField(
-        queryset=Notification.objects.all(),
-        required=True,
-        widget=AutocompleteSelect(Message._meta.get_field("notification"), admin.site),
-    )
-
-    class Meta:
-        model = Message
-        fields = ("name", "channel", "notification")
+        model = MessageTemplate
+        fields = ("name", "event", "channel", "notification", "debug")
 
     def clean(self) -> None:
         super().clean()
-        if "channel" in self.cleaned_data and "notification" in self.cleaned_data:
-            self.cleaned_data["organization"] = self.cleaned_data["channel"].organization
+        validate_cleaned_data(self)
+
+
+class MessageTemplateCreationForm(forms.ModelForm[MessageTemplate]):
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all(), widget=forms.HiddenInput, required=False)
+    event = forms.ModelChoiceField(
+        queryset=Event.objects.all(),
+        required=True,
+        widget=unfold.UnfoldAdminSelect2Widget,
+    )
+    notification = forms.ModelChoiceField(
+        queryset=Notification.objects.all(),
+        required=False,
+        widget=unfold.UnfoldAdminSelect2Widget,
+    )
+
+    class Meta:
+        model = MessageTemplate
+        fields = ("name", "event", "channel", "notification")
+
+    def clean(self) -> None:
+        super().clean()
+        validate_cleaned_data(self)
 
 
 class NotificationTemplateCreateForm(forms.Form):
-    name = forms.CharField(widget=widgets.UnfoldAdminTextInputWidget(attrs={"placeholder": "Name"}))
+    name = forms.CharField(widget=unfold.UnfoldAdminTextInputWidget(attrs={"placeholder": "Name"}))
     channel = forms.ModelChoiceField(
-        queryset=Channel.objects.all(), label="Channel", widget=widgets.UnfoldAdminSelectWidget
+        queryset=Channel.objects.all(), label="Channel", widget=unfold.UnfoldAdminSelectWidget
     )
 
     notification: "Notification"
@@ -86,3 +120,7 @@ class NotificationTemplateCreateForm(forms.Form):
         if self.notification.messages.filter(name__iexact=name).exists():
             raise ValidationError(_("This name is already in use."))
         return name
+
+    def clean(self) -> None:
+        super().clean()
+        validate_cleaned_data(self)

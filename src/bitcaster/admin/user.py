@@ -4,16 +4,21 @@ from typing import TYPE_CHECKING
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import link
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
-from django.db.models import F
-from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.forms import TypedChoiceField
+from django.urls import path, reverse
+from django.utils.translation import gettext_lazy as _
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
-from ..models import LogEntry, User
+from bitcaster.forms.unfold import UnfoldAdminSelect2Widget
+from bitcaster.web.dashboard.views import LockView, MonitorView, ToolsView
+
+from ..constants import bitcaster
+from ..models import User
+from ..utils.django import admin_toggle_bool_action
 from .base import BaseAdmin, BitcasterModelAdmin
 
 if TYPE_CHECKING:
-    from django.db.models import QuerySet
+    from django.db.models import Field, QuerySet
     from django.http import HttpRequest
 
 logger = logging.getLogger(__name__)
@@ -29,11 +34,12 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
     ordering = ("username",)
     exclude = ("groups",)
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "email")}),
+        (_("Personal info"), {"classes": ["tab"], "fields": ("first_name", "last_name", "email")}),
+        (_("Account"), {"classes": ["tab"], "fields": ("username", "password")}),
         (
             _("Permissions"),
             {
+                "classes": ["tab"],
                 "fields": (
                     "is_active",
                     "is_staff",
@@ -41,23 +47,39 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
                 ),
             },
         ),
-        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+        (_("Important dates"), {"classes": ["tab"], "fields": ("last_login", "date_joined")}),
+        (_("Options"), {"classes": ["tab"], "fields": ("timezone", "date_format", "time_format")}),
+        (_("Extended"), {"classes": ["tab"], "fields": ("custom_fields",)}),
     )
     filter_horizontal = ()
     change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
-    actions = ["toggle_superuser", "toggle_staff", "toggle_active"]
+    actions = ["toggle_superuser", "toggle_staff", "toggle_active", "enroll"]
+
+    def get_readonly_fields(self, request: "HttpRequest", obj: "User|None" = None) -> list[str]:
+        return ["custom_fields"]
+
+    def formfield_for_choice_field(self, db_field: "Field", request: "HttpRequest", **kwargs) -> TypedChoiceField:
+        if db_field.name == "timezone":
+            return TypedChoiceField(choices=db_field.choices, coerce=str, widget=UnfoldAdminSelect2Widget)
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+
+    def get_urls(self):
+        extra = []
+        for console in [ToolsView, LockView, MonitorView]:
+            custom_view = self.admin_site.admin_view(console.as_view(model_admin=self))
+            extra.append(
+                path(console.__name__.lower(), custom_view, name=f"console-{console.__name__.lower()}"),
+            )
+        return super().get_urls() + extra
 
     def toggle_superuser(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
-        queryset.exclude(pk=request.user.pk).update(is_superuser=~F("is_superuser"))
-        LogEntry.objects.log_actions(request.user.pk, queryset, LogEntry.CHANGE, "Toggled is_superuser flag")
+        admin_toggle_bool_action(request, queryset.exclude(pk=request.user.pk), "is_superuser")
 
     def toggle_staff(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
-        queryset.exclude(pk=request.user.pk).update(is_staff=~F("is_staff"))
-        LogEntry.objects.log_actions(request.user.pk, queryset, LogEntry.CHANGE, "Toggled is_staff flag")
+        admin_toggle_bool_action(request, queryset.exclude(pk=request.user.pk), "is_staff")
 
-    def toggle_active(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
-        queryset.exclude(pk=request.user.pk).update(active=~F("active"))
-        LogEntry.objects.log_actions(request.user.pk, queryset, LogEntry.CHANGE, "Toggled active status")
+    def enroll(self, request: "HttpRequest", queryset: "QuerySet[User]") -> None:
+        bitcaster.local_organization.enroll_users(queryset)
 
     @link(change_form=True, change_list=False)
     def addresses(self, button: ButtonWidget) -> None:

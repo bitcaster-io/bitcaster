@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from .base import Agent, AgentConfig
 

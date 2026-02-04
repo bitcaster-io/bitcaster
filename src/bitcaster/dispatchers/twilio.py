@@ -2,7 +2,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from django import forms
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from twilio.base.exceptions import TwilioRestException
 from twilio.rest import Client
 

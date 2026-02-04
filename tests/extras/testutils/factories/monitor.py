@@ -5,18 +5,18 @@ from strategy_field.utils import fqn
 from bitcaster.models import Monitor
 from testutils.agent import XAgent
 
-from . import PeriodicTaskFactory
 from .base import AutoRegisterModelFactory
 from .event import EventFactory
 
-__all__ = ["MonitorFactory", "PeriodicTaskFactory"]
+__all__ = [
+    "MonitorFactory",
+]
 
 
 class MonitorFactory(AutoRegisterModelFactory[Monitor]):
     name = Sequence(lambda n: "Monitor-%03d" % n)
     event = factory.SubFactory(EventFactory)
     agent = fqn(XAgent)
-    schedule = factory.SubFactory(PeriodicTaskFactory)
     config = {"foo": "bar"}
 
     class Meta:

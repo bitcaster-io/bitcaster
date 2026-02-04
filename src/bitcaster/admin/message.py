@@ -9,14 +9,14 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonRes
 from django.template import Context, Template
 from django.template.response import TemplateResponse
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from reversion.admin import VersionAdmin
 
 from bitcaster.models import (
     Application,
     DistributionList,
     Event,
-    Message,
+    MessageTemplate,
     Notification,
     Organization,
     Project,
@@ -24,11 +24,13 @@ from bitcaster.models import (
 
 from ..dispatchers.base import Dispatcher, Payload
 from ..forms.message import (
-    MessageChangeForm,
-    MessageCreationForm,
-    MessageEditForm,
-    MessageRenderForm,
+    MessageTemplateChangeForm,
+    MessageTemplateCloneForm,
+    MessageTemplateCreationForm,
+    MessageTemplateEditForm,
+    MessageTemplateRenderForm,
 )
+from ..forms.unfold import UnfoldAdminForm
 from ..utils.shortcuts import render_string
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
@@ -40,7 +42,7 @@ if TYPE_CHECKING:
 
 SAMPLE_TEXT_MESSAGE = """This is a sample message for event '{{ event }}' for the application '{{ event.application}}'.
 
-It hs been triggered on {{occurrence.timestamp|date:"Y-m-d"}} at {{occurrence.timestamp|date:"H:m"}},
+It hs been triggered on {{timestamp|date:"Y-m-d"}} at {{timestamp|date:"H:m"}},
  and produced by the notification '{{notification}}' for the DistributionList '{{ distribution }}'
 
 
@@ -54,7 +56,7 @@ This is a sample message for event: <b>{{ event }}</b> for the application <b>{{
 </div>
 
 <div>
-It hs been triggered on {{occurrence.timestamp|date:"Y-m-d"}} at {{occurrence.timestamp|date:"H:m"}}.
+It hs been triggered on {{timestamp|date:"Y-m-d"}} at {{timestamp|date:"H:m"}}.
 and produced by the notification '{{notification}}' for the DistributionList '{{ distribution }}'
 </div>
 
@@ -63,7 +65,7 @@ The destination address is {{ address }} thru the channel {{ channel }}
 """
 
 
-class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
+class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageTemplate]):
     search_fields = ("name",)
     list_display = ("name", "channel", "scope_level")
     list_filter = (
@@ -76,10 +78,10 @@ class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
     change_list_template = "admin/reversion_change_list.html"
     object_history_template = "reversion/object_history.html"
 
-    form = MessageChangeForm
-    add_form = MessageCreationForm
+    form = MessageTemplateChangeForm
+    add_form = MessageTemplateCreationForm
 
-    def scope_level(self, obj: "Message") -> "Notification | Event | Application | Project | Organization":
+    def scope_level(self, obj: "MessageTemplate") -> "Notification | Event | Application | Project | Organization":
         if obj.notification:
             return obj.notification
         if obj.event:
@@ -90,21 +92,25 @@ class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
             return obj.project
         return obj.organization
 
-    def get_queryset(self, request: HttpRequest) -> QuerySet[Message]:
+    def get_queryset(self, request: HttpRequest) -> QuerySet[MessageTemplate]:
         return (
             super()
             .get_queryset(request)
             .select_related("channel", "application", "project", "channel__organization", "event", "notification")
         )
 
-    def get_form(self, request: HttpRequest, obj: Optional["Message"] = None, **kwargs: dict[str, Any]) -> forms.Form:
+    def get_form(
+        self, request: HttpRequest, obj: Optional["MessageTemplate"] = None, **kwargs: dict[str, Any]
+    ) -> forms.Form:
         defaults: dict[str, Any] = {}
         if obj is None:
             defaults["form"] = self.add_form
         defaults.update(kwargs)
         return super().get_form(request, obj, **defaults)
 
-    def get_dummy_source_context(self, obj: Message, extra_context: dict[str, str] | None = None) -> dict[str, str]:
+    def get_dummy_source_context(
+        self, obj: MessageTemplate, extra_context: dict[str, str] | None = None
+    ) -> dict[str, str]:
         from bitcaster.models import Event, Notification, Occurrence
 
         event = obj.event if obj.event else Event(name="Sample Event")
@@ -113,10 +119,29 @@ class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
         oc = Occurrence(event=event, timestamp=timezone.now())
         return no.get_context(oc.get_context()) | (extra_context or {})
 
+    @button()
+    def clone(self, request: HttpRequest, pk: str) -> "HttpResponse":
+        context = self.get_common_context(request, pk, action_title="Clone")
+        cloned: MessageTemplate = context["original"]
+        cloned.name = f"Copy of {cloned.name}"
+        cloned.pk = None
+        if request.method == "POST":
+            form = MessageTemplateCloneForm(request.POST, instance=cloned)
+            if form.is_valid():
+                form.save()
+                self.message_user(request, _("Message Template updated successfully "))
+                return HttpResponseRedirect("..")
+        else:
+            form = MessageTemplateCloneForm(instance=cloned)
+        fs = (("", {"fields": MessageTemplateCloneForm.declared_fields}),)
+        context["admin_form"] = UnfoldAdminForm(form, fs, {}, model_admin=self)  # type: ignore[arg-type]
+        context["form"] = form
+        return TemplateResponse(request, "bitcaster/admin/message/clone.html", context)
+
     @view()
     def render(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        form = MessageRenderForm(request.POST)
-        msg: Message = self.get_object(request, pk)
+        form = MessageTemplateRenderForm(request.POST)
+        msg: MessageTemplate = self.get_object(request, pk)
         message_context = self.get_dummy_source_context(msg)
 
         ct = "text/html"
@@ -138,8 +163,8 @@ class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
 
     @view()
     def send_message(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
-        form = MessageEditForm(request.POST)
-        msg: Message = self.get_object(request, pk)
+        form = MessageTemplateEditForm(request.POST)
+        msg: MessageTemplate = self.get_object(request, pk)
         dispatcher: Dispatcher = msg.channel.dispatcher
         ret: "JsonType"
         if form.is_valid():
@@ -174,13 +199,13 @@ class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
         )
 
         if request.method == "POST":
-            form = MessageEditForm(request.POST, instance=msg)
+            form = MessageTemplateEditForm(request.POST, instance=msg)
             if form.is_valid():
                 form.save()
                 self.message_user(request, _("Message Template updated successfully "))
                 return HttpResponseRedirect("..")
         else:
-            form = MessageEditForm(
+            form = MessageTemplateEditForm(
                 initial={
                     "recipient": request.user.email,
                     "context": {k: "<sys>" for k, __ in message_context.items()},
@@ -195,8 +220,8 @@ class MessageAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[Message]):
 
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def usage(self, request: HttpRequest, pk: str) -> "HttpResponse":
-        context = self.get_common_context(request, pk, title=_("Message usage"))
-        msg: "Message" = context["original"]
+        context = self.get_common_context(request, pk, action_title=_("Message usage"))
+        msg: "MessageTemplate" = context["original"]
         usage: list[Any] = []
         level = ""
         if msg.notification:

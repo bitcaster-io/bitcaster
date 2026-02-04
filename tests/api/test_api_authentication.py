@@ -4,8 +4,6 @@ from unittest.mock import MagicMock
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
-from testutils.factories.event import EventFactory
-from testutils.factories.key import ApiKeyFactory
 
 from bitcaster.api.event import EventList
 from bitcaster.api.permissions import ApiKeyAuthentication
@@ -32,11 +30,15 @@ def client() -> APIClient:
 
 @pytest.fixture
 def key() -> APIClient:
+    from testutils.factories import ApiKeyFactory
+
     return ApiKeyFactory(application=None, project=None, grants=[Grant.FULL_ACCESS])
 
 
 @pytest.fixture
 def context(admin_user: "User") -> "Context":
+    from testutils.factories import ApiKeyFactory, EventFactory
+
     event: "Event" = EventFactory()
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     return {"event": event, "key": key, "backend": ApiKeyAuthentication(), "view": MagicMock(spec=EventList)}

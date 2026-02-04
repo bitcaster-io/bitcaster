@@ -14,6 +14,12 @@
     <span class="block bg-base-200 h-5 mx-3 w-px dark:bg-base-700"></span>
     {% include "unfold/helpers/header_back_button.html" %}
     <h1 class="overflow-hidden leading-5 text-ellipsis text-font-important-light whitespace-nowrap xl:text-base dark:text-font-important-dark">
+        <a href = "{% url 'admin:index' %}">
+            <span class="align-middle inline-block leading-5 tracking-tight">
+                <span class="material-symbols-outlined">home</span>
+            </span>
+            <span class="material-symbols-outlined inline-block align-middle leading-5 mx-2 text-base-400 dark:text-base-500">chevron_right</span>
+        </a>
         {% header_title %}
         {% if action_title %}
             <span class="material-symbols-outlined inline-block align-middle leading-5 mx-2 text-base-400 dark:text-base-500">chevron_right</span>
@@ -23,7 +29,9 @@
             <span class="font-medium ml-2 text-font-subtle-light text-sm dark:text-font-subtle-dark">
                 {% blocktranslate count counter=cl.result_count %}{{ counter }} result{% plural %}{{ counter }} results{% endblocktranslate %} (<a href="?{% if cl.is_popup %}_popup=1{% endif %}">
                 {% if cl.show_full_result_count %}
-                    {% blocktranslate with full_result_count=cl.full_result_count %}{{ full_result_count }} total{% endblocktranslate %}
+                    {% blocktranslate trimmed with full_result_count=cl.full_result_count %}
+                        {{ full_result_count }} total
+                    {% endblocktranslate %}
                 {% else %}
                     {% translate "Show all" %}
                 {% endif %}

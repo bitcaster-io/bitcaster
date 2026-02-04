@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 import requests
 from django import forms
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from requests import Response
 
 from ..exceptions import DispatcherError
@@ -24,6 +24,7 @@ class SlackDispatcher(Dispatcher):
     slug = "slack"
     config_class: type[DispatcherConfig] = SlackConfig
     protocol = MessageProtocol.PLAINTEXT
+    verbose_name = "Slack"
 
     def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         try:

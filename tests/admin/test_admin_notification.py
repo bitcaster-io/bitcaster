@@ -4,12 +4,15 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 from django.urls import reverse
+from testutils.helpers import assert_form_error
+
+from bitcaster.models import Notification
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-    from bitcaster.models import Message, Notification
+    from bitcaster.models import MessageTemplate
 
 
 @pytest.fixture
@@ -48,7 +51,7 @@ def test_create_notification_template(app: "DjangoTestApp", notification: "Notif
 def test_avoid_duplicates_template(app: "DjangoTestApp", notification: "Notification") -> None:
     from testutils.factories import MessageFactory
 
-    message: "Message" = MessageFactory(notification=notification, event=notification.event)
+    message: "MessageTemplate" = MessageFactory(notification=notification, event=notification.event)
     url = reverse("admin:bitcaster_notification_messages", args=[notification.pk])
     res = app.get(url)
     frm = res.forms["messageForm"]
@@ -78,13 +81,14 @@ def test_add_check_environments(app: "DjangoTestApp", notification: "Notificatio
     frm.fields["environments"][0].value = "test"
     res = frm.submit(expect_errors=True)
     assert res.status_code == 200
-    assert res.context["adminform"].form.errors == {"event": ["This field is required."]}
+    assert res.context["adminform"].form.errors == {
+        "event": ["This field is required."],
+    }
     # add missing fields
     res = app.get(url)
     frm = res.forms["notification_form"]
     frm["name"] = "Not2"
     frm["event"].force_value(notification.event.pk)
-    frm["distribution"].force_value(notification.distribution.pk)
     frm.fields["environments"][0].value = "test"
     res = frm.submit(expect_errors=True)
     assert res.status_code == 200
@@ -96,6 +100,8 @@ def test_add_check_environments(app: "DjangoTestApp", notification: "Notificatio
     frm = res.forms["notification_form"]
     frm["name"] = "Not2"
     frm["event"].force_value(notification.event.pk)
+    res = frm.submit().follow()
+    frm = res.forms["notification_form"]
     frm["distribution"].force_value(notification.distribution.pk)
     frm.fields["environments"][0].value = "development"
     res = frm.submit()
@@ -109,7 +115,63 @@ def test_add_dynamic(app: "DjangoTestApp", notification: "Notification") -> None
     frm["name"] = "Not2"
     frm["event"].force_value(notification.event.pk)
     frm.fields["environments"][0].value = "development"
+    res = frm.submit()
+    assert res.status_code == 302, res.context["adminform"].form.errors
+    res = res.follow()
+    assert not res.context["original"].active
+    frm = res.forms["notification_form"]
+    frm["active"] = True
     frm["dynamic"] = True
     frm["recipients_filter"] = json.dumps({"include": [], "exclude": []})
     res = frm.submit()
     assert res.status_code == 302
+
+
+def test_add_external_filtering(app: "DjangoTestApp", notification: "Notification") -> None:
+    url = reverse("admin:bitcaster_notification_add")
+    res = app.get(url)
+    frm = res.forms["notification_form"]
+    frm["name"] = "Not2"
+    frm["event"].force_value(notification.event.pk)
+    frm.fields["environments"][0].value = "development"
+    res = frm.submit()
+    assert res.status_code == 302, res.context["adminform"].form.errors
+    res = res.follow()
+    assert not res.context["original"].active
+    frm = res.forms["notification_form"]
+    frm["active"] = True
+    frm["external_filtering"] = True
+    res = frm.submit()
+    assert res.status_code == 302
+
+
+def test_add_flag_compatibility(app: "DjangoTestApp", notification: "Notification") -> None:
+    url = reverse("admin:bitcaster_notification_change", args=[notification.pk])
+    res = app.get(url)
+    frm = res.forms["notification_form"]
+    frm["name"] = "Not2"
+    frm["dynamic"] = True
+    frm["external_filtering"] = True
+    res = frm.submit()
+    assert_form_error(res, "__all__", "dynamic and external_filtering cannot be set at the same time")
+
+    frm = res.forms["notification_form"]
+    frm["name"] = "Not2"
+    frm["dynamic"] = False
+    frm["external_filtering"] = False
+    frm["distribution"].force_value(None)
+    res = frm.submit()
+    assert_form_error(res, "distribution", "This field is required")
+
+
+def test_toggle_active(app: "DjangoTestApp", notification: "Notification") -> None:
+    url = reverse("admin:bitcaster_notification_changelist")
+    res = app.get(url)
+    frm = res.forms["changelist-form"]
+    selected_users = []
+    for i in range(len(res.pyquery("input[name=_selected_action]"))):
+        frm.get("_selected_action", index=i).checked = True
+        selected_users.append(frm.get("_selected_action", index=i).value)
+    frm["action"] = "toggle_active"
+    frm.submit()
+    assert not Notification.objects.filter(active=True).exists()

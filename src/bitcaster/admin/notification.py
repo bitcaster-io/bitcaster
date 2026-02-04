@@ -4,14 +4,16 @@ from typing import TYPE_CHECKING
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.utils.translation import gettext as _
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from django_ace import AceWidget
 from jsoneditor.forms import JSONEditor
 
 from ..forms.message import NotificationTemplateCreateForm
 from ..forms.notification import NotificationForm
+from ..utils.django import admin_toggle_bool_action
 from ..utils.filtering import schema
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
@@ -23,21 +25,48 @@ logger = logging.getLogger(__name__)
 
 class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     search_fields = ("name",)
-    list_display = ("name", "event", "application", "distribution")
+    list_display = ("name", "event", "application", "distribution", "active")
     list_filter = (
+        "active",
         ("event__application", LinkedAutoCompleteFilter.factory(parent=None)),
         ("event", LinkedAutoCompleteFilter.factory(parent="event__application")),
         ("distribution__recipients__address__user", LinkedAutoCompleteFilter.factory(parent=None)),
     )
     autocomplete_fields = ("event", "distribution")
     form = NotificationForm
+    add_fieldsets = (
+        (
+            _("General"),
+            {
+                "classes": ["tab"],
+                "fields": ["name", "event", "environments"],
+            },
+        ),
+    )
     fieldsets = (
         (_("General"), {"classes": ["tab"], "fields": ["name", "event", "environments"]}),
-        (_("Distribution"), {"classes": ["tab"], "fields": ["dynamic", "distribution", "recipients_filter"]}),
-        (_("Matching rules"), {"classes": ["tab"], "fields": ["payload_filter"]}),
+        (
+            _("Distribution"),
+            {
+                "classes": ["tab"],
+                "fields": [
+                    "active",
+                    "external_filtering",
+                    "dynamic",
+                    "distribution",
+                    "recipients_filter",
+                ],
+            },
+        ),
         (_("Extra context"), {"classes": ["tab"], "fields": ["extra_context"]}),
     )
-    conditional_fields = {"distribution": "dynamic == false", "recipients_filter": "dynamic == true"}
+    conditional_fields = {
+        "distribution": "active == true && (dynamic == false && external_filtering == false)",
+        "external_filtering": "active == true && (dynamic == false)",
+        "dynamic": "active == true && (external_filtering == false)",
+        "recipients_filter": "active == true && dynamic == true",
+    }
+    actions = ["toggle_active"]
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         field = super().formfield_for_dbfield(db_field, request, **kwargs)
@@ -61,6 +90,17 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
                 "distribution",
             )
         )
+
+    def response_add(self, request, obj, post_url_continue=None):
+        return HttpResponseRedirect(
+            reverse(
+                f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+                args=[obj.pk],
+            )
+        )
+
+    def toggle_active(self, request, queryset):
+        admin_toggle_bool_action(request, queryset, "active")
 
     @button(html_attrs={"class": ButtonColor.LINK.value})
     def messages(self, request: HttpRequest, pk: str) -> HttpResponse:

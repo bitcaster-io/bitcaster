@@ -1,9 +1,7 @@
-import json
 from typing import Any, Iterable
 
 from django.db import models
-from django.utils.translation import gettext as _
-from django_celery_beat.models import CrontabSchedule, PeriodicTask
+from django.utils.translation import gettext_lazy as _
 from strategy_field.fields import StrategyField
 
 from bitcaster.agents.base import Agent, agentManager
@@ -29,16 +27,12 @@ class Monitor(AdminReversable, models.Model):
     result = models.JSONField(blank=True, default=dict, editable=False)
     async_result = models.CharField(blank=True, default="", editable=False, max_length=255)
 
-    schedule = models.ForeignKey(
-        PeriodicTask,
-        verbose_name=_("Scheduling"),
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="monitors",
-    )
-
     objects = MonitorManager()
+
+    class Meta:
+        verbose_name = _("Monitor")
+        verbose_name_plural = _("Monitors")
+        ordering = ("name",)
 
     def __str__(self) -> str:
         return self.name
@@ -54,16 +48,6 @@ class Monitor(AdminReversable, models.Model):
         super().save(
             *args, force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields
         )
-        if self.schedule is None:
-            every_hour, _ = CrontabSchedule.objects.get_or_create(hour="*/1")
-            pt, __ = PeriodicTask.objects.get_or_create(
-                name=self.name,
-                task="bitcaster.tasks.monitor_run",
-                kwargs=json.dumps({"pk": self.pk}),
-                defaults={"crontab": every_hour},
-            )
-            self.schedule = pt
-            self.save()
 
     def natural_key(self) -> tuple[str | None, ...]:
         return (self.name,)

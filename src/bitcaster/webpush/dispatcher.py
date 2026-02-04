@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from cryptography.hazmat.primitives import serialization
 from django import forms
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from py_vapid import Vapid02, b64urlencode
 
 from bitcaster.dispatchers.base import (
@@ -79,6 +79,7 @@ class WebPushDispatcher(Dispatcher):
     config_class: type[DispatcherConfig] = WebPushConfig
     protocol = MessageProtocol.WEBPUSH
     need_subscription = True
+    verbose_name = "WebPush"
 
     def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         try:

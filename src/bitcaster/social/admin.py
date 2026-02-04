@@ -9,7 +9,7 @@ from django.db.models.fields import Field
 from django.forms.fields import Field as FormField
 from django.http import HttpRequest
 from django.urls import reverse
-from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
+from jsoneditor.forms import JSONEditor
 
 from bitcaster.admin.base import BitcasterModelAdmin
 from bitcaster.models import SocialProvider
@@ -29,17 +29,7 @@ class SocialProviderAdmin(ExtraButtonsMixin, BitcasterModelAdmin[SocialProvider]
     def formfield_for_dbfield(self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any) -> FormField | None:
         formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
         if isinstance(db_field, models.JSONField):
-            formfield.widget = SvelteJSONEditorWidget(
-                props={
-                    "mode": "text",
-                    "askToFormat": True,
-                    "mainMenuBar": False,
-                    "navigationBar": False,
-                    "indentation": 2,
-                    "tabSize": 2,
-                    "flattenColumns": False,
-                }
-            )
+            formfield.widget = JSONEditor()
         return formfield
 
     @link()

@@ -21,7 +21,7 @@ class Group(Enum):
 
 
 NOT_SET = "<- not set ->"
-EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY", "CACHE_URL", "CELERY_BROKER_URL", "MEDIA_ROOT", "STATIC_ROOT"]
+EXPLICIT_SET = ["DATABASE_URL", "SECRET_KEY", "CACHE_URL", "DRAMATIQ_BROKER", "MEDIA_ROOT", "STATIC_ROOT"]
 
 CONFIG: "Mapping[str, ConfigItem]" = {
     "ADMIN_EMAIL": (str, "", "Initial user created at first deploy"),
@@ -30,8 +30,9 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         str,
         "bitcaster.agents.fs.validate_path",
         "Callable to validate agent filesystem path",
+        None,
     ),
-    "AGENT_FILESYSTEM_ROOT": (str, "", "AgentFilesystem root directory"),
+    "AGENT_FILESYSTEM_ROOT": (str, "", "AgentFilesystem root directory", ""),
     "AGENT_FILESYSTEM_DISALLOWED": (list, "", "AgentFilesystem disallowed directories"),
     "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], setting("allowed-hosts")),
     "AUTHENTICATION_BACKENDS": (list, [], setting("authentication-backends")),
@@ -40,28 +41,10 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         "https://bitcaster-io.github.io/bitcaster",
         "Bitcaster documentation site. (no trailing slash)",
     ),
-    "CACHE_URL": (
-        str,
-        "redis://localhost:6379/0",
-    ),
+    "CACHE_PREFIX": (str, "", "", "prefix string to use in cache keys"),
+    "CACHE_URL": (str, "redis://cache-server:6379/0", "", "redis://cache-server:6379/0"),
+    "CHANNEL_SERVER": (str, "channel-server:6379", "", "channel-server:6379"),
     "CATCH_ALL_EMAIL": (str, "If set all the emails will be sent to this address"),
-    "CELERY_BROKER_URL": (str, NOT_SET, "https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html"),
-    "CELERY_TASK_ALWAYS_EAGER": (
-        bool,
-        False,
-        "https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_always_eager",
-        True,
-    ),
-    "CELERY_TASK_EAGER_PROPAGATES": (
-        bool,
-        True,
-        "https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-eager-propagates",
-    ),
-    "CELERY_VISIBILITY_TIMEOUT": (
-        int,
-        1800,
-        "https://docs.celeryq.dev/en/stable/userguide/configuration.html#broker-transport-options",
-    ),
     "CSRF_COOKIE_SECURE": (bool, True, setting("csrf-cookie-secure"), False),
     "CSRF_COOKIE_SAMESITE": (str, setting("csrf-cookie-samesite")),
     "CSRF_TRUSTED_ORIGINS": (list, ["http://localhost", "http://127.0.0.1"]),
@@ -71,6 +54,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         "https://django-environ.readthedocs.io/en/latest/types.html#environ-env-db-url",
         False,
     ),
+    "DRAMATIQ_BROKER": (str, "redis://dramatiq-broker:6379/0", "", "redis://dramatiq-broker:6379/0"),
     "DEBUG": (bool, False, setting("debug"), True),
     "EMAIL_BACKEND": (str, "django.core.mail.backends.smtp.EmailBackend", setting("email-backend"), True),
     "EMAIL_HOST": (str, "localhost", setting("email-host"), True),
@@ -85,7 +69,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "ENVIRONMENT": (str, "production", "Bitcaster Environment", "local"),
     "EXTRA_APPS": (list, [], setting("configuring-applications")),  # nosec
     "INTERNAL_IPS": (list, [], setting("internal-ips"), ["127.0.0.1", "localhost"]),  # nosec
-    "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level")),
+    "LOGGING_LEVEL": (str, "CRITICAL", setting("logging-level"), "DEBUG"),
     "MEDIA_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),
     "MEDIA_ROOT": (str, None, setting("media-root")),
     "MEDIA_URL": (str, "/media/", setting("media-url")),

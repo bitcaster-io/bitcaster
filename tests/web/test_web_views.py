@@ -18,6 +18,12 @@ def test_home(client: "Client") -> None:
     assert client.get("/").status_code == 200
 
 
+def test_index_user_no_redirect(django_app: DjangoTestApp, user: "User") -> None:
+    django_app.set_user(user)
+    response = django_app.get(reverse("home"))
+    assert response.status_code == 200
+
+
 def test_healthcheck(client: "Client") -> None:
     # DO NOT REVERSE THIS URL
     assert client.get("/healthcheck/").status_code == 200
@@ -26,7 +32,7 @@ def test_healthcheck(client: "Client") -> None:
 def test_login(django_app: DjangoTestApp, user: "User", settings: SettingsWrapper) -> None:
     settings.FLAGS = {"LOCAL_LOGIN": [("boolean", True)]}
 
-    url = reverse("login")
+    url = reverse("admin:login")
     res = django_app.get(url)
     assert res.status_code == 200
 

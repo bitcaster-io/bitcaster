@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.utils.functional import cached_property, classproperty
 from django.utils.module_loading import import_string
 from strategy_field.registry import Registry
+from strategy_field.utils import fqn
 
 from bitcaster.constants import AddressType
 
@@ -32,6 +33,7 @@ class MessageProtocol(models.TextChoices):
     SMS = "SMS"
     EMAIL = "EMAIL"
     WEBPUSH = "WEBPUSH"
+    INTERNAL = "INTERNAL"
 
     def has_capability(self, capability: Capability) -> bool:
         return capability in ProtocolCapabilities[self]
@@ -42,11 +44,13 @@ ProtocolCapabilities = {
     MessageProtocol.EMAIL: [Capability.SUBJECT, Capability.HTML, Capability.TEXT],
     MessageProtocol.SMS: [Capability.TEXT],
     MessageProtocol.WEBPUSH: [Capability.SUBJECT, Capability.TEXT],
+    MessageProtocol.INTERNAL: [Capability.SUBJECT, Capability.HTML],
 }
 
 
 class Payload:
     message: str
+    level: int = logging.INFO
     subject: str | None = None
     html_message: str | None = None
     event: "Event"
@@ -67,9 +71,21 @@ class Payload:
         self.html_message = html_message
         self.user = user
 
+    def as_dict(self) -> dict[str, str]:
+        return {
+            "message": self.message or "",
+            "subject": self.subject or "",
+            "html_message": self.html_message or "",
+            "user": self.user.username,
+        }
+
 
 class DispatcherConfig(forms.Form):
     help_text = ""
+
+    def save(self, channel: "Channel") -> None:
+        channel.config = self.cleaned_data
+        channel.save()
 
 
 class DispatcherMeta(type["Dispatcher"]):
@@ -97,6 +113,7 @@ class Dispatcher(metaclass=DispatcherMeta):
     channel: "Channel"
     protocol: MessageProtocol = MessageProtocol.PLAINTEXT
     need_subscription = False
+    default_config: dict[str, Any] = {}
 
     def __init__(self, channel: "Channel") -> None:
         self.channel = channel
@@ -126,6 +143,9 @@ class Dispatcher(metaclass=DispatcherMeta):
             raise ValidationError(cfg.errors)
         return cfg.cleaned_data
 
+    def get_extra_config_info(self) -> str:
+        return ""
+
     @classproperty
     def name(self) -> str:
         return self.verbose_name or self.__name__.title()
@@ -138,7 +158,15 @@ class Dispatcher(metaclass=DispatcherMeta):
 
 
 class DispatcherManager(Registry):
-    pass
+    def get_name(self, entry: type) -> str:
+        if hasattr(entry, "verbose_name"):
+            attr = entry.verbose_name
+            if not attr:
+                return fqn(entry)
+            if callable(attr):
+                return str(attr())
+            return str(attr)
+        return fqn(entry)
 
 
 dispatcherManager = DispatcherManager(Dispatcher)  # noqa N816

@@ -18,14 +18,32 @@ class NotificationForm(forms.ModelForm["Notification"]):
         prj_envs: list[str] = []
         envs: list[str] = []
         super().clean()
+        if self.cleaned_data.get("dynamic", False) and self.cleaned_data.get("external_filtering", False):
+            raise ValidationError("dynamic and external_filtering cannot be set at the same time")
+
         if self.cleaned_data.get("dynamic", False):
+            self.cleaned_data["distribution"] = None
             try:
-                recipients = self.cleaned_data["recipients_filter"]
+                recipients = self.cleaned_data.get("recipients_filter", {"include": [], "exclude": []})
                 validate_schema(recipients)
                 validate_filters(User.objects, recipients)
                 validate_lookups(User, recipients)
             except ValidationError as e:
                 raise ValidationError({"recipients_filter": e}) from None
+
+        if self.cleaned_data.get("external_filtering", False):
+            self.cleaned_data["distribution"] = None
+
+        if (
+            self.instance.pk
+            and self.cleaned_data["active"]
+            and (
+                not self.cleaned_data.get("external_filtering")
+                and not self.cleaned_data.get("dynamic")
+                and not self.cleaned_data.get("distribution")
+            )
+        ):
+            raise ValidationError({"distribution": "This field is required"}) from None
 
         if self.instance.pk:
             evt = self.instance.event

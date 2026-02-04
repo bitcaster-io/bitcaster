@@ -3,9 +3,7 @@
 {% block messages %}
     {{ block.super }}
 {% endblock messages %}
-{% block object-tools %}
+{% block form_before %}
     {{ block.super }}
-    <div>
-        <code class="clipboard">{{ original.get_trigger_url }}</code>
-    </div>
-{% endblock object-tools %}
+    <code>{{ original.get_trigger_url }}</code>
+{% endblock form_before %}

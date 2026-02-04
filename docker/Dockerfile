@@ -4,6 +4,7 @@ ARG GIT_SHA
 ARG BUILD_DATE
 
 RUN set -x \
+  && apt-get update && apt-get install -y --no-install-recommends debian-archive-keyring \
   && runtimeDeps=" \
     nginx \
     gettext \
@@ -47,11 +48,12 @@ RUN pip install uwsgi uv
 # ------- builder -------
 FROM deps AS builder
 ENV VIRTUAL_ENV=/venv \
-    UV_PROJECT_ENVIRONMENT=/venv
+    UV_PROJECT_ENVIRONMENT=/venv \
+    HATCH_VCS_VERSION=${VERSION}
 
 RUN <<EOF cat> /RELEASE
 {"version": "$VERSION",
-  "commit": "$GIT_SHA"
+  "commit": "$GIT_SHA",
   "date": "$BUILD_DATE"
 }
 EOF
@@ -62,7 +64,9 @@ COPY . /code
 
 RUN ls -al /code/src/
 RUN uv venv --no-cache $VIRTUAL_ENV \
-    && uv sync --no-dev --frozen --no-editable --no-cache
+    && uv sync --no-dev --frozen --no-editable --no-cache \
+    && git status \
+    && uv build
 
 FROM base_os AS dist
 ADD docker/conf /conf/
@@ -70,6 +74,8 @@ ADD docker/bin/* /usr/local/bin/
 
 COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/
 COPY --from=builder /venv /venv
+RUN mkdir -p /var/storage/media/ /var/storage/static/ \
+    && chown -R bitcaster /var/storage/
 
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
     VERSION=$VERSION \
@@ -77,13 +83,14 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
     PYTHONDONTWRITEBYTECODE=1 \
     DJANGO_SETTINGS_MODULE="bitcaster.config.settings" \
     STATIC_URL="/static/" \
-    PYTHONPATH=""\
+    PYTHONPATH="/venv/lib/python3.13/site-packages"\
     GIT_SHA=$GIT_SHA \
     PGSSLCERT="/tmp/postgresql.crt" \
     UWSGI_PROCESSES=4
 
 EXPOSE 8000
 USER bitcaster
+
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run"]
 

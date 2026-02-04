@@ -70,6 +70,8 @@ class ApiKey(Scoped3Mixin, BitcasterBaseModel):
     class Meta:
         ordering = ("name",)
         unique_together = (("name", "user"),)
+        verbose_name = _("Api Key")
+        verbose_name_plural = _("Api Keys")
 
     def get_bae(self) -> str:
         password = self.key

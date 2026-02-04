@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.db import transaction
 
+from ..constants import bitcaster
 from ..models import Group, Member
 from .utils import get_column_mapping, parse_kv
 
@@ -60,9 +61,7 @@ def import_members_csv(f: Iterable[bytes], group: "Group|None" = None) -> tuple[
 
     with transaction.atomic():
         created_count = len(Member.objects.bulk_create(data, ignore_conflicts=True))
-        if group and emails_to_add:
-            # Re-fetch the members to ensure they are attached to the database
-            members_to_add = Member.objects.filter(email__in=emails_to_add)
-            group.user_set.add(*members_to_add)
+        if emails_to_add:
+            bitcaster.local_organization.enroll_users(Member.objects.filter(email__in=emails_to_add), group)
 
     return created_count, processed

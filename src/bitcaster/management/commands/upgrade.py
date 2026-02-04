@@ -8,11 +8,11 @@ from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
 from django.core.validators import validate_email
-from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from flags.state import enable_flag
 
 from bitcaster.config import env
 from bitcaster.constants import Bitcaster, bitcaster
+from bitcaster.runner.manager import init_scheduler
 
 if TYPE_CHECKING:
     from argparse import ArgumentParser
@@ -131,7 +131,7 @@ class Command(BaseCommand):
                 call_command("check", deploy=True, verbosity=self.verbosity - 1)
             if self.static:
                 static_root = Path(str(settings.STATIC_ROOT))
-                echo(f"Run collectstatic to: '{static_root}' - '{static_root.absolute()}")
+                echo(f"Run collectstatic to: '{static_root}' '({static_root.absolute()})")
                 if not static_root.exists():
                     static_root.mkdir(parents=True)
                 call_command("collectstatic", **extra)
@@ -188,23 +188,12 @@ class Command(BaseCommand):
             Group.objects.get_or_create(name="Admins")
             Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
 
-            # Inside the function you want to add task dynamically
-            schedule_every_minute, _ = CrontabSchedule.objects.get_or_create(minute="*/1")
-            PeriodicTask.objects.get_or_create(
-                name="occurence_processor",
-                defaults={"task": "bitcaster.tasks.schedule_occurrences", "crontab": schedule_every_minute},
-            )
-
-            schedule_every_night, _ = CrontabSchedule.objects.get_or_create(hour=3, minute=30)
-            PeriodicTask.objects.get_or_create(
-                name="purge_occurrences",
-                defaults={"task": "bitcaster.tasks.purge_occurrences", "crontab": schedule_every_night},
-            )
             if not (org := Organization.objects.local().first()):
                 org = Organization.objects.create(name="Organization", owner=admin)
 
             if not Project.objects.local().exists():
                 Project.objects.create(name="Project", owner=admin, organization=org)
+            init_scheduler()
 
             echo("Upgrade completed", style_func=self.style.SUCCESS)
         except ValidationError as e:

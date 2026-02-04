@@ -1,0 +1,17 @@
+{% load i18n static %}
+<div class="flex items-center ml-auto">
+    <div class="flex flex-row group items-center leading-none relative">
+        <div class="flex gap-4 items-center mr-4">
+            {% include "bitcaster/unfold/consoles.html" %}
+            {% if environment %}
+                {% include "unfold/helpers/label.html" with text=environment.0 type=environment.1 %}
+            {% endif %}
+            {% if extra_userlinks %}
+                {{ extra_userlinks }}
+            {% endif %}
+        </div>
+    </div>
+    {% if nav_global_side %}
+        {{ nav_global_side }}
+    {% endif %}
+</div>

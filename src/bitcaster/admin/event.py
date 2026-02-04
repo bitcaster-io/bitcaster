@@ -10,7 +10,7 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from unfold import widgets as uwidgets
 
 from bitcaster.models import Assignment, Event
@@ -19,7 +19,7 @@ from ..constants import bitcaster
 from ..forms.event import EventChangeForm
 from ..state import state
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
-from .message import Message
+from .message import MessageTemplate
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:
@@ -30,8 +30,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class MessageInline(admin.TabularInline[Message, Event]):
-    model = Message
+class MessageInline(admin.TabularInline[MessageTemplate, Event]):
+    model = MessageTemplate
     extra = 0
     fields = [
         "name",
@@ -65,9 +65,11 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
             None,
             {
                 "fields": (
+                    ("application",),
                     ("name", "slug"),
                     ("description",),
-                    ("active", "newsletter", "occurrence_retention"),
+                    ("active", "newsletter", "paused"),
+                    ("occurrence_retention",),
                 )
             },
         ),
@@ -83,13 +85,18 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
     class Media:
         js = ["admin/js/vendor/jquery/jquery.js", "admin/js/jquery.init.js", "bitcaster/js/copy.js"]
 
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
+        return super().get_queryset(request).select_related("application__project__organization")
+
+    def has_delete_permission(self, request: HttpRequest, obj: Event | None = None) -> bool:
+        if obj and obj.application.project.organization.name == bitcaster.ORGANIZATION:
+            return False
+        return super().has_delete_permission(request, obj)
+
     def get_fieldsets(self, request: HttpRequest, obj: Event | None = None) -> "_FieldsetSpec":
         if obj:
             return self._fieldsets
         return [(None, {"fields": self.get_fields(request, obj)})]
-
-    def get_queryset(self, request: HttpRequest) -> QuerySet[Event]:
-        return super().get_queryset(request).select_related("application__project__organization")
 
     def delete_queryset(self, request: HttpRequest, queryset: QuerySet[Event]) -> None:
         queryset.exclude(application__project__organization__name=bitcaster.ORGANIZATION).delete()
@@ -116,7 +123,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "Event | None" = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:
-            return ["application", "slug", "name"]
+            return ["application", "slug"]
         return []
 
     def get_fields(self, request: HttpRequest, obj: Event | None = None) -> Sequence[str | Sequence[str]]:
@@ -172,4 +179,25 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
     def notifications(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_notification_changelist")
         event: Event = button.context["original"]
-        button.href = f"{url}?event__exact={event.pk}&event__application__exact={event.application.pk}"
+        if event:
+            button.href = f"{url}?event__exact={event.pk}&event__application__exact={event.application.pk}"
+        else:
+            button.visible = False
+
+    @link(change_form=True, change_list=False)
+    def occurrences(self, button: ButtonWidget) -> None:
+        url = reverse("admin:bitcaster_occurrence_changelist")
+        event: Event = button.context["original"]
+        if event:
+            button.href = f"{url}?event__exact={event.pk}&event__application__exact={event.application.pk}"
+        else:
+            button.visible = False
+
+    @link(change_form=True, change_list=False)
+    def messages(self, button: ButtonWidget) -> None:
+        url = reverse("admin:bitcaster_messagetemplate_changelist")
+        event: Event = button.context["original"]
+        if event:
+            button.href = f"{url}?event__exact={event.pk}"
+        else:
+            button.visible = False

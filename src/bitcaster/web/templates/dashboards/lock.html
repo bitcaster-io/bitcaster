@@ -1,0 +1,43 @@
+{% extends 'dashboards/_base.html' %}
+{% block content %}
+    <div x-data="{ open_lock: true, open_pause: false, activeTab: 'open_lock' }">
+        <div class="border-b-1 border-default mb-3">
+            <ul class="flex flex-wrap text-sm font-medium text-center text-body  -mb-px">
+                <li class="me-2" x-bind:class="(activeTab == 'open_lock' && 'text-red-500 border-b-red-500 border-b-2') || 'border-none'">
+                    <a @click="open_lock = true; open_pause = false; activeTab = 'open_lock'"
+                       class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Lock</a>
+                </li>
+                <li class="me-2" x-bind:class="(activeTab == 'open_pause' && 'text-red-500 border-b-red-500 border-b-2') || 'border-none'">
+                    <a @click="open_pause = true; open_lock = false; activeTab = 'open_pause'"
+                       class="inline-block p-4 text-fg-brand bg-neutral-secondary-soft rounded-t-base active cursor-pointer">Pause</a>
+                </li>
+            </ul>
+        </div>
+        {% for group, iforms in forms.items %}
+            <div class="grid grid-cols-2 gap-3" x-cloak x-transition x-show="open_{{ group }}">
+                {% for form in iforms %}
+                    <form method="post" id="{{ group }}-{{ form.form_id }}">
+                        {% csrf_token %}
+                        {#                        {% component "unfold/components/card.html" %}#}
+                        <div class="border-1 rounded border-gray-700">
+                            <div class="p-4">
+                                {#                            {% component "unfold/components/title.html" %}#}
+                                <div class="text-2xl mb-2">
+                                    {{ form.title }}
+                                </div>
+                                {#                            {% endcomponent %}#}
+                                {#                            {% component "unfold/components/text.html" %}#}
+                                {{ form }}
+                            </div>
+                            <div class="form-submit-row mt-3">
+                                <input type="submit" class="button button-primary" value="{{ group|title }}" />
+                            </div>
+                            {#                            {% endcomponent %}#}
+                        </div>
+                        {#                        {% endcomponent %}#}
+                    </form>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

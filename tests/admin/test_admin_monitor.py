@@ -22,8 +22,6 @@ from bitcaster.state import state
 if TYPE_CHECKING:
     from django.db.models.options import Options
     from django.http import HttpRequest
-    from webtest.forms import Form as WebTestForm
-    from webtest.response import TestResponse
 
 
 @pytest.fixture
@@ -43,16 +41,9 @@ def app(django_app_factory: MixinWithInstanceVariables, rf: RequestFactory) -> D
 
 @pytest.fixture
 def monitor(db: Any) -> Monitor:
-    from testutils.factories.monitor import MonitorFactory, PeriodicTaskFactory
+    from testutils.factories import MonitorFactory
 
-    return MonitorFactory(
-        agent=fqn(AgentFileSystem),
-        config={
-            "path": ".",
-        },
-        schedule=PeriodicTaskFactory(interval=None),
-        data={},
-    )
+    return MonitorFactory.create(agent=fqn(AgentFileSystem), config={"path": "."}, data={})
 
 
 def test_add(app: DjangoTestApp, event: "Event") -> None:
@@ -63,26 +54,13 @@ def test_add(app: DjangoTestApp, event: "Event") -> None:
     res.forms["monitor_form"]["agent"] = fqn(AgentFileSystem)
     res = res.forms["monitor_form"].submit()
     assert res.status_code == 302
-    # configure
-    res = res.follow()
-    monitor: Monitor = res.context["original"]
-    res.forms["config-form"]["path"] = "tests"
-    res.forms["config-form"]["recursive"] = True
-    res.forms["config-form"]["add"] = True
-    res = res.forms["config-form"].submit()
-    assert res.status_code == 302
-    # schedule
-    res = res.follow()
-    res = res.forms["action-form"].submit()
-    assert res.status_code == 302
-    assert res.location == monitor.get_admin_change()
 
 
-def test_change(app: DjangoTestApp, monitor: Monitor) -> None:
+def test_change(app: DjangoTestApp, monitor: "Monitor") -> None:
     url = reverse(admin_urlname(Monitor._meta, SafeString("change")), args=[monitor.pk])
     res = app.get(url)
     res = res.forms["monitor_form"].submit()
-    assert res.status_code == 302
+    assert res.status_code == 302, res.showbrowser()
 
 
 def test_configure(app: DjangoTestApp, monitor: "Monitor") -> None:
@@ -95,19 +73,6 @@ def test_configure(app: DjangoTestApp, monitor: "Monitor") -> None:
     assert res.status_code == 200
 
     res = app.post(url, {"path": "/"})
-    assert res.status_code == 302
-
-
-def test_schedule(app: DjangoTestApp, monitor: "Monitor") -> None:
-    url = reverse("admin:bitcaster_monitor_change", args=[monitor.pk])
-    res: "TestResponse" = app.get(url)
-    res = res.click("Schedule")
-    frm: "WebTestForm" = res.forms["action-form"]
-    frm["crontab"] = ""
-    res = frm.submit()
-    assert res.status_code == 200
-    res.forms["action-form"]["crontab"] = monitor.schedule.crontab.pk
-    res = res.forms["action-form"].submit()
     assert res.status_code == 302
 
 
