@@ -45,3 +45,9 @@ jobs:
         if: steps.changes.outputs.code_settings == 'true'
         with:
           labels: 'Change Linters Configuration'
+
+      - name: GitHub Configuration
+        uses: actions-ecosystem/action-add-labels@v1
+        if: steps.changes.outputs.actions == 'true'
+        with:
+          labels: 'GitHub Actions'
