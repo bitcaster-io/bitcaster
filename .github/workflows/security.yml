@@ -36,7 +36,7 @@ jobs:
         name: Check for backend file changes
         uses: dorny/paths-filter@v3
         with:
-          base: ${{ github.ref }}
+#          base: ${{ github.ref }}
           token: ${{ github.token }}
           filters: .github/file-filters.yml
 
@@ -78,7 +78,6 @@ jobs:
         with:
           scan-type: 'fs'
           scan-ref: '.'
-          files: 'uv.lock'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
