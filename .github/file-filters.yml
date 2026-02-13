@@ -4,7 +4,7 @@ docker: &docker
   - added|modified: './docker/*'
 
 dependencies: &dependencies
-  - 'pdm.lock'
+  - 'uv.lock'
   - 'pyproject.toml'
 
 actions: &actions
