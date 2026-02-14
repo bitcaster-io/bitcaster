@@ -46,11 +46,16 @@ migrations:
 
 code_settings: &code_settings
   - '.pre-commit-config.yaml'
-  - 'pytest.ini'
-  - 'tox.ini'
+  - '.trivyignore'
+  - 'bandit.yaml'
+  - 'djlint.toml'
+  - 'mypy.ini'
   - 'pyproject.toml'
+  - 'pytest.ini'
   - 'ruff.toml'
-  - 'mypy.toml'
+  - 'tox.ini'
+  - 'trivy.yaml'
+  - 'transifex.yml'
 
 
 lint:
