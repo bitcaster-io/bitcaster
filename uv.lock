@@ -253,6 +253,7 @@ dependencies = [
     { name = "drf-spectacular-sidecar" },
     { name = "httpagentparser" },
     { name = "jmespath" },
+    { name = "jmespath-filters" },
     { name = "jsonschema" },
     { name = "mailjet-rest" },
     { name = "msgpack" },
@@ -390,7 +391,7 @@ requires-dist = [
     { name = "django-tailwind", specifier = ">=4.4.2" },
     { name = "django-timezone-field", specifier = ">=6.1" },
     { name = "django-tinymce", specifier = ">=4" },
-    { name = "django-unfold", specifier = ">=0.72" },
+    { name = "django-unfold", specifier = "<0.77" },
     { name = "djangorestframework", specifier = ">=3.15" },
     { name = "dramatiq", specifier = ">=2" },
     { name = "drf-extensions", specifier = ">=0.7.1" },
@@ -398,6 +399,7 @@ requires-dist = [
     { name = "drf-spectacular-sidecar", specifier = ">=2024.4.1" },
     { name = "httpagentparser", specifier = ">=1.9.5" },
     { name = "jmespath", specifier = ">=1.0.1" },
+    { name = "jmespath-filters", specifier = ">=0.9.1" },
     { name = "jsonschema", specifier = ">=4.24" },
     { name = "mailjet-rest", specifier = ">=1.3.4" },
     { name = "msgpack", specifier = ">=1.1.2" },
@@ -1365,14 +1367,14 @@ wheels = [
 
 [[package]]
 name = "django-unfold"
-version = "0.75.0"
+version = "0.76.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5c/d3/042b5a20c9078efeafb5830be32fdc2c7e258ce1fa011ec4e96f45550fe9/django_unfold-0.75.0.tar.gz", hash = "sha256:5b55e5f9a72ba8a2b038317ea0ab4ff183098ac4db294913115d0362a62e14af", size = 1102853, upload-time = "2026-01-02T09:35:04.834Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c3/dc/041d8144fb4503dea02bd73059c842395dfc8b6e7e14e9c7e16b65a43696/django_unfold-0.76.0.tar.gz", hash = "sha256:26d556aaf0f14980f102ea680af27887ac8508085a56c5c797da28c7ca165ec8", size = 1103435, upload-time = "2026-01-12T12:10:11.943Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/35/02/fa76a4579eeba7ae85daec9b6553a4af62a3e6bc43e993a344e420ad8363/django_unfold-0.75.0-py3-none-any.whl", hash = "sha256:1fa6d1ca4ffea27a3fe10a71a0fce348d41c211c1c307bef2e8c6a02ff41f8f3", size = 1218603, upload-time = "2026-01-02T09:35:03.312Z" },
+    { url = "https://files.pythonhosted.org/packages/b1/17/9da3c6fd822dfe9bd1ef3e2486d4994df1456cf21de91594b79b982511a6/django_unfold-0.76.0-py3-none-any.whl", hash = "sha256:4323222ec06c73f9210196646447e90d4bc7464c2c5fd16bcf722fdc9c8ed4a7", size = 1219446, upload-time = "2026-01-12T12:10:10.118Z" },
 ]
 
 [[package]]
@@ -1875,6 +1877,15 @@ sdist = { url = "https://files.pythonhosted.org/packages/00/2a/e867e8531cf3e36b4
 wheels = [
     { url = "https://files.pythonhosted.org/packages/31/b4/b9b800c45527aadd64d5b442f9b932b00648617eb5d63d2c7a6587b7cafc/jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980", size = 20256, upload-time = "2022-06-17T18:00:10.251Z" },
 ]
+
+[[package]]
+name = "jmespath-filters"
+version = "0.9.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "jmespath" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e7/b7/2e216444b6a96a400e48f29090738a57ad3c9f658d6c52b212900f02e84e/jmespath_filters-0.9.2.tar.gz", hash = "sha256:b89f9f4e9feb40afdc2f4daf3782ae9416c4168201dfc62d27a6cfd963a7a69b", size = 8006, upload-time = "2025-12-16T17:14:10.616Z" }
 
 [[package]]
 name = "jsbeautifier"

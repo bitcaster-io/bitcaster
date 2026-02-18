@@ -18,27 +18,6 @@ EXAMPLE_PAYLOAD = {
 pytestmark = [pytest.mark.django_db]
 
 
-@pytest.mark.parametrize("statement", ["AND", "OR"])
-def test_simple_filter(statement: str) -> None:
-    from bitcaster.models import Notification
-
-    # now we test a non-matching filter
-    result = Notification.match_line_filter(
-        {"{statement}": ["people[?general.id==`999`].general | [0]"]}, EXAMPLE_PAYLOAD
-    )
-
-    assert result is False
-
-
-def test_plain_filter() -> None:
-    # now we test a matching filter
-    from bitcaster.models import Notification
-
-    result = Notification.match_line_filter("status == 'terminated: completed'", {"status": "terminated: completed"})
-
-    assert result is True
-
-
 @pytest.mark.parametrize(
     "payload, matches",
     [
@@ -67,12 +46,13 @@ def test_queryset_filter(payload: Dict[str, str], matches: bool) -> None:
         pytest.param({"NOT": "foo=='doo'"}, True, id="not-ok"),
         pytest.param({"NOT": "foo=='bar'"}, False, id="not-nok"),
         pytest.param({}, True, id="empty"),
+        pytest.param({"AND": [{"NOT": "foo=='doo'"}, "foo=='bar'"]}, True, id="nested"),
     ],
 )
 def test_jmespath_filter(filter_rules: Optional[Dict[str, Any] | str], result: bool) -> None:
     from bitcaster.models import Notification
 
-    assert Notification.match_line_filter(filter_rules_dict=filter_rules, payload={"foo": "bar"}) is result
+    assert Notification().match_filter(rules=filter_rules, payload={"foo": "bar"}) is result
 
 
 @pytest.mark.parametrize(

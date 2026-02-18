@@ -1,13 +1,13 @@
 import logging
 from typing import TYPE_CHECKING, Any, Generator
 
-import jmespath
 import yaml
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+from jmespath_filters import Filter
 
 from ..dispatchers.base import Payload
 from ..utils.filtering import FilterManager
@@ -168,24 +168,6 @@ class Notification(BitcasterBaseModel):
 
         return None, None
 
-    @classmethod
-    def match_line_filter(cls, filter_rules_dict: "YamlPayload", payload: "YamlPayload") -> bool:
-        if not filter_rules_dict:
-            return True
-
-        if isinstance(filter_rules_dict, str):
-            # this is a leaf, apply the filter
-            return bool(jmespath.search(filter_rules_dict, payload))
-
-        # it is not a str hence it must be a dict with one of AND, OR, NOT
-        if and_stm := filter_rules_dict.get("AND"):
-            return all(cls.match_line_filter(rules, payload) for rules in and_stm)
-        if or_stm := filter_rules_dict.get("OR"):
-            return any(cls.match_line_filter(rules, payload) for rules in or_stm)
-        if not_stm := filter_rules_dict.get("NOT"):
-            return not cls.match_line_filter(not_stm, payload)
-        return False
-
     def match_filter(self, payload: "YamlPayload", rules: dict[str, Any] | str | None = None) -> bool:
         """Check if given payload matches rules.
 
@@ -193,7 +175,7 @@ class Notification(BitcasterBaseModel):
         """
         if not rules:
             rules = yaml.safe_load(self.payload_filter or "")
-        return self.match_line_filter(rules, payload)
+        return Filter(rules).match(payload) if rules else True
 
     def get_messages(self, channel: "Channel") -> QuerySet["MessageTemplate"]:
         from .messagetemplate import MessageTemplate

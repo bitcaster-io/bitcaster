@@ -45,6 +45,7 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     )
     fieldsets = (
         (_("General"), {"classes": ["tab"], "fields": ["name", "event", "environments"]}),
+        (_("Payload filter"), {"classes": ["tab"], "fields": ["payload_filter"]}),
         (
             _("Distribution"),
             {

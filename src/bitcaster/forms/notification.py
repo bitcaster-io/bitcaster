@@ -1,8 +1,10 @@
 # mypy: disable-error-code="assignment"
 from typing import Any
 
+import yaml
 from django import forms
 from django.core.exceptions import ValidationError
+from jmespath_filters import Filter
 
 from bitcaster.models import Event, Notification, User
 from bitcaster.utils.filtering import validate_filters, validate_lookups, validate_schema
@@ -12,6 +14,16 @@ class NotificationForm(forms.ModelForm["Notification"]):
     class Meta:
         model = Notification
         exclude = ("config", "locked")  # noqa: DJ006
+
+    def clean_payload_filter(self) -> None:
+        payload_filter = self.cleaned_data.get("payload_filter", None)
+        if payload_filter:
+            try:
+                rules = yaml.safe_load(payload_filter)
+                Filter.from_json(rules)
+            except Exception as exc:
+                raise ValidationError(str(exc), code="payload_filter") from exc
+        return payload_filter
 
     def clean(self) -> dict[str, Any]:
         evt: Event

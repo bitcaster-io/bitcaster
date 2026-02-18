@@ -6,14 +6,13 @@
 
 Prerequisites:
 
-- This project uses [pdm](https://github.com/pdm-project/pdm#installation) as package manager
+- This project uses [uv](https://docs.astral.sh/uv/) as package manager
 - A Postgres DB v14+
 - A Redis server
 
 !!! note
 
-    PDM will create a virtualenv in <project_root>/.venv, and install dependencies into it.
-    If you wand to change this behaviour please read the [PDM Documentation](https://pdm-project.org/en/latest/usage/venv/)
+     Uv will create a virtualenv in <project_root>/.venv, and install dependencies into it.
 
 
 ## Create virtualenvironment
