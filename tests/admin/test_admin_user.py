@@ -1,7 +1,9 @@
 from typing import TYPE_CHECKING
 
 import pytest
+from django.contrib import messages
 from django.urls import reverse
+from testutils.helpers import assert_message
 
 from bitcaster.models import User
 
@@ -42,3 +44,23 @@ def test_toggle_staff(app: "DjangoTestApp") -> None:
     frm["action"] = "toggle_staff"
     frm.submit()
     assert not User.objects.filter(is_staff=False).exists()
+
+
+def test_create_user(app: "DjangoTestApp") -> None:
+    url = reverse("admin:bitcaster_user_changelist")
+    res = app.get(url)
+    res = res.click(href=reverse("admin:bitcaster_user_add"))
+    frm = res.forms["user_form"]
+    frm["username"] = "new-user"
+    frm["usable_password"] = "false"
+    res = frm.submit().follow()
+    assert_message(res, "was added successfully. You may edit it again below.", messages.SUCCESS)
+
+
+def test_change_password(app: "DjangoTestApp", user) -> None:
+    url = reverse("admin:bitcaster_user_change", args=[user.id])
+    res = app.get(url)
+    res = res.click("this form")
+    res.forms["user_form"]["password1"] = "new-password"
+    res.forms["user_form"]["password2"] = "new-password"
+    res = res.forms["user_form"].submit().follow()
