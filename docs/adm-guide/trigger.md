@@ -1,12 +1,12 @@
 # Trigger an Event
 
-You can trigger an event by sending a `POST` request to its trigger URL. This will create a new [Occurrence](../occurrence/) and start the process of sending notifications to the subscribers of the event.
+You can trigger an event by sending a `POST` request to its trigger URL. This will create a new <glossary:Occurrence> and start the process of sending notifications to the subscribers of the event.
 
 **Endpoint:** `POST /api/o/{org}/p/{proj}/a/{app}/e/{event}/trigger/`
 
 ## Authentication
 
-Authentication is performed via an [API Key](../api_key/) sent in the `Authorization` header.
+Authentication is performed via an <glossary:API Key> sent in the `Authorization` header.
 
 `Authorization: Key <YOUR_API_KEY>`
 
@@ -36,7 +36,7 @@ The object has two main keys:
 - `include`: A list of rules to select users.
 - `exclude`: A list of rules to filter out users from the selection.
 
-The structure of the rules follows the logic described in the [filtering documentation](../../dev-guide/filtering).
+The structure of the rules follows the logic described in the [filtering documentation](../dev-guide/filtering.md).
 
 **Example:**
 

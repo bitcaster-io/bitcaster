@@ -24,7 +24,7 @@ dependencies = [
   "click>=8.3.1",
   "colorlog>=6.10.1",
   "cron-descriptor>=2.0.6",
-  "cryptography==45.0.3",
+  "cryptography>=45.0.5",
   "django>=5.2.1,<6",
   "django-ace>=1.43.3",
   "django-admin-extra-buttons>=2.1.1",
@@ -94,6 +94,7 @@ scripts.bc = "bitcaster.cli.__main__:cli"
 
 [dependency-groups]
 dev = [
+  "bandit[sarif]>=1.9.3",
   "bump2version>=1.0.1",
   "coverage>=7.8.2",
   "django-debug-permissions>=1",

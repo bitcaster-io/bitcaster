@@ -1,15 +1,16 @@
 ---
+description:  ""
 template: term.html
-tags:
-   - Agent
 terms:
    - glossary:
          - Agent
          - AgentFileSystem
          - AgentFTP
+tags:
+   - Agent
 
 ---
-# Agents
+# Agent
 
 
 Bitcaster component that implements the low level protocol to check external resources.
