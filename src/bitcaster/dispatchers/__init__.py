@@ -6,6 +6,7 @@ from .mailjet import MailJetDispatcher
 from .sendgrid import SendGridDispatcher
 from .slack import SlackDispatcher
 from .sys import SystemDispatcher
+from .teams import TeamsDispatcher
 from .twilio import TwilioSMS
 from .user_message import UserMessageDispatcher
 
@@ -18,6 +19,7 @@ __all__ = [
     "SendGridDispatcher",
     "SlackDispatcher",
     "SystemDispatcher",
+    "TeamsDispatcher",
     "TwilioSMS",
     "UserMessageDispatcher",
 ]

@@ -51,10 +51,12 @@ INSTALLED_APPS = [
     "smart_selects",
     "adminfilters",
     "debug_toolbar",
+    # -- start editors
     "jsoneditor",
     "django_svelte_jsoneditor",
     "django_ace",
     "tinymce",
+    # -- end editors
     "reversion",
     "taggit",
     # "treebeard",

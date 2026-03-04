@@ -4,6 +4,7 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django_ace import AceWidget
 from django_svelte_jsoneditor.widgets import SvelteJSONEditorWidget
 from tinymce.widgets import TinyMCE
 
@@ -31,6 +32,9 @@ class MessageTemplateEditForm(forms.ModelForm[MessageTemplate]):
     html_content = forms.CharField(
         required=False, widget=TinyMCE(mce_attrs={"setup": "setupTinyMCE", "height": "400px"})
     )
+    markdown_content = forms.CharField(
+        required=False, widget=AceWidget(width="90%", height=None, toolbar=False, wordwrap=True, mode="markdown")
+    )
     context = forms.JSONField(widget=SvelteJSONEditorWidget(), required=False)
 
     @property
@@ -52,7 +56,7 @@ class MessageTemplateEditForm(forms.ModelForm[MessageTemplate]):
 
     class Meta:
         model = MessageTemplate
-        fields = ("subject", "content", "html_content", "context", "recipient")
+        fields = ("subject", "content", "html_content", "context", "markdown_content", "recipient")
 
 
 class MessageTemplateRenderForm(MessageTemplateEditForm):

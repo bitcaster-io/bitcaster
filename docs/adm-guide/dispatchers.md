@@ -27,6 +27,15 @@ Use GMail server to send emails
 
 <https://slack.com/>
 
+### Microsoft Teams
+
+<https://www.microsoft.com/en-us/microsoft-teams/group-chat-software>
+
+Uses **Incoming Webhooks** to send messages to a specific Teams channel.
+Supports Markdown formatting.
+
+See [Create an Incoming Webhook](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook) for instructions on how to generate the Webhook URL.
+
 ## SMS
 
 ### Twilio SMS

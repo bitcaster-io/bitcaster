@@ -107,6 +107,9 @@ class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
     def support_text(self) -> bool:
         return self.channel.dispatcher.protocol.has_capability(Capability.TEXT)
 
+    def support_markdown(self) -> bool:
+        return self.channel.dispatcher.protocol.has_capability(Capability.MARKDOWN)
+
     def clone(self, channel: Channel) -> "MessageTemplate":
         return MessageTemplate.objects.get_or_create(
             organization=self.organization,
