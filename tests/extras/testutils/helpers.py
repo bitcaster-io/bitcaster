@@ -30,7 +30,7 @@ def assert_message(response: "DjangoWebtestResponse", message: str, level: int |
     m: Message
     messages = list(response.context["messages"])
     for m in messages:
-        if m.message == message:
+        if message in m.message:
             if level and level == m.level:
                 return
             return

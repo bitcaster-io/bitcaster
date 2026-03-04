@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 DEVELOP = {
     "DEBUG": True,
-    "SECRET_KEY": "only-development-secret-key",
+    "SECRET_KEY": "only-development-secret-key",  # nosec B105
 }
 
 
