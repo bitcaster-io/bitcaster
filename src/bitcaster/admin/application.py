@@ -108,18 +108,21 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
     def configure(self, request: HttpRequest, pk: str) -> HttpResponse:
         obj: Application = self.get_object_or_404(request, pk)
         context = self.get_common_context(request, pk, action_title=_("Advanced configuration"))
-        form_class = ApplicationAdvancedConfigForm
         if request.method == "POST":
-            config_form = form_class(request.POST)
+            config_form = ApplicationAdvancedConfigForm(request.POST)
             if config_form.is_valid():
                 obj.advanced_configuration = config_form.cleaned_data
                 obj.save()
                 self.message_user(request, _("Advanced configuration saved."))
                 return HttpResponseRedirect(reverse("admin:bitcaster_application_change", args=(obj.pk,)))
         else:
-            initial = {k: v for k, v in obj.advanced_configuration.items() if k in form_class.declared_fields}
-            config_form = form_class(initial=initial)
+            initial = {
+                k: v
+                for k, v in obj.advanced_configuration.items()
+                if k in ApplicationAdvancedConfigForm.declared_fields
+            }
+            config_form = ApplicationAdvancedConfigForm(initial=initial)
 
-        fs = (("", {"fields": form_class.declared_fields}),)
+        fs = (("", {"fields": ApplicationAdvancedConfigForm.declared_fields}),)
         context["adminform"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)  # type: ignore[arg-type]
         return TemplateResponse(request, "bitcaster/admin/application/configure.html", context)

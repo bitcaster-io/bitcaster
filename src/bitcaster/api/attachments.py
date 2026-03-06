@@ -1,8 +1,6 @@
-from django.http import FileResponse
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import parsers, serializers
-from rest_framework.exceptions import NotFound
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -12,7 +10,6 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_409_CONFLICT,
 )
-from rest_framework.views import APIView
 
 from bitcaster.api.base import SecurityMixin
 from bitcaster.exceptions import AttachmentsNotSupportedError
@@ -127,26 +124,3 @@ class AttachmentView(SecurityMixin, GenericAPIView):
     def verify_attachment_support(self, application: Application) -> None:
         if not application.advanced_configuration.get("support_attachment"):
             raise AttachmentsNotSupportedError
-
-
-class AttachmentDownloadView(SecurityMixin, APIView):
-    http_method_names = ["get"]
-    # XXX: this is the only way to bypass grants, as the default
-    #      permission classes require at least one.
-    permission_classes = []
-
-    @extend_schema(description=_("Download an attachment"))
-    def get(self, request: Request, *args, **kwargs):
-        application = get_object_or_404(
-            Application,
-            slug=self.kwargs["app"],
-            project__slug=self.kwargs["prj"],
-            project__organization__slug=self.kwargs["org"],
-        )
-        correlation_id = kwargs.get("correlation_id")
-        if not correlation_id:
-            raise NotFound(_("Downloading an attachment requires its correlation ID."))
-
-        attachment = get_object_or_404(Attachment, application=application, correlation_id=correlation_id)
-
-        return FileResponse(attachment.document, content_type=attachment.mime_type, as_attachment=True)

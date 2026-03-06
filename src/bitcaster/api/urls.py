@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 
 from .application import ApplicationView
-from .attachments import AttachmentDownloadView, AttachmentView
+from .attachments import AttachmentView
 from .channel import ChannelView
 from .distribution_list import DistributionMembersView, DistributionView
 from .event import EventList, EventTrigger
@@ -53,10 +53,5 @@ urlpatterns = [
         "o/<slug:org>/p/<slug:prj>/a/<slug:app>/attachment/<slug:correlation_id>/",
         AttachmentView.as_view(),
         name="attachment-upload-with-correlation-id",
-    ),
-    path(
-        "o/<slug:org>/p/<slug:prj>/a/<slug:app>/attachment/<slug:correlation_id>/download/",
-        AttachmentDownloadView.as_view(),
-        name="attachment-download",
     ),
 ]

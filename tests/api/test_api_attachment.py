@@ -247,23 +247,3 @@ def test_attachment_list(
     assert sorted(response.json(), key=lambda j: j["correlation_id"]) == sorted(
         [expected_attachment_json_1, expected_attachment_json_2], key=lambda j: j["correlation_id"]
     )
-
-
-def test_download_attachment(client: APIClient, data: "Context", uploaded_file: SimpleUploadedFile):
-    post_url = _base_url()
-    post_response = client.post(post_url, data={"document": uploaded_file}, format="multipart")
-    correlation_id = post_response.json()["correlation_id"]
-
-    download_url = f"{_base_url()}{correlation_id}/download/"
-    response = client.get(download_url)
-    assert response.status_code == status.HTTP_200_OK
-    assert response["Content-Type"] == uploaded_file.content_type
-    # NOTE: Django "mangles" filenames once uploaded
-    assert "attachment;" in response["Content-Disposition"]
-    assert response.getvalue() == b"Test text file"
-
-
-def test_download_non_existing_attachment_returns_not_found(client: APIClient, data: "Context"):
-    download_url = f"{_base_url()}this-id-does-not-exist/download/"
-    response = client.get(download_url)
-    assert response.status_code == status.HTTP_404_NOT_FOUND
