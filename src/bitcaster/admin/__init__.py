@@ -2,6 +2,7 @@ from .address import AddressAdmin
 from .api_key import ApiKeyAdmin
 from .application import ApplicationAdmin
 from .assignment import AssignmentAdmin
+from .attachment import AttachmentAdmin
 from .channel import ChannelAdmin
 from .distribution import DistributionListAdmin
 from .event import EventAdmin
@@ -25,6 +26,7 @@ __all__ = [
     "ApiKeyAdmin",
     "ApplicationAdmin",
     "AssignmentAdmin",
+    "AttachmentAdmin",
     "ChannelAdmin",
     "DistributionListAdmin",
     "EventAdmin",

@@ -3,6 +3,7 @@ from django.db.models import Model
 from . import base
 from .address import AddressFactory
 from .assignment import AssignmentFactory
+from .attachment import AttachmentFactory
 from .browser import BrowserFactory
 from .channel import ChannelFactory
 from .distribution import DistributionListFactory
@@ -29,6 +30,7 @@ __all__ = [
     "ApiKeyFactory",
     "ApplicationFactory",
     "AssignmentFactory",
+    "AttachmentFactory",
     "BrowserFactory",
     "BrowserFactory",
     "ChannelFactory",

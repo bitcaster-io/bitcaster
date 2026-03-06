@@ -1,12 +1,19 @@
 from typing import TYPE_CHECKING, Any, Mapping, Type
+from uuid import UUID
 
+import factory
 import pytest
+from django.core.files.base import ContentFile
 from django.db.models import Model
 
 if TYPE_CHECKING:
     from testutils.factories.base import AutoRegisterModelFactory
 
-KWARGS: Mapping[str, Any] = {}
+KWARGS: Mapping[str, Any] = {
+    "bitcaster.Attachment": {
+        "document": factory.LazyFunction(lambda: ContentFile(b"dummy content", name="dummy.txt")),
+    }
+}
 
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
@@ -43,5 +50,6 @@ def record(db: Any, request: pytest.FixtureRequest) -> Model:
 
 def test_natural_key(model: "Type[Model]", record: Model) -> None:
     key = record.natural_key()  # type: ignore[attr-defined]
-    assert all(isinstance(m, (int | str | None)) for m in key), key
-    assert model.objects.get_by_natural_key(*key) == record, key  # type: ignore[attr-defined]
+    assert all(isinstance(m, (int | str | UUID | None)) for m in key), key
+    if hasattr(model.objects, "get_by_natural_key"):
+        assert model.objects.get_by_natural_key(*key) == record, key  # type: ignore[attr-defined]

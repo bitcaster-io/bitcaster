@@ -12,6 +12,7 @@ from .user import User
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+    from django.db.models.fields.related_descriptors import RelatedManager
 
     from bitcaster.models import Channel, Event, MessageTemplate, Organization
 
@@ -47,9 +48,15 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
         default="[Bitcaster] ",
         help_text=_("Default prefix for messages supporting subject"),
     )
+    advanced_configuration = models.JSONField(
+        null=True, blank=True, help_text=_("Advanced configuration, i.e. for attachment support"), default=dict
+    )
 
     events: "QuerySet[Event]"
     objects = ApplicationManager()
+
+    if TYPE_CHECKING:
+        messagetemplate_set: RelatedManager[MessageTemplate]
 
     class Meta:
         ordering = ("name",)

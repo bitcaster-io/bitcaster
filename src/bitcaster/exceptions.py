@@ -1,7 +1,12 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from bitcaster.models.mixins import LockMixin
+
+
+class AttachmentsNotSupportedError(Exception):
+    pass
 
 
 class ConfigError(Exception):
@@ -30,3 +35,15 @@ class InactiveError(Exception):
 
     def __str__(self) -> str:
         return f"Unable to accept this event. {self.event.__class__.__name__} is paused or deactivated"
+
+
+class DownloadKeyDecryptionError(Exception):
+    pass
+
+
+class DownloadKeyExpiredError(Exception):
+    def __init__(self, expired_at: datetime):
+        self.expired_at = expired_at
+
+    def __str__(self) -> str:
+        return f"Key expired at {self.expired_at}"

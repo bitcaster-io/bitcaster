@@ -1,0 +1,25 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% load markdown i18n %}
+{% block extrahead %}
+    {{ block.super }}
+    {{ adminform.media }}
+{% endblock extrahead %}
+{% block content %}
+    <h1 class="text-xl font-medium">
+        {{ original.name }}
+    </h1>
+    <div class="help_text">
+        {{ admin_form.form|help_doc }}
+    </div>
+    {{ admin_form.form.non_field_errors }}
+    <form method="post" id="config-form">
+        {% csrf_token %}
+        {% for fieldset in adminform %}
+            {% include "admin/includes/fieldset.html" %}
+        {% endfor %}
+        <div id="submit-row" class="flex">
+            <input type="submit" value="Save" class="button button-primary mx-2" />
+            <a class="button" href="..">Back</a>
+        </div>
+    </form>
+{% endblock content %}

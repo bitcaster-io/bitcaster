@@ -6,6 +6,7 @@ from .address import AddressAdmin
 from .api_key import ApiKeyAdmin
 from .application import ApplicationAdmin
 from .assignment import AssignmentAdmin
+from .attachment import AttachmentAdmin
 from .channel import ChannelAdmin
 from .distribution import DistributionListAdmin
 from .event import EventAdmin
@@ -40,6 +41,7 @@ admin.site.register(models.Address, AddressAdmin)
 admin.site.register(models.ApiKey, ApiKeyAdmin)
 admin.site.register(models.Application, ApplicationAdmin)
 admin.site.register(models.Assignment, AssignmentAdmin)
+admin.site.register(models.Attachment, AttachmentAdmin)
 admin.site.register(models.Channel, ChannelAdmin)
 admin.site.register(models.DistributionList, DistributionListAdmin)
 admin.site.register(models.Event, EventAdmin)
