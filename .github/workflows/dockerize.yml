@@ -127,7 +127,7 @@ jobs:
           platforms: linux/amd64
 
       - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }} / ${{ steps.config.outputs.version }})
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         id: build
         env:
           HATCH_VCS_VERSION: ${{ steps.config.outputs.version }}
