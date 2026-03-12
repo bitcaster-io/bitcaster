@@ -1,8 +1,6 @@
 from django.db.models import TextChoices
 
 DEFAULT_GROUP_NAME = "Default"
-DEFAULT_OCCURRENCE_DEFAULT_RETENTION = 30
-DEFAULT_OCCURRENCE_MAX_RETENTION = 360
 
 
 class Scope(TextChoices):

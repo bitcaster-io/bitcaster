@@ -105,3 +105,5 @@ class SystemEvent(enum.Enum):
 
 
 bitcaster = Bitcaster()
+DEFAULT_OCCURRENCE_DEFAULT_RETENTION = 30
+DEFAULT_OCCURRENCE_MAX_RETENTION = 360

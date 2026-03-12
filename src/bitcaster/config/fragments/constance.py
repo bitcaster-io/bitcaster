@@ -1,8 +1,7 @@
 from bitcaster.auth.constants import (
     DEFAULT_GROUP_NAME,
-    DEFAULT_OCCURRENCE_DEFAULT_RETENTION,
-    DEFAULT_OCCURRENCE_MAX_RETENTION,
 )
+from bitcaster.constants import DEFAULT_OCCURRENCE_DEFAULT_RETENTION, DEFAULT_OCCURRENCE_MAX_RETENTION
 
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 

@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from bitcaster.admin.base import BitcasterModelAdmin
-from bitcaster.auth.constants import DEFAULT_OCCURRENCE_DEFAULT_RETENTION, DEFAULT_OCCURRENCE_MAX_RETENTION
+from bitcaster.constants import DEFAULT_OCCURRENCE_DEFAULT_RETENTION, DEFAULT_OCCURRENCE_MAX_RETENTION
 from bitcaster.forms.unfold import UnfoldForm
 
 
