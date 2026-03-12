@@ -1,7 +1,9 @@
+from constance.admin import Config
 from django.contrib import admin
 
 from bitcaster import models
 
+from . import CustomConstanceAdmin
 from .address import AddressAdmin
 from .api_key import ApiKeyAdmin
 from .application import ApplicationAdmin
@@ -36,6 +38,8 @@ admin.site.register(models.LogEntry, LogEntryAdmin)
 admin.site.unregister(FlagState)
 admin.site.register(FlagState, FlagStateAdmin)
 
+admin.site.unregister([Config])
+admin.site.register([Config], CustomConstanceAdmin)
 
 admin.site.register(models.Address, AddressAdmin)
 admin.site.register(models.ApiKey, ApiKeyAdmin)
