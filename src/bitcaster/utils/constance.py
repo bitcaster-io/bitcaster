@@ -2,6 +2,7 @@ import logging
 from typing import Any
 
 from django.forms import ChoiceField
+from unfold import forms
 
 from bitcaster.dispatchers.base import MessageProtocol
 from bitcaster.models import Channel
@@ -10,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class EmailChannel(ChoiceField):
+    widget = forms.UnfoldAdminSelectWidget
+
     def __init__(self, **kwargs: Any) -> None:
         ret = [
             (c["pk"], c["name"])
@@ -21,6 +24,8 @@ class EmailChannel(ChoiceField):
 
 
 class GroupSelect(ChoiceField):
+    widget = forms.UnfoldAdminSelectWidget
+
     def __init__(self, **kwargs: Any) -> None:
         from django.contrib.auth.models import Group
 
