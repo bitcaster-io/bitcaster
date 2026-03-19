@@ -24,7 +24,7 @@ Administrators are empowered with an easy to use console to choose how to receiv
 
 ## What is Bitcaster?
 
-Bitcaster (often referred to as Botcaster) is a powerful, system-to-user notification hub designed to solve the complexity of enterprise messaging. For a large organization, its value lies in centralizing communication logic, ensuring governance, and providing a highly personalized experience for recipients.
+Bitcaster is a powerful, system-to-user notification hub designed to solve the complexity of enterprise messaging. For a large organization, its value lies in centralizing communication logic, ensuring governance, and providing a highly personalized experience for recipients.
 
   Here are the key capabilities:
 
