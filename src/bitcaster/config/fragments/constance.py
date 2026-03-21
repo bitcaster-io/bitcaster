@@ -35,6 +35,6 @@ CONSTANCE_CONFIG = {
         "Maximum number of days of Occurrences retention",
         int,
     ),
-    "ATTACHMENT_DOWNLOAD_KEY_SALT": ("", "Salt to apply when generating attachment download keys", str),
-    "ATTACHMENT_BASE_URL": ("http://localhost", "The base URL for attachment file downloads (no trailing slash)", str),
+    "SECRET_KEY_SALT": ("", "Salt to use to generate secret keys", str),
+    "SERVER_URL": ("", "The base URL for attachment file downloads (no trailing slash)", str),
 }

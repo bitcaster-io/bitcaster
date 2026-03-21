@@ -4,6 +4,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
 from constance import config
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models.expressions import F
 from django.db.models.functions import Coalesce
@@ -35,6 +36,13 @@ if TYPE_CHECKING:
         channels: list[int]
         messages: list[int]
 
+    class RecipientsData(TypedDict):
+        recipients: list[tuple[Assignment, Channel, Notification, MessageTemplate | None]]
+        notifications: set[Notification]
+        channels: set[Channel]
+        messages: set[MessageTemplate]
+        errors: list[str]
+
     class OccurrenceOptions(TypedDict):
         limit_to: NotRequired[list[str]]
         channels: NotRequired[list[str]]
@@ -62,7 +70,7 @@ class OccurrenceManager(BitcasterBaselManager["Occurrence"]):
         return self.filter(
             last_updated__lt=timezone.now()
             - models.ExpressionWrapper(
-                timedelta(days=1) * Coalesce(F("event__occurrence_retention"), config.OCCURRENCE_DEFAULT_RETENTION),  # type: ignore
+                timedelta(days=1) * Coalesce(F("event__occurrence_retention"), config.OCCURRENCE_DEFAULT_RETENTION),  # type: ignore[operator]
                 output_field=models.DurationField(),
             )
         ).filter(*args, **kwargs)
@@ -128,6 +136,7 @@ class Occurrence(BitcasterBaseModel):
 
     def get_context(self) -> dict[str, Any]:
         return self.context | {
+            "occurrence": self,
             "timestamp": self.timestamp,
             "event": self.event,
         }
@@ -194,61 +203,91 @@ class Occurrence(BitcasterBaseModel):
             channel_filter["pk__in"] = channels
         return self.event.channels.filter(**channel_filter)
 
-    def _process(self) -> "tuple[bool, OccurrenceData]":
+    def collect_recipients(self) -> "RecipientsData":
         assignment: "Assignment"
         notification: "Notification"
-        delivered = self.data.get("delivered", [])
-        recipients = self.data.get("recipients", [])
-        errors = self.data.get("errors", [])
-        notifications = set(self.data.get("notifications", []))
-        channels = set(self.data.get("channels", []))
-        messages = set(self.data.get("messages", []))
         assignment_filter = {}
-        success = True
-        data: "OccurrenceData" = {
-            "delivered": delivered,
-            "recipients": recipients,
-            "errors": errors,
-            "notifications": [],
-            "channels": [],
-            "messages": [],
+        data: "RecipientsData" = {
+            "recipients": [],
+            "notifications": set(),
+            "channels": set(),
+            "messages": set(),
+            "errors": [],
         }
         if limit := self.options.get("limit_to", []):
             assignment_filter["address__value__in"] = limit
         api_filtering = self.options.get("filters", {}) or {}
         try:
             for notification in self._get_valid_notifications():
-                notifications.add(notification.pk)
+                data["notifications"].add(notification)
                 context = notification.get_context(self.get_context())
                 logger.debug(f"Processing occurrence {self.id} , context: {context}")
-
                 for channel in self._get_valid_channels():
-                    channels.add(channel.pk)
-                    for assignment in notification.get_pending_subscriptions(delivered, channel, api_filtering).filter(
+                    data["channels"].add(channel)
+                    for assignment in notification.get_pending_subscriptions([], channel, api_filtering).filter(
                         **assignment_filter
                     ):
-                        __, message_template_pk = notification.notify_to_channel(channel, assignment, context)
-                        if message_template_pk:
-                            messages.add(message_template_pk)
-                        delivered.append(assignment.id)
-                        recipients.append(
+                        message_template = notification.get_message(channel)
+                        data["recipients"].append(
                             (
-                                assignment.address.value,
-                                channel.name,
-                                assignment.pk,
-                                channel.pk,
-                                notification.pk,
-                                message_template_pk,
+                                assignment,
+                                channel,
+                                notification,
+                                message_template,
                             )
                         )
+        except ObjectDoesNotExist as e:
+            logger.exception(e)
+            data["errors"].append(str(e))
+        return data
+
+    def _process(self) -> "tuple[bool, OccurrenceData]":
+        assignment: "Assignment"
+        notification: "Notification"
+        recipients = self.data.get("recipients", [])
+        notifications = set(self.data.get("notifications", []))
+        channels = set(self.data.get("channels", []))
+        messages = set(self.data.get("messages", []))
+
+        recipients_data: "RecipientsData" = self.collect_recipients()
+        delivered = self.data.get("delivered", [])
+        errors = self.data.get("errors", [])
+        success = True
+        data: "OccurrenceData" = {
+            "delivered": delivered,
+            "recipients": [],
+            "errors": errors,
+            "notifications": [],
+            "channels": [],
+            "messages": [],
+        }
+        try:
+            for assignment, channel, notification, message_template in recipients_data["recipients"]:
+                notifications.add(notification.pk)
+                channels.add(channel.pk)
+                if assignment.pk not in delivered:
+                    context = notification.get_context(self.get_context())
+                    notification.notify_to_channel(channel, assignment, context)
+                    messages.add(message_template.pk)
+                    delivered.append(assignment.id)
+                    recipients.append(
+                        (
+                            assignment.address.value,
+                            channel.name,
+                            assignment.pk,
+                            channel.pk,
+                            notification.pk,
+                            message_template.pk,
+                        )
+                    )
         except Exception as e:
             logger.exception(e)
-            data["errors"].append(f"{e.__class__.__name__}: {str(e)}")
+            errors.append(f"{e.__class__.__name__}: {str(e)}")
             success = False
         finally:
             data["delivered"] = delivered
             data["recipients"] = recipients
-            data["notifications"] = list(notifications)
-            data["messages"] = list(messages)
-            data["channels"] = list(channels)
+            data["notifications"] = list(set(notifications))
+            data["messages"] = list(set(messages))
+            data["channels"] = list(set(channels))
         return success, data

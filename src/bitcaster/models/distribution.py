@@ -42,4 +42,4 @@ class DistributionList(BitcasterBaseModel):
         unique_together = (("name", "project"),)
 
     def get_context(self) -> dict[str, Any]:
-        return {"distribution": self.name}
+        return {"distribution": self}
