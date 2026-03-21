@@ -38,18 +38,26 @@
     {% endblock %}
     <div class="container mx-auto px-4 grow">
         {% block content %}
-            {{ occurrence }}
-            {{ parts }}
+            <div class="mb-15">
+                {% if parts.address %}
+                    <div>
+                        Welcome {{ parts.address }}
+                    </div>
+                {% endif %}
+                <div>
+                    Below the list of the recipients of the message:
+                </div>
+            </div>
             <table class="w-full">
                 <thead>
                     <tr>
-                        <th>
+                        <th class="p-1">
                             Address
                         </th>
-                        <th>
+                        <th class="p-1">
                             Channel
                         </th>
-                        <th>
+                        <th class="p-1">
                             Notification
                         </th>
                         {#                        <th>MessageTemplate</th>#}
@@ -58,13 +66,13 @@
                 <tbody>
                     {% for entry in data.recipients %}
                         <tr>
-                            <td>
+                            <td class="p-1">
                                 {{ entry.0.address.value }}
                             </td>
-                            <td>
+                            <td class="p-1">
                                 {{ entry.1 }}
                             </td>
-                            <td>
+                            <td class="p-1">
                                 {{ entry.2 }}
                             </td>
                         </tr>

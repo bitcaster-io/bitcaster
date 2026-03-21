@@ -70,8 +70,8 @@ Below the available context elements:
 4. {{ channel }}
 5. {{ address }}
 6. {{ distribution }}
-7. {% recipients occurrence %}
-7. {% download occurrence %}
+7. {% attachment "abc" 0 %}
+8. {% recipients occurrence %}
 
 """
 
