@@ -67,8 +67,6 @@ def pytest_configure(config):
 
     os.environ["MAILGUN_API_KEY"] = "11"
     os.environ["MAILGUN_SENDER_DOMAIN"] = "mailgun.domain"
-    os.environ["MAILJET_API_KEY"] = "11"
-    os.environ["MAILJET_SECRET_KEY"] = "11"
 
     os.environ["SECRET_KEY"] = "super-secret-key-just-for-testing"
     os.environ["SECURE_HSTS_PRELOAD"] = "0"

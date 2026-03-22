@@ -79,13 +79,16 @@ class UnfoldAdminForm(AdminForm):
         model_admin: "Any | None" = None,
     ) -> None:
         super().__init__(form, fieldsets, prepopulated_fields, readonly_fields, model_admin)
-        for field in self.form.fields.values():
+        for field_name, field in self.form.fields.items():
             if isinstance(field.widget, forms.HiddenInput):
                 continue
 
             for field_class, widget in WIDGETS_OVERRIDES.items():
                 if isinstance(field, field_class):
-                    if isinstance(field.widget, forms.Textarea):
+                    if isinstance(field.widget, forms.PasswordInput):
+                        value = self.form.initial.get(field_name)
+                        field.widget = widgets.UnfoldAdminPasswordWidget({"value": value})
+                    elif isinstance(field.widget, forms.Textarea):
                         field.widget = widgets.UnfoldAdminTextareaWidget()
                     elif hasattr(field, "choices"):
                         field.widget.choices = field.choices
