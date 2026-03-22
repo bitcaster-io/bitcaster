@@ -79,7 +79,7 @@ class Payload:
             "message": self.message or "",
             "subject": self.subject or "",
             "html_message": self.html_message or "",
-            "user": self.user.username,
+            "user": self.user.username if self.user else "",
         }
 
 

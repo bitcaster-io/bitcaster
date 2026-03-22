@@ -14,8 +14,6 @@ class BitcasterEncoder(DjangoJSONEncoder):
     def default(self, o: Any) -> Any:
         if isinstance(o, Payload):
             return o.as_dict()
-        if isinstance(o, (list | tuple)):
-            return [smart_dumps(e) for e in o]
         if isinstance(o, Model):
             return str(o)
         return super().default(o)

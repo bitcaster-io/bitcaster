@@ -14,5 +14,6 @@ class MediaFileForm(forms.ModelForm["MediaFile"]):
         fields = "__all__"  # noqa: DJ007
 
     def clean(self) -> dict[str, Any] | None:
-        self.cleaned_data["file_type"] = splitext(self.cleaned_data["image"].name)[1]
+        if img := self.cleaned_data.get("image"):
+            self.cleaned_data["file_type"] = splitext(img.name)[1]
         return self.cleaned_data

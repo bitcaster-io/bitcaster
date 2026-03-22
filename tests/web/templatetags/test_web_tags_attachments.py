@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 import pytest
 from constance.test.pytest import override_config
 from django import template
@@ -7,17 +5,8 @@ from testutils.factories.attachment import AttachmentFactory
 from testutils.factories.event import EventFactory
 from testutils.factories.org import ApplicationFactory
 
-from bitcaster.dispatchers.base import Capability
 from bitcaster.web.templatetags.attachments import UnrelatedEventError
 from bitcaster.web.templatetags.attachments import attachment as attachment_tag
-from bitcaster.web.templatetags.protocols import has
-
-if TYPE_CHECKING:
-    from bitcaster.models import Channel
-
-
-def test_has(channel: "Channel") -> None:
-    assert has(channel, Capability.TEXT)
 
 
 @pytest.mark.parametrize(

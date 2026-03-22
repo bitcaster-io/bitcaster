@@ -20,8 +20,9 @@ class AttachmentForm(forms.ModelForm[Attachment]):
 
     def clean(self) -> dict[str, str | None]:
         super().clean()
-        if not self.cleaned_data.get("mime_type"):
-            self.cleaned_data["mime_type"] = mimetypes.guess_type(self.cleaned_data["document"].name)[0]
-        if not self.cleaned_data.get("filename"):
-            self.cleaned_data["filename"] = self.cleaned_data["document"].name
+        if doc := self.cleaned_data.get("document"):
+            if not self.cleaned_data.get("mime_type"):
+                self.cleaned_data["mime_type"] = mimetypes.guess_type(doc.name)[0]
+            if not self.cleaned_data.get("filename"):
+                self.cleaned_data["filename"] = doc.name
         return self.cleaned_data

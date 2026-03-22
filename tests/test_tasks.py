@@ -9,6 +9,7 @@ from testutils.dispatcher import XDispatcher
 
 from bitcaster.constants import SystemEvent, bitcaster
 from bitcaster.runner.tasks import (
+    delete_expired_user_messages,
     monitor_run,
     process_occurrence,
     purge_occurrences,
@@ -352,6 +353,10 @@ def test_purge_occurrences(
     assert Occurrence.objects.filter(pk__in=[o.pk for o in non_purgeable_occurrences]).count() == len(
         non_purgeable_occurrences
     )
+
+
+def test_delete_expired_user_messages(system_user: "User") -> None:
+    delete_expired_user_messages()
 
 
 def test_monitor_run(system_user: "User") -> None:

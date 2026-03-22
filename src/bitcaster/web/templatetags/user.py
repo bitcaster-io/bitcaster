@@ -18,7 +18,8 @@ def user_date(context: Context, d: datetime) -> str:
         return ""
     if user.is_authenticated:
         d = timezone.localtime(d, user.timezone)
-    return user.format_date(d)
+        return user.format_date(d)
+    return d.strftime("%Y %b %d")
 
 
 @register.simple_tag(takes_context=True)
@@ -28,4 +29,5 @@ def user_datetime(context: Context, d: datetime) -> str:
         return ""
     if user.is_authenticated:
         d = timezone.localtime(d, user.timezone)
-    return user.format_datetime(d)
+        return user.format_datetime(d)
+    return d.strftime("%Y %b %d %H:%M")
