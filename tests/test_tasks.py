@@ -173,13 +173,15 @@ def test_process_event_resume(setup: "Context", monkeypatch: pytest.MonkeyPatch)
     n: Notification = setup["notification"]
     v1: Assignment = setup["assignments"][0]
     v2: Assignment = setup["assignments"][1]
+    msg: MessageTemplate = setup["message"]
     occurrence = setup["occurrence"]
     # note: fake OccurrenceData. recipients does not contais a valid line
     occurrence.data = {"delivered": [v1.id], "recipients": [(v1.address.value, "test")]}
     occurrence.save()
 
     monkeypatch.setattr(
-        "bitcaster.models.notification.Notification.notify_to_channel", mocked_notify := Mock(return_value=(None, 999))
+        "bitcaster.models.notification.Notification.notify_to_channel",
+        mocked_notify := Mock(return_value=(None, msg.pk)),
     )
 
     process_occurrence(occurrence.pk)
@@ -189,10 +191,13 @@ def test_process_event_resume(setup: "Context", monkeypatch: pytest.MonkeyPatch)
     assert mocked_notify.call_count == 1
     assert occurrence.data == {
         "delivered": [v1.id, v2.id],
-        "recipients": [["test1@example.com", "test"], ["test2@example.com", v2.channel.name, v2.pk, ch.pk, n.pk, 999]],
+        "recipients": [
+            ["test1@example.com", "test"],
+            ["test2@example.com", v2.channel.name, v2.pk, ch.pk, n.pk, msg.pk],
+        ],
         "channels": [ch.pk],
         "notifications": [n.pk],
-        "messages": [999],
+        "messages": [msg.pk],
         "errors": [],
     }
 
@@ -242,6 +247,7 @@ def test_retry(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects
     v1 = setup["assignments"][0]
     ch = setup["channel"]
     n = setup["notification"]
+    m = setup["message"]
     monkeypatch.setattr(
         "bitcaster.models.notification.Notification.notify_to_channel",
         mocked_notify := Mock(side_effect=[(None, 999), Exception("This is raised after first call")]),
@@ -255,9 +261,9 @@ def test_retry(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects
     assert o.data == {
         "delivered": [v1.id],
         "channels": [ch.pk],
-        "messages": [999],
+        "messages": [m.pk],
         "notifications": [n.pk],
-        "recipients": [[v1.address.value, "test", v1.pk, ch.pk, n.pk, 999]],
+        "recipients": [[v1.address.value, "test", v1.pk, ch.pk, n.pk, m.pk]],
         "errors": [
             "Exception: This is raised after first call",
             "StopIteration: ",
