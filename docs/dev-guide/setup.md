@@ -1,19 +1,16 @@
 # Setup development environment
 
 
-
-
-
 Prerequisites:
 
-- This project uses [pdm](https://github.com/pdm-project/pdm#installation) as package manager
+- This project uses [uv](https://docs.astral.sh/uv/) as package manager
 - A Postgres DB v14+
 - A Redis server
 
 !!! note
 
-    PDM will create a virtualenv in <project_root>/.venv, and install dependencies into it.
-    If you wand to change this behaviour please read the [PDM Documentation](https://pdm-project.org/en/latest/usage/venv/)
+    uv will create a virtualenv in <project_root>/.venv, and install dependencies into it.
+    If you want to change this behaviour please read the [UV Documentation](https://docs.astral.sh/uv/guides/projects/)
 
 
 ## Create virtualenvironment
@@ -72,8 +69,7 @@ If you want to use [direnv](https://direnv.net/) and automatic loading of enviro
 ./manage.py env --develop --config --pattern='{key}={value}' > .envrc
 
 echo 'export PYTHONPATH="$PYTHONPATH:./src"' >> .envrc
-echo 'eval $(pdm venv activate)' >> .envrc
-echo "unset PS1" >> .envrc
+echo 'source .venv/bin/activate' >> .envrc
 ```
 
 !!! warning
