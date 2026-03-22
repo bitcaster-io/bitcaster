@@ -47,6 +47,9 @@ RUN pip install uwsgi uv
 
 # ------- builder -------
 FROM deps AS builder
+ARG VERSION
+ARG GIT_SHA
+ARG BUILD_DATE
 ENV VIRTUAL_ENV=/venv \
     UV_PROJECT_ENVIRONMENT=/venv \
     HATCH_VCS_VERSION=${VERSION}
@@ -69,6 +72,9 @@ RUN uv venv --no-cache $VIRTUAL_ENV \
     && uv build
 
 FROM base_os AS dist
+ARG VERSION
+ARG GIT_SHA
+ARG BUILD_DATE
 ADD docker/conf /conf/
 ADD docker/bin/* /usr/local/bin/
 
