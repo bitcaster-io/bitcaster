@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - '**'  # Trigger on push to any branch
+    tags:
+      - '*'    # Trigger on push to any tag
   workflow_dispatch:
     inputs:
       git_reference:
@@ -137,7 +139,7 @@ jobs:
           push: true
           tags: |
             os4d/bitcaster:${{ steps.config.outputs.tag }}
-            ${{ github.event.inputs.latest == 'true' && 'os4d/bitcaster:latest' || null}}
+            ${{ github.event.inputs.latest == 'true' && 'os4d/bitcaster:latest' || null }}
           build-args: |
             VERSION=${{ steps.config.outputs.version }}
             BUILD_DATE=${{ steps.config.outputs.build_date }}
