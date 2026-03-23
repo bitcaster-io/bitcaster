@@ -37,11 +37,15 @@ class InactiveError(Exception):
         return f"Unable to accept this event. {self.event.__class__.__name__} is paused or deactivated"
 
 
-class DownloadKeyDecryptionError(Exception):
+class UnrelatedEventError(Exception):
     pass
 
 
-class DownloadKeyExpiredError(Exception):
+class DecryptionError(Exception):
+    pass
+
+
+class KeyExpiredError(Exception):
     def __init__(self, expired_at: datetime):
         self.expired_at = expired_at
 

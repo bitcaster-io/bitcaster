@@ -25,6 +25,7 @@ class SocialProviderManager(models.Manager["SocialProvider"]):
 
 
 class SocialProvider(models.Model):
+    label = models.CharField(max_length=50, help_text=_("Label"), unique=True)
     provider = models.CharField(
         max_length=30,
         help_text=_("Social Login provider"),
@@ -44,7 +45,3 @@ class SocialProvider(models.Model):
     @property
     def code(self) -> str:
         return self.provider.lower().replace("_", "-")
-
-    @property
-    def label(self) -> str:
-        return Provider[self.provider.replace("-", "_")].label

@@ -4,6 +4,7 @@ from .application import ApplicationAdmin
 from .assignment import AssignmentAdmin
 from .attachment import AttachmentAdmin
 from .channel import ChannelAdmin
+from .constance import CustomConstanceAdmin
 from .distribution import DistributionListAdmin
 from .event import EventAdmin
 from .group import GroupAdmin
@@ -28,6 +29,7 @@ __all__ = [
     "AssignmentAdmin",
     "AttachmentAdmin",
     "ChannelAdmin",
+    "CustomConstanceAdmin",
     "DistributionListAdmin",
     "EventAdmin",
     "GroupAdmin",

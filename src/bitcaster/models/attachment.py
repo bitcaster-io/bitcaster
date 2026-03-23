@@ -12,9 +12,24 @@ from bitcaster.models.mixins import BitcasterBaseModel
 
 class Attachment(BitcasterBaseModel):
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="attachments")
-    correlation_id = models.SlugField(default=uuid4, unique=True, blank=True, help_text=_("Correlation ID"))
+    correlation_id = models.SlugField(
+        default=uuid4,
+        unique=True,
+        blank=True,
+        verbose_name=_("Correlation ID"),
+        help_text=_("Unique human readable identifier for the attachment"),
+    )
+    filename = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+        verbose_name=_("Filename"),
+        help_text=_("Filename to use when downloading the attachment"),
+    )
     document = models.FileField(upload_to="attachments/", help_text=_("Attachment file"))
-    mime_type = models.CharField(max_length=256, help_text=_("Attachment MIME type"))
+    mime_type = models.CharField(
+        max_length=256, help_text=_("MIME type of the file. It will be auto-detected if not provided")
+    )
     size = models.PositiveIntegerField(default=0, help_text=_("Attachment size in bytes"))
 
     @override
@@ -34,10 +49,6 @@ class Attachment(BitcasterBaseModel):
         if not self.correlation_id:
             self.correlation_id = uuid4().hex
         super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
-
-    @property
-    def filename(self) -> str:
-        return self.document.name
 
     @override
     def natural_key(self) -> tuple[str, ...]:
