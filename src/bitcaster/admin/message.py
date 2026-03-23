@@ -6,7 +6,6 @@ from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from django import forms
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.template import Context, Template
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -31,7 +30,7 @@ from ..forms.message import (
     MessageTemplateRenderForm,
 )
 from ..forms.unfold import UnfoldAdminForm
-from ..utils.shortcuts import render_string
+from ..utils.shortcuts import render_message
 from ..web.templatetags.markdown import md
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
@@ -62,6 +61,17 @@ and produced by the notification '{{notification}}' for the DistributionList '{{
 </div>
 
 The destination address is {{ address }} thru the channel {{ channel }}
+
+Below the available context elements:
+
+1. {{ occurrence }}
+2. {{ assignment }}
+3. {{ event }}
+4. {{ channel }}
+5. {{ address }}
+6. {{ distribution }}
+7. {% attachment "abc" 0 %}
+8. {% recipients occurrence %}
 
 """
 
@@ -117,7 +127,8 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
         event = obj.event if obj.event else Event(name="Sample Event")
         dl = DistributionList(name="Sample DistributionList", project=event.application.project)
         no = Notification(name="Sample Notification", event=event, distribution=dl)
-        oc = Occurrence(event=event, timestamp=timezone.now())
+        oc = Occurrence(event=event, timestamp=timezone.now(), pk=-1)
+
         return no.get_context(oc.get_context()) | (extra_context or {})
 
     @button()
@@ -141,18 +152,25 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
 
     @view()
     def render(self, request: HttpRequest, pk: str) -> "HttpResponse":
+        from bitcaster.models import Address, Assignment
+
         form = MessageTemplateRenderForm(request.POST)
         msg: MessageTemplate = self.get_object(request, pk)
         message_context = self.get_dummy_source_context(msg)
 
         ct = "text/html"
         if form.is_valid():
-            message_context |= {"channel": msg.channel.name, "address": form.cleaned_data["recipient"]}
+            message_context |= {
+                "channel": msg.channel.name,
+                "assignment": Assignment(
+                    address=Address(value=form.cleaned_data["recipient"], user=request.user), channel=msg.channel
+                ),
+                "address": form.cleaned_data["recipient"],
+            }
             try:
-                tpl = Template(form.cleaned_data["content"])
                 ct = form.cleaned_data["content_type"]
                 ctx = {**form.cleaned_data["context"], **message_context}
-                res = str(tpl.render(Context(ctx)))
+                res = render_message(form.cleaned_data["content"], ctx)
                 match ct:
                     case "text/html":
                         pass
@@ -180,10 +198,10 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
             ctx = {**form.cleaned_data["context"], **message_context}
 
             payload: Payload = Payload(
-                subject=render_string(form.cleaned_data["subject"], ctx),
-                message=render_string(form.cleaned_data["content"], ctx),
+                subject=render_message(form.cleaned_data["subject"], ctx),
+                message=render_message(form.cleaned_data["content"], ctx),
                 user=request.user,
-                html_message=render_string(form.cleaned_data["html_content"], ctx),
+                html_message=render_message(form.cleaned_data["html_content"], ctx),
                 event=Event(name="Sample Event"),
             )
             recipient = form.cleaned_data["recipient"]

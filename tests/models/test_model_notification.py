@@ -114,8 +114,8 @@ def test_missing_message(event: "Event", monkeypatch: pytest.MonkeyPatch) -> Non
 def test_extra_context_override(ctx: dict[str, str], extra: dict[str, Any], expected: dict[str, Any]) -> None:
     from testutils.factories import NotificationFactory
 
-    notification = NotificationFactory(extra_context=extra)
-    expected |= {"notification": notification.name}
+    notification = NotificationFactory.create(extra_context=extra)
+    expected |= {"notification": notification}
     assert notification.get_context(ctx).items() >= expected.items()
 
 

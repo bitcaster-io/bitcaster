@@ -53,14 +53,19 @@ class UnfoldForm(forms.Form):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            if widget := WIDGETS_OVERRIDES.get(field.__class__):
-                if isinstance(field.widget, forms.Textarea):
-                    field.widget = widgets.UnfoldAdminTextareaWidget()
-                elif hasattr(field, "choices"):
-                    field.widget = widget()
-                    field.widget.choices = field.choices
-                else:
-                    field.widget = widget()
+            if isinstance(field.widget, forms.HiddenInput):
+                continue
+
+            for field_class, widget in WIDGETS_OVERRIDES.items():
+                if isinstance(field, field_class):
+                    if isinstance(field.widget, forms.Textarea):
+                        field.widget = widgets.UnfoldAdminTextareaWidget()
+                    elif hasattr(field, "choices"):
+                        field.widget = widget()
+                        field.widget.choices = field.choices
+                    else:
+                        field.widget = widget()
+                    break
 
 
 # kudos to https://github.com/unfoldadmin/django-unfold/issues/180
@@ -74,14 +79,22 @@ class UnfoldAdminForm(AdminForm):
         model_admin: "Any | None" = None,
     ) -> None:
         super().__init__(form, fieldsets, prepopulated_fields, readonly_fields, model_admin)
-        for field in self.form.fields.values():
-            if widget := WIDGETS_OVERRIDES.get(field.__class__):
-                if isinstance(field.widget, forms.Textarea):
-                    field.widget = widgets.UnfoldAdminTextareaWidget()
-                elif hasattr(field, "choices"):
-                    field.widget.choices = field.choices
-                else:
-                    field.widget = widget()
+        for field_name, field in self.form.fields.items():
+            if isinstance(field.widget, forms.HiddenInput):
+                continue
+
+            for field_class, widget in WIDGETS_OVERRIDES.items():
+                if isinstance(field, field_class):
+                    if isinstance(field.widget, forms.PasswordInput):
+                        value = self.form.initial.get(field_name)
+                        field.widget = widgets.UnfoldAdminPasswordWidget({"value": value})
+                    elif isinstance(field.widget, forms.Textarea):
+                        field.widget = widgets.UnfoldAdminTextareaWidget()
+                    elif hasattr(field, "choices"):
+                        field.widget.choices = field.choices
+                    else:
+                        field.widget = widget()
+                    break
 
 
 class UnfoldChainedSelect(ChainedSelect):

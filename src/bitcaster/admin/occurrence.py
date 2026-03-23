@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING, Any
 from unittest import mock
 
 from admin_extra_buttons.api import confirm_action
-from admin_extra_buttons.decorators import button
+from admin_extra_buttons.buttons import ChoiceButton
+from admin_extra_buttons.decorators import button, choice, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
 from constance import config
 from django.contrib import messages
@@ -18,6 +19,7 @@ from bitcaster.models import Assignment, Channel, MessageTemplate, Notification,
 from bitcaster.runner.tasks import purge_occurrences
 
 from ..cache.manager import CacheManager
+from ..web.templatetags.bitcaster import recipients
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 if TYPE_CHECKING:
@@ -70,6 +72,25 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
 
     def has_change_permission(self, request: HttpRequest, obj: Occurrence | None = None) -> bool:
         return False
+
+    @choice(change_list=False, change_form=True)
+    def recipients(self, button: ChoiceButton) -> None:
+        button.choices = [
+            self.recipients_occurrence,
+            # self.recipients_notification
+        ]
+
+    @view()
+    def recipients_occurrence(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
+        obj: Occurrence = self.get_queryset(request).select_related("event__application").get(id=pk)
+        url = recipients({"address": request.user.email}, obj)
+        return HttpResponseRedirect(url)
+
+    @view()
+    def recipients_notification(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
+        obj: Occurrence = self.get_queryset(request).select_related("event__application").get(id=pk)
+        url = recipients({"address": request.user.email}, obj)
+        return HttpResponseRedirect(url)
 
     @button(html_attrs={"class": ButtonColor.ACTION.value})
     def inspect(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa

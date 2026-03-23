@@ -6,7 +6,7 @@ from django.db.models import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
 from ..dispatchers.base import Capability
-from ..utils.shortcuts import render_string
+from ..utils.shortcuts import render_message
 from .channel import Channel
 from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager, Scoped3Mixin
@@ -130,9 +130,9 @@ class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
             }
         subject = message = html_message = ""
         if self.support_subject():
-            subject = render_string(self.subject, context)
+            subject = render_message(self.subject, context)
         if self.support_text():
-            message = render_string(self.content, context)
+            message = render_message(self.content, context)
         if self.support_html():
-            html_message = render_string(self.html_content, context)
+            html_message = render_message(self.html_content, context)
         return subject, message, html_message

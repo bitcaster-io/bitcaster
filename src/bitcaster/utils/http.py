@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Sequence
 from urllib.parse import urljoin
 
+import constance
 from django.conf import settings
 from django.http.request import split_domain_port
 from django.urls import reverse
@@ -21,12 +22,15 @@ def get_server_host(request: "AnyRequest_co | None" = None) -> str:
 
 
 def get_server_url() -> str:
-    req: HttpRequest | None = state.request
     host = ""
+    if constance.config.SERVER_URL:
+        return constance.config.SERVER_URL
+    req: HttpRequest | None = state.request
     if req:
         host = req.build_absolute_uri("/")[:-1]
         if settings.SOCIAL_AUTH_REDIRECT_IS_HTTPS:
             host = host.replace("http://", "https://")
+
     return host
 
 
