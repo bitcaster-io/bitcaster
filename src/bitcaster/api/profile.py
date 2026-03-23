@@ -27,7 +27,7 @@ class UserProfileView(SecurityMixin, ViewSet, RetrieveAPIView):
     required_grants = [Grant.USER_PROFILE]
 
     def get_queryset(self) -> QuerySet[User]:
-        return User.objects.all()
+        raise NotImplementedError
 
     def get_object(self) -> "User":
         return self.request.user
