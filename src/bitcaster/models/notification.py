@@ -103,8 +103,8 @@ class Notification(BitcasterBaseModel):
     def application(self) -> "Application":
         return self.event.application
 
-    def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
-        ctx = {**ctx, "notification": self.name} | self.extra_context
+    def get_context(self, ctx: dict[str, Any]) -> dict[str, Any]:
+        ctx = {**ctx, "notification": self} | self.extra_context
         if self.distribution:
             ctx.update(self.distribution.get_context())
         return ctx
@@ -154,7 +154,7 @@ class Notification(BitcasterBaseModel):
         logger.debug(f"channel: {channel} , assignment: {assignment} , context: {context}")
         if message_template := self.get_message(channel):
             logger.debug(f"message: {message_template}")
-            context.update({"channel": channel, "address": addr.value})
+            context.update({"channel": channel, "address": addr.value, "assignment": assignment})
             subject, message, html_message = message_template.render(context)
             payload: Payload = Payload(
                 event=self.event,

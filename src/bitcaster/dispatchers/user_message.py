@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from unfold.widgets import UnfoldAdminSelect2Widget
 
-from ..utils.shortcuts import render_string
+from ..utils.shortcuts import render_message
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 if TYPE_CHECKING:
@@ -66,7 +66,7 @@ class UserMessageDispatcher(Dispatcher):
 
         if event_pk := self.channel.config.get("event"):
             event = Event.objects.filter(pk=event_pk).first()
-            return render_string(
+            return render_message(
                 """
     <div class="grid grid-cols-2 gap-4">
     <div>Event</div><div><a href="{% url 'admin:bitcaster_event_change' event.pk %}">{{event}}</div>
