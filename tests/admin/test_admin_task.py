@@ -86,3 +86,12 @@ def test_task_change_invalid_trigger(app: "DjangoTestApp") -> None:
     assert res.status_code == 200
     assert_form_error(res, "trigger", "This field is required.")
     assert_form_error(res, "trigger", "Please select a valid trigger")
+
+
+def test_task_pause_resume(app: "DjangoTestApp", task) -> None:
+    url = reverse("admin:bitcaster_task_change", args=[task.id])
+    res = app.get(url)
+    res = res.click("Resume").follow()
+    assert res.status_code == 200
+    res = res.click("Pause").follow()
+    assert res.status_code == 200

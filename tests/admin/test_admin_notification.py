@@ -28,12 +28,12 @@ def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTes
 
 @pytest.fixture
 def notification(django_app_factory: "MixinWithInstanceVariables", db: "Any") -> "Notification":
-    from testutils.factories import ChannelFactory, MessageFactory, NotificationFactory
+    from testutils.factories import ChannelFactory, MessageTemplateFactory, NotificationFactory
 
     n = NotificationFactory(
         event__channels=[ChannelFactory(), ChannelFactory()], event__application__project__environments=["development"]
     )
-    MessageFactory(notification=n, event=n.event, channel=n.event.channels.first())
+    MessageTemplateFactory(notification=n, event=n.event, channel=n.event.channels.first())
     return n
 
 
@@ -49,9 +49,9 @@ def test_create_notification_template(app: "DjangoTestApp", notification: "Notif
 
 
 def test_avoid_duplicates_template(app: "DjangoTestApp", notification: "Notification") -> None:
-    from testutils.factories import MessageFactory
+    from testutils.factories import MessageTemplateFactory
 
-    message: "MessageTemplate" = MessageFactory(notification=notification, event=notification.event)
+    message: "MessageTemplate" = MessageTemplateFactory(notification=notification, event=notification.event)
     url = reverse("admin:bitcaster_notification_messages", args=[notification.pk])
     res = app.get(url)
     frm = res.forms["messageForm"]

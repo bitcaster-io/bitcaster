@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             model_name="messagetemplate",
             name="debug",
             field=models.BooleanField(
-                default=False, help_text="Allow debug information in teh message", verbose_name="debug allowed"
+                default=False, help_text="Allow debug information in the message", verbose_name="debug allowed"
             ),
         ),
         migrations.AlterField(

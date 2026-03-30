@@ -36,10 +36,12 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
         AssignmentFactory,
         DistributionListFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
     )
 
-    event: "Event" = EventFactory.create(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
+    event: "Event" = EventFactory.create(
+        channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)]
+    )
     assignments = [
         AssignmentFactory.create(address__value=f"email-{i:02}@d{i % 2:02}.com", channel=email_channel)
         for i in range(1, 11)
@@ -57,10 +59,10 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
 
 
 def test_get_message_cache(notification: "Notification", django_assert_num_queries: DjangoAssertNumQueries) -> None:
-    from testutils.factories import ChannelFactory, MessageFactory
+    from testutils.factories import ChannelFactory, MessageTemplateFactory
 
     ch1 = ChannelFactory()
-    m1 = MessageFactory(channel=ch1, notification=notification, event=notification.event)
+    m1 = MessageTemplateFactory(channel=ch1, notification=notification, event=notification.event)
 
     with django_assert_num_queries(1):
         assert notification.get_message(ch1) == m1
@@ -69,14 +71,14 @@ def test_get_message_cache(notification: "Notification", django_assert_num_queri
 
 
 def test_get_message_precedence(event: "Event", django_assert_num_queries: DjangoAssertNumQueries) -> None:
-    from testutils.factories import ChannelFactory, MessageFactory, NotificationFactory
+    from testutils.factories import ChannelFactory, MessageTemplateFactory, NotificationFactory
 
     ch1 = ChannelFactory()
     n1: "Notification" = NotificationFactory.create(event=event)
     n2: "Notification" = NotificationFactory.create(event=event)
 
-    m1: "MessageTemplate" = MessageFactory.create(name="m1", channel=ch1, event=n1.event, notification=None)
-    m2: "MessageTemplate" = MessageFactory.create(name="m2", channel=ch1, event=n1.event, notification=n2)
+    m1: "MessageTemplate" = MessageTemplateFactory.create(name="m1", channel=ch1, event=n1.event, notification=None)
+    m2: "MessageTemplate" = MessageTemplateFactory.create(name="m2", channel=ch1, event=n1.event, notification=n2)
 
     assert list(n1.get_messages(ch1)) == [m1]
     assert list(n2.get_messages(ch1)) == [m2, m1]

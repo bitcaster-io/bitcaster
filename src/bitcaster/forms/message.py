@@ -64,14 +64,17 @@ class MessageTemplateRenderForm(MessageTemplateEditForm):
 
 
 def validate_cleaned_data(form: "forms.ModelForm[MessageTemplate] | NotificationTemplateCreateForm") -> None:
-    if "channel" in form.cleaned_data and "notification" in form.cleaned_data:
-        form.cleaned_data["organization"] = form.cleaned_data["channel"].organization
-    if (
-        "channel" in form.cleaned_data
-        and "event" in form.cleaned_data
-        and (form.cleaned_data["channel"] not in form.cleaned_data["event"].channels.all())
-    ):
+    if event := form.cleaned_data.get("event"):
+        form.cleaned_data["organization"] = event.application.project.organization
+    if channel := form.cleaned_data.get("channel"):
+        form.cleaned_data["organization"] = channel.organization
+
+    if channel and "notification" in form.cleaned_data:
+        form.cleaned_data["organization"] = channel.organization
+    if channel and event and (channel not in event.channels.all()):
         form.add_error("channel", _("This channel is not available for the selected event"))
+    if not form.cleaned_data.get("organization"):
+        form.add_error(None, _("Cannot determinate Organization"))
 
 
 class MessageTemplateChangeForm(forms.ModelForm[MessageTemplate]):

@@ -161,7 +161,7 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
         ct = "text/html"
         if form.is_valid():
             message_context |= {
-                "channel": msg.channel.name,
+                "channel": msg.channel,
                 "assignment": Assignment(
                     address=Address(value=form.cleaned_data["recipient"], user=request.user), channel=msg.channel
                 ),

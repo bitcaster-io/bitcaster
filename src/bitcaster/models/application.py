@@ -36,7 +36,7 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
     active = models.BooleanField(
         verbose_name=_("active"), default=True, help_text=_("Whether the application should be active")
     )
-    auto_crete_event = models.BooleanField(
+    auto_create_event = models.BooleanField(
         verbose_name=_("auto create events"),
         default=False,
         help_text=_("If true unknown events will be automatically created"),

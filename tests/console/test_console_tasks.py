@@ -30,7 +30,7 @@ def data(db) -> "tuple[Channel, Event, UserMessage]":
         AssignmentFactory,
         ChannelFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
         UserMessageFactory,
     )
@@ -38,7 +38,7 @@ def data(db) -> "tuple[Channel, Event, UserMessage]":
     ch1 = ChannelFactory.create(name="XDispatcher")
 
     event: "Event" = EventFactory.create(channels=[ch1])
-    MessageFactory(channel=ch1, event=event)
+    MessageTemplateFactory(channel=ch1, event=event)
     NotificationFactory.create(event=event, external_filtering=True, dynamic=False, distribution=None)
     ch2 = ChannelFactory.create(
         name="UserMessageDispatcher", dispatcher=fqn(UserMessageDispatcher), config={"event": event.pk, "active": True}

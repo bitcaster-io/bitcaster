@@ -31,12 +31,12 @@ def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTes
 
 @pytest.fixture
 def message(db: Any) -> "MessageTemplate":
-    from testutils.factories import MessageFactory, NotificationFactory
+    from testutils.factories import MessageTemplateFactory, NotificationFactory
 
     from bitcaster.dispatchers import EmailDispatcher
 
     n = NotificationFactory()
-    m: MessageTemplate = MessageFactory(notification=n, channel__dispatcher=fqn(EmailDispatcher))
+    m: MessageTemplate = MessageTemplateFactory(notification=n, channel__dispatcher=fqn(EmailDispatcher))
     assert m.support_html()
     assert m.support_text()
     assert m.support_subject()
@@ -45,11 +45,11 @@ def message(db: Any) -> "MessageTemplate":
 
 @pytest.fixture
 def email_message(email_channel: "Channel") -> "MessageTemplate":
-    from testutils.factories import ChannelFactory, MessageFactory
+    from testutils.factories import ChannelFactory, MessageTemplateFactory
 
     from bitcaster.dispatchers import SystemDispatcher
 
-    return MessageFactory(channel=ChannelFactory(dispatcher=fqn(SystemDispatcher)))
+    return MessageTemplateFactory(channel=ChannelFactory(dispatcher=fqn(SystemDispatcher)))
 
 
 def test_render(app: "DjangoTestApp", message: "MessageTemplate") -> None:

@@ -97,6 +97,8 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                 data: "JSON" = {}
                 try:
                     evt: "Event" = self.get_queryset().get(slug=slug)
+                    if not evt.active:
+                        raise InactiveError(evt)
                 except Event.DoesNotExist:
                     grant = Grant.EVENT_AUTO_CREATE in request.auth.grants
                     if grant and (
@@ -105,7 +107,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                             project__organization__slug=self.kwargs["org"],
                             project__slug=self.kwargs["prj"],
                             slug=self.kwargs["app"],
-                            auto_crete_event=True,
+                            auto_create_event=True,
                         )
                         .first()
                     ):
@@ -146,7 +148,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
             except LockError as e:
                 return Response({"error": str(e)}, status=400)
             except InactiveError as e:
-                return Response({"warning": str(e)}, status=200)
+                return Response({"error": str(e)}, status=400)
             except Event.DoesNotExist:
                 return Response({"error": f"Event not found {self.kwargs}"}, status=404)
         else:

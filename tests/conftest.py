@@ -16,6 +16,7 @@ if TYPE_CHECKING:
         Application,
         Event,
         Group,
+        MessageTemplate,
         Monitor,
         Occurrence,
         Project,
@@ -246,9 +247,9 @@ def address(db):
 
 @pytest.fixture
 def message(db):
-    from testutils.factories.message import MessageFactory
+    from testutils.factories.message import MessageTemplateFactory
 
-    return MessageFactory()
+    return MessageTemplateFactory()
 
 
 @pytest.fixture
@@ -349,7 +350,19 @@ def assignment(db):
 def monitor() -> "Monitor":
     from testutils.factories import MonitorFactory
 
-    return MonitorFactory()
+    return MonitorFactory.create()
+
+
+@pytest.fixture
+def message_template() -> "MessageTemplate":
+    from strategy_field.utils import fqn
+    from testutils.factories import ChannelFactory, EventFactory, MessageTemplateFactory
+
+    from bitcaster.dispatchers import GMailDispatcher
+
+    ch = ChannelFactory.create(dispatcher=fqn(GMailDispatcher))
+    event = EventFactory.create(channels=[ch])
+    return MessageTemplateFactory.create(event=event, channel=ch)
 
 
 @pytest.fixture

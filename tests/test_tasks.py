@@ -48,7 +48,7 @@ def setup(admin_user: "User") -> "Context":
         AssignmentFactory,
         ChannelFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
         OccurrenceFactory,
     )
@@ -57,7 +57,7 @@ def setup(admin_user: "User") -> "Context":
     v1: Assignment = AssignmentFactory.create(channel=ch, address__value="test1@example.com")
     v2: Assignment = AssignmentFactory.create(channel=ch, address__value="test2@example.com")
     no: Notification = NotificationFactory.create(event__channels=[ch], distribution__recipients=[v1, v2])
-    msg = MessageFactory.create(
+    msg = MessageTemplateFactory.create(
         channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}"
     )
 
