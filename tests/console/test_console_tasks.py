@@ -10,8 +10,10 @@ from bitcaster.console.utils import get_user_latest_notify_time
 from bitcaster.dispatchers import UserMessageDispatcher
 from bitcaster.runner.tasks import check_for_new_user_messages, scan_occurrences
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from bitcaster.models import Channel, Event, User, UserMessage
+
+pytestmark = [pytest.mark.xdist_group(name="console_tasks")]
 
 
 @contextlib.contextmanager

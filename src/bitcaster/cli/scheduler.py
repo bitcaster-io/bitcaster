@@ -12,7 +12,7 @@ from sentry_sdk.utils import epoch
 
 from bitcaster.runner.manager import init_scheduler
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from apscheduler.job import Job
 
 
@@ -118,6 +118,7 @@ def run_scheduler(verbose: int, debug: bool) -> None:
         seconds=10,
         replace_existing=True,
     )
+    healthcheck()
     init_scheduler()
 
     try:

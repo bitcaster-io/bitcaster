@@ -4,8 +4,10 @@ import pytest
 
 from bitcaster.console.utils import get_users_to_notify, set_user_latest_notify_time
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from bitcaster.models import UserMessage
+
+pytestmark = [pytest.mark.xdist_group(name="console_notify")]
 
 
 @pytest.mark.django_db
