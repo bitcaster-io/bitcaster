@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING
 
 from seleniumbase import BaseCase
 
+from testutils.matchers import list_match
+
 if TYPE_CHECKING:
     from bitcaster.models import User
 
@@ -27,7 +29,7 @@ class TestBrowser(BaseCase):
 
     def open(self, url: str, **kwargs):
         super().open(f"{self.live_server_url}{url}", **kwargs)
-        self.set_window_size(3000, 2000)
+        self.set_window_size(1400, 900)
         self.maximize_window()
 
     def select2_select(self, element_id: str, value: str):
@@ -51,6 +53,13 @@ class TestBrowser(BaseCase):
 
     def get_field_error(self, element: str) -> bool:
         return self.wait_for_element_visible(f"fieldset.{element} ul.errorlist").text
+
+    def get_admin_messages(self):
+        messages = self.find_elements("#main div.px-4>div.container.mx-auto>ul li")
+        return [m.text for m in messages]
+
+    def assert_admin_message(self, message: str):
+        self.assert_true(list_match(self.get_admin_messages(), message))
 
     def get_pixel_colors(self):
         # Return the RGB colors of the canvas element's top left pixel

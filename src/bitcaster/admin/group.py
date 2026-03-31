@@ -7,7 +7,7 @@ from bitcaster.auth.constants import DEFAULT_GROUP_NAME
 
 from .base import BaseAdmin, BitcasterModelAdmin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.auth.models import Group
     from django.utils.datastructures import _ListOrTuple
 

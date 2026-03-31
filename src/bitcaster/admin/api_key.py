@@ -24,7 +24,7 @@ from bitcaster.utils.security import is_root
 
 from .base import BitcasterModelAdmin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin.options import _ListOrTuple
     from django.db.models import QuerySet
 

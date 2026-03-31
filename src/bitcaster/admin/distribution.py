@@ -13,7 +13,7 @@ from .mixins import TwoStepCreateMixin
 
 logger = logging.getLogger(__name__)
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.utils.datastructures import _ListOrTuple
 
 

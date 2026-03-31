@@ -17,7 +17,7 @@ from ..utils.django import admin_toggle_bool_action
 from ..utils.filtering import schema
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from bitcaster.models import Notification
 
 logger = logging.getLogger(__name__)

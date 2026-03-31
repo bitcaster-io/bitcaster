@@ -22,7 +22,7 @@ from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from .filters import ChannelTypeFilter
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.utils.datastructures import _ListOrTuple
 
     from bitcaster.types.django import AnyModel_co

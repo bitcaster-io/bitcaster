@@ -26,11 +26,10 @@ def test_create_template_message(browser: TestBrowser, event: "Event"):
     channel = event.channels.first()
 
     browser.login()
-    browser.set_window_size(3000, 2000)
-    browser.maximize_window()
 
     browser.click_link("Admin")
-    browser.click('span:contains("dock_to_right")')
+    if not browser.is_element_visible("#nav-sidebar"):
+        browser.click('span:contains("dock_to_right")')
     browser.click('//a[contains(., "Message Templates")]')
     browser.click("a[title='Add Message template']")
 
@@ -39,7 +38,7 @@ def test_create_template_message(browser: TestBrowser, event: "Event"):
     browser.select2_select("id_channel", channel.name)
     browser.scroll_to_bottom()
     browser.click("button[name='_save']")
-    browser.scroll_to_bottom()
+    browser.assert_admin_message("The Message template .* was added successfully.")
     assert MessageTemplate.objects.filter(name="Template Name #1").exists()
 
 

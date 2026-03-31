@@ -6,6 +6,8 @@ from django.urls import reverse
 if TYPE_CHECKING:
     from bitcaster.models import UserMessage
 
+pytestmark = [pytest.mark.xdist_group(name="console_view")]
+
 
 @pytest.fixture
 def message() -> "UserMessage":

@@ -36,7 +36,7 @@ from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..types.django import JsonType
     from ..types.http import AuthHttpRequest
 
