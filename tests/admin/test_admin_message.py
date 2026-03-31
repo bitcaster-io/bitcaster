@@ -7,6 +7,7 @@ from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.urls import reverse
 from strategy_field.utils import fqn
 
+from bitcaster.forms.message import MessageTemplateChangeForm, MessageTemplateCreationForm
 from bitcaster.models.protocols import CreateMessage
 
 if TYPE_CHECKING:
@@ -73,7 +74,22 @@ def test_render_error(app: "DjangoTestApp", message: "MessageTemplate") -> None:
     assert res.content == b"<!DOCTYPE HTML>* context\n  * Enter a valid JSON."
 
 
-def test_edit(app: "DjangoTestApp", message: "MessageTemplate") -> None:
+def test_change(app: "DjangoTestApp", message: "MessageTemplate") -> None:
+    opts: "Options[MessageTemplate]" = message._meta
+    url = reverse(admin_urlname(opts, "change"), args=[message.pk])  # type: ignore[arg-type]
+    res = app.get(url)
+    res = res.forms["messagetemplate_form"].submit()
+    assert res.status_code == 200
+
+
+@pytest.mark.parametrize("form_class", [MessageTemplateCreationForm, MessageTemplateChangeForm])
+@pytest.mark.parametrize("data", [{"event": 1, "channel": 1}, {"event": 1}, {"channel": 1}])
+def test_validate_cleaned_data(form_class, data):
+    form = form_class(data)
+    assert not form.is_valid()
+
+
+def test_editor(app: "DjangoTestApp", message: "MessageTemplate") -> None:
     new_subject_value = "subject_update_value"
     new_content_value = "content_update_value"
     new_html_content_value = "html_content_update_value"

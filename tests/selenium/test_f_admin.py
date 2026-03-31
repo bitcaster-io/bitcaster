@@ -49,7 +49,9 @@ def _set_template_content(browser: TestBrowser, content: str):
     browser.send_keys("#tinymce", Keys.TAB)
     sleep(1)
     browser.switch_to_default_content()
+    browser.wait_for_element_visible("#preview")
     browser.switch_to_frame("#preview")
+    sleep(1)
     text = browser.get_element("html>body").text
     browser.switch_to_default_content()
     return text
@@ -72,6 +74,7 @@ def test_edit_template_message(browser: TestBrowser, message_template: "MessageT
     browser.type("input[name=subject]", "Subject Test")
     browser.click("button#btn_html")
     text = _set_template_content(browser, "Sample context")
+
     assert text == "Sample context"
     text = _set_template_content(browser, "Event {{event.name}}")
     assert text == f"Event {event.name}"
