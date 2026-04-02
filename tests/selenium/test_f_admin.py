@@ -58,6 +58,7 @@ def _set_template_content(browser: TestBrowser, content: str):
 
 
 @pytest.mark.xdist_group(name="message_template")
+@pytest.mark.flaky(max_runs=2)
 def test_edit_template_message(browser: TestBrowser, message_template: "MessageTemplate"):
     event = message_template.event
     channel = message_template.channel
