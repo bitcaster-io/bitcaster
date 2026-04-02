@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Iterable, Mapping, Optional
+from typing import TYPE_CHECKING, Any, Mapping, Optional
 from unittest.mock import Mock
 
 import pytest
@@ -8,8 +8,8 @@ from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models import Model
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django_regex.utils import RegexList as _RegexList
 from pytest_django.fixtures import SettingsWrapper
+from testutils.matchers import RegexList
 
 if TYPE_CHECKING:
     from admin_extra_buttons.mixins import ExtraButtonsMixin
@@ -22,12 +22,6 @@ if TYPE_CHECKING:
 
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
-
-
-class RegexList(_RegexList):  # type: ignore[misc]
-    def extend(self, __iterable: "Iterable[Any]") -> None:
-        for e in __iterable:
-            self.append(e)
 
 
 GLOBAL_EXCLUDED_MODELS = RegexList(

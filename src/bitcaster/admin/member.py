@@ -27,7 +27,7 @@ from bitcaster.utils.json import process_dict
 from ..importing.members import import_members_csv
 from .base import BaseAdmin, BitcasterModelAdmin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.http import HttpRequest, HttpResponse
 
     from bitcaster.types.json import JSON

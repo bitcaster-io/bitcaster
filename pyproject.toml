@@ -106,6 +106,7 @@ dev = [
   "django-webtest>=1.9.11",
   "djlint>=1.36.4",
   "factory-boy>=3.3",
+  "flaky>=3.8.1",
   "freezegun>=1.4",
   "pdbpp>=0.10.3",
   "pip-audit>=2.7.3",

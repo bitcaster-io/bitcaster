@@ -5,14 +5,12 @@ from django.contrib.admin.filters import SimpleListFilter
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
-if TYPE_CHECKING:
-    from bitcaster.models.user_message import UserMessageQuerySet
-
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin import ModelAdmin
     from django.db.models.query import QuerySet
 
     from bitcaster.models import Channel, UserMessage
+    from bitcaster.models.user_message import UserMessageQuerySet
 
 
 class ChannelTypeFilter(SimpleListFilter):

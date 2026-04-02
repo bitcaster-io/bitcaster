@@ -18,13 +18,13 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def context(occurrence: "Occurrence", user: "User") -> "Context":
-    from testutils.factories import AssignmentFactory, ChannelFactory, MessageFactory, NotificationFactory
+    from testutils.factories import AssignmentFactory, ChannelFactory, MessageTemplateFactory, NotificationFactory
 
     notification: "Notification" = NotificationFactory.create(
         event__channels=[ChannelFactory()], payload_filter="foo=='bar'"
     )
     assignment: "Assignment" = AssignmentFactory.create(channel=notification.event.channels.first())
-    MessageFactory(channel=assignment.channel, event=notification.event)
+    MessageTemplateFactory(channel=assignment.channel, event=notification.event)
     notification.distribution.recipients.add(assignment)
 
     return {"assignment": assignment, "notification": notification}

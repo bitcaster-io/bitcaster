@@ -56,7 +56,7 @@ def test_queryset_filter(payload: Dict[str, str], matches: bool) -> None:
     sub2 = NotificationFactory(event=sub1.event, payload_filter="foo=='bar'")
 
     m = [m.id for m in Notification.objects.match(payload)]
-    assert m == [sub1.id] + ([sub2.id] if matches else [])
+    assert sorted(m) == sorted([sub1.id] + ([sub2.id] if matches else []))
 
 
 @pytest.mark.parametrize(

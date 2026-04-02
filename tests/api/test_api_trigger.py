@@ -5,7 +5,7 @@ from unittest import mock
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
-from testutils.perms import key_grants, lock
+from testutils.perms import configure_event, configure_model, key_grants, lock
 
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import SystemEvent
@@ -54,11 +54,11 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
         ApiKeyFactory,
         AssignmentFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
     )
 
-    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
+    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)])
     assignments = [AssignmentFactory(channel=email_channel) for __ in range(4)]
 
     n = NotificationFactory(distribution__recipients=assignments, event=event)
@@ -86,11 +86,11 @@ def data_dynamic(admin_user: "User", email_channel: "Channel") -> "Context":
         ApiKeyFactory,
         AssignmentFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
     )
 
-    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
+    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)])
     assignments = [AssignmentFactory(channel=email_channel) for __ in range(4)]
     n = NotificationFactory(distribution=None, external_filtering=True, event=event)
 
@@ -119,6 +119,46 @@ def test_trigger_invalid(client: APIClient, data: "Context") -> None:
     with key_grants(api_key, Grant.EVENT_TRIGGER):
         res = client.post(url, data={"context": 22}, format="json")
         assert res.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_trigger_inactive(client: APIClient, data: "Context") -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    event: Event = data["event"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    with configure_event(event, active=False):
+        with key_grants(api_key, Grant.EVENT_TRIGGER):
+            res = client.post(url, data={}, format="json")
+    assert res.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_trigger_paused(client: APIClient, data: "Context") -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    event: Event = data["event"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    with configure_event(event, paused=True):
+        with key_grants(api_key, Grant.EVENT_TRIGGER):
+            res = client.post(url, data={}, format="json")
+    assert res.status_code == status.HTTP_201_CREATED
+
+
+def test_trigger_auto_create(client: APIClient, data: "Context") -> None:
+    api_key = data["key"]
+    event: Event = data["event"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    url = "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
+        event.application.project.organization.slug,
+        event.application.project.slug,
+        event.application.slug,
+        "new-event",
+    )
+    with configure_model(event.application, auto_create_event=True):
+        with key_grants(api_key, [Grant.EVENT_TRIGGER, Grant.EVENT_AUTO_CREATE]):
+            res = client.post(url, data={}, format="json")
+    assert res.status_code == status.HTTP_201_CREATED
 
 
 def test_trigger_405(client: APIClient, data: "Context") -> None:
@@ -325,6 +365,16 @@ def test_trigger_limit_to_with_wrong_receiver(
 
 
 # Environment
+
+
+def test_trigger_invalid_filters(client: APIClient, data: "Context") -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.post(url, data={"options": {"filters": "invalid"}}, format="json")
+        assert res.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_trigger_invalid_options(

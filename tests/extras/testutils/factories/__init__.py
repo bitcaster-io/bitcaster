@@ -14,7 +14,7 @@ from .key import ApiKeyFactory
 from .log import LogEntryFactory
 from .media import MediaFileFactory
 from .member import MemberFactory
-from .message import MessageFactory
+from .message import MessageTemplateFactory
 from .monitor import MonitorFactory
 from .notification import NotificationFactory
 from .occurrence import OccurrenceFactory
@@ -42,7 +42,7 @@ __all__ = [
     "LogMessageFactory",
     "MediaFileFactory",
     "MemberFactory",
-    "MessageFactory",
+    "MessageTemplateFactory",
     "MonitorFactory",
     "NotificationFactory",
     "OccurrenceFactory",

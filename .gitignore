@@ -12,6 +12,7 @@ libcairo.2.dylib
 downloaded_files/
 celerybeat-schedule
 src/bitcaster/version.py
+latest_logs
 junit.xml
 !.git
 !.codecov.yml

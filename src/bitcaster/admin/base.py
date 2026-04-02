@@ -17,7 +17,7 @@ from unfold.contrib.forms import widgets as uwidgets
 from bitcaster.forms.unfold import UnfoldChainedSelect
 from bitcaster.state import state
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.db.models import QuerySet
 
     from bitcaster.types.django import AnyModel_co

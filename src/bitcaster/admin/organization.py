@@ -14,7 +14,7 @@ from ..state import state
 from ..utils.django import url_related
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.utils.datastructures import _ListOrTuple
 
 logger = logging.getLogger(__name__)

@@ -22,7 +22,7 @@ from ..cache.manager import CacheManager
 from ..web.templatetags.bitcaster import recipients
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..models.occurrence import OccurrenceData
 
 logger = logging.getLogger(__name__)

@@ -21,7 +21,7 @@ from .base import BitcasterModelAdmin
 
 logger = logging.getLogger(__name__)
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin.options import InlineModelAdmin
 
     from bitcaster.types.django import AnyModel_co

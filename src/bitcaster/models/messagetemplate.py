@@ -67,7 +67,7 @@ class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
         _("HTML Content"), blank=True, help_text=_("The HTML formatted content of the message")
     )
     debug = models.BooleanField(
-        _("debug allowed"), default=False, help_text=_("Allow debug information in teh message")
+        _("debug allowed"), default=False, help_text=_("Allow debug information in the message")
     )
     objects = MessageManager()
 
