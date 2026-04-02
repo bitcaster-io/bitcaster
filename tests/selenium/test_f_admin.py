@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 import pytest
 from django.urls import reverse
-from flaky import flaky
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from testutils.selenium import TestBrowser
@@ -59,7 +58,7 @@ def _set_template_content(browser: TestBrowser, content: str):
 
 
 @pytest.mark.xdist_group(name="message_template")
-@flaky(max_runs=2)
+@pytest.mark.flaky(max_runs=2)
 def test_edit_template_message(browser: TestBrowser, message_template: "MessageTemplate"):
     event = message_template.event
     channel = message_template.channel

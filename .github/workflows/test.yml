@@ -34,11 +34,11 @@ jobs:
       dockerize: ${{ steps.changes.outputs.dockerize }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v6
 
     - id: changes
       name: Check for file changes
-      uses: dorny/paths-filter@v3
+      uses: dorny/paths-filter@v4
       with:
         base: ${{ github.ref }}
         token: ${{ github.token }}
@@ -78,12 +78,12 @@ jobs:
       RUNNER_TOOL_CACHE: /tmp/
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v8
       with:
         version: latest
         enable-cache: true
@@ -97,7 +97,7 @@ jobs:
 
     - name: Restore cached vEnv
       id: cache-venv-restore
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: |
           ./uv-cache
@@ -109,7 +109,7 @@ jobs:
 
     - name: Save vEnv
       id: cache-venv-save
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: |
           ./uv-cache
@@ -121,7 +121,7 @@ jobs:
         uv run tox -e tests
 
     - name: Archive selenium results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: failure()
       with:
         name: selenium-log-report
@@ -135,7 +135,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       continue-on-error: false
       with:
         env_vars: OS,PYTHON
