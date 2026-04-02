@@ -6,9 +6,11 @@ from unittest.mock import Mock
 
 from django.contrib.auth.models import Permission
 from faker import Faker
+from strategy_field.utils import get_attr
 
 from bitcaster.auth.constants import Grant
 from bitcaster.state import state
+from testutils.helpers import set_attr
 
 whitespace = " \t\n\r\v\f"
 lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -155,17 +157,33 @@ def lock(target: "LockMixin") -> "Generator[None, None, None]":
         target.save()
 
 
-@contextlib.contextmanager
-def configure_model(target: "Model", **kwargs: Any):
-    stored = {}
-    for k, v in kwargs.items():
-        stored[k] = getattr(target, k)
-        setattr(target, k, v)
-    target.save()
-    yield
-    for k, v in stored.items():
-        setattr(target, k, v)
-    target.save()
+class configure_model(ContextDecorator):  # noqa
+    def __init__(self, target: "Model", **fields: Any) -> None:
+        self.target = target
+        self.fields = fields
+        self.stored = {}
+
+    def __enter__(self) -> "configure_model":
+        if self.fields:
+            for k, v in self.fields.items():
+                self.stored[k] = get_attr(self.target, k)
+                set_attr(self.target, k.replace("__", "."), v)
+            self.target.save()
+        return self
+
+    def __exit__(self, e_typ: Optional[type], e_val: Optional[Exception], trcbak: Optional[Any]) -> None:
+        if self.stored:
+            for k, v in self.stored.items():
+                set_attr(self.target, k.replace("__", "."), v)
+            self.target.save()
+
+    def start(self) -> "configure_model":
+        """Activate a patch, returning any created mock."""
+        return self.__enter__()
+
+    def stop(self) -> None:
+        """Stop an active patch."""
+        return self.__exit__(None, None, None)
 
 
 @contextlib.contextmanager

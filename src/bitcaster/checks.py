@@ -2,10 +2,12 @@ import os
 from pathlib import Path
 from typing import Any
 
+import sentry_sdk
 from django.apps import AppConfig
 from django.conf import settings
 from django.core import checks
 from django.utils.module_loading import import_string
+from sentry_sdk.utils import BadDsn
 
 from bitcaster.config import env
 
@@ -26,24 +28,30 @@ E003 = checks.Error(
     id="bitcaster.E003",
 )
 
+
 W001 = checks.Warning(
-    "SENTRY_DSN is set but sentry_sdk is not installed",
+    "Invalid SENTRY_DSN:  Sentry client cannot be initialized",
     id="bitcaster.W001",
+)
+
+W002 = checks.Warning(
+    "SENTRY_DSN is set but Sentry server seems unreachable",
+    id="bitcaster.W002",
 )
 
 
 @checks.register("config")
 def check_sentry(app_configs: AppConfig, **kwargs: Any) -> list[checks.CheckMessage]:
+    from bitcaster.config.fragments.sentry import init_sentry
+
     if settings.SENTRY_DSN:
         try:
-            import sentry_sdk
-
-            if sentry_sdk.get_client().dsn:
-                sentry_sdk.capture_message("Bitcaster System Check")
-            else:
-                return [W001]
-        except ImportError:
+            init_sentry(True)
+            sentry_sdk.capture_message("Bitcaster System Check")
+        except BadDsn:
             return [W001]
+        except Exception:
+            return [W002]
     return []
 
 
