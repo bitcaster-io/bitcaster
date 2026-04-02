@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - id: changes
         name: Check for backend file changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
 #          base: ${{ github.ref }}
           token: ${{ github.token }}
