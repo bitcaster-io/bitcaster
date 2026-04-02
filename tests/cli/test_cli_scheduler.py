@@ -54,8 +54,6 @@ def test_cron_command_interrupt(monkeypatch):
     Test that the 'cron' management command can be gracefully
     interrupted with Control+C (SIGINT).
     """
-    # Ensure we are in the project root so manage.py can be found
-    monkeypatch.chdir("/Users/sax/Documents/data/PROGETTI/bitcaster.io/bitcaster")
 
     # Start the cron command as a subprocess
     process = subprocess.Popen(
