@@ -1,19 +1,40 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from bitcaster.cli.__main__ import cli
 from bitcaster.cli.worker import ClickMiddleware
 
 
-def test_worker_run(runner):
+@pytest.mark.parametrize("autoreload", ["", "--autoreload"])
+@pytest.mark.parametrize("pid_file", ["", "~temp.pid"])
+@pytest.mark.parametrize("verbosity", [0, 1, 2, 3])
+@pytest.mark.parametrize("reset", ["", "--reset"])
+def test_worker_run(runner, verbosity, pid_file, autoreload, monkeypatch, reset):
     # worker.py calls dramatiq.cli.main()
+    reloader = MagicMock()
+    monkeypatch.setattr("django.utils.autoreload.run_with_reloader", reloader)
+    args = ["run"]
+    if verbosity:
+        args.extend(["-v"] * verbosity)
+    if reset:
+        args.extend(["--reset"])
+    if autoreload:
+        args.extend(["--autoreload"])
+    if pid_file:
+        args.extend(["--pid-file", pid_file])
+
     with patch("dramatiq.cli.main") as mock_main:
         with patch("django.setup"):
             # It also imports bitcaster.config.dramatiq.broker and calls dramatiq.set_broker
             with patch("dramatiq.set_broker"):
-                result = runner.invoke(cli, ["run"])
+                result = runner.invoke(cli, args)
 
-    assert result.exit_code == 0
-    mock_main.assert_called_once()
+    assert result.exit_code == 0, f"{result.output} {result.stderr}"
+    if autoreload:
+        reloader.assert_called_once()
+    else:
+        mock_main.assert_called_once()
 
 
 def test_worker_run_options(runner):

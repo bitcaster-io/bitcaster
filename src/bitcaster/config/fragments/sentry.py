@@ -1,17 +1,9 @@
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-
-from bitcaster.config import env
+from ...utils.sentry import init_sentry
+from ..settings import env
 
 SENTRY_DSN = env("SENTRY_DSN")
 SENTRY_URL = env("SENTRY_URL")
+SENTRY_ENVIRONMENT = env("SENTRY_ENVIRONMENT")
+
 if SENTRY_DSN:  # pragma: no cover
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        environment=env("SENTRY_ENVIRONMENT"),
-        send_default_pii=True,
-        enable_tracing=True,
-        integrations=[
-            DjangoIntegration(),
-        ],
-    )
+    init_sentry()

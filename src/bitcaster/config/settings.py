@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -205,7 +206,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -252,6 +252,7 @@ TIME_FORMATS = [
     "%I:%M%p",
 ]
 
+logger = logging.getLogger(__name__)
 
 from .fragments.agents import *  # noqa
 from .fragments.bitcaster import *  # noqa
