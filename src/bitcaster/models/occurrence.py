@@ -146,7 +146,7 @@ class Occurrence(BitcasterBaseModel):
         return self.event.application
 
     def log_action(self) -> None:
-        LogEntry.objects.log_actions(bitcaster.system_user_id, [self], LogEntry.OTHER, "Start processing")
+        LogEntry.objects.log_actions(bitcaster.system_user.pk, [self], LogEntry.OTHER, "Start processing")
 
     def process(self) -> int:
         from bitcaster.models import Occurrence

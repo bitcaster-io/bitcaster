@@ -1,4 +1,3 @@
-import sys
 import time
 from typing import TYPE_CHECKING, Any
 
@@ -50,12 +49,6 @@ class ClickMiddleware(Middleware):
             ProcessLogEntry.objects.log_process(
                 self.fn, elapsed=delta, error=exception, args=message._message.args, kwargs=message._message.kwargs
             )
-
-        sys.stdout.write(f"1111.1, {message._message}\n")
-        sys.stdout.write(f"1111.2, {message.actor_name}\n")
-        sys.stdout.write(f"1111.3, {message._message.args}\n")
-        sys.stdout.write(f"1111.4, {message._message.kwargs}\n")
-        sys.stdout.write(f"1111.4, {message._message.options}\n")
 
 
 broker: RedisBroker = RedisBroker(  # type: ignore[no-untyped-call]

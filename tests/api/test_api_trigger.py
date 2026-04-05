@@ -9,12 +9,13 @@ from testutils.perms import configure_event, configure_model, key_grants, lock
 
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import SystemEvent
+from bitcaster.models import Application
 from bitcaster.runner.tasks import process_occurrence
 
 if TYPE_CHECKING:
     from bitcaster.models import (
         ApiKey,
-        Application,
+        # Application,
         Assignment,
         Channel,
         Event,
@@ -30,6 +31,7 @@ if TYPE_CHECKING:
             "event": Event,
             "key": ApiKey,
             "user": User,
+            "system_user": User,
             "channel": Channel,
             "assignments": list[Assignment],
             "notification": Notification,
@@ -58,16 +60,21 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
         NotificationFactory,
     )
 
-    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)])
-    assignments = [AssignmentFactory(channel=email_channel) for __ in range(4)]
+    from bitcaster.constants import bitcaster
 
-    n = NotificationFactory(distribution__recipients=assignments, event=event)
+    event: "Event" = EventFactory.create(
+        channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)]
+    )
+    assignments = [AssignmentFactory.create(channel=email_channel) for __ in range(4)]
 
-    key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
+    n = NotificationFactory.create(distribution__recipients=assignments, event=event)
+
+    key = ApiKeyFactory.create(user=admin_user, grants=[], application=event.application)
     return {
         "event": event,
         "key": key,
         "user": admin_user,
+        "system_user": bitcaster.system_user,
         "channel": email_channel,
         "notification": n,
         "assignments": assignments,
@@ -549,3 +556,21 @@ def test_trigger_external_filtering(client: APIClient, data_dynamic: "Context") 
     assert num_sent == 4
     o.refresh_from_db()
     assert o.recipients == 4
+
+
+@pytest.mark.parametrize("opt", Application.AutoCreateOption.values, ids=Application.AutoCreateOption.names)
+def test_trigger_auto_create_options(client: APIClient, data: "Context", opt) -> None:
+    api_key = data["key"]
+    event: Event = data["event"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    url = "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
+        event.application.project.organization.slug,
+        event.application.project.slug,
+        event.application.slug,
+        uuid.uuid4().hex,
+    )
+    with configure_model(event.application, auto_create_event=True, auto_create_options=opt):
+        with key_grants(api_key, [Grant.EVENT_TRIGGER, Grant.EVENT_AUTO_CREATE]):
+            res = client.post(url, data={}, format="json")
+    assert res.status_code in [status.HTTP_201_CREATED, status.HTTP_400_BAD_REQUEST]

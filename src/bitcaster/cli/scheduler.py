@@ -28,9 +28,11 @@ def run_scheduler(verbose: int, debug: bool) -> None:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bitcaster.config.settings")
     django.setup()
 
+    from bitcaster.cli.utils import patch_signal
     from bitcaster.models import Task
     from bitcaster.runner.manager import BackgroundManager, scheduler
 
+    patch_signal()
     last_round = epoch.astimezone(datetime.UTC)
     job: Job
 

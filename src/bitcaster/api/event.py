@@ -130,10 +130,6 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                                 paused = False
                                 active = False
                                 create_occurrence = False
-                            case _:
-                                paused = True
-                                active = False
-                                create_occurrence = False
 
                         evt = Event.objects.create(
                             application=app,

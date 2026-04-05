@@ -15,7 +15,7 @@ class LogEntryManager(_LogEntry.objects.__class__):  # type: ignore[name-defined
         return self.get(pk=pk)
 
     def log_system_action(self, obj: "Model", action_flag: int, change_message: str = "") -> None:
-        user_id = bitcaster.system_user_id
+        user_id = bitcaster.system_user.pk
         self.log_actions(user_id=user_id, queryset=[obj], action_flag=action_flag, change_message=change_message)
 
 
