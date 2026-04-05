@@ -1,13 +1,22 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.contrib.admin.models import LogEntry as _LogEntry
 from django.utils.translation import gettext_lazy as _
 
+from bitcaster.constants import bitcaster
+
+if TYPE_CHECKING:
+    from django.db import Model
+
 
 class LogEntryManager(_LogEntry.objects.__class__):  # type: ignore[name-defined]
     def get_by_natural_key(self, pk: "str", *args: Any) -> "LogEntry":
         return self.get(pk=pk)
+
+    def log_system_action(self, obj: "Model", action_flag: int, change_message: str = "") -> None:
+        user_id = bitcaster.system_user_id
+        self.log_actions(user_id=user_id, queryset=[obj], action_flag=action_flag, change_message=change_message)
 
 
 class LogEntry(_LogEntry):

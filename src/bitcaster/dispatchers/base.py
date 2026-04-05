@@ -1,3 +1,4 @@
+import abc
 import enum
 import logging
 from typing import TYPE_CHECKING, Any, Optional, cast
@@ -12,6 +13,7 @@ from strategy_field.registry import Registry
 from strategy_field.utils import fqn
 
 from bitcaster.constants import AddressType
+from bitcaster.exceptions import DispatcherError
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment, Channel, Event, User
@@ -91,7 +93,7 @@ class DispatcherConfig(forms.Form):
         channel.save()
 
 
-class DispatcherMeta(type["Dispatcher"]):
+class DispatcherMeta(abc.ABCMeta):
     _all = {}
     verbose_name: str = ""
 
@@ -153,8 +155,17 @@ class Dispatcher(metaclass=DispatcherMeta):
     def name(self) -> str:
         return self.verbose_name or self.__name__.title()
 
-    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+    @abc.abstractmethod
+    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         raise NotImplementedError
+
+    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+        try:
+            return self._send(address, payload, assignment, **kwargs)
+        except DispatcherError:
+            raise
+        except Exception as e:
+            raise DispatcherError("Error sending message") from e
 
     def subscribe(self, assignment: "Assignment", **kwargs: Any) -> HttpResponseRedirect:
         return HttpResponseRedirect(".")

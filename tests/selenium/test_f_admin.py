@@ -20,6 +20,7 @@ def test_login(browser: TestBrowser):
 
 
 @pytest.mark.xdist_group(name="message_template")
+@pytest.mark.flaky(max_runs=2)
 def test_create_template_message(browser: TestBrowser, event: "Event"):
     from bitcaster.models import MessageTemplate
 

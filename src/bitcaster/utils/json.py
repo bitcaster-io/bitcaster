@@ -23,6 +23,10 @@ def smart_dumps(obj: Any) -> Any:
     return json.dumps(obj, cls=BitcasterEncoder)
 
 
+def safe_dumps(obj: Any) -> Any:
+    return json.dumps(obj, cls=BitcasterEncoder)
+
+
 class JsonUpdateMode(TextChoices):
     MERGE = "merge"
     REMOVE = "remove"

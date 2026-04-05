@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from bitcaster.cli.__main__ import cli
-from bitcaster.cli.worker import ClickMiddleware
+from bitcaster.runner.broker import ClickMiddleware
 
 
 @pytest.mark.parametrize("autoreload", ["", "--autoreload"])

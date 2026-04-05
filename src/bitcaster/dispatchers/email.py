@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class BaseEmailDispatcher(Dispatcher):
     protocol: MessageProtocol = MessageProtocol.EMAIL
 
-    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         try:
             subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
             email = EmailMultiAlternatives(

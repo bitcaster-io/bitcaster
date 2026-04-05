@@ -29,13 +29,12 @@ class TeamsDispatcher(Dispatcher):
     def _get_connection(self) -> requests.Session:
         return requests.Session()
 
-    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         webhook_url = self.channel.config.get("webhook_url")
 
         if not webhook_url:
             raise DispatcherError("Webhook URL not configured for this channel")
         text_content = payload.message
-
         # Adaptive Card Payload
         teams_message = {
             "type": "message",
@@ -69,19 +68,14 @@ class TeamsDispatcher(Dispatcher):
             ],
         }
 
-        try:
-            session = self._get_connection()
-            response = session.post(webhook_url, json=teams_message, timeout=10)
+        session = self._get_connection()
+        response = session.post(webhook_url, json=teams_message, timeout=10)
 
-            if response.status_code != 200:
-                logger.error(f"Teams dispatcher error: {response.status_code} - {response.text}")
-                raise DispatcherError(f"Failed to send to Teams: {response.text}")
+        if response.status_code != 200:
+            logger.error(f"Teams dispatcher error: {response.status_code} - {response.text}")
+            raise DispatcherError(f"Failed to send to Teams: {response.text}")
 
-            return True
-
-        except requests.RequestException as e:
-            logger.exception("Network error sending to Teams")
-            raise DispatcherError(f"Network error: {e}") from e
+        return True
 
     def test_connection(self, raise_exception: bool = False) -> bool:
         if not self.channel.config.get("webhook_url"):

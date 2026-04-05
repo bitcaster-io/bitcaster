@@ -7,7 +7,7 @@ from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
-from bitcaster.models import Application
+from bitcaster.models import Application, LogEntry
 
 from ..auth.constants import Grant
 from ..exceptions import InactiveError, LockError
@@ -93,6 +93,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
 
         if ser.is_valid():
             slug = self.kwargs["evt"]
+            create_occurrence = True
             try:
                 data: "JSON" = {}
                 try:
@@ -112,15 +113,44 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                         .first()
                     ):
                         slug = self.kwargs["evt"]
+                        match app.auto_create_options:
+                            case Application.AutoCreateOption.PROCESS:
+                                paused = False
+                                active = True
+                                create_occurrence = True
+                            case Application.AutoCreateOption.PAUSED:
+                                paused = True
+                                active = True
+                                create_occurrence = True
+                            case Application.AutoCreateOption.DUMMY:
+                                paused = False
+                                active = True
+                                create_occurrence = False
+                            case Application.AutoCreateOption.INACTIVE:
+                                paused = False
+                                active = False
+                                create_occurrence = False
+                            case _:
+                                paused = True
+                                active = False
+                                create_occurrence = False
+
                         evt = Event.objects.create(
                             application=app,
-                            active=False,
-                            paused=True,
+                            active=active,
+                            paused=paused,
                             slug=slug,
                             name=f"AUTO: {slug.title()}",
-                            description="auto created via APO invocation",
+                            description="auto created via API invocation",
+                        )
+                        LogEntry.objects.log_system_action(
+                            evt,
+                            LogEntry.ADDITION,
+                            "auto created via API invocation",
                         )
                         data["warning"] = f"New event '{evt.name}' created with id {evt.id}"
+                        data["creation_op   tions"] = Application.AutoCreateOption(app.auto_create_options).label
+                        data["status"] = {"paused": evt.paused, "active": evt.active, "trigger": create_occurrence}
                     else:
                         raise
                 if evt.locked:
@@ -136,14 +166,15 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                         opts["environs"] = list(set(opts["environs"]).intersection(request.auth.environments))
                     else:
                         opts["environs"] = request.auth.environments
-                o: "Occurrence" = evt.trigger(
-                    context=ser.validated_data.get("context", {}),
-                    options=opts,
-                    cid=correlation_id,
-                )
-                data["occurrence"] = o.pk
-                if o.event.paused or o.event.application.paused:
-                    data["paused"] = True
+                if create_occurrence:
+                    o: "Occurrence" = evt.trigger(
+                        context=ser.validated_data.get("context", {}),
+                        options=opts,
+                        cid=correlation_id,
+                    )
+                    data["occurrence"] = o.pk
+                    if o.event.paused or o.event.application.paused:
+                        data["paused"] = True
                 return Response(data, status=201)
             except LockError as e:
                 return Response({"error": str(e)}, status=400)

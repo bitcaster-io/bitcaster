@@ -16,6 +16,7 @@ from .notification import NotificationAdmin
 from .occurrence import OccurrenceAdmin
 from .organization import OrganizationAdmin
 from .overrides import LogEntryAdmin
+from .process_log import ProcessLogEntryAdmin
 from .project import ProjectAdmin
 from .task import TaskAdmin
 from .user import UserAdmin
@@ -41,6 +42,7 @@ __all__ = [
     "NotificationAdmin",
     "OccurrenceAdmin",
     "OrganizationAdmin",
+    "ProcessLogEntryAdmin",
     "ProjectAdmin",
     "TaskAdmin",
     "UserAdmin",

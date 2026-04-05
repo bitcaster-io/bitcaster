@@ -28,6 +28,12 @@ class ApplicationManager(BitcasterBaselManager["Application"]):
 
 
 class Application(SlugMixin, LockMixin, BitcasterBaseModel):
+    class AutoCreateOption(models.IntegerChoices):
+        PROCESS = 100, _("Create eevent and process")
+        INACTIVE = 10, _("Create eevent and set it not active")
+        PAUSED = 20, _("Create eevent and set it paused")
+        DUMMY = 30, _("Create event but do not trigger it")
+
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="applications")
     owner = models.ForeignKey(
         User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True, related_name="applications"
@@ -39,6 +45,12 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
     auto_create_event = models.BooleanField(
         verbose_name=_("auto create events"),
         default=False,
+        help_text=_("If true unknown events will be automatically created"),
+    )
+    auto_create_options = models.IntegerField(
+        verbose_name=_("auto create event options"),
+        choices=AutoCreateOption.choices,
+        default=AutoCreateOption.PROCESS,
         help_text=_("If true unknown events will be automatically created"),
     )
     from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))

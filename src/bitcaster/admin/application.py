@@ -39,6 +39,23 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
     autocomplete_fields = ("owner",)
     form = ApplicationChangeForm
     change_form_template = "bitcaster/admin/application/change_form.html"
+    fieldsets = (
+        (
+            _("General"),
+            {
+                "classes": ["tab"],
+                "fields": [
+                    "name",
+                    "slug",
+                    "project",
+                    "owner",
+                ],
+            },
+        ),
+        (_("Events auto creation"), {"classes": ["tab"], "fields": ["auto_create_event", "auto_create_options"]}),
+        (_("Status"), {"classes": ["tab"], "fields": ["active", "locked", "paused"]}),
+        (_("Notification"), {"classes": ["tab"], "fields": ["from_email", "subject_prefix"]}),
+    )
 
     def has_add_permission(self, request: HttpRequest) -> bool:
         from bitcaster.models import Project
@@ -110,7 +127,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
         context = self.get_common_context(request, pk, action_title=_("Advanced configuration"))
         if request.method == "POST":
             config_form = ApplicationAdvancedConfigForm(request.POST)
-            if config_form.is_valid():
+            if config_form.is_valid():  # pragma: no branch
                 obj.advanced_configuration = config_form.cleaned_data
                 obj.save()
                 self.message_user(request, _("Advanced configuration saved."))

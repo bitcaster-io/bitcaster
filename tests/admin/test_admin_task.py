@@ -34,7 +34,7 @@ def test_task_add(app: "DjangoTestApp") -> None:
     url = reverse("admin:bitcaster_task_add")
     res = app.get(url)
     frm = res.forms["task_form"]
-    frm["func"] = fqn(scan_occurrences)
+    frm["func"] = fqn(scan_occurrences.fn)
     frm["name"] = "Scan Occurrences"
     res = frm.submit()
     assert res.status_code == 302, res.showbrowser()

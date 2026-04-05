@@ -81,18 +81,14 @@ class WebPushDispatcher(Dispatcher):
     need_subscription = True
     verbose_name = "WebPush"
 
-    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
-        try:
-            from .utils import webpush_send_message
+    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+        from .utils import webpush_send_message
 
-            if not assignment:
-                raise ValueError(_("WebPushDispatcher: assignment arg must be provided"))
+        if not assignment:
+            raise DispatcherError(_("WebPushDispatcher: assignment arg must be provided"))
 
-            if not assignment.data:
-                raise DispatcherError(_("Assignment not subscribed"))
-            msg = json.dumps({"message": payload.message, "subject": payload.subject})
-            res: dict[str, Any] = webpush_send_message(message=msg, assignment=assignment, **kwargs)
-            return res["success"] == 1
-        except Exception as e:
-            logger.exception(e)
-            raise DispatcherError(e) from e
+        if not assignment.data:
+            raise DispatcherError(_("Assignment not subscribed"))
+        msg = json.dumps({"message": payload.message, "subject": payload.subject})
+        res: dict[str, Any] = webpush_send_message(message=msg, assignment=assignment, **kwargs)
+        return res["success"] == 1

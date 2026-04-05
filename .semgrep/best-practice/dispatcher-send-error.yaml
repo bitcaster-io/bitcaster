@@ -1,0 +1,25 @@
+rules:
+  - id: dispatcher-send-must-raise-dispatcher-error
+    languages: [python]
+    severity: ERROR
+    message: |
+      All 'send' methods in a Dispatcher subclass must wrap their logic in a try...except Exception block
+      that only raises DispatcherError using `raise DispatcherError("...") from e.
+    patterns:
+      - pattern: |
+          def send(self, $ADDR, $PAYLOAD, ...):
+            ...
+      - pattern-not: |
+          def send(self, $ADDR, $PAYLOAD, ...):
+            ...
+            try:
+              ...
+            except Exception as $E:
+              ...
+              raise DispatcherError(...) from $E
+    paths:
+      include:
+        - "**/src/bitcaster/dispatchers/*.py"
+      exclude:
+        - "**/src/bitcaster/dispatchers/base.py"
+        - "**/src/bitcaster/dispatchers/__init__.py"

@@ -1,0 +1,43 @@
+rules:
+  - id: check-dramatiq-smart-actor
+    patterns:
+      - pattern: |
+          @dramatiq.actor(...)
+          def $FUNC(...):
+            ...
+      - pattern-not: |
+          @dramatiq.actor(..., actor_class=SmartActor, ...)
+          def $FUNC(...):
+            ...
+    message: "Dramatiq actors should use actor_class=SmartActor"
+    severity: WARNING
+    languages:
+      - python
+
+  - id: dramatiq-actor-name-too-long
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern: |
+                  @dramatiq.actor(..., name=$NAME, ...)
+                  def $FUNC(...):
+                    ...
+              - metavariable-regex:
+                  metavariable: $NAME
+                  regex: '".{100,}"'
+          - patterns:
+              - pattern: |
+                  @dramatiq.actor(...)
+                  def $FUNC(...):
+                    ...
+              - pattern-not: |
+                  @dramatiq.actor(..., name=..., ...)
+                  def $FUNC(...):
+                    ...
+              - metavariable-regex:
+                  metavariable: $FUNC
+                  regex: ".{100,}"
+    message: "Dramatiq actor name (explicit or function name) must be less than 1000 characters"
+    severity: ERROR
+    languages:
+      - python
