@@ -7,7 +7,7 @@
     "build:clean": "rimraf ../../static/css/",
     "build:tailwind": "cross-env NODE_ENV=production postcss src/*.scss --dir ../../static/css/ --ext css --minify",
     "dev": "cross-env NODE_ENV=development postcss src/*.scss --dir ../../static/css/ --ext css --watch ",
-    "start": "cross-env NODE_ENV=development postcss src/*.scss --dir ../../static/css/ --ext css --watch --poll",
+    "start": "cross-env NODE_ENV=development postcss src/*.scss --dir ../../static/css/ --ext css --watch --poll"
   },
   "keywords": [],
   "author": "",

@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, TypedDict
 from unittest.mock import Mock
 
 import pytest
+from django.core.exceptions import ObjectDoesNotExist
 from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
 from testutils.perms import configure_model
@@ -367,8 +368,11 @@ def test_monitor_run(system_user: "User", monitor) -> None:
 def test_monitor_check(system_user: "User") -> None:
     from testutils.factories.monitor import MonitorFactory
 
+    with pytest.raises(ObjectDoesNotExist):
+        monitor_check("-1")
+
     monitor = MonitorFactory.create()
-    assert monitor_check(monitor) == "done"
+    assert monitor_check(monitor.pk) == "done"
 
     with configure_model(monitor, active=False):
-        assert monitor_check(monitor) == "inactive"
+        assert monitor_check(monitor.pk) == "inactive"

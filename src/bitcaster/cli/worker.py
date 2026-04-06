@@ -13,11 +13,10 @@ LOGFORMAT = "%(log_color)s%(asctime)s%(reset)s | %(log_color)s%(message)s%(reset
 def runit(args: list[str], log_level, comp_log_level, **extra) -> None:
     from dramatiq.cli import make_argument_parser
 
-    from bitcaster.cli.utils import configure_logging, patch_signal
+    from bitcaster.cli.utils import configure_logging
     from bitcaster.runner.config import dramatiq
     from bitcaster.runner.manager import BackgroundManager
 
-    patch_signal()
     manager = BackgroundManager()
     manager.register_runner()
     click.echo(" ".join(args))

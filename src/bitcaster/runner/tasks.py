@@ -31,7 +31,7 @@ def beat_heartbeat() -> None:
     BackgroundManager().scheduler_ping()
 
 
-@dramatiq.actor(actor_class=SmartActor, logging=True)
+@dramatiq.actor(actor_class=SmartActor)
 def process_occurrence(occurrence_pk: int, return_value: bool = False) -> int | None:
     from bitcaster.models import Occurrence
 
@@ -67,31 +67,30 @@ def check_for_new_user_messages() -> None:
 
 
 @dramatiq.actor(actor_class=SmartActor)
-def scan_occurrences() -> None:
+def scan_occurrences() -> list[int]:
     from bitcaster.models import Occurrence
 
     logger.debug("Scan new occurrences")
     o: Occurrence
-    try:
-        for o in (
-            Occurrence.objects.select_related("event")
-            .filter(status=Occurrence.Status.NEW)
-            .exclude(Q(event__paused=True) | Q(event__application__paused=True))
-        ):
-            process_occurrence.send(o.id)
-    except Exception as e:
-        logger.exception(e)
-        raise
+    ret = []
+    for o in (
+        Occurrence.objects.select_related("event")
+        .filter(status=Occurrence.Status.NEW)
+        .exclude(Q(event__paused=True) | Q(event__application__paused=True))
+    ):
+        process_occurrence.send(o.id)
+        ret.append(o.id)
+    return ret
 
 
-@dramatiq.actor(actor_class=SmartActor)
+@dramatiq.actor(actor_class=SmartActor, logging=True)
 def delete_expired_user_messages() -> None | Exception:
     from bitcaster.models import UserMessage
 
     UserMessage.objects.expired().delete()
 
 
-@dramatiq.actor(actor_class=SmartActor)
+@dramatiq.actor(actor_class=SmartActor, logging=True)
 def purge_occurrences() -> None | Exception:
     from bitcaster.models import Occurrence
 
@@ -105,12 +104,19 @@ def purge_occurrences() -> None | Exception:
 @dramatiq.actor(actor_class=SmartActor)
 def monitor_run() -> None:
     for monitor in Monitor.objects.filter(active=True):
-        monitor_check(monitor)
+        monitor_check.send(monitor.pk)
 
 
-def monitor_check(monitor: Monitor) -> str:
+@dramatiq.actor(actor_class=SmartActor, logging=True)
+def monitor_check(pk: int) -> str:
     from django.contrib.admin.models import LogEntry
     from django.contrib.contenttypes.models import ContentType
+
+    try:
+        monitor: "Monitor" = Monitor.objects.get(pk=pk)
+    except Monitor.DoesNotExist as e:
+        logger.exception(e)
+        raise
 
     try:
         if monitor.active:

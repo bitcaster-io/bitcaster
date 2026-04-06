@@ -1,17 +1,35 @@
 import logging
 from typing import TYPE_CHECKING
 
+from django.contrib.admin import SimpleListFilter
+
 from bitcaster.admin.base import BaseAdmin
 
 from .base import BitcasterModelAdmin
 
 if TYPE_CHECKING:  # pragma: no cover
+    from django.contrib.admin import ModelAdmin
     from django.db.models import QuerySet
     from django.http import HttpRequest
 
-    from bitcaster.models import ProcessLogEntry
+    from bitcaster.models import Channel, ProcessLogEntry
 
 logger = logging.getLogger(__name__)
+
+
+class TaskFilter(SimpleListFilter):
+    parameter_name = "type"
+    title = "Type"
+
+    def lookups(self, request: "HttpRequest", model_admin: "ModelAdmin[Channel]") -> tuple[tuple[str, str], ...]:
+        return self.prefixes
+
+    def queryset(self, request: "HttpRequest", queryset: "QuerySet[Channel]") -> "QuerySet[Channel]":
+        if self.value() == "abstract":
+            return queryset.filter(organization__isnull=False, project__isnull=True)
+        if self.value() == "project":
+            return queryset.filter(organization__isnull=False, project__isnull=False)
+        return queryset.all()
 
 
 class ProcessLogEntryAdmin(BaseAdmin, BitcasterModelAdmin["ProcessLogEntry"]):

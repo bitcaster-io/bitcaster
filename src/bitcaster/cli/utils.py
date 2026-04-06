@@ -1,21 +1,10 @@
 import logging
-import signal
-import threading
 
 from colorlog import ColoredFormatter
 
 logger = logging.getLogger(__name__)
 
 LOGFORMAT = "%(log_color)s%(asctime)s%(reset)s | %(name)s | %(log_color)s%(message)s%(reset)s"
-
-
-def patch_signal():
-    if threading.current_thread() is not threading.main_thread():
-        # Patch signal.signal to be a no-op
-        def signal_patch(signum, handler):
-            logger.debug(f"Ignoring signal {signum} registration from non-main thread")
-
-        signal.signal = signal_patch
 
 
 def configure_logging(level1, level2):
