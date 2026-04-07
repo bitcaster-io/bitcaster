@@ -62,7 +62,7 @@ class DbConnectionsMiddleware(Middleware):
 class ClickMiddleware(Middleware):
     @property
     def actor_options(self) -> set[str]:
-        return {"logging"}
+        return {"logging", "start"}
 
     def before_worker_boot(self, broker: "Broker", worker: "Worker") -> None:
         pass
@@ -78,7 +78,7 @@ class ClickMiddleware(Middleware):
         pass
 
     def before_process_message(self, broker: "Broker", message: "MessageProxy") -> None:
-        message._start = time.perf_counter()
+        message.options["start"] = time.perf_counter()
 
     def after_process_message(
         self,
@@ -88,7 +88,7 @@ class ClickMiddleware(Middleware):
         result: Any | None = None,
         exception: BaseException | None = None,
     ) -> None:
-        delta = time.perf_counter() - message._start
+        delta = time.perf_counter() - message.options["start"]
         actor: "Actor[Any, Any]" = broker.get_actor(message.actor_name)
         logging = message.options.get("logging") or actor.options.get("logging")
         if logging:

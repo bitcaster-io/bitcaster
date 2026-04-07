@@ -25,12 +25,6 @@ class SmartActor(Actor[P, R]):
     pass
 
 
-def beat_heartbeat() -> None:
-    from .manager import BackgroundManager
-
-    BackgroundManager().scheduler_ping()
-
-
 @dramatiq.actor(actor_class=SmartActor)
 def process_occurrence(occurrence_pk: int, return_value: bool = False) -> int | None:
     from bitcaster.models import Occurrence

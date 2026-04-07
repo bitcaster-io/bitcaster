@@ -126,7 +126,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                                 paused = False
                                 active = True
                                 create_occurrence = False
-                            case Application.AutoCreateOption.INACTIVE:
+                            case _:  ## Application.AutoCreateOption.INACTIVE
                                 paused = False
                                 active = False
                                 create_occurrence = False
