@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 import click
 import django
-from django.utils import timezone
 from django.utils.module_loading import import_string
 from sentry_sdk.utils import epoch
 
@@ -17,11 +16,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 logger = logging.getLogger(__name__)
-
-
-def echo(message: str, fg: str = "yellow") -> None:
-    ts = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
-    click.secho(f"{ts} - {message}", fg=fg)
 
 
 def run_scheduler(verbose: int, debug: bool) -> None:
