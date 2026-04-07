@@ -9,73 +9,73 @@ from django.utils.module_loading import import_string
 from sentry_sdk.utils import epoch
 
 from bitcaster.cli.utils import configure_logging
-from bitcaster.runner.manager import init_scheduler
+from bitcaster.models import Task
+from bitcaster.runner.manager import BackgroundManager, init_scheduler, scheduler
 
 if TYPE_CHECKING:  # pragma: no cover
     from apscheduler.job import Job
 
-
 logger = logging.getLogger(__name__)
+
+last_round = epoch.astimezone(datetime.UTC)
+
+
+def queue(task_id: int) -> None:
+    task = Task.objects.get(id=task_id)
+    logger.warning(f"queued {task.name}")
+    actor = import_string(task.func)
+    actor.send()
+
+
+def healthcheck() -> bool:
+    logger.warning("Healthcheck")
+    BackgroundManager().scheduler_ping()
+    return True
+
+
+def inspect_jobs() -> bool:
+    global last_round  # noqa: PLW0603
+    for task in Task.objects.filter(last_updated__gt=last_round):
+        try:
+            kwargs = {
+                "id": task.slug,
+                "func": queue,
+                "args": [task.id],
+                "trigger": task.trigger,
+                "replace_existing": task.replace_existing,
+                "max_instances": task.max_instances,
+                **task.trigger_config,
+            }
+            if job := scheduler.get_job(task.slug):
+                logger.debug(f"processing {job}")
+                next_run_time = getattr(job, "next_run_time", None)
+                if not task.active and next_run_time:
+                    job.pause()
+                    logger.warning(f"{job.id} paused")
+                elif task.active and not next_run_time:
+                    job.resume()
+                    logger.warning(f"{job.id} resumed")
+                else:  # task.active and next_run_time:
+                    scheduler.remove_job(job.id)
+                    job = scheduler.add_job(**kwargs)
+                    logger.warning(f"UPDATED {job.id} / {task.slug}")
+            else:
+                job = scheduler.add_job(**kwargs)
+                if not task.active:
+                    job.pause()
+                logger.warning(f"ADDED {job.id} ({task.get_status()}) {task.scheduling()}")
+
+        except Exception as e:
+            logger.error(f"ERROR {e}")
+    last_round = datetime.datetime.now(datetime.UTC)
+    return True
 
 
 def run_scheduler(verbose: int, debug: bool) -> None:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bitcaster.config.settings")
     django.setup()
 
-    from bitcaster.models import Task
-    from bitcaster.runner.manager import BackgroundManager, scheduler
-
-    last_round = epoch.astimezone(datetime.UTC)
     job: Job
-
-    def healthcheck() -> bool:
-        logger.warning("Healthcheck")
-        BackgroundManager().scheduler_ping()
-        return True
-
-    def queue(task_id: int) -> None:
-        task = Task.objects.get(id=task_id)
-        logger.warning(f"queued {task.name}")
-        actor = import_string(task.func)
-        actor.send()
-
-    def inspect_jobs() -> bool:
-        nonlocal last_round
-        for task in Task.objects.filter(last_updated__gt=last_round):
-            try:
-                kwargs = {
-                    "id": task.slug,
-                    "func": queue,
-                    "args": [task.id],
-                    "trigger": task.trigger,
-                    "replace_existing": task.replace_existing,
-                    "max_instances": task.max_instances,
-                    **task.trigger_config,
-                }
-
-                if job := scheduler.get_job(task.slug):
-                    logger.debug(f"processing {job}")
-                    if not task.active and job.next_run_time:
-                        job.pause()
-                        logger.warning(f"{job.id} paused")
-                    elif not job.next_run_time and task.active:
-                        job.resume()
-                        logger.warning(f"{job.id} resumed")
-                    else:
-                        scheduler.remove_job(job.id)
-                        job = scheduler.add_job(**kwargs)
-                        logger.warning(f"UPDATED {job.id} / {task.slug}")
-                else:
-                    job = scheduler.add_job(**kwargs)
-                    if not task.active:
-                        job.pause()
-                    logger.warning(f"ADDED {job.id} ({task.get_status()}) {task.scheduling()}")
-
-            except Exception as e:
-                logger.error(f"ERROR {e}")
-                raise
-        last_round = datetime.datetime.now(datetime.UTC)
-        return True
 
     if debug:
         log_level = logging.DEBUG
@@ -117,7 +117,8 @@ def run_scheduler(verbose: int, debug: bool) -> None:
         scheduler.start()
     except KeyboardInterrupt:
         click.echo("Scheduler stopping...")
-        scheduler.shutdown()
+        if scheduler.running:
+            scheduler.shutdown()
 
 
 @click.command(name="scheduler")

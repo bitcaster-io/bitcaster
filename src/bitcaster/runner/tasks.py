@@ -95,7 +95,11 @@ def purge_occurrences() -> None | Exception:
     from bitcaster.models import Occurrence
 
     try:
-        Occurrence.objects.purgeable().delete()
+        batch_size = 10000
+        queryset = Occurrence.objects.purgeable()
+        while queryset.exists():
+            ids = queryset.values_list("pk", flat=True)[:batch_size]
+            Occurrence.objects.filter(pk__in=list(ids)).delete()
     except Exception as e:
         logger.exception(e)
         return e

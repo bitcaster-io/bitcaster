@@ -34,7 +34,7 @@ def runit(args: list[str], log_level, comp_log_level, **extra) -> None:
 @click.option("-t", "--threads", default=1, help="Enable/disable worker events (default: enabled)")
 @click.option("-d", "--debug", is_flag=True, help="Set debug mode On")
 @click.option("--reset", is_flag=True, help="Clear pending tasks")
-@click.option("-v", "--verbose", count=True, default=2)
+@click.option("-v", "--verbose", count=True, default=0)
 @click.option("--pid-file", type=click.Path())
 @click.option("--autoreload", is_flag=True, default=False, help="Reload on code changes")
 def run(

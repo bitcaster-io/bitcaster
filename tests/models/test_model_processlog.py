@@ -18,4 +18,6 @@ def test_natural_key(processlogentry) -> None:
 
 @pytest.mark.parametrize("error", [None, Exception()])
 def test_manager_log_process(processlogentry, error) -> None:
-    processlogentry.__class__.objects.log_process(actor=delete_expired_user_messages, error=error)
+    processlogentry.__class__.objects.log_process(
+        actor=delete_expired_user_messages, args=[1, 2, 3], kwargs="{}", error=error
+    )

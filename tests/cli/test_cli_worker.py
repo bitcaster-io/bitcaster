@@ -7,16 +7,26 @@ from bitcaster.runner.broker import ClickMiddleware
 
 
 @pytest.mark.parametrize("autoreload", ["", "--autoreload"])
+@pytest.mark.parametrize("debug", ["", "--debug"])
 @pytest.mark.parametrize("pid_file", ["", "~temp.pid"])
-@pytest.mark.parametrize("verbosity", [0, 1, 2, 3])
+@pytest.mark.parametrize(
+    "verbosity",
+    [
+        pytest.param(0, id=""),
+        pytest.param(1, id="-v"),
+        pytest.param(2, id="-vv"),
+    ],
+)
 @pytest.mark.parametrize("reset", ["", "--reset"])
-def test_worker_run(runner, verbosity, pid_file, autoreload, monkeypatch, reset):
+def test_worker_run(runner, verbosity, pid_file, autoreload, monkeypatch, reset, debug):
     # worker.py calls dramatiq.cli.main()
     reloader = MagicMock()
     monkeypatch.setattr("django.utils.autoreload.run_with_reloader", reloader)
     args = ["run"]
-    if verbosity:
+    if verbosity > 0:
         args.extend(["-v"] * verbosity)
+    if debug:
+        args.extend(["--debug"])
     if reset:
         args.extend(["--reset"])
     if autoreload:

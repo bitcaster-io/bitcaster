@@ -12,14 +12,7 @@ if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-    from bitcaster.models import Task, User
-
-
-@pytest.fixture
-def task() -> "Task":
-    from testutils.factories import TaskFactory
-
-    return TaskFactory()
+    from bitcaster.models import User
 
 
 @pytest.fixture

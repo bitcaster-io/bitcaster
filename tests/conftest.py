@@ -21,6 +21,7 @@ if TYPE_CHECKING:
         Occurrence,
         ProcessLogEntry,
         Project,
+        Task,
         User,
     )
 
@@ -378,3 +379,10 @@ def processlogentry(db) -> "ProcessLogEntry":
     from testutils.factories import ProcessLogEntryFactory
 
     return ProcessLogEntryFactory.create()
+
+
+@pytest.fixture
+def task() -> "Task":
+    from testutils.factories import TaskFactory
+
+    return TaskFactory.create()
