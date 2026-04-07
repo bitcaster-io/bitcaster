@@ -146,20 +146,20 @@ def test_process_occurrence(
     res: "TestResponse" = app_for_admin.get(url)
 
     with mock.patch("bitcaster.models.occurrence.Occurrence.process", return_value=0):
-        res = res.click("Process")
+        res = res.click("Process", linkid="btn-process")
         res = res.forms["confirm-form"].submit().follow()
 
     assert_message(res, "Occurrence has been processed, but no recipients have been reached out", messages.WARNING)
 
     res: "TestResponse" = app_for_admin.get(url)
     with mock.patch("bitcaster.models.occurrence.Occurrence.process", return_value=1):
-        res = res.click("Process")
+        res = res.click("Process", linkid="btn-process")
         res = res.forms["confirm-form"].submit().follow()
     assert_message(res, "Occurrence has been successfully processed", messages.SUCCESS)
 
     res: "TestResponse" = app_for_admin.get(url)
     with mock.patch("bitcaster.models.occurrence.Occurrence.process", side_effect=Exception):
-        res = res.click("Process")
+        res = res.click("Process", linkid="btn-process")
         res = res.forms["confirm-form"].submit().follow()
     assert_message(res, "Error processing occurrence", messages.ERROR)
 

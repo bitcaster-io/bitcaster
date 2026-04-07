@@ -26,6 +26,7 @@ from .overrides import (
     FlagStateAdmin,
     LogEntryAdmin,
 )
+from .process_log import ProcessLogEntryAdmin
 from .project import ProjectAdmin
 from .task import TaskAdmin
 from .user import UserAdmin
@@ -56,6 +57,7 @@ admin.site.register(models.Member, MemberAdmin)
 admin.site.register(models.Notification, NotificationAdmin)
 admin.site.register(models.Occurrence, OccurrenceAdmin)
 admin.site.register(models.Organization, OrganizationAdmin)
+admin.site.register(models.ProcessLogEntry, ProcessLogEntryAdmin)
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.UserRole, UserRoleAdmin)

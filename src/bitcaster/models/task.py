@@ -17,6 +17,12 @@ class TaskManager(BitcasterBaselManager["Task"]):
         return self.get(slug=slug)
 
 
+def get_tasks() -> list[tuple[str, str]]:
+    from bitcaster.runner.config import SCHEDULER
+
+    return sorted([(entry["func"], entry["func"]) for entry in SCHEDULER.values()])
+
+
 class Task(BitcasterBaseModel):
     class TriggerOption(models.TextChoices):
         INTERVAL = "interval", "Interval"
@@ -26,7 +32,7 @@ class Task(BitcasterBaseModel):
     slug = models.SlugField(unique=True)
     name = models.CharField(max_length=200, unique=True)
 
-    func = models.CharField(max_length=500)
+    func = models.CharField(max_length=500, choices=get_tasks)
     replace_existing = models.BooleanField(default=False)
     max_instances = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     next_run_time = models.DateTimeField(null=True, blank=True)

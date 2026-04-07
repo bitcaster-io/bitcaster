@@ -6,7 +6,6 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from requests import Response
 
-from ..exceptions import DispatcherError
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 if TYPE_CHECKING:
@@ -26,11 +25,7 @@ class SlackDispatcher(Dispatcher):
     protocol = MessageProtocol.PLAINTEXT
     verbose_name = "Slack"
 
-    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
-        try:
-            conn = requests.Session()
-            res: Response = conn.post(self.config["url"], json={"text": payload.message})
-            return res.status_code == 200
-        except Exception as e:
-            logger.exception(e)
-            raise DispatcherError(e) from e
+    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+        conn = requests.Session()
+        res: Response = conn.post(self.config["url"], json={"text": payload.message})
+        return res.status_code == 200

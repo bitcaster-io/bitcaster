@@ -67,7 +67,7 @@ def test_teams_send_network_error(channel: Channel) -> None:
 
         with pytest.raises(DispatcherError) as excinfo:
             dispatcher.send("address", payload)
-        assert "Network error" in str(excinfo.value)
+        assert "Error sending message" in str(excinfo.value)
 
 
 def test_teams_missing_config() -> None:

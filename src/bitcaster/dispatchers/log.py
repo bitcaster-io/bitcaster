@@ -18,7 +18,7 @@ class LocalDatabaseDispatcher(Dispatcher):
     verbose_name = "Log"
     protocol = MessageProtocol.PLAINTEXT
 
-    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         from bitcaster.models.internal import LogMessage
 
         LogMessage.objects.create(level=address, application=payload.event.application, message=payload.message)

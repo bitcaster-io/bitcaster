@@ -31,7 +31,7 @@ class XDispatcher(Dispatcher):  # type: ignore
         seed = self.channel.config["seed"]
         return f"{seed}:messages"
 
-    def send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
+    def _send(self, address: str, payload: Payload, assignment: "Optional[Assignment]" = None, **kwargs: Any) -> bool:
         self.client.sadd(self.cache_key, smart_dumps([address, payload.message, self.counter]))
         return True
 

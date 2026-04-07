@@ -81,7 +81,7 @@ class UserMessageDispatcher(Dispatcher):
             )
         return ""
 
-    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         user: "User" = assignment.address.user
         event = payload.event if payload.event.pk else None

@@ -6,10 +6,12 @@ import pytest
 from django.core.exceptions import ObjectDoesNotExist
 from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
+from testutils.perms import configure_model
 
 from bitcaster.constants import SystemEvent, bitcaster
 from bitcaster.runner.tasks import (
     delete_expired_user_messages,
+    monitor_check,
     monitor_run,
     process_occurrence,
     purge_occurrences,
@@ -359,15 +361,18 @@ def test_delete_expired_user_messages(system_user: "User") -> None:
     delete_expired_user_messages()
 
 
-def test_monitor_run(system_user: "User") -> None:
+def test_monitor_run(system_user: "User", monitor) -> None:
+    monitor_run()
+
+
+def test_monitor_check(system_user: "User") -> None:
     from testutils.factories.monitor import MonitorFactory
 
-    monitor = MonitorFactory()
-    assert monitor_run(monitor.pk) == "done"
-
     with pytest.raises(ObjectDoesNotExist):
-        monitor_run("-1")
+        monitor_check("-1")
 
-    monitor.active = False
-    monitor.save()
-    assert monitor_run(monitor.pk) == "inactive"
+    monitor = MonitorFactory.create()
+    assert monitor_check(monitor.pk) == "done"
+
+    with configure_model(monitor, active=False):
+        assert monitor_check(monitor.pk) == "inactive"

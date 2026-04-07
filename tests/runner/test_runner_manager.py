@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from unittest import mock
 
 import dramatiq
 import pytest
@@ -99,3 +100,15 @@ def test_scheduler_ping(manager: "BackgroundManager", message):
 @pytest.mark.xdist_group(name="runner")
 def test_scheduler_info(manager: "BackgroundManager", message):
     manager.scheduler_info()
+
+
+@pytest.mark.xdist_group(name="runner")
+def test_manager_actors(manager: "BackgroundManager", message):
+    from bitcaster.runner.broker import broker
+
+    with mock.patch.object(broker, "get_declared_actors", wraps=broker.get_declared_actors) as m:
+        assert manager.actors
+        assert m.call_count == 1
+    with mock.patch.object(broker, "get_declared_actors", wraps=broker.get_declared_actors) as m:
+        assert manager.actors
+        assert m.call_count == 0

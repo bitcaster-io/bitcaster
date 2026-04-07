@@ -20,7 +20,7 @@ class SystemDispatcher(Dispatcher):
     def get_connection(self) -> "DispatcherHandler":
         return get_connection()
 
-    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         email = EmailMultiAlternatives(
             subject=subject,

@@ -17,6 +17,7 @@ from .monitor import Monitor
 from .notification import Notification
 from .occurrence import Occurrence
 from .organization import Organization
+from .process_log import ProcessLogEntry
 from .project import Project
 from .task import Task
 from .user import Member, User
@@ -43,6 +44,7 @@ __all__ = [
     "Occurrence",
     "Organization",
     "Organization",
+    "ProcessLogEntry",
     "Project",
     "SocialProvider",
     "Task",

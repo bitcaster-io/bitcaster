@@ -16,6 +16,8 @@ latest_logs
 junit.xml
 !.git
 !.codecov.yml
+!.semgrep
+!.semgrep/Makefile
 !tests/.coveragerc
 !.github
 !.dockerignore

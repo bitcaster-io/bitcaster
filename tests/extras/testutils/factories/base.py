@@ -22,14 +22,4 @@ class AutoRegisterModelFactory(
     typing.Generic[T],
     metaclass=AutoRegisterFactoryMetaClass,  # type: ignore
 ):
-    @classmethod
-    def create_batch(cls, size: int, **kwargs) -> "list[T]":
-        return super().create_batch(size, **kwargs)
-
-    @classmethod
-    def create(cls, **kwargs) -> "T":
-        return super().create(**kwargs)
-
-    @classmethod
-    def build(cls, **kwargs) -> "T":
-        return super().build(**kwargs)
+    pass
