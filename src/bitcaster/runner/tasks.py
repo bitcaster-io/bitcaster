@@ -66,7 +66,7 @@ def check_for_new_user_messages() -> None:
             set_user_latest_notify_time(uid)
 
 
-@dramatiq.actor(actor_class=SmartActor)
+@dramatiq.actor(actor_class=SmartActor, logging=True)
 def scan_occurrences() -> list[int]:
     from bitcaster.models import Occurrence
 
@@ -101,7 +101,7 @@ def purge_occurrences() -> None | Exception:
         return e
 
 
-@dramatiq.actor(actor_class=SmartActor)
+@dramatiq.actor(actor_class=SmartActor, logging=True)
 def monitor_run() -> None:
     for monitor in Monitor.objects.filter(active=True):
         monitor_check.send(monitor.pk)

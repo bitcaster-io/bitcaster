@@ -95,5 +95,5 @@ class ClickMiddleware(Middleware):
             from bitcaster.models import ProcessLogEntry
 
             ProcessLogEntry.objects.log_process(
-                actor.fn, elapsed=delta, error=exception, args=message._message.args, kwargs=message._message.kwargs
+                actor, elapsed=delta, error=exception, args=message._message.args, kwargs=message._message.kwargs
             )

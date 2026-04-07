@@ -19,6 +19,7 @@ if TYPE_CHECKING:
         MessageTemplate,
         Monitor,
         Occurrence,
+        ProcessLogEntry,
         Project,
         User,
     )
@@ -369,4 +370,11 @@ def message_template() -> "MessageTemplate":
 def group() -> "Group":
     from testutils.factories import GroupFactory
 
-    return GroupFactory()
+    return GroupFactory.create()
+
+
+@pytest.fixture
+def processlogentry(db) -> "ProcessLogEntry":
+    from testutils.factories import ProcessLogEntryFactory
+
+    return ProcessLogEntryFactory.create()

@@ -1,5 +1,4 @@
-from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.admin.models import LogEntry as _LogEntry
 from django.db import models
@@ -9,6 +8,9 @@ from strategy_field.utils import fqn
 
 from bitcaster.utils.json import safe_dumps
 
+if TYPE_CHECKING:
+    from dramatiq import Actor
+
 
 class LogEntryManager(_LogEntry.objects.__class__):  # type: ignore[name-defined]
     def get_by_natural_key(self, pk: "str", *args: Any) -> "ProcessLogEntry":
@@ -16,7 +18,7 @@ class LogEntryManager(_LogEntry.objects.__class__):  # type: ignore[name-defined
 
     def log_process(
         self,
-        fn: Callable[[Any], Any],
+        actor: "Actor[Any, Any]",
         elapsed: int | None = None,
         args: Any | None = None,
         error: BaseException | None = None,
@@ -25,8 +27,8 @@ class LogEntryManager(_LogEntry.objects.__class__):  # type: ignore[name-defined
         ProcessLogEntry.objects.create(
             status=ProcessLogEntry.FAILURE if error else ProcessLogEntry.SUCCESS,
             elapsed=elapsed,
-            task_name=fn.__name__,
-            task_func=fqn(fn),
+            task_name=actor.fn.__name__,
+            task_func=fqn(actor.fn),
             exc_info=str(error) if error else "",
             args=safe_dumps(args),
             kwargs=safe_dumps(kwargs),
