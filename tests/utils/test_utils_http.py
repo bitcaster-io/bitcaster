@@ -55,6 +55,13 @@ def test_get_server_url(settings: "SettingsWrapper") -> None:
     assert get_server_url() == "https://127.0.0.1"
 
 
+def test_get_server_url_constance() -> None:
+    from constance.test import override_config
+
+    with override_config(SERVER_URL="https://example.com"):
+        assert get_server_url() == "https://example.com"
+
+
 @pytest.mark.parametrize("key", ["HTTP_X_FORWARDED_FOR", "HTTP_X_REAL_IP", "REMOTE_ADDR"])
 def test_get_client_ip(rf: "RequestFactory", key: str) -> None:
     req = rf.get("/", **{key: "1.1.1.1   "})  # type: ignore

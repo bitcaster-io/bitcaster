@@ -112,3 +112,15 @@ def test_manager_actors(manager: "BackgroundManager", message):
     with mock.patch.object(broker, "get_declared_actors", wraps=broker.get_declared_actors) as m:
         assert manager.actors
         assert m.call_count == 0
+
+
+@pytest.mark.xdist_group(name="runner")
+def test_manager_get_queue_sizes(manager: "BackgroundManager", message):
+    from bitcaster.runner.broker import broker
+
+    with mock.patch.object(broker, "get_declared_actors", wraps=broker.get_declared_actors) as m:
+        assert manager.actors
+        assert m.call_count == 1
+    with mock.patch.object(broker, "get_declared_actors", wraps=broker.get_declared_actors) as m:
+        assert manager.actors
+        assert m.call_count == 0

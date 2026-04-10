@@ -12,6 +12,17 @@ if TYPE_CHECKING:
     from dramatiq import Actor
 
 
+def mask_secrets(data: Any) -> Any:
+    if isinstance(data, dict):
+        return {
+            k: ("********" if any(s in k.lower() for s in ["password", "secret", "token", "key"]) else mask_secrets(v))
+            for k, v in data.items()
+        }
+    if isinstance(data, list | tuple):
+        return [mask_secrets(v) for v in data]
+    return data
+
+
 class LogEntryManager(_LogEntry.objects.__class__):  # type: ignore[name-defined]
     def get_by_natural_key(self, pk: "str", *args: Any) -> "ProcessLogEntry":
         return self.get(pk=pk)
@@ -30,8 +41,8 @@ class LogEntryManager(_LogEntry.objects.__class__):  # type: ignore[name-defined
             task_name=actor.fn.__name__,
             task_func=fqn(actor.fn),
             exc_info=str(error) if error else "",
-            args=safe_dumps(args),
-            kwargs=safe_dumps(kwargs),
+            args=safe_dumps(mask_secrets(args)),
+            kwargs=safe_dumps(mask_secrets(kwargs)),
         )
 
 
