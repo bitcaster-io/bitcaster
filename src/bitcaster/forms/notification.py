@@ -5,7 +5,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from bitcaster.models import Event, Notification, User
-from bitcaster.models.choices import FILTERING_CONTEXT, FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
+from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
 from bitcaster.utils.filtering import validate_filters, validate_lookups, validate_schema
 
 
@@ -37,7 +37,7 @@ class NotificationForm(forms.ModelForm["Notification"]):
         elif (
             self.instance.pk
             and self.cleaned_data["active"]
-            and (policy in [FILTERING_CONTEXT, FILTERING_NONE] and not self.cleaned_data.get("distribution"))
+            and (policy == FILTERING_NONE and not self.cleaned_data.get("distribution"))
         ):
             raise ValidationError({"distribution": "This field is required"}) from None
 

@@ -12,11 +12,11 @@ The most common way to filter is by providing a JMESPath expression in the **Pay
 
 ### Basic Examples
 
-| Goal | Filter Expression |
-| :--- | :--- |
-| Match a string | `country == 'italy'` |
-| Match a number | `office == \`22\`` |
-| Check nested data | `server.status == 'down'` |
+| Goal | Filter Expression            |
+| :--- |:-----------------------------|
+| Match a string | `country == 'italy'`         |
+| Match a number | `office == 22`               |
+| Check nested data | `server.status == 'down'`    |
 | Check if field exists | `attribute_not_null(urgent)` |
 
 > **Note on Numbers**: In JMESPath, literal numbers must be enclosed in backticks (e.g., `` `22` ``) to be treated as integers rather than strings.
@@ -31,16 +31,16 @@ When you need to combine multiple conditions, you can use a structured YAML synt
 All conditions must be true.
 ```yaml
 AND:
-  - "country == 'italy'"
-  - "region == 'lazio'"
+  - country == 'italy'
+  - region == 'lazio'
 ```
 
 ### OR Operator
 At least one condition must be true.
 ```yaml
 OR:
-  - "country == 'italy'"
-  - "office == `22`"
+  - country == 'italy'
+  - office == 22
 ```
 
 ### Nested Logic
@@ -50,9 +50,9 @@ You can nest these operators to create highly specific rules.
 ```yaml
 OR:
   - AND:
-      - "country == 'italy'"
-      - "region == 'lazio'"
-  - "office == `22`"
+      - country == 'italy'
+      - region == 'lazio'
+  - office == 22
 ```
 
 ---

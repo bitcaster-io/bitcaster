@@ -61,6 +61,7 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
             },
         ),
         (_("Extra context"), {"classes": ["tab"], "fields": ["extra_context"]}),
+        (_("Match Filter"), {"classes": ["tab"], "fields": ["payload_filter"]}),
     )
     conditional_fields = {
         "distribution": "active == true && policy == 1",
