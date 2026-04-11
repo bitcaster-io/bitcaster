@@ -180,7 +180,6 @@ plugins:
 
 watch:
   - docs/
-  - docs/adm-guide/
 
 hooks:
   - docs/_hooks/hooks.py
