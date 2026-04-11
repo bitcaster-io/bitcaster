@@ -163,12 +163,36 @@ def test_get_pending_subscriptions(data: "Context", recipients_filter, api_filte
 @pytest.mark.parametrize(
     "rule, payload, expected",
     [
+        # JMESPath inline syntax
         ("country == 'italy'", {"country": "italy"}, True),
         ("country == 'italy'", {"country": "france"}, False),
-        ("(country == 'italy' && region == 'lazio') || office == `22` ", {"country": "italy", "region": "lazio"}, True),
+        (
+            "(country == 'italy' && region == 'lazio') || office == `22` ",
+            {"country": "italy", "region": "lazio"},
+            True,
+        ),
         ("(country == 'italy' && region == 'lazio') || office == `22` ", {"office": 22}, True),
         (
             "(country == 'italy' && region == 'lazio') || office == `22` ",
+            {"country": "italy", "region": "toscana", "office": 10},
+            False,
+        ),
+        # Structured YAML syntax (AND/OR)
+        ("AND:\n  - country == 'italy'\n  - region == 'lazio'", {"country": "italy", "region": "lazio"}, True),
+        ("AND:\n  - country == 'italy'\n  - region == 'lazio'", {"country": "italy", "region": "toscana"}, False),
+        ("OR:\n  - country == 'italy'\n  - office == `22` ", {"office": 22}, True),
+        (
+            "OR:\n  - AND:\n      - country == 'italy'\n      - region == 'lazio'\n  - office == `22` ",
+            {"country": "italy", "region": "lazio"},
+            True,
+        ),
+        (
+            "OR:\n  - AND:\n      - country == 'italy'\n      - region == 'lazio'\n  - office == `22` ",
+            {"office": 22},
+            True,
+        ),
+        (
+            "OR:\n  - AND:\n      - country == 'italy'\n      - region == 'lazio'\n  - office == `22` ",
             {"country": "italy", "region": "toscana", "office": 10},
             False,
         ),
