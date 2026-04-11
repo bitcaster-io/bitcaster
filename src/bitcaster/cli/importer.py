@@ -26,16 +26,11 @@ def import_users(csv_file, org, group):
 
         group_obj = None
         if group:
-            group_obj = Group.objects.get(organization=organization, name=group)
-
-        # Configuriamo l'organizzazione corrente per il processo di importazione
-        from bitcaster.constants import bitcaster
-
-        bitcaster.local_organization = organization
+            group_obj = Group.objects.get(name=group)
 
         click.echo(f"Importing users into organization '{organization.name}'...")
 
-        created, processed = import_members_csv(csv_file, group=group_obj)
+        created, processed = import_members_csv(csv_file, group=group_obj, organization=organization)
 
         click.secho(f"Success! Processed {processed} lines, created/updated {created} users.", fg="green")
     except Organization.DoesNotExist:

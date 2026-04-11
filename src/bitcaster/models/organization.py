@@ -51,7 +51,7 @@ class Organization(SlugMixin, BitcasterBaseModel):
 
         grp = group or bitcaster.get_default_group()
         enrolled = [
-            UserRole(user=u, organization=bitcaster.local_organization, group=grp)
+            UserRole(user=u, organization=self, group=grp)
             for u in queryset.exclude(username__in=[bitcaster.SYSTEM_USER])
         ]
         return UserRole.objects.bulk_create(enrolled, ignore_conflicts=True)

@@ -1,7 +1,7 @@
 import codecs
 import csv
 from contextlib import suppress
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable
 
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
@@ -10,6 +10,9 @@ from django.db import transaction
 from ..constants import bitcaster
 from ..models import Group, Member
 from .utils import get_column_mapping, parse_kv
+
+if TYPE_CHECKING:
+    from ..models import Organization
 
 
 def process_csv_line(row: dict[str, Any], cleaned_names: dict[str, str]) -> dict[str, Any] | None:
@@ -38,7 +41,9 @@ def process_csv_line(row: dict[str, Any], cleaned_names: dict[str, str]) -> dict
     return record
 
 
-def import_members_csv(f: Iterable[bytes], group: "Group|None" = None) -> tuple[int, int]:
+def import_members_csv(
+    f: Iterable[bytes], group: "Group|None" = None, organization: "Organization|None" = None
+) -> tuple[int, int]:
     reader = csv.DictReader(codecs.iterdecode(f, "utf-8"))
     if not reader.fieldnames:
         raise NotImplementedError("No fieldnames found")
@@ -62,6 +67,7 @@ def import_members_csv(f: Iterable[bytes], group: "Group|None" = None) -> tuple[
     with transaction.atomic():
         created_count = len(Member.objects.bulk_create(data, ignore_conflicts=True))
         if emails_to_add:
-            bitcaster.local_organization.enroll_users(Member.objects.filter(email__in=emails_to_add), group)
+            org = organization or bitcaster.local_organization
+            org.enroll_users(Member.objects.filter(email__in=emails_to_add), group)
 
     return created_count, processed
