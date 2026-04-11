@@ -158,3 +158,22 @@ def test_get_pending_subscriptions(data: "Context", recipients_filter, api_filte
     qs = notification.get_pending_subscriptions(delivered=[], channel=data["channel"], api_filtering=api_filters)
     results = list(qs.values_list("address__value", flat=True))
     assert len(results) == expected, results
+
+
+@pytest.mark.parametrize(
+    "rule, payload, expected",
+    [
+        ("country == 'italy'", {"country": "italy"}, True),
+        ("country == 'italy'", {"country": "france"}, False),
+        ("(country == 'italy' && region == 'lazio') || office == `22` ", {"country": "italy", "region": "lazio"}, True),
+        ("(country == 'italy' && region == 'lazio') || office == `22` ", {"office": 22}, True),
+        (
+            "(country == 'italy' && region == 'lazio') || office == `22` ",
+            {"country": "italy", "region": "toscana", "office": 10},
+            False,
+        ),
+    ],
+)
+def test_payload_filter(notification: "Notification", rule: str, payload: dict, expected: bool) -> None:
+    notification.payload_filter = rule
+    assert notification.match_filter(payload) is expected
