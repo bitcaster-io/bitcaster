@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -92,6 +92,11 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
                 "distribution",
             )
         )
+
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
+        ret = super().get_changeform_initial_data(request)
+        ret.setdefault("recipients_filter", {"include": [], "exclude": []})
+        return ret
 
     def response_add(self, request, obj, post_url_continue=None):
         return HttpResponseRedirect(

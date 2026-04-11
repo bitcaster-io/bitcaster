@@ -20,6 +20,9 @@ class NotificationForm(forms.ModelForm["Notification"]):
         envs: list[str] = []
         super().clean()
         policy = self.cleaned_data.get("policy", None)
+        if not self.cleaned_data.get("recipients_filter", {}):
+            self.cleaned_data["recipients_filter"] = {"include": [], "exclude": []}
+
         if policy == FILTERING_DYNAMIC:
             self.cleaned_data["distribution"] = None
             try:
@@ -30,7 +33,6 @@ class NotificationForm(forms.ModelForm["Notification"]):
             except ValidationError as e:
                 raise ValidationError({"recipients_filter": e}) from None
 
-        # if self.cleaned_data.get("external_filtering", False):
         elif policy == FILTERING_EXTERNAL:
             self.cleaned_data["distribution"] = None
 

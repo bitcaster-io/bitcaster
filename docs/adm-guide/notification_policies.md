@@ -22,22 +22,37 @@ Recipients are selected dynamically from the user database based on specific att
 
 *   **Format**: This field must be valid **JSON**.
 *   **Filter Logic**:
-    *   A single dictionary `{}` applies **AND** between its keys.
-    *   A list of dictionaries `[{}]` applies **OR** between the dictionaries.
-    *   A list of lists `[ [{}], [{}] ]` applies **AND** between the inner groups.
-*   **Configuration Example (JSON)**:
+    *   **AND**: Use a single dictionary. All keys in the dictionary must match.
+    *   **OR**: Use a list of dictionaries. Any dictionary in the list matching will include the user.
+    *   **Advanced**: A list of lists `[[{}, {}], [{}]]` creates `(OR group) AND (OR group)`.
+
+#### **Configuration Examples (JSON)**:
+
+1. This example includes users who are staff AND in Milan, but excludes anyone who is inactive OR in the 'Deactivated' group.*
+
     ```json
     {
       "include": {
         "is_staff": true,
-        "metadata__office": "Milan"
+        "custom_fields__office": "Milan"
       },
-      "exclude": {
-        "is_active": false
-      }
+      "exclude": [
+        {"is_active": false},
+        {"groups__name": "Deactivated"}
+      ]
     }
     ```
-*   **Best for**: Targeting users based on global attributes (e.g., "All users in Italy").
+
+2. This example includes users who are in the Milan office OR the Rome office.*
+
+    ```json
+    {
+      "include": [
+        {"custom_fields__office": "Milan"},
+        {"custom_fields__office": "Rome"}
+      ]
+    }
+    ```
 
 ### External Ruled Filtering (API-driven)
 The list of recipients is decided by the external system that triggers the event. Bitcaster will ignore the Distribution List and use the rules provided in the API call.
