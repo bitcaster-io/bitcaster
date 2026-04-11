@@ -17,32 +17,46 @@ This is the default behavior. The notification is sent to everyone subscribed to
 *   **Best for**: Static teams (e.g., "All System Administrators").
 
 ### Fixed Ruled Filtering (Dynamic)
-Recipients are selected dynamically from the entire user database based on specific attributes (e.g., role, location, or custom tags).
-*   **Configuration Example (YAML)**:
-    ```yaml
-    # Filter users who are staff and in the 'Milan' office
-    AND:
-      - "is_staff == `true`"
-      - "metadata.office == 'Milan'"
+Recipients are selected dynamically from the user database based on specific attributes.
+> **Note**: This policy only selects from users who have an **active Assignment** (configured address) for the channel being used.
+
+*   **Format**: This field must be valid **JSON**.
+*   **Filter Logic**:
+    *   A single dictionary `{}` applies **AND** between its keys.
+    *   A list of dictionaries `[{}]` applies **OR** between the dictionaries.
+    *   A list of lists `[ [{}], [{}] ]` applies **AND** between the inner groups.
+*   **Configuration Example (JSON)**:
+    ```json
+    {
+      "include": {
+        "is_staff": true,
+        "metadata__office": "Milan"
+      },
+      "exclude": {
+        "is_active": false
+      }
+    }
     ```
-*   **Best for**: Global attributes that change frequently.
+*   **Best for**: Targeting users based on global attributes (e.g., "All users in Italy").
 
 ### External Ruled Filtering (API-driven)
 The list of recipients is decided by the external system that triggers the event. Bitcaster will ignore the Distribution List and use the rules provided in the API call.
-*   **Best for**: Situations where only the source system knows the exact targets (e.g., "Notify the specific manager of this ticket ID").
+> **Note**: Like the Dynamic policy, this only targets users with an existing **active Assignment** for the channel.
 
-### Context Based Filtering
-The notification is enabled or disabled based on values within the event context. It usually still targets a Distribution List but adds a conditional "Go/No-Go" check.
+*   **Best for**: Situations where only the source system knows the exact targets (e.g., "Notify the specific manager of this ticket ID").
 
 ---
 
 ## 2. Payload Filtering (The "When")
 
-Regardless of the recipient policy, you can define a **Payload Filter** using **JMESPath** syntax. If the event data does not match this filter, the notification is skipped.
+Regardless of the recipient policy, you can define a **Payload Filter** using **JMESPath** syntax. This field supports **YAML** format. If the event data does not match this filter, the notification is skipped.
 
 **Example**: You have a "Server Error" event, but you only want a specific notification to trigger if the error is "Critical".
 
-*   **Filter**: `severity == 'critical'`
+*   **Filter (YAML)**:
+    ```yaml
+    severity == 'critical'
+    ```
 *   **Payload sent to API**: `{"error": "Database down", "severity": "critical"}` -> **Triggered!**
 *   **Payload sent to API**: `{"error": "Slow response", "severity": "warning"}` -> **Skipped.**
 
@@ -50,48 +64,56 @@ Regardless of the recipient policy, you can define a **Payload Filter** using **
 
 ## 3. API Examples
 
-When triggering an event via API, the `pk` or `slug` of the event is used.
+When triggering an event via API, use the `context` for message data and `options` for routing/filtering.
 
 ### Basic Trigger (Standard Policy)
 ```bash
 curl -X POST https://bitcaster.yourdomain.com/api/v1/trigger/my-event/ \
      -H "Authorization: Token YOUR_API_KEY" \
-     -d '{"user_count": 50, "status": "ok"}'
+     -d '{
+           "context": {"user_count": 50, "status": "ok"}
+         }'
 ```
 
 ### Trigger with External Filtering (External Policy)
-If your notification is set to **External Ruled Filtering**, you must provide the `filter` in the request:
+If your notification is set to **External Ruled Filtering**, you must provide the `filters` inside the `options` object:
 
 ```bash
 curl -X POST https://bitcaster.yourdomain.com/api/v1/trigger/my-event/ \
      -H "Authorization: Token YOUR_API_KEY" \
      -d '{
-           "data": {"ticket_id": 123},
-           "filter": "email == 'manager@company.com'"
+           "context": {"ticket_id": 123},
+           "options": {
+             "filters": {
+               "include": {"email": "manager@company.com"}
+             }
+           }
          }'
 ```
-*Bitcaster will find the user with that email and send the notification only to them.*
+*Bitcaster will find the user with that email and send the notification only to them, provided they have an active assignment for the channel.*
 
 ### Advanced External Filtering (Multiple Users)
 ```json
 {
-  "data": {"project": "Bitcaster"},
-  "filter": {
-    "OR": [
-      "groups.contains('developers')",
-      "is_superuser == `true`"
-    ]
+  "context": {"project": "Bitcaster"},
+  "options": {
+    "filters": {
+      "include": [
+        {"groups__name": "developers"},
+        {"is_superuser": true}
+      ]
+    }
   }
 }
 ```
+*This example will include users who belong to the 'developers' group OR are superusers.*
 
 ---
 
 ## Summary Table
 
-| Policy | Source of Truth for Recipients | Complexity |
-| :--- | :--- | :--- |
-| **None** | Distribution List (Manual) | Low |
-| **Dynamic** | Database Query (Automatic) | Medium |
-| **External** | API Payload (Real-time) | High |
-| **Context** | Context values + Dist. List | Medium |
+| Policy | Source of Truth for Recipients | Format | Scope |
+| :--- | :--- | :--- | :--- |
+| **None** | Distribution List | N/A | Manual / Static |
+| **Dynamic** | Database Query | JSON | Automatic / Attribute-based |
+| **External** | API Payload | JSON | Real-time / Dynamic |
