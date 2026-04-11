@@ -7,3 +7,6 @@ class XAgent(Agent):  # type: ignore
 
     def check(self, notify: bool = True, update: bool = True) -> None:
         pass
+
+    def changes_detected(self) -> bool:
+        return False

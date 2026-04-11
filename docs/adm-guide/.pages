@@ -1,13 +1,16 @@
 nav:
   - Quick Start: quickstart.md
   - Create Initial Structure: structure.md
+  - User Management and Integration: user_management.md
   - Create Abstract Channel: abstract_channel_create.md
   - Enable Channel: channel_enable.md
   - Create Distribution List: dl.md
   - Add Application: app.md
   - Register Events: events.md
   - Create Notification Rule: notification.md
+  - Notification Policies: notification_policies.md
   - Create Message: message.md
+  - Command line interface: cli.md
   - Trigger Event: trigger.md
   - Configure Monitors: monitor.md
   - Login:
