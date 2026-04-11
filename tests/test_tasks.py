@@ -390,6 +390,28 @@ def test_check_for_new_user_messages(monkeypatch):
 
 
 @pytest.mark.django_db
+def test_check_for_new_user_messages_no_channel(monkeypatch):
+    from testutils.factories import UserFactory
+
+    user = UserFactory()
+    monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
+    # Ensure no UserMessageDispatcher channel exists
+    Channel.objects.filter(dispatcher=fqn(UserMessageDispatcher)).delete()
+    check_for_new_user_messages()
+
+
+@pytest.mark.django_db
+def test_check_for_new_user_messages_no_event(monkeypatch):
+    from testutils.factories import ChannelFactory, UserFactory
+
+    user = UserFactory()
+    monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
+    # Channel exists but no event in config
+    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={})
+    check_for_new_user_messages()
+
+
+@pytest.mark.django_db
 def test_check_for_new_user_messages_empty(monkeypatch):
     monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", list)
     check_for_new_user_messages()
@@ -454,6 +476,17 @@ def test_purge_occurrences_exception():
         result = purge_occurrences()
         assert isinstance(result, Exception)
         assert str(result) == "Database error"
+
+
+@pytest.mark.django_db
+def test_scan_occurrences_with_data():
+    from testutils.factories import OccurrenceFactory
+
+    occ = OccurrenceFactory(status=Occurrence.Status.NEW)
+    with patch("bitcaster.runner.tasks.process_occurrence.send") as mock_send:
+        result = scan_occurrences()
+        assert occ.pk in result
+        assert mock_send.call_count == 1
 
 
 @pytest.mark.django_db
