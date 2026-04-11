@@ -3,6 +3,7 @@ nav:
   - Run Tests: tests.md
   - Filtering: filtering.md
   - Tasks: tasks.md
+  - Dispatchers: dispatchers.md
 #  - Quick Start: quickstart.md
 #  - Create Initial Structure: structure.md
 #  - Dispatchers: dispatchers.md

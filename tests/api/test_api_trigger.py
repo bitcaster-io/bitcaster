@@ -10,6 +10,7 @@ from testutils.perms import configure_event, configure_model, key_grants, lock
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import SystemEvent
 from bitcaster.models import Application
+from bitcaster.models.choices import FILTERING_EXTERNAL
 from bitcaster.runner.tasks import process_occurrence
 
 if TYPE_CHECKING:
@@ -97,9 +98,15 @@ def data_dynamic(admin_user: "User", email_channel: "Channel") -> "Context":
         NotificationFactory,
     )
 
-    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)])
+    event: "Event" = EventFactory.create(
+        channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)]
+    )
     assignments = [AssignmentFactory(channel=email_channel) for __ in range(4)]
-    n = NotificationFactory(distribution=None, external_filtering=True, event=event)
+    n = NotificationFactory(
+        distribution=None,
+        policy=FILTERING_EXTERNAL,
+        event=event,
+    )
 
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     return {

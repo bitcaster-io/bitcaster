@@ -7,6 +7,7 @@ from django.urls import reverse
 from testutils.helpers import assert_form_error
 
 from bitcaster.models import Notification
+from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
@@ -121,10 +122,10 @@ def test_add_dynamic(app: "DjangoTestApp", notification: "Notification") -> None
     assert not res.context["original"].active
     frm = res.forms["notification_form"]
     frm["active"] = True
-    frm["dynamic"] = True
+    frm["policy"] = FILTERING_DYNAMIC
     frm["recipients_filter"] = json.dumps({"include": [], "exclude": []})
     res = frm.submit()
-    assert res.status_code == 302
+    assert res.status_code == 302, res.context["adminform"].form.errors
 
 
 def test_add_external_filtering(app: "DjangoTestApp", notification: "Notification") -> None:
@@ -140,9 +141,10 @@ def test_add_external_filtering(app: "DjangoTestApp", notification: "Notificatio
     assert not res.context["original"].active
     frm = res.forms["notification_form"]
     frm["active"] = True
-    frm["external_filtering"] = True
+    frm["policy"] = FILTERING_EXTERNAL
+
     res = frm.submit()
-    assert res.status_code == 302
+    assert res.status_code == 302, res.context["adminform"].form.errors
 
 
 def test_add_flag_compatibility(app: "DjangoTestApp", notification: "Notification") -> None:
@@ -150,15 +152,7 @@ def test_add_flag_compatibility(app: "DjangoTestApp", notification: "Notificatio
     res = app.get(url)
     frm = res.forms["notification_form"]
     frm["name"] = "Not2"
-    frm["dynamic"] = True
-    frm["external_filtering"] = True
-    res = frm.submit()
-    assert_form_error(res, "__all__", "dynamic and external_filtering cannot be set at the same time")
-
-    frm = res.forms["notification_form"]
-    frm["name"] = "Not2"
-    frm["dynamic"] = False
-    frm["external_filtering"] = False
+    frm["policy"] = FILTERING_NONE
     frm["distribution"].force_value(None)
     res = frm.submit()
     assert_form_error(res, "distribution", "This field is required")

@@ -4,6 +4,8 @@ from unittest.mock import Mock
 import pytest
 from pytest_django import DjangoAssertNumQueries
 
+from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
+
 if TYPE_CHECKING:
     from bitcaster.models import (
         ApiKey,
@@ -135,26 +137,67 @@ def test_get_pending_subscriptions(data: "Context", recipients_filter, api_filte
     from testutils.factories import NotificationFactory
 
     distribution = None
-    external_filtering = False
-    dynamic = False
+    policy = FILTERING_NONE
     match bool(recipients_filter), bool(api_filters):
         case False, False:
             distribution = data["distribution"]
         case True, __:
             distribution = None
-            dynamic = True
+            policy = FILTERING_DYNAMIC
         case __, True:
             distribution = data["distribution"]
-            external_filtering = True
+            policy = FILTERING_EXTERNAL
         case __:
             distribution = None
     notification = NotificationFactory.create(
         event=data["event"],
-        external_filtering=external_filtering,
-        dynamic=dynamic,
+        policy=policy,
         distribution=distribution,
         recipients_filter=recipients_filter,
     )
     qs = notification.get_pending_subscriptions(delivered=[], channel=data["channel"], api_filtering=api_filters)
     results = list(qs.values_list("address__value", flat=True))
     assert len(results) == expected, results
+
+
+@pytest.mark.parametrize(
+    "rule, payload, expected",
+    [
+        # JMESPath inline syntax
+        ("country == 'italy'", {"country": "italy"}, True),
+        ("country == 'italy'", {"country": "france"}, False),
+        (
+            "(country == 'italy' && region == 'lazio') || office == `22` ",
+            {"country": "italy", "region": "lazio"},
+            True,
+        ),
+        ("(country == 'italy' && region == 'lazio') || office == `22` ", {"office": 22}, True),
+        (
+            "(country == 'italy' && region == 'lazio') || office == `22` ",
+            {"country": "italy", "region": "toscana", "office": 10},
+            False,
+        ),
+        # Structured YAML syntax (AND/OR)
+        ("AND:\n  - country == 'italy'\n  - region == 'lazio'", {"country": "italy", "region": "lazio"}, True),
+        ("AND:\n  - country == 'italy'\n  - region == 'lazio'", {"country": "italy", "region": "toscana"}, False),
+        ("OR:\n  - country == 'italy'\n  - office == `22` ", {"office": 22}, True),
+        (
+            "OR:\n  - AND:\n      - country == 'italy'\n      - region == 'lazio'\n  - office == `22` ",
+            {"country": "italy", "region": "lazio"},
+            True,
+        ),
+        (
+            "OR:\n  - AND:\n      - country == 'italy'\n      - region == 'lazio'\n  - office == `22` ",
+            {"office": 22},
+            True,
+        ),
+        (
+            "OR:\n  - AND:\n      - country == 'italy'\n      - region == 'lazio'\n  - office == `22` ",
+            {"country": "italy", "region": "toscana", "office": 10},
+            False,
+        ),
+    ],
+)
+def test_payload_filter(notification: "Notification", rule: str, payload: dict, expected: bool) -> None:
+    notification.payload_filter = rule
+    assert notification.match_filter(payload) is expected

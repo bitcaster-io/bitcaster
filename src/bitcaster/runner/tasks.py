@@ -85,17 +85,28 @@ def delete_expired_user_messages() -> None | Exception:
 
 
 @dramatiq.actor(actor_class=SmartActor, logging=True)
-def purge_occurrences() -> None | Exception:
+def purge_occurrences(max_batches: int = 100) -> None | Exception:
+    from django.db import transaction
+
     from bitcaster.models import Occurrence
 
+    logger.info("Starting occurrence purge")
     try:
         batch_size = 10000
-        queryset = Occurrence.objects.purgeable()
-        while queryset.exists():
-            ids = queryset.values_list("pk", flat=True)[:batch_size]
-            Occurrence.objects.filter(pk__in=list(ids)).delete()
+        iteration = 0
+        while iteration < max_batches:
+            with transaction.atomic():
+                # Order by PK for deterministic batching
+                ids = list(Occurrence.objects.purgeable().order_by("pk").values_list("pk", flat=True)[:batch_size])
+
+                if not ids:
+                    break
+
+                Occurrence.objects.filter(pk__in=ids).delete()
+                iteration += 1
+                logger.debug(f"Deleted batch {iteration}")
     except Exception as e:
-        logger.exception(e)
+        logger.exception("Failed to purge occurrences")
         return e
 
 

@@ -3,7 +3,15 @@ from django.utils import timezone
 
 from bitcaster.dispatchers.base import Payload
 from bitcaster.models import Event
-from bitcaster.utils.json import JsonUpdateMode, merge_dicts, override_dicts, process_dict, remove_dicts, smart_dumps
+from bitcaster.utils.json import (
+    JsonUpdateMode,
+    merge_dicts,
+    override_dicts,
+    process_dict,
+    remove_dicts,
+    safe_dumps,
+    smart_dumps,
+)
 
 
 @pytest.mark.parametrize(
@@ -99,3 +107,7 @@ def test_process_dict_invalid_mode():
 )
 def test_smart_dumps(o):
     assert smart_dumps(o)
+
+
+def test_safe_dumps():
+    assert safe_dumps({"a": 1}) == '{"a": 1}'

@@ -5,6 +5,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from bitcaster.models import Event, Notification, User
+from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
 from bitcaster.utils.filtering import validate_filters, validate_lookups, validate_schema
 
 
@@ -18,10 +19,8 @@ class NotificationForm(forms.ModelForm["Notification"]):
         prj_envs: list[str] = []
         envs: list[str] = []
         super().clean()
-        if self.cleaned_data.get("dynamic", False) and self.cleaned_data.get("external_filtering", False):
-            raise ValidationError("dynamic and external_filtering cannot be set at the same time")
-
-        if self.cleaned_data.get("dynamic", False):
+        policy = self.cleaned_data.get("policy", None)
+        if policy == FILTERING_DYNAMIC:
             self.cleaned_data["distribution"] = None
             try:
                 recipients = self.cleaned_data.get("recipients_filter", {"include": [], "exclude": []})
@@ -31,17 +30,14 @@ class NotificationForm(forms.ModelForm["Notification"]):
             except ValidationError as e:
                 raise ValidationError({"recipients_filter": e}) from None
 
-        if self.cleaned_data.get("external_filtering", False):
+        # if self.cleaned_data.get("external_filtering", False):
+        elif policy == FILTERING_EXTERNAL:
             self.cleaned_data["distribution"] = None
 
-        if (
+        elif (
             self.instance.pk
             and self.cleaned_data["active"]
-            and (
-                not self.cleaned_data.get("external_filtering")
-                and not self.cleaned_data.get("dynamic")
-                and not self.cleaned_data.get("distribution")
-            )
+            and (policy == FILTERING_NONE and not self.cleaned_data.get("distribution"))
         ):
             raise ValidationError({"distribution": "This field is required"}) from None
 

@@ -1,7 +1,7 @@
 import datetime
 from typing import TYPE_CHECKING
 from unittest import mock
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from apscheduler.schedulers.base import STATE_RUNNING, STATE_STOPPED
@@ -65,6 +65,20 @@ def test_scheduler_queue(task: "Task"):
     from bitcaster.cli.scheduler import queue
 
     queue(task.id)
+
+
+def test_scheduler_queue_security_alert(task: "Task", monkeypatch):
+    from bitcaster.cli.scheduler import queue
+
+    # Mock BackgroundManager to return an empty list of allowed actors
+    mock_manager = MagicMock()
+    mock_manager.get_all_tasks.return_value = {}
+    monkeypatch.setattr("bitcaster.cli.scheduler.BackgroundManager", lambda: mock_manager)
+
+    with patch("bitcaster.cli.scheduler.logger") as mock_logger:
+        queue(task.id)
+        mock_logger.error.assert_called_once()
+        assert "Security Alert" in mock_logger.error.call_args[0][0]
 
 
 def test_scheduler_healthcheck(runner, monkeypatch, stub_dramatiq):

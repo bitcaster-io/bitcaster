@@ -22,6 +22,12 @@ last_round = epoch.astimezone(datetime.UTC)
 
 def queue(task_id: int) -> None:
     task = Task.objects.get(id=task_id)
+    # Security: Validate against a whitelist of allowed actors
+    allowed_actors = BackgroundManager().get_all_tasks().keys()
+    if task.func not in allowed_actors:
+        logger.error(f"Security Alert: Blocked execution of unverified task function {task.func}")
+        return
+
     logger.warning(f"queued {task.name}")
     actor = import_string(task.func)
     actor.send()
@@ -65,8 +71,8 @@ def inspect_jobs() -> bool:
                     job.pause()
                 logger.warning(f"ADDED {job.id} ({task.get_status()}) {task.scheduling()}")
 
-        except Exception as e:
-            logger.error(f"ERROR {e}")
+        except Exception:
+            logger.exception(f"ERROR processing task {task.slug}")
     last_round = datetime.datetime.now(datetime.UTC)
     return True
 
