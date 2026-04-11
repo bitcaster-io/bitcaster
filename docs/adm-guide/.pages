@@ -9,6 +9,7 @@ nav:
   - Register Events: events.md
   - Create Notification Rule: notification.md
   - Notification Policies: notification_policies.md
+  - Filtering Guide: filtering.md
   - Create Message: message.md
   - Command line interface: cli.md
   - Trigger Event: trigger.md
