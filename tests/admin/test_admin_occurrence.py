@@ -71,11 +71,11 @@ def _build_occurrence(status) -> "Context":
     ch = ChannelFactory.create()
     event = EventFactory.create(channels=[ch])
     asm: "Assignment" = AssignmentFactory.create(channel=ch)
-    n = NotificationFactory.create(distribution__recipients=[asm], event=event)
+    n: "Notification" = NotificationFactory.create(distribution__recipients=[asm], event=event)
     dl = DistributionListFactory.create(recipients=[asm])
     message = MessageTemplateFactory.create(event=event, channel=ch)
     return {
-        "occurrence": OccurrenceFactory(event=n.event, status=status),
+        "occurrence": OccurrenceFactory.create(event=n.event, status=status),
         "channel": ch,
         "event": event,
         "assignment": asm,

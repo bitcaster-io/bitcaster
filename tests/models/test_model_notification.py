@@ -4,6 +4,8 @@ from unittest.mock import Mock
 import pytest
 from pytest_django import DjangoAssertNumQueries
 
+from bitcaster.models.choices import FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
+
 if TYPE_CHECKING:
     from bitcaster.models import (
         ApiKey,
@@ -135,23 +137,21 @@ def test_get_pending_subscriptions(data: "Context", recipients_filter, api_filte
     from testutils.factories import NotificationFactory
 
     distribution = None
-    external_filtering = False
-    dynamic = False
+    policy = FILTERING_NONE
     match bool(recipients_filter), bool(api_filters):
         case False, False:
             distribution = data["distribution"]
         case True, __:
             distribution = None
-            dynamic = True
+            policy = FILTERING_DYNAMIC
         case __, True:
             distribution = data["distribution"]
-            external_filtering = True
+            policy = FILTERING_EXTERNAL
         case __:
             distribution = None
     notification = NotificationFactory.create(
         event=data["event"],
-        external_filtering=external_filtering,
-        dynamic=dynamic,
+        policy=policy,
         distribution=distribution,
         recipients_filter=recipients_filter,
     )

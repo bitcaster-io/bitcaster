@@ -51,20 +51,21 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
                 "classes": ["tab"],
                 "fields": [
                     "active",
-                    "external_filtering",
-                    "dynamic",
+                    "policy",
+                    # "external_filtering",
+                    # "dynamic",
                     "distribution",
                     "recipients_filter",
+                    "context_filter",
                 ],
             },
         ),
         (_("Extra context"), {"classes": ["tab"], "fields": ["extra_context"]}),
     )
     conditional_fields = {
-        "distribution": "active == true && (dynamic == false && external_filtering == false)",
-        "external_filtering": "active == true && (dynamic == false)",
-        "dynamic": "active == true && (external_filtering == false)",
-        "recipients_filter": "active == true && dynamic == true",
+        "distribution": "active == true && policy == 1",
+        "context_filter": "active == true && policy == 2",
+        "recipients_filter": "active == true && policy == 4",
     }
     actions = ["toggle_active"]
 

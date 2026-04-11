@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from unfold.widgets import UnfoldAdminSelect2Widget
 
+from ..models.choices import FILTERING_EXTERNAL
 from ..utils.shortcuts import render_message
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
@@ -45,7 +46,7 @@ class UserMessageConfig(DispatcherConfig):
             case _:
                 raise ValidationError(_("Event must have only one Channel configured"))
 
-        if not event.notifications.filter(external_filtering=True).exists():
+        if not event.notifications.filter(policy=FILTERING_EXTERNAL).exists():
             raise ValidationError(_("At least one notification with external_filtering=True must be configured"))
         if not event.messages.exists():
             raise ValidationError(_("Event does not have any Message Template configured"))
