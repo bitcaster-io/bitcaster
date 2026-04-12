@@ -26,6 +26,39 @@ Recipients are selected dynamically from the user database based on specific att
     *   **OR**: Use a list of dictionaries. Any dictionary in the list matching will include the user.
     *   **Advanced**: A list of lists `[[{}, {}], [{}]]` creates `(OR group) AND (OR group)`.
 
+#### Available Fields and Lookups
+Since Bitcaster uses Django's filtering engine, you can use any field from the **User** model and its relationships using the double underscore (`__`) syntax.
+
+| Model | Filter Path | Description |
+| :--- | :--- | :--- |
+| **User** | `username` | User login name |
+| **User** | `email` | Primary email address |
+| **User** | `first_name` | User's first name |
+| **User** | `last_name` | User's last name |
+| **User** | `is_staff` | Boolean: is a member of staff |
+| **User** | `is_superuser` | Boolean: has all permissions |
+| **User** | `is_active` | Boolean: is the account active |
+| **User** | `custom_fields__<key>` | Search inside custom metadata (JSON) |
+| **Group** | `groups__name` | Name of the assigned Django group |
+| **Address** | `addresses__name` | Label of the address (e.g., 'Work Email') |
+| **Address** | `addresses__type` | Type (EMAIL, PHONE, SMS, SLACK, etc.) |
+| **Address** | `addresses__value` | The actual contact value (email, phone, etc.) |
+| **Assignment** | `addresses__assignments__active` | Boolean: is the channel assignment active |
+| **Assignment** | `addresses__assignments__validated` | Boolean: is the assignment verified |
+
+#### Django Operators
+You can append operators to field names for more complex matches:
+*   `__contains` / `__icontains`: Partial match (case-insensitive).
+*   `__startswith` / `__endswith`: Match beginning or end.
+*   `__in`: Match any value in a provided list (e.g., `"pk__in": [1, 2, 3]`).
+*   `__gt` / `__lt`: Greater than / Less than.
+
+#### Security Restrictions
+For security, filters containing sensitive words are **forbidden** and will trigger a validation error:
+*   `password`, `token`, `secret`, `key`.
+
+*   **Configuration Examples (JSON)**:
+
 #### **Configuration Examples (JSON)**:
 
 1. This example includes users who are staff AND in Milan, but excludes anyone who is inactive OR in the 'Deactivated' group.*
@@ -122,6 +155,20 @@ curl -X POST https://bitcaster.yourdomain.com/api/v1/trigger/my-event/ \
 }
 ```
 *This example will include users who belong to the 'developers' group OR are superusers.*
+
+---
+
+## 4. Extra Context
+
+Notifications can define **Extra Context**, which is a JSON dictionary of static variables. These variables are merged into the template context during message rendering.
+
+This is useful for providing notification-specific information that isn't part of the original event data, such as:
+*   Support department contact details.
+*   Service Level Agreement (SLA) identifiers.
+*   Internal routing labels.
+
+**Example**:
+If Extra Context is `{"support_email": "support@example.com"}`, you can use `{{ support_email }}` in your message templates.
 
 ---
 
