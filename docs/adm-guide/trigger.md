@@ -32,6 +32,25 @@ The `options` object can contain the following keys:
 
 The `filters` object allows for dynamic filtering of recipients based on user attributes. It is only considered for notifications that have the `external_filtering` flag enabled.
 
+Like fixed rules, the `filters` object supports **Context Variables**. You can use `{{ ... }}` placeholders that will be rendered using the `context` provided in the same request.
+
+**Example with Context Variables:**
+
+```json
+{
+    "context": {
+        "target_region": "emea"
+    },
+    "options": {
+        "filters": {
+            "include": {
+                "custom_fields__region": "{{ target_region }}"
+            }
+        }
+    }
+}
+```
+
 The object has two main keys:
 - `include`: A list of rules to select users.
 - `exclude`: A list of rules to filter out users from the selection.

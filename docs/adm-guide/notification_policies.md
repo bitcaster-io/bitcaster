@@ -17,81 +17,198 @@ This is the default behavior. The notification is sent to everyone subscribed to
 *   **Best for**: Static teams (e.g., "All System Administrators").
 
 ### Fixed Ruled Filtering (Dynamic)
-Recipients are selected dynamically from the entire user database based on specific attributes (e.g., role, location, or custom tags).
-*   **Configuration Example (YAML)**:
-    ```yaml
-    # Filter users who are staff and in the 'Milan' office
-    AND:
-      - "is_staff == `true`"
-      - "metadata.office == 'Milan'"
+Recipients are selected dynamically from the user database based on specific attributes.
+> **Note**: This policy only selects from users who have an **active Assignment** (configured address) for the channel being used.
+
+*   **Format**: This field must be valid **JSON**.
+*   **Context Variables**: You can use template variables from the event context within the filter values. Any string value in the filter can contain Jinja2-style placeholders `{{ ... }}`.
+
+#### Using Context Variables in Filters
+When an event is triggered, Bitcaster merges the provided context with the notification settings. You can use any value from this context to filter your recipients.
+
+**Example 1: Filter by a specific username provided in the context**
+If your event is triggered with context `{"target_username": "john_doe"}`, you can use:
+```json
+{
+  "include": {
+    "username": "{{ target_username }}"
+  }
+}
+```
+
+**Example 2: Filter by a custom attribute from the context**
+If you want to notify only users in a specific department provided in the event data `{"department_id": "sales"}`:
+```json
+{
+  "include": {
+    "custom_fields__department": "{{ department_id }}"
+  }
+}
+```
+
+**Example 3: Complex logic with context**
+You can combine multiple context variables and static values:
+```json
+{
+  "include": {
+    "is_staff": true,
+    "custom_fields__office": "{{ office_name }}",
+    "groups__name": "{{ required_group }}"
+  }
+}
+```
+
+*   **Filter Logic**:
+    *   **AND**: Use a single dictionary. All keys in the dictionary must match.
+    *   **OR**: Use a list of dictionaries. Any dictionary in the list matching will include the user.
+    *   **Advanced**: A list of lists `[[{}, {}], [{}]]` creates `(OR group) AND (OR group)`.
+
+#### Available Fields and Lookups
+Since Bitcaster uses Django's filtering engine, you can use any field from the **User** model and its relationships using the double underscore (`__`) syntax.
+
+| Model | Filter Path | Description |
+| :--- | :--- | :--- |
+| **User** | `username` | User login name |
+| **User** | `email` | Primary email address |
+| **User** | `first_name` | User's first name |
+| **User** | `last_name` | User's last name |
+| **User** | `is_staff` | Boolean: is a member of staff |
+| **User** | `is_superuser` | Boolean: has all permissions |
+| **User** | `is_active` | Boolean: is the account active |
+| **User** | `custom_fields__<key>` | Search inside custom metadata (JSON) |
+| **Group** | `groups__name` | Name of the assigned Django group |
+| **Address** | `addresses__name` | Label of the address (e.g., 'Work Email') |
+| **Address** | `addresses__type` | Type (EMAIL, PHONE, SMS, SLACK, etc.) |
+| **Address** | `addresses__value` | The actual contact value (email, phone, etc.) |
+| **Assignment** | `addresses__assignments__active` | Boolean: is the channel assignment active |
+| **Assignment** | `addresses__assignments__validated` | Boolean: is the assignment verified |
+
+#### Django Operators
+You can append operators to field names for more complex matches:
+*   `__contains` / `__icontains`: Partial match (case-insensitive).
+*   `__startswith` / `__endswith`: Match beginning or end.
+*   `__in`: Match any value in a provided list (e.g., `"pk__in": [1, 2, 3]`).
+*   `__gt` / `__lt`: Greater than / Less than.
+
+#### Security Restrictions
+For security, filters containing sensitive words are **forbidden** and will trigger a validation error:
+*   `password`, `token`, `secret`, `key`.
+
+#### **Configuration Examples (JSON)**:
+
+1. This example includes users who are staff AND in Milan, but excludes anyone who is inactive OR in the 'Deactivated' group.*
+    ```json
+    {
+      "include": {
+        "is_staff": true,
+        "custom_fields__office": "Milan"
+      },
+      "exclude": [
+        {"is_active": false},
+        {"groups__name": "Deactivated"}
+      ]
+    }
     ```
-*   **Best for**: Global attributes that change frequently.
+
+2. This example includes users who are in the Milan office OR the Rome office.*
+    ```json
+    {
+      "include": [
+        {"custom_fields__office": "Milan"},
+        {"custom_fields__office": "Rome"}
+      ]
+    }
+    ```
 
 ### External Ruled Filtering (API-driven)
 The list of recipients is decided by the external system that triggers the event. Bitcaster will ignore the Distribution List and use the rules provided in the API call.
-*   **Best for**: Situations where only the source system knows the exact targets (e.g., "Notify the specific manager of this ticket ID").
+> **Note**: Like the Dynamic policy, this only targets users with an existing **active Assignment** for the channel.
 
-### Context Based Filtering
-The notification is enabled or disabled based on values within the event context. It usually still targets a Distribution List but adds a conditional "Go/No-Go" check.
+*   **Best for**: Situations where only the source system knows the exact targets (e.g., "Notify the specific manager of this ticket ID").
 
 ---
 
 ## 2. Payload Filtering (The "When")
 
-Regardless of the recipient policy, you can define a **Payload Filter** using **JMESPath** syntax. If the event data does not match this filter, the notification is skipped.
+Regardless of the recipient policy, you can define a **Payload Filter** using **JMESPath** syntax. This field supports **YAML** format. If the event data does not match this filter, the notification is skipped.
 
 **Example**: You have a "Server Error" event, but you only want a specific notification to trigger if the error is "Critical".
 
-*   **Filter**: `severity == 'critical'`
+*   **Filter (YAML)**:
+    ```yaml
+    severity == 'critical'
+    ```
 *   **Payload sent to API**: `{"error": "Database down", "severity": "critical"}` -> **Triggered!**
 *   **Payload sent to API**: `{"error": "Slow response", "severity": "warning"}` -> **Skipped.**
 
 ---
 
-## 3. API Examples
+## 3. Extra Context
 
-When triggering an event via API, the `pk` or `slug` of the event is used.
+Notifications can define **Extra Context**, which is a JSON dictionary of static variables. These variables are merged into the template context during message rendering.
+
+This is useful for providing notification-specific information that isn't part of the original event data, such as:
+*   Support department contact details.
+*   Service Level Agreement (SLA) identifiers.
+*   Internal routing labels.
+
+**Example**:
+If Extra Context is `{"support_email": "support@example.com"}`, you can use `{{ support_email }}` in your message templates.
+
+---
+
+## 4. API Examples
+
+When triggering an event via API, use the `context` for message data and `options` for routing/filtering.
 
 ### Basic Trigger (Standard Policy)
 ```bash
 curl -X POST https://bitcaster.yourdomain.com/api/v1/trigger/my-event/ \
      -H "Authorization: Token YOUR_API_KEY" \
-     -d '{"user_count": 50, "status": "ok"}'
+     -d '{
+           "context": {"user_count": 50, "status": "ok"}
+         }'
 ```
 
 ### Trigger with External Filtering (External Policy)
-If your notification is set to **External Ruled Filtering**, you must provide the `filter` in the request:
+If your notification is set to **External Ruled Filtering**, you must provide the `filters` inside the `options` object:
 
 ```bash
 curl -X POST https://bitcaster.yourdomain.com/api/v1/trigger/my-event/ \
      -H "Authorization: Token YOUR_API_KEY" \
      -d '{
-           "data": {"ticket_id": 123},
-           "filter": "email == 'manager@company.com'"
+           "context": {"ticket_id": 123},
+           "options": {
+             "filters": {
+               "include": {"email": "manager@company.com"}
+             }
+           }
          }'
 ```
-*Bitcaster will find the user with that email and send the notification only to them.*
+*Bitcaster will find the user with that email and send the notification only to them, provided they have an active assignment for the channel.*
 
 ### Advanced External Filtering (Multiple Users)
 ```json
 {
-  "data": {"project": "Bitcaster"},
-  "filter": {
-    "OR": [
-      "groups.contains('developers')",
-      "is_superuser == `true`"
-    ]
+  "context": {"project": "Bitcaster"},
+  "options": {
+    "filters": {
+      "include": [
+        {"groups__name": "developers"},
+        {"is_superuser": true}
+      ]
+    }
   }
 }
 ```
+*This example will include users who belong to the 'developers' group OR are superusers.*
 
 ---
 
 ## Summary Table
 
-| Policy | Source of Truth for Recipients | Complexity |
-| :--- | :--- | :--- |
-| **None** | Distribution List (Manual) | Low |
-| **Dynamic** | Database Query (Automatic) | Medium |
-| **External** | API Payload (Real-time) | High |
-| **Context** | Context values + Dist. List | Medium |
+| Policy | Source of Truth for Recipients | Format | Scope |
+| :--- | :--- | :--- | :--- |
+| **None** | Distribution List | N/A | Manual / Static |
+| **Dynamic** | Database Query | JSON | Automatic / Attribute-based |
+| **External** | API Payload | JSON | Real-time / Dynamic |

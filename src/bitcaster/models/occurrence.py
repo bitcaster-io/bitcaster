@@ -224,9 +224,9 @@ class Occurrence(BitcasterBaseModel):
                 logger.debug(f"Processing occurrence {self.id} , context: {context}")
                 for channel in self._get_valid_channels():
                     data["channels"].add(channel)
-                    for assignment in notification.get_pending_subscriptions([], channel, api_filtering).filter(
-                        **assignment_filter
-                    ):
+                    for assignment in notification.get_pending_subscriptions(
+                        [], channel, api_filtering, context
+                    ).filter(**assignment_filter):
                         message_template = notification.get_message(channel)
                         data["recipients"].append(
                             (
