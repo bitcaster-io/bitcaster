@@ -32,7 +32,7 @@ The `options` object can contain the following keys:
 
 The `filters` object allows for dynamic filtering of recipients based on user attributes. It is only considered for notifications that have the `external_filtering` flag enabled.
 
-Like fixed rules, the `filters` object supports **Context Variables**. You can use `{{ ... }}` placeholders that will be rendered using the `context` provided in the same request.
+Like fixed rules, the `filters` object supports **Context Variables**. You can use `{ { ... } }` placeholders that will be rendered using the `context` provided in the same request.
 
 **Example with Context Variables:**
 

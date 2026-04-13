@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, TypedDict
 
 import pytest
 from django.urls import reverse
+from testutils.factories import DistributionListFactory
 from testutils.helpers import assert_form_error, assert_message, get_resource
 from webtest import Upload
 
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
 
     Context = TypedDict(
         "Context",
-        {"organization": Organization, "members": list[Member]},
+        {"organization": Organization, "distributionlist": DistributionList, "members": list[Member]},
     )
 
 
@@ -28,13 +29,15 @@ def context(system_objects) -> "Context":
         OrganizationFactory,
     )
 
-    org: "Organization" = OrganizationFactory()
-    ch: "Channel" = ChannelFactory(organization=org)
-    members = [MemberFactory(organization=org), MemberFactory(organization=org)]
+    org: "Organization" = OrganizationFactory.create()
+    ch: "Channel" = ChannelFactory.create(organization=org)
+    members = [MemberFactory.create(organization=org), MemberFactory(organization=org)]
     addr = AddressFactory(user=members[0], value=members[0].email)
-    AssignmentFactory(address=addr, channel=ch)
     return {
         "organization": org,
+        "distributionlist": DistributionListFactory.create(
+            recipients=[AssignmentFactory.create(address=addr, channel=ch)]
+        ),
         "members": members,
     }
 
@@ -114,3 +117,22 @@ def test_import_members_ui(app: "DjangoTestApp", local_organization) -> None:
     res.forms["action-form"]["file"] = Upload(str(get_resource("data/members_mixed.csv").absolute()))
     res = res.forms["action-form"].submit("apply").follow()
     assert_message(res, "Record successfully imported 2/3")
+
+
+@pytest.mark.parametrize("flt", ["dl=1", "dl="])
+def test_member_filtering(app: "DjangoTestApp", context: "Context", flt: str) -> None:
+    url = reverse("admin:bitcaster_member_changelist")
+    res = app.get(f"{url}?{flt}")
+    assert res.status_code == 200
+
+
+@pytest.mark.django_db
+def test_member_distributionlist_filter(app: "DjangoTestApp", context: "Context") -> None:
+    url = reverse("admin:bitcaster_member_changelist")
+    distributionlist = context["distributionlist"]
+    asm = distributionlist.recipients.first()
+    member = context["members"][1]
+
+    res = app.get(f"{url}?dl={distributionlist.pk}")
+    assert asm.address.user.username in res
+    assert member.username not in res

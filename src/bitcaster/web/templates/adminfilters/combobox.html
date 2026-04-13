@@ -3,7 +3,10 @@
     {% blocktrans with title as filter_title %} By {{ filter_title }} {% endblocktrans %}
 </h3>
 <ul>
-    <select id="filter-{{ spec.field.name }}" onchange="location.href=this.options[selectedIndex].value">
+    <select id="filter-{{ spec.parameter_name }}"
+            name="{{ spec.parameter_name }}"
+            class="border rounded p-1 w-full py-2 border-amber-50"
+            onchange="location.href=this.options[selectedIndex].value">
         {% for choice in choices %}
             <option {% if choice.selected %} selected="selected"{% endif %} value="{{ choice.query_string|iriencode }}">
                 {{ choice.display }}

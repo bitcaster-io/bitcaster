@@ -21,7 +21,7 @@ Recipients are selected dynamically from the user database based on specific att
 > **Note**: This policy only selects from users who have an **active Assignment** (configured address) for the channel being used.
 
 *   **Format**: This field must be valid **JSON**.
-*   **Context Variables**: You can use template variables from the event context within the filter values. Any string value in the filter can contain Jinja2-style placeholders `{{ ... }}`.
+*   **Context Variables**: You can use template variables from the event context within the filter values. Any string value in the filter can contain Jinja2-style placeholders `{ { ... } }`
 
 #### Using Context Variables in Filters
 When an event is triggered, Bitcaster merges the provided context with the notification settings. You can use any value from this context to filter your recipients.

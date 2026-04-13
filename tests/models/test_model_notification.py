@@ -237,9 +237,31 @@ def test_validate_filters_with_variables():
 
 
 @pytest.mark.django_db
-def test_validate_lookups_with_variables():
-    from bitcaster.models import User
-    from bitcaster.utils.filtering import validate_lookups
+def test_render_recursive_nested():
+    from testutils.factories import AssignmentFactory, NotificationFactory, UserFactory
 
-    # This should not raise ValidationError
-    validate_lookups(User, {"include": {"username": "{{ some_var }}"}, "exclude": {}})
+    user1 = UserFactory(username="user1")
+    user2 = UserFactory(username="user2")
+
+    from bitcaster.models import Channel
+
+    channel = Channel.objects.first()  # assuming one exists from other fixtures
+    if not channel:
+        from testutils.factories import ChannelFactory
+
+        channel = ChannelFactory()
+
+    AssignmentFactory(address__user=user1, channel=channel)
+    AssignmentFactory(address__user=user2, channel=channel)
+
+    notification = NotificationFactory.create(
+        policy=FILTERING_DYNAMIC,
+        recipients_filter={"include": [{"username": "{{ user_a }}"}, {"username": "{{ user_b }}"}]},
+        distribution=None,
+    )
+
+    context = {"user_a": "user1", "user_b": "user2"}
+    qs = notification.get_pending_subscriptions(delivered=[], channel=channel, api_filtering={}, context=context)
+
+    results = set(qs.values_list("address__user__username", flat=True))
+    assert results == {"user1", "user2"}

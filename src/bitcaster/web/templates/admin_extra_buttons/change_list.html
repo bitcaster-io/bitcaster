@@ -5,7 +5,17 @@
     {{ block.super }}
 {% endblock object-tools-items %}
 {% block content %}
-    <ul class="flex w-full justify-end">
+    <div class="text-xl">
+        {{ subtitle|default_if_none:"" }}
+    </div>
+    <div class="text-xl">
+        {% for active_filter in active_filters %}
+            <div>
+                {{ active_filter }}
+            </div>
+        {% endfor %}
+    </div>
+    <ul class="flex w-full justify-end mb-2">
         {% include "admin_extra_buttons/includes/change_list_buttons.html" %}
     </ul>
     {{ block.super }}

@@ -7,7 +7,7 @@ This module provides a flexible way to filter Recipients using a JSON-like struc
 The main class in this module. It takes a Django `QuerySet` or `Manager` and a filter specification, and applies the specified filters.
 
 !!! note "Template Rendering"
-    While `FilterManager` itself does not handle template rendering, the `Notification` model implements a `render_recursive` helper that processes any Jinja2-style `{{ ... }}` placeholders in the filter dictionary using the event context before passing it to the `FilterManager`.
+    While `FilterManager` itself does not handle template rendering, the `Notification` model implements a `render_recursive` helper that processes any Jinja2-style `{ { ... } }` placeholders in the filter dictionary using the event context before passing it to the `FilterManager`.
 
 **Arguments:**
 
