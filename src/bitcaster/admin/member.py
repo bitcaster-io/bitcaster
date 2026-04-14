@@ -258,14 +258,14 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
                     if form.cleaned_data["mode"] == JsonUpdateMode2.REWRITE:
                         queryset.update(custom_fields=form.cleaned_data["custom_fields"])
                     else:
-                        for __, record in enumerate(queryset.only("pk", "custom_fields")):
+                        for __, record in enumerate(queryset):
                             updated = process_dict(
                                 record.custom_fields, form.cleaned_data["custom_fields"], form.cleaned_data["mode"]
                             )
                             record.custom_fields = updated
                             record.save()
                 LogEntry.objects.log_actions(
-                    user_id=self.request.user.pk,
+                    user_id=request.user.pk,
                     queryset=queryset,
                     action_flag=LogEntry.OTHER,
                     change_message="Custom field mass-updated",

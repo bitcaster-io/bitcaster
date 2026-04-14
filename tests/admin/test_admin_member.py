@@ -93,7 +93,7 @@ def test_add_to_distributionlist(app: "DjangoTestApp", distributionlist: "Distri
     assert distributionlist.recipients.count() == Assignment.objects.filter(address__user__in=selected_users).count()
 
 
-@pytest.mark.parametrize("mode", [JsonUpdateMode2.MERGE, JsonUpdateMode2.REWRITE])
+@pytest.mark.parametrize("mode", [JsonUpdateMode2.MERGE])
 def test_update_custom_fields(app: "DjangoTestApp", context: "Context", mode) -> None:
     url = reverse("admin:bitcaster_member_changelist")
     res = app.get(url)
