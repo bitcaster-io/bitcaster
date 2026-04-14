@@ -97,6 +97,7 @@ dev = [
   "bandit[sarif]>=1.9.3",
   "bump2version>=1.0.1",
   "coverage>=7.8.2",
+  "diff-cover>=10.2",
   "django-debug-permissions>=1",
   "django-extensions>=3.2.3",
   "django-migration-linter>=5.2",

@@ -113,7 +113,7 @@ def test_assign_to_channel(app: "DjangoTestApp", address: "Address", channel) ->
     assert address.assignments.filter(channel=channel).exists()
 
 
-@pytest.mark.parametrize("flt", ["dl=1", "dl=", "n=1", "n="])
+@pytest.mark.parametrize("flt", ["dl=1", "dl=", "dl=invalid", "n=1", "n=", "n=invalid"])
 def test_address_filtering(app: "DjangoTestApp", context: "Context", flt: str) -> None:
     url = reverse("admin:bitcaster_address_changelist")
     res = app.get(f"{url}?{flt}")

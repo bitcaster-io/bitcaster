@@ -80,7 +80,7 @@ def validate_lookups(model: "type[models.Model]", filter_spec: "AllowedFilters")
             rules = RegexList(DEFAULT_MODEL_INVALID_LOOKUPS.get(model_name, []) + DEFAULT_INVALID_LOOKUPS)
             for i, entry in enumerate(parsed.children, 1):
                 if not isinstance(entry, tuple):
-                    raise NotImplementedError(f"Not implemented lookup: {entry} {entry.__class__}")
+                    raise NotImplementedError(f"Not implemented lookup: '{entry}' '{entry.__class__}'")
                 if entry[0] in rules:
                     raise ValidationError(f"Unauthorised lookup: '{entry[0]}' in {family}[{i}]")
 

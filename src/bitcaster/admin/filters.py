@@ -96,14 +96,12 @@ class AddressByList(SimpleListFilter):
         return tuple(DistributionList.objects.all().values_list("id", "name"))
 
     def queryset(self, request: HttpRequest, queryset: "QuerySet") -> "QuerySet":
-        if self.value():
-            lookup_id = self.value()
-            try:
-                index = int(self.value())
-                lookup_id = self.lookups(request, None)[index][0]
-            except (ValueError, IndexError):
-                pass
+        try:
+            index = int(self.value())
+            lookup_id = self.lookups(request, None)[index][0]
             return queryset.filter(assignments__distributionlist__id=lookup_id).distinct()
+        except (ValueError, IndexError, TypeError):
+            pass
         return queryset
 
 
@@ -118,12 +116,10 @@ class AddressByNotification(SimpleListFilter):
         return tuple(Notification.objects.all().values_list("id", "name"))
 
     def queryset(self, request: HttpRequest, queryset: "QuerySet") -> "QuerySet":
-        if self.value():
-            lookup_id = self.value()
-            try:
-                index = int(self.value())
-                lookup_id = self.lookups(request, None)[index][0]
-            except (ValueError, IndexError):
-                pass
+        try:
+            index = int(self.value())
+            lookup_id = self.lookups(request, None)[index][0]
             return queryset.filter(assignments__distributionlist__notifications__id=lookup_id).distinct()
+        except (ValueError, IndexError, TypeError):
+            pass
         return queryset
