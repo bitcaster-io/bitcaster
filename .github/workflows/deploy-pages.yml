@@ -1,0 +1,62 @@
+name: Deploy Master Pages
+
+on:
+  workflow_run:
+    workflows: ["Documentation", "Test"]
+    types:
+      - completed
+    branches:
+      - develop
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+      - name: Prepare merge directories
+        run: |
+          mkdir -p public
+          mkdir -p public/tests
+
+      - name: Download Docs Site
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: docs.yml
+          branch: develop
+          name: docs-site
+          path: public/
+          if_no_artifact_found: warn
+
+      - name: Download Test Report
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: test.yml
+          branch: develop
+          name: test-report
+          path: public/tests/
+          if_no_artifact_found: warn
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload combined artefact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'public/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

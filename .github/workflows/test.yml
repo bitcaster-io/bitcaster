@@ -116,9 +116,18 @@ jobs:
           ./tox
         key: ${{ steps.cache-venv-restore.outputs.cache-primary-key }}
 
-    - name: Run Test suite
+    - name: Run Test suite and generate report
       run: |
-        uv run tox -e tests
+        mkdir -p report-output
+        uv run tox -e tests -- --html=report-output/index.html --self-contained-html
+
+    - name: Upload Test Artefact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-report
+        path: ./report-output/
+        retention-days: 14
 
     - name: Archive selenium results
       uses: actions/upload-artifact@v7
