@@ -1,6 +1,6 @@
 import uuid
 from typing import TYPE_CHECKING, Any, TypedDict
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,7 +9,10 @@ from testutils.dispatcher import XDispatcher
 from testutils.perms import configure_model
 
 from bitcaster.constants import SystemEvent, bitcaster
+from bitcaster.dispatchers import UserMessageDispatcher
+from bitcaster.models import Channel, Event, Monitor, Occurrence, UserMessage
 from bitcaster.runner.tasks import (
+    check_for_new_user_messages,
     delete_expired_user_messages,
     monitor_check,
     monitor_run,
@@ -22,11 +25,8 @@ if TYPE_CHECKING:
     from bitcaster.models import (
         Address,
         Assignment,
-        Channel,
-        Event,
         MessageTemplate,
         Notification,
-        Occurrence,
         User,
     )
 
@@ -357,12 +357,90 @@ def test_purge_occurrences(
     )
 
 
+@pytest.mark.django_db
+def test_process_occurrence_return_value():
+    from testutils.factories import OccurrenceFactory
+
+    occ = OccurrenceFactory()
+    with patch.object(Occurrence, "process", return_value=True):
+        assert process_occurrence(occ.pk, return_value=True) is True
+
+
+@pytest.mark.django_db
+def test_process_occurrence_not_found():
+    with pytest.raises(Occurrence.DoesNotExist):
+        process_occurrence(-1)
+
+
+@pytest.mark.django_db
+def test_check_for_new_user_messages(monkeypatch):
+    from testutils.factories import ChannelFactory, EventFactory, UserFactory
+
+    user = UserFactory()
+    monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
+
+    event = EventFactory()
+    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={"event": event.pk})
+
+    with patch.object(Event, "trigger") as mock_trigger:
+        with patch("bitcaster.runner.tasks.set_user_latest_notify_time") as mock_set_time:
+            check_for_new_user_messages()
+            mock_trigger.assert_called_once()
+            mock_set_time.assert_called_once_with(user.pk)
+
+
+@pytest.mark.django_db
+def test_check_for_new_user_messages_no_channel(monkeypatch):
+    from testutils.factories import UserFactory
+
+    user = UserFactory()
+    monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
+    # Ensure no UserMessageDispatcher channel exists
+    Channel.objects.filter(dispatcher=fqn(UserMessageDispatcher)).delete()
+    check_for_new_user_messages()
+
+
+@pytest.mark.django_db
+def test_check_for_new_user_messages_no_event(monkeypatch):
+    from testutils.factories import ChannelFactory, UserFactory
+
+    user = UserFactory()
+    monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
+    # Channel exists but no event in config
+    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={})
+    check_for_new_user_messages()
+
+
+@pytest.mark.django_db
+def test_check_for_new_user_messages_empty(monkeypatch):
+    monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", list)
+    check_for_new_user_messages()
+
+
+@pytest.mark.django_db
 def test_delete_expired_user_messages(system_user: "User") -> None:
+    from datetime import timedelta
+
+    from django.utils import timezone
+    from testutils.factories import ChannelFactory, UserMessageFactory
+
+    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={"message_ttl": 7})
+
+    m1 = UserMessageFactory()
+    UserMessage.objects.filter(pk=m1.pk).update(created=timezone.now() - timedelta(days=10))
+
+    m2 = UserMessageFactory()
+
+    assert UserMessage.objects.count() == 2
     delete_expired_user_messages()
+    assert UserMessage.objects.count() == 1
+    assert UserMessage.objects.filter(pk=m2.pk).exists()
 
 
 def test_monitor_run(system_user: "User", monitor) -> None:
-    monitor_run()
+    with patch("bitcaster.runner.tasks.monitor_check.send") as mock_send:
+        monitor_run()
+        assert mock_send.call_count == 1
 
 
 def test_monitor_check(system_user: "User") -> None:
@@ -376,3 +454,42 @@ def test_monitor_check(system_user: "User") -> None:
 
     with configure_model(monitor, active=False):
         assert monitor_check(monitor.pk) == "inactive"
+
+
+@pytest.mark.django_db
+def test_monitor_check_exception():
+    from testutils.factories.monitor import MonitorFactory
+
+    monitor = MonitorFactory(active=True)
+    with patch.object(monitor.agent, "check", side_effect=Exception("Check failed")):
+        with patch.object(Monitor.objects, "get", return_value=monitor):
+            with pytest.raises(Exception, match="Check failed"):
+                monitor_check(monitor.pk)
+            monitor.refresh_from_db()
+            assert monitor.active is False
+            assert monitor.result == {"error": "Check failed"}
+
+
+@pytest.mark.django_db
+def test_purge_occurrences_exception():
+    with patch.object(Occurrence.objects, "purgeable", side_effect=Exception("Database error")):
+        result = purge_occurrences()
+        assert isinstance(result, Exception)
+        assert str(result) == "Database error"
+
+
+@pytest.mark.django_db
+def test_scan_occurrences_with_data():
+    from testutils.factories import OccurrenceFactory
+
+    occ = OccurrenceFactory(status=Occurrence.Status.NEW)
+    with patch("bitcaster.runner.tasks.process_occurrence.send") as mock_send:
+        result = scan_occurrences()
+        assert occ.pk in result
+        assert mock_send.call_count == 1
+
+
+@pytest.mark.django_db
+def test_scan_occurrences_empty():
+    Occurrence.objects.filter(status=Occurrence.Status.NEW).delete()
+    assert scan_occurrences() == []
