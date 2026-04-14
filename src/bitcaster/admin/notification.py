@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -46,23 +46,46 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     fieldsets = (
         (_("General"), {"classes": ["tab"], "fields": ["name", "event", "environments"]}),
         (
-            _("Distribution"),
+            _("Recipients filters"),
             {
                 "classes": ["tab"],
+                "description": _(
+                    "Defines who should receive the notification. You can use a static distribution list, "
+                    "dynamic rules based on user attributes, or external filters passed via API."
+                ),
                 "fields": [
                     "active",
                     "policy",
-                    # "external_filtering",
-                    # "dynamic",
                     "distribution",
                     "recipients_filter",
                     "context_filter",
                 ],
             },
         ),
-        (_("Extra context"), {"classes": ["tab"], "fields": ["extra_context"]}),
-        (_("Match Filter"), {"classes": ["tab"], "fields": ["payload_filter"]}),
+        (
+            _("Notification filter"),
+            {
+                "classes": ["tab"],
+                "description": _(
+                    "Defines when this notification should be triggered. Use JMESPath syntax to match "
+                    "the incoming event data. If the data does not match, the notification is skipped."
+                ),
+                "fields": ["payload_filter"],
+            },
+        ),
+        (
+            _("Extra context"),
+            {
+                "classes": ["tab"],
+                "description": _(
+                    "Additional static variables that will be available in the message templates. "
+                    "Use this to define notification-specific data like support emails or custom labels."
+                ),
+                "fields": ["extra_context"],
+            },
+        ),
     )
+
     conditional_fields = {
         "distribution": "active == true && policy == 1",
         "context_filter": "active == true && policy == 2",
@@ -92,6 +115,11 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
                 "distribution",
             )
         )
+
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
+        ret = super().get_changeform_initial_data(request)
+        ret.setdefault("recipients_filter", {"include": [], "exclude": []})
+        return ret
 
     def response_add(self, request, obj, post_url_continue=None):
         return HttpResponseRedirect(

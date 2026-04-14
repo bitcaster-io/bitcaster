@@ -32,7 +32,7 @@ All conditions must be true.
 ```yaml
 AND:
   - country == 'italy'
-  - region == 'lazio'
+  - area == 'europe'
 ```
 
 ### OR Operator
@@ -50,8 +50,8 @@ You can nest these operators to create highly specific rules.
 ```yaml
 OR:
   - AND:
+      - area == 'europe'
       - country == 'italy'
-      - region == 'lazio'
   - office == 22
 ```
 
@@ -65,15 +65,15 @@ When you trigger an event via the API, the filtering engine evaluates your rules
 ```json
 {
     "context": {
+        "area": "europe",
         "country": "italy",
-        "region": "lazio",
         "office": 10,
         "message": "High temperature alert"
     }
 }
 ```
 
-If a notification has the filter `country == 'italy' && region == 'lazio'`, it will be **processed** because both conditions match the context.
+If a notification has the filter `country == 'italy' && area == 'europe'`, it will be **processed** because both conditions match the context.
 
 ---
 
