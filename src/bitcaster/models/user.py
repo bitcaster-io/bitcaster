@@ -86,8 +86,7 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
 
         return Assignment.objects.filter(address__user=self, channel=ch).first()
 
-    @property
-    def distribution_lists(self) -> "QuerySet[DistributionList]":
+    def get_distribution_lists(self) -> "QuerySet[DistributionList]":
         """Retrieve all distribution lists this user is a recipient of via any assignment."""
         from bitcaster.models import DistributionList
 

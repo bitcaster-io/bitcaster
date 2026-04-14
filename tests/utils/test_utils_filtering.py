@@ -169,6 +169,14 @@ def test_validate_lookups_invalid_entry():
             validate_lookups(User, filter_spec)
 
 
+@pytest.mark.django_db
+def test_validate_lookups_parameters():
+    q = Q(username="test")
+    q.children = ["admin"]
+    filter_spec = {"include": {"username": "{{test}}"}, "exclude": {}}
+    validate_lookups(User, filter_spec)
+
+
 # Tests for validate_filters
 @pytest.mark.django_db
 def test_validate_filters():

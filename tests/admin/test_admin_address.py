@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import pytest
 from django.urls import reverse
@@ -9,7 +9,18 @@ from testutils.helpers import assert_message
 from bitcaster.constants import AddressType
 
 if TYPE_CHECKING:
-    from bitcaster.models import Address, Channel
+    from bitcaster.models import Address, Channel, DistributionList, Member, Notification, Organization
+
+    Context = TypedDict(
+        "Context",
+        {
+            "organization": Organization,
+            "channel": Channel,
+            "notification": Notification,
+            "distributionlist": DistributionList,
+            "members": list[Member],
+        },
+    )
 
 
 @pytest.fixture
@@ -21,6 +32,33 @@ def app(django_app_factory: MixinWithInstanceVariables, db: Any) -> DjangoTestAp
     django_app.set_user(admin_user)
     django_app._user = admin_user
     return django_app
+
+
+@pytest.fixture
+def context(system_objects) -> "Context":
+    from testutils.factories import (
+        AddressFactory,
+        AssignmentFactory,
+        ChannelFactory,
+        DistributionListFactory,
+        MemberFactory,
+        NotificationFactory,
+        OrganizationFactory,
+    )
+
+    org: "Organization" = OrganizationFactory.create()
+    ch: "Channel" = ChannelFactory.create(organization=org)
+    members = [MemberFactory.create(organization=org), MemberFactory(organization=org)]
+    addr = AddressFactory.create(user=members[0], value=members[0].email)
+    distribution = DistributionListFactory.create(recipients=[AssignmentFactory.create(address=addr, channel=ch)])
+    notification = NotificationFactory.create(id=1, distribution=distribution, event__channels=[ch])
+    return {
+        "organization": org,
+        "channel": ch,
+        "notification": notification,
+        "distributionlist": distribution,
+        "members": members,
+    }
 
 
 def test_add_and_redirect(app: DjangoTestApp) -> None:
@@ -73,3 +111,22 @@ def test_assign_to_channel(app: "DjangoTestApp", address: "Address", channel) ->
     assert res.status_code == 302
     address.refresh_from_db()
     assert address.assignments.filter(channel=channel).exists()
+
+
+@pytest.mark.parametrize("flt", ["dl=1", "dl=", "dl=invalid", "n=1", "n=", "n=invalid"])
+def test_address_filtering(app: "DjangoTestApp", context: "Context", flt: str) -> None:
+    url = reverse("admin:bitcaster_address_changelist")
+    res = app.get(f"{url}?{flt}")
+    assert res.status_code == 200
+
+
+@pytest.mark.django_db
+def test_address_distributionlist_filter(app: "DjangoTestApp", context: "Context") -> None:
+    url = reverse("admin:bitcaster_address_changelist")
+    distributionlist = context["distributionlist"]
+    asm = distributionlist.recipients.first()
+    member = context["members"][1]
+
+    res = app.get(f"{url}?dl={distributionlist.pk}")
+    assert asm.address.user.username in res
+    assert member.username not in res

@@ -21,6 +21,43 @@ Recipients are selected dynamically from the user database based on specific att
 > **Note**: This policy only selects from users who have an **active Assignment** (configured address) for the channel being used.
 
 *   **Format**: This field must be valid **JSON**.
+*   **Context Variables**: You can use template variables from the event context within the filter values. Any string value in the filter can contain Jinja2-style placeholders `{ { ... } }`
+
+#### Using Context Variables in Filters
+When an event is triggered, Bitcaster merges the provided context with the notification settings. You can use any value from this context to filter your recipients.
+
+**Example 1: Filter by a specific username provided in the context**
+If your event is triggered with context `{"target_username": "john_doe"}`, you can use:
+```json
+{
+  "include": {
+    "username": "{{ target_username }}"
+  }
+}
+```
+
+**Example 2: Filter by a custom attribute from the context**
+If you want to notify only users in a specific department provided in the event data `{"department_id": "sales"}`:
+```json
+{
+  "include": {
+    "custom_fields__department": "{{ department_id }}"
+  }
+}
+```
+
+**Example 3: Complex logic with context**
+You can combine multiple context variables and static values:
+```json
+{
+  "include": {
+    "is_staff": true,
+    "custom_fields__office": "{{ office_name }}",
+    "groups__name": "{{ required_group }}"
+  }
+}
+```
+
 *   **Filter Logic**:
     *   **AND**: Use a single dictionary. All keys in the dictionary must match.
     *   **OR**: Use a list of dictionaries. Any dictionary in the list matching will include the user.
@@ -57,12 +94,9 @@ You can append operators to field names for more complex matches:
 For security, filters containing sensitive words are **forbidden** and will trigger a validation error:
 *   `password`, `token`, `secret`, `key`.
 
-*   **Configuration Examples (JSON)**:
-
 #### **Configuration Examples (JSON)**:
 
 1. This example includes users who are staff AND in Milan, but excludes anyone who is inactive OR in the 'Deactivated' group.*
-
     ```json
     {
       "include": {
@@ -77,7 +111,6 @@ For security, filters containing sensitive words are **forbidden** and will trig
     ```
 
 2. This example includes users who are in the Milan office OR the Rome office.*
-
     ```json
     {
       "include": [
@@ -110,7 +143,21 @@ Regardless of the recipient policy, you can define a **Payload Filter** using **
 
 ---
 
-## 3. API Examples
+## 3. Extra Context
+
+Notifications can define **Extra Context**, which is a JSON dictionary of static variables. These variables are merged into the template context during message rendering.
+
+This is useful for providing notification-specific information that isn't part of the original event data, such as:
+*   Support department contact details.
+*   Service Level Agreement (SLA) identifiers.
+*   Internal routing labels.
+
+**Example**:
+If Extra Context is `{"support_email": "support@example.com"}`, you can use `{{ support_email }}` in your message templates.
+
+---
+
+## 4. API Examples
 
 When triggering an event via API, use the `context` for message data and `options` for routing/filtering.
 
@@ -155,20 +202,6 @@ curl -X POST https://bitcaster.yourdomain.com/api/v1/trigger/my-event/ \
 }
 ```
 *This example will include users who belong to the 'developers' group OR are superusers.*
-
----
-
-## 4. Extra Context
-
-Notifications can define **Extra Context**, which is a JSON dictionary of static variables. These variables are merged into the template context during message rendering.
-
-This is useful for providing notification-specific information that isn't part of the original event data, such as:
-*   Support department contact details.
-*   Service Level Agreement (SLA) identifiers.
-*   Internal routing labels.
-
-**Example**:
-If Extra Context is `{"support_email": "support@example.com"}`, you can use `{{ support_email }}` in your message templates.
 
 ---
 

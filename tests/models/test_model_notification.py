@@ -201,3 +201,67 @@ def test_get_pending_subscriptions(data: "Context", recipients_filter, api_filte
 def test_payload_filter(notification: "Notification", rule: str, payload: dict, expected: bool) -> None:
     notification.payload_filter = rule
     assert notification.match_filter(payload) is expected
+
+
+@pytest.mark.django_db
+def test_get_pending_subscriptions_with_variables(data):
+    from testutils.factories import AssignmentFactory, NotificationFactory, UserFactory
+
+    user = UserFactory(username="target_user")
+    AssignmentFactory(address__user=user, channel=data["channel"])
+
+    notification = NotificationFactory.create(
+        event=data["event"],
+        policy=FILTERING_DYNAMIC,
+        recipients_filter={"include": {"username": "{{ target_username }}"}},
+        distribution=None,
+    )
+
+    context = {"target_username": "target_user"}
+    qs = notification.get_pending_subscriptions(
+        delivered=[], channel=data["channel"], api_filtering={}, context=context
+    )
+
+    results = list(qs.values_list("address__user__username", flat=True))
+    assert "target_user" in results
+    assert len(results) == 1
+
+
+@pytest.mark.django_db
+def test_validate_filters_with_variables():
+    from bitcaster.models import User
+    from bitcaster.utils.filtering import validate_filters
+
+    # This should not raise FieldError even if {{ var }} is not a valid username
+    validate_filters(User.objects.all(), {"include": {"username": "{{ some_var }}"}, "exclude": {}})
+
+
+@pytest.mark.django_db
+def test_render_recursive_nested():
+    from testutils.factories import AssignmentFactory, NotificationFactory, UserFactory
+
+    user1 = UserFactory(username="user1")
+    user2 = UserFactory(username="user2")
+
+    from bitcaster.models import Channel
+
+    channel = Channel.objects.first()  # assuming one exists from other fixtures
+    if not channel:
+        from testutils.factories import ChannelFactory
+
+        channel = ChannelFactory()
+
+    AssignmentFactory(address__user=user1, channel=channel)
+    AssignmentFactory(address__user=user2, channel=channel)
+
+    notification = NotificationFactory.create(
+        policy=FILTERING_DYNAMIC,
+        recipients_filter={"include": [{"username": "{{ user_a }}"}, {"username": "{{ user_b }}"}]},
+        distribution=None,
+    )
+
+    context = {"user_a": "user1", "user_b": "user2"}
+    qs = notification.get_pending_subscriptions(delivered=[], channel=channel, api_filtering={}, context=context)
+
+    results = set(qs.values_list("address__user__username", flat=True))
+    assert results == {"user1", "user2"}

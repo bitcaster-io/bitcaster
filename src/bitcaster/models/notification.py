@@ -102,13 +102,30 @@ class Notification(BitcasterBaseModel):
         return ctx
 
     def get_pending_subscriptions(
-        self, delivered: list[str | int], channel: "Channel", api_filtering: Any
+        self, delivered: list[str | int], channel: "Channel", api_filtering: Any, context: dict[str, Any] | None = None
     ) -> QuerySet[Assignment]:
+        from django.template import Context, Template
+
+        def render_recursive(obj: Any, ctx: Context) -> Any:
+            if isinstance(obj, dict):
+                return {k: render_recursive(v, ctx) for k, v in obj.items()}
+            if isinstance(obj, list):
+                return [render_recursive(v, ctx) for v in obj]
+            if isinstance(obj, str) and "{{" in obj:
+                return Template(obj).render(ctx)
+            return obj
+
         if self.policy == FILTERING_DYNAMIC and self.recipients_filter:
-            included, excluded = FilterManager.parse(self.recipients_filter)
+            rules = self.recipients_filter
+            if context:
+                rules = render_recursive(rules, Context(context))
+            included, excluded = FilterManager.parse(rules)
             users = User.objects.filter(included).exclude(excluded)
         elif self.policy == FILTERING_EXTERNAL and api_filtering:
-            included, excluded = FilterManager.parse(api_filtering)
+            rules = api_filtering
+            if context:
+                rules = render_recursive(rules, Context(context))
+            included, excluded = FilterManager.parse(rules)
             users = User.objects.filter(included).exclude(excluded)
         else:
             users = User.objects.filter(is_active=True)

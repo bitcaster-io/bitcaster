@@ -15,9 +15,10 @@ from unfold.admin import TabularInline
 
 from bitcaster.admin.base import BaseAdmin
 from bitcaster.forms.address import AddressForm, AssignToChannelForm
-from bitcaster.models import Address, Assignment
+from bitcaster.models import Address, Assignment, DistributionList, Notification
 
 from .base import BitcasterModelAdmin
+from .filters import AddressByList, AddressByNotification
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,8 @@ class AddressAdmin(BaseAdmin, BitcasterModelAdmin[Address]):
     list_filter = (
         ("user", LinkedAutoCompleteFilter.factory(parent=None)),
         ("assignments__channel", AutoCompleteFilter),
-        ("assignments__distributionlist__notifications__event", AutoCompleteFilter),
+        AddressByList,
+        AddressByNotification,
         "type",
     )
     autocomplete_fields = ("user",)
@@ -59,6 +61,25 @@ class AddressAdmin(BaseAdmin, BitcasterModelAdmin[Address]):
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Address]:
         return super().get_queryset(request).select_related("user")
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        active_filters = []
+        if dl_id := request.GET.get("dl"):
+            try:
+                dl = DistributionList.objects.get(pk=dl_id)
+                active_filters.append(_("Distribution list: %s") % dl.name)
+            except (DistributionList.DoesNotExist, ValueError):
+                pass
+        if not_id := request.GET.get("n"):
+            try:
+                notification = Notification.objects.get(pk=not_id)
+                active_filters.append(_("Notification:  %s") % notification.name)
+            except (DistributionList.DoesNotExist, ValueError):
+                pass
+
+        extra_context["active_filters"] = active_filters
+        return super().changelist_view(request, extra_context=extra_context)
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         user_pk = request.GET.get("user", request.user.pk)

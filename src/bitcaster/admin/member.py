@@ -7,7 +7,7 @@ from django import forms
 from django.contrib import messages
 from django.contrib.admin import helpers
 from django.db import transaction
-from django.db.models import Q, QuerySet, TextChoices
+from django.db.models import ForeignKey, Q, QuerySet, TextChoices
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.response import TemplateResponse
@@ -16,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 from jsoneditor.forms import JSONEditor
 from unfold.admin import TabularInline
 from unfold.contrib.inlines.admin import NonrelatedTabularInline
+from unfold.contrib.inlines.forms import NonrelatedInlineModelFormSet
 from unfold.decorators import action
 
 from bitcaster.constants import Bitcaster, bitcaster
@@ -24,10 +25,13 @@ from bitcaster.forms.user import GenericActionForm, SelectDistributionForm
 from bitcaster.models import Address, Assignment, DistributionList, Group, LogEntry, Member, User
 from bitcaster.utils.json import process_dict
 
+from ..forms.assignment import AssignmentInlineForm
 from ..importing.members import import_members_csv
 from .base import BaseAdmin, BitcasterModelAdmin
+from .filters import UserDistributionListFilter
 
 if TYPE_CHECKING:  # pragma: no cover
+    from django.forms import ModelChoiceField
     from django.http import HttpRequest, HttpResponse
 
     from bitcaster.types.json import JSON
@@ -46,35 +50,77 @@ class ReadOnlyInline:
     def has_change_permission(self, request, obj):
         return False
 
+    def save_new_instance(self, parent, instance):
+        pass
+
 
 class AddressInline(TabularInline):  # NonrelatedStackedInline is available as well
     model = Address
     fields = ["name", "type"]  # Ignore property to display all fields
     extra = 0
+    tab = True
+    verbose_name = _("Addresses")
+    collapsible = True
+
+    def get_form_queryset(self, obj: Member):
+        return Address.objects.filter(user=obj)
+
+    def has_add_permission(self, request, obj):
+        return super().has_add_permission(request, obj) and obj and obj.pk
 
 
-class AssignmentInline(ReadOnlyInline, NonrelatedTabularInline):  # NonrelatedStackedInline is available as well
+class AssignmentFormSet(NonrelatedInlineModelFormSet):
+    def get_form_kwargs(self, index):
+        ret = super().get_form_kwargs(index)
+        ret["user"] = self.instance
+        return ret
+
+
+class AssignmentInline(NonrelatedTabularInline):  # NonrelatedStackedInline is available as well
     model = Assignment
-    fields = ["channel", "address", "validated", "active"]  # Ignore property to display all fields
-    readonly_fields = ["address", "channel"]
+    tab = True
+    extra = 0
+    form = AssignmentInlineForm
+    autocomplete_fields = ["address"]
+    formset = AssignmentFormSet
+
+    def formfield_for_foreignkey(
+        self, db_field: "ForeignKey", request: "HttpRequest", **kwargs
+    ) -> "ModelChoiceField | None":
+        ret = super().formfield_for_foreignkey(db_field, request, **kwargs)
+        if db_field.name == "address":
+            ret.queryset = Address.objects.none()
+            ret.widget.queryset = Address.objects.none()
+        return ret
 
     def get_form_queryset(self, obj: Member):
         return Assignment.objects.filter(address__user=obj)
 
-    def save_new_instance(self, parent, instance):
-        pass
+    def save_new_instance(self, parent: "Member", instance: Assignment):
+        instance.save()
+
+    def has_add_permission(self, request, obj):
+        return super().has_add_permission(request, obj) and obj and obj.pk
 
 
-class ListsInline(ReadOnlyInline, NonrelatedTabularInline):  # NonrelatedStackedInline is available as well
+class ListsFormSet(NonrelatedInlineModelFormSet):
+    def get_form_kwargs(self, index):
+        ret = super().get_form_kwargs(index)
+        ret["user"] = self.instance
+        return ret
+
+
+class ListsInline(NonrelatedTabularInline):  # NonrelatedStackedInline is available as well
     model = DistributionList
+    tab = True
     fields = ["name", "project"]  # Ignore property to display all fields
-    readonly_fields = ["name", "project"]
+    extra = 0
 
     def get_form_queryset(self, obj: Member):
-        return obj.distribution_lists
+        return obj.get_distribution_lists()
 
     def save_new_instance(self, parent, instance):
-        pass
+        instance.save()
 
 
 class JsonUpdateMode2(TextChoices):
@@ -135,8 +181,23 @@ class ImportForm(forms.Form):
 
 class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     list_display = ("username", "first_name", "last_name", "email")
-    list_filter = (("custom_fields", JsonFieldFilter.factory()),)
+    list_filter = (
+        ("custom_fields", JsonFieldFilter.factory(options=False)),
+        UserDistributionListFilter,
+    )
     inlines = [AddressInline, AssignmentInline, ListsInline]
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        dl_id = request.GET.get("dl")
+        if dl_id:
+            try:
+                dl = DistributionList.objects.get(pk=dl_id)
+                extra_context["subtitle"] = _("Members selected for distribution list: %s") % dl.name
+            except (DistributionList.DoesNotExist, ValueError):
+                pass
+        return super().changelist_view(request, extra_context=extra_context)
+
     actions = ["update_custom_fields", "add_to_distributionlist"]
     search_fields = ("username", "first_name", "last_name", "email")
     form = MemberForm
@@ -197,14 +258,14 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
                     if form.cleaned_data["mode"] == JsonUpdateMode2.REWRITE:
                         queryset.update(custom_fields=form.cleaned_data["custom_fields"])
                     else:
-                        for __, record in enumerate(queryset.only("pk", "custom_fields")):
+                        for __, record in enumerate(queryset):
                             updated = process_dict(
                                 record.custom_fields, form.cleaned_data["custom_fields"], form.cleaned_data["mode"]
                             )
                             record.custom_fields = updated
                             record.save()
                 LogEntry.objects.log_actions(
-                    user_id=self.request.user.pk,
+                    user_id=request.user.pk,
                     queryset=queryset,
                     action_flag=LogEntry.OTHER,
                     change_message="Custom field mass-updated",

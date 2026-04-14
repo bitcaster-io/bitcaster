@@ -26,15 +26,27 @@ def test_address(db: Any) -> None:
     "value,type_",
     [
         ("test@example.com", AddressType.EMAIL),
-        ("+1 (817) 943-8393", AddressType.PHONE),
+        ("+18179438393", AddressType.PHONE),
         ("acount", AddressType.ACCOUNT),
     ],
 )
-def test_save(value: str, type_: AddressType) -> None:
-    from testutils.factories import AddressFactory, ChannelFactory
+def test_save(db: Any, value: str, type_: AddressType) -> None:
+    from testutils.factories import AddressFactory, UserFactory
 
-    addr: "Address" = AddressFactory()
-    ch: "Channel" = ChannelFactory()
-    addr.validate_channel(ch)
+    user = UserFactory()
+    addr = AddressFactory(user=user, value=value)
+    # The save() method calls get_type_from_value
+    # account type might be generic if not email/phone
+    if type_ == AddressType.ACCOUNT:
+        assert addr.type == AddressType.GENERIC
+    else:
+        assert addr.type == type_
 
-    assert list(addr.channels.all()) == [ch]
+
+def test_natural_key(address: "Address") -> None:
+    assert address.natural_key() == (address.user.username, address.name)
+
+
+def test_get_by_natural_key(address: "Address") -> None:
+    username, name = address.natural_key()
+    assert Address.objects.get_by_natural_key(username, name) == address

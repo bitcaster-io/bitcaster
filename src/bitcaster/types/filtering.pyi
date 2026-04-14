@@ -10,4 +10,4 @@ class QuerysetFilter(TypedDict):
     include: list[FilterRule]
     exclude: list[FilterRule]
 
-AllowedFilters = dict[str, Any] | QuerysetFilter
+AllowedFilters = dict[str, Any] | QuerysetFilter | list[AllowedFilters] | str

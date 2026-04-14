@@ -257,3 +257,10 @@ def test_usage(app: "DjangoTestApp", creator: CreateMessage, channel: "Channel")
     url = reverse(admin_urlname(opts, "usage"), args=[message.pk])  # type: ignore[arg-type]
     res = app.get(url)
     assert res.pyquery(".usage div.grid a.link").text() == creator.name
+
+
+@pytest.mark.parametrize("flt", ["expired=", "expired=1", "expired=0"])
+def test_filtering(app: "DjangoTestApp", message: "MessageTemplate", flt: str) -> None:
+    url = reverse("admin:bitcaster_usermessage_changelist")
+    res = app.get(f"{url}?{flt}")
+    assert res.status_code == 200
