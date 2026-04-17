@@ -74,9 +74,11 @@ class BitcasterBaselManager(models.Manager["AnyModel_co"]):
 
 
 class BitcasterBaseModel(AdminReversable):
-    version = IntegerVersionField()
-    last_updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
+    version = IntegerVersionField(verbose_name=_("Version"), help_text=_("version number of the record"))
+    last_updated = models.DateTimeField(
+        verbose_name=_("Last updated"), auto_now=True, help_text=_("Record last update time")
+    )
+    created = models.DateTimeField(verbose_name=_("Created"), auto_now_add=True, help_text=_("Record creation time"))
 
     class Meta:
         abstract = True
@@ -86,8 +88,8 @@ class BitcasterBaseModel(AdminReversable):
 
 
 class SlugMixin(models.Model):
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, blank=True)
+    name = models.CharField(verbose_name=_("Name"), max_length=255, help_text=_("name"))
+    slug = models.SlugField(verbose_name=_("Slug"), max_length=255, blank=True, help_text=_("record slug"))
 
     class Meta:
         abstract = True
@@ -143,16 +145,19 @@ class ScopedManager(BitcasterBaselManager["AnyModel_co"]):
 
 class Scoped2Mixin(models.Model):
     organization: "Organization"
-    organization = models.ForeignKey("Organization", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True)
+    organization = models.ForeignKey(
+        "Organization", on_delete=models.CASCADE, related_name="%(class)s_set", blank=True, help_text=_("Organization")
+    )
     project = ChainedForeignKey(
         "Project",
+        on_delete=models.CASCADE,
+        related_name="%(class)s_set",
         blank=True,
         null=True,
         chained_field="organization",
         chained_model_field="organization",
         show_all=False,
-        related_name="%(class)s_set",
-        on_delete=models.CASCADE,
+        help_text=_("Project this record belong to"),
     )
 
     class Meta:
@@ -163,13 +168,13 @@ class Scoped3Mixin(Scoped2Mixin):
     application: "Application"
     application = ChainedForeignKey(
         "Application",
+        on_delete=models.CASCADE,
+        related_name="%(class)s_set",
         blank=True,
         null=True,
         chained_field="project",
         chained_model_field="project",
         show_all=False,
-        related_name="%(class)s_set",
-        on_delete=models.CASCADE,
     )
 
     class Meta:

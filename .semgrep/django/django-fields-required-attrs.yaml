@@ -1,0 +1,28 @@
+rules:
+  - id: django-fields-required-attrs
+    languages:
+      - python
+    severity: WARNING
+    message: >-
+      All Django model fields should explicitly define `verbose_name` and `help_text` using `gettext_lazy` (e.g., `_("Name")`).
+      This improves the usability of the user interface (Admin and forms) and ensures that each field is documented and translatable.
+    patterns:
+      - pattern-inside: |
+          class $MODEL(...):
+            ...
+      - pattern-not-inside: |
+          class Meta:
+            ...
+      - pattern-either:
+          - pattern: $FIELD_NAME = models.$F(...)
+          - pattern: $FIELD_NAME = $F(...)
+      - metavariable-regex:
+          metavariable: $F
+          regex: .*Field$
+      # We exclude cases where both attributes are present
+      - pattern-not: $FIELD_NAME = $ANY(..., verbose_name=..., help_text=..., ...)
+      - pattern-not: $FIELD_NAME = $ANY(..., help_text=..., verbose_name=..., ...)
+    paths:
+      include:
+        - "**/models.py"
+        - "**/models/*.py"

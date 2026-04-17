@@ -11,26 +11,36 @@ from bitcaster.models.mixins import BitcasterBaseModel
 
 
 class Attachment(BitcasterBaseModel):
-    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="attachments")
+    application = models.ForeignKey(
+        Application,
+        verbose_name=_("Application"),
+        on_delete=models.CASCADE,
+        related_name="attachments",
+        help_text=_("application owner of this Attachment"),
+    )
     correlation_id = models.SlugField(
+        verbose_name=_("Correlation ID"),
+        blank=True,
         default=uuid4,
         unique=True,
-        blank=True,
-        verbose_name=_("Correlation ID"),
         help_text=_("Unique human readable identifier for the attachment"),
     )
     filename = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True,
         verbose_name=_("Filename"),
+        max_length=256,
+        blank=True,
+        null=True,
         help_text=_("Filename to use when downloading the attachment"),
     )
-    document = models.FileField(upload_to="attachments/", help_text=_("Attachment file"))
-    mime_type = models.CharField(
-        max_length=256, help_text=_("MIME type of the file. It will be auto-detected if not provided")
+    document = models.FileField(
+        verbose_name=_("Document/File"), upload_to="attachments/", help_text=_("Attachment file")
     )
-    size = models.PositiveIntegerField(default=0, help_text=_("Attachment size in bytes"))
+    mime_type = models.CharField(
+        verbose_name=_("MIME Type"),
+        max_length=256,
+        help_text=_("MIME type of the file. It will be auto-detected if not provided"),
+    )
+    size = models.PositiveIntegerField(verbose_name=_("File size"), default=0, help_text=_("Attachment size in bytes"))
 
     @override
     def __str__(self) -> str:

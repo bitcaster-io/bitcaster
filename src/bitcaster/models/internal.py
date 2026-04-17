@@ -23,10 +23,15 @@ class LogMessageManager(BitcasterBaselManager["LogMessage"]):
 
 
 class LogMessage(BitcasterBaseModel):
-    level = models.CharField(max_length=255, choices=LEVELS)
-    message = models.TextField()
-    created = models.DateTimeField(auto_now_add=True)
-    application = models.ForeignKey(Application, on_delete=models.CASCADE)
+    level = models.CharField(verbose_name=_("Level"), max_length=255, choices=LEVELS, help_text=_("Log message level"))
+    message = models.TextField(verbose_name=_("Message"), help_text=_("message body"))
+    created = models.DateTimeField(verbose_name=_("Date"), auto_now_add=True, help_text=_("date of this message"))
+    application = models.ForeignKey(
+        Application,
+        verbose_name=_("Application"),
+        on_delete=models.CASCADE,
+        help_text=_("application linked to this message"),
+    )
 
     objects = LogMessageManager()
 

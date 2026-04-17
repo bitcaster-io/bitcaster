@@ -34,9 +34,20 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
         PAUSED = 20, _("Create eevent and set it paused")
         DUMMY = 30, _("Create event but do not trigger it")
 
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="applications")
+    project = models.ForeignKey(
+        Project,
+        verbose_name=_("Project"),
+        on_delete=models.CASCADE,
+        related_name="applications",
+        help_text=_("project this application belong to"),
+    )
     owner = models.ForeignKey(
-        User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True, related_name="applications"
+        User,
+        verbose_name=_("Owner"),
+        on_delete=models.PROTECT,
+        related_name="applications",
+        blank=True,
+        help_text=_("owner of this application"),
     )
 
     active = models.BooleanField(
@@ -53,7 +64,9 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
         default=AutoCreateOption.PROCESS,
         help_text=_("If true unknown events will be automatically created"),
     )
-    from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
+    from_email = models.EmailField(
+        verbose_name=_("From email"), blank=True, default="", help_text=_("default from address for emails")
+    )
     subject_prefix = models.CharField(
         verbose_name=_("subject prefix"),
         max_length=50,
@@ -61,7 +74,11 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
         help_text=_("Default prefix for messages supporting subject"),
     )
     advanced_configuration = models.JSONField(
-        null=True, blank=True, help_text=_("Advanced configuration, i.e. for attachment support"), default=dict
+        verbose_name=_("Advanced configuration"),
+        blank=True,
+        null=True,
+        default=dict,
+        help_text=_("Advanced configuration, i.e. for attachment support"),
     )
 
     events: "QuerySet[Event]"

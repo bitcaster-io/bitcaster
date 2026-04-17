@@ -54,15 +54,38 @@ class UserMessageManager(BitcasterBaselManager["UserMessage"]):
 
 
 class UserMessage(BitcasterBaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bitcaster_messages")
-    level = models.CharField(max_length=255, choices=LEVELS, default=logging.INFO)
-    subject = models.TextField()
-    message = models.TextField()
-    created = models.DateTimeField(auto_now_add=True)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=_("User"), on_delete=models.CASCADE, related_name="bitcaster_messages"
+    )
+    level = models.CharField(
+        verbose_name=_("Level"),
+        max_length=255,
+        choices=LEVELS,
+        default=logging.INFO,
+        help_text=_("Level of the message"),
+    )
+    subject = models.TextField(verbose_name=_("Subject"), help_text=_("Subject of the message"))
+    message = models.TextField(verbose_name=_("Message"), help_text=_("Content of the message"))
+    created = models.DateTimeField(verbose_name=_("Created"), auto_now_add=True, help_text=_("Message date"))
+    event = models.ForeignKey(
+        Event,
+        verbose_name=_("Event"),
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        help_text=_("Event produced the message"),
+    )
 
-    read = models.DateTimeField(blank=True, null=True, default=None)
-    displayed = models.BooleanField(blank=True, null=True, default=None)
+    read = models.DateTimeField(
+        verbose_name=_("Readed om"), blank=True, null=True, default=None, help_text=_("Read date")
+    )
+    displayed = models.BooleanField(
+        verbose_name=_("Displayed"),
+        blank=True,
+        null=True,
+        default=None,
+        help_text=_("If the message has beed displayed to teh user"),
+    )
 
     objects = UserMessageManager()
 

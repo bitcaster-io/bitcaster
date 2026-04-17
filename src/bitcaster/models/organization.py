@@ -24,7 +24,9 @@ class OrganizationManager(BitcasterBaselManager["Organization"]):
 
 
 class Organization(SlugMixin, BitcasterBaseModel):
-    from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
+    from_email = models.EmailField(
+        verbose_name=_("From email"), blank=True, default="", help_text=_("default from address for emails")
+    )
     subject_prefix = models.CharField(
         verbose_name=_("Subject Prefix"),
         max_length=50,

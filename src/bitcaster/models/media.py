@@ -4,6 +4,7 @@ import magic
 from django.core.files.storage import storages
 from django.db import models
 from django.db.models.fields.files import ImageFieldFile
+from django.utils.translation import gettext as _
 
 from bitcaster.models.mixins import (
     BitcasterBaseModel,
@@ -88,18 +89,28 @@ class ImageFieldWithExtra(models.ImageField):
 
 class MediaFile(Scoped3Mixin, SlugMixin, BitcasterBaseModel):
     image = ImageFieldWithExtra(
+        verbose_name=_("Image"),
         storage=storages["mediafiles"],
         width_field="width",
         height_field="height",
         size_field="size",
         mime_field="mime_type",
+        help_text=_("Media file"),
     )
-    size = models.PositiveIntegerField(blank=True, default=0, null=True)
-    width = models.PositiveIntegerField(blank=True, default=0, null=True)
-    height = models.PositiveIntegerField(blank=True, default=0, null=True)
+    size = models.PositiveIntegerField(
+        verbose_name=_("Image size"), blank=True, null=True, default=0, help_text=_("image size in bytes")
+    )
+    width = models.PositiveIntegerField(
+        verbose_name=_("Image width"), blank=True, null=True, default=0, help_text=_("image width in pixels")
+    )
+    height = models.PositiveIntegerField(
+        verbose_name=_("Image height"), blank=True, null=True, default=0, help_text=_("image height in pixels")
+    )
 
-    mime_type = models.CharField(max_length=100, blank=True, default="")
-    file_type = models.CharField(max_length=100, blank=True, default="")
+    mime_type = models.CharField(
+        verbose_name=_("Mime type"), max_length=100, blank=True, default="", help_text=_("Mime type")
+    )
+    file_type = models.CharField(verbose_name=_("File type"), max_length=100, blank=True, default="", help_text=_(""))
 
     objects = MediaFileManager()
 

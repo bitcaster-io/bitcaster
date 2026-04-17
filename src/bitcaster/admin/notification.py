@@ -58,7 +58,6 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
                     "policy",
                     "distribution",
                     "recipients_filter",
-                    "context_filter",
                 ],
             },
         ),
@@ -88,7 +87,6 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
 
     conditional_fields = {
         "distribution": "active == true && policy == 1",
-        "context_filter": "active == true && policy == 2",
         "recipients_filter": "active == true && policy == 4",
     }
     actions = ["toggle_active"]

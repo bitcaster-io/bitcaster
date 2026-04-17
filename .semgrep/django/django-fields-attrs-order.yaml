@@ -1,0 +1,42 @@
+rules:
+  - id: django-field-attribute-order
+    languages: [python]
+    severity: WARNING
+    message: |
+      Incorrect attribute order. The required order is:
+      1.  verbose_name
+      2.  on_delete
+      3.  to
+      4.  related_name
+      5.  max_length
+      5a. upload_to
+      6.  choices
+      7.  blank
+      8.  null
+      9.  default
+      10. db_index
+      11. db_collation
+      12. unique
+      13. editable
+      14. auto_now
+      15. auto_now_add
+      16. chained_field
+      17. chained_model_field
+      18. (others)
+      19. validators
+      20. help_text
+      Note: for ForeignKey, 'to' and 'on_delete' can precede 'verbose_name'.
+      Note: for ChoiceArrayField, the first entry can be base_field.
+    patterns:
+      - pattern: $MOD.$FIELD($...ARGS)
+      - metavariable-regex:
+          metavariable: $MOD
+          regex: models
+      - metavariable-regex:
+          metavariable: $...ARGS
+          regex: (?s).*(?:\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b)\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\brelated_name\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bmax_length\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bchoices\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bblank\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bnull\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bdefault\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b|\bdb_index\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bdb_index\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b|\bdb_index\b|\bdb_collation\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bdb_collation\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b|\bdb_index\b|\bdb_collation\b|\bunique\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bunique\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b|\bdb_index\b|\bdb_collation\b|\bunique\b|\beditable\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\beditable\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b|\bdb_index\b|\bdb_collation\b|\bunique\b|\beditable\b|\bauto_now\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bauto_now\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b|\bdb_index\b|\bdb_collation\b|\bunique\b|\beditable\b|\bauto_now\b|\bauto_now_add\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bauto_now_add\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b|\bdb_index\b|\bdb_collation\b|\bunique\b|\beditable\b|\bauto_now\b|\bauto_now_add\b|\bchained_field\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bchained_field\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b|\bdb_index\b|\bdb_collation\b|\bunique\b|\beditable\b|\bauto_now\b|\bauto_now_add\b|\bchained_field\b|\bchained_model_field\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*\bchained_model_field\b\s*=|\b(?!(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b|\bdb_index\b|\bdb_collation\b|\bunique\b|\beditable\b|\bauto_now\b|\bauto_now_add\b|\bchained_field\b|\bchained_model_field\b|\bvalidators\b|\bhelp_text\b))\w+\s*=(?:[^()]|\([^()]*\))*?,\s*(?:\bbase_field\b|\bverbose_name\b|\bon_delete\b|\bto\b|\brelated_name\b|\bmax_length\b|\bchoices\b|\bblank\b|\bnull\b|\bdefault\b|\bdb_index\b|\bdb_collation\b|\bunique\b|\beditable\b|\bauto_now\b|\bauto_now_add\b|\bchained_field\b|\bchained_model_field\b)\s*=|\b(?:\bvalidators\b|\bhelp_text\b)\s*=(?:[^()]|\([^()]*\))*?,\s*(?!(?:\bvalidators\b|\bhelp_text\b))\w+\s*=|\b\bhelp_text\b\s*=(?:[^()]|\([^()]*\))*?,\s*\bvalidators\b\s*=).*
+    paths:
+      include:
+        - "**/models.py"
+        - "**/models/*.py"
+        - "django-fields-attrs-order.py"

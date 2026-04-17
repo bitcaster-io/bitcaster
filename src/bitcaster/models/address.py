@@ -48,16 +48,24 @@ PROTOCOL_TO_ADDRESS = {
 
 
 class Address(BitcasterBaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
-    name = models.CharField(verbose_name=_("name"), max_length=255, help_text="Label or mnemonic name for this address")
+    user = models.ForeignKey(
+        User,
+        verbose_name=_("User"),
+        on_delete=models.CASCADE,
+        related_name="addresses",
+        help_text=_("owner of this address"),
+    )
+    name = models.CharField(
+        verbose_name=_("name"), max_length=255, help_text=_("Label or mnemonic name for this address")
+    )
     type = models.CharField(
         verbose_name=_("type"),
         max_length=10,
         choices=AddressType.choices,
         default=AddressType.GENERIC,
-        help_text="Type of address",
+        help_text=_("Type of address"),
     )
-    value = models.CharField(verbose_name=_("value"), max_length=255, help_text="Specific address value.")
+    value = models.CharField(verbose_name=_("value"), max_length=255, help_text=_("Specific address value."))
     assignments: "QuerySet[Assignment]"
 
     objects = AddressManager()

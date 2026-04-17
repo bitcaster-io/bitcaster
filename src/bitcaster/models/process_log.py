@@ -53,14 +53,24 @@ class ProcessLogEntry(models.Model):
         (SUCCESS, _("Success")),
         (FAILURE, _("Failure")),
     ]
-    action_time = models.DateTimeField(_("action time"), default=timezone.now, editable=False)
-    status = models.IntegerField(_("status"), choices=STATUD_CHOICES, default=SUCCESS)
-    elapsed = models.IntegerField(_("elapsed"), blank=True, null=True)
-    task_name = models.CharField(max_length=100, null=True, blank=True)
-    task_func = models.CharField(max_length=500, null=True, blank=True)
-    args = models.JSONField(null=True, blank=True)
-    kwargs = models.JSONField(null=True, blank=True)
-    exc_info = models.TextField(null=True, blank=True, default="")
+    action_time = models.DateTimeField(
+        verbose_name=_("action time"), default=timezone.now, editable=False, help_text=_("Action time")
+    )
+    status = models.IntegerField(
+        verbose_name=_("status"), choices=STATUD_CHOICES, default=SUCCESS, help_text=_("Status")
+    )
+    elapsed = models.IntegerField(verbose_name=_("elapsed"), blank=True, null=True, help_text=_("Elapsed time"))
+    task_name = models.CharField(
+        verbose_name=_("task name"), max_length=100, blank=True, null=True, help_text=_("Task name")
+    )
+    task_func = models.CharField(
+        verbose_name=_("task func"), max_length=500, blank=True, null=True, help_text=_("Task full path")
+    )
+    args = models.JSONField(verbose_name=_("args"), blank=True, null=True, help_text=_("Task arguments"))
+    kwargs = models.JSONField(verbose_name=_("kwargs"), blank=True, null=True, help_text=_("Task keyword arguments"))
+    exc_info = models.TextField(
+        verbose_name=_("Exc Info"), blank=True, null=True, default="", help_text=_("Exception info")
+    )
     objects = LogEntryManager()
 
     class Meta:
