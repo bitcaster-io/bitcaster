@@ -1,5 +1,6 @@
 target-version = "py312"
 line-length = 120
+exclude = [".semgrep"]
 
 [lint.isort]
 case-sensitive = true
