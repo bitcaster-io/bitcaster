@@ -15,7 +15,7 @@ from bitcaster.constants import bitcaster
 from bitcaster.models import Project
 
 
-class ProjectView(SecurityMixin, ViewSet, ListAPIView, RetrieveAPIView):
+class ProjectView(SecurityMixin, ViewSet, ListAPIView[Project], RetrieveAPIView[Project]):
     """List Organization's projects."""
 
     serializer_class = ProjectSerializer
