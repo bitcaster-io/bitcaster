@@ -46,11 +46,23 @@ class NotificationManager(BitcasterBaselManager.from_queryset(NotificationQueryS
 
 
 class Notification(BitcasterBaseModel):
-    name = models.CharField(verbose_name=_("name"), max_length=100)
-    description = models.TextField(verbose_name=_("description"), blank=True, null=True)
-    event = models.ForeignKey("bitcaster.Event", on_delete=models.CASCADE, related_name="notifications")
+    name = models.CharField(verbose_name=_("name"), max_length=100, help_text=_("Notification name"))
+    description = models.TextField(
+        verbose_name=_("description"), blank=True, null=True, help_text=_("Small description of this notification")
+    )
+    event = models.ForeignKey(
+        "bitcaster.Event",
+        on_delete=models.CASCADE,
+        related_name="notifications",
+        help_text=_("Event linked to this notification"),
+    )
     distribution = models.ForeignKey(
-        DistributionList, blank=True, null=True, on_delete=models.CASCADE, related_name="notifications"
+        DistributionList,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+        blank=True,
+        null=True,
+        help_text=_("Distribution to use for this notification. Can be empty depending on the policy"),
     )
     environments = ArrayField(
         models.CharField(max_length=20, blank=True, null=True),
@@ -60,13 +72,38 @@ class Notification(BitcasterBaseModel):
         help_text=_("Allow notification only for these environments"),
     )
 
-    policy = models.IntegerField(choices=FILTERING, default=FILTERING_NONE)
+    policy = models.IntegerField(
+        verbose_name=_("policy"), choices=FILTERING, default=FILTERING_NONE, help_text=_("Routing policy")
+    )
 
-    extra_context = models.JSONField(default=dict, blank=True)
-    active = models.BooleanField(verbose_name=_("active"), default=False)
-    context_filter = models.JSONField(verbose_name=_("context filter"), default=dict, blank=True)
-    payload_filter = models.TextField(verbose_name=_("payload filter"), blank=True, null=True)
-    recipients_filter = models.JSONField(default=dict, blank=True)
+    extra_context = models.JSONField(
+        verbose_name=_("Extra context"),
+        blank=True,
+        default=dict,
+        help_text=_("Extra context to add to what provided by the sender"),
+    )
+    active = models.BooleanField(verbose_name=_("active"), default=False, help_text=_("If this notification is active"))
+    payload_filter = models.TextField(
+        verbose_name=_("payload filter"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "YAML configuration to filter notifications based on event data. "
+            "Use JMESPath expressions to match payload values. "
+            "Supports logical operators (AND, OR, NOT). "
+            "If the payload does not match the rules, the notification is skipped."
+        ),
+    )
+    recipients_filter = models.JSONField(
+        verbose_name=_("recipients filter"),
+        blank=True,
+        default=dict,
+        help_text=_(
+            "JSON structure to dynamically select recipients. "
+            "Use 'include' and 'exclude' keys with Django-style lookups (e.g., {'email__endswith': '@company.com'}). "
+            "Supports nested lists for complex AND/OR logic."
+        ),
+    )
 
     objects = NotificationManager()
 

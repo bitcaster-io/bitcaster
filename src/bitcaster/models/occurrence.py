@@ -90,9 +90,19 @@ class Occurrence(BitcasterBaseModel):
         verbose_name=_("context"), blank=True, default=dict, help_text=_("Context provided by the sender")
     )
     options: "OccurrenceOptions" = models.JSONField(  # type: ignore[assignment]
-        blank=True, default=dict, help_text=_("Options provided by the sender to route linked notifications")
+        verbose_name=_("Options"),
+        blank=True,
+        default=dict,
+        help_text=_("Options provided by the sender to route linked notifications"),
     )
-    correlation_id = models.CharField(max_length=255, editable=False, blank=True, null=True)
+    correlation_id = models.CharField(
+        verbose_name=_("Correlation ID"),
+        max_length=255,
+        blank=True,
+        null=True,
+        editable=False,
+        help_text=_("Correlation ID provided by the sender"),
+    )
     recipients = models.IntegerField(
         verbose_name=_("recipients"), default=0, help_text=_("Total number of reached recipients")
     )
@@ -100,13 +110,13 @@ class Occurrence(BitcasterBaseModel):
         verbose_name=_("newsletter mode"), default=False, help_text=_("Do not customise notifications per single user")
     )
     data: "OccurrenceData" = models.JSONField(  # type: ignore[assignment]
-        default=dict, help_text=_("Information about the processing (recipients, channels)")
+        verbose_name=_("Data"), default=dict, help_text=_("Information about the processing (recipients, channels)")
     )
     status = models.CharField(
         verbose_name=_("status"),
+        max_length=20,
         choices=Status,
         default=Status.NEW.value,
-        max_length=20,
         help_text=_("Status of the occurrence"),
     )
     attempts = models.IntegerField(
@@ -114,7 +124,7 @@ class Occurrence(BitcasterBaseModel):
         default=5,
         help_text=_("The remaining number of attempts before the occurrence is marked as failed"),
     )
-    parent = models.ForeignKey("self", editable=False, blank=True, null=True, on_delete=models.CASCADE)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, blank=True, null=True, editable=False)
 
     objects = OccurrenceManager()
 

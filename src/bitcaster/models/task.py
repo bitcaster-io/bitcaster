@@ -8,6 +8,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.base import ModelBase
+from django.utils.translation import gettext_lazy as _
 
 from bitcaster.models.mixins import BitcasterBaseModel, BitcasterBaselManager
 
@@ -25,30 +26,49 @@ def get_tasks() -> list[tuple[str, str]]:
 
 class Task(BitcasterBaseModel):
     class TriggerOption(models.TextChoices):
-        INTERVAL = "interval", "Interval"
-        CRON = "cron", "Cron"
+        INTERVAL = "interval", _("Interval")
+        CRON = "cron", _("Cron")
 
-    last_updated = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(unique=True)
-    name = models.CharField(max_length=200, unique=True)
+    last_updated = models.DateTimeField(verbose_name=_("Last updated"), auto_now=True, help_text=_("Last updated"))
+    slug = models.SlugField(verbose_name=_("Slug"), unique=True, help_text=_("Slug"))
+    name = models.CharField(verbose_name=_("Name"), max_length=200, unique=True, help_text=_("Name"))
 
-    func = models.CharField(max_length=500, choices=get_tasks)
-    replace_existing = models.BooleanField(default=False)
-    max_instances = models.IntegerField(default=1, validators=[MinValueValidator(1)])
-    next_run_time = models.DateTimeField(null=True, blank=True)
-    args = JSONField(default=list, blank=True)
-    kwargs = JSONField(default=dict, blank=True)
+    func = models.CharField(
+        verbose_name=_("Func"),
+        max_length=500,
+        choices=get_tasks,
+        help_text=_("Func"),
+    )
+    replace_existing = models.BooleanField(
+        verbose_name=_("Replace existing"), default=False, help_text=_("Replace existing")
+    )
+    max_instances = models.IntegerField(
+        verbose_name=_("Max instances"), default=1, validators=[MinValueValidator(1)], help_text=_("Max instances")
+    )
+    next_run_time = models.DateTimeField(
+        verbose_name=_("Next run time"), blank=True, null=True, help_text=_("Next run time")
+    )
+    args = JSONField(verbose_name=_("Args"), blank=True, default=list, help_text=_("Args"))
+    kwargs = JSONField(verbose_name=_("Kwargs"), blank=True, default=dict, help_text=_("Kwargs"))
 
-    trigger = models.CharField(max_length=500, choices=TriggerOption.choices, default=TriggerOption.INTERVAL)
-    trigger_config = JSONField(default=dict, blank=True)
+    trigger = models.CharField(
+        verbose_name=_("Trigger"),
+        max_length=500,
+        choices=TriggerOption.choices,
+        default=TriggerOption.INTERVAL,
+        help_text=_("Trigger"),
+    )
+    trigger_config = JSONField(
+        verbose_name=_("Trigger config"), blank=True, default=dict, help_text=_("Trigger config")
+    )
 
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(verbose_name=_("Active"), default=False, help_text=_("Active"))
 
     objects = TaskManager()
 
     class Meta:
-        verbose_name = "Task"
-        verbose_name_plural = "Tasks"
+        verbose_name = _("Task")
+        verbose_name_plural = _("Tasks")
 
     def __str__(self) -> str:
         return self.name

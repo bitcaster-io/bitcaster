@@ -1,11 +1,11 @@
 test:
-	semgrep --test ./
+	semgrep --test --trace ./
 
 scan:
 	semgrep scan \
+		--config . \
 		--metrics=off \
 		--disable-version-check \
 		--error \
-		-c . \
 		--exclude ../.semgrep/ \
 		../src/

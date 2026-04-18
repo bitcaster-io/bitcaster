@@ -38,7 +38,7 @@ class MessageManager(BitcasterBaselManager["MessageTemplate"]):
 class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
     application: "Application"
 
-    name = models.CharField(_("Name"), max_length=255)
+    name = models.CharField(verbose_name=_("Name"), max_length=255, help_text=_("name of this template message"))
     channel = models.ForeignKey(
         Channel,
         on_delete=models.CASCADE,
@@ -48,26 +48,28 @@ class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
+        related_name="messages",
         blank=True,
         null=True,
-        related_name="messages",
         help_text=_("Event to which this message belongs"),
     )
     notification = models.ForeignKey(
         Notification,
         on_delete=models.CASCADE,
+        related_name="messages",
         blank=True,
         null=True,
-        related_name="messages",
         help_text=_("Notification to which this message belongs"),
     )
-    subject = models.TextField(_("subject"), blank=True, null=True, help_text=_("The subject of the message"))
-    content = models.TextField(_("content"), blank=True, help_text=_("The content of the message"))
+    subject = models.TextField(
+        verbose_name=_("subject"), blank=True, null=True, help_text=_("The subject of the message")
+    )
+    content = models.TextField(verbose_name=_("content"), blank=True, help_text=_("The content of the message"))
     html_content = models.TextField(
-        _("HTML Content"), blank=True, help_text=_("The HTML formatted content of the message")
+        verbose_name=_("HTML Content"), blank=True, help_text=_("The HTML formatted content of the message")
     )
     debug = models.BooleanField(
-        _("debug allowed"), default=False, help_text=_("Allow debug information in the message")
+        verbose_name=_("debug allowed"), default=False, help_text=_("Allow debug information in the message")
     )
     objects = MessageManager()
 

@@ -29,9 +29,13 @@ class ProjectManager(BitcasterBaselManager["Project"]):
 
 
 class Project(SlugMixin, LockMixin, BitcasterBaseModel):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="projects")
+    organization = models.ForeignKey(
+        Organization, verbose_name=_("Organization"), on_delete=models.CASCADE, related_name="projects"
+    )
     owner = models.ForeignKey(User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True)
-    from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
+    from_email = models.EmailField(
+        verbose_name=_("From Email"), blank=True, default="", help_text=_("default from address for emails")
+    )
     subject_prefix = models.CharField(
         verbose_name=_("Subject Prefix"),
         max_length=50,
@@ -40,6 +44,7 @@ class Project(SlugMixin, LockMixin, BitcasterBaseModel):
     )
     environments = ArrayField(
         models.CharField(max_length=20, blank=True, null=True),
+        verbose_name=_("Environments"),
         blank=True,
         null=True,
         help_text=_("Environments available for project"),

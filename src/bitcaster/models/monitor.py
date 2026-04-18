@@ -5,7 +5,9 @@ from django.utils.translation import gettext_lazy as _
 from strategy_field.fields import StrategyField
 
 from bitcaster.agents.base import Agent, agentManager
-from bitcaster.models.mixins import AdminReversable, BaseQuerySet, BitcasterBaselManager
+
+from .event import Event
+from .mixins import AdminReversable, BaseQuerySet, BitcasterBaselManager
 
 
 class MonitorQuerySet(BaseQuerySet["Monitor"]):
@@ -18,14 +20,33 @@ class MonitorManager(BitcasterBaselManager.from_queryset(MonitorQuerySet)):
 
 
 class Monitor(AdminReversable, models.Model):
-    name = models.CharField(verbose_name=_("Name"), max_length=255)
-    event = models.ForeignKey("Event", related_name="%(class)s_set", on_delete=models.CASCADE, blank=False)
-    agent: "Agent" = StrategyField(registry=agentManager)
-    active = models.BooleanField(default=True)
-    config = models.JSONField(blank=True, default=dict, editable=False)
-    data = models.JSONField(blank=True, default=dict, editable=False)
-    result = models.JSONField(blank=True, default=dict, editable=False)
-    async_result = models.CharField(blank=True, default="", editable=False, max_length=255)
+    name = models.CharField(verbose_name=_("Name"), max_length=255, help_text=_("name for this monitor"))
+    event = models.ForeignKey(
+        Event, verbose_name=_("Event"), on_delete=models.CASCADE, related_name="%(class)s_set", blank=False
+    )
+    agent: "Agent" = StrategyField(verbose_name=_("Agent"), registry=agentManager, help_text=_("Agent to use"))
+    active = models.BooleanField(verbose_name=_("Active"), default=True, help_text=_("Enable/Disable monitor"))
+    config = models.JSONField(
+        verbose_name=_("Configuration"), blank=True, default=dict, editable=False, help_text=_("monitor configuration")
+    )
+    data = models.JSONField(
+        verbose_name=_("Data"), blank=True, default=dict, editable=False, help_text=_("monitor daa")
+    )
+    result = models.JSONField(
+        verbose_name=_("Latest result"),
+        blank=True,
+        default=dict,
+        editable=False,
+        help_text=_("monitor last execution result"),
+    )
+    async_result = models.CharField(
+        verbose_name=_("async_result"),
+        max_length=255,
+        blank=True,
+        default="",
+        editable=False,
+        help_text=_("async_result"),
+    )
 
     objects = MonitorManager()
 

@@ -19,6 +19,8 @@ on:
 
 permissions:
   contents: read
+  security-events: write # Required to upload SARIF results
+
 
 jobs:
   semgrep:
@@ -38,9 +40,11 @@ jobs:
       # Fetch project source with GitHub Actions Checkout. Use either v3 or v4.
       - uses: actions/checkout@v4
       # Run the "semgrep ci" command on the command line of the docker image.
-      - run: semgrep ci
-        env:
-          # Connect to Semgrep AppSec Platform through your SEMGREP_APP_TOKEN.
-          # Generate a token from Semgrep AppSec Platform > Settings
-          # and add it to your GitHub secrets.
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+      - run: semgrep ci --config .semgrep/ --exclude=.semgrep/ --exclude=docs/_scripts/ --sarif --output semgrep.sarif
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+        # Ensure this runs even if vulnerabilities are found
+        if: always()
