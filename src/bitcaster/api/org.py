@@ -11,7 +11,7 @@ from bitcaster.models import Organization
 from bitcaster.utils.http import absolute_uri
 
 
-class OrgSerializer(serializers.ModelSerializer):
+class OrgSerializer(serializers.ModelSerializer[Organization]):
     users = serializers.SerializerMethodField()
     projects = serializers.SerializerMethodField()
     channels = serializers.SerializerMethodField()
@@ -30,7 +30,7 @@ class OrgSerializer(serializers.ModelSerializer):
         return absolute_uri(reverse("api:org-channel-list", kwargs={"org": obj.slug}))
 
 
-class OrgView(SecurityMixin, ViewSet, RetrieveAPIView):
+class OrgView(SecurityMixin, ViewSet, RetrieveAPIView[Organization]):
     """Organization details."""
 
     serializer_class = OrgSerializer

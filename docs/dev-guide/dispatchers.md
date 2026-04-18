@@ -34,7 +34,7 @@ class MyServiceDispatcher(Dispatcher):
         """
         Core logic to send the message.
         - address: The destination (phone number, email, etc.)
-        - payload: Contains .message, .subject, .html_message
+        - payload: Payload dataclass with strongly typed fields (.message, .subject, .html_message). Follow django-stubs.
         - self.config: Dictionary containing validated data from MyServiceConfig
         """
         api_key = self.config['api_key']
@@ -109,6 +109,6 @@ pytest tests/dispatchers/test_my_service.py
 ## 5. Best Practices
 
 1. **Error Handling**: Do not catch all exceptions in `_send`. If an unhandled exception occurs, Bitcaster will catch it, log it, and mark the delivery as failed.
-2. **British English**: Use British English for comments and UI messages (e.g., "Configured", not "Configured").
-3. **Type Hinting**: Always use type hints for all methods.
+2. **British English**: Use British English for comments and UI messages (e.g., "Colour", not "Color").
+3. **Type Hinting**: Always use type hints for all methods and ensure compliance with `django-stubs`.
 4. **Validation**: Use the `clean()` method in your `DispatcherConfig` form to perform complex validation (e.g., verifying an API key format).

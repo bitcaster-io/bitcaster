@@ -5,7 +5,7 @@ from bitcaster.models import Address, Application, Channel, Event, Project, User
 from bitcaster.utils.http import absolute_reverse
 
 
-class ChannelSerializer(serializers.ModelSerializer):
+class ChannelSerializer(serializers.ModelSerializer[Channel]):
     dispatcher = serializers.SerializerMethodField()
 
     class Meta:
@@ -16,13 +16,13 @@ class ChannelSerializer(serializers.ModelSerializer):
         return fqn(obj.dispatcher)
 
 
-class AddressSerializer(serializers.ModelSerializer):
+class AddressSerializer(serializers.ModelSerializer[Address]):
     class Meta:
         model = Address
         fields = ("value", "type", "name")
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectSerializer(serializers.ModelSerializer[Project]):
     applications = serializers.SerializerMethodField()
     lists = serializers.SerializerMethodField()
     channels = serializers.SerializerMethodField()
@@ -41,7 +41,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         return absolute_reverse("api:project-channel-list", args=[obj.organization.slug, obj.slug])
 
 
-class ApplicationSerializer(serializers.ModelSerializer):
+class ApplicationSerializer(serializers.ModelSerializer[Application]):
     events = serializers.SerializerMethodField()
 
     class Meta:
@@ -52,13 +52,13 @@ class ApplicationSerializer(serializers.ModelSerializer):
         return absolute_reverse("api:events-list", args=[obj.project.organization.slug, obj.project.slug, obj.slug])
 
 
-class EventSerializer(serializers.ModelSerializer):
+class EventSerializer(serializers.ModelSerializer[Event]):
     class Meta:
         model = Event
         fields = "__all__"
 
 
-class UserMessageSerializer(serializers.ModelSerializer):
+class UserMessageSerializer(serializers.ModelSerializer[UserMessage]):
     class Meta:
         model = UserMessage
         fields = ("id", "level", "subject", "message", "created", "read", "displayed")

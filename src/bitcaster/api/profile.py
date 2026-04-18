@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 from django.db.models import QuerySet
 from django.http import HttpRequest
@@ -16,13 +16,13 @@ from bitcaster.console.utils import get_unseen_message_for_user
 from bitcaster.models import User
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer[User]):
     class Meta:
         model = User
         fields = ("id", "email", "username", "first_name", "last_name", "locked")
 
 
-class UserProfileView(SecurityMixin, ViewSet, RetrieveAPIView):
+class UserProfileView(SecurityMixin, ViewSet, RetrieveAPIView[User]):
     serializer_class = UserProfileSerializer
     required_grants = [Grant.USER_PROFILE]
 
@@ -30,7 +30,7 @@ class UserProfileView(SecurityMixin, ViewSet, RetrieveAPIView):
         raise NotImplementedError
 
     def get_object(self) -> "User":
-        return self.request.user
+        return cast("User", self.request.user)
 
     @extend_schema(request=AddressSerializer, responses=AddressSerializer, description=_("List User's addresses"))
     def addresses(self, request: HttpRequest, **kwargs: Any) -> Response:

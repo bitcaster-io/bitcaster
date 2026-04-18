@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import parsers, serializers
@@ -16,20 +18,20 @@ from bitcaster.exceptions import AttachmentsNotSupportedError
 from bitcaster.models import Application, Attachment
 
 
-class AttachmentUploadSerializer(serializers.ModelSerializer):
+class AttachmentUploadSerializer(serializers.ModelSerializer[Attachment]):
     class Meta:
         model = Attachment
         fields = ("document",)
 
 
-class AttachmentResponseSerializer(serializers.ModelSerializer):
+class AttachmentResponseSerializer(serializers.ModelSerializer[Attachment]):
     class Meta:
         model = Attachment
         fields = ("correlation_id", "filename", "mime_type", "size")
         read_only_fields = ("correlation_id", "filename", "mime_type", "size")
 
 
-class AttachmentView(SecurityMixin, GenericAPIView):
+class AttachmentView(SecurityMixin, GenericAPIView[Attachment]):
     serializer_class = AttachmentUploadSerializer
     parser = (parsers.MultiPartParser,)
     http_method_names = ["get", "post", "put"]
@@ -38,7 +40,7 @@ class AttachmentView(SecurityMixin, GenericAPIView):
     permission_classes = []
 
     @extend_schema(request=AttachmentUploadSerializer, description=_("Upload a file as attachment"))
-    def post(self, request: Request, *args, **kwargs):
+    def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         application = get_object_or_404(
             Application,
             slug=self.kwargs["app"],
@@ -77,7 +79,7 @@ class AttachmentView(SecurityMixin, GenericAPIView):
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
     @extend_schema(request=AttachmentUploadSerializer, description=_("Replace an existing attachment with a new file"))
-    def put(self, request: Request, *args, **kwargs):
+    def put(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         application = get_object_or_404(
             Application,
             slug=self.kwargs["app"],
@@ -110,7 +112,7 @@ class AttachmentView(SecurityMixin, GenericAPIView):
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
     @extend_schema(description=_("List attachments for an application"))
-    def get(self, request: Request, *args, **kwargs):
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         application = get_object_or_404(
             Application,
             slug=self.kwargs["app"],

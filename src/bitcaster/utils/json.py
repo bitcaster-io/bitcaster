@@ -47,7 +47,7 @@ def process_dict(d1: "JSON", d2: "JSON", mode: JsonUpdateMode) -> "JSON":
     raise ValueError(f"Unknown JsonUpdateMode: {mode}")
 
 
-def merge_dicts(d1: "JSON", d2: "JSON") -> "JSON":
+def merge_dicts(d1: Any, d2: Any) -> Any:
     """Deep merge.
 
     - dicts merge recursively
@@ -74,7 +74,7 @@ def override_dicts(d1: "JSON", d2: "JSON") -> "JSON":
     return d2
 
 
-def remove_dicts(d1: "JSON", d2: "JSON") -> "JSON":
+def remove_dicts(d1: Any, d2: Any) -> Any:
     """Remove keys in d1 if they appear in d2.
 
     If both values are dicts → remove recursively.

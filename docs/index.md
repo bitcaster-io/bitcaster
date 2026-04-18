@@ -7,7 +7,7 @@ title: Documentation
 
 # Welcome to Bitcaster Documentation
 
-## TL;TR
+## TL;DR
 
 Bitcaster is a system-to-user signal-to-message notification system.
 
@@ -67,7 +67,7 @@ See the [Glossary](./glossary/index.md) for a list of common Bitcaster terminolo
 
 !!! hint
 
-    To help you to novigate this documentation use the `Set Address` link on the header.
-    All the links to in the pages will reflect your server address for a better user experience.
+    To help you navigate this documentation use the `Set Address` link on the header.
+    All the links in the pages will reflect your server address for a better user experience.
 
     **No data are sent outside your Browser**

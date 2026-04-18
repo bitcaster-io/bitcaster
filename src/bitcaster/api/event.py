@@ -20,24 +20,25 @@ if TYPE_CHECKING:
 
     from ..models.occurrence import OccurrenceOptions
     from ..types.filtering import QuerysetFilter
-    from ..types.json import JSON
+    from ..types.json import JSONValue
 
 app_name = "api"
 
 
-class OptionSerializer(serializers.Serializer):
+class OptionSerializer(serializers.Serializer[Any]):
     limit_to = serializers.ListField(child=serializers.CharField(), required=False)
     channels = serializers.ListField(child=serializers.CharField(), required=False)
     environs = serializers.ListField(child=serializers.CharField(), required=False)
     filters = serializers.JSONField(required=False)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        unknown = set(self.parent.initial_data["options"]) - set(self.fields)
-        if unknown:
-            raise serializers.ValidationError("Unknown field(s): {}".format(", ".join(unknown)))
+        if "options" in self.parent.initial_data:
+            unknown = set(self.parent.initial_data["options"]) - set(self.fields)
+            if unknown:
+                raise serializers.ValidationError("Unknown field(s): {}".format(", ".join(unknown)))
         return attrs
 
-    def validate_filters(self, data: "dict") -> "QuerysetFilter":
+    def validate_filters(self, data: "QuerysetFilter") -> "QuerysetFilter":
         try:
             validate_schema(data)
             validate_filters(User.objects, data)
@@ -47,18 +48,24 @@ class OptionSerializer(serializers.Serializer):
             raise serializers.ValidationError({"error": e.message}) from None
 
 
-class ActionSerializer(serializers.Serializer):
-    context = serializers.DictField(required=False)
+class ActionSerializer(serializers.Serializer[dict[str, Any]]):
+    payload_context = serializers.DictField(required=False)
     options = OptionSerializer(required=False)
 
+    def to_internal_value(self, data: Any) -> dict[str, Any]:
+        if isinstance(data, dict) and "context" in data:
+            data = data.copy()
+            data["payload_context"] = data.pop("context")
+        return super().to_internal_value(data)
 
-class EventSerializer(serializers.ModelSerializer):
+
+class EventSerializer(serializers.ModelSerializer[Event]):
     class Meta:
         model = Event
         fields = "__all__"
 
 
-class EventList(SecurityMixin, ListAPIView):
+class EventList(SecurityMixin, ListAPIView[Event]):
     """List application events."""
 
     serializer_class = EventSerializer
@@ -72,7 +79,7 @@ class EventList(SecurityMixin, ListAPIView):
         )
 
 
-class EventTrigger(SecurityMixin, GenericAPIView):
+class EventTrigger(SecurityMixin, GenericAPIView[Event]):
     """Trigger application's event."""
 
     serializer_class = EventSerializer
@@ -95,7 +102,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
             slug = self.kwargs["evt"]
             create_occurrence = True
             try:
-                data: "JSON" = {}
+                data: dict[str, "JSONValue"] = {}
                 try:
                     evt: "Event" = self.get_queryset().get(slug=slug)
                     if not evt.active:
@@ -145,7 +152,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                             "auto created via API invocation",
                         )
                         data["warning"] = f"New event '{evt.name}' created with id {evt.id}"
-                        data["creation_op   tions"] = Application.AutoCreateOption(app.auto_create_options).label
+                        data["creation_op   tions"] = str(Application.AutoCreateOption(app.auto_create_options).label)
                         data["status"] = {"paused": evt.paused, "active": evt.active, "trigger": create_occurrence}
                     else:
                         raise
@@ -156,7 +163,8 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                 if evt.application.project.locked:
                     raise LockError(evt.application.project)
                 self.check_object_permissions(self.request, evt)
-                opts: OccurrenceOptions = ser.validated_data.get("options", {})
+
+                opts: "OccurrenceOptions" = ser.validated_data.get("options", {})
                 if request.auth.environments:
                     if "environs" in opts:
                         opts["environs"] = list(set(opts["environs"]).intersection(request.auth.environments))
@@ -164,7 +172,7 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                         opts["environs"] = request.auth.environments
                 if create_occurrence:
                     o: "Occurrence" = evt.trigger(
-                        context=ser.validated_data.get("context", {}),
+                        context=ser.validated_data.get("payload_context", {}),
                         options=opts,
                         cid=correlation_id,
                     )

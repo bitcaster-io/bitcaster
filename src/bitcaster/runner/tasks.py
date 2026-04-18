@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 import dramatiq
 from django.db.models import Q
@@ -53,7 +53,7 @@ def check_for_new_user_messages() -> None:
         and (ch := Channel.objects.filter(dispatcher=fqn(UserMessageDispatcher)).first())
         and (event_pk := ch.config.get("event"))
     ):
-        options: "OccurrenceOptions" = {"filters": {"include": [{"pk__in": users}], "exclude": []}}
+        options: "OccurrenceOptions" = {"filters": {"include": [{"pk__in": cast("list[Any]", users)}], "exclude": []}}
         evt: Event = Event.objects.get(pk=event_pk)
         evt.trigger(context={}, options=options)
         for uid in users:

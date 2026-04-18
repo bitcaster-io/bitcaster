@@ -19,7 +19,7 @@ from bitcaster.utils.http import absolute_reverse
 from bitcaster.utils.json import JsonUpdateMode, process_dict
 
 
-class UserCreateSerializer(serializers.ModelSerializer):
+class UserCreateSerializer(serializers.ModelSerializer[User]):
     email = serializers.EmailField(required=True)
     username = serializers.CharField(read_only=True)
 
@@ -40,14 +40,14 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserUpdateSerializer(serializers.ModelSerializer):
+class UserUpdateSerializer(serializers.ModelSerializer[User]):
     _mode = serializers.ChoiceField(choices=JsonUpdateMode.choices, default=JsonUpdateMode.IGNORE)
 
     class Meta:
         model = User
         fields = ("first_name", "last_name", "locked", "custom_fields", "_mode")
 
-    def validate(self, attrs):
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         ret = super().validate(attrs)
         if "custom_fields" in ret:
             if attrs["_mode"] == JsonUpdateMode.IGNORE:
@@ -58,7 +58,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         return ret
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer[User]):
     url = serializers.SerializerMethodField()
 
     class Meta:
@@ -69,7 +69,7 @@ class UserSerializer(serializers.ModelSerializer):
         return absolute_reverse("api:user-update", args=[self.context["view"].kwargs["org"], obj.username])
 
 
-class UserDetailSerializer(serializers.ModelSerializer):
+class UserDetailSerializer(serializers.ModelSerializer[User]):
     messages = serializers.SerializerMethodField()
     addresses = serializers.SerializerMethodField()
 
@@ -84,7 +84,9 @@ class UserDetailSerializer(serializers.ModelSerializer):
         return absolute_reverse("api:user-addresses", args=[self.context["view"].kwargs["org"], obj.username])
 
 
-class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, UpdateAPIView, RetrieveAPIView):
+class UserView(
+    SecurityMixin, ViewSet, ListAPIView[User], CreateAPIView[User], UpdateAPIView[User], RetrieveAPIView[User]
+):
     serializer_class = UserSerializer
     required_grants = [Grant.USER_READ, Grant.USER_WRITE]
     action_serializers = {
@@ -116,7 +118,7 @@ class UserView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, UpdateAPIView
     @action(detail=True, methods=["POST"], serializer_class=AddressSerializer)
     def add_address(self, request: HttpRequest, **kwargs: Any) -> Response:
         user = self.get_object()
-        status_code = status.HTTP_200_OK
+        status_code: int = status.HTTP_200_OK
         ser = AddressSerializer(data=request.POST)
         if ser.is_valid():
             ser.save(user=user)

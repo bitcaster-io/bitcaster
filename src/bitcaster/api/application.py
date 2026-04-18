@@ -15,7 +15,7 @@ from bitcaster.constants import bitcaster
 from bitcaster.models import Application
 
 
-class ApplicationView(SecurityMixin, ViewSet, RetrieveAPIView, ListAPIView):
+class ApplicationView(SecurityMixin, ViewSet, RetrieveAPIView[Application], ListAPIView[Application]):
     """List Project applications."""
 
     serializer_class = ApplicationSerializer

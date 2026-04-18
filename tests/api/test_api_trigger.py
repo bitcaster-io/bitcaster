@@ -132,7 +132,7 @@ def test_trigger_invalid(client: APIClient, data: "Context") -> None:
 
     with key_grants(api_key, Grant.EVENT_TRIGGER):
         res = client.post(url, data={"context": 22}, format="json")
-        assert res.status_code == status.HTTP_400_BAD_REQUEST
+    assert res.status_code == status.HTTP_400_BAD_REQUEST, res.json()
 
 
 def test_trigger_inactive(client: APIClient, data: "Context") -> None:
@@ -227,10 +227,10 @@ def test_trigger(client: APIClient, data: "Context") -> None:
     # finally... valid token
     with key_grants(api_key, Grant.EVENT_TRIGGER):
         res = client.post(url, data={"context": event_context}, format="json")
-        assert res.status_code == status.HTTP_201_CREATED, res.json()
-        assert res.data["occurrence"]
-        o = Occurrence.objects.get(pk=res.data["occurrence"])
-        assert o.context == event_context
+    assert res.status_code == status.HTTP_201_CREATED, res.json()
+    assert res.data["occurrence"]
+    o = Occurrence.objects.get(pk=res.data["occurrence"])
+    assert o.context == event_context
 
 
 def test_cid(client: APIClient, data: "Context") -> None:

@@ -1,13 +1,24 @@
-from typing import Any, TypedDict
+from typing import TypedDict
 
-from .json import JSON
+from .json import JSON, JSONScalar, JSONValue
 
-FilterRule = JSON
+# A rule can be a single filter dict, a list of dicts,
+# or nested lists for complex OR/AND logic
+type FilterRule = dict[str, JSONValue] | list[JSON] | list[list[JSON]] | list[JSONScalar]
 
-FilterRuleSet = list[FilterRule]
+# A set of rules is simply a list of the above
+type FilterRuleSet = list[FilterRule]
 
+# Define the structure for include/exclude logic
 class QuerysetFilter(TypedDict):
-    include: list[FilterRule]
-    exclude: list[FilterRule]
+    include: FilterRuleSet
+    exclude: FilterRuleSet
 
-AllowedFilters = dict[str, Any] | QuerysetFilter | list[AllowedFilters] | str
+# Recursive definition for allowed filters
+# Replaced dict[str, Any] with JSON to maintain type safety
+type AllowedFilters = (
+    JSON
+    | QuerysetFilter
+    | list["AllowedFilters"]  # Recursive reference using quotes or lazy type
+    | str
+)

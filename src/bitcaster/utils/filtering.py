@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from django.core.exceptions import FieldError, ValidationError
 from django.db import models
@@ -63,8 +63,8 @@ def clean_field_error_message(message: str) -> str:
     return message
 
 
-def validate_lookups(model: "type[models.Model]", filter_spec: "AllowedFilters") -> None:
-    def _dummy_render(obj: Any) -> "AllowedFilters":
+def validate_lookups(model: "type[models.Model]", filter_spec: "QuerysetFilter") -> None:
+    def _dummy_render(obj: Any) -> Any:
         if isinstance(obj, dict):
             return {k: _dummy_render(v) for k, v in obj.items()}
         if isinstance(obj, list):
@@ -125,10 +125,10 @@ def normalize_groups(data: "JSON | list[JSON] | list[list[JSON]]") -> "list[list
         if not data:
             return []
         if all(isinstance(item, dict) for item in data):
-            return [data]
+            return [cast("list[JSON]", data)]
 
         if all(isinstance(item, list) and all(isinstance(d, dict) for d in item) for item in data):
-            return data
+            return cast("list[list[JSON]]", data)
 
     raise TypeError(f"Invalid filter structure: {data!r}")
 
@@ -162,8 +162,9 @@ class FilterManager[M]:
 
     @classmethod
     def parse(cls, filter_spec: "AllowedFilters") -> tuple[Q, Q]:
-        includes = parse_filter_clause(filter_spec.get("include", []))
-        excludes = parse_filter_clause(filter_spec.get("exclude", []))
+        spec = cast("dict[str, Any]", filter_spec) if isinstance(filter_spec, dict) else {}
+        includes = parse_filter_clause(spec.get("include", []))
+        excludes = parse_filter_clause(spec.get("exclude", []))
         return includes, excludes
 
     def filter(self, *args: Any, **kwargs: Any) -> "models.QuerySet[M]":
