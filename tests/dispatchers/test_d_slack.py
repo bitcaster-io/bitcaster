@@ -9,7 +9,7 @@ from bitcaster.models import Channel
 pytestmark = [pytest.mark.dispatcher, pytest.mark.django_db]
 
 
-def test_twilio_send(mail_payload: Payload, mocked_responses: RequestsMock, twilio_sid: str) -> None:
+def test_slack_send(mail_payload: Payload, mocked_responses: RequestsMock, twilio_sid: str) -> None:
     mocked_responses.add(mocked_responses.POST, "http://test-slack.com/abdce/", json={"ok": True})
     ch = Channel(
         dispatcher=fqn(SlackDispatcher),

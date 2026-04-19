@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, cast
 
 from constance import config
 from django.db import models
-from django.utils.functional import cached_property
 
 if TYPE_CHECKING:
     from bitcaster.models import Application, Event, Group, Occurrence, Organization, User
@@ -48,10 +47,6 @@ class Bitcaster:
         from bitcaster.models import User
 
         return User.objects.get_or_create(username=self.SYSTEM_USER)[0]
-
-    @cached_property
-    def system_user_id(self) -> int:
-        return self.system_user.pk
 
     @property
     def local_organization(self) -> "Organization":
@@ -105,3 +100,5 @@ class SystemEvent(enum.Enum):
 
 
 bitcaster = Bitcaster()
+DEFAULT_OCCURRENCE_DEFAULT_RETENTION = 30
+DEFAULT_OCCURRENCE_MAX_RETENTION = 360

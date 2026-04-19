@@ -58,3 +58,22 @@ def test_ping(client: APIClient, data: "Context") -> None:
         res = client.get(url, data={})
         assert res.status_code == status.HTTP_200_OK
         assert res.json() == {"token": api_key.name}
+
+
+def test_login(client: APIClient, data: "Context") -> None:
+    """
+    Verify that LoginView returns the token name when authenticated with a valid API key.
+    """
+    api_key = data["key"]
+    url = "/api/login/"
+
+    # Unauthenticated request
+    res = client.get(url)
+    assert res.status_code == status.HTTP_401_UNAUTHORIZED
+
+    # Authenticated with valid key and proper grants
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    with key_grants(api_key, Grant.SYSTEM_PING):
+        res = client.get(url)
+        assert res.status_code == status.HTTP_200_OK
+        assert res.json() == {"token": api_key.name}

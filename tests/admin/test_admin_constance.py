@@ -1,12 +1,15 @@
 # mypy: disable-error-code="union-attr"
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
+from django.core.exceptions import ValidationError
 from django.test.client import RequestFactory
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
+from bitcaster.admin.constance import CustomConstanceForm
 from bitcaster.state import state
 
 if TYPE_CHECKING:
@@ -35,3 +38,36 @@ def test_save_constance(app: DjangoTestApp, group: "Group", email_channel: "Chan
     res = app.get(url)
     res = res.forms["changelist-form"].submit()
     assert res.status_code == 302
+
+
+@patch("constance.forms.ConstanceForm.__init__", return_value=None)
+@patch("bitcaster.forms.unfold.UnfoldForm.__init__", return_value=None)
+def test_custom_constance_form_clean_valid(mock_unfold_init, mock_constance_init):
+    form = CustomConstanceForm()
+    form.cleaned_data = {
+        "OCCURRENCE_DEFAULT_RETENTION": 30,
+        "OCCURRENCE_MAX_RETENTION": 60,
+    }
+    # Should not raise
+    form.clean()
+
+
+@patch("constance.forms.ConstanceForm.__init__", return_value=None)
+@patch("bitcaster.forms.unfold.UnfoldForm.__init__", return_value=None)
+def test_custom_constance_form_clean_invalid(mock_unfold_init, mock_constance_init):
+    form = CustomConstanceForm()
+    form.cleaned_data = {
+        "OCCURRENCE_DEFAULT_RETENTION": 100,
+        "OCCURRENCE_MAX_RETENTION": 60,
+    }
+    with pytest.raises(ValidationError, match="Default retention cannot be greater than maximum retention."):
+        form.clean()
+
+
+@patch("constance.forms.ConstanceForm.__init__", return_value=None)
+@patch("bitcaster.forms.unfold.UnfoldForm.__init__", return_value=None)
+def test_custom_constance_form_clean_defaults(mock_unfold_init, mock_constance_init):
+    form = CustomConstanceForm()
+    form.cleaned_data = {}
+    # Should use defaults from constants and not raise
+    form.clean()

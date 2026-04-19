@@ -20,7 +20,7 @@ Click on the
 
 !!! warning
 
-    Depepnding on your license you could be limited to only one Project per installation.
+    Depending on your license you could be limited to only one Project per installation.
 
 
 ![Image](_screenshots/add_prj.png)

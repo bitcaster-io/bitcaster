@@ -5,9 +5,9 @@ if TYPE_CHECKING:
 
 
 def test_factory_event(email_channel: "Channel") -> None:
-    from testutils.factories import EventFactory, MessageFactory
+    from testutils.factories import EventFactory, MessageTemplateFactory
 
-    e: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
+    e: "Event" = EventFactory(channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)])
     assert e.channels.filter(pk=email_channel.pk).exists()
     assert e.messages.filter(channel__pk=email_channel.pk).exists()
 
@@ -15,14 +15,14 @@ def test_factory_event(email_channel: "Channel") -> None:
 def test_factory_notification(email_channel: "Channel") -> None:
     from testutils.factories import (
         AssignmentFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
     )
 
     n: "Notification" = NotificationFactory(
         distribution__recipients=[AssignmentFactory(channel=email_channel) for __ in range(4)],
         event__channels=[email_channel],
-        event__messages=[MessageFactory(channel=email_channel)],
+        event__messages=[MessageTemplateFactory(channel=email_channel)],
     )
     assert n.event.channels.filter(pk=email_channel.pk).exists()
     assert n.event.messages.filter(channel__pk=email_channel.pk).exists()

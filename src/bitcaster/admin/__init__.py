@@ -2,7 +2,9 @@ from .address import AddressAdmin
 from .api_key import ApiKeyAdmin
 from .application import ApplicationAdmin
 from .assignment import AssignmentAdmin
+from .attachment import AttachmentAdmin
 from .channel import ChannelAdmin
+from .constance import CustomConstanceAdmin
 from .distribution import DistributionListAdmin
 from .event import EventAdmin
 from .group import GroupAdmin
@@ -14,6 +16,7 @@ from .notification import NotificationAdmin
 from .occurrence import OccurrenceAdmin
 from .organization import OrganizationAdmin
 from .overrides import LogEntryAdmin
+from .process_log import ProcessLogEntryAdmin
 from .project import ProjectAdmin
 from .task import TaskAdmin
 from .user import UserAdmin
@@ -25,7 +28,9 @@ __all__ = [
     "ApiKeyAdmin",
     "ApplicationAdmin",
     "AssignmentAdmin",
+    "AttachmentAdmin",
     "ChannelAdmin",
+    "CustomConstanceAdmin",
     "DistributionListAdmin",
     "EventAdmin",
     "GroupAdmin",
@@ -37,6 +42,7 @@ __all__ = [
     "NotificationAdmin",
     "OccurrenceAdmin",
     "OrganizationAdmin",
+    "ProcessLogEntryAdmin",
     "ProjectAdmin",
     "TaskAdmin",
     "UserAdmin",

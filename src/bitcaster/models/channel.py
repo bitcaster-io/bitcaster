@@ -31,7 +31,14 @@ class ChannelManager(ScopedManager["Channel"]):
 
 
 class Channel(LockMixin, BitcasterBaseModel):
-    organization = models.ForeignKey("Organization", related_name="%(class)s_set", on_delete=models.CASCADE, blank=True)
+    organization = models.ForeignKey(
+        "Organization",
+        verbose_name=_("Organization"),
+        on_delete=models.CASCADE,
+        related_name="%(class)s_set",
+        blank=True,
+        help_text=_("Chanel organization"),
+    )
     project = ChainedForeignKey(
         "Project",
         blank=True,
@@ -39,14 +46,27 @@ class Channel(LockMixin, BitcasterBaseModel):
         chained_field="organization",
         chained_model_field="organization",
         show_all=False,
+        help_text=_("project linked to this channel"),
     )
-    name = models.CharField(_("Name"), max_length=255)
-    dispatcher: "Dispatcher" = StrategyField(registry=dispatcherManager, default="test")
-    config = models.JSONField(verbose_name=_("configuration"), blank=True, default=dict)
-    protocol = models.CharField(verbose_name=_("protocol"), choices=MessageProtocol.choices, max_length=50)
-    active = models.BooleanField(verbose_name=_("active"), default=True)
+    name = models.CharField(verbose_name=_("Name"), max_length=255, help_text=_("channel name"))
+    dispatcher: "Dispatcher" = StrategyField(
+        verbose_name=_("Dispatcher"), registry=dispatcherManager, default="test", help_text=_("channel dispatcher")
+    )
+    config = models.JSONField(
+        verbose_name=_("configuration"), blank=True, default=dict, help_text=_("Channel configuration")
+    )
+    protocol = models.CharField(
+        verbose_name=_("protocol"), max_length=50, choices=MessageProtocol.choices, help_text=_("channel protocol")
+    )
+    active = models.BooleanField(verbose_name=_("active"), default=True, help_text=_("enable/disable channel"))
     parent = ChainedForeignKey(
-        "self", blank=True, null=True, chained_field="organization", chained_model_field="organization", show_all=False
+        "self",
+        blank=True,
+        null=True,
+        chained_field="organization",
+        chained_model_field="organization",
+        show_all=False,
+        help_text=_("parent channel"),
     )
     objects = ChannelManager()
 

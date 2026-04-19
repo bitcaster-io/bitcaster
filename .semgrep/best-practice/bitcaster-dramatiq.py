@@ -1,0 +1,17 @@
+import django.contrib.postgres.indexes
+import dramatiq
+from django.db import migrations
+
+from bitcaster.runner.tasks import SmartActor
+
+
+# ok: check-dramatiq-smart-actor
+@dramatiq.actor(actor_class=SmartActor)
+def sample_task():
+    pass
+
+
+# ruleid: check-dramatiq-smart-actor
+@dramatiq.actor
+def sample_task():
+    pass

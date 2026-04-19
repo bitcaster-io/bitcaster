@@ -14,8 +14,8 @@ from .org import OrganizationFactory, ProjectFactory
 
 class ChannelFactory(AutoRegisterModelFactory[Channel]):
     name = Sequence(lambda n: "Channel-%03d" % n)
-    organization = factory.SubFactory(OrganizationFactory)
     project = factory.SubFactory(ProjectFactory)
+    organization = factory.SelfAttribute("project.organization")
     dispatcher = fqn(XDispatcher)
     config = factory.LazyFunction(lambda: {"seed": uuid.uuid4().hex})
 
@@ -28,9 +28,9 @@ class ChannelFactory(AutoRegisterModelFactory[Channel]):
         if kwargs.get("project"):
             kwargs["organization"] = kwargs["project"].organization  # type: ignore[attr-defined]
         if not kwargs.get("organization"):
-            kwargs["organization"] = OrganizationFactory()
+            kwargs["organization"] = OrganizationFactory.create()
 
-        if not kwargs.get("project"):
-            kwargs["project"] = ProjectFactory(organization=kwargs["organization"])
+        if "project" not in kwargs:
+            kwargs["project"] = ProjectFactory.create(organization=kwargs["organization"])
 
         return cast("Channel", super().create(**kwargs))

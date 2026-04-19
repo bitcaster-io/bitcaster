@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
+class UserAdmin(BaseAdmin, DjangoUserAdmin[User], BitcasterModelAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
@@ -52,7 +52,7 @@ class UserAdmin(BaseAdmin, BitcasterModelAdmin, DjangoUserAdmin[User]):
         (_("Extended"), {"classes": ["tab"], "fields": ("custom_fields",)}),
     )
     filter_horizontal = ()
-    change_user_password_template = "admin/auth/user/change_password2.html"  # nosec  # noqa: S105
+    change_user_password_template = "admin/auth/user/change_password.html"  # nosec  # noqa: S105
     actions = ["toggle_superuser", "toggle_staff", "toggle_active", "enroll"]
 
     def get_readonly_fields(self, request: "HttpRequest", obj: "User|None" = None) -> list[str]:

@@ -1,0 +1,11 @@
+dispatchers:
+    - email.md
+    - gmail.md
+    - log.md
+    - mailgun.md
+    - mailjet.md
+    - sendgrid.md
+    - slack.md
+    - sys.md
+    - teams.md
+    - twilio.md

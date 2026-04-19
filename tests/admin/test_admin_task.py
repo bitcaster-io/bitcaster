@@ -12,14 +12,7 @@ if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-    from bitcaster.models import Task, User
-
-
-@pytest.fixture
-def task() -> "Task":
-    from testutils.factories import TaskFactory
-
-    return TaskFactory()
+    from bitcaster.models import User
 
 
 @pytest.fixture
@@ -34,7 +27,7 @@ def test_task_add(app: "DjangoTestApp") -> None:
     url = reverse("admin:bitcaster_task_add")
     res = app.get(url)
     frm = res.forms["task_form"]
-    frm["func"] = fqn(scan_occurrences)
+    frm["func"] = fqn(scan_occurrences.fn)
     frm["name"] = "Scan Occurrences"
     res = frm.submit()
     assert res.status_code == 302, res.showbrowser()
@@ -86,3 +79,12 @@ def test_task_change_invalid_trigger(app: "DjangoTestApp") -> None:
     assert res.status_code == 200
     assert_form_error(res, "trigger", "This field is required.")
     assert_form_error(res, "trigger", "Please select a valid trigger")
+
+
+def test_task_pause_resume(app: "DjangoTestApp", task) -> None:
+    url = reverse("admin:bitcaster_task_change", args=[task.id])
+    res = app.get(url)
+    res = res.click("Resume").follow()
+    assert res.status_code == 200
+    res = res.click("Pause").follow()
+    assert res.status_code == 200

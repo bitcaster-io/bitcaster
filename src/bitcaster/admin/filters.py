@@ -5,14 +5,12 @@ from django.contrib.admin.filters import SimpleListFilter
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
-if TYPE_CHECKING:
-    from bitcaster.models.user_message import UserMessageQuerySet
-
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin import ModelAdmin
     from django.db.models.query import QuerySet
 
     from bitcaster.models import Channel, UserMessage
+    from bitcaster.models.user_message import UserMessageQuerySet
 
 
 class ChannelTypeFilter(SimpleListFilter):
@@ -68,4 +66,60 @@ class UserMessageExpiredFilter(SimpleListFilter):
             return queryset.expired()
         if self.value() == "1":
             return queryset.active()
+        return queryset
+
+
+class UserDistributionListFilter(SimpleListFilter):
+    parameter_name = "dl"
+    title = _("Distribution List")
+    template = "adminfilters/combobox.html"
+
+    def lookups(self, request: HttpRequest, model_admin: "ModelAdmin") -> list[tuple[str, str]]:
+        from bitcaster.models import DistributionList
+
+        return list(DistributionList.objects.all().values_list("id", "name"))
+
+    def queryset(self, request: HttpRequest, queryset: "QuerySet") -> "QuerySet":
+        if self.value():
+            return queryset.filter(addresses__assignments__distributionlist__id=self.value()).distinct()
+        return queryset
+
+
+class AddressByList(SimpleListFilter):
+    parameter_name = "dl"
+    title = _("Distribution List")
+    template = "adminfilters/combobox.html"
+
+    def lookups(self, request: HttpRequest, model_admin: "ModelAdmin") -> tuple[tuple[str, str], ...]:
+        from bitcaster.models import DistributionList
+
+        return tuple(DistributionList.objects.all().values_list("id", "name"))
+
+    def queryset(self, request: HttpRequest, queryset: "QuerySet") -> "QuerySet":
+        try:
+            index = int(self.value())
+            lookup_id = self.lookups(request, None)[index][0]
+            return queryset.filter(assignments__distributionlist__id=lookup_id).distinct()
+        except (ValueError, IndexError, TypeError):
+            pass
+        return queryset
+
+
+class AddressByNotification(SimpleListFilter):
+    parameter_name = "n"
+    title = _("Notification")
+    template = "adminfilters/combobox.html"
+
+    def lookups(self, request: HttpRequest, model_admin: "ModelAdmin") -> tuple[tuple[str, str], ...]:
+        from bitcaster.models import Notification
+
+        return tuple(Notification.objects.all().values_list("id", "name"))
+
+    def queryset(self, request: HttpRequest, queryset: "QuerySet") -> "QuerySet":
+        try:
+            index = int(self.value())
+            lookup_id = self.lookups(request, None)[index][0]
+            return queryset.filter(assignments__distributionlist__notifications__id=lookup_id).distinct()
+        except (ValueError, IndexError, TypeError):
+            pass
         return queryset

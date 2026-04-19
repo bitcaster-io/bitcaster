@@ -18,16 +18,13 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def context(occurrence: "Occurrence", user: "User") -> "Context":
-    from testutils.factories import (
-        AssignmentFactory,
-        ChannelFactory,
-        NotificationFactory,
-    )
+    from testutils.factories import AssignmentFactory, ChannelFactory, MessageTemplateFactory, NotificationFactory
 
     notification: "Notification" = NotificationFactory.create(
         event__channels=[ChannelFactory()], payload_filter="foo=='bar'"
     )
     assignment: "Assignment" = AssignmentFactory.create(channel=notification.event.channels.first())
+    MessageTemplateFactory(channel=assignment.channel, event=notification.event)
     notification.distribution.recipients.add(assignment)
 
     return {"assignment": assignment, "notification": notification}
@@ -45,7 +42,9 @@ def test_model_occurrence_filter(
         "bitcaster.models.notification.Notification.notify_to_channel", mock := Mock(return_value=(None, 999))
     )
     asm = context["assignment"]
+    n = context["notification"]
     occurrence: Occurrence = context["notification"].event.trigger(context=payload)
+    msg = n.get_message(asm.channel)
     occurrence.process()
 
     assert mock.call_count == notified_count
@@ -54,11 +53,11 @@ def test_model_occurrence_filter(
     if notified_count == 1:
         assert occurrence.data == {
             "channels": [asm.channel.pk],
-            "messages": [999],
+            "messages": [msg.pk],
             "notifications": [context["notification"].pk],
             "delivered": [asm.id],
             "recipients": [
-                [asm.address.value, asm.channel.name, asm.pk, asm.channel.pk, context["notification"].pk, 999]
+                [asm.address.value, asm.channel.name, asm.pk, asm.channel.pk, context["notification"].pk, msg.pk]
             ],
             "errors": [],
         }
@@ -106,6 +105,7 @@ def test_get_context(ctx: dict[str, str], expected: dict[str, Any]) -> None:
     occurrence.context = ctx
 
     expected = expected | {
+        "occurrence": occurrence,
         "timestamp": FakeDatetime(2001, 1, 2, 1, 2, 33, tzinfo=datetime.timezone.utc),
         "event": occurrence.event,
     }

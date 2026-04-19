@@ -14,14 +14,16 @@ class BitcasterEncoder(DjangoJSONEncoder):
     def default(self, o: Any) -> Any:
         if isinstance(o, Payload):
             return o.as_dict()
-        if isinstance(o, (list | tuple)):
-            return [smart_dumps(e) for e in o]
         if isinstance(o, Model):
             return str(o)
         return super().default(o)
 
 
 def smart_dumps(obj: Any) -> Any:
+    return json.dumps(obj, cls=BitcasterEncoder)
+
+
+def safe_dumps(obj: Any) -> Any:
     return json.dumps(obj, cls=BitcasterEncoder)
 
 
@@ -45,7 +47,7 @@ def process_dict(d1: "JSON", d2: "JSON", mode: JsonUpdateMode) -> "JSON":
     raise ValueError(f"Unknown JsonUpdateMode: {mode}")
 
 
-def merge_dicts(d1: "JSON", d2: "JSON") -> "JSON":
+def merge_dicts(d1: Any, d2: Any) -> Any:
     """Deep merge.
 
     - dicts merge recursively
@@ -72,7 +74,7 @@ def override_dicts(d1: "JSON", d2: "JSON") -> "JSON":
     return d2
 
 
-def remove_dicts(d1: "JSON", d2: "JSON") -> "JSON":
+def remove_dicts(d1: Any, d2: Any) -> Any:
     """Remove keys in d1 if they appear in d2.
 
     If both values are dicts → remove recursively.

@@ -29,6 +29,7 @@ def cli(ctx: "Context", debug: bool) -> None:
 
 
 def register_commands() -> None:
+    from .importer import importer
     from .inspect import inspect
     from .queue import queue
     from .scheduler import cron
@@ -38,6 +39,7 @@ def register_commands() -> None:
     cli.add_command(inspect)
     cli.add_command(cron)
     cli.add_command(queue)
+    cli.add_command(importer, name="import")
 
 
 register_commands()

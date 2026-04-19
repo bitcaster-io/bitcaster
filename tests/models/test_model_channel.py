@@ -11,12 +11,15 @@ from bitcaster.models import Channel, Project
 def channel(request: pytest.FixtureRequest, db: "Any") -> Channel:
     from testutils.factories.channel import ChannelFactory
 
-    if hasattr(request, "param"):
-        if request.param == "organization":
-            return ChannelFactory(name="organization", project=None, organization__from_email="from@org")
-        if request.param == "project":
-            return ChannelFactory(name="project", project__from_email="from@org")
-    return ChannelFactory()
+    params = {
+        "organization__email": "from@org",
+    }
+    match getattr(request, "param", None):
+        case "organization":
+            params.update({"project": None, "name": "organization"})
+        case "project":
+            params.update({"name": "project", "project__email": "from@prj"})
+    return ChannelFactory.create(**params)
 
 
 def test_manager_get_or_create(project: "Project") -> None:
@@ -64,9 +67,13 @@ def test_clean(channel: "Channel", attr: str) -> None:
     channel.clean()
 
 
+def test_channel_can_be_locked(channel: "Channel") -> None:
+    assert channel.can_be_locked()
+
+
 @pytest.mark.parametrize("args", [{}, {"project": None}])
 def test_natural_key(args: dict[str, Any]) -> None:
     from testutils.factories import ChannelFactory
 
-    ch = ChannelFactory(name="ch1", **args)
+    ch = ChannelFactory.create(name="ch1", **args)
     assert Channel.objects.get_by_natural_key(*ch.natural_key()) == ch, ch.natural_key()

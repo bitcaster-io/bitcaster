@@ -38,6 +38,27 @@ repos:
         args:
           - --check
 
+  - repo: https://github.com/returntocorp/semgrep
+    rev: v1.157.0
+    hooks:
+      - id: semgrep
+        exclude: '(\.semgrep/|docs/)'
+        exclude_types:
+          - yaml
+        args:
+          - scan
+          - --config
+          - .semgrep/
+          # Do not try to scan '.semgrep/' directories as they contain test files
+          # thus they will trigger findings.
+          - --exclude=.semgrep/
+          - --exclude=docs/_scripts/
+          # Do not check for version updates, it slows down the execution.
+          - --disable-version-check
+          # Quiet mode in order to not pollute the pre-commit outputs.
+          # Replace --quiet with --verbose to debug issues.
+          - --quiet
+
   - repo: https://github.com/saxix/pch
     rev: '0.6'
     hooks:

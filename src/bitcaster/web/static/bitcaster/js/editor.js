@@ -11,7 +11,27 @@ function Editor() {
         self.test_url = $("meta[name='test-url']").attr("content");
         self.change_url = $("meta[name='change-url']").attr("content");
         self.iframeElement = document.getElementById("preview");
+        self.mdEditor = null;
         self.ACTIVE = null;
+
+        (function waitForAceEditor() {
+            if (typeof ace === "undefined") {
+                return setTimeout(waitForAceEditor, 50);
+            }
+
+            const aceDiv = document.querySelector(".ace_editor");
+
+            if (!aceDiv) {
+                return setTimeout(waitForAceEditor, 50);
+            }
+
+            self.mdEditor = ace.edit(aceDiv); // 🔥 istanza reale, già creata
+
+            self.mdEditor.session.on("change", function () {
+                send();
+            });
+        })();
+
         $.ajaxSetup({
             beforeSend: function (xhr, settings) {
                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -19,6 +39,7 @@ function Editor() {
                 }
             }
         });
+
 
         self.$context.on("change", function () {
             send()
@@ -73,7 +94,9 @@ function Editor() {
         var selected = self.ACTIVE.attr("id");
         var content = "";
         var context = self.$context.val();
-        if (selected === "btn_html") {
+        if (selected === "btn_md") {
+            if (self.mdEditor) content = self.mdEditor.getValue();
+        } else if (selected === "btn_html") {
             content = tinymce.activeEditor.getContent("id_html_content");
         } else if (selected === "btn_subject") {
             content = self.$subject.val()
@@ -82,13 +105,13 @@ function Editor() {
         } else {
             return
         }
-
-        django.jQuery.post(self.render_url, {
-                "content_type": $(self.ACTIVE).data("content-type"),
-                "content": content,
-                "context": context,
-                "recipient": $("#id_recipient").val(),
-            },
+        var payload = {
+            "content_type": $(self.ACTIVE).data("content-type"),
+            "content": content,
+            "context": context,
+            "recipient": $("#id_recipient").val(),
+        }
+        django.jQuery.post(self.render_url, payload,
             function (data) {
                 replaceIframeContent(data)
             }

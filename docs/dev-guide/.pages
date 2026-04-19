@@ -1,11 +1,7 @@
 nav:
   - Setup: setup.md
+  - API Implementation: api.md
   - Run Tests: tests.md
   - Filtering: filtering.md
   - Tasks: tasks.md
-#  - Quick Start: quickstart.md
-#  - Create Initial Structure: structure.md
-#  - Dispatchers: dispatchers.md
-#  - Channels: channels.md
-#  - Social Logins: sso.md
-#  - Diagrams: diagrams
+  - Dispatchers: dispatchers.md

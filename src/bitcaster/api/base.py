@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from django.db.migrations.serializer import BaseSerializer
 from rest_framework import views
 from rest_framework.authentication import (
     BaseAuthentication,
@@ -12,6 +13,7 @@ from rest_framework.views import APIView
 
 from ..exceptions import InvalidGrantError
 from .permissions import ApiApplicationPermission, ApiKeyAuthentication
+from .throttling import SlidingWindowThrottle
 
 if TYPE_CHECKING:
     from django.utils.datastructures import _ListOrTuple
@@ -21,13 +23,14 @@ if TYPE_CHECKING:
 
 
 class SecurityMixin(APIView):
-    authentication_classes: "_ListOrTuple[BaseAuthentication]" = (
+    authentication_classes: "_ListOrTuple[type[BaseAuthentication]]" = (
         ApiKeyAuthentication,
         BasicAuthentication,
         SessionAuthentication,
     )
-    permission_classes: "_ListOrTuple[BasePermission]" = (ApiApplicationPermission,)
+    permission_classes: "_ListOrTuple[type[BasePermission]]" = (ApiApplicationPermission,)
     required_grants: "_ListOrTuple[Grant]" = ()
+    throttle_classes = [SlidingWindowThrottle]
 
     @property
     def grants(self) -> "_ListOrTuple[Grant]":
@@ -38,7 +41,7 @@ class SecurityMixin(APIView):
             return Response({"detail": str(exc)}, status=403)
         return super().handle_exception(exc)
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type[BaseSerializer]:
         if hasattr(self, "action_serializers"):
             return self.action_serializers.get(self.action, self.serializer_class)
         return super().get_serializer_class()

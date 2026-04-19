@@ -1,14 +1,20 @@
 import uuid
 from typing import TYPE_CHECKING, Any, TypedDict
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 from django.core.exceptions import ObjectDoesNotExist
 from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
+from testutils.perms import configure_model
 
 from bitcaster.constants import SystemEvent, bitcaster
+from bitcaster.dispatchers import UserMessageDispatcher
+from bitcaster.models import Channel, Event, Monitor, Occurrence, UserMessage
 from bitcaster.runner.tasks import (
+    check_for_new_user_messages,
+    delete_expired_user_messages,
+    monitor_check,
     monitor_run,
     process_occurrence,
     purge_occurrences,
@@ -19,11 +25,8 @@ if TYPE_CHECKING:
     from bitcaster.models import (
         Address,
         Assignment,
-        Channel,
-        Event,
         MessageTemplate,
         Notification,
-        Occurrence,
         User,
     )
 
@@ -47,7 +50,7 @@ def setup(admin_user: "User") -> "Context":
         AssignmentFactory,
         ChannelFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
         OccurrenceFactory,
     )
@@ -56,7 +59,7 @@ def setup(admin_user: "User") -> "Context":
     v1: Assignment = AssignmentFactory.create(channel=ch, address__value="test1@example.com")
     v2: Assignment = AssignmentFactory.create(channel=ch, address__value="test2@example.com")
     no: Notification = NotificationFactory.create(event__channels=[ch], distribution__recipients=[v1, v2])
-    msg = MessageFactory.create(
+    msg = MessageTemplateFactory.create(
         channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}"
     )
 
@@ -173,13 +176,15 @@ def test_process_event_resume(setup: "Context", monkeypatch: pytest.MonkeyPatch)
     n: Notification = setup["notification"]
     v1: Assignment = setup["assignments"][0]
     v2: Assignment = setup["assignments"][1]
+    msg: MessageTemplate = setup["message"]
     occurrence = setup["occurrence"]
     # note: fake OccurrenceData. recipients does not contais a valid line
     occurrence.data = {"delivered": [v1.id], "recipients": [(v1.address.value, "test")]}
     occurrence.save()
 
     monkeypatch.setattr(
-        "bitcaster.models.notification.Notification.notify_to_channel", mocked_notify := Mock(return_value=(None, 999))
+        "bitcaster.models.notification.Notification.notify_to_channel",
+        mocked_notify := Mock(return_value=(None, msg.pk)),
     )
 
     process_occurrence(occurrence.pk)
@@ -189,10 +194,13 @@ def test_process_event_resume(setup: "Context", monkeypatch: pytest.MonkeyPatch)
     assert mocked_notify.call_count == 1
     assert occurrence.data == {
         "delivered": [v1.id, v2.id],
-        "recipients": [["test1@example.com", "test"], ["test2@example.com", v2.channel.name, v2.pk, ch.pk, n.pk, 999]],
+        "recipients": [
+            ["test1@example.com", "test"],
+            ["test2@example.com", v2.channel.name, v2.pk, ch.pk, n.pk, msg.pk],
+        ],
         "channels": [ch.pk],
         "notifications": [n.pk],
-        "messages": [999],
+        "messages": [msg.pk],
         "errors": [],
     }
 
@@ -242,6 +250,7 @@ def test_retry(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects
     v1 = setup["assignments"][0]
     ch = setup["channel"]
     n = setup["notification"]
+    m = setup["message"]
     monkeypatch.setattr(
         "bitcaster.models.notification.Notification.notify_to_channel",
         mocked_notify := Mock(side_effect=[(None, 999), Exception("This is raised after first call")]),
@@ -255,9 +264,9 @@ def test_retry(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects
     assert o.data == {
         "delivered": [v1.id],
         "channels": [ch.pk],
-        "messages": [999],
+        "messages": [m.pk],
         "notifications": [n.pk],
-        "recipients": [[v1.address.value, "test", v1.pk, ch.pk, n.pk, 999]],
+        "recipients": [[v1.address.value, "test", v1.pk, ch.pk, n.pk, m.pk]],
         "errors": [
             "Exception: This is raised after first call",
             "StopIteration: ",
@@ -348,15 +357,139 @@ def test_purge_occurrences(
     )
 
 
-def test_monitor_run(system_user: "User") -> None:
+@pytest.mark.django_db
+def test_process_occurrence_return_value():
+    from testutils.factories import OccurrenceFactory
+
+    occ = OccurrenceFactory()
+    with patch.object(Occurrence, "process", return_value=True):
+        assert process_occurrence(occ.pk, return_value=True) is True
+
+
+@pytest.mark.django_db
+def test_process_occurrence_not_found():
+    with pytest.raises(Occurrence.DoesNotExist):
+        process_occurrence(-1)
+
+
+@pytest.mark.django_db
+def test_check_for_new_user_messages(monkeypatch):
+    from testutils.factories import ChannelFactory, EventFactory, UserFactory
+
+    user = UserFactory()
+    monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
+
+    event = EventFactory()
+    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={"event": event.pk})
+
+    with patch.object(Event, "trigger") as mock_trigger:
+        with patch("bitcaster.runner.tasks.set_user_latest_notify_time") as mock_set_time:
+            check_for_new_user_messages()
+            mock_trigger.assert_called_once()
+            mock_set_time.assert_called_once_with(user.pk)
+
+
+@pytest.mark.django_db
+def test_check_for_new_user_messages_no_channel(monkeypatch):
+    from testutils.factories import UserFactory
+
+    user = UserFactory()
+    monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
+    # Ensure no UserMessageDispatcher channel exists
+    Channel.objects.filter(dispatcher=fqn(UserMessageDispatcher)).delete()
+    check_for_new_user_messages()
+
+
+@pytest.mark.django_db
+def test_check_for_new_user_messages_no_event(monkeypatch):
+    from testutils.factories import ChannelFactory, UserFactory
+
+    user = UserFactory()
+    monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
+    # Channel exists but no event in config
+    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={})
+    check_for_new_user_messages()
+
+
+@pytest.mark.django_db
+def test_check_for_new_user_messages_empty(monkeypatch):
+    monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", list)
+    check_for_new_user_messages()
+
+
+@pytest.mark.django_db
+def test_delete_expired_user_messages(system_user: "User") -> None:
+    from datetime import timedelta
+
+    from django.utils import timezone
+    from testutils.factories import ChannelFactory, UserMessageFactory
+
+    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={"message_ttl": 7})
+
+    m1 = UserMessageFactory()
+    UserMessage.objects.filter(pk=m1.pk).update(created=timezone.now() - timedelta(days=10))
+
+    m2 = UserMessageFactory()
+
+    assert UserMessage.objects.count() == 2
+    delete_expired_user_messages()
+    assert UserMessage.objects.count() == 1
+    assert UserMessage.objects.filter(pk=m2.pk).exists()
+
+
+def test_monitor_run(system_user: "User", monitor) -> None:
+    with patch("bitcaster.runner.tasks.monitor_check.send") as mock_send:
+        monitor_run()
+        assert mock_send.call_count == 1
+
+
+def test_monitor_check(system_user: "User") -> None:
     from testutils.factories.monitor import MonitorFactory
 
-    monitor = MonitorFactory()
-    assert monitor_run(monitor.pk) == "done"
-
     with pytest.raises(ObjectDoesNotExist):
-        monitor_run("-1")
+        monitor_check("-1")
 
-    monitor.active = False
-    monitor.save()
-    assert monitor_run(monitor.pk) == "inactive"
+    monitor = MonitorFactory.create()
+    assert monitor_check(monitor.pk) == "done"
+
+    with configure_model(monitor, active=False):
+        assert monitor_check(monitor.pk) == "inactive"
+
+
+@pytest.mark.django_db
+def test_monitor_check_exception():
+    from testutils.factories.monitor import MonitorFactory
+
+    monitor = MonitorFactory(active=True)
+    with patch.object(monitor.agent, "check", side_effect=Exception("Check failed")):
+        with patch.object(Monitor.objects, "get", return_value=monitor):
+            with pytest.raises(Exception, match="Check failed"):
+                monitor_check(monitor.pk)
+            monitor.refresh_from_db()
+            assert monitor.active is False
+            assert monitor.result == {"error": "Check failed"}
+
+
+@pytest.mark.django_db
+def test_purge_occurrences_exception():
+    with patch.object(Occurrence.objects, "purgeable", side_effect=Exception("Database error")):
+        result = purge_occurrences()
+        assert isinstance(result, Exception)
+        assert str(result) == "Database error"
+
+
+@pytest.mark.django_db
+def test_scan_occurrences_with_data():
+    from testutils.factories import OccurrenceFactory
+
+    occ = OccurrenceFactory(status=Occurrence.Status.NEW)
+    with patch("bitcaster.runner.tasks.process_occurrence.send") as mock_send:
+        result = scan_occurrences()
+        assert occ.pk in result
+        assert mock_send.call_count == 1
+
+
+@pytest.mark.django_db
+def test_scan_occurrences_empty():
+    Occurrence.objects.filter(status=Occurrence.Status.NEW).delete()
+    assert scan_occurrences() == []

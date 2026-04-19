@@ -20,7 +20,7 @@ from ..forms.monitor import MonitorForm
 from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from .mixins import TwoStepCreateMixin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from bitcaster.types.http import AuthHttpRequest
 
 logger = logging.getLogger(__name__)

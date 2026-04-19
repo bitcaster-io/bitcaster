@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from ..dispatchers.base import Payload
 from ..utils.filtering import FilterManager
 from .assignment import Assignment
+from .choices import FILTERING, FILTERING_DYNAMIC, FILTERING_EXTERNAL, FILTERING_NONE
 from .distribution import DistributionList
 from .mixins import BaseQuerySet, BitcasterBaseModel, BitcasterBaselManager
 from .user import User
@@ -45,10 +46,23 @@ class NotificationManager(BitcasterBaselManager.from_queryset(NotificationQueryS
 
 
 class Notification(BitcasterBaseModel):
-    name = models.CharField(verbose_name=_("name"), max_length=100)
-    event = models.ForeignKey("bitcaster.Event", on_delete=models.CASCADE, related_name="notifications")
+    name = models.CharField(verbose_name=_("name"), max_length=100, help_text=_("Notification name"))
+    description = models.TextField(
+        verbose_name=_("description"), blank=True, null=True, help_text=_("Small description of this notification")
+    )
+    event = models.ForeignKey(
+        "bitcaster.Event",
+        on_delete=models.CASCADE,
+        related_name="notifications",
+        help_text=_("Event linked to this notification"),
+    )
     distribution = models.ForeignKey(
-        DistributionList, blank=True, null=True, on_delete=models.CASCADE, related_name="notifications"
+        DistributionList,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+        blank=True,
+        null=True,
+        help_text=_("Distribution to use for this notification. Can be empty depending on the policy"),
     )
     environments = ArrayField(
         models.CharField(max_length=20, blank=True, null=True),
@@ -57,23 +71,38 @@ class Notification(BitcasterBaseModel):
         null=True,
         help_text=_("Allow notification only for these environments"),
     )
-    payload_filter = models.TextField(verbose_name=_("payload filter"), blank=True, null=True)
-    extra_context = models.JSONField(default=dict, blank=True)
-    active = models.BooleanField(verbose_name=_("active"), default=False)
-    external_filtering = models.BooleanField(
-        verbose_name=_("external filtering"),
-        default=False,
-        help_text="Allow filtering recipients based on rules passed in the api call",
+
+    policy = models.IntegerField(
+        verbose_name=_("policy"), choices=FILTERING, default=FILTERING_NONE, help_text=_("Routing policy")
     )
 
-    dynamic = models.BooleanField(
-        default=False,
-        help_text="Dynamic notification do not need DistributionList. "
-        "It filters users based on 'recipients_filter' rules",
+    extra_context = models.JSONField(
+        verbose_name=_("Extra context"),
+        blank=True,
+        default=dict,
+        help_text=_("Extra context to add to what provided by the sender"),
+    )
+    active = models.BooleanField(verbose_name=_("active"), default=False, help_text=_("If this notification is active"))
+    payload_filter = models.TextField(
+        verbose_name=_("payload filter"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "YAML configuration to filter notifications based on event data. "
+            "Use JMESPath expressions to match payload values. "
+            "Supports logical operators (AND, OR, NOT). "
+            "If the payload does not match the rules, the notification is skipped."
+        ),
     )
     recipients_filter = models.JSONField(
-        default=dict,
+        verbose_name=_("recipients filter"),
         blank=True,
+        default=dict,
+        help_text=_(
+            "JSON structure to dynamically select recipients. "
+            "Use 'include' and 'exclude' keys with Django-style lookups (e.g., {'email__endswith': '@company.com'}). "
+            "Supports nested lists for complex AND/OR logic."
+        ),
     )
 
     objects = NotificationManager()
@@ -103,24 +132,41 @@ class Notification(BitcasterBaseModel):
     def application(self) -> "Application":
         return self.event.application
 
-    def get_context(self, ctx: dict[str, str]) -> dict[str, Any]:
-        ctx = {**ctx, "notification": self.name} | self.extra_context
+    def get_context(self, ctx: dict[str, Any]) -> dict[str, Any]:
+        ctx = {**ctx, "notification": self} | self.extra_context
         if self.distribution:
             ctx.update(self.distribution.get_context())
         return ctx
 
     def get_pending_subscriptions(
-        self, delivered: list[str | int], channel: "Channel", api_filtering: Any
+        self, delivered: list[str | int], channel: "Channel", api_filtering: Any, context: dict[str, Any] | None = None
     ) -> QuerySet[Assignment]:
-        if self.dynamic and self.recipients_filter:
-            included, excluded = FilterManager.parse(self.recipients_filter)
+        from django.template import Context, Template
+
+        def render_recursive(obj: Any, ctx: Context) -> Any:
+            if isinstance(obj, dict):
+                return {k: render_recursive(v, ctx) for k, v in obj.items()}
+            if isinstance(obj, list):
+                return [render_recursive(v, ctx) for v in obj]
+            if isinstance(obj, str) and "{{" in obj:
+                return Template(obj).render(ctx)
+            return obj
+
+        if self.policy == FILTERING_DYNAMIC and self.recipients_filter:
+            rules = self.recipients_filter
+            if context:
+                rules = render_recursive(rules, Context(context))
+            included, excluded = FilterManager.parse(rules)
             users = User.objects.filter(included).exclude(excluded)
-        elif self.external_filtering and api_filtering:
-            included, excluded = FilterManager.parse(api_filtering)
+        elif self.policy == FILTERING_EXTERNAL and api_filtering:
+            rules = api_filtering
+            if context:
+                rules = render_recursive(rules, Context(context))
+            included, excluded = FilterManager.parse(rules)
             users = User.objects.filter(included).exclude(excluded)
         else:
             users = User.objects.filter(is_active=True)
-        if self.dynamic or self.external_filtering:
+        if self.policy in [FILTERING_DYNAMIC, FILTERING_EXTERNAL]:
             return self.get_dynamic_pending_subscriptions(delivered, channel, filter_users=users)
         return self.get_distributionlist_pending_subscriptions(delivered, channel, filter_users=users)
 
@@ -154,7 +200,7 @@ class Notification(BitcasterBaseModel):
         logger.debug(f"channel: {channel} , assignment: {assignment} , context: {context}")
         if message_template := self.get_message(channel):
             logger.debug(f"message: {message_template}")
-            context.update({"channel": channel, "address": addr.value})
+            context.update({"channel": channel, "address": addr.value, "assignment": assignment})
             subject, message, html_message = message_template.render(context)
             payload: Payload = Payload(
                 event=self.event,

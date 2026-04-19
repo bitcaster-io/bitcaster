@@ -7,7 +7,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from unfold.widgets import UnfoldAdminSelect2Widget
 
-from ..utils.shortcuts import render_string
+from ..models.choices import FILTERING_EXTERNAL
+from ..utils.shortcuts import render_message
 from .base import Dispatcher, DispatcherConfig, MessageProtocol, Payload
 
 if TYPE_CHECKING:
@@ -45,7 +46,7 @@ class UserMessageConfig(DispatcherConfig):
             case _:
                 raise ValidationError(_("Event must have only one Channel configured"))
 
-        if not event.notifications.filter(external_filtering=True).exists():
+        if not event.notifications.filter(policy=FILTERING_EXTERNAL).exists():
             raise ValidationError(_("At least one notification with external_filtering=True must be configured"))
         if not event.messages.exists():
             raise ValidationError(_("Event does not have any Message Template configured"))
@@ -66,7 +67,7 @@ class UserMessageDispatcher(Dispatcher):
 
         if event_pk := self.channel.config.get("event"):
             event = Event.objects.filter(pk=event_pk).first()
-            return render_string(
+            return render_message(
                 """
     <div class="grid grid-cols-2 gap-4">
     <div>Event</div><div><a href="{% url 'admin:bitcaster_event_change' event.pk %}">{{event}}</div>
@@ -81,7 +82,7 @@ class UserMessageDispatcher(Dispatcher):
             )
         return ""
 
-    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         subject: str = f"{self.channel.subject_prefix}{payload.subject or ''}"
         user: "User" = assignment.address.user
         event = payload.event if payload.event.pk else None

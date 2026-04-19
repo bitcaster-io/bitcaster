@@ -1,11 +1,14 @@
+from constance.admin import Config
 from django.contrib import admin
 
 from bitcaster import models
 
+from . import CustomConstanceAdmin
 from .address import AddressAdmin
 from .api_key import ApiKeyAdmin
 from .application import ApplicationAdmin
 from .assignment import AssignmentAdmin
+from .attachment import AttachmentAdmin
 from .channel import ChannelAdmin
 from .distribution import DistributionListAdmin
 from .event import EventAdmin
@@ -23,6 +26,7 @@ from .overrides import (
     FlagStateAdmin,
     LogEntryAdmin,
 )
+from .process_log import ProcessLogEntryAdmin
 from .project import ProjectAdmin
 from .task import TaskAdmin
 from .user import UserAdmin
@@ -35,11 +39,14 @@ admin.site.register(models.LogEntry, LogEntryAdmin)
 admin.site.unregister(FlagState)
 admin.site.register(FlagState, FlagStateAdmin)
 
+admin.site.unregister([Config])
+admin.site.register([Config], CustomConstanceAdmin)
 
 admin.site.register(models.Address, AddressAdmin)
 admin.site.register(models.ApiKey, ApiKeyAdmin)
 admin.site.register(models.Application, ApplicationAdmin)
 admin.site.register(models.Assignment, AssignmentAdmin)
+admin.site.register(models.Attachment, AttachmentAdmin)
 admin.site.register(models.Channel, ChannelAdmin)
 admin.site.register(models.DistributionList, DistributionListAdmin)
 admin.site.register(models.Event, EventAdmin)
@@ -50,6 +57,7 @@ admin.site.register(models.Member, MemberAdmin)
 admin.site.register(models.Notification, NotificationAdmin)
 admin.site.register(models.Occurrence, OccurrenceAdmin)
 admin.site.register(models.Organization, OrganizationAdmin)
+admin.site.register(models.ProcessLogEntry, ProcessLogEntryAdmin)
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.UserRole, UserRoleAdmin)

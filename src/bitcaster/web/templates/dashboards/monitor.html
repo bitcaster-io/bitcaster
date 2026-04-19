@@ -28,8 +28,8 @@
                     <div class="text-sm m-4" x-text="datetime">
                     </div>
                     {#                    <div class="">#}
-                    <span :class="alive ? 'text-green-600' : 'text-red-600'">
-                        <span :class="flash ? 'text-orange-200' : alive ? 'text-green-600' : 'text-red-600'">●</span>
+                    <span :class="alive ? 'text-green-600' : 'text-red-500'">
+                        <span class="flash" :class="flash ? 'text-orange-200' : alive ? 'text-green-600' : 'text-red-600'">●</span>
                         <span class="font-semibold" x-show="alive">Background process maanger running</span>
                         <span class="font-semibold" x-show="!alive">Background process down</span>
                     </span>

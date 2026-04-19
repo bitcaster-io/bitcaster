@@ -7,7 +7,7 @@ from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
-from bitcaster.models import Application
+from bitcaster.models import Application, LogEntry
 
 from ..auth.constants import Grant
 from ..exceptions import InactiveError, LockError
@@ -20,24 +20,25 @@ if TYPE_CHECKING:
 
     from ..models.occurrence import OccurrenceOptions
     from ..types.filtering import QuerysetFilter
-    from ..types.json import JSON
+    from ..types.json import JSONValue
 
 app_name = "api"
 
 
-class OptionSerializer(serializers.Serializer):
+class OptionSerializer(serializers.Serializer[Any]):
     limit_to = serializers.ListField(child=serializers.CharField(), required=False)
     channels = serializers.ListField(child=serializers.CharField(), required=False)
     environs = serializers.ListField(child=serializers.CharField(), required=False)
     filters = serializers.JSONField(required=False)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        unknown = set(self.parent.initial_data["options"]) - set(self.fields)
-        if unknown:
-            raise serializers.ValidationError("Unknown field(s): {}".format(", ".join(unknown)))
+        if "options" in self.parent.initial_data:
+            unknown = set(self.parent.initial_data["options"]) - set(self.fields)
+            if unknown:
+                raise serializers.ValidationError("Unknown field(s): {}".format(", ".join(unknown)))
         return attrs
 
-    def validate_filters(self, data: "dict") -> "QuerysetFilter":
+    def validate_filters(self, data: "QuerysetFilter") -> "QuerysetFilter":
         try:
             validate_schema(data)
             validate_filters(User.objects, data)
@@ -47,18 +48,24 @@ class OptionSerializer(serializers.Serializer):
             raise serializers.ValidationError({"error": e.message}) from None
 
 
-class ActionSerializer(serializers.Serializer):
-    context = serializers.DictField(required=False)
+class ActionSerializer(serializers.Serializer[dict[str, Any]]):
+    payload_context = serializers.DictField(required=False)
     options = OptionSerializer(required=False)
 
+    def to_internal_value(self, data: Any) -> dict[str, Any]:
+        if isinstance(data, dict) and "context" in data:
+            data = data.copy()
+            data["payload_context"] = data.pop("context")
+        return super().to_internal_value(data)
 
-class EventSerializer(serializers.ModelSerializer):
+
+class EventSerializer(serializers.ModelSerializer[Event]):
     class Meta:
         model = Event
         fields = "__all__"
 
 
-class EventList(SecurityMixin, ListAPIView):
+class EventList(SecurityMixin, ListAPIView[Event]):
     """List application events."""
 
     serializer_class = EventSerializer
@@ -72,7 +79,7 @@ class EventList(SecurityMixin, ListAPIView):
         )
 
 
-class EventTrigger(SecurityMixin, GenericAPIView):
+class EventTrigger(SecurityMixin, GenericAPIView[Event]):
     """Trigger application's event."""
 
     serializer_class = EventSerializer
@@ -93,10 +100,13 @@ class EventTrigger(SecurityMixin, GenericAPIView):
 
         if ser.is_valid():
             slug = self.kwargs["evt"]
+            create_occurrence = True
             try:
-                data: "JSON" = {}
+                data: dict[str, "JSONValue"] = {}
                 try:
                     evt: "Event" = self.get_queryset().get(slug=slug)
+                    if not evt.active:
+                        raise InactiveError(evt)
                 except Event.DoesNotExist:
                     grant = Grant.EVENT_AUTO_CREATE in request.auth.grants
                     if grant and (
@@ -105,20 +115,45 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                             project__organization__slug=self.kwargs["org"],
                             project__slug=self.kwargs["prj"],
                             slug=self.kwargs["app"],
-                            auto_crete_event=True,
+                            auto_create_event=True,
                         )
                         .first()
                     ):
                         slug = self.kwargs["evt"]
+                        match app.auto_create_options:
+                            case Application.AutoCreateOption.PROCESS:
+                                paused = False
+                                active = True
+                                create_occurrence = True
+                            case Application.AutoCreateOption.PAUSED:
+                                paused = True
+                                active = True
+                                create_occurrence = True
+                            case Application.AutoCreateOption.DUMMY:
+                                paused = False
+                                active = True
+                                create_occurrence = False
+                            case _:  ## Application.AutoCreateOption.INACTIVE
+                                paused = False
+                                active = False
+                                create_occurrence = False
+
                         evt = Event.objects.create(
                             application=app,
-                            active=False,
-                            paused=True,
+                            active=active,
+                            paused=paused,
                             slug=slug,
                             name=f"AUTO: {slug.title()}",
-                            description="auto created via APO invocation",
+                            description="auto created via API invocation",
+                        )
+                        LogEntry.objects.log_system_action(
+                            evt,
+                            LogEntry.ADDITION,
+                            "auto created via API invocation",
                         )
                         data["warning"] = f"New event '{evt.name}' created with id {evt.id}"
+                        data["creation_op   tions"] = str(Application.AutoCreateOption(app.auto_create_options).label)
+                        data["status"] = {"paused": evt.paused, "active": evt.active, "trigger": create_occurrence}
                     else:
                         raise
                 if evt.locked:
@@ -128,25 +163,27 @@ class EventTrigger(SecurityMixin, GenericAPIView):
                 if evt.application.project.locked:
                     raise LockError(evt.application.project)
                 self.check_object_permissions(self.request, evt)
-                opts: OccurrenceOptions = ser.validated_data.get("options", {})
+
+                opts: "OccurrenceOptions" = ser.validated_data.get("options", {})
                 if request.auth.environments:
                     if "environs" in opts:
                         opts["environs"] = list(set(opts["environs"]).intersection(request.auth.environments))
                     else:
                         opts["environs"] = request.auth.environments
-                o: "Occurrence" = evt.trigger(
-                    context=ser.validated_data.get("context", {}),
-                    options=opts,
-                    cid=correlation_id,
-                )
-                data["occurrence"] = o.pk
-                if o.event.paused or o.event.application.paused:
-                    data["paused"] = True
+                if create_occurrence:
+                    o: "Occurrence" = evt.trigger(
+                        context=ser.validated_data.get("payload_context", {}),
+                        options=opts,
+                        cid=correlation_id,
+                    )
+                    data["occurrence"] = o.pk
+                    if o.event.paused or o.event.application.paused:
+                        data["paused"] = True
                 return Response(data, status=201)
             except LockError as e:
                 return Response({"error": str(e)}, status=400)
             except InactiveError as e:
-                return Response({"warning": str(e)}, status=200)
+                return Response({"error": str(e)}, status=400)
             except Event.DoesNotExist:
                 return Response({"error": f"Event not found {self.kwargs}"}, status=404)
         else:

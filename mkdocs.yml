@@ -134,17 +134,17 @@ plugins:
 #  - mkdocstrings
   - macros
 #      module_name: source_code
-  - minify:
-      minify_html: true
-      minify_js: true
-      minify_css: true
-      htmlmin_opts:
-        remove_comments: true
-      cache_safe: true
-      js_files:
-        - _theme/js/address.js
-      css_files:
-        - _theme/css/style.css
+#  - minify:
+#      minify_html: true
+#      minify_js: true
+#      minify_css: true
+#      htmlmin_opts:
+#        remove_comments: true
+#      cache_safe: true
+#      js_files:
+#        - _theme/js/address.js
+#      css_files:
+#        - _theme/css/style.css
   - redirects:
       redirect_maps:
         'help/channel.md': 'glossary/terms/channel.md'

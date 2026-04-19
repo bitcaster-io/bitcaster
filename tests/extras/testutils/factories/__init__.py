@@ -3,6 +3,7 @@ from django.db.models import Model
 from . import base
 from .address import AddressFactory
 from .assignment import AssignmentFactory
+from .attachment import AttachmentFactory
 from .browser import BrowserFactory
 from .channel import ChannelFactory
 from .distribution import DistributionListFactory
@@ -13,11 +14,12 @@ from .key import ApiKeyFactory
 from .log import LogEntryFactory
 from .media import MediaFileFactory
 from .member import MemberFactory
-from .message import MessageFactory
+from .message import MessageTemplateFactory
 from .monitor import MonitorFactory
 from .notification import NotificationFactory
 from .occurrence import OccurrenceFactory
 from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
+from .processlog import ProcessLogEntryFactory
 from .social import SocialProviderFactory
 from .task import TaskFactory
 from .user import SuperUserFactory, UserFactory
@@ -29,6 +31,7 @@ __all__ = [
     "ApiKeyFactory",
     "ApplicationFactory",
     "AssignmentFactory",
+    "AttachmentFactory",
     "BrowserFactory",
     "BrowserFactory",
     "ChannelFactory",
@@ -40,7 +43,7 @@ __all__ = [
     "LogMessageFactory",
     "MediaFileFactory",
     "MemberFactory",
-    "MessageFactory",
+    "MessageTemplateFactory",
     "MonitorFactory",
     "NotificationFactory",
     "OccurrenceFactory",
@@ -48,6 +51,7 @@ __all__ = [
     "PermissionFactory",
     "ProjectFactory",
     "ProjectFactory",
+    "ProcessLogEntryFactory",
     "SocialProviderFactory",
     "SuperUserFactory",
     "TaskFactory",

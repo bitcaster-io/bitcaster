@@ -5,16 +5,18 @@ from unittest import mock
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
-from testutils.perms import key_grants, lock
+from testutils.perms import configure_event, configure_model, key_grants, lock
 
 from bitcaster.auth.constants import Grant
 from bitcaster.constants import SystemEvent
+from bitcaster.models import Application
+from bitcaster.models.choices import FILTERING_EXTERNAL
 from bitcaster.runner.tasks import process_occurrence
 
 if TYPE_CHECKING:
     from bitcaster.models import (
         ApiKey,
-        Application,
+        # Application,
         Assignment,
         Channel,
         Event,
@@ -30,6 +32,7 @@ if TYPE_CHECKING:
             "event": Event,
             "key": ApiKey,
             "user": User,
+            "system_user": User,
             "channel": Channel,
             "assignments": list[Assignment],
             "notification": Notification,
@@ -54,20 +57,25 @@ def data(admin_user: "User", email_channel: "Channel") -> "Context":
         ApiKeyFactory,
         AssignmentFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
     )
 
-    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
-    assignments = [AssignmentFactory(channel=email_channel) for __ in range(4)]
+    from bitcaster.constants import bitcaster
 
-    n = NotificationFactory(distribution__recipients=assignments, event=event)
+    event: "Event" = EventFactory.create(
+        channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)]
+    )
+    assignments = [AssignmentFactory.create(channel=email_channel) for __ in range(4)]
 
-    key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
+    n = NotificationFactory.create(distribution__recipients=assignments, event=event)
+
+    key = ApiKeyFactory.create(user=admin_user, grants=[], application=event.application)
     return {
         "event": event,
         "key": key,
         "user": admin_user,
+        "system_user": bitcaster.system_user,
         "channel": email_channel,
         "notification": n,
         "assignments": assignments,
@@ -86,13 +94,19 @@ def data_dynamic(admin_user: "User", email_channel: "Channel") -> "Context":
         ApiKeyFactory,
         AssignmentFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
     )
 
-    event: "Event" = EventFactory(channels=[email_channel], messages=[MessageFactory(channel=email_channel)])
+    event: "Event" = EventFactory.create(
+        channels=[email_channel], messages=[MessageTemplateFactory(channel=email_channel)]
+    )
     assignments = [AssignmentFactory(channel=email_channel) for __ in range(4)]
-    n = NotificationFactory(distribution=None, external_filtering=True, event=event)
+    n = NotificationFactory(
+        distribution=None,
+        policy=FILTERING_EXTERNAL,
+        event=event,
+    )
 
     key = ApiKeyFactory(user=admin_user, grants=[], application=event.application)
     return {
@@ -118,7 +132,47 @@ def test_trigger_invalid(client: APIClient, data: "Context") -> None:
 
     with key_grants(api_key, Grant.EVENT_TRIGGER):
         res = client.post(url, data={"context": 22}, format="json")
-        assert res.status_code == status.HTTP_400_BAD_REQUEST
+    assert res.status_code == status.HTTP_400_BAD_REQUEST, res.json()
+
+
+def test_trigger_inactive(client: APIClient, data: "Context") -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    event: Event = data["event"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    with configure_event(event, active=False):
+        with key_grants(api_key, Grant.EVENT_TRIGGER):
+            res = client.post(url, data={}, format="json")
+    assert res.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_trigger_paused(client: APIClient, data: "Context") -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    event: Event = data["event"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    with configure_event(event, paused=True):
+        with key_grants(api_key, Grant.EVENT_TRIGGER):
+            res = client.post(url, data={}, format="json")
+    assert res.status_code == status.HTTP_201_CREATED
+
+
+def test_trigger_auto_create(client: APIClient, data: "Context") -> None:
+    api_key = data["key"]
+    event: Event = data["event"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+    url = "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
+        event.application.project.organization.slug,
+        event.application.project.slug,
+        event.application.slug,
+        "new-event",
+    )
+    with configure_model(event.application, auto_create_event=True):
+        with key_grants(api_key, [Grant.EVENT_TRIGGER, Grant.EVENT_AUTO_CREATE]):
+            res = client.post(url, data={}, format="json")
+    assert res.status_code == status.HTTP_201_CREATED
 
 
 def test_trigger_405(client: APIClient, data: "Context") -> None:
@@ -173,10 +227,10 @@ def test_trigger(client: APIClient, data: "Context") -> None:
     # finally... valid token
     with key_grants(api_key, Grant.EVENT_TRIGGER):
         res = client.post(url, data={"context": event_context}, format="json")
-        assert res.status_code == status.HTTP_201_CREATED, res.json()
-        assert res.data["occurrence"]
-        o = Occurrence.objects.get(pk=res.data["occurrence"])
-        assert o.context == event_context
+    assert res.status_code == status.HTTP_201_CREATED, res.json()
+    assert res.data["occurrence"]
+    o = Occurrence.objects.get(pk=res.data["occurrence"])
+    assert o.context == event_context
 
 
 def test_cid(client: APIClient, data: "Context") -> None:
@@ -325,6 +379,16 @@ def test_trigger_limit_to_with_wrong_receiver(
 
 
 # Environment
+
+
+def test_trigger_invalid_filters(client: APIClient, data: "Context") -> None:
+    api_key = data["key"]
+    url: str = data["url"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    with key_grants(api_key, Grant.EVENT_TRIGGER):
+        res = client.post(url, data={"options": {"filters": "invalid"}}, format="json")
+        assert res.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_trigger_invalid_options(
@@ -499,3 +563,21 @@ def test_trigger_external_filtering(client: APIClient, data_dynamic: "Context") 
     assert num_sent == 4
     o.refresh_from_db()
     assert o.recipients == 4
+
+
+@pytest.mark.parametrize("opt", Application.AutoCreateOption.values, ids=Application.AutoCreateOption.names)
+def test_trigger_auto_create_options(client: APIClient, data: "Context", opt) -> None:
+    api_key = data["key"]
+    event: Event = data["event"]
+    client.credentials(HTTP_AUTHORIZATION=f"Key {api_key.key}")
+
+    url = "/api/o/{}/p/{}/a/{}/e/{}/trigger/".format(
+        event.application.project.organization.slug,
+        event.application.project.slug,
+        event.application.slug,
+        uuid.uuid4().hex,
+    )
+    with configure_model(event.application, auto_create_event=True, auto_create_options=opt):
+        with key_grants(api_key, [Grant.EVENT_TRIGGER, Grant.EVENT_AUTO_CREATE]):
+            res = client.post(url, data={}, format="json")
+    assert res.status_code in [status.HTTP_201_CREATED, status.HTTP_400_BAD_REQUEST]

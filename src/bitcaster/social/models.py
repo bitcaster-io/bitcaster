@@ -25,14 +25,21 @@ class SocialProviderManager(models.Manager["SocialProvider"]):
 
 
 class SocialProvider(models.Model):
+    label = models.CharField(verbose_name=_("label"), max_length=50, unique=True, help_text=_("Label"))
     provider = models.CharField(
+        verbose_name=_("provider"),
         max_length=30,
-        help_text=_("Social Login provider"),
         choices=Provider.choices,
         unique=True,
+        help_text=_("Social Login provider"),
     )
-    configuration = models.JSONField(default=dict, blank=True, help_text=_("Configuration as per Python Social Auth"))
-    enabled = models.BooleanField(default=True)
+    configuration = models.JSONField(
+        verbose_name=_("Configuration"),
+        blank=True,
+        default=dict,
+        help_text=_("Configuration as per Python Social Auth"),
+    )
+    enabled = models.BooleanField(verbose_name=_("Enabled"), default=True, help_text=_("Provider status"))
     objects = SocialProviderManager()
 
     class Meta:
@@ -44,7 +51,3 @@ class SocialProvider(models.Model):
     @property
     def code(self) -> str:
         return self.provider.lower().replace("_", "-")
-
-    @property
-    def label(self) -> str:
-        return Provider[self.provider.replace("-", "_")].label

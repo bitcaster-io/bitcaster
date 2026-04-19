@@ -15,16 +15,15 @@
                            data-group="{{ spec.field_path }}"
                            data-lk="{{ spec.lookup_kwarg_negated }}"
                            data-original="{{ spec.lookup_negated_val|lower }}"
-                           class="filter-jsonfield negate {{ spec.field_path }}"
+                           class="filter-jsonfield negate {{ spec.field_path }} mx-1"
                            {% if spec.lookup_negated_val == "true" %}checked="checked"{% endif %} />
                 </span>
             {% endif %}
             {% if spec.options %}
-                <select __style="height: 20px; padding: 0"
-                        name="{{ spec.lookup_kwarg_options }}"
+                <select name="{{ spec.lookup_kwarg_options }}"
                         data-lk="{{ spec.lookup_kwarg_options }}"
                         data-original="{{ spec.lookup_options_val }}"
-                        class="filter-jsonfield {{ spec.id }} mb-1">
+                        class="filter-jsonfield {{ spec.id }} mb-1 grow border rounded p-1 w-full border-base-200">
                     <option value="e" {% if spec.lookup_options_val == "e" %}selected="selected"{% endif %}>
                         <small>remove
                         missing</small>
@@ -43,15 +42,15 @@
                    data-original="{{ spec.lookup_key_val }}"
                    data-group="{{ spec.field_path }}"
                    placeholder="{{ spec.key_placeholder }}"
-                   class="filter-jsonfield {{ spec.field_path }} mb-1"
+                   class="filter-jsonfield {{ spec.field_path }} mb-1 py-2 grow border rounded p-1 w-full border-base-200 "
                    value="{{ spec.lookup_key_val }}" />
-            <span class="flex gap-1">
+            <span class="flex gap-1 grow p-1 w-full border-base-200 border rounded">
                 <input type="text"
                        name="{{ spec.lookup_kwarg_value }}"
                        data-group="{{ spec.field_path }}"
                        data-lk="{{ spec.lookup_kwarg_value }}"
                        placeholder="{{ spec.placeholder }}"
-                       class="filter-jsonfield {{ spec.field_path }}"
+                       class="filter-jsonfield {{ spec.field_path }} p-1 border-0 focus:ring-0 focus:outline-none shadow-none bg-transparent"
                        value="{{ spec.lookup_value_val }}"
                        data-original="{{ spec.lookup_value_val }}" />
                 <select name="{{ spec.lookup_kwarg_type }}" data-lk="{{ spec.lookup_kwarg_type }}" data-original="{{ spec.lookup_type_val }}">

@@ -3,24 +3,23 @@ from typing import TYPE_CHECKING
 
 from rest_framework import authentication, permissions
 from rest_framework.request import Request
+from rest_framework.views import APIView
 
 from bitcaster.auth.constants import Grant
 from bitcaster.exceptions import InvalidGrantError
 from bitcaster.models import ApiKey, User
 
-if TYPE_CHECKING:
-    from bitcaster.api.base import SecurityMixin
-    from bitcaster.types.django import AnyModel_co
-    from bitcaster.types.http import ApiRequest
-
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from django.db.models import Model
 
 
 class ApiKeyAuthentication(authentication.TokenAuthentication):
     keyword = "Key"
     model = ApiKey
 
-    def authenticate(self, request: "ApiRequest") -> "tuple[ApiKey, User] | None":
+    def authenticate(self, request: "Request") -> "tuple[ApiKey, User] | None":
         certs: "tuple[ApiKey, User] | None" = super().authenticate(request)
         if certs:
             request.user = certs[1]
@@ -28,7 +27,7 @@ class ApiKeyAuthentication(authentication.TokenAuthentication):
 
 
 class ApiBasePermission(permissions.BasePermission):
-    def _check_valid_scope(self, token: "ApiKey", view: "SecurityMixin") -> bool:
+    def _check_valid_scope(self, token: "ApiKey", view: "APIView") -> bool:
         if "org" in view.kwargs and view.kwargs["org"] != token.organization.slug:
             raise InvalidGrantError(f"Invalid organization for {token}")
         if "prj" in view.kwargs:
@@ -53,20 +52,20 @@ class ApiBasePermission(permissions.BasePermission):
 
 
 class ApiApplicationPermission(ApiBasePermission):
-    def has_permission(self, request: Request, view: "SecurityMixin") -> bool:
+    def has_permission(self, request: Request, view: APIView) -> bool:
         if getattr(request, "auth", None) is None:
             return (
                 getattr(request, "user", None) is not None
                 and request.user.is_authenticated
                 and request.user.is_superuser
             )
-        return self._check_valid_scope(request.auth, view)
+        return isinstance(request.auth, ApiKey) and self._check_valid_scope(request.auth, view)
 
-    def has_object_permission(self, request: Request, view: "SecurityMixin", obj: "AnyModel_co") -> bool:
+    def has_object_permission(self, request: Request, view: "APIView", obj: "Model") -> bool:
         if getattr(request, "auth", None) is None:
             return (
                 getattr(request, "user", None) is not None
                 and request.user.is_authenticated
                 and request.user.is_superuser
             )
-        return self._check_valid_scope(request.auth, view)
+        return isinstance(request.auth, ApiKey) and self._check_valid_scope(request.auth, view)

@@ -1,3 +1,4 @@
+import abc
 import enum
 import logging
 from typing import TYPE_CHECKING, Any, Optional, cast
@@ -9,8 +10,10 @@ from django.http import HttpResponseRedirect
 from django.utils.functional import cached_property, classproperty
 from django.utils.module_loading import import_string
 from strategy_field.registry import Registry
+from strategy_field.utils import fqn
 
 from bitcaster.constants import AddressType
+from bitcaster.exceptions import DispatcherError
 
 if TYPE_CHECKING:
     from bitcaster.models import Assignment, Channel, Event, User
@@ -23,6 +26,7 @@ class Capability(enum.StrEnum):
     HTML = "HTML"
     TEXT = "TEXT"
     SUBJECT = "SUBJECT"
+    MARKDOWN = "MARKDOWN"
 
 
 @enum.unique
@@ -33,6 +37,7 @@ class MessageProtocol(models.TextChoices):
     EMAIL = "EMAIL"
     WEBPUSH = "WEBPUSH"
     INTERNAL = "INTERNAL"
+    MARKDOWN = "MARKDOWN"
 
     def has_capability(self, capability: Capability) -> bool:
         return capability in ProtocolCapabilities[self]
@@ -44,6 +49,7 @@ ProtocolCapabilities = {
     MessageProtocol.SMS: [Capability.TEXT],
     MessageProtocol.WEBPUSH: [Capability.SUBJECT, Capability.TEXT],
     MessageProtocol.INTERNAL: [Capability.SUBJECT, Capability.HTML],
+    MessageProtocol.MARKDOWN: [Capability.SUBJECT, Capability.MARKDOWN],
 }
 
 
@@ -75,7 +81,7 @@ class Payload:
             "message": self.message or "",
             "subject": self.subject or "",
             "html_message": self.html_message or "",
-            "user": self.user.username,
+            "user": self.user.username if self.user else "",
         }
 
 
@@ -87,7 +93,7 @@ class DispatcherConfig(forms.Form):
         channel.save()
 
 
-class DispatcherMeta(type["Dispatcher"]):
+class DispatcherMeta(abc.ABCMeta):
     _all = {}
     verbose_name: str = ""
 
@@ -149,15 +155,32 @@ class Dispatcher(metaclass=DispatcherMeta):
     def name(self) -> str:
         return self.verbose_name or self.__name__.title()
 
-    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+    @abc.abstractmethod
+    def _send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
         raise NotImplementedError
+
+    def send(self, address: str, payload: Payload, assignment: "Assignment | None" = None, **kwargs: Any) -> bool:
+        try:
+            return self._send(address, payload, assignment, **kwargs)
+        except DispatcherError:
+            raise
+        except Exception as e:
+            raise DispatcherError("Error sending message") from e
 
     def subscribe(self, assignment: "Assignment", **kwargs: Any) -> HttpResponseRedirect:
         return HttpResponseRedirect(".")
 
 
 class DispatcherManager(Registry):
-    pass
+    def get_name(self, entry: type) -> str:
+        if hasattr(entry, "verbose_name"):
+            attr = entry.verbose_name
+            if not attr:
+                return fqn(entry)
+            if callable(attr):
+                return str(attr())
+            return str(attr)
+        return fqn(entry)
 
 
 dispatcherManager = DispatcherManager(Dispatcher)  # noqa N816

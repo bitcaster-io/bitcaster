@@ -2,7 +2,7 @@
 tags:
    - Agent
 ---
-# Agents
+# Agent
 
 
 Bitcaster implements the following Agents:

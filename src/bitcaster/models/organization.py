@@ -24,7 +24,9 @@ class OrganizationManager(BitcasterBaselManager["Organization"]):
 
 
 class Organization(SlugMixin, BitcasterBaseModel):
-    from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
+    from_email = models.EmailField(
+        verbose_name=_("From email"), blank=True, default="", help_text=_("default from address for emails")
+    )
     subject_prefix = models.CharField(
         verbose_name=_("Subject Prefix"),
         max_length=50,
@@ -51,7 +53,7 @@ class Organization(SlugMixin, BitcasterBaseModel):
 
         grp = group or bitcaster.get_default_group()
         enrolled = [
-            UserRole(user=u, organization=bitcaster.local_organization, group=grp)
+            UserRole(user=u, organization=self, group=grp)
             for u in queryset.exclude(username__in=[bitcaster.SYSTEM_USER])
         ]
         return UserRole.objects.bulk_create(enrolled, ignore_conflicts=True)

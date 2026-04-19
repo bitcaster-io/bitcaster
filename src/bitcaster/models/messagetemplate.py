@@ -6,7 +6,7 @@ from django.db.models import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
 from ..dispatchers.base import Capability
-from ..utils.shortcuts import render_string
+from ..utils.shortcuts import render_message
 from .channel import Channel
 from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager, Scoped3Mixin
@@ -38,7 +38,7 @@ class MessageManager(BitcasterBaselManager["MessageTemplate"]):
 class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
     application: "Application"
 
-    name = models.CharField(_("Name"), max_length=255)
+    name = models.CharField(verbose_name=_("Name"), max_length=255, help_text=_("name of this template message"))
     channel = models.ForeignKey(
         Channel,
         on_delete=models.CASCADE,
@@ -48,26 +48,28 @@ class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
+        related_name="messages",
         blank=True,
         null=True,
-        related_name="messages",
         help_text=_("Event to which this message belongs"),
     )
     notification = models.ForeignKey(
         Notification,
         on_delete=models.CASCADE,
+        related_name="messages",
         blank=True,
         null=True,
-        related_name="messages",
         help_text=_("Notification to which this message belongs"),
     )
-    subject = models.TextField(_("subject"), blank=True, null=True, help_text=_("The subject of the message"))
-    content = models.TextField(_("content"), blank=True, help_text=_("The content of the message"))
+    subject = models.TextField(
+        verbose_name=_("subject"), blank=True, null=True, help_text=_("The subject of the message")
+    )
+    content = models.TextField(verbose_name=_("content"), blank=True, help_text=_("The content of the message"))
     html_content = models.TextField(
-        _("HTML Content"), blank=True, help_text=_("The HTML formatted content of the message")
+        verbose_name=_("HTML Content"), blank=True, help_text=_("The HTML formatted content of the message")
     )
     debug = models.BooleanField(
-        _("debug allowed"), default=False, help_text=_("Allow debug information in teh message")
+        verbose_name=_("debug allowed"), default=False, help_text=_("Allow debug information in the message")
     )
     objects = MessageManager()
 
@@ -107,6 +109,9 @@ class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
     def support_text(self) -> bool:
         return self.channel.dispatcher.protocol.has_capability(Capability.TEXT)
 
+    def support_markdown(self) -> bool:
+        return self.channel.dispatcher.protocol.has_capability(Capability.MARKDOWN)
+
     def clone(self, channel: Channel) -> "MessageTemplate":
         return MessageTemplate.objects.get_or_create(
             organization=self.organization,
@@ -127,9 +132,9 @@ class MessageTemplate(Scoped3Mixin, BitcasterBaseModel):
             }
         subject = message = html_message = ""
         if self.support_subject():
-            subject = render_string(self.subject, context)
+            subject = render_message(self.subject, context)
         if self.support_text():
-            message = render_string(self.content, context)
+            message = render_message(self.content, context)
         if self.support_html():
-            html_message = render_string(self.html_content, context)
+            html_message = render_message(self.html_content, context)
         return subject, message, html_message

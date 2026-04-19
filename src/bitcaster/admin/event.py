@@ -22,7 +22,7 @@ from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from .message import MessageTemplate
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin.options import _FieldsetSpec
     from django.http import HttpResponse
     from django.utils.datastructures import _ListOrTuple

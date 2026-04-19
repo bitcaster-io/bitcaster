@@ -77,3 +77,18 @@ def test_no_cache(rf: "RequestFactory", monkeypatch: pytest.MonkeyPatch) -> None
     assert ua.browser.family == "IE Mobile"
     assert not ua.is_safari
     assert ua.is_mobile
+
+
+def test_empty_ua(rf: "RequestFactory") -> None:
+    request = rf.get("/", HTTP_USER_AGENT="")
+    ua = get_user_agent(request)
+    assert ua.browser.family == "Other"
+
+
+def test_uncached_ua(rf: "RequestFactory") -> None:
+    import uuid
+
+    unique_ua = f"UniqueUA-{uuid.uuid4()}"
+    request = rf.get("/", HTTP_USER_AGENT=unique_ua)
+    ua = get_user_agent(request)
+    assert unique_ua == ua.ua_string

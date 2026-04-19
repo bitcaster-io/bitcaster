@@ -55,12 +55,33 @@ class ApiKeyManager(ScopedManager["ApiKey"]):
 
 
 class ApiKey(Scoped3Mixin, BitcasterBaseModel):
-    name = models.CharField(verbose_name=_("Name"), max_length=255, db_collation="case_insensitive")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="keys")
-    key = models.CharField(verbose_name=_("Token"), max_length=255, unique=True, default=make_token)
-    grants = ChoiceArrayField(models.CharField(max_length=255, choices=Grant.choices), null=True, blank=True)
+    name = models.CharField(
+        verbose_name=_("Name"),
+        max_length=255,
+        db_index=True,
+        db_collation="case_insensitive",
+        help_text=_("name of his key"),
+    )
+    user = models.ForeignKey(
+        User,
+        verbose_name=_("User"),
+        on_delete=models.CASCADE,
+        related_name="keys",
+        help_text=_("user responsible of this key"),
+    )
+    key = models.CharField(
+        verbose_name=_("Token"), max_length=255, default=make_token, unique=True, help_text=_("api key")
+    )
+    grants = ChoiceArrayField(
+        models.CharField(max_length=255, choices=Grant.choices),
+        verbose_name=_("Grants"),
+        blank=True,
+        null=True,
+        help_text=_("grants for this key"),
+    )
     environments = ArrayField(
         models.CharField(max_length=20, blank=True, null=True),
+        verbose_name=_("Environments"),
         blank=True,
         null=True,
         help_text=_("Limit validity to these environments. If empty the key will be valid for any environment"),

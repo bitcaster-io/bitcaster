@@ -8,15 +8,13 @@ from bitcaster.models import MessageTemplate
 from .base import AutoRegisterModelFactory
 from .channel import ChannelFactory
 from .event import EventFactory
-from .org import ApplicationFactory, OrganizationFactory, ProjectFactory
+from .org import ApplicationFactory, OrganizationFactory
 
 
-class MessageFactory(AutoRegisterModelFactory[MessageTemplate]):
+class MessageTemplateFactory(AutoRegisterModelFactory[MessageTemplate]):
     name = Sequence(lambda n: "Message-%03d" % n)
     content = "Message for {{ event.name }} on channel {{channel.name}}"
 
-    organization = factory.SubFactory(OrganizationFactory)
-    project = factory.SubFactory(ProjectFactory)
     application = factory.SubFactory(ApplicationFactory)
     channel = factory.SubFactory(ChannelFactory)
     event = factory.SubFactory(EventFactory)
@@ -31,6 +29,6 @@ class MessageFactory(AutoRegisterModelFactory[MessageTemplate]):
             kwargs["organization"] = kwargs["event"].application.project.organization
 
         if not kwargs.get("organization"):
-            kwargs["organization"] = OrganizationFactory()
+            kwargs["organization"] = OrganizationFactory.create()
 
         return cast("MessageTemplate", super().create(**kwargs))

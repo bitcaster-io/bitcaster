@@ -18,9 +18,9 @@ def email_channel(db: Any) -> "Channel":
 
 @pytest.fixture
 def email_message(email_channel: "Channel") -> "MessageTemplate":
-    from testutils.factories import MessageFactory
+    from testutils.factories import MessageTemplateFactory
 
-    return MessageFactory(channel=email_channel)
+    return MessageTemplateFactory(channel=email_channel)
 
 
 def test_instantiate(message: "MessageTemplate", channel: "Channel") -> None:
@@ -32,9 +32,9 @@ def test_instantiate(message: "MessageTemplate", channel: "Channel") -> None:
 
 @pytest.mark.parametrize("args", [{}, {"application": None}, {"project": None, "application": None}])
 def test_natural_key(args: dict[str, Any]) -> None:
-    from testutils.factories import MessageFactory
+    from testutils.factories import MessageTemplateFactory
 
     from bitcaster.models import MessageTemplate
 
-    msg: "MessageTemplate" = MessageFactory(**args)
+    msg: "MessageTemplate" = MessageTemplateFactory.create(**args)
     assert MessageTemplate.objects.get_by_natural_key(*msg.natural_key()) == msg, msg.natural_key()

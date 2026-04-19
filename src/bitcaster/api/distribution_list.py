@@ -17,11 +17,11 @@ from bitcaster.models import Assignment, DistributionList, Project
 from bitcaster.utils.http import absolute_reverse
 
 
-class DistributionAddSerializer(serializers.Serializer):
+class DistributionAddSerializer(serializers.Serializer[DistributionList]):
     address = serializers.CharField()
 
 
-class DistributionMemberSerializer(serializers.ModelSerializer):
+class DistributionMemberSerializer(serializers.ModelSerializer[Assignment]):
     address = serializers.CharField(read_only=True, source="address.value")
     user = serializers.CharField(read_only=True, source="address.user.username")
     channel = serializers.CharField(read_only=True, source="channel.name")
@@ -31,7 +31,7 @@ class DistributionMemberSerializer(serializers.ModelSerializer):
         fields = ("id", "address", "user", "channel", "active")
 
 
-class DistributionListSerializer(serializers.ModelSerializer):
+class DistributionListSerializer(serializers.ModelSerializer[DistributionList]):
     members = serializers.SerializerMethodField()
 
     class Meta:
@@ -52,7 +52,13 @@ class DistributionListSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, RetrieveAPIView[DistributionList]):
+class DistributionView(
+    SecurityMixin,
+    ViewSet,
+    ListAPIView[DistributionList],
+    CreateAPIView[DistributionList],
+    RetrieveAPIView[DistributionList],
+):
     """List Project's DistributionList."""
 
     serializer_class = DistributionListSerializer
@@ -105,7 +111,7 @@ class DistributionView(SecurityMixin, ViewSet, ListAPIView, CreateAPIView, Retri
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView):
+class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView[Assignment]):
     """Distribution list."""
 
     serializer_class = DistributionMemberSerializer

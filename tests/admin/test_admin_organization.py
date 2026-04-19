@@ -30,12 +30,12 @@ def app(django_app_factory: "MixinWithInstanceVariables", db: Any) -> "DjangoTes
 
 @pytest.fixture
 def context() -> "Context":
-    from testutils.factories import ChannelFactory, MessageFactory, OrganizationFactory
+    from testutils.factories import ChannelFactory, MessageTemplateFactory, OrganizationFactory
 
     o = OrganizationFactory()
     ch: Channel = ChannelFactory(organization=o)
     o.channel_set.add(ch)
-    message: MessageTemplate = MessageFactory(channel=ch, organization=o, project=None, application=None)
+    message: MessageTemplate = MessageTemplateFactory(channel=ch, organization=o, project=None, application=None)
 
     return {
         "organization": o,

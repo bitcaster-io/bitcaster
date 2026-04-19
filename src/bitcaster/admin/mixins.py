@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .base import BitcasterModelAdmin, ButtonColor
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from bitcaster.types.django import AnyModel_co
 
 

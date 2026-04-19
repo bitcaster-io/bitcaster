@@ -12,6 +12,7 @@ from .user import User
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+    from django.db.models.fields.related_descriptors import RelatedManager
 
     from bitcaster.models import Channel, Event, MessageTemplate, Organization
 
@@ -27,29 +28,64 @@ class ApplicationManager(BitcasterBaselManager["Application"]):
 
 
 class Application(SlugMixin, LockMixin, BitcasterBaseModel):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="applications")
+    class AutoCreateOption(models.IntegerChoices):
+        PROCESS = 100, _("Create eevent and process")
+        INACTIVE = 10, _("Create eevent and set it not active")
+        PAUSED = 20, _("Create eevent and set it paused")
+        DUMMY = 30, _("Create event but do not trigger it")
+
+    project = models.ForeignKey(
+        Project,
+        verbose_name=_("Project"),
+        on_delete=models.CASCADE,
+        related_name="applications",
+        help_text=_("project this application belong to"),
+    )
     owner = models.ForeignKey(
-        User, verbose_name=_("Owner"), on_delete=models.PROTECT, blank=True, related_name="applications"
+        User,
+        verbose_name=_("Owner"),
+        on_delete=models.PROTECT,
+        related_name="applications",
+        blank=True,
+        help_text=_("owner of this application"),
     )
 
     active = models.BooleanField(
         verbose_name=_("active"), default=True, help_text=_("Whether the application should be active")
     )
-    auto_crete_event = models.BooleanField(
+    auto_create_event = models.BooleanField(
         verbose_name=_("auto create events"),
         default=False,
         help_text=_("If true unknown events will be automatically created"),
     )
-    from_email = models.EmailField(blank=True, default="", help_text=_("default from address for emails"))
+    auto_create_options = models.IntegerField(
+        verbose_name=_("auto create event options"),
+        choices=AutoCreateOption.choices,
+        default=AutoCreateOption.PROCESS,
+        help_text=_("If true unknown events will be automatically created"),
+    )
+    from_email = models.EmailField(
+        verbose_name=_("From email"), blank=True, default="", help_text=_("default from address for emails")
+    )
     subject_prefix = models.CharField(
         verbose_name=_("subject prefix"),
         max_length=50,
         default="[Bitcaster] ",
         help_text=_("Default prefix for messages supporting subject"),
     )
+    advanced_configuration = models.JSONField(
+        verbose_name=_("Advanced configuration"),
+        blank=True,
+        null=True,
+        default=dict,
+        help_text=_("Advanced configuration, i.e. for attachment support"),
+    )
 
     events: "QuerySet[Event]"
     objects = ApplicationManager()
+
+    if TYPE_CHECKING:
+        messagetemplate_set: RelatedManager[MessageTemplate]
 
     class Meta:
         ordering = ("name",)

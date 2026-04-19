@@ -10,6 +10,7 @@ from strategy_field.utils import fqn
 from testutils.helpers import assert_form_error
 
 from bitcaster.dispatchers import UserMessageDispatcher
+from bitcaster.models.choices import FILTERING_EXTERNAL
 
 if TYPE_CHECKING:
     from responses import RequestsMock
@@ -47,7 +48,8 @@ def data(system_channel):
     app = ApplicationFactory.create()
     # working config
     n = NotificationFactory.create(
-        event=EventFactory(channels=[system_channel], messages="abc"), external_filtering=True
+        event=EventFactory(channels=[system_channel], messages="abc"),
+        policy=FILTERING_EXTERNAL,
     )
 
     return {
@@ -57,7 +59,10 @@ def data(system_channel):
             channels=[ChannelFactory.create(project=app.project), ChannelFactory.create(project=app.project)]
         ),
         "event3": EventFactory.create(channels=[system_channel]),
-        "event4": NotificationFactory.create(event__channels=[system_channel], external_filtering=True).event,
+        "event4": NotificationFactory.create(
+            event__channels=[system_channel],
+            policy=FILTERING_EXTERNAL,
+        ).event,
         "event_ok": n.event,
     }
 

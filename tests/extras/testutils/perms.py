@@ -6,9 +6,11 @@ from unittest.mock import Mock
 
 from django.contrib.auth.models import Permission
 from faker import Faker
+from strategy_field.utils import get_attr
 
 from bitcaster.auth.constants import Grant
 from bitcaster.state import state
+from testutils.helpers import set_attr
 
 whitespace = " \t\n\r\v\f"
 lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -20,8 +22,9 @@ ascii_letters = ascii_lowercase + ascii_uppercase
 
 if TYPE_CHECKING:
     from django.contrib.auth.models import Group
+    from django.db.models import Model
 
-    from bitcaster.models import ApiKey, Application, Organization, Project, User
+    from bitcaster.models import ApiKey, Application, Event, Organization, Project, User
     from bitcaster.models.mixins import LockMixin
 
 
@@ -51,7 +54,7 @@ def get_group(
 ) -> "Group":
     from .factories.django_auth import GroupFactory
 
-    group = GroupFactory(name=(name or text(5)))
+    group = GroupFactory.create(name=(name or text(5)))
     permission_names = permissions or []
     for permission_name in permission_names:
         try:
@@ -154,6 +157,48 @@ def lock(target: "LockMixin") -> "Generator[None, None, None]":
         target.save()
 
 
+class configure_model(ContextDecorator):  # noqa
+    def __init__(self, target: "Model", **fields: Any) -> None:
+        self.target = target
+        self.fields = fields
+        self.stored = {}
+
+    def __enter__(self) -> "configure_model":
+        if self.fields:
+            for k, v in self.fields.items():
+                self.stored[k] = get_attr(self.target, k)
+                set_attr(self.target, k.replace("__", "."), v)
+            self.target.save()
+        return self
+
+    def __exit__(self, e_typ: Optional[type], e_val: Optional[Exception], trcbak: Optional[Any]) -> None:
+        if self.stored:
+            for k, v in self.stored.items():
+                set_attr(self.target, k.replace("__", "."), v)
+            self.target.save()
+
+    def start(self) -> "configure_model":
+        """Activate a patch, returning any created mock."""
+        return self.__enter__()
+
+    def stop(self) -> None:
+        """Stop an active patch."""
+        return self.__exit__(None, None, None)
+
+
+@contextlib.contextmanager
+def configure_event(target: "Event", **kwargs: Any):
+    stored = {}
+    for k, v in kwargs.items():
+        stored[k] = getattr(target, k)
+        setattr(target, k, v)
+    target.save()
+    yield
+    for k, v in stored.items():
+        setattr(target, k, v)
+    target.save()
+
+
 class key_grants(ContextDecorator):  # noqa
     caches: list[Any] = []
 
@@ -163,7 +208,7 @@ class key_grants(ContextDecorator):  # noqa
         grants: Optional[Grant | list[Grant | None] | None] = None,
         add: bool = True,
         organization: "Union[Null, None, Organization]" = keep_existing,
-        project: "Union[Null, None, Project]" = keep_existing,
+        project: "Project | Null | None" = keep_existing,
         application: "Union[Null, None, Application]" = keep_existing,
         environments: "Union[Null, Iterable[str]]" = keep_existing,
     ):

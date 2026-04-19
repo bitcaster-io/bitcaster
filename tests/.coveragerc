@@ -33,13 +33,6 @@ exclude_also =
     if TYPE_CHECKING:
     if self\.debug
     if __name__ == .__main__.:
-    except JSONDecodeError
-    except ValidationError
-    except Exception
-    raise AssertionError
-    raise NotImplementedError
-    except ImportError
-    except BaseException as e
     raise CommandError.*
     self.halt\(.*
     @abc.abstractmethod

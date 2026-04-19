@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from bitcaster.models import ApiKey
 
 
-class PingSerializer(serializers.Serializer):
+class PingSerializer(serializers.Serializer[Any]):
     token = serializers.CharField()
 
 
@@ -25,7 +25,7 @@ class PingView(BaseView):
 
     @extend_schema(request=PingSerializer, description=_("Ping system"))
     def get(self, request: Request, **kwargs: Any) -> Response:
-        key: "ApiKey" = request.auth
+        key: "ApiKey" = cast("ApiKey", request.auth)
         ser = PingSerializer({"token": key.name})
         return Response(ser.data, status=status.HTTP_200_OK)
 
@@ -37,6 +37,6 @@ class LoginView(BaseView):
 
     @extend_schema(request=PingSerializer, description=_("Ping system"))
     def get(self, request: Request, **kwargs: Any) -> Response:
-        key: "ApiKey" = request.auth
+        key: "ApiKey" = cast("ApiKey", request.auth)
         ser = PingSerializer({"token": key.name})
         return Response(ser.data, status=status.HTTP_200_OK)

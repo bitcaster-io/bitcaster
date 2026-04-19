@@ -1,0 +1,80 @@
+rules:
+  - id: bitcaster-admin-use-autocomplete-fields
+    message: >-
+      Relationship field '$FIELD' found in admin class '$ADMIN' but missing from 'autocomplete_fields'.
+      In Bitcaster, all ForeignKeys must use autocomplete fields instead of simple comboboxes
+      to ensure better performance and user experience.
+    languages:
+      - python
+    severity: WARNING
+    patterns:
+      - pattern-inside: |
+          class $ADMIN(..., $BASE, ...):
+              ...
+      - metavariable-regex:
+          metavariable: $BASE
+          regex: (BitcasterModelAdmin|BaseAdmin|UnfoldModelAdmin|ModelAdmin)
+      - pattern-either:
+          - pattern: |
+              class $ADMIN(...):
+                  ...
+                  fields = [..., "$FIELD", ...]
+                  ...
+          - pattern: |
+              class $ADMIN(...):
+                  ...
+                  fields = (..., "$FIELD", ...)
+                  ...
+          - pattern: |
+              class $ADMIN(...):
+                  ...
+                  fieldsets = (..., {"fields": [..., "$FIELD", ...]}, ...)
+                  ...
+          - pattern: |
+              class $ADMIN(...):
+                  ...
+                  fieldsets = (..., {"fields": (..., "$FIELD", ...)}, ...)
+                  ...
+          - pattern: |
+              class $ADMIN(...):
+                  ...
+                  fieldsets = [..., {"fields": [..., "$FIELD", ...]}, ...]
+                  ...
+          - pattern: |
+              class $ADMIN(...):
+                  ...
+                  fieldsets = [..., {"fields": (..., "$FIELD", ...)}, ...]
+                  ...
+      - metavariable-regex:
+          metavariable: $FIELD
+          regex: ^(project|organization|application|owner|user|channel|event|group|distribution|notification|member|address|target|handler|plugin|parent)$
+      - pattern-not:
+          pattern: |
+              class $ADMIN(...):
+                  ...
+                  autocomplete_fields = (..., "$FIELD", ...)
+                  ...
+      - pattern-not:
+          pattern: |
+              class $ADMIN(...):
+                  ...
+                  autocomplete_fields = [..., "$FIELD", ...]
+                  ...
+      - pattern-not:
+          pattern: |
+              class $ADMIN(...):
+                  ...
+                  readonly_fields = (..., "$FIELD", ...)
+                  ...
+      - pattern-not:
+          pattern: |
+              class $ADMIN(...):
+                  ...
+                  readonly_fields = [..., "$FIELD", ...]
+                  ...
+      - pattern-not:
+          pattern: |
+              class $ADMIN(...):
+                  ...
+                  radio_fields = {..., "$FIELD": ..., ...}
+                  ...

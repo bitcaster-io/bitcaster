@@ -155,6 +155,11 @@ UNFOLD = {
                         "icon": "inbox_text_person",
                         "link": reverse_lazy("admin:bitcaster_usermessage_changelist"),
                     },
+                    {
+                        "title": _("Attachments"),
+                        "icon": "attachment",
+                        "link": reverse_lazy("admin:bitcaster_attachment_changelist"),
+                    },
                 ],
             },
             {
@@ -249,6 +254,11 @@ UNFOLD = {
                         "title": _("System Log"),
                         "icon": "data_alert",
                         "link": reverse_lazy("admin:bitcaster_logentry_changelist"),
+                    },
+                    {
+                        "title": _("SSO Providers"),
+                        "icon": "captive_portal",
+                        "link": reverse_lazy("admin:social_socialprovider_changelist"),
                     },
                 ],
             },

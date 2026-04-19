@@ -60,3 +60,25 @@ def test_add(app: "DjangoTestApp", project: "Project", bitcaster: "Application")
     frm["project"].force_value(project.pk)
     res = frm.submit()
     assert res.status_code == 302
+
+
+def test_configure_form_saves_advanced_configuration(app: "DjangoTestApp", application: "Application") -> None:
+    change_url = reverse("admin:bitcaster_application_change", args=[application.pk])
+    response = app.get(change_url)
+    assert response.status_code == 200
+
+    configure_button = response.html.find("a", {"class": "extra-button", "href": lambda href: "configure" in href})
+    assert configure_button, "Configure button not found on change form"
+
+    configure_url = configure_button["href"]
+    response = app.get(configure_url)
+    assert response.status_code == 200
+
+    form = response.forms["config-form"]
+    form["support_attachments"] = True
+    response = form.submit()
+    assert response.status_code == 302
+    assert response.location == change_url
+
+    application.refresh_from_db()
+    assert application.advanced_configuration == {"support_attachments": True}

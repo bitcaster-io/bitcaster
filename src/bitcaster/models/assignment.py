@@ -24,11 +24,27 @@ class AssignmentManager(BitcasterBaselManager["Assignment"]):
 
 
 class Assignment(BitcasterBaseModel):
-    address = models.ForeignKey("bitcaster.Address", on_delete=models.CASCADE, related_name="assignments")
-    channel = models.ForeignKey("bitcaster.Channel", on_delete=models.CASCADE, related_name="assignments")
-    validated = models.BooleanField(default=False)
-    active = models.BooleanField(default=True)
-    data = models.JSONField(default=dict, blank=True, null=False)
+    address = models.ForeignKey(
+        "bitcaster.Address",
+        verbose_name=_("Address"),
+        on_delete=models.CASCADE,
+        related_name="assignments",
+        help_text=_("address to use for this assignment"),
+    )
+    channel = models.ForeignKey(
+        "bitcaster.Channel",
+        verbose_name=_("Channel"),
+        on_delete=models.CASCADE,
+        related_name="assignments",
+        help_text=_("channel to assign to the semected address"),
+    )
+    validated = models.BooleanField(
+        verbose_name=_("Validated"), default=False, help_text=_("If the assignment has been validated")
+    )
+    active = models.BooleanField(verbose_name=_("Validated"), default=True, help_text=_("If the assignment is acive"))
+    data = models.JSONField(
+        verbose_name=_("Data"), blank=True, null=False, default=dict, help_text=_("system data of this assignment")
+    )
 
     objects = AssignmentManager()
 

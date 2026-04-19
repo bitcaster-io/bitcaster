@@ -11,7 +11,7 @@ from bitcaster.admin.base import BaseAdmin, BitcasterModelAdmin, ButtonColor
 from bitcaster.forms.assignment import AssignmentForm
 from bitcaster.models import Address, Assignment
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from django.forms import ModelForm
 
     AssignmentT = TypeVar("AssignmentT", bound=Assignment)

@@ -1,0 +1,19 @@
+rules:
+  - id: django-models-require-gettext
+    languages: [python]
+    severity: WARNING
+    message: |
+      Django model fields must use gettext_lazy `_("...")` for `help_text` and `verbose_name`.
+    patterns:
+      - pattern-either:
+          - pattern: models.$FIELD(..., help_text="$STR", ...)
+          - pattern: models.$FIELD(..., verbose_name="$STR", ...)
+      - pattern-not: models.$FIELD(..., help_text=_("$STR"), ...)
+      - pattern-not: models.$FIELD(..., verbose_name=_("$STR"), ...)
+      - pattern-not-inside: |
+          class Meta:
+            ...
+    paths:
+      include:
+        - "**/models/*.py"
+        - "**/models.py"

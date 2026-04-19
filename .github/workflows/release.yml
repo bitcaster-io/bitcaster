@@ -1,7 +1,7 @@
 name: Release to PyPI
 on:
-  push:
-    tags: ["*"]
+  release:
+    types: [published]
 
 env:
   dists-artifact-name: python-package-distributions
@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
@@ -33,28 +33,16 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: release
-      url: https://pypi.org/project/${{ github.reppository }}/${{ github.ref_name }}
+      url: https://pypi.org/project/bitcaster/${{ github.ref_name }}
     permissions:
       id-token: write
     steps:
       - name: Download all the dists
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.dists-artifact-name }}
           path: dist/
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.12.4
+        uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           attestations: true
-  dockerize:
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-    steps:
-      - name: Trigger dockerize workflow
-        run: |
-          curl -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/dockerize.yml/dispatches \
-            -d "{\"ref\":\"refs/tags/${{ github.ref_name }}\", \"inputs\": {\"version\": \"${{ github.ref_name }}\"}"

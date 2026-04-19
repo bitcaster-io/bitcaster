@@ -3,25 +3,42 @@ import logging
 import os
 from _socket import gethostname
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Iterable
 
 import dramatiq
 import msgpack
 from apscheduler.schedulers.blocking import BlockingScheduler
 from django_redis import get_redis_connection
+from strategy_field.utils import fqn
 
 from bitcaster.runner.config import SCHEDULER
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from dramatiq import MessageProxy
+    from dramatiq import Actor, MessageProxy
 
 
 class BackgroundManager:
     def __init__(self) -> None:
         self.client = get_redis_connection("default")
         self.name = f"bitcaster@{gethostname()}"
+        self._actors: Iterable[Actor[Any, Any]] = []
+
+    @property
+    def actors(self) -> "Iterable[Actor[Any, Any]]":
+        if not self._actors:
+            from . import tasks  # noqa
+            from .broker import broker
+
+            self._actors = [broker.get_actor(actor_name) for actor_name in broker.get_declared_actors()]
+        return self._actors
+
+    def get_all_tasks(self) -> dict[str, str]:
+        tasks = {}
+        for actor in self.actors:
+            tasks[fqn(actor.fn)] = actor.actor_name
+        return tasks
 
     def get_executor_name(self) -> str:
         return f"{os.getpid()}"

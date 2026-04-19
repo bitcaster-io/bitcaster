@@ -46,15 +46,33 @@ def get_time_format_choices() -> list[tuple[str, str]]:
 
 
 class User(LockMixin, BitcasterBaseModel, AbstractUser):
-    timezone = TimeZoneField(default="UTC")
+    timezone = TimeZoneField(verbose_name=_("Timezone"), default="UTC", help_text=_("User time zone"))
 
     date_time_format = models.CharField(
-        max_length=50, choices=get_datetime_format_choices, default=settings.DATETIME_FORMAT
+        verbose_name=_("Date and time format"),
+        max_length=50,
+        choices=get_datetime_format_choices,
+        default=settings.DATETIME_FORMAT,
+        help_text=_("User preferred date and time format"),
     )
-    date_format = models.CharField(max_length=50, choices=get_date_format_choices, default=settings.DATE_FORMAT)
-    time_format = models.CharField(max_length=50, choices=get_time_format_choices, default=settings.TIME_FORMATS)
+    date_format = models.CharField(
+        verbose_name=_("Date format"),
+        max_length=50,
+        choices=get_date_format_choices,
+        default=settings.DATE_FORMAT,
+        help_text=_("User preferred date only format"),
+    )
+    time_format = models.CharField(
+        verbose_name=_("Time format"),
+        max_length=50,
+        choices=get_time_format_choices,
+        default=settings.TIME_FORMATS,
+        help_text=_("User time only format"),
+    )
 
-    custom_fields = models.JSONField(default=dict, blank=True)
+    custom_fields = models.JSONField(
+        verbose_name=_("Custom fields"), blank=True, default=dict, help_text=_("User custom fields")
+    )
 
     bitcaster_messages: "UserMessageManager"
 
@@ -86,8 +104,7 @@ class User(LockMixin, BitcasterBaseModel, AbstractUser):
 
         return Assignment.objects.filter(address__user=self, channel=ch).first()
 
-    @property
-    def distribution_lists(self) -> "QuerySet[DistributionList]":
+    def get_distribution_lists(self) -> "QuerySet[DistributionList]":
         """Retrieve all distribution lists this user is a recipient of via any assignment."""
         from bitcaster.models import DistributionList
 

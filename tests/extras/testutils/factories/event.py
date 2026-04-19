@@ -31,7 +31,7 @@ class EventFactory(AutoRegisterModelFactory[Event]):
 
     @factory.post_generation  # type: ignore[misc]
     def messages(self: "Event", create: bool, extracted: Any, **kwargs: Any) -> None:
-        from .message import MessageFactory
+        from .message import MessageTemplateFactory
 
         if not create:
             return
@@ -39,11 +39,11 @@ class EventFactory(AutoRegisterModelFactory[Event]):
         if extracted:
             if isinstance(extracted, int):
                 for _ in range(extracted):
-                    msg = MessageFactory()
+                    msg = MessageTemplateFactory()
                     self.messages.add(msg)
                     self.channels.add(msg.channel)
             elif isinstance(extracted, str):
-                MessageFactory(channel=self.channels.first(), event=self, content=extracted)
+                MessageTemplateFactory(channel=self.channels.first(), event=self, content=extracted)
             else:
                 for msg in extracted:
                     self.messages.add(msg)

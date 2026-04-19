@@ -22,9 +22,13 @@ class ApplicationBaseForm(forms.ModelForm["Application"]):
 class ApplicationChangeForm(ApplicationBaseForm):
     class Meta:
         model = Application
-        exclude = ()  # noqa: DJ006
+        exclude = ("advanced_configuration",)  # noqa: DJ006
 
     def get_initial_for_field(self, field: Field, field_name: str) -> Any:
         if field_name == "project":
             return Project.objects.local().first()
         return super().get_initial_for_field(field, field_name)
+
+
+class ApplicationAdvancedConfigForm(forms.Form):
+    support_attachments = forms.BooleanField(required=False)

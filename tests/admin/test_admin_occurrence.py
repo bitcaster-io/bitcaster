@@ -63,7 +63,7 @@ def _build_occurrence(status) -> "Context":
         ChannelFactory,
         DistributionListFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
         OccurrenceFactory,
     )
@@ -71,11 +71,11 @@ def _build_occurrence(status) -> "Context":
     ch = ChannelFactory.create()
     event = EventFactory.create(channels=[ch])
     asm: "Assignment" = AssignmentFactory.create(channel=ch)
-    n = NotificationFactory.create(distribution__recipients=[asm], event=event)
+    n: "Notification" = NotificationFactory.create(distribution__recipients=[asm], event=event)
     dl = DistributionListFactory.create(recipients=[asm])
-    message = MessageFactory.create(event=event, channel=ch)
+    message = MessageTemplateFactory.create(event=event, channel=ch)
     return {
-        "occurrence": OccurrenceFactory(event=n.event, status=status),
+        "occurrence": OccurrenceFactory.create(event=n.event, status=status),
         "channel": ch,
         "event": event,
         "assignment": asm,
@@ -146,20 +146,20 @@ def test_process_occurrence(
     res: "TestResponse" = app_for_admin.get(url)
 
     with mock.patch("bitcaster.models.occurrence.Occurrence.process", return_value=0):
-        res = res.click("Process")
+        res = res.click("Process", linkid="btn-process")
         res = res.forms["confirm-form"].submit().follow()
 
     assert_message(res, "Occurrence has been processed, but no recipients have been reached out", messages.WARNING)
 
     res: "TestResponse" = app_for_admin.get(url)
     with mock.patch("bitcaster.models.occurrence.Occurrence.process", return_value=1):
-        res = res.click("Process")
+        res = res.click("Process", linkid="btn-process")
         res = res.forms["confirm-form"].submit().follow()
     assert_message(res, "Occurrence has been successfully processed", messages.SUCCESS)
 
     res: "TestResponse" = app_for_admin.get(url)
     with mock.patch("bitcaster.models.occurrence.Occurrence.process", side_effect=Exception):
-        res = res.click("Process")
+        res = res.click("Process", linkid="btn-process")
         res = res.forms["confirm-form"].submit().follow()
     assert_message(res, "Error processing occurrence", messages.ERROR)
 

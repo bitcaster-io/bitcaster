@@ -16,9 +16,12 @@ if TYPE_CHECKING:
         Application,
         Event,
         Group,
+        MessageTemplate,
         Monitor,
         Occurrence,
+        ProcessLogEntry,
         Project,
+        Task,
         User,
     )
 
@@ -67,8 +70,6 @@ def pytest_configure(config):
 
     os.environ["MAILGUN_API_KEY"] = "11"
     os.environ["MAILGUN_SENDER_DOMAIN"] = "mailgun.domain"
-    os.environ["MAILJET_API_KEY"] = "11"
-    os.environ["MAILJET_SECRET_KEY"] = "11"
 
     os.environ["SECRET_KEY"] = "super-secret-key-just-for-testing"
     os.environ["SECURE_HSTS_PRELOAD"] = "0"
@@ -248,9 +249,9 @@ def address(db):
 
 @pytest.fixture
 def message(db):
-    from testutils.factories.message import MessageFactory
+    from testutils.factories.message import MessageTemplateFactory
 
-    return MessageFactory()
+    return MessageTemplateFactory()
 
 
 @pytest.fixture
@@ -351,11 +352,37 @@ def assignment(db):
 def monitor() -> "Monitor":
     from testutils.factories import MonitorFactory
 
-    return MonitorFactory()
+    return MonitorFactory.create()
+
+
+@pytest.fixture
+def message_template() -> "MessageTemplate":
+    from strategy_field.utils import fqn
+    from testutils.factories import ChannelFactory, EventFactory, MessageTemplateFactory
+
+    from bitcaster.dispatchers import GMailDispatcher
+
+    ch = ChannelFactory.create(dispatcher=fqn(GMailDispatcher))
+    event = EventFactory.create(channels=[ch])
+    return MessageTemplateFactory.create(event=event, channel=ch)
 
 
 @pytest.fixture
 def group() -> "Group":
     from testutils.factories import GroupFactory
 
-    return GroupFactory()
+    return GroupFactory.create()
+
+
+@pytest.fixture
+def processlogentry(db) -> "ProcessLogEntry":
+    from testutils.factories import ProcessLogEntryFactory
+
+    return ProcessLogEntryFactory.create()
+
+
+@pytest.fixture
+def task() -> "Task":
+    from testutils.factories import TaskFactory
+
+    return TaskFactory.create()

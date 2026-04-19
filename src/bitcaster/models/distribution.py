@@ -23,9 +23,21 @@ class DistributionListManager(BitcasterBaselManager["DistributionList"]):
 
 class DistributionList(BitcasterBaseModel):
     ADMINS = "Bitcaster Admins"
-    name = models.CharField(max_length=255, db_collation="case_insensitive")
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    recipients = models.ManyToManyField(Assignment, blank=True)
+    name = models.CharField(
+        verbose_name=_("Name"),
+        max_length=255,
+        db_collation="case_insensitive",
+        help_text=_("name of this distribuition list"),
+    )
+    project = models.ForeignKey(
+        Project,
+        verbose_name=_("Project"),
+        on_delete=models.CASCADE,
+        help_text=_("project linked to this distribution list"),
+    )
+    recipients = models.ManyToManyField(
+        Assignment, verbose_name=_("Recipients"), blank=True, help_text=_("members of the list")
+    )
 
     objects = DistributionListManager()
     notifications: "QuerySet[Notification]"
@@ -42,4 +54,4 @@ class DistributionList(BitcasterBaseModel):
         unique_together = (("name", "project"),)
 
     def get_context(self) -> dict[str, Any]:
-        return {"distribution": self.name}
+        return {"distribution": self}

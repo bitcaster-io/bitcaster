@@ -48,7 +48,7 @@ def context() -> "Context":
         ChannelFactory,
         DistributionListFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
     )
 
@@ -65,7 +65,7 @@ def context() -> "Context":
     v2: Assignment = AssignmentFactory.create(address__value="addr2@example.com", channel=ch)
 
     n = NotificationFactory.create(event=evt, distribution=dis)
-    msg = MessageFactory.create(
+    msg = MessageTemplateFactory.create(
         channel=ch, event=evt, content="Message for {{ event.name }} on channel {{channel.name}}"
     )
 

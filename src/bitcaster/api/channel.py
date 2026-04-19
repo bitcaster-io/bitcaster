@@ -16,7 +16,7 @@ from .serializers import ChannelSerializer
 app_name = "api"
 
 
-class ChannelView(SecurityMixin, ViewSet, ListAPIView, RetrieveAPIView):
+class ChannelView(SecurityMixin, ViewSet, ListAPIView[Channel], RetrieveAPIView[Channel]):
     """List channels."""
 
     serializer_class = ChannelSerializer
@@ -32,7 +32,7 @@ class ChannelView(SecurityMixin, ViewSet, ListAPIView, RetrieveAPIView):
             return Channel.objects.filter(
                 organization__slug=self.kwargs["org"],
             )
-        return None
+        return Channel.objects.none()
 
     @extend_schema(description=_("List organization channels"))
     def list_for_org(self, request: Request, *args: Any, **kwargs: Any) -> Response:

@@ -8,10 +8,13 @@ from strategy_field.utils import fqn
 
 from bitcaster.console.utils import get_user_latest_notify_time
 from bitcaster.dispatchers import UserMessageDispatcher
+from bitcaster.models.choices import FILTERING_EXTERNAL
 from bitcaster.runner.tasks import check_for_new_user_messages, scan_occurrences
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from bitcaster.models import Channel, Event, User, UserMessage
+
+pytestmark = [pytest.mark.xdist_group(name="console_tasks")]
 
 
 @contextlib.contextmanager
@@ -30,7 +33,7 @@ def data(db) -> "tuple[Channel, Event, UserMessage]":
         AssignmentFactory,
         ChannelFactory,
         EventFactory,
-        MessageFactory,
+        MessageTemplateFactory,
         NotificationFactory,
         UserMessageFactory,
     )
@@ -38,8 +41,12 @@ def data(db) -> "tuple[Channel, Event, UserMessage]":
     ch1 = ChannelFactory.create(name="XDispatcher")
 
     event: "Event" = EventFactory.create(channels=[ch1])
-    MessageFactory(channel=ch1, event=event)
-    NotificationFactory.create(event=event, external_filtering=True, dynamic=False, distribution=None)
+    MessageTemplateFactory(channel=ch1, event=event)
+    NotificationFactory.create(
+        event=event,
+        policy=FILTERING_EXTERNAL,
+        distribution=None,
+    )
     ch2 = ChannelFactory.create(
         name="UserMessageDispatcher", dispatcher=fqn(UserMessageDispatcher), config={"event": event.pk, "active": True}
     )
