@@ -24,6 +24,5 @@ urlpatterns = [
     path("tinymce/", include("tinymce.urls")),
     path("social/", include("social_django.urls", namespace="social")),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
-
     path(r"__debug__/", include(debug_toolbar.urls)),
 ]

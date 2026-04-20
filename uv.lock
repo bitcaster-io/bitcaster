@@ -234,6 +234,7 @@ dependencies = [
     { name = "django-migration-linter" },
     { name = "django-online-issues", extra = ["github"] },
     { name = "django-push-notifications" },
+    { name = "django-pwa" },
     { name = "django-redis" },
     { name = "django-regex" },
     { name = "django-reversion" },
@@ -385,6 +386,7 @@ requires-dist = [
     { name = "django-migration-linter", specifier = ">=5.2" },
     { name = "django-online-issues", extras = ["github"], specifier = ">=0.6" },
     { name = "django-push-notifications", specifier = ">=3.1" },
+    { name = "django-pwa", specifier = ">=1.0.12" },
     { name = "django-redis", specifier = ">=5.4" },
     { name = "django-regex", specifier = ">=0.5" },
     { name = "django-reversion", specifier = ">=5.0.12" },
@@ -1211,6 +1213,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/89/85/7fb804fcab89f0b00d816d2359516f444fbb9117dadb7b7d242d205aede4/django_push_notifications-3.3.0.tar.gz", hash = "sha256:fed8b48be2f956c72567e8713a1865b4a1b1d56d22193328b1f04fbcf169b9f5", size = 64488, upload-time = "2025-11-16T06:45:51.92Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/53/44/ff628b53a2a024b2b7488472932eaf9c68414c19ede4223729ed2365e813/django_push_notifications-3.3.0-py3-none-any.whl", hash = "sha256:b930051a923ee26ef24c7a5fee87a8a38c5997d73485034ce8393456f51b9c22", size = 47926, upload-time = "2025-11-16T06:45:50.495Z" },
+]
+
+[[package]]
+name = "django-pwa"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/39/5f/4a77504bb5edd693711ec2a396d47836f0a0b4d3f2fb9dc773f8b450c067/django_pwa-2.0.1.tar.gz", hash = "sha256:5539fabb41fe189cc2a82cb1f0f889b45671a8144d7b5bb5206a9ddd0fddb3c2", size = 448237, upload-time = "2024-09-27T13:15:52.481Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c3/64/5ffd65b8e8e9d5563e863d868c259f69a1af79c878f6be469540c573347c/django_pwa-2.0.1-py3-none-any.whl", hash = "sha256:41dc931c645c6125c556bd753205ca051aa48e5d46edbf281003594f3d76d4a3", size = 453981, upload-time = "2024-09-27T13:15:50.858Z" },
 ]
 
 [[package]]

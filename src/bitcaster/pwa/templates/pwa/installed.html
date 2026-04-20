@@ -1,0 +1,42 @@
+{% extends "pwa/base.html" %}
+{% load i18n static %}
+{% block pwa_title %}
+    {% trans "Bitcaster Installed!" %}
+{% endblock %}
+{% block pwa_content %}
+    <div class="pwa-status-container">
+        <div class="status-icon-wrapper">
+            <div class="pulse-bg">
+            </div>
+            <img class="main-icon" src="{% static "bitcaster/images/logos/logo128.png" %}" alt="Bitcaster logo" />
+            <div class="check-badge">
+                <span class="material-symbols-outlined text-lg font-bold">check</span>
+            </div>
+        </div>
+        <div class="space-y-4">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                {% trans "App Installed!" %}
+            </h2>
+            <p class="text-gray-600 dark:text-gray-400 max-w-xs mx-auto">
+                {% trans "Bitcaster is now on your home screen. You can close this tab and open the app for a full experience." %}
+            </p>
+        </div>
+        <div class="w-full max-w-xs space-y-4 pt-4">
+            <button onclick="openInApp()" class="pwa-btn pwa-btn-primary pwa-btn-xl w-full flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">launch</span>
+                {% trans "Open Bitcaster" %}
+            </button>
+            <a href="{% url 'pwa:index' %}" class="pwa-btn pwa-btn-secondary block text-sm">
+                {% trans "Stay in browser" %}
+            </a>
+        </div>
+    </div>
+{% endblock %}
+{% block header %}
+    <!-- Custom minimalist header for the success page -->
+    <div class="pwa-header justify-center bg-red-600 text-white p-4">
+        <img src="{% static "bitcaster/images/logos/logo48.png" %}" class="h-8 w-8" />
+    </div>
+{% endblock %}
+{% block bottom_nav %}
+{% endblock %}

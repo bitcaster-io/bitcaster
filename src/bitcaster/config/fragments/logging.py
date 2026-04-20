@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 from .. import env
 
@@ -69,3 +70,21 @@ LOGGING = {
         },
     },
 }
+
+
+def _apply_dynamic_logging_levels(logging_dict: dict[str, Any]) -> None:
+    for k, v in os.environ.items():
+        if k.startswith("LOGGING_LEVEL_") and v:
+            # Es. map "LOGGING_LEVEL_DJANGO__SERVER" -> "django.server"
+            entry: str = k.replace("LOGGING_LEVEL_", "").lower().replace("__", ".")
+            if entry in logging_dict["loggers"]:
+                logging_dict["loggers"][entry]["level"] = v
+            else:
+                logging_dict["loggers"][entry] = {
+                    "handlers": ["console"],
+                    "level": v,
+                    "propagate": False,
+                }
+
+
+_apply_dynamic_logging_levels(LOGGING)

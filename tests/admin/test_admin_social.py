@@ -5,6 +5,8 @@ from django.test import override_settings
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 
+from bitcaster.social.models import Provider
+
 if TYPE_CHECKING:
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
     from pytest_django.fixtures import SettingsWrapper
@@ -42,3 +44,23 @@ def test_get_readonly_if_root(app: DjangoTestApp, context: "Context", settings: 
         res = app.get(url)
         frm = res.forms["socialprovider_form"]
         assert "configuration" not in frm.fields
+
+
+def test_add(app: DjangoTestApp, context: "Context", settings: "SettingsWrapper") -> None:
+    url = reverse("admin:social_socialprovider_add")
+    res: "TestResponse" = app.get(url)
+    frm = res.forms["socialprovider_form"]
+
+    frm["label"] = "Google"
+    frm["provider"] = Provider.GOOGLE_OAUTH2
+    res = frm.submit()
+    assert res.status_code == 302
+
+
+def test_change(app: DjangoTestApp, context: "Context", settings: "SettingsWrapper") -> None:
+    url = reverse("admin:social_socialprovider_change", args=[context["provider"].pk])
+    res: "TestResponse" = app.get(url)
+    frm = res.forms["socialprovider_form"]
+    frm["label"] = "Google"
+    res = frm.submit()
+    assert res.status_code == 302

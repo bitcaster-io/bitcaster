@@ -1,137 +1,14 @@
 {
-  "id": "{{suffix}}.bitcas.com",
-  "name": "Bitcaster{{suffix}}{% load static %}",
-  "short_name": "Bitcaster-{{suffix}}",
-  "description": "Bitcaster mobile app",
-  "start_url": "{{start_url}}",
-  "display": "standalone",
-  "scope": "/pwa/",
-  "orientation": "portrait-primary",
-  "background_color": "#00a8b5",
-  "theme_color": "#00a8b5",
-  "status_bar": "default",
-  "permissions": {
-    "notification": {
-      "description": "Needed for creating system notifications."
-    },
-    "geolocation": {
-      "description": "Needed provide user position"
-    }
-  },
-  "host_permissions": [
-    "{{host}}",
-    "*://*.sosbob.com/*"
-  ],
-  "categories": [
-    "family",
-    "aid",
-    "healthcare"
-  ],
-  "screenshots": [
-    {
-      "src": "{% static 'pwa/screenshots/install.png' %}",
-      "type": "image/png",
-      "sizes": "300x667",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "{% static 'pwa/screenshots/app.png' %}",
-      "type": "image/png",
-      "sizes": "300x667",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "{% static 'pwa/screenshots/alarmed.png' %}",
-      "type": "image/png",
-      "sizes": "300x667",
-      "form_factor": "narrow"
-    }
-  ],
-  "icons": [
-    {
-      "src": "{% static 'pwa/icons/icon-48x48.png' %}",
-      "sizes": "48x48",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "{% static 'pwa/icons/icon-72x72.png' %}",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "{% static 'pwa/icons/icon-96x96.png' %}",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "{% static 'pwa/icons/icon-128x128.png' %}",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "{% static 'pwa/icons/icon-144x144.png' %}",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "{% static 'pwa/icons/icon-152x152.png' %}",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "{% static 'pwa/icons/icon-192x192.png' %}",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "{% static 'pwa/icons/icon-284x284.png' %}",
-      "sizes": "284x284",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "{% static 'pwa/icons/icon-512x512.png' %}",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "{% static 'pwa/icons/maskable_icon_x128.png' %}",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "{% static 'pwa/icons/maskable_icon_x192.png' %}",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "{% static 'pwa/icons/maskable_icon_x512.png' %}",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "dir": "ltr",
-  "display_override": [
-    "window-controls-overlay"
-  ],
-  "lang": "en-US",
-  "prefer_related_applications": true,
-  "related_applications": [
-    {
-      "platform": "webapp",
-      "id": "{{suffix}}.sosbob.com",
-      "url": "{{manifest}}"
-    }
-  ]
+  "id": "/pwa/",
+  "name": "{{ PWA_APP_NAME }}",
+  "short_name": "{{ PWA_APP_NAME }}",
+  "description": "{{ PWA_APP_DESCRIPTION }}",
+  "start_url": "{{ PWA_APP_START_URL }}",
+  "display": "{{ PWA_APP_DISPLAY }}",
+  "background_color": "{{ PWA_APP_BACKGROUND_COLOR }}",
+  "theme_color": "{{ PWA_APP_THEME_COLOR }}",
+  "orientation": "{{ PWA_APP_ORIENTATION }}",
+  "scope": "{{ PWA_APP_SCOPE }}",
+  "prefer_related_applications": false,
+  "icons": {{ PWA_APP_ICONS|safe }}
 }

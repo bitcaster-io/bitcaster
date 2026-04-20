@@ -36,7 +36,7 @@
   @apply bg-green-300 border-transparent;
 }
 
-.text-green-600 {
+.text-green-600{
   color: #15c11c;
 }
 
@@ -116,9 +116,7 @@ body.pwa {
 
     &.pwa-open-app {
       @apply bg-red-50 border-red-200;
-      &:where(.dark, .dark *) {
-        @apply bg-red-900/20 border-red-900/40;
-      }
+      &:where(.dark, .dark *) { @apply bg-red-900/20 border-red-900/40; }
     }
 
     .pwa-banner-inner {
@@ -131,13 +129,8 @@ body.pwa {
 
     .pwa-banner-text {
       @apply flex-1;
-      h4 {
-        @apply text-sm font-bold text-gray-900 dark:text-white;
-      }
-
-      p {
-        @apply text-xs text-gray-500 dark:text-gray-400;
-      }
+      h4 { @apply text-sm font-bold text-gray-900 dark:text-white; }
+      p { @apply text-xs text-gray-500 dark:text-gray-400; }
     }
 
     .pwa-banner-actions {
@@ -149,22 +142,20 @@ body.pwa {
   .pwa-btn {
     @apply px-4 py-2 text-xs font-bold rounded-lg shadow-md transition-all;
 
-    &.primary {
+    &-primary {
       @apply bg-red-600 text-white hover:bg-red-700;
     }
 
-    &.secondary {
+    &-secondary {
       @apply text-gray-500 hover:text-gray-700 dark:hover:text-gray-300;
     }
 
-    &.outline {
+    &-outline {
       @apply border-2 border-red-600 text-red-600 hover:bg-red-50;
-      &:where(.dark, .dark *) {
-        @apply hover:bg-red-900/20;
-      }
+      &:where(.dark, .dark *) { @apply hover:bg-red-900/20; }
     }
 
-    &.large {
+    &-large {
       @apply py-3 text-sm;
     }
 
@@ -175,31 +166,31 @@ body.pwa {
 
   /* Filter Selector */
   .pwa-filter-container {
-    @apply flex p-1 mb-6 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-zinc-900 rounded-xl;
+    @apply flex p-1 mb-6 bg-gray-100 border border-gray-200 rounded-xl;
 
     &:where(.dark, .dark *) {
-      @apply bg-gray-800 border-zinc-900;
+      @apply bg-black border-zinc-900;
+    }
+  }
+
+  .pwa-filter-item {
+    @apply flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all text-gray-500;
+
+    &:where(.dark, .dark *) {
+      @apply text-gray-500;
     }
 
-    .pwa-filter-item {
-      @apply flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all;
+    &.active {
+      @apply bg-white text-red-600 shadow-sm;
 
       &:where(.dark, .dark *) {
-        @apply text-gray-500;
-      }
-
-      &.active {
-        @apply bg-white text-red-600 shadow-sm  bg-white dark:bg-zinc-700 text-red-600 shadow-sm;
-
-        &:where(.dark, .dark *) {
-          @apply bg-zinc-700 text-red-600;
-        }
+        @apply bg-zinc-950 text-red-600;
       }
     }
   }
 
   /* Cards */
-  .form-preferences {
+  .pwa-card {
     @apply p-6 border border-gray-200 rounded-xl shadow-md bg-white transition-all;
 
     &:where(.dark, .dark *) {
@@ -208,26 +199,10 @@ body.pwa {
 
     &.interactive {
       @apply cursor-pointer active:bg-gray-50;
-      &:where(.dark, .dark *) {
-        @apply active:bg-gray-700;
-      }
+      &:where(.dark, .dark *) { @apply active:bg-gray-700; }
     }
-
   }
-  #pwa-install-section{
-    @apply p-6 border border-gray-200 rounded-xl shadow-md bg-white transition-all;
-    &:where(.dark, .dark *) {
-      @apply border-gray-700 bg-gray-800 text-gray-100;
-    }
 
-    h3{
-      @apply font-bold text-gray-800 dark:text-gray-200 text-sm mb-2;
-    }
-    p{
-      @apply text-xs text-gray-500 dark:text-gray-400 mb-4;
-    }
-
-  }
   /* Message List */
   .pwa-message-card {
     @apply p-4 mb-4 border border-gray-200 rounded-lg shadow-sm bg-white transition-all cursor-pointer active:bg-gray-50;
@@ -238,26 +213,17 @@ body.pwa {
 
     .header {
       @apply flex justify-between items-start mb-2 bg-transparent p-0 shadow-none border-none text-gray-500;
-      &:where(.dark, .dark *) {
-        @apply text-gray-400;
-      }
-      .message-date{
-        @apply text-xs text-gray-500 dark:text-gray-400;
-      }
+      &:where(.dark, .dark *) { @apply text-gray-400; }
     }
 
     h3 {
       @apply font-bold text-gray-800 mb-1;
-      &:where(.dark, .dark *) {
-        @apply text-gray-100;
-      }
+      &:where(.dark, .dark *) { @apply text-gray-100; }
     }
 
     p {
       @apply text-sm text-gray-600 truncate;
-      &:where(.dark, .dark *) {
-        @apply text-gray-400;
-      }
+      &:where(.dark, .dark *) { @apply text-gray-400; }
     }
   }
 
@@ -274,19 +240,8 @@ body.pwa {
     }
 
     .info {
-      h2 {
-        @apply text-lg font-bold text-gray-900 leading-tight;
-        &:where(.dark, .dark *) {
-          @apply text-white;
-        }
-      }
-
-      p {
-        @apply text-sm text-gray-500;
-        &:where(.dark, .dark *) {
-          @apply text-gray-400;
-        }
-      }
+      h2 { @apply text-lg font-bold text-gray-900 leading-tight; &:where(.dark, .dark *) { @apply text-white; } }
+      p { @apply text-sm text-gray-500; &:where(.dark, .dark *) { @apply text-gray-400; } }
     }
   }
 
@@ -294,18 +249,14 @@ body.pwa {
   .badge {
     @apply inline-block px-2 py-1 text-[10px] font-bold rounded-full uppercase;
 
-    .badge-unread, .badge-new {
-      @apply text-red-800;
-      &:where(.dark, .dark *) {
-        @apply text-red-400;
-      }
+    &-unread, &-new {
+      @apply bg-red-100 text-red-800;
+      &:where(.dark, .dark *) { @apply bg-red-900/30 text-red-400; }
     }
 
-    .badge-read {
-      @apply text-green-800;
-      &:where(.dark, .dark *) {
-        @apply text-green-400;
-      }
+    &-read {
+      @apply bg-green-100 text-green-800;
+      &:where(.dark, .dark *) { @apply bg-green-900/30 text-green-400; }
     }
   }
 
@@ -313,12 +264,7 @@ body.pwa {
   .pwa-form-group {
     @apply flex flex-col space-y-2 mb-6;
 
-    label {
-      @apply font-bold text-gray-800 text-sm;
-      &:where(.dark, .dark *) {
-        @apply text-gray-200;
-      }
-    }
+    label { @apply font-bold text-gray-800 text-sm; &:where(.dark, .dark *) { @apply text-gray-200; } }
 
     input, select, textarea {
       @apply w-full p-3 border rounded-lg bg-white border-gray-300 text-gray-900;
@@ -329,16 +275,8 @@ body.pwa {
       }
     }
 
-    .help-text {
-      @apply text-xs text-gray-500 italic;
-      &:where(.dark, .dark *) {
-        @apply text-gray-400;
-      }
-    }
-
-    .error {
-      @apply text-xs text-red-500 font-medium;
-    }
+    .help-text { @apply text-xs text-gray-500 italic; &:where(.dark, .dark *) { @apply text-gray-400; } }
+    .error { @apply text-xs text-red-500 font-medium; }
   }
 
   /* Pagination */
@@ -347,23 +285,17 @@ body.pwa {
 
     .btn {
       @apply px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm font-medium transition-all;
-      &:where(.dark, .dark *) {
-        @apply bg-gray-700 text-gray-200;
-      }
+      &:where(.dark, .dark *) { @apply bg-gray-700 text-gray-200; }
 
       &.disabled {
         @apply bg-gray-100 text-gray-400 cursor-not-allowed;
-        &:where(.dark, .dark *) {
-          @apply bg-gray-800 text-gray-600;
-        }
+        &:where(.dark, .dark *) { @apply bg-gray-800 text-gray-600; }
       }
     }
 
     .info {
       @apply text-sm text-gray-600 font-medium;
-      &:where(.dark, .dark *) {
-        @apply text-gray-400;
-      }
+      &:where(.dark, .dark *) { @apply text-gray-400; }
     }
   }
 
@@ -372,71 +304,34 @@ body.pwa {
     @apply flex flex-col items-center justify-center min-h-[60vh] p-8 text-center space-y-8;
 
     .status-icon-wrapper {
-      @apply relative mb-4;
-      .pulse-bg {
-        @apply absolute -inset-4 bg-red-100 rounded-full animate-pulse;
-        &:where(.dark, .dark *) {
-          @apply bg-red-900/20;
-        }
-      }
-
-      .main-icon {
-        @apply relative h-24 w-24 rounded-2xl shadow-xl;
-      }
-
-      .check-badge {
-        @apply absolute -bottom-2 -right-2 bg-green-500 text-white rounded-full p-1 shadow-lg flex items-center justify-center;
-      }
+        @apply relative mb-4;
+        .pulse-bg { @apply absolute -inset-4 bg-red-100 rounded-full animate-pulse; &:where(.dark, .dark *) { @apply bg-red-900/20; } }
+        .main-icon { @apply relative h-24 w-24 rounded-2xl shadow-xl; }
+        .check-badge { @apply absolute -bottom-2 -right-2 bg-green-500 text-white rounded-full p-1 shadow-lg flex items-center justify-center; }
     }
   }
 
   /* Message Detail */
   .pwa-back-link {
     @apply inline-flex items-center text-red-600 font-medium mb-4 no-underline;
-    &:where(.dark, .dark *) {
-      @apply text-red-500;
-    }
+    &:where(.dark, .dark *) { @apply text-red-500; }
   }
 
   .pwa-message-detail {
+    @apply pwa-card;
 
     .detail-header {
       @apply flex flex-col space-y-2 mb-6 border-b border-gray-100 pb-4;
-      &:where(.dark, .dark *) {
-        @apply border-gray-700;
-      }
+      &:where(.dark, .dark *) { @apply border-gray-700; }
 
-      .date {
-        @apply text-xs text-gray-700 font-medium;
-        &:where(.dark, .dark *) {
-          @apply text-gray-400;
-        }
-      }
-
-      h2 {
-        @apply text-2xl font-bold text-black;
-        &:where(.dark, .dark *) {
-          @apply text-gray-100;
-        }
-      }
-
-      .meta {
-        @apply flex items-center text-sm text-gray-900;
-        &:where(.dark, .dark *) {
-          @apply text-gray-400;
-        }
-
-        b {
-          @apply text-black dark:text-gray-200 mr-2;
-        }
-      }
+      .date { @apply text-xs text-gray-700 font-medium; &:where(.dark, .dark *) { @apply text-gray-400; } }
+      h2 { @apply text-2xl font-bold text-black; &:where(.dark, .dark *) { @apply text-gray-100; } }
+      .meta { @apply flex items-center text-sm text-gray-900; &:where(.dark, .dark *) { @apply text-gray-400; } b { @apply text-black dark:text-gray-200 mr-2; } }
     }
 
     .message-body {
       @apply text-base leading-relaxed whitespace-pre-wrap text-gray-800;
-      &:where(.dark, .dark *) {
-        @apply text-gray-300;
-      }
+      &:where(.dark, .dark *) { @apply text-gray-300; }
     }
   }
 }

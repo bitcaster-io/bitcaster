@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -81,7 +81,7 @@ class UserConsoleDetailView(UserConsoleMixin, LoginRequiredMixin, DetailView[Use
         return obj
 
 
-class UserPrefFrom(UnfoldForm, forms.ModelForm[User]):
+class UserPrefForm(UnfoldForm, forms.ModelForm[User]):
     timezone = TimeZoneFormField(widget=UnfoldAdminSelectWidget)
 
     class Meta:
@@ -89,11 +89,11 @@ class UserPrefFrom(UnfoldForm, forms.ModelForm[User]):
         fields = ("timezone", "date_format", "time_format")
 
 
-class UserConsoleUserPrefsView(UserConsoleMixin, LoginRequiredMixin, UpdateView[User, UserPrefFrom]):
+class UserConsoleUserPrefsView(UserConsoleMixin, LoginRequiredMixin, UpdateView[User, UserPrefForm]):
     template_name = "bitcaster/console/prefs.html"
-    form_class = UserPrefFrom
+    form_class = UserPrefForm
     model = User
     success_url = "."
 
     def get_object(self, queryset: QuerySet["User"] | None = None) -> User:
-        return self.request.user  # type: ignore[return-value]
+        return cast("User", self.request.user)

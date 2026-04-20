@@ -44,20 +44,20 @@
     @apply border rounded text-sm p-1 w-24 block uppercase font-bold text-center;
     @apply dark:border-gray-600;
     &.badge-new{
-      @apply dark:bg-gray-400  dark:text-black ;
+      @apply dark:bg-gray-400  dark:text-black text-white;
     }
     &.badge-read{
-      @apply dark:bg-green-700 dark:text-black;
+      @apply dark:bg-green-700 dark:text-black text-white;  ;
     }
     &.badge-unread{
-      @apply dark:bg-yellow-600 dark:text-black;
+      @apply dark:bg-yellow-600 dark:text-black text-white;
     }
   }
   thead {
     tr {
       @apply p-2;
       th {
-        @apply text-left p-2;
+        @apply text-left p-2 text-black;
       }
     }
   }

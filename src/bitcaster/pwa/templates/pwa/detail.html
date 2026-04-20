@@ -1,0 +1,28 @@
+{% extends "pwa/base.html" %}
+{% load i18n user %}
+{% block pwa_title %}
+    {% trans "Message Detail" %}
+{% endblock %}
+{% block pwa_content %}
+    <div>
+        <a href="{% url 'pwa:index' %}" class="pwa-back-link">
+            <span class="material-symbols-outlined mr-1">arrow_back</span>
+            {% trans "Back to messages" %}
+        </a>
+    </div>
+    <div class="pwa-message-detail">
+        <div class="detail-header">
+            <span class="date">{% user_datetime message.created %}</span>
+            <h2>
+                {{ message.subject }}
+            </h2>
+            <div class="meta">
+                <b>{% trans "Event" %}:</b>
+                <span>{{ message.event }}</span>
+            </div>
+        </div>
+        <div class="message-body">
+            {{ message.message|safe }}
+        </div>
+    </div>
+{% endblock %}

@@ -11,8 +11,10 @@ from django.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseNotModified,
+    HttpResponseRedirect,
 )
 from django.http.response import HttpResponseBadRequest
+from django.urls import reverse_lazy
 from django.utils._os import safe_join
 from django.utils.http import http_date
 from django.utils.translation import gettext_lazy as _
@@ -37,6 +39,11 @@ class UnfoldViewMixin(UnfoldAdminSite, ContextMixin):
 
 class IndexView(UnfoldViewMixin, TemplateView):
     template_name = "bitcaster/index.html"
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if request.user_agent.is_mobile:
+            return HttpResponseRedirect(reverse_lazy("pwa:index"))
+        return super().get(request, *args, **kwargs)
 
 
 class LogoutView(BaseLogoutView):
