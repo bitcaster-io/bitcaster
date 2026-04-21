@@ -9,78 +9,208 @@ Social Login can be configured at <https://SERVER_ADDRESS/admin/social/socialpro
 
 1. Navigate to <https://SERVER_ADDRESS/admin/social/socialprovider/add/>
 2. Select one of the supported provider and add related configuration as
-   per [Python Social Auth](https://python-social-auth.readthedocs.io/).
-3. Be sure `enabled` is checked before saving the form
+   a JSON object in the `Configuration` field.
+3. Be sure `enabled` is checked before saving the form.
+
+The configuration uses the [Python Social Auth](https://python-social-auth.readthedocs.io/) settings.
+In Bitcaster, these settings must be provided as a JSON dictionary where keys are the setting names
+(e.g., `SOCIAL_AUTH_GITHUB_KEY`).
 
 ## Supported backends
 
 ### Azure AD
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/azuread.html#microsoft-azure-active-directory>
+To use Azure AD, you need to register an application in the Azure Portal.
+
+**Configuration:**
+```json
+{
+    "SOCIAL_AUTH_AZUREAD_OAUTH2_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET": "<your-client-secret>"
+}
+```
 
 #### Tenant support
+If you want to restrict login to a specific tenant:
+```json
+{
+    "SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET": "<your-client-secret>",
+    "SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID": "<your-tenant-id>"
+}
+```
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/azuread.html#tenant-support>
-
+Further reading: [Azure AD Auth](https://python-social-auth.readthedocs.io/en/latest/backends/azuread.html#microsoft-azure-active-directory)
 
 ### Facebook
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/facebook.html#oauth2>
+Requires a Facebook App.
 
+**Configuration:**
+```json
+{
+    "SOCIAL_AUTH_FACEBOOK_KEY": "<your-app-id>",
+    "SOCIAL_AUTH_FACEBOOK_SECRET": "<your-app-secret>",
+    "SOCIAL_AUTH_FACEBOOK_SCOPE": ["email"]
+}
+```
+
+Further reading: [Facebook Auth](https://python-social-auth.readthedocs.io/en/latest/backends/facebook.html#oauth2)
 
 ### GitLab
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/gitlab.html>
+Requires a GitLab Application.
+
+**Configuration:**
+```json
+{
+    "SOCIAL_AUTH_GITLAB_KEY": "<your-application-id>",
+    "SOCIAL_AUTH_GITLAB_SECRET": "<your-secret>",
+    "SOCIAL_AUTH_GITLAB_API_URL": "https://gitlab.com"
+}
+```
+
+Further reading: [GitLab Auth](https://python-social-auth.readthedocs.io/en/latest/backends/gitlab.html)
 
 ### GitHub
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/github.html#github-for-organizations>
+Requires a GitHub OAuth App.
+
+**Configuration:**
+```json
+{
+    "SOCIAL_AUTH_GITHUB_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_GITHUB_SECRET": "<your-client-secret>",
+    "SOCIAL_AUTH_GITHUB_SCOPE": ["user:email"]
+}
+```
 
 #### GitHub Enterprise
-
-see <https://python-social-auth.readthedocs.io/en/latest/backends/github.html#github-enterprise>
+```json
+{
+    "SOCIAL_AUTH_GITHUB_ENTERPRISE_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_GITHUB_ENTERPRISE_SECRET": "<your-client-secret>",
+    "SOCIAL_AUTH_GITHUB_ENTERPRISE_URL": "https://github.example.com",
+    "SOCIAL_AUTH_GITHUB_ENTERPRISE_API_URL": "https://github.example.com/api/v3"
+}
+```
 
 #### GitHub Organizations
-
-see <https://python-social-auth.readthedocs.io/en/latest/backends/github.html#github-for-organizations>
+Restricts login to members of specific organizations.
+```json
+{
+    "SOCIAL_AUTH_GITHUB_ORG_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_GITHUB_ORG_SECRET": "<your-client-secret>",
+    "SOCIAL_AUTH_GITHUB_ORG_NAME": "<your-org-name>"
+}
+```
 
 #### GitHub Team
-
-see <https://python-social-auth.readthedocs.io/en/latest/backends/github.html#github-team>
+Restricts login to members of a specific team.
+```json
+{
+    "SOCIAL_AUTH_GITHUB_TEAM_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_GITHUB_TEAM_SECRET": "<your-client-secret>",
+    "SOCIAL_AUTH_GITHUB_TEAM_ID": "<your-team-id>"
+}
+```
 
 ![Image title](_screenshots/sso_github.png)
 
+Further reading: [GitHub Auth](https://python-social-auth.readthedocs.io/en/latest/backends/github.html)
+
 ### Google
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/google.html#google-oauth2>
+Requires a Google Cloud Project with OAuth 2.0 Client ID.
+
+**Configuration:**
+```json
+{
+    "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET": "<your-client-secret>"
+}
+```
 
 Sample Configuration:
 
 ![Image title](_screenshots/sso_google.png)
 
+Further reading: [Google Auth](https://python-social-auth.readthedocs.io/en/latest/backends/google.html#google-oauth2)
 
 ### LinkedIn
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/linkedin.html#linkedin-oauth2>
+**Configuration:**
+```json
+{
+    "SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET": "<your-client-secret>",
+    "SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE": ["r_liteprofile", "r_emailaddress"]
+}
+```
+
+Further reading: [LinkedIn Auth](https://python-social-auth.readthedocs.io/en/latest/backends/linkedin.html#linkedin-oauth2)
 
 ### Keycloak
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/keycloak.html>
+**Configuration:**
+```json
+{
+    "SOCIAL_AUTH_KEYCLOAK_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_KEYCLOAK_SECRET": "<your-client-secret>",
+    "SOCIAL_AUTH_KEYCLOAK_PUBLIC_KEY": "<your-public-key>",
+    "SOCIAL_AUTH_KEYCLOAK_AUTHORIZATION_URL": "https://<keycloak-url>/auth/realms/<realm>/protocol/openid-connect/auth",
+    "SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL": "https://<keycloak-url>/auth/realms/<realm>/protocol/openid-connect/token"
+}
+```
+
+Further reading: [Keycloak Auth](https://python-social-auth.readthedocs.io/en/latest/backends/keycloak.html)
 
 ### WSO2
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/wso2.html>
+Uses a specialized backend that requires OpenID Connect configuration.
+
+**Configuration:**
+```json
+{
+    "SOCIAL_AUTH_OAUTH2_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_OAUTH2_SECRET": "<your-client-secret>",
+    "SOCIAL_AUTH_OAUTH2_AUTHORIZATION_URL": "https://<wso2-url>/oauth2/authorize",
+    "SOCIAL_AUTH_OAUTH2_ACCESS_TOKEN_URL": "https://<wso2-url>/oauth2/token",
+    "SOCIAL_AUTH_OAUTH2_USERINFO_URL": "https://<wso2-url>/oauth2/userinfo"
+}
+```
+
+Further reading: [WSO2 Auth](https://python-social-auth.readthedocs.io/en/latest/backends/wso2.html)
 
 ### Twitter
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/twitter_oauth2.html>
+Requires a Twitter Developer App.
+
+**Configuration:**
+```json
+{
+    "SOCIAL_AUTH_TWITTER_KEY": "<your-consumer-key>",
+    "SOCIAL_AUTH_TWITTER_SECRET": "<your-consumer-secret>"
+}
+```
+
+Further reading: [Twitter Auth](https://python-social-auth.readthedocs.io/en/latest/backends/twitter_oauth2.html)
 
 ### Generic OAuth
 
-see <https://python-social-auth.readthedocs.io/en/latest/backends/oauth.html#oauth2>
+Can be used for any OAuth2 compatible provider.
 
+**Configuration:**
+```json
+{
+    "SOCIAL_AUTH_OAUTH2_KEY": "<your-client-id>",
+    "SOCIAL_AUTH_OAUTH2_SECRET": "<your-client-secret>",
+    "SOCIAL_AUTH_OAUTH2_AUTHORIZATION_URL": "https://example.com/authorize",
+    "SOCIAL_AUTH_OAUTH2_ACCESS_TOKEN_URL": "https://example.com/token"
+}
+```
 
-
+Further reading: [Generic OAuth2](https://python-social-auth.readthedocs.io/en/latest/backends/oauth.html#oauth2)
 
 ## Global configuration
 
