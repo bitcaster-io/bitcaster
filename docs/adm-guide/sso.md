@@ -56,7 +56,7 @@ see <https://python-social-auth.readthedocs.io/en/latest/backends/twitter_oauth2
 
 ## Global configuration
 
-Some global parameters for Social Auth can be configured in the global settings:
+Some global parameters for Social Auth can be configured in the Django Admin interface at <https://SERVER_ADDRESS/admin/constance/config/>
 
 | Parameter | Default | Description |
 | --- | --- | --- |
