@@ -36,6 +36,18 @@ see <https://python-social-auth.readthedocs.io/en/latest/backends/gitlab.html>
 
 see <https://python-social-auth.readthedocs.io/en/latest/backends/github.html#github-for-organizations>
 
+#### GitHub Enterprise
+
+see <https://python-social-auth.readthedocs.io/en/latest/backends/github.html#github-enterprise>
+
+#### GitHub Organizations
+
+see <https://python-social-auth.readthedocs.io/en/latest/backends/github.html#github-for-organizations>
+
+#### GitHub Team
+
+see <https://python-social-auth.readthedocs.io/en/latest/backends/github.html#github-team>
+
 ![Image title](_screenshots/sso_github.png)
 
 ### Google
@@ -47,9 +59,25 @@ Sample Configuration:
 ![Image title](_screenshots/sso_google.png)
 
 
+### LinkedIn
+
+see <https://python-social-auth.readthedocs.io/en/latest/backends/linkedin.html#linkedin-oauth2>
+
+### Keycloak
+
+see <https://python-social-auth.readthedocs.io/en/latest/backends/keycloak.html>
+
+### WSO2
+
+see <https://python-social-auth.readthedocs.io/en/latest/backends/wso2.html>
+
 ### Twitter
 
 see <https://python-social-auth.readthedocs.io/en/latest/backends/twitter_oauth2.html>
+
+### Generic OAuth
+
+see <https://python-social-auth.readthedocs.io/en/latest/backends/oauth.html#oauth2>
 
 
 
