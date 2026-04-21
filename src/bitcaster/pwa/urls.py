@@ -2,7 +2,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 from .views import (
-    MobileRegisterView,
+    # MobileRegisterView,
     PwaDetailView,
     PwaIndexView,
     PwaLoginView,
@@ -21,7 +21,6 @@ urlpatterns = [
     path("logout/", PwaLogoutView.as_view(), name="logout"),
     path("<int:pk>/", PwaDetailView.as_view(), name="detail"),
     path("prefs/", PwaPrefsView.as_view(), name="prefs"),
-    path("register/", MobileRegisterView.as_view(), name="pwa-register"),
     path("manifest.json", manifest, name="manifest"),
     path("serviceworker.js", PwaServiceWorker.as_view(), name="serviceworker"),
     path("offline/", offline, name="offline"),

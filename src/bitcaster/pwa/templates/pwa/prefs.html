@@ -3,7 +3,7 @@
 {% block pwa_title %}
     {% trans "Preferences" %}
 {% endblock %}
-{% block pwa_content %}
+{% block content %}
     <!-- User Profile Header -->
     <div class="pwa-profile-header">
         <div class="avatar">
@@ -57,6 +57,10 @@
         <button id="pwa-install-button" onclick="installPwa()" class="pwa-btn outline large w-full">
             {% trans "Install Application" %}
         </button>
+    </div>
+    <div class="h-20">
+    </div>
+    <div class="h-5">
     </div>
     <script>
         function checkPwaInstallability() {

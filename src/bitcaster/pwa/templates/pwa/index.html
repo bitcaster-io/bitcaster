@@ -1,73 +1,7 @@
 {% extends "pwa/base.html" %}
 {% load i18n user %}
-{% block pwa_title %}
-    {% trans "Messages" %}
-{% endblock %}
-{% block pwa_content %}
-    <!-- Filter Selector -->
-    <div class="pwa-filter-container">
-        <a href="?status=all" class="pwa-filter-item {% if current_status == 'all' %}active{% endif %}">
-            {% trans "All" %}
-        </a>
-        <a href="?status=new" class="pwa-filter-item {% if current_status == 'new' %}active{% endif %}">
-            {% trans "New" %}
-        </a>
-        <a href="?status=unread" class="pwa-filter-item {% if current_status == 'unread' %}active{% endif %}">
-            {% trans "Not Read" %}
-        </a>
-        <a href="?status=read" class="pwa-filter-item {% if current_status == 'read' %}active{% endif %}">
-            {% trans "Read" %}
-        </a>
+{% block content %}
+    {% include "bitcaster/console/_messages.html" %}
+    <div class="h-20">
     </div>
-    <div class="space-y-4" id="user_messages">
-        {% for message in messages %}
-            <div class="pwa-message-card" onclick="location.href='{% url 'pwa:detail' message.pk %}'">
-                <div class="header">
-                    <span class="message-date">{% user_datetime message.created %}</span>
-                    <div class="badge">
-                        {% if message.read %}
-                            <span class="badge-read">
-                                <span>{% trans "Read" %}</span>
-                            </span>
-                        {% elif message.displayed %}
-                            <span class="badge-displayed">
-                                <span>{% trans "Read" %}</span>
-                            </span>
-                        {% else %}
-                            <span class="badge-new">
-                                <span>{% trans "New" %}</span>
-                            </span>
-                        {% endif %}
-                    </div>
-                </div>
-                <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-1">
-                    {{ message.subject }}
-                </h3>
-            </div>
-        {% empty %}
-            <div class="text-center py-20 text-gray-500 dark:text-gray-400">
-                <span class="material-symbols-outlined text-6xl mb-2">inbox</span>
-                <p class="text-lg">
-                    {% trans "No messages yet." %}
-                </p>
-            </div>
-        {% endfor %}
-    </div>
-    {% if is_paginated %}
-        <div class="pwa-pagination">
-            {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}" class="btn">{% trans "Previous" %}</a>
-            {% else %}
-                <span class="btn disabled">{% trans "Previous" %}</span>
-            {% endif %}
-            <span class="info">
-                {{ page_obj.number }} / {{ paginator.num_pages }}
-            </span>
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}" class="btn">{% trans "Next" %}</a>
-            {% else %}
-                <span class="btn disabled">{% trans "Next" %}</span>
-            {% endif %}
-        </div>
-    {% endif %}
 {% endblock %}

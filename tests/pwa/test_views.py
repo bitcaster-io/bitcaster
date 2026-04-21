@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 from django.urls import reverse
 from django.utils import timezone
+from flags.state import enable_flag
 from testutils.factories.usermessage import UserMessageFactory
 from testutils.perms import configure_model
 
@@ -23,7 +24,7 @@ def user_message(user: User) -> "UserMessage":
 
 
 @pytest.fixture
-def user_messages(user: User) -> list["UserMessage"]:
+def user_messages(user: User) -> list[UserMessage]:
     """User messages fixture for filtering tests."""
     return [
         UserMessageFactory.create(user=user, displayed=None, read=None),  # new
@@ -44,7 +45,7 @@ def test_pwa_index_authenticated(django_app: DjangoTestApp, user: User) -> None:
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize("status", ["new", "unread", "read", "all"])
+@pytest.mark.parametrize("status", ["unread", "read", "all"])
 def test_pwa_index_filtering(
     django_app: DjangoTestApp, user: User, user_messages: list[UserMessage], status: str
 ) -> None:
@@ -52,15 +53,14 @@ def test_pwa_index_filtering(
     response = django_app.get(reverse("pwa:index") + f"?status={status}")
     assert response.status_code == 200
     messages = response.context["messages"]
-    if status == "new":
-        assert all(m.displayed is None and m.read is None for m in messages)
-    elif status == "unread":
-        assert all(m.displayed is True and m.read is None for m in messages)
+    if status == "unread":
+        assert all(m.instance.read is None for m in messages)
     elif status == "read":
-        assert all(m.read is not None for m in messages)
+        assert all(m.instance.read is not None for m in messages)
 
 
 def test_pwa_login(django_app: DjangoTestApp, user: User) -> None:
+    enable_flag("LOCAL_LOGIN")
     response = django_app.get(reverse("pwa:login"))
     assert response.status_code == 200
     form = response.forms[0]
@@ -80,11 +80,11 @@ def test_pwa_logout(django_app: DjangoTestApp, user: User) -> None:
     assert response.url.endswith(reverse("pwa:login"))
 
 
-@pytest.mark.parametrize("read", [{"read", True}, {"read", False}])
-@pytest.mark.parametrize("displayed", [{"displayed", None}, {"displayed", timezone.now()}])
-def test_pwa_detail(django_app: DjangoTestApp, user: User, user_message: UserMessage, status, displayed) -> None:
+@pytest.mark.parametrize("read", [{"read": None}, {"read": timezone.now()}])
+@pytest.mark.parametrize("displayed", [{"displayed": True}, {"displayed": False}])
+def test_pwa_detail(django_app: DjangoTestApp, user: User, user_message: UserMessage, read, displayed) -> None:
     django_app.set_user(user)
-    with configure_model(user_message, **{**displayed, **status}):
+    with configure_model(user_message, **{**displayed, **read}):
         response = django_app.get(reverse("pwa:detail", kwargs={"pk": user_message.pk}))
     assert response.status_code == 200
     assert response.context["message"] == user_message

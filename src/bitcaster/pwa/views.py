@@ -17,13 +17,12 @@ from django.templatetags.static import static
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import DetailView, ListView, TemplateView, UpdateView
+from django.views.generic import DetailView, TemplateView, UpdateView
 from timezone_field import TimeZoneFormField
 
+from bitcaster.console.views import UserConsoleIndexView
 from bitcaster.models import User, UserMessage
 from bitcaster.utils.http import absolute_reverse, get_server_url
-from bitcaster.webpush.views import SubscribeView
 
 logger = logging.getLogger(__name__)
 
@@ -72,37 +71,14 @@ class PwaLogoutView(LoginRequiredMixin, TemplateView):
         return {"request": self.request, **kwargs}
 
 
-class MobileRegisterView(SubscribeView):
-    pass
-
-
-@method_decorator(csrf_exempt, name="dispatch")
-class MobileView(LoginRequiredMixin, TemplateView):
+class PwaIndexView(UserConsoleIndexView):
     login_url = "pwa:login"
     template_name = "pwa/index.html"
-    request: "HttpRequest"
-
-
-class PwaIndexView(LoginRequiredMixin, ListView[UserMessage]):
-    login_url = "pwa:login"
-    template_name = "pwa/index.html"
-    context_object_name = "messages"
     paginate_by = 25
-
-    def get_queryset(self) -> QuerySet[UserMessage]:
-        qs = self.request.user.bitcaster_messages.order_by("-created")
-        status = self.request.GET.get("status")
-        if status == "new":
-            qs = qs.filter(displayed__isnull=True, read__isnull=True)
-        elif status == "unread":
-            qs = qs.filter(displayed=True, read__isnull=True)
-        elif status == "read":
-            qs = qs.filter(read__isnull=False)
-        return qs
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["current_status"] = self.request.GET.get("status", "all")
+        context["details_url"] = "pwa:detail"
         return context
 
 

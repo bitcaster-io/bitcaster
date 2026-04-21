@@ -123,7 +123,7 @@
         }
     </script>
 {% endblock %}
-{% block base %}
+{% block header %}
     <script>
         function checkPwaMode() {
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
@@ -173,50 +173,46 @@
             </div>
         </div>
     </div>
-    {% block header %}
-        <div class="pwa-header">
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                <img src="{% static "bitcaster/images/logos/logo48.png" %}" class="h-8 w-8" />
-                {% block pwa_title %}
-                    Bitcaster
-                {% endblock %}
-            </h1>
-            <div class="flex items-center gap-2">
-                <button type="button" x-on:click="adminTheme = (adminTheme === 'dark' ? 'light' : 'dark')" class="pwa-header-btn text-white">
-                    <span class="material-symbols-outlined text-[24px]" x-show="adminTheme !== 'dark'">light_mode</span>
-                    <span class="material-symbols-outlined text-[24px]" x-show="adminTheme === 'dark'">dark_mode</span>
-                </button>
-            </div>
-        </div>
-    {% endblock %}
-    {% block content %}
-        <div class="pwa-content-wrapper">
-            {% block pwa_content %}
-            {% endblock %}
-        </div>
-    {% endblock %}
-    {% if request.user.is_authenticated %}
-        {% block bottom_nav %}
-            <nav class="bottom-nav">
-                <a href="{% url 'pwa:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
-                    <span class="material-symbols-outlined">mail</span>
-                    <span>{% trans "Messages" %}</span>
-                </a>
-                <a href="{% url 'pwa:prefs' %}" class="{% if request.resolver_match.url_name == 'prefs' %}active{% endif %}">
-                    <span class="material-symbols-outlined">settings</span>
-                    <span>{% trans "Settings" %}</span>
-                </a>
-                <a href="{% url 'pwa:about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">
-                    <span class="material-symbols-outlined">info</span>
-                    <span>{% trans "About" %}</span>
-                </a>
-                <a href="{% url 'pwa:logout' %}" class="{% if request.resolver_match.url_name == 'logout' %}active{% endif %}">
-                    <span class="material-symbols-outlined">logout</span>
-                    <span>{% trans "Logout" %}</span>
-                </a>
-            </nav>
-        {% endblock %}
-    {% endif %}
+    {% include "pwa/_header.html" %}
+    {#    {% block header %}#}
+    {#        <div class="pwa-header">#}
+    {#            <h1 class="text-xl font-bold flex items-center gap-2">#}
+    {#                <img src="{% static "bitcaster/images/logos/logo48.png" %}" class="h-8 w-8" />#}
+    {#                {% block pwa_title %}#}
+    {#                    Bitcaster#}
+    {#                {% endblock %}#}
+    {#            </h1>#}
+    {#            <div class="flex items-center gap-2">#}
+    {#                <button type="button" x-on:click="adminTheme = (adminTheme === 'dark' ? 'light' : 'dark')" class="pwa-header-btn text-white">#}
+    {#                    <span class="material-symbols-outlined text-[24px]" x-show="adminTheme !== 'dark'">light_mode</span>#}
+    {#                    <span class="material-symbols-outlined text-[24px]" x-show="adminTheme === 'dark'">dark_mode</span>#}
+    {#                </button>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    {% endblock %}#}
+    {#    {% if request.user.is_authenticated %}#}
+    {#        {% block bottom_nav %}#}
+    {#            <nav class="bottom-nav">#}
+    {#                <a href="{% url 'pwa:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">#}
+    {#                    <span class="material-symbols-outlined">mail</span>#}
+    {#                    <span>{% trans "Messages" %}</span>#}
+    {#                </a>#}
+    {#                <a href="{% url 'pwa:prefs' %}" class="{% if request.resolver_match.url_name == 'prefs' %}active{% endif %}">#}
+    {#                    <span class="material-symbols-outlined">settings</span>#}
+    {#                    <span>{% trans "Settings" %}</span>#}
+    {#                </a>#}
+    {#                <a href="{% url 'pwa:about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">#}
+    {#                    <span class="material-symbols-outlined">info</span>#}
+    {#                    <span>{% trans "About" %}</span>#}
+    {#                </a>#}
+    {#                <a href="{% url 'pwa:logout' %}" class="{% if request.resolver_match.url_name == 'logout' %}active{% endif %}">#}
+    {#                    <span class="material-symbols-outlined">logout</span>#}
+    {#                    <span>{% trans "Logout" %}</span>#}
+    {#                </a>#}
+    {#            </nav>#}
+    {#        {% endblock %}#}
+    {#    {% endif %}#}
 {% endblock %}
 {% block bc-footer %}
+    {% include "pwa/_footer.html" %}
 {% endblock %}

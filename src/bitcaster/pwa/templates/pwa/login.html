@@ -1,5 +1,5 @@
 {% extends "pwa/base.html" %}
-{% load i18n static %}
+{% load i18n static feature_flags %}
 {% block pwa_title %}
     {% trans "Login" %}
 {% endblock %}
@@ -15,40 +15,43 @@
                     {% trans "Log in to your account" %}
                 </p>
             </div>
-            <form method="post" class="space-y-4">
-                {% csrf_token %}
-                {% for field in form %}
-                    <div class="flex flex-col space-y-2">
-                        <label for="{{ field.id_for_label }}">
-                            {{ field.label }}
-                        </label>
-                        <div class="w-full">
-                            {{ field }}
+            {% flag_enabled 'LOCAL_LOGIN' as LOCAL_LOGIN %}
+            {% if LOCAL_LOGIN %}
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="flex flex-col space-y-2">
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+                            <div class="w-full">
+                                {{ field }}
+                            </div>
+                            {% if field.help_text %}
+                                <p class="text-xs text-gray-500 italic">
+                                    {{ field.help_text }}
+                                </p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <p class="text-xs text-red-500 font-medium">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
                         </div>
-                        {% if field.help_text %}
-                            <p class="text-xs text-gray-500 italic">
-                                {{ field.help_text }}
-                            </p>
-                        {% endif %}
-                        {% for error in field.errors %}
-                            <p class="text-xs text-red-500 font-medium">
+                    {% endfor %}
+                    {% if form.non_field_errors %}
+                        <div class="p-3 bg-red-100 border border-red-300 rounded text-red-700 text-sm">
+                            {% for error in form.non_field_errors %}
                                 {{ error }}
-                            </p>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-                {% if form.non_field_errors %}
-                    <div class="p-3 bg-red-100 border border-red-300 rounded text-red-700 text-sm">
-                        {% for error in form.non_field_errors %}
-                            {{ error }}
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="pt-4">
+                        <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg shadow-lg hover:bg-red-700 transition">
+                            {% trans "Log In" %}
+                        </button>
                     </div>
                 {% endif %}
-                <div class="pt-4">
-                    <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg shadow-lg hover:bg-red-700 transition">
-                        {% trans "Log In" %}
-                    </button>
-                </div>
             </form>
             {% if sso_providers %}
                 <div class="relative py-4">
