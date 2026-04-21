@@ -5,7 +5,7 @@ tags:
 
 # Configure Login
 
-Bitcaster support both local accounts and SSO. Local accounts can be managed through the admin or using the API.
+Bitcaster support both local accounts and SSO. Local accounts can be managed through Bitcaster Admin or using the API.
 
  -  <https://SERVER_ADDRESS/admin/bitcaster/user/>
 

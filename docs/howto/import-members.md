@@ -4,7 +4,7 @@ Bitcaster allows you to add multiple members at once by importing them from a co
 
 ## How to Import Members
 
-1.  From the admin sidebar, navigate to **Bitcaster** > **Members**.
+1.  From the Bitcaster Admin sidebar, navigate to **Bitcaster** > **Members**.
 2.  On the Member list page, click the **Import Members** button located in the top-right corner.
 3.  On the "Import Members" page, you will see two fields:
     -   **File:** Click "Choose File" and select the CSV file you want to upload.
