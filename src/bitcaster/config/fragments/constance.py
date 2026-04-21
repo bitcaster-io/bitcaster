@@ -37,4 +37,6 @@ CONSTANCE_CONFIG = {
     ),
     "SECRET_KEY_SALT": ("", "Salt to use to generate secret keys", str),
     "SERVER_URL": ("", "The base URL for attachment file downloads (no trailing slash)", str),
+    "SOCIAL_AUTH_CREATE_USER": (True, "If true, not existing users will be automatically created", bool),
+    "SOCIAL_AUTH_ACCEPTED_USERS": ("", "comma separated list of usernames accepted ", str),
 }

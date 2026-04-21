@@ -54,4 +54,13 @@ see <https://python-social-auth.readthedocs.io/en/latest/backends/twitter_oauth2
 
 
 
-## Generic OAuth
+## Global configuration
+
+Some global parameters for Social Auth can be configured in the global settings:
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `SOCIAL_AUTH_CREATE_USER` | `True` | If true, not existing users will be automatically created. If false, only already existing users can log in via SSO. |
+| `SOCIAL_AUTH_ACCEPTED_USERS` | `""` | A comma separated list of emails that are allowed to log in. It supports regular expressions (e.g., `.*@example.com`). |
+| `NEW_USER_DEFAULT_GROUP` | `DEFAULT_GROUP_NAME` | The Django Group that will be assigned to any new user created via SSO. |
+| `NEW_USER_IS_STAFF` | `False` | If true, any new user created (via SSO or otherwise) will be marked as staff. |

@@ -1,6 +1,8 @@
 from unittest.mock import Mock
 
 import pytest
+from constance.test.pytest import override_config
+from social_core.exceptions import AuthForbidden
 
 from bitcaster.social.models import Provider
 from bitcaster.social.strategy import BitcasterStrategy
@@ -48,3 +50,26 @@ def test_social_strategy_url() -> None:
     SocialProviderFactory(provider=Provider.FACEBOOK, configuration={"SOCIAL_AUTH_FACEBOOK_URL": "admin:login"})
     s = BitcasterStrategy(Mock(), Mock())
     s.get_setting("SOCIAL_AUTH_FACEBOOK_URL")
+
+
+@override_config(SOCIAL_AUTH_CREATE_USER=True)
+def test_social_create_user1() -> None:
+    s = BitcasterStrategy(Mock(), Mock())
+    u = s.create_user(email="")
+    assert u
+
+
+@override_config(SOCIAL_AUTH_CREATE_USER=False)
+def test_social_create_user2() -> None:
+    s = BitcasterStrategy(Mock(), Mock())
+    u = s.create_user(email="")
+    assert u
+
+
+@override_config(SOCIAL_AUTH_CREATE_USER=False, SOCIAL_AUTH_ACCEPTED_USERS="test@example.com")
+def test_social_create_user3() -> None:
+    s = BitcasterStrategy(Mock(), Mock())
+    with pytest.raises(AuthForbidden):
+        s.create_user(email="not-allowed@example.com")
+
+    assert s.create_user(email="test@example.com")
