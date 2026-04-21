@@ -9,7 +9,7 @@ Social Login can be configured at <https://SERVER_ADDRESS/admin/social/socialpro
 
 1. Navigate to <https://SERVER_ADDRESS/admin/social/socialprovider/add/>
 2. Select one of the supported provider and add related configuration as
-   a JSON object in the `Configuration` field.
+   a JSON object in the **Configuration** field.
 3. Be sure `enabled` is checked before saving the form.
 
 The configuration uses the [Python Social Auth](https://python-social-auth.readthedocs.io/) settings.
@@ -25,8 +25,8 @@ To use Azure AD, you need to register an application in the Azure Portal.
 **Configuration:**
 ```json
 {
-    "SOCIAL_AUTH_AZUREAD_OAUTH2_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET": "<your-client-secret>"
+  "SOCIAL_AUTH_AZUREAD_OAUTH2_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET": "<your-client-secret>"
 }
 ```
 
@@ -34,9 +34,9 @@ To use Azure AD, you need to register an application in the Azure Portal.
 If you want to restrict login to a specific tenant:
 ```json
 {
-    "SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET": "<your-client-secret>",
-    "SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID": "<your-tenant-id>"
+  "SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET": "<your-client-secret>",
+  "SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID": "<your-tenant-id>"
 }
 ```
 
@@ -49,9 +49,9 @@ Requires a Facebook App.
 **Configuration:**
 ```json
 {
-    "SOCIAL_AUTH_FACEBOOK_KEY": "<your-app-id>",
-    "SOCIAL_AUTH_FACEBOOK_SECRET": "<your-app-secret>",
-    "SOCIAL_AUTH_FACEBOOK_SCOPE": ["email"]
+  "SOCIAL_AUTH_FACEBOOK_KEY": "<your-app-id>",
+  "SOCIAL_AUTH_FACEBOOK_SECRET": "<your-app-secret>",
+  "SOCIAL_AUTH_FACEBOOK_SCOPE": ["email"]
 }
 ```
 
@@ -64,9 +64,9 @@ Requires a GitLab Application.
 **Configuration:**
 ```json
 {
-    "SOCIAL_AUTH_GITLAB_KEY": "<your-application-id>",
-    "SOCIAL_AUTH_GITLAB_SECRET": "<your-secret>",
-    "SOCIAL_AUTH_GITLAB_API_URL": "https://gitlab.com"
+  "SOCIAL_AUTH_GITLAB_KEY": "<your-application-id>",
+  "SOCIAL_AUTH_GITLAB_SECRET": "<your-secret>",
+  "SOCIAL_AUTH_GITLAB_API_URL": "https://gitlab.com"
 }
 ```
 
@@ -79,19 +79,19 @@ Requires a GitHub OAuth App.
 **Configuration:**
 ```json
 {
-    "SOCIAL_AUTH_GITHUB_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_GITHUB_SECRET": "<your-client-secret>",
-    "SOCIAL_AUTH_GITHUB_SCOPE": ["user:email"]
+  "SOCIAL_AUTH_GITHUB_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_GITHUB_SECRET": "<your-client-secret>",
+  "SOCIAL_AUTH_GITHUB_SCOPE": ["user:email"]
 }
 ```
 
 #### GitHub Enterprise
 ```json
 {
-    "SOCIAL_AUTH_GITHUB_ENTERPRISE_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_GITHUB_ENTERPRISE_SECRET": "<your-client-secret>",
-    "SOCIAL_AUTH_GITHUB_ENTERPRISE_URL": "https://github.example.com",
-    "SOCIAL_AUTH_GITHUB_ENTERPRISE_API_URL": "https://github.example.com/api/v3"
+  "SOCIAL_AUTH_GITHUB_ENTERPRISE_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_GITHUB_ENTERPRISE_SECRET": "<your-client-secret>",
+  "SOCIAL_AUTH_GITHUB_ENTERPRISE_URL": "https://github.example.com",
+  "SOCIAL_AUTH_GITHUB_ENTERPRISE_API_URL": "https://github.example.com/api/v3"
 }
 ```
 
@@ -99,9 +99,9 @@ Requires a GitHub OAuth App.
 Restricts login to members of specific organizations.
 ```json
 {
-    "SOCIAL_AUTH_GITHUB_ORG_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_GITHUB_ORG_SECRET": "<your-client-secret>",
-    "SOCIAL_AUTH_GITHUB_ORG_NAME": "<your-org-name>"
+  "SOCIAL_AUTH_GITHUB_ORG_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_GITHUB_ORG_SECRET": "<your-client-secret>",
+  "SOCIAL_AUTH_GITHUB_ORG_NAME": "<your-org-name>"
 }
 ```
 
@@ -109,9 +109,9 @@ Restricts login to members of specific organizations.
 Restricts login to members of a specific team.
 ```json
 {
-    "SOCIAL_AUTH_GITHUB_TEAM_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_GITHUB_TEAM_SECRET": "<your-client-secret>",
-    "SOCIAL_AUTH_GITHUB_TEAM_ID": "<your-team-id>"
+  "SOCIAL_AUTH_GITHUB_TEAM_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_GITHUB_TEAM_SECRET": "<your-client-secret>",
+  "SOCIAL_AUTH_GITHUB_TEAM_ID": "<your-team-id>"
 }
 ```
 
@@ -126,8 +126,8 @@ Requires a Google Cloud Project with OAuth 2.0 Client ID.
 **Configuration:**
 ```json
 {
-    "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET": "<your-client-secret>"
+  "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET": "<your-client-secret>"
 }
 ```
 
@@ -142,9 +142,9 @@ Further reading: [Google Auth](https://python-social-auth.readthedocs.io/en/late
 **Configuration:**
 ```json
 {
-    "SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET": "<your-client-secret>",
-    "SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE": ["r_liteprofile", "r_emailaddress"]
+  "SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET": "<your-client-secret>",
+  "SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE": ["r_liteprofile", "r_emailaddress"]
 }
 ```
 
@@ -155,11 +155,11 @@ Further reading: [LinkedIn Auth](https://python-social-auth.readthedocs.io/en/la
 **Configuration:**
 ```json
 {
-    "SOCIAL_AUTH_KEYCLOAK_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_KEYCLOAK_SECRET": "<your-client-secret>",
-    "SOCIAL_AUTH_KEYCLOAK_PUBLIC_KEY": "<your-public-key>",
-    "SOCIAL_AUTH_KEYCLOAK_AUTHORIZATION_URL": "https://<keycloak-url>/auth/realms/<realm>/protocol/openid-connect/auth",
-    "SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL": "https://<keycloak-url>/auth/realms/<realm>/protocol/openid-connect/token"
+  "SOCIAL_AUTH_KEYCLOAK_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_KEYCLOAK_SECRET": "<your-client-secret>",
+  "SOCIAL_AUTH_KEYCLOAK_PUBLIC_KEY": "<your-public-key>",
+  "SOCIAL_AUTH_KEYCLOAK_AUTHORIZATION_URL": "https://<key-url>/auth/realms/<realm>/protocol/openid-connect/auth",
+  "SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL": "https://<key-url>/auth/realms/<realm>/protocol/openid-connect/token"
 }
 ```
 
@@ -172,11 +172,11 @@ Uses a specialized backend that requires OpenID Connect configuration.
 **Configuration:**
 ```json
 {
-    "SOCIAL_AUTH_OAUTH2_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_OAUTH2_SECRET": "<your-client-secret>",
-    "SOCIAL_AUTH_OAUTH2_AUTHORIZATION_URL": "https://<wso2-url>/oauth2/authorize",
-    "SOCIAL_AUTH_OAUTH2_ACCESS_TOKEN_URL": "https://<wso2-url>/oauth2/token",
-    "SOCIAL_AUTH_OAUTH2_USERINFO_URL": "https://<wso2-url>/oauth2/userinfo"
+  "SOCIAL_AUTH_OAUTH2_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_OAUTH2_SECRET": "<your-client-secret>",
+  "SOCIAL_AUTH_OAUTH2_AUTHORIZATION_URL": "https://<wso2-url>/oauth2/authorize",
+  "SOCIAL_AUTH_OAUTH2_ACCESS_TOKEN_URL": "https://<wso2-url>/oauth2/token",
+  "SOCIAL_AUTH_OAUTH2_USERINFO_URL": "https://<wso2-url>/oauth2/userinfo"
 }
 ```
 
@@ -189,8 +189,8 @@ Requires a Twitter Developer App.
 **Configuration:**
 ```json
 {
-    "SOCIAL_AUTH_TWITTER_KEY": "<your-consumer-key>",
-    "SOCIAL_AUTH_TWITTER_SECRET": "<your-consumer-secret>"
+  "SOCIAL_AUTH_TWITTER_KEY": "<your-consumer-key>",
+  "SOCIAL_AUTH_TWITTER_SECRET": "<your-consumer-secret>"
 }
 ```
 
@@ -203,10 +203,10 @@ Can be used for any OAuth2 compatible provider.
 **Configuration:**
 ```json
 {
-    "SOCIAL_AUTH_OAUTH2_KEY": "<your-client-id>",
-    "SOCIAL_AUTH_OAUTH2_SECRET": "<your-client-secret>",
-    "SOCIAL_AUTH_OAUTH2_AUTHORIZATION_URL": "https://example.com/authorize",
-    "SOCIAL_AUTH_OAUTH2_ACCESS_TOKEN_URL": "https://example.com/token"
+  "SOCIAL_AUTH_OAUTH2_KEY": "<your-client-id>",
+  "SOCIAL_AUTH_OAUTH2_SECRET": "<your-client-secret>",
+  "SOCIAL_AUTH_OAUTH2_AUTHORIZATION_URL": "https://example.com/authorize",
+  "SOCIAL_AUTH_OAUTH2_ACCESS_TOKEN_URL": "https://example.com/token"
 }
 ```
 
