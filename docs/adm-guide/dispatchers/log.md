@@ -12,4 +12,4 @@ This dispatcher does not require any configuration.
 1.  Select `Log` as dispatcher for a Channel
 2.  Save the Channel.
 
-Now you can add this channel to your Application and send notifications. The notifications will be visible in the Log section of the administration panel.
+Now you can add this channel to your Application and send notifications. The notifications will be visible in the Log section of the Bitcaster Admin panel.
