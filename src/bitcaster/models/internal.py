@@ -5,11 +5,10 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .application import Application
+from .choices import get_logging_levels
 from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
 logger = logging.getLogger(__name__)
-
-LEVELS = zip(logging._nameToLevel.keys(), logging._nameToLevel.keys(), strict=False)
 
 
 class LogMessageManager(BitcasterBaselManager["LogMessage"]):
@@ -23,7 +22,9 @@ class LogMessageManager(BitcasterBaselManager["LogMessage"]):
 
 
 class LogMessage(BitcasterBaseModel):
-    level = models.CharField(verbose_name=_("Level"), max_length=255, choices=LEVELS, help_text=_("Log message level"))
+    level = models.CharField(
+        verbose_name=_("Level"), max_length=255, choices=get_logging_levels, help_text=_("Log message level")
+    )
     message = models.TextField(verbose_name=_("Message"), help_text=_("message body"))
     created = models.DateTimeField(verbose_name=_("Date"), auto_now_add=True, help_text=_("date of this message"))
     application = models.ForeignKey(

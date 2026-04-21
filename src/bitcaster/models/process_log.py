@@ -9,6 +9,7 @@ from strategy_field.utils import fqn
 from bitcaster.utils.json import safe_dumps
 
 if TYPE_CHECKING:
+    from django.utils.functional import _StrPromise
     from dramatiq import Actor
 
 
@@ -46,6 +47,10 @@ class LogEntryManager(_LogEntry.objects.__class__):  # type: ignore[name-defined
         )
 
 
+def _get_status_choices() -> "list[tuple[int, _StrPromise]]":
+    return ProcessLogEntry.STATUD_CHOICES
+
+
 class ProcessLogEntry(models.Model):
     SUCCESS = 10
     FAILURE = 20
@@ -57,7 +62,7 @@ class ProcessLogEntry(models.Model):
         verbose_name=_("action time"), default=timezone.now, editable=False, help_text=_("Action time")
     )
     status = models.IntegerField(
-        verbose_name=_("status"), choices=STATUD_CHOICES, default=SUCCESS, help_text=_("Status")
+        verbose_name=_("status"), choices=_get_status_choices, default=SUCCESS, help_text=_("Status")
     )
     elapsed = models.IntegerField(verbose_name=_("elapsed"), blank=True, null=True, help_text=_("Elapsed time"))
     task_name = models.CharField(

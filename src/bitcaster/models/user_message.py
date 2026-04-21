@@ -9,12 +9,11 @@ from strategy_field.utils import fqn
 
 from ..config import settings
 from ..dispatchers import UserMessageDispatcher
+from .choices import get_logging_levels
 from .event import Event
 from .mixins import BitcasterBaseModel, BitcasterBaselManager
 
 logger = logging.getLogger(__name__)
-
-LEVELS = zip(logging._nameToLevel.keys(), logging._nameToLevel.keys(), strict=False)
 
 
 class UserMessageQuerySet(models.QuerySet["UserMessage"]):
@@ -60,7 +59,7 @@ class UserMessage(BitcasterBaseModel):
     level = models.CharField(
         verbose_name=_("Level"),
         max_length=255,
-        choices=LEVELS,
+        choices=get_logging_levels,
         default=logging.INFO,
         help_text=_("Level of the message"),
     )

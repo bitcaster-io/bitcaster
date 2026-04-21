@@ -1,0 +1,28 @@
+rules:
+  - id: django-choices-must-be-callable
+    languages:
+      - python
+    severity: WARNING
+    message: >-
+      The `choices` attribute of a Django Field should be a callable.
+      Using a callable ensures that choices are evaluated at runtime, which is important for
+      dynamic values, translations, and avoiding side effects during import.
+      Example: `choices=get_my_choices` instead of `choices=MY_CHOICES`.
+    patterns:
+      - pattern: $X(..., choices=$VAR, ...)
+      - metavariable-regex:
+          metavariable: $X
+          regex: .*Field$
+      - metavariable-regex:
+          metavariable: $VAR
+          # Matches list literals, tuple literals, or constants (UPPER_CASE)
+          regex: ^(\[|\(|[A-Z_][A-Z0-9_]*$)
+    paths:
+      include:
+        - "**/models.py"
+        - "**/models/*.py"
+        - "**/forms.py"
+        - "**/forms/*.py"
+        - "**/*.py"
+      exclude:
+        - "**/migrations/*.py"

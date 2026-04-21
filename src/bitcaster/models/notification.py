@@ -18,11 +18,17 @@ from .mixins import BaseQuerySet, BitcasterBaseModel, BitcasterBaselManager
 from .user import User
 
 if TYPE_CHECKING:
+    from django.utils.functional import _StrPromise
+
     from bitcaster.dispatchers.base import Dispatcher
     from bitcaster.models import Address, Application, Channel, MessageTemplate
     from bitcaster.types.yaml import YamlPayload
 
 logger = logging.getLogger(__name__)
+
+
+def get_policy() -> "tuple[tuple[int, str | _StrPromise], ...]":
+    return FILTERING
 
 
 class NotificationQuerySet(BaseQuerySet["Notification"]):
@@ -73,7 +79,7 @@ class Notification(BitcasterBaseModel):
     )
 
     policy = models.IntegerField(
-        verbose_name=_("policy"), choices=FILTERING, default=FILTERING_NONE, help_text=_("Routing policy")
+        verbose_name=_("policy"), choices=get_policy, default=FILTERING_NONE, help_text=_("Routing policy")
     )
 
     extra_context = models.JSONField(

@@ -1,3 +1,5 @@
+import logging
+
 from django.utils.translation import gettext as _
 
 FILTERING_NONE = 1
@@ -8,3 +10,7 @@ FILTERING = (
     (FILTERING_EXTERNAL, _("API filters. Do not use DistributionList, filter users by API rules")),
     (FILTERING_DYNAMIC, _("Filter users using provided rules.")),
 )
+
+
+def get_logging_levels() -> list[tuple[str, str]]:
+    return list(zip(logging._nameToLevel.keys(), logging._nameToLevel.keys(), strict=False))

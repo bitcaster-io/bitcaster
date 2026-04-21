@@ -1,18 +1,26 @@
 
 repos:
+
+  - repo: local
+    hooks:
+      - id: django-check-migrations
+        name: Check for missing migrations
+        entry: uv run python manage.py makemigrations --check --dry-run
+        language: system
+        pass_filenames: false
+        always_run: true
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
 
-
   - repo: https://github.com/djlint/djLint
     rev: v1.36.4
     hooks:
     -   id: djlint-reformat
         args: ["--configuration", "djlint.toml"]
-
 
   - repo: https://github.com/twisted/towncrier
     rev: 24.8.0
