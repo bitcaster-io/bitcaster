@@ -6,13 +6,30 @@ import pytest
 from django.urls import reverse
 from django.utils import timezone
 from testutils.factories.usermessage import UserMessageFactory
+from testutils.perms import configure_model
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
 
-    from bitcaster.models import User
+    from bitcaster.models import User, UserMessage
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture
+def user_message(user: User) -> "UserMessage":
+    """User message fixture."""
+    return UserMessageFactory.create(user=user)
+
+
+@pytest.fixture
+def user_messages(user: User) -> list["UserMessage"]:
+    """User messages fixture for filtering tests."""
+    return [
+        UserMessageFactory.create(user=user, displayed=None, read=None),  # new
+        UserMessageFactory.create(user=user, displayed=True, read=None),  # unread
+        UserMessageFactory.create(user=user, read=timezone.now()),  # read
+    ]
 
 
 def test_pwa_index_anonymous(django_app: DjangoTestApp) -> None:
@@ -28,11 +45,9 @@ def test_pwa_index_authenticated(django_app: DjangoTestApp, user: User) -> None:
 
 
 @pytest.mark.parametrize("status", ["new", "unread", "read", "all"])
-def test_pwa_index_filtering(django_app: DjangoTestApp, user: User, status: str) -> None:
-    UserMessageFactory(user=user, displayed=None, read=None)  # new
-    UserMessageFactory(user=user, displayed=True, read=None)  # unread
-    UserMessageFactory(user=user, read=timezone.now())  # read
-
+def test_pwa_index_filtering(
+    django_app: DjangoTestApp, user: User, user_messages: list[UserMessage], status: str
+) -> None:
     django_app.set_user(user)
     response = django_app.get(reverse("pwa:index") + f"?status={status}")
     assert response.status_code == 200
@@ -65,10 +80,12 @@ def test_pwa_logout(django_app: DjangoTestApp, user: User) -> None:
     assert response.url.endswith(reverse("pwa:login"))
 
 
-def test_pwa_detail(django_app: DjangoTestApp, user: User) -> None:
-    user_message = UserMessageFactory(user=user)
+@pytest.mark.parametrize("read", [{"read", True}, {"read", False}])
+@pytest.mark.parametrize("displayed", [{"displayed", None}, {"displayed", timezone.now()}])
+def test_pwa_detail(django_app: DjangoTestApp, user: User, user_message: UserMessage, status, displayed) -> None:
     django_app.set_user(user)
-    response = django_app.get(reverse("pwa:detail", kwargs={"pk": user_message.pk}))
+    with configure_model(user_message, **{**displayed, **status}):
+        response = django_app.get(reverse("pwa:detail", kwargs={"pk": user_message.pk}))
     assert response.status_code == 200
     assert response.context["message"] == user_message
 
