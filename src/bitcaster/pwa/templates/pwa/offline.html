@@ -1,0 +1,26 @@
+{% extends "pwa/base.html" %}
+{% load i18n static %}
+{% block pwa_title %}
+    {% trans "Offline" %}
+{% endblock %}
+{% block base %}
+    <div class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-8">
+        <div class="flex flex-col items-center animate-pulse">
+            <img style="width: 200px" src="{% static "bitcaster/images/logos/logo400.png" %}" class="mb-6" />
+            <img class="h-10 mb-8" src="{% static "bitcaster/images/logos/name_white.svg" %}" />
+            <div class="text-center space-y-4">
+                <span class="material-symbols-outlined text-5xl text-gray-500">wifi_off</span>
+                <h2 class="text-2xl font-bold">
+                    {% trans "You are offline" %}
+                </h2>
+                <p class="text-gray-400 max-w-xs mx-auto">
+                    {% trans "Please check your internet connection. Bitcaster will be available again once you are back online." %}
+                </p>
+            </div>
+            <button onclick="window.location.reload()"
+                    class="mt-10 px-8 py-3 bg-red-600 text-white font-bold rounded-lg shadow-lg hover:bg-red-700 transition">
+                {% trans "Retry" %}
+            </button>
+        </div>
+    </div>
+{% endblock %}

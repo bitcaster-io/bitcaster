@@ -1,0 +1,104 @@
+{% extends "pwa/base.html" %}
+{% load i18n %}
+{% block pwa_title %}
+    {% trans "Preferences" %}
+{% endblock %}
+{% block content %}
+    <!-- User Profile Header -->
+    <div class="pwa-profile-header">
+        <div class="avatar">
+            {{ request.user.username|slice:":1"|upper }}
+        </div>
+        <div class="info">
+            <h2>
+                {{ request.user.get_full_name|default:request.user.username }}
+            </h2>
+            <p>
+                {{ request.user.email }}
+            </p>
+        </div>
+    </div>
+    <div class="form-preferences">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="pwa-form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="help-text">
+                            {{ field.help_text }}
+                        </p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="error">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="pt-4">
+                <button type="submit" class="pwa-btn primary large w-full">
+                    {% trans "Save Preferences" %}
+                </button>
+            </div>
+        </form>
+    </div>
+    <!-- PWA Installation Section -->
+    <div id="pwa-install-section" class="hidden mt-6">
+        <h3 class="">
+            {% trans "Mobile App" %}
+        </h3>
+        <p class="">
+            {% trans "Install Bitcaster on your home screen for quick access and a better experience." %}
+        </p>
+        <button id="pwa-install-button" onclick="installPwa()" class="pwa-btn outline large w-full">
+            {% trans "Install Application" %}
+        </button>
+    </div>
+    <div class="h-20">
+    </div>
+    <div class="h-5">
+    </div>
+    <script>
+        function checkPwaInstallability() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const installSection = document.getElementById('pwa-install-section');
+            const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            if (isStandalone) {
+                installSection.classList.add('hidden');
+                return;
+            }
+
+            // Show section if we have the prompt OR if it's iOS (where we show instructions)
+            if (deferredPrompt || isiOS) {
+                installSection.classList.remove('hidden');
+
+                if (isiOS) {
+                    const btn = document.getElementById('pwa-install-button');
+                    btn.innerText = '{% trans "How to Install" %}';
+                    btn.onclick = () => alert('{% trans "On iOS, tap the Share icon and then Add to Home Screen" %}');
+                }
+            }
+        }
+
+        // Check on load and every second for a few times because deferredPrompt might arrive late
+        window.addEventListener('load', () => {
+            checkPwaInstallability();
+            let attempts = 0;
+            const interval = setInterval(() => {
+                checkPwaInstallability();
+                attempts++;
+                if (deferredPrompt || attempts > 5) clearInterval(interval);
+            }, 1000);
+        });
+
+        // Also listen for the event here just in case
+        window.addEventListener('beforeinstallprompt', () => {
+            checkPwaInstallability();
+        });
+    </script>
+{% endblock %}

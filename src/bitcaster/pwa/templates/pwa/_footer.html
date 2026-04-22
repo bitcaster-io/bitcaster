@@ -1,0 +1,21 @@
+{% load static i18n %}
+{% if request.user.is_authenticated %}
+    <nav class="bottom-nav">
+        <a href="{% url 'pwa:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+            <span class="material-symbols-outlined">mail</span>
+            <span>{% trans "Messages" %}</span>
+        </a>
+        <a href="{% url 'pwa:prefs' %}" class="{% if request.resolver_match.url_name == 'prefs' %}active{% endif %}">
+            <span class="material-symbols-outlined">settings</span>
+            <span>{% trans "Settings" %}</span>
+        </a>
+        <a href="{% url 'pwa:about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+            <span class="material-symbols-outlined">info</span>
+            <span>{% trans "About" %}</span>
+        </a>
+        <a href="{% url 'pwa:logout' %}" class="{% if request.resolver_match.url_name == 'logout' %}active{% endif %}">
+            <span class="material-symbols-outlined">logout</span>
+            <span>{% trans "Logout" %}</span>
+        </a>
+    </nav>
+{% endif %}

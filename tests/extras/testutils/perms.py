@@ -4,6 +4,7 @@ from random import choice
 from typing import TYPE_CHECKING, Any, Generator, Iterable, Optional, Union
 from unittest.mock import Mock
 
+from concurrency.api import disable_concurrency
 from django.contrib.auth.models import Permission
 from faker import Faker
 from strategy_field.utils import get_attr
@@ -168,14 +169,16 @@ class configure_model(ContextDecorator):  # noqa
             for k, v in self.fields.items():
                 self.stored[k] = get_attr(self.target, k)
                 set_attr(self.target, k.replace("__", "."), v)
-            self.target.save()
+            with disable_concurrency(self.target):
+                self.target.save()
         return self
 
     def __exit__(self, e_typ: Optional[type], e_val: Optional[Exception], trcbak: Optional[Any]) -> None:
         if self.stored:
             for k, v in self.stored.items():
                 set_attr(self.target, k.replace("__", "."), v)
-            self.target.save()
+            with disable_concurrency(self.target):
+                self.target.save()
 
     def start(self) -> "configure_model":
         """Activate a patch, returning any created mock."""

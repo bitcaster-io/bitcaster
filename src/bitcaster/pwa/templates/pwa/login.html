@@ -1,0 +1,76 @@
+{% extends "pwa/base.html" %}
+{% load i18n static feature_flags %}
+{% block pwa_title %}
+    {% trans "Login" %}
+{% endblock %}
+{% block content %}
+    <div class="flex flex-col items-center justify-center min-h-[75vh] p-8">
+        <div class="w-full max-w-sm p-8 border rounded-2xl shadow-lg space-y-8">
+            <div class="text-center">
+                <img class="h-16 mx-auto mb-4" src="{% static "bitcaster/images/logos/logo128.png" %}" alt="Bitcaster logo" />
+                <h2 class="text-2xl font-bold">
+                    {% trans "Welcome" %}
+                </h2>
+                <p class="text-sm">
+                    {% trans "Log in to your account" %}
+                </p>
+            </div>
+            {% flag_enabled 'LOCAL_LOGIN' as LOCAL_LOGIN %}
+            {% if LOCAL_LOGIN %}
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="flex flex-col space-y-2">
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+                            <div class="w-full">
+                                {{ field }}
+                            </div>
+                            {% if field.help_text %}
+                                <p class="text-xs text-gray-500 italic">
+                                    {{ field.help_text }}
+                                </p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <p class="text-xs text-red-500 font-medium">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    {% if form.non_field_errors %}
+                        <div class="p-3 bg-red-100 border border-red-300 rounded text-red-700 text-sm">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="pt-4">
+                        <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg shadow-lg hover:bg-red-700 transition">
+                            {% trans "Log In" %}
+                        </button>
+                    </div>
+                {% endif %}
+            </form>
+            {% if sso_providers %}
+                <div class="relative py-4">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-200 dark:border-gray-700">
+                        </div>
+                    </div>
+                    <div class="relative flex justify-center text-xs uppercase">
+                        <span class="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">{% trans "Or continue with" %}</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 gap-3">
+                    {% for k, v in sso_providers %}
+                        <a href="{% url 'social:begin' k %}"
+                           class="flex items-center justify-center w-full py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm">
+                            {{ v }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endblock %}

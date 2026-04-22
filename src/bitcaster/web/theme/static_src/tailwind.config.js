@@ -1,8 +1,8 @@
 export default {
-  darkMode: ["attribute", "data-theme"],
+  darkMode: "selector",
   content: [
-    "./templates/**/*.html",
-    "./**/*.py",
-    "./**/*.js",
+    "../../**/templates/**/*.html",
+    "../../**/*.py",
+    "../../**/*.js",
   ],
 }

@@ -77,6 +77,7 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "SECRET_KEY": (str, NOT_SET, setting("secret-key")),
     "SECURE_HSTS_PRELOAD": (bool, True, setting("secure-hsts-preload"), False),
     "SECURE_HSTS_SECONDS": (int, 60, setting("secure-hsts-seconds")),
+    "SECURE_PROXY_SSL_HEADER": (tuple, "", setting("secure-proxy-ssl-header")),
     "SECURE_SSL_REDIRECT": (bool, True, setting("secure-ssl-redirect"), False),
     "SENTRY_DSN": (str, "", "Sentry DSN"),
     "SENTRY_ENVIRONMENT": (str, "production", "Sentry Environment"),
@@ -113,6 +114,8 @@ CONFIG: "Mapping[str, ConfigItem]" = {
     "STATIC_URL": (str, "/static/", setting("static-url")),
     "SUPERUSERS": (list, [], "Users in this list will be granted superuser privileges when created."),
     "TIME_ZONE": (str, "UTC", setting("std-setting-TIME_ZONE")),
+    "USE_X_FORWARDED_HOST": (bool, False, setting("use-x-forwarded-host")),
+    "USE_X_FORWARDED_PORT": (bool, False, setting("use-x-forwarded-port")),
 }
 
 

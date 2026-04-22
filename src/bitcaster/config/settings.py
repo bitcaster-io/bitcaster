@@ -15,6 +15,9 @@ LOCALE_PATHS = [str((PACKAGE_DIR / "LOCALE").absolute())]
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 SECRET_KEY = env("SECRET_KEY")
 SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT")
+SECURE_PROXY_SSL_HEADER = env.list("SECURE_PROXY_SSL_HEADER")
+USE_X_FORWARDED_HOST = env("USE_X_FORWARDED_HOST")
+USE_X_FORWARDED_PORT = env("USE_X_FORWARDED_PORT")
 
 DEBUG = env.bool("DEBUG")
 INTERNAL_IPS = env.list("INTERNAL_IPS")
@@ -70,6 +73,7 @@ INSTALLED_APPS = [
     "anymail",
     "bitcaster.apps.Config",
     "bitcaster.console.apps.Config",
+    "bitcaster.pwa.apps.Config",
     "tailwind",
     "issues",
     *env("EXTRA_APPS"),
@@ -262,6 +266,7 @@ from .fragments.debug_toolbar import *  # noqa
 from .fragments.dramatiq import *  # noqa
 from .fragments.flags import *  # noqa
 from .fragments.logging import *  # noqa
+from .fragments.pwa import *  # noqa
 from .fragments.rest_framework import *  # noqa
 from .fragments.root import *  # noqa
 from .fragments.sentry import *  # noqa

@@ -1,0 +1,27 @@
+{% extends "pwa/base.html" %}
+{% load i18n static %}
+{% block pwa_title %}
+    {% trans "About" %}
+{% endblock %}
+{% block content %}
+    <div class="pwa-card text-center py-12">
+        <img src="{% static "bitcaster/images/logos/logo128.png" %}" class="h-24 w-24 mx-auto mb-6 rounded-2xl shadow-lg" />
+        <h2 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+            Bitcaster
+        </h2>
+        <div class="border-gray-100 dark:border-gray-700 pt-8">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                {% trans "Bitcaster is a distributed signal-to-message notification broker." %}
+            </p>
+        </div>
+        <div class="border-gray-100 dark:border-gray-700 pt-8">
+            <p class="text-gray-500 dark:text-gray-400">
+                {{ bitcaster.version }}
+            </p>
+            <p class="text-gray-500 dark:text-gray-400">
+                Copyright &copy; 2022-<script>document.write(new Date().getFullYear())</script> OS4D ltd
+            </p>
+            <a href="{{ bitcaster.doc_site }}/license/">License</a> -  <a href="{{ bitcaster.doc_site }}">Documentation</a>
+        </div>
+    </div>
+{% endblock %}

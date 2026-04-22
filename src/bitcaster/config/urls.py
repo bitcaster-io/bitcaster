@@ -1,6 +1,7 @@
 import debug_toolbar
 from django.contrib import admin
 from django.urls import include, path
+from django.views.i18n import JavaScriptCatalog
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -10,6 +11,7 @@ from drf_spectacular.views import (
 urlpatterns = [
     path("", include("bitcaster.web.urls")),
     path("i18n/", include("django.conf.urls.i18n")),
+    path("pwa/", include("bitcaster.pwa.urls")),
     path("admin/", admin.site.urls),
     path("console/", include("bitcaster.console.urls", namespace="console")),
     path("chaining/", include("smart_selects.urls")),
@@ -21,5 +23,6 @@ urlpatterns = [
     path("adminactions/", include("adminactions.urls")),
     path("tinymce/", include("tinymce.urls")),
     path("social/", include("social_django.urls", namespace="social")),
+    path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
     path(r"__debug__/", include(debug_toolbar.urls)),
 ]

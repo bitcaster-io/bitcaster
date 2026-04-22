@@ -17,13 +17,23 @@ if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from pytest_django.fixtures import SettingsWrapper
 
-    from bitcaster.models import User
+    from bitcaster.models import Occurrence, User
 
 pytestmark = pytest.mark.django_db
 
 
 def test_home(client: "Client") -> None:
     assert client.get("/").status_code == 200
+
+
+def test_home_mobile(client: "Client") -> None:
+    iphone_ua = (
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 "
+        "(KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1"
+    )
+    response = client.get("/", HTTP_USER_AGENT=iphone_ua)
+    assert response.status_code == 302
+    assert response.url == reverse("pwa:index")
 
 
 def test_index_user_no_redirect(django_app: DjangoTestApp, user: "User") -> None:
@@ -106,3 +116,11 @@ def test_attachment_not_found(django_app: DjangoTestApp) -> None:
     # ... and expect to find nothing in the db
     response = django_app.get(reverse("safe_download", kwargs={"key": key}), expect_errors=True)
     assert response.status_code == 404
+
+
+def test_recipients_view(django_app: DjangoTestApp, occurrence: "Occurrence") -> None:
+    key = KeyManager().generate_key(None, occurrence=occurrence.pk)
+    url = reverse("recipients", kwargs={"token": key})
+    response = django_app.get(url)
+    assert response.status_code == 200
+    assert response.context["occurrence"] == occurrence

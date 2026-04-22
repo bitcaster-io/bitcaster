@@ -1,0 +1,63 @@
+{% load i18n static user %}
+{% block last_seen %}
+    <div class="p-2">
+        {{ last_seen }}
+    </div>
+{% endblock %}
+<!-- Filter Selector -->
+<div class="pwa-filter-container">
+    <a href="?status=all" class="pwa-filter-item {% if current_status == 'all' %}active{% endif %}">
+        {% trans "All" %}
+    </a>
+    <a href="?status=unread" class="pwa-filter-item {% if current_status == 'unread' %}active{% endif %}">
+        {% trans "Not Read" %}
+    </a>
+    <a href="?status=read" class="pwa-filter-item {% if current_status == 'read' %}active{% endif %}">
+        {% trans "Read" %}
+    </a>
+</div>
+<div class="space-y-4" id="user_messages">
+    {% for message in messages %}
+        <div class="pwa-message-card" onclick="location.href='{% url details_url message.instance.pk %}'">
+            <div class="header">
+                <span class="message-date">{% user_datetime message.instance.created %}</span>
+                <div class="badge">
+                    {% if message.instance.created > last_seen %}
+                        <span class="badge badge-new">{% trans "New" %}</span>
+                    {% else %}
+                        {% if message.instance.read %}
+                            <span class="badge badge-read">{% trans "Read" %}</span>
+                        {% else %}
+                            <span class="badge badge-unread">{% trans "Not Read" %}</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-1">
+                {{ message.instance.subject }}
+            </h3>
+        </div>
+    {% empty %}
+        <div class="text-center py-20 text-gray-500 dark:text-gray-400">
+            <span class="material-symbols-outlined text-6xl mb-2">inbox</span>
+            <p class="text-lg">
+                {% trans "No messages yet." %}
+            </p>
+        </div>
+    {% endfor %}
+</div>
+<div class="pwa-pagination mb-10">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn">{% trans "Previous" %}</a>
+    {% else %}
+        <span class="btn disabled">{% trans "Previous" %}</span>
+    {% endif %}
+    <span class="info">
+        {{ page_obj.number }} / {{ paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn">{% trans "Next" %}</a>
+    {% else %}
+        <span class="btn disabled">{% trans "Next" %}</span>
+    {% endif %}
+</div>

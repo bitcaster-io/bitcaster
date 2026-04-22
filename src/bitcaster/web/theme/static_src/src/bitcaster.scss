@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+@source "../../../../**/*.html";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary-50: var(--color-red-50);
+  --color-primary-100: var(--color-red-100);
+  --color-primary-200: var(--color-red-200);
+  --color-primary-300: var(--color-red-300);
+  --color-primary-400: var(--color-red-400);
+  --color-primary-500: var(--color-red-500);
+  --color-primary-600: var(--color-red-600);
+  --color-primary-700: var(--color-red-700);
+  --color-primary-800: var(--color-red-800);
+  --color-primary-900: var(--color-red-900);
+  --color-primary-950: var(--color-red-950);
+}
 
 .button {
   @apply block border cursor-pointer px-3 py-2 rounded w-auto;
@@ -19,6 +36,407 @@
   @apply bg-green-300 border-transparent;
 }
 
-.text-green-600{
+.text-green-600 {
   color: #15c11c;
+}
+
+/* PWA Styles */
+body.pwa {
+  @apply pb-[75px] md:pb-0 bg-gray-50 text-gray-900 min-h-screen;
+
+  &:where(.dark, .dark *) {
+    @apply bg-gray-900 text-gray-100;
+  }
+
+  .pwa-header {
+    @apply flex items-center justify-between p-4 bg-red-600 text-white shadow-md;
+
+    &:where(.dark, .dark *) {
+      @apply bg-red-900;
+    }
+
+    h1 {
+      @apply text-xl font-bold flex items-center gap-2;
+    }
+  }
+
+  .pwa-header-btn {
+    @apply flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/20 transition-colors focus:outline-none;
+  }
+
+  .pwa-content-wrapper {
+    @apply p-4 pb-10 mb-10;
+  }
+
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 flex border-t border-gray-200 z-[1000] h-[75px] bg-white;
+    padding-bottom: env(safe-area-inset-bottom);
+
+    &:where(.dark, .dark *) {
+      @apply bg-gray-800 border-gray-700;
+    }
+
+    a {
+      @apply flex-1 flex flex-col items-center justify-center text-gray-400 transition-colors no-underline;
+      background-color: transparent !important;
+
+      &:where(.dark, .dark *) {
+        @apply text-gray-500;
+      }
+
+      span.material-symbols-outlined {
+        font-size: 26px !important;
+        margin-bottom: 2px;
+      }
+
+      span:not(.material-symbols-outlined) {
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+      }
+
+      &.active {
+        @apply text-red-600;
+
+        &:where(.dark, .dark *) {
+          @apply text-red-500;
+        }
+      }
+    }
+  }
+
+  /* Banners */
+  .pwa-banner {
+    @apply fixed top-0 left-0 right-0 z-[2000] p-4 bg-white border-b shadow-xl;
+
+    &:where(.dark, .dark *) {
+      @apply bg-gray-800 border-gray-700;
+    }
+
+    &.pwa-open-app {
+      @apply bg-red-50 border-red-200;
+      &:where(.dark, .dark *) {
+        @apply bg-red-900/20 border-red-900/40;
+      }
+    }
+
+    .pwa-banner-inner {
+      @apply flex items-center gap-4;
+    }
+
+    .pwa-banner-icon {
+      @apply h-12 w-12 rounded-xl shadow-sm;
+    }
+
+    .pwa-banner-text {
+      @apply flex-1;
+      h4 {
+        @apply text-sm font-bold text-gray-900 dark:text-white;
+      }
+
+      p {
+        @apply text-xs text-gray-500 dark:text-gray-400;
+      }
+    }
+
+    .pwa-banner-actions {
+      @apply flex gap-2;
+    }
+  }
+
+  /* Buttons */
+  .pwa-btn {
+    @apply px-4 py-2 text-xs font-bold rounded-lg shadow-md transition-all;
+
+    &.primary {
+      @apply bg-red-600 text-white hover:bg-red-700;
+    }
+
+    &.secondary {
+      @apply text-gray-500 hover:text-gray-700 dark:hover:text-gray-300;
+    }
+
+    &.outline {
+      @apply border-2 border-red-600 text-red-600 hover:bg-red-50;
+      &:where(.dark, .dark *) {
+        @apply hover:bg-red-900/20;
+      }
+    }
+
+    &.large {
+      @apply py-3 text-sm;
+    }
+
+    &-xl {
+      @apply py-4 text-base rounded-xl;
+    }
+  }
+
+  /* Filter Selector */
+  .pwa-filter-container {
+    @apply flex p-1 mb-6 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-zinc-900 rounded-xl;
+
+    &:where(.dark, .dark *) {
+      @apply bg-gray-800 border-zinc-900;
+    }
+
+    .pwa-filter-item {
+      @apply flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all;
+
+      &:where(.dark, .dark *) {
+        @apply text-gray-500;
+      }
+
+      &.active {
+        @apply bg-white text-red-600 shadow-sm  bg-white dark:bg-zinc-700 text-red-600 shadow-sm;
+
+        &:where(.dark, .dark *) {
+          @apply bg-zinc-700 text-red-600;
+        }
+      }
+    }
+  }
+
+  /* Cards */
+  .form-preferences {
+    @apply p-6 border border-gray-200 rounded-xl shadow-md bg-white transition-all;
+
+    &:where(.dark, .dark *) {
+      @apply border-gray-700 bg-gray-800 text-gray-100;
+    }
+
+    &.interactive {
+      @apply cursor-pointer active:bg-gray-50;
+      &:where(.dark, .dark *) {
+        @apply active:bg-gray-700;
+      }
+    }
+
+  }
+  #pwa-install-section{
+    @apply p-6 border border-gray-200 rounded-xl shadow-md bg-white transition-all;
+    &:where(.dark, .dark *) {
+      @apply border-gray-700 bg-gray-800 text-gray-100;
+    }
+
+    h3{
+      @apply font-bold text-gray-800 dark:text-gray-200 text-sm mb-2;
+    }
+    p{
+      @apply text-xs text-gray-500 dark:text-gray-400 mb-4;
+    }
+
+  }
+  /* Message List */
+  .pwa-message-card {
+    @apply p-4 mb-4 border border-gray-200 rounded-lg shadow-sm bg-white transition-all cursor-pointer active:bg-gray-50;
+
+    &:where(.dark, .dark *) {
+      @apply border-gray-700 bg-gray-800 active:bg-gray-700;
+    }
+
+    .header {
+      @apply flex justify-between items-start mb-2 bg-transparent p-0 shadow-none border-none text-gray-500;
+      &:where(.dark, .dark *) {
+        @apply text-gray-400;
+      }
+      .message-date{
+        @apply text-xs text-gray-500 dark:text-gray-400;
+      }
+    }
+
+    h3 {
+      @apply font-bold text-gray-800 mb-1;
+      &:where(.dark, .dark *) {
+        @apply text-gray-100;
+      }
+    }
+
+    p {
+      @apply text-sm text-gray-600 truncate;
+      &:where(.dark, .dark *) {
+        @apply text-gray-400;
+      }
+    }
+  }
+
+  /* Profile Header */
+  .pwa-profile-header {
+    @apply flex items-center gap-4 p-6 mb-6 border border-gray-200 rounded-xl shadow-md bg-white;
+
+    &:where(.dark, .dark *) {
+      @apply border-gray-700 bg-gray-800;
+    }
+
+    .avatar {
+      @apply flex items-center justify-center w-12 h-12 bg-red-600 text-white rounded-full font-bold text-xl shadow-inner;
+    }
+
+    .info {
+      h2 {
+        @apply text-lg font-bold text-gray-900 leading-tight;
+        &:where(.dark, .dark *) {
+          @apply text-white;
+        }
+      }
+
+      p {
+        @apply text-sm text-gray-500;
+        &:where(.dark, .dark *) {
+          @apply text-gray-400;
+        }
+      }
+    }
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-block px-2 py-1 text-[10px] font-bold rounded-full uppercase;
+
+    .badge-unread, .badge-new {
+      @apply text-red-800;
+      &:where(.dark, .dark *) {
+        @apply text-red-400;
+      }
+    }
+
+    .badge-read {
+      @apply text-green-800;
+      &:where(.dark, .dark *) {
+        @apply text-green-400;
+      }
+    }
+  }
+
+  /* Form Widgets */
+  .pwa-form-group {
+    @apply flex flex-col space-y-2 mb-6;
+
+    label {
+      @apply font-bold text-gray-800 text-sm;
+      &:where(.dark, .dark *) {
+        @apply text-gray-200;
+      }
+    }
+
+    input, select, textarea {
+      @apply w-full p-3 border rounded-lg bg-white border-gray-300 text-gray-900;
+      @apply focus:ring-red-500 focus:border-red-500;
+
+      &:where(.dark, .dark *) {
+        @apply bg-gray-700 border-gray-600 text-white;
+      }
+    }
+
+    .help-text {
+      @apply text-xs text-gray-500 italic;
+      &:where(.dark, .dark *) {
+        @apply text-gray-400;
+      }
+    }
+
+    .error {
+      @apply text-xs text-red-500 font-medium;
+    }
+  }
+
+  /* Pagination */
+  .pwa-pagination {
+    @apply flex justify-between items-center mt-8 pb-4;
+
+    .btn {
+      @apply px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm font-medium transition-all;
+      &:where(.dark, .dark *) {
+        @apply bg-gray-700 text-gray-200;
+      }
+
+      &.disabled {
+        @apply bg-gray-100 text-gray-400 cursor-not-allowed;
+        &:where(.dark, .dark *) {
+          @apply bg-gray-800 text-gray-600;
+        }
+      }
+    }
+
+    .info {
+      @apply text-sm text-gray-600 font-medium;
+      &:where(.dark, .dark *) {
+        @apply text-gray-400;
+      }
+    }
+  }
+
+  /* Success/Installed Page */
+  .pwa-status-container {
+    @apply flex flex-col items-center justify-center min-h-[60vh] p-8 text-center space-y-8;
+
+    .status-icon-wrapper {
+      @apply relative mb-4;
+      .pulse-bg {
+        @apply absolute -inset-4 bg-red-100 rounded-full animate-pulse;
+        &:where(.dark, .dark *) {
+          @apply bg-red-900/20;
+        }
+      }
+
+      .main-icon {
+        @apply relative h-24 w-24 rounded-2xl shadow-xl;
+      }
+
+      .check-badge {
+        @apply absolute -bottom-2 -right-2 bg-green-500 text-white rounded-full p-1 shadow-lg flex items-center justify-center;
+      }
+    }
+  }
+
+  /* Message Detail */
+  .pwa-back-link {
+    @apply inline-flex items-center text-red-600 font-medium mb-4 no-underline;
+    &:where(.dark, .dark *) {
+      @apply text-red-500;
+    }
+  }
+
+  .pwa-message-detail {
+
+    .detail-header {
+      @apply flex flex-col space-y-2 mb-6 border-b border-gray-100 pb-4;
+      &:where(.dark, .dark *) {
+        @apply border-gray-700;
+      }
+
+      .date {
+        @apply text-xs text-gray-700 font-medium;
+        &:where(.dark, .dark *) {
+          @apply text-gray-400;
+        }
+      }
+
+      h2 {
+        @apply text-2xl font-bold text-black;
+        &:where(.dark, .dark *) {
+          @apply text-gray-100;
+        }
+      }
+
+      .meta {
+        @apply flex items-center text-sm text-gray-900;
+        &:where(.dark, .dark *) {
+          @apply text-gray-400;
+        }
+
+        b {
+          @apply text-black dark:text-gray-200 mr-2;
+        }
+      }
+    }
+
+    .message-body {
+      @apply text-base leading-relaxed whitespace-pre-wrap text-gray-800;
+      &:where(.dark, .dark *) {
+        @apply text-gray-300;
+      }
+    }
+  }
 }

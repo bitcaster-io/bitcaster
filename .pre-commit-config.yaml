@@ -94,6 +94,8 @@ repos:
             - '@.*postcss\.config\.js'
             - -i
             - '@.*tailwind\.config\.js'
+            - -i
+            - '@src/bitcaster/pwa/templates/pwa/serviceworker.js'
 
       - id: check-forbidden
         name: check pyproject to avoid editable sources/deps

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -38,15 +38,22 @@ class UserConsoleMixin(UnfoldViewMixin, ContextMixin):
     pass
 
 
-# @method_decorator(cache_page(60 * 1), name='dispatch')
-# @method_decorator(vary_on_cookie, name='dispatch')
 class UserConsoleIndexView(UserConsoleMixin, LoginRequiredMixin, TemplateView):
     template_name = "bitcaster/console/index.html"
     paginate_by = 25
 
+    def get_queryset(self) -> QuerySet[UserMessage]:
+        qs = self.request.user.bitcaster_messages.order_by("-created")
+        status = self.request.GET.get("status")
+        if status == "unread":
+            qs = qs.filter(read__isnull=True)
+        elif status == "read":
+            qs = qs.filter(read__isnull=False)
+        return qs
+
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         ctx = super().get_context_data(**kwargs)
-        qs = self.request.user.bitcaster_messages.order_by("-created")
+        qs = self.get_queryset()
 
         paginator = Paginator(qs, self.paginate_by)
         page_number = self.request.GET.get("page")
@@ -62,7 +69,9 @@ class UserConsoleIndexView(UserConsoleMixin, LoginRequiredMixin, TemplateView):
             messages=MessageFormSet(queryset=page_obj.object_list),  # type: ignore[arg-type]
             page_obj=page_obj,
             last_seen=last_seen,
+            details_url="console:detail",
             last_notify=last_notify,
+            current_status=self.request.GET.get("status", "all"),
         )
         return ctx
 
@@ -81,7 +90,7 @@ class UserConsoleDetailView(UserConsoleMixin, LoginRequiredMixin, DetailView[Use
         return obj
 
 
-class UserPrefFrom(UnfoldForm, forms.ModelForm[User]):
+class UserPrefForm(UnfoldForm, forms.ModelForm[User]):
     timezone = TimeZoneFormField(widget=UnfoldAdminSelectWidget)
 
     class Meta:
@@ -89,11 +98,11 @@ class UserPrefFrom(UnfoldForm, forms.ModelForm[User]):
         fields = ("timezone", "date_format", "time_format")
 
 
-class UserConsoleUserPrefsView(UserConsoleMixin, LoginRequiredMixin, UpdateView[User, UserPrefFrom]):
+class UserConsoleUserPrefsView(UserConsoleMixin, LoginRequiredMixin, UpdateView[User, UserPrefForm]):
     template_name = "bitcaster/console/prefs.html"
-    form_class = UserPrefFrom
+    form_class = UserPrefForm
     model = User
     success_url = "."
 
     def get_object(self, queryset: QuerySet["User"] | None = None) -> User:
-        return self.request.user  # type: ignore[return-value]
+        return cast("User", self.request.user)

@@ -1,0 +1,17 @@
+{% load static %}
+<div class="pwa-header">
+    <h1 class="text-xl font-bold flex items-center gap-2">
+        <a href="/pwa/">
+            <img src="{% static "bitcaster/images/logos/logo48.png" %}" class="h-8 w-8" />
+        </a>
+        {% block pwa_title %}
+            Bitcaster
+        {% endblock %}
+    </h1>
+    <div class="flex items-center gap-2">
+        <button type="button" x-on:click="adminTheme = (adminTheme === 'dark' ? 'light' : 'dark')" class="pwa-header-btn text-white">
+            <span class="material-symbols-outlined text-[24px]" x-show="adminTheme !== 'dark'">light_mode</span>
+            <span class="material-symbols-outlined text-[24px]" x-show="adminTheme === 'dark'">dark_mode</span>
+        </button>
+    </div>
+</div>

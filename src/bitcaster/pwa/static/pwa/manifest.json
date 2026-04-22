@@ -1,0 +1,27 @@
+{
+  "name": "Bitcaster PWA",
+  "short_name": "Bitcaster",
+  "description": "Displays messages received from a Bitcaster server.",
+  "start_url": "/pwa/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "scope": "/pwa/",
+  "icons": [
+    {
+      "src": "images/logos/bitcaster_48x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "images/logos/bitcaster_128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "images/logos/bitcaster_400x400.png",
+      "sizes": "400x400",
+      "type": "image/png"
+    }
+  ]
+}

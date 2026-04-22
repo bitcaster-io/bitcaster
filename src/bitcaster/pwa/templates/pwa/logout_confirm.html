@@ -1,0 +1,32 @@
+{% extends "pwa/base.html" %}
+{% load i18n static %}
+{% block pwa_title %}
+    {% trans "Logout" %}
+{% endblock %}
+{% block content %}
+    <div class="flex flex-col items-center justify-center min-h-[75vh] p-8">
+        <div class="w-full max-w-sm p-8 border rounded-2xl shadow-lg space-y-8">
+            <div class="text-center">
+                <span class="material-symbols-outlined text-6xl text-red-600 mb-4">logout</span>
+                <h2 class="text-2xl font-bold">
+                    {% trans "Log Out" %}
+                </h2>
+                <p class="text-sm text-gray-500">
+                    {% trans "Are you sure you want to log out of Bitcaster?" %}
+                </p>
+            </div>
+            <div class="space-y-4">
+                <form method="post" action="{% url 'pwa:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg shadow-lg hover:bg-red-700 transition">
+                        {% trans "Yes, Log Out" %}
+                    </button>
+                </form>
+                <a href="{% url 'pwa:index' %}"
+                   class="block w-full py-3 text-center border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 font-bold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    {% trans "Cancel" %}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
