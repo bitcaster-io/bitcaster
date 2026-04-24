@@ -28,7 +28,7 @@ def get_server_url() -> str:
     req: HttpRequest | None = state.request
     if req:
         host = req.build_absolute_uri("/")[:-1]
-        if settings.SOCIAL_AUTH_REDIRECT_IS_HTTPS:
+        if settings.REDIRECT_TO_HTTPS:
             host = host.replace("http://", "https://")
 
     return host
@@ -42,7 +42,7 @@ def absolute_uri(url: str | None = None) -> str:
         uri = get_server_url()
     else:
         uri = urljoin(get_server_url().rstrip("/") + "/", url.lstrip("/"))
-    if settings.SOCIAL_AUTH_REDIRECT_IS_HTTPS:
+    if settings.REDIRECT_TO_HTTPS:
         uri = uri.replace("http://", "https://")
     return uri
 

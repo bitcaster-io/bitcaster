@@ -221,6 +221,7 @@ dependencies = [
     { name = "django-admin-extra-buttons" },
     { name = "django-adminactions" },
     { name = "django-adminfilters" },
+    { name = "django-allauth", extra = ["mfa"] },
     { name = "django-anymail" },
     { name = "django-concurrency" },
     { name = "django-constance" },
@@ -258,6 +259,7 @@ dependencies = [
     { name = "jsonschema" },
     { name = "mailjet-rest" },
     { name = "msgpack" },
+    { name = "oauthlib" },
     { name = "phonenumbers" },
     { name = "pillow" },
     { name = "premailer" },
@@ -271,12 +273,11 @@ dependencies = [
     { name = "pywebpush" },
     { name = "qrcode" },
     { name = "requests" },
+    { name = "requests-oauthlib" },
     { name = "sentry-sdk" },
     { name = "setuptools" },
     { name = "slack-notifications" },
     { name = "slack-sdk" },
-    { name = "social-auth-app-django" },
-    { name = "social-auth-core" },
     { name = "twilio" },
     { name = "user-agents" },
 ]
@@ -373,6 +374,7 @@ requires-dist = [
     { name = "django-admin-extra-buttons", specifier = ">=2.1.1" },
     { name = "django-adminactions", specifier = ">=2.3" },
     { name = "django-adminfilters", specifier = ">=2.6" },
+    { name = "django-allauth", extras = ["mfa"], specifier = ">=65.16.1" },
     { name = "django-anymail", specifier = ">=10.3" },
     { name = "django-concurrency", specifier = ">=2.5" },
     { name = "django-constance", specifier = ">=3.1" },
@@ -410,6 +412,7 @@ requires-dist = [
     { name = "jsonschema", specifier = ">=4.24" },
     { name = "mailjet-rest", specifier = ">=1.3.4" },
     { name = "msgpack", specifier = ">=1.1.2" },
+    { name = "oauthlib", specifier = ">=3.3.1" },
     { name = "phonenumbers", specifier = ">=9" },
     { name = "pillow", specifier = ">=12.2" },
     { name = "premailer", specifier = ">=3.10" },
@@ -423,12 +426,11 @@ requires-dist = [
     { name = "pywebpush", specifier = ">=2" },
     { name = "qrcode", specifier = ">=7.4.2" },
     { name = "requests", specifier = ">=2.33.1" },
+    { name = "requests-oauthlib", specifier = ">=2.0.0" },
     { name = "sentry-sdk", specifier = ">=1.43" },
     { name = "setuptools", specifier = ">=75.3" },
     { name = "slack-notifications", specifier = ">=0.2.2" },
     { name = "slack-sdk", specifier = ">=3.27.1" },
-    { name = "social-auth-app-django", specifier = ">=5.6" },
-    { name = "social-auth-core", specifier = ">=4.5.3" },
     { name = "twilio", specifier = ">=9.10.5" },
     { name = "user-agents", specifier = ">=2.2" },
 ]
@@ -1031,6 +1033,25 @@ wheels = [
 ]
 
 [[package]]
+name = "django-allauth"
+version = "65.16.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "asgiref" },
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3d/df/357187dfff18c7783e4911827a6c69437e290d7259a32a99c23fcd85997f/django_allauth-65.16.1.tar.gz", hash = "sha256:4425ac3088541c4c54983e16e08f6e3eb9f438dc1b1009534fa51c8bb739ed31", size = 2232835, upload-time = "2026-04-17T18:53:59.475Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ad/58/d95b6c3088d83697bfd93782ee57bc6a6462e41eb19121a947b8a015396a/django_allauth-65.16.1-py3-none-any.whl", hash = "sha256:e49df24056bf37c44e56aaad1e51f78994b7d175bc3476d65e8f8f58390a8ce8", size = 2051868, upload-time = "2026-04-17T18:54:12.032Z" },
+]
+
+[package.optional-dependencies]
+mfa = [
+    { name = "fido2" },
+    { name = "qrcode" },
+]
+
+[[package]]
 name = "django-anymail"
 version = "14.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1619,6 +1640,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/2d/18/7881a99ba5244bfc82f06017316ffe93217dbbbcfa52b887caa1d4f2a6d3/fasteners-0.20.tar.gz", hash = "sha256:55dce8792a41b56f727ba6e123fcaee77fd87e638a6863cec00007bfea84c8d8", size = 25087, upload-time = "2025-08-11T10:19:37.785Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/51/ac/e5d886f892666d2d1e5cb8c1a41146e1d79ae8896477b1153a21711d3b44/fasteners-0.20-py3-none-any.whl", hash = "sha256:9422c40d1e350e4259f509fb2e608d6bc43c0136f79a00db1b49046029d0b3b7", size = 18702, upload-time = "2025-08-11T10:19:35.716Z" },
+]
+
+[[package]]
+name = "fido2"
+version = "2.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cryptography" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/09/34/4837e2f5640baf61d8abd6125ccb6cc60b4b2933088528356ad6e781496f/fido2-2.2.0.tar.gz", hash = "sha256:0d8122e690096ad82afde42ac9d6433a4eeffda64084f36341ea02546b181dd1", size = 294167, upload-time = "2026-04-15T06:42:50.264Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/01/82/f3c5dd87b0977f5547cc132b7969e6f5075a8c2f5881cf4b6df6378505f9/fido2-2.2.0-py3-none-any.whl", hash = "sha256:3587ccf0af7b71b5dd73f17e1dbec9f0fd157292f9163f02e7778f46d0d25fe5", size = 234025, upload-time = "2026-04-15T06:42:51.813Z" },
 ]
 
 [[package]]
@@ -3642,18 +3675,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python3-openid"
-version = "3.2.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "defusedxml" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5f/4a/29feb8da6c44f77007dcd29518fea73a3d5653ee02a587ae1f17f1f5ddb5/python3-openid-3.2.0.tar.gz", hash = "sha256:33fbf6928f401e0b790151ed2b5290b02545e8775f982485205a066f874aaeaf", size = 305600, upload-time = "2020-06-29T12:15:49.026Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e0/a5/c6ba13860bdf5525f1ab01e01cc667578d6f1efc8a1dba355700fb04c29b/python3_openid-3.2.0-py3-none-any.whl", hash = "sha256:6626f771e0417486701e0b4daff762e7212e820ca5b29fcc0d05f6f8736dfa6b", size = 133681, upload-time = "2020-06-29T12:15:47.502Z" },
-]
-
-[[package]]
 name = "python3-xlib"
 version = "0.15"
 source = { registry = "https://pypi.org/simple" }
@@ -4115,36 +4136,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a2/87/a6771e1546d97e7e041b6ae58d80074f81b7d5121207425c964ddf5cfdbd/sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc", size = 20372, upload-time = "2024-02-25T23:20:04.057Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e9/44/75a9c9421471a6c4805dbf2356f7c181a29c1879239abab1ea2cc8f38b40/sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2", size = 10235, upload-time = "2024-02-25T23:20:01.196Z" },
-]
-
-[[package]]
-name = "social-auth-app-django"
-version = "5.7.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-    { name = "social-auth-core" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/eb/1d/50d9f85975f8aebec6fd353e815d260acada851004e0457fa53e346ed242/social_auth_app_django-5.7.0.tar.gz", hash = "sha256:c0cc118d1bb935dbf02acb8a57fabd7b07694452fce755a5956282c69f019c79", size = 29192, upload-time = "2025-12-18T19:00:26.209Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/39/df/8ed6e0b5e97a3893fc9d2fa5ef57844f0ed820119df49ea151fc1b0ceac1/social_auth_app_django-5.7.0-py3-none-any.whl", hash = "sha256:492b6f64e1e9fa5ed62b24bc19bde31c235fd4eb7fbd5c310e999e752b8f699a", size = 28542, upload-time = "2025-12-18T19:00:26.955Z" },
-]
-
-[[package]]
-name = "social-auth-core"
-version = "4.8.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "defusedxml" },
-    { name = "oauthlib" },
-    { name = "pyjwt", extra = ["crypto"] },
-    { name = "python3-openid" },
-    { name = "requests" },
-    { name = "requests-oauthlib" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/bc/a3/87381698a6d671e07d17ef9b89cb30d02b2cb4a9470d530da245ec4e2bd2/social_auth_core-4.8.5.tar.gz", hash = "sha256:fd10d44bff681a128d127f665f203c496658d5bbfc993ad1b5bbaed589eab573", size = 244501, upload-time = "2026-02-10T09:06:16.902Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/f8/7e/7c30fcf6ebcbef6163a5be0514f5cdc551d276cd03eae92b524f46c4eb2a/social_auth_core-4.8.5-py3-none-any.whl", hash = "sha256:2591c2ce71127ad410e7ca9581bd88658031fdf7b209e05be5920d0bcc1c005a", size = 447336, upload-time = "2026-02-10T09:06:18.399Z" },
 ]
 
 [[package]]

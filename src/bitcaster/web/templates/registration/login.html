@@ -1,5 +1,5 @@
 {% extends "bitcaster/base.html" %}
-{% load feature_flags static %}
+{% load feature_flags static socialaccount %}
 {% block body %}
     {% flag_enabled 'LOCAL_LOGIN' as LOCAL_LOGIN %}
     <div class="text-center">
@@ -17,7 +17,7 @@
             {% endif %}
             <div class="social-login">
                 {% for k,v in sso_providers %}
-                    <form action="{% url "social:begin" k %}">
+                    <form action="{% provider_login_url k %}">
                         <input type="submit" value="{{ v }}" />
                     </form>
                 {% endfor %}

@@ -1,34 +1,68 @@
-from ..settings import env
+ACCOUNT_ADAPTER = "bitcaster.social.adapter.BitcasterAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "bitcaster.social.adapter.BitcasterSocialAccountAdapter"
 
-SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = [
-    "username",
-    "first_name",
-    "last_name",
-    "email",
-]
-SOCIAL_AUTH_JSONFIELD_ENABLED = True
-SOCIAL_AUTH_URL_NAMESPACE = "social"
-SOCIAL_AUTH_STRATEGY = "bitcaster.social.strategy.BitcasterStrategy"
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
-SOCIAL_AUTH_PIPELINE = (
-    "social_core.pipeline.social_auth.social_details",
-    "social_core.pipeline.social_auth.social_uid",
-    "social_core.pipeline.social_auth.social_user",
-    "social_core.pipeline.user.get_username",
-    "social_core.pipeline.social_auth.associate_by_email",
-    "bitcaster.social.pipeline.create_user",
-    "social_core.pipeline.social_auth.associate_user",
-    "social_core.pipeline.social_auth.load_extra_data",
-    "social_core.pipeline.user.user_details",
-    "bitcaster.social.pipeline.save_to_group",
-    "bitcaster.social.pipeline.add_email_address",
-)
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 
-SOCIAL_AUTH_SANITIZE_REDIRECTS = False
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = env.bool("SOCIAL_AUTH_REDIRECT_IS_HTTPS")
-SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
-SOCIAL_AUTH_RAISE_EXCEPTIONS = env("SOCIAL_AUTH_RAISE_EXCEPTIONS")
+# Passkey / MFA settings
+MFA_PASSKEY_LOGIN_ENABLED = True
+MFA_PASSKEY_SIGNUP_ENABLED = True
 
-SOCIAL_LOGIN_URL = env("SOCIAL_AUTH_LOGIN_URL")
-
-USER_FIELDS = ["username", "email", "first_name", "last_name"]
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "SCOPE": ["user:email"],
+    },
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    },
+    "microsoft": {
+        "TENANT": "common",
+    },
+    "facebook": {
+        "METHOD": "oauth2",
+        "SCOPE": ["email", "public_profile"],
+        "AUTH_PARAMS": {"auth_type": "reauthenticate"},
+        "INIT_PARAMS": {"cookie": True},
+        "FIELDS": [
+            "id",
+            "email",
+            "name",
+            "first_name",
+            "last_name",
+            "verified",
+            "locale",
+            "timezone",
+            "link",
+            "gender",
+            "updated_time",
+        ],
+        "EXCHANGE_TOKEN": True,
+        "LOCALE_FUNC": lambda request: "en_US",
+        "VERIFIED_EMAIL": False,
+        "VERSION": "v13.0",
+    },
+    "linkedin_oauth2": {
+        "SCOPE": ["r_liteprofile", "r_emailaddress"],
+        "PROFILE_FIELDS": [
+            "id",
+            "first-name",
+            "last-name",
+            "email-address",
+            "picture-url",
+            "public-profile-url",
+        ],
+    },
+    "gitlab": {
+        "SCOPE": ["api", "read_user"],
+    },
+    "twitter": {
+        "AUTH_PARAMS": {"force_login": "true"},
+    },
+}

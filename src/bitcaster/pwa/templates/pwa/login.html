@@ -1,5 +1,5 @@
 {% extends "pwa/base.html" %}
-{% load i18n static feature_flags %}
+{% load i18n static feature_flags socialaccount %}
 {% block pwa_title %}
     {% trans "Login" %}
 {% endblock %}
@@ -65,7 +65,7 @@
                 </div>
                 <div class="grid grid-cols-1 gap-3">
                     {% for k, v in sso_providers %}
-                        <a href="{% url 'social:begin' k %}"
+                        <a href="{% provider_login_url k %}"
                            class="flex items-center justify-center w-full py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm">
                             {{ v }}
                         </a>
@@ -73,4 +73,5 @@
                 </div>
             {% endif %}
         </div>
-    {% endblock %}
+    </div>
+{% endblock %}

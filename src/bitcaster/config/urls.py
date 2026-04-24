@@ -22,7 +22,8 @@ urlpatterns = [
     path("api/", include("bitcaster.api.urls", namespace="api")),
     path("adminactions/", include("adminactions.urls")),
     path("tinymce/", include("tinymce.urls")),
-    path("social/", include("social_django.urls", namespace="social")),
+    path("social/", include("allauth.urls")),
+    path("mfa/", include("allauth.mfa.urls")),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
     path(r"__debug__/", include(debug_toolbar.urls)),
 ]

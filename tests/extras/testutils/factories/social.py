@@ -7,8 +7,8 @@ from .base import AutoRegisterModelFactory
 
 
 class SocialProviderFactory(AutoRegisterModelFactory[SocialProvider]):
-    label = factory.LazyAttribute(lambda o: Provider[o.provider.replace("-", "_")].label)
     provider = fuzzy.FuzzyChoice(Provider)
+    label = factory.LazyAttribute(lambda o: o.provider.label.title())
 
     class Meta:
         model = SocialProvider
