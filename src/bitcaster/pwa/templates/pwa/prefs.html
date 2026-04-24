@@ -54,7 +54,7 @@
         <p class="">
             {% trans "Install Bitcaster on your home screen for quick access and a better experience." %}
         </p>
-        <button id="pwa-install-button" onclick="installPwa()" class="pwa-btn outline large w-full">
+        <button id="pwa-install-button" class="pwa-btn outline large w-full">
             {% trans "Install Application" %}
         </button>
     </div>
@@ -62,43 +62,4 @@
     </div>
     <div class="h-5">
     </div>
-    <script>
-        function checkPwaInstallability() {
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-            const installSection = document.getElementById('pwa-install-section');
-            const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-            if (isStandalone) {
-                installSection.classList.add('hidden');
-                return;
-            }
-
-            // Show section if we have the prompt OR if it's iOS (where we show instructions)
-            if (deferredPrompt || isiOS) {
-                installSection.classList.remove('hidden');
-
-                if (isiOS) {
-                    const btn = document.getElementById('pwa-install-button');
-                    btn.innerText = '{% trans "How to Install" %}';
-                    btn.onclick = () => alert('{% trans "On iOS, tap the Share icon and then Add to Home Screen" %}');
-                }
-            }
-        }
-
-        // Check on load and every second for a few times because deferredPrompt might arrive late
-        window.addEventListener('load', () => {
-            checkPwaInstallability();
-            let attempts = 0;
-            const interval = setInterval(() => {
-                checkPwaInstallability();
-                attempts++;
-                if (deferredPrompt || attempts > 5) clearInterval(interval);
-            }, 1000);
-        });
-
-        // Also listen for the event here just in case
-        window.addEventListener('beforeinstallprompt', () => {
-            checkPwaInstallability();
-        });
-    </script>
 {% endblock %}

@@ -80,7 +80,7 @@ def pytest_configure(config):
 
     os.environ["STORAGE_DEFAULT"] = "django.core.files.storage.FileSystemStorage"
     os.environ["STORAGE_MEDIA"] = "django.core.files.storage.FileSystemStorage"
-    os.environ["STORAGE_STTIC"] = "django.core.files.storage.FileSystemStorage"
+    os.environ["STORAGE_STATIC"] = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
     os.environ["GMAIL_USER"] = "user@example.com"
     os.environ["GMAIL_PASSWORD"] = "11"
@@ -158,21 +158,21 @@ def mocked_responses():
 def user(db):
     from testutils.factories.user import UserFactory
 
-    return UserFactory(username="user@example.com", is_active=True)
+    return UserFactory.create(username="user@example.com", is_active=True)
 
 
 @pytest.fixture
 def system_user(db):
     from testutils.factories.user import UserFactory
 
-    return UserFactory(username="__SYSTEM__")
+    return UserFactory.create(username="__SYSTEM__")
 
 
 @pytest.fixture
 def superuser(db):
     from testutils.factories.user import SuperUserFactory
 
-    return SuperUserFactory(username="superuser@example.com")
+    return SuperUserFactory.create(username="superuser@example.com")
 
 
 @pytest.fixture
@@ -181,7 +181,7 @@ def os4d(db):
 
     from bitcaster.constants import bitcaster
 
-    return OrganizationFactory(name=bitcaster.ORGANIZATION, slug="os4d")
+    return OrganizationFactory.create(name=bitcaster.ORGANIZATION, slug="os4d")
 
 
 @pytest.fixture
@@ -190,7 +190,7 @@ def bitcaster(os4d) -> "Application":
 
     from bitcaster.constants import bitcaster
 
-    return ApplicationFactory(
+    return ApplicationFactory.create(
         name=bitcaster.APPLICATION, project__organization=os4d, project__name=bitcaster.PROJECT, slug="bitcaster"
     )
 
@@ -216,56 +216,56 @@ def local_organization(db):
 def project(organization):
     from testutils.factories.org import ProjectFactory
 
-    return ProjectFactory(organization=organization)
+    return ProjectFactory.create(organization=organization)
 
 
 @pytest.fixture
 def application(project: "Project"):
     from testutils.factories.org import ApplicationFactory
 
-    return ApplicationFactory(project=project)
+    return ApplicationFactory.create(project=project)
 
 
 @pytest.fixture
 def distributionlist(project: "Project"):
     from testutils.factories.distribution import DistributionListFactory
 
-    return DistributionListFactory(project=project)
+    return DistributionListFactory.create(project=project)
 
 
 @pytest.fixture
 def event(application) -> "Event":
     from testutils.factories import ChannelFactory, EventFactory
 
-    return EventFactory(application=application, channels=[ChannelFactory()], active=True)
+    return EventFactory.create(application=application, channels=[ChannelFactory()], active=True)
 
 
 @pytest.fixture
 def address(db):
     from testutils.factories.address import AddressFactory
 
-    return AddressFactory()
+    return AddressFactory.create()
 
 
 @pytest.fixture
 def message(db):
     from testutils.factories.message import MessageTemplateFactory
 
-    return MessageTemplateFactory()
+    return MessageTemplateFactory.create()
 
 
 @pytest.fixture
 def channel(project: "Project"):
     from testutils.factories.channel import ChannelFactory
 
-    return ChannelFactory(project=project, organization=project.organization)
+    return ChannelFactory.create(project=project, organization=project.organization)
 
 
 @pytest.fixture
 def org_channel(organization):
     from testutils.factories.channel import ChannelFactory
 
-    return ChannelFactory(organization=organization, project=None)
+    return ChannelFactory.create(organization=organization, project=None)
 
 
 @pytest.fixture
@@ -275,7 +275,7 @@ def email_channel(db):
 
     from bitcaster.dispatchers import GMailDispatcher
 
-    return ChannelFactory(dispatcher=fqn(GMailDispatcher))
+    return ChannelFactory.create(dispatcher=fqn(GMailDispatcher))
 
 
 @pytest.fixture
@@ -285,21 +285,21 @@ def sms_channel(db):
 
     from bitcaster.dispatchers import TwilioSMS
 
-    return ChannelFactory(dispatcher=fqn(TwilioSMS))
+    return ChannelFactory.create(dispatcher=fqn(TwilioSMS))
 
 
 @pytest.fixture
 def api_key(db):
     from testutils.factories.key import ApiKeyFactory
 
-    return ApiKeyFactory()
+    return ApiKeyFactory.create()
 
 
 @pytest.fixture
 def occurrence(db):
     from testutils.factories import OccurrenceFactory
 
-    return OccurrenceFactory()
+    return OccurrenceFactory.create()
 
 
 @pytest.fixture
@@ -312,10 +312,10 @@ def purgeable_occurrences(db) -> List["Occurrence"]:
     from testutils.factories import OccurrenceFactory
 
     with freeze_time(timezone.now() - timedelta(days=config.OCCURRENCE_DEFAULT_RETENTION + 1)):
-        occurrence_default_retention = OccurrenceFactory()
+        occurrence_default_retention = OccurrenceFactory.create()
 
     with freeze_time(timezone.now() - timedelta(days=6)):
-        occurrence_custom_retention = OccurrenceFactory(event__occurrence_retention=5)
+        occurrence_custom_retention = OccurrenceFactory.create(event__occurrence_retention=5)
 
     return [occurrence_default_retention, occurrence_custom_retention]
 
@@ -329,7 +329,7 @@ def non_purgeable_occurrences(db) -> List["Occurrence"]:
     from testutils.factories import OccurrenceFactory
 
     with freeze_time(timezone.now() - timedelta(days=1)):
-        non_purgeable_occurrence = OccurrenceFactory(event__occurrence_retention=5)
+        non_purgeable_occurrence = OccurrenceFactory.create(event__occurrence_retention=5)
 
     return [non_purgeable_occurrence]
 
@@ -338,14 +338,14 @@ def non_purgeable_occurrences(db) -> List["Occurrence"]:
 def notification(db):
     from testutils.factories import NotificationFactory
 
-    return NotificationFactory()
+    return NotificationFactory.create()
 
 
 @pytest.fixture
 def assignment(db):
     from testutils.factories import AssignmentFactory
 
-    return AssignmentFactory()
+    return AssignmentFactory.create()
 
 
 @pytest.fixture
