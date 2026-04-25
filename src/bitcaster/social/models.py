@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -8,17 +8,19 @@ if TYPE_CHECKING:
 
 
 class Provider(models.TextChoices):
+    FACEBOOK = "facebook", "Facebook"
     GITHUB = "github", "Github"
     GITLAB = "gitlab", "Gitlab"
     GOOGLE = "google", "Google"
     LINKEDIN = "linkedin_oauth2", "Linkedin"
     MICROSOFT = "microsoft", "Microsoft"
     TWITTER = "twitter", "Twitter"
+    WSO2 = "wso2", "Wso2"
     KEYCLOAK = "openid_connect", "Keycloak"
 
 
 def get_provider_choices() -> "list[tuple[str, _StrPromise]]":
-    return Provider.choices
+    return cast("list[tuple[str, _StrPromise]]", Provider.choices)
 
 
 class SocialProviderManager(models.Manager["SocialProvider"]):

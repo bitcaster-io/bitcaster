@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.models import SocialAccount, SocialLogin
 from django.contrib.auth.models import Group
 
@@ -44,7 +45,69 @@ class TestBitcasterSocialAccountAdapter:
         assert app.secret == "legacy-secret"
 
     def test_is_auto_signup_allowed(self, adapter, request_mock):
-        assert adapter.is_auto_signup_allowed(request_mock, MagicMock()) is True
+        with patch("bitcaster.social.adapter.config") as mock_config:
+            mock_config.SOCIAL_AUTH_CREATE_USER = True
+            assert adapter.is_auto_signup_allowed(request_mock, MagicMock()) is True
+
+            mock_config.SOCIAL_AUTH_CREATE_USER = False
+            assert adapter.is_auto_signup_allowed(request_mock, MagicMock()) is False
+
+    def test_is_open_for_signup_social_create_user_disabled(self, adapter, request_mock):
+        sociallogin = MagicMock()
+        sociallogin.user = MagicMock()
+        with patch("bitcaster.social.adapter.config") as mock_config:
+            mock_config.SOCIAL_AUTH_CREATE_USER = False
+            assert adapter.is_open_for_signup(request_mock, sociallogin) is False
+
+    def test_is_open_for_signup_social_accepted_users_match(self, adapter, request_mock):
+        sociallogin = MagicMock()
+        sociallogin.user = MagicMock()
+        sociallogin.user.email = "allowed@example.com"
+        with patch("bitcaster.social.adapter.config") as mock_config:
+            mock_config.SOCIAL_AUTH_CREATE_USER = True
+            mock_config.SOCIAL_AUTH_ACCEPTED_USERS = ".*@example.com, admin@bitcaster.io"
+            assert adapter.is_open_for_signup(request_mock, sociallogin) is True
+
+    def test_is_open_for_signup_social_accepted_users_no_match(self, adapter, request_mock):
+        sociallogin = MagicMock()
+        sociallogin.user = MagicMock()
+        sociallogin.user.email = "hacker@other.com"
+        with patch("bitcaster.social.adapter.config") as mock_config:
+            mock_config.SOCIAL_AUTH_CREATE_USER = True
+            mock_config.SOCIAL_AUTH_ACCEPTED_USERS = ".*@example.com, admin@bitcaster.io"
+            assert adapter.is_open_for_signup(request_mock, sociallogin) is False
+
+    def test_pre_social_login_forbidden_signup(self, adapter, request_mock):
+        sociallogin = MagicMock(spec=SocialLogin)
+        sociallogin.is_existing = False
+        sociallogin.user = MagicMock()
+        email_address = MagicMock()
+        email_address.email = "hacker@other.com"
+        sociallogin.email_addresses = [email_address]
+        sociallogin.user.email = "hacker@other.com"
+
+        with patch("bitcaster.social.adapter.config") as mock_config:
+            mock_config.SOCIAL_AUTH_CREATE_USER = True
+            mock_config.SOCIAL_AUTH_ACCEPTED_USERS = ".*@example.com"
+            with pytest.raises(ImmediateHttpResponse):
+                adapter.pre_social_login(request_mock, sociallogin)
+
+    def test_pre_social_login_forbidden_signup_closed_registration(self, adapter, request_mock):
+        sociallogin = MagicMock(spec=SocialLogin)
+        sociallogin.is_existing = False
+        sociallogin.user = MagicMock()
+        email_address = MagicMock()
+        email_address.email = "anyone@anywhere.com"
+        sociallogin.email_addresses = [email_address]
+        sociallogin.user.email = "anyone@anywhere.com"
+
+        with patch("bitcaster.social.adapter.config") as mock_config:
+            mock_config.SOCIAL_AUTH_CREATE_USER = False
+            # is_open_for_signup will return False when SOCIAL_AUTH_CREATE_USER is False
+            with pytest.raises(ImmediateHttpResponse) as exc:
+                adapter.pre_social_login(request_mock, sociallogin)
+
+            assert b"Registration is currently closed." in exc.value.response.content
 
     def test_pre_social_login_auto_connect(self, adapter, request_mock):
         user = User.objects.create(email="test@example.com", username="test@example.com")
@@ -64,11 +127,13 @@ class TestBitcasterSocialAccountAdapter:
         # Line 75 coverage: User.DoesNotExist
         sociallogin = MagicMock(spec=SocialLogin)
         sociallogin.is_existing = False
+        sociallogin.user = MagicMock()
         email_address = MagicMock()
         email_address.email = "nonexistent@example.com"
         sociallogin.email_addresses = [email_address]
+        sociallogin.user.email = "nonexistent@example.com"
 
-        # Should not raise exception
+        # Should not raise exception if is_open_for_signup returns True (default)
         adapter.pre_social_login(request_mock, sociallogin)
         sociallogin.connect.assert_not_called()
 

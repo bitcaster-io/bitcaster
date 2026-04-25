@@ -116,7 +116,7 @@ class Event(SlugMixin, LockMixin, BitcasterBaseModel):
             event=self,
             application=self.application,
             project=self.application.project,
-            defaults=defaults if defaults else {},
+            defaults=defaults or {},
         )[0]
 
     def get_trigger_url(self) -> str:

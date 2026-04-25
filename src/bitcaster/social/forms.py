@@ -1,6 +1,7 @@
 from typing import Any
 
 from django import forms
+from django.db.models import Model
 from django.utils.translation import gettext_lazy as _
 from unfold.widgets import UnfoldAdminTextInputWidget
 
@@ -17,10 +18,10 @@ class WriteOnlyWidget(UnfoldAdminTextInputWidget):
         return ""
 
 
-class WriteOnlyFieldMixin(forms.ModelForm):
+class WriteOnlyFieldMixin(forms.ModelForm[Model]):
     write_only_fields = ["secret", "key"]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         for f in self.write_only_fields:
             if getattr(self.instance, f):
@@ -31,8 +32,8 @@ class WriteOnlyFieldMixin(forms.ModelForm):
                 self.fields[f].help_text = _("Write only. Once set it cannot be read")
                 self.fields[f].widget = WriteOnlyWidget(attrs={"suffix": "not set"})
 
-    def clean(self):
-        cleaned_data = super().clean()
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean() or {}
         for f in self.write_only_fields:
             if cleaned_data.get(f) == WriteOnlyWidget.MASK:
                 cleaned_data[f] = getattr(self.instance, f)
@@ -44,7 +45,7 @@ class SocialProviderForm(WriteOnlyFieldMixin, forms.ModelForm["SocialProvider"])
         model = SocialProvider
         fields = ["label", "provider", "enabled", "client_id", "secret", "key", "configuration"]
 
-    def clean(self):
+    def clean(self) -> Any:
         cleaned_data = super().clean()
         provider = cleaned_data.get("provider")
         qs = SocialProvider.objects.filter(provider=provider)

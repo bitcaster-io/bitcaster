@@ -46,21 +46,64 @@
             </div>
         </form>
     </div>
+    <!-- Security & Passkeys Section -->
+    <div class="mt-8 space-y-4">
+        <h3 class="text-lg font-bold border-b pb-2">
+            {% trans "Security & Passkeys" %}
+        </h3>
+        {% if authenticators %}
+            <div class="space-y-2">
+                {% for auth in authenticators %}
+                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined">
+                                {% if auth.type == 'webauthn' %}
+                                    fingerprint
+                                {% elif auth.type == 'totp' %}
+                                    numbers
+                                {% else %}
+                                    security
+                                {% endif %}
+                            </span>
+                            <div>
+                                <p class="font-medium text-sm">
+                                    {{ auth }}
+                                </p>
+                                <p class="text-xs text-gray-500">
+                                    {% trans "Added" %}: {{ auth.created_at|date }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-sm text-gray-500 italic">
+                {% trans "No passkeys or MFA authenticators registered yet." %}
+            </p>
+        {% endif %}
+        <div class="pt-2">
+            <a href="{% url 'mfa_index' %}" class="pwa-btn outline w-full flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">settings_suggest</span>
+                {% trans "Manage MFA & Passkeys" %}
+            </a>
+        </div>
+    </div>
     <!-- PWA Installation Section -->
-    <div id="pwa-install-section" class="hidden mt-6">
-        <h3 class="">
+    <div id="pwa-install-section" class="hidden mt-8">
+        <h3 class="text-lg font-bold border-b pb-2">
             {% trans "Mobile App" %}
         </h3>
-        <p class="">
-            {% trans "Install Bitcaster on your home screen for quick access and a better experience." %}
-        </p>
-        <button id="pwa-install-button" onclick="installPwa()" class="pwa-btn outline large w-full">
-            {% trans "Install Application" %}
-        </button>
+        <div class="py-4">
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                {% trans "Install Bitcaster on your home screen for quick access and a better experience." %}
+            </p>
+            <button id="pwa-install-button" onclick="installPwa()" class="pwa-btn outline large w-full">
+                {% trans "Install Application" %}
+            </button>
+        </div>
     </div>
     <div class="h-20">
-    </div>
-    <div class="h-5">
     </div>
     <script>
         function checkPwaInstallability() {
@@ -73,7 +116,6 @@
                 return;
             }
 
-            // Show section if we have the prompt OR if it's iOS (where we show instructions)
             if (deferredPrompt || isiOS) {
                 installSection.classList.remove('hidden');
 
@@ -85,7 +127,6 @@
             }
         }
 
-        // Check on load and every second for a few times because deferredPrompt might arrive late
         window.addEventListener('load', () => {
             checkPwaInstallability();
             let attempts = 0;
@@ -96,7 +137,6 @@
             }, 1000);
         });
 
-        // Also listen for the event here just in case
         window.addEventListener('beforeinstallprompt', () => {
             checkPwaInstallability();
         });

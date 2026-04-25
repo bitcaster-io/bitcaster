@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from bitcaster.models import DistributionList
 
 from ..constants import bitcaster
-from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor
 from .mixins import TwoStepCreateMixin
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from django.utils.datastructures import _ListOrTuple
 
 
-class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], BitcasterModelAdmin[DistributionList]):
+class DistributionListAdmin(TwoStepCreateMixin[DistributionList], BaseAdmin[DistributionList]):
     search_fields = ("name",)
     list_display = ("name", "project")
     list_filter = (
@@ -37,12 +37,12 @@ class DistributionListAdmin(BaseAdmin, TwoStepCreateMixin[DistributionList], Bit
     def get_queryset(self, request: HttpRequest) -> QuerySet[DistributionList]:
         return super().get_queryset(request).select_related("project__organization")
 
-    @button(label=_("Recipients"), html_attrs={"class": ButtonColor.LINK.value})
+    @button(label=_("Recipients"), html_attrs={"class": ButtonColor.LINK.value})  # type: ignore[arg-type]
     def members(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:
         url = reverse("admin:bitcaster_member_changelist")
         return HttpResponseRedirect(f"{url}?dl={pk}")
 
-    def get_readonly_fields(self, request: "HttpRequest", obj: "DistributionList | None" = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: HttpRequest, obj: DistributionList | None = None) -> "_ListOrTuple[str]":
         if obj and obj.name == DistributionList.ADMINS:
             return ["name", "project"]
         return []

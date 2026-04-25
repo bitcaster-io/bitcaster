@@ -1,6 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any
-from unittest import mock
+from typing import TYPE_CHECKING, Any, cast
 
 from admin_extra_buttons.api import confirm_action
 from admin_extra_buttons.buttons import ChoiceButton
@@ -10,6 +9,7 @@ from constance import config
 from django.contrib import messages
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.template import Context
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -20,7 +20,7 @@ from bitcaster.runner.tasks import purge_occurrences
 
 from ..cache.manager import CacheManager
 from ..web.templatetags.bitcaster import recipients
-from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..models.occurrence import OccurrenceData
@@ -28,7 +28,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
+class OccurrenceAdmin(BaseAdmin[Occurrence]):
     search_fields = ("name",)
     list_display = ("pk", "timestamp", "application", "event", "status_badge", "paused", "attempts", "recipients")
     list_filter = (
@@ -49,11 +49,11 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     def get_queryset(self, request: HttpRequest) -> QuerySet[Occurrence]:
         return super().get_queryset(request).select_related("event__application")
 
-    @display(boolean=True)
-    def paused(self, obj: Occurrence):
-        return obj.event.paused or obj.event.application.paused
+    @display(boolean=True)  # type: ignore[untyped-decorator]
+    def paused(self, obj: Occurrence) -> bool:
+        return bool(obj.event.paused or obj.event.application.paused)
 
-    @display(
+    @display(  # type: ignore[untyped-decorator]
         ordering="status",
         label={
             Occurrence.Status.PROCESSED: "success",  # green
@@ -61,11 +61,11 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
             Occurrence.Status.NEW: "info",  # green
         },
     )
-    def status_badge(self, obj):
-        return obj.status
+    def status_badge(self, obj: Occurrence) -> str:
+        return str(obj.status)
 
     def get_list_display(self, request: HttpRequest) -> list[str]:  # type: ignore[override]
-        return super().get_list_display(request)  # type: ignore[return-value]
+        return cast("list[str]", super().get_list_display(request))
 
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False
@@ -73,30 +73,30 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
     def has_change_permission(self, request: HttpRequest, obj: Occurrence | None = None) -> bool:
         return False
 
-    @choice(change_list=False, change_form=True)
+    @choice(change_list=False, change_form=True)  # type: ignore[arg-type]
     def recipients(self, button: ChoiceButton) -> None:
         button.choices = [
             self.recipients_occurrence,
             # self.recipients_notification
         ]
 
-    @view()
-    def recipients_occurrence(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj: Occurrence = self.get_queryset(request).select_related("event__application").get(id=pk)
-        url = recipients({"address": request.user.email}, obj)
+    @view()  # type: ignore[arg-type]
+    def recipients_occurrence(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:  # noqa
+        obj: Occurrence = self.get_object_or_404(request, pk)
+        url = recipients(Context({"address": request.user.email}), obj)
         return HttpResponseRedirect(url)
 
-    @view()
-    def recipients_notification(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj: Occurrence = self.get_queryset(request).select_related("event__application").get(id=pk)
-        url = recipients({"address": request.user.email}, obj)
+    @view()  # type: ignore[arg-type]
+    def recipients_notification(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:  # noqa
+        obj: Occurrence = self.get_object_or_404(request, pk)
+        url = recipients(Context({"address": request.user.email}), obj)
         return HttpResponseRedirect(url)
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
+    @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
     def inspect(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj: Occurrence = self.get_queryset(request).select_related("event__application").get(id=pk)
+        obj: Occurrence = self.get_object_or_404(request, pk)
 
-        def inspect(req):
+        def _inspect(req: HttpRequest) -> HttpResponse:
             dm = CacheManager(req)
             version = dm.get_version(f"inspect:{obj.pk}")
             base_key = f"inspect:{obj.pk}:{version}"
@@ -106,7 +106,7 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
                     if not (extra_context := dm.retrieve("extra_context")):
                         active_notifications = [p.pk for p in obj._get_valid_notifications()]
                         active_channels = obj._get_valid_channels()
-                        message_for_channel = {
+                        message_for_channel: dict[Any, Any] = {
                             msg.channel.pk: msg for msg in MessageTemplate.objects.filter(notification__event=obj.event)
                         }
                         for nt in obj.event.notifications.filter(id__in=active_notifications):
@@ -137,16 +137,18 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
                     )
                     # Processing info
                     data: "OccurrenceData"
-                    assignments = dm.retrieve("assignments")
-                    recipients = dm.retrieve("recipients")
+                    assignments_dict = dm.retrieve("assignments")
+                    recipients_list = dm.retrieve("recipients")
 
-                    if not assignments or not recipients:
+                    if not assignments_dict or not recipients_list:
                         if obj.status == Occurrence.Status.NEW:
 
                             def collect_info(
                                 n: "Notification", channel: "Channel", assignment: "Assignment", context: dict[str, Any]
-                            ):
-                                return assignment.address.value, n.get_message(channel).pk
+                            ) -> tuple[str, Any]:
+                                return str(assignment.address.value), n.get_message(channel).pk
+
+                            from unittest import mock
 
                             with mock.patch(
                                 "bitcaster.models.notification.Notification.notify_to_channel", collect_info
@@ -154,28 +156,29 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
                                 __, data = obj._process()
                         else:
                             data = obj.data
-                        recipients = data.get("recipients", [])
-                        assignment_pks = [e[2] for e in recipients]
-                        assignments = (
+                        recipients_list = data.get("recipients", [])
+                        assignment_pks = [e[2] for e in recipients_list]
+                        assignments_dict = (
                             Assignment.objects.select_related("address__user", "channel")
                             .filter(pk__in=assignment_pks)
                             .in_bulk()
                         )
-                        dm.store("assignments", assignments)
-                        dm.store("recipients", recipients)
+                        dm.store("assignments", assignments_dict)
+                        dm.store("recipients", recipients_list)
 
-                    ctx["assignments"] = assignments
-                    ctx["recipients"] = recipients
+                    ctx["assignments"] = assignments_dict
+                    ctx["recipients"] = recipients_list
                     return TemplateResponse(req, "bitcaster/admin/occurrence/inspect.html", ctx)
                 except Exception as e:
                     logger.exception(e)
-                    self.message_user(req, _("Error inspecting occurrence"), messages.ERROR)
+                    self.message_user(req, str(_("Error inspecting occurrence")), messages.ERROR)
+                    return HttpResponseRedirect("..")
 
         if obj.status == Occurrence.Status.NEW:
             return confirm_action(
                 self,
                 request,
-                inspect,
+                _inspect,
                 message="Proceeding will take some time",
                 success_message="",
                 description="",
@@ -183,29 +186,29 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
                 error_message="",
             )
 
-        return inspect(request)
+        return _inspect(request)
 
-    @button(
+    @button(  # type: ignore[arg-type]
         html_attrs={"class": ButtonColor.ACTION.value},
         visible=lambda btn: btn.original.status == btn.original.Status.NEW,
     )
     def process(self, request: HttpRequest, pk: str) -> HttpResponse:  # noqa
-        obj: Occurrence = self.get_object(request, pk)
+        obj: Occurrence = self.get_object_or_404(request, pk)
 
-        def doit(request):
+        def doit(req: HttpRequest) -> None:
             try:
                 if obj.process():
-                    self.message_user(request, _("Occurrence has been successfully processed"), messages.SUCCESS)
-                    self.message_user(request, f"{obj.data}", messages.INFO)
+                    self.message_user(req, str(_("Occurrence has been successfully processed")), messages.SUCCESS)
+                    self.message_user(req, f"{obj.data}", messages.INFO)
                 else:
                     self.message_user(
-                        request,
-                        _("Occurrence has been processed, but no recipients have been reached out"),
+                        req,
+                        str(_("Occurrence has been processed, but no recipients have been reached out")),
                         messages.WARNING,
                     )
             except Exception as e:
                 logger.exception(e)
-                self.message_user(request, _("Error processing occurrence"), messages.ERROR)
+                self.message_user(req, str(_("Error processing occurrence")), messages.ERROR)
 
         return confirm_action(
             self,
@@ -218,14 +221,14 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
             error_message="",
         )
 
-    @button(
+    @button(  # type: ignore[arg-type]
         html_attrs={"class": ButtonColor.ACTION.value},
         permission="bitcaster.delete_occurrence",
     )
     def purge(self, request: HttpRequest) -> HttpResponse:  # noqa
-        def doit(request) -> "HttpResponse|None":
+        def doit(req: HttpRequest) -> None:
             purge_occurrences.send()
-            self.message_user(request, _("Occurrence purge has been successfully triggered"), messages.SUCCESS)
+            self.message_user(req, str(_("Occurrence purge has been successfully triggered")), messages.SUCCESS)
 
         return confirm_action(
             self,
@@ -233,18 +236,18 @@ class OccurrenceAdmin(BaseAdmin, BitcasterModelAdmin[Occurrence]):
             doit,
             message=f"Proceeding will delete all occurrences older than {config.OCCURRENCE_DEFAULT_RETENTION} days",
             success_message="",
-            description=_("All data will be permanently removed. No rollback action available"),
-            title=_("Purge occurrences"),
+            description=str(_("All data will be permanently removed. No rollback action available")),
+            title=str(_("Purge occurrences")),
             extra_context={"action_title": "Purge occurrences"},
             error_message="",
         )
 
-    @button(
+    @button(  # type: ignore[arg-type]
         html_attrs={"class": ButtonColor.ACTION.value},
         permission="bitcaster.delete_occurrence",
     )
     def add_notification(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:  # noqa
-        obj: Occurrence = self.get_object(request, pk)
+        obj: Occurrence = self.get_object_or_404(request, pk)
         base_url = reverse("admin:bitcaster_notification_add")
         url = f"{base_url}?event={obj.event.pk}&name=Auto%20notification%20for%20{obj.event.name}"
         return HttpResponseRedirect(url)

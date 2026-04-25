@@ -1,10 +1,17 @@
 import logging
+from typing import Any, cast
 
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from allauth.socialaccount.models import SocialApp
+from allauth.socialaccount.models import SocialApp, SocialLogin
 from constance import config
 from django.contrib.auth.models import Group
+from django.core.cache import cache
+from django.http import HttpRequest
+from django.shortcuts import render
+from django.utils.translation import gettext as _
+from django_regex.utils import RegexList
 
 from bitcaster.constants import AddressType
 from bitcaster.models import Address, User
@@ -14,12 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 class BitcasterAccountAdapter(DefaultAccountAdapter):
-    def is_open_for_signup(self, request):
-        return config.SOCIAL_AUTH_CREATE_USER
+    def is_open_for_signup(self, request: HttpRequest) -> bool:
+        return cast("bool", config.SOCIAL_AUTH_CREATE_USER)
 
 
 class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
-    def get_app(self, request, provider, client_id=None):
+    def get_app(self, request: HttpRequest, provider: str, client_id: str | None = None) -> SocialApp:
         try:
             db_provider = SocialProvider.objects.get(provider=provider, enabled=True)
 
@@ -53,15 +60,32 @@ class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
                 key=key,
             )
         except SocialProvider.DoesNotExist:
-            return super().get_app(request, provider, client_id)
+            return cast("SocialApp", super().get_app(request, provider, client_id))
 
-    def is_auto_signup_allowed(self, request, sociallogin):
+    def is_open_for_signup(self, request: HttpRequest, sociallogin: SocialLogin) -> bool:
+        if not config.SOCIAL_AUTH_CREATE_USER:
+            return False
+
+        email = cast("str", sociallogin.user.email)
+        if config.SOCIAL_AUTH_ACCEPTED_USERS:
+            return email in self.get_allowed_emails()
         return True
 
-    def pre_social_login(self, request, sociallogin):
+    def is_auto_signup_allowed(self, request: HttpRequest, sociallogin: SocialLogin) -> bool:
+        return cast("bool", config.SOCIAL_AUTH_CREATE_USER)
+
+    def get_allowed_emails(self) -> RegexList:
+        key = "bitcaster:social:allowed_emails"
+        allowed = cache.get(key)
+        if allowed is None:
+            allowed = RegexList(cast("str", config.SOCIAL_AUTH_ACCEPTED_USERS).split(","))
+            cache.set(key, allowed, 300)
+        return cast("RegexList", allowed)
+
+    def pre_social_login(self, request: HttpRequest, sociallogin: SocialLogin) -> None:
         # Force email to be verified to allow auto-connect and auto-signup
-        for email in sociallogin.email_addresses:
-            email.verified = True
+        for email_address in sociallogin.email_addresses:
+            email_address.verified = True
 
         if not sociallogin.is_existing:
             email = None
@@ -73,22 +97,34 @@ class BitcasterSocialAccountAdapter(DefaultSocialAccountAdapter):
                     user = User.objects.get(email=email)
                     sociallogin.connect(request, user)
                 except User.DoesNotExist:
-                    pass
+                    # check if signup is allowed
+                    if not self.is_open_for_signup(request, sociallogin):
+                        if not config.SOCIAL_AUTH_CREATE_USER:
+                            msg = _("Registration is currently closed.")
+                        else:
+                            msg = _("Your email address (%s) is not allowed to register.") % email
 
-        return super().pre_social_login(request, sociallogin)
+                        response = render(
+                            request,
+                            "bitcaster/social/registration_error.html",
+                            {"error_message": msg},
+                        )
+                        raise ImmediateHttpResponse(response) from None
 
-    def populate_user(self, request, sociallogin, data):
-        user = super().populate_user(request, sociallogin, data)
+        super().pre_social_login(request, sociallogin)
+
+    def populate_user(self, request: HttpRequest, sociallogin: SocialLogin, data: dict[str, Any]) -> User:
+        user = cast("User", super().populate_user(request, sociallogin, data))
         email = data.get("email") or sociallogin.account.extra_data.get("email")
         if email:
             user.email = email
             user.username = email
         return user
 
-    def save_user(self, request, sociallogin, form=None):
+    def save_user(self, request: HttpRequest, sociallogin: SocialLogin, form: Any = None) -> User:
         user = sociallogin.user
         is_new = user.pk is None
-        user = super().save_user(request, sociallogin, form)
+        user = cast("User", super().save_user(request, sociallogin, form))
         if is_new:
             try:
                 grp = Group.objects.get(name=config.NEW_USER_DEFAULT_GROUP)

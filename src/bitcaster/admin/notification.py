@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from django.db.models import QuerySet
+from django.db.models import Field, QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -15,7 +15,7 @@ from ..forms.message import NotificationTemplateCreateForm
 from ..forms.notification import NotificationForm
 from ..utils.django import admin_toggle_bool_action
 from ..utils.filtering import schema
-from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:  # pragma: no cover
     from bitcaster.models import Notification
@@ -23,7 +23,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
+class NotificationAdmin(BaseAdmin["Notification"]):
     search_fields = ("name",)
     list_display = ("name", "event", "application", "distribution", "active")
     list_filter = (
@@ -91,13 +91,13 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
     }
     actions = ["toggle_active"]
 
-    def formfield_for_dbfield(self, db_field, request, **kwargs):
+    def formfield_for_dbfield(self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any) -> Any:
         field = super().formfield_for_dbfield(db_field, request, **kwargs)
-        if db_field.name == "recipients_filter":
+        if db_field.name == "recipients_filter" and field:
             field.widget = JSONEditor(jsonschema=schema)
-        elif db_field.name == "extra_context":
+        elif db_field.name == "extra_context" and field:
             field.widget = JSONEditor()
-        elif db_field.name == "payload_filter":
+        elif db_field.name == "payload_filter" and field:
             field.widget = AceWidget(mode="yaml")
         return field
 
@@ -119,7 +119,9 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
         ret.setdefault("recipients_filter", {"include": [], "exclude": []})
         return ret
 
-    def response_add(self, request, obj, post_url_continue=None):
+    def response_add(
+        self, request: HttpRequest, obj: "Notification", post_url_continue: str | None = None
+    ) -> HttpResponse:
         return HttpResponseRedirect(
             reverse(
                 f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
@@ -127,10 +129,10 @@ class NotificationAdmin(BaseAdmin, BitcasterModelAdmin["Notification"]):
             )
         )
 
-    def toggle_active(self, request, queryset):
+    def toggle_active(self, request: HttpRequest, queryset: QuerySet["Notification"]) -> None:
         admin_toggle_bool_action(request, queryset, "active")
 
-    @button(html_attrs={"class": ButtonColor.LINK.value})
+    @button(html_attrs={"class": ButtonColor.LINK.value})  # type: ignore[arg-type]
     def messages(self, request: HttpRequest, pk: str) -> HttpResponse:
         status_code = 200
         ctx = self.get_common_context(request, pk, title=_("Messages"))

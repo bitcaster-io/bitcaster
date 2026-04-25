@@ -136,3 +136,35 @@ def test_member_distributionlist_filter(app: "DjangoTestApp", context: "Context"
     res = app.get(f"{url}?dl={distributionlist.pk}")
     assert asm.address.user.username in res
     assert member.username not in res
+
+
+def test_assignment_inline_save(app: "DjangoTestApp", context: "Context"):
+    from testutils.factories import AddressFactory, ChannelFactory
+
+    member = context["members"][0]
+    channel = ChannelFactory(organization=context["organization"])
+    address = AddressFactory(user=member)
+
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
+    res = app.get(url)
+    form = res.forms["member_form"]
+
+    prefix = "bitcaster-assignment"
+    form[f"{prefix}-TOTAL_FORMS"] = "1"
+    form[f"{prefix}-0-address"] = address.pk
+    form[f"{prefix}-0-channel"] = channel.pk
+
+    res = form.submit().follow()
+    assert res.status_code == 200
+    assert Assignment.objects.filter(address=address, channel=channel).exists()
+
+
+def test_assignment_inline_list(app: "DjangoTestApp", context: "Context"):
+    from testutils.factories import AssignmentFactory
+
+    member = context["members"][0]
+    AssignmentFactory(address__user=member)
+
+    url = reverse("admin:bitcaster_member_change", args=[member.pk])
+    res = app.get(url)
+    assert res.status_code == 200

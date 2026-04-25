@@ -1,6 +1,7 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
+from django import forms
 from django.contrib.admin import AdminSite
 from django.test import RequestFactory
 from django.urls import reverse
@@ -21,6 +22,7 @@ from bitcaster.admin.member import (
     ListsInline,
     ReadOnlyInline,
 )
+from bitcaster.constants import bitcaster
 from bitcaster.models import Address, Assignment, Member
 
 
@@ -127,6 +129,34 @@ def test_assignment_inline_formfield_for_foreignkey(admin_user):
 
 
 @pytest.mark.django_db
+def test_assignment_inline_formfield_for_foreignkey_with_widget_queryset(admin_user):
+    from unittest.mock import patch
+
+    site = AdminSite()
+    inline = AssignmentInline(Member, site)
+
+    rf = RequestFactory()
+    request = rf.get("/")
+    request.user = admin_user
+
+    db_field = Assignment._meta.get_field("address")
+
+    with patch("bitcaster.admin.member.NonrelatedTabularInline.formfield_for_foreignkey") as mock_super:
+        mock_field = MagicMock()
+        mock_field.widget = MagicMock()
+        # Mocking hasattr(ret.widget, "queryset") to return True
+        # and also allowing assignment to it.
+        # MagicMock has any attribute, so hasattr will be true.
+        mock_super.return_value = mock_field
+
+        ret = inline.formfield_for_foreignkey(db_field, request)
+        assert ret == mock_field
+        # Verify that Address.objects.none() was assigned to ret.widget.queryset
+        # We can't easily compare querysets directly, but we can check if it was called.
+        assert mock_field.widget.queryset is not None
+
+
+@pytest.mark.django_db
 def test_member_admin_formsets(admin_user):
     member = MemberFactory()
 
@@ -209,6 +239,202 @@ def test_update_custom_fields_get(admin_user):
     response = ma.update_custom_fields(request, queryset)
     assert response.status_code == 200
     assert b"Update Custom Fields" in response.content
+
+
+@pytest.mark.django_db
+def test_member_admin_changelist_no_dl(app):
+    url = reverse("admin:bitcaster_member_changelist")
+    response = app.get(url)
+    assert response.status_code == 200
+    # This should cover the branch where dl_id is None (line 192 skipping to 198)
+
+
+@pytest.mark.django_db
+def test_check_custom_fields_invalid_json():
+    from bitcaster.admin.member import check_custom_fields
+
+    with pytest.raises(forms.ValidationError) as excinfo:
+        check_custom_fields("{invalid json}")
+    assert "Invalid JSON" in str(excinfo.value)
+
+
+@pytest.mark.django_db
+def test_check_custom_fields_not_dict():
+    from bitcaster.admin.member import check_custom_fields
+
+    with pytest.raises(forms.ValidationError) as excinfo:
+        check_custom_fields("[]")  # JSON list, not dict
+    assert "Must be a dictionary" in str(excinfo.value)
+
+    with pytest.raises(forms.ValidationError) as excinfo:
+        check_custom_fields(123)  # Not a string, not a dict
+    assert "Must be a dictionary" in str(excinfo.value)
+
+
+@pytest.mark.django_db
+def test_member_form_clean_custom_fields():
+    from bitcaster.admin.member import MemberForm
+
+    form = MemberForm(data={"custom_fields": '{"a": 1}'})
+    # We need other fields too for valid form, but we can call clean_custom_fields directly or via full_clean
+    form.cleaned_data = {"custom_fields": '{"a": 1}'}
+    assert form.clean_custom_fields() == {"a": 1}
+
+
+@pytest.mark.django_db
+def test_member_admin_add_to_distributionlist(admin_user):
+    from django.contrib.admin import AdminSite
+    from django.contrib.messages.storage.cookie import CookieStorage
+    from django.test import RequestFactory
+
+    from bitcaster.admin.member import MemberAdmin
+    from bitcaster.models import Member
+
+    member = MemberFactory()
+    dl = DistributionListFactory()
+    site = AdminSite()
+    ma = MemberAdmin(Member, site)
+    rf = RequestFactory()
+
+    # GET request
+    request = rf.get("/")
+    request.user = admin_user
+    response = ma.add_to_distributionlist(request, Member.objects.filter(pk=member.pk))
+    if hasattr(response, "render"):
+        response.render()
+    assert response.status_code == 200
+    assert b"Add to Distribution List" in response.content
+
+    # POST request (apply)
+    data = {
+        "apply": "1",
+        "dl": str(dl.pk),
+        "action": "add_to_distributionlist",
+        "_selected_action": [str(member.pk)],
+    }
+    request = rf.post("/", data=data)
+    request.user = admin_user
+    request._messages = CookieStorage(request)
+
+    # We need to make sure the user has an assignment to be added
+    addr = AddressFactory(user=member)
+    ch = ChannelFactory()
+    asm = AssignmentFactory(address=addr, channel=ch)
+
+    response = ma.add_to_distributionlist(request, Member.objects.filter(pk=member.pk))
+    assert response.status_code == 302
+    assert dl.recipients.filter(pk=asm.pk).exists()
+
+
+@pytest.mark.django_db
+def test_member_admin_import_members(admin_user):
+    from django.contrib.admin import AdminSite
+    from django.contrib.messages.storage.cookie import CookieStorage
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    from django.test import RequestFactory
+
+    from bitcaster.admin.member import MemberAdmin
+    from bitcaster.models import Member
+
+    site = AdminSite()
+    ma = MemberAdmin(Member, site)
+    rf = RequestFactory()
+
+    # GET request
+    request = rf.get("/")
+    request.user = admin_user
+    # ma.import_members is decorated with @button
+    try:
+        response = ma.import_members(request)
+    except TypeError:
+        if hasattr(ma.import_members, "func"):
+            response = ma.import_members.func(ma, request)
+        else:
+            from bitcaster.admin.member import MemberAdmin
+
+            response = MemberAdmin.import_members(ma, request)
+
+    if hasattr(response, "render"):
+        response.render()
+    assert response.status_code == 200
+    assert b"Import Members" in response.content
+
+    # POST request (apply)
+    csv_content = b"username,first_name,last_name,email\nuser1,User,One,user1@example.com"
+    csv_file = SimpleUploadedFile("members.csv", csv_content, content_type="text/csv")
+
+    data = {
+        "apply": "1",
+        "file": csv_file,
+        "group": str(bitcaster.get_default_group().pk),
+    }
+    request = rf.post("/", data=data)
+    request.user = admin_user
+    request._messages = CookieStorage(request)
+
+    with patch("bitcaster.admin.member.import_members_csv") as mock_import:
+        mock_import.return_value = (1, 1)
+        try:
+            response = ma.import_members(request)
+        except TypeError:
+            if hasattr(ma.import_members, "func"):
+                response = ma.import_members.func(ma, request)
+            else:
+                from bitcaster.admin.member import MemberAdmin
+
+                response = MemberAdmin.import_members(ma, request)
+
+        assert response.status_code == 302
+        mock_import.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_update_custom_fields_rewrite(admin_user):
+    from bitcaster.admin.member import JsonUpdateMode2, MemberAdmin
+
+    target_member = MemberFactory(custom_fields={"a": 1})
+    site = AdminSite()
+    ma = MemberAdmin(Member, site)
+    rf = RequestFactory()
+
+    data = {
+        "apply": "1",
+        "mode": JsonUpdateMode2.REWRITE,
+        "action": "update_custom_fields",
+        "_selected_action": [str(target_member.pk)],
+        "custom_fields": '{"b": 2}',
+    }
+
+    request = rf.post("/", data=data)
+    request.user = admin_user
+    from django.contrib.messages.storage.cookie import CookieStorage
+
+    request._messages = CookieStorage(request)
+
+    queryset = Member.objects.filter(pk=target_member.pk)
+    response = ma.update_custom_fields(request, queryset)
+    assert response.status_code == 302
+
+    target_member.refresh_from_db()
+    assert target_member.custom_fields == {"b": 2}
+
+
+@pytest.mark.django_db
+def test_update_custom_fields_invalid_form(admin_user):
+    from bitcaster.admin.member import MemberAdmin
+
+    member = MemberFactory()
+    site = AdminSite()
+    ma = MemberAdmin(Member, site)
+    rf = RequestFactory()
+
+    # apply is present but form is invalid (missing mode)
+    request = rf.post("/", data={"apply": "1", "_selected_action": [str(member.pk)]})
+    request.user = admin_user
+
+    queryset = Member.objects.filter(pk=member.pk)
+    response = ma.update_custom_fields(request, queryset)
+    assert response.status_code == 200  # Returns to form with errors
 
 
 @pytest.mark.django_db

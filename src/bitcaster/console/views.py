@@ -5,9 +5,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
 from django.utils import timezone
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import DetailView, TemplateView, UpdateView
 from django.views.generic.base import ContextMixin
 from timezone_field import TimeZoneFormField
@@ -76,8 +73,6 @@ class UserConsoleIndexView(UserConsoleMixin, LoginRequiredMixin, TemplateView):
         return ctx
 
 
-@method_decorator(cache_page(60 * 60), name="dispatch")
-@method_decorator(vary_on_cookie, name="dispatch")
 class UserConsoleDetailView(UserConsoleMixin, LoginRequiredMixin, DetailView[UserMessage]):
     template_name = "bitcaster/console/detail.html"
     model = UserMessage

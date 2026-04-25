@@ -76,5 +76,5 @@ class Organization(SlugMixin, BitcasterBaseModel):
             application=None,
             project=None,
             organization=self,
-            defaults=defaults if defaults else {},
+            defaults=defaults or {},
         )[0]

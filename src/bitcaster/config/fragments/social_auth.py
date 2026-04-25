@@ -2,7 +2,7 @@ ACCOUNT_ADAPTER = "bitcaster.social.adapter.BitcasterAccountAdapter"
 SOCIALACCOUNT_ADAPTER = "bitcaster.social.adapter.BitcasterSocialAccountAdapter"
 
 ACCOUNT_LOGIN_METHODS = {"email"}
-ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_FIELDS = ["email", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 SOCIALACCOUNT_QUERY_EMAIL = True
@@ -11,8 +11,9 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 
 # Passkey / MFA settings
-MFA_PASSKEY_LOGIN_ENABLED = True
-MFA_PASSKEY_SIGNUP_ENABLED = True
+MFA_PASSKEY_LOGIN_ENABLED = False
+MFA_PASSKEY_SIGNUP_ENABLED = False
+MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 
 SOCIALACCOUNT_PROVIDERS = {
     "github": {
@@ -43,7 +44,7 @@ SOCIALACCOUNT_PROVIDERS = {
             "gender",
             "updated_time",
         ],
-        "EXCHANGE_TOKEN": True,
+        "EXCHANGE_TOKEN": True,  # nosec B105
         "LOCALE_FUNC": lambda request: "en_US",
         "VERIFIED_EMAIL": False,
         "VERSION": "v13.0",

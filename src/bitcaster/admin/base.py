@@ -1,6 +1,6 @@
 import enum
 import logging
-from typing import TYPE_CHECKING, Any, Generic
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.mixin import AdminAutoCompleteSearchMixin, AdminFiltersMixin
@@ -20,8 +20,6 @@ from bitcaster.state import state
 if TYPE_CHECKING:  # pragma: no cover
     from django.db.models import QuerySet
 
-    from bitcaster.types.django import AnyModel_co
-
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +30,7 @@ class ButtonColor(enum.Enum):
     UNLOCK = "unlock"
 
 
-class BitcasterModelAdmin(UnfoldModelAdmin):
+class BitcasterModelAdmin[T](UnfoldModelAdmin):
     warn_unsaved_form = True
     list_filter_submit = True
     formfield_overrides = {
@@ -44,15 +42,15 @@ class BitcasterModelAdmin(UnfoldModelAdmin):
         },
     }
 
-    def has_view_or_change_permission(self, request, obj=...):
+    def has_view_or_change_permission(self, request: HttpRequest, obj: Any = None) -> bool:
         return super().has_view_or_change_permission(request, obj)
 
-    def changelist_view(self, request: HttpRequest, extra_context: dict[str, str] | None = None) -> TemplateResponse:
+    def changelist_view(self, request: HttpRequest, extra_context: dict[str, Any] | None = None) -> TemplateResponse:
         return super().changelist_view(request, extra_context)
 
     def formfield_for_foreignkey(
-        self, db_field: ForeignKey, request: HttpRequest, **kwargs: Any
-    ) -> ModelChoiceField | None:
+        self, db_field: ForeignKey[Any], request: HttpRequest, **kwargs: Any
+    ) -> ModelChoiceField[Any] | None:
         if isinstance(db_field, ChainedForeignKey):
             widget = UnfoldChainedSelect(
                 to_app_name=db_field.to_app_name,
@@ -80,23 +78,26 @@ class BitcasterModelAdmin(UnfoldModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class BaseAdmin(BitcasterModelAdmin, AdminFiltersMixin, AdminAutoCompleteSearchMixin, ExtraButtonsMixin):
-    def get_object_or_404(self, request: HttpRequest, object_id: str, from_field: str | None = None) -> "AnyModel_co":
+class BaseAdmin[T](
+    BitcasterModelAdmin[T],
+    AdminFiltersMixin,
+    AdminAutoCompleteSearchMixin,
+    ExtraButtonsMixin,
+):
+    def get_object_or_404(self, request: HttpRequest, object_id: str, from_field: str | None = None) -> Any:
         if not (ret := self.get_object(request, object_id, from_field)):
             raise Http404
         return ret
 
-    def response_add(
-        self, request: HttpRequest, obj: "Generic[AnyModel_co]", post_url_continue: str | None = None
-    ) -> HttpResponse:
+    def response_add(self, request: HttpRequest, obj: Any, post_url_continue: str | None = None) -> HttpResponse:
         ret = super().response_add(request, obj, post_url_continue)
         if redirect_url := request.GET.get("next", ""):
             return HttpResponseRedirect(redirect_url)
         return ret
 
     def get_search_results(
-        self, request: HttpRequest, queryset: "QuerySet[AnyModel_co]", search_term: str
-    ) -> "tuple[QuerySet[AnyModel_co], bool]":
+        self, request: HttpRequest, queryset: "QuerySet[Any]", search_term: str
+    ) -> "tuple[QuerySet[Any], bool]":
         field_names = [f.name for f in self.model._meta.get_fields()]
         filters = {k: v for k, v in request.GET.items() if k in field_names}
         exclude = {k[:-5]: v for k, v in request.GET.items() if k.endswith("__not") and k[:-5] in field_names}
@@ -108,11 +109,12 @@ class BaseAdmin(BitcasterModelAdmin, AdminFiltersMixin, AdminAutoCompleteSearchM
         from bitcaster.models import Organization
 
         initial = super().get_changeform_initial_data(request)
-        initial.setdefault("user", request.user.id)
-        initial.setdefault("owner", request.user.id)
-        initial.setdefault("organization", state.get_cookie("organization") or Organization.objects.local().first())
-        initial.setdefault("project", state.get_cookie("project"))
-        initial.setdefault("application", state.get_cookie("application"))
+        initial.setdefault("user", str(request.user.id))
+        initial.setdefault("owner", str(request.user.id))
+        org = Organization.objects.local().first()
+        initial.setdefault("organization", str(state.get_cookie("organization") or (org.id if org else "")))
+        initial.setdefault("project", str(state.get_cookie("project") or ""))
+        initial.setdefault("application", str(state.get_cookie("application") or ""))
         return initial
 
     def changeform_view(

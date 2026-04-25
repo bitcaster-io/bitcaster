@@ -5,12 +5,12 @@ from django.db.models import QuerySet
 from django.http import HttpRequest
 
 from ..models.internal import LogMessage
-from .base import BaseAdmin, BitcasterModelAdmin
+from .base import BaseAdmin
 
 logger = logging.getLogger(__name__)
 
 
-class LogMessageAdmin(BaseAdmin, BitcasterModelAdmin[LogMessage]):
+class LogMessageAdmin(BaseAdmin[LogMessage]):
     search_fields = ("name",)
     list_display = ("created", "level", "application")
     list_filter = (

@@ -23,6 +23,7 @@ urlpatterns = [
     path("adminactions/", include("adminactions.urls")),
     path("tinymce/", include("tinymce.urls")),
     path("social/", include("allauth.urls")),
+    path("social/", include("bitcaster.social.urls")),
     path("mfa/", include("allauth.mfa.urls")),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
     path(r"__debug__/", include(debug_toolbar.urls)),

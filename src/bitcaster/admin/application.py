@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button, link
@@ -17,7 +17,7 @@ from bitcaster.models import Application
 from ..constants import bitcaster
 from ..state import state
 from ..utils.django import url_related
-from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixinAdmin
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -26,7 +26,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdmin[Application]):
+class ApplicationAdmin(LockMixinAdmin[Application], BaseAdmin[Application]):
     search_fields = ("name",)
     list_display = ("name", "project", "organization", "active", "locked")
     list_filter = (
@@ -60,7 +60,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
     def has_add_permission(self, request: HttpRequest) -> bool:
         from bitcaster.models import Project
 
-        return super().has_add_permission(request) and Project.objects.local().count() > 0
+        return cast("bool", super().has_add_permission(request) and Project.objects.local().count() > 0)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Application]:
         return super().get_queryset(request).select_related("project", "project__organization", "owner")
@@ -82,13 +82,13 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
         from bitcaster.models import Project
 
         initial = super().get_changeform_initial_data(request)
-        initial.setdefault("owner", request.user.id)
+        initial.setdefault("owner", str(request.user.id))
         initial.setdefault("project", state.get_cookie("project"))
         initial["project"] = Project.objects.filter(pk=state.get_cookie("project")).first()
-        initial.setdefault("from_email", request.user.email)
+        initial.setdefault("from_email", str(request.user.email))
         return initial
 
-    @link(change_form=True, change_list=False)
+    @link(change_form=True, change_list=False)  # type: ignore[arg-type]
     def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         application: Application = button.context["original"]
@@ -100,7 +100,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
         else:
             button.visible = False
 
-    @link(change_form=True, change_list=False)
+    @link(change_form=True, change_list=False)  # type: ignore[arg-type]
     def notifications(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_notification_changelist")
         application: Application = button.context["original"]
@@ -109,16 +109,16 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
         else:
             button.visible = False
 
-    @button(
+    @button(  # type: ignore[arg-type]
         visible=lambda s: s.context["original"].project.organization.name != bitcaster.ORGANIZATION,
         html_attrs={"class": ButtonColor.ACTION.value},
     )
-    def add_event(self, request: HttpRequest, pk: str) -> HttpResponse:
+    def add_event(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:
         from bitcaster.models import Event
 
         return HttpResponseRedirect(url_related(Event, op="add", application=pk))
 
-    @button(
+    @button(  # type: ignore[arg-type]
         visible=lambda s: bool(s.context["original"].pk),
         html_attrs={"class": ButtonColor.ACTION.value},
     )
@@ -130,7 +130,7 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
             if config_form.is_valid():  # pragma: no branch
                 obj.advanced_configuration = config_form.cleaned_data
                 obj.save()
-                self.message_user(request, _("Advanced configuration saved."))
+                self.message_user(request, str(_("Advanced configuration saved.")))
                 return HttpResponseRedirect(reverse("admin:bitcaster_application_change", args=(obj.pk,)))
         else:
             initial = {
@@ -140,6 +140,6 @@ class ApplicationAdmin(BaseAdmin, LockMixinAdmin[Application], BitcasterModelAdm
             }
             config_form = ApplicationAdvancedConfigForm(initial=initial)
 
-        fs = (("", {"fields": ApplicationAdvancedConfigForm.declared_fields}),)
-        context["adminform"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)  # type: ignore[arg-type]
+        fs = [("", {"fields": list(ApplicationAdvancedConfigForm.declared_fields.keys())})]
+        context["adminform"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)
         return TemplateResponse(request, "bitcaster/admin/application/configure.html", context)
