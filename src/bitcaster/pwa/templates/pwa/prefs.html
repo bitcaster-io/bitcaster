@@ -47,48 +47,48 @@
         </form>
     </div>
     <!-- Security & Passkeys Section -->
-    <div class="mt-8 space-y-4">
-        <h3 class="text-lg font-bold border-b pb-2">
-            {% trans "Security & Passkeys" %}
-        </h3>
-        {% if authenticators %}
-            <div class="space-y-2">
-                {% for auth in authenticators %}
-                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined">
-                                {% if auth.type == 'webauthn' %}
-                                    fingerprint
-                                {% elif auth.type == 'totp' %}
-                                    numbers
-                                {% else %}
-                                    security
-                                {% endif %}
-                            </span>
-                            <div>
-                                <p class="font-medium text-sm">
-                                    {{ auth }}
-                                </p>
-                                <p class="text-xs text-gray-500">
-                                    {% trans "Added" %}: {{ auth.created_at|date }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-sm text-gray-500 italic">
-                {% trans "No passkeys or MFA authenticators registered yet." %}
-            </p>
-        {% endif %}
-        <div class="pt-2">
-            <a href="{% url 'mfa_index' %}" class="pwa-btn outline w-full flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined">settings_suggest</span>
-                {% trans "Manage MFA & Passkeys" %}
-            </a>
-        </div>
-    </div>
+    {#    <div class="mt-8 space-y-4">#}
+    {#        <h3 class="text-lg font-bold border-b pb-2">#}
+    {#            {% trans "Security & Passkeys" %}#}
+    {#        </h3>#}
+    {#        {% if authenticators %}#}
+    {#            <div class="space-y-2">#}
+    {#                {% for auth in authenticators %}#}
+    {#                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">#}
+    {#                        <div class="flex items-center gap-3">#}
+    {#                            <span class="material-symbols-outlined">#}
+    {#                                {% if auth.type == 'webauthn' %}#}
+    {#                                    fingerprint#}
+    {#                                {% elif auth.type == 'totp' %}#}
+    {#                                    numbers#}
+    {#                                {% else %}#}
+    {#                                    security#}
+    {#                                {% endif %}#}
+    {#                            </span>#}
+    {#                            <div>#}
+    {#                                <p class="font-medium text-sm">#}
+    {#                                    {{ auth }}#}
+    {#                                </p>#}
+    {#                                <p class="text-xs text-gray-500">#}
+    {#                                    {% trans "Added" %}: {{ auth.created_at|date }}#}
+    {#                                </p>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div>#}
+    {#                {% endfor %}#}
+    {#            </div>#}
+    {#        {% else %}#}
+    {#            <p class="text-sm text-gray-500 italic">#}
+    {#                {% trans "No passkeys or MFA authenticators registered yet." %}#}
+    {#            </p>#}
+    {#        {% endif %}#}
+    {#        <div class="pt-2">#}
+    {#            <a href="{% url 'mfa_index' %}" class="pwa-btn outline w-full flex items-center justify-center gap-2">#}
+    {#                <span class="material-symbols-outlined">settings_suggest</span>#}
+    {#                {% trans "Manage MFA & Passkeys" %}#}
+    {#            </a>#}
+    {#        </div>#}
+    {#    </div>#}
     <!-- PWA Installation Section -->
     <div id="pwa-install-section" class="hidden mt-8">
         <h3 class="text-lg font-bold border-b pb-2">

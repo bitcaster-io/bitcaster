@@ -63,7 +63,7 @@ class UserConsoleIndexView(UserConsoleMixin, LoginRequiredMixin, TemplateView):
         set_user_latest_notify_time(self.request.user.pk)  # type: ignore[arg-type]
         ctx.update(
             user=self.request.user,
-            messages=MessageFormSet(queryset=page_obj.object_list),  # type: ignore[arg-type]
+            user_messages=MessageFormSet(queryset=page_obj.object_list),  # type: ignore[arg-type]
             page_obj=page_obj,
             last_seen=last_seen,
             details_url="console:detail",

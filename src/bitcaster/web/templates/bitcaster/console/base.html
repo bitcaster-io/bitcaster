@@ -21,6 +21,18 @@
                     <span class="material-symbols-outlined text-3xl" x-show="this.adminTheme !== 'dark'">account_circle</span>
                     <span class="material-symbols-outlined text-3xl text-white" x-show="this.adminTheme === 'dark'">account_circle</span>
                 </a>
+                <a href="{% url "pwa:index" %}"
+                   class="text-font-default-light dark:text-font-default-dark hover:text-primary-600 dark:hover:text-primary-500">
+                    <span class="material-symbols-outlined text-3xl" x-show="this.adminTheme !== 'dark'">mobile</span>
+                    <span class="material-symbols-outlined text-3xl text-white" x-show="this.adminTheme === 'dark'">mobile</span>
+                </a>
+                <form method="post" action="{% url "logout" %}" id="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" x-on:click="adminTheme = (adminTheme === 'dark' ? 'light' : 'dark')" class="pwa-header-btn text-white">
+                        <span class="material-symbols-outlined text-[24px]" x-show="adminTheme !== 'dark'">logout</span>
+                        <span class="material-symbols-outlined text-[24px]" x-show="adminTheme === 'dark'">logout</span>
+                    </button>
+                </form>
                 <button type="button" x-on:click="adminTheme = (adminTheme === 'dark' ? 'light' : 'dark')" class="pwa-header-btn text-white">
                     <span class="material-symbols-outlined text-[24px]" x-show="adminTheme !== 'dark'">light_mode</span>
                     <span class="material-symbols-outlined text-[24px]" x-show="adminTheme === 'dark'">dark_mode</span>
@@ -29,6 +41,7 @@
         </div>
     {% endblock %}
     <div class="container mx-auto px-4 grow">
+        {% include "unfold/helpers/messages.html" %}
         {% block content %}
         {% endblock %}
     </div>
