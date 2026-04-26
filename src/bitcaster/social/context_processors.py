@@ -7,4 +7,4 @@ if TYPE_CHECKING:
 
 
 def available_providers(request: "HttpRequest") -> dict[str, list[tuple[str, str]]]:
-    return {"sso_providers": SocialProvider.objects.choices()}
+    return {"sso_providers": SocialProvider.objects.as_choices()}

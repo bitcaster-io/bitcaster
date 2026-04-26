@@ -273,5 +273,5 @@ class Notification(BitcasterBaseModel):
             application=self.event.application,
             project=self.event.application.project,
             organization=self.event.application.project.organization,
-            defaults=defaults if defaults else {},
+            defaults=defaults or {},
         )[0]

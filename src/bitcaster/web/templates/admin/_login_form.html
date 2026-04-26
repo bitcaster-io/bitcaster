@@ -1,0 +1,73 @@
+{% load i18n static unfold feature_flags socialaccount %}
+{% flag_enabled 'LOCAL_LOGIN' as LOCAL_LOGIN %}
+{% flag_enabled 'PASSKEY_LOGIN' as PASSKEY_LOGIN %}
+{% if form.errors or form.non_field_errors %}
+    <div class="flex flex-col gap-4 mb-8 *:mb-0">
+        {% include "unfold/helpers/messages/errornote.html" with errors=form.errors %}
+        {% include "unfold/helpers/messages/error.html" with errors=form.non_field_errors %}
+        {% if user.is_authenticated %}
+            {% blocktranslate trimmed asvar message %}
+                You are authenticated as {{ username }}, but are not authorized to
+                access this page. Would you like to login to a different account?
+            {% endblocktranslate %}
+            {% include "unfold/helpers/messages/error.html" with error=message %}
+        {% endif %}
+    </div>
+{% endif %}
+{% block login_before %}
+{% endblock %}
+<div lass="text-center">
+    <div class="login-form">
+        {% if LOCAL_LOGIN %}
+            <form method="post" action=".">
+                {% csrf_token %}
+                {% include "unfold/helpers/field.html" with field=form.username %}
+                {% include "unfold/helpers/field.html" with field=form.password %}
+                <div class="container mt-5">
+                    {% component "unfold/components/button.html" with submit=1 variant="primary" class="submit-row w-full" %}
+                    {% translate 'Log in' %}
+                    <span class="material-symbols-outlined relative right-0 transition-all group-hover:-right-1 text-sm">arrow_forward</span>
+                {% endcomponent %}
+            </div>
+        </form>
+    {% endif %}
+    <div class="social-login mt-10 border rounded p-2 grid grid-cols-1 gap-3 border-gray-500">
+        {% for k,v in sso_providers %}
+            <form action="{% provider_login_url k %}">
+                {% component "unfold/components/button.html" with submit=1 variant="default" class="submit-row w-full hover:bg-red-500" %}
+                {{ v }}
+            {% endcomponent %}
+        </form>
+    {% endfor %}
+</div>
+</div>
+{% if PASSKEY_LOGIN %}
+    ----
+    <div class="mt-8">
+        <form id="mfa_login" method="post" action="{% url 'mfa_login_webauthn' %}">
+            {% csrf_token %}
+            <input type="hidden" name="credential" id="mfa_credential" />
+            <button type="button" id="mfa_login_btn" class="button secondary w-full flex justify-center gap-2">
+                <span class="material-symbols-outlined text-sm">fingerprint</span>
+                {% trans "Login with Passkey" %}
+            </button>
+        </form>
+    </div>
+    <script src="{% static 'mfa/js/webauthn-json.js' %}"></script>
+    <script src="{% static 'mfa/js/webauthn.js' %}"></script>
+    <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (window.allauth && allauth.webauthn) {
+                    allauth.webauthn.forms.loginForm({
+                        ids: {
+                            login: 'mfa_login_btn',
+                            credential: 'mfa_credential'
+                        }
+                    });
+                }
+            });
+    </script>
+{% endif %}
+</div>
+{% block login_after %}
+{% endblock %}

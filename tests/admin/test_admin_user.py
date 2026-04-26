@@ -64,3 +64,20 @@ def test_change_password(app: "DjangoTestApp", user) -> None:
     res.forms["user_form"]["password1"] = "new-password"
     res.forms["user_form"]["password2"] = "new-password"
     res = res.forms["user_form"].submit().follow()
+
+
+def test_delete_user(app: "DjangoTestApp", user: "User") -> None:
+    url = reverse("admin:bitcaster_user_delete", args=[user.id])
+    res = app.get(url)
+    form = [f for f in res.forms.values() if "post" in f.fields][0]
+    res = form.submit().follow()
+    assert not User.objects.filter(pk=user.pk).exists()
+
+
+def test_delete_queryset_user(app: "DjangoTestApp", user: "User") -> None:
+    url = reverse("admin:bitcaster_user_changelist")
+    res = app.post(url, {"action": "delete_selected", "_selected_action": [user.pk], "index": "0"})
+    # Confirmation page
+    form = [f for f in res.forms.values() if "post" in f.fields][0]
+    res = form.submit().follow()
+    assert not User.objects.filter(pk=user.pk).exists()

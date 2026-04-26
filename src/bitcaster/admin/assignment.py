@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING, Any, TypeVar
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from django.contrib import messages
-from django.http import HttpRequest, HttpResponse
-from django.utils.translation import gettext_lazy as _
+from django.http import HttpRequest
+from django.utils.translation import gettext as _
 
-from bitcaster.admin.base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+from bitcaster.admin.base import BaseAdmin, ButtonColor
 from bitcaster.forms.assignment import AssignmentForm
 from bitcaster.models import Address, Assignment
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class AssignmentAdmin(BaseAdmin, BitcasterModelAdmin[Assignment]):
+class AssignmentAdmin(BaseAdmin[Assignment]):
     search_fields = ("address__name",)
     list_display = ("address", "channel", "validated", "active")
     list_filter = (
@@ -38,15 +38,15 @@ class AssignmentAdmin(BaseAdmin, BitcasterModelAdmin[Assignment]):
     ) -> "type[ModelForm[Assignment]]":
         return super().get_form(request, obj, change, **kwargs)
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
-    def validate(self, request: HttpRequest, pk: str) -> "HttpResponse":
+    @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
+    def validate(self, request: HttpRequest, pk: str) -> None:
         v: Assignment = self.get_object_or_404(request, pk)
         if v.channel.dispatcher.need_subscription:
-            self.message_user(request, _("Cannot be validated."), messages.ERROR)
+            self.message_user(request, str(_("Cannot be validated.")), messages.ERROR)
         else:
             v.validated = True
             v.save()
-            self.message_user(request, _("Validated."))
+            self.message_user(request, str(_("Validated.")))
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         ch_pk = request.GET.get("channel", None)

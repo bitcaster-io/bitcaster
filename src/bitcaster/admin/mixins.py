@@ -1,18 +1,15 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from admin_extra_buttons.decorators import button
-from django.contrib import admin, messages
+from django.contrib import messages
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext_lazy as _
 
 from .base import BitcasterModelAdmin, ButtonColor
 
-if TYPE_CHECKING:  # pragma: no cover
-    from bitcaster.types.django import AnyModel_co
 
-
-class LockMixinAdmin(BitcasterModelAdmin["LockMixin"]):
+class LockMixinAdmin[T](BitcasterModelAdmin[T]):
     def render_change_form(
         self,
         request: HttpRequest,
@@ -20,22 +17,22 @@ class LockMixinAdmin(BitcasterModelAdmin["LockMixin"]):
         add: bool = False,
         change: bool = False,
         form_url: str = "",
-        obj: "AnyModel_co | None" = None,
+        obj: T | None = None,
     ) -> HttpResponse:
-        if obj and obj.locked:
-            self.message_user(request, "Locked", messages.ERROR)
+        if obj and getattr(obj, "locked", False):
+            self.message_user(request, str(_("Locked")), messages.ERROR)
         return super().render_change_form(request, context, add, change, form_url, obj)
 
-    @button(
+    @button(  # type: ignore[arg-type]
         label=_("Lock"),
         visible=lambda s: not s.context["original"].locked,
         enabled=lambda s: s.context["original"].can_be_locked(),
         permission=lambda r, o, handler: r.user.has_perm("bitcaster.console_lock"),
         html_attrs={"class": ButtonColor.LOCK.value},
     )
-    def lock(self, request: "HttpRequest", pk: str) -> "HttpResponse | None":
+    def lock(self, request: HttpRequest, pk: str) -> HttpResponse | None:
         obj = self.get_object(request, pk)
-        if obj.can_be_locked():
+        if obj and obj.can_be_locked():
             label = obj._meta.verbose_name
             context = self.get_common_context(request, pk, title=_("Lock {}").format(label), target=label)
             if request.method == "POST":
@@ -45,28 +42,29 @@ class LockMixinAdmin(BitcasterModelAdmin["LockMixin"]):
             return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
         return None
 
-    @button(
+    @button(  # type: ignore[arg-type]
         label=_("Unlock"),
         visible=lambda s: s.context["original"].locked,
         enabled=lambda s: s.context["original"].can_be_locked(),
         permission=lambda r, o, handler: r.user.has_perm("bitcaster.console_lock"),
         html_attrs={"class": ButtonColor.UNLOCK.value},
     )
-    def unlock(self, request: "HttpRequest", pk: str) -> "HttpResponse":
+    def unlock(self, request: HttpRequest, pk: str) -> HttpResponse | None:
         obj = self.get_object(request, pk)
-        label = obj._meta.verbose_name
-        context = self.get_common_context(request, pk, title=_("Unlock {}").format(label), target=label)
-        if request.method == "POST":
-            obj = self.get_object(request, pk)
-            obj.unlock()
-            self.message_user(request, _("{} unlocked").format(label))
-            return HttpResponseRedirect("..")
-        return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
+        if obj:
+            label = obj._meta.verbose_name
+            context = self.get_common_context(request, pk, title=_("Unlock {}").format(label), target=label)
+            if request.method == "POST":
+                obj.unlock()
+                self.message_user(request, _("{} unlocked").format(label))
+                return HttpResponseRedirect("..")
+            return TemplateResponse(request, "bitcaster/admin/channel/lock.html", context)
+        return None
 
 
-class TwoStepCreateMixin(admin.ModelAdmin["AnyModel"]):
+class TwoStepCreateMixin[T]:
     def changeform_view(
-        self,
+        self: Any,
         request: HttpRequest,
         object_id: str | None = None,
         form_url: str = "",

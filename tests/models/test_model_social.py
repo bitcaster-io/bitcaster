@@ -1,17 +1,28 @@
 from typing import Any
 
+import pytest
+
 from bitcaster.social.models import Provider, SocialProvider
 
 
-def test_manager(db: Any) -> None:
+@pytest.fixture
+def data(db: Any) -> "list[SocialProvider]":
     from testutils.factories.social import SocialProviderFactory
 
-    SocialProviderFactory(provider=Provider.GITHUB)
-    SocialProviderFactory(provider=Provider.GOOGLE_OAUTH2)
-    SocialProviderFactory(provider=Provider.AZUREAD_TENANT_OAUTH2)
-
-    assert SocialProvider.objects.choices() == [
-        ("github", "Github"),
-        ("google-oauth2", "Google"),
-        ("azuread-tenant-oauth2", "Azure Tenant"),
+    return [
+        SocialProviderFactory.create(provider=Provider.GITHUB),
+        SocialProviderFactory.create(provider=Provider.GOOGLE),
+        SocialProviderFactory.create(provider=Provider.MICROSOFT),
     ]
+
+
+def test_manager(data) -> None:
+    assert SocialProvider.objects.as_choices() == [
+        ("github", "Github"),
+        ("google", "Google"),
+        ("microsoft", "Microsoft"),
+    ]
+
+
+def test_code(data) -> None:
+    assert data[0].code

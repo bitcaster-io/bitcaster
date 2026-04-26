@@ -18,9 +18,14 @@ from bitcaster.dispatchers import UserMessageDispatcher
 from bitcaster.models import Address, UserMessage
 
 
+@pytest.fixture
+def dl():
+    return DistributionListFactory.create()
+
+
 @pytest.mark.django_db
 def test_user_message_expired_filter(rf):
-    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={"message_ttl": 5})
+    ChannelFactory.create(dispatcher=fqn(UserMessageDispatcher), config={"message_ttl": 5})
 
     now = timezone.now()
     msg_active = UserMessageFactory()
@@ -37,8 +42,7 @@ def test_user_message_expired_filter(rf):
 
 
 @pytest.mark.django_db
-def test_address_by_list_filter(rf):
-    dl = DistributionListFactory()
+def test_address_by_list_filter(rf, dl):
     addr = AddressFactory()
     ass = AssignmentFactory(address=addr)
     dl.recipients.add(ass)

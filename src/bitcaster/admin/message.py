@@ -1,9 +1,8 @@
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, TypeVar
 
 from admin_extra_buttons.decorators import button, view
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
-from django import forms
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.response import TemplateResponse
@@ -32,13 +31,17 @@ from ..forms.message import (
 from ..forms.unfold import UnfoldAdminForm
 from ..utils.shortcuts import render_message
 from ..web.templatetags.markdown import md
-from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:  # pragma: no cover
+    from django import forms
+
     from ..types.django import JsonType
     from ..types.http import AuthHttpRequest
+
+    _MessageTemplateT = TypeVar("_MessageTemplateT", bound=MessageTemplate)
 
 SAMPLE_TEXT_MESSAGE = """This is a sample message for event '{{ event }}' for the application '{{ event.application}}'.
 
@@ -76,7 +79,7 @@ Below the available context elements:
 """
 
 
-class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageTemplate]):
+class MessageTemplateAdmin(BaseAdmin[MessageTemplate], VersionAdmin["_MessageTemplateT"]):
     search_fields = ("name",)
     list_display = ("name", "channel", "scope_level")
     list_filter = (
@@ -111,8 +114,12 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
         )
 
     def get_form(
-        self, request: HttpRequest, obj: Optional["MessageTemplate"] = None, **kwargs: dict[str, Any]
-    ) -> forms.Form:
+        self,
+        request: HttpRequest,
+        obj: Optional["MessageTemplate"] = None,
+        change: bool = False,
+        **kwargs: dict[str, Any],
+    ) -> "type[forms.ModelForm[_MessageTemplateT]]":
         defaults: dict[str, Any] = {}
         if obj is None:
             defaults["form"] = self.add_form
@@ -141,21 +148,21 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
             form = MessageTemplateCloneForm(request.POST, instance=cloned)
             if form.is_valid():
                 form.save()
-                self.message_user(request, _("Message Template updated successfully "))
+                self.message_user(request, str(_("Message Template updated successfully ")))
                 return HttpResponseRedirect("..")
         else:
             form = MessageTemplateCloneForm(instance=cloned)
-        fs = (("", {"fields": MessageTemplateCloneForm.declared_fields}),)
-        context["admin_form"] = UnfoldAdminForm(form, fs, {}, model_admin=self)  # type: ignore[arg-type]
+        fs = (("", {"fields": list(MessageTemplateCloneForm.declared_fields.keys())}),)
+        context["admin_form"] = UnfoldAdminForm(form, fs, {}, model_admin=self)
         context["form"] = form
         return TemplateResponse(request, "bitcaster/admin/message/clone.html", context)
 
-    @view()
-    def render(self, request: HttpRequest, pk: str) -> "HttpResponse":
+    @view()  # type: ignore[arg-type]
+    def render(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Address, Assignment
 
         form = MessageTemplateRenderForm(request.POST)
-        msg: MessageTemplate = self.get_object(request, pk)
+        msg: MessageTemplate = self.get_object_or_404(request, pk)
         message_context = self.get_dummy_source_context(msg)
 
         ct = "text/html"
@@ -185,10 +192,10 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
 
         return HttpResponse(res, content_type=ct)
 
-    @view()
-    def send_message(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
+    @view()  # type: ignore[arg-type]
+    def send_message(self, request: "AuthHttpRequest", pk: str) -> HttpResponse:
         form = MessageTemplateEditForm(request.POST)
-        msg: MessageTemplate = self.get_object(request, pk)
+        msg: MessageTemplate = self.get_object_or_404(request, pk)
         dispatcher: Dispatcher = msg.channel.dispatcher
         ret: "JsonType"
         if form.is_valid():
@@ -214,8 +221,8 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
 
         return JsonResponse(ret)
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
-    def edit(self, request: HttpRequest, pk: str) -> "HttpResponse":
+    @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
+    def edit(self, request: HttpRequest, pk: str) -> HttpResponse:
         context = self.get_common_context(request, pk, action_title="Edit")
         msg = context["original"]
         message_context = self.get_dummy_source_context(
@@ -226,25 +233,25 @@ class MessageTemplateAdmin(BaseAdmin, BitcasterModelAdmin, VersionAdmin[MessageT
             form = MessageTemplateEditForm(request.POST, instance=msg)
             if form.is_valid():
                 form.save()
-                self.message_user(request, _("Message Template updated successfully "))
+                self.message_user(request, str(_("Message Template updated successfully ")))
                 return HttpResponseRedirect("..")
         else:
             form = MessageTemplateEditForm(
                 initial={
-                    "recipient": request.user.email,
+                    "recipient": str(request.user.email),
                     "context": {k: "<sys>" for k, __ in message_context.items()},
-                    "subject": msg.subject if msg.subject else "Subject for {{ event }}",
-                    "content": (msg.content if msg.content else SAMPLE_TEXT_MESSAGE),
-                    "html_content": (msg.html_content if msg.html_content else SAMPLE_HTML_MESSAGE),
-                    "markdown_content": (msg.content if msg.content else SAMPLE_TEXT_MESSAGE),
+                    "subject": msg.subject or "Subject for {{ event }}",
+                    "content": (msg.content or SAMPLE_TEXT_MESSAGE),
+                    "html_content": (msg.html_content or SAMPLE_HTML_MESSAGE),
+                    "markdown_content": (msg.content or SAMPLE_TEXT_MESSAGE),
                 },
                 instance=msg,
             )
         context["form"] = form
         return TemplateResponse(request, "bitcaster/admin/message/edit.html", context)
 
-    @button(html_attrs={"class": ButtonColor.LINK.value})
-    def usage(self, request: HttpRequest, pk: str) -> "HttpResponse":
+    @button(html_attrs={"class": ButtonColor.LINK.value})  # type: ignore[arg-type]
+    def usage(self, request: HttpRequest, pk: str) -> HttpResponse:
         context = self.get_common_context(request, pk, action_title=_("Message usage"))
         msg: "MessageTemplate" = context["original"]
         usage: list[Any] = []

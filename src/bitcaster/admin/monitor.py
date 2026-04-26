@@ -17,7 +17,7 @@ from reversion.admin import VersionAdmin
 from bitcaster.models import Channel, Monitor
 
 from ..forms.monitor import MonitorForm
-from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor
 from .mixins import TwoStepCreateMixin
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -34,7 +34,7 @@ class MonitorScheduleForm(forms.Form):
     pass
 
 
-class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, VersionAdmin[Monitor]):
+class MonitorAdmin(BaseAdmin[Monitor], TwoStepCreateMixin[Monitor], VersionAdmin[Monitor]):
     search_fields = ("name",)
     list_display = (
         "name",
@@ -90,14 +90,12 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, 
             config_form = form_class(
                 initial={k: v for k, v in monitor.config.items() if k in form_class.declared_fields}
             )
-        fs = (("", {"fields": form_class.declared_fields}),)
-        context["admin_form"] = AdminForm(config_form, fs, {})  # type: ignore[arg-type]
+        fs = [(None, {"fields": list(form_class.declared_fields.keys())})]
+        context["admin_form"] = AdminForm(config_form, fs, {})
         return TemplateResponse(request, "bitcaster/admin/monitor/configure.html", context)
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
-    def test(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
-        from bitcaster.models import Monitor
-
+    @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
+    def test(self, request: "AuthHttpRequest", pk: str) -> HttpResponse:
         monitor: Monitor = self.get_object_or_404(request, pk)
         context = self.get_common_context(request, pk, title=_("Test Monitor"))
         if request.method == "POST":
@@ -109,7 +107,7 @@ class MonitorAdmin(BaseAdmin, TwoStepCreateMixin[Monitor], BitcasterModelAdmin, 
                     self.message_user(request, "Success. No changes detected", messages.SUCCESS)
             except Exception as e:
                 logger.exception(e)
-                self.message_error_to_user(request, e)
+                self.message_user(request, str(e), level=messages.ERROR)
         context["monitor"] = monitor
         context["form"] = MonitorTestForm()
         return TemplateResponse(request, "bitcaster/admin/monitor/test.html", context)

@@ -7,7 +7,7 @@ from unfold.contrib.filters.admin import AutocompleteSelectFilter
 from unfold.decorators import display
 
 from ..models import UserMessage
-from .base import BaseAdmin, BitcasterModelAdmin
+from .base import BaseAdmin
 from .filters import UserMessageExpiredFilter
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ class HorizontalChoicesFieldListFilter(ChoicesFieldListFilter):
     horizontal = True  # Enable horizontal layout
 
 
-class UserMessageAdmin(BaseAdmin, BitcasterModelAdmin[UserMessage]):
+class UserMessageAdmin(BaseAdmin[UserMessage]):
     list_display = ("created", "level_badge", "event", "user", "subject")
     list_filter = (
         ("user", AutocompleteSelectFilter),
@@ -36,15 +36,15 @@ class UserMessageAdmin(BaseAdmin, BitcasterModelAdmin[UserMessage]):
     def has_add_permission(self, request: "HttpRequest", *args: Any, **kwargs: Any) -> bool:
         return False
 
-    def has_change_permission(self, request, obj=...):
+    def has_change_permission(self, request: "HttpRequest", obj: UserMessage | None = None) -> bool:
         return False
 
-    @display(
+    @display(  # type: ignore[untyped-decorator]
         description=_("Level"),
         ordering="level",
         label={
             "INFO": "info",
         },
     )
-    def level_badge(self, obj):
-        return logging._levelToName[int(obj.level)]
+    def level_badge(self, obj: UserMessage) -> str:
+        return str(logging.getLevelName(int(obj.level)))

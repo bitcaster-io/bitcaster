@@ -50,7 +50,18 @@ INSTALLED_APPS = [
     # "django_select2",
     "adminactions",
     "admin_extra_buttons",
-    "social_django",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.mfa",
+    "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.facebook",
+    "allauth.socialaccount.providers.gitlab",
+    "allauth.socialaccount.providers.microsoft",
+    "allauth.socialaccount.providers.linkedin_oauth2",
+    "allauth.socialaccount.providers.openid_connect",
+    "allauth.socialaccount.providers.twitter",
     "csp",
     "smart_selects",
     "adminfilters",
@@ -93,6 +104,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/"
@@ -113,8 +125,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "social_django.context_processors.backends",
-                "social_django.context_processors.login_redirect",
                 "bitcaster.social.context_processors.available_providers",
                 "bitcaster.web.context_processors.version",
                 "bitcaster.web.context_processors.debug",
@@ -174,20 +184,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    # social
-    "social_core.backends.azuread.AzureADOAuth2",
-    "social_core.backends.azuread_tenant.AzureADTenantOAuth2",
-    "social_core.backends.facebook.FacebookOAuth2",
-    "social_core.backends.github.GithubOAuth2",
-    "social_core.backends.gitlab.GitLabOAuth2",
-    "social_core.backends.google.GoogleOAuth2",
-    "social_core.backends.linkedin.LinkedinOAuth2",
-    "social_core.backends.twitter.TwitterOAuth",
-    "bitcaster.social.backend.wso2.Wso2OAuth2",
-    "social_core.backends.keycloak.KeycloakOAuth2",
-    # local
     "bitcaster.auth.backends.BitcasterBackend",
-    # "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

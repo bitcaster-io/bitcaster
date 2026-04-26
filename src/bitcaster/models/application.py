@@ -125,5 +125,5 @@ class Application(SlugMixin, LockMixin, BitcasterBaseModel):
             application=self,
             project=self.project,
             organization=self.project.organization,
-            defaults=defaults if defaults else {},
+            defaults=defaults or {},
         )[0]

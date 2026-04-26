@@ -99,3 +99,17 @@ def test_monitor_test(app: DjangoTestApp, monitor: "Monitor") -> None:
     msg = list(res.context["messages"])[0]
     assert msg.level == WARNING, str(f"{msg.level}: {msg.message}")
     assert msg.message == "Success. Changes detected"
+
+
+def test_monitor_test_error(app: DjangoTestApp, monitor: "Monitor") -> None:
+    from unittest import mock
+
+    from django.contrib import messages
+
+    url = reverse("admin:bitcaster_monitor_test", args=[monitor.pk])
+    with mock.patch("bitcaster.agents.fs.AgentFileSystem.check", side_effect=Exception("Test Exception")):
+        res = app.post(url)
+    assert res.status_code == 200
+    msg = list(res.context["messages"])[0]
+    assert msg.level == messages.ERROR
+    assert msg.message == "Test Exception"

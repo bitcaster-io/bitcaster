@@ -1,7 +1,8 @@
 {% extends "bitcaster/base.html" %}
-{% load feature_flags static %}
+{% load feature_flags static socialaccount %}
 {% block body %}
     {% flag_enabled 'LOCAL_LOGIN' as LOCAL_LOGIN %}
+    {% flag_enabled 'MFA_LOGIN' as MFA_LOGIN %}
     <div class="text-center">
         <img style="width: 200px;margin-bottom: 50px" src="{% static "bitcaster/images/logos/logo400.png" %}" />
         <div class="login-form">
@@ -17,11 +18,37 @@
             {% endif %}
             <div class="social-login">
                 {% for k,v in sso_providers %}
-                    <form action="{% url "social:begin" k %}">
+                    <form action="{% provider_login_url k %}">
                         <input type="submit" value="{{ v }}" />
                     </form>
                 {% endfor %}
             </div>
         </div>
     </div>
+    {#    {% if MFA_LOGIN %}#}
+    {#        <div class="mt-8">#}
+    {#            <form id="mfa_login" method="post" action="{% url 'mfa_login_webauthn' %}">#}
+    {#                {% csrf_token %}#}
+    {#                <input type="hidden" name="credential" id="mfa_credential" />#}
+    {#                <button type="button" id="mfa_login_btn" class="button secondary w-full flex justify-center gap-2">#}
+    {#                    <span class="material-symbols-outlined text-sm">fingerprint</span>#}
+    {#                    {% trans "Login with Passkey" %}#}
+    {#                </button>#}
+    {#            </form>#}
+    {#        </div>#}
+    {#        <script src="{% static 'mfa/js/webauthn-json.js' %}"></script>#}
+    {#        <script src="{% static 'mfa/js/webauthn.js' %}"></script>#}
+    {#        <script>#}
+    {#        document.addEventListener('DOMContentLoaded', function() {#}
+    {#            if (window.allauth && allauth.webauthn) {#}
+    {#                allauth.webauthn.forms.loginForm({#}
+    {#                    ids: {#}
+    {#                        login: 'mfa_login_btn',#}
+    {#                        credential: 'mfa_credential'#}
+    {#                    }#}
+    {#                });#}
+    {#            }#}
+    {#        });#}
+    {#        </script>#}
+    {#    {% endif %}#}
 {% endblock body %}

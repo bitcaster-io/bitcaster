@@ -1,3 +1,5 @@
+from typing import Any
+
 from constance.admin import ConstanceAdmin
 from constance.base import Config
 from constance.forms import ConstanceForm
@@ -10,13 +12,14 @@ from bitcaster.forms.unfold import UnfoldForm
 
 
 class CustomConstanceForm(UnfoldForm, ConstanceForm):
-    def clean(self):
+    def clean(self) -> Any:
         cleaned_data = super().clean()
         default_val = cleaned_data.get("OCCURRENCE_DEFAULT_RETENTION", DEFAULT_OCCURRENCE_DEFAULT_RETENTION)
         max_val = cleaned_data.get("OCCURRENCE_MAX_RETENTION", DEFAULT_OCCURRENCE_MAX_RETENTION)
 
         if default_val > max_val:
             raise ValidationError(_("Default retention cannot be greater than maximum retention."))
+        return cleaned_data
 
 
 class CustomConstanceAdmin(ConstanceAdmin, BitcasterModelAdmin[Config]):

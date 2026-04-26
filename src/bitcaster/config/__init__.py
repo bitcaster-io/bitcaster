@@ -103,10 +103,10 @@ CONFIG: "Mapping[str, ConfigItem]" = {
         "https://python-social-auth.readthedocs.io/en/latest/configuration/django.html",
         True,
     ),
-    "SOCIAL_AUTH_REDIRECT_IS_HTTPS": (
+    "REDIRECT_TO_HTTPS": (
         bool,
-        True,
-        "https://python-social-auth.readthedocs.io/en/latest/configuration/settings.html",
+        False,
+        "",
         False,
     ),
     "STATIC_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage", setting("storages")),

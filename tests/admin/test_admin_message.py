@@ -259,6 +259,22 @@ def test_usage(app: "DjangoTestApp", creator: CreateMessage, channel: "Channel")
     assert res.pyquery(".usage div.grid a.link").text() == creator.name
 
 
+def test_clone(app: "DjangoTestApp", message: "MessageTemplate") -> None:
+    from testutils.factories import ChannelFactory
+
+    from bitcaster.models import MessageTemplate
+
+    opts: "Options[MessageTemplate]" = message._meta
+    url = reverse(admin_urlname(opts, "clone"), args=[message.pk])  # type: ignore[arg-type]
+    res = app.get(url)
+    assert res.status_code == 200
+
+    new_channel = ChannelFactory(organization=message.organization)
+    res = app.post(url, {"name": "New Name", "event": message.notification.event.pk, "channel": new_channel.pk})
+    assert res.status_code == 302
+    assert MessageTemplate.objects.filter(name="New Name", channel=new_channel).exists()
+
+
 @pytest.mark.parametrize("flt", ["expired=", "expired=1", "expired=0"])
 def test_filtering(app: "DjangoTestApp", message: "MessageTemplate", flt: str) -> None:
     url = reverse("admin:bitcaster_usermessage_changelist")

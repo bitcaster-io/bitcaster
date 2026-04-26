@@ -278,3 +278,35 @@ def test_add_channel_with_parent(
     res = res.forms["channel_form"].submit()
     assert res.status_code == 200
     assert_form_error(res, "parent", "Parent does not belong same organization.")
+
+
+def test_lock_unlock(app: DjangoTestApp, gmail_channel: Channel) -> None:
+    opts: "Options[Channel]" = gmail_channel._meta
+    lock_url = reverse(admin_urlname(opts, SafeString("lock")), args=[gmail_channel.pk])
+    unlock_url = reverse(admin_urlname(opts, SafeString("unlock")), args=[gmail_channel.pk])
+    change_url = reverse(admin_urlname(opts, SafeString("change")), args=[gmail_channel.pk])
+
+    # Test lock GET
+    res = app.get(lock_url)
+    assert res.status_code == 200
+
+    # Test lock POST
+    res = app.post(lock_url)
+    assert res.status_code == 302
+    gmail_channel.refresh_from_db()
+    assert gmail_channel.locked
+
+    # Test line 23 (Locked message in change form)
+    res = app.get(change_url)
+    assert res.status_code == 200
+    assert "Locked" in res.text
+
+    # Test unlock GET
+    res = app.get(unlock_url)
+    assert res.status_code == 200
+
+    # Test unlock POST
+    res = app.post(unlock_url)
+    assert res.status_code == 302
+    gmail_channel.refresh_from_db()
+    assert not gmail_channel.locked

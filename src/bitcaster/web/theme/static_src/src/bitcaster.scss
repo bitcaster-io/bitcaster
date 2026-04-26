@@ -42,7 +42,6 @@
 
 /* PWA Styles */
 body.pwa {
-  @apply pb-[75px] md:pb-0 bg-gray-50 text-gray-900 min-h-screen;
 
   &:where(.dark, .dark *) {
     @apply bg-gray-900 text-gray-100;

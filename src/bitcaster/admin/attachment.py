@@ -1,15 +1,7 @@
-from adminfilters.autocomplete import AutoCompleteFilter
-
-from bitcaster.admin.base import BaseAdmin, BitcasterModelAdmin
-from bitcaster.forms.attachment import AttachmentForm
 from bitcaster.models import Attachment
 
+from .base import BaseAdmin
 
-class AttachmentAdmin(BaseAdmin, BitcasterModelAdmin[Attachment]):
-    search_fields = ("filename", "correlation_id")
-    list_display = ("filename", "correlation_id", "size", "mime_type")
-    list_filter = (
-        ("application", AutoCompleteFilter),
-        ("mime_type", AutoCompleteFilter),
-    )
-    form = AttachmentForm
+
+class AttachmentAdmin(BaseAdmin[Attachment]):
+    list_display = ("pk", "application", "filename", "correlation_id")

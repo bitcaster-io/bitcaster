@@ -12,7 +12,7 @@ from bitcaster.models import Channel, Group, Organization
 from ..constants import bitcaster
 from ..state import state
 from ..utils.django import url_related
-from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.utils.datastructures import _ListOrTuple
@@ -39,7 +39,7 @@ Joe,Doe,j.doe@example.com
     group = forms.ModelChoiceField(queryset=Group.objects.all(), help_text=_("Add imported users to this Group"))
 
 
-class OrganizationAdmin(BaseAdmin, BitcasterModelAdmin[Organization]):
+class OrganizationAdmin(BaseAdmin[Organization]):
     search_fields = ("name",)
     list_display = ("name", "from_email", "subject_prefix")
     autocomplete_fields = ("owner",)
@@ -59,18 +59,18 @@ class OrganizationAdmin(BaseAdmin, BitcasterModelAdmin[Organization]):
 
         return super().changeform_view(request, object_id, form_url, extra_context)
 
-    @view(login_required=True)
-    def current(self, request: HttpRequest) -> HttpResponse:
+    @view(login_required=True)  # type: ignore[arg-type]
+    def current(self, request: HttpRequest) -> HttpResponseRedirect:
         if current := Organization.objects.local().first():
             return HttpResponseRedirect(reverse("admin:bitcaster_organization_change", args=[current.pk]))
         return HttpResponseRedirect(reverse("admin:bitcaster_organization_add"))
 
-    @button(html_attrs={"class": ButtonColor.LINK.value})
-    def channels(self, request: HttpRequest, pk: str) -> HttpResponse:
+    @button(html_attrs={"class": ButtonColor.LINK.value})  # type: ignore[arg-type]
+    def channels(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:
         return HttpResponseRedirect(url_related(Channel, organization__exact=pk))
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
-    def project(self, request: HttpRequest, pk: str) -> HttpResponse:
+    @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
+    def project(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:
         from bitcaster.models import Project
 
         if prj := Project.objects.filter(organization_id=pk).first():
@@ -96,5 +96,5 @@ class OrganizationAdmin(BaseAdmin, BitcasterModelAdmin[Organization]):
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
-            "owner": request.user.id,
+            "owner": str(request.user.id),
         }

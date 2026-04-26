@@ -32,9 +32,10 @@ def test_absolute_reverse() -> None:
 
 
 def test_absolute_uri(settings: "SettingsWrapper") -> None:
+    settings.REDIRECT_TO_HTTPS = False
     assert absolute_uri("aa") == "http://127.0.0.1/aa"
     assert absolute_uri("") == "http://127.0.0.1/"
-    settings.SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+    settings.REDIRECT_TO_HTTPS = True
     assert absolute_uri("") == "https://127.0.0.1/"
     with state.configure(request=None):
         assert absolute_uri("") == ""
@@ -51,7 +52,7 @@ def test_get_server_url(settings: "SettingsWrapper") -> None:
     with state.configure(request=None):
         assert get_server_url() == ""
 
-    settings.SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+    settings.REDIRECT_TO_HTTPS = True
     assert get_server_url() == "https://127.0.0.1"
 
 

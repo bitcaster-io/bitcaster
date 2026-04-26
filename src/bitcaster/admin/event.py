@@ -7,7 +7,7 @@ from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilt
 from django import forms
 from django.contrib import admin, messages
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -18,13 +18,12 @@ from bitcaster.models import Assignment, Event
 from ..constants import bitcaster
 from ..forms.event import EventChangeForm
 from ..state import state
-from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor
 from .message import MessageTemplate
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin.options import _FieldsetSpec
-    from django.http import HttpResponse
     from django.utils.datastructures import _ListOrTuple
 
 logger = logging.getLogger(__name__)
@@ -43,7 +42,7 @@ class EventTestForm(forms.Form):
     assignment = forms.ModelChoiceField(queryset=Assignment.objects.none(), widget=uwidgets.UnfoldAdminSelectWidget)
 
 
-class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], BitcasterModelAdmin[Event]):
+class EventAdmin(TwoStepCreateMixin[Event], LockMixinAdmin[Event], BaseAdmin[Event]):
     search_fields = ("name",)
     list_display = ("name", "application", "active", "locked")
     list_filter = (
@@ -96,7 +95,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
     def get_fieldsets(self, request: HttpRequest, obj: Event | None = None) -> "_FieldsetSpec":
         if obj:
             return self._fieldsets
-        return [(None, {"fields": self.get_fields(request, obj)})]
+        return [(None, {"fields": list(self.get_fields(request, obj))})]
 
     def delete_queryset(self, request: HttpRequest, queryset: QuerySet[Event]) -> None:
         queryset.exclude(application__project__organization__name=bitcaster.ORGANIZATION).delete()
@@ -116,27 +115,27 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         initial = super().get_changeform_initial_data(request)
-        initial.setdefault("owner", request.user.id)
+        initial.setdefault("owner", str(request.user.id))
         initial.setdefault("organization", state.get_cookie("organization"))
-        initial.setdefault("from_email", request.user.email)
+        initial.setdefault("from_email", str(request.user.email))
         return initial
 
-    def get_readonly_fields(self, request: "HttpRequest", obj: "Event | None" = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: HttpRequest, obj: Event | None = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:
             return ["application", "slug"]
         return []
 
-    def get_fields(self, request: HttpRequest, obj: Event | None = None) -> Sequence[str | Sequence[str]]:
+    def get_fields(self, request: HttpRequest, obj: Event | None = None) -> list[Any]:
         form = self._get_form_for_get_fields(request, obj)
         return [*self.get_readonly_fields(request, obj), *form.base_fields]
 
-    def get_exclude(self, request: "HttpRequest", obj: "Event | None" = None) -> "_ListOrTuple[str]":
+    def get_exclude(self, request: HttpRequest, obj: Event | None = None) -> "_ListOrTuple[str]":
         if obj is None:
             return ["channels", "locked"]
         return ["locked"]
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
-    def trigger_event(self, request: HttpRequest, pk: str) -> "HttpResponse":
+    @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
+    def trigger_event(self, request: HttpRequest, pk: str) -> HttpResponse:
         from bitcaster.models import Occurrence
 
         def get_form(*args: Any, **kwargs: Any) -> EventTestForm:
@@ -147,7 +146,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
             return frm
 
         context = self.get_common_context(request, pk, action_title=_("Trigger Event"))
-        evt: Event | None = self.get_object(request, pk)
+        evt: Event = self.get_object_or_404(request, pk)
         if request.method == "POST":
             config_form = get_form(request.POST)
             if config_form.is_valid():
@@ -164,7 +163,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
                     return HttpResponseRedirect(".")
                 except Exception as e:
                     logger.exception(e)
-                    self.message_error_to_user(request, e)
+                    self.message_user(request, str(e), level=messages.ERROR)
         else:
             config_form = get_form(
                 initial={
@@ -175,7 +174,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
         context["form"] = config_form
         return TemplateResponse(request, "bitcaster/admin/event/test_event.html", context)
 
-    @link(change_form=True, change_list=False)
+    @link(change_form=True, change_list=False)  # type: ignore[arg-type]
     def notifications(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_notification_changelist")
         event: Event = button.context["original"]
@@ -184,7 +183,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
         else:
             button.visible = False
 
-    @link(change_form=True, change_list=False)
+    @link(change_form=True, change_list=False)  # type: ignore[arg-type]
     def occurrences(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_occurrence_changelist")
         event: Event = button.context["original"]
@@ -193,7 +192,7 @@ class EventAdmin(BaseAdmin, TwoStepCreateMixin[Event], LockMixinAdmin[Event], Bi
         else:
             button.visible = False
 
-    @link(change_form=True, change_list=False)
+    @link(change_form=True, change_list=False)  # type: ignore[arg-type]
     def messages(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_messagetemplate_changelist")
         event: Event = button.context["original"]

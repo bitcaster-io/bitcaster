@@ -75,7 +75,7 @@ def test_console_prefs(django_app, user) -> None:
     res = django_app.get(url, user=user)
     assert res.status_code == 200
 
-    form = res.forms[0]
+    form = res.forms["user-preferences-form"]
     form["timezone"] = "Europe/Rome"
     res = form.submit()
     assert res.status_code == 302
