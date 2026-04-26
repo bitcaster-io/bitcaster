@@ -28,6 +28,16 @@ class ProjectView(SecurityMixin, ViewSet, ListAPIView[Project], RetrieveAPIView[
             organization__slug=self.kwargs["org"],
         )
 
-    @extend_schema(description=_("Retrieve project details"))
+    @extend_schema(
+        responses={200: ProjectSerializer(many=True)},
+        description=_("List all projects belonging to a specific organization."),
+    )
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        responses={200: ProjectSerializer},
+        description=_("Retrieve details of a specific project within an organization."),
+    )
     def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return super().retrieve(request, *args, **kwargs)

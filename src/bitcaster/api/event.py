@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING, Any
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import QuerySet
+from django.utils.translation import gettext as _
+from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
@@ -78,6 +80,13 @@ class EventList(SecurityMixin, ListAPIView[Event]):
             application__slug=self.kwargs["app"],
         )
 
+    @extend_schema(
+        responses={200: EventSerializer(many=True)},
+        description=_("List all events configured for a specific application."),
+    )
+    def get(self, request: "Request", *args: Any, **kwargs: Any) -> Response:
+        return super().get(request, *args, **kwargs)
+
 
 class EventTrigger(SecurityMixin, GenericAPIView[Event]):
     """Trigger application's event."""
@@ -94,6 +103,15 @@ class EventTrigger(SecurityMixin, GenericAPIView[Event]):
             application__slug=self.kwargs["app"],
         )
 
+    @extend_schema(
+        request=ActionSerializer,
+        responses={201: Any},
+        description=_(
+            "Trigger a specific event. "
+            "This endpoint accepts a payload context and routing options. "
+            "If configured, it may auto-create the event if it doesn't exist."
+        ),
+    )
     def post(self, request: "Request", *args: Any, **kwargs: Any) -> Response:
         ser = ActionSerializer(data=request.data)
         correlation_id = request.query_params.get("cid", None)

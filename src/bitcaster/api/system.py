@@ -23,7 +23,11 @@ class PingView(BaseView):
     serializer_class = PingSerializer
     authentication_classes = [ApiKeyAuthentication]
 
-    @extend_schema(request=PingSerializer, description=_("Ping system"))
+    @extend_schema(
+        request=PingSerializer,
+        responses={200: PingSerializer},
+        description=_("Check the system status and verify the validity of the API token."),
+    )
     def get(self, request: Request, **kwargs: Any) -> Response:
         key: "ApiKey" = cast("ApiKey", request.auth)
         ser = PingSerializer({"token": key.name})
@@ -35,7 +39,11 @@ class LoginView(BaseView):
     serializer_class = PingSerializer
     authentication_classes = [ApiKeyAuthentication]
 
-    @extend_schema(request=PingSerializer, description=_("Ping system"))
+    @extend_schema(
+        request=PingSerializer,
+        responses={200: PingSerializer},
+        description=_("Endpoint for API authentication and verification."),
+    )
     def get(self, request: Request, **kwargs: Any) -> Response:
         key: "ApiKey" = cast("ApiKey", request.auth)
         ser = PingSerializer({"token": key.name})

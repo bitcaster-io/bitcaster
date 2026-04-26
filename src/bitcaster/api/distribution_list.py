@@ -79,7 +79,30 @@ class DistributionView(
         )
 
     @extend_schema(
-        description=_("Add recipient to a DistributionList"),
+        responses={200: DistributionListSerializer(many=True)},
+        description=_("List all distribution lists within a specific project."),
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        request=DistributionListSerializer,
+        responses={201: DistributionListSerializer},
+        description=_("Create a new distribution list for the project."),
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        responses={200: DistributionListSerializer}, description=_("Retrieve details of a specific distribution list.")
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        description=_(
+            "Add recipients to a DistributionList by providing a list of their address values (e.g., emails)."
+        ),
         examples=[
             OpenApiExample(
                 "Add users",
@@ -121,3 +144,10 @@ class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView[Assignment]):
         return Assignment.objects.filter(
             distributionlist__id=self.kwargs["pk"], distributionlist__project__slug=self.kwargs["prj"]
         )
+
+    @extend_schema(
+        responses={200: DistributionMemberSerializer(many=True)},
+        description=_("List all members (assignments) of a specific distribution list."),
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
