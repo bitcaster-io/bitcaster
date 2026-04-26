@@ -18,14 +18,13 @@ from bitcaster.models import Assignment, Channel, User
 
 from ..dispatchers.base import Payload
 from ..forms.channel import ChannelChangeForm
-from .base import BaseAdmin, BitcasterModelAdmin, ButtonColor
+from .base import BaseAdmin, ButtonColor
 from .filters import ChannelTypeFilter
 from .mixins import LockMixinAdmin, TwoStepCreateMixin
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.utils.datastructures import _ListOrTuple
 
-    from bitcaster.types.django import AnyModel_co
     from bitcaster.types.http import AuthHttpRequest
 
 logger = logging.getLogger(__name__)
@@ -41,7 +40,7 @@ class ManagementForm(forms.Form):
     current_step = forms.IntegerField()
 
 
-class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], BitcasterModelAdmin[Channel]):
+class ChannelAdmin(TwoStepCreateMixin[Channel], LockMixinAdmin[Channel], BaseAdmin[Channel]):
     search_fields = ("name",)
     list_display = ("name", "organization", "project", "dispatcher_", "active", "locked", "protocol")
     list_filter = (
@@ -57,33 +56,33 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
     def dispatcher_(self, obj: Channel) -> str:
         return str(obj.dispatcher)
 
-    def get_queryset(self, request: "HttpRequest") -> QuerySet[Channel]:
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Channel]:
         return super().get_queryset(request).select_related("project", "organization")
 
-    def get_readonly_fields(self, request: "HttpRequest", obj: "AnyModel_co | None" = None) -> "_ListOrTuple[str]":
+    def get_readonly_fields(self, request: HttpRequest, obj: Channel | None = None) -> "_ListOrTuple[str]":
         if obj and obj.pk == config.SYSTEM_EMAIL_CHANNEL:
             return ["name", "organization", "project", "parent", "protocol", "locked"]
         if obj and obj.pk:
             return ["parent", "organization", "protocol", "locked", "project"]
         return []
 
-    @link(change_form=True, change_list=False)
+    @link(change_form=True, change_list=False)  # type: ignore[arg-type]
     def events(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_event_changelist")
         ch: Channel = button.context["original"]
         if ch:
             button.href = f"{url}?channels__exact={ch.pk}"
 
-    @link(change_form=True, change_list=False)
+    @link(change_form=True, change_list=False)  # type: ignore[arg-type]
     def assignments(self, button: ButtonWidget) -> None:
         url = reverse("admin:bitcaster_assignment_changelist")
         ch: Channel = button.context["original"]
         if ch:
             button.href = f"{url}?channel__id__exact={ch.pk}"
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
-    def configure(self, request: "HttpRequest", pk: str) -> "HttpResponse":
-        obj: "Channel" = self.get_object_or_404(request, pk)
+    @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
+    def configure(self, request: HttpRequest, pk: str) -> HttpResponse:
+        obj: Channel = self.get_object_or_404(request, pk)
         context = self.get_common_context(request, pk, action_title=_("Configure channel"))
         form_class = obj.dispatcher.config_class
         if form_class:
@@ -100,20 +99,20 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
                         initial[k] = v
 
                 config_form = form_class(initial=initial)
-            fs = (("", {"fields": form_class.declared_fields}),)
-            context["adminform"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)  # type: ignore[arg-type]
+            fs = [("", {"fields": list(form_class.declared_fields.keys())})]
+            context["adminform"] = UnfoldAdminForm(config_form, fs, {}, model_admin=self)
             context["extra_config_info"] = obj.dispatcher.get_extra_config_info()
         return TemplateResponse(request, "bitcaster/admin/channel/configure.html", context)
 
-    @button(html_attrs={"class": ButtonColor.ACTION.value})
-    def test(self, request: "AuthHttpRequest", pk: str) -> "HttpResponse":
+    @button(html_attrs={"class": ButtonColor.ACTION.value})  # type: ignore[arg-type]
+    def test(self, request: "AuthHttpRequest", pk: str) -> HttpResponse:
         from bitcaster.models import Event
 
         ch: Channel = self.get_object_or_404(request, pk)
         user: User = request.user
         assignment: Assignment | None = user.get_assignment_for_channel(ch)
         context = self.get_common_context(request, pk, action_title=_("Test channel"))
-        if request.method == "POST":
+        if request.method == "POST" and assignment:
             config_form = ChannelTestForm(request.POST)
             if config_form.is_valid():
                 recipient = str(assignment.address.value)
@@ -137,6 +136,6 @@ class ChannelAdmin(BaseAdmin, TwoStepCreateMixin[Channel], LockMixinAdmin[Channe
                 }
             )
         context["assignment"] = assignment
-        fs = (("", {"fields": ChannelTestForm.declared_fields}),)
+        fs = [("", {"fields": list(ChannelTestForm.declared_fields.keys())})]
         context["adminform"] = UnfoldAdminForm(config_form, fs, {})
         return TemplateResponse(request, "bitcaster/admin/channel/test.html", context)

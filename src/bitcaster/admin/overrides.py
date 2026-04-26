@@ -7,7 +7,7 @@ from flags.models import FlagState
 from flags.state import flag_enabled
 from unfold.contrib.filters.admin import RelatedDropdownFilter
 
-from bitcaster.admin.base import BaseAdmin, BitcasterModelAdmin
+from bitcaster.admin.base import BaseAdmin
 from bitcaster.forms import unfold as uwidgets
 from bitcaster.models import LogEntry
 
@@ -26,7 +26,7 @@ class FlagStateForm(BaseFlagStateForm):
     )
 
 
-class FlagStateAdmin(BaseAdmin, _FlagStateAdmin):
+class FlagStateAdmin(BaseAdmin[FlagState], _FlagStateAdmin):
     search_fields = ("name",)
     list_display = ("name", "condition", "value", "required", "active")
     ordering = ("name",)
@@ -39,7 +39,7 @@ class FlagStateAdmin(BaseAdmin, _FlagStateAdmin):
     active.boolean = True
 
 
-class LogEntryAdmin(BaseAdmin, BitcasterModelAdmin[LogEntry]):
+class LogEntryAdmin(BaseAdmin[LogEntry]):
     list_display = (
         "action_time",
         "user",

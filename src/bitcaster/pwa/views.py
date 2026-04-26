@@ -23,6 +23,7 @@ from timezone_field import TimeZoneFormField
 from bitcaster.console.views import UserConsoleIndexView
 from bitcaster.models import User, UserMessage
 from bitcaster.utils.http import absolute_reverse, get_server_url
+from bitcaster.web.views import UnfoldViewMixin
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class PwaUserPrefForm(forms.ModelForm[User]):
         }
 
 
-class PwaLoginView(BaseLoginView):
+class PwaLoginView(UnfoldViewMixin, BaseLoginView):
     template_name = "pwa/login.html"
     redirect_authenticated_user = True
 
@@ -59,7 +60,7 @@ class PwaLoginView(BaseLoginView):
         return form
 
 
-class PwaLogoutView(LoginRequiredMixin, TemplateView):
+class PwaLogoutView(UnfoldViewMixin, LoginRequiredMixin, TemplateView):
     login_url = "pwa:login"
     template_name = "pwa/logout_confirm.html"
 
@@ -68,7 +69,7 @@ class PwaLogoutView(LoginRequiredMixin, TemplateView):
         return redirect(absolute_reverse("pwa:login"))
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        return {"request": self.request, **kwargs}
+        return {"request": self.request, **super().get_context_data(**kwargs)}
 
 
 class PwaIndexView(UserConsoleIndexView):
@@ -82,7 +83,7 @@ class PwaIndexView(UserConsoleIndexView):
         return context
 
 
-class PwaDetailView(LoginRequiredMixin, DetailView[UserMessage]):
+class PwaDetailView(UnfoldViewMixin, LoginRequiredMixin, DetailView[UserMessage]):
     login_url = "pwa:login"
     template_name = "pwa/detail.html"
     model = UserMessage
@@ -96,7 +97,7 @@ class PwaDetailView(LoginRequiredMixin, DetailView[UserMessage]):
         return obj
 
 
-class PwaPrefsView(LoginRequiredMixin, UpdateView[User, PwaUserPrefForm]):
+class PwaPrefsView(UnfoldViewMixin, LoginRequiredMixin, UpdateView[User, PwaUserPrefForm]):
     login_url = "pwa:login"
     template_name = "pwa/prefs.html"
     model = User
@@ -105,6 +106,13 @@ class PwaPrefsView(LoginRequiredMixin, UpdateView[User, PwaUserPrefForm]):
 
     def get_object(self, queryset: QuerySet[User] | None = None) -> User:
         return cast("User", self.request.user)
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        from allauth.mfa.models import Authenticator
+
+        context = super().get_context_data(**kwargs)
+        context["authenticators"] = Authenticator.objects.filter(user=self.request.user)
+        return context
 
 
 class PwaServiceWorker(TemplateView):

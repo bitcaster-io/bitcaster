@@ -12,9 +12,6 @@ from smart_selects.db_fields import ChainedForeignKey
 if TYPE_CHECKING:
     from bitcaster.types.django import AnyModel_co
 
-    from .application import Application
-    from .organization import Organization
-
 
 class LockMixin(models.Model):
     locked = models.BooleanField(
@@ -144,7 +141,6 @@ class ScopedManager(BitcasterBaselManager["AnyModel_co"]):
 
 
 class Scoped2Mixin(models.Model):
-    organization: "Organization"
     organization = models.ForeignKey(
         "Organization", on_delete=models.CASCADE, related_name="%(class)s_set", blank=True, help_text=_("Organization")
     )
@@ -165,7 +161,6 @@ class Scoped2Mixin(models.Model):
 
 
 class Scoped3Mixin(Scoped2Mixin):
-    application: "Application"
     application = ChainedForeignKey(
         "Application",
         on_delete=models.CASCADE,
@@ -188,12 +183,12 @@ class Scoped3Mixin(Scoped2Mixin):
         update_fields: Iterable[str] | None = None,
     ) -> None:
         try:
-            if self.application:
+            if hasattr(self, "application") and self.application:
                 self.project = self.application.project
         except ObjectDoesNotExist:  # pragma: no cover
             pass
         try:
-            if self.project:
+            if hasattr(self, "project") and self.project:
                 self.organization = self.project.organization
         except ObjectDoesNotExist:  # pragma: no cover
             pass
@@ -201,12 +196,12 @@ class Scoped3Mixin(Scoped2Mixin):
 
     def clean(self) -> None:
         try:
-            if self.application:
+            if hasattr(self, "application") and self.application:
                 self.project = self.application.project
         except ObjectDoesNotExist:  # pragma: no cover
             pass
         try:
-            if self.project:
+            if hasattr(self, "project") and self.project:
                 self.organization = self.project.organization
         except ObjectDoesNotExist:  # pragma: no cover
             pass

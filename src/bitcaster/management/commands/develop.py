@@ -100,7 +100,7 @@ class Command(BaseCommand):
 
             if os.environ.get("GOOGLE_CLIENT_ID") and os.environ.get("GOOGLE_CLIENT_SECRET"):
                 sso, __ = SocialProvider.objects.update_or_create(
-                    provider=Provider.GOOGLE_OAUTH2,
+                    provider=Provider.GOOGLE,
                     defaults={
                         "configuration": {
                             "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": os.environ.get("GOOGLE_CLIENT_ID"),

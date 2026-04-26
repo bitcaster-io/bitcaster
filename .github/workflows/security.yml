@@ -88,3 +88,24 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+
+  pysentry:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false && needs.changes.outputs.lint == 'true'
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pysentry
+        run: pip install pysentry-rs
+
+      - name: Run pysentry and generate SARIF
+        run: pysentry-rs . --fail-on high --format sarif --output pysentry-results.sarif
+
+      - name: Upload PySentry SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: pysentry-results.sarif

@@ -12,7 +12,7 @@ from bitcaster.models import Project
 from ..constants import bitcaster
 from ..forms.project import ProjectChangeForm
 from ..utils.django import url_related
-from .base import BaseAdmin, ButtonColor, UnfoldModelAdmin
+from .base import BaseAdmin, ButtonColor
 from .mixins import LockMixinAdmin
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], UnfoldModelAdmin[Project]):
+class ProjectAdmin(LockMixinAdmin[Project], BaseAdmin[Project]):
     search_fields = ("name",)
     list_display = ("name", "organization", "slug", "environments")
     list_filter = (("organization", AutoCompleteFilter),)
@@ -29,8 +29,8 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], UnfoldModelAdmin[Project]
     exclude = ("locked",)
     form = ProjectChangeForm
 
-    @view(login_required=True)
-    def current(self, request: HttpRequest) -> HttpResponse:
+    @view(login_required=True)  # type: ignore[arg-type]
+    def current(self, request: HttpRequest) -> HttpResponseRedirect:
         current: Project = Project.objects.local()[0]
         return HttpResponseRedirect(reverse("admin:bitcaster_project_change", args=[current.pk]))
 
@@ -49,29 +49,29 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], UnfoldModelAdmin[Project]
 
         return super().changeform_view(request, object_id, form_url, extra_context)
 
-    @button(
+    @button(  # type: ignore[arg-type]
         html_attrs={"class": ButtonColor.ACTION.value},
         visible=lambda s: s.context["original"].name != bitcaster.PROJECT,
     )
-    def add_application(self, request: HttpRequest, pk: str) -> HttpResponse:
+    def add_application(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:
         from bitcaster.models import Application
 
         return HttpResponseRedirect(url_related(Application, op="add", project=pk))
 
-    @button(
+    @button(  # type: ignore[arg-type]
         html_attrs={"class": ButtonColor.ACTION.value},
         visible=lambda s: s.context["original"].name != bitcaster.PROJECT,
     )
-    def add_distribution_list(self, request: HttpRequest, pk: str) -> HttpResponse:
+    def add_distribution_list(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:
         from bitcaster.models import DistributionList
 
         return HttpResponseRedirect(url_related(DistributionList, op="add", project=pk))
 
-    @button(
+    @button(  # type: ignore[arg-type]
         html_attrs={"class": ButtonColor.ACTION.value},
         visible=lambda s: s.context["original"].name != bitcaster.PROJECT,
     )
-    def add_channel(self, request: HttpRequest, pk: str) -> HttpResponse:
+    def add_channel(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:
         from bitcaster.models import Channel
 
         return HttpResponseRedirect(url_related(Channel, op="add", project=pk))
@@ -92,6 +92,6 @@ class ProjectAdmin(BaseAdmin, LockMixinAdmin[Project], UnfoldModelAdmin[Project]
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         initial = super().get_changeform_initial_data(request)
-        initial.setdefault("owner", request.user.id)
-        initial.setdefault("from_email", request.user.email)
+        initial.setdefault("owner", str(request.user.id))
+        initial.setdefault("from_email", str(request.user.email))
         return initial

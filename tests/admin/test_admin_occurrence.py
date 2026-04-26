@@ -229,3 +229,32 @@ def test_button_add_notification(
     res: "TestResponse" = app_for_admin.get(url)
     res = res.click("Add Notification")
     assert res
+
+
+def test_recipients_occurrence(app_for_admin: DjangoTestApp, occurrence: "Occurrence") -> None:
+    url = reverse("admin:bitcaster_occurrence_recipients_occurrence", args=[occurrence.pk])
+    res = app_for_admin.get(url)
+    assert res.status_code == 302
+    assert "recipients" in res.location
+
+
+def test_recipients_notification(app_for_admin: DjangoTestApp, occurrence: "Occurrence") -> None:
+    url = reverse("admin:bitcaster_occurrence_recipients_notification", args=[occurrence.pk])
+    res = app_for_admin.get(url)
+    assert res.status_code == 302
+    assert "recipients" in res.location
+
+
+def test_inspect_occurrence_error(app_for_admin: DjangoTestApp, new_occurrence: "Occurrence") -> None:
+    from bitcaster.models import Occurrence
+
+    url = reverse("admin:bitcaster_occurrence_change", args=[new_occurrence.pk])
+    res = app_for_admin.get(url)
+    res = res.click("Inspect")
+
+    with mock.patch.object(Occurrence, "_get_valid_notifications", side_effect=Exception("Test Error")):
+        res = res.forms["confirm-form"].submit()
+
+    while res.status_code == 302:
+        res = res.follow()
+    assert "Error inspecting occurrence" in res.text

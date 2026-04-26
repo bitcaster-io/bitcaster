@@ -1,6 +1,6 @@
 import logging
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import LinkedAutoCompleteFilter
@@ -21,8 +21,6 @@ from bitcaster.forms.mixins import Scoped3FormMixin
 from bitcaster.models import ApiKey, Application, Event, Organization, Project  # noqa
 from bitcaster.state import state
 from bitcaster.utils.security import is_root
-
-from .base import BitcasterModelAdmin
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin.options import _ListOrTuple
@@ -47,15 +45,15 @@ class ApiKeyForm(Scoped3FormMixin[ApiKey], forms.ModelForm[ApiKey]):
             )
 
     def clean(self) -> dict[str, Any]:
-        super().clean()
-        if self.instance.pk is None and (g := self.cleaned_data.get("grants")):
-            a = self.cleaned_data.get("application")
+        cleaned_data = cast("dict[str, Any]", super().clean())
+        if self.instance.pk is None and (g := cleaned_data.get("grants")):
+            a = cleaned_data.get("application")
             if Grant.EVENT_TRIGGER in g and not a:
                 raise ValidationError(_("Application must be set if EVENT_TRIGGER is granted"))
-        return self.cleaned_data
+        return cleaned_data
 
 
-class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
+class ApiKeyAdmin(BaseAdmin[ApiKey]):
     search_fields = ("name",)
     list_display = ("name", "user", "organization", "project", "application", "environments")
     list_filter = (
@@ -69,17 +67,15 @@ class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
     save_as_continue = False
     change_form_outer_before_template = "bitcaster/admin/apikey/outer_before.html"
 
-    def get_queryset(self, request: "HttpRequest") -> "QuerySet[ApiKey]":
+    def get_queryset(self, request: HttpRequest) -> "QuerySet[ApiKey]":
         return super().get_queryset(request).select_related("application")
 
-    def get_readonly_fields(
-        self, request: HttpRequest, obj: ApiKey | None = None
-    ) -> list[str] | tuple[str, ...] | tuple[()]:
+    def get_readonly_fields(self, request: HttpRequest, obj: ApiKey | None = None) -> list[str]:
         if obj and obj.pk:
             return ["organization", "project"]
-        return self.readonly_fields
+        return list(self.readonly_fields)
 
-    def get_exclude(self, request: "HttpRequest", obj: "ApiKey | None" = None) -> "_ListOrTuple[str]":
+    def get_exclude(self, request: HttpRequest, obj: ApiKey | None = None) -> "_ListOrTuple[str]":
         if flag_enabled("DEVELOP_FULL_EDIT"):
             return []
         if obj and obj.pk:
@@ -88,7 +84,7 @@ class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict[str, Any]:
         return {
-            "user": request.user.id,
+            "user": str(request.user.id),
             "name": "Key-1",
             "organization": state.get_cookie("organization"),
             "project": state.get_cookie("project"),
@@ -98,9 +94,9 @@ class ApiKeyAdmin(BaseAdmin, BitcasterModelAdmin["ApiKey"]):
     def response_add(self, request: HttpRequest, obj: ApiKey, post_url_continue: str | None = None) -> HttpResponse:
         return HttpResponseRedirect(reverse("admin:bitcaster_apikey_show_key", args=[obj.pk]))
 
-    @button()
+    @button()  # type: ignore[arg-type]
     def show_key(self, request: HttpRequest, pk: str) -> HttpResponse:
-        obj: ApiKey | None = self.get_object(request, pk)
+        obj: ApiKey = self.get_object_or_404(request, pk)
         if is_root(request):
             expires = None
             expired = False

@@ -17,7 +17,7 @@
     </a>
 </div>
 <div class="space-y-4" id="user_messages">
-    {% for message in messages %}
+    {% for message in user_messages %}
         <div class="pwa-message-card" onclick="location.href='{% url details_url message.instance.pk %}'">
             <div class="header">
                 <span class="message-date">{% user_datetime message.instance.created %}</span>

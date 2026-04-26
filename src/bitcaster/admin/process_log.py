@@ -7,7 +7,6 @@ from strategy_field.utils import fqn
 from bitcaster.admin.base import BaseAdmin
 
 from ..runner.manager import BackgroundManager
-from .base import BitcasterModelAdmin
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.admin import ModelAdmin
@@ -26,7 +25,7 @@ class TaskFilter(SimpleListFilter):
     def lookups(self, request: "HttpRequest", model_admin: "ModelAdmin[ProcessLogEntry]") -> list[tuple[str, str]]:
         return sorted(
             [
-                (fqn(actor.fn), actor.actor_name)
+                (fqn(actor.fn), str(actor.actor_name))
                 for actor in BackgroundManager().actors
                 if actor.options.get("logging", False)
             ]
@@ -38,7 +37,7 @@ class TaskFilter(SimpleListFilter):
         return queryset.all()
 
 
-class ProcessLogEntryAdmin(BaseAdmin, BitcasterModelAdmin["ProcessLogEntry"]):
+class ProcessLogEntryAdmin(BaseAdmin["ProcessLogEntry"]):
     search_fields = ("task_name",)
     list_display = ("action_time", "status", "elapsed", "task_name")
     list_filter = (

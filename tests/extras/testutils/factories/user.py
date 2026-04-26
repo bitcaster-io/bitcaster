@@ -1,8 +1,6 @@
 from typing import Any, cast
-from uuid import uuid4
 
 import factory
-from social_django.models import UserSocialAuth
 
 from bitcaster.models import User
 
@@ -34,9 +32,3 @@ class SuperUserFactory(UserFactory):
     is_superuser = True
     is_staff = True
     is_active = True
-
-
-class SocialAuthUserFactory(UserFactory):
-    @factory.post_generation  # type: ignore[misc]
-    def sso(self, create: bool, extracted: list[User], **kwargs: Any) -> None:
-        UserSocialAuth.objects.get_or_create(user=self, provider="test", uid=uuid4())

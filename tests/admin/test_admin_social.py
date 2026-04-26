@@ -1,15 +1,11 @@
 from typing import TYPE_CHECKING, TypedDict
 
 import pytest
-from django.test import override_settings
 from django.urls import reverse
 from django_webtest import DjangoTestApp
 
-from bitcaster.social.models import Provider
-
 if TYPE_CHECKING:
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
-    from pytest_django.fixtures import SettingsWrapper
     from webtest.response import TestResponse
 
     from bitcaster.models import SocialProvider, User
@@ -29,38 +25,63 @@ def app(django_app_factory: "MixinWithInstanceVariables", admin_user: "User") ->
 def context() -> "Context":
     from testutils.factories import SocialProviderFactory
 
-    provider = SocialProviderFactory()
+    from bitcaster.social.models import Provider
+
+    provider = SocialProviderFactory.create(provider=Provider.GOOGLE)
     return {"provider": provider}
 
 
-def test_get_readonly_if_root(app: DjangoTestApp, context: "Context", settings: "SettingsWrapper") -> None:
-    url = reverse("admin:social_socialprovider_change", args=[context["provider"].pk])
-    with override_settings(FLAGS={"IS_ROOT": [("boolean", True)]}, DEBUG=True):
-        res: "TestResponse" = app.get(url)
-        frm = res.forms["socialprovider_form"]
-        assert "configuration" in frm.fields
-
-    with override_settings(FLAGS={"IS_ROOT": [("boolean", False)]}):
-        res = app.get(url)
-        frm = res.forms["socialprovider_form"]
-        assert "configuration" not in frm.fields
-
-
-def test_add(app: DjangoTestApp, context: "Context", settings: "SettingsWrapper") -> None:
+def test_add(app: DjangoTestApp) -> None:
     url = reverse("admin:social_socialprovider_add")
     res: "TestResponse" = app.get(url)
     frm = res.forms["socialprovider_form"]
 
     frm["label"] = "Google"
-    frm["provider"] = Provider.GOOGLE_OAUTH2
+    frm["provider"] = "google"
     res = frm.submit()
     assert res.status_code == 302
 
 
-def test_change(app: DjangoTestApp, context: "Context", settings: "SettingsWrapper") -> None:
+def test_change(app: DjangoTestApp, context: "Context") -> None:
     url = reverse("admin:social_socialprovider_change", args=[context["provider"].pk])
     res: "TestResponse" = app.get(url)
     frm = res.forms["socialprovider_form"]
-    frm["label"] = "Google"
+    frm["label"] = "Google 2"
     res = frm.submit()
     assert res.status_code == 302
+
+
+def test_validate_unique(app: DjangoTestApp) -> None:
+    url = reverse("admin:social_socialprovider_add")
+    res: "TestResponse" = app.get(url)
+    res.forms["socialprovider_form"]["label"] = "Google"
+    res.forms["socialprovider_form"]["provider"] = "google"
+    res = res.forms["socialprovider_form"].submit()
+    assert res.status_code == 302
+    res: "TestResponse" = app.get(url)
+    res.forms["socialprovider_form"]["label"] = "Google"
+    res.forms["socialprovider_form"]["provider"] = "google"
+    res = res.forms["socialprovider_form"].submit()
+    assert res.status_code == 200
+
+
+def test_write_only_widgets(app: DjangoTestApp) -> None:
+    from bitcaster.models import SocialProvider
+
+    url = reverse("admin:social_socialprovider_add")
+    res: "TestResponse" = app.get(url)
+    frm = res.forms["socialprovider_form"]
+    frm["label"] = "Google"
+    frm["provider"] = "google"
+    frm["secret"] = "123"
+    res = frm.submit()
+    assert res.status_code == 302
+    instance = SocialProvider.objects.get(provider="google")
+    assert instance.secret == "123"
+    url = reverse("admin:social_socialprovider_change", args=[instance.pk])
+    res: "TestResponse" = app.get(url)
+    frm = res.forms["socialprovider_form"]
+    res = frm.submit()
+    assert res.status_code == 302
+    instance.refresh_from_db()
+    assert instance.secret == "123"

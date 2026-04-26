@@ -1,5 +1,5 @@
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 from admin_extra_buttons.decorators import button
 from adminfilters.json_filter import JsonFieldFilter
@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.admin import helpers
 from django.db import transaction
 from django.db.models import ForeignKey, Q, QuerySet, TextChoices
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -27,30 +27,27 @@ from bitcaster.utils.json import process_dict
 
 from ..forms.assignment import AssignmentInlineForm
 from ..importing.members import import_members_csv
-from .base import BaseAdmin, BitcasterModelAdmin
+from .base import BaseAdmin
 from .filters import UserDistributionListFilter
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.forms import ModelChoiceField
-    from django.http import HttpRequest, HttpResponse
-
-    from bitcaster.types.json import JSON
 
 
 class ReadOnlyInline:
     extra = 0
     tab = True
 
-    def has_delete_permission(self, request, obj):
+    def has_delete_permission(self, request: HttpRequest, obj: Any = None) -> bool:
         return False
 
-    def has_add_permission(self, request, obj):
+    def has_add_permission(self, request: HttpRequest, obj: Any = None) -> bool:
         return False
 
-    def has_change_permission(self, request, obj):
+    def has_change_permission(self, request: HttpRequest, obj: Any = None) -> bool:
         return False
 
-    def save_new_instance(self, parent, instance):
+    def save_new_instance(self, parent: Any, instance: Any) -> None:
         pass
 
 
@@ -62,16 +59,16 @@ class AddressInline(TabularInline):  # NonrelatedStackedInline is available as w
     verbose_name = _("Addresses")
     collapsible = True
 
-    def get_form_queryset(self, obj: Member):
+    def get_form_queryset(self, obj: Member) -> QuerySet[Address]:
         return Address.objects.filter(user=obj)
 
-    def has_add_permission(self, request, obj):
-        return super().has_add_permission(request, obj) and obj and obj.pk
+    def has_add_permission(self, request: HttpRequest, obj: Member | None = None) -> bool:
+        return cast("bool", super().has_add_permission(request, obj) and obj and obj.pk)
 
 
 class AssignmentFormSet(NonrelatedInlineModelFormSet):
-    def get_form_kwargs(self, index):
-        ret = super().get_form_kwargs(index)
+    def get_form_kwargs(self, index: int) -> dict[str, Any]:
+        ret = cast("dict[str, Any]", super().get_form_kwargs(index))
         ret["user"] = self.instance
         return ret
 
@@ -85,27 +82,28 @@ class AssignmentInline(NonrelatedTabularInline):  # NonrelatedStackedInline is a
     formset = AssignmentFormSet
 
     def formfield_for_foreignkey(
-        self, db_field: "ForeignKey", request: "HttpRequest", **kwargs
-    ) -> "ModelChoiceField | None":
-        ret = super().formfield_for_foreignkey(db_field, request, **kwargs)
-        if db_field.name == "address":
+        self, db_field: ForeignKey[Any], request: HttpRequest, **kwargs: Any
+    ) -> "ModelChoiceField[Any] | None":
+        ret = cast("ModelChoiceField[Any] | None", super().formfield_for_foreignkey(db_field, request, **kwargs))
+        if db_field.name == "address" and ret:
             ret.queryset = Address.objects.none()
-            ret.widget.queryset = Address.objects.none()
+            if hasattr(ret.widget, "queryset"):
+                ret.widget.queryset = Address.objects.none()
         return ret
 
-    def get_form_queryset(self, obj: Member):
+    def get_form_queryset(self, obj: Member) -> QuerySet[Assignment]:
         return Assignment.objects.filter(address__user=obj)
 
-    def save_new_instance(self, parent: "Member", instance: Assignment):
+    def save_new_instance(self, parent: Member, instance: Assignment) -> None:
         instance.save()
 
-    def has_add_permission(self, request, obj):
-        return super().has_add_permission(request, obj) and obj and obj.pk
+    def has_add_permission(self, request: HttpRequest, obj: Member | None = None) -> bool:
+        return cast("bool", super().has_add_permission(request, obj) and obj and obj.pk)
 
 
 class ListsFormSet(NonrelatedInlineModelFormSet):
-    def get_form_kwargs(self, index):
-        ret = super().get_form_kwargs(index)
+    def get_form_kwargs(self, index: int) -> dict[str, Any]:
+        ret = cast("dict[str, Any]", super().get_form_kwargs(index))
         ret["user"] = self.instance
         return ret
 
@@ -116,28 +114,29 @@ class ListsInline(NonrelatedTabularInline):  # NonrelatedStackedInline is availa
     fields = ["name", "project"]  # Ignore property to display all fields
     extra = 0
 
-    def get_form_queryset(self, obj: Member):
+    def get_form_queryset(self, obj: Member) -> QuerySet[DistributionList]:
         return obj.get_distribution_lists()
 
-    def save_new_instance(self, parent, instance):
+    def save_new_instance(self, parent: Member, instance: DistributionList) -> None:
         instance.save()
 
 
 class JsonUpdateMode2(TextChoices):
     # we do not support all bitcaster.utils.json.JsonUpdateMode options
-    MERGE = "merge"
-    REMOVE = "remove"
-    REWRITE = "rewrite"
-    OVERRIDE = "override"
+    MERGE = "merge", "merge"
+    REMOVE = "remove", "remove"
+    REWRITE = "rewrite", "rewrite"
+    OVERRIDE = "override", "override"
 
 
-def check_custom_fields(v: "JSON") -> "JSON":
+def check_custom_fields(v: Any) -> Any:
     try:
-        v = json.loads(v)
+        if isinstance(v, str):
+            v = json.loads(v)
         if not isinstance(v, dict):
-            raise forms.ValidationError("Must be a dictionary.")
+            raise forms.ValidationError(_("Must be a dictionary."))
     except json.JSONDecodeError:
-        raise forms.ValidationError("Invalid JSON.") from None
+        raise forms.ValidationError(_("Invalid JSON.")) from None
     return v
 
 
@@ -159,18 +158,18 @@ class CustomFieldForm(GenericActionForm):
     mode = forms.ChoiceField(choices=JsonUpdateMode2.choices, widget=uwidgets.UnfoldAdminSelectWidget)
     custom_fields = forms.CharField(widget=JSONEditor(jsonschema=schema), required=False)
 
-    def clean_custom_fields(self):
+    def clean_custom_fields(self) -> Any:
         return check_custom_fields(self.cleaned_data["custom_fields"])
 
 
-class MemberForm(forms.ModelForm):
+class MemberForm(forms.ModelForm[Member]):
     custom_fields = forms.CharField(widget=JSONEditor(jsonschema=CustomFieldForm.schema))
 
     class Meta:
         model = Member
         fields = ["username", "first_name", "last_name", "email", "custom_fields"]
 
-    def clean_custom_fields(self):
+    def clean_custom_fields(self) -> Any:
         return check_custom_fields(self.cleaned_data["custom_fields"])
 
 
@@ -179,7 +178,7 @@ class ImportForm(forms.Form):
     group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, widget=uwidgets.UnfoldAdminSelectWidget)
 
 
-class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
+class MemberAdmin(BaseAdmin[Member]):
     list_display = ("username", "first_name", "last_name", "email")
     list_filter = (
         ("custom_fields", JsonFieldFilter.factory(options=False)),
@@ -187,7 +186,7 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
     )
     inlines = [AddressInline, AssignmentInline, ListsInline]
 
-    def changelist_view(self, request, extra_context=None):
+    def changelist_view(self, request: HttpRequest, extra_context: dict[str, Any] | None = None) -> TemplateResponse:
         extra_context = extra_context or {}
         dl_id = request.GET.get("dl")
         if dl_id:
@@ -209,10 +208,10 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
         (_("Extended"), {"classes": ["tab"], "fields": ("custom_fields",)}),
     )
 
-    def get_readonly_fields(self, request: "HttpRequest", obj: "User|None" = None) -> list[str]:
+    def get_readonly_fields(self, request: HttpRequest, obj: User | None = None) -> list[str]:
         return ["username", "email", "last_login", "date_joined"]
 
-    def add_to_distributionlist(self, request: "HttpRequest", queryset: "QuerySet[User]") -> "HttpResponse":
+    def add_to_distributionlist(self, request: HttpRequest, queryset: QuerySet[User]) -> HttpResponse:
         ctx = self.get_common_context(request, title=_("Add to Distribution List"))
         initial = {
             "_selected_action": request.POST.getlist(helpers.ACTION_CHECKBOX_NAME),
@@ -226,15 +225,15 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
                 for user in queryset:
                     if asm := Assignment.objects.filter(address__user=user).first():
                         dl.recipients.add(asm)
-                self.message_user(request, _("Users successfully added"))
+                self.message_user(request, str(_("Users successfully added")))
                 return HttpResponseRedirect(reverse(f"{self.admin_site.name}:bitcaster_user_changelist"))
         else:
             form = SelectDistributionForm(initial=initial)
         ctx["form"] = form
         return TemplateResponse(request, "bitcaster/admin/user/add_to_distributionlist.html", ctx)
 
-    @button(label="Import Members")
-    def import_members(self, request) -> "HttpResponse":
+    @button(label="Import Members")  # type: ignore[arg-type]
+    def import_members(self, request: HttpRequest) -> HttpResponse:
         ctx = self.get_common_context(request, action_title="Import Members")
         if "apply" in request.POST:
             form = ImportForm(request.POST, request.FILES, initial={"group": bitcaster.get_default_group()})
@@ -248,8 +247,8 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
         ctx["form"] = form
         return render(request, "bitcaster/admin/members/import_members.html", ctx)
 
-    @action(description="Update Custom fields", icon="person")
-    def update_custom_fields(self, request: "HttpRequest", queryset: "QuerySet") -> "HttpResponse":
+    @action(description="Update Custom fields", icon="person")  # type: ignore[untyped-decorator]
+    def update_custom_fields(self, request: HttpRequest, queryset: QuerySet[Member]) -> HttpResponse:
         ctx = self.get_common_context(request, action_title="Update Custom Fields")
         if request.method == "POST" and "apply" in request.POST:
             form = CustomFieldForm(request.POST)
@@ -265,7 +264,7 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
                             record.custom_fields = updated
                             record.save()
                 LogEntry.objects.log_actions(
-                    user_id=request.user.pk,
+                    user_id=str(request.user.pk),
                     queryset=queryset,
                     action_flag=LogEntry.OTHER,
                     change_message="Custom field mass-updated",
@@ -285,5 +284,5 @@ class MemberAdmin(BaseAdmin, BitcasterModelAdmin[Member]):
         ctx["form"] = form
         return render(request, "bitcaster/admin/user/update_custom_fields.html", ctx)
 
-    def get_queryset(self, request):
-        return Member.objects.exclude(Q(username=Bitcaster.SYSTEM_USER)).order_by("username")
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Member]:
+        return cast("QuerySet[Member]", Member.objects.exclude(Q(username=Bitcaster.SYSTEM_USER)).order_by("username"))

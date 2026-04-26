@@ -31,7 +31,9 @@ GLOBAL_EXCLUDED_MODELS = RegexList(
         r"bitcaster\.Member",
         r"bitcaster\.Task",
         "authtoken",
-        "social_django",
+        "account",
+        "socialaccount",
+        "mfa",
         "depot",
     ]
 )

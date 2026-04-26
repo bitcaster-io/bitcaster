@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button
-from django.db.models import Model
-from django.http import HttpRequest, HttpResponseRedirect
+from django import forms
+from django.db.models import Field, Model
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -14,10 +15,10 @@ from ..forms.task import TaskAddForm, TaskForm
 from .base import BaseAdmin, UnfoldModelAdmin
 
 if TYPE_CHECKING:
-    from django import forms
+    from django.utils.datastructures import _ListOrTuple
 
 
-class TaskAdmin(BaseAdmin, UnfoldModelAdmin[Task]):
+class TaskAdmin(BaseAdmin[Task], UnfoldModelAdmin[Task]):
     list_display = ("name", "func", "scheduling", "active")
     form = TaskForm
     add_fieldsets = (
@@ -48,29 +49,33 @@ class TaskAdmin(BaseAdmin, UnfoldModelAdmin[Task]):
         return super().get_form(request, obj, change, **kwargs)
 
     @button(visible=lambda b: b.context["original"].active)
-    def pause(self, request, pk) -> None:
+    def pause(self, request: HttpRequest, pk: str) -> None:
         qs = self.get_queryset(request).filter(pk=pk)
         qs.update(active=False, last_updated=timezone.now())
         LogEntry.objects.log_actions(request.user.id, qs, LogEntry.CHANGE, "Paused")
 
     @button(visible=lambda b: not b.context["original"].active)
-    def resume(self, request, pk) -> None:
+    def resume(self, request: HttpRequest, pk: str) -> None:
         qs = self.get_queryset(request).filter(pk=pk)
         qs.update(active=True, last_updated=timezone.now())
         LogEntry.objects.log_actions(request.user.id, qs, LogEntry.CHANGE, "Resumed")
 
-    def formfield_for_dbfield(self, db_field, request, **kwargs):
+    def formfield_for_dbfield(
+        self, db_field: Field[Any, Any], request: HttpRequest, **kwargs: Any
+    ) -> forms.Field | None:
         field = super().formfield_for_dbfield(db_field, request, **kwargs)
         if db_field.name in ["args", "kwargs", "trigger_config"]:
             field.widget = JSONEditor()
         return field
 
-    def get_readonly_fields(self, request, obj: Model | None = None) -> list[str]:
+    def get_readonly_fields(self, request: HttpRequest, obj: Model | None = None) -> "_ListOrTuple[str]":
         if obj and obj.pk:
             return ["slug", "active", "last_updated"]
         return super().get_readonly_fields(request, obj)
 
-    def response_add(self, request, obj, post_url_continue=None):
+    def response_add(
+        self, request: HttpRequest, obj: Task | None, post_url_continue: str | None = None
+    ) -> HttpResponse:
         return HttpResponseRedirect(
             reverse(
                 f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
