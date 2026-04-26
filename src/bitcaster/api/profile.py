@@ -1,11 +1,11 @@
 from typing import Any, cast
 
 from django.db.models import QuerySet
-from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
@@ -36,7 +36,7 @@ class UserProfileView(SecurityMixin, ViewSet, RetrieveAPIView[User]):
         responses={200: UserProfileSerializer},
         description=_("Retrieve basic profile information for the currently authenticated user (Self)."),
     )
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return super().retrieve(request, *args, **kwargs)
 
     @extend_schema(
@@ -45,7 +45,7 @@ class UserProfileView(SecurityMixin, ViewSet, RetrieveAPIView[User]):
             "List all communication addresses (email, phone, push tokens, etc.) configured for the authenticated user."
         ),
     )
-    def addresses(self, request: HttpRequest, **kwargs: Any) -> Response:
+    def addresses(self, request: Request, **kwargs: Any) -> Response:
         user = self.get_object()
         ser = AddressSerializer(many=True, instance=user.addresses.all())
         return Response(ser.data)
@@ -54,7 +54,7 @@ class UserProfileView(SecurityMixin, ViewSet, RetrieveAPIView[User]):
         responses={200: UserMessageSerializer(many=True)},
         description=_("Retrieve the full history of notifications sent to the authenticated user."),
     )
-    def messages(self, request: HttpRequest) -> Response:
+    def messages(self, request: Request) -> Response:
         ser = UserMessageSerializer(many=True, instance=request.user.bitcaster_messages.all())
         return Response(ser.data)
 
@@ -64,7 +64,7 @@ class UserProfileView(SecurityMixin, ViewSet, RetrieveAPIView[User]):
             "Retrieve a list of notifications that have been sent but not yet marked as seen by the authenticated user."
         ),
     )
-    def unseen(self, request: HttpRequest, **kwargs: Any) -> Response:
+    def unseen(self, request: Request, **kwargs: Any) -> Response:
         user: User = self.get_object()
         ser = UserMessageSerializer(many=True, instance=get_unseen_message_for_user(user.pk))
         return Response(ser.data)

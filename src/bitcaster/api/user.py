@@ -7,6 +7,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
@@ -110,7 +111,7 @@ class UserView(
     @extend_schema(
         responses={200: UserSerializer(many=True)}, description=_("List all users belonging to the organization.")
     )
-    def list(self, request, *args, **kwargs):
+    def list(self, request: "Request", *args: Any, **kwargs: Any) -> Response:
         return super().list(request, *args, **kwargs)
 
     @extend_schema(
@@ -121,7 +122,7 @@ class UserView(
             "If the user already exists in the system, they will be linked to this organization."
         ),
     )
-    def create(self, request, *args, **kwargs):
+    def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return super().create(request, *args, **kwargs)
 
     @extend_schema(
@@ -130,7 +131,7 @@ class UserView(
             "Retrieve comprehensive details of a specific user, including their messaging and address endpoints."
         ),
     )
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return super().retrieve(request, *args, **kwargs)
 
     @extend_schema(
@@ -140,7 +141,7 @@ class UserView(
             "Update user details. Supports a specialized '_mode' for handling updates to custom_fields (JSON)."
         ),
     )
-    def update(self, request, *args, **kwargs):
+    def update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return super().update(request, *args, **kwargs)
 
     @extend_schema(
@@ -149,7 +150,7 @@ class UserView(
         description=_("Retrieve all communication addresses (email, phone, etc.) configured for a specific user."),
     )
     @action(detail=False, methods=["GET"], serializer_class=AddressSerializer)
-    def list_address(self, request: HttpRequest, **kwargs: Any) -> Response:
+    def list_address(self, request: Request, **kwargs: Any) -> Response:
         user = self.get_object()
         ser = AddressSerializer(many=True, instance=user.addresses.all())
         return Response(ser.data)
@@ -175,7 +176,7 @@ class UserView(
         description=_("Retrieve the complete notification history for a specific user within the organization."),
     )
     @action(detail=True, methods=["GET"], serializer_class=UserMessageSerializer)
-    def list_messages(self, request: HttpRequest, **kwargs: Any) -> Response:
+    def list_messages(self, request: Request, **kwargs: Any) -> Response:
         user: User = self.get_object()
         ser = UserMessageSerializer(many=True, instance=user.bitcaster_messages.all())
         return Response(ser.data)
