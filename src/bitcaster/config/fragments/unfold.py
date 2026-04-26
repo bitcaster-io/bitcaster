@@ -37,6 +37,14 @@ COMMON_SITE_DROPDOWN = [
         },
     },
     {
+        "icon": "mobile",
+        "title": "Mobile",
+        "link": "/pwa/",
+        "attrs": {
+            "target": "_mobile",
+        },
+    },
+    {
         "icon": "commit",
         "title": "GitHub",
         "link": "https://github.com/bitcaster-io/bitcaster",
