@@ -1,4 +1,4 @@
 # License
 
 
---8<-- "LICENSE.md"
+Full license available at https://github.com/bitcaster-io/bitcaster/blob/develop/LICENSE.md.
