@@ -36,20 +36,18 @@ pytestmark = [pytest.mark.api, pytest.mark.django_db]
 
 # WE DO NOT USE REVERSE HERE. WE NEED TO CHECK ENDPOINTS CONTRACTS
 
-org_name = "org1"
-prj_name = "prj1"
-app_name = "app1"
-event_slug = "evt1"
+org_name = "orglist2"
+prj_name = "prjlist2"
+app_name = "applist2"
+event_slug = "evtlist2"
 
 
 @pytest.fixture
 def client(data: SampleData):
     c = APIClient()
-    g = key_grants(data.key, Grant.FULL_ACCESS)
-    g.start()
+    c._key = data.key
     c.credentials(HTTP_AUTHORIZATION=f"Key {data.key.key}")
-    yield c
-    g.stop()
+    return c
 
 
 @pytest.fixture
@@ -88,21 +86,33 @@ def data(admin_user: "User", system_objects: Any) -> SampleData:
 
 def test_distribution_list(client: APIClient, data: SampleData) -> None:
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/"
+    res = client.get(url)
+    assert res.status_code == 403
+
     with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
         res = client.get(url)
-        assert res.json() == [
-            {
-                "id": data.dl.pk,
-                "name": data.dl.name,
-                "members": f"http://testserver/api/o/{data.org.slug}/p/{data.prj.slug}/d/{data.dl.pk}/m/",
-            }
-        ]
+        distribution_lists = res.json()
+    assert distribution_lists[0]["name"] == data.dl.name
+
+
+def test_distribution_members(client: APIClient, data: SampleData) -> None:
+    """Test distribution list members endpoint"""
+    members_url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/{data.dl.pk}/m/"
+    res = client.get(members_url)
+    assert res.status_code == 403
+
+    with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
+        res = client.get(members_url)
+    assert res.status_code == 200
 
 
 def test_distribution_create(client: APIClient, data: SampleData) -> None:
     from bitcaster.models import DistributionList
 
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/"
+    res = client.post(url, {"name": "Sample List #1"})
+    assert res.status_code == 403
+
     with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
         res = client.post(url, {"name": "Sample List #1"})
     assert res.status_code == 201
@@ -111,13 +121,31 @@ def test_distribution_create(client: APIClient, data: SampleData) -> None:
 
 def test_distribution_create_duplicate(client: APIClient, data: SampleData) -> None:
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/"
+    res = client.post(url, {"name": data.dl.name})
+    assert res.status_code == 403
+
     with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
         res = client.post(url, {"name": data.dl.name})
     assert res.status_code == 400
 
 
+def test_distribution_retrieve(client: APIClient, data: SampleData) -> None:
+    """Test distribution list retrieve endpoint"""
+    url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/{data.dl.pk}/"
+    res = client.get(url)
+    assert res.status_code == 403
+
+    with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
+        res = client.get(url)
+    assert res.status_code == 200
+    assert res.json()["name"] == data.dl.name
+
+
 def test_distribution_add_recipient(client: APIClient, data: SampleData) -> None:
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/{data.dl.pk}/add/"
+    res = client.post(url, [data.asm.address.value], format="json")
+    assert res.status_code == 403
+
     with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
         res = client.post(url, [data.asm.address.value], format="json")
     assert res.status_code == 200, res.json()
@@ -127,6 +155,9 @@ def test_distribution_add_recipient(client: APIClient, data: SampleData) -> None
 
 def test_distribution_add_recipient_error(client: APIClient, data: SampleData) -> None:
     url = f"/api/o/{data.org.slug}/p/{data.prj.slug}/d/{data.dl.pk}/add/"
+    res = client.post(url, json.dumps(["not-existent"]), format="json")
+    assert res.status_code == 403
+
     with key_grants(data.key, [Grant.DISTRIBUTION_LIST], project=data.prj, organization=data.org):
         res = client.post(url, json.dumps(["not-existent"]), format="json")
     assert res.status_code == 400

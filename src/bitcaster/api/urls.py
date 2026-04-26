@@ -25,17 +25,33 @@ urlpatterns = [
     path("me/addresses/", UserProfileView.as_view({"get": "addresses"}), name="user-profile-addresses"),
     path("o/<slug:org>/", OrgView.as_view({"get": "retrieve"}), name="org"),
     path("o/<slug:org>/c/", ChannelView.as_view({"get": "list_for_org"}), name="org-channel-list"),
-    path("o/<slug:org>/u/<str:username>/addresses/", UserView.as_view({"get": "list_address", "post": "add_address"})),
+    path("o/<slug:org>/c/<int:pk>/", ChannelView.as_view({"get": "retrieve"}), name="channel-detail"),
+    path(
+        "o/<slug:org>/u/<str:username>/addresses/",
+        UserView.as_view({"get": "list_address", "post": "add_address"}),
+        name="user-addresses",
+    ),
     path(
         "o/<slug:org>/u/<str:username>/",
         UserView.as_view({"put": "update", "patch": "update", "get": "retrieve"}),
         name="user-update",
     ),
+    path(
+        "o/<slug:org>/u/<str:username>/messages/",
+        UserView.as_view({"get": "list_messages"}),
+        name="user-messages",
+    ),
     path("o/<slug:org>/u/", UserView.as_view({"get": "list", "post": "create"}), name="user-list"),
     path("o/<slug:org>/p/", ProjectView.as_view({"get": "list"}), name="project-list"),
     path("o/<slug:org>/p/<slug:prj>/", ProjectView.as_view({"get": "retrieve"}), name="project-detail"),
     path("o/<slug:org>/p/<slug:prj>/a/", ApplicationView.as_view({"get": "list"}), name="project-application-list"),
+    path(
+        "o/<slug:org>/p/<slug:prj>/a/<slug:app>/",
+        ApplicationView.as_view({"get": "retrieve"}),
+        name="application-detail",
+    ),
     path("o/<slug:org>/p/<slug:prj>/c/", ChannelView.as_view({"get": "list_for_project"}), name="project-channel-list"),
+    path("o/<slug:org>/p/<slug:prj>/c/<int:pk>/", ChannelView.as_view({"get": "retrieve"}), name="channel-retrieve"),
     path(
         "o/<slug:org>/p/<slug:prj>/d/<int:pk>/m/", DistributionMembersView.as_view({"get": "list"}), name="members-list"
     ),
