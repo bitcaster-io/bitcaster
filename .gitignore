@@ -15,6 +15,7 @@ src/bitcaster/version.py
 latest_logs
 junit.xml
 !.git
+!.ai
 !.codecov.yml
 !.semgrep
 !.semgrep/Makefile

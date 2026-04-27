@@ -1,4 +1,4 @@
-import ftplib  # nosec
+import ftplib  # nosec: B402
 from functools import cached_property
 from typing import Any
 
@@ -14,6 +14,7 @@ class AgentFTPConfig(AgentConfig):
     path = forms.CharField()
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+    use_tls = forms.BooleanField(help_text=_("Use FTP over TLS (FTPS)"), required=False, initial=True)
     add = forms.BooleanField(help_text=_("Monitor directory for new files"), required=False)
     change = forms.BooleanField(help_text=_("Monitor directory for changed files"), required=False)
     delete = forms.BooleanField(help_text=_("Monitor directory for deleted files"), required=False)
@@ -23,8 +24,8 @@ class AgentFTP(AgentFiles):
     config_class: type[AgentFTPConfig] = AgentFTPConfig
 
     @cached_property
-    def client(self) -> ftplib.FTP:
-        f = ftplib.FTP()  # nosec # noqa S321
+    def client(self) -> ftplib.FTP_TLS:
+        f = ftplib.FTP_TLS()  # nosec # noqa S321
         host, port = self.config["server"].split(":")
         f.connect(host, int(port))
         f.login(self.config["username"], self.config["password"])
