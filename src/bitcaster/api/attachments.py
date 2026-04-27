@@ -39,7 +39,15 @@ class AttachmentView(SecurityMixin, GenericAPIView[Attachment]):
     #      permission classes require at least one.
     permission_classes = []
 
-    @extend_schema(request=AttachmentUploadSerializer, description=_("Upload a file as attachment"))
+    @extend_schema(
+        request=AttachmentUploadSerializer,
+        responses={201: AttachmentResponseSerializer},
+        description=_(
+            "Upload a new document to be used as an attachment for a notification. "
+            "Requires the application, project, and organization slugs. "
+            "An optional correlation_id can be provided to link the attachment to a specific trigger."
+        ),
+    )
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         application = get_object_or_404(
             Application,
@@ -78,7 +86,11 @@ class AttachmentView(SecurityMixin, GenericAPIView[Attachment]):
             return Response(response_serializer.data, status=HTTP_201_CREATED)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-    @extend_schema(request=AttachmentUploadSerializer, description=_("Replace an existing attachment with a new file"))
+    @extend_schema(
+        request=AttachmentUploadSerializer,
+        responses={200: AttachmentResponseSerializer},
+        description=_("Replace an existing attachment file with a new document using its correlation_id."),
+    )
     def put(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         application = get_object_or_404(
             Application,
@@ -111,7 +123,10 @@ class AttachmentView(SecurityMixin, GenericAPIView[Attachment]):
             return Response(response_serializer.data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-    @extend_schema(description=_("List attachments for an application"))
+    @extend_schema(
+        responses={200: AttachmentResponseSerializer(many=True)},
+        description=_("List all current attachments stored for a specific application."),
+    )
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         application = get_object_or_404(
             Application,

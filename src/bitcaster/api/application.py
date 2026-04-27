@@ -29,6 +29,16 @@ class ApplicationView(SecurityMixin, ViewSet, RetrieveAPIView[Application], List
             project__slug=self.kwargs["prj"],
         )
 
-    @extend_schema(description=_("List Project applications"))
+    @extend_schema(
+        responses={200: ApplicationSerializer(many=True)},
+        description=_("List all applications within a specific project."),
+    )
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        responses={200: ApplicationSerializer},
+        description=_("Retrieve detailed information about a specific application using its slug."),
+    )
+    def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().retrieve(request, *args, **kwargs)

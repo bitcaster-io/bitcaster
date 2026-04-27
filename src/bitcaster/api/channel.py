@@ -34,10 +34,22 @@ class ChannelView(SecurityMixin, ViewSet, ListAPIView[Channel], RetrieveAPIView[
             )
         return Channel.objects.none()
 
-    @extend_schema(description=_("List organization channels"))
+    @extend_schema(
+        responses={200: ChannelSerializer(many=True)},
+        description=_("List all notification channels (email, sms, etc.) configured for an organization."),
+    )
     def list_for_org(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return super().list(request, *args, **kwargs)
 
-    @extend_schema(description=_("List Project channels"))
+    @extend_schema(
+        responses={200: ChannelSerializer(many=True)},
+        description=_("List all notification channels available for a specific project."),
+    )
     def list_for_project(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        responses={200: ChannelSerializer}, description=_("Retrieve details of a specific notification channel.")
+    )
+    def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().retrieve(request, *args, **kwargs)

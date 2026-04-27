@@ -2,12 +2,12 @@ import json
 from typing import Any
 
 from django.db.models import QuerySet
-from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
@@ -79,7 +79,30 @@ class DistributionView(
         )
 
     @extend_schema(
-        description=_("Add recipient to a DistributionList"),
+        responses={200: DistributionListSerializer(many=True)},
+        description=_("List all distribution lists within a specific project."),
+    )
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        request=DistributionListSerializer,
+        responses={201: DistributionListSerializer},
+        description=_("Create a new distribution list for the project."),
+    )
+    def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        responses={200: DistributionListSerializer}, description=_("Retrieve details of a specific distribution list.")
+    )
+    def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        description=_(
+            "Add recipients to a DistributionList by providing a list of their address values (e.g., emails)."
+        ),
         examples=[
             OpenApiExample(
                 "Add users",
@@ -89,7 +112,7 @@ class DistributionView(
         ],
     )
     @action(detail=True, methods=["POST"])
-    def add_recipient(self, request: HttpRequest, **kwargs: Any) -> Response:
+    def add_recipient(self, request: Request, **kwargs: Any) -> Response:
         dl: DistributionList = self.get_object()
         try:
             data = json.loads(request.body)
@@ -121,3 +144,10 @@ class DistributionMembersView(SecurityMixin, ViewSet, ListAPIView[Assignment]):
         return Assignment.objects.filter(
             distributionlist__id=self.kwargs["pk"], distributionlist__project__slug=self.kwargs["prj"]
         )
+
+    @extend_schema(
+        responses={200: DistributionMemberSerializer(many=True)},
+        description=_("List all members (assignments) of a specific distribution list."),
+    )
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().list(request, *args, **kwargs)
