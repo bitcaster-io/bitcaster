@@ -14,6 +14,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 if TYPE_CHECKING:
     from bitcaster.models import (
         Application,
+        Attachment,
         Event,
         Group,
         MessageTemplate,
@@ -386,3 +387,10 @@ def task() -> "Task":
     from testutils.factories import TaskFactory
 
     return TaskFactory.create()
+
+
+@pytest.fixture
+def attachment() -> "Attachment":
+    from testutils.factories import AttachmentFactory
+
+    return AttachmentFactory.create()

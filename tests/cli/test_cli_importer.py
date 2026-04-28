@@ -54,18 +54,12 @@ def test_cli_import_users_org_not_found(runner, db):
     assert "Error: Organization 'non-existent' not found." in result.output
 
 
-def test_cli_import_users_with_group(runner, organization):
-    from testutils.factories import GroupFactory
-
-    GroupFactory(name="TestGroup")
-
+def test_cli_import_users_with_group(runner, organization, group):
     csv_content = b"email\nuser1@example.com"
     csv_file = io.BytesIO(csv_content)
 
     with patch("click.File.convert", return_value=csv_file):
-        result = runner.invoke(
-            cli, ["import", "users", "dummy.csv", "--org", organization.slug, "--group", "TestGroup"]
-        )
+        result = runner.invoke(cli, ["import", "users", "dummy.csv", "--org", organization.slug, "--group", group.name])
 
     assert result.exit_code == 0
     assert "Success!" in result.output
