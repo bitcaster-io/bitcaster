@@ -3,9 +3,10 @@ description:  ""
 template: term.html
 terms:
    - glossary:
-         - Agent
-         - AgentFileSystem
-         - AgentFTP
+          - Agent
+          - AgentFileSystem
+          - AgentFTP
+          - AgentImap
 tags:
    - Agent
 
