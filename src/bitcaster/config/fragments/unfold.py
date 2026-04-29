@@ -8,6 +8,22 @@ from django.utils.translation import gettext_lazy as _
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
+
+def environment_callback(request: "HttpRequest") -> tuple[str, str]:
+    return settings.ENVIRONMENT, "info"
+
+
+def occurrence_callback(request: "HttpRequest") -> int:
+    from bitcaster.models import Occurrence
+
+    return Occurrence.objects.filter(status=Occurrence.Status.NEW.value).count()
+
+
+def has_model_permission(app_label: str, model_name: str, codename: str = "view"):
+    """Return a permission checker lambda for a menu item."""
+    return lambda request: request.user.is_superuser or request.user.has_perm(f"{app_label}.{codename}_{model_name}")
+
+
 # see https://fonts.google.com/icons?icon.query=docs for icons
 COMMON_SITE_DROPDOWN = [
     {
@@ -147,26 +163,31 @@ UNFOLD = {
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_occurrence_changelist"),
                         "badge": "bitcaster.config.fragments.unfold.occurrence_callback",
+                        "permission": has_model_permission("bitcaster", "occurrence"),
                     },
                     {
                         "title": _("Members"),
                         "icon": "person",
                         "link": reverse_lazy("admin:bitcaster_member_changelist"),
+                        "permission": has_model_permission("bitcaster", "member"),
                     },
                     {
                         "title": _("Stream"),
                         "icon": "call_log",
                         "link": reverse_lazy("admin:bitcaster_logmessage_changelist"),
+                        "permission": has_model_permission("bitcaster", "logmessage"),
                     },
                     {
                         "title": _("Messages"),
                         "icon": "inbox_text_person",
                         "link": reverse_lazy("admin:bitcaster_usermessage_changelist"),
+                        "permission": has_model_permission("bitcaster", "usermessage"),
                     },
                     {
                         "title": _("Attachments"),
                         "icon": "attachment",
                         "link": reverse_lazy("admin:bitcaster_attachment_changelist"),
+                        "permission": has_model_permission("bitcaster", "attachment"),
                     },
                 ],
             },
@@ -179,26 +200,31 @@ UNFOLD = {
                         "title": _("Addresses"),
                         "icon": "alternate_email",
                         "link": reverse_lazy("admin:bitcaster_address_changelist"),
+                        "permission": has_model_permission("bitcaster", "address"),
                     },
                     {
                         "title": _("Distribution List"),
                         "icon": "patient_list",
                         "link": reverse_lazy("admin:bitcaster_distributionlist_changelist"),
+                        "permission": has_model_permission("bitcaster", "distributionlist"),
                     },
                     {
                         "title": _("Events"),
                         "icon": "event_list",
                         "link": reverse_lazy("admin:bitcaster_event_changelist"),
+                        "permission": has_model_permission("bitcaster", "event"),
                     },
                     {
                         "title": _("Notifications"),
                         "icon": "route",
                         "link": reverse_lazy("admin:bitcaster_notification_changelist"),
+                        "permission": has_model_permission("bitcaster", "notification"),
                     },
                     {
                         "title": _("Message Templates"),
                         "icon": "article",
                         "link": reverse_lazy("admin:bitcaster_messagetemplate_changelist"),
+                        "permission": has_model_permission("bitcaster", "messagetemplate"),
                     },
                 ],
             },
@@ -211,21 +237,25 @@ UNFOLD = {
                         "title": _("Channels"),
                         "icon": "business_messages",
                         "link": reverse_lazy("admin:bitcaster_channel_changelist"),
+                        "permission": has_model_permission("bitcaster", "channel"),
                     },
                     {
                         "title": _("Applications"),
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_application_changelist"),
+                        "permission": has_model_permission("bitcaster", "application"),
                     },
                     {
                         "title": _("Projects"),
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_project_changelist"),
+                        "permission": has_model_permission("bitcaster", "project"),
                     },
                     {
                         "title": _("Organization"),
                         "icon": "view_apps",
                         "link": reverse_lazy("admin:bitcaster_organization_changelist"),
+                        "permission": has_model_permission("bitcaster", "organization"),
                     },
                 ],
             },
@@ -262,11 +292,13 @@ UNFOLD = {
                         "title": _("System Log"),
                         "icon": "data_alert",
                         "link": reverse_lazy("admin:bitcaster_logentry_changelist"),
+                        "permission": has_model_permission("admin", "logentry"),
                     },
                     {
                         "title": _("SSO Providers"),
                         "icon": "captive_portal",
                         "link": reverse_lazy("admin:social_socialprovider_changelist"),
+                        "permission": has_model_permission("social", "socialprovider"),
                     },
                 ],
             },
@@ -297,13 +329,3 @@ UNFOLD = {
         },
     ],
 }
-
-
-def environment_callback(request: "HttpRequest") -> tuple[str, str]:
-    return settings.ENVIRONMENT, "info"
-
-
-def occurrence_callback(request: "HttpRequest") -> int:
-    from bitcaster.models import Occurrence
-
-    return Occurrence.objects.filter(status=Occurrence.Status.NEW.value).count()
