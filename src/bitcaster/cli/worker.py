@@ -15,18 +15,13 @@ def runit(args: list[str], log_level, comp_log_level, **extra) -> None:
 
     from bitcaster.cli.utils import configure_logging
     from bitcaster.runner.config import dramatiq
-    from bitcaster.runner.manager import BackgroundManager
 
-    manager = BackgroundManager()
-    manager.register_runner()
     click.echo(" ".join(args))
     try:
         configure_logging(log_level, comp_log_level)
         dramatiq.cli.main(make_argument_parser().parse_args(args))  # type: ignore[no-untyped-call]
     except KeyboardInterrupt:
         click.echo("Runner stopping...")
-    finally:
-        manager.unregister_runner()
 
 
 @click.command()

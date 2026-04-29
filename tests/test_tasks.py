@@ -3,9 +3,9 @@ from typing import TYPE_CHECKING, Any, TypedDict
 from unittest.mock import Mock, patch
 
 import pytest
-from django.core.exceptions import ObjectDoesNotExist
 from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
+from testutils.factories import MonitorFactory
 from testutils.perms import configure_model
 
 from bitcaster.constants import SystemEvent, bitcaster
@@ -75,6 +75,11 @@ def setup(admin_user: "User") -> "Context":
         "notification": no,
         "silent_event": EventFactory.create(application__name="External"),
     }
+
+
+@pytest.fixture
+def monitor() -> "Monitor":
+    return MonitorFactory.create()
 
 
 @pytest.mark.django_db(transaction=True)
@@ -443,17 +448,13 @@ def test_monitor_run(system_user: "User", monitor) -> None:
         assert mock_send.call_count == 1
 
 
-def test_monitor_check(system_user: "User") -> None:
-    from testutils.factories.monitor import MonitorFactory
+def test_monitor_check(system_user: "User", monitor) -> None:
+    assert monitor_check("-1") == "Monitor not found or deactivated"
 
-    with pytest.raises(ObjectDoesNotExist):
-        monitor_check("-1")
-
-    monitor = MonitorFactory.create()
     assert monitor_check(monitor.pk) == "done"
 
     with configure_model(monitor, active=False):
-        assert monitor_check(monitor.pk) == "inactive"
+        assert monitor_check(monitor.pk) == "Monitor not found or deactivated"
 
 
 @pytest.mark.django_db
