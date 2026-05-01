@@ -27,6 +27,12 @@ def stub_worker():
     worker.stop()
 
 
+def create_message(**kwargs) -> "UserMessage":
+    from testutils.factories import UserMessageFactory
+
+    return UserMessageFactory.create(**kwargs)
+
+
 @pytest.fixture
 def data(db) -> "tuple[Channel, Event, UserMessage]":
     from testutils.factories import (
@@ -70,8 +76,6 @@ def data(db) -> "tuple[Channel, Event, UserMessage]":
 
 @pytest.mark.django_db(transaction=True)
 def test_console_check_for_new_user_messages(data: "tuple[Channel, Event, UserMessage]"):
-    from testutils.factories import UserMessageFactory
-
     from bitcaster.models import Occurrence
 
     channel, event, message = data
@@ -84,15 +88,13 @@ def test_console_check_for_new_user_messages(data: "tuple[Channel, Event, UserMe
     o = Occurrence.objects.get(event=event, status=Occurrence.Status.NEW)
     assert o.options == {"filters": {"exclude": [], "include": [{"pk__in": [message.user.pk]}]}}
 
-    UserMessageFactory.create()
+    create_message()
     check_for_new_user_messages()  # new message new occurrence created
     assert Occurrence.objects.filter(event=event, status=Occurrence.Status.NEW).count() == 2
 
 
 @pytest.mark.django_db(transaction=True)
 def test_console_notify_new_messages(django_app, broker, data: "tuple[Channel, Event, UserMessage]", caplog):
-    from testutils.factories import UserMessageFactory
-
     caplog.set_level(logging.ERROR)
     channel, event, message = data
     user: "User" = message.user
@@ -105,7 +107,7 @@ def test_console_notify_new_messages(django_app, broker, data: "tuple[Channel, E
     assert messages[0][0] == user.email
 
     # create_new_message
-    UserMessageFactory.create(user=user, event=event, message="abc")
+    create_message(user=user, event=event, message="abc")
     with stub_worker():
         scan_occurrences()
 
@@ -114,7 +116,7 @@ def test_console_notify_new_messages(django_app, broker, data: "tuple[Channel, E
     assert messages[0][0] == user.email
     latest_notify_time = get_user_latest_notify_time(user.pk)
 
-    msg = UserMessageFactory.create(user=user, event=event)
+    msg = create_message(user=user, event=event)
     assert msg.created > latest_notify_time
     check_for_new_user_messages()
     with stub_worker():

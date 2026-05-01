@@ -11,21 +11,24 @@ if TYPE_CHECKING:
     from bitcaster.models import User
 
 
+@pytest.fixture
+def user(request):
+    if request.param == "user":
+        return UserFactory.create()
+    return request.param
+
+
 @pytest.mark.parametrize("dt, expected", [(None, False), (timezone.now(), True)])
-@pytest.mark.parametrize("user", ["user", AnonymousUser()])
-def test_user_date(user: "User", dt, rf, expected) -> None:
+@pytest.mark.parametrize("user", ["user", AnonymousUser()], indirect=True)
+def test_user_date(user, dt, rf, expected) -> None:
     request = rf.get("/")
-    if isinstance(user, str):
-        user = UserFactory.create()
     request.user = user
     assert bool(user_date({"request": request}, dt)) is expected
 
 
 @pytest.mark.parametrize("dt, expected", [(None, False), (timezone.now(), True)])
-@pytest.mark.parametrize("user", ["user", AnonymousUser()])
+@pytest.mark.parametrize("user", ["user", AnonymousUser()], indirect=True)
 def test_user_datetime(user: "User", dt, rf, expected) -> None:
     request = rf.get("/")
-    if isinstance(user, str):
-        user = UserFactory.create()
     request.user = user
     assert bool(user_datetime({"request": request}, dt)) is expected
