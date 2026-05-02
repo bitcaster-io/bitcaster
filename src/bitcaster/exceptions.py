@@ -21,6 +21,10 @@ class InvalidGrantError(Exception):
     pass
 
 
+class AgentError(Exception):
+    pass
+
+
 class LockError(Exception):
     def __init__(self, locked: "LockMixin"):
         self.locked = locked

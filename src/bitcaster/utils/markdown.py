@@ -1,5 +1,5 @@
 import re
-import xml.etree.ElementTree as ET  # nosec
+import xml.etree.ElementTree as ET  # nosec: B405
 from typing import Any
 
 from markdown import Markdown

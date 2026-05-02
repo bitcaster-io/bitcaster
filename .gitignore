@@ -16,7 +16,6 @@ latest_logs
 junit.xml
 !.git
 !.ai
-!.semgrepignore
 !.codecov.yml
 !.semgrep
 !.semgrep/Makefile
