@@ -1,11 +1,9 @@
 rules:
-  - id: django-fields-required-attrs
+  - id: django-field-verbose-name-required
     languages:
       - python
     severity: WARNING
-    message: >-
-      All Django model fields should explicitly define `verbose_name` and `help_text` using `gettext_lazy` (e.g., `_("Name")`).
-      This improves the usability of the user interface (Admin and forms) and ensures that each field is documented and translatable.
+    message: Django model fields should explicitly define `verbose_name`.
     patterns:
       - pattern-inside: |
           class $MODEL(...):
@@ -19,9 +17,75 @@ rules:
       - metavariable-regex:
           metavariable: $F
           regex: .*Field$
-      # We exclude cases where both attributes are present
-      - pattern-not: $FIELD_NAME = $ANY(..., verbose_name=..., help_text=..., ...)
-      - pattern-not: $FIELD_NAME = $ANY(..., help_text=..., verbose_name=..., ...)
+      - pattern-not: $FIELD_NAME = $ANY(..., verbose_name=..., ...)
+    paths:
+      include:
+        - "**/models.py"
+        - "**/models/*.py"
+
+  - id: django-field-help-text-required
+    languages:
+      - python
+    severity: WARNING
+    message: Django model fields should explicitly define `help_text`.
+    patterns:
+      - pattern-inside: |
+          class $MODEL(...):
+            ...
+      - pattern-not-inside: |
+          class Meta:
+            ...
+      - pattern-either:
+          - pattern: $FIELD_NAME = models.$F(...)
+          - pattern: $FIELD_NAME = $F(...)
+      - metavariable-regex:
+          metavariable: $F
+          regex: .*Field$
+      - pattern-not: $FIELD_NAME = $ANY(..., help_text=..., ...)
+    paths:
+      include:
+        - "**/models.py"
+        - "**/models/*.py"
+
+  - id: django-field-verbose-name-gettext
+    languages:
+      - python
+    severity: WARNING
+    message: Django model field `verbose_name` must use `_("...")`.
+    patterns:
+      - pattern-inside: |
+          class $MODEL(...):
+            ...
+      - pattern-either:
+          - pattern: $FIELD_NAME = models.$F(..., verbose_name=$VALUE, ...)
+          - pattern: $FIELD_NAME = $F(..., verbose_name=$VALUE, ...)
+      - metavariable-regex:
+          metavariable: $F
+          regex: .*Field$
+      - pattern-not:
+          pattern: $FIELD_NAME = $ANY(..., verbose_name=_("..."), ...)
+    paths:
+      include:
+        - "**/models.py"
+        - "**/models/*.py"
+
+  - id: django-field-help-text-gettext
+    languages:
+      - python
+    severity: WARNING
+    message: Django model field `help_text` must use `_("...")`.
+    patterns:
+      - pattern-inside: |
+          class $MODEL(...):
+            ...
+      - pattern-either:
+          - pattern: $FIELD_NAME = models.$F(..., help_text=$VALUE, ...)
+          - pattern: $FIELD_NAME = $F(..., help_text=$VALUE, ...)
+      - metavariable-regex:
+          metavariable: $F
+          regex: .*Field$
+      - pattern-not:
+          pattern: $FIELD_NAME = $ANY(..., help_text=_("..."), ...)
     paths:
       include:
         - "**/models.py"

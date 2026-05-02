@@ -5,6 +5,8 @@ import dramatiq
 import pytest
 from dramatiq import Message, MessageProxy
 
+from bitcaster.runner.tasks import SmartActor
+
 if TYPE_CHECKING:
     from bitcaster.runner.manager import BackgroundManager
 
@@ -37,7 +39,7 @@ def test_get_executor_name(manager):
 
 @pytest.mark.xdist_group(name="runner")
 def test_get_queue_sizes(broker, manager: "BackgroundManager"):
-    @dramatiq.actor
+    @dramatiq.actor(actor_class=SmartActor)
     def test1():
         pass
 
@@ -47,7 +49,7 @@ def test_get_queue_sizes(broker, manager: "BackgroundManager"):
 
 @pytest.mark.xdist_group(name="runner")
 def test_get_queued_items(broker, manager: "BackgroundManager"):
-    @dramatiq.actor
+    @dramatiq.actor(actor_class=SmartActor)
     def test2():
         pass
 
@@ -58,7 +60,7 @@ def test_get_queued_items(broker, manager: "BackgroundManager"):
 
 @pytest.mark.xdist_group(name="runner")
 def test_reset(broker, manager: "BackgroundManager"):
-    @dramatiq.actor
+    @dramatiq.actor(actor_class=SmartActor)
     def test3():
         pass
 

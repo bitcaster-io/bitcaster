@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, TypedDict
+
 import pytest
 from constance.test.pytest import override_config
 from django import template
@@ -7,6 +9,30 @@ from testutils.factories.org import ApplicationFactory
 
 from bitcaster.web.templatetags.attachments import UnrelatedEventError
 from bitcaster.web.templatetags.attachments import attachment as attachment_tag
+
+if TYPE_CHECKING:
+    from bitcaster.models import Application, Attachment, Event
+
+    Context = TypedDict(
+        "Context",
+        {
+            "attachment": Attachment,
+            "event": Event,
+            "application": Application,
+            "unrelated_event": Event,
+        },
+    )
+
+
+@pytest.fixture
+def data() -> "Context":
+    attachment = AttachmentFactory.create()
+    return {
+        "attachment": attachment,
+        "event": EventFactory.create(application=attachment.application),
+        "application": ApplicationFactory.create(name="Attach here"),
+        "unrelated_event": EventFactory.create(application__name="Unrelated Application"),
+    }
 
 
 @pytest.mark.parametrize(
@@ -18,9 +44,9 @@ from bitcaster.web.templatetags.attachments import attachment as attachment_tag
     ],
 )
 @override_config(SERVER_URL="https://example.com")
-def test_attachment_returns_a_url(validity):
-    attachment = AttachmentFactory()
-    event = EventFactory(application=attachment.application)
+def test_attachment_returns_a_url(validity, data: "Context") -> None:
+    attachment = data["attachment"]
+    event = data["event"]
 
     mock_context = template.Context({"event": event, "validity": validity, "address": ""})
 
@@ -29,9 +55,9 @@ def test_attachment_returns_a_url(validity):
     )
 
 
-def test_attachment_raises_with_negative_validity():
-    attachment = AttachmentFactory()
-    event = EventFactory(application=attachment.application)
+def test_attachment_raises_with_negative_validity(data: "Context") -> None:
+    attachment = data["attachment"]
+    event = data["event"]
 
     mock_context = template.Context({"event": event, "validity": -1, "address": ""})
 
@@ -39,12 +65,9 @@ def test_attachment_raises_with_negative_validity():
         attachment_tag(mock_context, attachment.correlation_id, "aa")
 
 
-def test_attachment_raises_with_unrelated_attachment():
-    application = ApplicationFactory(name="Attach here")
-    attachment = AttachmentFactory(application=application)
-    unrelated_application = ApplicationFactory(name="Wrong app")
-    unrelated_event = EventFactory(application=unrelated_application)
-
+def test_attachment_raises_with_unrelated_attachment(data: "Context") -> None:
+    unrelated_event = data["unrelated_event"]
+    attachment = data["attachment"]
     mock_context = template.Context({"event": unrelated_event, "validity": None, "address": ""})
 
     with pytest.raises(UnrelatedEventError):

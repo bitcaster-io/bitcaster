@@ -4,6 +4,7 @@ import pytest
 
 from bitcaster.cli.__main__ import cli
 from bitcaster.runner.broker import ClickMiddleware
+from bitcaster.runner.tasks import SmartActor
 
 
 @pytest.mark.parametrize("autoreload", ["", "--autoreload"])
@@ -73,7 +74,7 @@ def test_worker_clickmiddleware(runner, stub_dramatiq):
 
     broker, worker = stub_dramatiq
 
-    @dramatiq.actor
+    @dramatiq.actor(actor_class=SmartActor)
     def test(value):
         return value
 

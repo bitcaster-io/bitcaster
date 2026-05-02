@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any, TypedDict
 from unittest.mock import Mock, patch
 
@@ -36,6 +37,7 @@ if TYPE_CHECKING:
             "occurrence": Occurrence,
             "address": Address,
             "channel": Channel,
+            "event": Event,
             "assignments": list[Assignment],
             "silent_event": Event,
             "notification": Notification,
@@ -56,20 +58,22 @@ def setup(admin_user: "User") -> "Context":
     )
 
     ch: "Channel" = ChannelFactory.create(name="test", dispatcher=fqn(XDispatcher))
+    ev: Event = EventFactory.create(channels=[ch])
     v1: Assignment = AssignmentFactory.create(channel=ch, address__value="test1@example.com")
     v2: Assignment = AssignmentFactory.create(channel=ch, address__value="test2@example.com")
-    no: Notification = NotificationFactory.create(event__channels=[ch], distribution__recipients=[v1, v2])
+    no: Notification = NotificationFactory.create(event=ev, distribution__recipients=[v1, v2])
     msg = MessageTemplateFactory.create(
         channel=ch, event=no.event, content="Message for {{ event.name }} on channel {{channel.name}}"
     )
 
     bitcaster.initialize(admin_user)
 
-    o = OccurrenceFactory(event=no.event, attempts=3)
+    o = OccurrenceFactory.create(event=no.event, attempts=3, status=Occurrence.Status.NEW)
     return {
         "occurrence": o,
         "address": v1.address,
         "channel": ch,
+        "event": ev,
         "message": msg,
         "assignments": [v1, v2],
         "notification": no,
@@ -236,16 +240,16 @@ def test_silent_event(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_
 
 
 def test_attempts(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
-    from testutils.factories import OccurrenceFactory
-
     from bitcaster.models import Occurrence
 
-    o = OccurrenceFactory(attempts=0, status=Occurrence.Status.PROCESSED)
-    process_occurrence(o.pk)
+    o: Occurrence = setup["occurrence"]
+    with configure_model(o, attempts=0, status=Occurrence.Status.PROCESSED):
+        assert o.status == Occurrence.Status.PROCESSED
+        process_occurrence(o.pk)
 
-    o.refresh_from_db()
-    assert o.status == Occurrence.Status.PROCESSED
-    assert o.data == {}
+        o.refresh_from_db()
+        assert o.status == Occurrence.Status.PROCESSED
+        assert o.data == {}
 
 
 def test_retry(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any) -> None:
@@ -281,28 +285,26 @@ def test_retry(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects
 
 
 def test_error(setup: "Context", system_objects: Any) -> None:
-    from testutils.factories import OccurrenceFactory
-
     from bitcaster.models import Occurrence
 
-    o = OccurrenceFactory(attempts=0, status=Occurrence.Status.NEW)
-    process_occurrence(o.pk)
+    o: Occurrence = setup["occurrence"]
+    with configure_model(o, attempts=0, status=Occurrence.Status.NEW):
+        process_occurrence(o.pk)
 
-    o.refresh_from_db()
-    assert o.status == Occurrence.Status.FAILED
-    assert o.data == {}
+        o.refresh_from_db()
+        assert o.status == Occurrence.Status.FAILED
+        assert o.data == {}
 
 
 def test_processed(setup: "Context", monkeypatch: pytest.MonkeyPatch, system_objects: Any) -> None:
-    from testutils.factories import OccurrenceFactory
-
     from bitcaster.models import Occurrence
 
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence._process", mocked_notify := Mock())
 
-    o = OccurrenceFactory(status=Occurrence.Status.PROCESSED)
-    process_occurrence(o.pk)
-    assert mocked_notify.call_count == 0
+    o: Occurrence = setup["occurrence"]
+    with configure_model(o, attempts=0, status=Occurrence.Status.PROCESSED):
+        process_occurrence(o.pk)
+        assert mocked_notify.call_count == 0
 
 
 @pytest.fixture(autouse=True)
@@ -331,19 +333,17 @@ def test_scan_occurrences(run_tasks_sync, setup: "Context", monkeypatch: pytest.
 
 @pytest.mark.django_db(transaction=True)
 def test_process_silent(setup: "Context", monkeypatch: pytest.MonkeyPatch) -> None:
-    from testutils.factories import OccurrenceFactory
-
     from bitcaster.models import Event, Occurrence
 
     monkeypatch.setattr("bitcaster.models.occurrence.Occurrence.process", mocked_notify := Mock())
 
     silent_event = Event.objects.get(name=SystemEvent.OCCURRENCE_SILENCE.value)
-    o = OccurrenceFactory(status=Occurrence.Status.NEW, event=silent_event)
-
-    assert Occurrence.objects.filter(event=silent_event).count() == 1
-    process_occurrence(o.pk)
-    assert Occurrence.objects.filter(event=silent_event).count() == 1
-    assert mocked_notify.call_count == 1
+    o: Occurrence = setup["occurrence"]
+    with configure_model(o, status=Occurrence.Status.NEW, event=silent_event):
+        assert Occurrence.objects.filter(event=silent_event).count() == 1
+        process_occurrence(o.pk)
+        assert Occurrence.objects.filter(event=silent_event).count() == 1
+        assert mocked_notify.call_count == 1
 
 
 def test_purge_occurrences(
@@ -363,12 +363,11 @@ def test_purge_occurrences(
 
 
 @pytest.mark.django_db
-def test_process_occurrence_return_value():
-    from testutils.factories import OccurrenceFactory
-
-    occ = OccurrenceFactory()
-    with patch.object(Occurrence, "process", return_value=True):
-        assert process_occurrence(occ.pk, return_value=True) is True
+def test_process_occurrence_return_value(setup):
+    o: Occurrence = setup["occurrence"]
+    with configure_model(o, status=Occurrence.Status.NEW):
+        with patch.object(Occurrence, "process", return_value=True):
+            assert process_occurrence(o.pk, return_value=True) is True
 
 
 @pytest.mark.django_db
@@ -378,27 +377,22 @@ def test_process_occurrence_not_found():
 
 
 @pytest.mark.django_db
-def test_check_for_new_user_messages(monkeypatch):
-    from testutils.factories import ChannelFactory, EventFactory, UserFactory
+def test_check_for_new_user_messages(setup, monkeypatch):
+    user = setup["address"].user
+    event = setup["event"]
+    channel = setup["channel"]
 
-    user = UserFactory()
     monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
-
-    event = EventFactory()
-    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={"event": event.pk})
-
-    with patch.object(Event, "trigger") as mock_trigger:
-        with patch("bitcaster.runner.tasks.set_user_latest_notify_time") as mock_set_time:
-            check_for_new_user_messages()
-            mock_trigger.assert_called_once()
-            mock_set_time.assert_called_once_with(user.pk)
+    with configure_model(channel, dispatcher=fqn(UserMessageDispatcher), config={"event": event.pk}):
+        with patch.object(Event, "trigger") as mock_trigger:
+            with patch("bitcaster.runner.tasks.set_user_latest_notify_time") as mock_set_time:
+                check_for_new_user_messages()
+                mock_trigger.assert_called_once()
+                mock_set_time.assert_called_once_with(user.pk)
 
 
 @pytest.mark.django_db
-def test_check_for_new_user_messages_no_channel(monkeypatch):
-    from testutils.factories import UserFactory
-
-    user = UserFactory()
+def test_check_for_new_user_messages_no_channel(user, monkeypatch):
     monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
     # Ensure no UserMessageDispatcher channel exists
     Channel.objects.filter(dispatcher=fqn(UserMessageDispatcher)).delete()
@@ -406,14 +400,11 @@ def test_check_for_new_user_messages_no_channel(monkeypatch):
 
 
 @pytest.mark.django_db
-def test_check_for_new_user_messages_no_event(monkeypatch):
-    from testutils.factories import ChannelFactory, UserFactory
-
-    user = UserFactory()
+def test_check_for_new_user_messages_no_event(user, monkeypatch, channel):
     monkeypatch.setattr("bitcaster.runner.tasks.get_users_to_notify", lambda: [user.pk])
     # Channel exists but no event in config
-    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={})
-    check_for_new_user_messages()
+    with configure_model(channel, dispatcher=fqn(UserMessageDispatcher), config={}):
+        check_for_new_user_messages()
 
 
 @pytest.mark.django_db
@@ -423,19 +414,8 @@ def test_check_for_new_user_messages_empty(monkeypatch):
 
 
 @pytest.mark.django_db
-def test_delete_expired_user_messages(system_user: "User") -> None:
-    from datetime import timedelta
-
-    from django.utils import timezone
-    from testutils.factories import ChannelFactory, UserMessageFactory
-
-    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={"message_ttl": 7})
-
-    m1 = UserMessageFactory()
-    UserMessage.objects.filter(pk=m1.pk).update(created=timezone.now() - timedelta(days=10))
-
-    m2 = UserMessageFactory()
-
+def test_delete_expired_user_messages(user_messages, system_user: "User") -> None:
+    m1, m2 = user_messages
     assert UserMessage.objects.count() == 2
     delete_expired_user_messages()
     assert UserMessage.objects.count() == 1
@@ -458,10 +438,7 @@ def test_monitor_check(system_user: "User", monitor) -> None:
 
 
 @pytest.mark.django_db
-def test_monitor_check_exception():
-    from testutils.factories.monitor import MonitorFactory
-
-    monitor = MonitorFactory(active=True)
+def test_monitor_check_exception(monitor):
     with patch.object(monitor.agent, "check", side_effect=Exception("Check failed")):
         with patch.object(Monitor.objects, "get", return_value=monitor):
             with pytest.raises(Exception, match="Check failed"):
@@ -480,13 +457,10 @@ def test_purge_occurrences_exception():
 
 
 @pytest.mark.django_db
-def test_scan_occurrences_with_data():
-    from testutils.factories import OccurrenceFactory
-
-    occ = OccurrenceFactory(status=Occurrence.Status.NEW)
+def test_scan_occurrences_with_data(occurrence):
     with patch("bitcaster.runner.tasks.process_occurrence.send") as mock_send:
         result = scan_occurrences()
-        assert occ.pk in result
+        assert occurrence.pk in result
         assert mock_send.call_count == 1
 
 

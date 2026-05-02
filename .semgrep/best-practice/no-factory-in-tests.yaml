@@ -1,0 +1,66 @@
+rules:
+  - id: no-factory-in-test-body
+    languages:
+      - python
+    severity: ERROR
+    message: Factory classes should not be used directly in test bodies. Use fixtures instead.
+    patterns:
+      - pattern-inside: |
+          def $FUNC(...):
+            ...
+      - metavariable-regex:
+          metavariable: $FUNC
+          regex: test_.*
+      - pattern-either:
+          - pattern: $FACTORY.create(...)
+          - pattern: $FACTORY.build(...)
+          - pattern: $FACTORY.stub(...)
+          - pattern: $FACTORY(...)
+      - metavariable-regex:
+          metavariable: $FACTORY
+          regex: .*Factory$
+    paths:
+      include:
+        - "**/tests/web/templatetags/test_web_tags_user.py"
+        - "**/tests/agents/*.py"
+        - "**/tests/cache/*.py"
+        - "**/tests/cli/*.py"
+        - "**/tests/console/*.py"
+#        - "**/tests/admin/test_admin_apikey.py"
+#        - "**/tests/admin/test_admin_channel.py"
+#        - "**/tests/admin/test_admin_distribution.py"
+#        - "**/tests/admin/test_admin_event.py"
+#        - "**/tests/admin/test_admin_member.py"
+#        - "**/tests/admin/test_admin_member_extra.py"
+#        - "**/tests/admin/test_admin_message.py"
+#        - "**/tests/admin/test_admin_mixins.py"
+#        - "**/tests/admin/test_admin_notification.py"
+#        - "**/tests/admin/test_admin_organization.py"
+#        - "**/tests/admin/test_admin_task.py"
+#        - "**/tests/admin/test_autocomplete.py"
+#        - "**/tests/admin/test_event_admin.py"
+#        - "**/tests/admin/test_filters.py"
+#        - "**/tests/api/test_api_trigger.py"
+#        - "**/tests/cli/test_cli_importer.py"
+#        - "**/tests/console/test_console_notify.py"
+#        - "**/tests/console/test_console_tasks.py"
+#        - "**/tests/forms/test_assignment.py"
+#        - "**/tests/models/test_model_address.py"
+#        - "**/tests/models/test_model_assignment.py"
+#        - "**/tests/models/test_model_channel.py"
+#        - "**/tests/models/test_model_event.py"
+#        - "**/tests/models/test_model_log.py"
+#        - "**/tests/models/test_model_media.py"
+#        - "**/tests/models/test_model_message.py"
+#        - "**/tests/models/test_model_notification.py"
+#        - "**/tests/models/test_model_occurence.py"
+#        - "**/tests/models/test_model_user.py"
+#        - "**/tests/models/test_model_usermessage.py"
+#        - "**/tests/runner/test_runner_tasks.py"
+#        - "**/tests/test_commands.py"
+#        - "**/tests/test_payload_filter.py"
+      exclude:
+        - "**/tests/conftest.py"
+        - "**/tests/test_factories.py"
+        - "**/tests/extras/testutils/factories/**/*.py"
+# just avoid future violations
