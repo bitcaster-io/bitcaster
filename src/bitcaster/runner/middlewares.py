@@ -10,20 +10,14 @@ from bitcaster.runner.manager import BackgroundManager
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from dramatiq import Actor, Broker, Message, MessageProxy
+    from dramatiq import Actor, Broker, MessageProxy
 
 
 class WorkerHeartbeatMiddleware(Middleware):
     def before_process_message(self, broker: "Broker", message: "MessageProxy") -> None:
-        logger.debug(f"START {message.actor_name} {message, type(message)}")
-        from .manager import BackgroundManager
-
+        logger.debug(f"START {message.actor_name}")
         message.options["started_at"] = int(time.time() * 1000)
-        manager = BackgroundManager()
-        try:
-            manager.register_task(message)
-        except Exception:
-            raise
+        BackgroundManager().register_task(message)
 
     def after_process_message(
         self,
@@ -33,15 +27,8 @@ class WorkerHeartbeatMiddleware(Middleware):
         result: Any | None = None,
         exception: BaseException | None = None,
     ) -> None:
-        logger.debug(f"END {message.actor_name} {message, type(message)}")
-        from .manager import BackgroundManager
-
-        manager = BackgroundManager()
-
-        try:
-            manager.unregister_task(message)
-        except Exception:
-            raise
+        logger.debug(f"END {message.actor_name}")
+        BackgroundManager().unregister_task(message)
 
 
 class DbConnectionsMiddleware(Middleware):
@@ -68,8 +55,7 @@ class ClickMiddleware(Middleware):
         pass
 
     def after_worker_boot(self, broker: "Broker", worker: "Worker") -> None:
-        manager = BackgroundManager()
-        manager.register_runner()
+        BackgroundManager().register_runner()
 
     def before_enqueue(self, broker: "Broker", message: "Message[Any]", delay: int) -> None:
         pass
@@ -90,8 +76,8 @@ class ClickMiddleware(Middleware):
     ) -> None:
         delta = time.perf_counter() - message.options["start"]
         actor: "Actor[Any, Any]" = broker.get_actor(message.actor_name)
-        logging = message.options.get("logging") or actor.options.get("logging")
-        if logging:
+        do_logging = message.options.get("logging") or actor.options.get("logging")
+        if do_logging:
             from bitcaster.models import ProcessLogEntry
 
             ProcessLogEntry.objects.log_process(

@@ -20,9 +20,19 @@ if TYPE_CHECKING:
 
 
 class BackgroundManager:
+    _instance: "BackgroundManager | None" = None
+
+    def __new__(cls) -> "BackgroundManager":
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self) -> None:
+        if hasattr(self, "_initialized"):
+            return
+        self._initialized = True
         self.client = get_redis_connection("default")
-        self.name = f"bitcaster@{gethostname()}"
+        self.name = f"bitcaster@{gethostname()}({os.getpid()})"
         self._actors: Iterable[Actor[Any, Any]] = []
 
     @property
@@ -59,7 +69,7 @@ class BackgroundManager:
             elif key_type == "hash":
                 sizes[queue] = broker.client.hlen(key)
             else:
-                sizes[queue] = 0  # unknown type
+                sizes[queue] = 0
 
         return sizes
 
@@ -73,7 +83,6 @@ class BackgroundManager:
                 if key_type == "list":
                     raw_messages = broker.client.lrange(key, 0, -1)
                     for raw in raw_messages:
-                        # If list uses msgpack
                         msg = msgpack.unpackb(raw, raw=False)
                         items.append(msg)
                 elif key_type == "hash":
@@ -98,39 +107,56 @@ class BackgroundManager:
     def register_runner(self) -> None:
         logger.debug(f"Registering runner {self.name}")
         self.client.sadd("background:runners", self.name)
-        return self.client.set(f"background:runner:{self.name}:last_seen", datetime.now(UTC).timestamp())
+        self.client.set(f"background:runners:{self.name}:last_seen", datetime.now(UTC).timestamp())
 
-    def unregister_runner(self) -> None:
-        logger.debug(f"Unregistering runner {self.name}")
-        self.client.srem("background:runners", self.name)
-        self.client.delete(f"background:runners:{self.name}:tasks")
-        return self.client.delete(f"background:runners:{self.name}:last_seen")
+    def unregister_runner(self, name: str | None = None) -> None:
+        target = name or self.name
+        logger.debug(f"Unregistering runner {target}")
+        self.client.srem("background:runners", target)
+        self.client.delete(f"background:runners:{target}:tasks")
+        self.client.delete(f"background:runners:{target}:last_seen")
 
     def get_runners(self, quick: bool = False) -> dict[str, Any]:
         items = self.client.smembers("background:runners")
         ret = {}
+        stale_runners = []
         for e in items:
-            ts = float(self.client.get(f"background:runner:{e.decode()}:last_seen").decode())
+            runner_name = e.decode()
+            raw_ts = self.client.get(f"background:runners:{runner_name}:last_seen")
+            if raw_ts is None:
+                logger.debug(f"Runner {runner_name} has no last_seen, marking as stale")
+                stale_runners.append(runner_name)
+                continue
+
+            ts = float(raw_ts.decode())
             dt = datetime.fromtimestamp(ts, tz=UTC)
-            tasks = self.client.hgetall(f"background:runners:{e.decode()}:tasks")
-            if alive := (datetime.now(UTC) - dt < timedelta(minutes=2)):
-                ret[e.decode()] = {
-                    "tasks": sorted([json.loads(v.decode()) for k, v in tasks.items()], key=lambda t: t["pid"]),
-                    "last_seen": dt.strftime("%Y-%m-%d %H:%M:%S"),
-                    "alive": alive,
-                }
+            tasks = self.client.hgetall(f"background:runners:{runner_name}:tasks")
+            alive = datetime.now(UTC) - dt < timedelta(minutes=2)
+            ret[runner_name] = {
+                "tasks": sorted([json.loads(v.decode()) for k, v in tasks.items()], key=lambda t: t["pid"]),
+                "last_seen": dt.strftime("%Y-%m-%d %H:%M:%S"),
+                "alive": alive,
+            }
+            if datetime.now(UTC) - dt > timedelta(hours=1):
+                logger.debug(f"Unregistering stale runner {runner_name}")
+                stale_runners.append(runner_name)
+
+        for stale in stale_runners:
+            self.unregister_runner(stale)
         return ret
 
     def update_task(self, actor_name: str) -> None:
-        self.client.set(f"background:runner:{actor_name}:last_run", datetime.now(UTC).timestamp())
+        self.client.set(f"background:runners:{self.name}:{actor_name}:last_run", datetime.now(UTC).timestamp())
 
     def get_task_last_run(self, actor_name: str) -> datetime | None:
         try:
-            ts = float(self.client.get(f"background:runner:{actor_name}:last_run").decode())
-            dt = datetime.fromtimestamp(ts, tz=UTC)
-        except (TypeError, AttributeError):
-            dt = None
-        return dt
+            raw_ts = self.client.get(f"background:runners:{self.name}:{actor_name}:last_run")
+            if raw_ts is None:
+                return None
+            ts = float(raw_ts.decode())
+            return datetime.fromtimestamp(ts, tz=UTC)
+        except (TypeError, ValueError, AttributeError):
+            return None
 
     def register_task(self, message: "MessageProxy") -> None:
         self.register_runner()
@@ -175,9 +201,12 @@ def init_scheduler() -> None:
     for sid, config in SCHEDULER.items():
         job_args = {k: v for k, v in config.items() if k in ["func", "trigger", "replace_existing", "args", "kwargs"]}
         trigger_args = {k: v for k, v in config.items() if k not in job_args}
-        __, created = Task.objects.get_or_create(
-            slug=sid, defaults={"name": sid, "trigger_config": trigger_args, **job_args}
-        )
+        defaults = {"name": sid, "trigger_config": trigger_args, **job_args}
+        task, created = Task.objects.get_or_create(slug=sid, defaults=defaults)
+        if not created:
+            for key, value in defaults.items():
+                setattr(task, key, value)
+            task.save(update_fields=list(defaults.keys()))
 
 
 scheduler = BlockingScheduler()

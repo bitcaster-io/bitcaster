@@ -120,19 +120,6 @@ def test_monitor_check_success(monitor):
             ).exists()
 
 
-def test_monitor_check_inactive():
-    m = MonitorFactory(active=False)
-    res = monitor_check(m.pk)
-    assert res == "inactive"
-
-
-def test_monitor_check_not_found():
-    from bitcaster.models import Monitor
-
-    with pytest.raises(Monitor.DoesNotExist):
-        monitor_check(9999)
-
-
 def test_monitor_check_error():
     m = MonitorFactory(active=True)
     with patch.object(XAgent, "check", side_effect=Exception("Agent error")):
@@ -141,6 +128,11 @@ def test_monitor_check_error():
         m.refresh_from_db()
         assert m.active is False
         assert "Agent error" in m.result["error"]
+
+
+def test_monitor_check_monitor_not_found():
+    result = monitor_check(99999)
+    assert result == "Monitor not found or deactivated"
 
 
 def test_check_for_new_user_messages_no_users():

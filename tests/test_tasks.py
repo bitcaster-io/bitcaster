@@ -4,10 +4,9 @@ from typing import TYPE_CHECKING, Any, TypedDict
 from unittest.mock import Mock, patch
 
 import pytest
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils import timezone
 from strategy_field.utils import fqn
 from testutils.dispatcher import XDispatcher
+from testutils.factories import MonitorFactory
 from testutils.perms import configure_model
 
 from bitcaster.constants import SystemEvent, bitcaster
@@ -83,16 +82,8 @@ def setup(admin_user: "User") -> "Context":
 
 
 @pytest.fixture
-def user_messages(user) -> list["UserMessage"]:
-    from testutils.factories import ChannelFactory, UserMessageFactory
-
-    ChannelFactory(dispatcher=fqn(UserMessageDispatcher), config={"message_ttl": 7})
-
-    m1 = UserMessageFactory.create(created=timezone.now() - timedelta(days=10))
-    UserMessage.objects.filter(pk=m1.pk).update(created=timezone.now() - timedelta(days=10))
-
-    m2 = UserMessageFactory.create()
-    return [m1, m2]
+def monitor() -> "Monitor":
+    return MonitorFactory.create()
 
 
 @pytest.mark.django_db(transaction=True)
@@ -438,13 +429,12 @@ def test_monitor_run(system_user: "User", monitor) -> None:
 
 
 def test_monitor_check(system_user: "User", monitor) -> None:
-    with pytest.raises(ObjectDoesNotExist):
-        monitor_check("-1")
+    assert monitor_check("-1") == "Monitor not found or deactivated"
 
     assert monitor_check(monitor.pk) == "done"
 
     with configure_model(monitor, active=False):
-        assert monitor_check(monitor.pk) == "inactive"
+        assert monitor_check(monitor.pk) == "Monitor not found or deactivated"
 
 
 @pytest.mark.django_db
