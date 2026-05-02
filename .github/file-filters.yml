@@ -46,6 +46,8 @@ migrations:
 
 code_settings: &code_settings
   - '.pre-commit-config.yaml'
+  - '.semgrep.yaml'
+  - '.semgrepignore'
   - '.trivyignore'
   - 'bandit.yaml'
   - 'djlint.toml'
@@ -54,8 +56,8 @@ code_settings: &code_settings
   - 'pytest.ini'
   - 'ruff.toml'
   - 'tox.ini'
-  - 'trivy.yaml'
   - 'transifex.yml'
+  - 'trivy.yaml'
 
 
 lint:

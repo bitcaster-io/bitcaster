@@ -122,10 +122,10 @@ def monitor_check(pk: int) -> str:
     from django.contrib.contenttypes.models import ContentType
 
     try:
-        monitor: "Monitor" = Monitor.objects.get(pk=pk)
+        monitor: "Monitor" = Monitor.objects.get(active=True, pk=pk)
     except Monitor.DoesNotExist as e:
         logger.exception(e)
-        raise
+        return "Monitor not found or deactivated"
 
     try:
         if monitor.active:
@@ -145,6 +145,14 @@ def monitor_check(pk: int) -> str:
         logger.exception(e)
         monitor.active = False
         monitor.result = {"error": str(e)}
+        LogEntry.objects.create(
+            content_type=ContentType.objects.get_for_model(Monitor),
+            object_id=monitor.pk,
+            action_flag=200,
+            user=bitcaster.system_user,
+            object_repr=str(monitor),
+            change_message=f"Monitor failed: {e}",
+        )
         raise
     finally:
         monitor.save()

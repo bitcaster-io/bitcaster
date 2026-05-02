@@ -173,13 +173,14 @@ mypy = [
   "types-s3transfer>=0.10.1",
 ]
 
-[tool.hatch]
-build.hooks.vcs.version-file = "src/bitcaster/version.py"
-version.source = "vcs"
-raw-options = { root = "../.." }
+[tool.hatch.version]
+source = "vcs"
 
 [tool.hatch.version.raw-options]
 local_scheme = "no-local-version"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/bitcaster/version.py"
 
 [tool.hatch.build.targets.sdist]
 ignore-vcs = true
